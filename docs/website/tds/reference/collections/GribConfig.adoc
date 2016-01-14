@@ -7,11 +7,11 @@
 
 There are a number of ways that the user can intervene in the processing
 of GRIB Collections, all of them controlled by *<gribConfig>* elements
-inside the <**featureCollection**> elements of the TDS configuration
+inside the *<featureCollection>* elements of the TDS configuration
 catalogs or inside NcML. Its important to understand when these elements
 are applied and when index files need to be regenerated.
 
-As of version 4.5, there are two stages of processing.
+There are two stages of processing.
 
 The first stage creates GribCollections, which are collections of GRIB
 records stored in one or more files. Grib Collections try to make all of
@@ -26,7 +26,7 @@ Variables with **pdsHash**, how time intervals are handled with
 **intvFilter**, and a few other options described below.
 
 If you make changes to any *gribConfig* parameters that affect stage one
-processing, you need to delete the CDM index files (***.ncx3**) to force
+processing, you need to delete the CDM index files (*.ncx4*) to force
 them to be recreated. You do not need to delete the *gbx9* index files.
 
 The second stage happens when the GribCollection is turned into a
@@ -37,14 +37,14 @@ to recreate the collection indices. They will take affect the next time
 the TDS starts.
 
 These instructions are tailored for TDS users. To work with Grib
-Collections in client software using the CDM stack, see
-link:../../../netcdf-java/reference/formats/GribFiles.adoc[CDM Grib
-Files].
+Collections in client software using the CDM stack,
+see link:../../../netcdf-java/reference/formats/GribFiles.adoc[CDM Grib Files].
 
 == Stage One: GribCollection Creation
 
-=== **gdsHash**: Fix errors in GDS encoding
+=== *gdsHash*: Fix errors in GDS encoding
 
+[source,xml]
 -----------------------------------------------------------------
    <xsd:element name="gdsHash" minOccurs="0">
      <xsd:complexType>
@@ -71,19 +71,21 @@ differences in the GDS and the corresponding hashcodes. If you confirm
 that they are, in fact, the same GDS, then you can fix this problem, by
 merging the two groups, for example:
 
+[source,xml]
 -----------------------------------------------
  <gribConfig>
    <gdsHash from="1450218978" to="1450192070"/>
  </gribConfig>
 -----------------------------------------------
 
-This changes those variables using GDS hashcode =``1450218978'' to use
-``1450192070'', which essentially merges the two groups and eliminates
+This changes those variables using GDS hashcode ="1450218978" to use
+"1450192070", which essentially merges the two groups and eliminates
 the spurious group in the resulting CDM index file.
 
 Sometimes you want to remove spurious records altogether. To do so, set
 the gdsHash to 0:
 
+[source,xml]
 --------------------------------------
  <gribConfig>
    <gdsHash from="1450218978" to="0"/>
@@ -92,8 +94,9 @@ the gdsHash to 0:
 
 will ignore any records with GDS hashcode 1450218978.
 
-=== pdsHash: Control how PDS are made into variables
+=== *pdsHash*: Control how PDS are made into variables
 
+[source,xml]
 -----------------------------------------------------------------------
   <xsd:element name="pdsHash" minOccurs="0" maxOccurs="unbounded">
    <xsd:complexType>
@@ -108,15 +111,15 @@ will ignore any records with GDS hashcode 1450218978.
 
 Information from the GRIB record, in particular the PDS (Product
 Definition Section) is used to group GRIB records into CDM Variables
-containing multidimensional arrays. This is done by creating a ``CDM
-hashcode'' of each record, and then combining all records with the same
+containing multidimensional arrays. This is done by creating a "CDM
+hashcode" of each record, and then combining all records with the same
 hashcode into one variable. The CDM makes certain choices on how to do
 this, that may need to be overriden for a partitcular dataset. Currently
 most of these setting ar per dataset, and cannot be applied at a finer
-granularity, with the exception of **intvFilter**, which applies to
+granularity, with the exception of *intvFilter*, which applies to
 specific Variables.
 
-**useGenType**: GRIB-2 only. Control whether generating type (octet 12)
+*useGenType*: GRIB-2 only. Control whether generating type (octet 12)
 is used in the CDM hashcode. If true, records with different generating
 types will create different variables. Default is false. Set this to
 true if, in the same dataset, you have records with the same
@@ -124,6 +127,7 @@ discipline-category-parameter but with different generating types that
 should be made into diffeerent variables. By default, different
 generating types will be ignored.
 
+[source,xml]
 ---------------------------------
 <gribConfig>
   <pdsHash>
@@ -132,7 +136,7 @@ generating types will be ignored.
 </gribConfig>
 ---------------------------------
 
-**useTableVersion**: GRIB-1 only. Control whether table version (octet
+*useTableVersion*: GRIB-1 only. Control whether table version (octet
 4) is used in the CDM hashcode. If true, records with different table
 versions will create different variables. Default is false. Set this to
 true if, in the same dataset, you have records with the same parameter
@@ -140,6 +144,7 @@ number but with different table versions that should be made into
 different variables. By default, different table versions will be
 ignored.
 
+[source,xml]
 ------------------------------------------
  <pdsHash>
    <useTableVersion>true</useTableVersion>
@@ -148,9 +153,10 @@ ignored.
 
 **intvMerge**: GRIB-1 and GRIB-2. Control whether time intervals are
 merged. If false, seperate variables are created for each time interval
-length. Default is true, which will generate ``mixed interval
-variables'' if a variable has records of different interval lengths.
+length. Default is true, which will generate "mixed interval
+variables" if a variable has records of different interval lengths.
 
+[source,xml]
 -------------------------------
  <pdsHash>
    <intvMerge>false</intvMerge>
@@ -164,14 +170,16 @@ same dataset, you have records with the same parameter from different
 centers that should be made into different variables. By default,
 different centers will be ignored.
 
+[source,xml]
 ------------------------------
  <pdsHash>
    <useCenter>true</useCenter>
  </pdsHash>
 ------------------------------
 
-=== intvFilter: Time Interval filters
+=== *intvFilter*: filter on Time Interval
 
+[source,xml]
 --------------------------------------------------------------------------
   <xsd:element name="intvFilter" minOccurs="0" maxOccurs="unbounded">
    <xsd:complexType>
@@ -185,6 +193,7 @@ different centers will be ignored.
     </xsd:sequence>
      <xsd:attribute name="excludeZero" type="xsd:boolean" use="optional"/>
      <xsd:attribute name="intvLength" type="xsd:int" use="optional"/>
+     <xsd:attribute name="interval" type="xsd:string" use="optional"/>
    </xsd:complexType>
   </xsd:element>
 --------------------------------------------------------------------------
@@ -197,7 +206,7 @@ bounds of the time interval for each coordinate. Currently, the CDM
 places all intervals in the same variable (rather than create seperate
 variables for each interval size), unless *intvMerge* is set to false.
 When all intervals have the same size, the interval size is added to the
-variable name. Otherwise the phrase ``mixed_intervals'' is added to the
+variable name. Otherwise the phrase "mixed_intervals" is added to the
 variable name.
 
 Generally, the CDM places the coordinate value at the end of the
@@ -208,68 +217,73 @@ but the coordinate bounds pair are always unique. Application code needs
 to understand this to handle this situation correctly, by checking
 _CoordinateAxis1D.isInterval()_ or _CoordinateAxis2D.isInterval()_
 
-NCEP GRIB2 model output, at least, has some issues that we are slowing
-learning how best to deal with. Currently there are two situations which
-the user can fix:
+NCEP GRIB2 model output, at least, has some issues that we are slowing learning how best to deal with.
+There are several situations which the user can fix:
 
-=== excludeZero
+==== excludeZero
 
 * __GRIB-1: By default, intervals of length 0 are included__. You can
 choose to ignore zero length intervals by setting
-*excludeZero=``false''.*
+*excludeZero="false".*
 * __GRIB-2: By default, intervals of length 0 are excluded__. You can
 choose to include zero length intervals by setting
-*excludeZero=``true''.*
+*excludeZero="true".*
 
-**intvLength**: _By default, intervals of all lengths (except 0 for
-GRIB-2) are used._ You can choose that certain parameters use only
-selected intervals. This is helpful when the parameter has redundant
-mixed levels, which can be derived from the set of intervals of a fixed
-size . For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12)
-intervals are all present, and so other intervals (0,6), (0, 9), (0,12)
-can be ignored.
+==== intvLength
+
+*intvLength*: _By default, intervals of all lengths (except 0 for GRIB-2) are used._
+You can choose that certain parameters use only selected intervals.
+This is helpful when the parameter has redundant mixed levels, which can be derived from the set of intervals of a fixed size.
+For example, the 3 hour intervals (0,3), (3, 6), (6,9), (9,12) intervals are all present, and so other intervals (0,6), (0, 9), (0,12) can be ignored.
+
+==== interval
+
+*interval*: You can _remove_ records of a specified interval. Currently this will filter all variables. Experimental.
+
+==== Examples
 
 Here are examples using NcML:
 
+[source,xml]
 ------------------------------------
   <gribConfig>
-1) <intvFilter excludeZero="false"/>
-2) <intvFilter intvLength="3">
+   <intvFilter excludeZero="false"/> # <1>
+   <intvFilter intvLength="3">       # <2>
      <variable id="0-1-8"/>
      <variable id="0-1-10"/>
    </intvFilter>
+   <intvFilter interval="225,228"/> # <3>
  </gribConfig>
 ------------------------------------
 
-1.  Do not ignore 0 length time intervals.
-2.  For variables 0-1-8 and 0-1-10, only include records with time
-interval length = 3. This will simplify those variables so that they
-only contain 3 hour intervals, instead of a mixture of intervals.
-3.  GRIB-1 uses ids of center-subcenter-version-param, eg ``7-4-2-132''.
-4.  GRIB-2 uses ids of discipline-category-number, eg ``0-1-8''.
+<1>  Do not ignore 0 length time intervals.
+<2>  For variables 0-1-8 and 0-1-10, only *include* records with time interval length = 3.
+This will simplify those variables so that they only contain 3 hour intervals, instead of a mixture of intervals.
+<3>  *Exclude* any records with the interval (225,228).
 
-Also see
-link:../../../netcdf-java/reference/formats/GribFiles.adoc#intvFilter[CDM
-docs].
+Note that GRIB-1 uses ids of center-subcenter-version-param, eg "7-4-2-132", while GRIB-2 uses ids of discipline-category-number, eg "0-1-8".
 
-=== option: set miscellaneous values
+Also see link:../../../netcdf-java/reference/formats/GribFiles.adoc#intvFilter[CDM docs].
+
+=== *option*: set miscellaneous values
 
 Miscellaneous values that control how the GribCollection is made can be
 set with *option* elements. All option elements are key / value pairs.
 
-=== timeUnit
+==== timeUnit
 
 The unit of the time coordinates is taken from the first GRIB record in
 the collection. Occasionally you may want to override this. The value
 must be a valid string for *ucar.nc2.time.CalendarPeriod.of( timeUnit)*
 
+[source,xml]
 ---------------------------------------------
 <gribConfig>
   <option name="timeUnit" value="1 minute" />
 </gribConfig>
 ---------------------------------------------
 
-=== unionRuntimeCoord
+==== unionRuntimeCoord
 
 When multiple reference times are in the same dataset, but they differ
 for different variables, by default unique runtime coordinates are
@@ -279,6 +293,7 @@ a few missing records. By setting the *runtimeCoordinate* option to
 coordinates, at the cost of some extra missing values. This happens only
 at the leaf collections (eg. a file or directory).
 
+[source,xml]
 ---------------------------------------------------
 <gribConfig>
   <option name="runtimeCoordinate" value="union" />
@@ -287,7 +302,7 @@ at the leaf collections (eg. a file or directory).
 
 == Stage Two: NetcdfFile Creation
 
-=== gdsName: Rename groups
+=== *gdsName*: Rename groups
 
 When a dataset has multiple groups, the groups are automatically named
 by the projection used and the horizontal dimension size, eg
@@ -297,6 +312,7 @@ A user can set group names manually in the TDS configuration catalog. To
 do so, find the group hash as in the gdsHash example above. Then use the
 gdsName element like this:
 
+[source,xml]
 -----------------------------------------------------------------------
 <gribConfig>
   <gdsName hash='-1960629519' groupName='KTUA Arkansas-Red River RFC'/>
@@ -309,70 +325,67 @@ gdsName element like this:
 The groupName is used in URLs, so dont use any special characters, like ":".
 
 ToolsUI will generate the XML of the GDS in a collection. Open the
-collection in IOSP/GRIB1(2)/GribCollection tab, and click on the ``Show
-GDS use'' button on the top right. This will create a template you can
+collection in IOSP/GRIB1(2)/GribCollection tab, and click on the "Show
+GDS use" button on the top right. This will create a template you can
 then modify:
 
+[source,xml]
 -----------------------------------------------------------------------------
 <gdsName hash='1450192070' groupName='Gaussian latitude/longitude-576X1152'/>
 -----------------------------------------------------------------------------
 
 
-=== datasetTypes (TDS only)
+=== *datasetTypes* (TDS only)
 
 Define which datasets are available in the TDS catalog. By default, all are enabled.
 
-1.  *TwoD:* the full dataset with two time coordinates: runtime and
-forecast time
-2.  **Best**: the ``best timeseries'' of the collection dataset, one
-time coordinate (forecasst time)
+1.  *TwoD:* the full dataset with two time coordinates: runtime and forecast time
+2.  **Best**: the "best timeseries" of the collection dataset, one time coordinate (forecasst time)
 3.  **Latest**: add latest resolver dataset to catalog
-4.  **Files**: show component files, allow them to be downloaded via
-HTTP. (For File partitions which have a single file in each partition,
-this functionality is enabled by including an HTTPServer in the
-services.)
+4.  **Files**: show component files, allow them to be downloaded via HTTP.
+(For File partitions which have a single file in each partition, this functionality is enabled by including an HTTPServer in the services.)
 
+[source,xml]
 ----------------------------------------------
 <gribConfig datasetTypes="TwoD Best Latest" />
 ----------------------------------------------
 
-=== latestNamer (TDS only)
+=== *latestNamer* (TDS only)
 
 Rename the latest file dataset
 
-Change the name of the latest file dataset in the collection, as listed
-under the Files entry (the default name is ``Latest File''). The
-datasetTypes options _*LatestFile*_ and __*Files*__, must be enabled.
-Note that this does not affect dataset **urlPath**, which is always
-__latest.xml__.
+Change the name of the latest file dataset in the collection, as listed under the Files entry (the default name is "Latest File").
+The datasetTypes options _*LatestFile*_ and __*Files*__, must be enabled. Note that this does not affect dataset **urlPath**, which is always __latest.xml__.
 
+[source,xml]
 --------------------------------------
 <gribConfig>
   <latestNamer name="My Latest Name"/>
 </gribConfig>
 --------------------------------------
 
-=== bestNamer(TDS only)
+=== *bestNamer* (TDS only)
 
 Rename the Best dataset
 
-Change the name of the Best dataset in the collection (the default name
-is ``Best Timeseries''). The datasetTypes *_Best_* option must be
-selected. Note that this does not affect dataset **urlPath**.
+Change the name of the Best dataset in the collection (the default name is "Best Timeseries").
+The datasetTypes *_Best_* option must be selected. Note that this does not affect dataset **urlPath**.
 
+[source,xml]
 -----------------------------------
 <gribConfig>
   <bestNamer name="My Best Name" />
 </gribConfig>
 -----------------------------------
 
-=== filesSort (TDS only)
+=== *filesSort* (TDS only)
 
 Sort the dataset listings under the Files dataset
 
 Sort the files lexigraphically, either increasing or decreasing (default
 GRIB Feature Collection behavior is the same as __increasing = True__).
 
+[source,xml]
 ----------------------------------
 <gribConfig>
   <filesSort increasing="false" />
@@ -386,6 +399,7 @@ The gribConfig schema definition, version 1.2
 see:
 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd]
 
+[source,xml]
 --------------------------------------------------------------------------
 <xsd:complexType name="gribConfigType">
  <xsd:sequence>
@@ -459,6 +473,7 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unid
 </xsd:complexType>
 --------------------------------------------------------------------------
 
+[source,xml]
 ----------------------------------------
 <xsd:simpleType name="gribDatasetTypes">
  <xsd:union memberTypes="xsd:token">
@@ -483,14 +498,10 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unid
 . link:#gdsName[latestName]: Rename the latest file dataset
 . link:#bestNamer[bestNamer]: Rename the best file dataset
 . link:#datasetTypes[datasetTypes]: which datasets appear in the TDS catalog:
+..  *TwoD:* the full dataset with two time dimensions, reference time and forecast time.
+..  **Best**: the "best timeseries" of the collection dataset
+..  **Files**: each physical file is exposed as a dataset that can be downloaded.
+..  **Latest**: add latest resolver dataset to Files catalog (**Files** must also be selected)
 
-1.  *TwoD:* the full dataset with two time dimensions, reference time
-and forecast time.
-2.  **Best**: the ``best timeseries'' of the collection dataset
-3.  **Files**: each physical file is exposed as a dataset that can be
-downloaded.
-4.  **Latest**: add latest resolver dataset to Files catalog (**Files**
-must also be selected)
-
-'''''
+''''
 image:../../thread.png[image] This document was last updated April 2015

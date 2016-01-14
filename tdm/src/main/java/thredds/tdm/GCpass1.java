@@ -465,7 +465,7 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
     counters.count("referenceDate", gr.getReferenceDate());
 
     //counters.countS("param", gr.getDiscipline() + "-" + pdss.getParameterCategory() + "-" + pdss.getParameterNumber());
-    int cdmHash = Grib2Variable.cdmVariableHash(cust2, gr, 0, gribConfig.intvMerge, gribConfig.useGenType);
+    int cdmHash = Grib2Variable.cdmVariableHash(cust2, gr, 0, gribConfig.intvMerge, gribConfig.useGenType); // LOOK needs gdsHashOverride
     String name = GribUtils.makeNameFromDescription(cust2.getVariableName(gr));
     counters.count("variable", new Variable(cdmHash, name));
     int gdsHash = gr.getGDS().hashCode();

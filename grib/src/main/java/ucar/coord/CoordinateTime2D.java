@@ -50,6 +50,8 @@ import java.util.*;
 
 /**
  * Both runtime and time coordinates are tracked here. The time coordinate is dependent on the runtime, at least on the offset.
+ * isOrthogonal means all time coordinate offsets are the same for each runtime.
+ * isRegular means all time coordinate offsets are the same for each "runtime hour of day" (from FMRC).
  *
  * @author caron
  * @since 1/22/14
@@ -223,8 +225,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
-    info.format(" %s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, nruns, ntimes, isOrthogonal, isRegular);
-    runtime.showInfo(info, indent);
+    info.format(" %s runtime=%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, runtime.getName(), nruns, ntimes, isOrthogonal, isRegular);
+    //runtime.showInfo(info, indent);
     indent.incr();
 
     info.format("%sAll time values=", indent);
@@ -252,8 +254,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, nruns, ntimes, isOrthogonal, isRegular);
-    runtime.showCoords(info);
+    info.format("%s runtime=%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, runtime.getName(), nruns, ntimes, isOrthogonal, isRegular);
+    //runtime.showCoords(info);
 
     if (isOrthogonal)
       otime.showCoords(info);

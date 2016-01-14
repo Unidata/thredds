@@ -32,6 +32,7 @@
  */
 package thredds.server.catalog;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -88,6 +89,7 @@ public class TestDatasetScan {
     DatasetScan dss = (DatasetScan) ds;
     String serviceName = dss.getServiceNameDefault();
     assert serviceName.equals("all");
+    Assert.assertTrue("has DatasetScan property", ds.hasProperty("DatasetScan"));
 
     DatasetScanConfig config = dss.getConfig();
     System.out.printf("%s%n", config);

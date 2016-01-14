@@ -77,7 +77,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   static public Grib2Customizer factory(Grib2Table grib2Table) {
     switch (grib2Table.type) {
-      case dss: return DssLocalTables.getCust(grib2Table);
+      case cfsr: return CfsrLocalTables.getCust(grib2Table);
       case gempak: return GempakLocalTables.getCust(grib2Table);
       case gsd: return FslLocalTables.getCust(grib2Table);
       case kma: return KmaLocalTables.getCust(grib2Table);

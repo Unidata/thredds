@@ -152,6 +152,7 @@ public class CoverageCoordSys {
       }
     }
 
+    // LOOK would be better maybe to share time2DCoordSys across CoordSys
     if (timeOffsetAxis != null) {
       if (runtimeAxis == null)
         throw new RuntimeException("TimeOffset Axis must have a RunTime axis in a CoverageCoordSys");
@@ -321,7 +322,7 @@ public class CoverageCoordSys {
 
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getAxisType().isHoriz()) continue;
-      if (axis.isTime2D()) continue;
+      if (isTime2D(axis)) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) rank++;
     }
 
@@ -335,7 +336,7 @@ public class CoverageCoordSys {
 
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getAxisType().isHoriz()) continue;
-      if (axis.isTime2D()) continue;
+      if (isTime2D(axis)) continue;
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
         result[count++] = axis.getNcoords();
     }
@@ -404,6 +405,13 @@ public class CoverageCoordSys {
 
   ////////////////////////////////////////////////
 
+  public boolean isTime2D( CoverageCoordAxis axis) {
+    if (time2DCoordSys == null) return false;
+    if (axis instanceof TimeOffsetAxis) return true;
+    if (axis instanceof FmrcTimeAxis2D) return true;
+    return (axis.getAxisType() == AxisType.RunTime) && (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent);
+  }
+
   public Optional<CoverageCoordSys> subset(SubsetParams params) {
     return subset(params, false, true);
   }
@@ -413,7 +421,7 @@ public class CoverageCoordSys {
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
-      if (axis.getAxisType().isHoriz() || axis.isTime2D()) continue;
+      if (axis.getAxisType().isHoriz() || isTime2D(axis)) continue;
 
       ucar.nc2.util.Optional<CoverageCoordAxis> axiso = axis.subset(params);
       if (!axiso.isPresent())

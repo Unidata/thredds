@@ -123,6 +123,11 @@ public class GribCdmIndex implements IndexReader {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
 
+  static public File getTopIndexFileFromConfig(FeatureCollectionConfig config) {
+    File indexFile = makeTopIndexFileFromConfig(config);
+    return GribIndexCache.getExistingFileOrCache(indexFile.getPath());
+  }
+
   /**
    * This is only used for the top level GribCollection.
    *

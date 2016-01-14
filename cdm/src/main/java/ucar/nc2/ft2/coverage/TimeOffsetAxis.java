@@ -38,8 +38,9 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.Optional;
 
 /**
- * A new way to handle 2D time, an orthogonal axis with offset values. The time can be calculated with both the runtime with the offset.
- * Much of the work is done in Time2DCoordSys
+ * A new way to handle 2D time, a runtime axis with orthogonal offset values, so time = (runtime x offset).
+ * This class represents the offset values, which must be the same for each runtime.
+ * A Time2DCoordSys has a runtime and a TimeOffsetAxis, and manages the 2D time.
  * @author John
  * @since 8/13/2015
  */
@@ -47,10 +48,6 @@ public class TimeOffsetAxis extends CoverageCoordAxis1D {
 
   public TimeOffsetAxis( CoverageCoordAxisBuilder builder) {
     super(builder);
-  }
-
-  public boolean isTime2D() {
-    return true;
   }
 
   @Override

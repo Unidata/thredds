@@ -55,10 +55,11 @@ import java.util.zip.CRC32;
   [xx+1]–nn Optional list of numbers defining number of points (see Notes 2, 3 and 4)
  </pre>
  *
+ *  Effectively immutable, but caching lazy gds
  * @author caron
  * @since 3/28/11
  */
-@Immutable
+// @Immutable
 public class Grib2SectionGridDefinition {
   private final byte[] rawData;
   private final long startingPosition;
@@ -171,8 +172,11 @@ public class Grib2SectionGridDefinition {
     return rawData[index-1] & 0xff;
   }
 
-  public Grib2Gds getGDS() {
-    return Grib2Gds.factory(templateNumber, rawData);
+  private Grib2Gds gds2;
+  public synchronized Grib2Gds getGDS() {
+    if (gds2 == null)
+      gds2 = Grib2Gds.factory(templateNumber, rawData);
+    return gds2;
   }
 
 }

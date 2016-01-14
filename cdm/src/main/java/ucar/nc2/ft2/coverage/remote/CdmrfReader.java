@@ -67,7 +67,7 @@ import java.util.List;
  * @since 5/2/2015
  */
 public class CdmrfReader {
-  private static final boolean showRequest = true;
+  private static final boolean showRequest = false;
   String endpoint;
 
   public CdmrfReader(String endpoint) {

@@ -65,7 +65,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
 
   public static class Group implements GribCollectionBuilder.Group {
     public Grib2SectionGridDefinition gdss;
-    public Object gdsHashObject;       // may have been modified
+    public int hashCode;       // may have been modified
     public CalendarDate runtime;
 
     public List<Grib2CollectionBuilder.VariableBag> gribVars;
@@ -74,14 +74,14 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
     public Set<Long> runtimes = new HashSet<>();
 
-    Group(Grib2SectionGridDefinition gdss, Object gdsHashObject) {
+    Group(Grib2SectionGridDefinition gdss, int hashCode) {
       this.gdss = gdss;
-      this.gdsHashObject = gdsHashObject;
+      this.hashCode = hashCode;
     }
 
-    Group(Grib2SectionGridDefinition gdss, Object gdsHashObject, CalendarDate runtime) {
+    Group(Grib2SectionGridDefinition gdss, int hashCode, CalendarDate runtime) {
       this.gdss = gdss;
-      this.gdsHashObject = gdsHashObject;
+      this.hashCode = hashCode;
       this.runtime = runtime;
     }
 

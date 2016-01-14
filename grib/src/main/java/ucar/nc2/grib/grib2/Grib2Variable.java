@@ -88,7 +88,7 @@ public class Grib2Variable {
     this.center = center;
     this.subcenter = subcenter;
     this.gds = gds;
-    this.gdsHash = gds.hashCode;             // LOOK this requires no overridden gds hashCodes have made it into the ncx
+    this.gdsHash = gds.hashCode;             // ok because no overridden gds hashCodes have made it into the ncx
     this.pds = pds;
     this.intvMerge = intvMerge;
     this.useGenType = useGenType;
@@ -120,6 +120,7 @@ public class Grib2Variable {
         double size2 = cust.getForecastTimeIntervalSizeInHours(pds2);
         if (size != size2) return false;
       }
+      if (pds.getStatisticalProcessType() != pds2.getStatisticalProcessType()) return false;
     }
 
     if (pds.isSpatialInterval() != pds2.isSpatialInterval()) return false;
@@ -179,7 +180,7 @@ public class Grib2Variable {
         double size = cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make this configurable
         result += result * (int) (31 + (1000 * size)); // create new variable for each interval size - default not
       }
-      // result += result * 31 + pds.getStatisticalProcessType(); // create new variable for each stat type LOOK WTF ??
+      result += result * 31 + pds.getStatisticalProcessType(); // create new variable for each stat type
     }
 
     if (pds.isSpatialInterval()) {

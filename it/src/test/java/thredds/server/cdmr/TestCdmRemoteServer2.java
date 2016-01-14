@@ -114,16 +114,11 @@ public class TestCdmRemoteServer2 {
           e.printStackTrace();
         }
       }
-
-      @Override
-      public boolean getCatalogRef(CatalogRef cat, Object context) {
-        System.out.format("***CatalogRef %s %n", cat.getCatalogUrl());
-        return true;
-      }
-    });
+    },  null, null, null);
     long start = System.currentTimeMillis();
     try {
-      crawler.crawl(cat, null, null, null, new Indent(2));
+      crawler.crawl(cat);
+
     } finally {
       long took = (System.currentTimeMillis() - start);
       System.out.format("***Done " + cat + " took = " + took + " msecs%n");

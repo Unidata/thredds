@@ -97,7 +97,7 @@ public class TextHistoryPane extends JPanel {
       ta.addMouseListener( new MyPopupMenu());
 
     //JScrollPane sp = new JScrollPane(ta, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-    JScrollPane sp = new JScrollPane(ta);
+    JScrollPane sp = new JScrollPane(ta); // , JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     add(sp, BorderLayout.CENTER);
 
     javax.swing.filechooser.FileFilter[] filters = new javax.swing.filechooser.FileFilter[2];

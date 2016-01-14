@@ -57,7 +57,10 @@ import java.util.*;
 import java.util.concurrent.*;
 
 /**
- * Describe
+ * GribCollection Building - make summary of the feature collections.
+ * calls GCpass1 and writes the gbx files if needed.
+ * Does not build ncx files, so no large memory is needed.
+ * So can run with many threads.
  *
  * @author caron
  * @since 12/20/2015.
@@ -87,7 +90,6 @@ public class GCsummary {
     this.threddsConfig = Paths.get(contentDir, "thredds", "threddsConfig.xml");
     this.contentTdmDir = Paths.get(contentDir, "tdm");
     this.catalog = new FileSystemResource(contentThreddsDir.toString() + "/catalog.xml");
-    System.out.printf("catalog=%s%n", catalog.getFile().getPath());
   }
 
   public void setShowOnly(boolean showOnly) {
@@ -104,8 +106,10 @@ public class GCsummary {
     this.executor = executor;
   }
 
-  public void setCatalog(Resource catalog) {
-    this.catalog = catalog;
+  public void setCatalog(String catalog) throws IOException {
+    this.catalog = new FileSystemResource(contentThreddsDir.toString() + "/" + catalog);
+    System.out.printf("use catalog=%s%n", this.catalog.getFile().getPath());
+
   }
 
   ////////////////////////////////////////////////////////////////////
@@ -193,13 +197,13 @@ public class GCsummary {
     GCpass1.Accum all = new GCpass1.Accum();
     long tookAll = 0;
 
-    Formatter f= new Formatter();
+    Formatter f = new Formatter();
     f.format("%40s,  type, ptype,    took,  nfiles, nrecords,  idx(MB), data(GB), data/idx, bytes/rec, variables, runtimes, gds %n", "Collection");
     for (GCsummaryTask task : fcMap.values()) {
       f.format("%40s, %5s, %5s, %8d,", task.config.collectionName, task.config.type, task.config.ptype, task.took);
       GCpass1.Accum acc = task.pass1.accumAll;
-      f.format("%8d, %8d, %8.3f, %8.3f, ", acc.nfiles, acc.nrecords, acc.indexSize, acc.fileSize/1000);
-      f.format("%8.3f, %8.0f,", acc.fileSize/acc.indexSize, acc.indexSize*1000*1000/acc.nrecords);
+      f.format("%8d, %8d, %8.3f, %8.3f, ", acc.nfiles, acc.nrecords, acc.indexSize, acc.fileSize / 1000);
+      f.format("%8.3f, %8.0f,", acc.fileSize / acc.indexSize, acc.indexSize * 1000 * 1000 / acc.nrecords);
 
       Counters counters = task.pass1.countersAll;
       f.format("%8d,", counters.get("variable").getUnique());
@@ -213,8 +217,8 @@ public class GCsummary {
 
     f.format("%n");
     f.format("%40s, %5s, %5s, %8d,", "total", "", "", tookAll);
-    f.format("%8d, %8d, %8.3f, %8.3f, ", all.nfiles, all.nrecords, all.indexSize, all.fileSize/1000);
-    f.format("%8.3f, %8.0f", all.fileSize/all.indexSize, all.indexSize*1000*1000/all.nrecords);
+    f.format("%8d, %8d, %8.3f, %8.3f, ", all.nfiles, all.nrecords, all.indexSize, all.fileSize / 1000);
+    f.format("%8.3f, %8.0f", all.fileSize / all.indexSize, all.indexSize * 1000 * 1000 / all.nrecords);
     f.format("%n");
 
     System.out.printf("%s%n", f);
@@ -272,26 +276,14 @@ public class GCsummary {
  */
 
   private static class CommandLine {
-    @Parameter(names = {"-spec"}, description = "Collection specification string, exactly as in the <featureCollection>.", required = false)
-    public String spec;
+    @Parameter(names = {"-catalog"}, description = "specific catalog", required = false)
+    public String catalog;
 
-    @Parameter(names = {"-rootDir"}, description = "Collection rootDir, exactly as in the <featureCollection>.", required = false)
-    public String rootDir;
+    @Parameter(names = {"-nthreads"}, description = "number of threads", required = false)
+    public int nthreads;
 
-    @Parameter(names = {"-regexp"}, description = "Collection regexp string, exactly as in the <featureCollection>.", required = false)
-    public String regexp;
-
-    @Parameter(names = {"-isGrib2"}, description = "Is Grib2 collection.", required = false)
-    public boolean isGrib2 = false;
-
-    @Parameter(names = {"-partition"}, description = "Partition type: none, directory, file", required = false)
-    public FeatureCollectionConfig.PartitionType partitionType = FeatureCollectionConfig.PartitionType.directory;
-
-    @Parameter(names = {"-useTableVersion"}, description = "Use Table version to make seperate variables.", required = false)
-    public boolean useTableVersion = false;
-
-    @Parameter(names = {"-useCacheDir"}, description = "Set the Grib index cache directory.", required = false)
-    public String cacheDir;
+    @Parameter(names = {"-showOnly"}, description = "show collections and exit", required = false)
+    public boolean showOnly;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
     public boolean help = false;
@@ -307,9 +299,6 @@ public class GCsummary {
       jc.usage();
     }
 
-    FeatureCollectionType getFeatureCollectionType() {
-      return isGrib2 ? FeatureCollectionType.GRIB2 : FeatureCollectionType.GRIB1;
-    }
   }
 
   public static void main(String args[]) throws IOException, InterruptedException {
@@ -320,48 +309,42 @@ public class GCsummary {
       for (Map.Entry<String, String> entry : aliases.entrySet())
         AliasTranslator.addAlias(entry.getKey(), entry.getValue());
 
-      String contentDir = System.getProperty("tds.content.root.path");
-      if (contentDir == null) contentDir = "../content";
-      app.setContentDir(contentDir);
+      String progName = GCsummary.class.getName();
+      long start = System.currentTimeMillis();
 
-      String logLevel;
-
-      // /opt/jdk/bin/java -d64 -Xmx3g -jar -Dtds.content.root.path=/opt/tds-dev/content tdm-4.5.jar -cred tdm:trigger -tds "http://thredds-dev.unidata.ucar.edu/"
-      for (int i = 0; i < args.length; i++) {
-        if (args[i].equalsIgnoreCase("-help")) {
-          System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-forceOnStartup]%n");
-          System.out.printf("example: /opt/jdk/bin/java -Xmx3g -Dtds.content.root.path=/my/content -jar tdm-4.5.jar -tds http://thredds-dev.unidata.ucar.edu/%n");
-          System.exit(0);
+      try {
+        CommandLine cmdLine = new CommandLine(progName, args);
+        if (cmdLine.help) {
+          cmdLine.printUsage();
+          return;
         }
 
-        if (args[i].equalsIgnoreCase("-contentDir")) {
-          app.setContentDir(args[i + 1]);
-          i++;
+        String contentDir = System.getProperty("tds.content.root.path");
+        if (contentDir == null) contentDir = "../content";
+        app.setContentDir(contentDir);
 
-        } else if (args[i].equalsIgnoreCase("-catalog")) {
-          Resource cat = new FileSystemResource(args[i + 1]);
-          app.setCatalog(cat);
+        if (cmdLine.catalog != null)
+          app.setCatalog(cmdLine.catalog);
 
-        } else if (args[i].equalsIgnoreCase("-nthreads")) {
-          int n = Integer.parseInt(args[i + 1]);
-          app.setNThreads(n);
+        if (cmdLine.nthreads != 0)
+          app.setNThreads(cmdLine.nthreads);
 
-        } else if (args[i].equalsIgnoreCase("-showOnly")) {
+        if (cmdLine.showOnly)
           app.setShowOnly(true);
 
+        if (app.init()) {
+          app.start();
+          app.finish();
+          System.exit(0);
+        } else {
+          System.out.printf("%nEXIT DUE TO ERRORS");
         }
-      }
 
-      if (app.init()) {
-        app.start();
-        app.finish();
-        System.exit(0);
-
-      } else {
-        System.out.printf("%nEXIT DUE TO ERRORS");
+      } catch (ParameterException e) {
+        System.err.println(e.getMessage());
+        System.err.printf("Try \"%s --help\" for more information.%n", progName);
       }
     }
   }
-
 }
 

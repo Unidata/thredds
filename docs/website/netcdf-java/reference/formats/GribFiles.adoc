@@ -59,15 +59,15 @@ changes, the CDM should detect that and rewrite the index file. If there
 is any doubt about that, delete the index file and let it get recreated.
 
 For each GRIB collection, a _CDM collection index_ file is written with
-suffix *.ncx3.* This file contains all the metadata and the coordinates
+suffix *.ncx4.* This file contains all the metadata and the coordinates
 for the collection. It is usually fairly small (a few dozen KBytes to a
 few MBytes for a large collection), and once created, makes accessing
 the GRIB collection very fast. In general it will be updated if needed,
 but one can always delete it and let it be recreated.
 
-If one opens a single GRIB file in the CDM, a *gbx9* and *ncx3* file
+If one opens a single GRIB file in the CDM, a *gbx9* and *ncx4* file
 will be created for that file. If one opens a collection of multiple
-GRIB files, a *gbx9* file is created for each file, and one *ncx3* file
+GRIB files, a *gbx9* file is created for each file, and one *ncx4* file
 is created for the entire collection.
 
 Both kinds of index files are binary, private formats for the CDM, whose
@@ -77,9 +77,9 @@ way on the details of these formats.
 *Moving GRIB files.* When GRIB index files (**gbx9**) are created, they
 store the name of the GRIB data file. However, this is not used except
 for debugging. So you can move the data files and the GBX files as
-needed. The CDM index files (**ncx3**) also store the names of the GRIB
+needed. The CDM index files (**ncx4**) also store the names of the GRIB
 data files, and (usually) needs the GRIB files to exist there. So if you
-move, best to delete the ncx3 files and recreate.
+move, best to delete the ncx4 files and recreate.
 
 == GRIB Tables
 
@@ -109,7 +109,7 @@ and http://www.ecmwf.int/products/data/software/grib.html[gribex]
 The CDM has a <<GribTables#,number of ways>> to allow you to use
 new tables or override incorrect ones globally or by dataset. The good
 news is that if users contribute these fixes back to the CDM, everyone
-can take advantage of them and the set of ``correct'' datasets will
+can take advantage of them and the set of "correct" datasets will
 grow. The WMO has greatly improved the process of using the standard
 tables, and hopefully GRIB data producers will continue to
 <<GribTables#,improve methods for writing GRIB>>and maintaining
@@ -132,14 +132,14 @@ classes:
 * *ucar.nc2.ft.FeatureDatasetFactoryManager.open(FeatureType.GRID,
 String location, CancelTask task, Formatter errlog);*
 
-The GRIB Index (.gbx9) and GRIB Collection index (.ncx3) files will be
+The GRIB Index (.gbx9) and GRIB Collection index (.ncx4) files will be
 created as needed.
 
 === Collection Index Mode
 
-If the GRIB Collection index (.ncx3) already exists, one can pass that
+If the GRIB Collection index (.ncx4) already exists, one can pass that
 to any of the standard dataset opening classes. In this case, the
-collection is created from reading the ncx3 file with no checking
+collection is created from reading the ncx4 file with no checking
 against the original data file(s). The original data files are only
 accessed when data is requested from them. Be careful not to move the
 data files once the index files are created. If you do need to move the
@@ -151,12 +151,12 @@ You can use a <<../manPages.adoc#GribCdmIndex,command line tool>> that
 uses a complete
 link:../../../tds/reference/collections/GribCollections.adoc[GRIB
 <featureCollection> element] to define the GRIB Collection, and
-generates the CDM index (**ncx3**) file.
+generates the CDM index (**ncx4**) file.
 
-For simple cases, you can create the *ncx3* file based on a collection
+For simple cases, you can create the *ncx4* file based on a collection
 spec using **ToolsUI**: IOSP/GRIB1(2)/GribCollection. Enter the
-collection spec and hit Enter. To write the index file, hit the ``Write
-Index'' button on the right. Give it a memorable name and hit Save. Its
+collection spec and hit Enter. To write the index file, hit the "Write
+Index" button on the right. Give it a memorable name and hit Save. Its
 is currently not possible to pass GRIB Collection Configuration elements
 in this way.
 
@@ -168,9 +168,9 @@ homogenous, in practice this often has problems; the aggregation would
 appear ok, but in fact be incorrect in various subtle ways. This was one
 of the motivations for developing GRIB collections, which collects the
 GRIB records into multidimensional arrays and can (mostly) figure out
-the right thing to do without user intervention. __*NcML Aggregations on
+the right thing to do without user intervention. *_NcML Aggregations on
 GRIB files are not supported in versions 4.3 and above. You must use
-GRIB collections*__**.**
+GRIB collections_*.
 
 === Using NcML to pass GRIB Collection Configuration options
 

@@ -5,35 +5,32 @@
 
 == Overview
 
-All of the GRIB records in all of the files that you specify constitute
-a _GRIB collection._ The CDM creates one or more _CDM datasets_ from
-this collection. There is always an overall __collection dataset__, and
-for large collections you may want to also present smaller subsets, for
-example yearly subsets of a multiyear model run. To do so, GRIB
-collections can be divided up into __time partitions__, based on the
-reference time of the GRIB records.
+All of the GRIB records in all of the files that you specify constitute a _GRIB collection_.
+The CDM creates one or more _CDM datasets_ from this collection.
+There is always an overall __collection dataset__, and for large collections you may want to also present smaller subsets, for
+example yearly subsets of a multiyear model run.
+To do so, GRIB collections can be divided up into __time partitions__, based on the reference time of the GRIB records.
 
-You may also want to partition your collection due to memory constraints
-or in order to speed up indexing. To build an index, all of the metadata
-of each GRIB record is read into memory. This is approximately 400-500
-bytes / record. Another estimate is the sum of all the GRIB index file
-sizes (gbx9 files) in the collection. (This memory is only required when
-building the index, and after the indexes are built, the memory usage is
-proportional to the size of the CDM index files (ncx3 files)). So if you
-have 1 million records in your collection, you may need ~500 MB of main
-memory for the indexing. The time it takes to index also increases with
-the number of GRIB records (probably somewhat more than linearly). When
-your collection is changing, partitioned collections will only have to
-update the partitions that change. So all of these are reasons you may
-want to use time partitioning.
+You may also want to partition your collection due to memory constraints or in order to speed up indexing.
+To build an index, all of the metadata of each GRIB record is read into memory.
+This is somewhere between 200-1000 bytes / record.
+A good estimate is twice the sum of the sizes of all the GRIB index files (gbx9 files) in the collection.
+This memory is only required when building the index, and after the indexes are built, the memory usage is
+proportional to the size of the CDM index files (ncx files).
+For example, if you have 1 million records in your collection, you may need ~500 MB of main memory for the indexing.
+The time it takes to index also increases with the number of GRIB records (probably somewhat more than linearly).
+When your collection is changing, partitioned collections will only have to update the partitions that change.
+All of these are reasons you may want to use time partitioning.
 
 See <<TDM#,here>> for options on how to get your collections
 indexed.
 
+== Time Partitions
+
 A time partition is the partitioning of the GRIB records into disjoint
 sets, based on the reference time of the GRIB records. (For model runs
-the reference time is usually the model run time). The way the partition
-is done is controlled by the *timePartition* attribute on the
+the reference time is usually the model run time). The partitioning
+is controlled by the *timePartition* attribute on the
 <**collection**> element inside the <**featureCollection**>, eg:
 
 -----------------------------------------------------------------------------------
@@ -46,63 +43,49 @@ is done is controlled by the *timePartition* attribute on the
   </featureCollection>
 -----------------------------------------------------------------------------------
 
-For each partition, a CDM index file is created, and a CDM collection
-dataset can be acccessed by the user.
+For each partition, a CDM index file is created, and a CDM collection dataset can be acccessed by the user.
 
 The possible values of *timePartition* are:
 
-1.  *none:* all files are scanned in, and a collection level index is
-built, plus a collection for each unique reference time.
-2.  *directory:* each directory is a partition**.** Nested directories
-create nested partitions (eg year/month/day).
-3.  *file:* each file is a partition.
-4.  time unit: the files are divided into partitions based on the given
-time unit. The reference time must be encoded in the filenames. Thi is
-the only time you need to use a **dateFormatMark**.
+1.  *none*: all files are scanned in, and a collection level index is built, plus a collection for each unique reference time.
+2.  *directory*: each directory is a partition. Nested directories create nested partitions (eg year/month/day).
+3.  *file*: each file is a partition.
+4.  *_<time unit>_*: the files are divided into partitions based on the given time unit. The reference time must be encoded in the filenames.
+This is the only time you need to use a **dateFormatMark**.
 
 === Directory Partition
 
-In order to use a directory partition, the directory structure must
-partition the data by reference time. That is, all of the data for any
-given reference time must be completely contained in the directory.
+In order to use a directory partition, the directory structure must partition the data by reference time.
+That is, all of the data for any given reference time must be completely contained in the directory.
 Directories can be nested to any level.
+To use, put *timePartition="directory"*, or simply omit, as this is the default.
 
 === File Partition
 
-In order to use a file partition, all of the records for a reference
-time must be contained in a single file. The common case is that each
-file contains all of the records for a single reference time.
+In order to use a file partition, all of the records for a reference time must be contained in a single file.
+The common case is that each file contains all of the records for a single reference time. To use, put *timePartition="file"*.
 
 === Time Partition
 
-In order to use a time partition, the filenames must contain parseable
-time information than can be used to partition the data. The directory
-layout, if any, is not used. The common case is where all files are in a
-single directory, and each file has the reference date encoded in the
-name. The split-out of variables does not matter.
+In order to use a time partition, the filenames must contain parseable time information than can be used to partition the data.
+The directory layout, if any, is not used.
+The common case is where all files are in a single directory, and each file has the reference date encoded in the name.
+The split-out of variables does not matter.
 
-If a collection is configured as a time partition, all of the filenames
-are read into memory at once. A date extractor must be specified, and is
-used to group the files into partitions. For example, if *timePartition
-= ``year'',* all of the files for each calendar year are made into a
-collections. The overall dataset is then the collection of all of those
-yearly collections.
+If a collection is configured as a time partition, all of the filenames are read into memory at once.
+A date extractor must be specified, and is used to group the files into partitions.
+For example, if *timePartition = "1 year",* all of the files for each calendar year are made into a collection.
+The overall dataset is the collection of all of those yearly collections.
 
 === None Partition
 
-If a collection is configured with **timePartition=none**, all of the
-records’ metadata (excluding the data itself) must be read into memory
-at once. The records are then grouped by reference time, and a seperate
-collection is written for each reference time. The overall dataset is
-then the collection of all of those single-reftime collections.
+If a collection is configured with *timePartition="none"*, all of the records’ metadata (excluding the data itself) must be read into memory at once.
+The records are then grouped by reference time, and a seperate collection is written for each reference time.
+The overall dataset is then the collection of all of those single-reference time collections.
 
-This option is reasonable for small collections. Record metadata is
-approximately 400-500 bytes / record. 1M records would then consume
-400-500 MB during the indexing process. Our rule of thumb is to use a
-different partition strategy if the collection exceeds 1M records. Even
-then, this option takes the longest when indexing, and other strategies
-are preferred especially if the collection is dynamic and must be
-reindexed often.
+This option is reasonable only for small collections, say < 1M records.
+Even then, this option takes the longest when indexing, and other strategies
+are preferred especially if the collection is dynamic and must be reindexed often.
 
 === Collection storage strategies
 
@@ -113,22 +96,21 @@ few hundred is best, and more than a thousand starts to make things like
 directory listings hard.
 
 Partition your files by reference time, which typically is the model run
-time. Depending on size and number, you might group files by day, month,
-year, etc.
+time. Depending on size and number, you might create directories by day, month, year, etc.
 
 When you have complete control over how the collection is stored on
 disk, and you want to optimize for fastest THREDDS indexing and
 retrieval, *file partitions* are recommended. Placing all of the records
 for a single reference time in a single file is often optimal. If there
-are a small number of records for each runtime (<10,000 ?) you might
+are a small number of records for each runtime ( < a few tens of thousands?) you might
 want to put more than one reference time in each file. Its essential
 that all the records for each runtime be in a single file.
 
 GRIB files are unordered collections of GRIB records. So you can
-concatenate GRIB files together just using the *cat* command. So you can
+concatenate GRIB files together just using the *cat* command. You can
 easily reorganize your collection (breaking up files requires GRIB-aware
 software, but is easy enough), just delete any old THREDDS indexes
-(.**gbx9** or .**ncx3**) and regenerate them with the TDM.
+(.*gbx9* or .*ncx4*) and regenerate them with the TDM.
 
 === Homogeneity requirements
 
@@ -145,4 +127,4 @@ with variable and global attributes.
 
 '''''
 
-image:../../thread.png[image] This document was last updated April 2015
+image:../../thread.png[image] This document was last updated Jan 2016

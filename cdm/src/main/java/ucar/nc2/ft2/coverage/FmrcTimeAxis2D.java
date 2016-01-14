@@ -63,11 +63,6 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   }
 
   @Override
-  public boolean isTime2D() {
-    return true;
-  }
-
-  @Override
   protected void setDataset(CoordSysContainer dataset) {
     if (shape != null) throw new RuntimeException("Cant change axis once set");
     shape = new int[2];

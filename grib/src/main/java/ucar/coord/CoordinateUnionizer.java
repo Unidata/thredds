@@ -119,7 +119,7 @@ public class CoordinateUnionizer {
     if (intvFilter == null) return coord.getTimeIntervals();
     List<TimeCoord.Tinv> result = new ArrayList<>();
     for (TimeCoord.Tinv tinv : coord.getTimeIntervals()) {
-      if (intvFilter.filterOk(varId, tinv.getIntervalSize(), 0))
+      if (!intvFilter.filter(varId, tinv.getBounds1(), tinv.getBounds2(), Integer.MIN_VALUE))
         result.add(tinv);
     }
     return result;

@@ -66,7 +66,7 @@ abstract class GribCollectionBuilder {
   protected final org.slf4j.Logger logger;
   protected final boolean isGrib1;
   protected GribCollectionImmutable.Type type;
-  protected Map<Long, Integer> gdsTrack = new HashMap<>();
+  //protected Map<Long, Integer> gdsTrack = new HashMap<>();
 
   protected String name;            // collection name
   protected File directory;         // top directory
@@ -251,11 +251,11 @@ abstract class GribCollectionBuilder {
 
   @Immutable
   static protected class GroupAndRuntime {
-    private final GdsHashObject gdsHashObject;
+    private final int hashCode;
     private final long runtime;
 
-    GroupAndRuntime(GdsHashObject gdsHashObject, long runtime) {
-      this.gdsHashObject = gdsHashObject;
+    GroupAndRuntime(int hashCode, long runtime) {
+      this.hashCode = hashCode;
       this.runtime = runtime;
     }
 
@@ -265,13 +265,13 @@ abstract class GribCollectionBuilder {
       if (o == null || getClass() != o.getClass()) return false;
 
       GroupAndRuntime that = (GroupAndRuntime) o;
-      if (!gdsHashObject.equals(that.gdsHashObject)) return false;
+      if (hashCode != that.hashCode) return false;
       return runtime == that.runtime;
     }
 
     @Override
     public int hashCode() {
-      int result = gdsHashObject.hashCode();
+      int result = hashCode;
       result = 31 * result + (int) (runtime ^ (runtime >>> 32));
       return result;
     }

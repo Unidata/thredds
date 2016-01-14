@@ -42,6 +42,8 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -93,7 +95,7 @@ public final class Grib1SectionProductDefinition {
   }
 
   public int getLength() {
-    return GribNumbers.uint3(getOctet(1),getOctet(2),getOctet(3));
+    return GribNumbers.uint3(getOctet(1), getOctet(2), getOctet(3));
   }
 
   /**
@@ -332,7 +334,7 @@ public final class Grib1SectionProductDefinition {
   public void showPds(Grib1Customizer cust, Formatter f) {
 
     f.format("5           Originating Center : (%d) %s%n", getCenter(), CommonCodeTable.getCenterName(getCenter(), 1));
-    f.format("26       Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName( getSubCenter()));
+    f.format("26       Originating SubCenter : (%d) %s%n", getSubCenter(), cust.getSubCenterName(getSubCenter()));
     f.format("4                Table Version : %d%n", getTableVersion());
 
     Grib1Parameter parameter = cust.getParameter(getCenter(), getSubCenter(), getTableVersion(), getParameterNumber());
@@ -352,13 +354,13 @@ public final class Grib1SectionProductDefinition {
 
     f.format("13-17           Reference Time : %s%n", getReferenceDate());
     f.format("18                  Time Units : (%d) %s%n", getTimeUnit(), getCalendarPeriodAsString());
-    Grib1ParamTime ptime = cust.getParamTime(this);;
+    Grib1ParamTime ptime = cust.getParamTime(this);
     f.format("19                 Time 1 (P1) : %d%n", getTimeValue1());
     f.format("20                 Time 2 (P2) : %d%n", getTimeValue2());
     f.format("21        Time Range Indicator : (%d) %s%n", getTimeRangeIndicator(), ptime.getTimeTypeName());
     f.format("22-23           N in statistic : (%d)%n", getNincluded());
     f.format("24                   N missing : (%d)%n", getNmissing());
-    f.format("                   Time  coord : %s%n", ptime.getTimeCoord());
+    f.format("                   Time  coord : %s == %s%n", ptime.getTimeCoord(), makeTimeCoord(getReferenceDate(), ptime));
     Grib1ParamLevel plevel = cust.getParamLevel(this);
     f.format("10                  Level Type : (%d) %s%n", getLevelType(), plevel.getNameShort());
     f.format("             Level Description : %s%n", plevel.getDescription());
@@ -370,7 +372,23 @@ public final class Grib1SectionProductDefinition {
     f.format("                    BMS Exists : %s%n", bmsExists());
   }
 
- ////////////////////////////////////////////////////////
+  private String makeTimeCoord(CalendarDate refDate, Grib1ParamTime ptime) {
+    CalendarPeriod period = GribUtils.getCalendarPeriod(getTimeUnit());
+    CalendarDateUnit unit = CalendarDateUnit.of(null, period.getField(), getReferenceDate());
+    int timeCoord;
+    if (ptime.isInterval()) {
+      int[] intv = ptime.getInterval();
+      CalendarDate cdate1 = unit.makeCalendarDate(period.getValue() * intv[0]);
+      CalendarDate cdate2 = unit.makeCalendarDate(period.getValue() * intv[1]);
+      return "(" + cdate1.toString() + "," + cdate2.toString() + ")";
+    } else {
+      timeCoord = ptime.getForecastTime();
+      CalendarDate cdate = unit.makeCalendarDate(period.getValue() * timeCoord);
+      return cdate.toString();
+    }
+  }
+
+  ////////////////////////////////////////////////////////
   // Ensembles
 
 /* http://www.ecmwf.int/publications/manuals/d/gribapi/fm92/grib1/show/local/
@@ -406,8 +424,8 @@ public final class Grib1SectionProductDefinition {
 
       case 98:
         return ((rawData.length >= 51) &&
-            (getOctet(41) == 1 || getOctet(41) == 30) &&
-            (getOctet(43) == 10 || getOctet(43) == 11));
+                (getOctet(41) == 1 || getOctet(41) == 30) &&
+                (getOctet(43) == 10 || getOctet(43) == 11));
     }
     return false;
   }
@@ -415,8 +433,10 @@ public final class Grib1SectionProductDefinition {
   public final int getPerturbationType() {
     if (!isEnsemble()) return GribNumbers.UNDEFINED;
     switch (getCenter()) {
-      case 7: return getOctet(42);
-      case 98: return getOctet(43);
+      case 7:
+        return getOctet(42);
+      case 98:
+        return getOctet(43);
     }
     return GribNumbers.UNDEFINED;
   }
@@ -426,13 +446,14 @@ public final class Grib1SectionProductDefinition {
 
     switch (getCenter()) {
       case 7: {
-        int type =  getOctet(42);
-        int id =  getOctet(43);
+        int type = getOctet(42);
+        int id = getOctet(43);
         if (type == 1) return 0;
         if (type == 2) return id;
         if (type == 3) return 5 + id;
       }
-      case 98: return getOctet(50);
+      case 98:
+        return getOctet(50);
     }
     return GribNumbers.UNDEFINED;
   }

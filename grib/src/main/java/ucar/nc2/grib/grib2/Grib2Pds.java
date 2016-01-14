@@ -313,6 +313,10 @@ public abstract class Grib2Pds {
     return input[index - 1] & 0xff;
   }
 
+  public final int getInt4StartingAtOctet(int index) {
+    return GribNumbers.int4(getOctet(index), getOctet(index+1), getOctet(index+2), getOctet(index+3));
+  }
+
   public final int getOctetSigned(int index) {
     return GribNumbers.convertSignedByte(input[index - 1]);
   }
@@ -341,49 +345,49 @@ public abstract class Grib2Pds {
 
   //////////////////////////////////////////////////////////////////////////////////////////////
 
-  static public interface PdsAerosol {
-    public int getAerosolType() ;
-    public double getAerosolIntervalSizeType();
-    public double getAerosolSize1();
-    public double getAerosolSize2();
-    public double getAerosolIntervalWavelengthType();
-    public double getAerosolWavelength1();
-    public double getAerosolWavelength2();
+  public interface PdsAerosol {
+    int getAerosolType() ;
+    double getAerosolIntervalSizeType();
+    double getAerosolSize1();
+    double getAerosolSize2();
+    double getAerosolIntervalWavelengthType();
+    double getAerosolWavelength1();
+    double getAerosolWavelength2();
   }
 
-  static public interface PdsInterval {
-    public int getStatisticalProcessType();
-    public CalendarDate getIntervalTimeEnd();
-    public int getForecastTime();
-    public int getNumberTimeRanges();
-    public int getNumberMissing();
-    public TimeInterval[] getTimeIntervals();
-    public long getIntervalHash();
+  public interface PdsInterval {
+    int getStatisticalProcessType();
+    CalendarDate getIntervalTimeEnd();
+    int getForecastTime();
+    int getNumberTimeRanges();
+    int getNumberMissing();
+    TimeInterval[] getTimeIntervals();
+    long getIntervalHash();
   }
 
-  static public interface PdsEnsemble {
-    public int getPerturbationType();
-    public int getPerturbationNumber();
-    public int getNumberEnsembleForecasts();
+  public interface PdsEnsemble {
+    int getPerturbationType();
+    int getPerturbationNumber();
+    int getNumberEnsembleForecasts();
   }
 
-  static public interface PdsEnsembleDerived {
-    public int getDerivedForecastType();
-    public int getNumberEnsembleForecasts();
+  public interface PdsEnsembleDerived {
+    int getDerivedForecastType();
+    int getNumberEnsembleForecasts();
   }
 
-  static public interface PdsPercentile {
-    public int getPercentileValue();
+  public interface PdsPercentile {
+    int getPercentileValue();
   }
 
-  static public interface PdsProbability {
-    public int getForecastProbabilityNumber();
-    public int getNumberForecastProbabilities();
-    public int getProbabilityType();
-    public double getProbabilityLowerLimit();
-    public double getProbabilityUpperLimit();
-    public int getProbabilityHashcode();
-    public String getProbabilityName();
+  public interface PdsProbability {
+    int getForecastProbabilityNumber();
+    int getNumberForecastProbabilities();
+    int getProbabilityType();
+    double getProbabilityLowerLimit();
+    double getProbabilityUpperLimit();
+    int getProbabilityHashcode();
+    String getProbabilityName();
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////

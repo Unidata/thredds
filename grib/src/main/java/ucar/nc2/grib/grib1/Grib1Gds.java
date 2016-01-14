@@ -34,6 +34,7 @@
 package ucar.nc2.grib.grib1;
 
 import com.google.common.base.MoreObjects;
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.QuasiRegular;
@@ -76,6 +77,7 @@ import java.util.Formatter;
  * @author John
  * @since 9/3/11
  */
+@Immutable
 public abstract class Grib1Gds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
   public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded

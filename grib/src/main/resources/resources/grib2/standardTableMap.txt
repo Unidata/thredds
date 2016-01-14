@@ -8,6 +8,8 @@
 #
 # FSL HRRR
 59;    -1; -1; -1; 125;   gsd; fsl hrrr
+# RDA CSFR
+60;    1; 2; 1; 197;   cfsr; rda cfsr
 #
 # center 8, subcenter 0 and -9999 use ndfd table
 8;      0; -1; -1; -1;    ndfd; ndfd

@@ -132,7 +132,7 @@ public class ToolsUI extends JPanel {
   private BufrCdmIndexPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
-  private CdmIndexPanel cdmIndex2Panel;
+  private CdmIndexPanel cdmIndexPanel;
   private ReportOpPanel cdmIndexReportPanel;
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
@@ -277,7 +277,7 @@ public class ToolsUI extends JPanel {
 
     // nested-2 tab - grib
     //gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
-    gribTabPane.addTab("CdmIndex3", new JLabel("CdmIndex3"));
+    gribTabPane.addTab("CdmIndex4", new JLabel("CdmIndex4"));
     gribTabPane.addTab("CdmIndexReport", new JLabel("CdmIndexReport"));
     gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
     gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
@@ -469,9 +469,9 @@ public class ToolsUI extends JPanel {
       c = gribCdmIndexPanel; */
         break;
 
-      case "CdmIndex3":
-        cdmIndex2Panel = new CdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
-        c = cdmIndex2Panel;
+      case "CdmIndex4":
+        cdmIndexPanel = new CdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
+        c = cdmIndexPanel;
         break;
 
       case "CdmIndexReport": {
@@ -1126,7 +1126,7 @@ public class ToolsUI extends JPanel {
     if (bufrCodePanel != null) bufrCodePanel.save();
     if (coordSysPanel != null) coordSysPanel.save();
     if (coveragePanel != null) coveragePanel.save();
-    if (cdmIndex2Panel != null) cdmIndex2Panel.save();
+    if (cdmIndexPanel != null) cdmIndexPanel.save();
     if (cdmIndexReportPanel != null) cdmIndexReportPanel.save();
     if (cdmremotePanel != null) cdmremotePanel.save();
     if (dirPartPanel != null) dirPartPanel.save();
@@ -2984,7 +2984,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class CdmIndexPanel extends OpPanel {
-    CdmIndex3Panel indexPanel;
+    ucar.nc2.ui.grib.CdmIndexPanel indexPanel;
 
     void closeOpenFiles() throws IOException {
       indexPanel.clear();
@@ -2992,7 +2992,7 @@ public class ToolsUI extends JPanel {
 
     CdmIndexPanel(PreferencesExt p) {
       super(p, "index file:", true, false);
-      indexPanel = new CdmIndex3Panel(prefs, buttPanel);
+      indexPanel = new ucar.nc2.ui.grib.CdmIndexPanel(prefs, buttPanel);
       indexPanel.addPropertyChangeListener(new PropertyChangeListener() {
         public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib2Collection")) {

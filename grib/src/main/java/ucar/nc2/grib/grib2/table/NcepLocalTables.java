@@ -40,8 +40,6 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.NcepTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
-import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.time.CalendarPeriod;
 
 import java.io.File;
 import java.io.IOException;
@@ -209,34 +207,6 @@ public class NcepLocalTables extends LocalTables {
     f.format("  (62-65) hours skipped between each calculation component  = %d%n", p2mp1);
     f.format("  nhours in month %d should be  = %d%n", ngrids * p2, 24 * 31);
   }
-
-
-  @Override
-  public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
-    Grib2Pds pds = gr.getPDS();
-    if (!pds.isTimeInterval()) return null;
-    if (!isCfsr(pds)) return super.getForecastTimeInterval(gr);
-
-    // LOOK this is hack for CFSR monthly combobulation
-    CalendarPeriod period = CalendarPeriod.of(6, CalendarPeriod.Field.Hour); // hahahahahaha
-    return new TimeCoord.TinvDate(gr.getReferenceDate(), period);
-  }
-
-  @Override
-  public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
-    if (!isCfsr(pds)) return super.getForecastTimeIntervalSizeInHours(pds);
-    return 6.0;  // LOOK  WTF ??
-  }
-
-  private boolean isCfsr(Grib2Pds pds) {
-    int genType = pds.getGenProcessId();
-    if ((genType != 82) && (genType != 89)) return false;
-
-    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
-    Grib2Pds.TimeInterval[] ti = pdsIntv.getTimeIntervals();
-    return ti.length != 1;
-  }
-
 
   @Override
   public String getVariableName(int discipline, int category, int parameter) {

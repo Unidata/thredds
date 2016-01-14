@@ -32,22 +32,19 @@
  */
 package thredds.client.catalog.tools;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterDescription;
+import com.beust.jcommander.ParameterException;
 import com.google.common.base.MoreObjects;
-import thredds.client.catalog.Catalog;
-import thredds.client.catalog.CatalogRef;
-import thredds.client.catalog.Dataset;
+import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Crawl client catalogs
@@ -57,19 +54,40 @@ import java.util.Random;
  */
 public class CatalogCrawler {
 
+  public interface Listener {
+    /**
+     * Gets called for each dataset found.
+     *
+     * @param dd      the dataset
+     * @param context object passed into crawl() by the caller
+     */
+    void getDataset(Dataset dd, Object context);
+  }
+
+  public interface Filter {
+    // true means skip this dataset and any children
+    boolean skipAll(Dataset ds);
+
+    // true means skip this catref and any children
+    boolean skipCatref(CatalogRef ds, int level);
+  }
+
   public enum Type {
     all,                         // return all datasets
     all_direct,                  // return all direct datasets, ie that have an access URL
     first_direct,                // return first dataset in each collection of direct datasets
     random_direct,               // return one random dataset in each collection of direct datasets
     random_direct_middle,        // return one random dataset in each collection of direct datasets
-    random_direct_max           // return max random datasets in entire catalog
+    random_direct_max            // return max random datasets in entire catalog
   }
 
-  private Filter filter = null;
-  private int max = -1;
-  private Type type = Type.all;
-  private Listener listen;
+  private final Type type;
+  private final int max;
+  private final Filter filter;
+  private final Listener listen;
+  private final CancelTask task;
+  private final PrintWriter out;
+  private final Object context;
 
   private Random random;
   private int countCatrefs = 0;
@@ -80,15 +98,21 @@ public class CatalogCrawler {
    * Constructor.
    *
    * @param type   CatalogCrawler.Type
-   * @param max    return max (random_direct_max only)
+   * @param max    if > 0, only process max datasets, then exit (random_direct_max only)
    * @param filter dont process this dataset or its descendants. may be null
-   * @param listen each dataset gets passed to the listener
+   * @param listen each dataset gets passed to the listener. if null, send the dataset name to standard out
+   * @param task    user can cancel the task (may be null)
+   * @param out     send status messages to here (may be null)
+   * @param context caller can pass this object to Listener (eg used for thread safety)
    */
-  public CatalogCrawler(Type type, int max, Filter filter, Listener listen) {
-    this.type = type;
+  public CatalogCrawler(Type type, int max, Filter filter, Listener listen, CancelTask task, PrintWriter out, Object context) {
+    this.type = type == null ? Type.all : type;
     this.max = max;
     this.filter = filter;
     this.listen = listen;
+    this.task = task;
+    this.out = out;
+    this.context = context;
 
     if (type == Type.random_direct || type == Type.random_direct_middle || type == Type.random_direct_max)
       this.random = new Random(System.currentTimeMillis());
@@ -96,50 +120,48 @@ public class CatalogCrawler {
 
   /**
    * Open a catalog and crawl (depth first) all the datasets in it.
+   * Any that pass the filter are sent to the Listener
    * Close catalogs and release their resources as you.
    *
-   * @param catUrl  url of catalog to open
-   * @param task    user can cancel the task (may be null)
-   * @param out     send status messages to here (may be null)
-   * @param context caller can pass this object in (used for thread safety)
+   * @param catUrl  url of catalog to open (xml, not html)
    * @return number of catalogs (this + catrefs) opened and crawled
    */
-  public int crawl(String catUrl, CancelTask task, PrintWriter out, Object context) throws IOException {
+  public int crawl(String catUrl) throws IOException {
 
     CatalogBuilder catFactory = new CatalogBuilder();
     Catalog cat = catFactory.buildFromLocation(catUrl, null);
     boolean isValid = !catFactory.hasFatalError();
     if (out != null) {
-      out.println("catalog <" + catUrl + "> " + (isValid ? "is" : "is not") + " valid");
-      out.println(" validation output=\n" + catFactory.getErrorMessage());
+      out.println("Catalog <" + catUrl + "> " + (isValid ? "read ok" : "is not valid"));
+      if (!isValid)
+        out.println(" validation output=\n" + catFactory.getErrorMessage());
     }
-    if (out != null && cat != null)
-      out.println("***CATALOG " + cat.getBaseURI());
 
+    this.countCatrefs = 0;
     if (isValid)
-      return crawl(cat, task, out, context, new Indent(2));
-    else
-      System.err.printf("%s%n", catFactory.getErrorMessage());
+      return crawl(cat);
+
+    System.err.printf("%s%n", catFactory.getErrorMessage());
     return 0;
   }
 
   /**
    * Crawl a catalog thats already been opened.
-   * When you get to a dataset containing leaf datasets, do all, only the first, or a randomly chosen one.
    *
    * @param cat     the catalog
-   * @param task    user can cancel the task (may be null)
-   * @param out     send status messages to here (may be null)
-   * @param context caller can pass this object in (used for thread safety)
    * @return number of catalog references opened and crawled
    */
-  public int crawl(Catalog cat, CancelTask task, PrintWriter out, Object context, Indent indent) throws IOException {
+  public int crawl(Catalog cat) throws IOException {
+    this.countCatrefs = 0;
+    crawl(cat, 0, new Indent(2));
+    return 1 + countCatrefs;
+  }
 
+  private int crawl(Catalog cat, int level, Indent indent) throws IOException {
     for (Dataset ds : cat.getDatasetsLocal()) {
-      crawlDataset(ds, true, task, out, context, indent);
+      crawlDataset(ds, level, indent);
       if ((task != null) && task.isCancel()) break;
     }
-
     return 1 + countCatrefs;
   }
 
@@ -147,23 +169,21 @@ public class CatalogCrawler {
    * Crawl this dataset recursively.
    *
    * @param ds      the dataset
-   * @param isTop   is the top dataset
-   * @param task    user can cancel the task (may be null)
-   * @param out     send status messages to here (may be null)
-   * @param context caller can pass this object in (used for thread safety)
+   * @param level   is the top dataset
    * @param indent  print indentation
    */
-  private void crawlDataset(Dataset ds, boolean isTop, CancelTask task, PrintWriter out, Object context, Indent indent) throws IOException {
+  private void crawlDataset(Dataset ds, int level, Indent indent) throws IOException {
     if (filter != null && filter.skipAll(ds))
       return;
 
     if (ds instanceof CatalogRef) {
       CatalogRef catref = (CatalogRef) ds;
-      if (out != null) out.printf("%s**CATREF %s (%s)%n", indent, catref.getURI(), ds.getName());
-      countCatrefs++;
 
-      if (!listen.getCatalogRef(catref, context))
+      if (filter != null && filter.skipCatref(catref, level+1))
         return;
+
+      if (out != null) out.printf("%n%sCatalogRef %s (%s)%n", indent, catref.getURI(), ds.getName());
+      countCatrefs++;
 
       Catalog cat = readCatref(catref, out, indent);
       if (cat == null) {
@@ -171,20 +191,24 @@ public class CatalogCrawler {
         return;
       }
 
-      crawl(cat, task, out, context, indent.incr());
+      crawl(cat, level+1, indent.incr());
       indent.decr();
       return;
     }
 
-    if (isTop) {
+    if (filter != null && filter.skipAll(ds))
+      return;
+
+    if (level == 0) {
       if (type == Type.all || ds.hasAccess())
         listen.getDataset(ds, context);
     }
 
     if (type == Type.all) {
       for (Dataset dds : ds.getDatasetsLocal()) {
-        listen.getDataset(dds, context);
-        crawlDataset(dds, false, task, out, context, indent.incr());
+        if (!(dds instanceof CatalogRef))
+          listen.getDataset(dds, context);
+        crawlDataset(dds, level, indent.incr());
         indent.decr();
         if ((task != null) && task.isCancel()) break;
       }
@@ -217,17 +241,14 @@ public class CatalogCrawler {
           }
         }
       }
-    }
-
-    // recurse
-    for (Dataset dds : ds.getDatasets()) {
-      if (dds.hasNestedDatasets() || (dds instanceof CatalogRef)) {
-        crawlDataset(dds, false, task, out, context, indent.incr());
-        indent.decr();
-        if ((task != null) && task.isCancel()) break;
+      // recurse
+      for (Dataset dds : ds.getDatasetsLocal()) {
+        if (dds.hasNestedDatasets() || (dds instanceof CatalogRef)) {
+          crawlDataset(dds, level, indent.incr());
+          indent.decr();
+          if ((task != null) && task.isCancel()) break;
+        }
       }
-
-      if ((task != null) && task.isCancel()) break;
     }
   }
 
@@ -277,45 +298,8 @@ public class CatalogCrawler {
     return numReadFailures;
   }
 
-  //////////////////////////////////////////////////////////////////////////////
 
-  static public interface Listener {
-    /**
-     * Gets called for each dataset found.
-     *
-     * @param dd      the dataset
-     * @param context caller can pass this object in (used for thread safety)
-     */
-    public void getDataset(Dataset dd, Object context);
-
-    /**
-     * Gets called for each catalogRef found
-     *
-     * @param dd      the dataset
-     * @param context caller can pass this object in (used for thread safety)
-     * @return true to process, false to skip
-     */
-    public boolean getCatalogRef(CatalogRef dd, Object context);
-  }
-
-  static public interface Filter {
-    public boolean skipAll(Dataset ds);
-  }
-
-  private static class FilterDatasetScan implements Filter {
-    boolean skipDatasetScan;
-
-    private FilterDatasetScan(boolean skipDatasetScan) {
-      this.skipDatasetScan = skipDatasetScan;
-    }
-
-    @Override
-    public boolean skipAll(Dataset ds) {
-      return skipDatasetScan && (ds instanceof CatalogRef) && (ds.findProperty("DatasetScan") != null);
-    }
-  }
-
-  public int crawlAllInDirectory(Path directory, boolean recurse, CancelTask task, PrintWriter out, Object context) throws IOException {
+  /* public int crawlAllInDirectory(Path directory, boolean recurse, CancelTask task, PrintWriter out, Object context) throws IOException {
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(directory)) {
       for (Path p : ds) {
@@ -329,41 +313,193 @@ public class CatalogCrawler {
       }
     }
     return count;
-  }
+  } */
 
-  public static void main(String[] args) throws IOException {
-    long start = System.currentTimeMillis();
-    final int[] countDs = {0, 0};
+  //////////////////////////////////////////////////////////////////////////////
 
-    CatalogCrawler crawler = new CatalogCrawler(Type.all, -1, null, new Listener() {
-      public void getDataset(Dataset dd, Object context) {
-        countDs[0]++;
-        if (countDs[0] % 10000 == 0) System.out.printf("%d ", countDs[0]);
-        if (countDs[0] % 100000 == 0) System.out.printf("%n");
-      }
 
-      public boolean getCatalogRef(CatalogRef dd, Object context) {
-        countDs[1]++;
-        return true;
-      }
-    });
+  private static class FilterDatasetScan implements Filter {
+    PrintWriter out;
+    boolean skipDatasetScan;
+    int catrefLevel;
 
-    //PrintWriter pw = new PrintWriter(System.out, );
     int count = 0;
+    int countSkip = 0;
+    int countCatrefs = 0;
 
-    //count += crawler.crawl("file:B:/esgf/ncar/esgcet/catalog.xml", null, null, null);
-    count += crawler.crawl("file:B:/esgf/gfdl/esgcet/catalog.xml", null, null, null);
+    private FilterDatasetScan(PrintWriter pw, boolean skipDatasetScan, int catrefLevel) {
+      this.out = pw;
+      this.skipDatasetScan = skipDatasetScan;
+      this.catrefLevel = catrefLevel;
+    }
 
-    /*
-    Path top = FileSystems.getDefault().getPath("B:/esgf/ncar/esgcet/1/");
-    count += crawler.crawlAllInDirectory(top, false, null, null, null); */
+    @Override
+    public boolean skipAll(Dataset ds) {
+      boolean skip = skipDatasetScan && (ds instanceof CatalogRef) && (ds.findProperty("DatasetScan") != null);
+      if (skip) {
+        countSkip++;
+        out.printf("  skip DatasetScan %s%n", ds.getName());
+      }
+      count++;
+      return skip;
+    }
 
-    //pw.flush();
 
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("took %d msecs%n", took);
-    System.out.printf("count %d%n", count);
-    System.out.printf("countDs %d%n", countDs[0]);
-    System.out.printf("countCatref %d%n", countDs[1]);
+    @Override
+    public boolean skipCatref(CatalogRef dd, int level) {
+      countCatrefs++;
+      if (catrefLevel <= 0) return false;
+      return level > catrefLevel;
+    }
   }
+
+  private static class CommandLine {
+    @Parameter(names = {"-cat", "--catalog"}, description = "Top catalog URL", required = true)
+    public String topCatalog;
+
+    @Parameter(names = {"-t", "--type"}, description = "type of crawl. Allowed values=" +
+            "[all, all_direct, first_direct, random_direct, random_direct_middle, random_direct_max]")
+    public Type type = Type.all;
+
+    @Parameter(names = {"-sh", "--showNames"}, description = "show dataset names ")
+    public boolean showNames = false;
+
+    @Parameter(names = {"-o", "--openDataset"}, description = "try to open the dataset ")
+    public boolean openDataset = false;
+
+    @Parameter(names = {"-skipScans", "--skipScans"}, description = "skip DatasetScans ")
+    public boolean skipDatasetScan = true;
+
+    @Parameter(names = {"-catrefLevel", "--catrefLevel"}, description = "skip Catalog References > nested level")
+    public int catrefLevel = 0;
+
+    @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+    public boolean help = false;
+
+    private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
+      // Display parameters in this order in the usage information.
+      private final List<String> orderedParamNames = Arrays.asList(
+              "--catalog", "--type", "--openDataset", "--skipScans", "--catrefLevel", "--showNames", "--help");
+
+      @Override
+      public int compare(ParameterDescription p0, ParameterDescription p1) {
+        int index0 = orderedParamNames.indexOf(p0.getLongestName());
+        int index1 = orderedParamNames.indexOf(p1.getLongestName());
+        assert index0 >= 0 : "Unexpected parameter name: " + p0.getLongestName();
+        assert index1 >= 0 : "Unexpected parameter name: " + p1.getLongestName();
+
+        return Integer.compare(index0, index1);
+      }
+    }
+
+    private final JCommander jc;
+
+    public CommandLine(String progName, String[] args) throws ParameterException {
+      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName);           // Displayed in the usage information.
+
+      // Set the ordering of of parameters in the usage information.
+      jc.setParameterDescriptionComparator(new ParameterDescriptionComparator());
+    }
+
+    public void printUsage() {
+      jc.usage();
+    }
+
+    @Override
+    public String toString() {
+      return "topCatalog='" + topCatalog + '\'' +
+              "\n   type=" + type +
+              ", showNames=" + showNames +
+              ", skipDatasetScan=" + skipDatasetScan +
+              ", catrefLevel=" + catrefLevel +
+              ", openDataset=" + openDataset
+              ;
+    }
+  }
+
+  private static class Counter {
+    int datasets = 0;
+    int open = 0;
+    int fail = 0;
+    int failException = 0;
+  }
+
+  public static void main(String[] args) throws Exception {
+    String progName = CatalogCrawler.class.getName();
+    long start = System.currentTimeMillis();
+    Counter c = new Counter();
+
+    try {
+      CommandLine cmdLine = new CommandLine(progName, args);
+      if (cmdLine.help) {
+        cmdLine.printUsage();
+        return;
+      }
+      System.out.printf("%s %n   %s%n", progName, cmdLine);
+
+      PrintWriter pw = new PrintWriter(System.out, true);
+      FilterDatasetScan filter = new FilterDatasetScan(pw, cmdLine.skipDatasetScan, cmdLine.catrefLevel);
+      CancelTask task = null;
+
+      CatalogCrawler crawler = new CatalogCrawler(cmdLine.type, -1, filter, new Listener() {
+
+        public void getDataset(Dataset dd, Object context) {
+          c.datasets++;
+
+          if (cmdLine.showNames) {
+            Service s = dd.getServiceDefault();
+            String sname = (s == null) ? "none" : s.getName();
+            pw.format("  Dataset '%s' service=%s%n", dd.getName(), sname);
+          }
+
+          if (cmdLine.openDataset && dd.hasAccess()) {
+            Service s = dd.getServiceDefault();
+            if (s == null || s.getServiceTypeName().equalsIgnoreCase(ServiceType.HTTPServer.name())) // skip files
+              return;
+
+            DataFactory fac = new DataFactory();
+            try {
+              DataFactory.Result result = fac.openFeatureDataset(dd, task);
+              if (result.fatalError) {
+                pw.format("  Dataset fatalError=%s%n", result.errLog);
+                c.fail++;
+              } else {
+                pw.format("  Dataset '%s' opened as type=%s%n", dd.getName(), result.featureDataset.getFeatureType());
+                c.open++;
+              }
+            } catch (IOException e) {
+              e.printStackTrace(pw);
+              c.failException++;
+            }
+
+          }
+        }
+
+      }, task, pw, null);
+
+      int count = 0;
+
+      //count += crawler.crawl("file:B:/esgf/ncar/esgcet/catalog.xml", null, null, null);
+      count += crawler.crawl(cmdLine.topCatalog);
+      pw.flush();
+
+      long took = System.currentTimeMillis() - start;
+      System.out.printf("%nthat took %d msecs%n", took);
+      System.out.printf("count catalogs = %d%n", count);
+      System.out.printf("count catrefs  = %d%n", filter.countCatrefs);
+      System.out.printf("count skipped  = %d%n", filter.countSkip);
+      System.out.printf("count datasets = %d%n", c.datasets);
+      System.out.printf("count filterCalls = %d%n", filter.count);
+
+      System.out.printf("%ncount open = %d%n", c.open);
+      System.out.printf("count fail = %d%n", c.fail);
+      System.out.printf("count failException = %d%n", c.failException);
+
+    } catch (ParameterException e) {
+      System.err.println(e.getMessage());
+      System.err.printf("Try \"%s --help\" for more information.%n", progName);
+    }
+  }
+
 }

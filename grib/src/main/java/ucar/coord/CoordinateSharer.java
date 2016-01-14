@@ -270,7 +270,7 @@ public class CoordinateSharer<T> {
 
   // find indexes into unionCoords of a variable's coordinates
   public List<Integer> reindex2shared(List<Coordinate> prev) {
-    List<Integer> result = new ArrayList<>();
+    List<Integer> result = new ArrayList<>(prev.size());
 
     for (Coordinate coord : prev) {
       Coordinate swapCoord = swap.get(coord);
@@ -286,8 +286,9 @@ public class CoordinateSharer<T> {
           f.format(" %d == (%s) %s%n", c.hashCode(), c, c.getName());
         System.out.printf("%s%n", f.toString());
         logger.error("CoordinateSharer cant find coordinate "+ coord.getName(), new Throwable());
-      } else
+      } else {
         result.add(idx);
+      }
     }
 
     /* debug

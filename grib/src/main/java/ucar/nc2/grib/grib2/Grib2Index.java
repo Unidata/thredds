@@ -269,7 +269,7 @@ public class Grib2Index extends GribIndex {
       }
 
       if (records.isEmpty())
-        throw new RuntimeException("No GRIB1 records found in "+dataRaf.getLocation());
+        throw new RuntimeException("No GRIB2 records found in "+dataRaf.getLocation());
 
       Grib2IndexProto.Grib2Index index = rootBuilder.build();
       byte[] b = index.toByteArray();

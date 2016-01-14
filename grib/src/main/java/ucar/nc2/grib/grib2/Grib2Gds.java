@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribUtils;
@@ -53,6 +54,7 @@ import java.util.Formatter;
  * @author caron
  * @since 4/2/11
  */
+@Immutable
 public abstract class Grib2Gds {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
   public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometimes miscoded
