@@ -582,6 +582,7 @@ you use this default, by not specifying the *DiskCache.dir* element.
   <dir>/tomcat_home/content/thredds/cache/agg/</dir>
   <scour>24 hours</scour>
   <maxAge>90 days</maxAge>
+  <cachePathPolicy>nestedDirectory</cachePathPolicy>
 </AggregationCache>
 ----------------------------------------------------
 
@@ -597,6 +598,12 @@ _maxAge_ time will be deleted. If you have aggregations that never
 change, set *scour* to ``-1'' to disable the operation. Otherwise, make
 *maxAge* longer than the longest time between changes. Basically, you
 don’t want to remove active aggregations.
+
+*cachePathPolicy* controls _how_ cache files are stored in *dir*. It must be set to one of `oneDirectory` or
+`nestedDirectory`
+ (the default). `oneDirectory` will put all cache files into the same directory, while `nestedDirectory` will preserve
+ their directory structure. Use `nestedDirectory` for large aggregations, as some file systems struggle when a
+ directory contains thousands of files.
 
 This cache information is intended to be permanent; it stores coordinate
 information from each file in the aggregation, so that the file does not
@@ -656,11 +663,14 @@ write permission it will then write the files to the index directory.
 Write permission will be determined by what rights the _Tomcat user_ has
 (the user that starts up Tomcat). For security reasons, you want to
 carefully limit the file permissions of the Tomcat user.
+
 2.  The policy must be set to one of _oneDirectory_ or _nestedDirectory_
 (the default). _oneDirectory_ will put all index files into the same
 directory, while _nestedDirectory_ will preserve the directory structure
 of the index files. Use _nestedDirectory_ for large collections of
-files.
+files, as some file systems struggle when a directory contains thousands
+of files.
+
 3.  Every *scour* amount of time, any files in the cache that are older
 than *maxAge* will be removed. To turn off scouring, set the scour time
 to 0 (eg ``0 hours''), or leave out the <scour> element. Typically you
@@ -675,6 +685,7 @@ directory as the data files by specifying _<neverUse>true</neverUse>_ or
 by not using a _<neverUse>_ or _<alwaysUse>_ element (which uses the
 default behavior). When you delete the data files, delete the
 corresponding indices.
+
 2.  If you need to keep the index files separate from your data files,
 set __<alwaysUse>true</alwaysUse>__, and use
 __<policy>nestedDirectory</policy>__. There is currently no way to
