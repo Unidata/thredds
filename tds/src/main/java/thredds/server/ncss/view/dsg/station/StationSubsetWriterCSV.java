@@ -64,7 +64,7 @@ public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
     protected void writeStationPointFeature(StationPointFeature stationPointFeat) throws IOException {
         Station station = stationPointFeat.getStation();
 
-        writer.print(CalendarDateFormatter.toDateTimeString(stationPointFeat.getObservationTimeAsCalendarDate()));
+        writer.print(CalendarDateFormatter.toDateTimeStringISO(stationPointFeat.getObservationTimeAsCalendarDate()));
         writer.print(',');
         writer.print(station.getName());
         writer.print(',');

@@ -217,11 +217,14 @@ class CSVPointDataWriter implements PointDataWriter  {
 
 	private void writeGroupHeader(List<String> varGroup, GridDataset gridDataset, boolean hasEnsAxis, boolean hasTimeAxis){
 
-		StringBuilder sb = new StringBuilder();		
+		StringBuilder sb = new StringBuilder();
+
 		if(hasTimeAxis)
-			sb.append("date,");
-		sb.append("lat[unit=\"degrees_north\"],");
-		sb.append("lon[unit=\"degrees_east\"],");
+
+
+			sb.append("time,");
+		sb.append("latitude[unit=\"degrees_north\"],");
+		sb.append("longitude[unit=\"degrees_east\"],");
 
 		if(hasEnsAxis)
 			sb.append("ensMember,");

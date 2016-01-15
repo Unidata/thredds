@@ -64,7 +64,7 @@ public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
     public void writePoint(PointFeature pointFeat) throws Exception {
         EarthLocation loc = pointFeat.getLocation();
 
-        writer.print(CalendarDateFormatter.toDateTimeString(pointFeat.getObservationTimeAsCalendarDate()));
+        writer.print(CalendarDateFormatter.toDateTimeStringISO(pointFeat.getObservationTimeAsCalendarDate()));
         writer.print(',');
         writer.print(Format.dfrac(loc.getLatitude(), 3));
         writer.print(',');
