@@ -529,9 +529,10 @@ ln -s /data/thredds/content content</pre>
 <p><em>since version 4.1</em></p>
 <pre>
 &lt;AggregationCache&gt;
-  &lt;dir&gt;/temp/acache/&lt;/dir&gt;
+  &lt;dir&gt;/tomcat_home/content/thredds/cache/agg/&lt;/dir&gt;
   &lt;scour&gt;24 hours&lt;/scour&gt;
   &lt;maxAge&gt;90 days&lt;/maxAge&gt;
+  &lt;cachePathPolicy&gt;nestedDirectory&lt;/cachePathPolicy&gt;
 &lt;/AggregationCache&gt;
 </pre>
 <p> If you have <strong>joinExisting</strong> Aggregations, coordinate information will be written to a cache directory specified by <strong>dir</strong>
@@ -542,6 +543,12 @@ ln -s /data/thredds/content content</pre>
 <p>Every <strong>scour</strong> amount of time, any item that hasnt been changed since <em>maxAge</em> time will be deleted. If you
   have aggregations that never change, set <strong>scour</strong> to &quot;-1&quot; to disable the operation. Otherwise, make <strong>maxAge</strong> longer than the longest time between changes. Basically, you don't want to remove
   active aggregations.</p>
+
+<p><strong>cachePathPolicy</strong> controls <em>how</em> cache files are stored in <strong>dir</strong>. It must be
+  set to one of <code>oneDirectory</code> or <code>nestedDirectory</code> (the default).
+  <code>oneDirectory</code> will put all cache files into the same directory, while
+  <code>nestedDirectory</code> will preserve their directory structure. Use <code>nestedDirectory</code>
+  for large aggregations, as some file systems struggle when a directory contains thousands of files.</p>
 
 <p>This cache information is intended to be permanent; it stores coordinate
   information from each file in the aggregation, so that the file does
@@ -589,7 +596,7 @@ ln -s /data/thredds/content content</pre>
   <li>
     <p>The policy must be set to one of <em>oneDirectory</em> or <em>nestedDirectory </em> (the default). <em>oneDirectory</em> will put all index files into the
       same directory, while <em>nestedDirectory</em> will preserve the directory structure of the index files. Use <em>nestedDirectory</em> for large
-      collections of  files.</p>
+      collections of files, as some file systems struggle when a directory contains thousands of files.</p>
   </li>
   <li>Every <strong>scour</strong> amount of time, any files in the cache that are older than <strong>maxAge</strong> will be removed. To turn off scouring, set the scour time to 0 (eg &quot;0 hours&quot;), or leave out the &lt;scour&gt; element. Typically you do <strong>not</strong> want to scour the indices.</li>
 </ol>

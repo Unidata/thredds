@@ -107,7 +107,7 @@ public class DiskCache2 {
 
   private DiskCache2() {}
   /**
-   * Create a cache on disk. Use default policy (CachePathPolicy.OneDirectory)
+   * Create a cache on disk. Use default policy (CachePathPolicy.NestedDirectory)
    * @param root the root directory of the cache. Must be writeable.
    * @param reletiveToHome if the root directory is relative to the cache home directory.
    * @param persistMinutes  a file is deleted if its last modified time is greater than persistMinutes

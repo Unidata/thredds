@@ -152,8 +152,10 @@
   <!--
   Persist joinNew aggregations to named directory. scour every 24 hours, delete stuff older than 90 days
   <AggregationCache>
+    <dir>/tomcat_home/content/thredds/cache/agg/</dir>
     <scour>24 hours</scour>
     <maxAge>90 days</maxAge>
+    <cachePathPolicy>NestedDirectory<cachePathPolicy/>
   </AggregationCache>
   -->
 
