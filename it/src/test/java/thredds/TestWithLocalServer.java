@@ -53,7 +53,7 @@ import java.io.InputStream;
  * @since 10/15/13
  */
 public class TestWithLocalServer {
-  public static String server = "http://localhost:8081/thredds/";
+  public static String server = "http://localhost:8080/thredds/";
 
   public static String withPath(String path) {
     return server + StringUtils.stripStart(path, "/\\");  // Remove leading slashes from path.
@@ -69,11 +69,11 @@ public class TestWithLocalServer {
 
   public static byte[] getContent(Credentials cred, String endpoint, int[] expectCodes, ContentType expectContentType) {
     System.out.printf("req = '%s'%n", endpoint);
-    try (HTTPSession session = new HTTPSession(endpoint)) {
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       if (cred != null) {
         int pos = endpoint.indexOf("?");
         String url = pos < 0 ? endpoint : endpoint.substring(0, pos);
-        session.setCredentialsProvider(url, new HTTPConstantProvider(cred));
+        session.setCredentials(cred);
       }
 
       HTTPMethod method = HTTPFactory.Get(session);
@@ -110,7 +110,7 @@ public class TestWithLocalServer {
 
   public static void saveContentToFile(String endpoint, int expectCode, ContentType expectContentType, File saveTo) {
     System.out.printf("req = '%s'%n", endpoint);
-    try (HTTPSession session = new HTTPSession(endpoint)) {
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
       if (statusCode != 200) {

@@ -36,6 +36,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import ucar.httpservices.HTTPAuthUtil;
 import ucar.util.prefs.ui.Field;
 import ucar.util.prefs.ui.PrefPanel;
 
@@ -44,15 +45,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This can be used both for java.net authentication:
  *   java.net.Authenticator.setDefault(new thredds.ui.UrlAuthenticatorDialog(frame));
- *
+ * <p>
  * or for org.apache.http authentication:
  *    httpclient.getParams().setParameter( CredentialsProvider.PROVIDER, new UrlAuthenticatorDialog( null));
  *
  * @author John Caron
+ *         Modified 12/30/2015 by DMH to utilize an internal map so it
+ *         can support multiple AuthScopes to handle e.g. proxies like
+ *         BasicCredentialsProvider
  */
 public class UrlAuthenticatorDialog extends Authenticator implements CredentialsProvider
 {
@@ -63,10 +69,15 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
   private Field.Password passwF;
   private boolean debug = false;
 
-  /** constructor
-     @param parent JFrame
+  private Map<AuthScope, Credentials> cache = new HashMap<>();
+
+  /**
+   * constructor
+   *
+   * @param parent JFrame
    */
-  public UrlAuthenticatorDialog(javax.swing.JFrame parent) {
+  public UrlAuthenticatorDialog(javax.swing.JFrame parent)
+  {
     PrefPanel pp = new PrefPanel("UrlAuthenticatorDialog", null);
     serverF = pp.addTextField("server", "Server", "wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
     realmF = pp.addTextField("realm", "Realm", "");
@@ -75,8 +86,10 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
     userF = pp.addTextField("user", "User", "");
     passwF = pp.addPasswordField("password", "Password", "");
-    pp.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    pp.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(ActionEvent e)
+      {
         char[] pw = passwF.getPassword();
         if (pw == null) return;
         pwa = new UsernamePasswordCredentials(userF.getText(), new String(pw));
@@ -86,8 +99,10 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
       // button to dismiss
     JButton cancel = new JButton("Cancel");
     pp.addButton(cancel);
-    cancel.addActionListener( new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
+    cancel.addActionListener( new ActionListener()
+    {
+      public void actionPerformed(ActionEvent evt)
+      {
         pwa = null;
         dialog.setVisible( false);
       }
@@ -101,15 +116,17 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
   public void clear()
   {
+      this.cache.clear();
   }
 
   public void setCredentials(AuthScope scope, Credentials cred)
   {
-      //todo: provider.setCredentials(scope,cred);
+      cache.put(scope, cred);
   }
 
     // java.net calls this:
-  protected PasswordAuthentication getPasswordAuthentication() {
+  protected PasswordAuthentication getPasswordAuthentication()
+  {
     if (pwa == null) throw new IllegalStateException();
 
     if (debug) {
@@ -134,39 +151,30 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
 
   // http client calls this:
- public Credentials getCredentials(AuthScope scope) //AuthScheme scheme, String host, int port, boolean proxy)
+ public Credentials getCredentials(AuthScope scope)
  {
-    //todo: if (!(scope.getScheme()RFC2617Scheme))
-      //throw new UnsupportedOperationException( "Unsupported authentication scheme: " +
-      //                  scope.getScheme().toString()) ;
-
-    if (debug) {
-      System.out.println(scope.getHost() + ":" + scope.getPort() + " requires authentication with the realm '" + scope.getRealm() + "'");
+     Credentials creds = cache.get(scope);
+     if(creds == null) {
+       AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope,cache.keySet());
+       if(bestMatch != null) {
+         creds = cache.get(bestMatch);
+       }  
     }
-
+    if(creds != null)
+      return creds;
+    // Not cached, ask and cache
     serverF.setText(scope.getHost()+":"+scope.getPort());
     realmF.setText(scope.getRealm());
     dialog.setVisible( true);
     if (pwa == null) throw new IllegalStateException();
-
     if (debug) {
       System.out.println("user= ("+pwa.getUserName()+")");
       System.out.println("password= ("+new String(pwa.getPassword())+")");
     }
-
-    return new UsernamePasswordCredentials(pwa.getUserName(), new String(pwa.getPassword()));
-
-    /* if (null != httpSession) {
-      AuthScope authScope = new AuthScope( host, port, scheme.getRealm());
-      httpSession.setDefaultCredentials( authScope, cred);
-    } */
-
-    // return cred;
+    // Is this really necessary?
+    UsernamePasswordCredentials upc = new UsernamePasswordCredentials(pwa.getUserName(), new String(pwa.getPassword()));
+    cache.put(scope, upc);
+    return upc;
   }
-
-  /* private HttpSession httpSession = null;
-  public void setHttpSession(HttpSession httpSession) {
-    this.httpSession = httpSession;
-  } */
 }
 

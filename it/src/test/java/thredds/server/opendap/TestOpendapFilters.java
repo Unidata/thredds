@@ -25,7 +25,7 @@ public class TestOpendapFilters {
   public void testIllegalRequest() throws IOException, InvalidRangeException {
     String url = TestWithLocalServer.withPath("/dodsC/scanLocal/testWrite.nc.dds?");
     String esc = url + URLEncoder.encode("<bad>\nworse", CDM.UTF8);
-    try (HTTPSession session = new HTTPSession(esc)) {
+    try (HTTPSession session = HTTPFactory.newSession(esc)) {
       HTTPMethod method = HTTPFactory.Get(session);
       method.execute();
       Assert.assertEquals(400, method.getStatusCode());

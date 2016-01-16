@@ -79,7 +79,6 @@ public class TestRestrictDataset {
 
     public TestRestrictDataset(String path) {
       this.path = path;
-      HTTPCachingProvider.clearCache(); // clear for each test
     }
 
   @Test
@@ -87,7 +86,7 @@ public class TestRestrictDataset {
     String endpoint = TestWithLocalServer.withPath(path);
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
@@ -110,8 +109,8 @@ public class TestRestrictDataset {
     String endpoint = TestWithLocalServer.withPath(path);
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("baadss", "changeme")));
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
+      session.setCredentials(new UsernamePasswordCredentials("baadss", "changeme"));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -132,8 +131,8 @@ public class TestRestrictDataset {
     String endpoint = TestWithLocalServer.withPath(path);
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "changeme")));
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
+      session.setCredentials(new UsernamePasswordCredentials("tiggeUser", "changeme"));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
@@ -159,8 +158,8 @@ public class TestRestrictDataset {
     String endpoint = TestWithLocalServer.withPath(path);
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
-      session.setCredentialsProvider(endpoint, new HTTPConstantProvider(new UsernamePasswordCredentials("tiggeUser", "tigge")));
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
+      session.setCredentials(new UsernamePasswordCredentials("tiggeUser", "tigge"));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();

@@ -21,7 +21,7 @@ import ucar.unidata.test.util.TestDir;
 public class CompareGribVarNamesOnMotherlodeTds
 {
   private String modelId;
-  private String tdsUrl = "http://"+ TestDir.threddsServer+"/thredds/";
+  private String tdsUrl = "http://"+ TestDir.threddsTestServer+"/thredds/";
 
   public CompareGribVarNamesOnMotherlodeTds( String modelId )
   {

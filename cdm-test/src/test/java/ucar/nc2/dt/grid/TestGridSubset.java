@@ -202,7 +202,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void testDODS() throws Exception {
-    String ds = "http://"+TestDir.threddsServer+"/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
+    String ds = "http://"+TestDir.threddsTestServer+"/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
     GridDataset dataset = null;
 
     try {
@@ -337,7 +337,7 @@ public class TestGridSubset {
   public void test3D() throws Exception {
     try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
       System.out.printf("%s%n", dataset.getLocation());
-      //GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
+      //GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
 
       GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
       assert null != grid;
@@ -501,7 +501,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void testBBSubset() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsServer+"/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best")) {
+    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best")) {
       GeoGrid grid = dataset.findGridByName("Pressure_surface");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -530,7 +530,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void testBBSubset2() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best")) {
+    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best")) {
       GeoGrid grid = dataset.findGridByName("Pressure_hybrid");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -756,7 +756,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsExternalResource.class)
   public void testFindVerticalCoordinate() throws Exception {
-    String filename = "dods://"+TestDir.threddsServer+"/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
+    String filename = "dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
     try (GridDataset dataset = GridDataset.open(filename)) {
       GeoGrid grid = dataset.findGridByName("Geopotential_height_isobaric");
       assert null != grid;

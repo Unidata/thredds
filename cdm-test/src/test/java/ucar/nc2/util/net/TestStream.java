@@ -63,11 +63,11 @@ import ucar.unidata.test.util.TestDir;
 public class TestStream {
   @Test
   public void testStream1() throws URISyntaxException {
-    String catalogName = "http://"+ TestDir.threddsServer+"/thredds/catalog.xml";
+    String catalogName = "http://"+ TestDir.threddsTestServer+"/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
     try (HTTPSession client = HTTPFactory.newSession(catalogName)) {
-      HTTPMethod m = HTTPFactory.Get(client);
+      HTTPMethod m = HTTPFactory.Get(client,catalogName);
 
       int statusCode = m.execute();
       System.out.printf("status = %d%n", statusCode);
@@ -85,11 +85,11 @@ public class TestStream {
 
   @Test
   public void testString() throws URISyntaxException {
-    String catalogName = "http://"+TestDir.threddsServer+"/thredds/catalog.xml";
+    String catalogName = "http://"+TestDir.threddsTestServer+"/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
     try (HTTPSession client = HTTPFactory.newSession(catalogName)) {
-      HTTPMethod m = HTTPFactory.Get(client);
+      HTTPMethod m = HTTPFactory.Get(client,catalogName);
 
       int statusCode = m.execute();
       System.out.printf("status = %d%n", statusCode);

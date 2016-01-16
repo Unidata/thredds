@@ -53,7 +53,7 @@ public class TestTime2D {
 
   @Test
   public void testTime2D() throws Exception {
-    try (NetcdfFile dataset = NetcdfDataset.openDataset("dods://"+ TestDir.threddsDevServer+"/thredds/dodsC/grib/NCEP/GFS/Pacific_40km/TwoD")) {
+    try (NetcdfFile dataset = NetcdfDataset.openDataset("dods://"+ TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/GFS/Pacific_40km/TwoD")) {
       Variable v = dataset.findVariable(null, "Pressure_surface");
       assert null != v;
       assert v.getRank() == 4;
