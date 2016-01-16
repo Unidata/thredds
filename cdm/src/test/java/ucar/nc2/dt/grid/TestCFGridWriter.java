@@ -6,17 +6,16 @@ import org.junit.Test;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.TestLocal;
+import ucar.nc2.dt.GridDataset;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import ucar.nc2.dt.GridDataset;
-import ucar.unidata.test.util.TestDir;
 
 /**
  * Created by lesserwhirls on 7/28/14.
