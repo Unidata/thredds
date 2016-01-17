@@ -92,7 +92,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    *
    * @param b true or false. default is false.
    */
-  static public void setAllowSessions(boolean b) {
+  static public void setAllowSessions(boolean b)
+  {
     DConnect2.setAllowSessions(b);
   }
 
@@ -104,7 +105,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @param b true or false.
    * @deprecated use setAllowCompression
    */
-  static public void setAllowDeflate(boolean b) {
+  static public void setAllowDeflate(boolean b)
+  {
     accept_compress = b;
   }
 
@@ -113,7 +115,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    *
    * @param b true or false.
    */
-  static public void setAllowCompression(boolean b) {
+  static public void setAllowCompression(boolean b)
+  {
     accept_compress = b;
   }
 
@@ -122,7 +125,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    *
    * @param debugFlag set of debug flags.
    */
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag)
+  {
     debugCE = debugFlag.isSet("DODS/constraintExpression");
     debugServerCall = debugFlag.isSet("DODS/serverCall");
     debugOpenResult = debugFlag.isSet("DODS/debugOpenResult");
@@ -145,7 +149,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    *
    * @param b true if small variables are preloaded (default true)
    */
-  static public void setPreload(boolean b) {
+  static public void setPreload(boolean b)
+  {
     preload = b;
   }
 
@@ -154,7 +159,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    *
    * @param size maximum size of coordinate variables to be preloaded.
    */
-  static public void setCoordinateVariablePreloadSize(int size) {
+  static public void setCoordinateVariablePreloadSize(int size)
+  {
     preloadCoordVarSize = size;
   }
 
@@ -166,7 +172,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @param urlName the url string
    * @return canonical form
    */
-  public static String canonicalURL(String urlName) {
+  public static String canonicalURL(String urlName)
+  {
     if (urlName.startsWith("http:"))
       return "dods:" + urlName.substring(5);
     if (urlName.startsWith("https:"))
@@ -554,7 +561,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * and move to the proper groups.
    */
   protected void reGroup()
-          throws DAP2Exception {
+          throws DAP2Exception
+  {
     assert (RC.getUseGroups());
     Group rootgroup = this.getRootGroup();
 
@@ -619,7 +627,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
 
   @Deprecated
   protected void reGroupVariable(Group rootgroup, DODSVariable dodsv)
-          throws opendap.dap.DAP2Exception {
+          throws opendap.dap.DAP2Exception
+  {
     String dodsname = dodsv.getDODSName();
     NamePieces pieces = parseName(dodsname);
     if (pieces.prefix != null) {
@@ -640,7 +649,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
   }
 
   protected void reGroupVariableAttributes(Group rootgroup, Variable v)
-          throws opendap.dap.DAP2Exception {
+          throws opendap.dap.DAP2Exception
+  {
     String vname = v.getShortName();
     Group vgroup = v.getParentGroup();
     Object[] attlist = v.getAttributes().toArray();
@@ -1210,7 +1220,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
       logger.error(" DODS Unlimited_Dimension = " + dimName + " not found on " + location);
   }
 
-  protected int[] makeShape(opendap.dap.DArray dodsArray) {
+  protected int[] makeShape(opendap.dap.DArray dodsArray)
+  {
     int count = 0;
     Enumeration enumerate = dodsArray.getDimensions();
     while (enumerate.hasMoreElements()) {
@@ -1239,7 +1250,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @param var The variable whose name will appear in the CE
    * @return The name in a form suitable for use in a cE
    */
-  static public String getDODSConstraintName(Variable var) {
+  static public String getDODSConstraintName(Variable var)
+  {
     String vname = var.getDODSName();
     // The vname is backslash escaped, so we need to
     // modify to use DAP %xx escapes.
@@ -1296,7 +1308,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @param dataType   Netcdf data type.
    * @return the corresponding DODS type enum, from opendap.dap.Attribute.XXXX.
    */
-  static public int convertToDODSType(DataType dataType) {
+  static public int convertToDODSType(DataType dataType)
+  {
     if (dataType == DataType.STRING)
       return opendap.dap.Attribute.STRING;
     if (dataType == DataType.BYTE)
@@ -1330,7 +1343,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @return the corresponding netcdf DataType.
    * @see #isUnsigned
    */
-  static public DataType convertToNCType(int dodsDataType, boolean isUnsigned) {
+  static public DataType convertToNCType(int dodsDataType, boolean isUnsigned)
+  {
     switch (dodsDataType) {
       case opendap.dap.Attribute.BYTE:
         return isUnsigned ? DataType.UBYTE : DataType.BYTE;
@@ -1359,7 +1373,9 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @return the corresponding netcdf DataType.
    * @see #isUnsigned
    */
-  static public DataType convertToNCType(opendap.dap.BaseType dtype, boolean isUnsigned) {
+  static public DataType convertToNCType(opendap.dap.BaseType dtype, boolean isUnsigned)
+  {
+
     if (dtype instanceof DString)
       return DataType.STRING;
     else if ((dtype instanceof DStructure) || (dtype instanceof DSequence) || (dtype instanceof DGrid))
@@ -1370,10 +1386,10 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
       return DataType.DOUBLE;
     else if (dtype instanceof DUInt32)
       return DataType.UINT;
-    else if (dtype instanceof DInt32)
-      return DataType.INT;
     else if (dtype instanceof DUInt16)
       return DataType.USHORT;
+    else if (dtype instanceof DInt32)
+      return DataType.INT;
     else if (dtype instanceof DInt16)
       return DataType.SHORT;
     else if (dtype instanceof DByte)
@@ -1388,7 +1404,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @param dtype DODS BaseType.
    * @return true if unsigned
    */
-  static public boolean isUnsigned(opendap.dap.BaseType dtype) {
+  static public boolean isUnsigned(opendap.dap.BaseType dtype)
+  {
     return (dtype instanceof DByte) ||
             (dtype instanceof DUInt16) ||
             (dtype instanceof DUInt32);
@@ -1403,10 +1420,12 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @param CE constraint expression; use empty string if none
    * @return DataDDS
    * @throws java.io.IOException                on io error
-   * @throws opendap.dap.parsers.ParseException if error parsing return
+   * @throws opendap.dap.parsers.ParseException
+   *                                            if error parsing return
    * @throws opendap.dap.DAP2Exception          if you have otherwise been bad
    */
-  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.DAP2Exception {
+  DataDDS readDataDDSfromServer(String CE) throws IOException, opendap.dap.DAP2Exception
+  {
     if (debugServerCall) System.out.println("DODSNetcdfFile.readDataDDSfromServer = <" + CE + ">");
 
     long start = 0;
@@ -1442,7 +1461,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
    * @throws IOException on error
    */
   @Override
-  public List<Array> readArrays(List<Variable> preloadVariables) throws IOException {
+  public List<Array> readArrays(List<Variable> preloadVariables) throws IOException
+  {
     //For performance tests:
     //if (true) return super.readArrays (variables);
     if (preloadVariables.size() == 0) return new ArrayList<Array>();
@@ -1541,7 +1561,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
   }
 
   @Override
-  public Array readSection(String variableSection) throws IOException, InvalidRangeException {
+  public Array readSection(String variableSection) throws IOException, InvalidRangeException
+  {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
 
     //if (unlocked)
@@ -1558,7 +1579,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
   }
 
   @Override
-  protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException {
+  protected Array readData(ucar.nc2.Variable v, Section section) throws IOException, InvalidRangeException
+  {
     //if (unlocked)
     //    throw new IllegalStateException("File is unlocked - cannot use");
 
@@ -1603,7 +1625,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
 
   @Override
   public long readToByteChannel(ucar.nc2.Variable v, Section section, WritableByteChannel channel)
-          throws java.io.IOException, ucar.ma2.InvalidRangeException {
+          throws java.io.IOException, ucar.ma2.InvalidRangeException
+  {
     //if (unlocked)
     //    throw new IllegalStateException("File is unlocked - cannot use");
 
@@ -1630,7 +1653,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
       DodsV root = DodsV.parseDataDDS(dataDDS);
       DodsV want = root.children.get(0); // can only be one
       dataArray = convertD2N.convertNestedVariable(v, ranges, want, flatten);
-
     }
     catch (DAP2Exception ex) {
       ex.printStackTrace();
@@ -1644,7 +1666,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
     return dataArray;
   }  */
 
-  public Array readWithCE(ucar.nc2.Variable v, String CE) throws IOException {
+  public Array readWithCE(ucar.nc2.Variable v, String CE) throws IOException 
+  {
 
     Array dataArray;
     try {
@@ -1668,7 +1691,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
     return dataArray;
   }
 
-  private int addParents(StringBuilder buff, Variable s, List<Range> section, int start) {
+  private int addParents(StringBuilder buff, Variable s, List<Range> section, int start)
+  {
     Structure parent = s.getParentStructure();
     if (parent != null) {
       start = addParents(buff, parent, section, start);
@@ -1685,7 +1709,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
     return start + s.getRank();
   }
 
-  private void makeSelector(StringBuilder buff, List<Range> section) {
+  private void makeSelector(StringBuilder buff, List<Range> section)
+  {
     for (Range r : section) {
       buff.append("[");
       buff.append(r.first());
@@ -2228,7 +2253,8 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
   ////////////////////////////////////////////////////////////////////////////////
   // debugging
 
-  public void getDetailInfo(Formatter f) {
+  public void getDetailInfo(Formatter f)
+  {
     super.getDetailInfo(f);
 
     f.format("DDS = %n");
@@ -2242,11 +2268,13 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
     f.format("%s%n", new String(buffOS.toByteArray(), Util.UTF8));
   }
 
-  public String getFileTypeId() {
+  public String getFileTypeId()
+  {
     return "OPeNDAP";
   }
 
-  public String getFileTypeDescription() {
+  public String getFileTypeDescription()
+  {
     return "Open-source Project for a Network Data Access Protocol";
   }
 

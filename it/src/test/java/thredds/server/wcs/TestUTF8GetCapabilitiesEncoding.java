@@ -84,7 +84,7 @@ public class TestUTF8GetCapabilitiesEncoding {
     String endpoint = TestWithLocalServer.withPath(path + "?" + query);
     System.out.printf("GetCapabilities req = '%s'%n", endpoint);
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 

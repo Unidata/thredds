@@ -54,9 +54,9 @@ import java.io.InputStream;
  * Tom Kunicki's proposed pull request, but with the HTTPMethod
  * close extension he proposes but does not implement.
  * Pull request: https://github.com/tkunicki-usgs/thredds/commit/3b750ec0016a137db66336adeac421a9202b9d30
+ * Is this class needed in httpclient 4.5+ any more?
  *
  */
-
 
 public class HTTPMethodStream extends FilterInputStream implements Closeable
 {

@@ -21,7 +21,7 @@ public class TestRestrictNoAuth {
     String endpoint = TestWithLocalServer.withPath("/dodsC/testRestrictedDataset/testData2.nc.dds");
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 

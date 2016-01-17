@@ -61,7 +61,7 @@ public class PingTdsOnMotherlode8080
     @Test
     public void ping()
     {
-        String tdsUrl = "http://"+ TestDir.threddsServer+"/thredds/";
+        String tdsUrl = "http://"+ TestDir.threddsTestServer+"/thredds/";
         CatalogValidityTestUtils.assertCatalogIsAccessibleValidAndNotExpired( tdsUrl + catalogUrl );
     }
 }

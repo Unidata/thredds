@@ -34,6 +34,7 @@
 package thredds.ui.monitor;
 
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.AuthSchemes;
 import ucar.httpservices.*;
 import thredds.logs.LogReader;
 import thredds.logs.LogCategorizer;
@@ -106,7 +107,7 @@ public class TdsMonitor extends JPanel {
 
     CredentialsProvider provider = new UrlAuthenticatorDialog(null);
     try {
-      HTTPSession.setGlobalCredentialsProvider(provider,HTTPAuthSchemes.BASIC);
+      HTTPSession.setGlobalCredentialsProvider(provider, AuthSchemes.BASIC);
     } catch(HTTPException e) {
       System.err.println("Failed to set credentials");
     }

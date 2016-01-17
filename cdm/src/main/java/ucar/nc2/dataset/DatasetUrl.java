@@ -138,7 +138,7 @@ public class DatasetUrl {
     // 3. path extension
     // 4. contact the server (if defined)
 
-    // remove any trailing query or fragment
+    // temporarily remove any trailing query or fragment
     String fragment = null;
     int pos = trueurl.lastIndexOf('#');
     if (pos >= 0) {
@@ -146,7 +146,9 @@ public class DatasetUrl {
       trueurl = trueurl.substring(0, pos);
     }
     pos = location.lastIndexOf('?');
+    String query = null;
     if (pos >= 0) {
+      query = trueurl.substring(pos + 1, trueurl.length());
       trueurl = trueurl.substring(0, pos);
     }
     if (fragment != null)
@@ -174,6 +176,19 @@ public class DatasetUrl {
       trueurl = (allprotocols.size() == 0 ? "file:" + trueurl : location);
     }
 
+    // Add back the query and fragment (if any)
+    if(query != null || fragment != null) {
+	StringBuilder buf = new StringBuilder(trueurl);
+	if(query != null) {
+	    buf.append('?');
+	    buf.append(query);
+	}
+	if(fragment != null) {
+	    buf.append('#');
+	    buf.append(fragment);
+	}
+	trueurl = buf.toString();
+    }
     return new DatasetUrl(svctype, trueurl);
   }
 

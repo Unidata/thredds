@@ -41,6 +41,7 @@
 package opendap.servlet;
 
 import ucar.httpservices.HTTPSession;
+import ucar.httpservices.HTTPUtil;
 import ucar.unidata.util.StringUtil2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -294,7 +295,7 @@ public class ReqState {
    // if (cacheDir == null)
     //  cacheDir = dfalt;
     //else {
-    String  cacheDir = HTTPSession.canonicalpath(dfalt);
+    String  cacheDir = HTTPUtil.canonicalpath(dfalt);
       if (cacheDir.startsWith("/"))
         cacheDir = cacheDir.substring(1);
       cacheDir = realpath + "/" + cacheDir;
@@ -462,10 +463,10 @@ public class ReqState {
     String path3 = myHttpRequest.getRequestURI();
     String path4 = myHttpRequest.getPathInfo();
 
-    this.dataSetName = HTTPSession.canonicalpath(myHttpRequest.getPathInfo());
+    this.dataSetName = HTTPUtil.canonicalpath(myHttpRequest.getPathInfo());
     if (dataSetName.startsWith("/dodsC")) dataSetName = dataSetName.substring(6);
-    String cxtpath = HTTPSession.canonicalpath(myHttpRequest.getContextPath());
-    String servletpath = HTTPSession.canonicalpath(myHttpRequest.getServletPath());
+    String cxtpath = HTTPUtil.canonicalpath(myHttpRequest.getContextPath());
+    String servletpath = HTTPUtil.canonicalpath(myHttpRequest.getServletPath());
 
     // simplify subsequent tests
     if (this.dataSetName != null && this.dataSetName.length() == 0) this.dataSetName = null;

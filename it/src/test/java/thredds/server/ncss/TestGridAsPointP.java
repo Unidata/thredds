@@ -155,7 +155,7 @@ public class TestGridAsPointP {
     File tempFile = TestDir.getTempFile();
     System.out.printf(" write %sto %n  %s%n", endpoint, tempFile.getAbsolutePath());
 
-    try (HTTPSession session = new HTTPSession(endpoint)) {
+    try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
       if (statusCode != 200) {

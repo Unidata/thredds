@@ -59,7 +59,7 @@ public class CrawlRandomDatasetsOnMotherlodeTds
 
     @Parameterized.Parameters(name="{0}")
     public static Collection<Object[]> getDatasetUrls() throws IOException {
-        String tdsUrl = "http://"+ TestDir.threddsServer+"/thredds/";
+        String tdsUrl = "http://"+ TestDir.threddsTestServer+"/thredds/";
         StringBuilder log = new StringBuilder();
 
         List<String> catalogUrls = new ArrayList<>();

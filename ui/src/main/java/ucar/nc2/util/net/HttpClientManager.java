@@ -35,6 +35,7 @@ package ucar.nc2.util.net;
 
 import org.apache.http.Header;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.entity.StringEntity;
 import ucar.httpservices.*;
 import ucar.nc2.util.IO;
@@ -49,7 +50,8 @@ import java.util.zip.InflaterInputStream;
  *
  * @author caron
  */
-public class HttpClientManager {
+public class HttpClientManager
+{
   static private boolean debug = false;
   static private int timeout = 0;
 
@@ -59,12 +61,14 @@ public class HttpClientManager {
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  static public void init(CredentialsProvider provider, String userAgent) {
-    if (provider != null) try {
-      HTTPSession.setGlobalCredentialsProvider(provider, HTTPAuthSchemes.BASIC);
-    } catch (HTTPException e) {
-    }
-    ;
+  static public void init(CredentialsProvider provider, String userAgent)
+  {
+    if (provider != null)
+        try {
+            HTTPSession.setGlobalCredentialsProvider(provider);
+        } catch (HTTPException e) {
+            throw new IllegalArgumentException(e);
+        }
     if (userAgent != null)
       HTTPSession.setGlobalUserAgent(userAgent + "/NetcdfJava/HttpClient");
     else
@@ -81,7 +85,8 @@ public class HttpClientManager {
    */
   @Urlencoded
   public static String getContentAsString(String urlencoded)
-          throws IOException {
+          throws IOException
+  {
     return getContentAsString(null, urlencoded);
   }
 
@@ -95,14 +100,16 @@ public class HttpClientManager {
    */
   @Urlencoded
   @Deprecated
-  public static String getContentAsString(HTTPSession session, String urlencoded) throws IOException {
+  public static String getContentAsString(HTTPSession session, String urlencoded) throws IOException
+  {
     HTTPSession useSession = session;
     try {
       if (useSession == null)
         useSession = HTTPFactory.newSession(urlencoded);
-      HTTPMethod m = HTTPFactory.Get(useSession, urlencoded);
-      m.execute();
-      return m.getResponseAsString();
+      try (HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
+          m.execute();
+          return m.getResponseAsString();
+      }
     } finally {
       if ((session == null) && (useSession != null))
         useSession.close();
@@ -117,7 +124,8 @@ public class HttpClientManager {
    * @return the HTTP status return code
    * @throws java.io.IOException on error
    */
-  public static int putContent(String urlencoded, String content) throws IOException {
+  public static int putContent(String urlencoded, String content) throws IOException
+  {
     try (HTTPMethod m = HTTPFactory.Put(urlencoded)) {
 
       m.setRequestContent(new StringEntity(content, "application/text", "UTF-8"));
@@ -140,21 +148,22 @@ public class HttpClientManager {
 
   //////////////////////
 
-  static public String getUrlContentsAsString(String urlencoded, int maxKbytes) throws IOException {
+  static public String getUrlContentsAsString(String urlencoded, int maxKbytes) throws IOException
+  {
     return getUrlContentsAsString(null, urlencoded, maxKbytes);
   }
 
   @Deprecated
-  static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) throws IOException {
+  static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) throws IOException
+  {
     HTTPSession useSession = session;
     try {
       if (useSession == null) {
         useSession = HTTPFactory.newSession(urlencoded);
       }
-
       try (HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
         m.setFollowRedirects(true);
-        m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+        m.setCompression("gzip,deflate");
 
         int status = m.execute();
         if (status != 200) {
@@ -192,27 +201,30 @@ public class HttpClientManager {
     }
   }
 
-  static private String readContents(InputStream is, String charset, int maxKbytes) throws IOException {
+  static private String readContents(InputStream is, String charset, int maxKbytes) throws IOException
+  {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
     IO.copy(is, bout, 1000 * maxKbytes);
     return bout.toString(charset);
   }
 
   static public void copyUrlContentsToFile(String urlencoded, File file)
-          throws IOException {
+          throws IOException
+  {
     copyUrlContentsToFile(null, urlencoded, file);
   }
 
   @Deprecated
   static public void copyUrlContentsToFile(HTTPSession session, String urlencoded, File file)
-          throws IOException {
+          throws IOException
+  {
     HTTPSession useSession = session;
     try {
       if (useSession == null)
         useSession = HTTPFactory.newSession(urlencoded);
 
       HTTPMethod m = HTTPFactory.Get(useSession, urlencoded);
-      m.setRequestHeader("Accept-Encoding", "gzip,deflate");
+      m.setCompression("gzip,deflate");
 
       int status = m.execute();
 
@@ -246,13 +258,15 @@ public class HttpClientManager {
   }
 
   static public long appendUrlContentsToFile(String urlencoded, File file, long start, long end)
-          throws IOException {
+          throws IOException
+  {
     return appendUrlContentsToFile(null, urlencoded, file, start, end);
   }
 
   @Deprecated
   static public long appendUrlContentsToFile(HTTPSession session, String urlencoded, File file, long start, long end)
-          throws IOException {
+          throws IOException
+  {
     HTTPSession useSession = session;
     long nbytes = 0;
 
@@ -262,8 +276,8 @@ public class HttpClientManager {
       }
 
       try (HTTPMethod m = HTTPFactory.Get(useSession, urlencoded)) {
-        m.setRequestHeader("Accept-Encoding", "gzip,deflate");
-        m.setRequestHeader("Range", "bytes=" + start + "-" + end);
+        m.setCompression("gzip,deflate");
+        m.setRange(start,end);
 
         int status = m.execute();
         if ((status != 200) && (status != 206)) {

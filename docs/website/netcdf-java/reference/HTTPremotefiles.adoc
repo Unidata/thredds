@@ -5,7 +5,7 @@
 HTTP reading
 ============
 
-= Remote CDM files from an HTTP Server
+= Direct Access to Remote CDM files from an HTTP Server
 
 '''''
 
