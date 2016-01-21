@@ -53,7 +53,7 @@ import java.io.InputStream;
  * @since 10/15/13
  */
 public class TestWithLocalServer {
-  public static String server = "http://localhost:8080/thredds/";
+  public static String server = "http://localhost:8081/thredds/";
 
   public static String withPath(String path) {
     return server + StringUtils.stripStart(path, "/\\");  // Remove leading slashes from path.
