@@ -5,12 +5,6 @@ configure(publishedProjects) { Project project ->
 
     PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
 
-    // The PublishingExtension is a DeferredConfigurable model element, meaning that extension will be configured as
-    // late as possible in the build. So any 'publishing' configuration blocks are not evaluated until either:
-    //   1. The project is about to execute, or
-    //   2. the publishing extension is referenced as an instance, as opposed to via a configuration closure.
-    // This is why we can reference 'web' software components, even though the subprojects that apply the war plugin
-    // haven't been evaluated yet.
     publishing {
         repositories {
             String version = rootProject.version as String

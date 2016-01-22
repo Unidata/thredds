@@ -1,9 +1,13 @@
 apply plugin: 'groovy'
 
+// We'd normally apply the dependencies with something like:
+//     apply from: "$rootDir/gradle/dependencies.gradle"
+// However, 'buildSrc' is a *separate build* from every other project in thredds (see https://goo.gl/45RFqd),
+// so "$rootDir" actually points to the directory that *this* file is in.
 apply from: "../gradle/dependencies.gradle"
 
 dependencies {
-    compile gradleApi()  // We're developing a custom task, so we need the Gradle API.
+    compile gradleApi()  // We're working with Gradle classes like org.gradle.api.Project.
 
     testCompile (libraries["spock-core"]) {
         // The Gradle API drags in the bundled version of Groovy that Gradle ships with (localGroovy()) –
@@ -24,11 +28,4 @@ dependencies {
         // of the configuration.
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-}
-
-task foo << {
-    println rootProject?.name
-    println project?.name
-    println project?.parent?.name
-    println "$rootDir"
 }

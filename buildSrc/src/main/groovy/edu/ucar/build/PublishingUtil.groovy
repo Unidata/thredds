@@ -49,11 +49,11 @@ abstract class PublishingUtil {
                     SoftwareComponent webComponent = components.findByName('web')
                     if (webComponent) {
                         // Creates a Maven publication with the given name. It will also generate several tasks:
-                        //   generatePomFileForWebPublication
-                        //   publishWebPublicationToMavenLocal
-                        //   publishToMavenLocal  (depends on all instances of the above task)
-                        //   publishWebPublicationTo${repoName}Repository
-                        //   publish  (depends on all instances of the above task)
+                        //   generatePomFileFor${project.name}WebPublication
+                        //   publish${project.name}WebPublicationToMavenLocal
+                        //   publishToMavenLocal                          (depends on all instances of the above task)
+                        //   publish${project.name}WebPublicationTo${repoName}Repository
+                        //   publish                                      (depends on all instances of the above task)
                         "${project.name}Web"(MavenPublication) {
                             from webComponent
                         }
