@@ -101,7 +101,7 @@ public class TestWithLocalServer {
 
       return method.getResponseAsBytes();
 
-    } catch (Exception e) {
+    } catch (HTTPException e) {
       logger.error("Problem with HTTP request", e);
       assert false;
     }
