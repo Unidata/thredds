@@ -1,6 +1,7 @@
 /* Copyright */
 package thredds.server.catalog;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -40,7 +41,7 @@ public class TestTdsFCcatalogs {
             {"testStationFeatureCollection.v5/files/catalog", "?dataset=testStationFeatureCollection.v5/files/Surface_METAR_20060328_0000.nc"}, // point fc
     });
   }
-  private static final boolean show = false;
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestTdsFCcatalogs.class);
 
   @Parameterized.Parameter(value = 0)
   public String path;
@@ -52,16 +53,16 @@ public class TestTdsFCcatalogs {
   public void testOpenXml() {
     String endpoint = TestWithLocalServer.withPath("catalog/"+path+".xml"+query);
     byte[] response = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
-    if (show)
-      System.out.printf("%s%n", new String(response, CDM.utf8Charset));
+    Assert.assertNotNull(response);
+    logger.debug(new String(response, CDM.utf8Charset));
   }
 
   @Test
   public void testOpenHtml() {
     String endpoint = TestWithLocalServer.withPath("catalog/"+path+".html"+query);
-    byte[]  response = TestWithLocalServer.getContent(endpoint, 200, ContentType.html);
-    if (show)
-      System.out.printf("%s%n", new String(response, CDM.utf8Charset));
+    byte[] response = TestWithLocalServer.getContent(endpoint, 200, ContentType.html);
+    Assert.assertNotNull(response);
+    logger.debug(new String(response, CDM.utf8Charset));
   }
 
 }
