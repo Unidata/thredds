@@ -85,7 +85,13 @@ public class TestWithLocalServer {
         boolean ok = false;
         for (int expectCode : expectCodes)
           if (expectCode == statusCode) ok = true;
-        Assert.assertTrue(ok);
+	if(!ok) {
+	    StringBuilder b = new StringBuilder("Expected:");
+	    for(int ec: expectCodes) {b.append(' '); b.append(ec);}
+	    b.append("; found: ");
+	    b.append(statusCode);
+	    Assert.assertTrue(b.toString(),ok);
+	}
       }
 
       if (statusCode != 200) {
