@@ -78,9 +78,11 @@ public class TestWithLocalServer {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      if (expectCodes == null)
+      if (expectCodes == null) {
         Assert.assertEquals(200, statusCode);
-      else {
+      } else if (expectCodes.length == 1) {
+        Assert.assertEquals(expectCodes[0], statusCode);
+      } else {
         boolean ok = false;
         for (int expectCode : expectCodes)
           if (expectCode == statusCode) ok = true;
