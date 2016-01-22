@@ -22,7 +22,7 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestTdsFCcatalogs {
-  @Parameterized.Parameters
+  @Parameterized.Parameters(name = "{0}{1}")
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
             {"catalogGrib", ""},
@@ -42,13 +42,11 @@ public class TestTdsFCcatalogs {
   }
   private static final boolean show = false;
 
-  String path, query;
+  @Parameterized.Parameter(value = 0)
+  public String path;
 
-  public TestTdsFCcatalogs(String path, String query) {
-    this.path = path;
-    this.query = query;
-  }
-
+  @Parameterized.Parameter(value = 1)
+  public String query;
 
   @Test
   public void testOpenXml() {
