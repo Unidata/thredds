@@ -29,3 +29,34 @@ dependencies {
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
 }
+
+// Configure Jacoco
+// This code duplicates much of coverage.gradle. However, since :buildSrc is a separate build from thredds, it's not
+// appropriate to just apply that build script here (it references properties defined in thredds rootProject).
+// TODO: Can that script be modified so that it can be applied to both projects?
+// TODO: Alternately, can some of that code be moved to classes in :buildSrc? Would we then be able to use those
+// classes in this script?
+
+// The jacoco plugin adds the jacocoTestReport task, but only if the java or groovy plugin is already applied.
+apply plugin: "jacoco"
+
+jacoco {
+    toolVersion = '0.7.5.201505241946'  // The latest version as of 2015-06-26.
+}
+
+jacocoTestReport {
+    dependsOn tasks.test
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        csv.enabled = false
+    }
+}
+
+tasks.test {
+    finalizedBy tasks.jacocoTestReport
+
+    // Add the execution data that Jacoco generates as a task output.
+    outputs.file jacoco.destinationFile
+}
