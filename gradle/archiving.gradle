@@ -25,23 +25,4 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
             manifest.attributes 'Built-On': project.buildTimestamp  // Defined in root project.
         }
     }
-
-    // We could use "if (pluginManager.hasPlugin('war'))" here, but org.gradle.api.DomainObjectCollection.all()
-    // has the lovely effect of executing the given closure against all current and *future* War tasks added to the
-    // project. So, we don't have to think too hard about configuration order.
-    tasks.withType(War).all {
-        project.with {  // We're configuring the project, not the task.
-            // When the "war" plugin is applied to a project, it removes "jar" as a default artifact
-            // (see org.gradle.api.plugins.WarPlugin.apply() and
-            // org.gradle.api.internal.plugins.DefaultArtifactPublicationSet.addCandidate()).
-            // Here, we're restoring the jar by adding it as an *explicit* artifact.
-            artifacts {
-                archives jar
-            }
-
-            // This is the classifier that maven-war-plugin gives its comparable jar when attachClasses is true.
-            // Currently, threddsIso (and others?) depends on this jar.
-            jar.classifier = 'classes'
-        }
-    }
 }
