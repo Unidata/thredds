@@ -92,7 +92,14 @@ public class NCdumpPane extends TextHistoryPane {
     binButton.setToolTipText("write binary data to file");
     binButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        writeBinaryData((String) cb.getSelectedItem());
+        File binaryFile = new File(System.getProperty("user.home"));
+        JFileChooser aFileChooser = new JFileChooser();
+        aFileChooser.setSelectedFile(new File("temp.bin"));
+        int choice = aFileChooser.showSaveDialog(null);
+        if (choice == JFileChooser.APPROVE_OPTION) {
+          binaryFile = aFileChooser.getSelectedFile();
+          writeBinaryData((String) cb.getSelectedItem(), binaryFile);
+        }
       }
     });
 
@@ -152,7 +159,7 @@ public class NCdumpPane extends TextHistoryPane {
       stopButton.startProgressMonitorTask( task);
   }
 
-  private void writeBinaryData(String variableSection) {
+  private void writeBinaryData(String variableSection, File name) {
 
     ParsedSectionSpec cer;
     try {
@@ -164,7 +171,7 @@ public class NCdumpPane extends TextHistoryPane {
       return;
     }
 
-    String name = "C:/temp/file.bin";
+    if (name == null) return;
     try (FileOutputStream stream = new FileOutputStream(name)) {
       WritableByteChannel channel = stream.getChannel();
       cer.v.readToByteChannel(cer.section, channel);
