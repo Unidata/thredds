@@ -439,13 +439,9 @@ public class DatasetViewer extends JPanel {
       });
       csPopup.addAction("Write binary Data to file", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          File binaryFile = new File(System.getProperty("user.home"));
-          JFileChooser aFileChooser = new JFileChooser();
-          aFileChooser.setSelectedFile(new File("temp.bin"));
-          int choice = aFileChooser.showSaveDialog(null);
-          if (choice == JFileChooser.APPROVE_OPTION) {
-            binaryFile = aFileChooser.getSelectedFile();
-            writeData(table, binaryFile);
+          String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
+          if (binaryFilePath != null) {
+            writeData(table, new File(binaryFilePath));
           }
         }
       });
@@ -777,6 +773,8 @@ public class DatasetViewer extends JPanel {
 
   public void save() {
     dumpPane.save();
+    fileChooser.save();
+
     for (NestedTable nt : nestedTableList) {
       nt.saveState();
     }
