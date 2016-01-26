@@ -488,9 +488,9 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
 
     public GdsHorizCoordSys makeHorizCoordSys() {
       LatLonProjection proj = new LatLonProjection(getEarth());
-      ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
-      double startx = startP.getX();
-      double starty = startP.getY();
+      //ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      double startx = lo1; // startP.getX();
+      double starty = la1; // startP.getY();
       return new GdsHorizCoordSys(getNameShort(), template, getOctet4(7), scanMode, proj, startx, deltaLon, starty, deltaLat,
               getNxRaw(), getNyRaw(), getNptsInLine());
     }
