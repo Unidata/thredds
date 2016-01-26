@@ -30,4 +30,11 @@
         </sort>
     </datasetScan>
 
+    <datasetScan name="Test Scan Local Html" path="scanLocalHtml" location="content/testdata/">
+        <metadata inherited="true">
+            <serviceName>HTTPServer</serviceName>
+        </metadata>
+    </datasetScan>
+
+
 </catalog>

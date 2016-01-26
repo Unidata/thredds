@@ -5663,12 +5663,17 @@ public class ToolsUI extends JPanel {
       }
     });
 
+
     frame.getContentPane().add(ui);
-    Rectangle bounds = (Rectangle) prefs.getBean(FRAME_SIZE, new Rectangle(50, 50, 800, 450));
-    frame.setBounds(bounds);
+    Rectangle have = frame.getGraphicsConfiguration().getBounds();
+    Rectangle def = new Rectangle(50, 50, 800, 450);
+    Rectangle want = (Rectangle) prefs.getBean(FRAME_SIZE, def);
+    if (want.getX() > have.getWidth() - 25) want = def; // may be off screen when switcing between 2 monitor system
+
+    frame.setBounds(want);
 
     frame.pack();
-    frame.setBounds(bounds);
+    frame.setBounds(want);
     frame.setVisible(true);
 
     // in case a dataset was on the command line
