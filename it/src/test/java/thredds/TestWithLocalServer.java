@@ -53,6 +53,7 @@ import java.io.InputStream;
  * @since 10/15/13
  */
 public class TestWithLocalServer {
+  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestWithLocalServer.class);
   public static String server = "http://localhost:8081/thredds/";
 
   public static String withPath(String path) {
@@ -68,20 +69,20 @@ public class TestWithLocalServer {
   }
 
   public static byte[] getContent(Credentials cred, String endpoint, int[] expectCodes, ContentType expectContentType) {
-    System.out.printf("req = '%s'%n", endpoint);
+    logger.debug("req = '{}'", endpoint);
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       if (cred != null) {
-        int pos = endpoint.indexOf("?");
-        String url = pos < 0 ? endpoint : endpoint.substring(0, pos);
         session.setCredentials(cred);
       }
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      if (expectCodes == null)
+      if (expectCodes == null) {
         Assert.assertEquals(200, statusCode);
-      else {
+      } else if (expectCodes.length == 1) {
+        Assert.assertEquals(expectCodes[0], statusCode);
+      } else {
         boolean ok = false;
         for (int expectCode : expectCodes)
           if (expectCode == statusCode) ok = true;
@@ -89,7 +90,7 @@ public class TestWithLocalServer {
       }
 
       if (statusCode != 200) {
-        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
+        logger.warn("statusCode = {} '{}'", statusCode, method.getResponseAsString());
         return null;
       }
 
@@ -100,8 +101,8 @@ public class TestWithLocalServer {
 
       return method.getResponseAsBytes();
 
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch (HTTPException e) {
+      logger.error("Problem with HTTP request", e);
       assert false;
     }
 
@@ -109,12 +110,12 @@ public class TestWithLocalServer {
   }
 
   public static void saveContentToFile(String endpoint, int expectCode, ContentType expectContentType, File saveTo) {
-    System.out.printf("req = '%s'%n", endpoint);
+    logger.debug("req = '{}'", endpoint);
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
       if (statusCode != 200) {
-        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
+        logger.warn("statusCode = {} '{}'", statusCode, method.getResponseAsString());
         Assert.assertEquals(expectCode, statusCode);
         return;
       }
@@ -130,7 +131,7 @@ public class TestWithLocalServer {
       IO.appendToFile(content, saveTo.getAbsolutePath());
 
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.error("Problem with HTTP request", e);
       assert false;
     }
   }
