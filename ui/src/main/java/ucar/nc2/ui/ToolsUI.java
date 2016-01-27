@@ -33,6 +33,9 @@
 
 package ucar.nc2.ui;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.client.catalog.writer.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -6396,6 +6399,29 @@ public class ToolsUI extends JPanel {
 
   static boolean isCacheInit = false;
 
+  private static class CommandLine {
+    @Parameter(names = { "-nj22Config"}, description = "Runtime configuration file.", required = false)
+    public File nj22ConfigFile;
+
+    // Even though we want to accept at most 1 dataset, the JCommander main parameter must be a List<String>.
+    @Parameter(description = "Dataset")
+    public List<String> datasets = new ArrayList<>();
+
+    @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+    public boolean help = false;
+
+    private final JCommander jc;
+
+    public CommandLine(String progName, String[] args) throws ParameterException {
+      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName);           // Displayed in the usage information.
+    }
+
+    public void printUsage() {
+      jc.usage();
+    }
+  }
+
   public static void main(String args[]) {
     if (debugListen) {
       System.out.println("Arguments:");
@@ -6403,23 +6429,34 @@ public class ToolsUI extends JPanel {
         System.out.println(" " + arg);
       }
 
-        HTTPSession.debugHeaders(true);
+      HTTPSession.debugHeaders(true);
+    }
+
+    ////////////////////////////////////////// Parse command line //////////////////////////////////////////
+
+    String progName = ToolsUI.class.getName();
+    CommandLine cmdLine;
+
+    try {
+      cmdLine = new CommandLine(progName, args);
+
+      if (cmdLine.help) {
+        cmdLine.printUsage();
+        return;
+      }
+    } catch (ParameterException e) {
+      System.err.println(e.getMessage());
+      System.err.printf("Try \"%s --help\" for more information.%n", progName);
+      return;
     }
 
     //////////////////////////////////////////////////////////////////////////
     // handle multiple versions of ToolsUI, along with passing a dataset name
-    SocketMessage sm;
-    if (args.length > 0) {
-      // munge arguments into a single string
-      StringBuilder sbuff = new StringBuilder();
-      for (String arg : args) {
-        sbuff.append(arg);
-        sbuff.append(" ");
-      }
-      String arguments = sbuff.toString();
-      System.out.println("ToolsUI arguments=" + arguments);
 
-      wantDataset = arguments;
+    SocketMessage sm;
+
+    if (!cmdLine.datasets.isEmpty()) {
+      wantDataset = cmdLine.datasets.get(0);  // We only want one dataset. Ignore rest.
 
       // see if another version is running, if so send it the message
       sm = new SocketMessage(14444, wantDataset);
@@ -6428,7 +6465,7 @@ public class ToolsUI extends JPanel {
         System.exit(0);
       }
 
-    } else { // no arguments were passed
+    } else { // no dataset was passed
 
       // look for messages from another ToolsUI
       sm = new SocketMessage(14444, null);
@@ -6445,35 +6482,22 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    if (debugListen) {
-      System.out.println("Arguments:");
-      for (String arg : args) {
-        System.out.println(" " + arg);
-      }
-      HTTPSession.debugHeaders(true);
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     // spring initialization
     try (ClassPathXmlApplicationContext springContext =
             new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml")) {
 
-      // look for run line arguments
       boolean configRead = false;
-      for (int i = 0; i < args.length; i++) {
-        if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
-          String runtimeConfig = args[i + 1];
-          i++;
-          try {
-            StringBuilder errlog = new StringBuilder();
-            FileInputStream fis = new FileInputStream(runtimeConfig);
-            RuntimeConfigParser.read(fis, errlog);
-            configRead = true;
-            System.out.println(errlog);
-          } catch (IOException ioe) {
-            System.out.println("Error reading " + runtimeConfig + "=" + ioe.getMessage());
-          }
+
+      if (cmdLine.nj22ConfigFile != null) {
+        try (FileInputStream fis = new FileInputStream(cmdLine.nj22ConfigFile)) {
+          StringBuilder errlog = new StringBuilder();
+          RuntimeConfigParser.read(fis, errlog);
+          configRead = true;
+          System.out.println(errlog);
+        } catch (IOException ioe) {
+          System.out.println("Error reading " + cmdLine.nj22ConfigFile + "=" + ioe.getMessage());
         }
       }
 
@@ -6485,7 +6509,6 @@ public class ToolsUI extends JPanel {
             StringBuilder errlog = new StringBuilder();
             FileInputStream fis = new FileInputStream(filename);
             RuntimeConfigParser.read(fis, errlog);
-            configRead = true;
             System.out.println(errlog);
           } catch (IOException ioe) {
             System.out.println("Error reading " + filename + "=" + ioe.getMessage());
