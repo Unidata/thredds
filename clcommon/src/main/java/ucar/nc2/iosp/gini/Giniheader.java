@@ -154,7 +154,6 @@ class Giniheader {
   }
 
   void read(ucar.unidata.io.RandomAccessFile raf, ucar.nc2.NetcdfFile ncfile) throws IOException {
-    NetcdfFile ncfile1 = ncfile;
     int proj;                        /* projection type indicator     */
                                             /* 1 - Mercator                  */
                                             /* 3 - Lambert Conf./Tangent Cone*/
@@ -181,29 +180,29 @@ class Giniheader {
     ByteBuffer bos = ByteBuffer.wrap(head);
 
     Attribute att = new Attribute(CDM.CONVENTIONS, "GRIB");
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     bos.position(0);
 
     //sat_id = (int )( raf.readByte());
     Byte nv = bos.get();
     att = new Attribute("source_id", nv);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     nv = bos.get();
     ent_id = nv.intValue();
     att = new Attribute("entity_id", nv);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     nv = bos.get();
     sec_id = nv.intValue();
     att = new Attribute("sector_id", nv);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     nv = bos.get();
     phys_elem = nv.intValue();
     att = new Attribute("phys_elem", nv);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     bos.position(bos.position() + 4);
 
@@ -244,13 +243,13 @@ class Giniheader {
 
     //att = new Attribute( "Time", dstring);
     //this.ncfile.addAttribute(null, att);
-    ncfile1.addAttribute(null, new Attribute("time_coverage_start", dstring));
-    ncfile1.addAttribute(null, new Attribute("time_coverage_end", dstring));
+    ncfile.addAttribute(null, new Attribute("time_coverage_start", dstring));
+    ncfile.addAttribute(null, new Attribute("time_coverage_end", dstring));
     bos.get();   /* skip a byte for hundreds of seconds */
 
     nv = bos.get();
     att = new Attribute("ProjIndex", nv);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
     proj = nv.intValue();
     if (proj == 1) {
       att = new Attribute("ProjName", "MERCATOR");
@@ -260,7 +259,7 @@ class Giniheader {
       att = new Attribute("ProjName", "POLARSTEREOGRAPHIC");
     }
 
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     /*
     ** Get grid dimensions
@@ -268,11 +267,11 @@ class Giniheader {
 
     nx = bos.getShort();
     att = new Attribute("NX", nx);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     ny = bos.getShort();
     att = new Attribute("NY", ny);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     ProjectionImpl projection = null;
     double dxKm = 0.0, dyKm = 0.0, latin, lonProjectionOrigin;
@@ -287,22 +286,22 @@ class Giniheader {
         /* Latitude of first grid point */
         lat1 = readScaledInt(bos);
         att = new Attribute("Latitude0", lat1);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         lon1 = readScaledInt(bos);
         att = new Attribute("Longitude0", lon1);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         /* Longitude of last grid point */
         bos.get(); /* skip one byte */
 
         lat2 = readScaledInt(bos);
         att = new Attribute("LatitudeN", lat2);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         lon2 = readScaledInt(bos);
         att = new Attribute("LongitudeN", lon2);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         /*
         ** Hack to catch incorrect sign of lon2 in header.
@@ -330,7 +329,7 @@ class Giniheader {
         /* Latitude of proj cylinder intersects */
         latin = readScaledInt(bos);
         att = new Attribute("LatitudeX", latin);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         projection = new Mercator(lonv, latin);
         break;
@@ -351,18 +350,18 @@ class Giniheader {
         lonv = readScaledInt(bos);
         lonProjectionOrigin = lonv;
         att = new Attribute("Lov", lonv);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         /*
         ** Get distance increment of grid
         */
         dxKm = readScaledInt(bos);
         att = new Attribute("DxKm", dxKm);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         dyKm = readScaledInt(bos);
         att = new Attribute("DyKm", dyKm);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         /* calculate the lat2 and lon2 */
         if (proj == 5) {
@@ -391,13 +390,13 @@ class Giniheader {
         pole = nv.intValue();
         pole = (pole > 127) ? -1 : 1;
         att = new Attribute("ProjCenter", pole);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         bos.get(); /* skip one byte for Scanning mode */
 
         latin = readScaledInt(bos);
         att = new Attribute("Latin", latin);
-        ncfile1.addAttribute(null, att);
+        ncfile.addAttribute(null, att);
 
         if (proj == 3)
           projection = new LambertConformal(latin, lonProjectionOrigin, latin, latin);
@@ -407,23 +406,23 @@ class Giniheader {
         break;
 
       default:
-        System.out.println("unimplemented projection");
+        log.warn("GINI: Unimplemented projection!");
     }
 
-    ncfile1.addAttribute(null, new Attribute("title", gini_GetEntityID(ent_id)));
-    ncfile1.addAttribute(null, new Attribute("summary", getPhysElemSummary(phys_elem, ent_id)));
-    ncfile1.addAttribute(null, new Attribute("id", gini_GetSectorID(sec_id)));
-    ncfile1.addAttribute(null, new Attribute("keywords_vocabulary", gini_GetPhysElemID(phys_elem, ent_id)));
-    ncfile1.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
-    ncfile1.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
-    ncfile1.addAttribute(null, new Attribute("standard_name_vocabulary", getPhysElemLongName(phys_elem, ent_id)));
-    ncfile1.addAttribute(null, new Attribute("creator_name", "UNIDATA"));
-    ncfile1.addAttribute(null, new Attribute("creator_url", "http://www.unidata.ucar.edu/"));
-    ncfile1.addAttribute(null, new Attribute("naming_authority", "UCAR/UOP"));
-    ncfile1.addAttribute(null, new Attribute("geospatial_lat_min", lat1));
-    ncfile1.addAttribute(null, new Attribute("geospatial_lat_max", lat2));
-    ncfile1.addAttribute(null, new Attribute("geospatial_lon_min", lon1));
-    ncfile1.addAttribute(null, new Attribute("geospatial_lon_max", lon2));
+    ncfile.addAttribute(null, new Attribute("title", gini_GetEntityID(ent_id)));
+    ncfile.addAttribute(null, new Attribute("summary", getPhysElemSummary(phys_elem, ent_id)));
+    ncfile.addAttribute(null, new Attribute("id", gini_GetSectorID(sec_id)));
+    ncfile.addAttribute(null, new Attribute("keywords_vocabulary", gini_GetPhysElemID(phys_elem, ent_id)));
+    ncfile.addAttribute(null, new Attribute("cdm_data_type", FeatureType.GRID.toString()));
+    ncfile.addAttribute(null, new Attribute(CF.FEATURE_TYPE, FeatureType.GRID.toString()));
+    ncfile.addAttribute(null, new Attribute("standard_name_vocabulary", getPhysElemLongName(phys_elem, ent_id)));
+    ncfile.addAttribute(null, new Attribute("creator_name", "UNIDATA"));
+    ncfile.addAttribute(null, new Attribute("creator_url", "http://www.unidata.ucar.edu/"));
+    ncfile.addAttribute(null, new Attribute("naming_authority", "UCAR/UOP"));
+    ncfile.addAttribute(null, new Attribute("geospatial_lat_min", lat1));
+    ncfile.addAttribute(null, new Attribute("geospatial_lat_max", lat2));
+    ncfile.addAttribute(null, new Attribute("geospatial_lon_min", lon1));
+    ncfile.addAttribute(null, new Attribute("geospatial_lon_max", lon2));
     //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
     //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
 
@@ -433,14 +432,14 @@ class Giniheader {
     bos.position(41);  /* jump to 42 bytes of PDB */
     nv = bos.get();      /* Res [km] */
     att = new Attribute("imageResolution", nv);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
     // if(proj == 1)
     //     dyKm = nv.doubleValue()/dyKm;
     /* compression flag 43 byte */
 
     nv = bos.get();      /* Res [km] */
     att = new Attribute("compressionFlag", nv);
-    ncfile1.addAttribute(null, att);
+    ncfile.addAttribute(null, att);
 
     if (DataType.unsignedByteToShort(nv) == 128) {
       Z_type = 2;
@@ -603,36 +602,10 @@ class Giniheader {
       int jscale = 100000000;
       byte[] unsb = new byte[8];
       bos.get(unsb);
-      String unitStr = new String(unsb, CDM.utf8Charset).toUpperCase();
-      String iname;
-      String iunit;
+//      String unitStr = new String(unsb, CDM.utf8Charset).toUpperCase();
       bos.position(55);
       nv = bos.get();
       int calcod = DataType.unsignedByteToShort(nv);
-
-      if (unitStr.contains("INCH")) {
-        iname = "RAIN";
-        iunit = "IN  ";
-
-      } else if (unitStr.contains("dBz")) {
-        iname = "ECHO";
-        iunit = "dBz ";
-
-      } else if (unitStr.contains("KFT")) {
-
-        iname = "TOPS";
-        iunit = "KFT ";
-
-      } else if (unitStr.contains("KG/M")) {
-
-        iname = "VIL ";
-        iunit = "mm  ";
-
-      } else {
-
-        iname = "    ";
-        iunit = "    ";
-      }
 
       if (calcod > 0) {
         calcods = new int[5 * calcod + 1];
