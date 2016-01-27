@@ -173,7 +173,7 @@ class Giniheader {
     int gminute;
     int gsecond;
     double lonv;                        /* meridian parallel to y-axis */
-    double lon1, lon2, lat1, lat2;
+    double lon1 = 0.0, lon2 = 0.0, lat1 = 0.0, lat2 = 0.0;
     double latt;
     double imageScale = 0.0;
 
@@ -274,7 +274,7 @@ class Giniheader {
     att = new Attribute("NY", ny);
     ncfile1.addAttribute(null, att);
 
-    ProjectionImpl projection;
+    ProjectionImpl projection = null;
     double dxKm = 0.0, dyKm = 0.0, latin, lonProjectionOrigin;
 
     switch (proj) {
@@ -509,7 +509,11 @@ class Giniheader {
     // latin, lov, la1, lo1
 
     // we have to project in order to find the origin
-    ProjectionPoint start = projection.latLonToProj(new LatLonPointImpl(lat1, lon1));
+    ProjectionPoint start;
+    if (projection != null)
+      start = projection.latLonToProj(new LatLonPointImpl(lat1, lon1));
+    else
+      start = new ProjectionPointImpl();
     if (debug) log.warn("start at proj coord " + start);
 
     double startx = start.getX();
