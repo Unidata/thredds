@@ -811,7 +811,7 @@ public class HTTPSession implements Closeable
             throws HTTPException
     {
         assert (scope != null);
-        if(actualurl == null)
+        if(actualurl != null)
             this.sessionURI = actualurl;
         else
             this.sessionURI = HTTPAuthUtil.authscopeToURI(scope).toString();
