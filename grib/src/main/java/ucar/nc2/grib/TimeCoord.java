@@ -402,6 +402,11 @@ public class TimeCoord {
       this.end = start.add(period);
     }
 
+    public TinvDate(CalendarDate start, CalendarDate end) {
+      this.start = start;
+      this.end = end;
+    }
+
     public CalendarDate getStart() {
       return start;
     }

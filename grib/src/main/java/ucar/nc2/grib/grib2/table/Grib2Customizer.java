@@ -84,6 +84,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
       case ncep: return NcepLocalTables.getCust(grib2Table);
       case ndfd: return NdfdLocalTables.getCust(grib2Table);
       case mrms: return MrmsLocalTables.getCust(grib2Table);
+      case nwsDev: return NwsMetDevTables.getCust(grib2Table);
       default:
         if (wmoStandardTable == null) wmoStandardTable = new Grib2Customizer(grib2Table);
         return wmoStandardTable;
