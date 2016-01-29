@@ -244,7 +244,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   /**
-   * Get interval size in units of hours
+   * Get interval size in units of hours.
+   * Only use in GribVariable to decide on variable identity when intvMerge = false.
    * @param pds must be a Grib2Pds.PdsInterval
    * @return  interval size in units of hours
    */

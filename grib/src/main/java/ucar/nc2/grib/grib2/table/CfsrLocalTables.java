@@ -161,9 +161,14 @@ public class CfsrLocalTables extends NcepLocalTables {
     return new TimeCoord.TinvDate(start, period);
   }
 
+  /**
+   * Only use in GribVariable to decide on variable identity when intvMerge = false.
+   * By returning a constant, we dont support intvMerge = false.
+   * Problem is we cant reconstruct interval length without reference time, which is not in the pds.
+   */
   @Override
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
-    return 6.0;  // LOOK  WTF ??
+    return 6.0;
   }
 
   private boolean isCfsr2(Grib2Pds pds) {
