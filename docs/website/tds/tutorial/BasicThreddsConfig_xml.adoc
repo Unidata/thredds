@@ -127,5 +127,5 @@ element:
 --------------------------------------------------------------------------------
 
 More details are given in the
-link:../reference/ThreddsConfigXMLFile.adoc#Generated_HTML_Pages[threddsConfig.xml
-Reference document].
+<<../reference/ThreddsConfigXMLFile#Generated_HTML_Pages,threddsConfig.xml
+Reference document>>.

@@ -13,8 +13,8 @@ and the <<../tdsMonitor#,TdsMonitor Tool>> – both of which
 Enable SSL in Tomcat
 
 If Tomcat has not already been configured to run via SSL, follow the
-tutorial in the previous section to link:enablingSSL.adoc[Enable SSL in
-Tomcat].
+tutorial in the previous section to <<enablingSSL#,Enable SSL in
+Tomcatd]i>>.
 
 Modify `${tomcat_home}/conf/tomcat-users.xml` to add the new `tdsConfig`
 and `tdsMonitor` roles. Add these roles to your list of roles:

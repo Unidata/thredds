@@ -579,8 +579,8 @@ code,CDL------------------------------------------------------ code,CDL
 
 Generally the set of valid transforms are not specified by this
 *_Coordinates* Convention. The
-link:../reference/StandardCoordinateTransforms.adoc[transforms that the
-nj22 library recognizes] come from the CF grid mappings and vertical
+<<../reference/StandardCoordinateTransforms#,transforms that the
+nj22 library recognizes>> come from the CF grid mappings and vertical
 transforms, so these are recommended, when possible, for the actual
 transform content.
 

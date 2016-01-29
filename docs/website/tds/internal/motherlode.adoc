@@ -17,7 +17,7 @@ NOAA/FSL, as well as METAR, upper air, buoy, and SAO station data.
 
 <</data/data.general#,Breakdown of Available Current Data>>
 
-link:/data/data.detail.adoc[Detailed Information on Data, Data Stream
+link:/data/data.detail.html[Detailed Information on Data, Data Stream
 Products and Systems]
 
 == Catalogs and DQCs available on motherlode.ucar.edu

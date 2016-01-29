@@ -21,8 +21,8 @@ run it on a seperate, publically accessible, server.
 2.  http://www.cafesoft.com/[CAMS] server 2.1.33 and their Tomcat
 servlet filter 2.1.13. CAMS is a commercial SSO provider.
 
-You should follow the steps to get link:RestrictedAccess.adoc[default
-restricted datasets] working, then follow the steps below to plug in
+You should follow the steps to get <<RestrictedAccess#,default
+restricted datasets>> working, then follow the steps below to plug in
 your own code.
 
 == Configuring web.xml

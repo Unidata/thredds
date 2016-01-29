@@ -147,10 +147,10 @@ data files, its best to recreate the index files.
 
 === Creating a GRIB Collection Index
 
-You can use a <<../manPages.adoc#GribCdmIndex,command line tool>> that
+You can use a <<../manPages#GribCdmIndex,command line tool>> that
 uses a complete
-link:../../../tds/reference/collections/GribCollections.adoc[GRIB
-<featureCollection> element] to define the GRIB Collection, and
+<<../../../tds/reference/collections/GribCollections#,GRIB
+<featureCollection> element>> to define the GRIB Collection, and
 generates the CDM index (**ncx4**) file.
 
 For simple cases, you can create the *ncx4* file based on a collection
@@ -192,8 +192,8 @@ inside the TDS <**gribConfig**> element can be used inside the
 </netcdf>
 ----
 
-See link:../../../tds/reference/collections/GribConfig.adoc[GRIB
-Collection Configuration] for a description of all of the options.
+See <<../../../tds/reference/collections/GribConfig#,GRIB
+Collection Configuration>> for a description of all of the options.
 
 Note that you cannot use NcML to open a collection of GRIB files. You
 must generate the Grib Collection index file in a

@@ -9,8 +9,8 @@
 === Location of the TDS Configuration Directory
 
 If desired, the location can be set to a directory outside of the Tomcat
-install directory. See the link:../reference/DirectoryLocations.adoc[TDS
-Configuration Directory section] of the TDS Reference for more
+install directory. See the <<../reference/DirectoryLocations#,TDS
+Configuration Directory section>> of the TDS Reference for more
 information.
 
 === Location

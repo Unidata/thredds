@@ -90,8 +90,8 @@ Also see:
 * <<FeatureCollections#,Feature Collection>> overview
 * <<GribConfig#,GRIB specific configuration>>
 * <<GribCollectionFaq#,GRIB Collection FAQs>>
-* link:../../../netcdf-java/reference/formats/GribFiles.adoc[CDM GRIB
-Collection Processing]
+* <<../../../netcdf-java/reference/formats/GribFiles#,CDM GRIB
+Collection Processing>>
 
 == Example 1 (timePartition="none"):
 

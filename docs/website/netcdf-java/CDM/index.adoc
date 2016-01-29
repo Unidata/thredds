@@ -125,8 +125,8 @@ different lengths for each of the blobs.
 
 An *Object name* refers to the name of a Group, Dimension, Variable,
 Attribute, or EnumTypedef. An object name is a String, a variable length
-array of Unicode characters. The link:Identifiers.adoc[set of allowed
-characters] is still being considered.
+array of Unicode characters. The <<Identifiers#,set of allowed
+characters>> is still being considered.
 
 === Comparision to netCDF-4
 
@@ -225,7 +225,7 @@ A *_CoordinateAxis_* is a subtype of Variable, and is optionally classified acco
 A *_CoordinateTransform_* abstractly represents a transformation between
 CoordinateSystems, and  is either a *Projection* or a **Vertical Transform**.
 
-The <<CoordinateAttributes.adoc#AxisTypes,*_AxisType_*>> enumerations are specific to the case of georeferencing
+The <<CoordinateAttributes#AxisTypes,*_AxisType_*>> enumerations are specific to the case of georeferencing
 coordinate systems. _Time_ refers to the real date/time of the dataset.
 _Latitude_ and _Longitude_ identify standard horizontal coordinates.
 _Height_ and _Pressure_ identify the vertical coordinate. _GeoX_ and
@@ -285,7 +285,7 @@ Structure {
 } station(*)
 ----
 
-Also see: <<CoordinateAttributes.adoc#CoordSysBuilder,Coordinate System Building>>.
+Also see: <<CoordinateAttributes#CoordSysBuilder,Coordinate System Building>>.
 
 === Mathematical formalism for Coordinate Systems
 

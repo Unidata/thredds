@@ -40,7 +40,7 @@ their time and runtime coordinates and the actual data values.
 
 * Its best if the reference time is part of the filename, in a way that
 can be extracted with a
-<<FeatureCollections.adoc#dateExtractor,DateExtractor>>.
+<<FeatureCollections#dateExtractor,DateExtractor>>.
 * If there is a serviceType=``HTTPServer'' for the Feature Collection,
 it is removed from the virtual datasets (all except the _Files_
 datasets).
@@ -116,8 +116,8 @@ put *regularize* = false (or leave it off).
 == Working with FMRC in ToolsUI
 
 The ToolsUI FMRC tab allows you to view internal strurctures of an FMRC.
-You can pass it a link:CollectionSpecification.adoc[collection
-specification string] or a file with a *featureCollection* element in
+You can pass it a <<CollectionSpecification#,collection
+specification string>> or a file with a *featureCollection* element in
 it.
 
 == Working with FMRC in client software

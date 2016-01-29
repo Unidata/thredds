@@ -45,12 +45,12 @@ implementing Projections and Vertical Transforms
 
 === 6. Scientific Feature Types
 
-* link:../reference/FeatureDatasets/Overview.adoc[Feature Dataset
-Overview]
+* <<../reference/FeatureDatasets/Overview#,Feature Dataset
+Overview>>
 * <<GridDatatype#,Grid Datasets>>
 * <<RadialDatatype#,Radial Datatype>>
-* link:../reference/FeatureDatasets/PointFeatures.adoc[Point Feature
-Datasets] (aka Discrete Sampling Geometry datasets)
+* <<../reference/FeatureDatasets/PointFeatures#,Point Feature
+Datasets>> (aka Discrete Sampling Geometry datasets)
 
 === 7. Runtime Loading
 

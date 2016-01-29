@@ -27,7 +27,7 @@ configuration file before it can be used. This is done by adding an
 -----------------------
 
 Note: Details on other configuration options for NCSS are available in
-the <<ThreddsConfigXMLFile.adoc#ncss,threddsConfig.xml>> docs.
+the <<ThreddsConfigXMLFile#ncss,threddsConfig.xml>> docs.
 
 == Serving Datasets with the Netcdf Subset Service
 
@@ -52,8 +52,8 @@ arbitrary, but the *serviceType* and *base* must be exactly as shown.
 
 First, only datasets in the format that the CDM can read are supported.
 Second, the data must represent one of the following
-link:../../netcdf-java/reference/FeatureDatasets/Overview.adoc[Feature
-Types]: GRID, POINT, STATION.
+<<../../netcdf-java/reference/FeatureDatasets/Overview#,Feature
+Types>>: GRID, POINT, STATION.
 
 === Verifying that a dataset is gridded
 

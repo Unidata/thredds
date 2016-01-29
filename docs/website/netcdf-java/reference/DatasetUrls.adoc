@@ -36,8 +36,8 @@ To disambiguate HTTP remote files from OPeNDAP or other URLS, you can use _https
 
 === File Types
 
-The local or remote file must be link:formats/FileTypes.adoc[one of the
-formats that the netCDF-Java library can read]. We call this set of
+The local or remote file must be <<formats/FileTypes#,one of the
+formats that the netCDF-Java library can read>>. We call this set of
 files Common Data Model files, (or _CDM files_ for short), to make
 clear that the NetCDF-Java library is not limited to netCDF files.
 
@@ -181,8 +181,8 @@ than opening the dataset through the index-based services like _OPeNDAP_ and _cd
 === 3. Collection Datasets
 
 FeatureDatasetFactoryManager can open collections of datasets specified with a
-link:../../tds/reference/collections/CollectionSpecification.adoc[collection
-specification string]. This has the form
+<<../../tds/reference/collections/CollectionSpecification#,collection
+specification string>>. This has the form
 
   collection:spec
 

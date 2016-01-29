@@ -19,8 +19,8 @@ This is the on-line, self-guided tutorial. Follow this link for the
 
 === 1.Tomcat Configuration
 
-* link:GettingStarted.adoc[Getting Started With the TDS: Local Test
-Server Setup]
+* <<GettingStarted#,Getting Started With the TDS: Local Test
+Server Setup>>
 * <<Security#,Security Overview>>
 
 === 2. TDS Configuration
@@ -66,19 +66,19 @@ manager application]
 
 === 6. Feature Collections
 
-* link:../reference/collections/FeatureCollections.adoc[Feature
-Collections]
-* link:../reference/collections/GribCollections.adoc[GRIB Feature
-Collections]
-* link:GRIBFeatureCollectionTutorial.adoc[GRIB Feature Collection
-Tutoria]l
-* link:../reference/collections/FmrcCollection.adoc[FMRC (Forecast Model
-Run Collections)]
+* <<../reference/collections/FeatureCollections#,Feature
+Collections>>
+* <<../reference/collections/GribCollections#,GRIB Feature
+Collections>>
+* <<GRIBFeatureCollectionTutorial#,GRIB Feature Collection
+Tutorial>>
+* <<../reference/collections/FmrcCollection#,FMRC (Forecast Model
+Run Collections)>>]
 * <<FmrcFeatureCollectionsTutorial#,FMRC Tutorial>>
-* link:../../netcdf-java/reference/formats/GribFiles.adoc[GRIB Files in
-CDM]
-* link:../../netcdf-java/reference/formats/GribTables.adoc[GRIB Tables
-in CDM]
+* <<../../netcdf-java/reference/formats/GribFiles#,GRIB Files in
+CDM>>
+* <<../../netcdf-java/reference/formats/GribTables#,GRIB Tables
+in CDM>>]
 
 === 7. Other Advanced Features
 
@@ -94,8 +94,8 @@ in CDM]
 
 * <<Checklist#,Installation Checklist for Production>>
 * <<TroubleShooting#,TroubleShooting Problems>>
-* link:../reference/Performance.adoc[Performance
-Tips]<<TroubleShooting#,>>
+* <<../reference/Performance#,Performance
+Tips TroubleShooting>>
 * <<../UpgradingTo4.5#,Upgrading to 4.5>>
 
 === Other Resources:

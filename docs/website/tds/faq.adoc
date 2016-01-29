@@ -12,14 +12,14 @@
 whats going on!]
 * link:#restart[I made changes to my catalog and restarted tomcat but
 nothing changes!]
-* link:../netcdf-java/reference/BuildDependencies.adoc[I’m building my
+* <<../netcdf-java/reference/BuildDependencies#,I’m building my
 own maven project and want to use your jar files. Where is the Unidata
-Repository?]
-* link:../netcdf-java/tutorial/SourceCodeBuild.adoc[I’d like to
+Repository?>>
+* <<../netcdf-java/tutorial/SourceCodeBuild#,I’d like to
 contribute a bug fix or improvement to the THREDDS code. How do I do
-that?]
-* link:#citation[I’m submitting a paper for publication and want to
-include a citation for the TDS. What reference should I use?]
+that?>>
+* <<#citation,I’m submitting a paper for publication and want to
+include a citation for the TDS. What reference should I use?>>
 
 == Catalogs
 
@@ -197,8 +197,8 @@ Boulder, CO: UCAR/Unidata. (http://doi.org/10.5065/D6N014KG)
 *Q: How do I construct the URLs I find in a THREDDS Catalog?* +
 
 A: Heres the general idea in the
-<<tutorial/CatalogPrimer.adoc#Constructing_an_access_URL,tutorial>>
-and the <<catalog/InvCatalogSpec.adoc#constructingURLs,catalog spec>>
+<<tutorial/CatalogPrimer#Constructing_an_access_URL,tutorial>>
+and the <<catalog/InvCatalogSpec#constructingURLs,catalog spec>>
 docs. If you are using the CDM library, you can call
 
 ----------------------
@@ -269,7 +269,7 @@ There is currently no per-client resource throttle, unfortunately, but
 we are aware of the need for that. Any given request is single-threaded,
 so can’t hog too many resources. One can limit the size of opendap
 responses, which tends to be the main problem on some servers. See the
-<<./reference/ThreddsConfigXMLFile.adoc#opendap,OPeNDAP section>> of
+<<./reference/ThreddsConfigXMLFile#opendap,OPeNDAP section>> of
 the threddsConfig.xml page for details.
 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
@@ -396,8 +396,8 @@ the correct information to the proxied server so the request information
 will be correct.
 
 For more information, see our
-link:reference/TomcatBehindProxyServer.adoc[web page on running Tomcat
-behind a proxy server]. It contains links to Tomcat documentation on
+<<reference/TomcatBehindProxyServer#,web page on running Tomcat
+behind a proxy server>>. It contains links to Tomcat documentation on
 both mod_proxy and mod_jk as well as some user contributed documentation
 on setting up mod_proxy.
 ________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -412,7 +412,7 @@ The files and coordinates in a JoinExisting Aggregations are cached, and
 in some circumstances won’t get updated. The default location for the
 cache is *$\{tomcat_home}/content/thredds/cache/agg/* unless you change
 it in the
-<<reference/ThreddsConfigXMLFile.adoc#AggregationCache,threddsConfig.xml>>
+<<reference/ThreddsConfigXMLFile#AggregationCache,threddsConfig.xml>>
 file. Go to that directory, there will be files with the name of the
 cached dataset(s). Delete the file for the dataset that needs updating
 and restart Tomcat.
@@ -533,8 +533,8 @@ ________________________________________________________________________________
 Esentially this is a tradeoff between storage space and the time to
 decompress. I assume you dont want to store the files uncompressed, so
 you have to pay the price of that. To control how these files are
-cached, see link:reference/ThreddsConfigXMLFile.adoc#DiskCache[CDM
-library Disk cache]. I would suggest that you use: +
+cached, see <<reference/ThreddsConfigXMLFile#DiskCache,CDM
+library Disk cache>>. I would suggest that you use: +
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 -------------------------------
@@ -831,7 +831,7 @@ ________________________________________________________________________________
 Well-behaved web crawlers are supposed to look for a *robots.txt* file
 on the server and follow its instructions. To set up a robots.txt file
 that excludes web crawlers from crawling your server, follow
-<<./reference/Performance.adoc#robots,these directions>>.
+<<../reference/Performance#robots,these directions>>.
 ______________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
 '''''

@@ -76,5 +76,5 @@ A user can programmatically add another lookup table by calling
 ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile(). It must be in the
 same csv format as above. It will be searched first.
 
-This can also be done through the link:../RuntimeLoading.adoc[runtime
-configuration] XML file.
+This can also be done through the <<../RuntimeLoading#,runtime
+configuration>> XML file.

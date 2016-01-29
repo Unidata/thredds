@@ -14,8 +14,8 @@ ncISO supports three new services for datasets:
 * **NCML**: an NcML representation ofthe dataset’s structure and metadata;
 * **ISO**: an ISO 19115 metadata representation of the dataset; and
 * **UDDC**: an evaluation of how well the metadata contained in the dataset conforms to the
-link:../../netcdf-java/metadata/DataDiscoveryAttConvention.adoc[NetCDF
-Attribute Convention for Data Discovery (NACDD)] (also see the
+<<../../netcdf-java/metadata/DataDiscoveryAttConvention#,NetCDF
+Attribute Convention for Data Discovery (NACDD)>> (also see the
 https://geo-ide.noaa.gov/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery[NOAA/NGDC
 page on NACDD]).
 

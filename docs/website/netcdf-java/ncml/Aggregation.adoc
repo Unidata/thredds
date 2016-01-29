@@ -457,8 +457,8 @@ Note that you must explicitly specify the coordinate variable in order
 to assign attributes to it, which is something you are likely to need to
 do, for example defining a units attribute is usually necessary.
 Assigning the *_CoordinateAxisType* type is one way to make sure that the
-link:../reference/CoordinateAttributes.adoc#CoordinateAttributes[Coordinate
-layer] correctly identifies the coordinate type. Using CF Conventions is strongly recommended.
+<<../reference/CoordinateAttributes#CoordinateAttributes,Coordinate
+layer>> correctly identifies the coordinate type. Using CF Conventions is strongly recommended.
 
 Also note that, contrary to previous versions of NcML aggregation, you
 do *not* need to define a dimension element for the aggregation
@@ -563,7 +563,7 @@ The *_dateFormatMark_* attribute is used on *joinNew* aggregation, as
 well as *joinExisting* if there is only one time slice in each file, to
 create date coordinate values out of the filename. It consists of a
 section of text, a `#' marking character, then a
-<<AnnotatedSchema4.adoc#SimpleDateFormat,*java.text.SimpleDateFormat*>>
+<<AnnotatedSchema4#SimpleDateFormat,*java.text.SimpleDateFormat*>>
 string. The number of characters before the # is skipped in the
 filename, then the next part of the filename must match the
 SimpleDateFormat string, then it ignores any trailing text. For example:

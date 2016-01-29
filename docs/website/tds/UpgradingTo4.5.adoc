@@ -138,8 +138,8 @@ CDM
 
 IOSPs
 
-* link:../netcdf-java/reference/netcdf4Clibrary.adoc#writing[Netcdf-4
-writing] improved, default chunking improved.
+* <<../netcdf-java/reference/netcdf4Clibrary#writing,Netcdf-4
+writing>> improved, default chunking improved.
 * GRIB: yet another rewrite of Grib Collections to allow scaling to very
 large collections.
 * Improved HDF-EOS processing.

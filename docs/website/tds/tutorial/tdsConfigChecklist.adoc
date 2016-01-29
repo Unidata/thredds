@@ -18,13 +18,13 @@ TDS Configuration Checklist for Production
 (<<BasicThreddsConfig_xml#,more info>>)
 * Enable netCDF-4 output, if desired and the C netCDF library is
 installed on your system (new as of TDS 4.3.13)
-(<<../reference/ThreddsConfigXMLFile.adoc#netcdfCLibrary,more info>>)
+(<<../reference/ThreddsConfigXMLFile#netcdfCLibrary,more info>>)
 * Configure caches, if required
-(<<../reference/ThreddsConfigXMLFile.adoc#Cache_Locations,more info>>)
+(<<../reference/ThreddsConfigXMLFile#Cache_Locations,more info>>)
 * Configure and add new Viewer links
 (<<../reference/Viewers#,more info>>)
 * Specify other root catalogs, if needed
-(<<../reference/ThreddsConfigXMLFile.adoc#catalogRoots,more info>>)
+(<<../reference/ThreddsConfigXMLFile#catalogRoots,more info>>)
 * If needed, Restrict Dataset Access using Tomcat
 (<<../reference/RestrictedAccess#,more info>>)
 
@@ -38,7 +38,7 @@ xlink:href=``otherCatalog.xml'' name=``''/>
 (<<ConfigCatalogs#,more info>>)
 ** Note: Make sure these services are enabled in the
 *$\{tomcat_home}/content/thredds/threddsConfig.xml* file
-(<<../reference/ThreddsConfigXMLFile.adoc#Remote,more info>>)
+(<<../reference/ThreddsConfigXMLFile#Remote,more info>>)
 ** Make sure the service base URLs (the ``base'' attribute) exactly
 match the values given on <<ConfigCatalogs#,this>> page
 * Add or link to metadata related to your dataset
@@ -55,13 +55,13 @@ catalog (<<BasicConfigCatalogs#,more info>>)
 
 ==== Pre-Tomcat Startup
 
-* If you have enabled link:TDSMonitoringAndDebugging.adoc[access
-logging] (and you should), zip up the unused access logs in
+* If you have enabled <<TDSMonitoringAndDebugging#,access
+logging>> (and you should), zip up the unused access logs in
 *$\{tomcat_home}/logs/* and archive them off to another directory.
 * Likewise, zip up the unused TDS servlet logs in
 *$\{tomcat_home}/content/thredds/logs* and archive them as well.
 
 ==== Post-Tomcat Startup
 
-* Check the various new logs for errors (link:TroubleShooting.adoc[more
-info])
+* Check the various new logs for errors (<<TroubleShooting#,more
+info>>)

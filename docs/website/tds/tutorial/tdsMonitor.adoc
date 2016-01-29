@@ -22,11 +22,11 @@ Make sure you have access logging enabled.
 
 * Open `${tomcat_home}/conf/server.xml` and uncomment the
 `AccessLogValve` in the `Host`. Modify the `pattern` attribute as per
-these <<TDSMonitoringAndDebugging.adoc#access,instructions>>.
+these <<TDSMonitoringAndDebugging#access,instructions>>.
 * http://localhost:8080/thredds/catalog.html[Browse your installation of
 the TDS] to generate some entries in the access logs.
 
-Make sure you have the link:TDSMonitoringAndDebugging.adoc#tds[TDS
+Make sure you have the link:TDSMonitoringAndDebugging#tds[TDS
 servlet logging] enabled.
 
 * This is turned on by default in the `log4j.xml` file.

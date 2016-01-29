@@ -10,8 +10,8 @@ are best practices for running Tomcat.
 
 Also see:
 
-* link:../tutorial/AdditionalSecurityConfiguration.adoc[Tomcat Security
-in TDS Tutorial]
+* <<../tutorial/AdditionalSecurityConfiguration#,Tomcat Security
+in TDS Tutorial>>
 * http://oreilly.com/catalog/9780596101060/[https://www.mulesoft.com/tcat/tomcat-security]
 
 == Run as Unprivileged User
@@ -139,8 +139,8 @@ by adding this <Realm> element to the <Host> element named
 
 The _tdsConfig, manager_ and _admin_ roles allow access to secure parts
 of Tomcat and TDS. These can only be accessed using HTTPS (TLS), and so
-are considered secure. If you are link:RestrictedAccess.adoc[restricting
-access to datasets], you will also add other users who will have the
+are considered secure. If you are <<RestrictedAccess#,restricting
+access to datasets>>, you will also add other users who will have the
 *restrictedDatasetUser* role**. _Do not give any of these users
 (including yourself!) any of the_ tdsConfig, manager _or_ admin _roles -
 keep them strictly separate._** This is because *restrictedDatasetUser*

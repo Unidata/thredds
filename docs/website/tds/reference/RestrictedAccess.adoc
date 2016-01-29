@@ -137,9 +137,9 @@ always have the _restrictedDatasetUser_ role**, eg:
 
 Make sure that none of these *restrictedDatasetUsers* have any of the
 ``secure'' roles such as _tdsConfig, manager,_ or __admin__. (Here’s
-<<TomcatSecurity.adoc#Separate,why>>). In this example we are storing
+<<TomcatSecurity#Separate,why>>). In this example we are storing
 passwords in cleartext, but you are advised to
-<<TomcatSecurity.adoc#Digest,store passwords in digest form>>.
+<<TomcatSecurity#Digest,store passwords in digest form>>.
 
 You can also manage users and roles with the tomcat admin application,
 if you
@@ -206,11 +206,11 @@ configuration above, plus the following:
 
 === 1. Enable Tomcat Security / SSL
 
-You must <<RemoteManagement.adoc#SSL,enable Secure Sockets>>. See the
+You must <<RemoteManagement#SSL,enable Secure Sockets>>. See the
 <<RemoteManagement#,TDS Remote Management>> guide.
 
-We also recommend that you link:TomcatSecurity.adoc#Digest[store Digest
-Passwords]. See the <<TomcatSecurity#,Tomcat Security>> guide.
+We also recommend that you <<TomcatSecurity#Digest,store Digest
+Passwords>>. See the <<TomcatSecurity#,Tomcat Security>> guide.
 
 === 2. Modify the TDS web.xml file
 
@@ -294,7 +294,7 @@ if it is not 8443. +
 ==== Troubleshooting:
 
 * Your browser may tell you that your server certificate has expired.
-<<RemoteManagement.adoc#SSL,Create a new one>>, and restart Tomcat.
+<<RemoteManagement#SSL,Create a new one>>, and restart Tomcat.
 * Your browser will cache credentials (passwords), which may interfere
 with your ability to test these features. Turn password saving off,
 delete saved passwords, and restart your browser if needed.

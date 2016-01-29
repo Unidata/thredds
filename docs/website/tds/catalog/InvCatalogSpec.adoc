@@ -522,8 +522,8 @@ dataset and any nested datasets.
 
 If your intention is to enable THREDDS to write entries into a Digital
 Library, you should to be aware of
-link:../reference/DigitalLibraries.adoc[how elements are mapped to
-Digital Libraries]. For example, you will probably want to add a
+<<../reference/DigitalLibraries,how elements are mapped to
+Digital Libraries>>. For example, you will probably want to add a
 _documentation_ element with type _summary_ as its content will be the
 description of the dataset in the DL entry. Another documentation
 element you may need has type _rights_ which specifies what restrictions
@@ -1328,8 +1328,8 @@ Examples:
 ----
 
 These are
-the link:../../netcdf-java/reference/FeatureDatasets/Overview.adoc[Feature
-Types] of the datasets, which are used by clients to know how to display
+the <<../../netcdf-java/reference/FeatureDatasets/Overview#,Feature
+Types>> of the datasets, which are used by clients to know how to display
 the data.
 
 [[dateEnumTypes]]

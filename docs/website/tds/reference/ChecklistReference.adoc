@@ -44,7 +44,7 @@ export CATALINA_OPTS
 
 Create the directory
 *$CONTENT_DIR/thredds/javaUtilPrefs/.systemPrefs* and make sure it is writeable by the user running Tomcat
-(<<../faq.adoc#javaUtilPrefs,details>>). +
+(<<../faq#javaUtilPrefs,details>>). +
 
 Purchase a real certificate from a http://en.wikipedia.org/wiki/Certificate_authority[certificate
 authority], so users are not confused and question the legitimacy of your web site.

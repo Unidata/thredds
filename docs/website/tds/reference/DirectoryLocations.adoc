@@ -67,7 +67,7 @@ configured with the `dir` child element of the various caching elements
 in the <<ThreddsConfigXMLFile#,`threddsConfig.xml`>> file.
 However, *we recommend* using a symbolic link to move `content/thredds`
 instead (more detail
-<<ThreddsConfigXMLFile.adoc#Cache_Locations,here>>).
+<<ThreddsConfigXMLFile#Cache_Locations,here>>).
 
 == TDS Configuration Directory
 
@@ -94,8 +94,8 @@ TDS configuration)
 ** `enhancedCatalog.xml` - an example catalog [Note: It is referenced
 from `catalog.xml`.]
 ** `threddsConfig.xml` - configuration file for allowing non-default
-services, configuring caching, etc (link:ThreddsConfigXMLFile.adoc[more
-detailed information]).
+services, configuring caching, etc (<<ThreddsConfigXMLFile#,more
+detailed information>>).
 ** `logs/`
 *** `catalogInit.log` - log file for messages generated while reading
 TDS configuration catalogs during TDS initialization and
