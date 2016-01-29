@@ -74,8 +74,8 @@ eg */opt/tds/content* not **/opt/tds/content/thredds**.
 * You must run the TDM as a user who has read and write permission into
 the data directories, so it can write the index files (OR)
 * If you are using
-link:../ThreddsConfigXMLFile.adoc#GribIndexWriting[GRIB index
-redirection], the TDM must have read access to the data directories, and
+<<../ThreddsConfigXMLFile#GribIndexWriting,GRIB index
+redirection>>, the TDM must have read access to the data directories, and
 write access to the index directories.
 
 == Running the TDM:

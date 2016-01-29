@@ -46,8 +46,8 @@ Service for environmental data] (aka Godiva2).
 8.  The integrated <<reference/ncISO#,ncISO server>> provides
 automated metadata analysis and ISO metadata generation.
 9.  The integrated
-link:reference/services/NetcdfSubsetServiceReference.adoc[NetCDF Subset
-Service] allows subsetting certain CDM datasets in coordinate space,
+<<reference/services/NetcdfSubsetServiceReference#,NetCDF Subset
+Service>> allows subsetting certain CDM datasets in coordinate space,
 using a REST API. Gridded data subsets can be returned in
 http://cfconventions.org/[CF-compliant] netCDF-3 or netCDF-4. Point data
 subsets can be returned in CSV, XML, or {cf}#discrete-sampling-geometries[CF-DSG] netCDF files.
@@ -112,20 +112,20 @@ The THREDDS Data Manager (TDM)
 <<reference/WMS#,Web Map Service>>
 * <<reference/WCS#,Web Coverage Service>>
 * http://www.ngdc.noaa.gov/eds/tds/[ncISO]
-* link:reference/services/NetcdfSubsetServiceReference.adoc[Netcdf
-Subset Services]
-* link:../netcdf-java/reference/stream/CdmRemote.adoc[CdmRemote web
-service]
+* <<reference/services/NetcdfSubsetServiceReference#,Netcdf
+Subset Services>>
+* <<../netcdf-java/reference/stream/CdmRemote#,CdmRemote web
+service>>
 
 === Experimental TDS Services
 
-* link:../netcdf-java/reference/stream/CdmrFeature.adoc[CdmrFeature web
-service]
+* <<../netcdf-java/reference/stream/CdmrFeature#,CdmrFeature web
+service>>
 * Radar Subset Service
-** link:reference/radarServer/RadarLevel2SubsetService.adoc[NEXRAD Level
-2]
-** link:reference/radarServer/RadarLevel3SubsetService.adoc[NEXRAD Level
-3]
+** <<reference/radarServer/RadarLevel2SubsetService#,NEXRAD Level
+2>>
+** <<reference/radarServer/RadarLevel3SubsetService#,NEXRAD Level 3
+>>
 
 == Other ways to use TDS
 

@@ -121,13 +121,13 @@ where
 [[CFPointWriter]]
 == CFPointWriter
 
-Copies a CDM link:FeatureDatasets/PointFeatures.adoc[point feature
-dataset] to {cf}#discrete-sampling-geometries[CF/NetCDF
+Copies a CDM <<FeatureDatasets/PointFeatures#,point feature
+dataset>> to {cf}#discrete-sampling-geometries[CF/NetCDF
 format]. The CF conventions target NetCDF-3, but you can also write
 NetCDF-4 files in
 https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Classic-Model-Format.html[classic
-mode]. For that, you must first install the link:netcdf4Clibrary.adoc[C
-library].
+mode]. For that, you must first install the <<netcdf4Clibrary#,C
+library>>.
 
 ----
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.point.writer.CFPointWriter [options]
@@ -161,8 +161,8 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.point.writer.CFPointW
 == GribCdmIndex
 
 Write GRIB Collection Indexes from an XML file containing a
-link:../../tds/reference/collections/GribCollections.adoc[GRIB
-<featureCollection> XML element].
+<<../../tds/reference/collections/GribCollections#,GRIB
+<featureCollection> XML element>>.
 
 ----
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmIndex [options]
@@ -185,8 +185,8 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmI
 
 Note that the output file is placed in the root directory of the
 collection, as specified by the
-link:../../tds/reference/collections/CollectionSpecification.adoc[Collection
-Specification] of the GRIB
+<<../../tds/reference/collections/CollectionSpecification#,Collection
+Specification>> of the GRIB
 <<../../tds/reference/collections/FeatureCollections#,<featureCollection>>>.
 
 [[FeatureScan]]

@@ -55,8 +55,8 @@ debug);* +
 
 The collection may be one of:
 
-1.  link:../../../tds/reference/collections/CollectionSpecification.adoc[collection
-specification] string
+1.  <<../../../tds/reference/collections/CollectionSpecification#,collection
+specification>> string
 2.  __catalog__:catalogURL
 3.  filename.ncml
 

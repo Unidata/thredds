@@ -23,8 +23,8 @@ http://www.fgdc.gov/[FGDC], http://www.isotc211.org/scope.htm#19115[ISO
 19115] etc. metadata formats.
 
 These attributes parallel THREDDS catalog specification’s
-link:../../tds/catalog/InvCatalogServerSpec.adoc[digital library
-metadata]. Attributes are used to add information inside the NetCDF
+<<../../tds/catalog/InvCatalogServerSpec#,digital library
+metadata>>. Attributes are used to add information inside the NetCDF
 file, while THREDDS catalog metadata adds information external to the
 NetCDF file.
 
@@ -40,8 +40,8 @@ vs "creator_*"). +
 * Example netCDF file
 [link:../reference/formats/examples/2005092200_sst_21-24.en.nc[netCDF]][link:../reference/formats/examples/2005092200_sst_21-24.en.ncml[ncML]] +
 * <<DataDiscoveryAttConvention-Issues-ToDo#,Issues and ToDo List>>
-* link:ncACDD-metadataMappings.adoc[Map attributes into various
-standards]
+* <<ncACDD-metadataMappings#,Map attributes into various
+standards>>
 * https://geo-ide.noaa.gov/wiki/index.php?title=NetCDF_Attribute_Convention_for_Dataset_Discovery[NOAA
 GEO-IDE page on NetCDF ACDD] [Added 5 Oct 2011]
 
@@ -131,7 +131,7 @@ link:#suggested_geospatial[suggested geospatial attributes] |metadata/geospatial
 
 |link:#standard_name_vocabulary_Attribute[standard_name_vocabulary] |The name of the controlled vocabulary from which variable standard names are taken. |metadata/variables@vocabulary
 
-|<<DataDiscoveryAttConvention.adoc#license_Attribute[license] |Describe the restrictions to data access and distribution. |metadata/documentation,@type="rights">>
+|<<DataDiscoveryAttConvention#license_Attribute,license>> |Describe the restrictions to data access and distribution. |metadata/documentation,@type="rights"
 |===
 
 === Suggested

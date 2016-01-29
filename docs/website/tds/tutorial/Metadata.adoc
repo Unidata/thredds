@@ -188,7 +188,7 @@ bounding box for the dataset.
 10. The *variables* element list the data variables available in the
 dataset.
 11. There are a number of special instructions for datasetScan (see
-<<../reference/DatasetScan.adoc#addTimeCoverage,here>> for the gory
+<<../reference/DatasetScan#addTimeCoverage,here>> for the gory
 details). The *filter* element specifies which files and directories to
 include or exclude from the catalog. The *addDatasetSize* element
 indicates that a *dataSize* element should be added to each atomic
@@ -208,8 +208,8 @@ Catalog 1.0 Specification]
 * http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html[NetCDF
 Attribute Convention for Dataset Discovery]
 * <<../catalog/InvCatalogSpec#,THREDDS Catalog specification>> -
-link:../catalog/InvCatalogSpec.adoc#threddsMetadataGroup[Metadata
-Section]
+<<../catalog/InvCatalogSpec#threddsMetadataGroup<<Metadata
+Section>>
 
 '''''
 

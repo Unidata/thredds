@@ -417,8 +417,8 @@ file, CoordinateSystem information is encoded using a
 _http://www.unidata.ucar.edu/software/netcdf/conventions.html[Convention]_
 for adding Attributes, naming Variables and Dimensions, etc. in a
 standard way. The simplest and most direct way to add Coordinate Systems
-is to use the CDM link:CoordinateAttributes.adoc[_Coordinate Attribute
-Conventions]. Another approach is to follow an existing Convention, in
+is to use the CDM <<CoordinateAttributes#,_Coordinate Attribute
+Conventions>>. Another approach is to follow an existing Convention, in
 particular the http://www.cfconventions.org/[CF Convention] is an
 increasingly important one for gridded model data, and work is being
 done to make it applicable to other kinds of data.

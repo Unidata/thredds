@@ -177,11 +177,11 @@ best. You might find the code at *ucar.nc2.FileWriter2* useful to examine.
 
 The netCDF-Java library currently uses http://www.slf4j.org[SLF4J
 logging]. This allows you to switch what logging implementation is used.
-Read more <<BuildDependencies.adoc#_logging,here>>.
+Read more <<BuildDependencies#_logging,here>>.
 
 *Q: Im using the default logger in the JDK. How do I control it?*
 
-See <<BuildDependencies.adoc#_logging,here>>.
+See <<BuildDependencies#_logging,here>>.
 
 
 *Q: Im using the http://logging.apache.org/log4j/2.x/[log4j] logging package. How do I get rid of the message
@@ -259,8 +259,8 @@ Feel free to use another XML editor.
 .  If its a grid dataset, open it in the FeatureTypes/Grid tab to make
 sure you see grids, to check for complete coordinate system. If you
 don’t see the grids you expect, the CoordSys tab might be helpful. It
-takes some expertise to understand link:../CDM/index.adoc[how Coordinate
-systems work]. When all else fails, follow the {cf}[CF specification].
+takes some expertise to understand <<../CDM/index#,how Coordinate
+systems work>>. When all else fails, follow the {cf}[CF specification].
 .  If its an aggregation, the NcML/Aggregation tab will show you the
 individual file in the aggregation.
 .  If its an FMRC aggregation, the Fmrc/Fmrc tab will show you the
@@ -281,7 +281,7 @@ See <<formats/FileTypes#,File Types>>.
 *Q: How do I read a file of type X?*
 
 In general, you <<../tutorial/index#,open any CDM file>> in the same way, and access it through the
-<<../CDM/index.adoc#dataAccess,CDM data model>>. The whole point of the CDM is to hide the details of the file format.
+<<../CDM/index#dataAccess,CDM data model>>. The whole point of the CDM is to hide the details of the file format.
 However, some file type may require special handling:
 
 * GRIB and BUFR files may require special tables that the CDM doesn’t
@@ -326,7 +326,7 @@ the <<netcdf4Clibrary#,netCDF C library.>> See:
 
 * Program with complete control: *ucar.nc2.NetcdfFileWriter* javadoc and <<../tutorial/NetcdfWriting#,NetCDF File Writing tutorial>>.
 * Copy complete files from a program: *ucar.nc2.FileWriter2* writes CDM files to netCDF-3 or netCDF-4 format.
-* Command line file copying: See <<manPages.adoc#nccopy,here>> for details.
+* Command line file copying: See <<manPages#nccopy,here>> for details.
 
 *Q: What is the relationship of NetCDF with HDF5?*
 
@@ -434,7 +434,7 @@ probably more like what you want.
 
 *Q: I want to convert a GRIB file to netCDF. How do I do that?*
 
-If you are converting the entire file, you can do it on the <<manPages.adoc#nccopy,command line>>.
+If you are converting the entire file, you can do it on the <<manPages#nccopy,command line>>.
 
 You can do it from a Java program like this:
 

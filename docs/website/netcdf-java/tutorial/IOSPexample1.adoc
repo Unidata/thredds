@@ -386,8 +386,8 @@ We now have not only a working IOSP, but a PointObsDataset that can be
 displayed and georeferenced! Working source code for this example is
 link:files/UspLightning1.java[here]. Modify the main program to point to
 the link:files/lightningData.txt[data file], and try running it. Note
-that you need to link:../reference/RuntimeLoading.adoc[load your class
-at runtime], for example by calling:
+that you need to <<../reference/RuntimeLoading#,load your class
+at runtime>>, for example by calling:
 
 ----------------------------------------------------------
    NetcdfFile.registerIOProvider(UspLightning.class);

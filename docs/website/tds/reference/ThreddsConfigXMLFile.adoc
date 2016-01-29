@@ -200,8 +200,8 @@ the config file only if you are writing your own Java class.
 -----------------------------------------------------------
 
 You can add a _*DataSource*_ - essentially an IOSP with access to
-Servlet request parameters, by loading a link:DatasetSource.adoc[dataset
-source] at runtime.
+Servlet request parameters, by loading a <<DatasetSource#,dataset
+source>> at runtime.
 
 === Checking for Updates
 

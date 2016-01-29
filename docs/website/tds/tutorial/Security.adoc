@@ -25,9 +25,9 @@ Host]
 
 You should know how to do a <<GettingStarted#,basic installation>>
 of Tomcat, Java, and the TDS; and be familiar with the
-<<GettingStarted.adoc#tour,Tomcat directory structure>>;
-<<GettingStarted.adoc#files,Tomcat server configuration>>; and the
-<<GettingStarted.adoc#manager,Tomcat manager application>>.
+<<GettingStarted#tour,Tomcat directory structure>>;
+<<GettingStarted#files,Tomcat server configuration>>; and the
+<<GettingStarted#manager,Tomcat manager application>>.
 
 == Why Is Security Important?
 
@@ -679,8 +679,8 @@ proxy server.
 
 === Resources
 
-* link:../reference/TomcatBehindProxyServer.adoc[Running The TDS Behind
-a Proxy Server] +
+* <<:../reference/TomcatBehindProxyServer[Running The TDS Behind
+a Proxy Server>> +
  How to set up a reverse proxy for the TDS using Tomcat and the Apache
 HTTP server.
 

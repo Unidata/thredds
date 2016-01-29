@@ -26,8 +26,8 @@ methods which cannot be done efficiently or at all in the general case
 of NetcdfDataset objects.
 
 Also see overview of
-link:../reference/FeatureDatasets/Overview.adoc[Scientific Feature
-Types].
+<<../reference/FeatureDatasets/Overview#,Scientific Feature
+Types>>.
 
 === The Grid Feature Type
 

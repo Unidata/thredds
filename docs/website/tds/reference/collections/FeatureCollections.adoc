@@ -9,8 +9,8 @@
 
 == Overview
 
-The *featureCollection* element is a way to tell the TDS to serve collections of link:../../../netcdf-java/reference/FeatureDatasets/Overview.adoc[CDM
-Feature Datasets]. Currently this is used for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack.
+The *featureCollection* element is a way to tell the TDS to serve collections of <<../../../netcdf-java/reference/FeatureDatasets/Overview#,CDM
+Feature Dataset>>. Currently this is used for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack.
 This allows the TDS to automatically create logical datasets composed of collections of files, and to allow subsetting in coordinate space on them,
 through the WMS, WCS, Netcdf Subsetting and CDM Remote Feature services.
 
@@ -28,7 +28,7 @@ Data Manager (<<TDM#,TDM>>) is now available for that purpose.
 
 This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements, using the current server catalog XML Schema 1.2. For Feature Type specific information, see:
 
-* <<FmrcCollection.adoc[FMRC Collections] http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf,poster>>
+* <<FmrcCollection,FMRC Collections>> http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf,poster>>
 * <<PointFeatures#,Point Collections>>
 * <<GribCollections#,GRIB Collections>>
 * <<GribConfig#,GRIB specific configuration>>

@@ -64,7 +64,7 @@ following:
 Use the *link:/mailing_lists/archives/thredds/[TDS Mailing List]* to
 query experts in the Unidata community
 
-View *link:/support/help/MailArchives/thredds/maillist.adoc[Current
+View *link:/support/help/MailArchives/thredds/maillist.html[Current
 Support Questions]* being asked of TDS developers
 
 *link:/support/requestSupport.jsp[Request Support]* from TDS developers,
@@ -72,14 +72,14 @@ or email: support-thredds@unidata.ucar.edu
 
 ===== Training and Tutorials
 
-* link:/events/index.adoc#training[image:/community/img/awards2003-32x32.png[Training
+* link:/events/index.html#training[image:/community/img/awards2003-32x32.png[Training
 Workshop]] Attend the annual TDS
-link:/events/index.adoc#training[training +
- workshop] at the <</about/index.adoc#visit,UPC>> in Boulder
+link:/events/index.html#training[training +
+ workshop] at the link:/about/index.html#visit[UPC] in Boulder
 * link:tutorial/[image:/support/img/documentation-32x32.png[Tutorial]]
 Learn about TDS administration +
  from an online and link:tutorial/[in-depth tutorial]
-* link:tutorial/workshop2013.adoc[image:/community/img/monitors-32x32.png[Training
+* link:tutorial/workshop2013.html[image:/community/img/monitors-32x32.png[Training
 Workshop]] View the <<tutorial/workshop2013#,workshop tutorial>>
 from +
  the latest TDS training session
@@ -112,7 +112,7 @@ and tools available to a broader, more diverse audience. The following
 are a list of THREDDS Data Server-related projects between the Unidata
 Program Center and external collaborators.
 
-===== <</projects/index.adoc#cdm,Common Data Model>>
+===== <</projects/index#cdm,Common Data Model>>
 
 image:/images/logos/cdm_only-75x75.png[Common Data Model] Unidata’s
 link:/software/netcdf-java/CDM/[Common Data Model]
@@ -122,7 +122,7 @@ http://www.opendap.org/[OPeNDAP], and
 http://www.hdfgroup.org/products/hdf5/[HDF5] data models to create a
 common API for many types of scientific data. The NetCDF Java library is
 an implementation of the CDM which can read many
-<</software/netcdf-java/index.adoc#formats,file formats>> besides
+<</software/netcdf-java/index#formats,file formats>> besides
 netCDF.
 
-<</projects/index.adoc#cdm,More about the CDM>>
+<</projects/index#cdm,More about the CDM>>

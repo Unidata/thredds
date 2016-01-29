@@ -12,8 +12,8 @@ Netcdf File Writing
 CDM version 4.3 and above allows you to programatically create, edit,
 and add data to netCDF-3 and netCDF-4 files, using _NetcdfFileWriter_ or
 the _FileWriter2_ class. If you just want to copy an existing CDM
-dataset, you can use the link:../reference/manPages.adoc#nccopy[CDM
-nccopy application]. By combining nccopy and NcML, you can copy just
+dataset, you can use the <<../reference/manPages#nccopy,CDM
+nccopy application>>. By combining nccopy and NcML, you can copy just
 parts of an existing dataset, as well as
 link:../ncml/index.htm#modify[make modifications to it with NcML].
 
@@ -366,7 +366,7 @@ ncfileOut.close();
 
 --------------------------------------------------------------------------------------------
 
-See <<../reference/netcdf4Clibrary.adoc#writing,here>> for more
+See <<../reference/netcdf4Clibrary#writing,here>> for more
 details on Nc4Chunking.
 ____________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________________
 
