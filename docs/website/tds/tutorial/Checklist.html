@@ -25,15 +25,26 @@
     <li><a href="images/fileIcon.jpg">Download and install</a> the latest version of Tomcat 7.</li>
     <li>In <strong>${tomcat_home}/bin</strong> <a href="GettingStarted.html#makeSetenv">create a setenv.sh</a> shell script, and set the values of <strong>$JAVA_HOME, $JAVA_OPTS </strong>and<strong> $CATALINA_BASE</strong>:
       <pre>
-      #!/bin/sh
-      JAVA_HOME="/usr/local/tds/jdk1.7.0_60"  
-      export JAVA_HOME
-          
-      JAVA_OPTS="-Xmx4096m -Xms512m -server -Djava.awt.headless=true -Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"  
-      export JAVA_OPTS
-          
-      CATALINA_BASE="/usr/local/tds/apache-tomcat-7.0.42"  
-      export CATALINA_BASE</pre>
+    #!/bin/sh
+    #
+    ulimit -n 2048
+    #
+    CATALINA_HOME="/opt/tomcat-home"
+    export CATALINA_HOME
+    CATALINA_BASE="/opt/tomcat-home"
+    export CATALINA_BASE
+    JAVA_HOME="/opt/jdk"
+    export JAVA_HOME
+    #
+    CONTENT_ROOT="-Dtds.content.root.path=/data/thredds/tds/content"
+    NORMAL="-d64 -Xmx4090m -Xms512m -server"
+    MAX_PERM_GEN="-XX:MaxPermSize=256m"
+    HEADLESS="-Djava.awt.headless=true"
+    JAVA_PREFS_SYSTEM_ROOT="-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
+    #             
+    JAVA_OPTS="$CONTENT_ROOT $NORMAL $MAX_PERM_GEN $HEADLESS $JAVA_PREFS_SYSTEM_ROOT"
+    export JAVA_OPTS
+      </pre>
     </li>
     <li>Purchase a real certificate from a <a href="http://en.wikipedia.org/wiki/Certificate_authority">certificate authority</a>, so users are not confused and
       question the legitimacy of your web site.  <!-- (Otherwise, <a href="BasicTomcatAndTDSSecurity.html#createCert">create a self-signed certificate</a>).-->
