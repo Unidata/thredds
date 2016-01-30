@@ -27,3 +27,19 @@ body#threddsDocs div#content  pre.CodeRay .comment {
 body#threddsDocs div#content pre.CodeRay {
     background-color: #E3E4E6;
 }
+
+/* table formatting */
+
+body#threddsDocs table.tableblock {
+	border-collapse: collapse;
+	border: 1px black solid;
+}
+
+body#threddsDocs th,td {
+	border-collapse: collapse;
+	border: 1px black solid;
+}
+
+body#threddsDocs tr:hover {
+	background-color: #d8d8d8
+}
