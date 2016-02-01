@@ -1,6 +1,8 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+// Enables non-selectable callout icons drawn using CSS.
+:icons: font
 
 = THREDDS Client Catalog Primer
 
@@ -11,7 +13,7 @@
 The <<../catalog/InvCatalogSpec#,catalog specification>> is the
 best complete description of THREDDS catalogs.
 
-A _*THREDDS Catalog*_ describes what datasets a server has, and how they
+A _THREDDS Catalog_ describes what datasets a server has, and how they
 can be accessed. A catalog is an http://www.w3.org/TR/REC-xml/[XML]
 document that follows the THREDDS Catalog schema.
 
@@ -40,27 +42,28 @@ added.
 
 Here’s an example of a very simple catalog:
 
+[source,xml]
 --------------------------------------------------------------------------------------------------------------
-1 <?xml version="1.0" ?>
-2 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
-3   <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
-4   <dataset name="SAGE III Ozone 2006-10-31" serviceName="odap" urlPath="sage/20061031.nc" ID="20061031.nc"/>
-5 </catalog>
+<?xml version="1.0" ?>  <!--1-->
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >  <!--2-->
+  <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />  <!--3-->
+  <dataset name="SAGE III Ozone 2006-10-31" serviceName="odap" urlPath="sage/20061031.nc" ID="20061031.nc"/>  <!--4-->
+</catalog>  <!--5-->
 --------------------------------------------------------------------------------------------------------------
 
 with this line-by-line explanation:
 
-1.  The first line indicates that this is an XML document.
-2.  This is the root element of the XML, the `catalog` element. It must
+<1> The first line indicates that this is an XML document.
+<2> This is the root element of the XML, the `catalog` element. It must
 declare the _thredds catalog namespace_ with the `xmlns` attribute
 exactly as shown.
-3.  This declares a _service_ named `odap` that will serve data via the
+<3> This declares a _service_ named `odap` that will serve data via the
 OpenDAP protocol. Many other data access services come bundled with
 THREDDS.
-4.  This declares a _dataset_ named `SAGE III Ozone 2006-10-31`. It
+<4> This declares a _dataset_ named `SAGE III Ozone 2006-10-31`. It
 references the `odap` service, meaning that it will be served via
 OpenDAP. The URL to access the dataset is discussed next.
-5.  This closes the `catalog` element.
+<5> This closes the `catalog` element.
 
 == Constructing an access URL
 
@@ -69,6 +72,7 @@ to construct a __dataset access URL__:
 
 1.  Find the service referenced by the dataset:
 +
+[source,xml]
 ----------------------------------------------------------------------------------------------------------
 <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
 <dataset name="SAGE III Ozone 2006-10-31" serviceName="odap" urlPath="sage/20061031.nc" ID="20061031.nc"/>
@@ -83,6 +87,7 @@ serviceBaseUrl = serverRoot + serviceBasePath = http://hostname:port/thredds/dod
 -----------------------------------------------------------------------------------
 3.  Find the _URL path_ referenced by the dataset:
 +
+[source,xml]
 ----------------------------------------------------------------------------------------------------------
 <dataset name="SAGE III Ozone 2006-10-31" serviceName="odap" urlPath="sage/20061031.nc" ID="20061031.nc"/>
 ----------------------------------------------------------------------------------------------------------
@@ -108,28 +113,30 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 When you have many datasets to declare in each catalog, you can use
 nested datasets:
 
+[source,xml]
 -----------------------------------------------------------------------------------------------------
 <?xml version="1.0" ?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
   <service name="odap" serviceType="OpenDAP"  base="/thredds/dodsC/" />
 
-1  <dataset name="SAGE III Ozone Loss Experiment" ID="Sage III">
-2    <dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc" ID="jan.nc"/>
-2    <dataset name="February Averages" serviceName="odap" urlPath="sage/avg/feb.nc" ID="feb.nc"/>
-2    <dataset name="March Averages" serviceName="odap" urlPath="sage/avg/mar.nc" ID="mar.nc"/>
-3  </dataset>
+  <dataset name="SAGE III Ozone Loss Experiment" ID="Sage III">  <!--1-->
+    <dataset name="January Averages" serviceName="odap" urlPath="sage/avg/jan.nc" ID="jan.nc"/>  <!--2-->
+    <dataset name="February Averages" serviceName="odap" urlPath="sage/avg/feb.nc" ID="feb.nc"/>  <!--2-->
+    <dataset name="March Averages" serviceName="odap" urlPath="sage/avg/mar.nc" ID="mar.nc"/>  <!--2-->
+  </dataset>  <!--3-->
 </catalog>
 -----------------------------------------------------------------------------------------------------
 
-1.  This declares a _*collection dataset*_ which acts as a container for
+<1> This declares a _*collection dataset*_ which acts as a container for
 the other datasets. Note that it ends in a `>` instead of `/>`, and does
 not have a `urlPath` attribute.
-2.  These are the datasets that directly point to data, called **_direct
+<2> These are the datasets that directly point to data, called **_direct
 datasets_**.
-3.  This closes the collection dataset element on line 1.
+<3> This closes the collection dataset element on line 1.
 
 You can add any level of nesting you want, e.g.:
 
+[source,xml]
 ----------------------------------------------------------------------------------------------------------
 <?xml version="1.0" ?>
 <catalog name="Example" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" >
@@ -157,7 +164,7 @@ You can add any level of nesting you want, e.g.:
 === Reference documentation
 
 A complete listing of available properties can be found in the
-<<../catalog/InvCatalogSpec.adoc#dataset,catalog specification>>.
+<<../catalog/InvCatalogSpec#dataset,catalog specification>>.
 
 So far, we’ve used the `name`, `serviceName`, and `urlPath` attributes
 to tell THREDDS how to treat our datasets. However, there are a lot of
@@ -176,6 +183,7 @@ access protocols like OpenDAP and HTTP.
 should form a globally-unique identifier for a dataset. In the TDS, it
 is especially important to add the `ID` attribute to your datasets.
 
+[source,xml]
 -----------------------------------------------------------------------------------------
 <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
 
@@ -200,6 +208,7 @@ of granularity to be exported to digital libraries or other discovery
 services. Elements such as `summary`, `rights`, and `publisher` are
 needed in order to create valid entries for these services.
 
+[source,xml]
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 <dataset name="SAGE III Ozone Loss Experiment" ID="Sage III" harvest="true">
   <contributor role="data manager">John Smith</contributor>
@@ -216,6 +225,7 @@ needed in order to create valid entries for these services.
 When a catalog includes multiple datasets, it can often be the case that
 they have share properties. For example:
 
+[source,xml]
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
 
@@ -229,30 +239,31 @@ they have share properties. For example:
 Rather than declare the same information on each dataset, you can use
 the _metadata_ element to factor out common information:
 
+[source,xml]
 -----------------------------------------------------------------------------------------------------------
 <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
 
 <dataset name="SAGE III Ozone Loss Experiment" ID="Sage III">
-1  <metadata inherited="true">
-2    <serviceName>odap</serviceName>
-2    <authority>unidata.ucar.edu</authority>
-2    <dataFormatType>NetCDF</dataFormatType>
+  <metadata inherited="true">  <!--1-->
+    <serviceName>odap</serviceName>  <!--2-->
+    <authority>unidata.ucar.edu</authority>  <!--2-->
+    <dataFormatType>NetCDF</dataFormatType>  <!--2-->
   </metadata>
 
-3  <dataset name="January Averages" urlPath="sage/avg/jan.nc" ID="jan.nc"/>
-3  <dataset name="February Averages" urlPath="sage/avg/feb.nc" ID="feb.nc"/>
-4  <dataset name="Global Averages" urlPath="sage/global.nc" ID="global.nc" authority="fluffycats.com"/>
+  <dataset name="January Averages" urlPath="sage/avg/jan.nc" ID="jan.nc"/>  <!--3-->
+  <dataset name="February Averages" urlPath="sage/avg/feb.nc" ID="feb.nc"/>  <!--3-->
+  <dataset name="Global Averages" urlPath="sage/global.nc" ID="global.nc" authority="fluffycats.com"/>  <!--4-->
 </dataset>
 -----------------------------------------------------------------------------------------------------------
 
-1.  The `metadata` element with `inherited="true"` implies that all the
+<1> The `metadata` element with `inherited="true"` implies that all the
 information inside the metadata element applies to the current dataset
 and all nested datasets.
-2.  The `serviceName`, `authority`, and `dataFormatType` are declared as
+<2> The `serviceName`, `authority`, and `dataFormatType` are declared as
 elements.
-3.  These datasets use all the metadata values declared in the parent
+<3> These datasets use all the metadata values declared in the parent
 dataset.
-4.  This dataset overrides `authority`, but uses the other 2 metadata
+<4> This dataset overrides `authority`, but uses the other 2 metadata
 values
 
 *When should I use a metadata element?*
@@ -270,41 +281,40 @@ maintain each piece. One way to do this is to build each piece as a
 separate and logically-complete catalog, then create a master catalog
 using __catalog references__:
 
+[source,xml]
 ---------------------------------------------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="Top Catalog"
-1    xmlns:xlink="http://www.w3.org/1999/xlink">
-2  <dataset name="Realtime data from IDD" ID="IDD">
-3    <catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" />
-3    <catalogRef xlink:href="idd/radars.xml" xlink:title="NEXRAD Radar" name="" />
-3    <catalogRef xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" />
-3    <catalogRef xlink:href="idd/satellite.xml" xlink:title="Satellite Data" name="" />
-   </dataset>
+    xmlns:xlink="http://www.w3.org/1999/xlink">  <!--1-->
+  <dataset name="Realtime data from IDD" ID="IDD">  <!--2-->
+    <catalogRef xlink:href="idd/models.xml" xlink:title="NCEP Model Data" name="" />  <!--3-->
+    <catalogRef xlink:href="idd/radars.xml" xlink:title="NEXRAD Radar" name="" />  <!--3-->
+    <catalogRef xlink:href="idd/obsData.xml" xlink:title="Station Data" name="" />  <!--3-->
+    <catalogRef xlink:href="idd/satellite.xml" xlink:title="Satellite Data" name="" />  <!--3-->
+  </dataset>
 
-4  <catalogRef xlink:title="Far Away University catalog" xlink:href="http://www.farAway.edu/thredds/catalog.xml" />    <!-- 4 -->
+  <catalogRef xlink:title="Far Away University catalog" xlink:href="http://www.farAway.edu/thredds/catalog.xml" />  <!--4-->
 </catalog>
 ---------------------------------------------------------------------------------------------------------------------------------
 
-1.  We declare the *xlink namespace* in the catalog element.
-2.  The _collection_ (or __container__) dataset logically contains the
+<1> We declare the *xlink namespace* in the catalog element.
+<2> The _collection_ (or __container__) dataset logically contains the
 `catalogRef`s, which are thought of as nested datasets whose contents
 are the contents of the external catalog.
-3.  Here are several `catalogRef` elements, each with a link to an
+<3> Here are several `catalogRef` elements, each with a link to an
 external catalog, using the `xlink:href` attribute. The `xlink:title` is
 used as the name of the dataset. We need a `name` attribute (in order to
 validate, for obscure reasons), but it is ignored. The `xlink:href`
 attributes are
 http://www.webreference.com/html/tutorial2/3.html[relative URLS] and are
 resolved against the catalog URL. For example, if the catalog URL is:
-+
-__________________________________________________
-*http://thredds.ucar.edu/thredds/data/catalog.xml*
-__________________________________________________
-+
+`http://thredds.ucar.edu/thredds/data/catalog.xml`
 then the resolved URL of the first `catalogRef` will be:
-4.  `catalogRefs ` needn’t point to local catalogs only; this one points
+`http://thredds.ucar.edu/thredds/data/idd/models.xml`.
+<4> `catalogRef`s needn’t point to local catalogs only; this one points
 to a remote one at Far Away University.
-5.  *The metadata elements with inherited=``true''* are NOT not copied
+
+The metadata elements with `inherited='true'` are NOT copied
 across catalogRefs. The *catalog* that a *catalogRef* refers to is
 stand-alone in that sense.
 
@@ -319,6 +329,7 @@ Datasets can be made available through more than one access method by
 defining and then referencing a *compound* `service` element. The
 following:
 
+[source,xml]
 ----------------------------------------------------------------------
 <service name="all" serviceType="Compound" base="" >
   <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
@@ -330,6 +341,7 @@ defines a compound service named `all` which contains two nested
 services. Any dataset that reference the compound service will have two
 access methods. For instance:
 
+[source,xml]
 --------------------------------------------------------------------------------------
 <dataset name="SAGE III Ozone 2006-10-31" urlPath="sage/20061031.nc" ID="20061031.nc">
   <serviceName>all</serviceName>
@@ -348,6 +360,7 @@ for WCS access:
 Note: the contained services can still be referenced independently. For
 instance:
 
+[source,xml]
 ------------------------------------------------------------------------
 <dataset name="Global Averages" urlPath="sage/global.nc" ID="global.nc">
   <serviceName>odap</serviceName>
@@ -374,6 +387,7 @@ http://www.xmlvalidation.com/[this one]. If you also want to check
 _validity_ in those tools, you will need to declare the catalog schema
 location like so:
 
+[source,xml]
 -------------------------------------------------------------------------------------------------
 <catalog name="Validation" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
