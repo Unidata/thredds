@@ -1,15 +1,11 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-NcML FAQ
-========
-
 = NcML FAQ
 
 '''''
 
-=== Aggregation
+== Aggregation
 
 *Q: My NcML aggregation sometimes gives me one result, and sometimes
 another. I run the same test twice in a row and get different results.*

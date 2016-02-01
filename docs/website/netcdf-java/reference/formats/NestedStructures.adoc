@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Structures in NetCDF-3
-======================
-
 = Using Structures in NetCDF-3 files
 
 _John Caron_
@@ -66,16 +62,16 @@ station data, using nested Structures:
 
 ----------------------------------------------------
 netcdf C:/data/station.nc {
- 
+
  dimensions:
    nstations = 137;
-   
 
- variables: 
+
+ variables:
 
    Structure {
     char id(8);
-    char description(40); 
+    char description(40);
     float latitude;
         :units = "degrees_north";
     float longitude;
@@ -85,20 +81,20 @@ netcdf C:/data/station.nc {
       :long_name = "meters above msl";
       :positive = "up";
     int numReports;
-    
+
     Structure {
       int time_observation;
-        :units = "seconds since 1970-01-01 00 UTC"; 
+        :units = "seconds since 1970-01-01 00 UTC";
       float obs_data1 ;
       float obs_data2(11);
       int obs_data3;
       int obs_data4(4);
       String obs_data5;
       ...
-    } stationObs(*); 
-    
+    } stationObs(*);
+
   } station( nstations);
-} 
+}
 ----------------------------------------------------
 
 This describes an array of *station* Structures, each of which has an
@@ -119,7 +115,7 @@ The actual netCDF-3 CDL would look like:
 
 --------------------------------------------------
 netcdf C:/data/station.nc {
- 
+
  dimensions:
  station = 137;
    record = UNLIMITED;
@@ -127,19 +123,19 @@ netcdf C:/data/station.nc {
    location_len = 40;
    od2_len = 11;
    od4_len = 4;
-   
- variables: 
+
+ variables:
 
     char id(station, id_len);
-    char location(station, location_len); 
+    char location(station, location_len);
     float latitude(station);
     float longitude(station);
     int elevation(station);
     int firstStationObs(station);
     int numReports(station);
-    
+
     int time_observation(record);
-      :units = "seconds since 1970-01-01 00 UTC"; 
+      :units = "seconds since 1970-01-01 00 UTC";
     int nextStationObs(record);
     float obs_data1(record) ;
     float obs_data2(record, od2_len);
@@ -147,7 +143,7 @@ netcdf C:/data/station.nc {
     int obs_data4(record, od4_len);
     String obs_data5(record);
     ...
-} 
+}
 --------------------------------------------------
 
 Notice that the station data all uses the dimension **_station_**, and
@@ -178,41 +174,41 @@ sounding. In CDM:
 
 ------------------------------------------------------
 netcdf C:/data/station.nc {
- 
+
  dimensions:
    nstations = 137;
-   
 
- variables: 
+
+ variables:
 
    Structure {
     char id(8);
-    char location(40); 
+    char location(40);
     float latitude;
     float longitude;
     int elevation;
     int numReports;
-    
+
     Structure {
       int time_observation;
-          :units = "seconds since 1970-01-01 00 UTC"; 
+          :units = "seconds since 1970-01-01 00 UTC";
       float obs_data1 ;
       float obs_data2(11);
       ...
-      
+
       Structure {
         int depth;
-            :units = "m"; 
+            :units = "m";
         int obs_data3;
         int obs_data4(4);
         String obs_data5;
           ...
       } sounding(*)
 
-    } stationObs(*);   
-    
+    } stationObs(*);
+
   } station( nstations);
-} 
+}
 ------------------------------------------------------
 
 === NetCDF-3 Station/Sounding Data
@@ -224,7 +220,7 @@ the soundings with the stationObs.
 
 -------------------------------------------------
 netcdf C:/data/station.nc {
- 
+
  dimensions:
  station = 137;
   stationObs = 4700;
@@ -233,18 +229,18 @@ netcdf C:/data/station.nc {
    location_len = 40;
    od2_len = 11;
    od4_len = 4;
-      
- variables: 
+
+ variables:
    char id(station, id_len);
-   char location(station, location_len); 
+   char location(station, location_len);
    float latitude(station);
    float longitude(station);
    int elevation(station);
    int firstStationObs(station);
    int numReports(station);
-    
+
    int time_observation(stationObs);
-     :units = "seconds since 1970-01-01 00 UTC"; 
+     :units = "seconds since 1970-01-01 00 UTC";
    int nextStationObs(stationObs);
    float obs_data1(stationObs) ;
    float obs_data2(stationObs, od2_len);
@@ -257,7 +253,7 @@ netcdf C:/data/station.nc {
    int obs_data3(record);
    int obs_data4(record, od4_len);
    ...
-} 
+}
 -------------------------------------------------
 
 Since we only have one unlimited dimension, we use it for the sounding
@@ -292,18 +288,18 @@ location.
 
 -------------------------------------------------
 netcdf C:/data/trajectory.nc {
- 
+
  dimensions:
  trajectory = 11;
- record = UNLIMITED; 
-      
- variables: 
+ record = UNLIMITED;
+
+ variables:
    int firstObs(trajectory);
    int numObs(trajectory); // not strictly needed
-    
+
    int nextObs(record);
    int time_observation(record);
-     :units = "seconds since 1970-01-01 00 UTC"; 
+     :units = "seconds since 1970-01-01 00 UTC";
    float latitude(record);
    float longitude(record);
    int depth(record);
@@ -312,7 +308,7 @@ netcdf C:/data/trajectory.nc {
    int obs_data2(record);
    int obs_data3(record);
    ...
-} 
+}
 -------------------------------------------------
 
 The likely read access pattern is to access all the data for each

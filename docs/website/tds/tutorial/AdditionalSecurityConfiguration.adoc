@@ -1,20 +1,14 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDS Tutorial: Additional Security Configuration
-===============================================
-
 = TDS Tutorial: Additional Security Configuration
-
-'''''
 
 We have compiled a list of a few additional step you should take to help
 secure Tomcat and your TDS server. _This is not a complete laundry list
 of security fixes!_ Please use it as a starting point when securing your
 server.
 
-=== Keep Tomcat, Java and the TDS up-to-date
+== Keep Tomcat, Java and the TDS up-to-date
 
 Running the most current versions of software keeps your environment
 protected against _known_
@@ -39,7 +33,7 @@ database] +
  SecurityFocus’ database of all known vulnerabilities for all different
 types of software from different vendors.
 
-=== Removing the default Tomcat web applications
+== Removing the default Tomcat web applications
 
 It is generally good practice to remove any un-used web applications out
 of `${tomcat_home}/webapps`. Tomcat ships with several default web
@@ -66,7 +60,7 @@ http://tomcat.apache.org/tomcat-7.0-doc/[Tomcat documentation found
 online]. Unless you have need for a local copy, removing `docs` would
 help to tidy-up `${tomcat_home}/webapps`.
 
-=== Denying access to the TDS by remote IP address or host
+== Denying access to the TDS by remote IP address or host
 
 Use the `RemoteHostValve` or `RemoteAddrValve` to restrict access to the
 TDS. For example, the following `Valve` declarations show ways to either
@@ -108,7 +102,7 @@ are vulnerable to spoofing.
 For more information, see the Tomcat
 http://www.robotstxt.org/robotstxt.html[Valve Component] documentation.
 
-=== Blocking TDS content from being indexed by web crawlers
+== Blocking TDS content from being indexed by web crawlers
 
 Use a `robots.txt` file to prevent crawlers from indexing content.
 
@@ -138,7 +132,7 @@ __Note__: not all crawlers obey the `robots.txt` file.
 
 For more information, see: http://www.robotstxt.org/robotstxt.html.
 
-=== Running Tomcat as a user other than `root`
+== Running Tomcat as a user other than `root`
 
 **Background info**: The JVM doesn’t fork at all, nor does it support
 `setuid()` calls. The JVM (and therefore Tomcat) is one process. The JVM
@@ -164,7 +158,7 @@ Tomcat process.
 * Modify any scripts you have for server `init` processes to invoke the
 `tomcat` user:
 
-=== Blocking non-essential port access at the firewall
+== Blocking non-essential port access at the firewall
 
 Type the following in your terminal window:
 
@@ -213,7 +207,7 @@ For more information, see:
 http://www.linuxhomenetworking.com/wiki/index.php/Quick_HOWTO_:_Ch14_:_Linux_Firewalls_Using_iptables[Linux
 Firewalls Using iptable]
 
-=== Running Tomcat behind an HTTP server
+== Running Tomcat behind an HTTP server
 
 It is not uncommon to run Tomcat as an application server behind an HTTP
 server. Tomcat has a couple of different
@@ -235,7 +229,7 @@ Apache.
 For more information on Tomcat connectors in general, see the Tomcat
 connector http://tomcat.apache.org/connectors-doc/[Documentation Index].
 
-=== Running Tomcat under a JVM Security Manager
+== Running Tomcat under a JVM Security Manager
 
 The JVM Security Manager that comes with Tomcat imposes a fine-grained
 security restrictions to all Java applications running the JVM. It
@@ -253,7 +247,7 @@ For more information about the Security Manager, see the Tomcat
 http://tomcat.apache.org/tomcat-7.0-doc/security-manager-howto.html[Security
 Manager HOW-TO] documentation.
 
-=== Online Resources
+== Online Resources
 
 * http://wiki.apache.org/tomcat/FAQ/Security[Tomcat Security FAQ]
 

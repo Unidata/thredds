@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Untitled Document
-=================
-
 = Implementation of latest dataset
 
 1)
@@ -28,7 +24,7 @@ for example :
          urlPath="fmrc/NCEP/GFS/Alaska_191km/files/GFS_Alaska_191km_20121105_1800.grib1">
    ...
 </catalog>
- 
+
 ----------------------------------------------------------------------------------------------------------------
 
 2)
@@ -40,7 +36,7 @@ resolver type and just use a logical URL like
 urlPath=``path/latest'' />*
 
 -------------------------
-fcat?dataset=path/latest 
+fcat?dataset=path/latest
 -------------------------
 
 however you would have to propagate latest processing to all services.

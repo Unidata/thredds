@@ -1,12 +1,10 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-IOSP Overview 4
-===============
-
-= image:../netcdfBig.gif[image]Writing an IOSP for Netdf-Java (version
+= Writing an IOSP for Netdf-Java (version
 4+)
+
+image:../netcdfBig.gif[image]
 
 '''''
 
@@ -44,7 +42,7 @@ public interface ucar.nc2.iosp.IOServiceProvider {
   // Allows reading sections of nested variables
   // Only implement if you have Structures
   public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
-  
+
   // Get a structure iterator. iosps with top level sequences must override
   // Only implement if you have Sequences
   public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
@@ -57,10 +55,10 @@ public interface ucar.nc2.iosp.IOServiceProvider {
 
   // A way to communicate arbitrary information to an iosp.
   public Object sendIospMessage( Object message);
-  
+
   // print Debug info for this object.
   public String toStringDebug(Object o);
-  
+
   // Show debug / underlying implementation details
   public String getDetailInfo();
 

@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Netcdf File Writing
-===================
-
 = NetCDF File Writing (version 4.3+)
-
-'''''
 
 CDM version 4.3 and above allows you to programatically create, edit,
 and add data to netCDF-3 and netCDF-4 files, using _NetcdfFileWriter_ or

@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Free Monitoring and Debugging Tools
-===================================
-
 = Free Monitoring and Debugging Tools
 
 == What This Section Covers

@@ -2,10 +2,9 @@
 [[threddsDocs]]
 
 
-Transition to 4.0
-=================
+= Transition to 4.0
 
-= Transitioning to version 4.0
+== Transitioning to version 4.0
 
  +
  Version 4 is an extensive refactoring of the library, and many
@@ -41,7 +40,7 @@ to see.
 |ucar.nc2.ft.FeatureDatasetFactoryManager
 |=======================================================================
 
-==== Miscellaneous Notes
+=== Miscellaneous Notes
 
 * *DateUnit* is no longer a subclass of SimpleUnit, so you cannot use
 SimpleUnit.factory() to create a DateUnit.

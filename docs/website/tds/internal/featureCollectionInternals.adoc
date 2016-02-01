@@ -1,15 +1,11 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Feature Collections
-===================
-
 = Feature Collection Internals
 
 _last update 9/15/2013_
 
-=== CollectionUpdater
+== CollectionUpdater
 
 CollectionUpdater manages background tasks. It uses quartz scheduling
 library. It triggers CollectionManager to check if things have changed
@@ -17,7 +13,7 @@ library. It triggers CollectionManager to check if things have changed
 
 ----------------------------------
 if (groupName.equals("nocheck")) {
-  dcm.updateNocheck(); 
+  dcm.updateNocheck();
 } else {
   dcm.scan(true);
 }
@@ -26,7 +22,7 @@ if (groupName.equals("nocheck")) {
 In the TDS, the CollectionController recieves messages and tells
 CollectionUpdater to trigger a scan or updateNocheck.
 
-=== CollectionManager
+== CollectionManager
 
 CollectionManager handles the *collection* element. It manages a dynamic
 collection of MFile objects.
@@ -43,7 +39,7 @@ It throws an event to TriggerListener’s to communicate changes.
       public void handleCollectionEvent(TriggerEvent event);
     }
     public enum TriggerType {update, proto, updateNocheck }
-  
+
 -----------------------------------------------------------------------------------------------------------
 
 There are three types of events:
@@ -53,7 +49,7 @@ There are three types of events:
 modified the collection index
 * **proto**: time to re-choose the proto dataset
 
-=== InvDatasetFeatureCollection
+== InvDatasetFeatureCollection
 
 InvDatasetFeatureCollection subclass owns the dataset and the
 CollectionManager (dcm), and responds to events from the
@@ -82,7 +78,7 @@ There are 3 subclasses of InvDatasetFeatureCollection:
 * **point**; dataset is a FeatureDatasetPoint
 * **fmrc**: dataset is an Fmrc
 
-=== Updating
+== Updating
 
 There are several ways to update a feature collection when it changes,
 specified by the *update* and/or *tdm* element:
@@ -101,7 +97,7 @@ made. This is called __user controlled updating__.
 (currently only for grib), sends a trigger that causes an
 *updateNocheck* event. This is called __external program updating__.
 
-==== Implementation
+=== Implementation
 
 1.  *first request:*
 2.  **recheckAfter**: is implemented by calling **checkState**() for
@@ -129,7 +125,7 @@ trigger)
 1.  **nocheck**: manager.updateNocheck() -> factory(**nocheck**)
 2.  **test**: manager.scan() -> factory(**always**) or nothing
 
-=== External calls - must call checkState()
+== External calls - must call checkState()
 
 * OK public java.util.List<InvDataset> getDatasets(); // override catRef
 - defer construction until needed.
@@ -146,7 +142,7 @@ orgPath, URI catURI) +
  +
  +
 
-=== InvDatasetGribFc
+== InvDatasetGribFc
 
 Keeps and manages a GribCollection or a TimePartition object. All
 threads share this object
@@ -158,10 +154,10 @@ perhaps make Partition implement FileCacheable?
 
  
 
-=== GribCollection (GC)
+== GribCollection (GC)
 
 ---------------------------------------------------------------------------------------------------------------------------------------
- static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger); 
+ static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger);
 ---------------------------------------------------------------------------------------------------------------------------------------
 
 where Force controls the use of the *ncx* Index:
@@ -170,7 +166,7 @@ where Force controls the use of the *ncx* Index:
  public enum Force {
         always, // force writing new index
     test,   // test if new index is needed by scanning directory
-    nocheck  // if index exists, use it 
+    nocheck  // if index exists, use it
 }
 ----------------------------------------------------------------
 
@@ -216,7 +212,7 @@ spurious results.
 1.  it clobbers the index file and then sends a message to the TDS
 2.  TDS then reads new GC, closes old one
 
-=== TimePartition (TC)
+== TimePartition (TC)
 
 * the overall TimePartition (subclass GribCollection) object is kept in
 InvFcGrib object, with an open indexRaf. This has same pattern as the GC
@@ -226,7 +222,7 @@ wrap GribCollections, each has an indexRaf once opened.
 they dont have to be reopened each time.
 * TODO need to invalidate the cache when the index changes
 
-==== Problem1
+=== Problem1
 
 * scan sees a change on TimePartition, sends update event to InvFc
 * InvFc create a new TP(force=always)
@@ -239,7 +235,7 @@ collection files. So deletions wont be noticed.
 * TDM creates new TPs, sends trigger to TDS.
 ** should read in new indexes, not create
 
-==== *Problem 2*
+=== *Problem 2*
 
 * could close the raf each time, and let OS manage cache, which it
 probably does. put a read lock on it, and a write lock when you need to
@@ -249,7 +245,7 @@ rewrite. AutoCloseable
 
 does any of this affect NCDC?
 
-==== GribXCollectionBuilder.readOrCreateIndex(Force)
+=== GribXCollectionBuilder.readOrCreateIndex(Force)
 
 1.  always
 2.  test
@@ -266,7 +262,7 @@ does any of this affect NCDC?
    idx = gc.makeNewIndexFile(logger); // make sure we have a writeable index
    logger.info("{}: createIndex {}", gc.getName(), idx.getPath());
    createIndex(idx);
-   
+
    // read back in index
    RandomAccessFile indexRaf = new RandomAccessFile(idx.getPath(), "r");
    gc.setIndexRaf(indexRaf);
@@ -315,7 +311,7 @@ check createIndex() logic
 
 == motherlode instructions
 
-==== To restart the TDM:
+=== To restart the TDM:
 
 1.  log in to motherlode
 2.  cd ~caron
@@ -326,12 +322,12 @@ check createIndex() logic
 3.  mv tdm.log* save
 5.  sh ./runTdm.sh &
 
-==== TDM logs
+=== TDM logs
 
 1.  specific collections are in <collectionName>.log
 2.  running tdm output is in tdm.log; these roll over every day
 
-==== TDM source code
+=== TDM source code
 
 * in github under tdm module
 * tdm-4.3 jar is built by maven

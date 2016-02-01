@@ -1,11 +1,8 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-IOSP Overview
-=============
-
-= image:../netcdfBig.gif[image]Writing an IOSP : Overview
+= Writing an IOSP : Overview
+image:../netcdfBig.gif[image]
 
 A client uses the **NetcdfFile**, **NetcdfDataset**, or one of the
 *Scientific Feature Type APIs* to read data from a CDM file. These
@@ -32,16 +29,16 @@ public interface ucar.nc2.IOServiceProvider {
   // Check if this is a valid file for this IOServiceProvider
   // Required if you are registering your IOSP with NetcdfFile.registerIOProvider()
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) throws IOException;
-  
+
   // Open existing file, and populate ncfile with it.
   public void open(ucar.unidata.io.RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;
-  
+
   // Read data from a top level Variable and return a memory resident Array.
   public ucar.ma2.Array readData(ucar.nc2.Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-    
+
   // Close the file.
   public void close() throws IOException;
-  
+
   // Get the file type id.
   public String getFileTypeId();
 
@@ -58,25 +55,25 @@ public interface ucar.nc2.IOServiceProvider {
 6)  public StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException;
 
     // Read sections of nested variables nested inside a Structure
-7)  public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;  
+7)  public ucar.ma2.Array readSection(ParsedSectionSpec cer) throws IOException, InvalidRangeException;
 
     // Read data from a top level Variable and send data to a WritableByteChannel.
 
 8)  public long readToByteChannel(ucar.nc2.Variable v2, Section section, WritableByteChannel channel) throws java.io.IOException, ucar.ma2.InvalidRangeException;
-  
+
     // Extend the file if needed in a way that is compatible with the current metadata.
 9)  public boolean syncExtend() throws IOException;
-  
+
     // Check if file has changed, and reread metadata if needed.
 10) public boolean sync() throws IOException;
-  
+
     // A way to communicate arbitrary information to an iosp.
 11) public Object sendIospMessage( Object message);
-  
+
     // print Debug info for this object.
 12) public String toStringDebug(Object o);
-  
-    // Show debug / underlying implementation details 
+
+    // Show debug / underlying implementation details
 13) public String getDetailInfo();
 }
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -2,10 +2,8 @@
 [[threddsDocs]]
 
 
-URL Paths
-=========
-
-= image:../images/unidataLogo.png[image]TDS URL Paths
+= TDS URL Paths
+image:../images/unidataLogo.png[image]
 
 _note: needs updating as of 3/2015_
 
@@ -226,7 +224,7 @@ Check for dynamic catalogs:
 -------------------------------------------------------------------
  // check on static or dynamic catalogs
  if (DataRootHandler2.getInstance().processReqForCatalog(req, res))
-   return; 
+   return;
 -------------------------------------------------------------------
 
 '''''
@@ -282,7 +280,7 @@ catalogs into it:
     /NAM2
       catalog.xml
       NamData.nc
-  
+
 -----------------
 
 So you add a dataRoot path = ``model'' location = ``/data/model'', then

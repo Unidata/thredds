@@ -1,14 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+= Subset Service for Radar Level3 Data (version 1.0)
 
-Subset Service
-==============
-
-= image:../../THREDDSlogo.jpg[image] Subset Service for Radar Level3
-Data (version 1.0)
-
-'''''
+image:../../THREDDSlogo.jpg[image]
 
 === Please note that the interface described here is still a prototype,
 and subject to change.

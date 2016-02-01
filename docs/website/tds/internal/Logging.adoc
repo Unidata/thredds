@@ -2,12 +2,9 @@
 [[threddsDocs]]
 
 
-TDS Logging
-===========
+= TDS Logging
 
-= image:../images/unidataLogo.png[image]**Logging**
-
-'''''
+image:../images/unidataLogo.png[image]
 
 == Overview
 
@@ -102,7 +99,7 @@ _log4j-init-file_ context parameter in the thredds configuration file
  <context-param>
    <param-name>log4j-init-file</param-name>
    <param-value>/data/mylog4j.xml</param-value>
- </context-param> 
+ </context-param>
 -----------------------------------------------
 
 The value should be the absolute path to the log4j configuration file. +
@@ -151,12 +148,12 @@ Example:
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_NOT_FOUND, 0));
       res.sendError(HttpServletResponse.SC_NOT_FOUND);
 
-        
+
     } catch (Exception e) {
       log.error("GridServlet.showForm", e);
       log.info( UsageLog.closingMessageForRequestContext(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 0));
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      
+
 
     } finally {
       if (null != gds)
@@ -166,7 +163,7 @@ Example:
           log.error("Failed to close = " + pathInfo);
         }
     }
-       
+
     return;
 -----------------------------------------------------------------------------------------------------------
 
@@ -195,7 +192,7 @@ Currently rolls over every 10 Mb, keeping 10 files.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 2006-01-24T17:31:41.452 -0700 [   2025609][      44] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.172 - Request: "GET /thredds/idd/radars.xml HTTP/1.1"
- 
+
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 [cols=",,",]
@@ -233,5 +230,5 @@ log.info( "Remote host: " + req.getRemoteHost() + " - Request: " + request);
 ------------------------------------------------------------------------------------------------------------------------
 logStats.info( resCode + " " + ( ( resSizeInBytes != -1 ) ? String.valueOf( resSizeInBytes ) : "-" ) + " " + duration );
 log.info( "Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration);
- 
+
 ------------------------------------------------------------------------------------------------------------------------

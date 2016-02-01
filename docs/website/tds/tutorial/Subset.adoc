@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Dataset Subsetting
-==================
-
 = Dataset Subsetting
 
 == Resources For This Session:

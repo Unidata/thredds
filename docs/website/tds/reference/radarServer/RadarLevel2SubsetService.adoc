@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Subset Service
-==============
-
 = Subset Service for Radar Level2 Data (version 1.0)
-
-'''''
 
 === Please note that the interface described here is still a prototype,
 and subject to change.

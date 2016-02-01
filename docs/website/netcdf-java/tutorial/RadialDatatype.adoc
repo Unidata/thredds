@@ -1,13 +1,8 @@
 :source-highlighter: coderay
 [[threddsDocs]]
-
-
-The Radial Datatype
-===================
-
 = Tutorial: The Radial Scientific Feature Type
 
-=== The Radial Datatype
+== The Radial Datatype
 
 _*Radial Datatype*_ uses polar coordinates (elevation, azimuth,
 distance) to describe the location of its points in space, and it is
@@ -34,9 +29,9 @@ found in the *ucar.nc2.dt* package:
 
 image:../images/Radial.png[image]
 
-===  
+==  
 
-=== Opening and using a RadialDatasetSweep
+== Opening and using a RadialDatasetSweep
 
 The general way to open a RadialDataset is to use
 FeatureDatasetFactoryManager
@@ -69,7 +64,7 @@ __getRadialNumber()__, __getGateNumber()__, __getElevation(int
 radial)__, __getTime(int radial)__, and _readData(int radial)_ returns
 all information associated with the radial object. +
 
-=== Example of Retrieving information from a RadialDataset
+== Example of Retrieving information from a RadialDataset
 
 -----------------------------------------------------------------------------------------------------------
   private void showInfo(RadialDatasetSweep rds, String varName, Formatter f) {
@@ -107,10 +102,10 @@ all information associated with the radial object. +
       }
     }
   }
- 
+
 -----------------------------------------------------------------------------------------------------------
 
-=== Using ToolsUI to look at Radial Dataset
+== Using ToolsUI to look at Radial Dataset
 
 You can use ToolsUI *FeatureTypes/Radial* Tab to view Radial Datasets.
 The top table lists the RadialVariables in the dataset, and selecting

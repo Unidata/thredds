@@ -1,11 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-thredds.catalog2 Development
-============================
-
-= Catalog redesign
+= thredds.catalog2: Catalog redesign
 
 _6/12/2015_
 
@@ -49,7 +45,7 @@ Config version 2
 
 1.  Put dataset roots, services seperate, maybe a catalog ?
 2.  Put catalogs that might change in a seperate directory tree.
-3.  
+3.
 
 === TdsContext
 
@@ -83,7 +79,7 @@ lots of state in TdsContext; not immutable; effectively a singleton
 5.  should we also cache dynamic catalogs (catref, fc) ?
 
 ---------------------------------------------------------------------
-com.google.common.cache.LoadingCache<String, ConfigCatalog> cache    
+com.google.common.cache.LoadingCache<String, ConfigCatalog> cache
 ---------------------------------------------------------------------
 
 === ConfigCatalogInitialization

@@ -1,13 +1,8 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-IOSP Other Classes
-==================
-
-= image:../netcdfBig.gif[image]Writing an IOSP : Other Classes Needed
-
-'''''
+= Writing an IOSP : Other Classes Needed
+image:../netcdfBig.gif[image]
 
 == ucar.unidata.io.RandomAccessFile
 
@@ -182,7 +177,7 @@ order.
     for (int i=0; i< 128; i++) {
       ima.set(1, i); // set index 1
       data2.setDouble(
-    ima, raf.readDouble()); 
+    ima, raf.readDouble());
     }
   }
 --------------------------------------------------------------------------------------
@@ -192,8 +187,8 @@ more efficient to use the rank and type specific subclasses:
 
 ------------------------------------------------------
  ArrayDouble.D2 data3 = new ArrayDouble.D2)(128, 256);
-  for (int j=0; j< 128; j++) 
-    for (int i=0; i< 128; i++) 
+  for (int j=0; j< 128; j++)
+    for (int i=0; i< 128; i++)
       data3.set(
   j, i, raf.readDouble());
 ------------------------------------------------------

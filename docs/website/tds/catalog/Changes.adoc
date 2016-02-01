@@ -1,13 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Catalog Changes
-===============
-
 = Changes to Client Catalog schema +
-
-'''''
 
 == Changes for version 1.0.7
 

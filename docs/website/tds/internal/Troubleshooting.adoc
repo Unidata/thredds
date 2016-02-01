@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Troubleshooting TDS
-===================
-
 = Troubleshooting TDS
 
 == Out of File handles
@@ -18,14 +14,14 @@ Solaris/Unix commands to monitor open file (and socket) handles:
 
 ----------------------------------------------------------------------------------
  2. /usr/proc/bin/pfiles [Tomcat Process ID] > pfiles.out
-  
+
   98: S_IFREG mode:0644 dev:181,65538 ino:108165354 uid:10204 gid:6104 size:389012
       O_RDONLY|O_LARGEFILE
       /data/thredds/metars/Surface_METAR_20090223_0000.nc
 ----------------------------------------------------------------------------------
 
 -----------------------------------------------------
- 3. /usr/sbin/lsof -p [Tomcat Process ID] > lsof.out 
+ 3. /usr/sbin/lsof -p [Tomcat Process ID] > lsof.out
 -----------------------------------------------------
 
 You will need to change to the tomcat user to have permission to run
@@ -60,8 +56,8 @@ Its useful to clear the TDS cache:
   https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/forceRAFCache
 
 
-Then look at 
-     
+Then look at
+
   /usr/proc/bin/pfiles [Tomcat Process ID]
 ---------------------------------------------------------------------------
 

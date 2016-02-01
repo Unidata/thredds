@@ -2,13 +2,7 @@
 :cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
 
-
-THREDDS WCS Server
-==================
-
 = THREDDS Web Coverage Service
-
-'''''
 
 The THREDDS WCS Server implements the
 http://www.opengeospatial.org/[OGC] Web Coverage Service
@@ -77,7 +71,7 @@ configured to do so. It must be explicitly configured in the
 ----------------------------------
 <WCS>
   <allow>true</allow>
-  <allowRemote>true</allowRemote> 
+  <allowRemote>true</allowRemote>
   ...
 </WCS>
 ----------------------------------
@@ -96,7 +90,7 @@ identifiable coordinate systems, etc. For example, an OPeNDAP URL might
 be
 
 -----------------------------------------------------------------------------
-http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc 
+http://las.pfeg.noaa.gov/cgi-bin/nph-dods/data/oceanwatch/nrt/gac/AG14day.nc
 -----------------------------------------------------------------------------
 
 This can be served remotely as a WCS dataset with this URL:
@@ -202,13 +196,13 @@ GeoTIFF (Only supports requests for single time and single height.)
 All THREDDS WCS requests start with
 
 -------------------------------
-http://servername/thredds/wcs/ 
+http://servername/thredds/wcs/
 -------------------------------
 
 The next part of the path indicates which file to use
 
 ------------------------------------------
-http://servername/thredds/wcs/test/sst.nc 
+http://servername/thredds/wcs/test/sst.nc
 ------------------------------------------
 
 This is typically the URL you will need to pass to a WCS client. The WCS

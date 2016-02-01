@@ -1,15 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Untitled Document
-=================
-
 = TDS Sessions
 
 last update: Dec 6, 2005
-
-'''''
 
 == Design 1
 

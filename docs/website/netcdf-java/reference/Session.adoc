@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Session
-=======
-
 = HTTP Session Control
 
 == Dennis Heimbigner +

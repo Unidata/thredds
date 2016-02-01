@@ -2,12 +2,8 @@
 [[threddsDocs]]
 
 
-IOSP Details
-============
-
-= image:../netcdfBig.gif[image]Writing an IOSP : Details
-
-'''''
+= Writing an IOSP : Details
+image:../netcdfBig.gif[image]
 
 == Registering an IOSP
 
@@ -58,7 +54,7 @@ IOSP will be garbage collected.
 == The isValidFile() Method
 
 --------------------------------------------------------------------------------------
- // Check if this is a valid file for this IOServiceProvider. 
+ // Check if this is a valid file for this IOServiceProvider.
  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) throws IOException;
 --------------------------------------------------------------------------------------
 
@@ -78,7 +74,7 @@ throw an IOException.
 public class Nexrad2IOServiceProvider implements IOServiceProvider {
   static public final String ARCHIVE2 = "ARCHIVE2";
   static public final String AR2V0001 = "AR2V000";
-  
+
   public boolean isValidFile( RandomAccessFile raf) throws IOException (4) {
 1)  raf.seek(0);
     byte[] b = new byte[8];
@@ -302,9 +298,9 @@ file, is in big-endian format, and is stored as a regular array of
    short[] arr = new short[size];
 
    int count = 0;
-   while (count < size) 
+   while (count < size)
      arr[count++] = raf.readShort(); // copy into primitive array
-   
+
    Array data = Array.factory(DataType.SHORT.getPrimitiveClassType(), v2.getShape(), arr);
    return data.section(wantSection.getRanges());
 }
@@ -351,16 +347,16 @@ info in a VarInfo object:
  private class VarInfo {
    long filePos;
    int  otherStuff;
- }  
+ }
 ------------------------
 
 ---------------------------------------------------------------------------------------------------------
-public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {    
+public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
   this.raf = raf;
-  ...      
-  Variable elev = new Variable(ncfile, null, null, "elevation");     
   ...
-   
+  Variable elev = new Variable(ncfile, null, null, "elevation");
+  ...
+
   VarInfo vinfo = new VarInfo();
   vinfo.filePos = calcPosition(); // figure out where the elevation Variable's data starts
   vinfo.otherStuff = 42;
@@ -374,7 +370,7 @@ Then use that in readData:
 ----------------------------------------------------------------------------------------------------
  public Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
    VarInfo vinfo = (VarInfo) v2.getSPobject();
- 
+
    raf.seek(vinfo.filePos);
    raf.order(RandomAccessFile.BIG_ENDIAN);
    ...
@@ -399,7 +395,7 @@ calling close on the RandomAccessFile:
   public void close() throws IOException {
     raf.close();
   }
- 
+
 ------------------------------------------
 
 == Adding Coordinate System Information

@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Digital Library Record Generation and Harvesting
-================================================
-
 = Digital Library Record Generation and Harvesting
 
 '''''
