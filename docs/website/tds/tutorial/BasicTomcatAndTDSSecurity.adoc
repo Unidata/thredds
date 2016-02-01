@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDS Tutorial: Basic Tomcat and TDS Security
-===========================================
-
 = TDS Tutorial: Basic Tomcat and TDS Security
 
 == Tomcat `manager` Application: A Word Of Caution
@@ -178,7 +174,7 @@ the `         Host       ` element:
      resources under the key "UserDatabase".  Any edits
      that are performed against this UserDatabase are immediately
      available for use by the Realm.  -->
-<!-- 
+<!--
 <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
        resourceName="UserDatabase"/>
 -->

@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Writing a Coordinate Transform implementation
-=============================================
-
 = Writing a Coordinate Transform: Projections and Vertical Transforms
 
 '''''
@@ -165,11 +161,11 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
  public String getTransformName() {
 1)  return "lambert_conformal_conic";
  }
-   
+
  public TransformType getTransformType() {
    return TransformType.Projection;
  }
-  
+
  public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
 2) double[] pars = readAttributeDouble2(ctv.findAttribute( "standard_parallel"));
    double lon0 = readAttributeDouble( ctv, "longitude_of_central_meridian");
@@ -179,8 +175,8 @@ public class LambertConformalConic extends AbstractCoordTransBuilder {
    String units = ds.findAttValueIgnoreCase( ctv, "units", null);
    if (units == null)
      units = getUnits( ds);
-     
-3) ucar.unidata.geoloc.projection.LambertConformal lc = 
+
+3) ucar.unidata.geoloc.projection.LambertConformal lc =
      new ucar.unidata.geoloc.projection.LambertConformal(lat0, lon0, pars[0], pars[1], false_easting, false_northing, units);
 
 4) return new ProjectionCT(ctv.getShortName(), "FGDC", lc);
@@ -208,7 +204,7 @@ public class VAtmSigma extends AbstractCoordTransBuilder {
   public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
 2) String formula_terms = getFormula(ds, ctv);
    if (null == formula_terms) return null;
-  
+
    // parse the formula string
 3) StringTokenizer stoke = new StringTokenizer(formula_terms);
    while (stoke.hasMoreTokens()) {
@@ -230,7 +226,7 @@ public class VAtmSigma extends AbstractCoordTransBuilder {
    if (!addParameter( rs, AtmosSigma.PTOP, ds, ptop, true)) return null;
       return rs;
   }
- 
+
   public ucar.unidata.geoloc.vertical.VerticalTransform makeMathTransform(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
 7)  return new AtmosSigma(ds, timeDim, vCT);
   }
@@ -263,7 +259,7 @@ public class AtmosSigma extends VerticalTransformImpl {
    private Variable psVar; // surface pressue
    private double[] sigma; // The sigma array, function of z
    private double ptop;    // Top of the model
-   
+
    public AtmosSigma(NetcdfDataset ds, Dimension timeDim, VerticalCT vCT) {
 2)   super(timeDim);
 
@@ -286,7 +282,7 @@ public class AtmosSigma extends VerticalTransformImpl {
      } catch (IOException e) {
        throw new IllegalArgumentException("AtmosSigma failed to read "+ sigmaName);
      }
-     
+
 6)   units = ds.findAttValueIgnoreCase(psVar, "units", "none");
    }
 ------------------------------------------------------------------------------------------------------------

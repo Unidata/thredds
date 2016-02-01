@@ -2,13 +2,11 @@
 [[threddsDocs]]
 
 
-Exporting to Digital Libraries
-==============================
+= Exporting to Digital Libraries
 
-= image:../THREDDSlogo.jpg[image] Exporting THREDDS Datasets to Digital
-Libraries
 
-'''''
+== Exporting THREDDS Datasets to Digital Libraries
+image:../THREDDSlogo.jpg[image]
 
 Datasets that have enough information to create Digital Library entries
 are called __*enhanced datasets*__. The following shows how THREDDS

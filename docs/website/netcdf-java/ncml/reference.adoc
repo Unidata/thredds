@@ -2,14 +2,11 @@
 [[threddsDocs]]
 
 
-NcML Reference
-==============
-
 = *NcML Reference*
 
 '''''
 
-=== Variables that get aggregated
+== Variables that get aggregated
 
 * **union**: none, all variables from all datests are simply logically
 placed in the result dataset
@@ -23,7 +20,7 @@ variable that has a grid coordinate system, ie is recognized as a Grid
 by the CDM. Exclude coordinate axes, unless explicitly speced in
 <variableAgg>
 
-=== Reading Files to get Initial State
+== Reading Files to get Initial State
 
 * **union**: must read each file
 * **joinExisting**: read one file as prototype, read time coordinate
@@ -35,7 +32,7 @@ manually in NcML
 * **forecastModelRunCollection**:
 * **forecastModelRunCollectionSingle**:
 
-=== State
+== State
 
 * *All:* List<Dataset>
 * **union**: List<Variable>
@@ -46,7 +43,7 @@ manually in NcML
 * **forecastModelRunCollection**:
 * **forecastModelRunCollectionSingle**:
 
-=== Caching
+== Caching
 
 * *joinExisting only*
 * *Aggregation.setPersistenceCache(DiskCache2 dc)* must be called by the

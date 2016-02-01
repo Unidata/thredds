@@ -2,12 +2,9 @@
 [[threddsDocs]]
 
 
-Upgrading To TDS 4.5
-====================
+= Upgrading To TDS 4.5
 
-= image:images/unidataLogo.png[Unidata] Upgrading To TDS 4.5
-
-'''''
+image:images/unidataLogo.png[Unidata]
 
 == New Requirements
 
@@ -42,7 +39,7 @@ NORMAL="-d64 -Xmx4090m -Xms512m -server"
 MAX_PERM_GEN="-XX:MaxPermSize=256m"
 HEADLESS="-Djava.awt.headless=true"
 JAVA_PREFS_SYSTEM_ROOT="-Djava.util.prefs.systemRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=$CATALINA_BASE/content/thredds/javaUtilPrefs"
-#             
+#
 JAVA_OPTS="$CONTENT_ROOT $NORMAL $MAX_PERM_GEN $HEADLESS $JAVA_PREFS_SYSTEM_ROOT"
 export JAVA_OPTS
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -158,7 +155,7 @@ ToolsUI
 * using new Swing Look and Feel
 * table columns can be set by user (upper right button on header line)
 * File Chooser improvements
-* 
+*
 
 === API changes
 

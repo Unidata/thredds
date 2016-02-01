@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Radar Data Format
-=================
-
 = Writing Radar Data in netCDF files
 
 _John Caron_
@@ -150,7 +146,7 @@ netcdf C:/data/radar/level2/6500KHGX20000610_000110.raw {
    :DataType = "RADAR";
    :Title = "Nexrad Level 2 Station null from 2000-06-10T00:01:10Z to 2000-06-10T00:06:02Z";
 }
- 
+
 --------------------------------------------------------------------------------------------
 
 In this example, the reflectivity on the one hand, and the Velocity and

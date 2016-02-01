@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-THREDDS Motherlode Server Information
-=====================================
-
 = THREDDS Motherlode Server Information
 
 The THREDDS/IDD Server makes much of the real-time data coming in on the

@@ -1,9 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-HTTP Services
--------------
-
 = HTTP Services for netCDF-Java and Thredds
 
 Created: July 20, 2011 +
@@ -412,4 +409,3 @@ Author
 Author: Dennis Heimbigner +
  Affiliation: UCAR/Unidata +
  email: dmh@ucar.edu
-

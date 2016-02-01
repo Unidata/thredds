@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Building Coordinate Systems
-===========================
-
 = Writing your own Java class to identify Coordinate Systems
 
 == Overview
@@ -322,7 +318,7 @@ protected AxisType getAxisType( NetcdfDataset ncDataset, VariableEnhanced v) {
    unit.equalsIgnoreCase("degree_E") ||
    unit.equalsIgnoreCase("degreeE"))
      return AxisType.Lon;
-  
+
   if ( unit.equalsIgnoreCase("degrees_north") ||
     unit.equalsIgnoreCase("degrees_N") ||
     unit.equalsIgnoreCase("degreesN") ||
@@ -330,10 +326,10 @@ protected AxisType getAxisType( NetcdfDataset ncDataset, VariableEnhanced v) {
     unit.equalsIgnoreCase("degree_N") ||
     unit.equalsIgnoreCase("degreeN"))
       return AxisType.Lat;
-      
+
   if (SimpleUnit.isDateUnit(unit) || SimpleUnit.isTimeUnit(unit))
     return AxisType.Time;
- 
+
     // look for other z coordinate
   if (SimpleUnit.isCompatible("m", unit))
     return AxisType.Height;
@@ -341,7 +337,7 @@ protected AxisType getAxisType( NetcdfDataset ncDataset, VariableEnhanced v) {
     return AxisType.Pressure;
   if (unit.equalsIgnoreCase("level") || unit.equalsIgnoreCase("layer") || unit.equalsIgnoreCase("sigma_level"))
     return AxisType.GeoZ;
-   
+
   String positive = ncDataset.findAttValueIgnoreCase((Variable) v, "positive", null);
   if (positive != null) {
     if (SimpleUnit.isCompatible("m", unit))
@@ -393,14 +389,14 @@ Here is an example of one way to do that:
 1) double lat_origin = findAttributeDouble( ds, "LAT0");
    double lon_origin = findAttributeDouble( ds, "LON0");
    double scale = findAttributeDouble( ds, "SCALE");
-   if (Double.isNaN(scale)) scale = 1.0; 
+   if (Double.isNaN(scale)) scale = 1.0;
 
 2) VariableDS v = new VariableDS( ds, null, null, "ProjectionPS", DataType.CHAR, "", null, null);
    v.addAttribute( new Attribute("grid_mapping_name", "polar_stereographic"));
    v.addAttribute( new Attribute("straight_vertical_longitude_from_pole", lon_origin));
    v.addAttribute( new Attribute("latitude_of_projection_origin", lat_origin));
-   v.addAttribute( new Attribute("scale_factor_at_projection_origin", scale)); 
-   
+   v.addAttribute( new Attribute("scale_factor_at_projection_origin", scale));
+
 3) v.addAttribute( new Attribute(_Coordinate.TransformType, TransformType.Projection.toString());
 4) v.addAttribute( new Attribute(_Coordinate.AxisTypes, "GeoX GeoY");
    // fake data
@@ -450,7 +446,7 @@ handle the details:
 1) double lat_origin = findAttributeDouble( ds, "LAT0");
    double lon_origin = findAttributeDouble( ds, "LON0");
    double scale = findAttributeDouble( ds, "SCALE");
-   if (Double.isNaN(scale)) scale = 1.0; 
+   if (Double.isNaN(scale)) scale = 1.0;
 
 2) ProjectionImpl proj = new ucar.unidata.geoloc.projection.Stereographic( lat_origin, lon_origin, scale);
 3) ProjectionCT projCT = new ProjectionCT("ProjectionPS", "FGDC", proj);
@@ -505,7 +501,7 @@ protected void buildCoordinateSystems( NetcdfDataset ncDataset) {
   }
     // identify which variables are coordinate axes
   findCoordinateAxes( ncDataset);
-  
+
   // identify which variables are used to describe coordinate system
   findCoordinateSystems( ncDataset);
 
@@ -517,20 +513,20 @@ protected void buildCoordinateSystems( NetcdfDataset ncDataset) {
 
   // make Coordinate Systems for all Coordinate Systems Variables
   makeCoordinateSystems( ncDataset);
-    
+
   // assign explicit CoordinateSystem objects to variables
   assignExplicitCoordinateSystems( ncDataset);
-    
+
   // assign implicit CoordinateSystem objects to variables
   makeCoordinateSystemsImplicit( ncDataset);
-    
+
   // optionally assign implicit CoordinateSystem objects to variables that dont have one yet
   if (useMaximalCoordSys)
     makeCoordinateSystemsMaximal( ncDataset);
-     
+
    // make Coordinate Transforms
   makeCoordinateTransforms( ncDataset);
-   
+
   // assign Coordinate Transforms
   assignCoordinateTransforms( ncDataset);
 }

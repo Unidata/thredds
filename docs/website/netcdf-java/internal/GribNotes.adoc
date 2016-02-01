@@ -1,13 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Untitled Document
-=================
-
 = GRIB IOSP notes
 
-=== Use Cases
+== Use Cases
 
 1.  client
 1.  single data file mode
@@ -31,7 +27,7 @@ from seperate tdm process
 1.  use timePartition. This builds global ncx from time partitioned ncx,
 for performance.
 
-=== Notes
+== Notes
 
 * You must put in **<dataFormat>GRIB-1</dataFormat>**, otherwise GRIB-2
 is assumed
@@ -46,7 +42,7 @@ synchronous, wheras update is asynch.
 it. maybe thats fast enough that you can do it when next request comes
 in. but other fc (point, fmrc) may be differernt ??
 
-=== Single Data File Mode
+== Single Data File Mode
 
 Pass the data file location to the IOSP. Assumes its a File (ie not
 remote, etc). Call *GribIndex.makeCollection()*
@@ -63,7 +59,7 @@ remote, etc). Call *GribIndex.makeCollection()*
 3.  (Re)write if needed. *GribCollectionBuilder.createIndex()*
 4.  Not using DiskCache
 
-=== Collection Index Mode
+== Collection Index Mode
 
 Pass the *ncx* file to the IOSP. In this case, the collection is created
 from reading the ncx file with no checking against the original data
@@ -74,7 +70,7 @@ IOSP/GRIB1(2)/GribCollection. Enter the collection spec and hit Enter.
 To write the index file, hit the ``Write Index'' button on the right.
 Give it a memorable name and hit Save.
 
-=== FeatureCollection Mode
+== FeatureCollection Mode
 
 1.  At TDS startup, only the configuration info is read and stored. No
 scanning or object building, etc.
@@ -97,7 +93,7 @@ recreates the collection.
 
  
 
-=== Indexing
+== Indexing
 
 Rule of thumb is ~ 500 bytes / GRIB record. (check with GRIB1). So a
 collection of 7M records cost 3.5 Gb. If TdmRunner has 4 threads, can
@@ -143,7 +139,7 @@ top level gc are kept in memory. 68 total 42 M, avg = 600K.
    <gdsHash from="-2121584860" to="28944332"/>
  </iospParam>
 </netcdf>
- 
+
 NAM_CONUS_12km_conduit:
  <iospParam>
     <intvFilter excludeZero="true"/>
@@ -156,7 +152,7 @@ NAM_CONUS_12km_conduit:
 
 '''''
 
-=== Problems in 4.2
+== Problems in 4.2
 
 *1. IDD pqact was wrong on*
 
@@ -205,7 +201,7 @@ eg using time range id as product template, see:
 
 == Time Interval Coordinates
 
-=== Case 1 - even intervals
+== Case 1 - even intervals
 
 Q:\cdmUnitTest\tds\new\NAM_CONUS_12km_20100520_0000.grib2
 
@@ -224,7 +220,7 @@ Q:\cdmUnitTest\tds\new\NAM_CONUS_12km_20100520_0000.grib2
  :GRIB_product_definition_template = 8; // int
  :GRIB_level_type = 1; // int
  :GRIB_VectorComponentFlag = "gridRelative";
- 
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Run accum algorithm from IOSP/GRIB2:
@@ -292,7 +288,7 @@ data:
  \{81, 84} +
  }
 
-=== Case 3 - mixed intervals, unique endpoints, two coordinates with
+== Case 3 - mixed intervals, unique endpoints, two coordinates with
 same endpoints and different intervals
 
 Accumulation variables have different intervals than Average variables,
@@ -361,7 +357,7 @@ bound2= 3.0 6.0 9.0 12.0 15.0 18.0 21.0 24.0 27.0 30.0 33.0 36.0 39.0
 42.0 45.0 48.0 51.0 54.0 57.0 60.0 63.0 66.0 69.0 72.0 75.0 78.0 81.0
 84.0
 
-=== Case 4. Mixed, non-unique endpoints
+== Case 4. Mixed, non-unique endpoints
 
 Appear to be duplicates:
 
@@ -496,7 +492,7 @@ data:
 
  
 
-=== Case 5 mixed but contiguous
+== Case 5 mixed but contiguous
 
 Q:/cdmUnitTest/tds/new/GFS_CONUS_80km_20100513_0600.grib1
 

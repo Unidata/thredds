@@ -2,12 +2,7 @@
 [[threddsDocs]]
 
 
-Catalog Notes
-=============
-
 = Catalog Notes
-
-'''''
 
 == Notes for follow-on to 1.0
 

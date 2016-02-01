@@ -1,11 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-GRIB Feature Collections (Internal docs)
-========================================
-
-== Grib Collection Implementation Notes
+= Grib Collection Implementation Notes
 
 3/14/2015
 
@@ -30,7 +26,7 @@ InvDatasetFcGGrib   8844K
 
 6/15/2012
 
-=== Index
+== Index
 
 Example 1. GFS global half degree - 45 day archive
 
@@ -54,7 +50,7 @@ with 4Gb heap space, but 30 minutes with 2Gb heap. That probaby means
 that the index took just under 2Gb heap and was doing excessive GC. So
 one needs large heap sizes to compute these large collections.
 
-=== Assumptions on the GRIB encoding
+== Assumptions on the GRIB encoding
 
 The collection of GRIB records is not arbitrary, but must be coherent
 (eg come all from the same model) such that the following assumptions
@@ -87,7 +83,7 @@ hashcode for that projection type needs to be modified.
 variable in one group are compared, and where they are identical, are
 shared between variables.
 
-=== RAF Caching
+== RAF Caching
 
 ------------------------------------------------------------------------------------------------
     // GribCollection : default is allow 100 - 200 open files, cleanup every 15 minutes
@@ -108,7 +104,7 @@ shared between variables.
 
 <collection spec="G:/nomads/cfsr/timeseries/**/.*grb2$" dateFormatMark="#timeseries/#yyyyMM" name="CFSR-timeseries" timePartition="directory" />
 
-      
+
 // dateFormatMark in seperate attribute - #match literal# - works on the path
 // time partition by day
         <collection
@@ -138,7 +134,7 @@ shared between variables.
             timePartition="day"
             olderThan="5 min"/>
 
- 
+
 ------------------------------------------------------------------------------------------------------------------------------------------------
 
  
@@ -156,7 +152,7 @@ dont need proto change; it’s reselected when index is rebuilt
 
 handled by DCM, looking only at underlying collection.
 
-=== GribCollection
+== GribCollection
 
 1.  look for new or deleted files
 2.  look if newFile.lastModified() > oldFile.lastModified()
@@ -209,7 +205,7 @@ The *GribCollectionIndex* object has all the rest of the info. The
 ---------------------------------------------------------------------------------
 message GribCollectionIndex {
   required string name = 1;       // must be unique - index filename is name.ncx
-  repeated string files = 2;      // list of grib files 
+  repeated string files = 2;      // list of grib files
   repeated Group groups = 3;      // separate groups for each GDS
   repeated Parameter params = 4;  // global attributes
   required int32 center = 5;      // these 4 fields are to get a GribTable object
@@ -243,14 +239,14 @@ message Group {
   repeated TimeCoordUnion timeCoordUnions = 9; // for time partitions only
   optional string name = 10;       // only when user overrides default name
   optional sint32 gdsHash = 11 [default = 0];
-} 
+}
 -------------------------------------------------------------------------------------------------------------
 
 *Variable* object:
 
 ------------------------------------------------------------------------------------------------------------
 message Variable {
- required int32 discipline = 1;  
+ required int32 discipline = 1;
  required int32 category = 2;
  required int32 parameter = 3;
  required int32 levelType = 4;                     // table 4.5 (grib2); table 3 (grib1)
@@ -259,7 +255,7 @@ message Variable {
 
 
  required uint64 recordsPos = 7;  // offset of VariableRecords message for this Variable
- required uint32 recordsLen = 8;  // size of VariableRecords message for this Variable 
+ required uint32 recordsLen = 8;  // size of VariableRecords message for this Variable
 
 
  required uint32 timeIdx = 9;     // index into GribCollectionIndex.timeCoords
@@ -272,10 +268,10 @@ message Variable {
  optional string probabilityName = 13;
  optional int32 probabilityType = 14  [default = -1];           // table 4.9
  optional bool isLayer = 15 [default = false];
- 
+
  repeated uint32 groupno = 16;  // only for partitions
  repeated uint32 varno = 17;
- repeated int32 flag = 21; 
+ repeated int32 flag = 21;
 
  // in case different from the GribCollectionIndex
  optional uint32 tableVersion = 18;      // grib1 table Version, grib2 local
@@ -354,9 +350,9 @@ scalability.
 
 '''''
 
-=== Notes (10/31/2012)
+== Notes (10/31/2012)
 
-=== simple
+== simple
 
 [cols=",,,",options="header",]
 |=======================================================================
@@ -386,7 +382,7 @@ http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/
 latest
 http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Alaska_191km/files/latest.html
 
-=== time partition
+== time partition
 
 [cols=",,,",options="header",]
 |=======================================================================
@@ -429,7 +425,7 @@ http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-
 
  
 
-=== multiple groups
+== multiple groups
 
 [cols=",,,",options="header",]
 |=======================================================================
@@ -440,7 +436,7 @@ http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-
 |path/__files__/filename
 |=======================================================================
 
-=== time partition and groups
+== time partition and groups
 
 [cols=",,,",options="header",]
 |=======================================================================
@@ -459,9 +455,9 @@ http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-
 
 '''''
 
-=== 11/7/2012
+== 11/7/2012
 
-=== simple
+== simple
 
 -----------------------------------------------------------------------------------------------------------------------------
 <featureCollection name="GFS-CONUS_191km" featureType="GRIB" harvest="true" path="grib/NCEP/GFS/CONUS_191km">
@@ -499,7 +495,7 @@ http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-
 | 
 |=======================================================================
 
-=== groups
+== groups
 
 [width="100%",cols="20%,20%,20%,20%,20%",options="header",]
 |=======================================================================
@@ -527,7 +523,7 @@ http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-
 | 
 |=======================================================================
 
-=== time partition
+== time partition
 
 path -> path/partitionName
 
@@ -568,7 +564,7 @@ path -> path/partitionName
 |file.ncx
 |=======================================================================
 
-=== time partition with groups
+== time partition with groups
 
 path -> path/partition/group ??
 
@@ -617,22 +613,22 @@ path -> path/partition/group ??
 
 '''''
 
-=== VariableMap
+== VariableMap
 
 * uses MetadataController
 * DatasetHandler.openGridDataset(req, res, path)
 * MetadataExtractor.extractVariables()
 * collection could use best
 
-=== TimeRange / Spatial Extant
+== TimeRange / Spatial Extant
 
 * need to keep persistant Object cache.
 
 '''''
 
-=== 01/04/2014
+== 01/04/2014
 
-=== GribCollections, version 2
+== GribCollections, version 2
 
 -----------------------------------------------------------------------------------------------------------------------------
 <featureCollection name="GFS-CONUS_191km" featureType="GRIB2" harvest="true" path="grib/NCEP/GFS/CONUS_191km">
@@ -644,7 +640,7 @@ path -> path/partition/group ??
 </featureCollection>
 -----------------------------------------------------------------------------------------------------------------------------
 
-=== File Partition, no groups
+== File Partition, no groups
 
 [cols=",,,,",options="header",]
 |=======================================================================
@@ -672,7 +668,7 @@ path -> path/partition/group ??
 |file.ncx
 |=======================================================================
 
-=== Grib Collection, with groups
+== Grib Collection, with groups
 
 [width="100%",cols="20%,20%,20%,20%,20%",options="header",]
 |=======================================================================
@@ -700,7 +696,7 @@ path -> path/partition/group ??
 | 
 |=======================================================================
 
-=== partition collection
+== partition collection
 
 path -> path/partitionName
 
@@ -741,7 +737,7 @@ path -> path/partitionName
 |file.ncx
 |=======================================================================
 
-=== time partition with groups
+== time partition with groups
 
 path -> path/partition/group ??
 

@@ -1,14 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-_Coordinate Tutorial
-====================
-
 = _Coordinate Attribute Convention (Tutorial)
-
-'''''
-
  
 
 image:../images/CoordSys.png[image]
@@ -97,7 +90,7 @@ and/or Coordinate Transform Variables
      level:positive = "down";
 
     level:_CoordinateAxisType="Pressure";
-  
+
    double time(time);
      time:units = "days since 1970-01-01 00:00:0.0";
      time:long_name = "Time";
@@ -377,7 +370,7 @@ dimensions:
   float Soil_temperature(level, y, x);
        Soil_temperature:units = "K";
  Soil_temperature:_CoordinateSystems = "ProjectionCoordinateSystem";
-  
+
   double y(y);
      y:units = "km";
      y:long_name = "y coordinate of projection";

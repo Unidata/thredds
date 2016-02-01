@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-HTTP reading
-============
-
 = Direct Access to Remote CDM files from an HTTP Server
 
 '''''
@@ -30,7 +26,7 @@ The THREDDS Data Server enables range requests by default. You may have
 to configure other HTTP servers. Following are our notes on how to do
 so.
 
-=== Enabling Accept-Ranges response header in
+== Enabling Accept-Ranges response header in
 http://httpd.apache.org/[Apache HTTP Server]
 
 1.  Make sure mod_headers is either compiled into the httpd binary (from
@@ -60,7 +56,7 @@ For more information see:
 
 * http://httpd.apache.org/docs/2.0/mod/mod_headers.html
 
-=== Troubleshooting
+== Troubleshooting
 
 \1. Add http://livehttpheaders.mozdev.org/[Live HTTP Headers] plug-in to
 Firefox.
@@ -87,7 +83,7 @@ GET /thredds/fileServer/station/metar/Surface_METAR_20090209_0000.nc HTTP/1.1
    Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
    Keep-Alive: 300
    Connection: keep-alive
- 
+
 ------------------------------------------------------------------------------------------------------------------------------
 
 -----------------------------------------------

@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDS Caching
-===========
-
 = TDS Caching
 
 May, 2011

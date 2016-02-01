@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDS Configuration Checklist for Production
-==========================================
-
 = TDS Configuration Checklist for Production
 
 == TDS Configuration

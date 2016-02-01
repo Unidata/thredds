@@ -1,13 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+= Writing an IOSP : Example 1
 
-IOSP Example 1
-==============
-
-= image:../netcdfBig.gif[image]Writing an IOSP : Example 1
-
-'''''
+image:../netcdfBig.gif[image]
 
 We will work on an example link:files/lightningData.txt[lightning data]
 test file, which looks like:

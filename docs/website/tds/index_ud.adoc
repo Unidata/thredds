@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Unidata | THREDDS Data Server (TDS)
-===================================
-
 = THREDDS Data Server
 
 *Page menu:*
@@ -32,13 +28,13 @@ access protocols.
 
 <<TDS#,See the TDS package overview>>
 
-===== Citing the TDS
+=== Citing the TDS
 
 If you use the TDS and want to provide a DOI/citation, see
 http://www.unidata.ucar.edu/community/index.html#acknowledge[How to
 Acknowledge Unidata].
 
-===== link:/publications/factsheets/current/thredds_factsheet.pdf[TDS
+=== link:/publications/factsheets/current/thredds_factsheet.pdf[TDS
 Fact Sheet]
 
 image:/support/img/documentation-50x50.png[TDS Fact Sheet] A
@@ -49,14 +45,14 @@ and supported data formats.
 link:/publications/factsheets/current/thredds_factsheet.pdf[View the TDS
 fact sheet]
 
-===== Questions About the TDS?
+=== Questions About the TDS?
 
 Questions or comments about the TDS can be sent to:
 support-thredds@unidata.ucar.edu
 
-= THREDDS Data Server (TDS) Support
+== THREDDS Data Server (TDS) Support
 
-===== How To Get TDS Support
+=== How To Get TDS Support
 
 Didn’t find a solution in the <<TDS#,TDS documentation>>? Try the
 following:
@@ -70,7 +66,7 @@ Support Questions]* being asked of TDS developers
 *link:/support/requestSupport.jsp[Request Support]* from TDS developers,
 or email: support-thredds@unidata.ucar.edu
 
-===== Training and Tutorials
+=== Training and Tutorials
 
 * link:/events/index.html#training[image:/community/img/awards2003-32x32.png[Training
 Workshop]] Attend the annual TDS
@@ -84,7 +80,7 @@ Workshop]] View the <<tutorial/workshop2013#,workshop tutorial>>
 from +
  the latest TDS training session
 
-= For THREDDS Data Server Developers
+== For THREDDS Data Server Developers
 
 The TDS is an Open Source project led by developers at the Unidata
 Program Center. If you’re interested in contributing to the project, you
@@ -105,14 +101,14 @@ TDS code +
 Recipes]]**https://github.com/Unidata/git-recipes[Git Recipes]** +
  for developers
 
-= Unidata Projects Involving the TDS
+== Unidata Projects Involving the TDS
 
 Unidata embarks on link:/projects/[new projects] to help make its data
 and tools available to a broader, more diverse audience. The following
 are a list of THREDDS Data Server-related projects between the Unidata
 Program Center and external collaborators.
 
-===== <</projects/index#cdm,Common Data Model>>
+=== <</projects/index#cdm,Common Data Model>>
 
 image:/images/logos/cdm_only-75x75.png[Common Data Model] Unidata’s
 link:/software/netcdf-java/CDM/[Common Data Model]

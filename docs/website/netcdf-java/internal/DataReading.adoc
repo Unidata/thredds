@@ -2,10 +2,9 @@
 [[threddsDocs]]
 
 
-Data Reading
-============
+= Data Reading
 
-= Data Reading Control Flow
+== Data Reading Control Flow
 
 last updated Mar 2010, on version 4.2.
 
@@ -35,14 +34,14 @@ With these exceptions:
      result.setUnsigned(cer.v.isUnsigned());
      return result;
    }
-    
+
    if (spi == null)
      return IospHelper.readSection(cer);
    else
      // allow iosp to optimize
      return spi.readSection(cer);
    }
- 
+
 ----------------------------------------------------------------------------------------------
 
 * experimental version to try to use direct transfer I/O (read directly
@@ -55,7 +54,7 @@ from file to socket)
    else
      return spi.readToByteChannel(v, section, wbc);
    }
- 
+
 --------------------------------------------------------------------------------------------------
 
 These seem to break the normal Variable chain, so probably cant be used
@@ -74,9 +73,9 @@ all reading is channelled through: +
       if (debugCaching) System.out.println("got data from cache " + getName());
       return cache.data.copy();
     }
-    
+
     Array data = proxyReader.reallyRead(this, null);
-    
+
     // optionally cache it
     if (isCaching()) {
       setCachedData(data);
@@ -155,20 +154,20 @@ The usual way to wrap a Variable by a VariableDS (used by NcML,
 NetcdfDataset(NetcdfFile ncfile)) :
 
 --------------------------------------------------------------
- 
+
 public VariableDS(Group g, Variable orgVar, boolean enhance) {
   super(orgVar);
   if (g != null) this.group = g;
-  setDimensions( getDimensionsString()); 
+  setDimensions( getDimensionsString());
 
    // dont share cache, iosp : all IO is delegated
   this.ncfile = null;
   this.spiObject = null;
   createNewCache();
-   
+
   this.orgVar = orgVar;
   this.orgDataType = orgVar.getDataType();
-   
+
   if (orgVar instanceof VariableDS) {
      VariableDS ncVarDS = (VariableDS) orgVar;
      this.enhanceProxy = ncVarDS.enhanceProxy;
@@ -180,7 +179,7 @@ public VariableDS(Group g, Variable orgVar, boolean enhance) {
        enhance(NetcdfDataset.getDefaultEnhanceMode());
      } else {
        this.scaleMissingProxy = new EnhanceScaleMissingImpl();
-     }  
+     }
   }
 }
 --------------------------------------------------------------
@@ -196,7 +195,7 @@ protected Array _read() throws IOException {
     result = super._read(); // cache only raw data, so not twice room
   else
     result = proxyReader.reallyRead(this, null);
-  
+
   // LOOK not caching
   if (needScaleOffsetMissing)
     return convertScaleOffsetMissing(result);
@@ -205,7 +204,7 @@ protected Array _read() throws IOException {
   else
     return result;
  }
-   
+
 ---------------------------------------------------------------------
 
 The super(orgVar) constructor does not copy the proxyReader from orgVar.

@@ -1,13 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Feature Collections vs Aggregations
-===================================
-
 = Feature Collections vs Aggregations
 
-=== Updating
+== Updating
 
 * *Feature Collection:* may be updated in the background
 * **Aggregation**: will only be updated when the user makes a request

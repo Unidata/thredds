@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Untitled Document
-=================
-
 = *Forecast Model Run Collection*
 
 _last changed: Aug 11, 2006_
@@ -155,7 +151,7 @@ You need to review and hand edit these. An example:
       <variable name="Relative_humidity_layer_between_two_sigmas" />
       <variable name="Temperature" vertCoord="1" />
     </runSequence>
-  
+
     <runSequence allUseSeq="1">
       <variable name="Convective_precipitation" />
       <variable name="Total_precipitation" />
@@ -226,7 +222,7 @@ represented like:
     <run runHour="1.0" offsetHourSeq="1" />
     <run runHour="2.0" offsetHourSeq="1" />
     <run runHour="3.0" offsetHourSeq="0" />
-   
+
     <variable name="Accumulated_snow" />
     <variable name="Baseflow-groundwater_runoff" />
     <variable name="Cloud_water" vertCoord="0" />
@@ -254,7 +250,7 @@ One more possible complication:
     <vertTimeCoord restrict="850.0 700.0 500.0 300.0">2.0
     6.0</vertTimeCoord>
     <vertTimeCoord restrict="500.0">12.0</vertTimeCoord>
-  </variable> 
+  </variable>
 </runSequence>
 ------------------------------------------------------------------------------
 
@@ -343,7 +339,7 @@ public interface GridCoordSystem {
 
 ----------------------------------------------------------------
    // time
-   public thredds.datatype.DateRange getDateRange();   
+   public thredds.datatype.DateRange getDateRange();
    public boolean hasTimeAxis();
    public boolean hasTimeAxis1D();
    public CoordinateAxis1DTime getTimeAxis1D();
@@ -477,8 +473,8 @@ Indicate that the time coordinate units change, with the
   <aggregation dimName="run" type="forecastModelRunCollection" timeUnitsChange="true">
     <scan location="C:/data/grib/nam/c20s/" suffix=".grib1" enhance="true" dateFormatMark="NAM_CONUS_20km_surface_#yyyyMMdd_HHmm"/>
   </aggregation>
-</netcdf> 
- 
+</netcdf>
+
 -----------------------------------------------------------------------------------------------------------------------------------
 
 === Persistence
@@ -1240,31 +1236,31 @@ Generates the following catalog:
 <dataset ID="models/GFS/Alaska_191km" name="GFS Alaska 191km Model" serviceName="myserver" >
 
  <dataset name="Forecast Model Run Datasets" ID="models/GFS/Alaska_191km/runs">
-   <dataset name="GFS Alaska 191km Model run 2006-07-12 18:00" urlPath="models/GFS/Alaska_191km/runs/GFS_Alaska_191km_20060712_1800.grib1"> 
-   <dataset name="GFS Alaska 191km Model run 2006-07-12 15:00" urlPath="models/GFS/Alaska_191km/runs/GFS_Alaska_191km_20060712_1500.grib1"> 
+   <dataset name="GFS Alaska 191km Model run 2006-07-12 18:00" urlPath="models/GFS/Alaska_191km/runs/GFS_Alaska_191km_20060712_1800.grib1">
+   <dataset name="GFS Alaska 191km Model run 2006-07-12 15:00" urlPath="models/GFS/Alaska_191km/runs/GFS_Alaska_191km_20060712_1500.grib1">
    <dataset name="GFS Alaska 191km Model run 2006-07-12 12:00" urlPath="models/GFS/Alaska_191km/runs/GFS_Alaska_191km_20060712_1200.grib1">
-   ... 
+   ...
 
  <dataset>
 
  <dataset name="Constant Forecast Date Datasets" ID="models/GFS/Alaska_191km/forecast">
-   <dataset name="GFS Alaska 191km Model constant forecast date 2006-07-12 18:00"  urlPath="models/GFS/Alaska_191km/forecast/20060712_1800"> 
-   <dataset name="GFS Alaska 191km Model constant forecast date 2006-07-12 17:00"  urlPath="models/GFS/Alaska_191km/forecast/20060712_1700"> 
+   <dataset name="GFS Alaska 191km Model constant forecast date 2006-07-12 18:00"  urlPath="models/GFS/Alaska_191km/forecast/20060712_1800">
+   <dataset name="GFS Alaska 191km Model constant forecast date 2006-07-12 17:00"  urlPath="models/GFS/Alaska_191km/forecast/20060712_1700">
    <dataset name="GFS Alaska 191km Model constant forecast date 2006-07-12 16:00"  urlPath="models/GFS/Alaska_191km/forecast/20060712_1600">
-   ... 
+   ...
 
  <dataset>
 
  <dataset name="Constant Forecast Offset Datasets" ID="models/GFS/Alaska_191km/offset">
-   <dataset name="GFS Alaska 191km Model constant forecast offset 0 hours"  urlPath="models/GFS/Alaska_191km/offset/0_hour"> 
-   <dataset name="GFS Alaska 191km Model constant forecast offset 3 hours"  urlPath="models/GFS/Alaska_191km/offset/3_hour"> 
+   <dataset name="GFS Alaska 191km Model constant forecast offset 0 hours"  urlPath="models/GFS/Alaska_191km/offset/0_hour">
+   <dataset name="GFS Alaska 191km Model constant forecast offset 3 hours"  urlPath="models/GFS/Alaska_191km/offset/3_hour">
    <dataset name="GFS Alaska 191km Model constant forecast offset 6 hours"  urlPath="models/GFS/Alaska_191km/offset/6_hour">
-   ... 
+   ...
 
  <dataset>
 
  <dataset name="Best Time Series Dataset" ID="models/GFS/Alaska_191km/best" urlPath="models/GFS/Alaska_191km/best" />
- 
+
 </dataset>
 ---------------------------------------------------------------------------------------------------------------------------------------------
 

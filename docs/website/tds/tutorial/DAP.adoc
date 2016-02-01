@@ -1,11 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-OPeNDAP DAP2 and DAP4 Protocol Services
-=======================================
-
-= DAP2 and DAP4 Protocol Services
+= OPeNDAP DAP2 and DAP4 Protocol Services
 
 == Resources For This Session:
 

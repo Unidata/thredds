@@ -1,17 +1,13 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-Records in NetCDF-3
-===================
-
 = Using Records in NetCDF-3 files
 
-_John Caron_
+John Caron
 
-_last changed: June 21, 2005_
+last changed: June 21, 2005
 
-=== Contents:
+== Contents:
 
 * link:#Structures[Structures and Record Variables]
 * link:#Point[Using Records for Point Data]
@@ -53,15 +49,15 @@ file
 netcdf example {
  dimensions:
    time = UNLIMITED;
-   dim = 42; 
+   dim = 42;
 
- variables: 
+ variables:
    float non-record_var1;
    float non-record_var2( dim);
 
  float record_var1(time);
   float record_var2( time, dim);
-} 
+}
 --------------------------------
 
 In the enhanced CDL used by the Common Data Model, this would be:
@@ -69,10 +65,10 @@ In the enhanced CDL used by the Common Data Model, this would be:
 -------------------------------
 netcdf example {
  dimensions:
-   time = UNLIMITED; 
-   dim = 42; 
+   time = UNLIMITED;
+   dim = 42;
 
- variables: 
+ variables:
    float non-record_var1;
    float non-record_var2( dim);
 
@@ -80,7 +76,7 @@ netcdf example {
   float record_var1;
   float record_var2( dim);
   } record( time);
-} 
+}
 -------------------------------
 
 Our motivation is to efficiently access all of the data in the record
@@ -124,8 +120,8 @@ netcdf pointData {
    record = UNLIMITED;
    dim1 = 11;
    dim2 = 4;
-   
- variables: 
+
+ variables:
 
     float latitude(record);
     float longitude(record);
@@ -156,16 +152,16 @@ netcdf stationData {
  dimensions:
    station = 137;
 
- variables: 
+ variables:
 
    Structure {
     char id(8);
-    char description(40); 
+    char description(40);
     float latitude;
     float longitude;
     int elevation;
     int numReports;
-    
+
     Structure {
       int time_observation;
       float obs_data1 ;
@@ -174,10 +170,10 @@ netcdf stationData {
       int obs_data4(4);
       String obs_data5;
       ...
-    } stationObs(*); 
-    
+    } stationObs(*);
+
   } station( station);
-} 
+}
 ---------------------------
 
 This describes an array of *station* Structures, each of which has an
@@ -207,17 +203,17 @@ netcdf stationData {
    desc_len = 40;
    od2_len = 11;
    od4_len = 4;
-   
- variables: 
+
+ variables:
 
     char id(station, id_len);
-    char description(station, desc_len); 
+    char description(station, desc_len);
     float latitude(station);
     float longitude(station);
     int elevation(station);
     int firstStationObs(station);
     int numReports(station);
-    
+
  int nextStationObs(record);
  int stationIndex(record);
     int time_observation(record);
@@ -227,7 +223,7 @@ netcdf stationData {
     int obs_data4(record, od4_len);
     String obs_data5(record);
     ...
-} 
+}
 -----------------------------------------
 
 Notice that the station data variables all have the dimension
@@ -268,11 +264,11 @@ netcdf stationData {
    desc_len = 40;
    od2_len = 11;
    od4_len = 4;
-   
- variables: 
+
+ variables:
 
     char id(station, id_len);
-    char description(station, desc_len); 
+    char description(station, desc_len);
     float latitude(station);
     float longitude(station);
     int elevation(station);
@@ -284,7 +280,7 @@ netcdf stationData {
     int obs_data4(station, nobs, od4_len);
     String obs_data5(station, nobs);
     ...
-} 
+}
 --------------------------------------------
 
 Here we use the station dimension as the unlimited dimension, in order
@@ -308,16 +304,16 @@ the linked list case:
 netcdf trajectoryData {
  dimensions:
  trajectory = 11;
- record = UNLIMITED; 
-      
- variables: 
+ record = UNLIMITED;
+
+ variables:
    int trajectory(trajectory); // some kind of id
    int firstObs(trajectory);
-   int numObs(trajectory); 
-    
+   int numObs(trajectory);
+
    int nextObs(record);
  int trajectoryIndex(record);
-   int time_observation(record); 
+   int time_observation(record);
    float latitude(record);
    float longitude(record);
    int depth(record);
@@ -326,7 +322,7 @@ netcdf trajectoryData {
    int obs_data2(record);
    int obs_data3(record);
    ...
-} 
+}
 -------------------------------------------------
 
 Contiguous lists look just like linked lists except that you dont need
@@ -343,11 +339,11 @@ variable length sounding data at points along the trajectory:
 netcdf soundingData {
  dimensions:
    ship = 137;
-   
- variables: 
+
+ variables:
    Structure {
     char id(8);
-    char description(40); 
+    char description(40);
 
     Structure {
       float latitude;
@@ -356,7 +352,7 @@ netcdf soundingData {
       float obs_data1 ;
       float obs_data2(11);
       ...
-      
+
       Structure {
         int depth;
         int obs_data3;
@@ -365,10 +361,10 @@ netcdf soundingData {
           ...
       } observation(*)
 
-    } sounding(*);     
-    
+    } sounding(*);
+
   } ship( ship);
-} 
+}
 ---------------------------
 
 So this file has a number of ship _tracks_ (a kind of trajectory), each
@@ -387,10 +383,10 @@ netcdf soundingData {
  ship = 137;
    observation = 24;
    record = UNLIMITED;
-   
- variables: 
+
+ variables:
     char ship(ship, id_len);
-    char description(ship, desc_len); 
+    char description(ship, desc_len);
     int firstSounding(ship);
     int numSoundings(ship);
 
@@ -399,14 +395,14 @@ netcdf soundingData {
     float longitude(record);
     float obs_data1(record) ;
     float obs_data2(record, extra_dim1);
-    
+
     float depth(record, observation);
     int time(record);
     int obs_data3(record, observation);
     int obs_data4(record, observation, extra_dim2);
     String obs_data5(record, observation);
     ...
-} 
+}
 ---------------------------------------------------
 
 This puts all the data for one sounding (including the observation data)
@@ -423,13 +419,13 @@ netcdf soundingData {
  ship = 137;
     sounding = 4700;
  record = UNLIMITED;
-      
- variables: 
+
+ variables:
    char ship(ship, id_len);
-   char description(ship, desc_len); 
+   char description(ship, desc_len);
    int firstSounding(ship);
    int numSoundings(ship);
-    
+
  int shipIndex(sounding);
    float latitude(sounding);
    float longitude(sounding);
@@ -445,7 +441,7 @@ netcdf soundingData {
    int obs_data3(record);
    int obs_data4(record, extra_dim2);
    ...
-} 
+}
 -----------------------------------------
 
 So we have a contiguous list of soundings for each ship, and a
@@ -466,10 +462,10 @@ netcdf soundingData {
  dimensions:
     sounding = 1200;
  record = UNLIMITED;
-      
- variables: 
+
+ variables:
    char ship_name(id_len);
-   char description(desc_len); 
+   char description(desc_len);
 
    float latitude(sounding);
    float longitude(sounding);

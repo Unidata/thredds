@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-2014 Training Workshop Schedule : TDS Configuration and Administration
-======================================================================
-
 = 2014 Training Workshop Schedule : TDS Configuration and Administration
 
 == 23 October 2014 : TDS Installation, Management, and Configuration

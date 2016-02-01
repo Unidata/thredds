@@ -23,7 +23,7 @@ Before the CDM writes the temporary file, it looks to see if it already exists.
 | .Z |unix http://en.wikipedia.org/wiki/Compress[compress] ( LZW )
 | .zip |http://en.wikipedia.org/wiki/Zip_(file_format)[zip files] (assumes only one entry)
 | .gzip, .gz |http://en.wikipedia.org/wiki/Gzip[deflate]
-| .bz2 |http://en.wikipedia.org/wiki/Bzip2[Burrows–Wheeler]
+| .bz2 |http://en.wikipedia.org/wiki/Bzip2[Burrowsï¿½Wheeler]
 |=======================================================================
 
 2.  *Nexrad2, Cinrad2* files may also be compressed
@@ -210,3 +210,4 @@ so that as soon as the number of NetcdfFile objects exceeds _hardLimit_ , a clea
 '''''
 
 image:../nc.gif[image] This document was last updated Nov 2015
+

@@ -1,10 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-TDS URLs
-========
-
 = TDS URL patterns (5.0)
 
 == Forms
