@@ -218,12 +218,12 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     // calculate total "range"
     int range = 0;
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
+      if ((ti.timeRangeUnit != timeUnitOrg && ti.timeRangeUnit != 255) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         log.warn("TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
         throw new RuntimeException("TimeInterval(2) has different units");
       }
 
-      range += ti.timeRangeLength;
+      if (ti.timeRangeLength != 255) range += ti.timeRangeLength;
       if (ti.timeIncrementUnit != 255) range += ti.timeIncrement;
     }
 
@@ -252,12 +252,12 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     // calculate total "range" in units of timeUnit
     int range = 0;
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
-      if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
+      if ((ti.timeRangeUnit != timeUnitOrg && ti.timeRangeUnit != 255) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         log.warn("TimeInterval(2) has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
         throw new RuntimeException("TimeInterval(2) has different units");
       }
 
-      range += ti.timeRangeLength;
+      if (ti.timeRangeLength != 255) range += ti.timeRangeLength;
       if (ti.timeIncrementUnit != 255) range += ti.timeIncrement;
     }
 
