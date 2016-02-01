@@ -33,6 +33,8 @@
 package ucar.nc2.grib.grib1;
 
 
+import java.math.BigDecimal;
+
 /**
  * Helper class for pre-defined grid definition section (GDS) .
  * These are NCEP.
@@ -97,12 +99,12 @@ public class Grib1GdsPredefined {
       this.gridNumber = gridNumber;
       this.nx = nx;
       this.ny = ny;
-      this.la1 = la1;
-      this.lo1 = lo1;
-      this.la2 = la2;
-      this.lo2 = lo2;
-      this.deltaLon = deltaLon;
-      this.deltaLat = deltaLat;
+      this.la1 = BigDecimal.valueOf(la1);
+      this.lo1 = BigDecimal.valueOf(lo1);
+      this.la2 = BigDecimal.valueOf(la2);
+      this.lo2 = BigDecimal.valueOf(lo2);
+      this.deltaLon = BigDecimal.valueOf(deltaLon);
+      this.deltaLat = BigDecimal.valueOf(deltaLat);
       this.resolution = resolution;
       this.scanMode = scan;
     }
@@ -133,11 +135,11 @@ public class Grib1GdsPredefined {
       this.gridNumber = gridNumber;
       this.nx = nx;
       this.ny = ny;
-      this.la1 = la1;
-      this.lo1 = lo1;
-      this.lov = lov;
-      this.dX = dX;
-      this.dY = dY;
+      this.la1 = BigDecimal.valueOf(la1);
+      this.lo1 = BigDecimal.valueOf(lo1);
+      this.lov = BigDecimal.valueOf(lov);
+      this.dX = BigDecimal.valueOf(dX);
+      this.dY = BigDecimal.valueOf(dY);
       this.resolution = resolution;
       this.scanMode = scan;
     }
