@@ -43,3 +43,44 @@ body#threddsDocs th,td {
 body#threddsDocs tr:hover {
 	background-color: #d8d8d8
 }
+
+/* callouts */
+
+body#threddsDocs div#content .conum[data-value] {
+    display:inline-block;
+    color:#fff!important;
+    background-color:rgba(0,0,0,.8);
+    -webkit-border-radius:100px;
+    border-radius:100px;
+    text-align:center;
+    font-size:.75em;
+    width:1.67em;
+    height:1.67em;
+    line-height:1.67em;
+    font-family:"Open Sans","DejaVu Sans",sans-serif;
+    font-style:normal;
+    font-weight:bold;
+}
+
+body#threddsDocs div#content .conum[data-value] * {
+    color:#fff!important;
+}
+
+body#threddsDocs div#content .conum[data-value]+b {
+    display:none;
+}
+
+body#threddsDocs div#content .conum[data-value]:after {
+    content:attr(data-value);
+}
+
+body#threddsDocs div#content pre .conum[data-value] {
+    position:relative;top:-.125em;
+}
+
+body#threddsDocs div#content b.conum * {
+    color:inherit!important;
+}
+body#threddsDocs div#content .conum:not([data-value]):empty {
+    display:none;
+}
