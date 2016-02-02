@@ -23,6 +23,11 @@ before_install:
       gem install asciidoctor coderay;
     fi
 
+install:
+  - if [[ $TASK != "docs" ]]; then
+      ./gradlew assemble;
+    fi
+
 script:
   # If we need to do an IDV build, run the script
   - if [[ $TASK == "build_idv" ]]; then
