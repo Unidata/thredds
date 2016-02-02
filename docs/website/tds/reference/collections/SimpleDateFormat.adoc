@@ -1,9 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
-SimpleDateFormat
-================
+= Simple Date Format
 
 == java.text.SimpleDateFormat
 
@@ -92,7 +90,7 @@ time zone] |`Pacific Standard Time`; `PST`; `GMT-08:00`
 822 time zone] |`-0800`
 |=======================================================================
 
-==== Examples
+== Examples
 
 The following examples show how date and time patterns are interpreted
 in the U.S. locale. The given date and time are 2001-07-04 12:08:56

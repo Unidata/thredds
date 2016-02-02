@@ -5,8 +5,7 @@
 
 == Overview
 
-As of CDM version 4.3, GRIB datasets are handled as collections of GRIB
-files. A GRIB file is an unordered collection of GRIB records. A GRIB
+As of CDM version 4.3, GRIB datasets are handled as collections of GRIB files. A GRIB file is an unordered collection of GRIB records. A GRIB
 dataset is a therefore a collection of GRIB records in one or more
 files. A GRIB dataset can only operate on local files. A THREDDS Data
 Server (TDS) can make GRIB datasets remotely accessible, eg through
@@ -21,48 +20,28 @@ comparable to GRIB, typically within a factor of two.
 
 A GRIB collection must follow these __homogeneity constraints__:
 
-1.  The GRIB records must be either GRIB-1 or GRIB-2, you cannot mix
-different editions in the same collection.
-2.  The GRIB collection should be __coherent__, eg from the same model
-(you can mix multiple runs from the same model, however). This is
-because the user does not have access to the metadata in the individual
-records, but only to global and variable attributes describing the
-collections of GRIB records.
-3.  The GRIB records should all be from the same center and subcenter,
-since these are used for table lookups. (In principle, one could relax
-this if all records use only standard WMO entries. The global metadata
-may be misleading, however). Different table versions may be mixed in
-the same collection in GRIB-1.
-4.  The GRIB records may have different reference dates. (This was not
-true in versions before 4.3)
+. The GRIB records must be either GRIB-1 or GRIB-2, you cannot mix different editions in the same collection.
+. The GRIB collection should be __coherent__, eg from the same model (you can mix multiple runs from the same model, however). This is because the user does not have access to the metadata in the individual records, but only to global and variable attributes describing the collections of GRIB records.
+. The GRIB records should all be from the same center and subcenter, since these are used for table lookups. (In principle, one could relax this if all records use only standard WMO entries. The global metadata may be misleading, however). Different table versions may be mixed in the same collection in GRIB-1.
+. The GRIB records may have different reference dates. (This was not true in versions before 4.3)
 
 In addition:
 
-1.  A best practice is that all GRIB records in the collection should
-use the same Grid Definition (GDS). If there is more than one GDS in the
-collection, each GDS will be placed in a separate CDM __group__. This
-can be a problem for older software that doesn’t deal with groups.
-2.  Global attributes are taken from a single record, and so may be
-misleading if these vary within the collection. For example:
-1.  The originating center and subcenter.
-2.  The master and local table version (GRIB-2).
-3.  The generating process type.
-4.  The generating and background process name, if known.
+. A best practice is that all GRIB records in the collection should use the same Grid Definition (GDS). If there is more than one GDS in the collection, each GDS will be placed in a separate CDM __group__. This can be a problem for older software that doesn’t deal with groups.
+. Global attributes are taken from a single record, and so may be misleading if these vary within the collection. For example:
+.. The originating center and subcenter.
+.. The master and local table version (GRIB-2).
+.. The generating process type.
+.. The generating and background process name, if known.
 
 == Indexing
 
 For each GRIB file, a _GRIB index_ file is written with suffix *.gbx9.*
 This file contains everything in the GRIB file except the data.
-Generally it is 300-1000 times smaller than the original file. Once
-written, it typically never has to be rewritten. If the GRIB file
-changes, the CDM should detect that and rewrite the index file. If there
-is any doubt about that, delete the index file and let it get recreated.
+Generally it is 300-1000 times smaller than the original file.
+Once written, it typically never has to be rewritten. If the GRIB file changes, the CDM should detect that and rewrite the index file. If there is any doubt about that, delete the index file and let it get recreated.
 
-For each GRIB collection, a _CDM collection index_ file is written with
-suffix *.ncx4.* This file contains all the metadata and the coordinates
-for the collection. It is usually fairly small (a few dozen KBytes to a
-few MBytes for a large collection), and once created, makes accessing
-the GRIB collection very fast. In general it will be updated if needed,
+For each GRIB collection, a _CDM collection index_ file is written with suffix *.ncx4.* This file contains all the metadata and the coordinates for the collection. It is usually fairly small (a few dozen KBytes to a few MBytes for a large collection), and once created, makes accessing the GRIB collection very fast. In general it will be updated if needed,
 but one can always delete it and let it be recreated.
 
 If one opens a single GRIB file in the CDM, a *gbx9* and *ncx4* file

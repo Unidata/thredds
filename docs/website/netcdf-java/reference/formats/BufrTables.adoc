@@ -11,7 +11,7 @@ with a center/subcenter/version id. The CDM internally loads one table
 map located in *bufr.jar* at
 **/resources/bufrTables/local/tablelookup.csv**. It is a csv (comma separated value) format:
 
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----
 #
 # BUFR TableLookup
 #
@@ -51,30 +51,19 @@ map located in *bufr.jar* at
    NCEP.14,  7,   -1,       14,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncep.B07.14.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep/ncep.B4L-007-013-D.diff, mel_bufr
    NCEP.any, 7,   -1,       -1,    -1,    -1, resource:/resources/bufrTables/local/ncep/ncep.B07.local.csv, wmo_csv, resource:/resources/bufrTables/local/ncep/ncep.B4L-007-013-D.diff, mel_bufr
 ...
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----
 
-1.  Each row contains the *center id, subcenter id, master table
-version,* and **local table version**. These are use to look for a match
-on the BUFR record. The first exact match is used.
-2.  If there is no exact match, then a wildcard match is used, where a
-"-1" matches any id. The first wildcard match is used.
-3.  When a match is made, the given path to a BUFR *table B* and a BUFR
-*table D* is used. Various table formats are available, given by the
-**format.**.
-4.  NCEP uses a matching scheme that may depend on the **data
-category**.
-5.  The mode has the following meaning:
-1.  **wmoOnly**: wmo entries (x < 48 && y < 192) can only be taken from
-wmo table (center = 0)
-2.  **wmoLocal**: if wmo entries not found in wmo table, look in local
-table
-3.  **localWmo**: look in local table first, then wmo table
+. Each row contains the *center id, subcenter id, master table version,* and **local table version**. These are use to look for a match on the BUFR record. The first exact match is used.
+. If there is no exact match, then a wildcard match is used, where a "-1" matches any id. The first wildcard match is used.
+. When a match is made, the given path to a BUFR *table B* and a BUFR *table D* is used. Various table formats are available, given by the **format.**.
+. NCEP uses a matching scheme that may depend on the **data category**.
+. The mode has the following meaning:
+.. **wmoOnly**: wmo entries (x < 48 && y < 192) can only be taken from wmo table (center = 0)
+.. **wmoLocal**: if wmo entries not found in wmo table, look in local table
+.. **localWmo**: look in local table first, then wmo table
 
-=== Adding a user-defined standard table map
+== Adding a user-defined standard table map
 
-A user can programmatically add another lookup table by calling
-ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile(). It must be in the
-same csv format as above. It will be searched first.
+A user can programmatically add another lookup table by calling ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile(). It must be in the same csv format as above. It will be searched first.
 
-This can also be done through the <<../RuntimeLoading#,runtime
-configuration>> XML file.
+This can also be done through the <<../RuntimeLoading#,runtime configuration>> XML file.

@@ -11,13 +11,14 @@ CollectionUpdater manages background tasks. It uses quartz scheduling
 library. It triggers CollectionManager to check if things have changed
 (aka scan).
 
-----------------------------------
+[source,java]
+----
 if (groupName.equals("nocheck")) {
   dcm.updateNocheck();
 } else {
   dcm.scan(true);
 }
-----------------------------------
+----
 
 In the TDS, the CollectionController recieves messages and tells
 CollectionUpdater to trigger a scan or updateNocheck.
@@ -29,7 +30,8 @@ collection of MFile objects.
 
 It throws an event to TriggerListener’s to communicate changes.
 
------------------------------------------------------------------------------------------------------------
+[source,java]
+----
  /**
     * A TriggerEvent.proto is sent if protoDataset.change = "cron" has been specified
     * A TriggerEvent.update is sent if a scan has happened and a change in the list of MFiles has occurred,
@@ -40,7 +42,7 @@ It throws an event to TriggerListener’s to communicate changes.
     }
     public enum TriggerType {update, proto, updateNocheck }
 
------------------------------------------------------------------------------------------------------------
+----
 
 There are three types of events:
 
@@ -55,7 +57,8 @@ InvDatasetFeatureCollection subclass owns the dataset and the
 CollectionManager (dcm), and responds to events from the
 CollectionManager:
 
--------------------------------------------------------------------------
+[source,java]
+----
 public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
  if (event.getType() == CollectionManager.TriggerType.updateNocheck)
    update(CollectionManager.Force.nocheck);
@@ -70,7 +73,7 @@ public void handleCollectionEvent(CollectionManager.TriggerEvent event) {
   public enum Force {always,   // force new index
                      test,     // test if new index is needed
                      nocheck } // if index exists, use it
--------------------------------------------------------------------------
+----
 
 There are 3 subclasses of InvDatasetFeatureCollection:
 
@@ -83,64 +86,53 @@ There are 3 subclasses of InvDatasetFeatureCollection:
 There are several ways to update a feature collection when it changes,
 specified by the *update* and/or *tdm* element:
 
-1.  *recheckAfter* ** attribute**:** causes a directory scan whenever a
+. *recheckAfter* ** attribute**:** causes a directory scan whenever a
 request comes in and the specified time has elapsed since the last scan.
 The request waits until the scan is finished and a new collection is
 built (if needed). This is called __synchronous updating__.
-2.  *rescan* and *startup* attributes: uses a background thread to keep
+. *rescan* and *startup* attributes: uses a background thread to keep
 the collection updated, so that requests never wait. This is called
 __asynchronous updating__.
-3.  *trigger* attribute: allows a trigger to be sent to the TDS to tell
+. *trigger* attribute: allows a trigger to be sent to the TDS to tell
 it to scan the collection. If scan finds changes, an *update* event is
 made. This is called __user controlled updating__.
-4.  **tdm**: external program does the actual updating of the indexes
+.  **tdm**: external program does the actual updating of the indexes
 (currently only for grib), sends a trigger that causes an
 *updateNocheck* event. This is called __external program updating__.
 
 === Implementation
 
-1.  *first request:*
-2.  **recheckAfter**: is implemented by calling **checkState**() for
+. **first request:**
+. **recheckAfter**: is implemented by calling **checkState**() for
 each request which calls **dcm.scanIfNeeded()**. That returns true only
 if recheck is set and its the first time or a scan shows that something
 changed. If true, then:
-* **grib**: updateCollection(Force.**nocheck** or Force.**test**)
-3.  **update(Force.nocheck**);
-4.  **update(Force.test**);
-5.  **update(Force.always**);
+.. **grib**: updateCollection(Force.**nocheck** or Force.**test**)
+. **update(Force.nocheck**);
+. **update(Force.test**);
+. **update(Force.always**);
+.. manager.scan() -> factory(**always**) or nothing
 
-1.  manager.scan() -> factory(**always**) or nothing
-
-**update(Force.always**);
-
-1.  **nocheck**: manager.updateNocheck() -> factory(**nocheck**)
-2.  **test**: manager.scan() -> factory(**always**). since dcm hasnt
+. **update(Force.always**);
+.. **nocheck**: manager.updateNocheck() -> factory(**nocheck**)
+.. **test**: manager.scan() -> factory(**always**). since dcm hasnt
 been populated, this will always recreate the index PROBLEM?
-
-**update(Force.test**);
-
-1.  CollectionController calls CollectionUpdater.triggerUpdate(name,
+. **update(Force.test**);
+.. CollectionController calls CollectionUpdater.triggerUpdate(name,
 trigger)
-2.  CollectionUpdater starts background task, which runs and calls
-1.  **nocheck**: manager.updateNocheck() -> factory(**nocheck**)
-2.  **test**: manager.scan() -> factory(**always**) or nothing
+.. CollectionUpdater starts background task, which runs and calls
+... **nocheck**: manager.updateNocheck() -> factory(**nocheck**)
+... **test**: manager.scan() -> factory(**always**) or nothing
 
 == External calls - must call checkState()
 
-* OK public java.util.List<InvDataset> getDatasets(); // override catRef
-- defer construction until needed.
+* OK public java.util.List<InvDataset> getDatasets(); // override catRef - defer construction until needed.
 * public ucar.nc2.dt.GridDataset getGridDataset(String matchPath)
 * public NetcdfDataset getNetcdfDataset(String matchPath)
-
 * public InvCatalogImpl makeLatest(String matchPath, String reqPath, URI
 catURI)
 * abstract public InvCatalogImpl makeCatalog(String match, String
-orgPath, URI catURI) +
- +
- +
- +
- +
- +
+orgPath, URI catURI)
 
 == InvDatasetGribFc
 
@@ -153,55 +145,55 @@ all Records into memory. all accesses to it are synchronized
 perhaps make Partition implement FileCacheable?
 
  
-
 == GribCollection (GC)
 
----------------------------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
  static public GribCollection factory(boolean isGrib1, CollectionManager dcm, CollectionManager.Force force, org.slf4j.Logger logger);
----------------------------------------------------------------------------------------------------------------------------------------
+----
 
 where Force controls the use of the *ncx* Index:
 
-----------------------------------------------------------------
+[source,java]
+----
  public enum Force {
-        always, // force writing new index
+    always, // force writing new index
     test,   // test if new index is needed by scanning directory
     nocheck  // if index exists, use it
 }
-----------------------------------------------------------------
+----
 
 Relationship of CollectionManager and Index:
 
-1.  collection is being monitored from outside; the index is correct,
+. collection is being monitored from outside; the index is correct,
 and you just want to rebuild the GC from it: *force = nocheck.*
-1.  TDM sends *trigger=nocheck*
-2.  Very large datasets (NCDC) dont want to scan directories.
-startup=``nocheck'' NEW
-2.  CollectionManager knows that the collection has changed, and that
+.. TDM sends *trigger=nocheck*
+.. Very large datasets (NCDC) dont want to scan directories. startup=``nocheck'' NEW
+. CollectionManager knows that the collection has changed, and that
 the index needs to be updated: *force = always.*
-1.  rescan finds changes
-3.  Figure it out yourself factory: *force=test*
-1.  CDM ?
+.. rescan finds changes
+. Figure it out yourself factory: *force=test*
+.. CDM ?
 
 *Problem 1*
 
-1.  if you rebuild with nocheck and dont read in the dcm, then you cant
+. if you rebuild with nocheck and dont read in the dcm, then you cant
 run a scan and see whats changed
-1.  so populate dcm from index (or)
-2.  invalidate dcm and always rebuild on test
-2.  checkState() is called that calls dcm.scanIfNeeded() which will scan
+.. so populate dcm from index (or)
+.. invalidate dcm and always rebuild on test
+. checkState() is called that calls dcm.scanIfNeeded() which will scan
 if map is empty and !isStatic. isStatic apparently if theres no update
 element.
-3.  gribCollection.ncx has list of files, but not lastModified. Could go
+. gribCollection.ncx has list of files, but not lastModified. Could go
 to MFiles and increment ncx version. SOLUTION DONE - NEEDS TEST
 
 *Problem* 2
 
 * when index file needs to be rewritten by TDS
 
-1.  new GC object is created
-2.  index file rewritten
-3.  old GC object is closed, which closes indexRaf
+. new GC object is created
+. index file rewritten
+. old GC object is closed, which closes indexRaf
 
 * the idea was to allow the old CG to be used while the new was being
 rewritten. but its getting clobberred in place. so if a request is being
@@ -209,8 +201,8 @@ serviced while the index file is being rewritten, it will fail or get
 spurious results.
 
 * when TDM is doing it
-1.  it clobbers the index file and then sends a message to the TDS
-2.  TDS then reads new GC, closes old one
+. it clobbers the index file and then sends a message to the TDS
+. TDS then reads new GC, closes old one
 
 == TimePartition (TC)
 
@@ -222,20 +214,20 @@ wrap GribCollections, each has an indexRaf once opened.
 they dont have to be reopened each time.
 * TODO need to invalidate the cache when the index changes
 
-=== Problem1
+=== Problem 1
 
 * scan sees a change on TimePartition, sends update event to InvFc
 * InvFc create a new TP(force=always)
 * TP is trying to check if it needs to recreate the individual
 partitions, but its only checking existing index date against new
 collection files. So deletions wont be noticed.
-1.  could check new file collection against index file collection
-2.  could have option to only check latest.
-3.  Always create all partitions SOLUTION FOR NOW
+. could check new file collection against index file collection
+. could have option to only check latest.
+. Always create all partitions SOLUTION FOR NOW
 * TDM creates new TPs, sends trigger to TDS.
 ** should read in new indexes, not create
 
-=== *Problem 2*
+=== Problem 2
 
 * could close the raf each time, and let OS manage cache, which it
 probably does. put a read lock on it, and a write lock when you need to
@@ -247,11 +239,12 @@ does any of this affect NCDC?
 
 === GribXCollectionBuilder.readOrCreateIndex(Force)
 
-1.  always
-2.  test
-3.  nocheck
+. always
+. test
+. nocheck
 
--------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
  // force new index or test for new index needed
  boolean force = ((ff == CollectionManager.Force.always) || (ff == CollectionManager.Force.test && needsUpdate()));
 
@@ -268,12 +261,13 @@ does any of this affect NCDC?
    gc.setIndexRaf(indexRaf);
    readIndex(indexRaf);
  }
--------------------------------------------------------------------------------------------------------------------
+----
 
 if **test**, call __needsUpdate__() which uses _dcm.getFiles()_ and
 _CollectionManager.hasChangedSince()_ :
 
----------------------------------------------------------------------
+[source,java]
+----
  public boolean needsUpdate() {
    File idx = gc.getIndexFile();
    return !idx.exists() || needsUpdate(idx.lastModified());
@@ -287,12 +281,13 @@ _CollectionManager.hasChangedSince()_ :
    }
    return false;
  }
----------------------------------------------------------------------
+----
 
 _hasChangedSince()_ looks to see if the *gbx9* file exists or needs
 updating:
 
------------------------------------------------------------------------
+[source,java]
+----
 public boolean hasChangedSince(MFile file, long when) {
  File idxFile = GribCollection.getIndexFile(file.getPath() + GBX9_IDX);
  if (!idxFile.exists()) return true;
@@ -301,31 +296,28 @@ public boolean hasChangedSince(MFile file, long when) {
  if (0 < when && when < idxLastModified) return true;
  return false;
 }
------------------------------------------------------------------------
+----
 
 check createIndex() logic
 
-'''''
-
-'''''
 
 == motherlode instructions
 
 === To restart the TDM:
 
-1.  log in to motherlode
-2.  cd ~caron
-3.  sudo su ldm
-4.  clean up logs
-1.  rm saveX/*
-2.  mv *.log saveX
-3.  mv tdm.log* save
-5.  sh ./runTdm.sh &
+. log in to motherlode
+. cd ~caron
+. sudo su ldm
+. clean up logs
+.. rm saveX/*
+.. mv *.log saveX
+.. mv tdm.log* save
+. sh ./runTdm.sh &
 
 === TDM logs
 
-1.  specific collections are in <collectionName>.log
-2.  running tdm output is in tdm.log; these roll over every day
+. specific collections are in <collectionName>.log
+. running tdm output is in tdm.log; these roll over every day
 
 === TDM source code
 

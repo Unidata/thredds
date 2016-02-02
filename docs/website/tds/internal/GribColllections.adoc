@@ -2,12 +2,7 @@
 [[threddsDocs]]
 
 
-GRIB Collection Internals
-=========================
-
 = GRIB Collection Internals
-
- 
 
 11/15/2014
 
@@ -70,32 +65,29 @@ could a vertical have different runtime if theres missing. see
 GribPartitionBuilder.makeMissing()
 * partitions sorted by name. should be by date.
 
-=======================================================================
 
 10/21/2014
 
-InvDatasetFeatureCollection
+=== InvDatasetFeatureCollection
+
+
+=== InvDatasetFcGrib
 
  
-
-InvDatasetFcGrib
-
- 
-
-\{collection} -> \{runTime} -> \{Group} : a GC is a single runtime with
+{collection} -> {runTime} -> {Group} : a GC is a single runtime with
 1 or more groups (GDS).
 
-PofGC = \{GC}
+PofGC = {GC}
 
-PofP = \{PofGC}
+PofP = {PofGC}
 
-==== case 1. \{collection} has single runtime.
+=== Case 1: {collection} has single runtime.
 
 * config: name = collone, partition = none, topdir=c:/tmp/mixed
 * index name = <config>-topdir
 
-_______________________
------------------------
+[source,bash]
+----
 Ismoro-mixed.ncx2
 
 lsmoro_N160.grib
@@ -103,18 +95,17 @@ lsmoro_N160.grib.gbx9
 lsmoro_N320.grib
 lsmoro_N320.grib.gbx9
 lsmoro_N640.grib
-lsmoro_N640.grib.gbx9  
------------------------
-_______________________
+lsmoro_N640.grib.gbx9
+----
 
-==== case 2. \{collection} has multiple runtime.
+==== Case 2: {collection} has multiple runtime.
 
 * config name = coll2, partition=none, topdir=c:/tmp/gfsmrt
 * PofGC GC names = <config>-<topdir>-<yyyyMMdd-hhmmss>.ncx2
 * PofGC index name = <config>-<topdir>
 
-_______________________________________
----------------------------------------
+[source,bash]
+----
 GFS_CONUS_95km_20141010_0000.grib2
 GFS_CONUS_95km_20141010_0000.grib2.gbx9
 GFS_CONUS_95km_20141010_0600.grib2
@@ -123,17 +114,16 @@ GFS_CONUS_95km_20141010_0600.grib2.gbx9
 coll2-gfsmrt-20141010-000000.ncx2
 coll2-gfsmrt-20141010-060000.ncx2
 coll2-gfsmrt.ncx2
----------------------------------------
-_______________________________________
+----
 
-==== case 3. \{collection} has multiple runtimes, file partition
+==== Case 3: {collection} has multiple runtimes, file partition
 
 * config name = coll2, partition=none, topdir=c:/tmp/gfsmrt
 * PofGC GC names = <file>.ncx2
 * PofGC index name = <config>-<topdir>
 
-_______________________________________
----------------------------------------
+[source,bash]
+----
 GFS_CONUS_95km_20141010_1200.grib2
 GFS_CONUS_95km_20141010_1200.grib2.gbx9
 GFS_CONUS_95km_20141010_1200.grib2.ncx2
@@ -142,5 +132,4 @@ GFS_CONUS_95km_20141010_1800.grib2.gbx9
 GFS_CONUS_95km_20141010_1800.grib2.ncx2
 
 coll3-gfsfp.ncx2
----------------------------------------
-_______________________________________
+----

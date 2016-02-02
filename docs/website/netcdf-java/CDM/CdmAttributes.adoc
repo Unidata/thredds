@@ -3,20 +3,20 @@
 
 = CDM Attributes
 
-=== _ChunkSize
+== _ChunkSize
 
 A Variable Attribute indicating what chunking to use to store the data
 in a file. Used when writing netCDF-4 files. When an HDF5/ netCDF-4 is
 read, this attribute is added to the variable’s metadata.
 
-=== _Compress
+== _Compress
 
 A Variable Attribute indicating if compression should be used when
 writing the variable. Used when writing netCDF-4 files and for ncstream.
 Currently the only valid value of the attribute is *_deflate_*,
 indicating to use the deflate compression algorithm.
 
-=== _field_atts
+== _field_atts
 
 Allows attributes on individual fields in a Compound type in a NetCDF4 file. See <<Netcdf4CompoundAttributes#,Details>>
 

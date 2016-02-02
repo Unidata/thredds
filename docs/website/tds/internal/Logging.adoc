@@ -28,13 +28,15 @@ https://motherlode.ucar.edu:9443/thredds/admin/logs/[admin] interface
 
 Rolls over each day
 
-<how to turn on?>
+how to turn on?
 
 Example:
 
+----
 76.106.9.7 - - [18/Sep/2008:04:51:23 -0600] ``GET
 /thredds/radarServer/nexrad/level2/IDD?&stn=KMLB&time_start=1998-09-21T10:51:20&time_end=2008-09-19T10:51:20
 HTTP/1.1'' 200 408606 ``null'' ``Java/1.6.0_07'' 1719 +
+----
 
 [cols=",",]
 |=======================================================================
@@ -63,7 +65,7 @@ HTTP/1.1''
 |msecs |1719
 |=======================================================================
 
-=== Setting tomcat log levels in catalina.out
+== Setting tomcat log levels in catalina.out
 
 To disable this message you need to modify logging properties file. +
  If you have logging.properties in your tomcat/conf folder then make
@@ -95,30 +97,36 @@ You can change the location of the log4j configuration file with the
 _log4j-init-file_ context parameter in the thredds configuration file
 *$\{tomcat_home}/webapps/thredds/WEB-INF/web.xml.* file. For example:
 
------------------------------------------------
+[source,xml]
+----
  <context-param>
    <param-name>log4j-init-file</param-name>
    <param-value>/data/mylog4j.xml</param-value>
  </context-param>
------------------------------------------------
+----
 
 The value should be the absolute path to the log4j configuration file. +
 
 Each request processor should do the following.
 
-1.  Begin request:
-+
----------------------------------------------
+. Begin request:
+
+[source,java]
+----
 log.info( UsageLog.setupRequestContext(req));
----------------------------------------------
-2.  Optional information
-3.  End request. Make sure all return paths have a log message
-+
--------------------------------------------------------------------------------------
+----
+[start=2]
+. Optional information
+. End request. Make sure all return paths have a log message
+
+[source,java]
+----
 log.info( UsageLog.closingMessageForRequestContext(statusReturn, returnSizeInBytes));
--------------------------------------------------------------------------------------
-4.  Error processing. Each return path should have its own log message
-1.  A *FileNotFoundException* should not usually generate a Exception
+----
+
+[start=4]
+. Error processing. Each return path should have its own log message
+..  A *FileNotFoundException* should not usually generate a Exception
 message in the log file
 
 where:
@@ -129,7 +137,8 @@ where:
 
 Example:
 
------------------------------------------------------------------------------------------------------------
+[source,java]
+----
     log.info( UsageLog.setupRequestContext(req));
 
     GridDataset gds = null;
@@ -165,7 +174,7 @@ Example:
     }
 
     return;
------------------------------------------------------------------------------------------------------------
+----
 
 == ThreddsServlet logfile
 
@@ -173,7 +182,8 @@ Files are *\{tomcat_home}/content/thredds/logs/threddsServlet.log.*
 
 Currently rolls over every 10 Mb, keeping 10 files.
 
-----------------------------------------------------------------------------------------------------------------
+[source,xml]
+----
   <appender name="threddsServlet" class="org.apache.log4j.RollingFileAppender">
     <param name="File" value="${logdir}/threddsServlet.log"/>
     <param name="MaxFileSize" value="20MB"/>
@@ -183,17 +193,17 @@ Currently rolls over every 10 Mb, keeping 10 files.
       <!--param name="ConversionPattern" value="%d{ISO8601} [%10r - %10X{ID}] %-5p - %c - %m%n"/-->
     </layout>
   </appender>
+----
 
 
-
-
+[source,java]
+----
 "%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} [%10r][%8X{ID}] %-5p - %c - %m%n"
-----------------------------------------------------------------------------------------------------------------
+----
 
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----
 2006-01-24T17:31:41.452 -0700 [   2025609][      44] INFO  - thredds.servlet.ServletUtil - Remote host: 128.117.140.172 - Request: "GET /thredds/idd/radars.xml HTTP/1.1"
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----
 
 [cols=",,",]
 |=====================================================================
@@ -221,14 +231,15 @@ Currently rolls over every 10 Mb, keeping 10 files.
 
 *Start Transaction*
 
-----------------------------------------------------------------------------
+[source,java]
+----
 log.info( "Remote host: " + req.getRemoteHost() + " - Request: " + request);
-----------------------------------------------------------------------------
+----
 
 *End Transaction*
 
-------------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
 logStats.info( resCode + " " + ( ( resSizeInBytes != -1 ) ? String.valueOf( resSizeInBytes ) : "-" ) + " " + duration );
 log.info( "Request Completed - " + resCode + " - " + resSizeInBytes + " - " + duration);
-
-------------------------------------------------------------------------------------------------------------------------
+----

@@ -4,48 +4,26 @@
 = _Coordinate Attribute Convention (Tutorial)
  
 
-image:../images/CoordSys.png[image]
+image:../images/CoordSys.png[Coordinate Systems UML]
 
-________________________
---
-________________________
---
-________________________
---
-________________________
---
-________________________
 *Coordinate Systems UML*
-________________________
 
---
-________________________
-
---
-________________________
-
---
-________________________
-
---
-________________________
-
-=== See also :
+See also
 
 * <<../CDM/index#,CDM Object Model>>.
 * _Coordinate Attribute
 <<../reference/CoordinateAttributes#,Reference>>
 
-=== Contents:
+== Contents:
 
-1.  link:#Example1[Example 1]: Simple Coordinate Variables
-2.  link:#Example2[Example 2]: Coordinate System Variable
-3.  link:#Example3[Example 3]: Multiple Coordinate Systems
-4.  link:#Example4[Example 4]: Adding Coordinate Transforms
-5.  link:#Example5[Example 5]: Reusing Variables for Coordinate System
+. link:#Example1[Example 1]: Simple Coordinate Variables
+. link:#Example2[Example 2]: Coordinate System Variable
+. link:#Example3[Example 3]: Multiple Coordinate Systems
+. link:#Example4[Example 4]: Adding Coordinate Transforms
+. link:#Example5[Example 5]: Reusing Variables for Coordinate System
 and/or Coordinate Transform Variables
-6.  link:#Implicit[Implicit] Coordinate Systems
-7.  link:#CoordinateTransformVariables[Coordinate Transform Variables]
+. link:#Implicit[Implicit] Coordinate Systems
+. link:#CoordinateTransformVariables[Coordinate Transform Variables]
 
 '''''
 
@@ -53,7 +31,8 @@ and/or Coordinate Transform Variables
 
 === *Example 1: Simple Coordinate Variables*
 
------------------------------------------------------
+[code,bash]
+----
  dimensions:
    lon = 144;
    lat = 73;
@@ -64,39 +43,34 @@ and/or Coordinate Transform Variables
    float earth(time, level, lat, lon);
      earth:units = "K";
      earth:long_name = "mean Daily Soil temperature";
-     earth:_CoordinateAxes="time
-    level lat lon";
+     earth:_CoordinateAxes="timelevel lat lon";
 
    float air(time, level, lat, lon);
      air:units = "K";
      air:long_name = "mean Daily Air temperature";
-     air:_CoordinateAxes="time
-    level lat lon";
+     air:_CoordinateAxes="time level lat lon";
 
    float lat(lat);
      lat:long_name = "Latitude";
      lat:units = "degrees_north";
- lat:_CoordinateAxisType="Lat";
+     lat:_CoordinateAxisType="Lat";
 
    float lon(lon);
      lon:long_name = "Longitude";
      lon:units = "degrees_east";
-
-    lon:_CoordinateAxisType="Lon";
+     lon:_CoordinateAxisType="Lon";
 
     float level(level);
      level:units = "millibar";
      level:long_name = "Level";
      level:positive = "down";
-
-    level:_CoordinateAxisType="Pressure";
+     level:_CoordinateAxisType="Pressure";
 
    double time(time);
      time:units = "days since 1970-01-01 00:00:0.0";
      time:long_name = "Time";
-
-    time:_CoordinateAxisType="Time";
------------------------------------------------------
+     time:_CoordinateAxisType="Time";
+----
 
 In this simple case, both data Variables explicitly name their
 CoordinateAxes with the *_CoordinateAxes* attribute. Each CoordinateAxis
@@ -105,8 +79,8 @@ defined which both data Variables share.
 
 *Rule:* A CoordinateAxis is identified in one of 2 ways:
 
-1.  having the attribute ___CoordinateAxisType__.
-2.  being listed in a __CoordinateAxes_ attribute.
+. having the attribute ___CoordinateAxisType__.
+. being listed in a __CoordinateAxes_ attribute.
 
 **Rule**: A CoordinateSystem is uniquely determined by its list of
 CoordinateAxes.
@@ -116,7 +90,8 @@ Variable’s *_CoordinateAxes* attribute.
 
 === *Example 2: Coordinate System Variable*
 
----------------------------------------------------------------
+[code,bash]
+----
  dimensions:
    lon = 144;
    lat = 73;
@@ -157,7 +132,7 @@ Variable’s *_CoordinateAxes* attribute.
 
     char LatLonCoordinateSystem;
  LatLonCoordinateSystem:_CoordinateAxes = "time level lat lon";
----------------------------------------------------------------
+----
 
 In this case we create a __*Coordinate System Variable*__, a dummy
 variable whose purpose is to define a CoordinateSystem. The data
@@ -168,7 +143,8 @@ System Variable, which always has a *_CoordinateAxes* attribute.
 
 === Example 3: Multiple Coordinate Systems
 
------------------------------------------------------------------------------------------------------------
+[code,bash]
+----
 dimensions:
    y = 428;
    x = 614;
@@ -204,8 +180,7 @@ dimensions:
    double depth_below_surface(depth_below_surface);
      depth_below_surface:long_name = "Depth below land surface";
      depth_below_surface:units = "m";
-     depth_below_surface:_CoordinateAxisType
-  = "Height";
+     depth_below_surface:_CoordinateAxisType = "Height";
      depth_below_surface:_CoordinateZisPositive = "down";
 
    double lat(y, x);
@@ -219,11 +194,11 @@ dimensions:
      lon:_CoordinateAxisType = "Lon";
 
  char LatLonCoordinateSystem;
- LatLonCoordinateSystem:_CoordinateAxes = "time depth_below_surface lat lon";
+     LatLonCoordinateSystem:_CoordinateAxes = "time depth_below_surface lat lon";
 
   char ProjectionCoordinateSystem;
- ProjectionCoordinateSystem:_CoordinateAxes = "time depth_below_surface y x";
------------------------------------------------------------------------------------------------------------
+     ProjectionCoordinateSystem:_CoordinateAxes = "time depth_below_surface y x";
+----
 
 In this case, the data Variables have two coordinate systems, the
 *LatLonCoordinateSystem* and the **ProjectionCoordinateSystem**.
@@ -246,7 +221,8 @@ coordinate go up or down.
 
 === Example 4: Adding Coordinate Transforms
 
----------------------------------------------------------------------------------
+[code,bash]
+----
 dimensions:
    y = 428;
    x = 614;
@@ -281,16 +257,14 @@ dimensions:
 
   char ProjectionCoordinateSystem;
      ProjectionCoordinateSystem:_CoordinateAxes = "time depth_below_surface y x";
- ProjectionCoordinateSystem:_CoordinateTransforms = "LambertConformalProjection";
-
- char LambertConformalProjection;
- LambertConformalProjection:_CoordinateTransformType = "Projection";
- LambertConformalProjection:transform_name = "lambert_conformal_conic";
- LambertConformalProjection:standard_parallel = 25.0;
-
-  LambertConformalProjection:longitude_of_central_meridian = 265.0;
- LambertConformalProjection:latitude_of_projection_origin = 25.0;
----------------------------------------------------------------------------------
+     ProjectionCoordinateSystem:_CoordinateTransforms = "LambertConformalProjection";
+char LambertConformalProjection;
+    LambertConformalProjection:_CoordinateTransformType = "Projection";
+     LambertConformalProjection:transform_name = "lambert_conformal_conic";
+     LambertConformalProjection:standard_parallel = 25.0;
+     LambertConformalProjection:longitude_of_central_meridian = 265.0;
+     LambertConformalProjection:latitude_of_projection_origin = 25.0;
+----
 
 To create a CoordinateTransform, we define a _*Coordinate Transform
 Variable*_ (here called **LambertConformalProjection**), which is a
@@ -308,7 +282,8 @@ Coordinate System Variable’s *_CoordinateTransforms* attribute.
 === Example 5: Reusing Variables for Coordinate System and/or Coordinate
 Transform Variables
 
----------------------------------------------------------------------------------
+[code,bash]
+----
 dimensions:
    y = 428;
    x = 614;
@@ -325,17 +300,17 @@ dimensions:
      y:long_name = "y coordinate of projection";
      y:_CoordinateAxisType = "GeoY";
 
-   double x(x);
+  double x(x);
      x:units = "km";
      x:long_name = "x coordinate of projection";
      x:_CoordinateAxisType = "GeoX";
 
-   int time(time);
+  int time(time);
      time:long_name = "forecast time";
      time:units = "hours since 2003-09-03T00:00:00Z";
      time:_CoordinateAxisType = "Time";
 
-   double depth_below_surface(depth_below_surface);
+  double depth_below_surface(depth_below_surface);
      depth_below_surface:long_name = "Depth below land surface";
      depth_below_surface:units = "m";
      depth_below_surface:_CoordinateAxisType = "Height";
@@ -349,7 +324,7 @@ dimensions:
      ProjectionCoordinateSystem:standard_parallel = 25.0;
      ProjectionCoordinateSystem:longitude_of_central_meridian = 265.0;
      ProjectionCoordinateSystem:latitude_of_projection_origin = 25.0;
----------------------------------------------------------------------------------
+----
 
 Here we are using the *ProjectionCoordinateSystem* Variable as both a
 Coordinate System Variable and a Coordinate Transform Variable. In this
@@ -360,7 +335,8 @@ Variable.
 You can use any Variable as the Coordinate Transform Variable; here’s an
 example using the vertical Coordinate Axis to hold a vertical transform:
 
----------------------------------------------------------------------------
+[code,bash]
+----
 dimensions:
    y = 428;
    x = 614;
@@ -385,11 +361,9 @@ dimensions:
      :long_name = "hybrid level at midpoints (1000*(A+B))";
      :units = "level";
      :positive = "down";
-
-    :standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
- :formula_terms = "a: hyam b: hybm p0: P0 ps: PS";
-
-    :_CoordinateTransformType = "Vertical";
+     :standard_name = "atmosphere_hybrid_sigma_pressure_coordinate";
+     :formula_terms = "a: hyam b: hybm p0: P0 ps: PS";
+     :_CoordinateTransformType = "Vertical";
      :_CoordinateAxisType = "GeoZ";
      :_CoordinateZisPositive = "down";
 
@@ -408,12 +382,12 @@ dimensions:
      ProjectionCoordinateSystem:_CoordinateAxes = "level y x";
 
     ProjectionCoordinateSystem:_CoordinateTransforms = "level";
-       ProjectionCoordinateSystem:_CoordinateTransformType = "Projection";
-     ProjectionCoordinateSystem:transform_name = "lambert_conformal_conic";
-     ProjectionCoordinateSystem:standard_parallel = 25.0;
-     ProjectionCoordinateSystem:longitude_of_central_meridian = 265.0;
-     ProjectionCoordinateSystem:latitude_of_projection_origin = 25.0;
----------------------------------------------------------------------------
+    ProjectionCoordinateSystem:_CoordinateTransformType = "Projection";
+    ProjectionCoordinateSystem:transform_name = "lambert_conformal_conic";
+    ProjectionCoordinateSystem:standard_parallel = 25.0;
+    ProjectionCoordinateSystem:longitude_of_central_meridian = 265.0;
+    ProjectionCoordinateSystem:latitude_of_projection_origin = 25.0;
+----
 
 Here again we are using the *ProjectionCoordinateSystem* Variable as
 both a Coordinate System Variable and a Coordinate Transform Variable.
@@ -453,14 +427,14 @@ this way, which is useful, for example, if the data is a trajectory.
 Coordinate variables created this way are used for implicit
 *_CoordinateAxes* processing (next section). Example:
 
--------------------------------------------
+[code,bash]
+----
    double valtime(record);
      :long_name = "valid time";
      :units = "hours since 1992-1-1";
-
-  :_CoordinateAliasForDimension = "record";
- :_CoordinateAxisType = "Time";
--------------------------------------------
+     :_CoordinateAliasForDimension = "record";
+     :_CoordinateAxisType = "Time";
+----
 
 Note that its very important to also identify the Coordinate Axis type.
 
@@ -491,20 +465,22 @@ attribute to the Coordinate Transform Variable listing the names or
 types of Coordinate Axes. The Coordinate Transform will be addded to any
 Coordinate System that contains all named axes. For example:
 
-------------------------------------------------------------------------
+[code,bash]
+----
    char ProjectionCoordinateSystem;
      ProjectionCoordinateSystem:_CoordinateTransformType = "Projection";
- ProjectionCoordinateSystem:_CoordinateAxisTypes = "GeoX GeoY";
-------------------------------------------------------------------------
+     ProjectionCoordinateSystem:_CoordinateAxisTypes = "GeoX GeoY";
+----
 
 will apply to any CoordinateSystem that has both *GeoX* and *GeoY*
 Coordinate axes.
 
---------------------------------------------------------------------
+[code,bash]
+----
    char VerticalCoordinateSystem;
      VerticalCoordinateSystem:_CoordinateTransformType = "Vertical";
- VerticalCoordinateSystem:_CoordinateAxes = "hybrid";
---------------------------------------------------------------------
+     VerticalCoordinateSystem:_CoordinateAxes = "hybrid";
+----
 
 will apply to any CoordinateSystem that has the Coordinate ** Axis named
 ``hybrid''..
@@ -519,56 +495,55 @@ Coordinate System. At a minimum it must have a *transform_name*
 attribute. (alias *grid_mapping_name* or *standard_name* for CF
 compatability).
 
--------------------------------------------------------------------------
+[code,bash]
+----
  char Lambert_Conformal_Projection;
- Lambert_Conformal_Projection:transform_name = "lambert_conformal_conic";
-
-  Lambert_Conformal_Projection:standard_parallel = 25.0;
- Lambert_Conformal_Projection:longitude_of_central_meridian = 265.0;
-
-  Lambert_Conformal_Projection:latitude_of_projection_origin = 25.0;
--------------------------------------------------------------------------
+     Lambert_Conformal_Projection:transform_name = "lambert_conformal_conic";
+     Lambert_Conformal_Projection:standard_parallel = 25.0;
+     Lambert_Conformal_Projection:longitude_of_central_meridian = 265.0;
+     Lambert_Conformal_Projection:latitude_of_projection_origin = 25.0;
+----
 
 When a *Coordinate System* has only one *Coordinate Transform,* the
 information on the transform may be added directly to the Coordinate
 System Variable. The Variable acts as both a Coordinate System and a
 Coordinate Transform. Example:
 
-------------------------------------------------------------------------------
+----
  char ProjectionCoordinateSystem;
   ProjectionCoordinateSystem:_CoordinateAxes = "time depth_below_surface y x";
   ProjectionCoordinateSystem:transform_name = "lambert_conformal_conic";
- ProjectionCoordinateSystem:standard_parallel = 25.0;
-
+  ProjectionCoordinateSystem:standard_parallel = 25.0;
   ProjectionCoordinateSystem:longitude_of_central_meridian = 265.0;
- ProjectionCoordinateSystem:latitude_of_projection_origin = 25.0;
-------------------------------------------------------------------------------
+  ProjectionCoordinateSystem:latitude_of_projection_origin = 25.0;
+----
 
 You can use a CF grid mapping or dimensionless vertical coordinate as a
 transform:
 
-------------------------------------------------------------------------------
+----
  char ProjectionCoordinateSystem;
   ProjectionCoordinateSystem:_CoordinateAxes = "time depth_below_surface y x";
   ProjectionCoordinateSystem:_CoordinateTransforms = "Lambert_Conformal lev";
-------------------------------------------------------------------------------
+----
 
-code,CDL------------------------------------------------------------------
-code,CDL
+[code,bash]
+----
  int Lambert_Conformal;
   Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
   Lambert_Conformal:standard_parallel = 25.0;
   Lambert_Conformal:longitude_of_central_meridian = 265.0;
   Lambert_Conformal:latitude_of_projection_origin = 25.0;
-------------------------------------------------------------------
+----
 
-code,CDL------------------------------------------------------ code,CDL
+[code,bash]
+----
  float lev(lev) ;
   lev:long_name = "sigma at layer midpoints" ;
   lev:positive = "down" ;
   lev:standard_name = "atmosphere_sigma_coordinate" ;
   lev:formula_terms = "sigma: lev ps: PS ptop: PTOP" ;
-------------------------------------------------------
+----
 
 Generally the set of valid transforms are not specified by this
 *_Coordinates* Convention. The
@@ -584,8 +559,8 @@ Variable. You also need to add the *_CoordinateTransformType* attribute
 to make sure it is interpreted as a Coordinate Transform variable
 instead of a data variable.
 
-code,CDL-----------------------------------------------------------------------
-code,CDL
+[code,bash]
+----
  int Lambert_Conformal;
   Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
   Lambert_Conformal:standard_parallel = 25.0;
@@ -593,25 +568,21 @@ code,CDL
   Lambert_Conformal:latitude_of_projection_origin = 25.0;
    Lambert_Conformal:_CoordinateTransformType = "Projection";
    Lambert_Conformal:_CoordinateSystems = "ProjectionCoordinateSystem";
------------------------------------------------------------------------
+----
 
 For dealing with implicitly defined Coordinate Systems, you can use the
 *_CoordinateAxes* attribute:
 
-code,CDL------------------------------------------------------------------
-code,CDL
+[code,bash]
+----
  int Lambert_Conformal;
-  Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
-  Lambert_Conformal:standard_parallel = 25.0;
-  Lambert_Conformal:longitude_of_central_meridian = 265.0;
-  Lambert_Conformal:latitude_of_projection_origin = 25.0;
+   Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
+   Lambert_Conformal:standard_parallel = 25.0;
+   Lambert_Conformal:longitude_of_central_meridian = 265.0;
+   Lambert_Conformal:latitude_of_projection_origin = 25.0;
    Lambert_Conformal:_CoordinateTransformType = "Projection";
    Lambert_Conformal:_CoordinateAxes = "y x";
-------------------------------------------------------------------
+----
 
 This means to apply it to any Coordinate System that includes the x and
 y Coordinate Axes.
-
-'''''
-
-image:../nc.gif[image] This document was last updated July 2013
