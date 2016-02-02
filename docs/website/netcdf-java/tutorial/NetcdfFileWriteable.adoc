@@ -9,122 +9,105 @@ write data to new or existing netCDF-3 files.
 This class is deprecated in CDM 4.3+. Use
 <<NetcdfWriting#,NetcdfWriter>> instead.
 
-=== Creating a new netCDF-3 file
+== Creating a new netCDF-3 file
 
-code,MsoNormal-------------------------------------------------------------------------------
-code,MsoNormal
+[source,java]
+----
    String filename = "testWrite.nc";
-1) NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false);
--------------------------------------------------------------------------------
+   NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false); // <1>
 
-------------------------------------------------------
    // add dimensions
-2) Dimension latDim = ncfile.addDimension("lat", 64);
+   Dimension latDim = ncfile.addDimension("lat", 64); // <2>
    Dimension lonDim = ncfile.addDimension("lon", 128);
-------------------------------------------------------
 
-------------------------------------------------------------
    // define Variable
    ArrayList dims = new ArrayList();
    dims.add( latDim);
    dims.add( lonDim);
-3) ncfile.addVariable("temperature", DataType.DOUBLE, dims);
-4) ncfile.addVariableAttribute("temperature", "units", "K");
-------------------------------------------------------------
-
------------------------------------------------------------------------------
+   ncfile.addVariable("temperature", DataType.DOUBLE, dims); // <3>
+   ncfile.addVariableAttribute("temperature", "units", "K"); // <4>
    // add a 1D attribute of length 3
-5) Array data = Array.factory( int.class, new int [] {3}, new int[] {1,2,3});
-6) ncfile.addVariableAttribute("temperature", "scale", data);
------------------------------------------------------------------------------
+   Array data = Array.factory( int.class, new int [] {3}, new int[] {1,2,3}); // <5>
+   ncfile.addVariableAttribute("temperature", "scale", data); // <6>
 
-------------------------------------------------------------
    // add a string-valued variable: char svar(80)
    Dimension svar_len = ncfile.addDimension("svar_len", 80);
    dims = new ArrayList();
    dims.add( svar_len);
-7) ncfile.addVariable("svar", DataType.CHAR, dims);
-------------------------------------------------------------
+   ncfile.addVariable("svar", DataType.CHAR, dims); // <7>
 
------------------------------------------------------
    // string array: char names(3, 80)
    Dimension names = ncfile.addDimension("names", 3);
    ArrayList dima = new ArrayList();
    dima.add(names);
    dima.add(svar_len);
-8) ncfile.addVariable("names", DataType.CHAR, dima);
------------------------------------------------------
+   ncfile.addVariable("names", DataType.CHAR, dima); // <8>
 
-------------------------------------------------------------------
    // how about a scalar variable?
-9) ncfile.addVariable("scalar", DataType.DOUBLE, new ArrayList());
-------------------------------------------------------------------
+   ncfile.addVariable("scalar", DataType.DOUBLE, new ArrayList()); // <9>
 
---------------------------------------------------------------
    // add global attributes
-10)ncfile.addGlobalAttribute("yo", "face");
+   ncfile.addGlobalAttribute("yo", "face"); // <10>
    ncfile.addGlobalAttribute("versionD", new Double(1.2));
    ncfile.addGlobalAttribute("versionF", new Float(1.2));
    ncfile.addGlobalAttribute("versionI", new Integer(1));
    ncfile.addGlobalAttribute("versionS", new Short((short)2));
    ncfile.addGlobalAttribute("versionB", new Byte((byte)3));
---------------------------------------------------------------
 
-----------------------------------------------------------------------------
    // create the file
    try {
-11)  ncfile.create();
+     ncfile.create(); // <11>
    } catch (IOException e) {
-10)  System.err.println("ERROR creating file "+ncfile.getLocation()+"\n"+e);
+    System.err.println("ERROR creating file "+ncfile.getLocation()+"\n"+e); // <12>
    }
-----------------------------------------------------------------------------
+----
 
-1.  Create new netcdf-3 file with the given filename, with __fill =
+<1> Create new netcdf-3 file with the given filename, with __fill =
 false__. Seting _fill = true_ causes everything to be written twice:
 first with the fill value, then with the data values. If you know you
 will write all the data, you dont need to use fill. If you don’t know if
 all the data will be written, turning fill on ensures that any values
 not written will have the fill value. Otherwise those values will be
 undefined: possibly zero, or possibly garbage.
-2.  Create two **Dimensions**, named _lat_ and __lon__, of lengths 64
+<2> Create two **Dimensions**, named _lat_ and __lon__, of lengths 64
 and 128 respectively, and add them to the file.
-3.  Create a list consisting of the two Dimension, and create a
+<3> Create a list consisting of the two Dimension, and create a
 *Variable* named __temperature__, of type **double**, with shape (lat,
 lon) .
-4.  Add an *Attribute* to the _temperature_ Variable, with name _units_
+<4> Add an *Attribute* to the _temperature_ Variable, with name _units_
 and value __K__.
-5.  Create a 1D *Array* of length 3, whose values are \{1,2,3}.
+<5> Create a 1D *Array* of length 3, whose values are {1,2,3}.
 Attributes can be scalars or 1D arrays of any type and length.
-6.  Add an attribute to the _temperature_ Variable, with name scale and
+<6> Add an attribute to the _temperature_ Variable, with name scale and
 value (1,2,3).
-7.  Create a Variable named _svar_ of type _character_ with length 80.
-8.  Create a 2D Variable named _names_ of type _character_ with shape
+<7> Create a Variable named _svar_ of type _character_ with length 80.
+<8> Create a 2D Variable named _names_ of type _character_ with shape
 (3,80).
-9.  Create a scalar Variable named _scalar_ of type __double__. Note
+<9> Create a scalar Variable named _scalar_ of type __double__. Note
 that the empty ArrayList means that it is a scalar, ie has no
 Dimensions.
-10. Create various global Attributes of different types.
-11. Create the file. At this point the (empty) file will be written to
+<10> Create various global Attributes of different types.
+<11> Create the file. At this point the (empty) file will be written to
 disk, and the metadata (Dimensions, Variables and Atributes) is fixed
 and cannot be changed or added.
-12. The *ncfile.getLocation()* method will return the filename. +
+<12> The *ncfile.getLocation()* method will return the filename.
 
-=== Writing data to a new or existing file
+== Writing data to a new or existing file
 
 You can now start writing data to the new file. Or you can open an
 existing file for example:
 
-code,MsoNormal--------------------------------------------------------------------------------
-code,MsoNormal
+[source,java]
+----
   NetcdfFileWriteable ncfile = NetcdfFileWriteable.openExisting(location, fill);
---------------------------------------------------------------------------------
+----
 
 In both cases the data writing is the same, for example:
 
-code,MsoNormal------------------------------------------------------------------------------
-code,MsoNormal
+[source,java]
+----
    // create some data
-1) ArrayDouble A = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength());
+   ArrayDouble A = new ArrayDouble.D2(latDim.getLength(), lonDim.getLength()); // <1>
    int i,j;
    Index ima = A.getIndex();
    for (i=0; i<latDim.getLength(); i++) {
@@ -132,38 +115,30 @@ code,MsoNormal
        A.setDouble(ima.set(i,j), (double) (i*1000000+j*1000));
      }
    }
-------------------------------------------------------------------------------
 
-----------------------------------------------
-2) int[] origin = new int[2];
+   int[] origin = new int[2]; // <2>
    try {
-3)   ncfile.write("temperature", origin, A);
+     ncfile.write("temperature", origin, A); // <3>
    } catch (IOException e) {
      System.err.println("ERROR writing file");
    } catch (InvalidRangeException e) {
      e.printStackTrace();
    }
 
-----------------------------------------------
-
-------------------------------------------------------------
    // write char variable as String
    try {
-4)   ArrayChar ac2 = new ArrayChar.D1(svar_len.getLength());
+     ArrayChar ac2 = new ArrayChar.D1(svar_len.getLength()); // <4>
      ac2.setString( "Two pairs of ladies stockings!");
-5)   ncfile.write("svar2", ac2);
+     ncfile.write("svar2", ac2); // <5>
    } catch (IOException e) {
      System.err.println("ERROR writing Achar2");
    } catch (InvalidRangeException e) {
      e.printStackTrace();
    }
 
-------------------------------------------------------------
-
--------------------------------------------------------------------------------
  // write String array
    try {
-6)   ArrayChar ac2 = new ArrayChar.D2(names.getLength(), svar_len.getLength());
+     ArrayChar ac2 = new ArrayChar.D2(names.getLength(), svar_len.getLength()); // <6>
      ac2.setString( 0, "0 pairs of ladies stockings!");
      ac2.setString( 1, "1 pair of ladies stockings!");
      ac2.setString( 2, "2 pairs of ladies stockings!");
@@ -173,12 +148,10 @@ code,MsoNormal
    } catch (InvalidRangeException e) {
      e.printStackTrace();
    }
--------------------------------------------------------------------------------
 
--------------------------------------------------
    // write scalar data
    try {
-7)   ArrayDouble.D0 datas = new ArrayDouble.D0();
+     ArrayDouble.D0 datas = new ArrayDouble.D0(); // <7>
      datas.set(222.333);
      ncfile.write("scalar", datas);
    } catch (IOException e) {
@@ -186,180 +159,141 @@ code,MsoNormal
    } catch (InvalidRangeException e) {
      e.printStackTrace();
    }
--------------------------------------------------
 
-----------------------------
    try {
-8)   ncfile.close();
+     ncfile.close(); // <8>
    } catch (IOException e) {
      e.printStackTrace();
    }
-----------------------------
+----
 
-1.  Much of the work of writing is constructing the data Arrays. Here we
+<1> Much of the work of writing is constructing the data Arrays. Here we
 create a 2D Array of shape (lat, lon) and fill it with some values.
-2.  A newly created Java integer array is guarenteed to be initialized
+<2> A newly created Java integer array is guarenteed to be initialized
 to zeros.
-3.  We write the data to the _temperature_ Variable, with *origin* all
+<3> We write the data to the _temperature_ Variable, with *origin* all
 zeros. The *shape* is taken from the data Array.
-4.  The *ArrayChar* class has special methods to make it convenient to
+<4> The *ArrayChar* class has special methods to make it convenient to
 work with Strings. Note that we use the _type and rank specific
 constructor_ **ArrayChar.D1**. The **setString**(String val) method is
 for rank one ArrayChar objects.
-5.  Write the data. Since we dont pass in an origin parameter, it is
+<5> Write the data. Since we dont pass in an origin parameter, it is
 assumed to be all zeroes.
-6.  The **setString**(int index, String val) method is for rank two
+<6> The **setString**(int index, String val) method is for rank two
 ArrayChar objects.
-7.  Working with _type and rank specific_ Array objects provides
+<7> Working with _type and rank specific_ Array objects provides
 convenient **set**() methods. Here, we have a rank-0 (scalar) double
 Array, whose set() methods sets the scalar value.
-8.  You must close the file when you are done, else you risk not writing
+<8> You must close the file when you are done, else you risk not writing
 the data to disk. **NetcdfFileWriteable**.flush() will flush to disk
-without closing. +
+without closing.
 
-=== Writing data one record at a time along the record dimension
+== Writing data one record at a time along the record dimension
 
---------------------------------------------------------------------------------
+[source,java]
+----
 public void testWriteRecordAtaTime() throws IOException, InvalidRangeException {
 
    NetcdfFileWriteable writeableFile = NetcdfFileWriteable.createNew(fileName);
---------------------------------------------------------------------------------
 
--------------------------------------------------------------------
    // define dimensions, including unlimited
    Dimension latDim = writeableFile.addDimension("lat", 3);
    Dimension lonDim = writeableFile.addDimension("lon", 4);
    Dimension timeDim = writeableFile.addUnlimitedDimension("time");
--------------------------------------------------------------------
 
----------------------------------------
    // define Variables
    Dimension[] dim3 = new Dimension[3];
    dim3[0] = timeDim;
    dim3[1] = latDim;
    dim3[2] = lonDim;
----------------------------------------
 
-------------------------------------------------------------------------------
    writeableFile.addVariable("lat", DataType.FLOAT, new Dimension[] {latDim});
    writeableFile.addVariableAttribute("lat", "units", "degrees_north");
-------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------
    writeableFile.addVariable("lon", DataType.FLOAT, new Dimension[] {lonDim});
    writeableFile.addVariableAttribute("lon", "units", "degrees_east");
-------------------------------------------------------------------------------
 
-------------------------------------------------------------------------------
    writeableFile.addVariable("rh", DataType.INT, dim3);
    writeableFile.addVariableAttribute("rh", "long_name", "relative humidity");
    writeableFile.addVariableAttribute("rh", "units", "percent");
-------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
    writeableFile.addVariable("T", DataType.DOUBLE, dim3);
    writeableFile.addVariableAttribute("T", "long_name", "surface temperature");
    writeableFile.addVariableAttribute("T", "units", "degC");
--------------------------------------------------------------------------------
 
----------------------------------------------------------------------------------
    writeableFile.addVariable("time", DataType.INT, new Dimension[] {timeDim});
    writeableFile.addVariableAttribute("time", "units", "hours since 1990-01-01");
----------------------------------------------------------------------------------
 
---------------------------
    // create the file
-1) writeableFile.create();
---------------------------
+   writeableFile.create(); // <1>
 
------------------------------------------------------------------------------------
    // write out the non-record variables
-2) writeableFile.write("lat", Array.factory(new float[] {41, 40, 39}));
+   writeableFile.write("lat", Array.factory(new float[] {41, 40, 39})); // <2>
    writeableFile.write("lon", Array.factory(new float[] {-109, -107, -105, -103}));
------------------------------------------------------------------------------------
 
--------------------------------------------------
    //// heres where we write the record variables
--------------------------------------------------
 
--------------------------------------------------------------------------------------------
    // different ways to create the data arrays.
    // Note the outer dimension has shape 1, since we will write one record at a time
-3) ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength());
+   ArrayInt rhData = new ArrayInt.D3(1, latDim.getLength(), lonDim.getLength()); // <3>
    ArrayDouble.D3 tempData = new ArrayDouble.D3(1, latDim.getLength(), lonDim.getLength());
    Array timeData = Array.factory( DataType.INT, new int[] {1});
    Index ima = rhData.getIndex();
--------------------------------------------------------------------------------------------
 
---------------------------------------
    int[] origin = new int[] {0, 0, 0};
 
    int[] time_origin = new int[] {0};
---------------------------------------
 
-----------------------------------------------------------------------------------------
    // loop over each record
-4) for (int time=0; time<10; time++) {
+   for (int time=0; time<10; time++) { // <4>
      // make up some data for this record, using different ways to fill the data arrays.
-5.1) timeData.setInt(timeData.getIndex(), time * 12);
+     timeData.setInt(timeData.getIndex(), time * 12); // <5>
 
      for (int lat=0; lat<latDim.getLength(); lat++) {
        for (int lon=0; lon<lonDim.getLength(); lon++) {
-5.2)     rhData.setInt(ima.set(0, lat, lon), time * lat * lon);
-5.3)     tempData.set(0, lat, lon, time * lat * lon / 3.14159);
+         rhData.setInt(ima.set(0, lat, lon), time * lat * lon); // <6>
+         tempData.set(0, lat, lon, time * lat * lon / 3.14159); // <7>
        }
      }
-----------------------------------------------------------------------------------------
 
------------------------------------------
      // write the data out for one record
      // set the origin here
-6)   time_origin[0] = time;
+     time_origin[0] = time; // <8>
      origin[0] = time;
------------------------------------------
 
---------------------------------------------------------
-7)   writeableFile.write("rh", origin, rhData);
+     writeableFile.write("rh", origin, rhData); // <9>
      writeableFile.write("T", origin, tempData);
      writeableFile.write("time", time_origin, timeData);
 
    } // loop over record
---------------------------------------------------------
 
-------------------------
   // all done
   writeableFile.close();
 }
 ------------------------
 
-1.  Define the dimensions, variables, and attributes. Note the use of
+<1> Define the dimensions, variables, and attributes. Note the use of
 *NetcdfFileWriteable.addUnlimitedDimension()* to add a _record_
 dimension.
-2.  Write the non-record variables
-3.  Create the arrays to hold the data. Note that the outer dimension
+<2> Write the non-record variables
+<3> Create the arrays to hold the data. Note that the outer dimension
 has shape of 1, since we will write only one record at a time.
-4.  Loop over the unlimited (record) dimension. Each loop will write one
+<4> Loop over the unlimited (record) dimension. Each loop will write one
 record.
-5.  Set the data for this record, using three different ways to fill the
-data arrays. In all cases the first dimension has index = 0.
-1.  *Array.setInt(Index ima, int value)* : _timeData.getIndex()_ returns
+<5> Set the data for this record, using three different ways to fill the
+data arrays. In all cases the first dimension has index = 0. First, *Array.setInt(Index ima, int value)* : _timeData.getIndex()_ returns
 an Index initialized to zero.
-2.  *Array.setInt(Index ima, int value)* : _ima.set(0, lat, lon)_
+<6> *Array.setInt(Index ima, int value)* : _ima.set(0, lat, lon)_
 explicitly sets the dimension indices
-3.  *ArrayDouble.D3.set(int i, int j, int k, double value):* by using a
+<7> *ArrayDouble.D3.set(int i, int j, int k, double value):* by using a
 type and rank specific Array class (ArrayDouble.D3), we don’t need to
 use an _Index_ object.
-6.  Set the origin to the current record number. The other dimensions
+<8> Set the origin to the current record number. The other dimensions
 have origin 0.
-7.  Write the data at the specified origin. +
- +
+<9> Write the data at the specified origin.
 
-=== Creating a file from NcML +
+== Creating a file from NcML
 
 A useful approach is to create your file using NcML (java library) or
 CDL (using ncgen program), and then populate the data variables with a
 program.
-
-'''''
-
-image:../nc.gif[image] This document was last updated on July 2013

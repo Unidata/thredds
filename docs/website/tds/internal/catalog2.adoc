@@ -7,47 +7,46 @@ _6/12/2015_
 
 == ESGF Mode
 
-1.  DataRoots are in top catalog.
-2.  Global services in top catalog
-3.  Top catalog always read in and cached
-4.  DatasetTracker persists _restrict, ncml_
-5.  Use CatalogScan with watches
-6.  Updating
-1.  If no cache, read in all catalogs into cache, record lastRead
+. DataRoots are in top catalog.
+. Global services in top catalog
+. Top catalog always read in and cached
+. DatasetTracker persists _restrict, ncml_
+. Use CatalogScan with watches
+. Updating
+.. If no cache, read in all catalogs into cache, record lastRead
 (global i think)
-2.  If cache, read catalog lastModified, test against lastRead, reread
+.. If cache, read catalog lastModified, test against lastRead, reread
 if needed
-3.  Manual reinit (just remove cache ??)
-4.  CatalogScan has watch, if changed, then reread that catalog.
-5.  This doesnt solve the problem of deletions.
-1.  (drag and drop into delete folder ?)
-2.  keep copy of old catalog
-3.  keep track of what datasets belong to what catalog
+.. Manual reinit (just remove cache ??)
+.. CatalogScan has watch, if changed, then reread that catalog.
+.. This doesnt solve the problem of deletions.
+... (drag and drop into delete folder ?)
+... keep copy of old catalog
+... keep track of what datasets belong to what catalog
 
 More General
 
-1.  DataRootPathMatcher could persist all data roots (dir, datasetScan,
+. DataRootPathMatcher could persist all data roots (dir, datasetScan,
 FC)
-2.  DatasetTracker could persist found metadata after cracking the file
+. DatasetTracker could persist found metadata after cracking the file
 (space/time extents, global attributes)
 
 == State redesign
 
 _3/30/2015_
 
-1.  Ids vs paths
-2.  dont requires default service, can be added globally
-3.  should we also cache dynamic catalogs (catref, fc) ?
+. Ids vs paths
+. dont requires default service, can be added globally
+. should we also cache dynamic catalogs (catref, fc) ?
 
 4/1/2015
 
 Config version 2
 
-1.  Put dataset roots, services seperate, maybe a catalog ?
-2.  Put catalogs that might change in a seperate directory tree.
-3.
+. Put dataset roots, services seperate, maybe a catalog ?
+. Put catalogs that might change in a seperate directory tree.
 
-=== TdsContext
+== TdsContext
 
 Implements ServletContextAware so it gets a ServletContext and performs
 most initial THREDDS set up.
@@ -55,138 +54,144 @@ most initial THREDDS set up.
 Not sure if it needs to have a ``reinit'' ? Perhaps this should be the
 object that does not reinit.
 
-1.  checks version
-2.  check for latest stable and development release versions
-3.  sets the content directory
-4.  reads persistent user defined params and runs ThreddsConfig.init
-5.  creates, if don’t exist, log and public dirs in content directory
-6.  Sets InvDatasetScan and InvDatasetFeatureCollection properties
-7.  Get default and jsp dispatchers from servletContext
-8.  Creates and initializes the TdsConfigMapper (how is this used? is
-not a instance field)
-9.  CdmInit is then called (by Spring)
+. checks version
+. check for latest stable and development release versions
+. sets the content directory
+. reads persistent user defined params and runs ThreddsConfig.init
+. creates, if don’t exist, log and public dirs in content directory
+. Sets InvDatasetScan and InvDatasetFeatureCollection properties
+. Get default and jsp dispatchers from servletContext
+. Creates and initializes the TdsConfigMapper (how is this used? is not a instance field)
+. CdmInit is then called (by Spring)
 
--------------------------------------------------------------------
-lots of state in TdsContext; not immutable; effectively a singleton
--------------------------------------------------------------------
+* lots of state in TdsContext
+* not immutable
+* effectively a singleton
 
-=== ConfigCatalogCache
+== ConfigCatalogCache
 
-1.  all acesses must come through here
-2.  reloads when not in cache, using *ConfigCatalogBuilder*
-3.  set maximum number of cache entries (currently 1000)
-4.  expires ??
-5.  should we also cache dynamic catalogs (catref, fc) ?
+. all acesses must come through here
+. reloads when not in cache, using *ConfigCatalogBuilder*
+. set maximum number of cache entries (currently 1000)
+. expires ??
+. should we also cache dynamic catalogs (catref, fc) ?
 
----------------------------------------------------------------------
+[source,java]
+----
 com.google.common.cache.LoadingCache<String, ConfigCatalog> cache
----------------------------------------------------------------------
+----
 
-=== ConfigCatalogInitialization
+== ConfigCatalogInitialization
 
-1.  reads configuration catalogs
-1.  finds DatasetRoots, DatasetScan, FeatureCollection
-2.  finds restrictAccess, NcML
-3.  look for duplicate ids (paths?)
-2.  constructs the PathMatcher
-3.  configures the datasetManager
-4.  adds a watch on all configCatalogs, or on directories (ESG mode)
-5.  Keep track of all root catalogs (all other catalogs can be found
+. reads configuration catalogs
+.. finds DatasetRoots, DatasetScan, FeatureCollection
+.. finds restrictAccess, NcML
+.. look for duplicate ids (paths?)
+. constructs the PathMatcher
+. configures the datasetManager
+. adds a watch on all configCatalogs, or on directories (ESG mode)
+. Keep track of all root catalogs (all other catalogs can be found
 from these)
-+
----------------------------------------------------------------------
+
+[source,java]
+----
 @Autowired private DataRootPathMatcher<DataRoot> dataRootPathMatcher;
 @Autowired private DatasetTracker datasetTracker;
 List<String> rootCatalogKeys;
----------------------------------------------------------------------
+----
 
-=== DataRoot
+== DataRoot
 
 A DataRoot associates a urlPath to a directoy, **DatasetScan**, or
 **FeatureCollectionRef**. This is where the references to those objects
 are held, preventing GC.
 
------------------------------------------------------------------------------------------------------------
+[source,java]
+----
 private final String path;          // match this path
 private final String dirLocation;   // to this directory
 private final DatasetScan scan;     // the DatasetScan that created this (may be null)
 private final FeatureCollectionRef featCollection; // the FeatureCollection that created this (may be null)
------------------------------------------------------------------------------------------------------------
+----
 
-=== DataRootPathMatcher
+== DataRootPathMatcher
 
 Holds the DataRoots, preventing GC.
 
-1.  An in-memory TreeSet of DataRoot paths, allowing ``longest match''
+. An in-memory TreeSet of DataRoot paths, allowing ``longest match''
 of request -> DataRoot path
-2.  A map DataRoot path -> DataRoot. Could be stored in external cache
+. A map DataRoot path -> DataRoot. Could be stored in external cache
 if needed.
 
---------------------------------------------------------------------------------------------------
+[source,java]
+----
 private final TreeSet<String> treeSet;    // this should be in-memory for speed
 private final Map<String, T> map;         // this could be turned into an off-heap cache if needed
---------------------------------------------------------------------------------------------------
+----
 
-=== DataRootManager
+== DataRootManager
 
-1.  *getLocationFromRequestPath()*
-2.  *findDataRootMatch()*
-3.  *getCatalog();* this is here because of need for dataRoots to find
-datasetScan, featureCollection (dynamic catalogs)
+. *getLocationFromRequestPath()*
+. *findDataRootMatch()*
+. *getCatalog();* this is here because of need for dataRoots to find
 
----------------------------------------------------------------------
+atasetScan, featureCollection (dynamic catalogs)
+
+[source,java]
+----
 @Autowired private DataRootPathMatcher<DataRoot> dataRootPathMatcher;
----------------------------------------------------------------------
+----
 
-=== CatalogManager
+== CatalogManager
 
-1.  **getCatalog()**, called by CatalogServiceController
+. **getCatalog()**, called by CatalogServiceController
 
------------------------------------------------------------------
+[source,java]
+----
 @Autowired private DataRootManager dataRootManager;
 @Autowired private ConfigCatalogCache ccc;
 @Autowired private FeatureCollectionCache featureCollectionCache;
------------------------------------------------------------------
+----
 
-=== DatasetTracker
+== DatasetTracker
 
 Maybe eventually track all metadata
 
 * String findResourceControl(String path);
 * String findNcml(String path);
 
-=== DatasetManager
+== DatasetManager
 
 Turns request into CDM Dataset objects. Fronted by
 **TdsRequestedDataset**.
 
-1.  getLocationFromRequestPath(String reqPath)
-2.  findResourceControl()
-3.  openNetcdfFile()
-4.  openGridDataset()
-5.  openGridCoverage()
-6.  openPointDataset()
+. getLocationFromRequestPath(String reqPath)
+. findResourceControl()
+. openNetcdfFile()
+. openGridDataset()
+. openGridCoverage()
+. openPointDataset()
 
---------------------------------------------------------------------
+[source,java]
+----
 @Autowired private DataRootManager dataRootManager;
 @Autowired private FeatureCollectionCache featureCollectionCache;
 @Autowired private Authorizer restrictedDatasetAuthorizer;
 @Autowired private DatasetTracker datasetTracker;
 
 private ArrayList<DatasetSource> datasetSources = new ArrayList<>();
---------------------------------------------------------------------
+----
 
-Currently we dont have access to the catalog Dataset object. Could we?
+Currently we don't have access to the catalog Dataset object. Could we?
 
-1.  DataRootPathMatcher gives you the dataRoot; if DatasetScan or
+. DataRootPathMatcher gives you the dataRoot; if DatasetScan or
 FeatureCollection then done.
-2.  Otherwise, can we have a (possibly external) map of urlPath ->
+. Otherwise, can we have a (possibly external) map of urlPath ->
 Dataset ??
-3.  Can we get dataset to be independent so can be serialized and cached
-?
-4.  Open the file, extract metadata into the Dataset element. What about
+. Can we get dataset to be independent so can be serialized and cached?
+. Open the file, extract metadata into the Dataset element. What about
 for datasetScan ??
-5.  Let the Catalog use the new Dataset, maybe write the catalog back
+. Let the Catalog use the new Dataset, maybe write the catalog back
 out with it ??
 
 If you pay the price of fetching Dataset for every request, can do away
@@ -199,10 +204,11 @@ Tracks NcML as a map *requestPath -> Dataset*
 
 * Dataset.getNcmlElement()
 
------------------------------------------------------------------------------------------------------
+[source,java]
+----
 // InvDataset (not DatasetScan, DatasetFmrc) that have an NcML element in it. key is the request Path
 private Map<String, Dataset> ncmlDatasetHash = new HashMap<>();
------------------------------------------------------------------------------------------------------
+----
 
 * could have Set<reqPath> hasNcml, and Map<reqPath,Dataset> all ??
 
@@ -211,27 +217,28 @@ Track restricted access datasets
 * map of *requestPath -> restrictAccess*
 * PathMatcher of *requestPath -> restrictAccess*
 
----------------------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
 // resource control
 private HashMap<String, String> resourceControlHash = new HashMap<>(); // path, restrictAccess string for datasets
 private volatile PathMatcher<String> resourceControlMatcher = new PathMatcher<>(); // path, restrictAccess string for datasetScan
----------------------------------------------------------------------------------------------------------------------------------
+----
 
 Track DatasetSource (only used by LAS)
 
-------------------------------------------------------------------------------------------------------
+[source,java]
+----
 // list of dataset sources. note we have to search this each call to getNetcdfFile - most requests (!)
 // possible change to one global hash table request
 private ArrayList<DatasetSource> sourceList = new ArrayList<>();
-------------------------------------------------------------------------------------------------------
-
- 
+----
 
 == URL redesign
 
 https://localhost:8443/thredds/admin/spring/map
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+[source,bash]
+----
     [/admin/showFmrc, /admin/showFmrc/*]: thredds.server.admin.CollectionController.showFmrcCache()
     [/admin/collection/showStatus]: thredds.server.admin.CollectionController.handleCollectionStatus()
     [/admin/collection/showStatus.csv]: thredds.server.admin.CollectionController.handleCollectionStatusCsv()
@@ -265,18 +272,10 @@ https://localhost:8443/thredds/admin/spring/map
     [/info/serverInfo.xml]: thredds.server.serverinfo.ServerInfoController.getServerInfoXML()
     [/view/{viewer}.jnlp]: thredds.server.viewer.ViewerController.launchViewer()
     [/wcs/**]: thredds.server.wcs.WCSController.doGet()
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----
 
-Notes
+Notes:
 
 * opendap not in here
 * cdmrfeature is wrong
 * ncss needs to be disambiguated, prob back to ncss/grid and ncss/point
-
- 
-
- 
-
- 
-
-=

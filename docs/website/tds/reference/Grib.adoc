@@ -1,14 +1,11 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-:stylesheet: ../tds_adoc.css
-:linkcss:
-
 = GRIB
 
-== 1 Standards ==
+== Standards
 
-==== GRIB1 and GRIB2
+=== GRIB1 and GRIB2
 
 The World Meteorological Organization (WMO) Commission for Basic Systems (CBS) met in 1985 to create the GRIB (GRIdded Binary) format.
 GRIB Edition 1 was approved in February 1994. GRIB Edition 2 format was approved in 2003. Transition to GRIB-2 has been slow, despite the severe limitations of GRIB-1.
@@ -16,7 +13,7 @@ By international treaty, national weather services are required to publish their
 
 Data is stored in compressed binary format, replacing earlier text encoding formats.
 
-==== Standard Tables / Local Tables
+=== Standard Tables / Local Tables
 
 Information in the files references external tables, either WMO standard tables or local tables defined by each National Center.
 For criticism of GRIB table handling practices, see: http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[Archiving in GRIB considered Harmful].
@@ -30,18 +27,18 @@ For criticism of GRIB table handling practices, see: http://www.unidata.ucar.edu
 
 NCEP does not publish their tables in a machine-readable format, so we periodically screenscrape their HTML pages. The results are stored in the THREDDS GIT site.
 
-- NCEP GRIB-1 Tables: http://www.nco.ncep.noaa.gov/pmb/docs/on388/[Original]  https://github.com/Unidata/thredds/tree/master/grib/src/main/resources/resources/grib1/ncep[CDM XML]
-- NCEP GRIB-2 Tables: http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml[Original] https://github.com/Unidata/thredds/tree/master/grib/src/main/resources/resources/grib2/ncep[CDM XML]
+* NCEP GRIB-1 Tables: http://www.nco.ncep.noaa.gov/pmb/docs/on388/[Original]  https://github.com/Unidata/thredds/tree/master/grib/src/main/resources/resources/grib1/ncep[CDM XML]
+* NCEP GRIB-2 Tables: http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml[Original] https://github.com/Unidata/thredds/tree/master/grib/src/main/resources/resources/grib2/ncep[CDM XML]
 
 ==== NCAR
 
-- NCAR / RDS has extensive documentation on the datasets they support: http://rda.ucar.edu/
-- Example : http://rda.ucar.edu/datasets/ds628.0/docs/
+* NCAR / RDS has extensive documentation on the datasets they support: http://rda.ucar.edu/
+* Example : http://rda.ucar.edu/datasets/ds628.0/docs/
 
 
-== 2 Raw GRIB
+== Raw GRIB
 
-==== Streaming
+=== Streaming
 
 GRIB is a record-oriented format, each record is nominally independent of any other. GRIB files typically consist of concateneated GRIB records.
 To read the individual records in a GRIB-1 file, one can use the following:
@@ -62,62 +59,51 @@ To read the individual records in a GRIB-1 file, one can use the following:
 Grib2RecordScanner and GRIB2record are similarly used for GRIB-2 records. See those classes for more details. Note that these are not considered public APIs.
 
 
-==== Reference Time / Valid Time
+=== Reference Time / Valid Time
 
-==== ToolsUI
+=== ToolsUI
 
-==== Vertical Coordinates
+=== Vertical Coordinates
 
-==== Time Intervals
+=== Time Intervals
 
+=== Ensembles
 
-==== Ensembles
+=== Data Encoding / Compression
 
-==== Data Encoding / Compression
+== Turning GRIB into netCDF with the CDM
 
+=== Variables grouped by PDS
+<<collections/GribConfig#pdsHash,Control how PDS are made into variables>>
 
+=== Horizontal Reference System grouped by GDS
 
-== 3 Turning GRIB into netCDF with the CDM
+<<collections/GribConfig#gdsHash,Fix errors in GDS encoding>>
 
-==== Variables grouped by PDS
-* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribConfig.html#pdsHash[Control how PDS are made into variables]
+=== Time Intervals
 
-==== Horizontal Reference System grouped by GDS
+<<collections/GribConfig#intvFilter,Time Interval filters>>
 
-* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribConfig.html#gdsHash[Fix errors in GDS encoding]
+=== Table Handling
 
-==== Time Intervals
+== Grib Collections
 
-* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribConfig.html#intvFilter[Time Interval filters]
+=== Grib Indexes
 
-==== Table Handling
+=== Collection Indexes
 
+=== Partitions
 
+<<collections/Partitions#,Grib Partitions>>
 
-== 4 Grib Collections
+=== Checking large collections
 
-==== Grib Indexes
-
-==== Collection Indexes
-
-==== Partitions
-
-* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/Partitions.html
-
-==== Checking large collections
-
-* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/TDM.html#GCPass1[GCPass1]
+<<collections/TDM#GCPass1,GCPass1>>
 
 
-== 5 TDS and GRIB Feature Collections
+== TDS and GRIB Feature Collections
 
-==== Configuration
+=== Configuration
 
-* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribConfig.html
-* http://www.unidata.ucar.edu/software/thredds/v5.0/tds/reference/collections/GribCollectionFaq.html[How do I control where the index files are written?]
-
-
-
-
-
-
+<<collections/GribConfig#, Grib Configuration>>
+<<collections/GribCollectionFaq#,How do I control where the index files are written?>>

@@ -1,6 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
-
+// Enables non-selectable callout icons drawn using CSS.
+:icons: font
 
 = Writing an IOSP : Details
 image:../netcdfBig.gif[image]
@@ -9,11 +10,12 @@ image:../netcdfBig.gif[image]
 
 *IOSPs* are loaded by registering them with the *NetcdfFile* class:
 
-------------------------------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
    ucar.nc2.NetcdfFile.registerIOProvider(Class iospClass) throws IllegalAccessException, InstantiationException;
 
    ucar.nc2.NetcdfFile.registerIOProvider(String className) throws IllegalAccessException, InstantiationException, ClassNotFoundException;
-------------------------------------------------------------------------------------------------------------------------------------------
+----
 
 When registering, an instance of the class will be created. This means
 that there must be a default constructor that has no arguments. Since
@@ -53,10 +55,11 @@ IOSP will be garbage collected.
 
 == The isValidFile() Method
 
---------------------------------------------------------------------------------------
+[source,java]
+----
  // Check if this is a valid file for this IOServiceProvider.
  public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf) throws IOException;
---------------------------------------------------------------------------------------
+----
 
 The **isValidFile**() method must quickly and accurately determine if
 the file is one that the IOSP knows how to read. If this is done
@@ -68,80 +71,74 @@ thrown only if the file is corrupted.* Since its unlikely that you can
 tell if the file is corrupt for any file type, you should probably never
 throw an IOException.
 
-==== Example 1:
+=== Example 1:
 
------------------------------------------------------------------------------------------------
+[source,java]
+----
 public class Nexrad2IOServiceProvider implements IOServiceProvider {
   static public final String ARCHIVE2 = "ARCHIVE2";
   static public final String AR2V0001 = "AR2V000";
 
-  public boolean isValidFile( RandomAccessFile raf) throws IOException (4) {
-1)  raf.seek(0);
+  public boolean isValidFile( RandomAccessFile raf) throws IOException { // <4>
+    raf.seek(0); // <1>
     byte[] b = new byte[8];
     raf.read(b);
-2)  String test = new String( b);
-3)  return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ;
+    String test = new String( b); // <2>
+    return test.equals( Level2VolumeScan.ARCHIVE2) || test.equals( Level2VolumeScan.AR2V0001) ; // <3>
   }
 ...
------------------------------------------------------------------------------------------------
+----
 
-1.  The IOSP wants to read starting at the first byte of the file. It
+<1> The IOSP wants to read starting at the first byte of the file. It
 must not assume that the file is already positioned there.
-2.  It reads in 8 bytes and converts to a String.
-3.  If it matches known patterns, return true.
-4.  The file is assumed bad if it can’t even read the first 8 bytes of
-the file. Its hard to imagine a valid file of less than 8 bytes. Still,
-be careful of your assumptions.
+<2> It reads in 8 bytes and converts to a String.
+<3> If it matches known patterns, return true.
+<4> The file is assumed bad if it can’t even read the first 8 bytes of the file. Its hard to imagine a valid file of less than 8 bytes. Still, be careful of your assumptions.
 
-*Example 2:*
+=== Example 2:
 
-----------------------------------------------------------------------
+[source,java]
+----
   public boolean isValidFile( ucar.unidata.io.RandomAccessFile raf ) {
     try {
-1)    raf.order( RandomAccessFile.BIG_ENDIAN );
+      raf.order( RandomAccessFile.BIG_ENDIAN ); // <1>
       raf.seek( 0 );
-2)    ucar.bufr.BufrInput bi = new ucar.bufr.BufrInput( raf );
+      ucar.bufr.BufrInput bi = new ucar.bufr.BufrInput( raf ); // <2>
       return bi.isValidFile();
-3)  } catch (IOException ex) {
+    } catch (IOException ex) { // <3>
        return false;
     }
   }
-----------------------------------------------------------------------
+----
 
-1.  The IOSP will read in numbers that it expects to be in big-endian
-format. It must not assume what mode the RandomAccessFile is in.
-2.  It creates a *BufrInput* object and delegates the work to it. Since
-this is a local instance, this is thread-safe. Creating new objects
-should be avoided when possible for speed, but sometimes it’s necessary.
-3.  Catch the IOExceptions! Arguably, it would be better for the
-*BufrInput* class to return null, following the rule that __Exceptions
-should only be used in exceptional circumstances__. Getting passed a
-file that is not yours is not exceptional.
+<1> The IOSP will read in numbers that it expects to be in big-endian format. It must not assume what mode the RandomAccessFile is in.
+<2> It creates a *BufrInput* object and delegates the work to it. Since this is a local instance, this is thread-safe. Creating new objects should be avoided when possible for speed, but sometimes it’s necessary.
+<3> Catch the IOExceptions! Arguably, it would be better for the *BufrInput* class to return null, following the rule that __Exceptions should only be used in exceptional circumstances__. Getting passed a file that is not yours is not exceptional.
 
-*Example 3 (BAD!):*
+=== Example 3 (BAD!):
 
-----------------------------------------------------------------
+[source,java]
+----
 public class Grib1ServiceProvider implements IOServiceProvider {
  private Grib1Input scanner;
   private int edition;
   public boolean isValidFile(RandomAccessFile raf) {
     raf.seek(0);
     raf.order( RandomAccessFile.BIG_ENDIAN );
-1)  scanner = new Grib1Input( raf );
-2)  edition = scanner.getEdition();
+    scanner = new Grib1Input( raf ); // <1>
+    edition = scanner.getEdition(); // <2>
     return (edition == 1);
   }
-----------------------------------------------------------------
+----
 
-1.  The IOSP creates a _Grib1Input_ object and delegates the work to it.
-This is an instance variable, and so __*this is not thread-safe*__.
-2.  The _edition_ variable is an instance variable, so __*this is not
-thread-safe*__.
+<1> The IOSP creates a _Grib1Input_ object and delegates the work to it. This is an instance variable, and so __**this is not thread-safe**__.
+<2> The _edition_ variable is an instance variable, so __**this is not thread-safe**__.
 
 The mistake might be because you want a scanner object and edition in
 the rest of the methods. Here’s the right way to do this:
 
-------------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
 public class Grib1ServiceProvider implements IOServiceProvider {
  private Grib1Input scanner;
   private int edition;
@@ -160,7 +157,7 @@ public class Grib1ServiceProvider implements IOServiceProvider {
     edition = scanner.getEdition();
     ...
   }
-------------------------------------------------------------------------------------------------------------------------
+----
 
 The **isValidFile**() method creates local variables for everything it
 has to do. The **open**() method has to repeat that, but it is allowed
@@ -169,10 +166,11 @@ for the duration of the IOSP object.
 
 == The open() method
 
-----------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
   // Open existing file, and populate ncfile with it.
   public void open(ucar.unidata.io.RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException;
-----------------------------------------------------------------------------------------------------------------------
+----
 
 Once an IOSP returns true on *isValidFile(),* a new IOSP object is
 created and *open()* is called on it. The job of open is to examine the
@@ -181,7 +179,7 @@ interesting information in the file. Sticking with the simple Netcdf-3
 data model for now, this means populating the _NetcdfFile_ object with
 __Dimension__, _Attribute_ and _Variable_ objects.
 
-==== ucar.nc2.Attribute
+=== ucar.nc2.Attribute
 
 An _Attribute_ is a (name, value) pair, where name is a String, and
 value is a 1D array of Strings or numbers. Attributes are thought of as
@@ -189,31 +187,34 @@ _*metadata*_ about your data. All attributes are read and kept in
 memory, so you should not put large data arrays in Attributes. You can
 add global attributes that apply to the entire file:
 
--------------------------------------------------------------------------------------
+[source,java]
+----
   ncfile.addAttribute(ncfile.getRootGroup(), new Attribute("Conventions", "CF-1.0"));
   ncfile.addAttribute(null, new Attribute("version", 42));
--------------------------------------------------------------------------------------
+----
 
 Or you can add Attributes that are contained inside a Variable, and
 apply only to that Variable:
 
--------------------------------------------------------------------------------------------------
+[source,java]
+----
   var.addAttribute( new Attribute("missing_value", Array.factory(new double[] {999.0, -999.0})));
--------------------------------------------------------------------------------------------------
+----
 
-==== ucar.nc2.Dimension
+=== ucar.nc2.Dimension
 
 A _Dimension_ describes the index space for the multidimension arrays of
 data stored in Variables. A Dimension has a String _name_ and in integer
 _length._ In the Netcdf-3 data model, Dimensions are shared between
 variables, and stored globally.
 
-------------------------------------------------------------
+[source,java]
+----
  ncfile.addDimension(null, new Dimension("lat", 180, true));
  ncfile.addDimension(null, new Dimension("lon", 360, true));
-------------------------------------------------------------
+----
 
-==== ucar.nc2.Variable
+=== ucar.nc2.Variable
 
 The actual data is contained in Variables, which are containers for
 multidimension arrays of data. In the Netcdf-3 data model, Variables can
@@ -223,9 +224,10 @@ DataType.FLOAT,_ or __DataType.DOUBLE__.
 If a variable is *unsigned* (bytes, shorts or integer data types), you
 must add the *_Unsigned* attribute:
 
-------------------------------------------------------
+[source,java]
+----
    v.addAttribute(new Attribute("_Unsigned", "true"));
-------------------------------------------------------
+----
 
 Here is an example creating a Variable of type short called
 ``elevation'', adding several attributes to it, and adding it to the
@@ -233,7 +235,8 @@ NetcdfFile. The Dimensions _lat_ and _lon_ must already have been added.
 When setting Dimensions, the slowest-varying Dimension goes first
 (C/Java order).
 
------------------------------------------------------------------------------------------------------
+[source,java]
+----
  Variable elev = new Variable(ncfile, null, null, "elevation");
    elev.setDataType(DataType.SHORT);
    elev.setDimensions("lat lon");
@@ -241,27 +244,29 @@ When setting Dimensions, the slowest-varying Dimension goes first
    elev.addAttribute(new Attribute("long_name", "digital elevation in meters above mean sea level"));
    elev.addAttribute(new Attribute("missing_value", (short) -9999));
    ncfile.addVariable(null, elev);
------------------------------------------------------------------------------------------------------
+----
 
 A special kind of Variable is a __Coordinate Variable__, which is used
 to name the coordinate values of a Dimension. A Variable has the same
 name as its single dimension. For example:
 
---------------------------------------------------------------
+[source,java]
+----
     Variable lat = new Variable(ncfile, null, null, "lat");
     lat.setDataType(DataType.FLOAT);
     lat.setDimensions("lat");
     lat.addAttribute(new Attribute("units", "degrees_north"));
     ncfile.addVariable(null, lat);
---------------------------------------------------------------
+----
 
 It is often convenient for IOSPs to set the data values of coordinate
 (or other) variables.
 
-----------------------------------------------------------------
+[source,java]
+----
   Array data = Array.makeArray(DataType.FLOAT, 180, 90.0, -1.0);
   lat.setCachedData(data, false);
-----------------------------------------------------------------
+----
 
 Here, *Array.makeArray* is a convenience method that generates an evenly
 spaced array of length 180, starting at 90.0 and incrementing -1.0. That
@@ -271,10 +276,11 @@ for data from the Variable. If a Variable has cached data, then
 
 == The readData() method
 
------------------------------------------------------------------------------------------------------------------------------------
+[source,java]
+----
   // Read data from a top level Variable and return a memory resident Array.
   public ucar.ma2.Array readData(ucar.nc2.Variable v2, Section section) throws java.io.IOException, ucar.ma2.InvalidRangeException;
------------------------------------------------------------------------------------------------------------------------------------
+----
 
 When a client asks to read data from a Variable, either the data is
 taken from the Vaiable’s data cache if it exists, or the *readData*
@@ -288,9 +294,10 @@ Here is an example, that assume the data starts at the start of the
 file, is in big-endian format, and is stored as a regular array of
 16-bit integers on disk:
 
-==== Example 1: Reading the entire Array
+=== Example 1: Reading the entire Array
 
-----------------------------------------------------------------------------------------------------
+[source,java]
+----
  public Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
    raf.seek(0);
    raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -304,7 +311,7 @@ file, is in big-endian format, and is stored as a regular array of
    Array data = Array.factory(DataType.SHORT.getPrimitiveClassType(), v2.getShape(), arr);
    return data.section(wantSection.getRanges());
 }
-----------------------------------------------------------------------------------------------------
+----
 
 The RandomAccessFile reads 16-bit integers, advancing automatically. The
 Array**.**section() method creates a logical section of the data array,
@@ -313,10 +320,11 @@ returning just the section requested.
 For large arrays, reading in all of the data can be too expensive. If
 your data has a Regular Layout, you can use LayoutRegular helper object:
 
-==== Example 2: Using ucar.nc2.iosp.LayoutRegular to read just the
+=== Example 2: Using ucar.nc2.iosp.LayoutRegular to read just the
 requested Section:
 
-----------------------------------------------------------------------------------------------------
+[source,java]
+----
  public Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
    raf.seek(0);
    raf.order(RandomAccessFile.BIG_ENDIAN);
@@ -331,9 +339,9 @@ requested Section:
    }
    return Array.factory(DataType.INTEGER.getPrimitiveClassType(), v2.getShape(), arr);
 }
-----------------------------------------------------------------------------------------------------
+----
 
-==== Example 3: Storing Variable specific information in SPobject
+=== Example 3: Storing Variable specific information in SPobject
 
 The previous examples essentially assumed a single data Variable whose
 data starts at byte 0 of the file. Typically you want to store various
@@ -343,14 +351,16 @@ multiple Variable starting at different locations in the file. You might
 compute these file offsets during the open call, storing that and other
 info in a VarInfo object:
 
-------------------------
+[source,java]
+----
  private class VarInfo {
    long filePos;
    int  otherStuff;
  }
-------------------------
+----
 
----------------------------------------------------------------------------------------------------------
+[source,java]
+----
 public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask) throws IOException {
   this.raf = raf;
   ...
@@ -363,11 +373,12 @@ public void open(RandomAccessFile raf, NetcdfFile ncfile, CancelTask cancelTask)
   elev.setSPobject( vinfo);
   ...
 }
----------------------------------------------------------------------------------------------------------
+----
 
 Then use that in readData:
 
-----------------------------------------------------------------------------------------------------
+[source,java]
+----
  public Array readData(Variable v2, Section wantSection) throws IOException, InvalidRangeException {
    VarInfo vinfo = (VarInfo) v2.getSPobject();
 
@@ -375,28 +386,29 @@ Then use that in readData:
    raf.order(RandomAccessFile.BIG_ENDIAN);
    ...
 }
-----------------------------------------------------------------------------------------------------
+----
 
 The **setSPobject**() and **getSPobject**() methods on the Variable are
 for the exclusive use of the IOSP. Use them in any way you need.
 
 == The close() method
 
------------------------------------------
+[source,java]
+----
   // Close the file.
   public void close() throws IOException;
------------------------------------------
+----
 
 When the close method is called, the IOSP is responsible for releasing
 any system resources suce as File handles, etc. This usually just means
 calling close on the RandomAccessFile:
 
-------------------------------------------
+[source,java]
+----
   public void close() throws IOException {
     raf.close();
   }
-
-------------------------------------------
+----
 
 == Adding Coordinate System Information
 
@@ -436,7 +448,3 @@ http://www.unidata.ucar.edu/projects/THREDDS/tech/reference/WCS.html[WCS]
 or the
 http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/NetcdfSubsetService.html[Netcdf
 Subset Service].
-
-'''''
-
-image:../nc.gif[image] This document was last updated July 2013

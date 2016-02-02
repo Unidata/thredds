@@ -10,16 +10,16 @@ This is the on-line, self-guided tutorial. Follow this link for the
 
 '''''
 
-=== TDS Overview (link:TDSOverview.pptx[ppt])
+== TDS Overview (link:TDSOverview.pptx[ppt])
 (link:TDSOverview.pdf[pdf])
 
-=== 1.Tomcat Configuration
+== 1.Tomcat Configuration
 
 * <<GettingStarted#,Getting Started With the TDS: Local Test
 Server Setup>>
 * <<Security#,Security Overview>>
 
-=== 2. TDS Configuration
+== 2. TDS Configuration
 
 * <<CatalogPrimer#,Client Catalog Primer>>
 * <<BasicConfigCatalogs#,Basic TDS Configuration Catalogs>>
@@ -33,7 +33,7 @@ Server Setup>>
 * threddsConfig.xml
 <<../reference/ThreddsConfigXMLFile#,reference>>
 
-=== 4. TDS Monitoring and Debugging
+== 4. TDS Monitoring and Debugging
 
 * <<TDSMonitoringAndDebugging#,TDS Monitoring and Debugging>>
 * <<TomcatAndTDSLogs#,Tomcat and TDS Logs>>
@@ -52,15 +52,15 @@ manager application]
 *** http://visualvm.java.net/api-quickstart.html[VisualVM]
 *** http://www.youtube.com/watch?v=Xy0tsT-GD68[JConsole]
 
-=== 5. Using NcML in TDS
+== 5. Using NcML in TDS
 
 * <<../../netcdf-java/ncml/Tutorial#,Basic NcML tutorial>>
 * <<../../netcdf-java/ncml/Aggregation#,NcML Aggregation>>
-* link:NcML.htm[Using NcML in the TDS]
+* <<NcML#,Using NcML in the TDS>>
 * <<NcMLExamples#,NcML Example Problems>>
 * <<NcMLAggExamples#,NcML Aggregation Example Problems>>
 
-=== 6. Feature Collections
+== 6. Feature Collections
 
 * <<../reference/collections/FeatureCollections#,Feature
 Collections>>
@@ -76,17 +76,17 @@ CDM>>
 * <<../../netcdf-java/reference/formats/GribTables#,GRIB Tables
 in CDM>>]
 
-=== 7. Other Advanced Features
+== 7. Other Advanced Features
 
 * <<../reference/RestrictedAccess#,Restricting dataset access>>
 * <<../reference/Viewers#,Viewer Links>>
 
-=== 8. Metadata
+== 8. Metadata
 
 * <<Metadata#,THREDDS Metadata>>
 * <<../reference/ncISO#,ISO metadata generation: (ncIso)>>
 
-=== 9. Production Servers
+== 9. Production Servers
 
 * <<Checklist#,Installation Checklist for Production>>
 * <<TroubleShooting#,TroubleShooting Problems>>
@@ -94,7 +94,7 @@ in CDM>>]
 Tips TroubleShooting>>
 * <<../UpgradingTo4.5#,Upgrading to 4.5>>
 
-=== Other Resources:
+== Other Resources:
 
 * <<../reference/index#,Reference documentation>>
 * <<../faq#,FAQ>>
