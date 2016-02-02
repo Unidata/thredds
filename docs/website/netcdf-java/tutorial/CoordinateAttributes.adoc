@@ -31,7 +31,7 @@ and/or Coordinate Transform Variables
 
 === *Example 1: Simple Coordinate Variables*
 
-[code,bash]
+[source,bash]
 ----
  dimensions:
    lon = 144;
@@ -90,7 +90,7 @@ Variable’s *_CoordinateAxes* attribute.
 
 === *Example 2: Coordinate System Variable*
 
-[code,bash]
+[source,bash]
 ----
  dimensions:
    lon = 144;
@@ -143,7 +143,7 @@ System Variable, which always has a *_CoordinateAxes* attribute.
 
 === Example 3: Multiple Coordinate Systems
 
-[code,bash]
+[source,bash]
 ----
 dimensions:
    y = 428;
@@ -221,7 +221,7 @@ coordinate go up or down.
 
 === Example 4: Adding Coordinate Transforms
 
-[code,bash]
+[source,bash]
 ----
 dimensions:
    y = 428;
@@ -282,7 +282,7 @@ Coordinate System Variable’s *_CoordinateTransforms* attribute.
 === Example 5: Reusing Variables for Coordinate System and/or Coordinate
 Transform Variables
 
-[code,bash]
+[source,bash]
 ----
 dimensions:
    y = 428;
@@ -335,7 +335,7 @@ Variable.
 You can use any Variable as the Coordinate Transform Variable; here’s an
 example using the vertical Coordinate Axis to hold a vertical transform:
 
-[code,bash]
+[source,bash]
 ----
 dimensions:
    y = 428;
@@ -427,7 +427,7 @@ this way, which is useful, for example, if the data is a trajectory.
 Coordinate variables created this way are used for implicit
 *_CoordinateAxes* processing (next section). Example:
 
-[code,bash]
+[source,bash]
 ----
    double valtime(record);
      :long_name = "valid time";
@@ -465,7 +465,7 @@ attribute to the Coordinate Transform Variable listing the names or
 types of Coordinate Axes. The Coordinate Transform will be addded to any
 Coordinate System that contains all named axes. For example:
 
-[code,bash]
+[source,bash]
 ----
    char ProjectionCoordinateSystem;
      ProjectionCoordinateSystem:_CoordinateTransformType = "Projection";
@@ -475,7 +475,7 @@ Coordinate System that contains all named axes. For example:
 will apply to any CoordinateSystem that has both *GeoX* and *GeoY*
 Coordinate axes.
 
-[code,bash]
+[source,bash]
 ----
    char VerticalCoordinateSystem;
      VerticalCoordinateSystem:_CoordinateTransformType = "Vertical";
@@ -495,7 +495,7 @@ Coordinate System. At a minimum it must have a *transform_name*
 attribute. (alias *grid_mapping_name* or *standard_name* for CF
 compatability).
 
-[code,bash]
+[source,bash]
 ----
  char Lambert_Conformal_Projection;
      Lambert_Conformal_Projection:transform_name = "lambert_conformal_conic";
@@ -527,7 +527,7 @@ transform:
   ProjectionCoordinateSystem:_CoordinateTransforms = "Lambert_Conformal lev";
 ----
 
-[code,bash]
+[source,bash]
 ----
  int Lambert_Conformal;
   Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
@@ -536,7 +536,7 @@ transform:
   Lambert_Conformal:latitude_of_projection_origin = 25.0;
 ----
 
-[code,bash]
+[source,bash]
 ----
  float lev(lev) ;
   lev:long_name = "sigma at layer midpoints" ;
@@ -559,7 +559,7 @@ Variable. You also need to add the *_CoordinateTransformType* attribute
 to make sure it is interpreted as a Coordinate Transform variable
 instead of a data variable.
 
-[code,bash]
+[source,bash]
 ----
  int Lambert_Conformal;
   Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
@@ -573,7 +573,7 @@ instead of a data variable.
 For dealing with implicitly defined Coordinate Systems, you can use the
 *_CoordinateAxes* attribute:
 
-[code,bash]
+[source,bash]
 ----
  int Lambert_Conformal;
    Lambert_Conformal:grid_mapping_name = "lambert_conformal_conic";
