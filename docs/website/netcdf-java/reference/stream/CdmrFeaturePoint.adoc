@@ -34,8 +34,7 @@ bounding box
 * data requests return an unordered list of observation as StructureData
 * The protobuf messages are defined by *thredds\cdm\src\main\java\ucar\nc2\ft\point\remote\pointStream.proto*
 
-StationTimeSeries
-^^^^^^^^^^^^^^^^^
+== StationTimeSeries
 
 Possible query parameters are:
 
@@ -78,8 +77,7 @@ variables
 
 * *stationList ncstream vs XML message*
 
-Client implementation
-^^^^^^^^^^^^^^^^^^^^^
+== Client implementation
 
 *ucar.nc2.stream.CdmRemoteFeatureDataset.factory()* makes an HTTP request to _*endpoint+"?req=capabilities"*_ to obtain the GetCapabilities XML
 document. This document describes what feature type(s) the dataset supports, which determines what are the valid requests, along with the endpoints
@@ -89,8 +87,7 @@ for those feature types, which may be different than the original endpoint.
 *ThreddsDataFactory.openFeatureDataset()* looks for catalog InvDatasets with _*featureType.isPointFeatureType()*_ and __*ServiceType.CdmRemote*__, and
 if found, calls **CdmRemoteFeatureDataset.factory()**.
 
-GetCapabilities XML document
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== GetCapabilities XML document
 
 This is an ad-hoc format (for now), example:
 
@@ -131,8 +128,7 @@ This is an ad-hoc format (for now), example:
 
 '''''
 
-PointStream Grammer
-~~~~~~~~~~~~~~~~~~~
+=== PointStream Grammar
 
 An _*pointstream*_ is a sequence of one or more messages:
 
@@ -168,15 +164,13 @@ The protobuf messages are defined by
 
 '''''
 
-Current notes on motherlode dev
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Current notes on motherlode dev
 
 * List of cdm datasets: http://thredds.ucar.edu/thredds/idd/newPointObs.html
 
-Nov-11-2010
-^^^^^^^^^^^
+==== Nov-11-2010
 
-\1) web.xml has a *org.springframework.web.servlet.DispatcherServlet* cdmRemote with a mapping: +
+1) web.xml has a *org.springframework.web.servlet.DispatcherServlet* cdmRemote with a mapping: +
 
 [source,xml]
 ------------------------------------------
@@ -186,8 +180,8 @@ Nov-11-2010
  </servlet-mapping>
 ------------------------------------------
 
-\2) Temporarily, we have the configuration of the datasets in **thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml**: which configures the
-collectionController. We will replacce this with pure catalog configuration in 4.2+. This is now being shown in serverStartup.log +
+2) Temporarily, we have the configuration of the datasets in **thredds\tds\src\main\webapp\WEB-INF\cdmRemote-servlet.xml**: which configures the
+collectionController. We will replace this with pure catalog configuration in 4.2+. This is now being shown in serverStartup.log +
 
 [source,xml]
 ----
@@ -246,7 +240,7 @@ eg:
  http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome?req=form
 ----
 
-*3) The default output is the dataset description: should be getCapabilities ????* +
+3) The default output is the dataset description: *should be getCapabilities ????* +
 
 ----
 FeatureDataset on location= http://localhost:8080/thredds/cdmremote/local/metars/collection
@@ -271,7 +265,7 @@ FeatureCollection 0
 
 ----
 
-\4) In ToolsUI, FeatureType/PointFeature Tab:
+4) In ToolsUI, FeatureType/PointFeature Tab:
 
 *cdmremote:http://localhost:8080/thredds/cdmremote/local/metars/collection*
 
@@ -336,10 +330,10 @@ CompositeStationFeatureIterator open datasetQ:\station\ldm/metar/Surface_METAR_2
  sent 481 features to 20V
 
 
-  (check to see what the strategy is for stations: coomplete scan or ??)
+  (check to see what the strategy is for stations: complete scan or ??)
 ----
 
-\5) *cdmremoteCatalog.xml* defines datasets for the collections we have working so far.
+5) *cdmremoteCatalog.xml* defines datasets for the collections we have working so far.
 
 '''''
 image:../../nc.gif[image] This document was last updated April 2015

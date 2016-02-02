@@ -5,12 +5,9 @@
 
 image:../../THREDDSlogo.jpg[image]
 
-=== Please note that the interface described here is still a prototype,
-and subject to change.
+* Please note that the interface described here is still a prototype, and subject to change. *
 
-== RadarLevel3 Subset Service
-
-=== *A. Example urls*
+== Example urls
 
 Some interesting URLs for the radarServer service:
 
@@ -25,7 +22,7 @@ http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039/stations.xml
 * Level3 CCS039 Dataset
 http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039/dataset.xml
 
-== *Subsetting Parameters*
+== Subsetting Parameters
 
 Some interesting URLs for the radarServer query service:
 
@@ -40,7 +37,7 @@ http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=D
 * CCS039 dataset var BREF1, station DMX time range
 http://thredds.ucar.edu/thredds/radarServer/nexrad/level3/CCS039?var=BREF1&stn=DMX&time_start=1998-01-01T00:00:00&time_end=2007-12-15T00:00:00
 
-=== *A. Specify variables*
+=== Specify variables
 
 Variable list:
 
@@ -49,79 +46,61 @@ N1S, N0R, N0V, N1R, N3S
 
 Variable Descriptions:
 
-``NTP/PrecipAccum'' vocabulary=``EARTH SCIENCE > Atmosphere >
-Precipitation > Rain'' units=``in''
+`'NTP/PrecipAccum'` vocabulary=`'EARTH SCIENCE > Atmosphere > Precipitation > Rain'` units=`'in'`
 
-``N1P/PrecipAccum'' vocabulary=``EARTH SCIENCE > Atmosphere >
-Precipitation > Rain'' units=``in''
+`'N1P/PrecipAccum'` vocabulary=`'EARTH SCIENCE > Atmosphere > Precipitation > Rain'` units=`'in'`
 
-``N0R/BaseReflectivity'' vocabulary=``EARTH SCIENCE >
-Spectral/Engineering > Radar > Radar Reflectivity'' units=``dbZ''
+`'N0R/BaseReflectivity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Radar Reflectivity'` units=`'dbZ'`
 
-``N1R/BaseReflectivity'' vocabulary=``EARTH SCIENCE >
-Spectral/Engineering > Radar > Radar Reflectivity'' units=``dbZ''
+`'N1R/BaseReflectivity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Radar Reflectivity'` units=`'dbZ'`
 
-``N2R/BaseReflectivity'' vocabulary=``EARTH SCIENCE >
-Spectral/Engineering > Radar > Radar Reflectivity'' units=``dbZ''
+`'N2R/BaseReflectivity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Radar Reflectivity'` units=`'dbZ'`
 
-``N3R/BaseReflectivity'' vocabulary=``EARTH SCIENCE >
-Spectral/Engineering > Radar > Radar Reflectivity'' units=``dbZ''
+`'N3R/BaseReflectivity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Radar Reflectivity'` units=`'dbZ'`
 
-``N0Z/BaseReflecitvity'' vocabulary=``EARTH SCIENCE >
-Spectral/Engineering > Radar > Radar Reflectivity'' units=``dbZ''
+`'N0Z/BaseReflecitvity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Radar Reflectivity'` units=`'dbZ'`
 
-``NCR/CompReflectivity'' vocabulary=``EARTH SCIENCE >
-Spectral/Engineering > Radar > Radar Reflectivity'' units=``dbZ''
+`'NCR/CompReflectivity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Radar Reflectivity'` units=`'dbZ'`
 
-``N0V/BaseVelocity'' vocabulary=``EARTH SCIENCE > Spectral/Engineering >
-Radar > Doppler Velocity'' units=``knots''
+`'N0V/BaseVelocity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Doppler Velocity'` units=`'knots'`
 
-``N1V/BaseVelocity'' vocabulary=``EARTH SCIENCE > Spectral/Engineering >
-Radar > Doppler Velocity'' units=``knots''
+`'N1V/BaseVelocity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Doppler Velocity'` units=`'knots'`
 
-``N0S/RadialVelocity'' vocabulary=``EARTH SCIENCE > Spectral/Engineering
-> Radar > Doppler Velocity'' units=``knots''
+`'N0S/RadialVelocity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Doppler Velocity'` units=`'knots'`
 
-``N1S/RadialVelocity'' vocabulary=``EARTH SCIENCE > Spectral/Engineering
-> Radar > Doppler Velocity'' units=``knots''
+`'N1S/RadialVelocity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Doppler Velocity'` units=`'knots'`
 
-``N2S/RadialVelocity'' vocabulary=``EARTH SCIENCE > Spectral/Engineering
-> Radar > Doppler Velocity'' units=``knots''
+`'N2S/RadialVelocity'` vocabulary=`'EARTH SCIENCE > Spectral/Engineering > Radar > Doppler Velocity'` units=`'knots'`
 
-``NET/EchoTop'' vocabulary=``EARTH SCIENCE > Atmosphere > Clouds > Cloud
-Optical Depth/Thickness'' units=``1000 feet''
+`'NET/EchoTop'` vocabulary=`'EARTH SCIENCE > Atmosphere > Clouds > Cloud Optical Depth/Thickness'' units=``1000 feet'`
 
-``NVL/VertLiquid'' vocabulary=``EARTH SCIENCE > Atmosphere >
-Precipitation > Liquid Water Equivalent'' units=``kg/m2''
+`'NVL/VertLiquid'` vocabulary=`'EARTH SCIENCE > Atmosphere > Precipitation > Liquid Water Equivalent'` units=`'kg/m2'`
 
-``NVW/VadWindSpeed'' vocabulary=``EARTH SCIENCE > Atmosphere >
-Atmospheric Winds > Wind Profiles'' units=``knots''
+`'NVW/VadWindSpeed'` vocabulary=`'EARTH SCIENCE > Atmosphere > Atmospheric Winds > Wind Profiles'` units=`'knots'`
 
-``DPA/PrecipArray_0'' vocabulary=``EARTH SCIENCE > Atmosphere >
-Precipitation > Precipitation Amount'' units=``dBA''
+`'DPA/PrecipArray_0'` vocabulary=``EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Amount'` units=`'dBA'`
 
-``DPA/PrecipArray_x'' vocabulary=``EARTH SCIENCE > Atmosphere >
-Precipitation > Precipitation Rate'' units=``dBA''
+`'DPA/PrecipArray_x'` vocabulary=``EARTH SCIENCE > Atmosphere > Precipitation > Precipitation Rate'` units=`'dBA'`
 
-* **var=**name of variables, separated by `,' (comma).
+* **var=**name of variables, separated by `,` (comma).
 
 Examples:
 
-* ** *var=N0R*
+* *var=N0R*
 * *var=N0R,N1R,N2R,N3R*
-* *var=N0R&var=N1R&var=N2R* (allowed, but comma seperated names are
+* *var=N0R&var=N1R&var=N2R* (allowed, but comma separated names are
 preferred)
 
 Variable names with spaces or other illegal characters must be escaped.
 
-=== *B. Specify spatial extent*
+=== Specify spatial extent
 
 Latitude, longitude values are specified in decimal degrees north and
 east, respectively.
 
 Use one of the following methods:
 
-==== *1. Specify lat/lon bounding box*
+==== Specify lat/lon bounding box
 
 Specify all of these parameters (order does not matter):
 
@@ -135,9 +114,9 @@ The bounding box has *west* as its west edge, includes all points going
 or negative, and will be taken modulo 360. Therefore, when crossing the
 dateline, the west edge may be greater than the east edge. Examples:
 
-* ** *north=17.3&south=12.088&west=140.2&east=160.0*
+* *north=17.3&south=12.088&west=140.2&east=160.0*
 
-==== *2. Specify lat/lon point*
+==== Specify lat/lon point
 
 * *latitude:* latitude of point, decimal degrees north
 * *longitude:* longitude of point, decimal degrees east
@@ -149,32 +128,32 @@ Examples:
 
 * *latitude=17.3&longitude=140.2*
 
-==== *3. Specify station(s)*
+==== Specify station(s)
 
 *You may specify a list of stations instead of the lat/lon point or
 bounding box*
 
-* **stn=**name of stations, separated by `,' (comma)
+* **stn=**name of stations, separated by `,` (comma)
 
 The list of valid stations is available from the Dataset Description.
 Station names with spaces or other illegal characters must be escaped.
 
 Examples:
 
-* ** *stn=FTG*
+* *stn=FTG*
 * *stn=FTG,GLD,PUX*
 * *stn=FTG&stn=GLD&stn=PUX*
 
-=== C. Specify time
+=== Specify time
 
 Use one of the following methods:
 
-==== *1. Time range*
+==== Time range
 
 Specify 2 of these 3 parameters (order does not matter):
 
-* **time_start**: starting time as an W3C date string or ``present''
-* **time_end**: ending time as an W3C date string or ``present''
+* **time_start**: starting time as an W3C date string or `'present'`
+* **time_end**: ending time as an W3C date string or `'present'`
 * **time_duration**: length of time as an W3C time duration
 
 The intersection of the requested time range with the dataset time range
@@ -188,9 +167,9 @@ Examples:
 from the present)
 * *time_end=present&time_duration=PT3H* (get last 3 hours)
 
-==== *2. Time point*
+==== Time point
 
-* *time:* time as an W3C date string or ``present''
+* *time:* time as an W3C date string or `'present'`
 
 The `latest' data retrieval is obtained by `time=present'. The requested
 time point must lie within the dataset time range. The time slice/point
@@ -201,13 +180,13 @@ Examples:
 * *time=2007-03-29T12:00:00Z*
 * *time=present*
 
-==== *3. All Times*
+==== All Times
 
 * *temporal=all*
 
 This returns data from all available times.
 
-=== D. Specify the return format
+=== Specify the return format
 
 The accept parameter default is xml and it is the only legal one at this
 time.

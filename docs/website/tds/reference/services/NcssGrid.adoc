@@ -49,8 +49,7 @@ Other horizontal subsetting parameters (like lat/lon or projection bounding boxe
 
 == Use cases
 
-*Spatial and coordinate subsetting*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== Spatial and coordinate subsetting
 
 NCSS provides two types of bounding boxes to subset the data:
 
@@ -103,8 +102,7 @@ Example request:
 By default, if no spatial subsetting is specified, the service returns all the features in the dataset.
 
 
-*Single-point requests*
-^^^^^^^^^^^^^^^^^^^^^^^
+=== Single-point requests
 
 The NetCDF Subset Service allows the user to extract data for a point of interest by specifying its latitude and longitude, which makes it
 a _grid-as-point_ service. NCSS will find the grid cell in which the lat/lon falls and return its
@@ -112,12 +110,11 @@ data as if it were a _timeseries_ feature (none or one vertical coordinate), or 
 The supported output formats are _netCDF_, _netCDF4_, _XML_, and _CSV_. Writing to netCDF will return a _CF-DSG/netCDF_ file.
 The XML and CSV formats are ad-hoc formats for easy parsing.
 
-*Temporal subsetting and valid time ranges*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== Temporal subsetting and valid time ranges
 
 There are several ways to do temporal subsetting requests:
 
-* Default: If no temporal subseting is specified, the closest time to the current time is returned.
+* Default: If no temporal subsetting is specified, the closest time to the current time is returned.
 * All time range: A shorthand to request all the time range in a dataset is setting the parameter _time=all_. This can also be done by providing a
 valid temporal range containing the entire dataset time range.
 * One single time: Passing the parameter time will get the time slice closest to the requested time if it is within the time range of the dataset.
@@ -135,17 +132,15 @@ Examples of time query strings with valid temporal ranges:
 * *time=present*
 * *time=all*
 
-*Vertical coordinate subsetting*
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== Vertical coordinate subsetting
 
 Subsetting on the vertical axis of a variable or variables with the same vertical levels may be done with the vertCoord parameter.
 
 By default, all vertical levels are returned.
 
-*Single Variable requests*
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+=== Single Variable requests
 
-Note that these single variable requests can be easily extended to multivariable request by simply passing a comma separated list of variables in the
+Note that these single variable requests can be easily extended to multi-variable request by simply passing a comma separated list of variables in the
 var= parameter. Please note that for grid datasets, each variable in the request must have the same vertical levels.
 
 Examples:

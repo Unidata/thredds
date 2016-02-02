@@ -36,35 +36,35 @@ message DataRow {
 
 === Arrays and vlen Arrays (not Structures)
 
-<1> *primdata* has _nelems * sizeof(dataType)_ bytes, turn into multidim array of primitives with _section_ and _bigend_
-<2> *stringdata* has _nelems_ strings, turn into multidim array of String with _section_
-<3> *vlens* has _section.size_ array lengths; _section_ does not include the last (vlen) dimension; data in _primdata_
-<4> *opaquedata* has _nelems_ opaque objects, turn into multidim array of Opaque with _section_
-<5> *structdata* has _nelems_ StructureData objects, turn into multidim array of StructureData with _section_
+<1> *primdata* has `nelems * sizeof(dataType)` bytes, turn into multidim array of primitives with `section` and `bigend`
+<2> *stringdata* has `nelems` strings, turn into multidim array of `String` with `section`
+<3> *vlens* has `section.size` array lengths; `section` does not include the last (vlen) dimension; data in `primdata`
+<4> *opaquedata* has `nelems` `Opaque` objects, turn into multidim array of `Opaque` with `section`
+<5> *structdata* has `nelems` `StructureData` objects, turn into multidim array of `StructureData` with `section`
 
 === Arrays of primitive data
 
-* For all primitive data types, specified by _dataType_, with _isVlen_=false.
-* The data is laid out in row-major order in _primdata_.
-* The number of elements is _nelems_.
-* The shape of the Array is specified by _section_.
-* Endianness is specified by _bigend_. This is _reader-make-right_.
+* For all primitive data types, specified by `dataType`, with `isVlen=false.`
+* The data is laid out in row-major order in `primdata`.
+* The number of elements is `nelems`.
+* The shape of the `Array` is specified by `section`.
+* Endianness is specified by `bigend`. This is _reader-make-right_.
 
 === Arrays of string
 
-* For data type = STRING.
-* The data is laid out in row-major order in _stringdata_.
-* The number of elements is _nelems_.
-* The shape of the Array is specified by _section_.
-* String data is always UTF-8 encoded.
+* For `dataType = STRING`.
+* The data is laid out in row-major order in `stringdata`.
+* The number of elements is `nelems`.
+* The shape of the `Array` is specified by `section`.
+* `String` data is always UTF-8 encoded.
 
 === Arrays of opaque
 
-* For data type = OPAQUE.
-* The data is laid out in row-major order in _opaquedata_.
-* The number of elements is _nelems_.
-* The shape of the Array is specified by _section_.
-* Opague data are variable length of bytes, aka blobs.
+* For `dataType = OPAQUE`.
+* The data is laid out in row-major order in `opaquedata`.
+* The number of elements is `nelems`.
+* The shape of the Array is specified by `section`.
+* `Opaque` data are variable length of bytes, aka blobs.
 
 === Vlen
 
@@ -78,20 +78,20 @@ Variable-length data can only have a variable length in its innermost (fastest v
     * is the last, variable-length dimension.
 ----
 
-* For _isVlen_ = true.
-* The data is laid out in row-major order in _primdata_, _stringdata_, or _opaquedata_, depending on the _dataType_.
-* The total number of elements in the data array is _nelems_.
-* The fixed shape of the data is specified by _section_.
-* The length of each variable-length array is stored in _vlens_. There will be _shape.size()_ of them.
-* The sum of the _vlens_ is equal to _nelems_.
+* For `isVlen_ = true`.
+* The data is laid out in row-major order in `primdata`, `stringdata`, or `opaquedata`, depending on the `dataType`.
+* The total number of elements in the data array is `nelems`.
+* The fixed shape of the data is specified by `section`.
+* The length of each variable-length array is stored in `vlens`. There will be `shape.size()` of them.
+* The sum of the `vlens` is equal to `nelems`.
 * see <<../../CDM/VariableLengthData#,vlen data>>
 
 Examples:
 
 . when encoding, the length of each vlen is known, so:
-.. _float vlen(*)_ will have a known length, so can be encoded the same as a regular array
-.. _float vlen(3,7, *)_ has 21 variable length arrays, stored in the vlens array
-... *_primdata_* has nelems * sizeof(dataType) bytes, turn into dim array of primitives, use vlens to divide into variable length arrays
+.. `float vlen(*)` will have a known length, so can be encoded the same as a regular array
+.. `float vlen(3,7, *)` has 21 variable length arrays, stored in the vlens array
+... `primdata` has `nelems * sizeof(dataType)` bytes, turn into dim array of primitives, use vlens to divide into variable length arrays
 
 
 == Structures
@@ -111,23 +111,23 @@ message ArrayStructureRow {
 
   bytes fixdata = 10;              // fixed data # <1>
   repeated string stringdata = 11;  // string dataType # <2>
-  repeated bytes bytedata = 13;     // opaque dataType and vlens # <4>
-  repeated ArrayStructureRow structdata = 14;  // structure/seq dataType # <5>
+  repeated bytes bytedata = 13;     // opaque dataType and vlens # <3>
+  repeated ArrayStructureRow structdata = 14;  // structure/seq dataType # <4>
 }
 ----
 
-<1> *fixdata* has nrows * rowLength bytes, which must be parsed based on the Member dataTypes.
-<2> *stringdata* is a list of Strings referenced from String datatypes in fixdata.
-<4> *opaquedata* is a list of byte arrays referenced from Opaque datatypes in fixdata.
-<5> *for the Members that are a Structure or Sequence. May be zero or more.
+<1> `fixdata` has `nrows * rowLength` bytes, which must be parsed based on the `Member` dataTypes.
+<2> `stringdata` is a list of `Strings` referenced from `String` datatypes in `fixdata`.
+<3> `opaquedata` is a list of byte arrays referenced from `Opaque` datatypes in `fixdata`.
+<4> for the `Member`s that are a `Structure` or `Sequence`. May be zero or more.
 
-How to parse fixdata:
+How to parse `fixdata`:
 
-* For each Member with primitive type:
-** The number of elements in each row is _shape.size()_.
+* For each `Member` with primitive type:
+** The number of elements in each row is `shape.size()`.
 ** No padding
-* For String, Opaque, Vlen, and Structure, a 4 byte integer is in the fixdata row, which is an index into
-stringdata, bytedata, or the nested ArrayStructureRow.
+* For `String`, `Opaque`, `Vlen`, and `Structure`, a 4 byte integer is in the `fixdata` row, which is an index into
+`stringdata`, `bytedata`, or the nested `ArrayStructureRow`.
 * Having replaced the variable length data with 4 byte integers, each row is now the same size.
 
 === Nested Structures
@@ -171,7 +171,7 @@ message DataRow {
 }
 ----
 
-Call this *ArrayStructureRow* _outer_. It has 4 members _fld1, fld2, inner_ and _seq_, like:
+Call this *ArrayStructureRow* `outer`. It has 4 members `fld1`, `fld2`, `inner` and `seq`, like:
 
 ----
 message ArrayStructureDataRow {
@@ -182,11 +182,11 @@ message ArrayStructureDataRow {
   bytes fixdata = size: 123 * 16
   repeated string stringdata = size: 123 * 12
   repeated bytes bytedata = null
-  repeated ArrayStructureRow structdata = size 2: _inner_ and _seq_
+  repeated ArrayStructureRow structdata = size 2: inner and seq
 }
 ----
 
-The data in _outer.fixdata_ will be laid out like this:
+The data in `outer.fixdata` will be laid out like this:
 
 There will be 123 rows, each row is 16 bytes long:
 
@@ -199,13 +199,13 @@ There will be 123 rows, each row is 16 bytes long:
 |seq | 4 | 12 | uint32 | row index into seq.arrayStruct
 |=======================================================================
 
-The _stringdata_ list will have 12 * 123 strings in it. (The 12 comes from the shape of _fld2_, times 123 rows).
-In the first row, _outer.fixdata.fld2_ will equal 0, in the second row it will equal 12, the third 24, etc.
+The `stringdata` list will have 12 * 123 strings in it. (The 12 comes from the shape of `fld2`, times 123 rows).
+In the first row, `outer.fixdata.fld2` will equal 0, in the second row it will equal 12, the third 24, etc.
 
-If there were opaque and vlens in this Structure they would share the _bytedata_ list.
+If there were opaque and vlens in this Structure they would share the `bytedata` list.
 
-The fields in the nested structures hold the data for all the rows. The _inner_ Structure has 99 rows for every outer row, so
-there will be 123 * 99 rows stored in the _outer.inner_ ArrayStructureRow, which has 2 fields, _fld3_ and _fld4_:
+The fields in the nested structures hold the data for all the rows. The `inner` Structure has 99 rows for every outer row, so
+there will be 123 * 99 rows stored in the `outer.inner` `ArrayStructureRow`, which has 2 fields, `fld3` and `fld4`:
 
 ----
 message ArrayStructureRow {
@@ -229,17 +229,17 @@ the data is laid out like:
 |fld4 | 4 | 4 | int64 | value of fld4
 |=======================================================================
 
-Now we can come back to the _outer_ ArrayStructureRow to understand the index values of the _inner_ field.
-In the first row, _outer.fixdata.inner_ will equal 0, in the second row it will equal 99, the third 198, etc.
-It is naming the row number in the _inner_ ArrayStructureRow where _outer.inner_ for that row starts. Because inner is
+Now we can come back to the `outer` ArrayStructureRow to understand the index values of the `inner` field.
+In the first row, `outer.fixdata.inner` will equal 0, in the second row it will equal 99, the third 198, etc.
+It is naming the row number in the `inner` ArrayStructureRow where `outer.inner` for that row starts. Because inner is
 fixed length, we could of course compute this.
 
-Similarly, _outer.fixdata.seq_ is the row number in the _seq_ ArrayStructureRow where _outer.seq_ for that row starts.
-In this case we dont know the number of rows for each sequence, so this value is very important!
+Similarly, `outer.fixdata.seq` is the row number in the `seq` `ArrayStructureRow` where `outer.seq` for that row starts.
+In this case we don't know the number of rows for each sequence, so this value is very important!
 This is the only way that one can find out how long each nested seq is.
 
-Here is what the _seq_ ArrayStructureRow is like.
-Assume for this example that when all of the rows in the 123 nested _seq_ are added together, there are 456 of them. So:
+Here is what the `seq` `ArrayStructureRow` is like.
+Assume for this example that when all of the rows in the 123 nested `seq` are added together, there are 456 of them. So:
 
 ----
 message ArrayStructureRow {
@@ -264,5 +264,5 @@ the data is laid out like:
 |fld7 | 4 | 14 | uint32 | index into seq.bytedata
 |=======================================================================
 
-Each of the _fld7_ variable length arrays are stored in a separate protobuf *bytes* data structure in _bytearray_. There are two of them
+Each of the `fld7` variable length arrays are stored in a separate protobuf *bytes* data structure in `bytearray`. There are two of them
 for each seq object.

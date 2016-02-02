@@ -3,7 +3,7 @@
 
 This documents version 1 of the NcStream Data message, used by CDM/TDS < 5.0.
 
-== Grammer
+== Grammar
 
 ----
 dataMessage := MAGIC_DATA, vlenb, NcStreamProto.Data, regData | vlenData | seqData | structData
@@ -102,31 +102,31 @@ int levels(ninst= 23, acqtime=100, *);
 === Compound Type
 
 Should be able to pop this in and out of a ByteBuffer (java) or void * (C), then use pointer manipulation to decode on the fly. Maybe good candidate
-for encodeing with protobuf
+for encoding with protobuf
 
-1.  n
-2.  n structs
-3.  nheap
-4.  nheap objects
+.  n
+.  n structs
+.  nheap
+.  nheap objects
 
 in this case, you have to read everything. if buffer has no vlens or strings, could use fixed size offsets. otherwise record the offsets.
 
-1.  n
-2.  n structs
-1.  nheap
-2.  nheap objects
+.  n
+.  n structs
+..  nheap
+..  nheap objects
 
 (each struct contains its own heap)
 
-1.  n
-2.  n lengths
-3.  n structs
-1.  nheap
-2.  nheap objects
+.  n
+.  n lengths
+.  n structs
+..  nheap
+..  nheap objects
 
 (each struct contains its own heap)
 
-this indicates maybe we should rewrite ArrayStructureBB to have seperate heaps for each struct.
+this indicates maybe we should rewrite ArrayStructureBB to have separate heaps for each struct.
 
 === Nested Vlen
 

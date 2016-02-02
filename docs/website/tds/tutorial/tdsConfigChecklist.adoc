@@ -42,14 +42,14 @@ match the values given on <<ConfigCatalogs#,this>> page
 * If your catalog will serve GRIB data, use the GribFeatureCollection!
 (<<../reference/collections/GribCollections#,more info>>)
 * Configure datasetRoot, dataset (single file), and datasetScan
-(directory) tags to expose the datafiles on your system through the
+(directory) tags to expose the data files on your system through the
 catalog (<<BasicConfigCatalogs#,more info>>)
 * If needed, Restrict Dataset Access at the catalog level
 (<<../reference/RestrictedAccess#,more info>>)
 
 == Adding New TDS Configuration options or New Configuration Catalogs
 
-==== Pre-Tomcat Startup
+=== Pre-Tomcat Startup
 
 * If you have enabled <<TDSMonitoringAndDebugging#,access
 logging>> (and you should), zip up the unused access logs in
@@ -57,7 +57,7 @@ logging>> (and you should), zip up the unused access logs in
 * Likewise, zip up the unused TDS servlet logs in
 *$\{tomcat_home}/content/thredds/logs* and archive them as well.
 
-==== Post-Tomcat Startup
+=== Post-Tomcat Startup
 
 * Check the various new logs for errors (<<TroubleShooting#,more
 info>>)

@@ -8,25 +8,35 @@ addons:
       - $TRAVIS_UPLOAD_PATH
     target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
 
+jdk:
+  - oraclejdk8
+
 env:
   global:
     - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64
-    - BUILD_IDV=false
+  matrix:
+    - TASK="build"
+    - TASK="docs"
 
-matrix:
-  include:
-    - jdk: oraclejdk8
-    # As of 2015-09-24, Travis does not provide "openjdk8".
-
-#      env: BUILD_IDV=true
+before_install:
+  - if [[ $TASK == "docs" ]]; then
+      gem install asciidoctor coderay;
+    fi
 
 script:
   # If we need to do an IDV build, run the script
-  - if [[ $BUILD_IDV == true ]]; then
+  - if [[ $TASK == "build_idv" ]]; then
       travis/build_idv.sh;
-    fi
-
-  - if [[ $BUILD_IDV == false ]]; then
+    elif [[ $TASK == "docs" ]]; then
+      echo Building docs;
+      cd docs/website;
+      ./adoc2html.sh 2&> build.log;
+      if [ -s build.log ]; then
+        echo Doc build produced errors:;
+        cat build.log;
+        false;
+      fi;
+    else
       echo If available, test report at;
       echo http://unidata-tds-tests.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
       ./gradlew --info testAll;

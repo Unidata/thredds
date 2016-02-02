@@ -13,7 +13,7 @@ installed. For instance:
 * The Tomcat logs directory (`${tomcat_home}/logs`).
 * Data directories
 
-=== Using Symbolic Links to Move Non-data Directories
+== Using Symbolic Links to Move Non-data Directories
 
 The easiest way to change the location of non-data directories is with
 symbolic links. For instance, if Tomcat is installed on a smaller and/or
@@ -36,7 +36,7 @@ drwxr-xr-x   7 tomcat   tomcat       512 Nov  1 18:33 webapps/
 drwxr-xr-x   3 tomcat   tomcat       512 Aug  9 19:38 work/
 ----------------------------------------------------------------------------------------
 
-=== Using tds.content.root.path to change the location of the configuration directory
+== Using tds.content.root.path to change the location of the configuration directory
 
 * You _must_ set the *_tds.content.root.path_* Java system property.
 For instance, by adding the following to JAVA_OPTS in your startup script:
@@ -52,7 +52,7 @@ configuration files in:
 /some/absolute/path/thredds
 ---------------------------
 
-=== Locations of Data Directories
+== Locations of Data Directories
 
 The location of your data directories is configured in your
 <<CatalogConfiguration#,configuration catalog(s)>>. So, if your
@@ -60,7 +60,7 @@ data is located in `/data/pub`, you simply use the appropriate
 `/data/pub` locations in your various dataset configurations
 (`datasetRoot`, `datasetScan`, and `featureCollection` elements).
 
-=== Location of cache Directories
+== Location of cache Directories
 
 The various cache directories (`agg/`, `cdm/`, `wcs/` e.g.) can be
 configured with the `dir` child element of the various caching elements
@@ -79,10 +79,10 @@ not place files containing passwords or anything else with security
 issues in this directory. Typically you will only be adding and
 modifying catalogs and configuration files.
 
-When there are many catalogs, you may want to keep them in seperate
+When there are many catalogs, you may want to keep them in separate
 subdirectories of the TDS configuration directory. This is recommended
 practice. However, do not use a subdirectory
-**content/thredds/catalog**, as *catalog* is a reserved word in this
+*`content/thredds/catalog`*, as `catalog` is a reserved word in this
 context.
 
 When the TDS is first deployed, the TDS configuration directory looks

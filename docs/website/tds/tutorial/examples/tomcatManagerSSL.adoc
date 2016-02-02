@@ -12,7 +12,7 @@ application.
 2.  Verify SSL has been enabled for the Tomcat `manager` application.
 3.  NOTE: You will have to redo this every time you upgrade Tomcat.
 
-==== Troubleshooting
+== Troubleshooting
 
 * Check the XML syntax in `web.xml` to make sure it is well-formed and
 without error.
