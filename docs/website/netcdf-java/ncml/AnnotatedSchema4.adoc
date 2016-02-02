@@ -17,7 +17,7 @@ for data conforming to the netCDF data model. For instance, it might
 represent an existing netCDF file, a netCDF file not yet written, a GRIB
 file read through the netCDF-Java library, a subset of a netCDF file, an
 aggregation of netCDF files, or a self-contained dataset (i.e. all the
-data is included in the NcML document and there is no seperate netCDF
+data is included in the NcML document and there is no separate netCDF
 file holding the data). An NcML document therefore should not
 necessarily be thought of as a physical netCDF file, but rather the
 "public interface" to a set of data conforming to the netCDF data
@@ -97,7 +97,7 @@ The element *_netcdf_* is the root tag of the NcML instance document, and is sai
 1.  A _*readMetadata*_ (default) or an _*explicit*_ element comes first.
 The _*readMetadata*_ element indicates that all the metadata from the
 referenced dataset will be read in. The _*explicit*_ element indicates
-that only the metadata explictly declared in the NcML file will be used.
+that only the metadata explicitly declared in the NcML file will be used.
 2.  An optional iospParam element. The NcML inside this element is
 passed directly to the IOSP. If an *iospParam* attribute is used, the
 attribute is used instead.
@@ -110,7 +110,7 @@ datasets into a single dataset.
 5.  The optional _*location*_ attribute provides a reference to another
 netCDF dataset, called the __*referenced dataset*__. The location can be
 an absolute URL (eg **http://server/myfile**, or
-**file:/usr/local/data/mine.nc**) or a URL reletive to the NcML location
+**file:/usr/local/data/mine.nc**) or a URL relative to the NcML location
 (eg **subdir/mydata.nc**). The referenced dataset contains the variable
 data that is not explicitly specified in the NcML document itself. If
 the location is missing and the data is not defined in *values*
@@ -338,7 +338,7 @@ different token can be specified using the _*separator*_ attribute. This
 is useful if you are entering String values, e.g. <values
 separator="*">My dog*has*fleas</values> defines three Strings.
 3.  The values can be specified from a global or variable attribute. To
-specify a global attribute, use __*@gattname*__. For a variable attibute
+specify a global attribute, use __*@gattname*__. For a variable attribute
 use __*varName@attName*__. The data type and the shape of the variable
 must agree with the attribute.
 
@@ -386,7 +386,7 @@ content:
 4.  By default, if the attribute has type String, the entire value is
 taken as the attribute value, and if it has type other than String, then
 the list of values are separated by whitespace. A different token
-seperator can be specified using the _*separator*_ attribute.
+separator can be specified using the _*separator*_ attribute.
 5.  The optional attribute _*orgName*_ is used when renaming an existing
 attribute.
 6.  The attribute’s values may be unsigned (if _byte, short, int_ or
@@ -886,7 +886,7 @@ time zone] |`Pacific Standard Time`; `PST`; `GMT-08:00`
 822 time zone] |`-0800`
 |=======================================================================
 
-==== Examples
+=== Examples
 
 The following examples show how date and time patterns are interpreted
 in the U.S. locale. The given date and time are 2001-07-04 12:08:56
@@ -912,7 +912,7 @@ included in the aggregation. Note that the regexp pattern is matched
 against the _*full pathname*_ of the file (__/dir/file.nc,__ not
 __file.nc__).
 
-When placing regular expressions in NcML, you dont need to use \\ for \, eg use
+When placing regular expressions in NcML, you don't need to use \\ for \, eg use
 
 ----
   <scan location="test" regExp=".*/AG.*\.nc$" />

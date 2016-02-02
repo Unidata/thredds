@@ -73,10 +73,10 @@ GET /thredds/restrictedAccess/tiggeData HTTP/1.1
    Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.7
    Keep-Alive: 300
    Connection: keep-alive
-   Cookie: JSESSIONID=77421EB5C6EEA0BD2AA59BE8A0950F33; 
+   Cookie: JSESSIONID=77421EB5C6EEA0BD2AA59BE8A0950F33;
 --------------------------------------------------------------------------------------------------------------
 
-*The reponse is the HTTP Security challenge. The WWW-Authenticate header
+*The response is the HTTP Security challenge. The WWW-Authenticate header
 indicates its using BASIC authentication for the Realm THREDDS Data
 Server. BASIC is safe because we are using SSL.*
 
@@ -139,8 +139,7 @@ HTTP/1.x 401 Unauthorized
    Date: Wed, 04 Apr 2007 00:27:32 GMT
 ------------------------------------------------------
 
-* +
- 5. The client follows the redirect, and we’re back where we started
+*5. The client follows the redirect, and we’re back where we started
 from (compare 1), except that the server now has created a session for
 this user, pointed to by the Session Cookie (which the client has been
 sending all along)*
@@ -194,7 +193,7 @@ HTTP/1.x 200 OK
    Content-Description: dods_ascii
    Content-Type: text/plain
    Transfer-Encoding: chunked
-   Date: Wed, 04 Apr 2007 00:56:23 GMT  
+   Date: Wed, 04 Apr 2007 00:56:23 GMT
 ----------------------------------------
 
 '''''
