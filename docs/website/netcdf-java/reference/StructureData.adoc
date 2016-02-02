@@ -8,23 +8,23 @@
 In the netCDF-3 data model, all data is represented by multidimensional
 arrays, stored on disk or in memory in one-dimensional arrays,
 linearized in row-order. The netCDF-4/CDM data model adds a data type
-called a *_Structure_*, akin to a _struct_ in C or a row in a
+called a `Structure`, akin to a `struct` in C or a row in a
 relational database, which contains constituent data variables that are
 stored together on disk. A Structure can be multidimensional, like any
 other data type, and in the CDM the data is represented as
-*_ArrayStructure_* objects, which are collections of *_StructureData_*
-objects, where a StructureData contains the data for a single instance
-of the Structure.
+`ArrayStructure` objects, which are collections of `StructureData`
+objects, where a `StructureData` contains the data for a single instance
+of the `Structure`.
 
-Because Structures can be nested inside of each other, the data
-representation and processing of ArrayStructures can be complex. This
-document explains the API, it’s use, and how to create ArrayStructure
+Because `Structure`s can be nested inside of each other, the data
+representation and processing of `ArrayStructure`s can be complex. This
+document explains the API, it’s use, and how to create `ArrayStructure`
 objects.
 
 == ArrayStructure API
 
-The public API of ArrayStructure objects is in the abstract class
-**ucar.ma2.ArrayStructure**:
+The public API of `ArrayStructure` objects is in the abstract class
+`ucar.ma2.ArrayStructure`:
 
 [source,java]
 ----
@@ -32,39 +32,40 @@ public abstract class ucar.ma2.ArrayStructure extends ucar.ma2.Array {
   List<StructureMembers.Member> getMembers();
   List<String> getStructureMemberNames();
   StructureMembers.Member findMember(String memberName);
+}
 ----
 
-One can find an individual *StructureMembers.Member* from its name,
-get the list of member names, or get the list of StructureMembers.Member
+One can find an individual `StructureMembers.Member` from its name,
+get the list of member names, or get the list of `StructureMembers.Member`
 objects. These describe the individual data components of the
-ArrayStructure:
+`ArrayStructure`:
 
 [source,java]
 ----
-  public class ucar.ma2.StructureMembers.Member {
-    String getName();
-    DataType getDataType();
-    int[] getShape();
-    boolean isScalar();
+public class ucar.ma2.StructureMembers.Member {
+  String getName();
+  DataType getDataType();
+  int[] getShape();
+  boolean isScalar();
 
-    int getSize();
-    int getTotalSize();
+  int getSize();
+  int getTotalSize();
 
-    String getUnitsString();
-    String getDescription();
-  }
+  String getUnitsString();
+  String getDescription();
+}
 ----
 
-Note: You may notice that you can also get a *StructureMembers* object
-by calling _Structure.makeStructureMembers()_. You should in general
-never do that, and use _Structure.getVariables()_ to get the list of
-Variables in a Structure. Always get *StructureMembers* directly from
-the ArrayStructure.
+Note: You may notice that you can also get a `StructureMembers` object
+by calling `Structure.makeStructureMembers()`. You should in general
+never do that, and use `Structure.getVariables()` to get the list of
+`Variable`s in a `Structure`. *Always get `StructureMembers` directly from
+the `ArrayStructure`.*
 
-==== Data Access
+=== Data Access
 
-The most general method for accessing the data in a StructureArray is to
-iterate over the collection of StructureData with a StructureDataIterator:
+The most general method for accessing the data in a `StructureArray` is to
+iterate over the collection of `StructureData` with a `StructureDataIterator`:
 
 [source,java]
 ----
@@ -73,15 +74,15 @@ for (StructureData sdata : arrayStructure) {
 }
 ----
 
-Another general way to access data in an ArrayStructure is to use
+Another general way to access data in an `ArrayStructure` is to use
 
 [source,java]
 ----
 StructureData getStructureData(Index index).
 ----
 
-One can also obtain the StructureData using the record number of the
-StructureData. For the common case of one-dimensional Structures, the
+One can also obtain the `StructureData` using the record number of the
+`StructureData`. For the common case of one-dimensional `Structure`s, the
 record number is the same as the index:
 
 [source,java]
@@ -89,25 +90,25 @@ record number is the same as the index:
 ucar.ma2.StructureData getStructureData(int recno);
 ----
 
-Make sure that in all these calls, the StructureMembers.Member object is
-obtained directly from the ArrayStructure, eg using
-**findMember**(String memberName). +
+Make sure that in all these calls, the `StructureMembers.Member` object is
+obtained directly from the `ArrayStructure`, eg using
+`findMember(String memberName)`. +
 
-Often you are not actually interested in the StructureData object, only
+Often you are not actually interested in the `StructureData` object, only
 in the member data. The following method may avoid the overhead of
-creating the StructureData object:
+creating the `StructureData` object:
 
 [source,java]
 ----
 ucar.ma2.Array getArray(int recno, StructureMembers.Member m);
 ----
 
-An Array handles data of all data types and ranks in a uniform way.
-However, you may want to avoid the overhead of of creating an Array
+An `Array` handles data of all data types and ranks in a uniform way.
+However, you may want to avoid the overhead of of creating an `Array`
 object when you simply want to extract the data as a Java primitive or
 primitive array, and you are willing to handle the data type and rank
-explicitly: The following methods are likely (but not guarenteed) to be
-more efficient, by avoiding unneeded Object creation. These methods must
+explicitly. The following methods are likely (but not guaranteed) to be
+more efficient, by avoiding unneeded `Object` creation. These methods must
 match the member type exactly:
 
 [source,java]
@@ -143,14 +144,14 @@ public ucar.ma2.ArraySequence getArraySequence(int recno, StructureMembers.Membe
 ----
 
 This method can be used on any type. It converts primitives to their
-corresponding object types (eg float to Float):
+corresponding object types (eg `float` to `Float`):
 
 [source,java]
 ----
 java.lang.Object getScalarObject(int recno, StructureMembers.Member m);
 ----
 
-These two methods convert any numeric type to a float or double:
+These two methods convert any numeric type to a `float` or `double`:
 
 [source,java]
 ----
@@ -158,11 +159,11 @@ float convertScalarFloat(int recno, StructureMembers.Member m);
 double convertScalarDouble(int recno, StructureMembers.Member m);
 ----
 
-==== Unsupported methods
+=== Unsupported methods
 
-Because ArrayStructure is a subclass of Array, there are getter/setter
+Because `ArrayStructure` is a subclass of `Array`, there are getter/setter
 methods for each primitive type. These are not useable, since primitive
-types cannot be cast to StructureData:
+types cannot be cast to `StructureData`:
 
 [source,java]
 ----
@@ -192,7 +193,7 @@ public ucar.ma2.Array createView(ucar.ma2.Index);
 public ucar.ma2.Array copy();
 ----
 
-These methods can be used, but the Object must be of type StructureData:
+These methods can be used, but the `Object` must be of type `StructureData`:
 
 [source,java]
 ----
@@ -202,9 +203,9 @@ public void setObject(ucar.ma2.Index, java.lang.Object);
 
 == StructureData API
 
-StructureData encapsolates all the data in a single record. It is
-normally contained within an ArrayStructure, and its methods closely
-parallel the methods of its parent ArrayStructure.
+`StructureData` encapsulates all the data in a single record. It is
+normally contained within an `ArrayStructure`, and its methods closely
+parallel the methods of its parent `ArrayStructure`.
 
 [source,java]
 ----
@@ -216,15 +217,15 @@ public abstract class ucar.ma2.StructureData {
 ----
 
 In the following data access methods, each method takes either a member
-name or a Member object. A common mistake is to assume that the Member
-object from the ArrayStructure is the same as the one from the
-StructureData objects that are contained in the ArrayStructure, which is
-not necessarily the case. Its slightly more efficient to use the Member
-object directly, as it avoids a hashMap lookup, but if using the Member
-directly, you must obtain it from the StructureData. Using the member
+name or a `Member` object. A common mistake is to assume that the `Member`
+object from the `ArrayStructure` is the same as the one from the
+`StructureData` objects that are contained in the `ArrayStructure`, which is
+not necessarily the case. Its slightly more efficient to use the `Member`
+object directly, as it avoids a `HashMap` lookup, but if using the `Member`
+directly, you must obtain it from the `StructureData`. Using the member
 name is always safe.
 
-The most general ways to access data in a StructureData are:
+The most general ways to access data in a `StructureData` are:
 
 [source,java]
 ----
@@ -233,7 +234,7 @@ ucar.ma2.Array getArray(StructureMembers.Member m);
 ----
 
 The following method will handle a scalar object of any type, by
-converting primitives to their Object type (eg int to Integer):
+converting primitives to their `Object` type (eg `int` to `Integer`):
 
 [source,java]
 ----
@@ -241,7 +242,7 @@ java.lang.Object getScalarObject(String memberName);
 java.lang.Object getScalarObject(StructureMembers.Member m);
 ----
 
-The following routines may be able to avoid extra Object creation, and
+The following routines may be able to avoid extra `Object` creation, and
 so are recommended when efficiency is paramount. These require that you
 know the data types of the member data:
 
@@ -288,7 +289,7 @@ public String[] getJavaArrayString(String memberName);
 public String[] getJavaArrayString(StructureMembers.Member);
 ----
 
-For members that are themselves Structures, the equivalent is:
+For members that are themselves `Structure`s, the equivalent is:
 
 [source,java]
 ----
@@ -302,8 +303,8 @@ public ucar.ma2.ArraySequence getArraySequence(String memberName);
 public ucar.ma2.ArraySequence getArraySequence(StructureMembers.Member);
 ----
 
-The following will return any compatible type as a double or float, but
-will have extra overhead when the types dont match:
+The following will return any compatible type as a `double` or `float`, but
+will have extra overhead when the types don't match:
 
 [source,java]
 ----
@@ -317,30 +318,30 @@ public double convertScalarDouble(StructureMembers.Member);
 
 image:ArrayStructure.png[image]
 
-IOSP writers need to create ArrayStructure objects for any Structure variables in their files.
+IOSP writers need to create `ArrayStructure` objects for any `Structure` variables in their files.
 
-ArrayStructure is an abstract class in which the only abstract method is:
+`ArrayStructure` is an abstract class in which the only abstract method is:
 
 [source,java]
 ----
   abstract protected StructureData makeStructureData( ArrayStructure as, int recno);
 ----
 
-However, ArrayStructure has a number of default method implementations that may need to be overriden.
+However, `ArrayStructure` has a number of default method implementations that may need to be overridden.
 
-An ArrayStructure uses one of two strategies for StructureData
-implementations. It either uses a **StructureDataW**, in which each
-StructureData contains its own data, or it uses a **StructureDataA**,
-which defers data access back to the ArrayStructure itself.
+An `ArrayStructure` uses one of two strategies for `StructureData`
+implementations. It either uses a *`StructureDataW`*, in which each
+StructureData contains its own data, or it uses a *`StructureDataA`*,
+which defers data access back to the `ArrayStructure` itself.
 
 === ArrayStructureBB
 
-ArrayStructureBB uses a *java.nio.ByteBuffer* for data storage and
+`ArrayStructureBB` uses a `java.nio.ByteBuffer` for data storage and
 converts member data only on demand. The member data must be at constant
 offsets from the start of each record. This offset is stored into each
-StructureMembers.Member using _StructureMembers.Member.setDataParam()_.
+`StructureMembers.Member` using `StructureMembers.Member.setDataParam()`.
 
-The data may be read from disk directly into a ByteBuffer, for example:
+The data may be read from disk directly into a `ByteBuffer`, for example:
 
 [source,java]
 ----
@@ -366,16 +367,16 @@ for (int recnum = recordRange.first(); recnum <= recordRange.last(); recnum += r
 }
 ----
 
-ArrayStructureBB calculates member offsets on demand, assuming that each record is the same size.
-*ucar.ma2.ArrayStructureBBpos* relaxes this assumption by allowing you
-to pass in the starting positions in the ByteBuffer of each record.
+`ArrayStructureBB` calculates member offsets on demand, assuming that each record is the same size.
+`ucar.ma2.ArrayStructureBBpos` relaxes this assumption by allowing you
+to pass in the starting positions in the `ByteBuffer` of each record.
 
 Member offsets must be the same for each record. However, more complex
 objects can be stored as an index into a _object heap list._ For
-example, the object heap is used to store Strings, which are variable
-length arrays of UTF-16 charactors. The index of the String in the list
-is stored (as a 4-byte integer) in the ByteBuffer instead of the String.
-The String itself is added using **ArrayStructureBB.addObjectToHeap()**,
+example, the object heap is used to store `String`s, which are variable
+length arrays of UTF-16 characters. The index of the String in the list
+is stored (as a 4-byte integer) in the `ByteBuffer` instead of the `String`.
+The `String` itself is added using `ArrayStructureBB.addObjectToHeap()`,
 as in the following code:
 
 [source,java]
@@ -393,17 +394,17 @@ arrayStructureBB.addObjectToHeap(recnum, member, stringData);   // add object fo
 
 When storing data in an ArrayStructureBB, the heap must be used for both
 Strings and Sequences. Here is the Object type that must be used when
-adding to the heap in the _ArrayStructureBB.addObjectToHeap()_ call:
+adding to the heap in the `ArrayStructureBB.addObjectToHeap()` call:
 
-* scalar String: *String*
-* array of Strings: *String[]*
-* sequence: *ArraySequence*
+* scalar String: `String`
+* array of Strings: `String[]`
+* sequence: `ArraySequence`
 
 ==== ArrayStructureBB Nested Structures
 
-You can accommodate arbitrary nesting of Structures by using a recursive
+You can accommodate arbitrary nesting of `Structure`s by using a recursive
 method to set the offsets. The following is a static convenience method
-in ArrayStructureBB:
+in `ArrayStructureBB`:
 
 [source,java]
 ----
@@ -414,7 +415,7 @@ in ArrayStructureBB:
       offset += m.getSize();
 
       // set inner offsets
-      if (m.getDataType() == DataType.STRUCTURE) 
+      if (m.getDataType() == DataType.STRUCTURE)
         setOffsets(m.getStructureMembers());
     }
     return offset;
@@ -422,17 +423,17 @@ in ArrayStructureBB:
 ----
 
 This only works when the nested structures are all of the same, known
-length. For variable length nested Structures, use ArraySequence.
+length. For variable length nested `Structure`s, use `ArraySequence`.
 
-==== Member data overridding
+==== Member data overriding
 
-NetcdfDataset may widen the type of a Variable when implementing
+`NetcdfDataset` may widen the type of a `Variable` when implementing
 scale/offset attributes. Typically this will cause a byte or short to
-become a float or double. A StructureDS will post-process the data it
+become a `float` or `double`. A `StructureDS` will post-process the data it
 gets from the IOSP to implement this. When the IOSP returns an
-ArrayStructureBB, it is convenient to rewrite just the member data that
+`ArrayStructureBB`, it is convenient to rewrite just the member data that
 needs to be widened. This can be done by calculating the new data and
-calling ArrayStructure.setMemberData(Array).
+calling `ArrayStructure.setMemberData(Array)`.
 
 [source,java]
 ----
@@ -440,7 +441,7 @@ void setMemberArray(ucar.ma2.StructureMembers.Member, ucar.ma2.Array memberArray
 ----
 
 Requests for data will be satisfied from the memberArray instead of the
-ByteBuffer. In order to make this work, the methods in ArrayStructureBB
+`ByteBuffer`. In order to make this work, the methods in `ArrayStructureBB`
 typically check if the member data array exists, and if so defers to the
 superclass. For example:
 
@@ -454,10 +455,9 @@ if (m.getDataArray() != null) return super.getScalarDouble(recnum, m);
 
 === ArrayStructureMA
 
-ArrayStructureMA stores its member data in __column-store form__, where
-each member’s data is stored in a single Array across all rows. The
-member Arrays are stored with
-**StructureMembers.Member.setDataArray()**, for example:
+`ArrayStructureMA` stores its member data in _column-store form_, where
+each member’s data is stored in a single `Array` across all rows. The
+member `Array`s are stored with `StructureMembers.Member.setDataArray()`, for example:
 
 [source,java]
 ----
@@ -476,27 +476,27 @@ for (StructureMembers.Member m : members.getMembers()) {
 
 ==== ArrayStructureMA Nested Structures
 
-A nested Structure inside of an ArrayStructureMA would be represented by
-another ArrayStructureMA, when the nested structures are all of the
-same, known length. This inner ArrayStructureMA would represent all of
-the inner Structures across all rows of the outer Structure.
+A nested `Structure` inside of an `ArrayStructureMA` would be represented by
+another `ArrayStructureMA`, when the nested structures are all of the
+same, known length. This inner `ArrayStructureMA` would represent all of
+the inner Structures across all rows of the outer `Structure`.
 
 === ArrayStructureW
 
-ArrayStructureW defers data reading to the StructureData objects. To use
-it, one constructs all of the StructureData objects and passes them to
-the ArrayStructureW, for example:
+`ArrayStructureW` defers data reading to the `StructureData` objects. To use
+it, one constructs all of the `StructureData` objects and passes them to
+the `ArrayStructureW`, for example:
 
 [source,java]
 ----
 public ArrayStructureW(StructureMembers members, int[] shape, StructureData[] sdata);
 ----
 
-All of the work is in constructing the StructureData objects.
+All of the work is in constructing the `StructureData` objects.
 
 == ArraySequence
 
-To create an empty sequence, one needs an empty StructureDataIterator,
+To create an empty sequence, one needs an empty `StructureDataIterator`,
 for example the following can be used:
 
 [source,java]
@@ -537,7 +537,7 @@ netcdf Q:/cdmUnitTest/formats/netcdf4/vlen/cdm_sea_soundings.nc4 {
    Sounding = 3;
 
  variables:
- 
+
   Structure {
     int sounding_no;
     float temp(*);
@@ -556,7 +556,7 @@ Can be read like this:
  String memberName = "temp";
  Array tempData = sdata.getArray(memberName);           // get the data for this member
  assert tempData instanceof ArrayFloat;                 // it will be a float array
- 
+
  System.out.printf("the %d th record has %d elements for vlen member %s%n", index, tempData.getSize(), memberName);
 ----
 

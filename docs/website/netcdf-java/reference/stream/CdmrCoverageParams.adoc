@@ -6,7 +6,7 @@ Subsetting Parameters for Grid (Coverage) Datasets:
 ===================================================
 
 [[_subsetting_parameters_for_grid_coverage_datasets]]
-=== Subsetting Parameters for Grid (Coverage) Datasets:
+== Subsetting Parameters for Grid (Coverage) Datasets:
 
 [cols=",,,,",options="header",]
 |=======================================================================

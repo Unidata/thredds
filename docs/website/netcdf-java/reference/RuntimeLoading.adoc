@@ -6,34 +6,37 @@
 
 These are the various classes that can be plugged in at runtime:
 
-=== Register an IOServiceProvider:
+== Register an `IOServiceProvider`
 
+[source,java]
 -----------------------------------------------------------
  ucar.nc2.NetcdfFile.registerIOProvider( String className);
 -----------------------------------------------------------
 
-The registered class must implement **ucar.nc2.IOServiceProvider.** When
-a *NetcdfFile* is opened, we loop through the **IOServiceProvider**
+The registered class must implement `ucar.nc2.IOServiceProvider`. When
+a `NetcdfFile` is opened, we loop through the `IOServiceProvider`
 classes and call
 
+[source,java]
 ------------------------------------------------------------
   boolean isValidFile( ucar.unidata.io.RandomAccessFile raf)
 ------------------------------------------------------------
 
 on each, until one returns true. This method must be fast and accurate.
 
-=== Register a CoordSysBuilder:
+== Register a `CoordSysBuilder`
 
+[source,java]
 -----------------------------------------------------------------------------------------------
  ucar.nc2.dataset.CoordSysBuilder.registerConvention( String conventionName, String className);
 -----------------------------------------------------------------------------------------------
 
-The registered class must implement
-*ucar.nc2.dataset.CoordSysBuilderIF.* The NetcdfDataset is checked if it
-has a *Convention* attribute, and if so, it is matched by
-__conventionName__**.** If not, loop through the *CoordSysBuilderIF*
+The registered class must implement `ucar.nc2.dataset.CoordSysBuilderIF`.
+The `NetcdfDataset` is checked if it has a *Convention* attribute, and if so,
+it is matched by __conventionName__. If not, loop through the `CoordSysBuilderIF`
 classes and call
 
+[source,java]
 -----------------------------------
  boolean isMine(NetcdfFile ncfile)
 -----------------------------------
@@ -41,35 +44,38 @@ classes and call
 on each, until one returns true. If none are found, use the default
 *_Coordinate* Convention.
 
-=== Register a CoordTransBuilder:
+== Register a `CoordTransBuilder`
 
+[source,java]
 -----------------------------------------------------------------------------------------------
  ucar.nc2.dataset.CoordTransBuilder.registerTransform( String transformName, String className);
 -----------------------------------------------------------------------------------------------
 
 The registered class must implement
-***ucar.nc2.dataset.CoordTransBuilderIF***. The Coordinate Transform
+`ucar.nc2.dataset.CoordTransBuilderIF`. The Coordinate Transform
 Variable must have the transform name as one of its parameters.
 
-=== Register a FeatureDatasetFactory:
+== Register a `FeatureDatasetFactory`
 
+[source,java]
 ------------------------------------------------------------------------------------------------------
  ucar.nc2.ft.FeatureDatasetFactoryManager.registerFactory( FeatureType featureType, String className);
 ------------------------------------------------------------------------------------------------------
 
-The registered class must implement
-****ucar.nc2.ft.**FeatureDatasetFactory**, see javadoc for that
-interface.
+The registered class must implement `ucar.nc2.ft.FeatureDatasetFactory`,
+see javadoc for that interface.
 
-=== Register a GRIB1 or GRIB2 Lookup Table (4.2 and before):
+== Register a GRIB1 or GRIB2 Lookup Table (4.2 and before)
 
+[source,java]
 -----------------------------------------------------------------------------
   ucar.grib.grib1.GribPDSParamTable.addParameterUserLookup( String filename);
   ucar.grib.grib2.ParameterTable.addParametersUser( String filename);
 -----------------------------------------------------------------------------
 
-=== Register a GRIB1 table (4.3):
+== Register a GRIB1 table (4.3)
 
+[source,java]
 -----------------------------------------------------------------------------------------------------------------------------------
   ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTable(int center, int subcenter, int tableVersion, String tableFilename);
 -----------------------------------------------------------------------------------------------------------------------------------
@@ -79,8 +85,9 @@ interface.
 about parameter tables.
 * GRIB2 table handling is still being developed.
 
-=== Register a GRIB1 lookup table (4.3):
+== Register a GRIB1 lookup table (4.3)
 
+[source,java]
 --------------------------------------------------------------------------------------------
  ucar.nc2.grib.grib1.tables.Grib1ParamTables.addParameterTableLookup(String lookupFilename);
 --------------------------------------------------------------------------------------------
@@ -91,8 +98,9 @@ center/subcenter/versions.
 about lookup tables.
 * GRIB2 table handling is still being developed.
 
-=== Register a BUFR Table lookup:
+== Register a BUFR Table lookup
 
+[source,java]
 -----------------------------------------------------------------------------------------------------------
   ucar.nc2.iosp.bufr.tables.BufrTables.addLookupFile( String filename) throws throws FileNotFoundException;
 -----------------------------------------------------------------------------------------------------------
@@ -131,11 +139,11 @@ The configuration file looks like this:
 </nj22Config>
 ----
 
-1.  Loads an *IOServiceProvider* with the given class name
-2.  Loads a *CoordSysBuilderIF* with the given class name, which looks for the given *Convention* attribute value.
-3.  Loads a *CoordTransBuilderIF* with the given class name, which looks
+1.  Loads an `IOServiceProvider` with the given class name
+2.  Loads a `CoordSysBuilderIF` with the given class name, which looks for the given *Convention* attribute value.
+3.  Loads a `CoordTransBuilderIF` with the given class name, which looks
 for the given *transformName* in the dataset. The type must be _vertical_ or __projection__.
-4.  Loads a *FeatureDatasetFactory* with the given class name which open *FeatureDatasets* of the given featureType.
+4.  Loads a `FeatureDatasetFactory` with the given class name which open *FeatureDatasets* of the given *featureType*.
 5.  Load a <<formats/GribTables#,GRIB-1 parameter table>> (as of version 4.3)
 6.  Load a <<formats/GribTables#,GRIB-1 parameter table lookup>> (as of version 4.3)
 7.  Load a <<formats/GribTables#,GRIB-1 parameter lookup table>> (versions < 4.3, deprecated)
@@ -145,8 +153,8 @@ for the given *transformName* in the dataset. The type must be _vertical_ or __p
 11. Set the <<netcdf4Clibrary#,netCDF-4 C library>> path and name.
 
 There are several ways pass the Runtime Configuration XML to the CDM
-library. From your application, you can pass a *java.io.InputStream* (or http://www.jdom.org/[JDOM] element) to
-**ucar.nc2.util.xml.RuntimeConfigParser**, as in the following examples:
+library. From your application, you can pass a `java.io.InputStream` (or http://www.jdom.org/[JDOM] element) to
+`ucar.nc2.util.xml.RuntimeConfigParser`, as in the following examples:
 
 [source,java]
 ----
@@ -198,21 +206,22 @@ public void main(String[] args) {
    }
  }
 ...
+}
 ----
 
 If none is specified on the command line, it will look for the XML
-document in *$USER_HOME/.unidata/nj22Config.xml.*
+document in *$USER_HOME/.unidata/nj22Config.xml*.
 
-== Runtime Loading of IOSP using javax.imageio.spi.ServiceRegistry
+== Runtime Loading of IOSP using `javax.imageio.spi.ServiceRegistry`
 
 You can create an IOSP and have it discovered at runtime automatically.
 
-1.  Your class must implement *ucar.nc2.iosp.IOServiceProvider*
+1.  Your class must implement `ucar.nc2.iosp.IOServiceProvider`
 2.  Create a JAR file with a **services** subdirectory in
 the META-INF directory. This directory contains a file called
-**ucar.nc2.iosp.IOServiceProvider**, which contains the name(s) of the
+`ucar.nc2.iosp.IOServiceProvider`, which contains the name(s) of the
 implementing class(es). For example, if the JAR file contained a class
-named com.mycompany.MyIOSP, the JAR file would contain a file named:
+named `com.mycompany.MyIOSP`, the JAR file would contain a file named:
 +
 ---------------------------------------------------
  META-INF/services/ucar.nc2.iosp.IOServiceProvider

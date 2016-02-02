@@ -60,9 +60,9 @@ http://server/webapp/**catalog**/catKey.[xml|html], to follow the form
         dataset=grib/NCEP/DGEX/CONUS_12km/DGEX_CONUS_12km_20150220_0600.grib2/files/DGEX_CONUS_12km_20150220_0600.grib2
 -----------------------------------------------------------------------------------------------------------------------------------
 
-=== FMRC Collections
+== FMRC Collections
 
-==== Forms
+=== Forms
 
 ----------------------------------------------------------------------------------------------------------------------
 4) http://server/webapp/catalog/dataRoot/remaining/catalog.[xml|html] [?dataset=dataRoot/<name_>[fmrc.ncd | best.ncd]]
@@ -71,7 +71,7 @@ http://server/webapp/**catalog**/catKey.[xml|html], to follow the form
 * remaining = null, **runs**, **files**, **constantForecast**,
 *constantOffset*
 
-==== Examples:
+=== Examples:
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/catalog.html?dataset=fmrc/ecmwf/global_2p5/TestFmrc_fmrc.ncd
@@ -85,15 +85,15 @@ https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/files
 https://thredds-dev.unidata.ucar.edu/thredds/catalog/fmrc/ecmwf/global_2p5/files/latest.html?dataset=fmrc/ecmwf/global_2p5/files/ECMWF_Global_2p5_20150319_1200.nc
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-=== GRIB Collections
+== GRIB Collections
 
-==== Forms
+=== Forms
 
 ---
 sss
 ---
 
-==== Examples
+=== Examples
 
 ---
 sss

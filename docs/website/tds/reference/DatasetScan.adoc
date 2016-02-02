@@ -202,7 +202,7 @@ so that if stray files accidentally get into your data directories, they
 wont generate erroneous catalog entries. This is also known as
 __whitelisting__.
 
-[link:#sample2[Sample config catalog 2]]
+[link:#sample2[Sample config catalog 2]] +
 
 Complicated matching can be done with regular expressions, eg:
 
@@ -216,11 +216,11 @@ A few gotchas to remember:
 
 * to match any number of characters, use ".*", not "*"
 * in the above, we use a "\" to escape the "." character, to require
-a literal "." character. Note that only one backslash is neeeded.
+a literal "." character. Note that only one backslash is needed.
 (Inside a Java String, one needs to use "\\", but not here in the
 catalog).
 
-[link:#sample3[Sample config catalog 3]]
+[link:#sample3[Sample config catalog 3]] +
 
 == Sorting Datasets
 
@@ -308,7 +308,7 @@ resulting *timeCoverage* element. +
 Example 1: The *addTimeCoverage* element,
 
 ----------------------------------------------------------------------------------------------
-<datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"> 
+<datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver">
   <addTimeCoverage
     datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2}).grib1$"
     startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
@@ -401,11 +401,11 @@ this dataset would end up as something like this: +
 
 == Examples
 
-Basic catalog:
+[[sample1]]Basic catalog:
 
 ----------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" 
+<catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"
     xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
     xmlns:xlink="http://www.w3.org/1999/xlink">
 
@@ -416,11 +416,11 @@ Basic catalog:
 </catalog>
 ----------------------------------------------------------------------------------------
 
-Catalog with wildcard *filter* element:
+[[sample2]]Catalog with wildcard *filter* element:
 
 ----------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" 
+<catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"
     xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
     xmlns:xlink="http://www.w3.org/1999/xlink">
 
@@ -436,12 +436,12 @@ Catalog with wildcard *filter* element:
 </catalog>
 ----------------------------------------------------------------------------------------
 
-Catalog with *filter* and *addTimeCoverage* elements using
+[[sample3]]Catalog with *filter* and *addTimeCoverage* elements using
 http://www.regular-expressions.info/[regular expressions]: +
 
 ---------------------------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
-<catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1" 
+<catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"
     xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
     xmlns:xlink="http://www.w3.org/1999/xlink">
 
@@ -457,4 +457,3 @@ http://www.regular-expressions.info/[regular expressions]: +
   </datasetScan>
 </catalog>
 ---------------------------------------------------------------------------------------------------------------
-

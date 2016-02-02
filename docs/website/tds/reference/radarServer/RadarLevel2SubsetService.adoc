@@ -3,15 +3,12 @@
 
 = Subset Service for Radar Level2 Data (version 1.0)
 
-=== Please note that the interface described here is still a prototype,
-and subject to change.
+*Please note that the interface described here is still a prototype, and subject to change.*
 
 _Please send comments to the mailto:thredds@unidata.ucar.edu[THREDDS
 email group]_
 
-== RadarLevel2 Subset Service
-
-=== *A. Example urls*
+== Example urls
 
 Some interesting URLs for the radarServer service:
 
@@ -26,7 +23,7 @@ http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/IDD/dataset.xml
 * Level2 CCS039 Dataset
 http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039/dataset.xml
 
-== *Subsetting Parameters*
+== Subsetting Parameters
 
 Some interesting URLs for the radarServer query service:
 
@@ -43,14 +40,14 @@ http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&tempor
 * CCS039 dataset Station KDMX 2 hour time range
 http://thredds.ucar.edu/thredds/radarServer/nexrad/level2/CCS039?stn=KDMX&time_start=1998-06-29T18:00:00&time_end=1998-06-29T19:00:00
 
-=== *B. Specify spatial extent*
+=== Specify spatial extent
 
 Latitude, longitude values are specified in decimal degrees north and
 east, respectively.
 
 Use one of the following methods:
 
-==== *1. Specify lat/lon bounding box*
+==== Specify lat/lon bounding box
 
 Specify all of these parameters (order does not matter):
 
@@ -64,9 +61,9 @@ The bounding box has *west* as its west edge, includes all points going
 or negative, and will be taken modulo 360. Therefore, when crossing the
 dateline, the west edge may be greater than the east edge. Examples:
 
-* ** *north=17.3&south=12.088&west=140.2&east=160.0*
+* *north=17.3&south=12.088&west=140.2&east=160.0*
 
-==== *2. Specify lat/lon point*
+==== Specify lat/lon point
 
 * *latitude:* latitude of point, decimal degrees north
 * *longitude:* longitude of point, decimal degrees east
@@ -78,32 +75,32 @@ Examples:
 
 * *latitude=17.3&longitude=140.2*
 
-==== *3. Specify station(s)*
+==== Specify station(s)
 
 *You may specify a list of stations instead of the lat/lon point or
 bounding box*
 
-* **stn=**name of stations, separated by `,' (comma)
+* **stn=**name of stations, separated by `,` (comma)
 
 The list of valid stations is available from the Dataset Description.
 Station names with spaces or other illegal characters must be escaped.
 
 Examples:
 
-* ** *stn=KFTG*
+* *stn=KFTG*
 * *stn=KFTG,KGLD,KPUX*
 * *stn=KFTG&stn=KGLD&stn=KPUX*
 
-=== C. Specify time
+=== Specify time
 
 Use one of the following methods:
 
-==== *1. Time range*
+==== Time range
 
 Specify 2 of these 3 parameters (order does not matter):
 
-* **time_start**: starting time as an W3C date string or ``present''
-* **time_end**: ending time as an W3C date string or ``present''
+* **time_start**: starting time as an W3C date string or `present`
+* **time_end**: ending time as an W3C date string or `present`
 * **time_duration**: length of time as an W3C time duration
 
 The intersection of the requested time range with the dataset time range
@@ -117,11 +114,11 @@ Examples:
 from the present)
 * *time_end=present&time_duration=PT3H* (get last 3 hours)
 
-==== *2. Time point*
+==== Time point
 
-* *time:* time as an W3C date string or ``present''
+* *time:* time as an W3C date string or `'present'`
 
-The `latest' data retrieval is obtained by `time=present'. The requested
+The `latest` data retrieval is obtained by `time=present`. The requested
 time point must lie within the dataset time range. The time slice/point
 closest to the requested time will be returned.
 
@@ -130,18 +127,16 @@ Examples:
 * *time=2007-03-29T12:00:00Z*
 * *time=present*
 
-==== *3. All Times*
+==== All Times
 
 * *temporal=all*
 
 This returns data from all available times.
 
-=== D. Specify the return format
+=== Specify the return format
 
 The accept parameter default is xml and it is the only legal one at this
 time.
-
-===  
 
 '''''
 
