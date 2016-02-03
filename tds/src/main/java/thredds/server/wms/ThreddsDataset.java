@@ -330,35 +330,35 @@ public class ThreddsDataset implements Dataset {
   }
 
   /**
-   * Returns true if the layerName contains some of the standard components prefixes for CF-1.0 or
-   * Grib convention
-   */
+   * Returns true if varAtt is the name of a scalar component of the vector layer layerName
+   *
+   * Check if the result of removing standard components prefixes for CF-1.0 or
+   * Grib convention from varAtt is the layerName.
+   *
+   * Handled standard components:
+   *    - x, y
+   *    - eastward, northward
+   *    - Meridional, Zonal
+   *    - u-component of, v-component of
+   *
+   * They can appear at the begining, in the middle or at the end, separated by _ or space characters
+   *
+   * @param layerName
+   * @param varAtt
+   * @return
+    */
   static boolean isComponent(String layerName, String varAtt) {
 
-    if (varAtt.contains("eastward_") || varAtt.contains("northward_")) {
-      //CF-Conventions
-      String[] tokens = layerName.split("_");
+    String componentRegex = "(x|y|eastward|northward|meridional|zonal|u-component of|v-component of)";
+    String separatorRegex = "(_|\\s+)";
+    String lookBehindRegex = "(?<=_|\\s|^)";
 
-      StringBuilder sb = new StringBuilder();
+    // Regex in two cases:
+    //  1: begining and middle (ex: eastward_sea_water_velocity or barotropic_sea_water_x_velocity)
+    //  2: end (ex: sea_water_velocity_x)
+    String regex = lookBehindRegex + componentRegex + separatorRegex + "|" +
+                   separatorRegex + componentRegex + "$";
 
-      if (tokens.length == 1) {
-        sb.append(tokens[0]).append("\\b");
-      } else {
-
-        sb.append(tokens[0]).append("\\B");
-        for (int i = 1; i < tokens.length - 1; i++) {
-          sb.append(".*\\B").append(tokens[i]).append("\\B");
-        }
-        sb.append(".*\\B").append(tokens[tokens.length - 1]).append("\\b");
-      }
-      Pattern pattern = Pattern.compile(sb.toString());
-      Matcher matcher = pattern.matcher(varAtt);
-
-      return matcher.find();
-
-    }
-
-    return varAtt.contains("u-component of " + layerName) || varAtt.contains("v-component of " + layerName);
-
+		return layerName.equals(varAtt.replaceAll("(?i)" + regex, ""));
   }
 }
