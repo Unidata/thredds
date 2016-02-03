@@ -3,12 +3,6 @@
 
 = HTTP Session Control
 
-== Dennis Heimbigner +
- UCAR/Unidata
-
-=== Date: July 20, 2011 +
- Revised: September 25, 2011
-
 == Introduction
 
 New public classes are introduced to the package ucar.httpclient. These
@@ -28,7 +22,7 @@ session.
 A session is encapsulated in an instance of the class __HTTPSession__.
 The encapsulation is with respect to a specific url. This means that
 once a session is specified, it is tied permanently to that url and
-link:#URLManagement[``compatible''] urls.
+<<URL Management, compatible URLs>>.
 
 It is important to note that Session objects do NOT correspond with the
 HttpClient objects of the Apache httpclient library. Each Session does,
@@ -38,7 +32,7 @@ It is possible to create a session with a null url, in which case, the
 session can be used generally. For this, an _HTTPSession_ constructor
 with no arguments is provided. If used, then (1) the session is tied to
 no specific url, and (2) method creation must specify a url (see
-link:#HTTPMethod[HTTPMethod]).
+<<HTTPMethod>>).
 
 === HTTPMethod
 
@@ -50,20 +44,22 @@ The _HTTPMethod_ class also operates as a factory for creating
 _HTTPMethod_ instances. To create a method for doing an HTTP GET
 operation, for example, one would invoke this operation
 
+[source,java]
 ---------------------------------------
 HTTPMethod m = HTTPMethod.Get(session);
 ---------------------------------------
 
-where ``session'' is a previously created session object.
+where `session` is a previously created session object.
 
 Alternately, one can create a method and specify a url.
 
+[source,java]
 -------------------------------------------
 HTTPMethod m = HTTPMethod.Get(session,url);
 -------------------------------------------
 
 Note that any URL must be compatible (See the Section on
-link:#URLManagement[URL Management]).
+<<URL Management>>.
 
 === HTTPMethodStream
 
@@ -79,13 +75,14 @@ for reporting errors out of the classes listed above.
 === HttpClientManager
 
 This class is a utility class to perform some specialized actions. Its
-name begins with ``Http'' rather than ``HTTP'' for historical reasons.
+name begins with "Http" rather than "HTTP" for historical reasons.
 
 This class contains only static methods and these methods perform the
 following utility operations.
 
 Return the contents of a URL as a String
 
+[source,java]
 ---------------------------------------------------------------
 String getUrlContentsAsString(String urlencoded, int maxKbytes)
 ---------------------------------------------------------------
@@ -95,6 +92,7 @@ of max length __maxKbytes__.
 
 Get the contents of URL and store in a file.
 
+[source,java]
 -----------------------------------------------------------------------------
 void copyUrlContentsToFile(String urlencoded, File file) throws HTTPException
 -----------------------------------------------------------------------------
@@ -104,6 +102,7 @@ the specified file.
 
 Append the contents of a URL to the end of a File
 
+[source,java]
 -------------------------------------------------------------------------
 long appendUrlContentsToFile(String url, File file, long start, long end)
 -------------------------------------------------------------------------
@@ -113,6 +112,7 @@ the specified file.
 
 Initialize the Client Manager class
 
+[source,java]
 ---------------------------------------------------------
 void init(CredentialsProvider provider, String userAgent)
 ---------------------------------------------------------
@@ -136,14 +136,14 @@ Legal url arguments to the HTTPMethod factory call and execute() call
 are constrained by the URL specified in creating the HTTPSession
 instance, if any. If the session was constructed with a specified URL,
 then any url specified to HTTMethod (via the factory or via execute())
-must be ``compatible'' with the session URL. The term ``compatible''
+must be "compatible" with the session URL. The term "compatible"
 basically means that the session url, as a string, must be a prefix of
 the specified method url. This maintains the semantics of the Session
 but allows flexibility in accessing data from the server. As an example,
 if a session was created and specifed the URL
-``http://motherlode.ucar.edu'', then any URL specified, in say,
+"http://motherlode.ucar.edu", then any URL specified, in say,
 HTTPMethod.execute() must begin with the session URL. So, specifiying
-``http://motherlode.ucar.edu/path/file.nc.dds'' would be a compatible
+"http://motherlode.ucar.edu/path/file.nc.dds" would be a compatible
 url. Note that if the session was created with no url then a URL must be
 specified to the HTTPMethod object.
 
@@ -158,7 +158,7 @@ acts like a wildcard.
 Similarly, missing ports or paths in the _surl_ also act like wildcards.
 
 Additionally, and for backward compatibility, if _surl_ is null or is
-the empty string (``''), then any other url is considered compatible.
+the empty string (""), then any other url is considered compatible.
 
 === Single Use Methods
 
@@ -196,6 +196,7 @@ The up shot is that closing the stream will cleanup the method and the
 
 ==== Example 1: Create/Use/Release Cycle
 
+[source,java]
 -----------------------------------------------------------------
 public class Main
 {
@@ -214,6 +215,7 @@ public class Main
 
 ==== Example 2: Using HttpClientManager
 
+[source,java]
 ------------------------------------------------------------------------
 public class Main
 {
@@ -227,6 +229,7 @@ public class Main
 
 ==== Example 3: Setting Some Global Parameters
 
+[source,java]
 -----------------------------------------------------------------------------
 public class Main
 {
@@ -251,6 +254,7 @@ public class Main
 
 ==== Example 4: Setting Some Local Parameters
 
+[source,java]
 -------------------------------------------------------------------
 public class Main
 {
@@ -276,6 +280,7 @@ public class Main
 
 ==== Example 1: Create/Use/Release Cycle
 
+[source,java]
 -----------------------------------------------------------------
 public class Main
 {
@@ -336,13 +341,14 @@ The last two items are optional. If missing, then the client will accept
 any certificate sent to it by the server. This includes, specifically,
 self-signed certificates.
 
-==== Setting Credentials
+=== Setting Credentials
 
 There are four primary credentialling methods in __HTTPSession__:
 
 1.  Insert an arbitrary entry into the auth store. Its signature is as
 follows.
 +
+[source,java]
 --------------------------------------------------------------------------------------------------------------
 static public void setAnyCredentialsProvider(HTTPAuthScheme scheme, String url,  CredentialsProvider provider)
 --------------------------------------------------------------------------------------------------------------
@@ -350,12 +356,14 @@ static public void setAnyCredentialsProvider(HTTPAuthScheme scheme, String url, 
 unless overridden by a more specific entry in the auth store. Its
 signature is as follows.
 +
+[source,java]
 ----------------------------------------------------------------------------------------------------
 static public void setGlobalCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
 ----------------------------------------------------------------------------------------------------
 3.  Set the credentials on a per-session basis, using the url defined
 for that session. Its signature is as follows.
 +
+[source,java]
 ---------------------------------------------------------------------------------------
 public void setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider provider)
 ---------------------------------------------------------------------------------------
@@ -363,6 +371,7 @@ public void setCredentialsProvider(HTTPAuthScheme scheme, CredentialsProvider pr
 instance of __Credentials__. This is only useful when the credentials
 are unchanging. Its signature is as follows.
 +
+[source,java]
 ---------------------------------------------------------------------
 public void setCredentials(HTTPAuthScheme scheme, Credentials creds);
 ---------------------------------------------------------------------
@@ -370,6 +379,7 @@ public void setCredentials(HTTPAuthScheme scheme, Credentials creds);
 instance of __Credentials__. This is only useful when the credentials
 are unchanging. Its signature is as follows.
 +
+[source,java]
 ---------------------------------------------------------------------------
 public void setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds);
 ---------------------------------------------------------------------------
@@ -377,12 +387,11 @@ public void setGlobalCredentials(HTTPAuthScheme scheme, Credentials creds);
 For backward compatibility, the following two methods are defined. They
 use the Basic scheme for the scheme.
 
-1.  -----------------------------------------------------------------------------
+[source,java]
+---------------------------------------------------------------------------
 static public void setGlobalCredentialsProvider(CredentialsProvider provider)
------------------------------------------------------------------------------
-2.  ----------------------------------------------------------------
 public void setCredentialsProvider(CredentialsProvider provider)
-----------------------------------------------------------------
+---------------------------------------------------------------------------
 
 == Command Line Access to the Authorization Mechanism
 
@@ -401,6 +410,7 @@ For purposes of backward compatibility, a check is made for these flags,
 and if they are defined, then an entry equivalent to the following is
 inserted into the auth store.
 
+[source,java]
 -----------------------------------------------------------------
 insert(new Entry(HTTPAuthScheme.SSL,ANY_URL,
                  new HTTPSSLProvider(keystore,kpassword,

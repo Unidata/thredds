@@ -29,7 +29,7 @@ When the CDM reads an OPeNDAP dataset, it makes the following transformations:
 | URL | ignored
 |===
 
-==== OPeNDAP Attributes
+== OPeNDAP Attributes
 
 An OPeNDAP Attribute may be a name/value pair, or may contain other
 attributes, in which case it is called an __attribute container__.
@@ -40,11 +40,11 @@ Variable. The CDM does not support nested attributes, so these are
 flattened by using a "." to separate the container(s) from the name.
 
 Certain OPeNDAP attribute containers are handled separately. An
-attribute named *_NC_GLOBAL_* or *_HDF_GLOBAL_* is assumed to contain
-global attributes. Attribute containers named *_DODS_EXTRA_* and
-*_EXTRA_DIMENSION_* are handled as described in the next section.
+attribute named `NC_GLOBAL` or `HDF_GLOBAL` is assumed to contain
+global attributes. Attribute containers named `DODS_EXTRA` and
+`EXTRA_DIMENSION` are handled as described in the next section.
 
-==== OPeNDAP Dimensions
+== OPeNDAP Dimensions
 
 OPeNDAP (version 2) does not have explicit shared Dimensions in its
 object model, except for Map arrays inside of Grids. NetCDF has only
@@ -63,10 +63,10 @@ of the same name and length are the same object.
 
 In order to get the full semantics of NetCDF files transported across
 the OPeNDAP protocol, we use 2 special global attributes. If there is a
-global attribute called *_DODS_EXTRA/Unlimited_Dimension_* then the
+global attribute called `DODS_EXTRA/Unlimited_Dimension` then the
 value of that attribute is assumed to be a dimension name, which is then
 set to be an _Unlimited_ dimension. If there is a global attribute
-called *_EXTRA_DIMENSION_* then it contains one or more (name, length)
+called `EXTRA_DIMENSION` then it contains one or more (name, length)
 attributes which are made into shared CDM Dimensions. This allows a
 server to pass dimensions which are not used in a Variable, but
 conceivably might be needed by a client. Here are examples of these two
@@ -76,9 +76,9 @@ cases:
     DODS_EXTRA { String Unlimited_Dimension record; }  
 ----
 
-_DODS_EXTRA_ and _EXTRA_DIMENSION_ are ad-hoc Conventions used only by the TDS.
+`DODS_EXTRA` and `EXTRA_DIMENSION` are ad-hoc Conventions used only by the TDS.
 
-==== OPeNDAP Grids
+== OPeNDAP Grids
 
 An OPeNDAP Grid object is decomposed into different Variables for the
 data array and for each map vector in the Grid. The map vectors are
@@ -95,6 +95,7 @@ data models, since there is not workaround for DAP 2.
 In order to preserve the semantics of the map vectors, the following CDM
 attribute is added to the data variable:
 
+[source,java]
 ----
  _Coordinate.Axes = "map1 map2 map3";
 ----
@@ -102,14 +103,14 @@ attribute is added to the data variable:
 The CDM Coordinate System layer uses this to associate the array and map
 Variables, as intended by the Grid specification
 
-==== OPeNDAP Strings
+== OPeNDAP Strings
 
 The default case is to map OPeNDAP Strings to CDM Strings. If the
-Variable has an attribute named _DODS/strlen_ , then the CDM instead
-uses DataType.CHAR. The value of the _DODS/strlen_ attribute is the
+Variable has an attribute named `DODS/strlen` , then the CDM instead
+uses DataType.CHAR. The value of the `DODS/strlen` attribute is the
 length of the innermost dimension. For example, an OPeNDAP String of
 dimension (5, 7) becomes a char Variable of dimension (5,7,strlen). If
-the Variable has an attribute named _DODS/dimName_, then dimName
+the Variable has an attribute named `DODS/dimName`, then dimName
 becomes the dimension name of the inner Dimension, otherwise the
 Dimension is anonymous.
 
@@ -118,22 +119,18 @@ char arrays to multidimensional String arrays, with each String being
 length 1. As a workaround, the CDM reads the data for all String
 variables from an OPeNDAP dataset when the dataset is opened. If it
 discovers that the data consists of Strings of length 1, it changes the
-Variable dataType to DataType.CHAR. In any case, we cache the String
+Variable dataType to `DataType.CHAR`. In any case, we cache the String
 data on the client. This workaround is reasonable as long as there isn’t
 huge amounts of String data in the dataset.
 
-==== OPeNDAP Sequences
+== OPeNDAP Sequences
 
 An OPeNDAP Sequence is mapped to a one-dimensional CDM Structure of
-variable length (uses Dimension.VLEN). The CDM now has a Sequence class,
+variable length (uses `Dimension.VLEN`). The CDM now has a Sequence class,
 but we have not yet converted the CDM opendap code to use it. The
 semantics of both are the same, the user is only allowed to read the
 entire sequence (no subsetting). In the general API (ie through the
 NetcdfFile interface), constraint expressions are not supported .
 However, a user could break encapsulation and call
-*_DODSNetcdfFile.readWithCE()_* to read data with a relational
+`DODSNetcdfFile.readWithCE()` to read data with a relational
 constraint expression on a Sequence.
-
-'''''
-
-image:../nc.gif[image] This document was last updated Nov 2015.

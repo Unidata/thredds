@@ -1,6 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+// Enables non-selectable callout icons drawn using CSS.
+:icons: font
+
 = Disk Caching
 
 == Writing temporary files using DiskCache
@@ -23,7 +26,7 @@ Before the CDM writes the temporary file, it looks to see if it already exists.
 | .Z |unix http://en.wikipedia.org/wiki/Compress[compress] ( LZW )
 | .zip |http://en.wikipedia.org/wiki/Zip_(file_format)[zip files] (assumes only one entry)
 | .gzip, .gz |http://en.wikipedia.org/wiki/Gzip[deflate]
-| .bz2 |http://en.wikipedia.org/wiki/Bzip2[Burrows�Wheeler]
+| .bz2 |http://en.wikipedia.org/wiki/Bzip2[Burrows–Wheeler]
 |=======================================================================
 
 2.  *Nexrad2, Cinrad2* files may also be compressed
@@ -57,22 +60,26 @@ a background timer thread, as in the following example.
 
 [source,java]
 ----
-Calendar c = Calendar.getInstance(); // contains current startup time # <1>
-c.add( Calendar.MINUTE, 30); // add 30 minutes to current time     // run task every 60 minutes, starting 30 minutes from now
-java.util.Timer timer = new Timer(); # <2>
+Calendar c = Calendar.getInstance(); // contains current startup time  // <1>
+c.add( Calendar.MINUTE, 30); // add 30 minutes to current time
+
+// run task every 60 minutes, starting 30 minutes from now
+java.util.Timer timer = new Timer();  // <2>
 timer.scheduleAtFixedRate( new CacheScourTask(), c.getTime(), (long) 1000 * 60 * 60 );
 
-private class CacheScourTask extends java.util.TimerTask {   # <3>
+private class CacheScourTask extends java.util.TimerTask {   // <3>
   public void run() {
     StringBuffer sbuff = new StringBuffer();
-    DiskCache.cleanCache(100 * 1000 * 1000, sbuff); // 100 Mbytes # <4>
+    DiskCache.cleanCache(100 * 1000 * 1000, sbuff); // 100 Mbytes // <4>
       sbuff.append("----------------------\n");
-      log.info(sbuff.toString()); # <5>
-    }
-   }
-   ...
-   // upon exiting
-   timer.cancel(); # <6>
+      log.info(sbuff.toString()); // <5>
+  }
+}
+
+// ...
+
+// upon exiting
+timer.cancel(); // <6>
 ----
 
 <1>  Get the current time and add 30 minutes to it
@@ -175,7 +182,7 @@ To enable caching, you must first call
 
 [source,java]
 ----
- NetcdfDataset.initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period);
+NetcdfDataset.initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period);
 ----
 
 where _minElementsInMemory_ are the number of objects to keep in the
@@ -202,12 +209,8 @@ hard limit with this call:
 
 [source,java]
 ----
-   NetcdfDataset.initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit, int period);
+NetcdfDataset.initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit, int period);
 ----
 
-so that as soon as the number of NetcdfFile objects exceeds _hardLimit_ , a cleanup is done immediately in the calling thread.
-
-'''''
-
-image:../nc.gif[image] This document was last updated Nov 2015
-
+so that as soon as the number of NetcdfFile objects exceeds _hardLimit_ ,
+a cleanup is done immediately in the calling thread.
