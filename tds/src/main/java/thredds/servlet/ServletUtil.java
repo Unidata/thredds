@@ -679,6 +679,20 @@ public class ServletUtil {
   }
 
   /**
+   * Set the proper content length for the string
+   *
+   * @param response the HttpServletResponse to act upon
+   * @param s the string that will be returned
+   * @return the number of bytes
+   * @throws UnsupportedEncodingException on bad character encoding
+   */
+  public static int setResponseContentLength(HttpServletResponse response, String s) throws UnsupportedEncodingException {
+    int length = s.getBytes(response.getCharacterEncoding()).length;
+    response.setContentLength(length);
+    return length;
+  }
+
+  /**
    * Return the request URL relative to the server (i.e., starting with the context path).
    *
    * @param req request

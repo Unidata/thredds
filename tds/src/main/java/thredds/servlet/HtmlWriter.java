@@ -60,6 +60,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
+import static thredds.servlet.ServletUtil.setResponseContentLength;
+
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
  * <p/>
@@ -376,8 +378,8 @@ public class HtmlWriter {
     // Get directory as HTML
     String dirHtmlString = getDirectory(path, dir);
 
-    res.setContentLength(dirHtmlString.length());
     res.setContentType(ContentType.html.getContentHeader());
+    thredds.servlet.ServletUtil.setResponseContentLength(res, dirHtmlString);
     PrintWriter writer = res.getWriter();
     writer.write(dirHtmlString);
     writer.flush();
@@ -527,15 +529,18 @@ public class HtmlWriter {
           throws IOException {
     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
 
-    res.setContentLength(catHtmlAsString.length());
+    // Once this header is set, we know the encoding, and thus the actual
+    // number of *bytes*, not characters, to encode
     res.setContentType(ContentType.html.getContentHeader());
+    int len = setResponseContentLength(res, catHtmlAsString);
+
     if (!req.getMethod().equals("HEAD")) {
       PrintWriter writer = res.getWriter();
       writer.write(catHtmlAsString);
       writer.flush();
     }
 
-    return catHtmlAsString.length();
+    return len;
   }
 
   /**
@@ -607,7 +612,7 @@ public class HtmlWriter {
     sb.append("</body>\r\n");
     sb.append("</html>\r\n");
 
-    return (sb.toString());
+    return sb.toString();
   }
 
   private boolean doDatasets(InvCatalogImpl cat, List<InvDataset> datasets, StringBuilder sb, boolean shade, int level, boolean isLocalCatalog) {
@@ -844,8 +849,8 @@ public class HtmlWriter {
           throws IOException {
     String cdmAsString = getCDM(ds);
 
-    res.setContentLength(cdmAsString.length());
     res.setContentType(ContentType.html.getContentHeader());
+    thredds.servlet.ServletUtil.setResponseContentLength(res, cdmAsString);
     PrintWriter writer = res.getWriter();
 
     writer.write(cdmAsString);

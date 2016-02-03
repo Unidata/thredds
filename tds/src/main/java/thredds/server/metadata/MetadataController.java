@@ -110,7 +110,7 @@ public class MetadataController {
         strResponse = writeHTML(vars);
         res.setContentType(ContentType.html.getContentHeader());
       }
-      res.setContentLength(strResponse.length());
+      thredds.servlet.ServletUtil.setResponseContentLength(res, strResponse);
 
       PrintWriter pw = res.getWriter();
       pw.write(strResponse);

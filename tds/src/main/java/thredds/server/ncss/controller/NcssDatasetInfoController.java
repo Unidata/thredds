@@ -100,13 +100,13 @@ class NcssDatasetInfoController extends AbstractNcssController {
         return; // restricted dataset
 
       String strResponse = ncssShowDatasetInfo.showForm(fd, buildDatasetUrl(datasetPath), wantXML, showPointForm);
-      res.setContentLength(strResponse.length());
 
       if (wantXML)
         res.setContentType(ContentType.xml.getContentHeader());
       else
         res.setContentType(ContentType.html.getContentHeader());
 
+      thredds.servlet.ServletUtil.setResponseContentLength(res, strResponse);
       writeResponse(strResponse, res);
     }
   }

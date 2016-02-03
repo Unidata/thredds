@@ -161,9 +161,8 @@ public class CdmRemoteController extends AbstractController implements LastModif
 
           ncfile.setLocation(datasetPath); // hide where the file is stored
           String cdl = ncfile.toString();
-          res.setContentLength(cdl.length());
+          size = (long) thredds.servlet.ServletUtil.setResponseContentLength(res, cdl);
           pw.write(cdl);
-          size = cdl.length();
           break;
         }
 

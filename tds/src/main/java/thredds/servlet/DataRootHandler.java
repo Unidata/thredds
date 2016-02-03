@@ -1139,8 +1139,8 @@ public final class DataRootHandler implements InitializingBean {
     InvCatalogFactory catFactory = getCatalogFactory(false);
     String result = catFactory.writeXML(cat);
 
-    res.setContentLength(result.length());
     res.setContentType(ContentType.xml.getContentHeader());
+    thredds.servlet.ServletUtil.setResponseContentLength(res, result);
     PrintWriter pw = res.getWriter();
     pw.write(result);
   }
