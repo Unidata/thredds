@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = CDM nested table notation for DSG
 
 *_CDM nested table notation_* expresses the data structures for point features
@@ -23,7 +22,9 @@ logically _joined_ to a nested table with the same dimension.
 * A _feature collection_ is an unconnected collection of a specific
 feature type.
 
-==== CDL notation:
+== Flat Tables
+
+=== CDL notation:
 
 ----------------------
 dimensions:
@@ -37,7 +38,7 @@ variables:
   float data2(sample);
 ----------------------
 
-==== CDM Structure notation:
+=== CDM Structure notation:
 
 Variables with a common outer dimension can be grouped into a
 __structure__:
@@ -59,7 +60,7 @@ variables:
 Both the netCDF-4 file format and the NetCDF-Java CDM library support
 structure data types.
 
-==== CDM Table notation:
+=== CDM Table notation:
 
 ---------------------
 dimensions:
@@ -70,7 +71,7 @@ Table {
 } obs(sample); 
 ---------------------
 
-==== SQL notation:
+=== SQL notation:
 
 ---------------------------------------------
 CREATE TABLE obs  (
@@ -79,7 +80,7 @@ CREATE TABLE obs  (
 )  
 ---------------------------------------------
 
-==== Data rows:
+=== Data rows:
 
 [cols=",,,,,",options="header",]
 |================================================
@@ -88,9 +89,9 @@ CREATE TABLE obs  (
 |24.6 |-132.9 |30 |2009-07-22 02:10:20Z |281.0 |4
 |================================================
 
-=== Nested Tables
+== Nested Tables
 
-==== CDL:
+=== CDL:
 
 -----------------------------
 dimensions:
@@ -105,7 +106,7 @@ variables:
   float data2(station, time);
 -----------------------------
 
-==== CDM Nested Structure:
+=== CDM Nested Structure:
 
 ---------------------
 dimensions:
@@ -124,7 +125,7 @@ variables:
  } station(station); 
 ---------------------
 
-==== CDM Nested Table:
+=== CDM Nested Table:
 
 ----------------------
 dimensions:
@@ -139,7 +140,7 @@ Table {
 } station(station); 
 ----------------------
 
-==== SQL notation:
+=== SQL notation:
 
 ------------------------------------------------------------------------------
 CREATE TABLE station  (
@@ -155,7 +156,7 @@ CREATE INDEX obs_station_index  ON obs (station_id)
 SELECT * FROM station  INNER JOIN obs ON station.station_id = obs.station_id  
 ------------------------------------------------------------------------------
 
-==== Data rows:
+=== Data rows:
 
 [cols=",,,,,,",options="header",]
 |===================================================
@@ -164,9 +165,9 @@ SELECT * FROM station  INNER JOIN obs ON station.station_id = obs.station_id
 |2 |24.6 |-132.9 |30 |2009-07-22 02:10:00Z |281.0 |4
 |===================================================
 
-=== Factor out time coordinate
+== Factor out time coordinate
 
-==== CDL:
+=== CDL:
 
 -----------------------------
 dimensions:
@@ -181,7 +182,7 @@ variables:
   float data2(station, time);
 -----------------------------
 
-==== CDM Nested Table:
+=== CDM Nested Table:
 
 ----------------------
 dimensions:
@@ -198,14 +199,14 @@ Table {
 
 We use an _index join_ to add the time coordinate to the observation.
 
-==== SQL notation:
+=== SQL notation:
 
 No way to effectively factor out time coordinate, must store redundantly
 in the obs table
 
-=== Variable number of times for each station
+== Variable number of times for each station
 
-==== CDL:
+=== CDL:
 
 The 2D data arrays data(station, time) are flattened into a 1D arrays:
 data(obs). This is a way to efficiently store __ragged arrays__, ie
@@ -248,15 +249,17 @@ The _obs_count_ variable is added to associate each observation with a
 station. All obs between rowStart(s) and rowStart(s+1) belong to station
 s, where
 
-* rowStart(stn) = 0 if stn = 0
-* rowStart(stn) = rowStart(stn-1) + __obs_count__(stn-1) if i > 0
+----------------------
+rowStart(stn) = 0 if stn = 0
+rowStart(stn) = rowStart(stn-1) + __obs_count__(stn-1) if i > 0
+----------------------
 
 The advantage of this approach is performance for getting all the
 observations for one station: the data for each station are stored
 contiguously, and can be found by reading obs_count(station) instead of
 station_index(obs).
 
-==== CDM Nested Table:
+=== CDM Nested Table:
 
 ----------------------
 dimensions:
@@ -273,7 +276,7 @@ Table {
 The (*) means a variable number. The notation is independent of the
 various ways that the ragged arrays might be stored.
 
-==== SQL notation:
+=== SQL notation:
 
 SQL tables always have a variable length number of rows.
 
@@ -286,9 +289,7 @@ Design Goals
 * allow user to decide on how much data redundancy
 * enable generic software to read files
 
-'''''
-
-=== Standard Names
+== Standard Names
 
 * ragged_rowSize
 * ragged_parentIndex
@@ -300,10 +301,6 @@ Design Goals
 * trajectory_id
 * section_id
 
-=== other issues
+== Other Issues
 
 * stationTable.limit
-
-'''''
-
-image:../../nc.gif[image] This document was last updated on Sep 29, 2009

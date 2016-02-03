@@ -18,35 +18,30 @@ total
 
 Heap use:
 
-1.  FileCache: 68 Mbytes, 208 files
-1.  NetcdfDatasets : between 7.8M and 200K (Grib)
-2.  Jsp : 16 M
-3.  DataRootHandler / PathMatcher: 16 M
-1.  159 entries, InvDatsetScan (20K each), InvDatsetImpl (1.4M !) but
+. FileCache: 68 Mbytes, 208 files
+.. NetcdfDatasets : between 7.8M and 200K (Grib)
+.. Jsp : 16 M
+.. DataRootHandler / PathMatcher: 16 M
+... 159 entries, InvDatsetScan (20K each), InvDatsetImpl (1.4M !) but
 most may be a shared InvCatalogFactory. But why do we have these? Are
 they really FMRC ?
-2.  _*remove InvCatalogFactory reference from InvCatalog - done for TDS
-4.2.8*_
-3.  InvDatasestScan is retaining link to its parents
-4.  ehcache: 12 M
-5.  fmrcDatasets : 6 M each. most in FmrcInvLite, 46M total
-6.  quartz : 5 M
-7.  bdb : 80 M
-1.  bdb stores n 10M files, n us around 9 or 10. so we dont need 80 M
+... _*remove InvCatalogFactory reference from InvCatalog - done for TDS 4.2.8*_
+... InvDatasestScan is retaining link to its parents
+... ehcache: 12 M
+... fmrcDatasets : 6 M each. most in FmrcInvLite, 46M total
+... quartz : 5 M
+... bdb : 80 M
+.... bdb stores n 10M files, n us around 9 or 10. so we dont need 80 M
 cache (!) at least right now
-2.  bdb uses percent * JXV max bytes, default appears to be 2 % = 80 Mb.
-3.  *Allow cache size to be set by user*
-4.  Set to maxSize = 20 Mb for motherload (?)
-5.  nCacheMiss=17,403
-8.  org.geotoolkit 7M
+.... bdb uses percent * JXV max bytes, default appears to be 2 % = 80 Mb.
+.... *Allow cache size to be set by user*
+.... Set to maxSize = 20 Mb for motherload (?)
+.... nCacheMiss=17,403
+... org.geotoolkit 7M
 
 === 2. turn on catalog caching.
 
 TdsMonitor: catalog service 10134 requests, 114 msecs/req 359 Mbytes
-
- 
-
-'''''
 
 _below this line: update: Aug 10, 2006_
 
@@ -88,8 +83,6 @@ over 30 days
 
 |=======================================================================
 
- 
-
 === DiskCache
 
 This disk-based cache is used when you need to write into a directory,
@@ -102,6 +95,7 @@ The following directory is used for caching:
 *$\{tomcat_home}/content/thredds/cache/,* unless overridden in
 __*contentPath+``/params.xml''*__:
 
+[source, java]
 -----------------------------------------------------------------------------------------
     String cache = ServletParams.getInitParameter("CachePath", contentPath + "cache/");
     DiskCache.setRootDirectory(cache);
@@ -128,6 +122,7 @@ The following directory is used for caching:
 The following controls are set in ThreddsDefault.java. These need to be
 externalized:
 
+[source, java]
 --------------------------------------------------------------------------------------------
     // for efficiency, persist aggregations. every 12 hours, delete stuff older than 10 days
     String cache2 = ServletParams.getInitParameter("CacheAged", contentPath + "cacheAged/");
@@ -135,8 +130,6 @@ externalized:
 
 The directory is scoured (by a Timer in DiskCache2) removing files that
 are older than a certain date.
-
-'''''
 
 == Object Caching
 
@@ -154,6 +147,7 @@ However. multiple readers can access.???
 The following controls are set in ThreddsDefault.java. These need to be
 externalized:
 
+[source, java]
 ----------------------------------------------------------
     // allow 100 - 200 open files, cleanup every 2 minutes
     NetcdfFileCache.init(100, 200, 2 * 60, 2 * 60);
@@ -165,6 +159,7 @@ NetcdfDataset objects are cached in memory for performance. This is used
 by WCS server. The following controls are set in ThreddsDefault.java.
 These need to be externalized:
 
+[source, java]
 ----------------------------------------------------------
     // allow 100 - 200 open files, cleanup every 2 minutes
     NetcdfDataset.init(100, 200, 2 * 60, 2 * 60);
@@ -177,12 +172,11 @@ used by the HTTP file server, in particular to support byte range
 requests. The following controls are set in ThreddsDefault.java. These
 need to be externalized:
 
+[source, java]
 ----------------------------------------------------------
     // allow 100 - 200 open files, cleanup every 2 minutes
     FileCache.init(100, 200, 2 * 60, 2 * 60);
 ----------------------------------------------------------
-
-'''''
 
 == Catalog Caching
 
@@ -195,8 +189,6 @@ authorized.
 
 Dynamic catalogs are generated dynamically. We are considering caching
 them for some amount of time, but i dont think we’ve implemented yet. +
-
-'''''
 
 == File System Caching
 
@@ -225,8 +217,6 @@ not needed for just fmrc. most useful for datasetScan?
 
 CDM default is dont use, must turn on by calling
 DatasetCollectionManager.setController()
-
- 
 
 == FMRC Caching
 

@@ -11,36 +11,34 @@ _June 16, 2015_
 
 == Nota Bene
 
-1.  Be careful of trusting IntelliJ too much. It sometimes show problems
-in Spring that arent there.
-2.  Layout of resources: webapp/** is visible if user knows the URL, but
-webapp/WEB-INF/** is only acessible from controllers.
-3.  Difference between mapping spring dispatcher servlet to ``/'' and to
-``/*'':
-1.  ``/'' allow tomcat default servlet to handle jsps
-2.  ``/*'' spring takes over everything.
-3.  Currently we use 1), but probably should switch to 2).
-4.  http://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring
-* The **applicationContext.xml** defines the beans for the ``root webapp
-context'', i.e. the context associated with the webapp.
-* The **spring-servlet.xml** defines the beans for one servlet’s app
+. Be careful of trusting IntelliJ too much. It sometimes show problems
+in Spring that aren't there.
+. Layout of resources: webapp/** is visible if user knows the URL, but
+webapp/WEB-INF/** is only accessible from controllers.
+. Difference between mapping spring dispatcher servlet to "/" and to "/*":
+.. "/" allow tomcat default servlet to handle jsps
+.. "/*" spring takes over everything.
+.. Currently we use former, but probably should switch to latter.
+. http://stackoverflow.com/questions/3652090/difference-between-applicationcontext-xml-and-spring-servlet-xml-in-spring
+.. The **applicationContext.xml** defines the beans for the "root webapp context",
+i.e. the context associated withthe webapp.
+.. The **spring-servlet.xml** defines the beans for one servlet’s app
 context. There can be many of these in a webapp, one per Spring servlet.
 We only have one.
-* Beans in spring-servlet.xml can reference beans
+.. Beans in spring-servlet.xml can reference beans
 in applicationContext.xml, but not vice versa.
-* All Spring MVC controllers must go in the spring-servlet.xml context.
-* In most simple cases, the applicationContext.xml context is
+.. All Spring MVC controllers must go in the spring-servlet.xml context.
+.. In most simple cases, the applicationContext.xml context is
 unnecessary. It is generally used to contain beans that are shared
 between all servlets in a webapp. If you only have one servlet, then
 there’s not really much point, unless you have a specific use for it.
-* We use *applicationContext.xml* to define general TDS beans, and
+.. We use *applicationContext.xml* to define general TDS beans, and
 *spring-servlet.xml* to define MVC (controllers, etc).
-5.  Dont do any heavy processing in the bean initialization phase, just
+. Dont do any heavy processing in the bean initialization phase, just
 get the beans wired in
-6.  So bean constructors must not depend on anything else, or assume the
+. So bean constructors must not depend on anything else, or assume the
 order of wiring.
-7.  see
-http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc
+. see http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc
 
 == Spring DI
 
@@ -73,29 +71,28 @@ config objects
 
 == Startup
 
-see
-http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc
+see http://stackoverflow.com/questions/6684451/executing-a-java-class-at-application-startup-using-spring-mvc
 
-==== Startup Sequence
+=== Startup Sequence
 
-1.  Tomcat loads _thredds.war_ with /WEB-INF/web.xml
-2.  org.springframework.web.context.__ContextLoaderListener__ listens
+. Tomcat loads _thredds.war_ with /WEB-INF/web.xml
+. org.springframework.web.context.__ContextLoaderListener__ listens
 for context loading
-3.  beans in _applicationContext.xml_ are created and wired, annotations
+. beans in _applicationContext.xml_ are created and wired, annotations
 are found and wired.
-1.  Apparently _TdsConfig_ an be called in @PostConstruct method of
+.. Apparently _TdsConfig_ an be called in @PostConstruct method of
 spring beans
-4.  __TdsContext.afterPropertiesSet(__**).** This has the
+. __TdsContext.afterPropertiesSet(__**).** This has the
 _ServletContext_ already set.
-5.  ContextRefreshedEvent caught by __TdsInit__. Can assume all beans
+. ContextRefreshedEvent caught by __TdsInit__. Can assume all beans
 are now wired.
-1.  read _threddsConfig.xml_ and set values (eg register dataSources
+.. read _threddsConfig.xml_ and set values (eg register dataSources
 with __DatasetManager__)
-2.  call __ConfigInitialization__.__init__()
-6.  _ConfigInitialization_ reads config catalogs
-1.  add dataRoots to _DataRootPathMatcher_
-2.  add catalogs to _ConfigCatalogCache_
-3.  add ncml datasets to _DatasetManager_ (may eliminate)
+.. call __ConfigInitialization__.__init__()
+. _ConfigInitialization_ reads config catalogs
+.. add dataRoots to _DataRootPathMatcher_
+.. add catalogs to _ConfigCatalogCache_
+.. add ncml datasets to _DatasetManager_ (may eliminate)
 
 === threddsConfig.xml
 
@@ -114,6 +111,7 @@ nothing to do with views of XML files.
 * *NOTE:* In order to read in spring-servlet.xml, the mock framework
 in tds module needs
 +
+[source,java]
 ------------------------------------------------------------------------------
 locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}
 ------------------------------------------------------------------------------
@@ -138,6 +136,7 @@ use this to deal with restrictedDataset redirects.
 * return a *ResponseEntity<String>* allows to set headers, return value
 * see *CdmRemoteController.handleCapabilitiesRequest(), MetadataController*
 +
+[source,java]
 -----------------------------------------------------------------------------
 HttpHeaders responseHeaders = new HttpHeaders();
 responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
@@ -337,13 +336,13 @@ loader = MockTdsContextLoader.class) +
 === Debugging
 
 1. Look in serverStartup.log and search for messages with "RequestMappingHandlerMapping: Mapped" :
-
++
 ----
 712013-10-23T13:54:40.342-0600 [     17458][        ] INFO  org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: Mapped "{[/admin/collection || /admin/collection/trigger],methods=[],params=[],headers=[],consumes=[],produces=[],custom=[]}" onto protected org.springframework.web.servlet.ModelAndView thredds.server.admin.CollectionController.handleCollectionTriggers(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse) throws java.lang.Exception
 ----
 
 2. set these to debug level:
-
++
 [source,xml]
 ----
 <logger name="org.springframework.http" level="info" additivity="false">
