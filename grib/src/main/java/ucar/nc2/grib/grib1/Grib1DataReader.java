@@ -178,8 +178,9 @@ public class Grib1DataReader {
         if (nxRaw > 0 && nyRaw > 0) {
           values = new float[nxRaw * nyRaw];
         } else {
-          int npts = (int) ((info.dataLength - 11) * 8 - unusedbits) / info.numberOfBits;  // count bits
-          values = new float[npts];
+          int nptsExpected = (int) ((info.dataLength - 11) * 8 - unusedbits) / info.numberOfBits;  // count bits
+          if (!Grib1RecordScanner.allowBadDsLength && nptsExpected != nPts) logger.warn("nptsExpected {} != npts {}", nptsExpected, nPts);
+          values = new float[nPts];
         }
         BitReader reader = new BitReader(raf, startPos+11);
         for (int i = 0; i < values.length; i++) {
