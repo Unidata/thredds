@@ -38,9 +38,29 @@ public class TestGrib1Unpack {
 
       Variable var = nc.findVariable("Snowfall_surface");
       Array data = var.read();
+
       float first = data.getFloat(0);
 
       Assert.assertEquals(.326607, first, 1e-6);
+    }
+  }
+
+  // Tests reading a thin grid record thats at the the end of the file
+  // sample file has single record
+  @Test
+  public void testThinGridAtEndofFile() throws IOException {
+    final String testfile = "../grib/src/test/data/thinGrid.grib1";
+    try (NetcdfFile nc = NetcdfFile.open(testfile)) {
+
+      Variable var = nc.findVariable("Temperature_isobaric");
+      Array data = var.read();
+      Assert.assertEquals(73*73, data.getSize());
+
+      float first = data.getFloat(0);
+      float last = data.getFloat((73*73)-1);
+
+      Assert.assertEquals(291.0, first, 1e-6);
+      Assert.assertEquals(278.0, last, 1e-6);
     }
   }
 

@@ -33,7 +33,6 @@
 
 package ucar.nc2.grib.grib1;
 
-import ucar.ma2.DataType;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.QuasiRegular;
@@ -123,6 +122,7 @@ public class Grib1Record {
   }
 
   private Grib1Gds gds = null;
+
   public Grib1Gds getGDS() {
     if (gds == null)
       gds = gdss.getGDS();
@@ -154,6 +154,7 @@ public class Grib1Record {
   }
 
   private Grib1ParamTime ptime;
+
   public Grib1ParamTime getParamTime(Grib1Customizer cust) {
     if (ptime == null) ptime = cust.getParamTime(pdss);
     return ptime;
@@ -172,9 +173,9 @@ public class Grib1Record {
   }
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
-  private  float[] readData(RandomAccessFile raf, GribData.InterpolationMethod method) throws IOException {
+  private float[] readData(RandomAccessFile raf, GribData.InterpolationMethod method) throws IOException {
     Grib1Gds gds = getGDS();
-    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
+    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(), gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     float[] data = reader.getData(raf, bm);
 
@@ -186,12 +187,14 @@ public class Grib1Record {
     return data;
   }
 
- public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
+  public void showDataInfo(RandomAccessFile raf, Formatter f) throws IOException {
     Grib1Gds gds = getGDS();
     f.format(" decimal scale = %d%n", pdss.getDecimalScale());
     f.format("     scan mode = %d%n", gds.getScanMode());
     f.format("            nx = %d%n", gds.getNx());
     f.format("            ny = %d%n", gds.getNy());
+    f.format("         nxRaw = %d%n", gds.getNxRaw());
+    f.format("         nyRaw = %d%n", gds.getNyRaw());
     f.format("          Npts = %d%n", gds.getNpts());
     f.format("        isThin = %s%n", gdss.isThin());
 
@@ -216,7 +219,7 @@ public class Grib1Record {
    * Read data array by first reading in GribRecord.
    * All sections are read in, so scanMode is from the datafile, not the index.
    *
-   * @param raf  from this RandomAccessFile
+   * @param raf      from this RandomAccessFile
    * @param startPos message starts here
    * @return data as float[] array
    * @throws IOException on read error
@@ -273,10 +276,10 @@ public class Grib1Record {
     return info;
   }
 
-    // debugging - do not use
+  // debugging - do not use
   public int[] readRawData(RandomAccessFile raf) throws IOException {
     Grib1Gds gds = getGDS();
-    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNx(), gds.getNy(), gds.getNpts(), dataSection.getStartingPosition());
+    Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(), gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);
     return reader.getDataRaw(raf, bm);
   }
