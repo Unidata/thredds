@@ -96,18 +96,18 @@ public class Grib1DataReader {
 
   private final int decimalScale;
   private final int scanMode;
-  private final int nx, ny;
+  private final int nxRaw, nyRaw;
   private final int nPts;           // number of points from GDS
   private final long startPos;
 
   /**
    * @param startPos starting offset of the binary data section
    */
-  public Grib1DataReader(int decimalScale, int scanMode, int nx, int ny, int nPts, long startPos) {
+  public Grib1DataReader(int decimalScale, int scanMode, int nxRaw, int nyRaw, int nPts, long startPos) {
     this.decimalScale = decimalScale;
     this.scanMode = scanMode;
-    this.nx = nx;
-    this.ny = ny;
+    this.nxRaw = nxRaw;
+    this.nyRaw = nyRaw;
     this.nPts = nPts;
     this.startPos = startPos;
   }
@@ -155,7 +155,7 @@ public class Grib1DataReader {
 
     if (bitmap != null) {
       if (8 * bitmap.length < nPts) {
-        logger.error("Bitmap section length = {} != grid length {} ({},{}) for {}", bitmap.length, nx * ny, nx, ny, raf.getLocation());
+        logger.error("Bitmap section length = {} != grid length {} ({},{}) for {}", bitmap.length, nPts, nxRaw, nyRaw, raf.getLocation());
         throw new IllegalStateException("Bitmap section length!= grid length");
       }
       BitReader reader = new BitReader(raf, startPos+11);
@@ -171,24 +171,25 @@ public class Grib1DataReader {
           values[i] = staticMissingValue;
         }
       }
-      scanningModeCheck(values, scanMode, nx);
+      scanningModeCheck(values, scanMode, nxRaw);
 
     } else {  // bitmap is null
       if (!isConstant) {
-        if (nx != -1 && ny != -1) {
-          values = new float[nx * ny];
+        if (nxRaw > 0 && nyRaw > 0) {
+          values = new float[nxRaw * nyRaw];
         } else {
-          int npts = (int) ((info.dataLength - 11) * 8 - unusedbits) / info.numberOfBits;  // count bits
-          values = new float[npts];
+          int nptsExpected = (int) ((info.dataLength - 11) * 8 - unusedbits) / info.numberOfBits;  // count bits
+          if (!Grib1RecordScanner.allowBadDsLength && nptsExpected != nPts) logger.warn("nptsExpected {} != npts {}", nptsExpected, nPts);
+          values = new float[nPts];
         }
         BitReader reader = new BitReader(raf, startPos+11);
         for (int i = 0; i < values.length; i++) {
           values[i] = ref + scale * reader.bits2UInt(info.numberOfBits);
         }
-        scanningModeCheck(values, scanMode, nx);
+        scanningModeCheck(values, scanMode, nxRaw);
 
       } else {                     // constant valued - same min and max
-        values = new float[nx * ny];
+        values = new float[nxRaw * nyRaw];
         for (int i = 0; i < values.length; i++) {
           values[i] = ref;
         }
@@ -587,7 +588,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       val++;
     }
 
-    scanningModeCheck(values, scanMode, nx);
+    scanningModeCheck(values, scanMode, nxRaw);
 
     return values;
   }
@@ -772,7 +773,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
    */
   private void scanningModeCheck(float[] data, int scanMode, int Xlength) {
 
-    if (Xlength == -1) // old code
+    if (Xlength <= 0) // old code
       return;
 
     // Mode  0 +x, -y, adjacent x, adjacent rows same dir

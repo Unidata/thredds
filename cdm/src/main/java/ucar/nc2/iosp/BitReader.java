@@ -188,7 +188,8 @@ public class BitReader {
   private byte nextByte() throws IOException {
     if (raf != null) {
       int result = raf.read();
-      if (result == -1) throw new EOFException();
+      if (result == -1)
+        throw new EOFException();
       return (byte) result;
     } else {
       return data[dataPos++];

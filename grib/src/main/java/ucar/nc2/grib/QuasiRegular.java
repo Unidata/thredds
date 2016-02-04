@@ -124,7 +124,6 @@ public class QuasiRegular {
                   data,          /* output data */
                   outputIdx++);  /* where to put the interpolated value */
         }
-        //System.out.println( "inputIdx ="+ inputIdx );
         inputIdx += npoints;
       }
 
@@ -133,37 +132,31 @@ public class QuasiRegular {
 
       for (int j = 0; j < ny; j++) { // LOOK - assumes varies by x
         // int inrow; /* input row to use */
-        int npoints; /* number input points in current parallel */
-
         // inrow = j * (nrows - 1) / (nj - 1); /* set the row number */
-        // npoints = ix[inrow+1] - ix[inrow]; /* set number of input
-        // points */
-        npoints = linePts[j]; /* number of input points in this parallel */
+        // npoints = ix[inrow+1] - ix[inrow]; /* set number of input points */
+        int npoints = linePts[j]; /* number of input points in this parallel */
 
         // skip the processing if npoints = number of points in output
         // parallel
         if (npoints == nx) {
-          for (int i = 0; i < nx; i++) {
+          for (int i = 0; i < nx; i++)
             data[outputIdx++] = quasi[inputIdx++];
-          }
           continue;
         }
 
         for (int i = 0; i < nx; i++) {
-          double mapped_i; /* i mapped to input space */
-          mapped_i = (float) i / ((float) nx) * ((float) npoints);
+          double mapped_i = (float) i / ((float) nx) * ((float) npoints); // i mapped to input space
 
-          linear( /* interpolate the value */
-                  quasi, /* input data */
+          // interpolate this point
+          linear( quasi, /* input data */
                   inputIdx, /* current index position in input */
                   mapped_i, /* element to be interpolated */
-                  data, /* output data */
+                  data,     /* output data */
                   outputIdx++, /* where to put the interpolated value */
                   npoints);
         }
 
         inputIdx += npoints;
-
       }
 
     } else {
@@ -260,7 +253,7 @@ public class QuasiRegular {
 
     hi = hi > (y2d.length - 1) ? 0 : hi;
 
-		/* evalualte the polynomial */
+		/* evaluate the polynomial */
 
     // *outpt = a * inpt[low] + b * inpt[hi] + ((a * a * a - a) * y2d[low] +
     // (b * b * b - b) * y2d[hi]) / 6.0;
@@ -279,25 +272,23 @@ public class QuasiRegular {
     // float outpt; /* where to put the interpolated data */
     // int oIdx; /* index in output, the interpolated data */
 
-    int hi;
-    int low;
-    double a;
-    double b;
-
     if (java.lang.Math.floor(x) == x) { /* existing data point */
       outpt[oIdx] = inpt[iIdx + (int) x];
       return;
     }
 
 		/* set the input bracket */
-    hi = (int) (java.lang.Math.ceil(x));
-    low = (int) (java.lang.Math.floor(x));
+    int hi = (int) (java.lang.Math.ceil(x));
+    int low = (int) (java.lang.Math.floor(x));
 
-    a = hi - x;
-    b = x - low;
+    double a = hi - x;
+    double b = x - low;
 
     int hiIdx = hi > (npoints - 1) ? iIdx : iIdx + hi;
     int lowIdx = iIdx + low;
+
+    if (lowIdx >= inpt.length || hiIdx >= inpt.length)
+      System.out.printf("HEY%n");
 
     outpt[oIdx] = (float) (a * inpt[lowIdx] + b * inpt[hiIdx]);
 

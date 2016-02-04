@@ -60,10 +60,20 @@ import java.util.Map;
 public class Grib1RecordScanner {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
   static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
-  static private final boolean allowBadIsLength = false;
   static private final boolean debug = false;
   static private final boolean debugGds = false;
   static private final int maxScan = 16000;
+
+  static boolean allowBadIsLength = false;
+  static boolean allowBadDsLength = false; // ECMWF workaround
+
+  public static void setAllowBadIsLength(boolean allowBadIsLength) {
+    Grib1RecordScanner.allowBadIsLength = allowBadIsLength;
+  }
+
+  public static void setAllowBadDsLength(boolean allowBadDsLength) {
+    Grib1RecordScanner.allowBadDsLength = allowBadDsLength;
+  }
 
   static public boolean isValidFile(RandomAccessFile raf) {
     try {
@@ -77,6 +87,8 @@ public class Grib1RecordScanner {
 
       // check ending = 7777
       if (len > raf.length()) return false;
+      if (allowBadIsLength) return true;
+
       raf.skipBytes(len-12);
       for (int i = 0; i < 4; i++) {
         if (raf.read() != 55) return false;
@@ -187,8 +199,12 @@ public class Grib1RecordScanner {
       if (debug) System.out.printf(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
               raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
 
-      if (!foundEnding && allowBadIsLength) // LOOK not right - we dont actually know the length of data section until you read the data (!)
+      if (!foundEnding && allowBadIsLength)
         foundEnding = checkEnding(dataSection.getStartingPosition() + dataSection.getLength());
+
+      if (!foundEnding && allowBadDsLength) {
+        foundEnding = true;
+      }
 
       if (foundEnding) {
         lastPos = raf.getFilePointer();
