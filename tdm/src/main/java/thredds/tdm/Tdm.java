@@ -36,7 +36,6 @@
 package thredds.tdm;
 
 import org.apache.http.auth.*;
-import org.apache.http.client.CredentialsProvider;
 import org.slf4j.Logger;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
@@ -84,6 +83,7 @@ public class Tdm {
 
   private String user, pass;
   private boolean sendTriggers;
+  private String[] serverNames;
   private List<Server> servers;
 
   private java.util.concurrent.ExecutorService executor;
@@ -144,16 +144,21 @@ public class Tdm {
     this.catalog = catalog;
   }
 
-  public void setServerNames(String[] serverNames) throws HTTPException {
+  public void setServerNames(String[] serverNames) {
+    this.serverNames = serverNames;
+  }
+
+  public void initServers() throws HTTPException {
     if (serverNames == null) {
       servers = new ArrayList<>(); // empty list
       return;
     }
 
-    servers = new ArrayList<>(serverNames.length);
-    for (String name : serverNames) {
+    this.servers = new ArrayList<>(this.serverNames.length);
+    for (String name : this.serverNames) {
       try (HTTPSession session = HTTPFactory.newSession(name)) {
-        session.setCredentials(new UsernamePasswordCredentials(user, pass));
+        if (user != null && pass != null)
+          session.setCredentials(new UsernamePasswordCredentials(user, pass));
         session.setUserAgent("TDM");
         servers.add(new Server(name, session));
       }
@@ -166,7 +171,9 @@ public class Tdm {
     aliasHandler = new AliasHandler(aliasExpanders);
   }
 
-  boolean init() {
+  boolean init() throws HTTPException {
+    initServers();
+
     System.setProperty("tds.log.dir", contentTdmDir.toString());
 
     if (!Files.exists(threddsConfig)) {

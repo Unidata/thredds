@@ -532,11 +532,12 @@ public abstract class Grib1Gds {
       return sb.toString();
     }
 
+    @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
       LatLonProjection proj = new LatLonProjection(getEarth());
-      ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
-      double startx = startP.getX();
-      double starty = startP.getY();
+      //ProjectionPoint startP = proj.latLonToProj(new LatLonPointImpl(la1, lo1));
+      double startx = lo1; // startP.getX();
+      double starty = la1; // startP.getY();
       return new GdsHorizCoordSys(getNameShort(), template, 0, scanMode, proj, startx, getDx(), starty, getDy(), getNx(), getNy(), null);
     }
 
