@@ -249,7 +249,7 @@ public class Grib1DataTable extends JPanel {
       public void actionPerformed(ActionEvent e) {
         List beans = record1BeanTable.getSelectedBeans();
         if (beans.size() > 0)
-          writeToFile(beans);
+          extractToFile(beans);
       }
     });
 
@@ -546,7 +546,7 @@ public class Grib1DataTable extends JPanel {
     f.format("total records = %d%n", total);
   }
 
-  private void writeToFile(List beans) {
+  private void extractToFile(List beans) {
 
     if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
@@ -571,7 +571,7 @@ public class Grib1DataTable extends JPanel {
 
         if (fos == null) {
           String defloc = mfile.getPath();
-          filename = fileChooser.chooseFilenameToSave(defloc + ".grib2");
+          filename = fileChooser.chooseFilenameToSave(defloc + ".grib1");
           if (filename == null) return;
           File f = new File(filename);
           append = f.exists();

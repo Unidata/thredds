@@ -24,9 +24,12 @@ _compareTemp
 bin/
 *~
 
-# Ignore gradle stuff
+# Ignore the Gradle cache directory.
 .gradle/
+# Ignore the output that Gradle generates in the "build/" directories...
 build/
+# ...but not the source code in the "edu.ucar.build" package.
+!**/src/**/edu/ucar/build/
 
 # Ignore default content directory for mock servlets
 tds/src/content/

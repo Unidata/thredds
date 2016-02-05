@@ -307,6 +307,8 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
     scourSecs = ThreddsConfig.getSeconds("AggregationCache.scour", 24 * 60 * 60);
     maxAgeSecs = ThreddsConfig.getSeconds("AggregationCache.maxAge", 90 * 24 * 60 * 60);
     DiskCache2 aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
+    String cachePathPolicy = ThreddsConfig.get("AggregationCache.cachePathPolicy", null);
+    aggCache.setPolicy(cachePathPolicy);
     Aggregation.setPersistenceCache(aggCache);
     startupLog.info("TdsInit:  AggregationCache= " + dir + " scour = " + scourSecs + " maxAgeSecs = " + maxAgeSecs);
 

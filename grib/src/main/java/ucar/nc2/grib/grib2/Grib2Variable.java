@@ -116,7 +116,7 @@ public class Grib2Variable {
     if (pds.isTimeInterval() != pds2.isTimeInterval()) return false;
     if (pds.isTimeInterval()) {
       if (!intvMerge) {
-        double size = cust.getForecastTimeIntervalSizeInHours(pds); // LOOK using an Hour here, but will need to make this configurable
+        double size = cust.getForecastTimeIntervalSizeInHours(pds); // only used to decide on variable identity
         double size2 = cust.getForecastTimeIntervalSizeInHours(pds2);
         if (size != size2) return false;
       }

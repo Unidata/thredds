@@ -66,10 +66,10 @@ public class IndependentWindow extends JFrame {
     super(title);
 
     // L&F may change
-    UIManager.addPropertyChangeListener( new PropertyChangeListener() {
-      public void propertyChange( PropertyChangeEvent e) {
+    UIManager.addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("lookAndFeel"))
-          SwingUtilities.updateComponentTreeUI( IndependentWindow.this);
+          SwingUtilities.updateComponentTreeUI(IndependentWindow.this);
       }
     });
 
@@ -83,7 +83,7 @@ public class IndependentWindow extends JFrame {
    */
   public IndependentWindow(String title, Image iconImage, Component comp) {
     this(title, iconImage);
-    setComponent( comp);
+    setComponent(comp);
   }
 
   public void setComponent(Component comp ) {
@@ -100,15 +100,6 @@ public class IndependentWindow extends JFrame {
       log.error("Possible problem setting icon (?)", e);
     }
   }
-
-  @Override
-  public void setBounds(Rectangle r) {
-    // keep window on the screen
-    Rectangle screenSize = ScreenUtils.getScreenVirtualSize();
-    Rectangle result = r.intersection(screenSize);
-    super.setBounds(result);
-  }
-
 
   /** show the window. */
   public void show() {
@@ -131,6 +122,15 @@ public class IndependentWindow extends JFrame {
         IndependentWindow.super.show();
       }
     });
+  }
+
+  @Override
+  public void setBounds(Rectangle r) {
+    // keep window on the screen
+    Rectangle screenSize = ScreenUtils.getScreenVirtualSize();
+    Rectangle result = r.intersection(screenSize);
+    if (!result.isEmpty())
+      super.setBounds(result);
   }
 
 }

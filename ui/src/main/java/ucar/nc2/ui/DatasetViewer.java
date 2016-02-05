@@ -40,12 +40,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -460,7 +455,10 @@ public class DatasetViewer extends JPanel {
       });
       csPopup.addAction("Write binary Data to file", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          writeData(table);
+          String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
+          if (binaryFilePath != null) {
+            writeData(table, new File(binaryFilePath));
+          }
         }
       });
       if (level == 0) {
@@ -632,10 +630,10 @@ public class DatasetViewer extends JPanel {
     dumpWindow.show();
   }
 
-  private void writeData(BeanTable from) {
+  private void writeData(BeanTable from, File name) {
     Variable v = getCurrentVariable(from);
-    if (v == null) return;
-    String name = "C:/temp/file.bin";
+    if (v == null || name == null) return;
+
     try (FileOutputStream stream = new FileOutputStream(name)) {
       WritableByteChannel channel = stream.getChannel();
       v.readToByteChannel(v.getShapeAsSection(), channel);
@@ -812,6 +810,8 @@ public class DatasetViewer extends JPanel {
 
   public void save() {
     dumpPane.save();
+    fileChooser.save();
+
     for (NestedTable nt : nestedTableList) {
       nt.saveState();
     }

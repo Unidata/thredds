@@ -32,6 +32,8 @@
  */
 package ucar.nc2.ui.widget;
 
+import ucar.nc2.ui.util.ScreenUtils;
+
 import java.awt.*;
 import java.beans.*;
 import javax.swing.*;
@@ -95,6 +97,24 @@ public class IndependentDialog extends JDialog {
     Container cp = getContentPane();
     cp.add(comp, BorderLayout.CENTER);
     pack();
+  }
+
+  /* @Override
+     public void setBounds(Rectangle r) {
+    if (parent != null) {
+      Rectangle have = parent.getGraphicsConfiguration().getBounds();
+      if (r.getX() < have.getWidth() - 25); // may be off screen when switching between 2 monitor system
+      setBounds(r.x, r.y, r.width, r.height);
+    }
+  } */
+
+  @Override
+  public void setBounds(Rectangle r) {
+    // keep window on the screen
+    Rectangle screenSize = ScreenUtils.getScreenVirtualSize();
+    Rectangle result = r.intersection(screenSize);
+    if (!result.isEmpty())
+      super.setBounds(result);
   }
 }
 

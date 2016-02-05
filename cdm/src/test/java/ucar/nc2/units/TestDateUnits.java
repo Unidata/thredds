@@ -32,26 +32,13 @@
  */
 package ucar.nc2.units;
 
-import java.util.Date;
-import junit.framework.TestCase;
 import org.junit.Assert;
 import ucar.nc2.util.Misc;
-import ucar.units.DerivedUnit;
-import ucar.units.PrefixDBException;
-import ucar.units.SpecificationException;
-import ucar.units.TimeScaleUnit;
-import ucar.units.Unit;
-import ucar.units.UnitDBException;
-import ucar.units.UnitFormat;
-import ucar.units.UnitFormatManager;
-import ucar.units.UnitParseException;
-import ucar.units.UnitSystemException;
+import ucar.units.*;
 
-public class TestDateUnits extends TestCase {
+import java.util.Date;
 
-  public TestDateUnits(String name) {
-    super(name);
-  }
+public class TestDateUnits {
 
   private DateFormatter formatter = new DateFormatter();
 

@@ -53,14 +53,15 @@ public class TestLatLonToProjBB extends TestCase {
       System.out.println("  llbb= " + rect.toString2());
       System.out.println("  latLonToProjBB= " + prect);
       System.out.println("  latLonToProjBB2= " + prect2);
+      assert false;
     }
   }
 
-  void doTests(ProjectionImpl p) {
+  void doTests(ProjectionImpl p, double mid) {
     LatLonPointImpl ptL = new LatLonPointImpl(-10, 0.0);
     double xinc = 22.5;
     double yinc = 20.0;
-    for (double lon = 0.0; lon < 380.0; lon += xinc) {
+    for (double lon = mid - 90; lon < mid + 90; lon += xinc) {
       ptL.setLongitude(lon);
       LatLonRect llbb = new LatLonRect(ptL, yinc, xinc);
       
@@ -72,7 +73,7 @@ public class TestLatLonToProjBB extends TestCase {
   }
 
   public void testLC() {
-    doTests(new LambertConformal(40.0, 0, 20.0, 60.0));
+    doTests(new LambertConformal(40.0, 0, 20.0, 60.0), 0);
   }
 
   boolean equals(ProjectionRect prect1, ProjectionRect prect2) {
@@ -85,7 +86,7 @@ public class TestLatLonToProjBB extends TestCase {
       return Misc.closeEnough(pt1.getX(), pt2.getX()) &&  Misc.closeEnough(pt1.getY(), pt2.getY());
     }
 
-  public void testProblem() {
+  public void utestProblem() {
     ProjectionImpl p = new LambertConformal(40.0, 0, 20.0, 60.0);
     LatLonPointImpl ptL = new LatLonPointImpl(-10, 135);
     LatLonPointImpl ptL2 = new LatLonPointImpl(10, 157.5);

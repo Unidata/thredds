@@ -1,6 +1,9 @@
 # resources\grib2\standardTableMap.txt
 # center; subcenter; master; local; genProcess; Grib2Table.Type; resource name (opt)
 #
+# center 7 subcenter has non-standard time interval computation
+7;     14; 1; 0; -1;      nwsDev; NWS Meteorological Development Laboratory
+#
 # center 7 (ncep), 9 (usnws) and 54 (canandian met) all use ncep tables
 7;     -1; -1; -1; -1;    ncep; ncep
 9;     -1; -1; -1; -1;    ncep; usnws

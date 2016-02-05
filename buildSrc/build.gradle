@@ -1,0 +1,62 @@
+apply plugin: 'groovy'
+
+// We'd normally apply the dependencies with something like:
+//     apply from: "$rootDir/gradle/dependencies.gradle"
+// However, 'buildSrc' is a *separate build* from every other project in thredds (see https://goo.gl/45RFqd),
+// so "$rootDir" actually points to the directory that *this* file is in.
+apply from: "../gradle/dependencies.gradle"
+
+dependencies {
+    compile gradleApi()  // We're working with Gradle classes like org.gradle.api.Project.
+
+    testCompile (libraries["spock-core"]) {
+        // The Gradle API drags in the bundled version of Groovy that Gradle ships with (localGroovy()) –
+        // see https://discuss.gradle.org/t/unable-to-force-gradle-to-use-groovy-2-0-0-for-the-project/7021.
+        // Spock drags in another Groovy as a transitive dependency.
+        //
+        // So, there are multiple candidate versions of the Groovy dependency. Ordinarily, this is no problem for
+        // Gradle; it bas version-conflict-resolution machinery to deal with it. However, localGroovy() is a special
+        // kind of dependency that doesn't participate in that resolution (again, see above URL).
+        //
+        // Once added to a configuration, localGroovy() will remain part of it no matter what. Furthermore, since
+        // localGroovy() is "special", Gradle will not consider a second, "normal" Groovy dependency to be in conflict
+        // with it. This can result in two different versions of Groovy in the same configuration, and ultimately
+        // errors like: "groovy.lang.GroovyRuntimeException: Conflicting module versions. Module [groovy-all is loaded
+        // in version 2.4.4 and you are trying to load version 2.4.1".
+        //
+        // Our solution is to explicitly exclude any other Groovy dependencies whenever localGroovy() is already part
+        // of the configuration.
+        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+    }
+}
+
+// Configure Jacoco
+// This code duplicates much of coverage.gradle. However, since :buildSrc is a separate build from thredds, it's not
+// appropriate to just apply that build script here (it references properties defined in thredds rootProject).
+// TODO: Can that script be modified so that it can be applied to both projects?
+// TODO: Alternately, can some of that code be moved to classes in :buildSrc? Would we then be able to use those
+// classes in this script?
+
+// The jacoco plugin adds the jacocoTestReport task, but only if the java or groovy plugin is already applied.
+apply plugin: "jacoco"
+
+jacoco {
+    toolVersion = '0.7.5.201505241946'  // The latest version as of 2015-06-26.
+}
+
+jacocoTestReport {
+    dependsOn tasks.test
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        csv.enabled = false
+    }
+}
+
+tasks.test {
+    finalizedBy tasks.jacocoTestReport
+
+    // Add the execution data that Jacoco generates as a task output.
+    outputs.file jacoco.destinationFile
+}

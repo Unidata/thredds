@@ -84,6 +84,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
       case ncep: return NcepLocalTables.getCust(grib2Table);
       case ndfd: return NdfdLocalTables.getCust(grib2Table);
       case mrms: return MrmsLocalTables.getCust(grib2Table);
+      case nwsDev: return NwsMetDevTables.getCust(grib2Table);
       default:
         if (wmoStandardTable == null) wmoStandardTable = new Grib2Customizer(grib2Table);
         return wmoStandardTable;
@@ -218,6 +219,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     // calculate total "range"
     int range = 0;
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
+      if (ti.timeRangeUnit == 255)
+        continue;
       if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         log.warn("TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
         throw new RuntimeException("TimeInterval(2) has different units");
@@ -241,7 +244,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   /**
-   * Get interval size in units of hours
+   * Get interval size in units of hours.
+   * Only use in GribVariable to decide on variable identity when intvMerge = false.
    * @param pds must be a Grib2Pds.PdsInterval
    * @return  interval size in units of hours
    */
@@ -252,6 +256,8 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     // calculate total "range" in units of timeUnit
     int range = 0;
     for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
+      if (ti.timeRangeUnit == 255)
+        continue;
       if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         log.warn("TimeInterval(2) has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
         throw new RuntimeException("TimeInterval(2) has different units");

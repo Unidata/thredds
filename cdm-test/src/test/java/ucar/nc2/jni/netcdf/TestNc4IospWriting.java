@@ -1,12 +1,9 @@
 package ucar.nc2.jni.netcdf;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
-import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
@@ -30,6 +27,9 @@ import java.util.Map;
  * @since 7/27/12
  */
 public class TestNc4IospWriting {
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+
     int countNotOK = 0;
 
     @Before
@@ -232,7 +232,7 @@ public class TestNc4IospWriting {
     // Demonstrates GitHub issue #301--badly writing subsetted arrays
     @Test
     public void writeSubset() throws IOException, InvalidRangeException {
-        String fname = TestLocal.temporaryDataDir + "writeSubset.nc";
+        String fname = tempFolder.newFile("writeSubset.nc").getAbsolutePath();
         try (NetcdfFileWriter ncFile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fname)) {
             // Create shared, unlimited Dimension
             ncFile.addDimension(null, "x", 5);

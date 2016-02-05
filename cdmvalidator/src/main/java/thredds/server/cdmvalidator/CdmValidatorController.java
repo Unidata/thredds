@@ -284,7 +284,7 @@ public class CdmValidatorController extends AbstractController {
 
       if (wantXml) {
         infoString = info.writeXML();
-        res.setContentLength(infoString.length());
+        res.setContentLength(infoString.getBytes(CDM.utf8Charset).length);
         res.setContentType(ContentType.xml.getContentHeader());
 
       } else {
@@ -299,7 +299,7 @@ public class CdmValidatorController extends AbstractController {
         res.setContentType(ContentType.html.getContentHeader());
       }
 
-      res.setContentLength(infoString.length());
+      res.setContentLength(infoString.getBytes(CDM.utf8Charset).length);
 
       OutputStream out = res.getOutputStream();
       out.write(infoString.getBytes(CDM.utf8Charset));

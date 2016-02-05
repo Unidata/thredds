@@ -181,17 +181,23 @@ public class HttpClientManager
           byte[] body = m.getResponseAsBytes();
           if (body == null) throw new IOException("empty body");
           InputStream is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(body)), 10000);
+          if (useSession != null)
+            useSession.close();
           return readContents(is, charset, maxKbytes);
 
         } else if (encoding != null && encoding.equals("gzip")) {
           byte[] body = m.getResponseAsBytes();
           if (body == null) throw new IOException("empty body");
           InputStream is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(body)), 10000);
+          if (useSession != null)
+            useSession.close();
           return readContents(is, charset, maxKbytes);
 
         } else {
           byte[] body = m.getResponseAsBytes(maxKbytes * 1000);
           if (body == null) throw new IOException("empty body");
+          if (useSession != null)
+            useSession.close();
           return new String(body, charset);
         }
       }

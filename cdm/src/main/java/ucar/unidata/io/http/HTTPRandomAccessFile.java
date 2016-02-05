@@ -140,7 +140,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   {
     try {
       try (HTTPMethod method = HTTPFactory.Get(session, url)) {
-        method.setRequestHeader("Range", "bytes=" + 0 + "-" + 0);
+        method.setRange(0,0);
         doConnect(method);
 
         int code = method.getStatusCode();
@@ -170,7 +170,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     if (debugDetails) {
       // request headers dont seem to be available until after execute()
-      printHeaders("Request: " + method.getName() + " " + method.getPath(), method.getRequestHeaders());
+      printHeaders("Request: " + method.getURL(), method.getRequestHeaders());
       printHeaders("Response: " + method.getStatusCode(), method.getResponseHeaders());
     }
   }
@@ -204,7 +204,7 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
     try (HTTPMethod method = HTTPFactory.Get(session,url)) {
       method.setFollowRedirects(true);
-      method.setRequestHeader("Range", "bytes=" + pos + "-" + end);
+      method.setRange(pos,end);
       doConnect(method);
 
       int code = method.getStatusCode();

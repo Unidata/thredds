@@ -32,6 +32,7 @@
 
 package ucar.nc2.iosp.grib;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -40,6 +41,7 @@ import ucar.ma2.ArrayFloat;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -136,7 +138,7 @@ public class TestGribMisc {
     }
   }
 
-  @Ignore("NCEP may be miscoding. Withdraw uit test until we have more info")
+  @Ignore("NCEP may be miscoding. Withdraw unit test until we have more info")
   @Test
    public void testScanMode() throws IOException, InvalidRangeException {
      // Robert.C.Lipschutz@noaa.gov
@@ -180,6 +182,33 @@ public class TestGribMisc {
        assert Misc.closeEnough( vals.getFloat((int)vals.getSize()-1), 242.080002);
      }
    }
+
+  // Tests reading a bad ecmwf encoded grib 1 file.
+  // gaussian thin grid to boot.
+  @Test
+  public void testReadBadEcmwf() throws IOException {
+    Grib1RecordScanner.setAllowBadDsLength(true);
+    Grib1RecordScanner.setAllowBadIsLength(true);
+
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/badEcmwf.grib1";
+    try (NetcdfFile nc = NetcdfFile.open(filename)) {
+
+      Variable var = nc.findVariable("2_metre_temperature_surface");
+      Array data = var.read();
+      int npts = 2560 * 5136;
+      Assert.assertEquals(npts, data.getSize());
+
+      float first = data.getFloat(0);
+      float last = data.getFloat(npts-1);
+
+      Assert.assertEquals(273.260162, first, 1e-6);
+      Assert.assertEquals(224.599670, last, 1e-6);
+    }
+
+    Grib1RecordScanner.setAllowBadDsLength(false);
+    Grib1RecordScanner.setAllowBadIsLength(false);
+  }
+
 
 
 }

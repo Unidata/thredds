@@ -38,8 +38,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Centralize the mapping of threddsConfig.xml configuration settings to the data objects used by
- * the various servlets. Supports earlier versions (some deprecated) of threddsConfig.xml config
- * settings.
+ * the various servlets. Supports earlier versions (some deprecated) of threddsConfig.xml config settings.
  * <p/>
  * called from TdsInit
  *

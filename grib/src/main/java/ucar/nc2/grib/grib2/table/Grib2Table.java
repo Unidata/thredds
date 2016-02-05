@@ -51,7 +51,7 @@ import java.util.List;
  * @since 8/1/2014
  */
 public class Grib2Table {
-  public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms}
+  public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev}
   static public final String tableMapPath = "resources/grib2/standardTableMap.txt";
   static public List<Grib2Table> tables = null;
   static private Grib2Table standardTable = null;

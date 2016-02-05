@@ -38,18 +38,17 @@ import ucar.ma2.IsMissingEvaluator;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.image.image.ImageArrayAdapter;
+import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
-
-import ucar.nc2.ui.image.ImageViewPanel;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.nio.channels.WritableByteChannel;
+import ucar.util.prefs.ui.ComboBox;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * dump data using NetcdfFile.readSection()
@@ -64,12 +63,14 @@ public class NCdumpPane extends TextHistoryPane {
   private ucar.util.prefs.ui.ComboBox cb;
   private CommonTask task;
   private StopButton stopButton;
+  private FileManager fileChooser;
 
   private NetcdfFile ds;
 
   public NCdumpPane(PreferencesExt prefs) {
     super(true);
     this.prefs = prefs;
+    fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
 
     cb = new ComboBox(prefs);
 
@@ -93,7 +94,10 @@ public class NCdumpPane extends TextHistoryPane {
     binButton.setToolTipText("write binary data to file");
     binButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        writeBinaryData((String) cb.getSelectedItem());
+        String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
+        if (binaryFilePath != null) {
+          writeBinaryData((String) cb.getSelectedItem(), new File(binaryFilePath));
+        }
       }
     });
 
@@ -153,7 +157,7 @@ public class NCdumpPane extends TextHistoryPane {
       stopButton.startProgressMonitorTask( task);
   }
 
-  private void writeBinaryData(String variableSection) {
+  private void writeBinaryData(String variableSection, File name) {
 
     ParsedSectionSpec cer;
     try {
@@ -165,7 +169,7 @@ public class NCdumpPane extends TextHistoryPane {
       return;
     }
 
-    String name = "C:/temp/file.bin";
+    if (name == null) return;
     try (FileOutputStream stream = new FileOutputStream(name)) {
       WritableByteChannel channel = stream.getChannel();
       cer.v.readToByteChannel(cer.section, channel);
@@ -192,6 +196,8 @@ public class NCdumpPane extends TextHistoryPane {
 
   public void save() {
     cb.save();
+    fileChooser.save();
+
     if (imageWindow != null) {
       prefs.putBeanObject(ImageViewer_WindowSize, imageWindow.getBounds());
       //System.out.println("bounds out = "+imageWindow.getBounds());

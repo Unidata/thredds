@@ -44,6 +44,7 @@ import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.TdsContext;
 import thredds.server.viewer.ViewerService;
+import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.Format;
@@ -103,15 +104,18 @@ public class ConfigCatalogHtmlWriter {
   public int writeCatalog(HttpServletRequest req, HttpServletResponse res, Catalog cat, boolean isLocalCatalog) throws IOException {
     String catHtmlAsString = convertCatalogToHtml(cat, isLocalCatalog);
 
-    res.setContentLength(catHtmlAsString.length());
+    // Once this header is set, we know the encoding, and thus the actual
+    // number of *bytes*, not characters, to encode
     res.setContentType(ContentType.html.getContentHeader());
+    int len = ServletUtil.setResponseContentLength(res, catHtmlAsString);
+
     if (!req.getMethod().equals("HEAD")) {
       PrintWriter writer = res.getWriter();
       writer.write(catHtmlAsString);
       writer.flush();
     }
 
-    return catHtmlAsString.length();
+    return len;
   }
 
   /**
