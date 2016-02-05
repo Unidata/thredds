@@ -8,7 +8,6 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -210,62 +209,59 @@ public class TestWriteMisc {
   @Test
   public void testOpenExisting() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile("testOpenExisting.nc").getAbsolutePath();
-    File f = new File(filename);
-    assert f.delete();
 
     try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       writer.addUnlimitedDimension("time");
       writer.addGroupAttribute(null, new Attribute("name", "value"));
 
-      //   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
       Variable time = writer.addVariable(null, "time", DataType.DOUBLE, "time");
       writer.addVariableAttribute(time, new Attribute(CDM.UNSIGNED, "true"));
       writer.addVariableAttribute(time, new Attribute(CDM.SCALE_FACTOR, 10.0));
+
       List<Integer> a = new ArrayList<Integer>();
       a.add(10);
       a.add(240);
       writer.addVariableAttribute(time, new Attribute(CDM.VALID_RANGE, a));
+
       writer.create();
 
-      Array data = Array.makeFromJavaArray(new double[]{0, 1, 2, 3});
+      Array data = Array.makeFromJavaArray(new double[] { 0, 1, 2, 3 });
       writer.write(time, data);
+    }
+
+    try (NetcdfFileWriter writer = NetcdfFileWriter.openExisting(filename)) {
+      boolean rewrite2 = writer.setRedefineMode(true);
+      assert !rewrite2;
+
+      writer.addGroupAttribute(null, new Attribute("name2", "value2"));
+      boolean rewrite3 = writer.setRedefineMode(false);
+      assert rewrite3;
+
+      Variable time = writer.findVariable("time");
+      assert time != null;
+
+      Array data   = Array.makeFromJavaArray(new double[] { 4, 5, 6 });
       int[] origin = new int[1];
+      origin[0] = (int) time.getSize();
 
-      try (NetcdfFileWriter writer2 = NetcdfFileWriter.openExisting(filename)) {
-        boolean rewrite2 = writer2.setRedefineMode(true);
-        assert !rewrite2;
+      writer.write(time, origin, data);
+    }
 
-        writer2.addGroupAttribute(null, new Attribute("name2", "value2"));
-        boolean rewrite3 = writer2.setRedefineMode(false);
-        assert rewrite3;
+    try (NetcdfFileWriter writer = NetcdfFileWriter.openExisting(filename)) {
+      Variable time  = writer.findVariable("time");
+      Array    data   = Array.makeFromJavaArray(new double[] { 8, 9 });
+      int[]    origin = new int[1];
 
-        Variable time2 = writer2.findVariable("time");
-        assert time2 != null;
+      origin[0] = (int) time.getSize();
+      writer.write(time, origin, data);
+    }
 
-        data = Array.makeFromJavaArray(new double[]{4, 5, 6});
-        origin[0] = (int) time2.getSize();
-        writer2.write(time2, origin, data);
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Attribute att3 = ncfile.findGlobalAttribute("name2");
+      assert att3 != null;
 
-        data = Array.makeFromJavaArray(new double[]{4, 5, 6});
-        origin[0] = (int) time2.getSize();
-        writer2.write(time2, origin, data);
-        writer2.close();
-      }
-
-      NetcdfFileWriter writer3 = NetcdfFileWriter.openExisting(filename);
-      Variable time3 = writer3.findVariable("time");
-      data = Array.makeFromJavaArray(new double[]{8, 9});
-      origin[0] = (int) time3.getSize();
-      writer3.write(time3, origin, data);
-      writer3.close();
-
-      try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
-        Attribute att3 = ncfile.findGlobalAttribute("name2");
-        assert att3 != null;
-
-        Variable vv = ncfile.findVariable(null, "time");
-        assert vv.getSize() == 9 : vv.getSize();
-      }
+      Variable vv = ncfile.findVariable(null, "time");
+      assert vv.getSize() == 9 : vv.getSize();
     }
   }
 }
