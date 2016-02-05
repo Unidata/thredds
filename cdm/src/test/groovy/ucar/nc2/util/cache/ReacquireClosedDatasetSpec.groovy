@@ -1,10 +1,8 @@
 package ucar.nc2.util.cache
-
 import spock.lang.Specification
 import ucar.nc2.dataset.DatasetUrl
 import ucar.nc2.dataset.NetcdfDataset
 import ucar.unidata.test.util.TestDir
-
 /**
  * Tests caching behavior when datasets are closed and then reacquired.
  *
@@ -12,11 +10,17 @@ import ucar.unidata.test.util.TestDir
  * @since 2016-01-02
  */
 class ReacquireClosedDatasetSpec extends Specification {
-    def "reacquire"() {
-        setup: 'Initialize cache'
+    def setupSpec() {
+        // All datasets, once opened, will be added to this cache. Config values copied from CdmInit.
         NetcdfDataset.initNetcdfFileCache(100, 150, 12 * 60);
-        String location = TestDir.cdmLocalTestDataDir + "jan.nc"
+    }
 
+    def cleanupSpec() {
+        // Undo global changes we made in setupSpec() so that they do not affect subsequent test classes.
+        NetcdfDataset.shutdown();
+    }
+
+    def "reacquire"() {
         when: 'Acquire and close dataset 4 times'
         (1..4).each { println ''
             NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(location), true, null).close()

@@ -1,5 +1,7 @@
 package ucar.nc2.ncml;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.InvalidRangeException;
@@ -24,11 +26,20 @@ import java.util.List;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestAggDatasetIsCached {
+  @BeforeClass
+  public static void setupClass() {
+    // All datasets, once opened, will be added to this cache.
+    NetcdfDataset.initNetcdfFileCache(10, 20, -1);
+  }
+
+  @AfterClass
+  public static void cleanupClass() {
+    // Undo global changes we made in setupSpec() so that they do not affect subsequent test classes.
+    NetcdfDataset.shutdown();
+  }
 
   @Test
   public void TestAggCached() throws IOException, InvalidRangeException {
-    NetcdfDataset.initNetcdfFileCache(10, 20, -1);
-
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
     //String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
@@ -73,8 +84,6 @@ public class TestAggDatasetIsCached {
   @Test
   // check if caching works
   public void TestAggCached2() throws IOException, InvalidRangeException {
-    NetcdfDataset.initNetcdfFileCache(10, 20, -1);
-
     String filename = TestDir.cdmUnitTestDir + "agg/caching/wqb.ncml";  // joinExisting
     DatasetUrl durl = DatasetUrl.findDatasetUrl(filename);
 

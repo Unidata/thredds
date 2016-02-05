@@ -1,9 +1,7 @@
 package ucar.nc2.jni.netcdf;
 
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
@@ -28,6 +26,8 @@ import java.util.List;
  * @since 7/30/13
  */
 public class TestNc4Misc {
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Before
   public void setLibrary() {
@@ -39,40 +39,37 @@ public class TestNc4Misc {
 
   @Test
   public void testUnlimitedDimension() throws IOException, InvalidRangeException {
-
-    String location = TestLocal.temporaryDataDir + "testNc4UnlimitedDim.nc";
-    // String location = "C:/temp/testNc4UnlimitedDim.nc";
+    String location = tempFolder.newFile("testNc4UnlimitedDim.nc").getAbsolutePath();
     File f = new File(location);
-    System.out.printf("%s%n", f.exists());
-    boolean ok = f.delete();
-    System.out.printf("%s%n", ok);
+    assert f.delete();
 
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, location);
-    System.out.printf("write to file = %s%n", new File(location).getAbsolutePath());
+    Variable time;
+    Array    data;
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, location)) {
+      System.out.printf("write to file = %s%n", new File(location).getAbsolutePath());
 
-    Dimension timeDim = writer.addUnlimitedDimension("time");
-    List<Dimension> dims = new ArrayList<>();
-    dims.add(timeDim);
-    Variable time = writer.addVariable(null, "time", DataType.DOUBLE, dims);
+      Dimension       timeDim = writer.addUnlimitedDimension("time");
+      List<Dimension> dims    = new ArrayList<>();
+      dims.add(timeDim);
+      time = writer.addVariable(null, "time", DataType.DOUBLE, dims);
 
-    writer.create();
+      writer.create();
 
     Array data = Array.makeFromJavaArray(new double[]{0, 1, 2, 3});
     writer.write(time, data);
     writer.close();
 
-    NetcdfFileWriter writer2 = NetcdfFileWriter.openExisting(location);
+    try (NetcdfFileWriter writer2 = NetcdfFileWriter.openExisting(location)) {
+      time = writer2.findVariable("time");
+      int[] origin = new int[1];
+      origin[0] = (int) time.getSize();
+      writer2.write(time, origin, data);
+    }
 
-    time = writer2.findVariable("time");
-    int[] origin = new int[1];
-    origin[0] = (int) time.getSize();
-    writer2.write(time, origin, data);
-    writer2.close();
-
-    NetcdfFile file = NetcdfFile.open(location);
-    time = file.findVariable("time");
-    assert time.getSize() == 8 : "failed to append to unlimited dimension";
-    file.close();
+    try (NetcdfFile file = NetcdfFile.open(location)) {
+      time = file.findVariable("time");
+      assert time.getSize() == 8 : "failed to append to unlimited dimension";
+    }
   }
 
 
@@ -80,7 +77,7 @@ public class TestNc4Misc {
   @Test
   public void testChunkStandard() throws IOException, InvalidRangeException {
     // define the file
-    String location = TestLocal.temporaryDataDir + "testSizeWriting2.nc4";
+    String location = tempFolder.newFile("testSizeWriting2.nc4").getAbsolutePath();
     // String location = "C:/temp/testSizeWriting.nc4";
 
     NetcdfFileWriter dataFile = null;
@@ -140,19 +137,19 @@ public class TestNc4Misc {
     System.out.printf("Wrote data file %s size=%d%n", location, resultFile.length());
     assert resultFile.length() < 100 * 1000 : resultFile.length();
 
-    NetcdfFile file = NetcdfFile.open(location);
-    Variable time = file.findVariable("time");
-    Attribute chunk = time.findAttribute(CDM.CHUNK_SIZES);
-    assert chunk != null;
-    assert chunk.getNumericValue().equals(1024) : "chunk failed= " + chunk;
-    file.close();
+    try (NetcdfFile file = NetcdfFile.open(location)) {
+      Variable  time  = file.findVariable("time");
+      Attribute chunk = time.findAttribute(CDM.CHUNK_SIZES);
+      assert chunk != null;
+      assert chunk.getNumericValue().equals(1024) : "chunk failed= " + chunk;
+    }
   }
 
   // from  Jeff Johnson  jeff.m.johnson@noaa.gov   5/2/2014
   @Test
   public void testChunkFromAttribute() throws IOException, InvalidRangeException {
     // define the file
-    String location = TestLocal.temporaryDataDir + "testSizeWriting2.nc4";
+    String location = tempFolder.newFile("testSizeWriting2.nc4").getAbsolutePath();
     // String location = "C:/temp/testSizeWriting.nc4";
 
     NetcdfFileWriter dataFile = null;
@@ -213,12 +210,12 @@ public class TestNc4Misc {
     System.out.printf("Wrote data file %s size=%d%n", location, resultFile.length());
     assert resultFile.length() < 100 * 1000 : resultFile.length();
 
-    NetcdfFile file = NetcdfFile.open(location);
-    Variable time = file.findVariable("time");
-    Attribute chunk = time.findAttribute(CDM.CHUNK_SIZES);
-    assert chunk != null;
-    assert chunk.getNumericValue().equals(2000) : "chunk failed= " + chunk;
-    file.close();
+    try (NetcdfFile file = NetcdfFile.open(location)) {
+      Variable  time  = file.findVariable("time");
+      Attribute chunk = time.findAttribute(CDM.CHUNK_SIZES);
+      assert chunk != null;
+      assert chunk.getNumericValue().equals(2000) : "chunk failed= " + chunk;
+    }
   }
 
 

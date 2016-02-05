@@ -61,7 +61,7 @@ import java.io.Serializable;
  * Intellij.
  */
 
-@Category(NeedsExternalResource.class)
+@Category({NotJenkins.class, NotTravis.class})
 public class TestSSH extends UnitTestCommon
 {
     static protected final boolean IGNORE = true;

@@ -107,7 +107,7 @@ public class TdsMonitor extends JPanel {
 
     CredentialsProvider provider = new UrlAuthenticatorDialog(null);
     try {
-      HTTPSession.setGlobalCredentialsProvider(provider, AuthSchemes.BASIC);
+      HTTPSession.setGlobalCredentialsProvider(provider,HTTPAuthSchemes.BASIC);
     } catch(HTTPException e) {
       System.err.println("Failed to set credentials");
     }

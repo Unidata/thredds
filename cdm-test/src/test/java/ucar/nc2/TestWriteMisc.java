@@ -1,6 +1,8 @@
 package ucar.nc2;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -19,7 +21,6 @@ import java.util.List;
  * @since 4/26/12
  */
 public class TestWriteMisc {
-
   /* byte Band1(y, x);
  >     Band1:_Unsigned = "true";
  >     Band1:_FillValue = -1b; // byte
@@ -29,16 +30,15 @@ public class TestWriteMisc {
  >     Band2:valid_range = 0s, 254s; // short
  */
 
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
+
   @Test
   public void testUnsignedAttribute() throws IOException, InvalidRangeException {
-     String filename = TestLocal.temporaryDataDir + "testUnsignedAttribute2.nc";
-     //String filename = "C:/tmp/testUnsignedAttribute3.nc";
-     System.out.printf("%s%n", filename);
+     String filename = tempFolder.newFile("testUnsignedAttribute2.nc").getAbsolutePath();
 
-     NetcdfFileWriter writer = null;
-     try {
-       writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
-       writer.addUnlimitedDimension("time");
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
+      writer.addUnlimitedDimension("time");
 
        //   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
        Variable v = writer.addVariable(null, "time", DataType.BYTE, "time");
@@ -54,62 +54,51 @@ public class TestWriteMisc {
  >     Band1:_FillValue = -1b; // byte
  */
 
-       Variable band1 = writer.addVariable(null, "Band1", DataType.BYTE, "time");
-       writer.addVariableAttribute(band1, new Attribute(CDM.UNSIGNED, "true"));
-       writer.addVariableAttribute(band1, new Attribute(CDM.FILL_VALUE, (byte) -1));
-       writer.addVariableAttribute(band1, new Attribute(CDM.SCALE_FACTOR, 1.0));
+      Variable band1 = writer.addVariable(null, "Band1", DataType.BYTE, "time");
+      writer.addVariableAttribute(band1, new Attribute(CDM.UNSIGNED, "true"));
+      writer.addVariableAttribute(band1, new Attribute(CDM.FILL_VALUE, (byte) -1));
+      writer.addVariableAttribute(band1, new Attribute(CDM.SCALE_FACTOR, 1.0));
 
  /* byte Band2(y, x);
  >     Band2:_Unsigned = "true";
  >     Band2:valid_range = 0s, 254s; // short
  */
 
-       Variable band2 = writer.addVariable(null, "Band2", DataType.BYTE, "time");
-       writer.addVariableAttribute(band2, new Attribute(CDM.UNSIGNED, "true"));
-       writer.addVariableAttribute(band2, new Attribute(CDM.SCALE_FACTOR, 1.0));
-        List<Short> a2 = new ArrayList<Short>();
-        a2.add((short)0);
-        a2.add((short)254);
-        writer.addVariableAttribute(band2, new Attribute(CDM.VALID_RANGE, a2));
+      Variable band2 = writer.addVariable(null, "Band2", DataType.BYTE, "time");
+      writer.addVariableAttribute(band2, new Attribute(CDM.UNSIGNED, "true"));
+      writer.addVariableAttribute(band2, new Attribute(CDM.SCALE_FACTOR, 1.0));
+      List<Short> a2 = new ArrayList<Short>();
+      a2.add((short) 0);
+      a2.add((short) 254);
+      writer.addVariableAttribute(band2, new Attribute(CDM.VALID_RANGE, a2));
 
-       writer.create();
+      writer.create();
 
-       Array timeData = Array.factory(DataType.BYTE, new int[]{1});
-       int[] time_origin = new int[]{0};
+      Array timeData    = Array.factory(DataType.BYTE, new int[] { 1 });
+      int[] time_origin = new int[] { 0 };
 
-       for (int time = 0; time < 256; time++) {
-         timeData.setInt(timeData.getIndex(), time);
-         time_origin[0] = time;
-         writer.write(v, time_origin, timeData);
-         writer.write(band1, time_origin, timeData);
-         writer.write(band2, time_origin, timeData);
-       }
+      for (int time = 0; time < 256; time++) {
+        timeData.setInt(timeData.getIndex(), time);
+        time_origin[0] = time;
+        writer.write(v, time_origin, timeData);
+        writer.write(band1, time_origin, timeData);
+        writer.write(band2, time_origin, timeData);
+      }
+    }
 
-     } catch (IOException ioe) {
-       ioe.printStackTrace();
-       assert false;
-
-     } finally {
-       if (writer != null) writer.close();
-     }
-
-     NetcdfFile ncFile = NetcdfFile.open(filename);
-     try {
+     try (NetcdfFile ncFile = NetcdfFile.open(filename)) {
        Array result2 = ncFile.readSection("time");
        System.out.println(result2);
        //ucar.unidata.test.util.CompareNetcdf.compareData(result1, result2);
-     } finally {
-       ncFile.close();
      }
   }
-
-
 
   // test writing big format
   @Test
   public void testBig() throws IOException, InvalidRangeException {
-
     long start = System.nanoTime();
+    long stop;
+    double took;
     System.out.println("Begin <=");
 
     String varName = "example";
@@ -121,37 +110,38 @@ public class TestWriteMisc {
     System.out.println("File size  (B)  = " + (long) timeSize * latSize * lonSize * 4);
     System.out.println("File size~ (MB) = " + Math.round((long) timeSize * latSize * lonSize * 4 / Math.pow(2, 20)));
 
-    NetcdfFileWriter fileWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, TestLocal.temporaryDataDir + "bigFile2.nc");
-    fileWriter.setFill(false);
-    fileWriter.setLargeFile(true);
+    String fileName = tempFolder.newFile("bigFile2.nc").getAbsolutePath();
+    try (NetcdfFileWriter fileWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileName)) {
+      fileWriter.setFill(false);
+      fileWriter.setLargeFile(true);
 
-    long approxSize = (long) timeSize * latSize * lonSize * 4 + 4000;
-    fileWriter.setLength(approxSize);
+      long approxSize = (long) timeSize * latSize * lonSize * 4 + 4000;
+      fileWriter.setLength(approxSize);
 
-    String timeUnits = "hours since 2008-06-06 12:00:0.0";
-    String coordUnits = "degrees";
+      String timeUnits  = "hours since 2008-06-06 12:00:0.0";
+      String coordUnits = "degrees";
 
-    Dimension[] dim = new Dimension[3];
+      Dimension[] dim = new Dimension[3];
 
-    dim[0] = setDimension(fileWriter, "time", timeUnits, timeSize);
-    dim[1] = setDimension(fileWriter, "lat", coordUnits, latSize);
-    dim[2] = setDimension(fileWriter, "lon", coordUnits, lonSize);
+      dim[0] = setDimension(fileWriter, "time", timeUnits, timeSize);
+      dim[1] = setDimension(fileWriter, "lat", coordUnits, latSize);
+      dim[2] = setDimension(fileWriter, "lon", coordUnits, lonSize);
 
-    Variable v = fileWriter.addVariable(null, varName, DataType.FLOAT, Arrays.asList(dim));
+      Variable v = fileWriter.addVariable(null, varName, DataType.FLOAT, Arrays.asList(dim));
 
-    fileWriter.addVariableAttribute(v, new Attribute("_FillValue", -9999));
-    fileWriter.addVariableAttribute(v, new Attribute(CDM.MISSING_VALUE, -9999));
+      fileWriter.addVariableAttribute(v, new Attribute("_FillValue", -9999));
+      fileWriter.addVariableAttribute(v, new Attribute(CDM.MISSING_VALUE, -9999));
 
-    System.out.println("Creating netcdf <=");
-    fileWriter.create();
+      System.out.println("Creating netcdf <=");
+      fileWriter.create();
 
-    /////////////////////////////////////
-    long stop = System.nanoTime();
-    double took = (stop - start) * .001 * .001 * .001;
-    System.out.println("That took " + took + " secs");
-    start = stop;
+      /////////////////////////////////////
+      stop = System.nanoTime();
+      took = (stop - start) * .001 * .001 * .001;
+      System.out.println("That took " + took + " secs");
+      start = stop;
 
-    System.out.println("Writing netcdf <=");
+      System.out.println("Writing netcdf <=");
 
     int[] shape = new int[]{1, 1, lonSize};
     float[] floatStorage = new float[lonSize];
@@ -162,8 +152,6 @@ public class TestWriteMisc {
         fileWriter.write(v, origin, floatArray);
       }
     }
-
-    fileWriter.close();
 
     System.out.println("Done <=");
     stop = System.nanoTime();
@@ -181,26 +169,23 @@ public class TestWriteMisc {
 
   @Test
   public void testRedefine() throws IOException {
-    String filename = TestLocal.temporaryDataDir + "testRedefine.nc";
-    //String filename = "C:/tmp/testUnsignedAttribute3.nc";
-    System.out.printf("%s%n", filename);
+    String filename = tempFolder.newFile("testRedefine.nc").getAbsolutePath();
 
-    NetcdfFileWriter writer = null;
-    writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
-    writer.addUnlimitedDimension("time");
-    writer.addGroupAttribute(null, new Attribute("name", "value"));
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
+      writer.addUnlimitedDimension("time");
+      writer.addGroupAttribute(null, new Attribute("name", "value"));
 
-    //   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
-    Variable v = writer.addVariable(null, "time", DataType.DOUBLE, "time");
-    writer.addVariableAttribute(v, new Attribute(CDM.UNSIGNED, "true"));
-    writer.addVariableAttribute(v, new Attribute(CDM.SCALE_FACTOR, 10.0));
-    List<Integer> a = new ArrayList<Integer>();
-    a.add(10);
-    a.add(240);
-    writer.addVariableAttribute(v, new Attribute(CDM.VALID_RANGE, a));
-    writer.create();
-    boolean rewrite = writer.setRedefineMode(true);
-    assert !rewrite;
+      //   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
+      Variable v = writer.addVariable(null, "time", DataType.DOUBLE, "time");
+      writer.addVariableAttribute(v, new Attribute(CDM.UNSIGNED, "true"));
+      writer.addVariableAttribute(v, new Attribute(CDM.SCALE_FACTOR, 10.0));
+      List<Integer> a = new ArrayList<Integer>();
+      a.add(10);
+      a.add(240);
+      writer.addVariableAttribute(v, new Attribute(CDM.VALID_RANGE, a));
+      writer.create();
+      boolean rewrite = writer.setRedefineMode(true);
+      assert !rewrite;
 
     Attribute newAtt = writer.renameGroupAttribute(null, "name", "NAM");
     System.out.printf("newAtt = %s%n", newAtt);
@@ -212,55 +197,54 @@ public class TestWriteMisc {
     assert newAtt2 != null;
     assert newAtt2.getShortName().equals("nameLongerThanYou");
 
-    writer.create();
-    writer.close();
+      writer.create();
+    }
 
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    Attribute att3 = ncfile.findGlobalAttribute("nameLongerThanYou");
-    System.out.printf("read att = %s%n", att3);
-    assert att3 != null;
-    ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Attribute att3 = ncfile.findGlobalAttribute("nameLongerThanYou");
+      assert att3 != null;
+    }
   }
 
   @Test
   public void testOpenExisting() throws IOException, InvalidRangeException {
-    String filename = TestLocal.temporaryDataDir + "testOpenExisting.nc";
-    System.out.printf("write to file = %s%n", new File(filename).getAbsolutePath());
-
+    String filename = tempFolder.newFile("testOpenExisting.nc").getAbsolutePath();
     File f = new File(filename);
-    System.out.printf("%s%n", f.exists());
-    boolean ok = f.delete();
-    System.out.printf("%s%n", ok);
+    assert f.delete();
 
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename);
-    writer.addUnlimitedDimension("time");
-    writer.addGroupAttribute(null, new Attribute("name", "value"));
+    try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
+      writer.addUnlimitedDimension("time");
+      writer.addGroupAttribute(null, new Attribute("name", "value"));
 
-    //   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
-    Variable time = writer.addVariable(null, "time", DataType.DOUBLE, "time");
-    writer.addVariableAttribute(time, new Attribute(CDM.UNSIGNED, "true"));
-    writer.addVariableAttribute(time, new Attribute(CDM.SCALE_FACTOR, 10.0));
-    List<Integer> a = new ArrayList<Integer>();
-    a.add(10);
-    a.add(240);
-    writer.addVariableAttribute(time, new Attribute(CDM.VALID_RANGE, a));
-    writer.create();
+      //   public Variable addVariable(Group g, String shortName, DataType dataType, String dims) {
+      Variable time = writer.addVariable(null, "time", DataType.DOUBLE, "time");
+      writer.addVariableAttribute(time, new Attribute(CDM.UNSIGNED, "true"));
+      writer.addVariableAttribute(time, new Attribute(CDM.SCALE_FACTOR, 10.0));
+      List<Integer> a = new ArrayList<Integer>();
+      a.add(10);
+      a.add(240);
+      writer.addVariableAttribute(time, new Attribute(CDM.VALID_RANGE, a));
+      writer.create();
 
     Array data = Array.makeFromJavaArray(new double[]{0, 1, 2, 3});
     writer.write(time, data);
 
-    writer.close();
+    try (NetcdfFileWriter writer2 = NetcdfFileWriter.openExisting(filename)) {
+      boolean rewrite2 = writer2.setRedefineMode(true);
+      assert !rewrite2;
 
-    NetcdfFileWriter writer2 = NetcdfFileWriter.openExisting(filename);
-    boolean rewrite2 = writer2.setRedefineMode(true);
-    assert !rewrite2;
+      writer2.addGroupAttribute(null, new Attribute("name2", "value2"));
+      boolean rewrite3 = writer2.setRedefineMode(false);
+      assert rewrite3;
 
-    writer2.addGroupAttribute(null, new Attribute("name2", "value2"));
-    boolean rewrite3 = writer2.setRedefineMode(false);
-    assert rewrite3;
+      Variable time2 = writer2.findVariable("time");
+      assert time2 != null;
 
-    Variable time2 = writer2.findVariable("time");
-    assert time2 != null;
+      Array data   = Array.factory(new double[] { 4, 5, 6 });
+      int[] origin = new int[1];
+      origin[0] = (int) time2.getSize();
+      writer2.write(time2, origin, data);
+    }
 
     data = Array.makeFromJavaArray(new double[]{4, 5, 6});
     int[] origin = new int[1];
@@ -275,14 +259,12 @@ public class TestWriteMisc {
     writer3.write(time3, origin, data);
     writer3.close();
 
-    NetcdfFile ncfile = NetcdfFile.open(filename);
-    Attribute att3 = ncfile.findGlobalAttribute("name2");
-    System.out.printf("read att = %s%n", att3);
-    assert att3 != null;
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Attribute att3 = ncfile.findGlobalAttribute("name2");
+      assert att3 != null;
 
-    Variable vv = ncfile.findVariable(null, "time") ;
-    assert vv.getSize() == 9 : vv.getSize();
-    ncfile.close();
+      Variable vv = ncfile.findVariable(null, "time");
+      assert vv.getSize() == 9 : vv.getSize();
+    }
   }
-
 }

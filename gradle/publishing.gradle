@@ -1,31 +1,11 @@
-configure(publishedProjects) {
+import edu.ucar.build.PublishingUtil
+
+configure(publishedProjects) { Project project ->
     apply plugin: 'maven-publish'
 
-    // The PublishingExtension is a DeferredConfigurable model element, meaning that extension will be configured as
-    // late as possible in the build. So any 'publishing' configuration blocks are not evaluated until either:
-    //   1. The project is about to execute, or
-    //   2. the publishing extension is referenced as an instance, as opposed to via a configuration closure.
-    // This is why we can reference 'web' software components, even though the subprojects that apply the war plugin
-    // haven't been evaluated yet.
+    PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
+
     publishing {
-        publications {
-            ['java', 'web'].each { String name ->
-                def softwareComponent = components.findByName name
-
-                if (softwareComponent) {
-                    // Creates a Maven publication with the given name. It will also generate several tasks:
-                    //   generatePomFileFor${name}Publication
-                    //   publish${name}PublicationToMavenLocal
-                    //   publishToMavenLocal  (depends on all instances of the above task)
-                    //   publish${name}PublicationTo${repoName}Repository
-                    //   publish  (depends on all instances of the above task)
-                    "$name"(MavenPublication) {
-                        from softwareComponent
-                    }
-                }
-            }
-        }
-
         repositories {
             String version = rootProject.version as String
             if (version.endsWith('SNAPSHOT')) {
@@ -60,6 +40,20 @@ publishing {
                     artifactId task.baseName
                     artifact task
                 }
+            }
+        }
+
+        threddsParent(MavenPublication) {  // Maven BOM publication
+            artifactId 'thredds-parent'
+
+            pom.withXml{
+                List<MavenPublication> allPubs = publishedProjects.publishing.publications.flatten()
+                List<MavenPublication> webAndJavaPubs = allPubs.findAll {
+                    // Don't include threddsParent or any of the fatJar pubs in dependencyManagement.
+                    it.name.contains('Web') || it.name.contains('Java')
+                }
+
+                asNode().append PublishingUtil.createDependencyManagement(webAndJavaPubs)
             }
         }
     }

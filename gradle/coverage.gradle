@@ -31,17 +31,26 @@ configure(javaProjects + rootProject) {
 }
 
 ///////////////////////////////////////////////// Root /////////////////////////////////////////////////
-
 task rootJacocoReport(type: JacocoReport, group: 'Reports') {
     description = 'Generates an aggregate coverage report from all subprojects'
 
+    // Add source and class directories for the :buildSrc project. Note that by this time in the 'thredds' config,
+    // :buildSrc has already run as a *separate* build (see http://stackoverflow.com/questions/26597147),
+    // so we cannot programmatically access its Project object to retrieve these paths.
+    sourceDirectories = sourceDirectories + files('buildSrc/src/main/groovy')
+    classDirectories  = classDirectories  + files('buildSrc/build/classes/main')
+
+    // :buildSrc:test always runs and produces execution data, no matter what.
+    assert file('buildSrc/build/jacoco/test.exec').exists() : "Can't find :buildSrc Jacoco execution data."
+
     // By default, JacocoReport will be skipped if ANY of its executionData are non-existent: http://goo.gl/pHuwyg
-    // This is a problem: we don't know which data we have until execution time. So, we're temporarily assigning an
-    // empty collection (leaving it null causes an exception), and assigning the real values later.
-    executionData = files()
+    // So, we're going to start off with the only executionData we KNOW exists. As for the subprojects' executionData,
+    // we won't know what's available until after they run their 'test' tasks (if they run at all). So, delay that
+    // config until doFirst{}, which will run during Gradle's execution phase.
+    executionData = files('buildSrc/build/jacoco/test.exec')
 
     // Causes rootJacocoReport to always be executed. This is necessary because JacocoReport uses executionData as one
-    // of its Inputs, and by assigning an empty collection above, the normal UP-TO-DATE machinery has been subverted.
+    // of its Inputs, and by assigning an incomplete set above, the normal UP-TO-DATE machinery has been subverted.
     // As a result, rootJacocoReport can't properly determine when subprojects have generated new coverage data
     // (it thinks its executionData Inputs are always UP-TO-DATE). We'll try to detect those changes manually below.
     outputs.upToDateWhen { false }  // Evaluated at configuration time (onlyIf{} is evaluated at execution time)
@@ -52,12 +61,7 @@ task rootJacocoReport(type: JacocoReport, group: 'Reports') {
         Collection<File> exeData = tasksExtendedByJacoco*.jacoco*.destinationFile
 
         // Add all subproject executionData that actually exist.
-        executionData = files(exeData.findAll { it.exists() })
-
-        // Skip task if NO executionData exists. This is how JacocoReport ought to work in the first place.
-        if (executionData.isEmpty()) {
-            throw new StopExecutionException("SKIPPING $name: no execution data found.")
-        }
+        executionData = executionData + files(exeData.findAll { it.exists() })
 
         boolean allOutputsExist = outputs.files.every { it.exists() }
         boolean anyJacocoTaskDidWork = tasksExtendedByJacoco.any { it.didWork }

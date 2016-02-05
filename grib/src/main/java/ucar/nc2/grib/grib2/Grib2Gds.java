@@ -178,6 +178,7 @@ public abstract class Grib2Gds {
   public int getScanMode() {
     return scanMode;
   }
+
   // hack to fix eumetsat GDS
   public void setCenter(int center) {
     this.center = center;
@@ -242,7 +243,7 @@ public abstract class Grib2Gds {
 
   public boolean isThin() {
     boolean isThin = (getOctet(11) != 0);
-    assert !isThin || (nx <0 || ny < 0);
+    assert !isThin || (nx < 0 || ny < 0);
     return isThin;
   }
 
@@ -342,36 +343,36 @@ public abstract class Grib2Gds {
     }
   }
 
-/*
-Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant cylindrical, or Plate Carre))
-     1-4 (4): GDS length
-     5-5 (1): Section
-     6-6 (1): Source of Grid Definition (see code table 3.0)
-    7-10 (4): Number of data points
-   11-11 (1): Number of octects for optional list of numbers
-   12-12 (1): Interpretation of list of numbers
-   13-14 (2): Grid Definition Template Number
-      15 (1): Shape of the Earth - (see Code table 3.2)#GRIB2_6_0_1_codeflag.doc#G2_CF32
-      16 (1): Scale factor of radius of spherical Earth
-   17-20 (4): Scaled value of radius of spherical Earth
-      21 (1): Scale factor of major axis of oblate spheroid Earth
-   22-25 (4): Scaled value of major axis of oblate spheroid Earth
-      26 (1): Scale factor of minor axis of oblate spheroid Earth
-   27-30 (4): Scaled value of minor axis of oblate spheroid Earth
-   31-34 (4): Ni - number of points along a parallel
-   35-38 (4): Nj - number of points along a meridian
-   39-42 (4): Basic angle of the initial production domain - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-   43-46 (4): Subdivisions of basic angle used to define extreme longitudes and latitudes, and direction increments - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-   47-50 (4): La1 - latitude of first grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-   51-54 (4): Lo1 - longitude of first grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-      55 (1): Resolution and component flags - (see Flag table 3.3)#GRIB2_6_0_1_codeflag.doc#G2_CF33
-   56-59 (4): La2 - latitude of last grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-   60-63 (4): Lo2 - longitude of last grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-   64-67 (4): Di - i direction increment - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-   68-71 (4): Dj - j direction increment - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-      72 (1): Scanning mode - (flags - see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
-   73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Notes 2 and 3)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
-*/
+  /*
+  Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant cylindrical, or Plate Carre))
+       1-4 (4): GDS length
+       5-5 (1): Section
+       6-6 (1): Source of Grid Definition (see code table 3.0)
+      7-10 (4): Number of data points
+     11-11 (1): Number of octects for optional list of numbers
+     12-12 (1): Interpretation of list of numbers
+     13-14 (2): Grid Definition Template Number
+        15 (1): Shape of the Earth - (see Code table 3.2)#GRIB2_6_0_1_codeflag.doc#G2_CF32
+        16 (1): Scale factor of radius of spherical Earth
+     17-20 (4): Scaled value of radius of spherical Earth
+        21 (1): Scale factor of major axis of oblate spheroid Earth
+     22-25 (4): Scaled value of major axis of oblate spheroid Earth
+        26 (1): Scale factor of minor axis of oblate spheroid Earth
+     27-30 (4): Scaled value of minor axis of oblate spheroid Earth
+     31-34 (4): Ni - number of points along a parallel
+     35-38 (4): Nj - number of points along a meridian
+     39-42 (4): Basic angle of the initial production domain - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+     43-46 (4): Subdivisions of basic angle used to define extreme longitudes and latitudes, and direction increments - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+     47-50 (4): La1 - latitude of first grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+     51-54 (4): Lo1 - longitude of first grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+        55 (1): Resolution and component flags - (see Flag table 3.3)#GRIB2_6_0_1_codeflag.doc#G2_CF33
+     56-59 (4): La2 - latitude of last grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+     60-63 (4): Lo2 - longitude of last grid point - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+     64-67 (4): Di - i direction increment - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+     68-71 (4): Dj - j direction increment - (see Note 1)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+        72 (1): Scanning mode - (flags - see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
+     73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Notes 2 and 3)#GRIB2_6_0_1_temp.doc#G2_Gdt30n
+  */
   public static class LatLon extends Grib2Gds {
     public float la1, lo1, la2, lo2, deltaLon, deltaLat;
     public int basicAngle, basicAngleSubdivisions;
@@ -405,9 +406,11 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       float lastLat = getOctet4(56) * scale;
       float dLat = getOctet4(68) * scale;       // may be pos or neg
       if (GribUtils.scanModeYisPositive(scanMode)) {
-        if (firstLat > lastLat) f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, dLat, firstLat, lastLat);
+        if (firstLat > lastLat)
+          f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, dLat, firstLat, lastLat);
       } else {
-        if (firstLat < lastLat) f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, dLat, firstLat, lastLat);
+        if (firstLat < lastLat)
+          f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, dLat, firstLat, lastLat);
       }
     }
 
@@ -444,7 +447,8 @@ Template 3.0 (Grid definition template 3.0 - latitude/longitude (or equidistant 
       if (!super.equals(o)) return false;
 
       LatLon other = (LatLon) o;
-      if (!Misc.closeEnoughAbs(la1, other.la1, maxReletiveErrorPos * deltaLat)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(la1, other.la1, maxReletiveErrorPos * deltaLat))
+        return false;   // allow some slop, reletive to grid size
       if (!Misc.closeEnoughAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
       if (!Misc.closeEnoughAbs(la2, other.la2, maxReletiveErrorPos * deltaLat)) return false;
       if (!Misc.closeEnoughAbs(lo2, other.lo2, maxReletiveErrorPos * deltaLon)) return false;
@@ -657,9 +661,11 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
       float lastLat = getOctet4(52) * scale;
       float dY = getOctet4(69) * scale;       // may be pos or neg
       if (GribUtils.scanModeYisPositive(scanMode)) {
-        if (firstLat > lastLat) f.format("  **Mercator scan mode=%d dY=%f lat=(%f,%f)%n", scanMode, dY, firstLat, lastLat);
+        if (firstLat > lastLat)
+          f.format("  **Mercator scan mode=%d dY=%f lat=(%f,%f)%n", scanMode, dY, firstLat, lastLat);
       } else {
-        if (firstLat < lastLat) f.format("  **Mercator scan mode=%d dY=%f lat=(%f,%f)%n", scanMode, dY, firstLat, lastLat);
+        if (firstLat < lastLat)
+          f.format("  **Mercator scan mode=%d dY=%f lat=(%f,%f)%n", scanMode, dY, firstLat, lastLat);
       }
     }
 
@@ -671,7 +677,8 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
 
       Mercator that = (Mercator) o;
 
-      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY))
+        return false;   // allow some slop, reletive to grid size
       if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
       if (!Misc.closeEnoughAbs(lad, that.lad, maxReletiveErrorPos * dY)) return false;
       if (!Misc.closeEnough(dY, that.dY)) return false;
@@ -804,7 +811,8 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
 
       PolarStereographic that = (PolarStereographic) o;
 
-      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY))
+        return false;   // allow some slop, reletive to grid size
       if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
       if (!Misc.closeEnough(lad, that.lad)) return false;
       if (!Misc.closeEnough(lov, that.lov)) return false;
@@ -851,7 +859,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       if (GribNumbers.isUndefined(lad)) { // LOOK
         scale = 0.9330127018922193;
       } else {
-        scale = (1.0 + Math.sin(Math.toRadians( Math.abs( Math.abs(lad))))) / 2;
+        scale = (1.0 + Math.sin(Math.toRadians(Math.abs(Math.abs(lad))))) / 2;
       }
 
       ProjectionImpl proj;
@@ -964,7 +972,8 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
 
       LambertConformal that = (LambertConformal) o;
 
-      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY))
+        return false;   // allow some slop, reletive to grid size
       if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
       if (!Misc.closeEnough(lad, that.lad)) return false;
       if (!Misc.closeEnough(lov, that.lov)) return false;
@@ -1189,7 +1198,7 @@ some records differ only by:
 
     protected void finish() {
       super.finish();
-      deltaLon = (lo2 - lo1) / (getNx()-1); // more accurate - deltaLon may have roundoff
+      deltaLon = (lo2 - lo1) / (getNx() - 1); // more accurate - deltaLon may have roundoff
       deltaLat = 0.1f; // meaningless for gaussian
     }
 
@@ -1384,36 +1393,36 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
     /**
      * Make a Eumetsat MSG "Normalized Geostationary Projection" projection.
      * Fake coordinates for now, then see if this can be generalized.
-     * <p/>
+     * <p>
      * =======
-     * <p/>
+     * <p>
      * from  simon.elliott@eumetsat.int
-     * <p/>
+     * <p>
      * For products on a single pixel resolution grid, the scan angle is 83.84333 E-6 rad.
      * So dx = 2 * arcsin(10e6/Nr) / 83.84333 E-6 = 3622.30, which encoded to the nearest integer is 3622.
      * This is correctly encoded in our products.
-     * <p/>
+     * <p>
      * For products on a 3x3 pixel resolution grid, the scan angle is 3 * 83.84333 E-6 rad = 251.52999 E-6 rad.
      * So dx = 2 * arcsin(10e6/Nr) / 251.52999 E-6 = 1207.43, which encoded to the nearest integer is 1207.
      * This is correctly encoded in our products.
-     * <p/>
+     * <p>
      * Due to the elliptical shape of the earth, the calculation is a bit different in the y direction (Nr is in multiples of
      * the equatorial radius, but the tangent point is much closer to the polar radius from the earth's centre.
      * Approximating that the tangent point is actually at the polar radius from the earth's centre:
      * The sine of the angle subtended by the Earths centre and the tangent point on the equator as seen from the spacecraft
      * = Rp / (( Nr * Re) / 10^6) = (Rp * 10^6) / (Re * Nr)
-     * <p/>
+     * <p>
      * The angle subtended by the Earth equator as seen by the spacecraft is, by symmetry twice the inverse sine above,
      * = 2 * arcsine ((Rp * 10^6) / (Re * Nr))
-     * <p/>
+     * <p>
      * For products on a single pixel resolution grid, the scan angle is 83.84333 E-6 rad.
      * So dy = 2 * arcsine ((Rp * 10^6) / (Re * Nr)) / 83.84333 E-6 = 3610.06, which encoded to the nearest integer is 3610.
      * This is currently encoded in our products as 3568.
-     * <p/>
+     * <p>
      * For products on a 3x3 pixel resolution grid, the scan angle is 3 * 83.84333 E-6 rad = 251.52999 E-6 rad.
      * So dy = 2 * arcsine ((Rp * 10^6) / (Re * Nr)) / 251.52999 E-6 = 1203.35, which encoded to the nearest integer is 1203.
      * This is currently encoded in our products as 1189.
-     * <p/>
+     * <p>
      * As you can see the dx and dy values we are using will lead to an error of around 1% in the y direction.
      * I will ensure that the values are corrected to those explained here (3610 and 1203) as soon as possible.
      */
@@ -1439,7 +1448,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
 
       getEarth(); // fix units if needed
 
-       // use km, so scale by the earth radius
+      // use km, so scale by the earth radius
       double scale_factor = (Nr - 1) * majorAxis / 1000; // this sets the units of the projection x,y coords in km
       double scale_x = scale_factor; // LOOK fake neg need scan value
       double scale_y = -scale_factor; // LOOK fake neg need scan value
@@ -1468,7 +1477,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
         incry = (scale_factor / lfac);
       } else {
         incry = -(scale_factor / lfac);
-        starty = scale_factor * (Yp - getNy()) / lfac - incry * (getNy()-1);
+        starty = scale_factor * (Yp - getNy()) / lfac - incry * (getNy() - 1);
       }
 
       MSGnavigation proj = new MSGnavigation(LaP, LoP, majorAxis, minorAxis, Nr * majorAxis, scale_x, scale_y);
@@ -1521,8 +1530,8 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
     CurvilinearOrthogonal(byte[] data) {
       super(data, 204);
 
-      flags =  getOctet(55);
-      scanMode =  getOctet(72);
+      flags = getOctet(55);
+      scanMode = getOctet(72);
     }
 
     @Override

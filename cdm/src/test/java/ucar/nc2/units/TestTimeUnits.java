@@ -38,8 +38,6 @@ import ucar.nc2.util.Misc;
 import ucar.units.Unit;
 import ucar.units.ScaledUnit;
 import ucar.units.DerivedUnit;
-import ucar.units.ConversionException;
-import ucar.nc2.TestAll;
 
 public class TestTimeUnits extends TestCase  {
 

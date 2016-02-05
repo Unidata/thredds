@@ -32,13 +32,15 @@
 
 package ucar.nc2.dt.grid;
 
-import junit.framework.TestCase;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
-import ucar.nc2.*;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.IO;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.File;
@@ -50,21 +52,23 @@ import java.io.IOException;
  * @author caron
  * @since Apr 13, 2010
  */
-public class TestGridClose extends TestCase {
+public class TestGridClose {
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
+
   private String newVarName = "some_data";
 
+  @Test
   public void testClose() throws IOException {
     File org = new File(TestDir.cdmLocalTestDataDir + "rankTest.nc");
-    File copy = new File(TestLocal.temporaryDataDir + "rankTest.nc");
+    File copy = tempFolder.newFile("rankTest.nc");
     IO.copyFile(org, copy);
 
     String url = copy.getPath();
 
-    RandomAccessFile.setDebugLeaks(true);
     openDatasetAndView(url);
     alterExistingFile(url);
     checkFile(url);
-    TestDir.checkLeaks();
   }
 
   public void openDatasetAndView(String url) throws IOException {
@@ -72,8 +76,9 @@ public class TestGridClose extends TestCase {
     try (GridDataset dataset = GridDataset.open(url)) {
       for (GridDatatype grid : dataset.getGrids()) {
         temp_data = grid.readDataSlice(0, 0, -1, -1);
-        System.err.println("Min is: " + grid.getMinMaxSkipMissingData(temp_data).min);
-        System.err.println("Max is: " + grid.getMinMaxSkipMissingData(temp_data).max);
+
+        assert grid.getMinMaxSkipMissingData(temp_data).min == 0.0;   // min
+        assert grid.getMinMaxSkipMissingData(temp_data).max == 42.0;  // max
       }
     }
   }
@@ -98,9 +103,7 @@ public class TestGridClose extends TestCase {
 
   public void checkFile(String url) throws IOException {
     try (NetcdfFile file = NetcdfFile.open(url, null)) {
-      System.out.printf("%s%n", file);
       assert file.findVariable(newVarName) != null : "cant find "+newVarName;
     }
   }
-
 }

@@ -32,8 +32,6 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.*;
-import ucar.nc2.TestLocal;
 import ucar.unidata.test.util.TestDir;
 
 /**

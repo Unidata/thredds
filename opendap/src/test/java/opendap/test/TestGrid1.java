@@ -36,7 +36,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
@@ -57,7 +56,7 @@ import ucar.unidata.test.util.TestDir;
  * } testgrid1
  */
 
-public class TestGrid1 extends UnitTestCommon
+public class TestGrid1 extends TestSources
 {
     static final protected String DATASET = "testgrid1.nc";
 

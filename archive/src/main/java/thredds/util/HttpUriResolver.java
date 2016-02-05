@@ -173,7 +173,7 @@ public class HttpUriResolver {
       method.getSession().setConnectionTimeout(this.connectionTimeout);
       method.getSession().setSoTimeout(this.socketTimeout);
       method.setFollowRedirects(this.followRedirects);
-      method.setRequestHeader("Accept-Encoding", this.contentEncoding);
+      method.setCompression(this.contentEncoding);
 
       method.execute();
       int statusCode = method.getStatusCode();
