@@ -86,7 +86,7 @@ public class TestSlice {
 
   @Test
   public void testFill() throws IOException, InvalidRangeException {
-    try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filePath)) {
+    try (NetcdfFileWriter file = NetcdfFileWriter.openExisting(filePath)) {
       file.write(DATA_VARIABLE, createData());
     }
   }
