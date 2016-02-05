@@ -221,7 +221,7 @@ public class HtmlWriting {
     // Get directory as HTML
     String dirHtmlString = getDirectory(path, dir);
 
-    res.setContentLength(dirHtmlString.length());
+    thredds.servlet.ServletUtil.setResponseContentLength(res, dirHtmlString);
     res.setContentType(ContentType.html.getContentHeader());
     PrintWriter writer = res.getWriter();
     writer.write(dirHtmlString);

@@ -52,7 +52,7 @@ public class TestScaleOffset {
     MAMath.ScaleOffset so;
     Array packed;
 
-    try (NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename)) {
+    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true)) {
       // define dimensions
       Dimension latDim = ncfile.addDimension("lat", 200);
       Dimension lonDim = ncfile.addDimension("lon", 300);
@@ -73,13 +73,10 @@ public class TestScaleOffset {
       int     nbits        = 16;
 
       // convert to packed form
-      so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits, isUnsigned);
+      so = MAMath.calcScaleOffsetSkipMissingData(unpacked, missingValue, nbits);
       ncfile.addVariable("unpacked", DataType.DOUBLE, "lat lon");
 
       ncfile.addVariable("packed", DataType.SHORT, "lat lon");
-      if (isUnsigned) {
-        ncfile.addVariableAttribute("packed", CDM.UNSIGNED, "true");
-      }
       //ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, new Short( (short) -9999));
       ncfile.addVariableAttribute("packed", CDM.SCALE_FACTOR, so.scale);
       ncfile.addVariableAttribute("packed", "add_offset", so.offset);
@@ -89,7 +86,7 @@ public class TestScaleOffset {
 
       ncfile.write("unpacked", unpacked);
 
-      packed = MAMath.convert2packed(unpacked, missingValue, nbits, isUnsigned, DataType.SHORT);
+      packed = MAMath.convert2packed(unpacked, missingValue, nbits, DataType.SHORT);
       ncfile.write("packed", packed);
     }
 

@@ -44,31 +44,31 @@ public class TestNc4Misc {
     assert f.delete();
 
     Variable time;
-    Array    data;
     try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, location)) {
       System.out.printf("write to file = %s%n", new File(location).getAbsolutePath());
 
-      Dimension       timeDim = writer.addUnlimitedDimension("time");
-      List<Dimension> dims    = new ArrayList<>();
+      Dimension timeDim = writer.addUnlimitedDimension("time");
+      List<Dimension> dims = new ArrayList<>();
       dims.add(timeDim);
       time = writer.addVariable(null, "time", DataType.DOUBLE, dims);
 
       writer.create();
 
-    Array data = Array.makeFromJavaArray(new double[]{0, 1, 2, 3});
-    writer.write(time, data);
-    writer.close();
+      Array data = Array.makeFromJavaArray(new double[]{0, 1, 2, 3});
+      writer.write(time, data);
+      writer.close();
 
-    try (NetcdfFileWriter writer2 = NetcdfFileWriter.openExisting(location)) {
-      time = writer2.findVariable("time");
-      int[] origin = new int[1];
-      origin[0] = (int) time.getSize();
-      writer2.write(time, origin, data);
-    }
+      try (NetcdfFileWriter writer2 = NetcdfFileWriter.openExisting(location)) {
+        time = writer2.findVariable("time");
+        int[] origin = new int[1];
+        origin[0] = (int) time.getSize();
+        writer2.write(time, origin, data);
+      }
 
-    try (NetcdfFile file = NetcdfFile.open(location)) {
-      time = file.findVariable("time");
-      assert time.getSize() == 8 : "failed to append to unlimited dimension";
+      try (NetcdfFile file = NetcdfFile.open(location)) {
+        time = file.findVariable("time");
+        assert time.getSize() == 8 : "failed to append to unlimited dimension";
+      }
     }
   }
 

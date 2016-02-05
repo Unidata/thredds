@@ -37,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import ucar.ma2.*;
+import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.IO;
 import ucar.unidata.test.util.TestDir;
@@ -59,18 +60,16 @@ public class TestWriteMiscProblems {
   @Test
   public void testWriteBigString() throws IOException {
     String filename = tempFolder.newFile("testWriteMisc.nc").getAbsolutePath();
-    try (NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, false)) {
+    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false)) {
       int len = 120000;
       ArrayChar.D1 arrayCharD1 = new ArrayChar.D1(len);
-      for (int i = 0; i < len; i++) {
+      for (int i = 0; i < len; i++)
         arrayCharD1.set(i, '1');
-      }
-      ncfile.addGlobalAttribute("tooLongChar", arrayCharD1);
+      ncfile.addGlobalAttribute( new Attribute("tooLongChar", arrayCharD1));
 
       char[] carray = new char[len];
-      for (int i = 0; i < len; i++) {
+      for (int i = 0; i < len; i++)
         carray[i] = '2';
-      }
       String val = new String(carray);
       ncfile.addGlobalAttribute("tooLongString", val);
 
@@ -86,7 +85,7 @@ public class TestWriteMiscProblems {
 
     /* enter define mode */
     String filename = tempFolder.newFile("testCharMultidim.nc").getAbsolutePath();
-    try (NetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(filename, true)) {
+    try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true)) {
       /* define dimensions */
       Dimension Time_dim       = ncfile.addUnlimitedDimension("Time");
       Dimension DateStrLen_dim = ncfile.addDimension("DateStrLen", DateStrLen_len);
@@ -126,13 +125,19 @@ public class TestWriteMiscProblems {
     String inName = TestDir.cdmLocalTestDataDir + "testWrite.nc";
     String outName = tempFolder.newFile("testRemove.nc").getAbsolutePath();
 
-    try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(inName, null)) {
+    DatasetUrl durl = new DatasetUrl(null, inName);
+    try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null)) {
       assert ncd.removeVariable(null, "temperature");
       ncd.finish();
-      ucar.nc2.FileWriter.writeToFile(ncd, outName, true).close();
+
+      FileWriter2 writer = new FileWriter2(ncd, outName, NetcdfFileWriter.Version.netcdf3, null);
+      try (NetcdfFile ncdnew = writer.write()) {
+        // ok empty
+      }
     }
 
-    try (NetcdfDataset ncdnew2 = NetcdfDataset.acquireDataset(outName, null)) {
+    DatasetUrl durl2 = new DatasetUrl(null, outName);
+    try (NetcdfDataset ncdnew2 = NetcdfDataset.acquireDataset(durl2, true, null)) {
       assert ncdnew2.findVariable("temperature") == null;
     }
   }
@@ -146,7 +151,7 @@ public class TestWriteMiscProblems {
     if (newFile.exists()) newFile.delete();
     IO.copyFile(orgFile, newFile);
 
-    try (NetcdfFileWriteable ncfile = NetcdfFileWriteable.openExisting(path, false)) {
+    try (NetcdfFileWriter ncfile = NetcdfFileWriter.openExisting(path)) {
       System.out.println(ncfile);
 
       ncfile.setRedefineMode(true);

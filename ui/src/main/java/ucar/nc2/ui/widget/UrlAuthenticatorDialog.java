@@ -162,7 +162,7 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     }
     if(creds != null)
       return creds;
-    // Not cached, ask and cache
+   // Ok, ask and cache
     serverF.setText(scope.getHost()+":"+scope.getPort());
     realmF.setText(scope.getRealm());
     dialog.setVisible( true);

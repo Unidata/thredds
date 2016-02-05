@@ -179,12 +179,6 @@ public class Tdm {
     }
   }
 
-  AliasHandler aliasHandler;
-
-  public void setPathAliasReplacements(List<PathAliasReplacement> aliasExpanders) {
-    aliasHandler = new AliasHandler(aliasExpanders);
-  }
-
   boolean init() throws HTTPException {
     initServers();
 

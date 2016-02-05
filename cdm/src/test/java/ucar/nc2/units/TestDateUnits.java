@@ -32,17 +32,13 @@
  */
 package ucar.nc2.units;
 
-import junit.framework.TestCase;
+import org.junit.Assert;
 import ucar.nc2.util.Misc;
 import ucar.units.*;
 
 import java.util.Date;
 
-public class TestDateUnits extends TestCase {
-
-  public TestDateUnits(String name) {
-    super(name);
-  }
+public class TestDateUnits {
 
   private DateFormatter formatter = new DateFormatter();
 
@@ -87,7 +83,7 @@ public class TestDateUnits extends TestCase {
 
     du = new DateUnit( "hours since 1972-01-01T00:00:00Z");
     Date d2 = du.makeDate( 10);
-    System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d));
+    System.out.println(" " + du.toString() + " == " + formatter.toDateTimeStringISO(d));
     //assert du.getTimeUnitString().equals("hours");
     // showUnitInfo( du.getUnit());
 
@@ -97,7 +93,7 @@ public class TestDateUnits extends TestCase {
      // doesnt matter
     du = new DateUnit( "36 hours since 1972-01-01T00:00:00Z");
     d2 = du.makeDate( 10);
-    System.out.println(" "+du.toString()+" == "+formatter.toDateTimeStringISO(d));
+    System.out.println(" " + du.toString() + " == " + formatter.toDateTimeStringISO(d));
     //assert du.getTimeUnitString().equals("hours");
     //showUnitInfo( du.getUnit());
 
@@ -215,4 +211,19 @@ public class TestDateUnits extends TestCase {
     System.out.printf("%s == %s %n", unit, uu);
   }
 
+  // Assert that DateUnit.makeDate() == DateUnit.makeCalendarDate().toDate().
+  public void testMakeCalendarDate() {
+    String[] unitSpecs = new String[] {
+            "3600 secs since 1972-01-01T00:00:00Z",
+            "22 years since 2000-01-01T00:00:00 -06",
+            "53 hours since 1970-01-02T00:00:00Z",
+            "19 days since 1959-11-02T00:00:00Z",
+            " 104 secs since 1992-10-8 15:15:42.5 -6:00"
+    };
+
+    for (String unitSpec : unitSpecs) {
+      DateUnit du = DateUnit.factory(unitSpec);
+      Assert.assertEquals(String.format("'%s' failed", unitSpec), du.makeDate(0), du.makeCalendarDate(0).toDate());
+    }
+  }
 }

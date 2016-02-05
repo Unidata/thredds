@@ -59,18 +59,13 @@ public class TestSlice {
   public void setUp() throws IOException {
     filePath = tempFolder.newFile("testSlice.nc").getAbsolutePath();
 
-    try (NetcdfFileWriteable file = NetcdfFileWriteable.createNew(filePath)) {
-      Dimension t   = new Dimension("t", DIM_T, true);
-      Dimension alt = new Dimension("alt", DIM_ALT, true);
-      Dimension lat = new Dimension("lat", DIM_LAT, true);
-      Dimension lon = new Dimension("lon", DIM_LON, true);
-      file.addDimension(null, t);
-      file.addDimension(null, alt);
-      file.addDimension(null, lat);
-      file.addDimension(null, lon);
+    try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filePath)) {
+      file.addDimension(null, "t", DIM_T);
+      file.addDimension(null, "alt", DIM_ALT);
+      file.addDimension(null, "lat", DIM_LAT);
+      file.addDimension(null, "lon", DIM_LON);
 
-      Dimension[] dims = { t, alt, lat, lon };
-      file.addVariable(DATA_VARIABLE, DataType.FLOAT, dims);
+      file.addVariable(DATA_VARIABLE, DataType.FLOAT, "t alt lat lon");
       file.create();
     }
   }
@@ -91,7 +86,7 @@ public class TestSlice {
 
   @Test
   public void testFill() throws IOException, InvalidRangeException {
-    try (NetcdfFileWriteable file = NetcdfFileWriteable.openExisting(filePath)) {
+    try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filePath)) {
       file.write(DATA_VARIABLE, createData());
     }
   }

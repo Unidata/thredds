@@ -38,7 +38,7 @@ import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriteable;
+import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.IO;
 import ucar.unidata.test.util.TestDir;
