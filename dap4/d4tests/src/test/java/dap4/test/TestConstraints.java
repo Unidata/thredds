@@ -222,7 +222,6 @@ public class TestConstraints extends DapTestCommon
         ;
         if(!ok) {
             System.err.println("NcdumpW failed");
-            System.exit(1);
         }
         return sw.toString();
     }
@@ -248,7 +247,6 @@ public class TestConstraints extends DapTestCommon
         ;
         if(!ok) {
             System.err.println("NcdumpW failed");
-            System.exit(1);
         }
         return sw.toString();
     }
@@ -309,7 +307,6 @@ public class TestConstraints extends DapTestCommon
         } catch (Exception e) {
             System.err.println("*** FAIL");
             e.printStackTrace();
-            System.exit(1);
         }
         System.err.println("*** PASS");
         System.exit(0);
