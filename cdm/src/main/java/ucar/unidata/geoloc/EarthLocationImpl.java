@@ -40,28 +40,12 @@ package ucar.unidata.geoloc;
 public class EarthLocationImpl implements EarthLocation {
   protected double lat, lon, alt;
 
-  /**
-   * latitude in decimal degrees north
-   * @return latitude in decimal degrees north
-   */
   public double getLatitude() { return lat; }
 
-  /**
-   * longitude in decimal degrees east
-   * @return longitude in decimal degrees east
-   */
   public double getLongitude() { return lon; }
 
-  /**
-   * altitude in meters;  missing = NaN.
-   * @return altitude in meters;  missing = NaN.
-   */
   public double getAltitude() { return alt; }
 
-  /**
-   * Get the lat/lon location
-   * @return lat/lon location
-   */
   public LatLonPoint getLatLon() {
     return new LatLonPointImpl( lat, lon);
   }
