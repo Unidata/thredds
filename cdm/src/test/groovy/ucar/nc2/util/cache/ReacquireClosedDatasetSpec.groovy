@@ -1,8 +1,10 @@
 package ucar.nc2.util.cache
+
 import spock.lang.Specification
 import ucar.nc2.dataset.DatasetUrl
 import ucar.nc2.dataset.NetcdfDataset
 import ucar.unidata.test.util.TestDir
+
 /**
  * Tests caching behavior when datasets are closed and then reacquired.
  *
@@ -21,8 +23,11 @@ class ReacquireClosedDatasetSpec extends Specification {
     }
 
     def "reacquire"() {
+        setup: 'location'
+        String location = TestDir.cdmLocalTestDataDir + "jan.nc"
+
         when: 'Acquire and close dataset 4 times'
-        (1..4).each { println ''
+        (1..4).each {
             NetcdfDataset.acquireDataset(DatasetUrl.findDatasetUrl(location), true, null).close()
         }
 
