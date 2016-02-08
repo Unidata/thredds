@@ -81,16 +81,29 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public static int countGC; // debug
 
   public enum Type {    // must match with GribCollectionProto.Dataset.Type
-    GC,
     SRC,               // GC: Single Runtime Collection                [ntimes]
-    MRC,               // GC: Multiple Runtime Collection              [nruns, ntimes]
+    MRC,              // GC: Multiple Runtime Collection              [nruns, ntimes]
     MRSTC,             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
-    TP,                // PC: Multiple Runtime Single Time Partition   [nruns, 1]
-    TwoD,              // PC: TwoD time partition                      [nruns, ntimes]
-    Best,              // PC: Best time partition                      [ntimes]
-    BestComplete,      // PC: Best complete time partition (not done)  [ntimes]
     MRUTC,             // GC: Multiple Runtime Unique Time Collection  [ntimes]
-    MRUTP              // PC: Multiple Runtime Unique Time Partition   [ntimes]
+
+    MRSTP,            // PC: Multiple Runtime Single Time Partition   [nruns, 1]
+    TwoD,            // PC: TwoD time partition                      [nruns, ntimes]
+    Best,             // PC: Best time partition                      [ntimes]
+    BestComplete,     // PC: Best complete time partition (not done)  [ntimes]
+    MRUTP;            // PC: Multiple Runtime Unique Time Partition   [ntimes]
+
+    public boolean isSingleRuntime() {
+      return this == SRC;
+    }
+
+    public boolean isUniqueTime() {
+      return this == MRUTC || this == MRUTP;
+    }
+
+    public boolean isTwoD() {
+      return this == MRC || this == TwoD;
+    }
+
   }
 
   ////////////////////////////////////////////////////////////////
@@ -684,6 +697,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return info.intvType;
     }
 
+    public int getSpatialStatisticalProcessType() {
+      return info.spatialStatType;
+    }
+
     public int getEnsDerivedType() {
       return info.ensDerivedType;
     }
@@ -812,6 +829,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       final String probabilityName;
       final boolean isLayer, isEnsemble;
       final int genProcessType;
+      final int spatialStatType;
 
       public Info(GribCollectionMutable.VariableIndex gcVar) {
         this.tableVersion = gcVar.tableVersion;
@@ -828,6 +846,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         this.isLayer = gcVar.isLayer;
         this.isEnsemble = gcVar.isEnsemble;
         this.genProcessType = gcVar.genProcessType;
+        this.spatialStatType = gcVar.spatialStatType;
       }
     }
 

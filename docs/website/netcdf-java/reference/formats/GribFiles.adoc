@@ -243,7 +243,7 @@ where:
 * if a time interval, the Statistical Process Type (Code table 4.10)
 * if a probability, the Probability Type (Code table 4.9)
 * if it exists, the Derived forecast Type (Code table 4.7)
-* if the generating process type is 6 or 7 (error)
+* if the generating process type is 6 or 7 (meaning of parameter changes to "parameter error")
 * the GDS hashcode
 
 The GRIB-2 variable name is:

@@ -9031,13 +9031,13 @@ public final class GribCollectionProto {
        */
       MRUTC(4, 8),
       /**
-       * <code>TP = 7;</code>
+       * <code>MRSTP = 7;</code>
        *
        * <pre>
-       * time partition collection 1D
+       * multiple runtime single time partition
        * </pre>
        */
-      TP(5, 7),
+      MRSTP(5, 7),
       /**
        * <code>TwoD = 1;</code>
        *
@@ -9106,13 +9106,13 @@ public final class GribCollectionProto {
        */
       public static final int MRUTC_VALUE = 8;
       /**
-       * <code>TP = 7;</code>
+       * <code>MRSTP = 7;</code>
        *
        * <pre>
-       * time partition collection 1D
+       * multiple runtime single time partition
        * </pre>
        */
-      public static final int TP_VALUE = 7;
+      public static final int MRSTP_VALUE = 7;
       /**
        * <code>TwoD = 1;</code>
        *
@@ -9154,7 +9154,7 @@ public final class GribCollectionProto {
           case 5: return MRC;
           case 6: return MRSTC;
           case 8: return MRUTC;
-          case 7: return TP;
+          case 7: return MRSTP;
           case 1: return TwoD;
           case 2: return Best;
           case 9: return MRUTP;
@@ -19869,45 +19869,45 @@ public final class GribCollectionProto {
       "ds\022\013\n\003gds\030\001 \001(\014\022 \n\030predefinedGridDefinit" +
       "ion\030\002 \001(\r\"d\n\005Group\022\021\n\003gds\030\001 \001(\0132\004.Gds\022\034\n",
       "\tvariables\030\002 \003(\0132\t.Variable\022\026\n\006coords\030\003 " +
-      "\003(\0132\006.Coord\022\022\n\006fileno\030\004 \003(\rB\002\020\001\"\235\001\n\007Data" +
+      "\003(\0132\006.Coord\022\022\n\006fileno\030\004 \003(\rB\002\020\001\"\240\001\n\007Data" +
       "set\022\033\n\004type\030\001 \001(\0162\r.Dataset.Type\022\026\n\006grou" +
-      "ps\030\002 \003(\0132\006.Group\"]\n\004Type\022\006\n\002GC\020\000\022\007\n\003SRC\020" +
-      "\004\022\007\n\003MRC\020\005\022\t\n\005MRSTC\020\006\022\t\n\005MRUTC\020\010\022\006\n\002TP\020\007" +
-      "\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\t\n\005MRUTP\020\t\"N\n\005MFile" +
-      "\022\020\n\010filename\030\001 \001(\t\022\024\n\014lastModified\030\002 \001(\004" +
-      "\022\r\n\005index\030\003 \001(\r\022\016\n\006length\030\004 \001(\004\"\235\003\n\016Grib" +
-      "Collection\022\014\n\004name\030\001 \001(\t\022\016\n\006topDir\030\002 \001(\t" +
-      "\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004 \003(",
-      "\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\rmaster" +
-      "Runtime\030\006 \001(\0132\006.Coord\022\016\n\006center\030\007 \001(\005\022\021\n" +
-      "\tsubcenter\030\010 \001(\005\022\016\n\006master\030\t \001(\005\022\r\n\005loca" +
-      "l\030\n \001(\005\022\026\n\016genProcessType\030\013 \001(\005\022\024\n\014genPr" +
-      "ocessId\030\014 \001(\005\022\025\n\rbackProcessId\030\r \001(\005\022\017\n\007" +
-      "version\030\016 \001(\005\022\031\n\006config\030\025 \001(\0132\t.FcConfig" +
-      "\022\036\n\npartitions\030d \003(\0132\n.Partition\022\037\n\027isPa" +
-      "rtitionOfPartitions\030e \001(\010\022\024\n\010run2part\030f " +
-      "\003(\rB\002\020\001\"u\n\021PartitionVariable\022\017\n\007groupno\030" +
-      "\001 \001(\r\022\r\n\005varno\030\002 \001(\r\022\016\n\006partno\030\004 \001(\r\022\r\n\005",
-      "ndups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing" +
-      "\030\n \001(\r\"h\n\tPartition\022\014\n\004name\030\001 \001(\t\022\020\n\010fil" +
-      "ename\030\002 \001(\t\022\024\n\014lastModified\030\004 \001(\004\022\016\n\006len" +
-      "gth\030\005 \001(\003\022\025\n\rpartitionDate\030\006 \001(\003\"(\n\tStri" +
-      "ngMap\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\"\n\006In" +
-      "tMap\022\014\n\004from\030\001 \001(\021\022\n\n\002to\030\002 \001(\021\"F\n\nIntvFi" +
-      "lter\022\022\n\nintvLength\030\001 \001(\021\022\022\n\nvariableId\030\002" +
-      " \001(\r\022\020\n\010intvProb\030\003 \001(\021\"\315\002\n\010FcConfig\022\014\n\004n" +
-      "ame\030\001 \001(\t\022\026\n\016collectionSpec\030\002 \001(\t\022\025\n\rpar" +
-      "titionType\030\003 \001(\t\022\026\n\016dateFormatMark\030\004 \001(\t",
-      "\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\025\n\rpdsUseG" +
-      "enType\030\014 \001(\010\022\032\n\022pdsUseTableVersion\030\r \001(\010" +
-      "\022\024\n\014pdsIntvMerge\030\016 \001(\010\022\024\n\014pdsUseCenter\030\017" +
-      " \001(\010\022\027\n\017intvExcludeZero\030\020 \001(\010\022\037\n\nintvFil" +
-      "ter\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitConver" +
-      "t\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(\t*R" +
-      "\n\014GribAxisType\022\013\n\007runtime\020\000\022\010\n\004time\020\001\022\014\n" +
-      "\010timeIntv\020\002\022\010\n\004vert\020\003\022\n\n\006time2D\020\004\022\007\n\003ens" +
-      "\020\005B/\n\030ucar.nc2.grib.collectionB\023GribColl" +
-      "ectionProtob\006proto3"
+      "ps\030\002 \003(\0132\006.Group\"`\n\004Type\022\006\n\002GC\020\000\022\007\n\003SRC\020" +
+      "\004\022\007\n\003MRC\020\005\022\t\n\005MRSTC\020\006\022\t\n\005MRUTC\020\010\022\t\n\005MRST" +
+      "P\020\007\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\t\n\005MRUTP\020\t\"N\n\005MF" +
+      "ile\022\020\n\010filename\030\001 \001(\t\022\024\n\014lastModified\030\002 " +
+      "\001(\004\022\r\n\005index\030\003 \001(\r\022\016\n\006length\030\004 \001(\004\"\235\003\n\016G" +
+      "ribCollection\022\014\n\004name\030\001 \001(\t\022\016\n\006topDir\030\002 " +
+      "\001(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004",
+      " \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\rmas" +
+      "terRuntime\030\006 \001(\0132\006.Coord\022\016\n\006center\030\007 \001(\005" +
+      "\022\021\n\tsubcenter\030\010 \001(\005\022\016\n\006master\030\t \001(\005\022\r\n\005l" +
+      "ocal\030\n \001(\005\022\026\n\016genProcessType\030\013 \001(\005\022\024\n\014ge" +
+      "nProcessId\030\014 \001(\005\022\025\n\rbackProcessId\030\r \001(\005\022" +
+      "\017\n\007version\030\016 \001(\005\022\031\n\006config\030\025 \001(\0132\t.FcCon" +
+      "fig\022\036\n\npartitions\030d \003(\0132\n.Partition\022\037\n\027i" +
+      "sPartitionOfPartitions\030e \001(\010\022\024\n\010run2part" +
+      "\030f \003(\rB\002\020\001\"u\n\021PartitionVariable\022\017\n\007group" +
+      "no\030\001 \001(\r\022\r\n\005varno\030\002 \001(\r\022\016\n\006partno\030\004 \001(\r\022",
+      "\r\n\005ndups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007miss" +
+      "ing\030\n \001(\r\"h\n\tPartition\022\014\n\004name\030\001 \001(\t\022\020\n\010" +
+      "filename\030\002 \001(\t\022\024\n\014lastModified\030\004 \001(\004\022\016\n\006" +
+      "length\030\005 \001(\003\022\025\n\rpartitionDate\030\006 \001(\003\"(\n\tS" +
+      "tringMap\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\"\n" +
+      "\006IntMap\022\014\n\004from\030\001 \001(\021\022\n\n\002to\030\002 \001(\021\"F\n\nInt" +
+      "vFilter\022\022\n\nintvLength\030\001 \001(\021\022\022\n\nvariableI" +
+      "d\030\002 \001(\r\022\020\n\010intvProb\030\003 \001(\021\"\315\002\n\010FcConfig\022\014" +
+      "\n\004name\030\001 \001(\t\022\026\n\016collectionSpec\030\002 \001(\t\022\025\n\r" +
+      "partitionType\030\003 \001(\t\022\026\n\016dateFormatMark\030\004 ",
+      "\001(\t\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\025\n\rpdsU" +
+      "seGenType\030\014 \001(\010\022\032\n\022pdsUseTableVersion\030\r " +
+      "\001(\010\022\024\n\014pdsIntvMerge\030\016 \001(\010\022\024\n\014pdsUseCente" +
+      "r\030\017 \001(\010\022\027\n\017intvExcludeZero\030\020 \001(\010\022\037\n\nintv" +
+      "Filter\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitCon" +
+      "vert\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(" +
+      "\t*R\n\014GribAxisType\022\013\n\007runtime\020\000\022\010\n\004time\020\001" +
+      "\022\014\n\010timeIntv\020\002\022\010\n\004vert\020\003\022\n\n\006time2D\020\004\022\007\n\003" +
+      "ens\020\005B/\n\030ucar.nc2.grib.collectionB\023GribC" +
+      "ollectionProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {

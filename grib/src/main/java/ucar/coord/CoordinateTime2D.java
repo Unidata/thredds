@@ -574,7 +574,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
         CoordinateTimeIntv timeIntv = (times == null) ? (CoordinateTimeIntv) getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
         for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
           TimeCoord.Tinv tinvAbs = tinv.offset(getOffset(runIdx)); // convert to absolute offset
-          if (values.contains(tinvAbs)) return false;
+          if (values.contains(tinvAbs))
+            return false;
           values.add(tinvAbs);
         }
       }

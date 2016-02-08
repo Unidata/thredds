@@ -144,7 +144,6 @@ abstract class GribCollectionBuilder {
    // throw exception if failure
   private boolean createMultipleRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
-    this.type =  GribCollectionImmutable.Type.MRC;
 
     List<MFile> files = new ArrayList<>();
     List<? extends Group> groups = makeGroups(files, false, errlog);
@@ -176,15 +175,17 @@ abstract class GribCollectionBuilder {
     List<Long> sortedList = new ArrayList<>();
     for (Long cd : allRuntimes) sortedList.add(cd);
     Collections.sort(sortedList);
-
     if (sortedList.size() == 0)
       throw new IllegalArgumentException("No runtimes in this collection ="+name);
+
     else if (sortedList.size() == 1)
       this.type = GribCollectionImmutable.Type.SRC;
     else if (allTimesAreUnique)
       this.type =  GribCollectionImmutable.Type.MRUTC;
-    else if (allTimesAreOne)
-      this.type =  GribCollectionImmutable.Type.MRSTC;
+    //else if (allTimesAreOne)
+    //  this.type =  GribCollectionImmutable.Type.MRSTC;
+    else
+      this.type =  GribCollectionImmutable.Type.MRC;
 
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);

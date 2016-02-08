@@ -66,6 +66,7 @@ public class TestCoverageClassificationP {
 
   @Test
   public void testAdapter() throws IOException {
+    System.out.printf("open %s%n", endpoint);
 
     try (DtCoverageDataset gds = DtCoverageDataset.open(endpoint)) {
       Assert.assertNotNull(endpoint, gds);

@@ -91,7 +91,7 @@ message Dataset {
     MRSTC = 6;      // multiple runtime single time collection
     MRUTC = 8;      // Multiple Runtime Unique Time Collection
 
-    TP = 7;         // time partition collection 1D
+    MRSTP = 7;      // multiple runtime single time partition
     TwoD = 1;       // time partition 2D
     Best = 2;       // time partition Best
     MRUTP = 9;      // Multiple Runtime Unique Time Partition

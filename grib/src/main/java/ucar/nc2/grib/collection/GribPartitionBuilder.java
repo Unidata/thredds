@@ -166,15 +166,12 @@ abstract class GribPartitionBuilder  {
       throw new IllegalStateException("makeDataset2D failed, index not written on =" + result.showLocation()+"; errs="+errlog);
     }
 
-    // this finishes the 2D stuff
-    // result.makeHorizCS();
-
-    if (ds2D.gctype != GribCollectionImmutable.Type.TP)
+    // Make Best for a TwoD
+    if (ds2D.gctype == GribCollectionImmutable.Type.TwoD)
       makeDatasetBest(ds2D, false);
 
     // ready to write the index file
     return writeIndex(result, errlog);
-    // return true;
   }
 
   // each dataset / group has one of these, across all partitions
@@ -219,6 +216,7 @@ abstract class GribPartitionBuilder  {
 
     int countPartition = 0;
     boolean allAre1D = true;
+    boolean allAreUT = true;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
       try (GribCollectionMutable gc = tpp.makeGribCollection()) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
                                 // note its not recursive, maybe leave open, or cache; actually we keep a pointer to the partition's group in the GroupPartitions
@@ -241,9 +239,12 @@ abstract class GribPartitionBuilder  {
                 allAre1D = false;
             }
           }
-        } else if (ds2dp.gctype != GribCollectionImmutable.Type.MRSTC && ds2dp.gctype != GribCollectionImmutable.Type.TP) {
+        } else if (ds2dp.gctype == GribCollectionImmutable.Type.MRC || ds2dp.gctype == GribCollectionImmutable.Type.TwoD) {
           allAre1D = false;
         }
+
+        if (ds2dp.gctype != GribCollectionImmutable.Type.MRUTC && ds2dp.gctype != GribCollectionImmutable.Type.MRUTP)
+          allAreUT = false;
 
         int groupIdx = 0;
         for (GribCollectionMutable.GroupGC g : ds2dp.groups) { // for each group in the partition
@@ -263,8 +264,13 @@ abstract class GribPartitionBuilder  {
     result.masterRuntime = (CoordinateRuntime) runtimeAllBuilder.finish();
     if (result.isPartitionOfPartitions) // cache calendar dates for efficiency
       CoordinateTimeAbstract.cdf = new CalendarDateFactory(result.masterRuntime);
-    if (allAre1D)
-      ds2D.gctype = GribCollectionImmutable.Type.TP;
+
+    if (allAreUT)
+      ds2D.gctype = GribCollectionImmutable.Type.MRUTP;
+    else if (allAre1D)
+      ds2D.gctype = GribCollectionImmutable.Type.MRSTP;
+    else
+      ds2D.gctype = GribCollectionImmutable.Type.TwoD;
 
     // create run2part: for each run, which partition to use
     result.run2part = new int[result.masterRuntime.getSize()];

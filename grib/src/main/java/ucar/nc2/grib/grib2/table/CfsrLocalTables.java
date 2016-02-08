@@ -95,6 +95,9 @@ public class CfsrLocalTables extends NcepLocalTables {
   // products have reference times at intervals of P2, beginning at the given reference time.
   // 194
   // Average of N uninitialized analyses, starting at reference time, at intervals of P2.
+  // 195:
+  // Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
+  // Reference time is the start time of the first forecast, other forecasts at 24-hour intervals.
   // 204
   // Average of forecast accumulations. P1 = start of accumulation period. P2 = end of accumulation period.
   // Reference time is the start time of the first forecast, other forecasts at 6-hour intervals.
@@ -128,6 +131,7 @@ public class CfsrLocalTables extends NcepLocalTables {
         start = 0;
         end = n * p2;
         break;
+      case 195:
       case 204:
       case 205:
         start = p1;

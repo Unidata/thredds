@@ -89,7 +89,7 @@ public class TestCoverageFileWriterP {
         throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
     }
 
-    // open the new file as a Coverage. SInce its a netcdf file, it will open through the DtAdapter (!)
+    // open the new file as a Coverage. Since its a netcdf file, it will open through the DtAdapter (!)
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(tempFile.getPath())) {
       Assert.assertNotNull(endpoint, cc);
       Assert.assertEquals(1, cc.getCoverageCollections().size());
