@@ -1395,7 +1395,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     for (CoverageCoordAxis axis : coordsSetAxes)
       if (axis.getAxisType() == AxisType.RunTime) hasruntime = true;
     if (!hasruntime)
-      logger.warn("HEY no runtime " + gribCollection.getName());
+      logger.warn("HEYA no runtime " + gribCollection.getName());
 
     List<CoverageCoordAxis> geoArrayAxes = new ArrayList<>(coordsSetAxes);  // for GeoReferencedArray
     geoArrayAxes.add(subsetCoordSys.getYAxis());
