@@ -39,6 +39,7 @@ import thredds.server.ncss.validation.NcssRequestConstraint;
 import thredds.server.ncss.validation.TimeParamsConstraint;
 import thredds.server.ncss.validation.VarParamConstraint;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.point.collection.UpdateableCollection;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -49,6 +50,7 @@ import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Formatter;
@@ -64,6 +66,8 @@ import java.util.List;
 @TimeParamsConstraint
 @NcssRequestConstraint
 public class NcssParamsBean {
+
+  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   private String accept;
 
@@ -405,6 +409,24 @@ public class NcssParamsBean {
 
   public boolean intersectsTime(FeatureDataset fd, Formatter errs) throws ParseException {
     CalendarDateRange have =  fd.getCalendarDateRange();
+    try {
+      //
+      // if this is an updatable collection, check for a new CalendarDateRange (i.e. new
+      // data available).
+      // The issue is that fd does not get updated with thredds.catalog.InvDatasetFcPoint
+      //
+      // This allows requests to be fulfilled, even if the correct CalendarDateRange is
+      // not available in the catalog. Ideally these should be synced.
+      //
+      UpdateableCollection uc = (UpdateableCollection) fd;
+      have = uc.update();
+    } catch (IOException ioe) {
+      fd.getLocation();
+      log.error("NCSS I/O Error for location %s", fd.getLocation());
+      log.error(ioe.getLocalizedMessage());
+    } catch (ClassCastException cce) {
+      // not an updateable collection...just keep going.
+    }
     if (have == null) return true;
     Calendar dataCal = have.getStart().getCalendar(); // use the same calendar as the dataset
 
