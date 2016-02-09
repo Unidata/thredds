@@ -710,8 +710,9 @@ public class Grib2DataPanel extends JPanel {
       return;
     }
 
+    int count = 0;
     for (float fd : data)
-      f.format("%f%n", fd);
+      f.format("%d: %f%n", count++, fd);
   }
 
   void showBitmap(Grib2RecordBean bean1, Formatter f) throws IOException {

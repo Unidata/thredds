@@ -105,6 +105,41 @@ public class TestGribIndexCreation {
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
   }
 
+  /*
+    <featureCollection name="NDFD-CONUS-5km" featureType="GRIB2" harvest="true" path="grib/NDFD/CONUS_5km">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+
+    <collection
+        spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$"
+        dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
+        timePartition="file" />
+
+    <update startup="test" />
+    <tdm rewrite="always" rescan="0 2,17,32,47 * * * ? *" />
+
+    <gribConfig datasetTypes="TwoD LatestFile Files">
+      <gdsHash from="-197088379" to="-198041691"/>
+      <pdsHash>
+        <useGenType>true</useGenType>
+      </pdsHash>
+    </gribConfig>
+  </featureCollection>
+   */
+  @Test
+  public void createNDFD() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NDFD-CONUS-5km", "test/NDFD-CONUS-5km", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2$", null, null, null, "file", null);
+    config.gribConfig.addGdsHash("-197088379", "-198041691");
+    config.gribConfig.useGenType = true;
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
   @Test
   public void testCfrsAnalysisOnly() throws IOException {
      // this dataset 0-6 hour forecasts  x 124 runtimes (4x31)

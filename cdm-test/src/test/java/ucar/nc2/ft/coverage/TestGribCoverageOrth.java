@@ -34,6 +34,7 @@
 package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -71,7 +72,8 @@ public class TestGribCoverageOrth {
     this.filename = filename;
   }
 
-  // @Test not 2D anymore
+  @Ignore("files not present")
+  @Test
   public void testGridCoverageDatasetFmrc() throws IOException, InvalidRangeException {
     System.out.printf("%s%n", filename);
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {

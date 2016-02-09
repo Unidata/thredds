@@ -36,7 +36,6 @@ package ucar.nc2.ft.coverage;
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.ma2.Array;
-import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
@@ -130,7 +129,7 @@ public class TestGribCoverageRead {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       long size = cover.getSizeInBytes();
-      Assert.assertEquals(236293200, size);
+      Assert.assertEquals(4*5*1377*2145*4, size);
 
       SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 70000).set(SubsetParams.timeOffset, 2);
       GeoReferencedArray geo = cover.readData(subset);
@@ -138,10 +137,14 @@ public class TestGribCoverageRead {
       System.out.printf("%s%n", Misc.showInts(data.getShape()));
       Assert.assertArrayEquals(new int[]{1, 1, 1377, 2145}, data.getShape());
 
-      Index ima = data.getIndex();
-      float val = data.getFloat(ima.set(0,0,580,718));
-      System.out.printf("data val at %s = %f%n", ima, val);
-      Assert.assertEquals(283.25256, val, val*Misc.maxReletiveError);
+      float val = data.getFloat(40600);
+      System.out.printf("data val at %d = %f%n", 40600, val);
+      Assert.assertEquals(281.627563, val, val * Misc.maxReletiveError);
+
+      val = data.getFloat(55583);
+      System.out.printf("data val at %d = %f%n", 55583, val);
+      Assert.assertEquals(281.690063, val, val*Misc.maxReletiveError);
+
     }
   }
 
