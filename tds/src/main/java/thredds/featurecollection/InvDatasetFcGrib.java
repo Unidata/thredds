@@ -89,7 +89,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   static private final String BEST_DATASET = GribCollectionImmutable.Type.Best.toString();
   static private final String TWOD_DATASET = GribCollectionImmutable.Type.TwoD.toString();
-  static private final String TP_DATASET = GribCollectionImmutable.Type.MRSTP.toString();
+  static private final String TP_DATASET = "TP";
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {

@@ -64,7 +64,7 @@
 
   <!-- test restricted GRIB collection  -->
   <featureCollection featureType="GRIB2" name="HRRR 2.5km analysis" path="HRRR/analysis" >
-    <collection name="HRRR_analysis" spec="${cdmUnitTest}/gribCollections/anal/HRRR_CONUS_2p5km_ana_#yyyyMMdd_HHmm#.grib2" timePartition="file"/>
+    <collection name="HRRRanalysis" spec="${cdmUnitTest}/gribCollections/anal/.*grib2$" timePartition="file"/>
     <update startup="test" />
   </featureCollection>
 

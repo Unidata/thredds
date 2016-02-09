@@ -579,6 +579,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   private boolean srcReftimeWasMade;
   private void addTime2DCoordinates(CoordinateTime2D time2D, List<CoverageCoordAxis> axes) {
+    trackDateRange(time2D.makeCalendarDateRange(ucar.nc2.time.Calendar.proleptic_gregorian));
+
     CoverageCoordAxis covTime;
 
     if (ds.getType() == GribCollectionImmutable.Type.SRC) {
@@ -598,10 +600,10 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     } else if (time2D.isRegular())
       covTime = makeFmrcRegTimeAxis(time2D);
-      // else if (time2D.getNtimes() == 1)  // LOOK same as MRSTC ? LOOK still needed?
+      // else if (time2D.getNtimes() == 1)
       //   covTime = makeFmrcOneTimeAxis(time2D);
     else
-      throw new IllegalStateException(); // LOOK
+      throw new IllegalStateException("Time2D with type= "+ds.getType());
 
     axes.add(covTime);
 

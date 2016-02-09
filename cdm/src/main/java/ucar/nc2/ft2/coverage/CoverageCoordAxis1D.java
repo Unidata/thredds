@@ -443,7 +443,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
           return helper.subset(dateRange, stride);
 
         // If no time range or time point, a timeOffset can be used to specify the time point.
-        Double timeOffset = (Double) params.get(SubsetParams.timeOffset);
+        Double timeOffset = params.getDouble(SubsetParams.timeOffset);
         if (timeOffset != null)
           return Optional.of(helper.subsetClosest(timeOffset));
 

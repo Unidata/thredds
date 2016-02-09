@@ -134,7 +134,9 @@ public class NcStreamReader {
    */
   public DataResult readData(InputStream is, NetcdfFile ncfile) throws IOException {
     byte[] b = new byte[4];
-    NcStream.readFully(is, b);
+    int bytesRead = NcStream.readFully(is, b);
+    if (bytesRead < b.length) return null;
+
     if (NcStream.test(b,NcStream.MAGIC_DATA)) return readData1(is, ncfile);
     if (NcStream.test(b,NcStream.MAGIC_DATA2)) return readData2(is, ncfile);
 
