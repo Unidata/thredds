@@ -1,0 +1,72 @@
+:source-highlighter: coderay
+:linkcss:
+:stylesheet: ../tds.css
+
+= Testing a new version of the TDS
+
+Upgrading to a new version of the TDS can be a daunting task, especially when trying to figure out if your data collections are still accessible as your users expect.
+Perhaps one of the best "tests" a TDS administrator can do, although certainly not 100% complete, is to replay old user requests against a new, parallel test server to assess any issues. Note that the overhead of running a parallel test instance of Tomcat should be quite small, especially if the server is restricted to internal users only.
+
+== Replaying Requests
+
+ToolsUI.jar contains a tool that can be used from the command line to replay user requests from one server against another server.
+In order to use this tool, you or your sever admin must configure Tomcat access logs to use the "combined plus response time" format (see link:AccessLog.html[here] for more informaion).
+
+=== Obtain a sample of user requests
+
+The first step in replaying user requests against a test server is to obtain a sample of the user request logs. The access logs are contained in the `${TOMCAT_HOME}/logs` directory and have the output format of
+
+[source,bash]
+----
+174.16.142.252 - - [09/Feb/2016:14:55:34 -0700] "GET /thredds/catalog.html HTTP/1.1" 200 3346 "-" "Brave/0.7.12" 1
+----
+
+There are a number of ways one can obtain these files:
+
+ . scp the files directly from the web server
+ . Download the files via the link:RemoteManagement.html[admin/debug] page of the TDS using your web browser (requires that remote management is enabled)
+ . Use the link:../tutorial/tdsMonitor.html[TdsMonitor] tool (again, requires that remote management is enabled)
+
+Once the Tomcat access logs you wish to replay have been downloaded, place them in a flat directory (no subdirectories).
+
+=== Prepare the test server
+
+To prepare the test server, make sure all access logs have been removed prior to replaying any logs.
+
+=== Run the ReplayTdsLogs tool
+
+Make sure that you know the path to ToolsUI.jar and execute the following command to replay the subset of Tomcat access logs against an upgraded server:
+
+[source,bash]
+----
+java -classpath <path to toolsUI.jar> thredds.logs.ReplayTdsLogs <new server address> <path to Tomcat access logs to use>
+----
+
+For example, to test a new server (say, http://testmytds.me.org) using logs that live in a directory called "old_logs", where directory structure looks like the following:
+
+[source,bash]
+----
+<current directory>
+ToolsUI.jar
+old_logs/
+    access.2016-02-05.log
+    access.2016-02-06.log
+    access.2016-02-07.log
+----
+
+the following could be used, as executed from <current directory>:
+
+[source,bash]
+----
+java -classpath toolsUI.jar thredds.logs.ReplayTdsLogs http://testmytds.me.org old_logs/
+----
+
+Follow the progress and allow the tool to complete.
+
+=== Examine the logs on the test server
+
+The final step is to examine the logs on the test server.
+This includes examining the newly created access logs for any issues (i.e. response codes of 404s, 500s, etc. that were not in the initial access logs used for testing), as well as looking for issues within the TDS logs.
+For more information on the various Tomcat and TDS logs, please see our link:../tutorial/TDSMonitoringAndDebugging.html[logging] tutorial page.
+
+If you encounter errors with an http status code of 500 that you believe are valid requests, please submit a bug report on our https://github.com/unidata/thredds/issues[github issue tracker].
