@@ -100,7 +100,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           debugDim = false,
           debugUserTypes = false,
           debugLoad = true,
-          debugWrite = true;
+          debugWrite = false;
 
   /**
    * Use the default path to try to set jna.library.path
