@@ -33,12 +33,17 @@
 package thredds.crawlabledataset;
 
 import org.junit.Test;
-import static org.junit.Assert.*;
 
-import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 /**
  * A description
@@ -48,18 +53,13 @@ import java.io.IOException;
  */
 public class TestCrawlableDataset
 {
-
   @Test
   public void testEmptyPath()
   {
     String path = "";
 
     CrawlableDataset crDs = checkCrDs( path, path);
-    if ( crDs.exists() )
-    {
-      assertTrue( "Unexpected exist()==true for CrDs(\"\").",
-                  false);
-    }
+    assertFalse("Unexpected exist()==true for CrDs(\"\").", crDs.exists());
   }
 
   @Test
@@ -69,23 +69,17 @@ public class TestCrawlableDataset
     String name = "";
 
     CrawlableDataset crDs = checkCrDs( path, name );
-    if ( ! crDs.exists() )
-    {
-      assertTrue( "CrDs(\"/\") doesn't exist.",
-                  false );
-    }
-
+    assertTrue("CrDs(\"/\") doesn't exist.", crDs.exists());
   }
 
   @Test
-  public void testDotPath()
-  {
-    String path = ".";
-    String name = ".";
-    List results = new ArrayList();
-    results.add( "pom.xml" );
+  public void testResourcePath() throws URISyntaxException {
+    File iospResourcesDir = new File(getClass().getResource("/resources/nj22/iosp").toURI());
+    String path = iospResourcesDir.getAbsolutePath();
+    String name = iospResourcesDir.getName();
+    List<String> expectedChildrenNames = Arrays.asList("ghcnm.ncml", "igra-monthly.ncml", "igra-por.ncml");
 
-    checkCrDsChildren( path, name, results );
+    checkCrDsChildren(path, name, expectedChildrenNames);
   }
 
   // ToDo Get test working with manufactured directory.
