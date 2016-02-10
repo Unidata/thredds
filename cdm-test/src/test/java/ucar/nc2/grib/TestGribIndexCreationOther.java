@@ -301,7 +301,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ndfdNoaaport", "ndfdNoaaport", FeatureCollectionType.GRIB2,
             "B:/atm/ndfd/.*gbx9", null, null, null, "file", null);
-    config.gribConfig.addGdsHash("-1506003048","-1505079527");
+    config.gribConfig.addGdsHash("-1506003048", "-1505079527");
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
@@ -338,6 +338,7 @@ public class TestGribIndexCreationOther {
 
   /// rdavm
 
+  @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p1() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -354,6 +355,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p1p2013() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -370,6 +372,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p2t_dlw() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -386,6 +389,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p2t() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -403,6 +407,7 @@ public class TestGribIndexCreationOther {
   }
 
 
+  @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p2dt() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -420,6 +425,7 @@ public class TestGribIndexCreationOther {
   }
 
 
+  @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds277p6() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -434,6 +440,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds626p0() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -450,6 +457,7 @@ public class TestGribIndexCreationOther {
     GribIosp.setDebugFlags(new DebugFlagsImpl());
   }
 
+  @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds628p5() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
