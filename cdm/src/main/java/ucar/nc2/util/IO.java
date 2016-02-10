@@ -333,6 +333,21 @@ public class IO {
   /**
    * copy file to output stream
    *
+   * @param src  source
+   * @param fileOut        copy to this file
+   * @throws java.io.IOException on io error
+   */
+  static public void copy2File(byte[] src, String fileOut) throws IOException {
+    try (FileOutputStream fout = new FileOutputStream(fileOut)) {
+      InputStream in = new BufferedInputStream( new ByteArrayInputStream(src));
+      OutputStream out = new BufferedOutputStream(fout);
+      IO.copy(in, out);
+    }
+  }
+
+  /**
+   * copy file to output stream
+   *
    * @param fileInName open this file
    * @param out        copy here
    * @throws java.io.IOException on io error
