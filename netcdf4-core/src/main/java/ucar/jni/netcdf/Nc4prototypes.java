@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.jni.netcdf;
+package ucar.jni.netcdf;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;

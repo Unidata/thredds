@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Implementation-Title: DAP4: d4ts
+Implementation-Version: 5.0.0-SNAPSHOT
+Implementation-Vendor-Id: edu.ucar
+Implementation-Vendor: UCAR/Unidata
+Implementation-URL: http://www.unidata.ucar.edu/software/thredds/curre
+ nt/netcdf-java/documentation.htm
+Created-By: Gradle 2.9
+Build-Jdk: 1.8.0_45
+Built-By: dennis
+

@@ -33,7 +33,7 @@
  *
  */
 
-package ucar.nc2.jni.netcdf;
+package ucar.jni.netcdf;
 
 import com.sun.jna.IntegerType;
 import com.sun.jna.Native;

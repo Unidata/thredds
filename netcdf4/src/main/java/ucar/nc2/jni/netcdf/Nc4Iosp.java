@@ -37,6 +37,8 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import ucar.jni.netcdf.SizeT;
+import ucar.jni.netcdf.SizeTByReference;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -58,7 +60,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
 
-import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
+import ucar.jni.netcdf.Nc4prototypes;
+import static ucar.jni.netcdf.Nc4prototypes.*;
 
 /**
  * IOSP for reading netcdf files through jni interface to netcdf4 library

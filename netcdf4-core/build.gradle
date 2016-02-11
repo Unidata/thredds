@@ -1,0 +1,8 @@
+description = "Core NetCDF-4 jna code that loads the C library to read and write files."
+ext.title = "NetCDF-4 Core"
+ext.url = "https://www.unidata.ucar.edu/software/netcdf/"
+
+dependencies {
+    compile libraries["jna"]
+    compile libraries["slf4j-api"]
+}
