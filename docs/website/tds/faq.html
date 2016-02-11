@@ -571,7 +571,8 @@ you must restart tomcat for this to take effect.
 <h4>Q: <a name="permGenOutOfMemoryError">Im getting the error "java.lang.OutOfMemoryError: PermGen space". Whats up?</a></h4>
 <blockquote>
   <p>The good news is that this problem goes away with Java 8, and we recommend that you switch to Java 8 NOW.</p>
-  <p>Before Jaba 8, if you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you will eventually run into "<strong>java.lang.OutOfMemoryError:
+  <p>Before Java 8, if you reload the <strong>thredds.war</strong> webapp enough times without restarting Tomcat, you
+    will eventually run into "<strong>java.lang.OutOfMemoryError:
     PermGen space</strong>". This is a known bug in JDK/Tomcat. The only thing to do is to stop and restart Tomcat. </p>
 
   <p>You  can  increase PermGen using this JVM option, eg in <a href="reference/ChecklistReference.html">setenv.sh</a>:</p>
