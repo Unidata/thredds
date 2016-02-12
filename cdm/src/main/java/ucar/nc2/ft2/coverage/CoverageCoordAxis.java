@@ -127,7 +127,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     }
 
     if (builder.resolution == 0.0 && builder.ncoords > 1)
-      this.resolution = (builder.endValue - builder.startValue) / (builder.ncoords - 1);
+      this.resolution = (this.endValue - this.startValue) / (builder.ncoords - 1);
     else
       this.resolution = builder.resolution;
 
@@ -366,6 +366,8 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   // time coords only
 
   public double convert(CalendarDate date) {
+    if (timeHelper == null)
+      System.out.printf("HEY%n");
     return timeHelper.offsetFromRefDate(date);
   }
 

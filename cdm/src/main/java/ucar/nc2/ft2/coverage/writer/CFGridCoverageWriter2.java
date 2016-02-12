@@ -254,9 +254,9 @@ public class CFGridCoverageWriter2 {
   }
 
   private void addVariableAttributes(Variable v, List<Attribute> atts) {
-    // global attributes
     for (Attribute att : atts) {
       if (att.getShortName().startsWith("_Coordinate")) continue;
+      if (att.getShortName().startsWith("_Chunk")) continue;
       v.addAttribute(att);
     }
   }

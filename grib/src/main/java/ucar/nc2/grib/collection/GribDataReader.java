@@ -153,7 +153,7 @@ public abstract class GribDataReader {
       iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted array
 
       // for 1D TP, second index is implictly 0 (special case)
-      if (vindexP.getType() == GribCollectionImmutable.Type.TP) {
+      if (vindexP.getType() == GribCollectionImmutable.Type.MRSTP) {
         int[] indexReallyWanted = new int[indexWanted.length+1];
         indexReallyWanted[0] = indexWanted[0];
         indexReallyWanted[1] = 0;

@@ -125,7 +125,8 @@ public class Grib2Variable {
 
     if (pds.isSpatialInterval() != pds2.isSpatialInterval()) return false;
     if (pds.isSpatialInterval()) {
-      if (pds.getStatisticalProcessType() != pds2.getStatisticalProcessType()) return false;
+      Grib2Pds.PdsSpatialInterval pdsSpatial = (Grib2Pds.PdsSpatialInterval) pds;
+      if (pdsSpatial.getSpatialStatisticalProcessType() != pdsSpatial.getSpatialStatisticalProcessType()) return false;
     }
 
     int ensDerivedType = -1;
@@ -158,6 +159,14 @@ public class Grib2Variable {
       if (subcenter != var2.subcenter) return false;
     }
 
+    // always use the GenProcessType when "error" (6 or 7) 2/8/2012; added to equals 2/7/2016
+    int genType = pds.getGenProcessType();
+    int genType2 = pds2.getGenProcessType();
+    boolean error = (genType == 6 || genType == 7);
+    boolean error2 = (genType2 == 6 || genType2 == 7);
+    if (error != error2) return false;
+    if (useGenType && (genType != genType2)) return false;
+
     return true;
   }
 
@@ -184,7 +193,8 @@ public class Grib2Variable {
     }
 
     if (pds.isSpatialInterval()) {
-       result += result * 31 + pds.getStatisticalProcessType(); // template 15
+      Grib2Pds.PdsSpatialInterval pdsSpatial = (Grib2Pds.PdsSpatialInterval) pds;
+       result += result * 31 + pdsSpatial.getSpatialStatisticalProcessType(); // template 15
      }
 
      result += result * 31 + pds.getParameterNumber();

@@ -144,7 +144,6 @@ abstract class GribCollectionBuilder {
    // throw exception if failure
   private boolean createMultipleRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
-    this.type =  GribCollectionImmutable.Type.MRC;
 
     List<MFile> files = new ArrayList<>();
     List<? extends Group> groups = makeGroups(files, false, errlog);
@@ -158,27 +157,35 @@ abstract class GribCollectionBuilder {
 
     // create the master runtimes, classify the result
     boolean allTimesAreOne = true;
-    Set<Long> allDates = new HashSet<>();
+    boolean allTimesAreUnique = true;
+    Set<Long> allRuntimes = new HashSet<>();
     for (Group g : groups) {
       for (Long cd : g.getCoordinateRuntimes())
-        allDates.add(cd);
+        allRuntimes.add(cd);
       for (Coordinate coord : g.getCoordinates()) {
         if (coord instanceof CoordinateTime2D) {
           CoordinateTime2D coord2D = (CoordinateTime2D) coord;
           if (coord2D.getNtimes() > 1) allTimesAreOne = false;
+          if (allTimesAreUnique) {
+            allTimesAreUnique = coord2D.hasUniqueTimes();
+          }
         }
       }
     }
     List<Long> sortedList = new ArrayList<>();
-    for (Long cd : allDates) sortedList.add(cd);
+    for (Long cd : allRuntimes) sortedList.add(cd);
     Collections.sort(sortedList);
-
     if (sortedList.size() == 0)
       throw new IllegalArgumentException("No runtimes in this collection ="+name);
+
     else if (sortedList.size() == 1)
       this.type = GribCollectionImmutable.Type.SRC;
-    else if (allTimesAreOne)
-      this.type =  GribCollectionImmutable.Type.MRSTC;
+    else if (allTimesAreUnique)
+      this.type =  GribCollectionImmutable.Type.MRUTC;
+    //else if (allTimesAreOne)
+    //  this.type =  GribCollectionImmutable.Type.MRSTC;
+    else
+      this.type =  GribCollectionImmutable.Type.MRC;
 
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);

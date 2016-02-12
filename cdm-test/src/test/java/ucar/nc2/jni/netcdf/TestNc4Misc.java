@@ -145,7 +145,7 @@ public class TestNc4Misc {
     }
   }
 
-  // from  Jeff Johnson  jeff.m.johnson@noaa.gov   5/2/2014
+  @Ignore("remove ability to set chunk with attribute 2/10/2016")
   @Test
   public void testChunkFromAttribute() throws IOException, InvalidRangeException {
     // define the file

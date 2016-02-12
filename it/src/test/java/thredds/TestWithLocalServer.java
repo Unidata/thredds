@@ -69,7 +69,7 @@ public class TestWithLocalServer {
   }
 
   public static byte[] getContent(Credentials cred, String endpoint, int[] expectCodes, ContentType expectContentType) {
-    logger.debug("req = '{}'", endpoint);
+    System.out.printf("req = '%s'%n", endpoint);
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       if (cred != null) {
         session.setCredentials(cred);

@@ -50,7 +50,7 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
   @Override
   public boolean isChunked(Variable v) {
     if (v.isUnlimited()) return true;
-    if (getChunkAttribute(v) != null) return true;
+    // if (getChunkAttribute(v) != null) return true;
 
     int n = v.getRank();
     return n >= 2 && v.getSize() * v.getElementSize() > getMinVariableSize();
@@ -58,10 +58,10 @@ public class Nc4ChunkingStrategyGrib extends Nc4ChunkingDefault {
 
   @Override
    public long[] computeChunking(Variable v) {
-     // check attribute
+     /* check attribute
      int[] resultFromAtt = computeChunkingFromAttribute(v);
      if (resultFromAtt != null)
-       return convertToLong(resultFromAtt);
+       return convertToLong(resultFromAtt); */
 
      // no unlimited dimensions
      if (!v.isUnlimited()) {

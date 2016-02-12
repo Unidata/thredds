@@ -362,7 +362,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // find the runtime index
       int firstIndex = indexWanted[0];
       int masterIdx;
-      if (group.ds.gctype == Type.TwoD || group.ds.gctype == Type.TP) {
+      if (group.ds.gctype == Type.TwoD || group.ds.gctype == Type.MRSTP) {
         // find the partition by matching run coordinate with master runtime
         CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
         Object val = runtime.getValue(firstIndex);

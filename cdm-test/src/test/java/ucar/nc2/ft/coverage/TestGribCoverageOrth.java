@@ -33,8 +33,8 @@
  */
 package ucar.nc2.ft.coverage;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -44,7 +44,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,12 +58,12 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCoverageOrth {
-  private static String topdir = "D:/work/rdavm/index/";
+  private static String topdir = "D:/work/rdavm/";
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    result.add(new Object[]{topdir + "ds277.6.ncx4"});
+    result.add(new Object[]{topdir + "ds277.6/monthly/ds277.6.ncx4"});
     return result;
   }
 
@@ -73,13 +72,14 @@ public class TestGribCoverageOrth {
     this.filename = filename;
   }
 
+  @Ignore("files not present")
   @Test
   public void testGridCoverageDatasetFmrc() throws IOException, InvalidRangeException {
     System.out.printf("%s%n", filename);
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, fdc);
-      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
-      Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
+      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.GRID);
+      Assert.assertNotNull(FeatureType.GRID.toString(), cc);
 
       System.out.printf(" %s type=%s%n", cc.getName(), cc.getCoverageType());
       for (CoverageCoordSys coordSys : cc.getCoordSys()) {

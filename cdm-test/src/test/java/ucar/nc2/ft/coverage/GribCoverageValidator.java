@@ -42,7 +42,14 @@ public class GribCoverageValidator implements GribDataValidator {
     Assert.assertEquals("runtime", refdate, wantRuntime);
 
     // time offset
-    double wantTimeOffset = (Double) coords.get(CoordsSet.timeOffsetCoord);
+    Object coordOb = coords.get(CoordsSet.timeOffsetCoord);
+    if (coordOb == null) {
+      System.out.printf("HEY no timeOffsetCoord ");
+      return;
+    }
+
+    double wantTimeOffset = (Double) coordOb;
+
     Grib1ParamTime ptime = gr.getParamTime(cust);
     if (ptime.isInterval()) {
       int tinv[] = ptime.getInterval();
@@ -91,13 +98,13 @@ public class GribCoverageValidator implements GribDataValidator {
     CalendarDate wantTimeOffset = (CalendarDate) coords.get(CoordsSet.timeOffsetDate);
     if (gr.getPDS().isTimeInterval()) {
       TimeCoord.TinvDate tinv = cust.getForecastTimeInterval(gr);
-      if (tinv.getStart().isAfter(wantTimeOffset))
-        System.out.printf("HEY validateGrib2%n");
       Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset));          // lower <= time
       Assert.assertTrue("time coord upper", !tinv.getEnd().isBefore(wantTimeOffset));         // upper >= time
 
     }else {
       CalendarDate fdate = cust.getForecastDate(gr);
+      if (!fdate.equals(wantTimeOffset))
+        System.out.printf("HEY forecast date%n");
       Assert.assertEquals("time coord", wantTimeOffset, fdate);
     }
 

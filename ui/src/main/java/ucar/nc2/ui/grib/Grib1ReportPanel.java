@@ -1095,7 +1095,7 @@ public class Grib1ReportPanel extends ReportPanel {
             prob++;
           }
 
-          att = dt.findAttributeIgnoreCase("Grib_Statistical_Interval_Type");
+          att = dt.findAttributeIgnoreCase(GribIosp.GRIB_STAT_TYPE);
           if (att != null) {
             int statType = att.getNumericValue().intValue();
             if ((statType == 7) || (statType == 9)) {

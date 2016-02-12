@@ -504,6 +504,7 @@ public class Grib2ReportPanel extends ReportPanel {
     if (index == null) return;
 
     Formatter errlog = new Formatter();
+    // make sure ncx gets created for each file.
     try (GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(false, ff, CollectionUpdateType.nocheck, new FeatureCollectionConfig(), errlog, logger)) {
       // ??
     }
@@ -521,7 +522,7 @@ public class Grib2ReportPanel extends ReportPanel {
           prob++;
         }
 
-        att = dt.findAttributeIgnoreCase("Grib_Statistical_Interval_Type");
+        att = dt.findAttributeIgnoreCase(GribIosp.GRIB_STAT_TYPE);
         if (att != null) {
           int statType = att.getNumericValue().intValue();
           if ((statType == 7) || (statType == 9)) {

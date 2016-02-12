@@ -692,7 +692,7 @@ public class CdmIndexPanel extends JPanel {
     }
     f.format("%nAll are orthogonal: %s%n", ok);
     if (ok) return true;
-
+    
     for (int hour : hourMap.keySet()) {
       List<CoordinateTimeAbstract> hg = hourMap.get(hour);
       f.format("Hour %d: %n", hour);
@@ -700,6 +700,25 @@ public class CdmIndexPanel extends JPanel {
       f.format("%n");
     }
     return false;
+  }
+
+  private boolean testOrthogonal(Formatter f, List<CoordinateTimeAbstract> times) {
+    int max = 0;
+    Set<Object> allCoords = new HashSet<>(100);
+    for (CoordinateTimeAbstract coord : times) {
+      max = Math.max(max, coord.getSize());
+      for (Object val : coord.getValues())
+        allCoords.add(val);
+    }
+
+    // is the set of all values the same as the component times?
+    int totalMax = allCoords.size();
+    boolean isOrthogonal = (totalMax == max);
+    f.format("isOrthogonal %s : allCoords.size = %d max of coords=%d%nAllCoords=%n", isOrthogonal, totalMax, max);
+    for (Object coord : allCoords) {
+      f.format("  %s%n", coord);
+    }
+    return isOrthogonal;
   }
 
   /* private void compareFiles(Formatter f) throws IOException {

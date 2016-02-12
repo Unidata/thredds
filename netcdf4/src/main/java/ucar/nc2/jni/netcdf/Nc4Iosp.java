@@ -2382,7 +2382,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       int dimid = addDimension(g4.grpid, dim.getShortName(), dim.getLength());
       g4.dimHash.put(dim, dimid);
       if (debugWrite)
-        System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
+        System.out.printf(" create dim '%s' len=%d id=%d in group %d%n", dim.getShortName(), dim.getLength(), dimid, g4.grpid);
     }
 
     // enums
@@ -2458,7 +2458,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     int varid = varidp.getValue();
     vinfo.varid = varid;
     if (debugWrite)
-      System.out.printf("added variable %s (grpid %d varid %d) %n", v.getShortName(), vinfo.g4.grpid, vinfo.varid);
+      System.out.printf("added variable %s (grpid %d varid %d) %n", v, vinfo.g4.grpid, vinfo.varid);
 
     if (version.isNetdf4format() && v.getRank() > 0) {
       boolean isChunked = chunker.isChunked(v);
@@ -2818,6 +2818,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       String where = v != null ? "var " + v.getFullName() : "global or group attribute";
       throw new IOException(ret + " (" + nc4.nc_strerror(ret) + ") on attribute '" + att + "' on " + where);
     }
+
+    if (debugWrite)
+      System.out.printf("Add attribute to var %s == %s%n", (v == null) ? "global" : v.getFullName(), att.toString());
   }
 
   @Override

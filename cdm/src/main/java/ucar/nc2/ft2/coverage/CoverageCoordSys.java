@@ -136,16 +136,15 @@ public class CoverageCoordSys {
       if (axis.getAxisType() == AxisType.TimeOffset) {
         if (timeOffsetAxis != null)
           throw new RuntimeException("Cant have multiple TimeOffset Axes in a CoverageCoordSys");
-        if (!(axis instanceof TimeOffsetAxis))
-          throw new IllegalStateException("AxisType.TimeOffset must be instanceof TimeOffsetAxis");
-        timeOffsetAxis = (TimeOffsetAxis) axis;
+        if (axis instanceof TimeOffsetAxis)
+          timeOffsetAxis = (TimeOffsetAxis) axis;
       }
       if (axis.getAxisType() == AxisType.RunTime) {
         if (runtimeAxis != null)
           throw new RuntimeException("Cant have multiple RunTime axes in a CoverageCoordSys");
         runtimeAxis = (CoverageCoordAxis1D) axis;
       }
-      if (axis.getAxisType() == AxisType.Time && axis instanceof FmrcTimeAxis2D) {
+      if (axis instanceof FmrcTimeAxis2D) {
         if (time2DAxis != null)
           throw new RuntimeException("Cant have multiple TimeAxis2D axes in a CoverageCoordSys");
         time2DAxis = (FmrcTimeAxis2D) axis;

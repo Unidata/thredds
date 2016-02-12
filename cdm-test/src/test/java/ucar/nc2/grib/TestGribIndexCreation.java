@@ -102,8 +102,42 @@ public class TestGribIndexCreation {
       Assert.assertEquals(0, twoD.getGroups().size());
     }
 
-
     GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+  }
+
+  /*
+    <featureCollection name="NDFD-CONUS-5km" featureType="GRIB2" harvest="true" path="grib/NDFD/CONUS_5km">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+    </metadata>
+
+    <collection
+        spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$"
+        dateFormatMark="#NDFD_CONUS_5km_#yyyyMMdd_HHmm"
+        timePartition="file" />
+
+    <update startup="test" />
+    <tdm rewrite="always" rescan="0 2,17,32,47 * * * ? *" />
+
+    <gribConfig datasetTypes="TwoD LatestFile Files">
+      <gdsHash from="-197088379" to="-198041691"/>
+      <pdsHash>
+        <useGenType>true</useGenType>
+      </pdsHash>
+    </gribConfig>
+  </featureCollection>
+   */
+  @Test
+  public void createNDFD() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("NDFD-CONUS-5km", "test/NDFD-CONUS-5km", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2$", null, null, null, "file", null);
+    config.gribConfig.addGdsHash("-197088379", "-198041691");
+    config.gribConfig.useGenType = true;
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
   }
 
   @Test
@@ -231,83 +265,6 @@ public class TestGribIndexCreation {
   }
 
   @Test
-  public void testRdvamds094p1() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.1_Aggregation", "test/ds094.1", FeatureCollectionType.GRIB2,
-            "D:/work/rdavm/ds094.1/**/.*gbx9",
-            null, null, null, "directory", null);
-    config.gribConfig.addGdsHash("341801380", "342723940");
-    config.gribConfig.useGenType = true;
-
-    //config.gribConfig.unionRuntimeCoord = true;
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  @Test
-  public void testRdvamds094p1p2013() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.1_Test2013", "test/ds094.1", FeatureCollectionType.GRIB2,
-            "D:/work/rdavm/ds094.1/2013/.*gbx9",
-            null, null, null, "directory", null);
-    config.gribConfig.addGdsHash("341801380", "342723940");
-    config.gribConfig.useGenType = true;
-
-    //config.gribConfig.unionRuntimeCoord = true;
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  @Test
-  public void testRdvamds094p2t() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.2_t", "test/ds094.2_t", FeatureCollectionType.GRIB2,
-            "D:\\work\\rdavm\\ds094.2\\timeseries/.*gbx9",
-            null, null, null, "directory", null);
-    config.gribConfig.addGdsHash("341801380", "342723940");
-    config.gribConfig.useGenType = true;
-
-    //config.gribConfig.unionRuntimeCoord = true;
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  @Test
-  public void testRdvamds094p2dt() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.2_dt", "test/ds094.2_dt", FeatureCollectionType.GRIB2,
-            "D:\\work\\rdavm\\ds094.2\\diurnal_timeseries/.*gbx9",
-            null, null, null, "directory", null);
-    config.gribConfig.addGdsHash("341801380", "342723940");
-    config.gribConfig.useGenType = true;
-
-    //config.gribConfig.unionRuntimeCoord = true;
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  @Test
-  public void testRdvamds626p0() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds626.0_Aggregation", "test/ds626.0", FeatureCollectionType.GRIB2,
-            "D:/work/rdavm/ds626.0/.*gbx9",
-            null, null, null, "directory", null);
-    //config.gribConfig.unionRuntimeCoord = true;
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  @Test
   public void testRdvamds627p0() throws IOException {
     GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds627.0_46", "test/ds627.0", FeatureCollectionType.GRIB1,
@@ -363,17 +320,71 @@ public class TestGribIndexCreation {
   }
 
   @Test
-   public void testTP() throws IOException {   // should be a TP (multiple runtime, single offset
-     // String name, String path, FeatureCollectionType fcType,
-     // String spec, String collectionName,
-     // String dateFormatMark, String olderThan, String timePartition, Element innerNcml)
-     FeatureCollectionConfig config = new FeatureCollectionConfig("GFSonedega", "test/GFSonedega", FeatureCollectionType.GRIB2,
-             TestDir.cdmUnitTestDir + "gribCollections/tp/.*grib2", null,
-             null, null, "file", null);
-     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
-     System.out.printf("changed = %s%n", changed);
-   }
+  public void testMRSTP() throws IOException {   // should be a TP (multiple runtime, single offset
+    // String name, String path, FeatureCollectionType fcType,
+    // String spec, String collectionName,
+    // String dateFormatMark, String olderThan, String timePartition, Element innerNcml)
+    FeatureCollectionConfig config = new FeatureCollectionConfig("GFSonedega", "test/GFSonedega", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/tp/.*grib2", null,
+            null, null, "file", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void createECMWFbcs() throws IOException {   // SRC
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ECMWFbcs", "test/ECMWFbcs", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/ecmwf/bcs/.*001$", null, null, null, "directory", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void createECMWFemd() throws IOException {   // SRC
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ECMWFemd", "test/ECMWFemd", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/ecmwf/emd/.*grib$", null, null, null, "directory", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void createECMWFmad() throws IOException {   // SRC
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ECMWFmad", "test/ECMWFmad", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mad/.*001$", null, null, null, "directory", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void createECMWFmee() throws IOException {   // SRC
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ECMWFmee", "test/ECMWFmee", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mee/.*001$", null, null, null, "directory", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void createECMWFmwp() throws IOException {   // SRC
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ECMWFmwp", "test/ECMWFmwp", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/ecmwf/mwp/.*001$", null, null, null, "directory", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void createHRRRanalysis() throws IOException {   // MRUTC
+    FeatureCollectionConfig config = new FeatureCollectionConfig("HRRRanalysis", "test/HRRRanalysis", FeatureCollectionType.GRIB2,
+            TestDir.cdmUnitTestDir + "gribCollections/anal/.*grib2$", null, null, null, "directory", null);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
 
 
 }

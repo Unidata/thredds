@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Describe
+ * Check details of complicated time interval coords
  *
  * @author caron
  * @since 12/1/2014
