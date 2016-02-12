@@ -89,7 +89,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   static private final String BEST_DATASET = GribCollectionImmutable.Type.Best.toString();
   static private final String TWOD_DATASET = GribCollectionImmutable.Type.TwoD.toString();
-  static private final String TP_DATASET = GribCollectionImmutable.Type.TP.toString();
+  static private final String TP_DATASET = "TP";
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -225,7 +225,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           makeDatasetsFromGroups(catURI, best, groups, isSingleGroup);
         }
 
-      } else if (ds.getType() == GribCollectionImmutable.Type.TP) {
+      } else if (ds.getType() == GribCollectionImmutable.Type.MRSTP) {
         DatasetBuilder tp = new DatasetBuilder(result);
         tp.setName(getDatasetNameTP(result.getName()));
         String path = pathStart + "/" + TP_DATASET;
@@ -259,7 +259,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Single reference time Grib Collection"));
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "Reference Time", runtime.toString()));
 
-        } else if (ds.getType() == GribCollectionImmutable.Type.MRSTC) {
+        } else {
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference time Grib Collection"));
         }
 

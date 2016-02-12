@@ -104,7 +104,7 @@ public class SubsetParams {
     Object val = req.get(key);
     if (val == null) return null;
     Double dval;
-    if (val instanceof Double) dval = (Double) val;
+    if (val instanceof Number) dval = ((Number) val).doubleValue();
     else dval = Double.parseDouble((String) val);
     return dval;
   }
@@ -113,7 +113,7 @@ public class SubsetParams {
     Object val = req.get(key);
     if (val == null) return null;
     Integer dval;
-    if (val instanceof Integer) dval = (Integer) val;
+    if (val instanceof Number) dval = ((Number) val).intValue();
     else dval = Integer.parseInt((String) val);
     return dval;
   }

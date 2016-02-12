@@ -42,7 +42,6 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -461,7 +460,7 @@ public class Grib2CollectionPanel extends JPanel {
 
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
-    List<Object> gdss = new ArrayList<Object>(gds2Table.getBeans());
+    List<Object> gdss = new ArrayList<>(gds2Table.getBeans());
     Collections.sort(gdss, new Comparator<Object>() {
       public int compare(Object o1, Object o2) {
         int h1 = ((Gds2Bean) o1).gds.hashCode();
@@ -1347,41 +1346,9 @@ public class Grib2CollectionPanel extends JPanel {
       Grib2Show.showBytes(f, bytes, -1);
     }
 
-    public String showProcessedGridRecord(Formatter f) {
+    public void showProcessedGridRecord(Formatter f) {
       f.format("%nFile=%s (%d)%n", fileList.get(gr.getFile()).getPath(), gr.getFile());
-      GribTables.Parameter param = cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
-      if (param == null)
-        f.format("  Parameter=Unknown %d-%d-%d %n", gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
-      else
-        f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
-
-      VertCoord.VertUnit levelUnit = cust.getVertUnit(pds.getLevelType1());
-      f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
-
-      String intvName = "none";
-      if (pds instanceof Grib2Pds.PdsInterval) {
-        Grib2Pds.PdsInterval pdsi = (Grib2Pds.PdsInterval) pds;
-        Grib2Pds.TimeInterval[] ti = pdsi.getTimeIntervals();
-        int statType = ti[0].statProcessType;
-        intvName = cust.getStatisticNameShort(statType);
-      }
-
-      f.format("  Time Unit=%s ;Stat=%s%n", Grib2Utils.getCalendarPeriod( pds.getTimeUnit()), intvName);
-      f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
-      // f.format("  IntervalTimeEnd=%s%n", cust.getIntervalTimeEnd(gr));
-      f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
-      TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
-      if (intv != null) f.format("  TimeInterval=%s%n", intv);
-      f.format("%n");
-      pds.show(f);
-
-      //CFSR malarky
-      if (pds.getTemplateNumber() == 8 && cust instanceof NcepLocalTables) {
-        NcepLocalTables ncepCust =  (NcepLocalTables) cust;
-        ncepCust.showCfsr(pds, f);
-      }
-
-      return f.toString();
+      Grib2Show.showProcessedGridRecord(cust, gr, f);
     }
 
     float[] readData() throws IOException {

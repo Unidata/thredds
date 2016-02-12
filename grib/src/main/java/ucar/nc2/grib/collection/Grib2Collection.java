@@ -274,6 +274,12 @@ public class Grib2Collection extends GribCollectionImmutable {
       else
         v.addAttribute(new Attribute("Grib2_Generating_Process_Type", vindex.getGenProcessType()));
     }
+
+    String statType = cust2.getStatisticName(vindex.getIntvType());
+    if (statType != null) {
+      v.addAttribute(new Attribute("Grib2_Statistical_Process_Type", statType));
+    }
+
   }
 
 }

@@ -203,17 +203,8 @@ public class TestGridSubset {
   @Category(NeedsExternalResource.class)
   public void testDODS() throws Exception {
     String ds = "http://"+TestDir.threddsTestServer+"/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
-    GridDataset dataset = null;
 
-    try {
-      DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null);
-      System.out.println("result errlog= " + result.errLog);
-      assert !result.fatalError;
-      assert result.featureType == FeatureType.GRID;
-      assert result.featureDataset != null;
-
-      dataset = (GridDataset) result.featureDataset;
-
+    try (GridDataset dataset = GridDataset.open("thredds:resolve:" + ds, null)) {
       GeoGrid grid = dataset.findGridByName("Temperature_isobaric");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -229,9 +220,6 @@ public class TestGridSubset {
       assert data.getShape()[1] == shape[1] : data.getShape()[1];
       assert data.getShape()[2] == 101 : data.getShape()[2];
       assert data.getShape()[3] == 164 : data.getShape()[3];
-
-    } finally {
-      if (dataset != null) dataset.close();
     }
   }
 

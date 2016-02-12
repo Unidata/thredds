@@ -90,11 +90,10 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
     super(deflateLevel, shuffle);
   }
 
-  // LOOK - also consider deflate - needs to be chunked....
   @Override
   public boolean isChunked(Variable v) {
     if (v.isUnlimited()) return true;
-    if (getChunkAttribute(v) != null) return true;
+    // if (getChunkAttribute(v) != null) return true;
 
     long size = v.getSize() * v.getElementSize();
     return (size > minVariableSize);
@@ -102,10 +101,10 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
   @Override
   public long[] computeChunking(Variable v) {
-    // check attribute
+    /* check attribute
     int[] resultFromAtt = computeChunkingFromAttribute(v);
     if (resultFromAtt != null)
-      return convertToLong(resultFromAtt);
+      return convertToLong(resultFromAtt); */
 
     int maxElements = defaultChunkSize / v.getElementSize();
 

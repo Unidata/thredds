@@ -173,8 +173,8 @@ public class TestGribCoverageBuilding {
       CoverageCoordSys csys = cov.getCoordSys();
       Assert.assertNotNull("CoverageCoordSys", csys);
 
-      CoverageCoordAxis time = csys.getAxis(AxisType.TimeOffset);
-      Assert.assertNotNull(AxisType.TimeOffset.toString(), time);
+      CoverageCoordAxis time = csys.getAxis(AxisType.Time);
+      Assert.assertNotNull(AxisType.Time.toString(), time);
       Assert.assertTrue(time.getClass().getName(), time instanceof CoverageCoordAxis1D);
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, time.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());

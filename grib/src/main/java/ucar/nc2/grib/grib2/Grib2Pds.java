@@ -380,6 +380,12 @@ public abstract class Grib2Pds {
     int getPercentileValue();
   }
 
+  public interface PdsSpatialInterval {
+    int getSpatialStatisticalProcessType();
+    int getSpatialProcessType();
+    int getNSpatialDataPoints();
+  }
+
   public interface PdsProbability {
     int getForecastProbabilityNumber();
     int getNumberForecastProbabilities();
@@ -508,13 +514,13 @@ public abstract class Grib2Pds {
    * Product definition template 4.15 - average, accumulation, extreme values, or other statistically-processed
    * values over a spatial area at a horizontal level or in a horizontal layer at a point in time
    */
-  static private class Grib2Pds15 extends Grib2Pds0 {
+  static private class Grib2Pds15 extends Grib2Pds0 implements PdsSpatialInterval {
     Grib2Pds15(byte[] input) {
       super(input);
     }
 
     // table 4.10
-    public int getStatisticalProcessType() {
+    public int getSpatialStatisticalProcessType() {
       return getOctet(35);
     }
 

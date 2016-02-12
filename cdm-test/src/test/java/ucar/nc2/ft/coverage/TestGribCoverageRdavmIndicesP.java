@@ -58,7 +58,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestGribCoverageOrthP {
+public class TestGribCoverageRdavmIndicesP {
   private static String topdir = "D:/work/rdavm/index/";
 
   @Parameterized.Parameters(name="{0}")
@@ -73,7 +73,7 @@ public class TestGribCoverageOrthP {
   }
 
   String filename;
-  public TestGribCoverageOrthP(String filename) {
+  public TestGribCoverageRdavmIndicesP(String filename) {
     this.filename = filename;
   }
 

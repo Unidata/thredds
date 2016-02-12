@@ -565,6 +565,35 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted, time2runtime);
   }
 
+  // can we make into a MRUTC ?
+  public boolean hasUniqueTimes() {
+    if (isTimeInterval) {
+      // make unique set of coordinates
+      Set<TimeCoord.Tinv> values = new HashSet<>();
+      for (int runIdx = 0; runIdx < nruns; runIdx++) { // use times array, passed into constructor, with original inventory, if possible
+        CoordinateTimeIntv timeIntv = (times == null) ? (CoordinateTimeIntv) getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
+        for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
+          TimeCoord.Tinv tinvAbs = tinv.offset(getOffset(runIdx)); // convert to absolute offset
+          if (values.contains(tinvAbs))
+            return false;
+          values.add(tinvAbs);
+        }
+      }
+    } else {
+      Set<Integer> values = new HashSet<>();  // complete set of values
+      for (int runIdx=0; runIdx<nruns; runIdx++) {   // use times array, passed into constructor, with original inventory, if possible
+        CoordinateTime timeCoord = (times == null) ?  (CoordinateTime)  getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
+        for (Integer offset : timeCoord.getOffsetSorted()) {
+          int offsetAbs = (offset + getOffset(runIdx)); // convert to absolute offset
+          if (values.contains(offsetAbs)) return false;
+          values.add(offsetAbs);
+        }
+      }
+    }
+    return true;
+  }
+
+
   private CoordinateTimeAbstract makeBestTimeIntv(CoordinateRuntime master) {
      // make unique set of coordinates
     Set<TimeCoord.Tinv> values = new HashSet<>();

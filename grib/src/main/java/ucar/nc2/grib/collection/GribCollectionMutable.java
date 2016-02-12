@@ -42,10 +42,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import net.jcip.annotations.Immutable;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -55,7 +53,6 @@ import ucar.coord.CoordinateRuntime;
 import ucar.coord.CoordinateTime2D;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.coord.CoordinateTimeIntv;
-import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib1.Grib1Gds;
@@ -421,13 +418,6 @@ public class GribCollectionMutable implements Closeable {
         }
       }
       GribCollectionMutable.VariableIndex result = varMap.get(want);
-      /* if (result == null) {
-        System.out.printf("%s%n", want.hashCode());
-        for (VariableIndex vi : variList) {
-          System.out.printf("%s%n", vi.hashCode());
-          System.out.printf("%s%n", vi.equals(want));
-        }
-      } */
       return result;
     }
 
@@ -495,6 +485,7 @@ public class GribCollectionMutable implements Closeable {
     public final String probabilityName;
     public final boolean isLayer, isEnsemble;
     public final int genProcessType;
+    public final int spatialStatType;
 
     // stats
     public int ndups, nrecords, nmissing;
@@ -536,6 +527,7 @@ public class GribCollectionMutable implements Closeable {
 
         this.genProcessType = pds.getGenProcess(); // LOOK process vs process type ??
         this.isEnsemble = pds.isEnsemble();
+        this.spatialStatType = -1;
 
         // LOOK config vs serialized config
         gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), config.gribConfig.useTableVersion, config.gribConfig.intvMerge, config.gribConfig.useCenter);
@@ -574,6 +566,13 @@ public class GribCollectionMutable implements Closeable {
         this.genProcessType = pds.getGenProcessType();
         this.isEnsemble = pds.isEnsemble();
 
+        if (pds.isSpatialInterval()) {
+          Grib2Pds.PdsSpatialInterval pdsSpatial = (Grib2Pds.PdsSpatialInterval) pds;
+          this.spatialStatType = pdsSpatial.getSpatialStatisticalProcessType();
+        } else {
+          this.spatialStatType = -1;
+        }
+
         // LOOK config vs serialized config
         gribVariable = new Grib2Variable (cust2, discipline, center, subcenter, (Grib2Gds) g.getGdsHash(), pds, config.gribConfig.intvMerge, config.gribConfig.useGenType);
       }
@@ -600,6 +599,7 @@ public class GribCollectionMutable implements Closeable {
       this.probabilityName = other.probabilityName;
       this.probType = other.probType;
       this.genProcessType = other.genProcessType;
+      this.spatialStatType = other.spatialStatType;
       this.isEnsemble = other.isEnsemble;
     }
 

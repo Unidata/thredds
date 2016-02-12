@@ -357,6 +357,8 @@ public class TestCoverageSubsetTime {
       Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
 
     CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
+    if (timeAxis == null) timeAxis = geoCs.getAxis(AxisType.Time);
+
     Assert.assertNotNull(timeAxis);
     Assert.assertTrue(timeAxis instanceof CoverageCoordAxis1D);
     Assert.assertEquals(1, timeAxis.getNcoords());
@@ -520,9 +522,9 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       CoverageCoordSys cs = cover.getCoordSys();
-      CoverageCoordAxis toAxis = cs.getAxis(AxisType.TimeOffset);
-      Assert.assertNotNull("timeoffset axis", toAxis);
-      Assert.assertEquals(36, toAxis.getNcoords());
+      CoverageCoordAxis timeAxis = cs.getAxis(AxisType.Time);
+      Assert.assertNotNull("timeoffset axis", timeAxis);
+      Assert.assertEquals(36, timeAxis.getNcoords());
 
       SubsetParams params = new SubsetParams();
       params.set(SubsetParams.timePresent, true);
@@ -534,7 +536,7 @@ public class TestCoverageSubsetTime {
       Assert.assertArrayEquals("shape", expectShape, resultShape);
 
       CoverageCoordSys geocs = geo.getCoordSysForData();
-      CoverageCoordAxis toAxis2 = geocs.getAxis(AxisType.TimeOffset);
+      CoverageCoordAxis toAxis2 = geocs.getAxis(AxisType.Time);
       Assert.assertNotNull("timeoffset axis", toAxis2);
       Assert.assertEquals(1, toAxis2.getNcoords());
     }
