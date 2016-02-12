@@ -3,7 +3,7 @@ ext.title = "NetCDF-4 IOSP"
 ext.url = "https://www.unidata.ucar.edu/software/netcdf/"
 
 dependencies {
+    compile project(':netcdf4-core')
     compile project(':cdm')
-    compile libraries["jna"]
     compile libraries["slf4j-api"]
 }
