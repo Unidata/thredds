@@ -143,12 +143,12 @@ public class Grib1DataReader {
   // raf will be at byte 12
   private float[] readSimplePacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
 
-    boolean isConstant =  (info.numberOfBits == 0);
+    boolean isConstant = (info.numberOfBits == 0);
     int unusedbits = info.flag & 15;
 
     // *** read values *******************************************************
 
-    double pow10 =  Math.pow(10.0, -decimalScale);
+    double pow10 = Math.pow(10.0, -decimalScale);
     float ref = (float) (pow10 * info.referenceValue);
     float scale = (float) (pow10 * Math.pow(2.0, info.binaryScaleFactor));
     float[] values;
@@ -158,7 +158,7 @@ public class Grib1DataReader {
         logger.error("Bitmap section length = {} != grid length {} ({},{}) for {}", bitmap.length, nPts, nxRaw, nyRaw, raf.getLocation());
         throw new IllegalStateException("Bitmap section length!= grid length");
       }
-      BitReader reader = new BitReader(raf, startPos+11);
+      BitReader reader = new BitReader(raf, startPos + 11);
       values = new float[nPts];
       for (int i = 0; i < nPts; i++) {
         if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
@@ -179,10 +179,11 @@ public class Grib1DataReader {
           values = new float[nxRaw * nyRaw];
         } else {
           int nptsExpected = (int) ((info.dataLength - 11) * 8 - unusedbits) / info.numberOfBits;  // count bits
-          if (!Grib1RecordScanner.allowBadDsLength && nptsExpected != nPts) logger.warn("nptsExpected {} != npts {}", nptsExpected, nPts);
+          if (!Grib1RecordScanner.allowBadDsLength && nptsExpected != nPts)
+            logger.warn("nptsExpected {} != npts {}", nptsExpected, nPts);
           values = new float[nPts];
         }
-        BitReader reader = new BitReader(raf, startPos+11);
+        BitReader reader = new BitReader(raf, startPos + 11);
         for (int i = 0; i < values.length; i++) {
           values[i] = ref + scale * reader.bits2UInt(info.numberOfBits);
         }
@@ -261,7 +262,7 @@ public class Grib1DataReader {
     // First-order descriptors width stored at the equivalent place of bit number for ordinary packing
     int foWidth = info.numberOfBits;
 
-    boolean isConstant =  (info.numberOfBits == 0);
+    boolean isConstant = (info.numberOfBits == 0);
     int unusedbits = info.flag & 15;
 
    /* Octet     Contents
@@ -314,10 +315,10 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 
    */
     System.out.printf("flagExt=%s%n", Long.toBinaryString(flagExt));
-    boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt,3);
-    boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt,4);
-    boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt,5);
-    boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt,6);
+    boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
+    boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
+    boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
+    boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt, 6);
 
 
     // 22–(xx–1) Width(s) in bits of second-order packed values; each width is contained in 1 octet
@@ -334,7 +335,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       constantWidth = info.numberOfBits; // LOOK not documented ??
     } else {
       widths = new int[P1];
-      for (int i=0; i< P1; i++){
+      for (int i = 0; i < P1; i++) {
         widths[i] = raf.read();
       }
       bitmapStart = 21 + P1;
@@ -366,12 +367,12 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 
 
     //   N1–(N2–1) P1 first-order packed values, padded to a whole number of octets with binary 0
-    int nfo = N2-N1;  // docs say N1–(N2–1)
+    int nfo = N2 - N1;  // docs say N1–(N2–1)
     System.out.printf("nfo=%d%n", nfo);
 
     //   N2–. . .  P2 second-order packed values
     int np = this.nPts;
-    System.out.printf("need bitmap bytes=%d for npts=%d%n", np/8, np);
+    System.out.printf("need bitmap bytes=%d for npts=%d%n", np / 8, np);
 
     float[] data = new float[1];
 
@@ -471,12 +472,11 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 
     // heres how many bits groupWidths should take
     int groupWidthsSizeBits = widthOfWidths * NG;
-    int groupWidthsSizeBytes = (groupWidthsSizeBits+7)/8;
-    int skipBytes = NL-groupWidthsSizeBytes-26;
+    int groupWidthsSizeBytes = (groupWidthsSizeBits + 7) / 8;
+    int skipBytes = NL - groupWidthsSizeBytes - 26;
     System.out.printf("groupWidthsSizeBytes=%d, skipBytes=%d%n", groupWidthsSizeBytes, skipBytes);
 
     raf.skipBytes(skipBytes);
-
 
 
     // from grib_dimp output
@@ -491,25 +491,25 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 
     // meta groupWidths unsigned_bits(widthOfWidths,numberOfGroups) : read_only;
     int[] groupWidth = new int[NG];
-    for (int group=0; group<NG; group++) {
+    for (int group = 0; group < NG; group++) {
       groupWidth[group] = (int) reader.bits2UInt(widthOfWidths);
     }
 
     reader.incrByte(); // assume on byte boundary
-    showOffset("GroupLength", raf, NL-1, 2723);
+    showOffset("GroupLength", raf, NL - 1, 2723);
 
     // try forcing to NL
     // reader = new BitReader(raf, this.startPos + NL - 1);
 
     // meta groupLengths unsigned_bits(widthOfLengths,numberOfGroups) : read_only;
     int[] groupLength = new int[NG];
-    for (int group=0; group<NG; group++)
+    for (int group = 0; group < NG; group++)
       groupLength[group] = (int) reader.bits2UInt(widthOfLengths);
-    showOffset("FirstOrderValues", raf, N1-1, 5774);
+    showOffset("FirstOrderValues", raf, N1 - 1, 5774);
 
     // meta countOfGroupLengths sum(groupLengths);
     int countOfGroupLengths = 0;
-    for (int group=0; group<NG; group++)
+    for (int group = 0; group < NG; group++)
       countOfGroupLengths += groupLength[group];
     System.out.printf("countOfGroupLengths = %d%n", countOfGroupLengths);
     System.out.printf("nPts = %d%n%n", nPts);
@@ -523,11 +523,11 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     // meta firstOrderValues unsigned_bits(widthOfFirstOrderValues,numberOfGroups) : read_only;
     reader.incrByte(); // assume on byte boundary
     int[] firstOrderValues = new int[NG];
-    for (int group=0; group<NG; group++)
+    for (int group = 0; group < NG; group++)
       firstOrderValues[group] = (int) reader.bits2UInt(foWidth);
     int offset3 = (int) (raf.getFilePointer() - this.startPos);
     System.out.printf("nbytes=%d%n", (foWidth * NG + 7) / 8);
-    showOffset("SecondOrderValues", raf, N2-1, 11367);
+    showOffset("SecondOrderValues", raf, N2 - 1, 11367);
 
 
     int total_nbits = 0;
@@ -535,14 +535,14 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       int nbits = groupLength[group] * groupWidth[group];
       total_nbits += nbits;
     }
-    int data_bytes = (total_nbits +7) / 8;
+    int data_bytes = (total_nbits + 7) / 8;
     System.out.printf(" total_nbits=%d, nbytes=%d%n", total_nbits, data_bytes);
-    System.out.printf(" expect msgLen=%d, actual=%d%n", N2-1+data_bytes, info.dataLength);
+    System.out.printf(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataLength);
     int simplepackSizeInBits = nPts * info.numberOfBits;
-    int simplepackSizeInBytes = (simplepackSizeInBits +7) / 8;
+    int simplepackSizeInBytes = (simplepackSizeInBits + 7) / 8;
     System.out.printf(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
 
-        // meta bitsPerValue second_order_bits_per_value(codedValues,binaryScaleFactor,decimalScaleFactor);
+    // meta bitsPerValue second_order_bits_per_value(codedValues,binaryScaleFactor,decimalScaleFactor);
     reader.incrByte(); // assume on byte boundary
     int[] secondOrderValues = new int[countOfGroupLengths];
     int countGroups = 0;
@@ -568,9 +568,9 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     showOffset("MessageEnd", raf, (int) info.dataLength, 82091);
 
     System.out.printf("nbytes= %d%n", (total_nbits + 7) / 8);
-    System.out.printf("actual= %d%n", offset4-offset3);
+    System.out.printf("actual= %d%n", offset4 - offset3);
 
-    double pow10 =  Math.pow(10.0, -decimalScale);
+    double pow10 = Math.pow(10.0, -decimalScale);
     float ref = (float) (pow10 * info.referenceValue);
     float scale = (float) (pow10 * Math.pow(2.0, info.binaryScaleFactor));
     float[] values = new float[nPts];
@@ -583,8 +583,8 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       }
     }
     // use last average for shortfall
-    for (int i = countOfGroupLengths; i<nPts; i++) {
-      values[val] = ref + scale * firstOrderValues[NG-1];
+    for (int i = countOfGroupLengths; i < nPts; i++) {
+      values[val] = ref + scale * firstOrderValues[NG - 1];
       val++;
     }
 
@@ -604,11 +604,11 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
   }
 
   public static void showInfo(Formatter f, RandomAccessFile raf, long startPos) throws IOException {
-      GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
+    GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
-      boolean isGridPointData = !GribNumbers.testBitIsSet(info.flag, 1);
-      boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
-      if (!isGridPointData ||isSimplePacking) return;
+    boolean isGridPointData = !GribNumbers.testBitIsSet(info.flag, 1);
+    boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
+    if (!isGridPointData || isSimplePacking) return;
 
     int N1 = GribNumbers.uint2(raf);
     int flagExt = raf.read();
@@ -641,31 +641,31 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     f.format("%n");
 
     int groupWidthsSizeBits = widthOfWidths * NG;
-    int groupWidthsSizeBytes = (groupWidthsSizeBits+7)/8;
-    int skipBytes = NL-groupWidthsSizeBytes-26;
+    int groupWidthsSizeBytes = (groupWidthsSizeBits + 7) / 8;
+    int skipBytes = NL - groupWidthsSizeBytes - 26;
     System.out.printf("groupWidthsSizeBytes=%d, skipBytes=%d%n", groupWidthsSizeBytes, skipBytes);
     raf.skipBytes(skipBytes);
 
     BitReader reader = new BitReader(raf, raf.getFilePointer());
     int[] groupWidth = new int[NG];
-    for (int group=0; group<NG; group++) {
+    for (int group = 0; group < NG; group++) {
       groupWidth[group] = (int) reader.bits2UInt(widthOfWidths);
     }
     reader.incrByte(); // assume on byte boundary
-    showOffset(f, "GroupLength", raf, startPos, NL-1);
+    showOffset(f, "GroupLength", raf, startPos, NL - 1);
 
     // try forcing to NL
     // reader = new BitReader(raf, this.startPos + NL - 1);
 
     // meta groupLengths unsigned_bits(widthOfLengths,numberOfGroups) : read_only;
     int[] groupLength = new int[NG];
-    for (int group=0; group<NG; group++)
+    for (int group = 0; group < NG; group++)
       groupLength[group] = (int) reader.bits2UInt(widthOfLengths);
-    showOffset(f, "FirstOrderValues", raf, startPos, N1-1);
+    showOffset(f, "FirstOrderValues", raf, startPos, N1 - 1);
 
     // meta countOfGroupLengths sum(groupLengths);
     int countOfGroupLengths = 0;
-    for (int group=0; group<NG; group++)
+    for (int group = 0; group < NG; group++)
       countOfGroupLengths += groupLength[group];
     f.format("countOfGroupLengths = %d%n", countOfGroupLengths);
 
@@ -678,17 +678,17 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     // meta firstOrderValues unsigned_bits(widthOfFirstOrderValues,numberOfGroups) : read_only;
     reader.incrByte(); // assume on byte boundary
     int[] firstOrderValues = new int[NG];
-    for (int group=0; group<NG; group++)
+    for (int group = 0; group < NG; group++)
       firstOrderValues[group] = (int) reader.bits2UInt(foWidth);
 
-    showOffset(f, "SecondOrderValues", raf, startPos, N2-1);
+    showOffset(f, "SecondOrderValues", raf, startPos, N2 - 1);
 
     int total_nbits = 0;
     for (int group = 0; group < NG; group++) {
       int nbits = groupLength[group] * groupWidth[group];
       total_nbits += nbits;
     }
-    int data_bytes = (total_nbits +7) / 8;
+    int data_bytes = (total_nbits + 7) / 8;
     f.format(" total_nbits=%d, nbytes=%d%n", total_nbits, data_bytes);
     f.format(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataLength);
     //int simplepackSizeInBits = nPts * info.numberOfBits;
@@ -726,7 +726,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     secondary bit-map shall be inferred such that a 1 bit is set for the first point of each row (or column) of the defined
     grid (row by row packing). */
 
-    // xx–(N1–1) Secondary bit-map, at least P2 bits long, padded to a whole number of octets with binary 0
+  // xx–(N1–1) Secondary bit-map, at least P2 bits long, padded to a whole number of octets with binary 0
   /*   (3) The secondary bit-map, starting at octet xx, shall define with corresponding 1 bits the location where the use of the
     first-order packed values begins with reference to the defined grid (as modified by the bit-map, Section 3, if present);
     the first point of the grid, as modified by the bit-map in Section 3 if present, will always be present, and a
@@ -763,13 +763,13 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
    * Rearrange the data array using the scanning mode.
    * LOOK: not handling scanMode generally
    * Flag/Code table 8 – Scanning mode
-   Bit   No. Value Meaning
-   1   0   Points scan in +i direction
-   1   Points scan in –i direction
-   2   0   Points scan in –j direction
-   1   Points scan in +j direction
-   3   0   Adjacent points in i direction are consecutive
-   1   Adjacent points in j direction are consecutive
+   * Bit   No. Value Meaning
+   * 1   0   Points scan in +i direction
+   * 1   Points scan in –i direction
+   * 2   0   Points scan in –j direction
+   * 1   Points scan in +j direction
+   * 3   0   Adjacent points in i direction are consecutive
+   * 1   Adjacent points in j direction are consecutive
    */
   private void scanningModeCheck(float[] data, int scanMode, int Xlength) {
 
@@ -816,7 +816,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     // boolean isConstant =  (numbits == 0);
 
     // *** read int values *******************************************************
-    BitReader reader = new BitReader(raf, startPos+11);
+    BitReader reader = new BitReader(raf, startPos + 11);
     int[] ivals = new int[nPts];
     for (int i = 0; i < nPts; i++) {
       ivals[i] = (int) reader.bits2UInt(numbits);

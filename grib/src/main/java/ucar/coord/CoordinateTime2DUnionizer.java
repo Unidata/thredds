@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
+import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
 import java.util.*;
@@ -49,7 +50,6 @@ import java.util.*;
  * @since 11/22/2014
  */
 class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
-  // static private final Logger logger = LoggerFactory.getLogger(CoordinateTime2DUnionizer.class);
 
   boolean isTimeInterval;
   boolean makeVals;
@@ -71,16 +71,9 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   @Override
   public void addAll(Coordinate coord) {
     CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
-    for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {  // possible duplicate runtimes from different partitions
+    for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {    // possible duplicate runtimes from different partitions
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
       long runtime = coordT2D.getRuntime(runIdx);
-      CoordinateTimeAbstract timesPrev = timeMap.get(runtime);
-      if (timesPrev != null && !shown) {
-        logger.warn("CoordinateTime2DUnionizer duplicate runtime {} from different partition \nprev={}\ncurrent={} \n{}",
-                CalendarDate.of(runtime), timesPrev, times,
-                Misc.stackTraceToString(Thread.currentThread().getStackTrace()));
-        shown = true;
-      }
       timeMap.put(runtime, times);   // later partitions will override LOOK could check how many times there are and choose larger
     }
   }

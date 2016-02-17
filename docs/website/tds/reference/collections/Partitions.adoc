@@ -47,7 +47,7 @@ For each partition, a CDM index file is created, and a CDM collection dataset ca
 
 The possible values of *timePartition* are:
 
-1.  *none*: all files are scanned in, and a collection level index is built, plus a collection for each unique reference time.
+1.  *none*: all files are scanned in, and one collection level index is built.
 2.  *directory*: each directory is a partition. Nested directories create nested partitions (eg year/month/day).
 3.  *file*: each file is a partition.
 4.  *_<time unit>_*: the files are divided into partitions based on the given time unit. The reference time must be encoded in the filenames.
@@ -80,10 +80,9 @@ The overall dataset is the collection of all of those yearly collections.
 === None Partition
 
 If a collection is configured with *timePartition="none"*, all of the records’ metadata (excluding the data itself) must be read into memory at once.
-The records are then grouped by reference time, and a seperate collection is written for each reference time.
-The overall dataset is then the collection of all of those single-reference time collections.
+A single top-level collection is written.
 
-This option is reasonable only for small collections, say < 1M records.
+This option is good option for small-medium collections (say < 1M records) which are not time-partitioned by directory.
 Even then, this option takes the longest when indexing, and other strategies
 are preferred especially if the collection is dynamic and must be reindexed often.
 

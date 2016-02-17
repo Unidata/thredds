@@ -97,7 +97,6 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
     return Grib1CollectionWriter.minVersion;
   }
 
-
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   // reading
 

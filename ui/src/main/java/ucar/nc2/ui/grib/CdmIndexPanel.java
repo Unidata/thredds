@@ -532,13 +532,19 @@ public class CdmIndexPanel extends JPanel {
     List<? extends Object> vals2 = coord2.getValues();
     f.format("Coordinate %s%n", coord1.getName());
     for (Object val1 : vals1) {
-      boolean missing = (!vals2.contains(val1));
-      f.format(" %s %s%n", val1, (missing ? "MISSING IN 2" : ""));
+      if (!vals2.contains(val1)) {
+        f.format(" %s ", val1);
+        if (val1 instanceof Long) f.format("(%s) ", CalendarDate.of((Long) val1));
+        f.format("MISSING IN 2%n");
+      }
     }
     f.format("%nCoordinate %s%n", coord2.getName());
     for (Object val2 : vals2) {
-      boolean missing = (!vals1.contains(val2));
-      f.format(" %s %s%n", val2, (missing ? "MISSING IN 1" : ""));
+      if (!vals1.contains(val2)) {
+        f.format(" %s ", val2);
+        if (val2 instanceof Long) f.format("(%s) ", CalendarDate.of((Long) val2));
+        f.format("MISSING IN 1%n");
+      }
     }
   }
 

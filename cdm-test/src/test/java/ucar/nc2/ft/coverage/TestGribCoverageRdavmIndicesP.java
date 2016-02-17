@@ -51,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * testing non-othogonal 2D time coords
+ * sanity check on all rdavm indices in the directory
  *
  * @author caron
  * @since 1/5/2016.
@@ -78,22 +78,21 @@ public class TestGribCoverageRdavmIndicesP {
   }
 
   @Test
-  public void testGridCoverageDatasetFmrc() throws IOException, InvalidRangeException {
+  public void testGridCoverageDatasetRdavm() throws IOException, InvalidRangeException {
     System.out.printf("%s%n", filename);
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, fdc);
-      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
-      Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
-
-      System.out.printf(" %s type=%s%n", cc.getName(), cc.getCoverageType());
-      //for (CoverageCoordSys coordSys : cc.getCoordSys()) {
+      for (CoverageCollection cc : fdc.getCoverageCollections()) {
+        System.out.printf(" %s type=%s%n", cc.getName(), cc.getCoverageType());
+        //for (CoverageCoordSys coordSys : cc.getCoordSys()) {
         //Assert.assertTrue( coordSys.isTime2D(coordSys.getAxis(AxisType.RunTime)));
         //Assert.assertTrue( coordSys.isTime2D(coordSys.getTimeAxis()));
-      //}
+        //}
 
-      for (CoverageCoordAxis axis : cc.getCoordAxes()) {
-        if (axis.getAxisType().isTime())
-          System.out.printf("  %12s %10s %5d %10s %s%n", axis.getName(), axis.getAxisType(), axis.getNcoords(), axis.getDependenceType(), axis.getSpacing());
+        for (CoverageCoordAxis axis : cc.getCoordAxes()) {
+          if (axis.getAxisType().isTime())
+            System.out.printf("  %12s %10s %5d %10s %s%n", axis.getName(), axis.getAxisType(), axis.getNcoords(), axis.getDependenceType(), axis.getSpacing());
+        }
       }
     }
   }

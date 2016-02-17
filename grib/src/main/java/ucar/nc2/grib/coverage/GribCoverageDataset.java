@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.beust.jcommander.internal.Lists;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +85,7 @@ import ucar.unidata.util.Parameter;
 /**
  * Create a FeatureDatasetCoverage from a GribCollection file.
  * Called from InvDatasetFcGrib and (by reflection) from CoverageDatasetFactory
+ * LOOK might want to switch to Builder pattern
  *
  * @author John
  * @since 8/1/2015
@@ -91,7 +93,6 @@ import ucar.unidata.util.Parameter;
 @Immutable
 public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   static private final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
-  static private final boolean show = false;
   private static final double missingTolerence = .05;
 
   static public Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
@@ -121,7 +122,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       for (GribCollectionImmutable.Dataset ds : gc.getDatasets()) {
         for (GribCollectionImmutable.GroupGC group : ds.getGroups()) {
           GribCoverageDataset gribCov = new GribCoverageDataset(gc, ds, group);
-          datasets.add(gribCov.makeCoverageCollection());
+          datasets.add(gribCov.createCoverageCollection());
         }
       }
       FeatureDatasetCoverage result = new FeatureDatasetCoverage(endpoint, gc.getGlobalAttributes(), gc, datasets);
@@ -178,7 +179,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     return gribCollection.getLocation() + "#" + group.getId(); // ??
   }
 
-  public CoverageCollection makeCoverageCollection() {
+  public CoverageCollection createCoverageCollection() {
     String name = gribCollection.getName() + "#" + ds.getType();
     if (ds.getGroupsSize() > 1)
       name += "-" + group.getId();
@@ -204,38 +205,64 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     else
       axes.addAll(makeHorizCoordinates());
 
+    /* runtime smooshing
     for (Coordinate axis : group.getCoordinates()) {
       switch (axis.getType()) {
-        //case runtime:
-        //  addRuntimeCoordAxis((CoordinateRuntime) axis);
-        //  break;
-        case time2D:
-          addTime2DCoordinates((CoordinateTime2D) axis, axes);
+        case runtime:
+          runtimes.add(new RuntimeSmoosher((CoverageCoordAxis1D) axis));
           break;
+      }
+    } */
+
+    Map<Coordinate, List<CoverageCoordAxis>> coord2axisMap = new HashMap<>(); // track which coverageAxis is usd by which GribCoord
+
+    for (Coordinate axis : group.getCoordinates()) {
+      switch (axis.getType()) {
+        case runtime:
+          // runtime coord added by time coord as needed
+          break;
+
+        case time2D:
+          coord2axisMap.put(axis, makeTime2DCoordinates((CoordinateTime2D) axis));
+          break;
+
         case time:
         case timeIntv:
-          addTimeCoordinates((CoordinateTimeAbstract) axis, axes);
+          coord2axisMap.put(axis, makeTimeCoordinates((CoordinateTimeAbstract) axis));
           break;
+
         case vert:
-          axes.add(makeCoordAxis((CoordinateVert) axis));
+          CoverageCoordAxis covAxisVert =  makeCoordAxis((CoordinateVert) axis);
+          coord2axisMap.put(axis, Lists.newArrayList(covAxisVert));
           break;
+
         case ens:
-          axes.add(makeCoordAxis((CoordinateEns) axis));
+          CoverageCoordAxis covAxisEns =  makeCoordAxis((CoordinateEns) axis);
+          coord2axisMap.put(axis, Lists.newArrayList(covAxisEns));
           break;
       }
     }
     //makeRuntimeCoordAxes(axes);
     //makeTime2DCoordAxis(axes);
+    for (Coordinate coord : coord2axisMap.keySet())
+      axes.addAll(coord2axisMap.get(coord));
 
+    // make coord systems
     Map<String, CoverageCoordSys> coordSysSet = new HashMap<>();
     for (GribCollectionImmutable.VariableIndex v : vars) {
-      CoverageCoordSys sys = makeCoordSys(v, transforms);
+      CoverageCoordSys sys = makeCoordSys(v, transforms, coord2axisMap);
       coordSysSet.put(sys.getName(), sys);                    // duplicates get eliminated here
     }
     List<CoverageCoordSys> coordSys = new ArrayList<>(coordSysSet.values());
 
     // all vars that are left are coverages
-    List<Coverage> pgrids = vars.stream().map(this::makeCoverage).collect(Collectors.toList());
+    List<Coverage> pgrids = new ArrayList<>();
+    for (GribCollectionImmutable.VariableIndex v : group.getVariables()) {
+      pgrids.add(makeCoverage(v, coord2axisMap));
+    }
+    // List<Coverage> pgrids = vars.stream().map(this::makeCoverage).collect(Collectors.toList());
+
+    // put it together
     return new CoverageCollection(name, coverageType, gatts, null, null, // let cc calculate bbox
             getCalendarDateRange(), coordSys, transforms, axes, pgrids, this);
   }
@@ -432,8 +459,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       if (runtimes.get(i).closeEnough(tester)) return i;
     return -1;
   }
+  */
 
-  private static final double missingTolerence = .05;
   private static final double smooshTolerence = .02;
   private Map<String, String> substCoords = new HashMap<>();
   private List<RuntimeSmoosher> runtimes = new ArrayList<>();
@@ -493,6 +520,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     }
   }
 
+  /*
   private void makeRuntimeCoordAxes(List<CoverageCoordAxis> axes) {
     for (RuntimeSmoosher smoosh : runtimes) {
       if (!smoosh.combined) axes.add(smoosh.runtime);
@@ -550,7 +578,9 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       time2Dmap.put(tester, tester);
     else
       substCoords.put(time2D.getName(), already.time2D.getName());
-  }
+  } */
+
+  /*
 
   private void makeTime2DCoordAxis(List<CoverageCoordAxis> axes) {
     for (Time2DSmoosher smoosh : time2Dmap.keySet()) {
@@ -570,50 +600,45 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   /*
             runtime     time
    SRC      scalar      independent
-   is1D     dependent   independent
+   unique   dependent   independent
    is2D
     orth    independent timeOffset(time)
     reg     independent time(runtime, time)
     general IllegalStateException
    */
 
-  private boolean srcReftimeWasMade;
-  private void addTime2DCoordinates(CoordinateTime2D time2D, List<CoverageCoordAxis> axes) {
+  //private boolean srcReftimeWasMade;
+  private List<CoverageCoordAxis> makeTime2DCoordinates(CoordinateTime2D time2D) {
     trackDateRange(time2D.makeCalendarDateRange(ucar.nc2.time.Calendar.proleptic_gregorian));
 
+    List<CoverageCoordAxis> result = new ArrayList<>();
     CoverageCoordAxis covTime;
 
     if (ds.getType() == GribCollectionImmutable.Type.SRC) {
       covTime = makeUniqueTimeAxis(time2D);
-      if (!srcReftimeWasMade) {
-        axes.add(makeRuntimeCoord(time2D.getRuntimeCoordinate()));
-        srcReftimeWasMade = true;
-      }
+      //if (!srcReftimeWasMade) {
+        result.add(makeRuntimeCoord(time2D.getRuntimeCoordinate()));
+      //  srcReftimeWasMade = true;
+      //}
 
     } else if (ds.getType().isUniqueTime()) {
       covTime = makeUniqueTimeAxis(time2D);
-      axes.add(makeRuntimeAuxCoord(time2D, covTime.getNcoords()));
+      result.add(makeRuntimeAuxCoord(time2D, covTime.getNcoords()));
 
     } else if (time2D.isOrthogonal()) {
       covTime = makeTimeOffsetAxis(time2D);
-      axes.add(makeRuntimeCoord(time2D.getRuntimeCoordinate()));
+      result.add(makeRuntimeCoord(time2D.getRuntimeCoordinate()));
 
-    } else if (time2D.isRegular())
+    } else if (time2D.isRegular()) {
       covTime = makeFmrcRegTimeAxis(time2D);
-      // else if (time2D.getNtimes() == 1)
-      //   covTime = makeFmrcOneTimeAxis(time2D);
-    else
+      result.add(makeRuntimeCoord(time2D.getRuntimeCoordinate())); // LOOK ?
+
+    } else
       throw new IllegalStateException("Time2D with type= "+ds.getType());
 
-    axes.add(covTime);
+    result.add(covTime);
 
-    /* if (ds.getType().isTwoD()) {
-
-    } else {
-      CoverageCoordAxis runAux = makeRuntimeAuxCoord(time2D);
-      if (runAux != null)
-        axes.add(runAux);
-    } */
+    return result;
   }
 
   // dependent runtime, independent time
@@ -909,17 +934,22 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   //////////////////////////////////////////////////////////
 
-  private void addTimeCoordinates(CoordinateTimeAbstract time, List<CoverageCoordAxis> axes) {
+  private List<CoverageCoordAxis> makeTimeCoordinates(CoordinateTimeAbstract time) {
+    List<CoverageCoordAxis> result = new ArrayList<>();
+
     if (time instanceof CoordinateTime)
-      axes.add(makeCoordAxis((CoordinateTime) time));
+      result.add(makeCoordAxis((CoordinateTime) time));
     else if (time instanceof CoordinateTimeIntv)
-      axes.add(makeCoordAxis((CoordinateTimeIntv) time));
+      result.add(makeCoordAxis((CoordinateTimeIntv) time));
 
     CoverageCoordAxis runAux = makeRuntimeAuxCoord(time);
     if (runAux != null)
-      axes.add(runAux);
+      result.add(runAux);
+
+    return result;
   }
 
+  // create an independent runtime axis
   private CoverageCoordAxis1D makeRuntimeCoord(CoordinateRuntime runtime) {
     String units = runtime.getPeriodName() + " since " + gribCollection.getMasterFirstDate().toString();
 
@@ -928,13 +958,12 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     int n = offsets.size();
     double start = offsets.get(0) + offsetFromMaster;
     double end = offsets.get(n - 1) + offsetFromMaster;
-    double resol2 = (n > 1) ? (end - start) / (n - 1) : 0.0;
+    //double resol2 = (n > 1) ? (end - start) / (n - 1) : 0.0;
     Counters counters = runtime.calcDistributions();
     Comparable resolMode = counters.get("resol").getMode();
     double resol = (resolMode == null) ? 0.0 : ((Number) resolMode).doubleValue();
 
     // CoordinateRuntime master = gribCollection.getMasterRuntime();
-    //int n = master.getSize();
     boolean isScalar = (n == 1);      // this is the case of runtime[1]
     CoverageCoordAxis.DependenceType dependence = isScalar ? CoverageCoordAxis.DependenceType.scalar : CoverageCoordAxis.DependenceType.independent;
     CoverageCoordAxis.Spacing spacing = isScalar || isRegular(counters.get("resol"), missingTolerence) ? CoverageCoordAxis.Spacing.regular : CoverageCoordAxis.Spacing.irregularPoint;
@@ -958,6 +987,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
                     dependence, null, spacing, n, start, end, resol, values, this, false));
   }
 
+  // create a dependent runtime axis for this time2d, which has unique times
   private CoverageCoordAxis makeRuntimeAuxCoord(CoordinateTime2D time2D, int ntimes) {
     CoordinateRuntime runtimeU = time2D.getRuntimeCoordinate();
     List<Double> runOffsets = runtimeU.getOffsetsInTimeUnits();
@@ -996,6 +1026,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
                     dependence, time2D.getName(), spacing, ntimes, 0, 0, resol, data, this, false));
   }
 
+  // create a dependent runtime axis for this time, using the index into the master runtimes array
   private CoverageCoordAxis makeRuntimeAuxCoord(CoordinateTimeAbstract time) {
     if (time.getTime2runtime() == null) return null;
     String refName = "ref" + time.getName();
@@ -1076,8 +1107,6 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
                     CoverageCoordAxis.DependenceType.independent, null, spacing, n, start, end, resol, null, this, false));
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
   private CoverageCoordAxis makeCoordAxis(CoordinateVert vertCoord) {
     List<VertCoord.Level> levels = vertCoord.getLevelSorted();
 
@@ -1154,36 +1183,43 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
                     values[0], values[n - 1], 0.0, values, this, false));
   }
 
-  private CoverageCoordSys makeCoordSys(GribCollectionImmutable.VariableIndex gribVar, List<CoverageTransform> transforms) {
-    List<String> axisNames = makeAxisNameList(gribVar);
+  ///////////////////////////////////////////////////////////////////////////////////////////
+
+  private CoverageCoordSys makeCoordSys(GribCollectionImmutable.VariableIndex gribVar, List<CoverageTransform> transforms,
+                                        Map<Coordinate, List<CoverageCoordAxis>> coord2axisMap) {
+    List<String> axisNames = makeAxisNameList(gribVar, coord2axisMap);
     List<String> transformNames = transforms.stream().map(CoverageTransform::getName).collect(Collectors.toList());
     return new CoverageCoordSys(null, axisNames, transformNames, coverageType);
   }
 
   private class NameAndType {
     String name;
-    Coordinate.Type type;
+    AxisType type;
 
-    public NameAndType(String name, Coordinate.Type type) {
+    public NameAndType(String name, AxisType type) {
       this.name = name;
       this.type = type;
     }
   }
 
-  private List<String> makeAxisNameList(GribCollectionImmutable.VariableIndex gribVar) {
+  private List<String> makeAxisNameList(GribCollectionImmutable.VariableIndex gribVar, Map<Coordinate, List<CoverageCoordAxis>> coord2axisMap) {
     List<NameAndType> names = new ArrayList<>();
     for (Coordinate axis : gribVar.getCoordinates()) {
+      List<CoverageCoordAxis> coordList = coord2axisMap.get(axis);
+      if (coordList != null) {
+        for (CoverageCoordAxis coord : coordList) names.add(new NameAndType(coord.getName(), coord.getAxisType()));
+      }
       /* String subst = substCoords.get(axis.getName());
       if (subst != null)
         names.add(new NameAndType(subst, axis.getType()));
-      else */
+      else
       names.add(new NameAndType(axis.getName(), axis.getType()));
       if (axis.getType() == Coordinate.Type.time || axis.getType() == Coordinate.Type.timeIntv) {
         names.add(new NameAndType("ref" + axis.getName(), Coordinate.Type.runtime));  // LOOK do we have to test if it exists??
-      }
+      } */
     }
 
-    Collections.sort(names, (o1, o2) -> o1.type.order - o2.type.order);
+    Collections.sort(names, (o1, o2) -> o1.type.axisOrder() - o2.type.axisOrder());
     List<String> axisNames = names.stream().map(o -> o.name).collect(Collectors.toList());
     if (isCurvilinearOrthogonal) {
       Grib2Utils.LatLonCoordType type = Grib2Utils.getLatLon2DcoordType(gribVar.makeVariableDescription());
@@ -1221,7 +1257,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     return fname.toString();
   }
 
-  private Coverage makeCoverage(GribCollectionImmutable.VariableIndex gribVar) {
+  private Coverage makeCoverage(GribCollectionImmutable.VariableIndex gribVar, Map<Coordinate, List<CoverageCoordAxis>> coord2axisMap) {
 
     AttributeContainerHelper atts = new AttributeContainerHelper(gribVar.makeVariableName());
     atts.addAttribute(new Attribute(CDM.LONG_NAME, gribVar.makeVariableDescription()));
@@ -1256,7 +1292,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     } */
 
-    String coordSysName = makeCoordSysName(makeAxisNameList(gribVar));
+    String coordSysName = makeCoordSysName(makeAxisNameList(gribVar, coord2axisMap));
 
     return new Coverage(gribVar.makeVariableName(), DataType.FLOAT, atts.getAttributes(), coordSysName, gribVar.makeVariableUnits(),
             gribVar.makeVariableDescription(), this, gribVar);

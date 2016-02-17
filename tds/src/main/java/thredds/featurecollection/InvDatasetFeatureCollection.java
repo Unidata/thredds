@@ -76,6 +76,7 @@ import java.util.*;
  */
 @ThreadSafe
 public abstract class InvDatasetFeatureCollection {
+  private static org.slf4j.Logger oneLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
 
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
@@ -178,7 +179,8 @@ public abstract class InvDatasetFeatureCollection {
     makeDefaultServices();
 
     // this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
-    this.logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection
+    // this.logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection
+    this.logger = oneLogger;
     this.logger.info("FeatureCollection added = {}", getConfig());
   }
 

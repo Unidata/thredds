@@ -312,6 +312,7 @@ public class GribCdmIndex implements IndexReader {
    * @throws IOException
    */
   static public boolean updateGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
+    if (logger == null) logger = classLogger;
 
     long start = System.currentTimeMillis();
 
@@ -322,7 +323,7 @@ public class GribCdmIndex implements IndexReader {
 
     boolean changed;
 
-    if (config.ptype == FeatureCollectionConfig.PartitionType.none) {
+    if (config.ptype == FeatureCollectionConfig.PartitionType.none || config.ptype == FeatureCollectionConfig.PartitionType.all) {
 
       try (CollectionAbstract dcm = new CollectionPathMatcher(config, specp, logger)) {
         changed = updateGribCollection(isGrib1, dcm, updateType, FeatureCollectionConfig.PartitionType.none, logger, errlog);

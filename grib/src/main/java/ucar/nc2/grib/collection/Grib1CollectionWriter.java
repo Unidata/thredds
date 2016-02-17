@@ -57,7 +57,6 @@ import java.util.Set;
  * @since 2/20/14
  */
 class Grib1CollectionWriter extends GribCollectionWriter {
-
   public static final String MAGIC_START = "Grib1Collectio2Index";  // was Grib1CollectionIndex
   protected static final int minVersion = 1; // if less than this, force rewrite or at least do not read
   protected static final int version = 3;    // increment this as needed, must be backwards compatible through minVersion
