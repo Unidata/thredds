@@ -118,7 +118,7 @@ public class Grib2Collection extends GribCollectionImmutable {
 
     if (filename == null) {
       GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-      return gribCov.makeCoverageCollection();
+      return gribCov.createCoverageCollection();
 
     } else {
       MFile wantFile = findMFileByName(filename);
@@ -127,7 +127,7 @@ public class Grib2Collection extends GribCollectionImmutable {
         if (gc == null) return null;
 
         GribCoverageDataset gribCov = new GribCoverageDataset(gc, null, null);
-        return gribCov.makeCoverageCollection();
+        return gribCov.createCoverageCollection();
       }
       return null;
     }

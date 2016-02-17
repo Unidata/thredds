@@ -421,6 +421,9 @@ public class DataFactory {
           System.out.println("Cant open= " + datasetLocation + " " + serviceType);
           e.printStackTrace();
         }
+        String mess = e.getMessage();
+        if (mess != null && mess.contains("Unauthorized"))
+          break; // bail out
 
         accessList.remove(access);
         saveException = e;

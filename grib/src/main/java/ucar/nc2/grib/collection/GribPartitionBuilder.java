@@ -58,7 +58,7 @@ import java.util.*;
  * @since 2/21/14
  */
 abstract class GribPartitionBuilder  {
-  protected static final int version = 2;
+  //protected static final int version = 2;
 
   ////////////////////////
 
@@ -243,7 +243,7 @@ abstract class GribPartitionBuilder  {
           allAre1D = false;
         }
 
-        if (ds2dp.gctype != GribCollectionImmutable.Type.MRUTC && ds2dp.gctype != GribCollectionImmutable.Type.MRUTP)
+        if (!ds2dp.gctype.isUniqueTime())
           allAreUT = false;
 
         int groupIdx = 0;
@@ -321,13 +321,19 @@ abstract class GribPartitionBuilder  {
         vip.finish(); // create the SA, remove list LOOK, could do it differently
 
         // loop over partitions, make union coordinate; also time filter the intervals
-        CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult.getVarid(), intvMap, logger);
+        CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult, intvMap, logger);
         for (int partno = 0; partno < npart; partno++) {
           GribCollectionMutable.GroupGC group = gp.componentGroups[partno];
           if (group == null) continue; // tolerate missing groups
           GribCollectionMutable.VariableIndex vi = group.findVariableByHash(viResult);
           if (vi == null) continue; // tolerate missing variables
-          unionizer.addCoords(vi.getCoordinates());
+          try {
+            PartitionCollectionMutable.Partition part = ds2D.gctype.isUniqueTime() ? null : result.getPartition(partno);
+            unionizer.addCoords(vi.getCoordinates(), part);
+          } catch (IllegalStateException e) {
+            logger.error(e.getMessage()+" on dataset " +name);
+            return null;
+          }
         }  // loop over partition
 
         viResult.coords = unionizer.finish();  // the viResult coordinates have been ortho/regularized
@@ -532,6 +538,8 @@ abstract class GribPartitionBuilder  {
 
   protected abstract String getMagicStart();
 
+  protected abstract int getVersion();
+
   private GribCollectionWriter writer;
 
   // writing ncx2
@@ -560,7 +568,7 @@ abstract class GribPartitionBuilder  {
 
       //// header message
       raf.write(getMagicStart().getBytes(CDM.utf8Charset));
-      raf.writeInt(version);
+      raf.writeInt( getVersion());
       raf.writeLong(0); // no record section
 
       /*

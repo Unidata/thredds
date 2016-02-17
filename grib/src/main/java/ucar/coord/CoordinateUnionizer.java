@@ -34,6 +34,9 @@ package ucar.coord;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.collection.GribCollectionMutable;
+import ucar.nc2.grib.collection.PartitionCollectionMutable;
+import ucar.nc2.time.CalendarDate;
 
 import java.util.*;
 
@@ -51,16 +54,18 @@ import java.util.*;
  * @since 12/10/13
  */
 public class CoordinateUnionizer {
-  // static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateUnionizer.class);
+  static private final boolean debugPartitionErrors = true;
 
-  FeatureCollectionConfig.GribIntvFilter intvFilter;
-  org.slf4j.Logger logger;
-  int varId;
+  private final FeatureCollectionConfig.GribIntvFilter intvFilter;
+  private final org.slf4j.Logger logger;
+  private final GribCollectionMutable.VariableIndex vi;
+  private final Map<Long, PartitionCollectionMutable.Partition> timeMap;
 
-  public CoordinateUnionizer(int varId, FeatureCollectionConfig.GribIntvFilter intvFilter, org.slf4j.Logger logger) {
-    this.varId = varId;
+  public CoordinateUnionizer(GribCollectionMutable.VariableIndex vi, FeatureCollectionConfig.GribIntvFilter intvFilter, org.slf4j.Logger logger) {
+    this.vi = vi;
     this.intvFilter = intvFilter;
     this.logger = logger;
+    timeMap = (debugPartitionErrors) ? new HashMap<>() : null;
   }
 
   List<Coordinate> unionCoords = new ArrayList<>();
@@ -72,7 +77,7 @@ public class CoordinateUnionizer {
   CoordinateBuilder ensBuilder;
   CoordinateTime2DUnionizer time2DBuilder;
 
-  public void addCoords(List<Coordinate> coords) {
+  public void addCoords(List<Coordinate> coords, PartitionCollectionMutable.Partition part) {
     Coordinate runtime = null;
     for (Coordinate coord : coords) {
       switch (coord.getType()) {
@@ -81,31 +86,37 @@ public class CoordinateUnionizer {
           if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder2(rtime.getTimeUnits());
           runtimeBuilder.addAll(coord);
           runtime = coord;
+          if (debugPartitionErrors && part != null)
+            testDuplicateRuntime(rtime, part);
           break;
+
         case time:
           CoordinateTime time = (CoordinateTime) coord;
           if (timeBuilder == null) timeBuilder = new CoordinateTime.Builder2(coord.getCode(), time.getTimeUnit(), time.getRefDate());
           timeBuilder.addAll(coord);
           break;
+
         case timeIntv:
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) coord;
           if (timeIntvBuilder == null) timeIntvBuilder = new CoordinateTimeIntv.Builder2(null, coord.getCode(), timeIntv.getTimeUnit(), timeIntv.getRefDate());
           timeIntvBuilder.addAll(intervalFilter((CoordinateTimeIntv)coord));
           break;
+
         case time2D:
           CoordinateTime2D time2D = (CoordinateTime2D) coord;
           if (time2DBuilder == null) time2DBuilder = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), false, logger);
           time2DBuilder.addAll(time2D);
-
           // debug
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
             logger.warn("HEY CoordinateUnionizer runtimes not equal");
           break;
+
         case ens:
           if (ensBuilder == null) ensBuilder = new CoordinateEns.Builder2(coord.getCode());
           ensBuilder.addAll(coord);
           break;
+
         case vert:
           CoordinateVert vertCoord = (CoordinateVert) coord;
           if (vertBuilder == null) vertBuilder = new CoordinateVert.Builder2(coord.getCode(), vertCoord.getVertUnit());
@@ -115,11 +126,25 @@ public class CoordinateUnionizer {
     }
   }
 
+  private void testDuplicateRuntime(CoordinateRuntime runtime, PartitionCollectionMutable.Partition part) {
+    PartitionCollectionMutable.Partition shownPrevPart = null;
+    for (int idx=0; idx<runtime.getNCoords(); idx++) {    // possible duplicate runtimes from different partitions
+      long time = runtime.getRuntime(idx);
+      PartitionCollectionMutable.Partition prevPart = timeMap.get(time);
+      if (prevPart != null && prevPart != part && prevPart != shownPrevPart) {
+        System.out.printf("Variable %s Runtime %s in part %s and partition %s%n", vi.id(), CalendarDate.of(time), prevPart.getName(), part.getName());
+        logger.warn("Variable {} Runtime {} in part {} and partition {}", vi.id(), CalendarDate.of(time), prevPart.getName(), part.getName());
+        shownPrevPart = prevPart; // eliminate extra messages
+      }
+      timeMap.put(time, part);
+    }
+  }
+
   private List<TimeCoord.Tinv> intervalFilter(CoordinateTimeIntv coord) {
     if (intvFilter == null) return coord.getTimeIntervals();
     List<TimeCoord.Tinv> result = new ArrayList<>();
     for (TimeCoord.Tinv tinv : coord.getTimeIntervals()) {
-      if (!intvFilter.filter(varId, tinv.getBounds1(), tinv.getBounds2(), Integer.MIN_VALUE))
+      if (!intvFilter.filter(vi.getVarid(), tinv.getBounds1(), tinv.getBounds2(), Integer.MIN_VALUE))
         result.add(tinv);
     }
     return result;

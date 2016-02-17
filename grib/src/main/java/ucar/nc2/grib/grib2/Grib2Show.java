@@ -68,7 +68,7 @@ public class Grib2Show {
   }
 
   static public void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) throws IOException {
-    f.format("File=%d %s %n", gr.getFile(), path);
+    f.format("File=%d %s offset=%d%n", gr.getFile(), path, gr.getIs().getStartPos());
     f.format("Header=\"");
     showBytes(f, gr.getHeader(), 100);
     f.format("\"%n");

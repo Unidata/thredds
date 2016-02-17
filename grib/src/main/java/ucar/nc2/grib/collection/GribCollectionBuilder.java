@@ -132,13 +132,10 @@ abstract class GribCollectionBuilder {
 
    // throw exception if failure
   public boolean createIndex(FeatureCollectionConfig.PartitionType ptype, Formatter errlog) throws IOException {
-    switch (ptype) {
-      case none: return createSingleRuntimeCollections(errlog);
-      case directory: return createMultipleRuntimeCollections(errlog);
-      case file: return createMultipleRuntimeCollections(errlog);
-      case timePeriod: return createMultipleRuntimeCollections(errlog);
-    }
-    throw new IllegalArgumentException("unknown FeatureCollectionConfig.PartitionType ="+ptype);
+    if (ptype == FeatureCollectionConfig.PartitionType.all)
+      return createAllRuntimeCollections(errlog);
+    else
+      return createMultipleRuntimeCollections(errlog);
   }
 
    // throw exception if failure
@@ -197,7 +194,7 @@ abstract class GribCollectionBuilder {
   }
 
   // return true if success
-  private boolean createSingleRuntimeCollections(Formatter errlog) throws IOException {
+  private boolean createAllRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
     this.type =  GribCollectionImmutable.Type.SRC;
     boolean ok = true;

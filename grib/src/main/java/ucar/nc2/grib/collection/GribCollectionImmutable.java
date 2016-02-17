@@ -97,7 +97,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public boolean isUniqueTime() {
-      return this == MRUTC || this == MRUTP;
+      return this == MRUTC || this == MRUTP|| this == SRC;
     }
 
     public boolean isTwoD() {
@@ -970,7 +970,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           nmissing += v.nmissing;
         }
         if (nrecords == 0) nrecords = 1;
-        f.format("%s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, g.getDescription(), nrecords, ndups, ((float) ndups / nrecords), nmissing, ((float) nmissing / nrecords));
+        f.format("%s, %s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, ds.getType(), g.getDescription(), nrecords, ndups, ((float) ndups / nrecords), nmissing, ((float) nmissing / nrecords));
       }
     } else {
       for (GroupGC g : ds.groups) {
@@ -980,7 +980,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           ndups += v.ndups;
           nmissing += v.nmissing;
         }
-        f.format(" Group %s total nrecords=%d", g.getDescription(), nrecords);
+        f.format(" Group %s (%s) total nrecords=%d", g.getDescription(), ds.getType(), nrecords);
         if (nrecords == 0) nrecords = 1;
         f.format(", ndups=%d (%f)", ndups, ((float) ndups / nrecords));
         f.format(", nmiss=%d (%f)%n", nmissing, ((float) nmissing / nrecords));

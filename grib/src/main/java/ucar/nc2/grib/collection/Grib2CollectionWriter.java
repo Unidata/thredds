@@ -53,11 +53,9 @@ import java.util.*;
  * @since 4/6/11
  */
 class Grib2CollectionWriter extends GribCollectionWriter {
-
   public static final String MAGIC_START = "Grib2Collectio2Index";  // was Grib2CollectionIndex
   protected static final int minVersion = 1;  // increment this when you want to force index rebuild
   protected static final int version = 3;     // increment this as needed, must be backwards compatible through minVersion
-
 
   protected Grib2CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
     super(dcm, logger);

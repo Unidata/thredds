@@ -338,6 +338,19 @@ public class TestGribIndexCreationOther {
 
   /// rdavm
 
+  @Test
+  public void testRdvamds084p3() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds084.3", "test/ds084.3", FeatureCollectionType.GRIB2,
+            "D:/work/rdavm/ds084.3/**/.*gbx9",
+            null, null, null, "directory", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
   @Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p1() throws IOException {
@@ -348,7 +361,6 @@ public class TestGribIndexCreationOther {
     config.gribConfig.addGdsHash("341801380", "342723940");
     config.gribConfig.useGenType = true;
 
-    //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
@@ -365,7 +377,6 @@ public class TestGribIndexCreationOther {
     config.gribConfig.addGdsHash("341801380", "342723940");
     config.gribConfig.useGenType = true;
 
-    //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
@@ -382,7 +393,6 @@ public class TestGribIndexCreationOther {
     config.gribConfig.addGdsHash("341801380", "342723940");
     config.gribConfig.useGenType = true;
 
-    //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
@@ -399,7 +409,6 @@ public class TestGribIndexCreationOther {
     config.gribConfig.addGdsHash("341801380", "342723940");
     config.gribConfig.useGenType = true;
 
-    //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
@@ -417,7 +426,6 @@ public class TestGribIndexCreationOther {
     config.gribConfig.addGdsHash("341801380", "342723940");
     config.gribConfig.useGenType = true;
 
-    //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
@@ -433,7 +441,6 @@ public class TestGribIndexCreationOther {
             "D:/work/rdavm/ds277.6/monthly/.*gbx9",
             null, null, null, "directory", null);
 
-    //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
@@ -450,7 +457,31 @@ public class TestGribIndexCreationOther {
     config.gribConfig.addGdsHash("341801380", "342723940");
     config.gribConfig.useGenType = true;
 
-    //config.gribConfig.unionRuntimeCoord = true;
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    GribIosp.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  // @Ignore("D: not visible on spock")
+  @Test
+  public void testRdvamds628p0() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds628.0_ll125", "test/ds628.0_ll125", FeatureCollectionType.GRIB1,
+            "D:/work/rdavm/ds628.0/ll125/**/ll125.*[0-9]{4}$",
+            null, null, null, "none", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void testRdvamds628p2() throws IOException {
+    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds628.2", "test/ds628.2", FeatureCollectionType.GRIB1,
+            "D:/work/rdavm/ds628.2/fcst_column125/**/.*gbx9$",
+            null, null, null, "none", null);
+
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
@@ -465,7 +496,6 @@ public class TestGribIndexCreationOther {
             "D:/work/rdavm/ds628.5/fcst_surf125_var_diurnal/**/fcst_surf125_var.*.gbx9",
             null, null, null, "directory", null);
 
-    //config.gribConfig.unionRuntimeCoord = true;
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);

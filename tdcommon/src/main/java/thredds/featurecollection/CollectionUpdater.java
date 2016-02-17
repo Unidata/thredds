@@ -258,7 +258,7 @@ public class CollectionUpdater {
 
       try {
         eventBus.post( new CollectionUpdateEvent(type, collectionName, source));
-        fcLogger.debug("CollectionUpdate {} on {}", type, collectionName);
+        fcLogger.debug("CollectionUpdate post event {} on {}", type, collectionName);
 
       } catch (Throwable e) {
         if (loggerfc != null) loggerfc.error("UpdateCollectionJob.execute "+groupName+" failed collection=" + collectionName, e);

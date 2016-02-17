@@ -62,4 +62,8 @@ class Grib1PartitionBuilder extends GribPartitionBuilder {
   public String getMagicStart() {
     return MAGIC_START;
   }
+
+  protected int getVersion() {
+    return Grib1CollectionWriter.version;
+  }
 }

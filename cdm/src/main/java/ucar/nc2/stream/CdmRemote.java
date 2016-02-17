@@ -45,7 +45,6 @@ import ucar.nc2.util.IO;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Formatter;
 
 /**
@@ -118,7 +117,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       if (statusCode == 404)
         throw new FileNotFoundException(getErrorMessage(method));
 
-      if (statusCode >= 300)
+       if (statusCode >= 300)
         throw new IOException(getErrorMessage(method));
 
       InputStream is = method.getResponseAsStream();
@@ -214,7 +213,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     String path = method.getURL();
     String status = method.getStatusLine();
     String content = method.getResponseAsString();
-    return (content == null) ? path+" "+status : path+" "+status +"\n "+content;
+    return (content == null) ? status + " " + path: status + " " + path +"\n "+content;
   }
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
