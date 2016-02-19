@@ -386,10 +386,10 @@ abstract public class HTTPUtil
     {
         // merge global and local settings; local overrides global.
         HTTPSession.Settings merge = new HTTPSession.Settings();
-        for(String key : globalsettings.getKeys()) {
+        for(HTTPSession.Prop key : globalsettings.getKeys()) {
             merge.setParameter(key, globalsettings.getParameter(key));
         }
-        for(String key : localsettings.getKeys()) {
+        for(HTTPSession.Prop key : localsettings.getKeys()) {
             merge.setParameter(key, localsettings.getParameter(key));
         }
         return merge;

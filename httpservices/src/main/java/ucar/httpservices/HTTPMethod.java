@@ -37,9 +37,7 @@ import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpOptions;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.methods.*;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
@@ -175,8 +173,8 @@ public class HTTPMethod implements Closeable
     protected HTTPSession.Methods methodkind = null;
     protected HTTPMethodStream methodstream = null; // wrapper for strm
     protected boolean closed = false;
-    protected HttpUriRequest debugrequest = null;
-    protected HttpResponse response = null;
+    protected HttpRequestBase request = null;
+    protected CloseableHttpResponse response = null;
     protected long[] range = null;
 
     protected List<Header> headers = new ArrayList<Header>();
@@ -325,10 +323,13 @@ public class HTTPMethod implements Closeable
             setheaders(rb);
 
             // use the session to do the heavy lifting.
-            this.response = session.execute(this, methodurl, rb);
+            HTTPSession.ExecState estate = session.execute(this, methodurl, rb);
+            this.request = estate.request;
+            this.response = estate.response;
+            if(this.request == null || this.response == null)
+                throw new IllegalStateException("HTTPMethod.execute: request or response was null");
             HttpClientContext execcontext = session.getExecutionContext();
-            this.debugrequest = (HttpUriRequest) execcontext.getRequest();
-            int code = response.getStatusLine().getStatusCode();
+            int code = this.response.getStatusLine().getStatusCode();
             return code;
         } catch (Exception ie) {
             throw new HTTPException(ie);
@@ -361,25 +362,27 @@ public class HTTPMethod implements Closeable
                 session = null;
             }
         }
+        // finally, make this reusable
+        if(this.request != null) this.request.reset();
     }
 
     //////////////////////////////////////////////////
     // Accessors
 
     public String
-     getMethodKind()
-     {
-         return this.methodkind.name();
-     }
+    getMethodKind()
+    {
+        return this.methodkind.name();
+    }
 
     public int getStatusCode()
     {
-        return response == null ? 0 : response.getStatusLine().getStatusCode();
+        return (this.response == null) ? 0 : this.response.getStatusLine().getStatusCode();
     }
 
     public String getStatusLine()
     {
-        return response == null ? null : response.getStatusLine().toString();
+        return (this.response == null) ? null : this.response.getStatusLine().toString();
     }
 
     public String getRequestLine()
@@ -412,8 +415,8 @@ public class HTTPMethod implements Closeable
         } else { // first time
             HTTPMethodStream stream = null;
             try {
-                if(response == null) return null;
-                stream = new HTTPMethodStream(response.getEntity().getContent(), this);
+                if(this.response == null) return null;
+                stream = new HTTPMethodStream(this.response.getEntity().getContent(), this);
             } catch (Exception e) {
                 stream = null;
             }
@@ -438,9 +441,9 @@ public class HTTPMethod implements Closeable
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         byte[] content = null;
-        if(response != null)
+        if(this.response != null)
             try {
-                content = EntityUtils.toByteArray(response.getEntity());
+                content = EntityUtils.toByteArray(this.response.getEntity());
             } catch (Exception e) {/*ignore*/}
         return content;
     }
@@ -450,10 +453,10 @@ public class HTTPMethod implements Closeable
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         String content = null;
-        if(response != null)
+        if(this.response != null)
             try {
                 Charset cset = Charset.forName(charset);
-                content = EntityUtils.toString(response.getEntity(), cset);
+                content = EntityUtils.toString(this.response.getEntity(), cset);
             } catch (Exception e) {
                 throw new IllegalArgumentException(e.getMessage());
             }
@@ -479,7 +482,7 @@ public class HTTPMethod implements Closeable
     public Header getResponseHeader(String name)
     {
         try {
-            return this.response.getFirstHeader(name);
+            return this.response == null ? null : this.response.getFirstHeader(name);
         } catch (Exception e) {
             return null;
         }
@@ -488,6 +491,8 @@ public class HTTPMethod implements Closeable
     public Header[] getResponseHeaders()
     {
         try {
+            if(this.response == null)
+                return null;
             Header[] hs = this.response.getAllHeaders();
             return hs;
         } catch (Exception e) {
@@ -636,12 +641,12 @@ public class HTTPMethod implements Closeable
 
     public HttpMessage debugRequest()
     {
-        return this.debugrequest;
+        return (this.request);
     }
 
     public HttpResponse debugResponse()
     {
-        return this.response;
+        return (this.response);
     }
 
     //////////////////////////////////////////////////
@@ -649,6 +654,7 @@ public class HTTPMethod implements Closeable
 
     /**
      * Deprecated: use getMethodKind
+     *
      * @return Name of the method: e.g. GET, HEAD, ...
      */
     @Deprecated
