@@ -77,9 +77,10 @@ public class AllowedServices {
   private DebugCommands debugCommands;
 
   private Map<StandardService, AllowedService> allowed = new HashMap<>();
-  private List<String> allowedGridServiceNames, allowedPointServiceNames, allowedRadialServiceNames;
+  private List<String> allowedGridServiceNames, allowedPointServiceNames, allowedPointCollectionServiceNames, allowedRadialServiceNames;
   private List<Service> allowedGridServices = new ArrayList<>();
   private List<Service> allowedPointServices = new ArrayList<>();
+  private List<Service> allowedPointCollectionServices = new ArrayList<>();
   private List<Service> allowedRadialServices = new ArrayList<>();
   private Map<String, Service> globalServices = new HashMap<>();
 
@@ -114,6 +115,10 @@ public class AllowedServices {
     this.allowedPointServiceNames = list;
   }
 
+  public void setPointCollectionServices(List<String> list) {
+    this.allowedPointCollectionServiceNames = list;
+  }
+
   public void setRadialServices(List<String> list) {
     this.allowedRadialServiceNames = list;
   }
@@ -131,6 +136,19 @@ public class AllowedServices {
       }
     }
     allowedGridServices = Collections.unmodifiableList(result);
+
+    result = new ArrayList<>();
+    for (String s : allowedPointCollectionServiceNames) {
+      StandardService service = StandardService.getStandardServiceIgnoreCase(s);
+      if (service == null)
+        logServerStartup.error("No service named " + s);
+      else {
+        AllowedService as = allowed.get(service);
+        if (as != null && as.allowed)
+          result.add(makeService(as.ss));
+      }
+    }
+    allowedPointCollectionServices = Collections.unmodifiableList(result);
 
     result = new ArrayList<>();
     for (String s : allowedPointServiceNames) {
@@ -184,6 +202,18 @@ public class AllowedServices {
 
     if (featType == FeatureType.RADIAL) {
       return new Service("RadialServices", "", ServiceType.Compound.toString(), null, null, allowedRadialServices, null);
+    }
+
+    return null;
+  }
+
+  public Service getStandardCollectionServices(FeatureType featType) {
+    if (featType.isCoverageFeatureType()) {
+      return new Service("GridCollectionServices", "", ServiceType.Compound.toString(), null, null, allowedGridServices, null);
+    }
+
+    if (featType.isPointFeatureType()) {
+      return new Service("PointCollectionServices", "", ServiceType.Compound.toString(), null, null, allowedPointCollectionServices, null);
     }
 
     return null;
@@ -293,6 +323,10 @@ public class AllowedServices {
         }
         e.pw.printf("%n<h3>Point Services</h3>%n");
         for (Service s : allowedPointServices) {
+          e.pw.printf(" <b>%s:</b> %s%n", s.getName(), s.toString());
+        }
+        e.pw.printf("%n<h3>Point Collection Services</h3>%n");
+        for (Service s : allowedPointCollectionServices) {
           e.pw.printf(" <b>%s:</b> %s%n", s.getName(), s.toString());
         }
         e.pw.printf("%n<h3>Radial Services</h3>%n");
