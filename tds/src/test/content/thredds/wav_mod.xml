@@ -8,6 +8,7 @@
     <service name="opendap"   serviceType="OpenDAP"      base="/thredds/dodsC/"     />
     <service name="wcs"       serviceType="WCS"          base="/thredds/wcs/"       />
     <service name="wms"       serviceType="WMS"          base="/thredds/wms/"       />
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/" />
     <service name="ncss"      serviceType="NetcdfSubset" base="/thredds/ncss/" />
   </service>
 

@@ -217,6 +217,7 @@
   <catalogRef xlink:title="Radar Collections" xlink:href="radar/radarCollections.xml" name=""/>
   <catalogRef xlink:title="HIOOS" xlink:href="wav_mod.xml" name=""/>
   <catalogRef xlink:title="ESGF" xlink:href="testEsgfProblems.xml" name=""/>
+  <catalogRef xlink:title="RDA" xlink:href="testRdaProblems.xml" name=""/>
 
   <catalogScan location="catalogs5" path="catalogs5" name="catalog scan with version 5 features"/>
 

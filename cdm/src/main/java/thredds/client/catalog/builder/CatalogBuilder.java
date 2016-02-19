@@ -190,6 +190,10 @@ public class CatalogBuilder {
       services.add(s);
   }
 
+  public void removeAnyService() {
+    services = null;
+  }
+
   public void addDataset(DatasetBuilder d) {
     if (d == null) return;
     if (datasetBuilders == null) datasetBuilders = new ArrayList<>();

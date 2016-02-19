@@ -1,27 +1,47 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:toc:
 
 = GRIB Feature Collections
 
 == Overview
 
-GRIB Feature Collection Datasets are collections of GRIB records, which
-contain gridded data, typically from numeric model output. Because of
-the complexity of how GRIB data is written and stored, the TDS has
-developed specialized handling of GRIB datasets called *_GRIB Feature Collections_*.
+GRIB Feature Collection Datasets are collections of GRIB records, which contain gridded data, typically from numeric model output.
+Because of the complexity of how GRIB data is written and stored, the TDS has developed specialized handling of GRIB datasets called *_GRIB Feature Collections_*.
 
 * The user need only specify a collection of GRIB-1 or GRIB-2 files, and the software turns them into a dataset.
 * New indexing scheme allows fast access and scalability to very large datasets.
 * Multiple horizontal domains are supported and placed into separate groups.
 * Interval time coordinates are fully supported.
 
+Also see:
+
+* <<FeatureCollections#,Feature Collection>> overview
+* <<GribConfig#,GRIB specific configuration>>
+* <<GribCollectionFaq#,GRIB Collection FAQs>>
+* <<Partitions#,Partitions>>
+* <<../../../netcdf-java/reference/formats/GribFiles#,CDM GRIB Collection Processing>>
+
+=== Multiple Dataset Collections
+
+When a Grib Collection contains multiple runtimes, and the valid times (forecast times) overlap, a TwoD time dataset is created.
+From that, a Best time dataset is also created. One has the option of serving both or either of these.
+
+=== Multiple Groups
+
+When a Grib Collection contains multiple horizontal domains (i.e. distinct Grid Definition Sections (GDS)),
+each domain gets placed into a seperate group (CDM) or Dataset (TDS).
+
+
+== History
+
 === Version 4.5
 
 The GRIB Collections framework has been rewritten in CDM version 4.5, in
 order to handle large collections efficiently. Some of the new capabilities in version 4.5 are:
 
-* GRIB Collections now keep track of both the *_reference time_* and
-*_valid time_*. The collection is *_partitioned_* by reference time.
+* GRIB Collections now keep track of both the *_reference time_* and *_valid time_*.
+The collection is *_partitioned_* by reference time.
 * A collection with a single reference time will have a single partition
 with a single time coordinate.
 * A collection with multiple reference times will have partitions for
@@ -81,72 +101,95 @@ order to handle very large collections efficiently.
 * Collection index files now use the suffix **ncx4**. These will be
 rewritten first time you access the files. The *gbx9* files do NOT need
 to be rewritten, which is good because those are the slow ones.
-* DefaultServices. One can use the service name "DefaultServices" to use the default services for that Feature Type._
-** _If you dont specify the service name, DefaultServices is used._
-** DefaultServices use all enabled services appropriate to that Feature Type
+* Defaults
+** You no longer need specify the dataFormat or dataType, these are automatically added
+** It is recommended to not specify the set of services used, but accept the default set of services.
 
-Also see:
 
-* <<FeatureCollections#,Feature Collection>> overview
-* <<GribConfig#,GRIB specific configuration>>
-* <<GribCollectionFaq#,GRIB Collection FAQs>>
-* <<../../../netcdf-java/reference/formats/GribFiles#,CDM GRIB
-Collection Processing>>
+
+== Generated URLs
+
+So the datasets that are generated from a Grib Collection with *groupName* and *path* :
+
+[cols=",,,",options="header",]
+|===
+|dataset |catalogRef |name |path
+|group collection |  |groupName |path/groupName/_collection_
+
+|individual files |path/groupName/files/catalog.xml |filename
+|path/_files_/filename
+|===
+
+So the datasets that are generated from a Time Partition with **name**, **path**, and **partitionName**:
+
+[cols=",,,",options="header",]
+|===
+|dataset |catalogRef |name |path
+|collection |path/__collection/catalog.xml__ |name
+|path/name__/collection__
+
+|partitions |path/partitionName__/catalog.xml__ |partitionName
+|path/partitionName/__collection__
+
+|individual files |path/partitionName/__files/catalog.xml__ |filename
+|path/__files__/filename
+|===
+
+So the datasets that are generated from a Time Partition with **name**, **path**, **groupName**, and **partitionName**:
+
+[cols=",,,",options="header",]
+|===
+|dataset |catalogRef |name |path
+|overall collection for group |path/groupName/__collection/catalog.xml__
+|groupName |path/name/groupName
+
+|collection for partition and group |path/partitionName__/catalog.xml__
+|groupName |path/partitionName/groupName
+
+|individual files |path/partitionName/groupName/__files/catalog.xml__
+|partitionName/filename |path/__files__/filename
+|===
 
 == Example 1 (timePartition="none"):
 
+[source,xml]
 ------------------------------------------------------------------------------------------------
-1)<featureCollection featureType="GRIB1" name="rdavm partition none" path="gribCollection/none">
-2) <metadata inherited="true">
-3)  <dataFormat>GRIB-2</dataFormat>  <!--not used -->
-    <serviceName>all</serviceName>
-    <dataType>Grid</dataType>
-   </metadata>
+<featureCollection featureType="GRIB1" name="Dataset ds099.9" path="gribCollection/ds099.9"> # <1>
+ <metadata inherited="true"> # <2>
+      <documentation type="summary">The ds099.9 dataset blah blah blah</documentation>
+      <documentation xlink:href="http://www.rda.ucar.edu/rda/docs#ds099.9"
+            xlink:title="RDA Information"/>
+ </metadata>
 
-4) <collection name="ds083.2-none"
-5)      spec="Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1"
-6)      timePartition="none"/>
+ <collection name="ds099.9-none" # <3>
+    spec="Q:/cdmUnitTest/gribCollections/rdavm/ds099.9/PofP/**/.*grib1" # <4>
+    timePartition="none"/> # <5>
 
-7)   <update startup="never" trigger="allow"/>
-8)   <tdm rewrite="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
-9)   <gribConfig datasetTypes="TwoD Latest Best" />
+   <update startup="never" trigger="allow"/> # <6>
+   <tdm rewrite="test" rescan="0 0/15 * * * ? *" /> # <7>
+   <gribConfig datasetTypes="TwoD Latest Best" /> # <8>
 </featureCollection>
 ------------------------------------------------------------------------------------------------
 
-1.  A *featureCollection* must have a _name, a featureType_ and a _path_
-(do *not* set an _ID_ attribute__)__. Note that the *featureType*
-attribute must now equal _GRIB1_ or __GRIB2__, not plain __GRIB__.
-2.  A featureCollection is an InvDataset, so it can contain any elements
-an InvDataset can contain. It must have or inherit a default
-**service**.
-3.  The collection must consist of either GRIB-1 or GRIB-2 files (not
-both). You no longer should set the *dataFormat* element to indicate
-which, as it is specified in the featureType, and will be added
-automatically.
-4.  The collection *name* should be short but descriptive, it must be
-unique across all collections on your TDS, and should not change.
-5.  The <<CollectionSpecification#,collection specification>>
-defines the collection of files that are in this dataset.
-6.  The <<Partitions#,partitionType>> is **none**.
-7.  This *update* element tells the TDS to use the existing indices, and
-to read them only when an external trigger is sent. This is the default
-behavior as of 4.5.4.
-8.  This *tdm* element tells the <<TDM#,TDM>> to test every 15
-minutes if the collection has changed, and to rewrite the indices and
-and send a trigger to the TDS when it has changed.
-9.  <<GribConfig#,GRIB specific configuration>>.
+<1>  A *featureCollection* must have a _name_, a _featureType_ and a _path_ (do *not* set an _ID_ attribute).
+The name is "human readable" and may change at will.
+Note that the *featureType* attribute must now equal _GRIB1_ or _GRIB2_, not plain _GRIB_.
+<2>  A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain, such as metadata.
+<3>  The collection *name* should be short but descriptive, it must be unique across all collections on your TDS, and should not change.
+<4>  The <<CollectionSpecification#,collection specification>> defines the collection of files that are in this dataset.
+<5>  The <<Partitions#,partitionType>> is **none**.
+<6>  This *update* element tells the TDS to use the existing indices, and to read them only when an external trigger is sent.
+This is the default behavior, so could be ommitted
+<7>  This *tdm* element tells the <<TDM#,TDM>> to test every 15 minutes if the collection has changed, and to rewrite the indices when it has changed.
+<8>  <<GribConfig#,GRIB specific configuration>>.
 
 === Resulting Datasets:
 
-The above example generates a TwoD and Best dataset for the entire
-collection, a reference to the latest datset, as well as one dataset for
-each reference time in the collection, which become nested datasets in
-the catalog. These datasets are named by their index files, in the form
-**<collection-name>.<referenceTime>.ncx4**, eg
-GFS-Puerto_Rico-20141110-000000.ncx4
+The above example generates a TwoD and Best dataset for the entire collection.
 
 The simplified catalog is:
 
+[source,xml]
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
   <dataset name="NCEP GFS Puerto_Rico (191km)">
     <metadata inherited="true">
@@ -163,9 +206,6 @@ The simplified catalog is:
     <dataset name="Latest Collection for NCEP GFS Puerto_Rico (191km)" urlPath="latest.xml">
       <serviceName>latest</serviceName>
     </dataset>
-    <catalogRef xlink:href="/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-000000.ncx4/catalog.xml" />
-    <catalogRef xlink:href="/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-060000.ncx4/catalog.xml" />
-    <catalogRef xlink:href="/thredds/catalog/fmrc/NCEP/GFS/Puerto_Rico/GFS-Puerto_Rico-20141110-120000.ncx4/catalog.xml" />
   </dataset>
 -----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -177,6 +217,7 @@ of which file stores them.
 
 Now suppose that we modify the above example and use timePartition="directory":
 
+[source,xml]
 --------------------------------------------------------------------------------------------------------------------------------------
 <featureCollection featureType="GRIB1" name="rdavm partition directory" path="gribCollection/pofp">
   <metadata inherited="true">
@@ -215,6 +256,7 @@ up. Manual triggers for updating are enabled.
 A time partition generates one collection dataset, one dataset for each
 partition, and one dataset for each individual file in the collection:
 
+[source,xml]
 -----------------------------------------------------------------------------------------------------------------------------------------
 <dataset name="NAM-Polar90" ID="grib/NCEP/NAM/Polar90">
   <catalogRef xlink:href="/thredds/catalog/grib/NCEP/NAM/Polar90/collection/catalog.xml" xlink:title="collection"/>
@@ -230,6 +272,7 @@ partition, and one dataset for each individual file in the collection:
 
 de-referencing the catalogRefs, and simplifying:
 
+[source,xml]
 -------------------------------------------------------------------------------------------------------------------------------------
 <dataset name="NAM-Polar90" ID="grib/NCEP/NAM/Polar90">
 1)<dataset name="NAM-Polar90-collection" urlPath="grib/NCEP/NAM/Polar90/collection">
@@ -281,6 +324,7 @@ without reading the files. If you open this collection through the CDM
 TDS, however, separates groups into different datasets, so that each
 dataset has only a single (unnamed, aka __root__) group.
 
+[source,xml]
 --------------------------------------------------------------------------------------------
  <featureCollection name="RFC" featureType="GRIB" path="grib/NPVU/RFC">
    <metadata inherited="true">
@@ -320,6 +364,7 @@ details).
 For each group, this generates one collection dataset, and one dataset
 for each individual file in the group:
 
+[source,xml]
 -------------------------------------------------------------------------------------------------------------------------------
 <catalog>
   <dataset name="KALR:Southeast RFC" urlPath="grib/NPVU/RFC/KALR-Southeast-RFC/collection">
@@ -335,6 +380,7 @@ for each individual file in the group:
 Note that the groups are sorted by name, and that there is no overall
 collection for the dataset. Simplifying:
 
+[source,xml]
 ---------------------------------------------------------------------------------------------------------------------
 <catalog>
 1)<dataset name="KALR:Southeast RFC" urlPath="grib/NPVU/RFC/KALR-Southeast-RFC/collection">
@@ -361,16 +407,17 @@ So the datasets that are generated from a Grib Collection with
 [cols=",,,",options="header",]
 |=======================================================================
 |dataset |catalogRef |name |path
-|group collection |  |groupName____ |path/groupName/__collection__
+|group collection |  |groupName |path/groupName/_collection_
 
-|individual files |path/groupName/__files/catalog.xml__ |filename
-|path/__files__/filename
+|individual files |path/groupName/files/catalog.xml |filename
+|path/_files_/filename
 |=======================================================================
 
 == Example 4 (Time Partition with Multiple Groups):
 
 Here is a time partitioned dataset with multiple groups:
 
+[source,xml]
 ------------------------------------------------------------------------------
  <featureCollection name="NCDC-CFSR" featureType="GRIB" path="grib/NCDC/CFSR">
    <metadata inherited="true">
@@ -407,6 +454,7 @@ A time partition with multiple groups generates an _overall collection
 dataset_ for each group, a collection dataset for each group in each
 partition, and a dataset for each individual file:
 
+[source,xml]
 ----------------------------------------------------------------------------------------------------------------------
 <dataset name="NCDC-CFSR" ID="grib/NCDC/CFSR">
 1) <catalogRef xlink:href="/thredds/catalog/grib/NCDC/CFSR/collection/catalog.xml" xlink:title="collection" name="" />
@@ -418,6 +466,7 @@ partition, and a dataset for each individual file:
 
 de-referencing the catalogRefs, and simplifying:
 
+[source,xml]
 --------------------------------------------------------------------------------------------------------------------------------------------
 <dataset name="NCDC-CFSR" ID="grib/NCDC/CFSR">
 
@@ -456,18 +505,7 @@ etc.
 So the datasets that are generated from a Time Partition with **name**,
 **path**, **groupName**, and **partitionName**:
 
-[cols=",,,",options="header",]
-|=======================================================================
-|dataset |catalogRef |name |path
-|overall collection for group |path/groupName/__collection/catalog.xml__
-|groupName |path/name/groupName
 
-|collection for partition and group |path/partitionName__/catalog.xml__
-|groupName |path/partitionName/groupName
-
-|individual files |path/partitionName/groupName/__files/catalog.xml__
-|partitionName/filename |path/__files__/filename
-|=======================================================================
 
 ''''
 

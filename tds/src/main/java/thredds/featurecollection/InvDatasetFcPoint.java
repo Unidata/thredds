@@ -93,7 +93,6 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     return fd;
   }
 
-
   @Override
   public void updateCollection(State localState, CollectionUpdateType force) {
     try {
@@ -111,7 +110,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     try {
       if ((match == null) || (match.length() == 0)) {
         CatalogBuilder main = makeCatalogTop(catURI, localState);
-        main.addService(virtualService);
+        main.removeAnyService();
         return main;
 
       } else if (match.startsWith(FILES) && wantDatasets.contains(FeatureCollectionConfig.PointDatasetType.Files)) {
@@ -130,11 +129,13 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     DatasetBuilder top = new DatasetBuilder(null);
     top.transferInheritedMetadata(parent); // make all inherited metadata local
     top.setName(name);
-    top.addServiceToCatalog(virtualService);
+
+    Service topService = allowedServices.getStandardCollectionServices( fd.getFeatureType());
+    top.addServiceToCatalog(topService);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();
     tmi.set(Dataset.FeatureType, FeatureType.GRID.toString()); // override GRIB
-    tmi.set(Dataset.ServiceName, virtualService.getName());
+    tmi.set(Dataset.ServiceName, topService.getName());
     if (localState.coverage != null) tmi.set(Dataset.GeospatialCoverage, localState.coverage);
     if (localState.dateRange != null) tmi.set(Dataset.TimeCoverage, localState.dateRange);
     if (localState.vars != null) tmi.set(Dataset.VariableGroups, localState.vars);
