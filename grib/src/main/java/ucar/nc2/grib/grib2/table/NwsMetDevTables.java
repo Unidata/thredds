@@ -33,7 +33,6 @@
  */
 package ucar.nc2.grib.grib2.table;
 
-import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -69,10 +68,16 @@ public class NwsMetDevTables extends NcepLocalTables {
     if (!pds.isTimeInterval()) return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
 
+    // override here only if timeRangeUnit = 255
+    boolean needOverride = false;
+    for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
+      needOverride = (ti.timeRangeUnit == 255);
+    }
+    if (!needOverride)
+      return super.getForecastTimeInterval(gr);
+
     CalendarDate intvEnd = pdsIntv.getIntervalTimeEnd();
-
     int ftime = pdsIntv.getForecastTime();
-
     int timeUnitOrg = pds.getTimeUnit();
     int timeUnitConvert = convertTimeUnit(timeUnitOrg);
     CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(timeUnitConvert);
@@ -94,6 +99,17 @@ public class NwsMetDevTables extends NcepLocalTables {
    */
   @Override
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
+    Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
+
+    // override here only if timeRangeUnit = 255
+    boolean needOverride = false;
+    for (Grib2Pds.TimeInterval ti : pdsIntv.getTimeIntervals()) {
+      needOverride = (ti.timeRangeUnit == 255);
+    }
+    if (!needOverride)
+      return super.getForecastTimeIntervalSizeInHours(pds);
+
+
     return 12.0;
   }
 
