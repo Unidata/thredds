@@ -15,11 +15,13 @@ A *_cdmrfstream_* is an ordered sequence of one or more messages:
    cdmrfstream := MAGIC_START, {message}*, MAGIC_END
    message := headerMessage | dataMessage | errorMessage
 
-   headerMessage := covHeaderMessage | dsgHeaderMessaage
+   headerMessage := covHeaderMessage | dsgHeaderMessage
+   dataMessage := covDataMessage | covCoordDataMessage | dsgDataMessaage
+
    covHeaderMessage := MAGIC_HEADERCOV, vlenb, CdmrFeatureProto.CoverageDataset
    covDataMessage := MAGIC_DATACOV, vlenb, CdmrFeatureProto.CoverageDataResponse
+   covCoordDataMessage := MAGIC_DATACOORD, vlenb, CdmrFeatureProto.CoordDataResponse
 
-   dataMessage := covDataMessage | dsgDataMessaage
    dsgHeaderMessage := MAGIC_HEADERDSG, vlenb, CdmrFeatureProto.PointDataset
    dsgDataMessage := MAGIC_DATADSG, vlenb, CdmrFeatureProto.PointDataResponse
 
@@ -30,8 +32,9 @@ A *_cdmrfstream_* is an ordered sequence of one or more messages:
 primitives (same as ncstream, plus):
 
    MAGIC_HEADERCOV:=
-   MAGIC_HEADERDSG:=
    MAGIC_DATACOV:=
+   MAGIC_DATACOORD:=
+   MAGIC_HEADERDSG:=
    MAGIC_DATADSG:=
 ----
 

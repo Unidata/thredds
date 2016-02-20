@@ -42,6 +42,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.LastModified;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
@@ -54,11 +55,17 @@ import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.nc2.Variable;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.remote.CdmrFeatureProto;
 import ucar.nc2.ft2.coverage.remote.CdmrfWriter;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamCompression;
+import ucar.nc2.stream.NcStreamDataCol;
+import ucar.nc2.stream.NcStreamProto;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -114,12 +121,7 @@ public class CdmrGridController implements LastModified {
       responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
       return new ResponseEntity<>(cc.getCoverageType().toString(), responseHeaders, HttpStatus.OK);
 
-    } /* catch (Throwable t) {
-      HttpHeaders responseHeaders = new HttpHeaders();
-      responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
-      return new ResponseEntity<>(t.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    } */
-
+    }
   }
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=header")
@@ -172,9 +174,54 @@ public class CdmrGridController implements LastModified {
     }
   }
 
-  /* var=gridName
-     Z=value
-   */
+  @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=coord")
+  public void handleCoordRequest(HttpServletRequest request, HttpServletResponse response,
+                                 @RequestParam String var,
+                                 OutputStream out) throws IOException, BindException, InvalidRangeException {
+
+    if (!allowedServices.isAllowed(StandardService.cdmrFeatureGrid))
+      throw new ServiceNotAllowed(StandardService.cdmrFeatureGrid.toString());
+
+    String datasetPath = TdsPathUtils.extractPath(request, StandardService.cdmrFeatureGrid.getBase());
+
+    try (CoverageCollection gridCoverageDataset = TdsRequestedDataset.getCoverageCollection(request, response, datasetPath)) {
+      if (gridCoverageDataset == null) return;
+
+      response.setContentType(ContentType.binary.getContentHeader());
+      response.setHeader("Content-Description", "ncstream");
+
+      String[] coordNames = var.split(",");
+      for (String coordName : coordNames) {
+        CoverageCoordAxis coord = gridCoverageDataset.findCoordAxis(coordName);
+        double[] values;
+        if (!coord.isRegular())
+          values = coord.getValues();
+        else {
+          values = new double[coord.getNcoords()];
+          for (int i=0; i<values.length; i++)
+            values[i] = coord.getStartValue() + i*coord.getResolution();
+        }
+        sendCoordData(coord.getName(), new Section(new Range(values.length)), Array.makeFromJavaArray(values), out);
+      }
+      out.flush();
+
+    } catch (Throwable t) {
+      throw new RuntimeException("CdmrGridController on dataset "+datasetPath, t);
+    }
+  }
+
+  private long sendCoordData(String name, Section section, Array data, OutputStream out) throws IOException, InvalidRangeException {
+    NcStreamDataCol encoder = new NcStreamDataCol();
+    NcStreamProto.DataCol dataProto = encoder.encodeData2(name, false, section, data);
+
+    long size = 0;
+    size += writeBytes(out, NcStream.MAGIC_DATA2); // data version 3
+
+    byte[] datab = dataProto.toByteArray();
+    size += NcStream.writeVInt(out, datab.length); // dataProto len
+    size += writeBytes(out, datab); // dataProto
+    return size;
+  }
 
   @RequestMapping(value = "/**", method = RequestMethod.GET, params = "req=data")
   public void handleDataRequest(HttpServletRequest request, HttpServletResponse response,

@@ -61,7 +61,8 @@ import org.jdom2.input.SAXBuilder;
 
 /**
  * Factory for FeatureDataset using cdmrFeature protocol.
- * this object represents the client, connecting to a remote dataset.
+ * This object represents the client, connecting to a remote dataset.
+ * This handles both coverages (now in ucar.nc2.ft2) and point (ucar.nc2.ft) feature types.
  *
  * @author caron
  * @since May 19, 2009
