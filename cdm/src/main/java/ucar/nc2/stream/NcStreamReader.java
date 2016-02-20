@@ -108,15 +108,15 @@ public class NcStreamReader {
 
     // LOOK why are we reading then ignoring the data?
     while (is.available() > 0) {
-      readData(is, ncfile);
+      readData(is, ncfile, ncfile.getLocation());
     }
 
     return ncfile;
   }
 
-  static class DataResult {
-    String varNameFullEsc;
-    Array data;
+  static public class DataResult {
+    public String varNameFullEsc;
+    public Array data;
 
     DataResult(String varName, Array data) {
       this.varNameFullEsc = varName;
@@ -132,15 +132,15 @@ public class NcStreamReader {
    * @return DataResult
    * @throws IOException on read error
    */
-  public DataResult readData(InputStream is, NetcdfFile ncfile) throws IOException {
+  public DataResult readData(InputStream is, NetcdfFile ncfile, String location) throws IOException {
     byte[] b = new byte[4];
     int bytesRead = NcStream.readFully(is, b);
     if (bytesRead < b.length) return null;
 
     if (NcStream.test(b,NcStream.MAGIC_DATA)) return readData1(is, ncfile);
-    if (NcStream.test(b,NcStream.MAGIC_DATA2)) return readData2(is, ncfile);
+    if (NcStream.test(b,NcStream.MAGIC_DATA2)) return readData2(is);
 
-    throw new IOException("Data transfer corrupted on " + ncfile.getLocation());
+    throw new IOException("Data transfer corrupted on " + location);
   }
 
   private DataResult readData1(InputStream is, NetcdfFile ncfile) throws IOException {
@@ -228,7 +228,7 @@ public class NcStreamReader {
     return new DataResult(dproto.getVarName(), data);
   }
 
-  private DataResult readData2(InputStream is, NetcdfFile ncfile) throws IOException {
+  private DataResult readData2(InputStream is) throws IOException {
     int psize = NcStream.readVInt(is);
     if (debug) System.out.println("  readData data message len= " + psize);
     byte[] dp = new byte[psize];

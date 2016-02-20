@@ -61,7 +61,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Client side for opening a CdmrFeature CoverageDataset
+ * Client side for opening a CdmrFeature CoverageDataset. Reads the metadata.
  *
  * @author caron
  * @since 5/2/2015

@@ -159,6 +159,39 @@ This is the default behavior, so could be ommitted
 <7>  This *tdm* element tells the <<TDM#,TDM>> to test every 15 minutes if the collection has changed, and to rewrite the indices when it has changed.
 <8>  <<GribConfig#,GRIB specific configuration>>.
 
+== Example 1 (timePartition="none"):
+
+[source,xml]
+------------------------------------------------------------------------------------------------
+<featureCollection featureType="GRIB1" name="Dataset ds099.9" path="gribCollection/ds099.9"> # <1>
+ <metadata inherited="true"> # <2>
+      <documentation type="summary">The ds099.9 dataset blah blah blah</documentation>
+      <documentation xlink:href="http://www.rda.ucar.edu/rda/docs#ds099.9"
+            xlink:title="RDA Information"/>
+ </metadata>
+
+ <collection name="ds099.9-none" # <3>
+    spec="Q:/cdmUnitTest/gribCollections/rdavm/ds099.9/PofP/**/.*grib1" # <4>
+    timePartition="none"/> # <5>
+
+   <update startup="never" trigger="allow"/> # <6>
+   <tdm rewrite="test" rescan="0 0/15 * * * ? *" /> # <7>
+   <gribConfig datasetTypes="TwoD Latest Best" /> # <8>
+</featureCollection>
+------------------------------------------------------------------------------------------------
+
+<1>  A *featureCollection* must have a _name_, a _featureType_ and a _path_ (do *not* set an _ID_ attribute).
+The name is "human readable" and may change at will.
+Note that the *featureType* attribute must now equal _GRIB1_ or _GRIB2_, not plain _GRIB_.
+<2>  A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain, such as metadata.
+<3>  The collection *name* should be short but descriptive, it must be unique across all collections on your TDS, and should not change.
+<4>  The <<CollectionSpecification#,collection specification>> defines the collection of files that are in this dataset.
+<5>  The <<Partitions#,partitionType>> is **none**.
+<6>  This *update* element tells the TDS to use the existing indices, and to read them only when an external trigger is sent.
+This is the default behavior, so could be ommitted
+<7>  This *tdm* element tells the <<TDM#,TDM>> to test every 15 minutes if the collection has changed, and to rewrite the indices when it has changed.
+<8>  <<GribConfig#,GRIB specific configuration>>.
+
 === Resulting Datasets:
 
 The above example generates a TwoD and Best dataset for the entire collection.
