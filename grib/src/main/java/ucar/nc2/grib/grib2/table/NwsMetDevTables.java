@@ -45,7 +45,6 @@ import ucar.nc2.time.CalendarPeriod;
  SubCenter     = (14) NWS Meteorological Development Laboratory
  Master Table  = 1
  Local Table   = 0
-
  *
  * @author caron
  * @since 1/28/2016.
