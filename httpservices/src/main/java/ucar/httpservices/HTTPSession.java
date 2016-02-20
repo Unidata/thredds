@@ -44,10 +44,10 @@ import org.apache.http.client.entity.DeflateDecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
-import org.apache.http.client.params.AllClientPNames;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -150,29 +150,29 @@ public class HTTPSession implements Closeable
     // Constants
 
     // Define all the legal properties
-    // From class AllClientPNames
-    // To do: AllClientPNames is deprecated, so change all references
-    // Use aliases because in httpclient 4.4, AllClientPNames is deprecated
+    // Previously taken from class AllClientPNames, but that is now
+    // deprecated, so just use an enum
 
-    static public final String ALLOW_CIRCULAR_REDIRECTS = AllClientPNames.ALLOW_CIRCULAR_REDIRECTS;
-    static public final String HANDLE_REDIRECTS = AllClientPNames.HANDLE_REDIRECTS;
-    static public final String HANDLE_AUTHENTICATION = AllClientPNames.HANDLE_AUTHENTICATION;
-    static public final String MAX_REDIRECTS = AllClientPNames.MAX_REDIRECTS;
-    static public final String SO_TIMEOUT = AllClientPNames.SO_TIMEOUT;
-    static public final String CONN_TIMEOUT = AllClientPNames.CONNECTION_TIMEOUT;
-    static public final String USER_AGENT = AllClientPNames.USER_AGENT;
+    static /*package*/ enum Prop
+    {
+        ALLOW_CIRCULAR_REDIRECTS,
+        HANDLE_REDIRECTS,
+        HANDLE_AUTHENTICATION,
+        MAX_REDIRECTS,
+        MAX_THREADS,
+        SO_TIMEOUT,
+        CONN_TIMEOUT,
+        CONN_REQ_TIMEOUT,
+        USER_AGENT,
+        COOKIE_STORE,
+        RETRIES,
+        UNAVAILRETRIES,
+        COMPRESSION,
+        CREDENTIALS,
+        USESESSIONS,
+    }
 
-    // Following not from AllClientPNames
-    static public final String COOKIE_STORE = org.apache.http.client.protocol.HttpClientContext.COOKIE_STORE;
-    static public final String CONN_REQ_TIMEOUT = "http.connection_request.timeout";
-    static public final String RETRIES = "http.retries";
-    static public final String UNAVAILRETRIES = "http.service_unavailable";
-
-    // Locally defined
-    static public final String COMPRESSION = "COMPRESSION";
-    static final public String CREDENTIALS = "Credentials";
-    static final public String USESESSIONS = "UseSessions";
-
+    // Header names
     // from: http://en.wikipedia.org/wiki/List_of_HTTP_header_fields
     static final public String HEADER_USERAGENT = "User-Agent";
     static final public String ACCEPT_ENCODING = "Accept-Encoding";
@@ -227,42 +227,49 @@ public class HTTPSession implements Closeable
      * Sub-class HashTable<String,Object> for mnemonic convenience
      * and for synchronized access.
      */
-    static class Settings extends Hashtable<String, Object>
+    static class Settings extends Hashtable<Prop, Object>
     {
         public Settings()
         {
         }
 
-        public Set<String>
+        public Set<Prop>
         getKeys()
         {
             return keySet();
         }
 
-        public Object getParameter(String param)
+        public Object getParameter(Prop param)
         {
             return super.get(param);
         }
 
-        public long getIntParameter(String param)
+        public long getIntParameter(Prop param)
         {
             return (Long) super.get(param);
         }
 
-        public Settings setParameter(String param, Object value)
+        public Settings setParameter(Prop param, Object value)
         {
             super.put(param, value);
             return this;
         }
 
-        public Object removeParameter(String param)
+        public Object removeParameter(Prop param)
         {
             return super.remove(param);
         }
 
     }
 
-    static enum Methods
+    // For communication between HTTPSession.execute and HTTPMethod.execute.
+    static /*package*/ class ExecState
+    {
+        public HttpRequestBase request = null;
+        public CloseableHttpResponse response = null;
+    }
+
+    static /*package*/ enum Methods
     {
         Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
         private final String name;
@@ -348,7 +355,8 @@ public class HTTPSession implements Closeable
     static public org.slf4j.Logger log
             = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
 
-    static PoolingHttpClientConnectionManager connmgr;
+    static protected PoolingHttpClientConnectionManager connmgr;
+
 
     // Define a settings object to hold all the
     // settable values; there will be one
@@ -400,7 +408,7 @@ public class HTTPSession implements Closeable
         processDFlags(); // Process all -D flags
         connmgr = new PoolingHttpClientConnectionManager(sslregistry);
         setGlobalUserAgent(DFALTUSERAGENT);
-        setGlobalThreadCount(DFALTTHREADCOUNT);
+        // does not work setGlobalThreadCount(DFALTTHREADCOUNT);
         setGlobalConnectionTimeout(DFALTCONNTIMEOUT);
         setGlobalSoTimeout(DFALTSOTIMEOUT);
     }
@@ -412,14 +420,15 @@ public class HTTPSession implements Closeable
     static protected void setDefaults(Settings props)
     {
         if(false) {// turn off for now
-            props.setParameter(HANDLE_AUTHENTICATION, Boolean.TRUE);
+            props.setParameter(Prop.HANDLE_AUTHENTICATION, Boolean.TRUE);
         }
-        props.setParameter(HANDLE_REDIRECTS, Boolean.TRUE);
-        props.setParameter(ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
-        props.setParameter(MAX_REDIRECTS, (Integer) DFALTREDIRECTS);
-        props.setParameter(SO_TIMEOUT, (Integer) DFALTSOTIMEOUT);
-        props.setParameter(CONN_TIMEOUT, (Integer) DFALTCONNTIMEOUT);
-        props.setParameter(USER_AGENT, DFALTUSERAGENT);
+        props.setParameter(Prop.HANDLE_REDIRECTS, Boolean.TRUE);
+        props.setParameter(Prop.ALLOW_CIRCULAR_REDIRECTS, Boolean.TRUE);
+        props.setParameter(Prop.MAX_REDIRECTS, (Integer) DFALTREDIRECTS);
+        props.setParameter(Prop.SO_TIMEOUT, (Integer) DFALTSOTIMEOUT);
+        props.setParameter(Prop.CONN_TIMEOUT, (Integer) DFALTCONNTIMEOUT);
+        props.setParameter(Prop.CONN_REQ_TIMEOUT, (Integer) DFALTCONNREQTIMEOUT);
+        props.setParameter(Prop.USER_AGENT, DFALTUSERAGENT);
     }
 
     static synchronized void
@@ -457,18 +466,18 @@ public class HTTPSession implements Closeable
 
     static synchronized public void setGlobalUserAgent(String userAgent)
     {
-        globalsettings.setParameter(USER_AGENT, userAgent);
+        globalsettings.setParameter(Prop.USER_AGENT, userAgent);
     }
 
     static synchronized public String getGlobalUserAgent()
     {
-        return (String) globalsettings.getParameter(USER_AGENT);
+        return (String) globalsettings.getParameter(Prop.USER_AGENT);
     }
 
     static synchronized public void setGlobalThreadCount(int nthreads)
     {
-        connmgr.setMaxTotal(nthreads);
-        connmgr.setDefaultMaxPerRoute(nthreads);
+        //globalsettings.setParameter(Prop.MAX_THREADS,nthreads);
+        throw new UnsupportedOperationException("HTTPSession.setGlobalThreadCount is currently not working");
     }
 
     // Alias
@@ -486,12 +495,15 @@ public class HTTPSession implements Closeable
 
     static synchronized public void setGlobalConnectionTimeout(int timeout)
     {
-        if(timeout >= 0) globalsettings.setParameter(CONN_TIMEOUT, (Integer) timeout);
+        if(timeout >= 0) {
+            globalsettings.setParameter(Prop.CONN_TIMEOUT, (Integer) timeout);
+            globalsettings.setParameter(Prop.CONN_REQ_TIMEOUT, (Integer) timeout);
+        }
     }
 
     static synchronized public void setGlobalSoTimeout(int timeout)
     {
-        if(timeout >= 0) globalsettings.setParameter(SO_TIMEOUT, (Integer) timeout);
+        if(timeout >= 0) globalsettings.setParameter(Prop.SO_TIMEOUT, (Integer) timeout);
     }
 
     /**
@@ -500,7 +512,7 @@ public class HTTPSession implements Closeable
      */
     static synchronized public void setGlobalFollowRedirects(boolean tf)
     {
-        globalsettings.setParameter(HANDLE_REDIRECTS, (Boolean) tf);
+        globalsettings.setParameter(Prop.HANDLE_REDIRECTS, (Boolean) tf);
     }
 
 
@@ -513,7 +525,7 @@ public class HTTPSession implements Closeable
     {
         if(n < 0) //validate
             throw new IllegalArgumentException("setMaxRedirects");
-        globalsettings.setParameter(MAX_REDIRECTS, n);
+        globalsettings.setParameter(Prop.MAX_REDIRECTS, n);
     }
 
     static synchronized public Object getGlobalSetting(String key)
@@ -527,12 +539,12 @@ public class HTTPSession implements Closeable
     static synchronized public void
     setGlobalCompression(String compressors)
     {
-        if(globalsettings.getParameter(COMPRESSION) != null)
+        if(globalsettings.getParameter(Prop.COMPRESSION) != null)
             removeGlobalCompression();
         String compresslist = checkCompressors(compressors);
         if(HTTPUtil.nullify(compresslist) == null)
             throw new IllegalArgumentException("Bad compressors: " + compressors);
-        globalsettings.setParameter(COMPRESSION, compresslist);
+        globalsettings.setParameter(Prop.COMPRESSION, compresslist);
         HttpResponseInterceptor hrsi;
         if(compresslist.contains("gzip")) {
             hrsi = new GZIPResponseInterceptor();
@@ -547,7 +559,7 @@ public class HTTPSession implements Closeable
     static public void
     removeGlobalCompression()
     {
-        if(globalsettings.removeParameter(COMPRESSION) != null) {
+        if(globalsettings.removeParameter(Prop.COMPRESSION) != null) {
             for(int i = rspintercepts.size() - 1; i >= 0; i--) { // walk backwards
                 HttpResponseInterceptor hrsi = rspintercepts.get(i);
                 if(hrsi instanceof GZIPResponseInterceptor
@@ -778,7 +790,7 @@ public class HTTPSession implements Closeable
     protected CloseableHttpClient cachedclient = null;
     protected RequestConfig cachedconfig = null;
     protected URI requestURI = null;  // full uri from the HTTPMethod call
-    protected HttpUriRequest request = null;
+    protected ExecState execution = new ExecState();
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -881,7 +893,7 @@ public class HTTPSession implements Closeable
     public HTTPSession setUserAgent(String agent)
     {
         if(agent == null || agent.length() == 0) throw new IllegalArgumentException("null argument");
-        localsettings.setParameter(USER_AGENT, agent);
+        localsettings.setParameter(Prop.USER_AGENT, agent);
         this.cachevalid = false;
         return this;
     }
@@ -890,7 +902,7 @@ public class HTTPSession implements Closeable
     {
         if(timeout <= 0)
             throw new IllegalArgumentException("setSoTimeout");
-        localsettings.setParameter(SO_TIMEOUT, timeout);
+        localsettings.setParameter(Prop.SO_TIMEOUT, timeout);
         this.cachevalid = false;
         return this;
     }
@@ -899,8 +911,8 @@ public class HTTPSession implements Closeable
     {
         if(timeout <= 0)
             throw new IllegalArgumentException("setConnectionTImeout");
-        localsettings.setParameter(CONN_TIMEOUT, timeout);
-        localsettings.setParameter(CONN_REQ_TIMEOUT, timeout);
+        localsettings.setParameter(Prop.CONN_TIMEOUT, timeout);
+        localsettings.setParameter(Prop.CONN_REQ_TIMEOUT, timeout);
         this.cachevalid = false;
         return this;
     }
@@ -914,7 +926,7 @@ public class HTTPSession implements Closeable
     {
         if(n < 0) //validate
             throw new IllegalArgumentException("setMaxRedirects");
-        localsettings.setParameter(MAX_REDIRECTS, n);
+        localsettings.setParameter(Prop.MAX_REDIRECTS, n);
         this.cachevalid = false;
         return this;
     }
@@ -925,7 +937,7 @@ public class HTTPSession implements Closeable
      */
     public HTTPSession setFollowRedirects(boolean tf)
     {
-        localsettings.setParameter(HANDLE_REDIRECTS, (Boolean) tf);
+        localsettings.setParameter(Prop.HANDLE_REDIRECTS, (Boolean) tf);
         this.cachevalid = false;
         return this;
     }
@@ -937,7 +949,7 @@ public class HTTPSession implements Closeable
      */
     public HTTPSession setUseSessions(boolean tf)
     {
-        localsettings.setParameter(USESESSIONS, (Boolean) tf);
+        localsettings.setParameter(Prop.USESESSIONS, (Boolean) tf);
         this.cachevalid = false;
         return this;
     }
@@ -1090,14 +1102,15 @@ public class HTTPSession implements Closeable
      * @param method
      * @param methoduri
      * @param rb
-     * @return CloseableHttpResponse
+     * @return Request+Response pair
      * @throws HTTPException
      */
 
-    CloseableHttpResponse
+    ExecState
     execute(HTTPMethod method, URI methoduri, RequestBuilder rb)
             throws HTTPException
     {
+        this.execution = new ExecState();
         this.requestURI = methoduri;
         AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(methoduri);
         AuthScope target = HTTPAuthUtil.authscopeUpgrade(this.scope, methodscope);
@@ -1115,16 +1128,14 @@ public class HTTPSession implements Closeable
                 this.cachevalid = true;
             }
         }
-        this.request = rb.build();
-        // Save relevant info in the HTTPMethod object
-        CloseableHttpResponse response;
+        this.execution.request = (HttpRequestBase)rb.build();
         try {
             HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
-            response = cachedclient.execute(targethost, this.request, this.sessioncontext);
+            this.execution.response = cachedclient.execute(targethost, this.execution.request, this.sessioncontext);
         } catch (IOException ioe) {
             throw new HTTPException(ioe);
         }
-        return response;
+        return this.execution;
     }
 
     protected RequestConfig
@@ -1132,22 +1143,25 @@ public class HTTPSession implements Closeable
             throws HTTPException
     {
         // Configure the RequestConfig
-        for(String key : settings.getKeys()) {
+        for(Prop key : settings.getKeys()) {
             Object value = settings.getParameter(key);
             boolean tf = (value instanceof Boolean ? (Boolean) value : false);
-            if(key.equals(ALLOW_CIRCULAR_REDIRECTS)) {
+            if(key == Prop.ALLOW_CIRCULAR_REDIRECTS) {
                 rcb.setCircularRedirectsAllowed(tf);
-            } else if(key.equals(HANDLE_REDIRECTS)) {
+            } else if(key == Prop.HANDLE_REDIRECTS) {
                 rcb.setRedirectsEnabled(tf);
                 rcb.setRelativeRedirectsAllowed(tf);
-            } else if(key.equals(MAX_REDIRECTS)) {
+            } else if(key == Prop.MAX_REDIRECTS) {
                 rcb.setMaxRedirects((Integer) value);
-            } else if(key.equals(SO_TIMEOUT)) {
+            } else if(key == Prop.SO_TIMEOUT) {
                 rcb.setSocketTimeout((Integer) value);
-            } else if(key.equals(CONN_TIMEOUT)) {
+            } else if(key == Prop.CONN_TIMEOUT) {
                 rcb.setConnectTimeout((Integer) value);
-            } else if(key.equals(CONN_REQ_TIMEOUT)) {
+            } else if(key == Prop.CONN_REQ_TIMEOUT) {
                 rcb.setConnectionRequestTimeout((Integer) value);
+            } else if(key == Prop.MAX_THREADS) {
+                connmgr.setMaxTotal((Integer)value);
+                connmgr.setDefaultMaxPerRoute((Integer)value);
             } /* else ignore */
         }
         RequestConfig cfg = rcb.build();
@@ -1159,7 +1173,7 @@ public class HTTPSession implements Closeable
             throws HTTPException
     {
         cb.useSystemProperties();
-        String agent = (String) settings.get(USER_AGENT);
+        String agent = (String) settings.get(Prop.USER_AGENT);
         if(agent != null)
             cb.setUserAgent(agent);
         setInterceptors(cb);
@@ -1329,8 +1343,8 @@ public class HTTPSession implements Closeable
     {
         if(!this.cachevalid) return null;
         Header[] hdrs = null;
-        if(this.request != null)
-            hdrs= this.request.getAllHeaders();
+        if(this.execution.request != null)
+            hdrs = this.execution.request.getAllHeaders();
         return hdrs;
     }
 
@@ -1349,7 +1363,6 @@ public class HTTPSession implements Closeable
 
     static protected synchronized void kill()
     {
-
         if(sessionList != null) {
             for(HTTPSession session : sessionList) {
                 session.close();
