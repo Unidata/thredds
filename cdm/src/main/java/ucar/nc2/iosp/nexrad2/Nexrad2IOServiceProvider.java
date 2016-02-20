@@ -71,7 +71,6 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     }
   }
 
-  private Level2VolumeScan volScan;
  // private Dimension radialDim;
   private double radarRadius;
   private Variable v0, v1;
@@ -82,7 +81,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     super.open(raf, ncfile, cancelTask);
     NexradStationDB.init();
 
-    volScan = new Level2VolumeScan( raf, cancelTask); // note raf may change when compressed
+    Level2VolumeScan volScan = new Level2VolumeScan( raf, cancelTask); // note raf may change when compressed
     this.raf = volScan.raf;
     this.location = volScan.raf.getLocation();
 
@@ -124,9 +123,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
 
     gps = volScan.getReflectivityGroups();
     if( gps != null) {
-        makeVariable( ncfile, Level2Record.REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups(), 0);
+        makeVariable( ncfile, Level2Record.REFLECTIVITY, "Reflectivity", "Reflectivity", "R", volScan.getReflectivityGroups(), 0, volScan);
         int velocity_type =  (volScan.getDopplarResolution() == Level2Record.DOPPLER_RESOLUTION_HIGH_CODE) ? Level2Record.VELOCITY_HI : Level2Record.VELOCITY_LOW;
-        Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups(), 0);
+        Variable v = makeVariable( ncfile, velocity_type, "RadialVelocity", "Radial Velocity", "V", volScan.getVelocityGroups(), 0, volScan);
         gps = volScan.getVelocityGroups();
         List<Level2Record> gp = gps.get(0);
         Level2Record record = gp.get(0);
@@ -238,9 +237,9 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
             secondGroup.add(o);
     }
     if(firstGroup != null && firstGroup.size() > 0)
-        v1 = makeVariable(ncfile, datatype, shortName + "_HI", longName + "_HI",  abbrev + "_HI", firstGroup, 1);
+        v1 = makeVariable(ncfile, datatype, shortName + "_HI", longName + "_HI",  abbrev + "_HI", firstGroup, 1, vScan);
     if(secondGroup != null && secondGroup.size() > 0)
-        v0 = makeVariable(ncfile, datatype, shortName, longName,  abbrev, secondGroup, 0);
+        v0 = makeVariable(ncfile, datatype, shortName, longName,  abbrev, secondGroup, 0, vScan);
 
   }
 
@@ -253,7 +252,15 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
       return maxRadials;
   }
 
-  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName, String longName, String abbrev, List<List<Level2Record>> groups, int rd) throws IOException {
+  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName,
+                               String longName, String abbrev, List<List<Level2Record>> groups,
+                               int rd) throws IOException {
+      return makeVariable(ncfile, datatype, shortName, longName, abbrev, groups, rd, null);
+  }
+
+  public Variable makeVariable(NetcdfFile ncfile, int datatype, String shortName,
+                               String longName, String abbrev, List<List<Level2Record>> groups,
+                               int rd, Level2VolumeScan volScan) throws IOException {
     int nscans = groups.size();
 
     if (nscans == 0) {
@@ -448,62 +455,6 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
     v.setSPobject( vg);
   }
 
-  private void makeCoordinateData(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
-                                  Variable ngatesVar, List groups) {
-
-    Array timeData = Array.factory( time.getDataType().getPrimitiveClassType(), time.getShape());
-    IndexIterator timeDataIter = timeData.getIndexIterator();
-
-    Array elevData = Array.factory( elev.getDataType().getPrimitiveClassType(), elev.getShape());
-    IndexIterator elevDataIter = elevData.getIndexIterator();
-
-    Array aziData = Array.factory( azi.getDataType().getPrimitiveClassType(), azi.getShape());
-    IndexIterator aziDataIter = aziData.getIndexIterator();
-
-    Array nradialsData = Array.factory( nradialsVar.getDataType().getPrimitiveClassType(), nradialsVar.getShape());
-    IndexIterator nradialsIter = nradialsData.getIndexIterator();
-
-    Array ngatesData = Array.factory( ngatesVar.getDataType().getPrimitiveClassType(), ngatesVar.getShape());
-    IndexIterator ngatesIter = ngatesData.getIndexIterator();
-
-
-    int last_msecs = Integer.MIN_VALUE;
-    int nscans = groups.size();
-    int maxRadials = volScan.getMaxRadials(0);
-    for (int i = 0; i < nscans; i++) {
-      List scanGroup = (List) groups.get(i);
-      int nradials = scanGroup.size();
-
-      Level2Record first = null;
-      for (int j = 0; j < nradials; j++) {
-        Level2Record r =  (Level2Record) scanGroup.get(j);
-        if (first == null) first = r;
-
-        timeDataIter.setIntNext( r.data_msecs);
-        elevDataIter.setFloatNext( r.getElevation());
-        aziDataIter.setFloatNext( r.getAzimuth());
-
-        if (r.data_msecs < last_msecs) logger.warn("makeCoordinateData time out of order "+r.data_msecs);
-        last_msecs = r.data_msecs;
-      }
-
-      for (int j = nradials; j < maxRadials; j++) {
-        timeDataIter.setIntNext( MISSING_INT);
-        elevDataIter.setFloatNext( MISSING_FLOAT);
-        aziDataIter.setFloatNext( MISSING_FLOAT);
-      }
-
-      nradialsIter.setIntNext( nradials);
-      if (first != null) ngatesIter.setIntNext( first.getGateCount( datatype));
-    }
-
-    time.setCachedData( timeData, false);
-    elev.setCachedData( elevData, false);
-    azi.setCachedData( aziData, false);
-    nradialsVar.setCachedData( nradialsData, false);
-    ngatesVar.setCachedData( ngatesData, false);
-  }
-
   private void makeCoordinateDataWithMissing(int datatype, Variable time, Variable elev, Variable azi, Variable nradialsVar,
                                   Variable ngatesVar, List groups) {
 
@@ -609,7 +560,7 @@ public class Nexrad2IOServiceProvider extends AbstractIOServiceProvider {
         ii.setByteNext( MISSING_DATA);
       return;
     }
-    r.readData(volScan.raf, datatype, gateRange, ii);
+    r.readData(raf, datatype, gateRange, ii);
   }
 
   private static class Vgroup {
