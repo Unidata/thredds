@@ -182,16 +182,19 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       endValue = axis1D.getCoordValue((int) dtCoordAxis.getSize() - 1);
 
       if (axis1D.isRegular() || axis1D.isScalar()) {
-        spacing = CoverageCoordAxis.Spacing.regular;
+        spacing = CoverageCoordAxis.Spacing.regularPoint;
         values = null;
+        resolution = (ncoords == 1) ? 0.0 : (endValue - startValue) / (ncoords-1);
 
       } else if (!dtCoordAxis.isInterval()) {
         spacing = CoverageCoordAxis.Spacing.irregularPoint;
         values = axis1D.getCoordValues();
+        resolution = (ncoords == 1) ? 0.0 : (endValue - startValue) / (ncoords-1);
 
       } else if (dtCoordAxis.isContiguous()) {
         spacing = CoverageCoordAxis.Spacing.contiguousInterval;
         values = axis1D.getCoordEdges();
+        resolution = (endValue - startValue) / ncoords;
 
       } else {
         spacing = CoverageCoordAxis.Spacing.discontiguousInterval;
@@ -203,6 +206,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
           values[count++] = bounds1[i];
           values[count++] = bounds2[i];
         }
+        resolution = (endValue - startValue) / ncoords;
       }
 
       CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
@@ -299,7 +303,6 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     }
 
     throw new IllegalStateException("Dont know what to do with axis " + dtCoordAxis);
-    // return ucar.nc2.util.Optional.empty("Dont know what to do with axis " + dtCoordAxis.getFullName());
   }
 
   ////////////////////////

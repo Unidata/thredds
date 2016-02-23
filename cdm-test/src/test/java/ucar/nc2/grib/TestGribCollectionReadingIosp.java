@@ -41,6 +41,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -48,17 +49,45 @@ import ucar.unidata.test.util.TestDir;
 import java.io.IOException;
 
 /**
- * Describe
+ * Read data through the Grib iosp.
+ * Though this is superceeded by coverage, we need to keep it working.
  *
  * @author caron
  * @since 4/9/2015
  */
 @Category(NeedsCdmUnitTest.class)
-public class TestGribCollectionReading {
+public class TestGribCollectionReadingIosp {
 
   @Test
-  public void testReadTimeRange() throws IOException, InvalidRangeException {
-    // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
+  public void testReadBest() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4";
+    String covName = "Best/Temperature_height_above_ground";
+    System.out.printf("open %s var=%s%n", endpoint, covName);
+
+    try (NetcdfDataset ds = NetcdfDataset.openDataset(endpoint)) {
+      assert ds != null;
+      Variable v = ds.findVariable(null, covName);
+      assert v != null;
+      assert v instanceof VariableDS;
+
+      Variable time = ds.findVariable("Best/time3");
+      Array timeData = time.read();
+      for (int i=0; i< timeData.getSize(); i++)
+        System.out.printf("time(%d) = %f%n", i, timeData.getDouble(i));
+      System.out.printf("%s%n", time.findAttribute("units"));
+
+      Array data = v.read("30,0,:,:"); // Time  coord : 180 == 2014-10-31T12:00:00Z
+      float first = data.getFloat(0);
+      float last = data.getFloat((int)data.getSize()-1);
+      System.out.printf("data first = %f last=%f%n", first, last);
+      Assert.assertEquals(300.33002, first, first*Misc.maxReletiveError);
+      Assert.assertEquals(279.49, last, last*Misc.maxReletiveError);
+    }
+  }
+
+  @Test
+  public void testReadMrutpTimeRange() throws IOException, InvalidRangeException {
+    // read more than one time coordinate at a time in a MRUTP, no vertical
     try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.findVariable(null, "Pressure_surface");
       assert v != null;
@@ -74,8 +103,8 @@ public class TestGribCollectionReading {
   }
 
   @Test
-  public void testReadTimeRangeWithSingleVerticalLevel() throws IOException, InvalidRangeException {
-    // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
+  public void testReadMrutpTimeRangeWithSingleVerticalLevel() throws IOException, InvalidRangeException {
+    // read more than one time coordinate at a time in a MRUTP, with vertical
     try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.findVariable(null, "Relative_humidity_sigma");
       assert v != null;
@@ -95,10 +124,9 @@ public class TestGribCollectionReading {
     }
   }
 
-
   @Test
-  public void testReadTimeRangeWithMultipleVerticalLevel() throws IOException, InvalidRangeException {
-    // read more than one time coordinate at a time in a TP (multiple runtimes, single offset) partition
+  public void testReadMrutpTimeRangeWithMultipleVerticalLevel() throws IOException, InvalidRangeException {
+    // read more than one time coordinate at a time in a MRUTP. multiple verticals
     try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4")) {
       Variable v = ds.findVariable(null, "Relative_humidity_isobaric");
       assert v != null;

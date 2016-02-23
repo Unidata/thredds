@@ -104,20 +104,21 @@ public class TimeHelper {
   }
 
   public List<NamedObject> getCoordValueNames(CoverageCoordAxis1D axis) {
-    axis.getValues(); // read in if needed
+    axis.loadValuesIfNeeded();
     List<NamedObject> result = new ArrayList<>();
     for (int i = 0; i < axis.getNcoords(); i++) {
       double value;
       switch (axis.getSpacing()) {
-        case regular:
+        case regularPoint:
         case irregularPoint:
-          value = axis.getCoord(i);
+          value = axis.getCoordMidpoint(i);
           result.add(new NamedAnything(makeDate(value), axis.getAxisType().toString()));
           break;
 
+        case regularInterval:
         case contiguousInterval:
         case discontiguousInterval:
-          CoordInterval coord = new CoordInterval(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);  // LOOK
+          CoordInterval coord = new CoordInterval(axis.getCoordEdge1(i), axis.getCoordEdge2(i), 3);
           result.add(new NamedAnything(coord, coord + " " + axis.getUnits()));
           break;
       }

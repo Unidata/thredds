@@ -62,28 +62,9 @@ import java.util.Formatter;
  * @since 4/6/11
  */
 public abstract class GribIosp extends AbstractIOServiceProvider {
-  static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
-  static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
-  static public final String GRIB_RUNTIME = "GRIB reference time";
-  static public final String GRIB_STAT_TYPE = "Grib_Statistical_Interval_Type";
-
-  // do not use
-  static public boolean debugRead = false;
-  static public int debugIndexOnlyCount = 0;  // count number of data accesses
-  static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
-  static boolean debugIndexOnly = false;      // we are running with only ncx index files, no data
-  static public boolean debugGbxIndexOnly = false;  // we are running with only ncx and gbx index files, no data
 
   static private final boolean debug = false, debugTime = false, debugName = false;
-
-  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
-    debugRead = debugFlag.isSet("Grib/showRead");
-    debugIndexOnly = debugFlag.isSet("Grib/indexOnly");
-    debugIndexOnlyShow = debugFlag.isSet("Grib/indexOnlyShow");
-    debugGbxIndexOnly = debugFlag.isSet("Grib/debugGbxIndexOnly");
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////
+  static public int debugIndexOnlyCount = 0;  // count number of data accesses
 
   // store custom tables in here
   protected FeatureCollectionConfig config = new FeatureCollectionConfig();
@@ -286,12 +267,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       Coordinate.Type ctype = coord.getType();
       switch (ctype) {
         case runtime:
-          if (gctype.isTwoD())
+          if (gctype.isTwoD() || coord.getNCoords() == 1)
             makeRuntimeCoordinate(ncfile, g, (CoordinateRuntime) coord);
-          else if ( gctype.isSingleRuntime() && !singleRuntimeWasMade) {
-            makeRuntimeCoordinate(ncfile, g, (CoordinateRuntime) coord);
-            singleRuntimeWasMade = true;
-          }
           break;
         case timeIntv:
           makeTimeCoordinate1D(ncfile, g, (CoordinateTimeIntv) coord);
@@ -350,10 +327,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           coordinateAtt.format("%s %s ", run.getName(), time.getName());
           break;
 
-        case MRUTP:             // GC: Multiple Runtime Unique Time Partition  [ntimes]
+        case MRUTP:             // PC: Multiple Runtime Unique Time Partition  [ntimes]
         case MRUTC:             // GC: Multiple Runtime Unique Time Collection  [ntimes]
-        case MRSTC:             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
-        case MRSTP:                // PC: Multiple Runtime Single Time Partition   [nruns, 1]         (run, 2D)  ignore the run, its generated from the 2D in
+        // case MRSTC:             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
+        // case MRSTP:             // PC: Multiple Runtime Single Time Partition   [nruns, 1]         (run, 2D)  ignore the run, its generated from the 2D in
           dimNames.format("%s ", time.getName());
           coordinateAtt.format("ref%s %s ", time.getName(), time.getName());
           break;
@@ -431,13 +408,13 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       if (vindex.getIntvType() >= 0) {
         GribStatType statType = gribTable.getStatType(vindex.getIntvType());   // LOOK find the time coordinate
         if (statType != null) {
-          v.addAttribute(new Attribute(GRIB_STAT_TYPE, statType.toString()));
+          v.addAttribute(new Attribute(Grib.GRIB_STAT_TYPE, statType.toString()));
           CF.CellMethods cm = GribStatType.getCFCellMethod(statType);
           Coordinate timeCoord = vindex.getCoordinate(Coordinate.Type.timeIntv);
           if (cm != null && timeCoord != null)
             v.addAttribute(new Attribute(CF.CELL_METHODS, timeCoord.getName() + ": " + cm.toString()));
         } else {
-          v.addAttribute(new Attribute(GRIB_STAT_TYPE, vindex.getIntvType()));
+          v.addAttribute(new Attribute(Grib.GRIB_STAT_TYPE, vindex.getIntvType()));
         }
       }
 
@@ -458,7 +435,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     v.addAttribute(new Attribute(CDM.UNITS, rtc.getUnit()));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_RUNTIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     /* String vsName = tcName + "_ISO";
@@ -510,7 +487,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     // the data is not generated until asked for to save space
@@ -527,19 +504,21 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       bounds.setSPobject(new Time2Dinfo(Time2DinfoType.boundsU, time2D, null));
     }
 
-    // for this case we have to generate a separate reftime, because have to use the same dimension
-    String refName = "ref"+tcName;
-    Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, tcName));
-    vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-    vref.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_RUNTIME));
-    vref.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
-    vref.addAttribute(new Attribute(CDM.UNITS, units));
-    vref.setSPobject(new Time2Dinfo(Time2DinfoType.isUniqueRuntime, time2D, null));
+    if (runtime.getNCoords() != 1) {
+      // for this case we have to generate a separate reftime, because have to use the same dimension
+      String refName = "ref" + tcName;
+      if (g.findVariable(refName) == null) {
+        Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, tcName));
+        vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
+        vref.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
+        vref.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
+        vref.addAttribute(new Attribute(CDM.UNITS, units));
+        vref.setSPobject(new Time2Dinfo(Time2DinfoType.isUniqueRuntime, time2D, null));
+      }
+    }
   }
 
-  /*
-  1) time(1, ntimes) -> time(ntimes) with scalar reftime coordinate (singleRun == SRC)
-  2) time(nruns, 1)  -> time(nruns) with reftime(nruns) auxilary coordinate (singleTime not used)
+  /* non unique time case
   3) time(nruns, ntimes) with reftime(nruns)
    */
   private void makeTimeCoordinate2D(NetcdfFile ncfile, Group g, CoordinateTime2D time2D, GribCollectionImmutable.Type gctype) {
@@ -548,17 +527,17 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     int nruns = time2D.getNruns();
     int ntimes = time2D.getNtimes();
     String tcName = time2D.getName();
-    boolean singleRun = (nruns == 1);  // dont use reftime dimension if time(1, ntimes) or time(nruns, 1))
-    boolean singleTime = (gctype == GribCollectionImmutable.Type.MRSTC) || (gctype == GribCollectionImmutable.Type.MRSTP);
-    String dims = singleRun || singleTime ? tcName : runtime.getName() + " " + tcName;
-    int dimLength = singleTime ? nruns : ntimes;
+    //boolean singleRun = (nruns == 1);  // dont use reftime dimension if time(1, ntimes) or time(nruns, 1))
+    // boolean uniqueTime = gctype.isUniqueTime();
+    String dims = runtime.getName() + " " + tcName;
+    int dimLength = ntimes;
 
     ncfile.addDimension(g, new Dimension(tcName, dimLength));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
     String units = runtime.getUnit(); // + " since " + runtime.getFirstDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     // the data is not generated until asked for to save space
@@ -575,16 +554,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       bounds.setSPobject(new Time2Dinfo(Time2DinfoType.bounds, time2D, null));
     }
 
-    // for this case we have to generate a separate reftime, because have to use the same dimension
-    if (singleTime) {
-      String refName = "ref"+tcName;
-      Variable vref = ncfile.addVariable(g, new Variable(ncfile, g, null, refName, DataType.DOUBLE, tcName));
-      vref.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-      vref.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_RUNTIME));
-      vref.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
-      vref.addAttribute(new Attribute(CDM.UNITS, units));
-      vref.setSPobject(new Time2Dinfo(Time2DinfoType.is1Dtime, time2D, null));
-    }
   }
 
   private Array makeLazyCoordinateData(Variable v2, Time2Dinfo info) {
@@ -736,7 +705,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String units = coordTime.getUnit() + " since " + coordTime.getRefDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     double[] data = new double[ntimes];
@@ -755,7 +724,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String tcName = "ref"+timeName;
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, timeName));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME_REFERENCE));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_RUNTIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
     v.addAttribute(new Attribute(CDM.UNITS, units));
 
@@ -772,7 +741,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String units = coordTime.getUnit() + " since " + coordTime.getRefDate();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
-    v.addAttribute(new Attribute(CDM.LONG_NAME, GRIB_VALID_TIME));
+    v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
     v.addAttribute(new Attribute(CF.CALENDAR, Calendar.proleptic_gregorian.toString()));
 
     double[] data = new double[ntimes];

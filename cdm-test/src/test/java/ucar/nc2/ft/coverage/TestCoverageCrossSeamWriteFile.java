@@ -12,7 +12,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
-import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -95,7 +95,7 @@ public class TestCoverageCrossSeamWriteFile {
       CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "VAR_2-0-0_L1";
-      Coverage coverage = gcs.findCoverageByAttribute(GribIosp.VARIABLE_ID_ATTNAME, gribId); // Land_cover_0__sea_1__land_surface
+      Coverage coverage = gcs.findCoverageByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId); // Land_cover_0__sea_1__land_surface
       Assert.assertNotNull(gribId, coverage);
 
       CoverageCoordSys cs = coverage.getCoordSys();

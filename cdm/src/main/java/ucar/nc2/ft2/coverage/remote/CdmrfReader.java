@@ -423,14 +423,16 @@ message Coverage {
 
   static public CoverageCoordAxis.Spacing convertSpacing(CdmrFeatureProto.AxisSpacing type) {
     switch (type) {
-      case regular:
-        return CoverageCoordAxis.Spacing.regular;
+      case regularPoint:
+        return CoverageCoordAxis.Spacing.regularPoint;
       case irregularPoint:
         return CoverageCoordAxis.Spacing.irregularPoint;
       case contiguousInterval:
         return CoverageCoordAxis.Spacing.contiguousInterval;
       case discontiguousInterval:
         return CoverageCoordAxis.Spacing.discontiguousInterval;
+      case regularInterval:
+        return CoverageCoordAxis.Spacing.regularInterval;
     }
     throw new IllegalStateException("illegal data type " + type);
   }

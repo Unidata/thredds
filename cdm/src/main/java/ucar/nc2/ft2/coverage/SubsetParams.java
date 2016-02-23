@@ -150,11 +150,18 @@ public class SubsetParams {
 
   public CalendarDate getTime() { return (CalendarDate) get(time);}
   public SubsetParams setTimePresent() {  set(timePresent, true); return this; }
+  public SubsetParams setTimeOffset(double offset) {  set(timeOffset, offset); return this; }
+  public SubsetParams setTime(CalendarDate date) {  set(time, date); return this; }
 
   public CalendarDateRange getTimeRange() { return (CalendarDateRange) get(timeRange);}
+  public SubsetParams setTimeRange(CalendarDateRange dateRange) {  set(timeRange, dateRange); return this; }
+
+  public SubsetParams setRunTime(CalendarDate date) {  set(runtime, date); return this; }
+
 
   public CalendarPeriod getTimeWindow() { return (CalendarPeriod) get(timeWindow);}
 
   public double[] getVertRange() { return (double []) get(vertRange);}
+  public SubsetParams setVertCoord(double coord) {  set(vertCoord, coord); return this; }
 
 }

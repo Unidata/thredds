@@ -40,13 +40,9 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.ArrayDouble;
-import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.*;
-import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.GribCollectionImmutable;
-import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollectionImmutable;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -78,7 +74,7 @@ public class TestGribCollectionCoordinates {
 
   @AfterClass
   static public void after() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
     /* Formatter out = new Formatter(System.out);
 
     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
@@ -109,7 +105,7 @@ public class TestGribCollectionCoordinates {
   // check that all time variables are coordinates (TwoD PofP was not eliminating unused coordinates after merging)
   @Test
   public void testExtraCoordinates() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("namAlaska22", "test/namAlaska22", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/namAlaska22/.*gbx9", null, null, null, "file", null);
     // config.gribConfig.setOption("timeUnit", "1 minute");
@@ -175,8 +171,7 @@ public class TestGribCollectionCoordinates {
     boolean ok = true;
 
     try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4")) {
-      Group best = ds.findGroup("Best");
-      for (Variable vds : best.getVariables()) {
+      for (Variable vds : ds.getVariables()) {
         String stdname = ds.findAttValueIgnoreCase(vds, "standard_name", "no");
         if (!stdname.equalsIgnoreCase("forecast_reference_time")) continue;
 

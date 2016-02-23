@@ -62,7 +62,7 @@ message Coord {
   bool isOrthogonal = 8; // time2D only
   bool isRegular = 9; // time2D only
 
-  repeated uint32 time2runtime = 10 [packed=true];  // time index to runtime index, only Best Time and TimeIntv
+  repeated uint32 time2runtime = 10 [packed=true];  // time index to runtime index, Best Time only
 }
 
 message Parameter {
@@ -129,6 +129,8 @@ message GribCollection {
 
   // repeated Parameter params = 20;      // not used
   FcConfig config = 21;
+  uint64 startTime = 22; // calendar date, first valid time
+  uint64 endTime = 23;   // calendar date, last valid time
 
   // extensions
   repeated Partition partitions = 100;

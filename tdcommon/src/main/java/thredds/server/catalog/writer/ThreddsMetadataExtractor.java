@@ -44,7 +44,7 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.*;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -144,7 +144,7 @@ public class ThreddsMetadataExtractor {
         String vname = null;
         String id = null;
 
-        Attribute att = grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME);
+        Attribute att = grid.findAttributeIgnoreCase(Grib.VARIABLE_ID_ATTNAME);
         if (att != null) {
           id = att.getStringValue();
           vname = att.getStringValue();

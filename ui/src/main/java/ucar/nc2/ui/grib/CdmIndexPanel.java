@@ -1052,7 +1052,7 @@ public class CdmIndexPanel extends JPanel {
     }
 
     public String getResolMode() {
-      return (resolMode == null) ? "scalar" : resolMode.toString();
+      return (resolMode == null) ? "null" : resolMode.toString();
     }
 
     public String getValues() {
@@ -1063,7 +1063,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateTime2D) {
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-        CalendarDateRange dr = coord2D.makeCalendarDateRange(ucar.nc2.time.Calendar.proleptic_gregorian);
+        CalendarDateRange dr = coord2D.makeCalendarDateRange(null); // default calendar
         f.format("%s %s", dr.getStart(), dr.getEnd());
 
       } else {

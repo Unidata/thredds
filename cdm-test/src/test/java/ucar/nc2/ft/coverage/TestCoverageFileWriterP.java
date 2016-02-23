@@ -49,7 +49,6 @@ public class TestCoverageFileWriterP {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/testCFwriter.nc", FeatureType.GRID, Lists.newArrayList("PS", "Temperature"), null, NetcdfFileWriter.Version.netcdf3});  // both x,y and lat,lon
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID, Lists.newArrayList("Soil_temperature_depth_below_surface_layer"), null, NetcdfFileWriter.Version.netcdf4});  // TwoD Best
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC, Lists.newArrayList("Soil_temperature_depth_below_surface_layer"), null, NetcdfFileWriter.Version.netcdf4 });  // TwoD
 // */
     return result;
   }

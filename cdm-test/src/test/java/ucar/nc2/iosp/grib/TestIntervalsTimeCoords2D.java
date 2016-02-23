@@ -48,7 +48,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.Grib;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
@@ -117,7 +117,7 @@ public class TestIntervalsTimeCoords2D {
 
       try (NetcdfFile ncf = NetcdfFile.open(filename)) {
         Group best = ncf.findGroup("Best"); // use best group if it exists, may be null
-        Variable var = ncf.findVariableByAttribute(best, GribIosp.VARIABLE_ID_ATTNAME, parameter);
+        Variable var = ncf.findVariableByAttribute(best, Grib.VARIABLE_ID_ATTNAME, parameter);
         assert var != null : parameter;
         System.out.printf(" using variable %s%n", var.getFullName());
 

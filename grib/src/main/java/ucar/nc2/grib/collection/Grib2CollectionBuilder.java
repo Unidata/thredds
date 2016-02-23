@@ -44,6 +44,7 @@ import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CloseableIterator;
 
@@ -97,7 +98,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         Grib2Index index;
 
         try {
-          if (GribIosp.debugGbxIndexOnly) {
+          if (Grib.debugGbxIndexOnly) {
              index = (Grib2Index) GribIndex.open(false, mfile);
            } else {
              // this is where gbx9 files get recreated
@@ -210,12 +211,13 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   @Override
-  protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends GribCollectionBuilder.Group> groups, List<MFile> files) throws IOException {
+  protected boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
+                    List<? extends GribCollectionBuilder.Group> groups, List<MFile> files, CalendarDateRange dateRange) throws IOException {
     Grib2CollectionWriter writer = new Grib2CollectionWriter(dcm, logger);
     List<Grib2CollectionWriter.Group> groups2 = new ArrayList<>();
     for (Object g : groups) groups2.add((Grib2CollectionWriter.Group) g); // copy to change GribCollectionBuilder.Group ->  Grib2CollectionWriter.Group
     File indexFileInCache = GribIndexCache.getFileOrCache(indexFilepath);
-    return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type);
+    return writer.writeIndex(name, indexFileInCache, masterRuntime, groups2, files, type, dateRange);
   }
 
   static class VariableBag implements Comparable<VariableBag> {

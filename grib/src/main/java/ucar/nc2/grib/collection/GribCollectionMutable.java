@@ -112,10 +112,15 @@ public class GribCollectionMutable implements Closeable {
   public List<Parameter> params;          // not used
   protected Map<Integer, MFile> fileMap;    // all the files used in the GC; key is the index in original collection, GC has subset of them
   protected List<Dataset> datasets;
-  // protected List<GribHorizCoordSystem> horizCS; // one for each unique GDS
   protected CoordinateRuntime masterRuntime;
   protected GribTables cust;
   protected int indexVersion;
+
+  public void setCalendarDateRange(long startMsecs, long endMsecs) {
+    this.dateRange = CalendarDateRange.of( CalendarDate.of(startMsecs), CalendarDate.of(endMsecs));
+  }
+
+  protected CalendarDateRange dateRange;
 
   // not stored in index
   protected RandomAccessFile indexRaf; // this is the raf of the index (ncx) file

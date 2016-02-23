@@ -174,7 +174,7 @@ public class Grib1Collection extends GribCollectionImmutable {
     Grib1Customizer cust1 = (Grib1Customizer) gc.cust;
 
     // Grib attributes
-    v.addAttribute(new Attribute(GribIosp.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
+    v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
     v.addAttribute(new Attribute("Grib1_Center", gc.getCenter()));
     v.addAttribute(new Attribute("Grib1_Subcenter", gc.getSubcenter()));
     v.addAttribute(new Attribute("Grib1_TableVersion", vindex.getTableVersion()));

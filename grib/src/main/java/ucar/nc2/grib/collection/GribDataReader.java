@@ -34,6 +34,7 @@
 package ucar.nc2.grib.collection;
 
 import net.jcip.annotations.Immutable;
+import ucar.coord.CoordinateTime2D;
 import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.grib.*;
@@ -121,7 +122,7 @@ public abstract class GribDataReader {
     for  (int sourceIndex : sectionWanted) {
       // addRecord(sourceIndex, count++);
       GribCollectionImmutable.Record record = vindex.getRecordAt(sourceIndex);
-      if (GribIosp.debugRead)
+      if (Grib.debugRead)
         System.out.printf("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
       if (record != null)
         records.add( new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys()));
@@ -152,18 +153,22 @@ public abstract class GribDataReader {
     while (iterWanted.hasNext()) {
       iterWanted.next(indexWanted);   // returns the vindexP index in indexWanted array
 
-      // for 1D TP, second index is implictly 0 (special case)
-      if (vindexP.getType() == GribCollectionImmutable.Type.MRSTP) {
+      // for MRUTP, must munge the index here (not in vindexP.getDataRecord, because its recursive
+      if (vindexP.getType() == GribCollectionImmutable.Type.MRUTP) {
+        // find the partition from getRuntimeIdxFromMrutpTimeIndex
+        CoordinateTime2D time2D = (CoordinateTime2D) vindexP.getCoordinateTime();
+        int[] timeIndices = time2D.getTimeIndicesFromMrutp(indexWanted[0]);
+
         int[] indexReallyWanted = new int[indexWanted.length+1];
-        indexReallyWanted[0] = indexWanted[0];
-        indexReallyWanted[1] = 0;
+        indexReallyWanted[0] = timeIndices[0];
+        indexReallyWanted[1] = timeIndices[1];
         System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length-1);
         useIndex = indexReallyWanted;
       }
 
       PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(useIndex);
       if (record == null) {
-        if (GribIosp.debugRead) System.out.printf("readDataFromPartition missing data%n");
+        if (Grib.debugRead) System.out.printf("readDataFromPartition missing data%n");
         resultPos++; // can just skip, since result is prefilled with NaNs
         continue;
       }
@@ -180,7 +185,7 @@ public abstract class GribDataReader {
   }
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // Experimental
+  // Coordinate based subsetting for Coverage
 
   public Array readData2(CoordsSet want, RangeIterator yRange, RangeIterator xRange) throws IOException, InvalidRangeException {
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
@@ -259,9 +264,9 @@ public abstract class GribDataReader {
     RandomAccessFile rafData = null;
     try {
       for (DataRecord dr : records) {
-        if (GribIosp.debugIndexOnly || GribIosp.debugGbxIndexOnly) {
+        if (Grib.debugIndexOnly || Grib.debugGbxIndexOnly) {
           GribIosp.debugIndexOnlyCount++;
-          if (GribIosp.debugIndexOnlyShow) dr.show(gribCollection);
+          if (Grib.debugIndexOnlyShow) dr.show(gribCollection);
           dataReceiver.setDataToZero();
           continue;
         }
@@ -308,9 +313,9 @@ public abstract class GribDataReader {
 
       for (DataRecord dr : records) {
         PartitionCollectionImmutable.DataRecord drp = (PartitionCollectionImmutable.DataRecord) dr;
-        if (GribIosp.debugIndexOnly || GribIosp.debugGbxIndexOnly) {
+        if (Grib.debugIndexOnly || Grib.debugGbxIndexOnly) {
           GribIosp.debugIndexOnlyCount++;
-          if (GribIosp.debugIndexOnlyShow) drp.show();
+          if (Grib.debugIndexOnlyShow) drp.show();
           dataReceiver.setDataToZero();
           continue;
         }

@@ -83,10 +83,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public enum Type {    // must match with GribCollectionProto.Dataset.Type
     SRC,               // GC: Single Runtime Collection                [ntimes]
     MRC,              // GC: Multiple Runtime Collection              [nruns, ntimes]
-    MRSTC,             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
+    // MRSTC,             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
     MRUTC,             // GC: Multiple Runtime Unique Time Collection  [ntimes]
 
-    MRSTP,            // PC: Multiple Runtime Single Time Partition   [nruns, 1]
+    // MRSTP,            // PC: Multiple Runtime Single Time Partition   [nruns, 1]
     TwoD,            // PC: TwoD time partition                      [nruns, ntimes]
     Best,             // PC: Best time partition                      [ntimes]
     BestComplete,     // PC: Best complete time partition (not done)  [ntimes]
@@ -367,8 +367,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.variList = Collections.unmodifiableList(work);
     }
 
-    public boolean isTwoD() {
-      return ds.gctype != Type.Best;
+    public Type getType() {
+      return ds.gctype;
     }
 
     public String getId() {
@@ -549,7 +549,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // experimental coord based record finding
+    // coord based record finding. note only record at a time
     public synchronized Record getRecordAt(Map<String, Object> coords) {
       int[] want = new int[getRank()];
       int count = 0;
@@ -648,9 +648,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return null;
     }
 
+    // get the ith coordinate
     public Coordinate getCoordinate(int index) {
-      if (index >= coordIndex.size())
-        System.out.println("HEY GribCollectionImmutable index out of range");
+      //if (index >= coordIndex.size())
+      //  System.out.println("HEY GribCollectionImmutable index out of range");
       int grpIndex = coordIndex.get(index);
       return group.coords.get(grpIndex);
     }

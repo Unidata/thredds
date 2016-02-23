@@ -62,11 +62,11 @@ class GribCollectionWriter {
     return writeGdsProto(hcs.getRawGds(), hcs.getPredefinedGridDefinition());
   }
 
-    /*
-      message Gds {
-        bytes gds = 1;                        // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
-        uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes; need center, subcenter to interpret
-      }
+  /*
+    message Gds {
+      bytes gds = 1;                        // raw gds: Grib1SectionGridDefinition or Grib2SectionGridDefinition
+      uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes; need center, subcenter to interpret
+    }
    */
   static GribCollectionProto.Gds writeGdsProto(byte[] rawGds, int predefinedGridDefinition) throws IOException {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
@@ -188,6 +188,11 @@ class GribCollectionWriter {
       else
         b.addTimes(writeCoordProto((CoordinateTimeIntv)time));
     }
+
+    int[] time2runtime = coord.getTime2runtime();
+    if (time2runtime != null)
+      for (int val : time2runtime)
+        b.addTime2Runtime(val);
 
     return b.build();
   }

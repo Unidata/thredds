@@ -281,7 +281,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     public GribCollectionImmutable getGribCollection() throws IOException {
       String path = getIndexFilenameInCache();
       if (path == null) {
-        if (GribIosp.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
+        if (Grib.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
           // tricky: substitute the current root
           File orgParentDir = new File(directory);
           File currentFile = new File(PartitionCollectionMutable.this.indexFilename);

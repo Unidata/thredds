@@ -75,7 +75,7 @@ public class TestGeoTiffWriter {
     List<Object[]> result = new ArrayList<>();
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", FeatureType.GRID, "Temperature_sigma"});         // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", FeatureType.FMRC, "Pressure_surface"});                                         // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", FeatureType.GRID, "Pressure_surface"});                                         // TP
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID, "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC, "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
 
@@ -145,7 +145,7 @@ public class TestGeoTiffWriter {
         Coverage coverage = gcd.findCoverage(covName);
         CoverageCoordAxis1D z = (CoverageCoordAxis1D) coverage.getCoordSys().getZAxis();
         SubsetParams params = new SubsetParams().set(SubsetParams.timePresent, true);
-        if (z != null) params.set(SubsetParams.vertCoord, z.getCoord(0));
+        if (z != null) params.set(SubsetParams.vertCoord, z.getCoordMidpoint(0));
         Assert.assertNotNull(covName, coverage);
         covArray = coverage.readData(params);
 

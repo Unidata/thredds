@@ -40,7 +40,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.Grib;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
@@ -63,7 +63,7 @@ public class TestGribEnsembles {
 
       String variableName = "VAR_10-3-192_L1";
 
-      GridDatatype gridDatatype = gridDataset.findGridDatatypeByAttribute(GribIosp.VARIABLE_ID_ATTNAME, variableName);
+      GridDatatype gridDatatype = gridDataset.findGridDatatypeByAttribute(Grib.VARIABLE_ID_ATTNAME, variableName);
       assertNotNull(gridDatatype);
 
       Dimension rtDimension = gridDatatype.getRunTimeDimension();

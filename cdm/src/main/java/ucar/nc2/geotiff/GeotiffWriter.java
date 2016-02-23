@@ -586,7 +586,7 @@ public class GeotiffWriter implements Closeable {
     double yInc = Math.abs(yaxis.getResolution()) * scaler;
 
     Array data = array.getData().reduce();
-    if (yaxis.getCoord(0) < yaxis.getCoord(1)) {
+    if (yaxis.getCoordMidpoint(0) < yaxis.getCoordMidpoint(1)) {
       data = data.flip(0);
       yStart = yaxis.getCoordEdgeLast();
     }

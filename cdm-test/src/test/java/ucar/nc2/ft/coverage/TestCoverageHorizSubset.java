@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
@@ -26,7 +26,7 @@ public class TestCoverageHorizSubset {
       CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "VAR_3-0-8";
-      Coverage coverage = gcs.findCoverageByAttribute(GribIosp.VARIABLE_ID_ATTNAME, gribId); // "Pixel_scene_type");
+      Coverage coverage = gcs.findCoverageByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId); // "Pixel_scene_type");
       Assert.assertNotNull(gribId, coverage);
 
       CoverageCoordSys cs = coverage.getCoordSys();
@@ -99,7 +99,7 @@ public class TestCoverageHorizSubset {
       CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "VAR_0-3-0_L1";
-      Coverage coverage = gcs.findCoverageByAttribute(GribIosp.VARIABLE_ID_ATTNAME, gribId); // "Pressure_Surface");
+      Coverage coverage = gcs.findCoverageByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId); // "Pressure_Surface");
       Assert.assertNotNull(gribId, coverage);
 
       CoverageCoordSys cs = coverage.getCoordSys();
@@ -179,7 +179,7 @@ public class TestCoverageHorizSubset {
       CoverageCollection gcs = cc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull("gcs", gcs);
       String gribId = "VAR_2-0-0_L1";
-      Coverage coverage = gcs.findCoverageByAttribute(GribIosp.VARIABLE_ID_ATTNAME, gribId); // Land_cover_0__sea_1__land_surface
+      Coverage coverage = gcs.findCoverageByAttribute(Grib.VARIABLE_ID_ATTNAME, gribId); // Land_cover_0__sea_1__land_surface
       Assert.assertNotNull(gribId, coverage);
 
       CoverageCoordSys cs = coverage.getCoordSys();

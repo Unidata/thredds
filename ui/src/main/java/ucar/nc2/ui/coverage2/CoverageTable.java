@@ -620,7 +620,8 @@ public class CoverageTable extends JPanel {
     String showCoordValueDiffs() {
       Formatter f = new Formatter();
       switch (axis.getSpacing()) {
-        case regular:
+        case regularInterval:
+        case regularPoint:
           f.format("%n%s resolution=%f%n", axis.getSpacing(), axis.getResolution());
           break;
 

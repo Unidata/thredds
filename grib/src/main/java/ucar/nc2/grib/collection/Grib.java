@@ -29,60 +29,38 @@
  *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
  *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
  */
-
-package ucar.nc2.grib;
-
-import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.DiskCache2;
-
-import java.io.File;
+package ucar.nc2.grib.collection;
 
 /**
- * manages where the grib index files live
+ * Describe
  *
  * @author caron
- * @since 12/18/2014
+ * @since 2/23/2016.
  */
-public class GribIndexCache {
+public class Grib {
 
-  static private DiskCache2 diskCache;
+  static public final String VARIABLE_ID_ATTNAME = "Grib_Variable_Id";
+  static public final String GRIB_VALID_TIME = "GRIB forecast or observation time";
+  static public final String GRIB_RUNTIME = "GRIB reference time";
+  static public final String GRIB_STAT_TYPE = "Grib_Statistical_Interval_Type";
 
-  static synchronized public void setDiskCache2(DiskCache2 dc) {
-    diskCache = dc;
+  // do not use
+  static public boolean debugRead = false;
+  static public boolean debugGbxIndexOnly = false;  // we are running with only ncx and gbx index files, no data
+  static boolean debugIndexOnlyShow = false;  // debugIndexOnly must be true; show record fetch
+  static boolean debugIndexOnly = false;      // we are running with only ncx index files, no data
+
+
+  static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
+    debugRead = debugFlag.isSet("Grib/showRead");
+    debugIndexOnly = debugFlag.isSet("Grib/indexOnly");
+    debugIndexOnlyShow = debugFlag.isSet("Grib/indexOnlyShow");
+    debugGbxIndexOnly = debugFlag.isSet("Grib/debugGbxIndexOnly");
   }
 
-  static synchronized public DiskCache2 getDiskCache2() {
-    if (diskCache == null)
-      diskCache = DiskCache2.getDefault();
-    return diskCache;
-  }
 
-  /**
-   * Get index file, may be in cache directory, may not exist
-   *
-   * @param fileLocation full path of original index filename
-   * @return File, possibly in cache, may or may not exist
-   */
-  static public File getFileOrCache(String fileLocation) {
-    File result = getExistingFileOrCache(fileLocation);
-    if (result != null) return result;
-    return getDiskCache2().getFile(fileLocation);
-  }
-
-  /**
-   * Looking for an existing file, in cache or not
-   *
-   * @param fileLocation full path of original index filename
-   * @return existing file if you can find it, else null
-   */
-  static public File getExistingFileOrCache(String fileLocation) {
-    File result =  getDiskCache2().getExistingFileOrCache(fileLocation);
-    if (result == null && Grib.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx4")) { // might create only from gbx9 for debugging
-      int length = fileLocation.length();
-      String maybeIndexAlreadyExists = fileLocation.substring(0, length-10)+".ncx4";
-      result =  getDiskCache2().getExistingFileOrCache(maybeIndexAlreadyExists);
-    }
-    return result;
-  }
+  // class not interface, per Bloch edition 2 item 19
+  private Grib() {} // disable instantiation
 }

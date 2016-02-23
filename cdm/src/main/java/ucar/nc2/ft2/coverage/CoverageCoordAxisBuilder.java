@@ -41,6 +41,8 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.util.Counters;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.StringUtil2;
 
 import java.util.ArrayList;
@@ -74,7 +76,6 @@ public class CoverageCoordAxisBuilder {
   public TimeHelper timeHelper; // AxisType = Time, RunTime only
   public String units;
 
-  // may be lazy eval
   public double[] values;
 
   // 1D only
@@ -89,12 +90,12 @@ public class CoverageCoordAxisBuilder {
   public int[] shape;
   public Object userObject;
 
-  public CoverageCoordAxisBuilder() {}
+  public CoverageCoordAxisBuilder() {
+  }
 
   public CoverageCoordAxisBuilder(String name, String units, String description, DataType dataType, AxisType axisType, AttributeContainer atts,
-                              CoverageCoordAxis.DependenceType dependenceType, String dependsOnS, CoverageCoordAxis.Spacing spacing,
-                              int ncoords, double startValue, double endValue, double resolution, double[] values,
-                              CoordAxisReader reader, boolean isSubset) {
+                                  CoverageCoordAxis.DependenceType dependenceType, String dependsOnS, CoverageCoordAxis.Spacing spacing,
+                                  int ncoords, double startValue, double endValue, double resolution, double[] values, CoordAxisReader reader) {
     this.name = name;
     this.units = units;
     this.description = description;
@@ -110,11 +111,6 @@ public class CoverageCoordAxisBuilder {
     this.resolution = resolution;
     this.values = values;
     this.reader = reader;
-    this.isSubset = isSubset;
-
-    //this.minIndex = 0;
-    //this.maxIndex = ncoords-1;
-    // this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
   }
 
   CoverageCoordAxisBuilder(CoverageCoordAxis from) {
@@ -137,15 +133,15 @@ public class CoverageCoordAxisBuilder {
     this.isSubset = from.isSubset;
     this.timeHelper = from.timeHelper;
 
-    //this.minIndex = 0;
-    //this.maxIndex = ncoords-1;
-    // this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
-
     if (from instanceof LatLonAxis2D) {
       LatLonAxis2D latlon = (LatLonAxis2D) from;
       this.shape = latlon.getShape();
       this.userObject = latlon.getUserObject();
     }
+  }
+
+  public void setIsSubset(boolean isSubset) {
+    this.isSubset = isSubset;
   }
 
   public CoverageCoordAxisBuilder setDependsOn(String dependsOn) {
@@ -158,6 +154,124 @@ public class CoverageCoordAxisBuilder {
     }
     return this;
   }
+
+  ///////////////////////////////////////////////////////////////////////
+  //// this could be moved into grib ncx calculation
+  // for point: values are the points, values[npts]
+  // for intervals: values are the edges, values[2*npts]: low0, high0, low1, high1
+
+  public void setSpacingFromValues(boolean isInterval) {
+    if (isInterval)
+      setSpacingFromIntervalValues();
+    else
+      setSpacingFromPointValues();
+  }
+
+  private void setSpacingFromPointValues() {
+    assert (values.length == ncoords);
+
+    this.startValue = values[0];
+    this.endValue = values[ncoords - 1];
+    this.resolution = (ncoords == 1) ? 0.0 : (endValue - startValue) / (ncoords - 1);
+
+    if (ncoords == 1) {
+      this.spacing = CoverageCoordAxis.Spacing.regularPoint;
+      values = null;
+      return;
+    }
+
+    this.resolution = (endValue - startValue) / (ncoords - 1);
+
+    Counters.Counter resol = new Counters.Counter("resol");
+    for (int i = 0; i < values.length - 1; i++) {
+      double diff = values[i + 1] - values[i];
+      resol.count(diff);
+    }
+
+    Comparable resolMode = resol.getMode();
+    if (resolMode != null)
+      this.resolution = ((Number) resolMode).doubleValue();
+
+    boolean isRegular = isRegular(resol);
+    this.spacing = isRegular ? CoverageCoordAxis.Spacing.regularPoint : CoverageCoordAxis.Spacing.irregularPoint;
+    if (isRegular) values = null;
+  }
+
+  private void setSpacingFromIntervalValues() {
+    assert (values.length == 2 * ncoords);
+
+    this.startValue = values[0];
+    this.endValue = values[values.length - 1];
+    this.resolution = (endValue - startValue) / ncoords;
+
+    Counters.Counter resol = new Counters.Counter("resol");
+    boolean isContiguous = true;
+    for (int i = 0; i < values.length - 2; i += 2) {
+      double diff = values[i + 2] - values[i];  // difference of consecutive starting interval values // LOOK roundoff
+      resol.count(diff);
+      if (isContiguous && !Misc.closeEnough(values[i+1], values[i+2])) // difference of this ending interval values with next starting value
+        isContiguous = false;
+    }
+
+    Comparable resolMode = resol.getMode();
+    if (resolMode != null) {
+      double modeValue = ((Number) resolMode).doubleValue();
+      if (modeValue != 0.0)
+        this.resolution = modeValue;
+    }
+
+    boolean regular = isRegular(resol);
+
+    if (regular && isContiguous) {
+      this.spacing = CoverageCoordAxis.Spacing.regularInterval;
+      this.values = null;
+
+    } else if (isContiguous) {
+      this.spacing = CoverageCoordAxis.Spacing.contiguousInterval;
+      double[] contValues = new double[ncoords+ 1];
+      int count = 0;
+      for (int i = 0; i < values.length; i += 2)
+        contValues[count++] = values[i]; // starting interval
+      contValues[count] = values[values.length - 1]; // ending interval
+      this.values = contValues;
+
+    } else {
+      this.spacing = CoverageCoordAxis.Spacing.discontiguousInterval;
+    }
+  }
+
+  private static final double missingTolerence = .05;
+
+  private boolean isRegular(Counters.Counter resol) {
+    if (resol.getUnique() == 1) return true; // all same resolution, or n == 1
+
+    Comparable mode = resol.getMode();
+    Number modeNumber = (Number) mode;
+    if (modeNumber == null || modeNumber.intValue() == 0)
+      return false;
+
+    int modeCount = 0;
+    int nonModeCount = 0;
+    for (Comparable value : resol.getValues()) {
+      if (value.compareTo(mode) == 0)
+        modeCount = resol.getCount(value);
+      else {
+        Number valueNumber = (Number) value;
+        // non mode must be a multiple of mode - means there are some missing values
+        int rem = (valueNumber.intValue() % modeNumber.intValue());
+        if (rem != 0)
+          return false;
+        int multiple = (valueNumber.intValue() / modeNumber.intValue());
+        nonModeCount += (multiple - 1) * resol.getCount(value);
+      }
+    }
+
+    // only tolerate these many missing values
+    double ratio = (nonModeCount / (double) modeCount);
+    return ratio < missingTolerence;
+  }
+
+  ////////////////////////////////////////
 
   CoverageCoordAxisBuilder subset(String dependsOn, CoverageCoordAxis.Spacing spacing, int ncoords, double[] values) {
     assert values != null;

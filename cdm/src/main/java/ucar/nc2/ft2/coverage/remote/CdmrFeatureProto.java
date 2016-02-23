@@ -231,9 +231,9 @@ public final class CdmrFeatureProto {
   public enum AxisSpacing
       implements com.google.protobuf.ProtocolMessageEnum {
     /**
-     * <code>regular = 0;</code>
+     * <code>regularPoint = 0;</code>
      */
-    regular(0, 0),
+    regularPoint(0, 0),
     /**
      * <code>irregularPoint = 1;</code>
      */
@@ -246,13 +246,17 @@ public final class CdmrFeatureProto {
      * <code>discontiguousInterval = 3;</code>
      */
     discontiguousInterval(3, 3),
+    /**
+     * <code>regularInterval = 4;</code>
+     */
+    regularInterval(4, 4),
     UNRECOGNIZED(-1, -1),
     ;
 
     /**
-     * <code>regular = 0;</code>
+     * <code>regularPoint = 0;</code>
      */
-    public static final int regular_VALUE = 0;
+    public static final int regularPoint_VALUE = 0;
     /**
      * <code>irregularPoint = 1;</code>
      */
@@ -265,6 +269,10 @@ public final class CdmrFeatureProto {
      * <code>discontiguousInterval = 3;</code>
      */
     public static final int discontiguousInterval_VALUE = 3;
+    /**
+     * <code>regularInterval = 4;</code>
+     */
+    public static final int regularInterval_VALUE = 4;
 
 
     public final int getNumber() {
@@ -277,10 +285,11 @@ public final class CdmrFeatureProto {
 
     public static AxisSpacing valueOf(int value) {
       switch (value) {
-        case 0: return regular;
+        case 0: return regularPoint;
         case 1: return irregularPoint;
         case 2: return contiguousInterval;
         case 3: return discontiguousInterval;
+        case 4: return regularInterval;
         default: return null;
       }
     }
@@ -2483,7 +2492,7 @@ public final class CdmrFeatureProto {
       if (nvalues_ != 0L) {
         output.writeInt64(10, nvalues_);
       }
-      if (spacing_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regular.getNumber()) {
+      if (spacing_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regularPoint.getNumber()) {
         output.writeEnum(11, spacing_);
       }
       if (startValue_ != 0D) {
@@ -2556,7 +2565,7 @@ public final class CdmrFeatureProto {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(10, nvalues_);
       }
-      if (spacing_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regular.getNumber()) {
+      if (spacing_ != ucar.nc2.ft2.coverage.remote.CdmrFeatureProto.AxisSpacing.regularPoint.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(11, spacing_);
       }
@@ -14092,18 +14101,19 @@ public final class CdmrFeatureProto {
       "oY\020\004\022\010\n\004GeoZ\020\005\022\007\n\003Lat\020\006\022\007\n\003Lon\020\007\022\n\n\006Heig" +
       "ht\020\010\022\014\n\010Pressure\020\t\022\021\n\rRadialAzimuth\020\n\022\022\n" +
       "\016RadialDistance\020\013\022\023\n\017RadialElevation\020\014\022\014" +
-      "\n\010Spectral\020\r\022\016\n\nTimeOffset\020\016*a\n\013AxisSpac" +
-      "ing\022\013\n\007regular\020\000\022\022\n\016irregularPoint\020\001\022\026\n\022" +
-      "contiguousInterval\020\002\022\031\n\025discontiguousInt" +
-      "erval\020\003*S\n\016DependenceType\022\017\n\013independent" +
-      "\020\000\022\r\n\tdependent\020\001\022\n\n\006scalar\020\002\022\010\n\004twoD\020\003\022",
-      "\013\n\007fmrcReg\020\004*t\n\010Calendar\022\027\n\023proleptic_gr" +
-      "egorian\020\000\022\r\n\tgregorian\020\001\022\n\n\006noleap\020\002\022\014\n\010" +
-      "all_leap\020\003\022\020\n\014uniform30day\020\004\022\n\n\006julian\020\005" +
-      "\022\010\n\004none\020\006*K\n\014CoverageType\022\013\n\007General\020\000\022" +
-      "\017\n\013Curvilinear\020\001\022\010\n\004Grid\020\002\022\t\n\005Swath\020\003\022\010\n" +
-      "\004Fmrc\020\004B0\n\034ucar.nc2.ft2.coverage.remoteB" +
-      "\020CdmrFeatureProtob\006proto3"
+      "\n\010Spectral\020\r\022\016\n\nTimeOffset\020\016*{\n\013AxisSpac" +
+      "ing\022\020\n\014regularPoint\020\000\022\022\n\016irregularPoint\020" +
+      "\001\022\026\n\022contiguousInterval\020\002\022\031\n\025discontiguo" +
+      "usInterval\020\003\022\023\n\017regularInterval\020\004*S\n\016Dep" +
+      "endenceType\022\017\n\013independent\020\000\022\r\n\tdependen",
+      "t\020\001\022\n\n\006scalar\020\002\022\010\n\004twoD\020\003\022\013\n\007fmrcReg\020\004*t" +
+      "\n\010Calendar\022\027\n\023proleptic_gregorian\020\000\022\r\n\tg" +
+      "regorian\020\001\022\n\n\006noleap\020\002\022\014\n\010all_leap\020\003\022\020\n\014" +
+      "uniform30day\020\004\022\n\n\006julian\020\005\022\010\n\004none\020\006*K\n\014" +
+      "CoverageType\022\013\n\007General\020\000\022\017\n\013Curvilinear" +
+      "\020\001\022\010\n\004Grid\020\002\022\t\n\005Swath\020\003\022\010\n\004Fmrc\020\004B0\n\034uca" +
+      "r.nc2.ft2.coverage.remoteB\020CdmrFeaturePr" +
+      "otob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
