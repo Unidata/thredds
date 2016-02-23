@@ -166,11 +166,12 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       while (subset.hasNext())
         values[count++] = subset.nextDouble();
 
-      return new CoverageCoordAxis1D(
-              new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
-                      AttributeContainerHelper.filter(attributes, "_Coordinate"),
-                      dependenceType, getDependsOn(), spacing, n, values[0], values[n - 1],
-                      0.0, values, reader, true));
+      CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
+              AttributeContainerHelper.filter(attributes, "_Coordinate"),
+              dependenceType, getDependsOn(), spacing, n, values[0], values[n - 1],
+              0.0, values, reader);
+      builder.setIsSubset(true);
+      return new CoverageCoordAxis1D(builder);
     }
 
     if (spacing == Spacing.discontiguousInterval) {
@@ -183,11 +184,13 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
       while (subset.hasNext())
         values[count++] = subset.nextDouble();
 
-      return new CoverageCoordAxis1D(
-              new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
-                      AttributeContainerHelper.filter(attributes, "_Coordinate"),
-                      dependenceType, getDependsOn(), spacing, n / 2, values[0], values[n - 1],
-                      0.0, values, reader, true));
+      CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, units, description, dataType, axisType,
+              AttributeContainerHelper.filter(attributes, "_Coordinate"),
+              dependenceType, getDependsOn(), spacing, n / 2, values[0], values[n - 1],
+              0.0, values, reader);
+
+      builder.setIsSubset(true);
+      return new CoverageCoordAxis1D(builder);
     }
 
     // LOOK what about the other cases ??

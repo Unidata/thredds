@@ -33,7 +33,6 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -61,15 +60,15 @@ import java.util.List;
  * @author caron
  * @since 7/11/2015
  */
-//@Immutable
 abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis> {
   static private final Logger logger = LoggerFactory.getLogger(CoverageCoordAxis.class);
 
   public enum Spacing {
-    regular,                // regularly spaced points or intervals (start, end, npts), edges halfway between coords
-    irregularPoint,         // irregular spaced points (values, npts), edges halfway between coords
-    contiguousInterval,     // irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-    discontiguousInterval   // irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1..
+    regularPoint,          // regularly spaced points (start, end, npts), start and end are pts, edges halfway between coords, resol = (start - end) / (npts-1)
+    irregularPoint,        // irregular spaced points (values, npts), edges halfway between coords
+    regularInterval,       // regular contiguous intervals (start, end, npts), start and end are edges, resol = (start - end) / npts
+    contiguousInterval,    // irregular contiguous intervals (values, npts), values are the edges, values[npts+1], coord halfway between edges
+    discontiguousInterval  // irregular discontiguous spaced intervals (values, npts), values are the edges, values[2*npts]: low0, high0, low1, high1, ...
   }
 
   public enum DependenceType {
@@ -102,7 +101,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   // may be lazy eval
   protected double[] values;     // null if isRegular, or use CoordAxisReader for lazy eval
 
-  protected CoverageCoordAxis( CoverageCoordAxisBuilder builder) {
+  protected CoverageCoordAxis(CoverageCoordAxisBuilder builder) {
     this.name = builder.name;
     this.units = builder.units;
     this.description = builder.description;
@@ -115,21 +114,9 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     this.reader = builder.reader; // used only if values == null
     this.dependsOn = builder.dependsOn == null ? Collections.emptyList() : builder.dependsOn;
 
-    if (builder.values == null) {
-      this.startValue = builder.startValue;
-      this.endValue = builder.endValue;
-    }  else {
-      this.startValue = builder.values[0];
-      this.endValue = builder.values[values.length-1];
-      //if (builder.resolution == 0.0 && values.length > 1)
-      //  builder.resolution = (this.endValue - this.startValue) / (values.length-1);
-      // could also check if regular, and change spacing
-    }
-
-    if (builder.resolution == 0.0 && builder.ncoords > 1)
-      this.resolution = (this.endValue - this.startValue) / (builder.ncoords - 1);
-    else
-      this.resolution = builder.resolution;
+    this.startValue = builder.startValue;
+    this.endValue = builder.endValue;
+    this.resolution = builder.resolution;
 
     this.ncoords = builder.ncoords;
     this.isSubset = builder.isSubset;
@@ -205,7 +192,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   }
 
   public boolean isRegular() {
-    return (spacing == Spacing.regular);
+    return (spacing == Spacing.regularPoint) || (spacing == Spacing.regularInterval);
   }
 
   public double getResolution() {
@@ -255,15 +242,11 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     return isSubset;
   }
 
-  //public boolean isTime2D() {
-  //   return false;
-  // }
-
   public boolean isInterval() {
-    return spacing == Spacing.contiguousInterval ||  spacing == Spacing.discontiguousInterval;
+    return spacing == Spacing.regularInterval || spacing == Spacing.contiguousInterval || spacing == Spacing.discontiguousInterval;
   }
 
-   @Override
+  @Override
   public String toString() {
     Formatter f = new Formatter();
     Indent indent = new Indent(2);
@@ -274,7 +257,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   public int[] getShape() {
     if (getDependenceType() == CoverageCoordAxis.DependenceType.scalar)
       return new int[0];
-    return new int[] {ncoords};
+    return new int[]{ncoords};
   }
 
   public Range getRange() {
@@ -282,7 +265,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
       return Range.EMPTY;
 
     try {
-      return new Range(axisType.toString(), 0, ncoords-1);
+      return new Range(axisType.toString(), 0, ncoords - 1);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e);
     }
@@ -293,7 +276,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
       return Range.EMPTY;
 
     try {
-      return new Range(axisType.toString(), 0, ncoords-1);
+      return new Range(axisType.toString(), 0, ncoords - 1);
     } catch (InvalidRangeException e) {
       throw new RuntimeException(e);
     }
@@ -345,19 +328,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
 
   public String getSummary() {
     Formatter f = new Formatter();
-    f.format("start=%f end=%f %s %s", startValue, endValue, units, spacing);
-    if (ncoords > 1) {
-      switch (spacing) {
-        case regular:
-          f.format(" spacing=%f", resolution);
-          break;
-        case contiguousInterval:
-        case irregularPoint:
-          if (axisType.isTime())
-            f.format(", typical spacing=%f", resolution);
-          break;
-      }
-    }
+    f.format("start=%f end=%f %s %s resolution=%f", startValue, endValue, units, spacing, resolution);
     f.format(" (npts=%d)", ncoords);
     return f.toString();
   }
@@ -366,8 +337,6 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   // time coords only
 
   public double convert(CalendarDate date) {
-    if (timeHelper == null)
-      System.out.printf("HEY%n");
     return timeHelper.offsetFromRefDate(date);
   }
 
@@ -401,16 +370,24 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
 
   ///////////////////////////////////////////////
 
-  // will return null when isRegular
-  public double[] getValues() {
+  private boolean valuesLoaded;
+
+  protected void loadValuesIfNeeded() {
+    if (isRegular() || valuesLoaded) return;
     synchronized (this) {
-      if (values == null && !isRegular() && reader != null)
+      if (values == null && reader != null)
         try {
           values = reader.readCoordValues(this);
         } catch (IOException e) {
           logger.error("Failed to read " + name, e);
         }
+      valuesLoaded = true;
     }
+  }
+
+  // will return null when isRegular, otherwise reads values if needed
+  public double[] getValues() {
+    loadValuesIfNeeded();
     return values == null ? null : Arrays.copyOf(values, values.length); // cant allow values array to escape, must be immutable
   }
 }

@@ -56,33 +56,33 @@ public class TestDtWithCoverageReadingSingleP {
             "2015-03-01T00:00:00Z", null, "2015-03-01T06:00:00Z ", null, null});
 
     // Slice Momentum_flux_u-component_surface_Mixed_intervals_Average runtime=2015-03-01T12:00:00Z (2) ens=0.000000 (-1) time=2015-03-04T19:30:00Z (26) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
             "2015-03-01T12:00:00Z", null, "2015-03-04T19:30:00Z", null, null});
 
     // Slice Total_ozone_entire_atmosphere_single_layer runtime=2015-03-01T12:00:00Z (2) ens=0.000000 (-1) time=2015-03-03T15:00:00Z (17) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T12:00:00Z", null, "2015-03-03T15:00:00Z", null, null});
     //
     //    Slice runtime=2015-03-01T00:00:00Z (0) ens=0.000000 (-1) time=2015-03-06T19:30:00Z (46) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,  "Momentum_flux_u-component_surface_Mixed_intervals_Average",
             "2015-03-01T00:00:00Z", null, "2015-03-06T19:30:00Z", null, 46});
 
     // Test Dataset Q:/cdmUnitTest/gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4  Grid TwoD/Total_ozone_entire_atmosphere_single_layer
     //  Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T00:00:00Z (0) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T06:00:00Z", null, "2015-03-01T12:00:00Z", null, null});
     // Slice runtime=2015-03-01T06:00:00Z (1) ens=0.000000 (-1) time=2015-03-01T03:00:00Z (1) vert=0.000000 (-1)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T12:00:00Z", null, "2015-03-01T12:00:00Z", null, null});
     //    Slice runtime=2015-03-01T18:00:00Z (3) ens=0.000000 (-1) time=2015-03-17T18:00:00Z (92) vert=30000.000000 (9)
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC,  "Total_ozone_entire_atmosphere_single_layer",
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID,  "Total_ozone_entire_atmosphere_single_layer",
             "2015-03-01T18:00:00Z", null, "2015-03-17T18:00:00Z", null, null});
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc",  null, "RH_lpdg", null, null, "2003-06-12T19:00:00Z", 150.0, null});  // NUWG - has CoordinateAlias
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",  null, "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.580000, null}); // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",  null, "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.665000, null}); // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",  null, "Absolute_vorticity_isobaric", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 100000.0, null}); // SRC                               // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", null, "elev",  null, null, "2009-10-24T04:14:59.121Z", null, null});  // x,y axis but no projection
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/03061219_ruc.nc",  FeatureType.GRID, "RH_lpdg", null, null, "2003-06-12T19:00:00Z", 150.0, null});  // NUWG - has CoordinateAlias
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",  FeatureType.GRID, "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.580000, null}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",  FeatureType.GRID, "Relative_humidity_sigma_layer", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 0.665000, null}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4",  FeatureType.GRID, "Absolute_vorticity_isobaric", "2015-03-26T06:00:00Z", null, "2015-03-26T06:00:00Z", 100000.0, null}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR, "elev",  null, null, "2009-10-24T04:14:59.121Z", null, null});  // x,y axis but no projection
     // */
     return result;
   }

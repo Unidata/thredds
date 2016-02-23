@@ -36,17 +36,12 @@ package ucar.nc2.dt.grid;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
-import ucar.nc2.dataset.CoordinateAxis;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
@@ -55,8 +50,6 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -193,30 +186,30 @@ public class TestCFWriter2 {
   @Ignore("not visible on spock")
   @Test
   public void testWriteFileOnNarr2() throws Exception {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Accum_snow_surface,Convective_cloud_cover_entire_atmosphere_3_Hour_Average",
             "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", null, true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(new DebugFlagsImpl(""));
   }
 
   @Ignore("not visible on spock")
   @Test
   public void testWriteFileOnNarr3() throws Exception {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     ProjectionRect rect = new ProjectionRect( new ProjectionPointImpl(-5645, -4626), 11329, 8992);
     testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Accum_snow_surface,Convective_cloud_cover_entire_atmosphere_3_Hour_Average",
             "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", rect, true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(new DebugFlagsImpl(""));
   }
 
   @Ignore("not visible on spock")
   @Test
   public void testWriteFileOnNarr4() throws Exception {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     ProjectionRect rect = new ProjectionRect( new ProjectionPointImpl(-5645, -4626), 11329, 8992);
     testFileSize("B:/ncdc/0409/narr/Narr_A_fc.ncx4", "Convective_cloud_cover_entire_atmosphere_3_Hour_Average,Accum_snow_surface",
             "2014-10-01T21:00:00Z", "2014-10-02T21:00:00Z", rect, true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(new DebugFlagsImpl(""));
   }
 
   private void testFileSize(String fileIn, String gridNames, String startDate, String endDate, ProjectionRect rect, boolean writeFile) throws Exception {

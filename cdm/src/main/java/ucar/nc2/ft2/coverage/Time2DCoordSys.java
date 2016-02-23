@@ -209,7 +209,8 @@ public class Time2DCoordSys {
     atts.addAttribute(new Attribute(CF.CALENDAR, runAxisSubset.getCalendar().toString()));
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, runAxisSubset.getUnits(), desc, DataType.DOUBLE, AxisType.Time, atts,
-            CoverageCoordAxis.DependenceType.scalar, null, CoverageCoordAxis.Spacing.regular, 1, val, val, 0.0, null, null, true);
+            CoverageCoordAxis.DependenceType.scalar, null, CoverageCoordAxis.Spacing.regularPoint, 1, val, val, 0.0, null, null);
+    builder.setIsSubset(true);
 
     return new CoverageCoordAxis1D(builder);
   }
@@ -242,7 +243,8 @@ public class Time2DCoordSys {
       double offset = timeAxisSubset.getOffsetInTimeUnits(runAxis.getRefDate(), timeAxisSubset.getRefDate());
 
       switch (timeAxisSubset.getSpacing()) {
-        case regular:
+        case regularInterval:
+        case regularPoint:
           builder.startValue = timeAxisSubset.getStartValue() + offset;
           builder.endValue = timeAxisSubset.getEndValue() + offset;
           break;

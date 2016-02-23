@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -45,7 +46,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -70,7 +71,7 @@ public class TestGridSubsetCoordinateSystem {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", "Temperature_sigma"});         // SRC                               // TP
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", "Pressure_surface"});                                         // TP
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2001/ds083.2_Aggregation-2001.ncx4", "Temperature_surface"});  // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation.ncx4", "Temperature_surface"});  // TPofP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation.ncx4", "Best/Temperature_surface"});  // TPofP
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/yearPartition-1979.ncx4", "Runoff_surface_12_Hour_Average"});  // MRSTC
@@ -91,7 +92,7 @@ public class TestGridSubsetCoordinateSystem {
   @Test
   public void testGridDomain() throws Exception {
     System.err.printf("%nOpen %s grid='%s'%n", filename, gridName);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     try (GridDataset dataset = GridDataset.open(filename)) {
       GeoGrid grid = dataset.findGridByName(gridName);
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -104,7 +105,7 @@ public class TestGridSubsetCoordinateSystem {
       testDomain("subset grid", gridSubset.getDimensions(), gcsSubset.getCoordinateAxes());
 
     } finally {
-      GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+      Grib.setDebugFlags(new DebugFlagsImpl(""));
     }
   }
 
@@ -122,17 +123,19 @@ public class TestGridSubsetCoordinateSystem {
   @Test
   public void testCoordinateSystemDomain() throws Exception {
     System.err.printf("%nOpen %s grid='%s'%n", filename, gridName);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
 
     try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
+      Assert.assertNotNull( filename, ncd);
       VariableDS vds = (VariableDS) ncd.findVariable(gridName);
+      Assert.assertNotNull( gridName, vds);
       for (CoordinateSystem cs : vds.getCoordinateSystems()) {
         System.err.printf("  CoordinateSystem= '%s'%n", cs);
         testDomain("CoordinateSystem ", vds.getDimensions(), cs.getCoordinateAxes());
       }
 
     } finally {
-      GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+      Grib.setDebugFlags(new DebugFlagsImpl(""));
     }
   }
 

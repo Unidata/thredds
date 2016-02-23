@@ -44,9 +44,11 @@ import thredds.inventory.partition.PartitionManagerFromIndexList;
 import ucar.coord.Coordinate;
 import ucar.coord.CoordinateRuntime;
 import ucar.coord.CoordinateTime2D;
+import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CloseableIterator;
 import ucar.unidata.util.StringUtil2;
 
@@ -66,14 +68,14 @@ abstract class GribCollectionBuilder {
   protected final org.slf4j.Logger logger;
   protected final boolean isGrib1;
   protected GribCollectionImmutable.Type type;
-  //protected Map<Long, Integer> gdsTrack = new HashMap<>();
 
   protected String name;            // collection name
   protected File directory;         // top directory
 
   protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException;
 
-  protected abstract boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime, List<? extends Group> groups, List<MFile> files) throws IOException;
+  protected abstract boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
+                                        List<? extends Group> groups, List<MFile> files, CalendarDateRange dateRange) throws IOException;
 
   public GribCollectionBuilder(boolean isGrib1, String name, MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
@@ -153,7 +155,8 @@ abstract class GribCollectionBuilder {
     }
 
     // create the master runtimes, classify the result
-    boolean allTimesAreOne = true;
+    CalendarDateRange calendarDateRangeAll = null;
+    //boolean allTimesAreOne = true;
     boolean allTimesAreUnique = true;
     Set<Long> allRuntimes = new HashSet<>();
     for (Group g : groups) {
@@ -162,10 +165,15 @@ abstract class GribCollectionBuilder {
       for (Coordinate coord : g.getCoordinates()) {
         if (coord instanceof CoordinateTime2D) {
           CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-          if (coord2D.getNtimes() > 1) allTimesAreOne = false;
+          //if (coord2D.getNtimes() > 1) allTimesAreOne = false;
           if (allTimesAreUnique) {
             allTimesAreUnique = coord2D.hasUniqueTimes();
           }
+        }
+        if (coord instanceof CoordinateTimeAbstract) {
+          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
+          if (calendarDateRangeAll == null) calendarDateRangeAll = calendarDateRange;
+          else calendarDateRangeAll.extend(calendarDateRange);
         }
       }
     }
@@ -186,7 +194,7 @@ abstract class GribCollectionBuilder {
 
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);
-    boolean ok = writeIndex(this.name, indexFileForRuntime.getPath(), masterRuntimes, groups, allFiles);
+    boolean ok = writeIndex(this.name, indexFileForRuntime.getPath(), masterRuntimes, groups, allFiles, calendarDateRangeAll);
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);
@@ -229,8 +237,17 @@ abstract class GribCollectionBuilder {
       runtimes.add(g.getRuntime().getMillis());
       CoordinateRuntime masterRuntimes = new CoordinateRuntime(runtimes, null);
 
+      CalendarDateRange calendarDateRangeAll = null;
+      for (Coordinate coord : g.getCoordinates()) {
+        if (coord instanceof CoordinateTimeAbstract) {
+          CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
+          if (calendarDateRangeAll == null) calendarDateRangeAll = calendarDateRange;
+          else calendarDateRangeAll.extend(calendarDateRange);
+        }
+      }
+
       // for each Group write an index file
-      ok &= writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles);
+      ok &= writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles, calendarDateRangeAll);
       logger.info("GribCollectionBuilder write {} ok={}", indexFileForRuntime.getPath(), ok);
     }
 

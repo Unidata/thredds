@@ -170,7 +170,7 @@ public class TestGridCoverageRemoteP {
             Assert.assertTrue(edge2.toString(), !edge2.isBefore(time_val));
 
           } else {
-            double val2 = timeOffsetAxis.getCoord(0);
+            double val2 = timeOffsetAxis.getCoordMidpoint(0);
             CalendarDate forecastDate = timeOffsetAxis.makeDate(runDate, val2);
             Assert.assertEquals(time_val, forecastDate);
           }
@@ -181,7 +181,7 @@ public class TestGridCoverageRemoteP {
             Assert.assertTrue(timeOffsetAxis.getCoordEdge2(0) >= time_offset);
 
           } else {
-            double val2 = timeOffsetAxis.getCoord(0);
+            double val2 = timeOffsetAxis.getCoordMidpoint(0);
             Assert.assertEquals(val2, time_offset, Misc.maxReletiveError);
           }
         }

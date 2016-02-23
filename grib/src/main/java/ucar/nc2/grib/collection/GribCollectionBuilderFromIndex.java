@@ -161,6 +161,8 @@ abstract class GribCollectionBuilderFromIndex {
       gc.directory = gc.setOrgDirectory(proto.getTopDir());
       gc.indexVersion = proto.getVersion();
 
+      gc.setCalendarDateRange(proto.getStartTime(), proto.getEndTime());
+
       int fsize = 0;
       int n = proto.getMfilesCount();
       Map<Integer, MFile> fileMap = new HashMap<>(2 * n);
@@ -173,11 +175,6 @@ abstract class GribCollectionBuilderFromIndex {
       if (debug) System.out.printf("GribCollectionBuilderFromIndex files len = %d%n", fsize);
 
       gc.masterRuntime = (CoordinateRuntime) readCoord(proto.getMasterRuntime());
-
-      /* gc.horizCS = new ArrayList<>(proto.getGdsCount());
-      for (int i = 0; i < proto.getGdsCount(); i++)
-        readGds(proto.getGds(i));
-      gc.horizCS = Collections.unmodifiableList(gc.horizCS); // must be in order */
 
       gc.datasets = new ArrayList<>(proto.getDatasetCount());
       for (int i = 0; i < proto.getDatasetCount(); i++)
@@ -400,11 +397,11 @@ message Coord {
         boolean isOrthogonal = pc.getIsOrthogonal();
         boolean isRegular = pc.getIsRegular();
         if (isOrthogonal)
-          return new CoordinateTime2D(code, timeUnit3, null, runtime, (CoordinateTimeAbstract) times.get(0), null);
+          return new CoordinateTime2D(code, timeUnit3, null, runtime, (CoordinateTimeAbstract) times.get(0), null, readTime2Runtime(pc));
         else if (isRegular)
-          return new CoordinateTime2D(code, timeUnit3, null, runtime, times, null);
+          return new CoordinateTime2D(code, timeUnit3, null, runtime, times, null, readTime2Runtime(pc));
         else
-          return new CoordinateTime2D(code, timeUnit3, null, runtime, times);
+          return new CoordinateTime2D(code, timeUnit3, null, runtime, times, readTime2Runtime(pc));
 
       case vert:
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();

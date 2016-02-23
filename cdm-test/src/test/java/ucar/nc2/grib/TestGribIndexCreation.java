@@ -10,10 +10,7 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.GribCollectionImmutable;
-import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollectionImmutable;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
@@ -42,7 +39,7 @@ public class TestGribIndexCreation {
     PartitionCollectionImmutable.countPC = 0;
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
-    // GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    // Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
 
@@ -54,7 +51,7 @@ public class TestGribIndexCreation {
 
   @AfterClass
   static public void after() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
     Formatter out = new Formatter(System.out);
 
     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
@@ -84,7 +81,7 @@ public class TestGribIndexCreation {
 
   @Test
   public void testGdsHashChange() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("NDFD-CONUS_noaaport", "test/NDFD-CONUS_noaaport", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/.*gbx9", null, null, null, "file", null);
     // 	  <gdsHash from='-1506003048' to='-1505079527'/>
@@ -97,12 +94,9 @@ public class TestGribIndexCreation {
     try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "gribCollections/gdsHashChange/noaaport/NDFD-CONUS_noaaport.ncx4", null)) {
       Group root = ncfile.getRootGroup();
       Assert.assertEquals(2, root.getGroups().size());
-      Group twoD = root.findGroup("TwoD");
-      assert twoD != null;
-      Assert.assertEquals(0, twoD.getGroups().size());
     }
 
-    GribIosp.setDebugFlags(new DebugFlagsImpl(""));
+    Grib.setDebugFlags(new DebugFlagsImpl(""));
   }
 
   /*
@@ -129,7 +123,7 @@ public class TestGribIndexCreation {
    */
   @Test
   public void createNDFD() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("NDFD-CONUS-5km", "test/NDFD-CONUS-5km", FeatureCollectionType.GRIB2,
             TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/.*grib2$", null, null, null, "file", null);
     config.gribConfig.addGdsHash("-197088379", "-198041691");
@@ -235,12 +229,12 @@ public class TestGribIndexCreation {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
   @Test
   public void testRdvamds083p2() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/**/.*gbx9",
             null, null, null, "directory", null);
@@ -248,12 +242,12 @@ public class TestGribIndexCreation {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
   @Test
   public void testRdvamds083p2_1999() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_Aggregation", "test/ds083.2", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2008/**/.*gbx9",
             null, null, null,  "directory", null);
@@ -261,25 +255,25 @@ public class TestGribIndexCreation {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
   @Test
   public void testRdvamds627p0() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds627.0_46", "test/ds627.0", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.0/ei.oper.an.pv/**/.*gbx9", null , "#ei.oper.an.pv/#yyyyMM", null, "directory", null);
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
 
   @Test   // has one file for for each month, all in same directory
   public void testRdvamds627p1() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("GCpass1-union", "test/GCpass1", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null, null, null, "directory", null);
     config.gribConfig.unionRuntimeCoord = true;
@@ -287,14 +281,14 @@ public class TestGribIndexCreation {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
     ////////////////
 
   @Test   // has one file for for each month, all in same directory
   public void testTimePartition() throws IOException {
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("yearPartition", "test/yearPartition", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/.*gbx9", null, "#ei.mdfa.fc12hr.sfc.regn128sc.#yyyyMMddhh", null, "year", null);
     config.gribConfig.unionRuntimeCoord = true;
@@ -303,7 +297,7 @@ public class TestGribIndexCreation {
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
   @Test
@@ -320,7 +314,7 @@ public class TestGribIndexCreation {
   }
 
   @Test
-  public void testMRSTP() throws IOException {   // should be a TP (multiple runtime, single offset
+  public void testMRUTP() throws IOException {   // should be a TP (multiple runtime, single offset
     // String name, String path, FeatureCollectionType fcType,
     // String spec, String collectionName,
     // String dateFormatMark, String olderThan, String timePartition, Element innerNcml)

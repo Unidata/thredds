@@ -377,14 +377,16 @@ public class CdmrfWriter {
 
   static public CdmrFeatureProto.AxisSpacing convertSpacing(CoverageCoordAxis.Spacing type) {
     switch (type) {
-      case regular:
-        return CdmrFeatureProto.AxisSpacing.regular;
+      case regularPoint:
+        return CdmrFeatureProto.AxisSpacing.regularPoint;
       case irregularPoint:
         return CdmrFeatureProto.AxisSpacing.irregularPoint;
       case contiguousInterval:
         return CdmrFeatureProto.AxisSpacing.contiguousInterval;
       case discontiguousInterval:
         return CdmrFeatureProto.AxisSpacing.discontiguousInterval;
+      case regularInterval:
+        return CdmrFeatureProto.AxisSpacing.regularInterval;
     }
     throw new IllegalStateException("illegal data type " + type);
   }

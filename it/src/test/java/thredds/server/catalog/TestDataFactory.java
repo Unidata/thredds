@@ -62,7 +62,7 @@ public class TestDataFactory {
     String server = TestWithLocalServer.server;
     return Arrays.asList(new Object[][]{
             /// GRIB feature collections
-            {"thredds:"+server+"catalog/grib.v5/NDFD/CONUS_5km/catalog.xml#grib.v5/NDFD/CONUS_5km/TP", FeatureType.GRID, ServiceType.CdmrFeature},
+            {"thredds:"+server+"catalog/grib.v5/NDFD/CONUS_5km/catalog.xml#grib.v5/NDFD/CONUS_5km/TwoD", FeatureType.FMRC, ServiceType.CdmrFeature},
             {"thredds:"+server+"catalog/gribCollection.v5/GFS_CONUS_80km/catalog.xml#gribCollection.v5/GFS_CONUS_80km/TwoD", FeatureType.FMRC, ServiceType.CdmrFeature},
             {"thredds:"+server+"catalog/gribCollection.v5/GFS_CONUS_80km/catalog.xml#gribCollection.v5/GFS_CONUS_80km/Best", FeatureType.GRID, ServiceType.CdmrFeature},
             {"thredds:resolve:"+server+"catalog/gribCollection.v5/GFS_CONUS_80km/latest.xml", FeatureType.GRID, ServiceType.CdmrFeature},

@@ -19,9 +19,9 @@ import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.GribVariableRenamer;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
-import ucar.nc2.grib.collection.GribIosp;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
@@ -522,7 +522,7 @@ public class Grib2ReportPanel extends ReportPanel {
           prob++;
         }
 
-        att = dt.findAttributeIgnoreCase(GribIosp.GRIB_STAT_TYPE);
+        att = dt.findAttributeIgnoreCase(Grib.GRIB_STAT_TYPE);
         if (att != null) {
           int statType = att.getNumericValue().intValue();
           if ((statType == 7) || (statType == 9)) {
@@ -1086,7 +1086,7 @@ public class Grib2ReportPanel extends ReportPanel {
       List<GridMatch> listNew = new ArrayList<>(gridsNew.values());
       Collections.sort(listNew);
       for (GridMatch gm : listNew) {
-        f.format(" %s%n", gm.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME));
+        f.format(" %s%n", gm.grid.findAttributeIgnoreCase(Grib.VARIABLE_ID_ATTNAME));
         f.format(" %s (%d)%n", gm.grid.getFullName(), gm.hashCode());
         if (gm.match != null) {
           boolean exact = gm.match.grid.getFullName().equals(gm.grid.getFullName());
@@ -1134,7 +1134,7 @@ public class Grib2ReportPanel extends ReportPanel {
           f.format("MISSING %s (%s)%n", gmOld.grid.getFullName(), gmOld.show());
           continue;
         }
-        Attribute att = gmOld.match.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME);
+        Attribute att = gmOld.match.grid.findAttributeIgnoreCase(Grib.VARIABLE_ID_ATTNAME);
         String varId = att == null ? "" : att.getStringValue();
         varNames.add(new VarName(mfile.getName(), gmOld.grid.getShortName(), gmOld.match.grid.getShortName(), varId));
       }

@@ -41,6 +41,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -110,7 +111,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
   // indexFile is in the cache
   boolean writeIndex(String name, File idxFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
-                     GribCollectionImmutable.Type type) throws IOException {
+                     GribCollectionImmutable.Type type, CalendarDateRange dateRange) throws IOException {
     Grib1Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
@@ -184,6 +185,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
       // repeated Parameter params = 20;      // not used
       FcConfig config = 21;
+      uint64 startTime = 22; // calendar date, first valid time
+      uint64 endTime = 23;   // calendar date, last valid time
 
       // extensions
       repeated Partition partitions = 100;
@@ -225,6 +228,9 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       indexBuilder.setLocal(pds.getTableVersion());
       indexBuilder.setMaster(0);
       indexBuilder.setGenProcessId(pds.getGenProcess());
+
+      indexBuilder.setStartTime(dateRange.getStart().getMillis());
+      indexBuilder.setEndTime(dateRange.getEnd().getMillis());
 
       GribCollectionProto.GribCollection index = indexBuilder.build();
       byte[] b = index.toByteArray();

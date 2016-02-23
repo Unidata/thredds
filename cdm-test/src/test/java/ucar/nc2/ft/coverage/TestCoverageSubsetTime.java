@@ -226,7 +226,7 @@ public class TestCoverageSubsetTime {
       Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
       Assert.assertEquals(1, runtimeAxis.getNcoords());
       CoverageCoordAxis1D runtimeAxis1D = (CoverageCoordAxis1D) runtimeAxis;
-      Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
+      Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoordMidpoint(0)));
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
       Assert.assertNotNull(timeAxis);
@@ -267,7 +267,7 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(runtimeAxis);
       Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
       Assert.assertEquals(4, runtimeAxis.getNcoords());
-      Assert.assertEquals(CoverageCoordAxis.Spacing.regular, runtimeAxis.getSpacing());
+      Assert.assertEquals(CoverageCoordAxis.Spacing.regularPoint, runtimeAxis.getSpacing());
       Assert.assertEquals(0.0, runtimeAxis.getStartValue(), Misc.maxReletiveError);
       Assert.assertEquals(6.0, runtimeAxis.getResolution(), Misc.maxReletiveError);
 
@@ -281,7 +281,7 @@ public class TestCoverageSubsetTime {
         Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge2(0) >= offsetVal);          // upper >= time
 
       }else {
-        Assert.assertEquals("offset coord", offsetVal, timeAxis1D.getCoord(0), offsetVal*Misc.maxReletiveError);
+        Assert.assertEquals("offset coord", offsetVal, timeAxis1D.getCoordMidpoint(0), offsetVal*Misc.maxReletiveError);
       }
 
       // LOOK need to test data
@@ -331,7 +331,7 @@ public class TestCoverageSubsetTime {
           Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
 
         } else {
-          Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+          Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoordMidpoint(0)));
         }
       }
 
@@ -354,7 +354,7 @@ public class TestCoverageSubsetTime {
     Assert.assertEquals(1, runtimeAxis.getNcoords());
     CoverageCoordAxis1D runtimeAxis1D = (CoverageCoordAxis1D) runtimeAxis;
     if (runtime != null)
-      Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoord(0)));
+      Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoordMidpoint(0)));
 
     CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
     if (timeAxis == null) timeAxis = geoCs.getAxis(AxisType.Time);
@@ -373,7 +373,7 @@ public class TestCoverageSubsetTime {
         CalendarDate upper = timeAxis1D.makeDate(timeAxis1D.getCoordEdge2(0));
         Assert.assertTrue("time coord lower", !upper.isBefore(time));         // upper >= time
       } else {
-        Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoord(0)));
+        Assert.assertEquals("time coord", time, timeAxis1D.makeDate(timeAxis1D.getCoordMidpoint(0)));
       }
     }
 

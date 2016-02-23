@@ -263,12 +263,12 @@ public class CoverageRenderer {
       subset.set(SubsetParams.time, date);
     }
     if (runtime >= 0 && dataState.rtaxis != null) {
-      double rtimeVal = dataState.rtaxis.getCoord(runtime);
+      double rtimeVal = dataState.rtaxis.getCoordMidpoint(runtime);
       CalendarDate date = dataState.rtaxis.makeDate(rtimeVal);
       subset.set(SubsetParams.runtime, date);
     }
     if (ensemble >= 0 && dataState.ensaxis != null) {
-      double ensVal = dataState.ensaxis.getCoord(ensemble);
+      double ensVal = dataState.ensaxis.getCoordMidpoint(ensemble);
       subset.set(SubsetParams.ensCoord, ensVal);
     }
     if (horizStride != 1)

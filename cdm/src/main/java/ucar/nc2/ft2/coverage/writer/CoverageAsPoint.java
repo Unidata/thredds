@@ -219,7 +219,7 @@ public class CoverageAsPoint {
 
       @Override
       public PointFeature next() {
-        double obsTime = timeAxis.getCoord(curr);
+        double obsTime = timeAxis.getCoordMidpoint(curr);
 
         StructureDataScalar coords = new StructureDataScalar("Coords");
         for (VarIter vi : varIters) {

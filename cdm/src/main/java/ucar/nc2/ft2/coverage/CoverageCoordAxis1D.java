@@ -56,7 +56,7 @@ import java.util.List;
  * @since 7/15/2015
  */
 @Immutable
-public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<Object> {
+public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Iterable<Object> {
 
   // does this really describe all subset possibilities? what about RangeScatter, composite ??
   // protected final int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
@@ -79,15 +79,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
       this.range = Range.make(rangeName, getNcoords());
     }
     this.crange = builder.crange;
-
-    // LOOK this is fishy
-    //this.isTime2D = (axisType == AxisType.RunTime && dependenceType != CoverageCoordAxis.DependenceType.dependent);
   }
-
-  //@Override
-  //public boolean isTime2D() {
-  //  return isTime2D;
-  //}
 
   @Override
   public RangeIterator getRangeIterator() {
@@ -114,7 +106,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     if (ncoords < 7) {
       Formatter f = new Formatter();
       for (int i = 0; i < ncoords; i++) {
-        CalendarDate cd = makeDate(getCoord(i));
+        CalendarDate cd = makeDate(getCoordMidpoint(i));
         if (i > 0) f.format(", ");
         f.format("%s", cd);
       }
@@ -135,17 +127,11 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   ///////////////////////////////////////////////////////////////////
   // Spacing
 
-  /*
-   * regular: regularly spaced points or intervals (start, end, npts), edges halfway between coords
-   * irregularPoint: irregular spaced points (values, npts), edges halfway between coords
-   * contiguousInterval: irregular contiguous spaced intervals (values, npts), values are the edges, and there are npts+1, coord halfway between edges
-   * discontinuousInterval: irregular discontiguous spaced intervals (values, npts), values are the edges, and there are 2*npts: low0, high0, low1, high1...
-   */
-
   public boolean isAscending() {
-    getValues();
+    loadValuesIfNeeded();
     switch (spacing) {
-      case regular:
+      case regularInterval:
+      case regularPoint:
         return getResolution() > 0;
 
       case irregularPoint:
@@ -161,10 +147,19 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   }
 
   public double getCoordMidpoint(int index) {
+    if (index < 0 || index >= getNcoords())
+      throw new IllegalArgumentException("Index out of range=" + index);
+    loadValuesIfNeeded();
+
     switch (spacing) {
-      case regular:
+      case regularPoint:
+        return startValue + index * getResolution();
+
       case irregularPoint:
-        return getCoord(index);
+        return values[index];
+
+      case regularInterval:
+        return startValue + (index + .5) * getResolution();
 
       case contiguousInterval:
       case discontiguousInterval:
@@ -173,37 +168,17 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }
 
-  public double getCoord(int index) {
-    getValues();
-    if (index < 0 || index >= getNcoords())
-      throw new IllegalArgumentException("Index out of range=" + index);
-
-    switch (spacing) {
-      case regular:
-        if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
-        return startValue + index * getResolution();
-
-      case irregularPoint:
-        return values[index];
-
-      case contiguousInterval:
-        return (values[index] + values[index + 1]) / 2;
-
-      case discontiguousInterval:
-        return (values[2 * index] + values[2 * index + 1]) / 2;
-    }
-    throw new IllegalStateException("Unknown spacing=" + spacing);
-  }
-
   public double getCoordEdge1(int index) {
-    getValues();
     if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);
+    loadValuesIfNeeded();
 
     switch (spacing) {
-      case regular:
-        if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
+      case regularPoint:
         return startValue + (index - .5) * getResolution();
+
+      case regularInterval:
+        return startValue + index * getResolution();
 
       case irregularPoint:
         if (index > 0)
@@ -221,14 +196,17 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   }
 
   public double getCoordEdge2(int index) {
-    getValues();
     if (index < 0 || index >= getNcoords())
       throw new IllegalArgumentException("Index out of range=" + index);
+    loadValuesIfNeeded();
 
     switch (spacing) {
-      case regular:
+      case regularPoint:
         if (index < 0 || index >= ncoords) throw new IllegalArgumentException("Index out of range " + index);
         return startValue + (index + .5) * getResolution();
+
+      case regularInterval:
+        return startValue + (index+1) * getResolution();
 
       case irregularPoint:
         if (index < ncoords - 1)
@@ -251,7 +229,6 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
 
   @Override
   public Array getCoordsAsArray() {
-    getValues();
     Array result;
     switch (dependenceType) {
       case scalar:
@@ -263,13 +240,12 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     }
 
     for (int i = 0; i < ncoords; i++)
-      result.setDouble(i, getCoord(i));
+      result.setDouble(i, getCoordMidpoint(i));
     return result;
   }
 
   @Override
   public Array getCoordBoundsAsArray() {
-    getValues();
     Array result = Array.factory(getDataType(), new int[]{ncoords, 2});
 
     int count = 0;
@@ -290,24 +266,14 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   // CalendarDate, double[2], or Double
   public Object getCoordObject(int index) {
     if (axisType == AxisType.RunTime)
-      return makeDate(getCoord(index));
+      return makeDate(getCoordMidpoint(index));
     if (isInterval())
       return new double[]{getCoordEdge1(index), getCoordEdge2(index)};
-    return getCoord(index);
+    return getCoordMidpoint(index);
   }
-
-  /*
-
-  public CalendarDate getCoordAsDate(int index) {
-    if (axisType == AxisType.RunTime)
-      return makeDate(getCoord(index));
-    double val = isInterval() ? (getCoordEdge1(index) + getCoordEdge2(index)) / 2.0 : getCoord(index);
-    return makeDate(val);
-  }
-   */
 
   public List<NamedObject> getCoordValueNames() {
-    getValues();  // read in if needed
+    loadValuesIfNeeded();
     if (timeHelper != null)
       return timeHelper.getCoordValueNames(this);
 
@@ -315,11 +281,12 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     for (int i = 0; i < ncoords; i++) {
       Object value = null;
       switch (spacing) {
-        case regular:
+        case regularPoint:
         case irregularPoint:
-          value = Format.d(getCoord(i), 3);
+          value = Format.d(getCoordMidpoint(i), 3);
           break;
 
+        case regularInterval:
         case contiguousInterval:
         case discontiguousInterval:
           value = new CoordInterval(getCoordEdge1(i), getCoordEdge2(i), 3);
@@ -346,7 +313,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
   public Optional<CoverageCoordAxis> subsetByIntervals(List<MAMath.MinMax> lonIntvs, int stride) {
     if (axisType != AxisType.Lon)
       return Optional.empty("subsetByIntervals only for longitude");
-    if (spacing != Spacing.regular)
+    if (!isRegular())
       return Optional.empty("subsetByIntervals only for regular longitude");
 
     CoordAxisHelper helper = new CoordAxisHelper(this);
@@ -504,7 +471,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     return Optional.of(new CoverageCoordAxis1D(builder));
   }
 
-  @Override
+ // @Override
   public Iterator<Object> iterator() {
     return new MyIterator();
   }
@@ -519,7 +486,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis implements Iterable<O
     }
 
     public Object next() {
-      return getCoord(current++);
+      if (isInterval())
+        return getCoordMidpoint(current++);
+      else
+        return getCoordMidpoint(current++);
     }
   }
 
