@@ -36,6 +36,7 @@ package ucar.nc2.stream;
 import com.google.protobuf.ByteString;
 import ucar.ma2.*;
 import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -187,6 +188,10 @@ public class NcStreamDataCol {
 
   public static ByteString copyArrayToByteString(Array data) {
     int nbytes = (int) data.getSizeBytes();
+    if (nbytes < 0) {
+      System.out.printf("copyArrayToByteString neg byte size %d dataType = %d data size %d shape = %s%n",
+              nbytes, data.getDataType().getSize(), data.getSize(), Misc.showInts(data.getShape()));
+    }
     ByteBuffer bb = ByteBuffer.allocate(nbytes);
     bb.order(ByteOrder.nativeOrder());
     copyArrayToBB(data, false, bb);

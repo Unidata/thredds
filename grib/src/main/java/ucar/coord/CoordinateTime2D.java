@@ -695,11 +695,22 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
   }
 
-  public int findTimeIndexInOtime(Object need) {
-    if (!isOrthogonal)
-      throw new IllegalStateException();
+  /**
+   * Find index in time coordinate from the time value
+   * @param val TimeCoord.Tinv or Integer
+   * @return
+   */
+  public int findTimeIndexFromVal(Object val) {
+    if (isOrthogonal)
+      return otime.getIndex(val);
 
-    return otime.getIndex(need);
+    // LOOK otherwise assume unique and non-overlapping. so should be able to figure out from the offset
+    int test = (isTimeInterval) ? ((TimeCoord.Tinv) val).getBounds2() : (Integer) val;
+    int idx = Arrays.binarySearch(offset, test);
+    // idx = -insertion - 1; insertion = -idx-1
+    if (idx < 0) idx = -idx-1;
+    return idx;
+
   }
 
   /* public int findIndexContaining(int runIdx, double value, CalendarDate refDateOfValue) {

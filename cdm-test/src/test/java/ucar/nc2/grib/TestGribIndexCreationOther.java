@@ -320,7 +320,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Ignore("B: not visible on spock")
+  //@Ignore("B: not visible on spock")
   @Test
   public void testNcdcGfsanl4() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -348,7 +348,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Ignore("D: not visible on spock")
+  //@Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p1() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -364,7 +364,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Ignore("D: not visible on spock")
+  //@Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p1p2013() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -380,7 +380,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Ignore("D: not visible on spock")
+  //@Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p2t_dlw() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -396,7 +396,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Ignore("D: not visible on spock")
+  //@Ignore("D: not visible on spock")
   @Test
   public void testRdvamds094p2t() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -430,7 +430,7 @@ public class TestGribIndexCreationOther {
   }
 
 
-  @Ignore("D: not visible on spock")
+  //@Ignore("D: not visible on spock")
   @Test
   public void testRdvamds277p6() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -444,7 +444,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  @Ignore("D: not visible on spock")
+  //@Ignore("D: not visible on spock")
   @Test
   public void testRdvamds626p0() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));

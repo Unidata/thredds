@@ -33,70 +33,62 @@
  */
 package ucar.nc2.ft.coverage;
 
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * sanity check on all rdavm indices in the directory
+ * Describe
  *
  * @author caron
- * @since 1/5/2016.
+ * @since 2/24/2016.
  */
-@RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
-public class TestGribCoverageRdavmIndicesP {
-  private static String topdir = "D:/work/rdavm/index/";
-  private static boolean showDetails = false;
+public class TestRdaReading {
 
-  @Parameterized.Parameters(name="{0}")
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>(30);
-    try {
-      TestDir.actOnAllParameterized(topdir, new SuffixFileFilter(".ncx4"), result);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return result;
-  }
-
-  String filename;
-  public TestGribCoverageRdavmIndicesP(String filename) {
-    this.filename = filename;
-  }
-
+  // time2D coordinate, not orthogonal, but times are unique
+  // GribCollectionImmutable assumes time2D -> orthogonal
+  // doesnt actually work since we only have the gbx9
   @Test
-  public void testGridCoverageDatasetRdavm() throws IOException, InvalidRangeException {
-    if (showDetails) System.out.printf("%s%n", filename);
-    try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {
-      Assert.assertNotNull(filename, fdc);
-      for (CoverageCollection cc : fdc.getCoverageCollections()) {
-        System.out.printf(" %s type=%s%n", cc.getName(), cc.getCoverageType());
-        //for (CoverageCoordSys coordSys : cc.getCoordSys()) {
-        //Assert.assertTrue( coordSys.isTime2D(coordSys.getAxis(AxisType.RunTime)));
-        //Assert.assertTrue( coordSys.isTime2D(coordSys.getTimeAxis()));
-        //}
+  public void testNonOrthMRUTC() throws IOException, InvalidRangeException {
+    String endpoint = "D:/work/rdavm/ds277.6/monthly/ds277.6.ncx4";
+    String ccName = "ds277.6#MRUTC-LatLon_418X360-4p8338S-179p5000W";
+    String covName = "Salinity_depth_below_sea_Average";
+    try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, fdc);
+      CoverageCollection cc = fdc.findCoverageDataset(ccName);
+      Assert.assertNotNull(ccName, cc);
+      Coverage cov = cc.findCoverage(covName);
+      Assert.assertNotNull(covName, cov);
 
-        if (showDetails)
-          for (CoverageCoordAxis axis : cc.getCoordAxes()) {
-            if (axis.getAxisType().isTime())
-              System.out.printf("  %12s %10s %5d %10s %s%n", axis.getName(), axis.getAxisType(), axis.getNcoords(), axis.getDependenceType(), axis.getSpacing());
-          }
-      }
+      SubsetParams subset = new SubsetParams().setTimePresent();
+      GeoReferencedArray geo = cov.readData(subset);
+      Array data = geo.getData();
+      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
     }
   }
 
+  // /thredds/cdmrfeature/grid/aggregations/g/ds084.3/1/TwoD?req=data&var=v-component_of_wind_potential_vorticity_surface&timePresent=true
+  @Test
+  public void testNegDataSize() throws IOException, InvalidRangeException {
+    String endpoint = "D:/work/rdavm/ds084.3/ds084.3.ncx4";
+    String covName = "v-component_of_wind_potential_vorticity_surface";
+    try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, fdc);
+      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
+      Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
+      Coverage cov = cc.findCoverage(covName);
+      Assert.assertNotNull(covName, cov);
+
+      SubsetParams subset = new SubsetParams().setTimePresent();
+      GeoReferencedArray geo = cov.readData(subset);
+      Array data = geo.getData();
+      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
+    }
+  }
 }

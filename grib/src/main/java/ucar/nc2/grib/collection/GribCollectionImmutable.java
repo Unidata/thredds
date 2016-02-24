@@ -585,11 +585,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
             if (coordVal != null) {
               if (coordVal instanceof Double) {
                 coordInt = ((Double) coordVal).intValue();
-                idx = ((CoordinateTime2D) coord).findTimeIndexInOtime(coordInt);
+                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(coordInt);
+
               } else if (coordVal instanceof double[]) {
                 double[] coordBounds = (double[]) coordVal;
                 TimeCoord.Tinv coordTinv = new TimeCoord.Tinv((int) coordBounds[0], (int) coordBounds[1]);
-                idx = ((CoordinateTime2D) coord).findTimeIndexInOtime(coordTinv);
+                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(coordTinv); // LOOK can only use if orthogonal
               }
               break;
             }
