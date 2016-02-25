@@ -194,13 +194,17 @@ public class StructureDataDeep extends StructureDataA {
           case LONG:
             bb.putLong(sdata.getScalarLong(m));
             break;
+          case STRUCTURE:
+            StructureData sd  = sdata.getScalarStructure(m);
+            ArrayStructureBB out_abb = new ArrayStructureBB(sd.getStructureMembers(),
+                    new int[]{1}, bb, 0);
+            copyToArrayBB(sd, out_abb);
+            break;
           default:
             throw new IllegalStateException("scalar " + dtype.toString());
             /* case BOOLEAN:
            break;
          case SEQUENCE:
-           break;
-         case STRUCTURE:
            break;
          case OPAQUE:
            break; */
