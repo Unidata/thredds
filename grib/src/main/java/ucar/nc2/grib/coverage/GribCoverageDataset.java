@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.beust.jcommander.internal.Lists;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1235,7 +1234,6 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
             CoverageCoordAxis toAxis = subsetCoordSys.getAxis(AxisType.TimeOffset);
             if (toAxis != null)
               coordsSetAxes.addAll(axisAndDependents(toAxis, subsetCoordSys));
-            //LOOK MRUTP / MRUTC ?
           } else {
             CoverageCoordAxis toAxis = subsetCoordSys.getAxis(AxisType.Time);
             if (toAxis != null)

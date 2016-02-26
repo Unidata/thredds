@@ -168,12 +168,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return datasets.get(idx);
   }
 
-  public Dataset getDatasetByTypeName(String name) {
-    for (Dataset ds : datasets)
-      if (ds.gctype.toString().equalsIgnoreCase(name)) return ds;
-    return null;
-  }
-
   public Dataset getDatasetCanonical() {
     for (Dataset ds : datasets) {
       if (ds.gctype != GribCollectionImmutable.Type.Best) return ds;
