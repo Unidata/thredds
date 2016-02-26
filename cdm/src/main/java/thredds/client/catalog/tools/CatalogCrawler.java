@@ -502,6 +502,8 @@ public class CatalogCrawler {
                 c.openOdap++;
               else
                 c.failOdap++;
+            } else {
+              System.out.printf("HEY%n");
             }
 
             // cdmremote

@@ -1235,7 +1235,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
             CoverageCoordAxis toAxis = subsetCoordSys.getAxis(AxisType.TimeOffset);
             if (toAxis != null)
               coordsSetAxes.addAll(axisAndDependents(toAxis, subsetCoordSys));
-            //LOOK MRUTP / MRUTC
+            //LOOK MRUTP / MRUTC ?
           } else {
             CoverageCoordAxis toAxis = subsetCoordSys.getAxis(AxisType.Time);
             if (toAxis != null)

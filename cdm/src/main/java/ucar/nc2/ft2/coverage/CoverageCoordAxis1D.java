@@ -59,9 +59,6 @@ import java.util.List;
 public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Iterable<Object> {
 
   // does this really describe all subset possibilities? what about RangeScatter, composite ??
-  // protected final int minIndex, maxIndex; // closed interval [minIndex, maxIndex] ie minIndex to maxIndex are included, nvalues = max-min+1.
-  // protected final int stride = 1;
-  // protected final boolean isTime2D;
   protected final Range range;            // for subset, tracks the indexes in the original
   protected final RangeComposite crange;
 

@@ -698,19 +698,19 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   /**
    * Find index in time coordinate from the time value
    * @param val TimeCoord.Tinv or Integer
-   * @return
+   * @return indx in the time coordinate
    */
-  public int findTimeIndexFromVal(Object val) {
+  public int findTimeIndexFromVal(int runIdx, Object val) {
     if (isOrthogonal)
       return otime.getIndex(val);
 
-    // LOOK otherwise assume unique and non-overlapping. so should be able to figure out from the offset
-    int test = (isTimeInterval) ? ((TimeCoord.Tinv) val).getBounds2() : (Integer) val;
-    int idx = Arrays.binarySearch(offset, test);
-    // idx = -insertion - 1; insertion = -idx-1
-    if (idx < 0) idx = -idx-1;
-    return idx;
+    // LOOK regular case ??
+    if (isRegular)
+      System.out.printf("HEY%n");
 
+    CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
+    if (time.getNCoords() == 1) return 0;
+    return time.getIndex(val); // not sure if its reletive to runtime ??
   }
 
   /* public int findIndexContaining(int runIdx, double value, CalendarDate refDateOfValue) {

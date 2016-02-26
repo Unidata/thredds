@@ -79,7 +79,7 @@ public class ThreddsMetadataExtractor {
       }
 
       if (result.featureType.isCoverageFeatureType()) {
-        GridDataset gridDataset = (GridDataset) result.featureDataset;
+        GridDataset gridDataset = (GridDataset) result.featureDataset; // LOOK wrong
         flds.put(Dataset.GeospatialCoverage, extractGeospatial(gridDataset));
 
         CalendarDateRange tc = extractCalendarDateRange(gridDataset);

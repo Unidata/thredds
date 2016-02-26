@@ -555,17 +555,19 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // coord based record finding. note only record at a time
+    // coord based record finding. note only one record at a time
     public synchronized Record getRecordAt(Map<String, Object> coords) {
       int[] want = new int[getRank()];
       int count = 0;
+      int runIdx = -1;
       for (Coordinate coord : getCoordinates()) {
         int idx = -1;
         Object coordVal = null;
         switch (coord.getType()) {
           case runtime:
             coordVal = coords.get(CoordsSet.runDate);  // CalendarDate or Long
-            idx = coord.getIndex( coordVal);
+            idx = coord.getIndex(coordVal);
+            runIdx = idx;
             break;
 
           case timeIntv:
@@ -585,12 +587,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
             if (coordVal != null) {
               if (coordVal instanceof Double) {
                 coordInt = ((Double) coordVal).intValue();
-                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(coordInt);
+                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordInt);
 
               } else if (coordVal instanceof double[]) {
                 double[] coordBounds = (double[]) coordVal;
                 TimeCoord.Tinv coordTinv = new TimeCoord.Tinv((int) coordBounds[0], (int) coordBounds[1]);
-                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(coordTinv); // LOOK can only use if orthogonal
+                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordTinv); // LOOK can only use if orthogonal
               }
               break;
             }
@@ -622,7 +624,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         }
 
         if (coordVal == null)
-          System.out.printf("GribCollectionImmutable: missing CoordVal for %s%n", coord.getName());
+          logger.warn("GribCollectionImmutable: missing CoordVal for {}%n", coord.getName());
 
         if (idx < 0) {
           logger.debug("Cant find index for value {} in axis {} in variable {}", coordVal, coord.getName(), name );

@@ -372,7 +372,6 @@ class CoordAxisHelper {
       case discontiguousInterval:
         subsetValues = new double[2 * ncoords];            // need 2*npts
         for (int i : range) {
-          //for (int i = minIndex; i <= maxIndex; i += 2) {
           subsetValues[count2++] = values[2 * i];
           subsetValues[count2++] = values[2 * i + 1];
         }

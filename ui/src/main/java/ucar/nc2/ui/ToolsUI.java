@@ -1394,10 +1394,18 @@ public class ToolsUI extends JPanel {
     }
 
     if (threddsData.featureType.isCoverageFeatureType()) {
-      makeComponent(ftTabPane, "Coverages");
-      coveragePanel.setDataset(threddsData.featureDataset);
-      tabbedPane.setSelectedComponent(ftTabPane);
-      ftTabPane.setSelectedComponent(coveragePanel);
+      if (threddsData.featureDataset instanceof FeatureDatasetCoverage) {
+        makeComponent(ftTabPane, "Coverages");
+        coveragePanel.setDataset(threddsData.featureDataset);
+        tabbedPane.setSelectedComponent(ftTabPane);
+        ftTabPane.setSelectedComponent(coveragePanel);
+
+      } else if (threddsData.featureDataset instanceof GridDataset) {
+        makeComponent(ftTabPane, "Grids");
+        gridPanel.setDataset((GridDataset) threddsData.featureDataset);
+        tabbedPane.setSelectedComponent(ftTabPane);
+        ftTabPane.setSelectedComponent(gridPanel);
+      }
 
     } else if (threddsData.featureType == FeatureType.IMAGE) {
       makeComponent(ftTabPane, "Images");

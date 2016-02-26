@@ -99,7 +99,7 @@ public class SparseArray<T> {
   }
 
   public T getContent(int idx) {
-    if (idx > track.length || idx < 0)
+    if (idx >= track.length || idx < 0)
       logger.error("BAD index get="+ idx+" max= "+track.length, new Throwable());
     int contentIdx = track[idx]-1;
     if (contentIdx < 0)

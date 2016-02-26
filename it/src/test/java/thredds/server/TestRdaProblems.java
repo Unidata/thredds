@@ -31,10 +31,15 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package ucar.nc2.ft.coverage;
+package thredds.server;
 
 import org.junit.Assert;
 import org.junit.Test;
+import thredds.TestWithLocalServer;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.tools.DataFactory;
+import thredds.server.catalog.TdsLocalCatalog;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
@@ -49,20 +54,32 @@ import java.io.IOException;
  * @author caron
  * @since 2/24/2016.
  */
-public class TestRdaReading {
+public class TestRdaProblems {
 
-  // time2D coordinate, not orthogonal, but times are unique
-  // GribCollectionImmutable assumes time2D -> orthogonal
-  // doesnt actually work since we only have the gbx9
+  // /thredds/cdmrfeature/grid/aggregations/g/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E?req=data&
+  // var=Temperature_height_above_ground_Mixed_intervals_AverageNforecasts&timePresent=true
+
+  // http://localhost:8081/thredds/catalog/rdaTest/ds094.2_t/catalog.html?dataset=rdaTest/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E
   @Test
-  public void testNonOrthMRUTC() throws IOException, InvalidRangeException {
-    String endpoint = "D:/work/rdavm/ds277.6/monthly/ds277.6.ncx4";
-    String ccName = "ds277.6#MRUTC-LatLon_418X360-4p8338S-179p5000W";
-    String covName = "Salinity_depth_below_sea_Average";
-    try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(endpoint)) {
-      Assert.assertNotNull(endpoint, fdc);
-      CoverageCollection cc = fdc.findCoverageDataset(ccName);
-      Assert.assertNotNull(ccName, cc);
+  public void testIndexOutOfBounds() throws IOException, InvalidRangeException {
+    //String endpoint = TestWithLocalServer.withPath("cdmrfeature/grid/rdaTest/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E");
+    //String ccName = "ds094.2_t#GaussLatLon_880X1760-0p0000N-180p0000E";
+    String covName = "Temperature_height_above_ground_Mixed_intervals_AverageNforecasts";
+    //System.out.printf("%s%n", endpoint);
+
+    Catalog cat = TdsLocalCatalog.open("catalog/rdaTest/ds094.2_t/catalog.xml");
+    Assert.assertNotNull(cat);
+    Dataset ds = cat.findDatasetByID("rdaTest/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E");
+
+    DataFactory fac = new DataFactory();
+    try ( DataFactory.Result result = fac.openFeatureDataset(ds, null)) {
+      Assert.assertFalse(result.errLog.toString(), result.fatalError);
+      Assert.assertNotNull(result.featureDataset);
+      Assert.assertEquals(FeatureDatasetCoverage.class, result.featureDataset.getClass());
+
+      FeatureDatasetCoverage fdc = (FeatureDatasetCoverage) result.featureDataset;
+      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.GRID);
+      Assert.assertNotNull(FeatureType.GRID.toString(), cc);
       Coverage cov = cc.findCoverage(covName);
       Assert.assertNotNull(covName, cov);
 
@@ -72,25 +89,4 @@ public class TestRdaReading {
       System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
     }
   }
-
-  // /thredds/cdmrfeature/grid/aggregations/g/ds084.3/1/TwoD?req=data&var=v-component_of_wind_potential_vorticity_surface&timePresent=true
-  @Test
-  public void testNegDataSize() throws IOException, InvalidRangeException {
-    String endpoint = "D:/work/rdavm/ds084.3/ds084.3.ncx4";
-    String covName = "v-component_of_wind_potential_vorticity_surface";
-    try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(endpoint)) {
-      Assert.assertNotNull(endpoint, fdc);
-      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
-      Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
-      Coverage cov = cc.findCoverage(covName);
-      Assert.assertNotNull(covName, cov);
-
-      SubsetParams subset = new SubsetParams().setTimePresent();
-      GeoReferencedArray geo = cov.readData(subset);
-      Array data = geo.getData();
-      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
-    }
-  }
-
-
 }

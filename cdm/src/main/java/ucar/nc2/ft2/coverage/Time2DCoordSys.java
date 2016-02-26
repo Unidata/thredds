@@ -33,6 +33,7 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import com.google.common.collect.Lists;
 import net.jcip.annotations.Immutable;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -41,6 +42,7 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Optional;
 
 import java.util.ArrayList;
@@ -75,21 +77,21 @@ public class Time2DCoordSys {
     return timeAxis2D.getShape();
   }
 
-/*
-  (from CdmrfParams.adoc) :
+  /*
+    (from CdmrfParams.adoc) :
 
-  You may specify a runtime with a date, latest or all. Default is latest.
-  You may specify a timeOffset with a numeric value, first, or all. A timeOffset value is a duration of time,
-    it is added to the runtime to give the requested time. Its units must be the same as the dataset. Default is all.
-  Time parameters may be used only used if timeOffset is not. There are 2 cases:
-   - Runtime is set to a specific value or latest (not all). Time parameters (point or range) can then be used.
-   - Runtime to set to all. Time point (date, or present) only can then be used.
-  If no runtime, timeOffset, or time parameters are set, then return all times for latest runtime.
-  Special cases:
-   - Set specific runtime = constant runtime dataset
-   - Set specific timeOffset, set runTime to all = constant offset dataset
-   - Set specific time, set runTime to all = constant forecast dataset
- */
+    2D Time subsetting
+    A 2D time dataset will have CoverageType set to FMRC.
+    You may specify a runtime with a date, latest or all; specify a timeOffset with a numeric value, first, or all.
+      If only one is set, use the default for the other. If neither is set, then return all times for latest runtime.
+    Time parameters are only used if explicitly set and timeOffset is not set. There are only 2 cases where time can be used:
+    Set runtime to a specific value or latest (not all). Time parameters (point or range) can be used.
+    Set runtime to all. Time point (date, or present) can be used.
+    Special cases:
+      set specific runtime = constant runtime dataset
+      set specific timeOffset, set runTime to all = constant offset dataset
+      set specific time, set runTime to all = constant forecast dataset
+   */
   /*
   1) single runtime
      1a timeOffset
@@ -101,8 +103,8 @@ public class Time2DCoordSys {
    */
   public Optional<List<CoverageCoordAxis>> subset(SubsetParams params, AtomicBoolean isConstantForcast, boolean makeCFcompliant) {
     return Optional.empty("not implemented by "+getClass().getName());
-    /*
-    List<CoverageCoordAxis> result = new ArrayList<>();
+
+    /* List<CoverageCoordAxis> result = new ArrayList<>();
 
     Optional<CoverageCoordAxis> axiso = runAxis.subset(params);
     if (!axiso.isPresent())
@@ -196,7 +198,7 @@ public class Time2DCoordSys {
     CoverageCoordAxis scalarTimeCoord = makeScalarTimeCoord(wantOffset, runAxisSubset);
 
     // nothing needed for CF, the run coordinate acts as the CF time independent coord. timeOffset is aux, forecastTime is scalar
-    return Optional.of(Lists.newArrayList(runAxisSubset2, timeOffsetSubset, scalarTimeCoord)); */
+    return Optional.of(Lists.newArrayList(runAxisSubset2, timeOffsetSubset, scalarTimeCoord)); // */
   }
 
   private CoverageCoordAxis makeScalarTimeCoord(double val, CoverageCoordAxis1D runAxisSubset) {
