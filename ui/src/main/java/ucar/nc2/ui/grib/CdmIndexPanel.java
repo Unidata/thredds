@@ -1109,6 +1109,15 @@ public class CdmIndexPanel extends JPanel {
       return coord.getUnit();
     }
 
+    public String getRefDate() {
+      if (coord instanceof CoordinateTimeAbstract)
+        return ((CoordinateTimeAbstract)coord).getRefDate().toString();
+      else if (coord instanceof CoordinateRuntime)
+        return ((CoordinateRuntime)coord).getFirstDate().toString();
+      else
+        return "";
+    }
+
     public String getName() {
       String intvName = null;
       if (coord instanceof CoordinateTimeIntv) {

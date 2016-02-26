@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -844,6 +845,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(runtime.getName(), units, "GRIB reference time", DataType.DOUBLE, AxisType.RunTime, atts,
             dependence, null, null, n, 0.0, 0.0, 0.0, values, this);
+
     builder.setSpacingFromValues(false);
 
     return new CoverageCoordAxis1D(builder);
@@ -889,7 +891,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     for (int i = 0; i < length; i++) data[i] = Double.NaN;
 
     int count = 0;
-    List<Double> masterOffsets = gribCollection.getMasterRuntime().getOffsetsInTimeUnits();
+    CoordinateRuntime master = gribCollection.getMasterRuntime();
+    List<Double> masterOffsets = master.getOffsetsInTimeUnits();
     for (int masterIdx : time.getTime2runtime()) {
       data[count++] = masterOffsets.get(masterIdx - 1);
     }
@@ -900,7 +903,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     atts.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_RUNTIME));
     atts.addAttribute(new Attribute(CF.CALENDAR, ucar.nc2.time.Calendar.proleptic_gregorian.toString()));
 
-    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(refName, time.getTimeUdUnit(), Grib.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime, atts,
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(refName, master.getUnit(), Grib.GRIB_RUNTIME, DataType.DOUBLE, AxisType.RunTime, atts,
             CoverageCoordAxis.DependenceType.dependent, time.getName(), null, length, 0, 0, 0, data, this);
     builder.setSpacingFromValues(false);
 
@@ -1257,12 +1260,12 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     }
 
-    // debugging
+    /* debugging
     boolean hasruntime = false;
     for (CoverageCoordAxis axis : coordsSetAxes)
       if (axis.getAxisType() == AxisType.RunTime) hasruntime = true;
     if (!hasruntime)
-      logger.warn("HEYA no runtime " + gribCollection.getName());
+      logger.warn("HEYA no runtime " + gribCollection.getName()); */
 
     List<CoverageCoordAxis> geoArrayAxes = new ArrayList<>(coordsSetAxes);  // for GeoReferencedArray
     geoArrayAxes.add(subsetCoordSys.getYAxis());

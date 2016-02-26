@@ -335,20 +335,7 @@ public class TestGribIndexCreationOther {
 
   /// rdavm
 
-  @Test
-  public void testRdvamds084p3() throws IOException {
-    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds084.3", "test/ds084.3", FeatureCollectionType.GRIB2,
-            "D:/work/rdavm/ds084.3/**/.*gbx9",
-            null, null, null, "directory", null);
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-    Grib.setDebugFlags(new DebugFlagsImpl());
-  }
-
-  @Ignore("D: not visible on spock")
+  //@Ignore("D: not visible on spock")
   @Test
   public void testRdvamds084p3() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));

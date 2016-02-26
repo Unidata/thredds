@@ -35,9 +35,7 @@ package ucar.nc2.ft2.coverage;
 
 import net.jcip.annotations.Immutable;
 import ucar.ma2.Index;
-import ucar.ma2.Range;
 import ucar.ma2.RangeIterator;
-import ucar.ma2.Section;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 
@@ -51,6 +49,7 @@ import java.util.*;
  *   1) Best: time (ind), runtime (dep)
  *
  *  Grib: If theres a time offset, then there must be a runtime coordinate, and the time offset is reletive to that.
+ *  LOOK only used by Grib
  */
 @Immutable
 public class CoordsSet implements Iterable<Map<String, Object>> {
@@ -113,34 +112,48 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
   }
 
   private class CoordIterator implements Iterator<Map<String, Object>> {
-    Section.Iterator sectionIter;
-    int[] odo;
+    private int[] odo = new int[getRank()];
+    private int[] shape = getShape();
+    private long done, total;
 
     CoordIterator() {
-      /* List<Range> ranges = new ArrayList<>();
-      for (CoverageCoordAxis axis : axes) {
-        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
-        else ranges.add(axis.get());
-      } */
-      Section section = new Section( shape);
-      sectionIter = section.getIterator(shape);
-      odo = new int[shape.length];
+      done = 0;
+      total = Index.computeSize(shape); // total number of elements
     }
 
     public boolean hasNext() {
-      return sectionIter.hasNext();
+      return done < total;
     }
 
     public Map<String, Object> next() {
-      sectionIter.next(odo);
+      Map<String, Object> next = currentElement();
+      done++;
+      if (done < total) incr(); // increment for next call
+      return next;
+    }
+
+    private void incr() {
+      int digit = getRank() - 1;
+      while (digit >= 0) {
+        odo[digit]++;
+        if (odo[digit] < shape[digit])
+          break; // normal exit
+
+        // else, carry to next digit in the odometer
+        odo[digit] = 0;
+        digit--;
+      }
+    }
+
+    private Map<String, Object> currentElement() {
       Map<String, Object> result = new HashMap<>();
-      int count = 0;
+      int odoIndex = 0;
       CalendarDate runtime = null;
       for (CoverageCoordAxis axis : axes) {
         if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
         CoverageCoordAxis1D axis1D = (CoverageCoordAxis1D) axis;
 
-        int coordIdx = (axis.getDependenceType() == CoverageCoordAxis.DependenceType.scalar) ? 0 : odo[count];
+        int coordIdx = (axis.getDependenceType() == CoverageCoordAxis.DependenceType.scalar) ? 0 : odo[odoIndex];
         Object coord = axis1D.getCoordObject(coordIdx); // CalendarDate (runtime), Double or double{} (interval)
 
         if (axis.getAxisType() == AxisType.RunTime) {
@@ -150,7 +163,7 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
           if (constantForecast) {
             CoverageCoordAxis1D timeOffsetCF = findDependent(axis, AxisType.TimeOffset);
             if (timeOffsetCF != null) {
-              addAdjustedTimeCoords(result, timeOffsetCF, coordIdx, runtime); // LOOK adjust to runtime or not ?
+              addAdjustedTimeCoords(result, timeOffsetCF, coordIdx, runtime);
             }
           }
 
@@ -161,8 +174,7 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
             result.put(runDate, runtime);
           }
           assert runtime != null;
-          result.put(timeOffsetCoord, coord);
-          // LOOK adjust to runtime or not ? addAdjustedTimeCoords(result, axis1D, coordIdx, runtime);
+          addAdjustedTimeCoords(result, axis1D, coordIdx, runtime);
         }
 
         else if (axis.getAxisType().isVert())
@@ -178,8 +190,8 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
           result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, val)); // validation
         }
 
-        //if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent) // scalar ??
-        count++;
+        if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
+          odoIndex++;
       }
       return result;
     }
