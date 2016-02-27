@@ -1,12 +1,7 @@
 dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4shared')
-    compile project(':dap4:d4cdmshared')
-    compile project(':netcdf4')
-    compile project(':cdm')
 
     provided libraries["javax.servlet-api"]
     compile libraries["slf4j-api"]
-    compile libraries["spring-web"]
-    compile libraries["spring-context"]
 }

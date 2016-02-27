@@ -4,7 +4,6 @@
 
 package dap4.servlet;
 
-import dap4.cdmshared.CDMUtil;
 import dap4.ce.CEConstraint;
 import dap4.core.data.*;
 import dap4.core.dmr.*;

@@ -2,9 +2,8 @@
    See the LICENSE file for more information.
 */
 
-package dap4.servlet;
+package dap4.cdm;
 
-import dap4.cdmshared.CDMUtil;
 import dap4.core.data.DataAtomic;
 import dap4.core.data.DataException;
 import dap4.core.dmr.AtomicType;

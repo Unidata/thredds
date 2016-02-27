@@ -13,11 +13,10 @@ import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.ErrorResponse;
 import dap4.core.util.*;
 import dap4.dap4shared.*;
-import org.springframework.web.context.ServletContextAware;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -26,7 +25,7 @@ import java.net.MalformedURLException;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 
-abstract public class DapController implements ServletContextAware
+abstract public class DapController extends HttpServlet
 {
 
     //////////////////////////////////////////////////
@@ -156,7 +155,6 @@ abstract public class DapController implements ServletContextAware
 
     //////////////////////////////////////////////////////////
 
-    @PostConstruct
     public void init()
             throws ServletException
     {

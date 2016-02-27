@@ -2,12 +2,11 @@
    See the LICENSE file for more information.
 */
 
-package dap4.servlet;
+package dap4.cdm;
 
 import dap4.core.data.DataException;
 import dap4.core.dmr.DapSequence;
 import dap4.core.dmr.DapStructure;
-import dap4.servlet.CDMDataStructure;
 import ucar.ma2.Array;
 import ucar.ma2.StructureData;
 
