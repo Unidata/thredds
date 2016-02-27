@@ -1,5 +1,4 @@
 configurations {
-    dap4
     ncIdv
     tdmFat
     netcdfAll
@@ -7,8 +6,6 @@ configurations {
 }
 
 dependencies {
-    dap4 project(':dap4:d4client')
-
     ncIdv project(':cdm')
     ncIdv project(':clcommon')
     ncIdv project(':bufr')
@@ -46,17 +43,6 @@ apply plugin: 'com.github.johnrengelman.shadow'
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 def fatJarTasks = []
-
-fatJarTasks << tasks.create(name: 'buildDap4', type: ShadowJar) {
-    baseName = 'dap4'
-    configurations = [project.configurations.dap4]
-
-    doFirst {
-        // This script is evaluated before :dap4:d4client, so we must wait until execution time to get its properties.
-        // This does not affect the incremental build. The main disadvantage is that failure (if any) is delayed.
-        manifest.attributes project(':dap4:d4client').tasks.jar.manifest.attributes
-    }
-}
 
 fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
     baseName = 'ncIdv'
@@ -144,7 +130,6 @@ apply plugin: 'base'
 
 // The base-plugin's "assemble" task automatically creates all artifacts added to the "archives" configuration.
 artifacts {
-    archives buildDap4
     archives buildNcIdv
     archives buildTdmFat
     archives buildNetcdfAll

@@ -4,7 +4,6 @@
 
 package dap4.cdm;
 
-import dap4.cdmshared.CDMUtil;
 import dap4.core.dmr.*;
 import dap4.core.util.DapException;
 import dap4.dap4shared.DSP;

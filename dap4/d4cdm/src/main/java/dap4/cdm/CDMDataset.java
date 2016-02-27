@@ -4,7 +4,6 @@
 
 package   dap4.cdm;
 
-import dap4.cdmshared.NodeMap;
 import ucar.ma2.Array;
 import ucar.nc2.CDMNode;
 

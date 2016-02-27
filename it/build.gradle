@@ -12,8 +12,6 @@ dependencies {
     testRuntime project(":opendap")
     testRuntime project(":visadCdm")
 
-    testRuntime project(':dap4:d4cdmclient')
-
     testRuntime libraries["jaxen"]
     testCompile libraries["jdom2"]
     testCompile libraries["commons-io"]
