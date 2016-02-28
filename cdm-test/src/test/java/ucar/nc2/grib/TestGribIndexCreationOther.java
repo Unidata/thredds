@@ -343,8 +343,8 @@ public class TestGribIndexCreationOther {
             "D:/work/rdavm/ds084.3/**/.*gbx9",
             null, null, null, "directory", null);
 
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.nocheck, logger);
     System.out.printf("changed = %s%n", changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
   }

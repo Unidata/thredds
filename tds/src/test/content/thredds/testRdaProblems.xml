@@ -13,4 +13,8 @@
         <collection spec="${cdmUnitTest}/gribCollections/rdavm/ds094.2/timeseries/.*gbx9$" />
     </featureCollection>
 
+    <featureCollection name="ds084.3" featureType="GRIB2" path="rdaTest/ds084.3">
+        <collection spec="D:/work/rdavm/ds084.3/**/.*gbx9" />
+    </featureCollection>
+
 </catalog>

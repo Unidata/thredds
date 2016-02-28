@@ -73,7 +73,7 @@ public class NcssParamsBean {
 
   protected String time;
 
-  protected String temporal;  // deprecated, use time="all"
+  protected String temporal;  // legacy, use time="all"
 
   protected String time_window;        // a time duration; point data only
 
@@ -276,6 +276,10 @@ public class NcssParamsBean {
     return (temporal != null && temporal.equalsIgnoreCase("all")) || (time != null && time.equalsIgnoreCase("all"));
   }
 
+  public boolean isPresentTime() {
+    return (time != null && time.equalsIgnoreCase("present"));
+  }
+
   // return requested CalendarDateRange.
   public CalendarDateRange getCalendarDateRange(Calendar cal) {
     if (dateRange == null) return null;
@@ -300,10 +304,6 @@ public class NcssParamsBean {
     if (cal.equals(Calendar.getDefault())) return date;
 
      // otherwise must reparse
-    if (getTime().equalsIgnoreCase("present")) {
-      return CalendarDate.present(cal);
-    }
-
     return CalendarDateFormatter.isoStringToCalendarDate(cal, getTime());
   }
 

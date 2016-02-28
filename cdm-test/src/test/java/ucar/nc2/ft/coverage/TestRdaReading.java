@@ -135,4 +135,41 @@ Caused by: java.lang.RuntimeException: masterRuntime does not contain runtime 20
     Grib.setDebugFlags(new DebugFlagsImpl(""));
   }
 
+  /*
+
+2016-02-26T13:02:24 [76516564] [104] INFO threddsServlet:  (184.96.199.251) /thredds/cdmrfeature/grid/aggregations/g/ds084.3/1/TwoD?
+req=data&var=Geopotential_height_isobaric&timePresent=true
+
+Caused by: java.lang.OutOfMemoryError: Java heap space
+	at ucar.nc2.grib.collection.GribDataReader$DataReceiver.<init>(GribDataReader.java:391) ~[grib-5.0.0-SNAPSHOT.jar:5.0.0-SNAPSHOT]
+	at ucar.nc2.grib.collection.GribDataReader.readDataFromPartition2(GribDataReader.java:232) ~[grib-5.0.0-SNAPSHOT.jar:5.0.0-SNAPSHOT]
+	at ucar.nc2.grib.collection.GribDataReader.readData2(GribDataReader.java:192) ~[grib-5.0.0-SNAPSHOT.jar:5.0.0-SNAPSHOT]
+	at ucar.nc2.grib.coverage.GribCoverageDataset.readData(GribCoverageDataset.java:1279) ~[grib-5.0.0-SNAPSHOT.jar:5.0.0-SNAPSHOT]
+	at ucar.nc2.ft2.coverage.Coverage.readData(Coverage.java:196) ~[cdm-5.0.0-SNAPSHOT.jar:5.0.0-SNAPSHOT]
+	at thredds.server.cdmrfeature.CdmrGridController.handleDataRequest(CdmrGridController.java:253) ~[classes/:5.0.0-SNAPSHOT]
+
+Im thinking a bad integer causing huge mem alloc.
+   */
+  @Test
+  public void testBadSize() throws IOException, InvalidRangeException {
+    // Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+
+    String endpoint = "D:/work/rdavm/ds084.3/ds084.3.ncx4";
+    String covName = "Geopotential_height_isobaric";
+    try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(endpoint)) {
+      Assert.assertNotNull(endpoint, fdc);
+      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
+      Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
+      Coverage cov = cc.findCoverage(covName);
+      Assert.assertNotNull(covName, cov);
+
+      SubsetParams subset = new SubsetParams().setTimePresent();
+      GeoReferencedArray geo = cov.readData(subset);
+      Array data = geo.getData();
+      System.out.printf(" read data from %s shape = %s%n", cov.getName(), Misc.showInts(data.getShape()));
+    }
+
+    Grib.setDebugFlags(new DebugFlagsImpl(""));
+  }
+
 }

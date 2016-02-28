@@ -33,7 +33,10 @@
 
 package ucar.nc2.grib.collection;
 
+import com.google.common.base.Throwables;
 import net.jcip.annotations.Immutable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.coord.CoordinateTime2D;
 import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.CoordsSet;
@@ -62,6 +65,8 @@ import java.util.*;
  */
 @Immutable
 public abstract class GribDataReader {
+  static private final Logger logger = LoggerFactory.getLogger(GribDataReader.class);
+
 
   public static GribDataReader factory(GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
     if (gribCollection.isGrib1)
@@ -388,6 +393,11 @@ public abstract class GribDataReader {
       this.horizSize = yRange.length() * xRange.length();
 
       int len = (int) Section.computeSize(shape);
+      if (len > 100 * 1000 * 1000*4) { // LOOK make configurable
+        logger.warn("Len greater that 100MB shape={}\n{}", Misc.showInts(shape),
+                Throwables.getStackTraceAsString(new Throwable()));
+        throw new IllegalArgumentException("Len greater that 100M ");
+      }
       float[] data = new float[len];
       Arrays.fill(data, Float.NaN); // prefill primitive array
       dataArray = Array.factory(DataType.FLOAT, shape, data);

@@ -368,7 +368,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         Double dval = params.getDouble(SubsetParams.vertCoord);
         if (dval != null)
           return Optional.of(helper.subsetClosest(dval));
-        double[] vertRange = params.getVertRange();
+        double[] vertRange = params.getVertRange(); // used by WCS
         if (vertRange != null)
           return helper.subset(vertRange[0], vertRange[1], 1);
 
@@ -426,9 +426,9 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         if (rundate != null)
           return Optional.of(helper.subsetClosest(rundate));
 
-        CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
+/*        CalendarDateRange rundateRange = (CalendarDateRange) params.get(SubsetParams.runtimeRange);
         if (rundateRange != null)
-          return helper.subset(rundateRange, 1);
+          return helper.subset(rundateRange, 1); */
 
         if (params.isTrue(SubsetParams.runtimeAll))
           break;

@@ -47,6 +47,10 @@ These are compiled by the protobuf compiler into Java, Python, and C code that d
 
 == Messages
 
+=== Header Response Message[[header]]
+
+The header response is a protobuf-encoded message, described by *_CdmrFeatureProto.CoverageDataset_* or *_CdmrFeatureProto.PointDataset_*
+
 === Data Response Message
 
 The DataResponse has a list of GeoReferencedArray objects, which may share the same coordinate system.

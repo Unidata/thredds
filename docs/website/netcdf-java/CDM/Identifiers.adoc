@@ -132,7 +132,7 @@ The backslash becomes a special char, so it needs to be in the escape set:
 Utility routines using this include *Variable.getNameEscaped(),* and **GridDatatype.getNameEscaped()**.
 
 
-== cdmremote
+== cdmremote [[cdmremote]]
 
 The client forms requests of the form *_endpoint?query_*, and are sent over HTTP.
 The possible query parameters are:

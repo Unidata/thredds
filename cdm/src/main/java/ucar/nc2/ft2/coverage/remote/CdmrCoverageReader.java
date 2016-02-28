@@ -95,11 +95,8 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
       httpClient = HTTPFactory.newSession(endpoint); // LOOK is this ok? no authentication...
 
     Formatter f = new Formatter();
-    f.format("%s?req=data&var=%s", endpoint, urlParamEscaper.escape(coverage.getName()));  // LOOK full vs short name
-
-    for (Map.Entry<String,Object> entry : subset.getEntries()) {
-      f.format("&%s=%s", entry.getKey(), entry.getValue());
-    }
+    f.format("%s?", endpoint);
+    subset.encodeForCdmrfDataRequest(f, coverage.getName());
 
     if (showRequest)
       System.out.printf("CdmrFeature data request for gridCoverage: %s%n url=%s", coverage.getName(), f);
