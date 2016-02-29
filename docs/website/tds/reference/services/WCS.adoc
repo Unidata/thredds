@@ -106,15 +106,15 @@ http://servername:8080/thredds/wcs?dataset=http://las.pfeg.noaa.gov/cgi-bin/nph-
 The current TDS implementation of WCS 1.0 has the following
 restrictions:
 
-No interpolation is available (i.e., interpolationMethod=``none'').
+No interpolation is available (i.e., interpolationMethod="none").
 
 CRS/SRS
 
-1.  All CRS/SRS are listed as ``WGS84(DD)'' even though it may have
+1.  All CRS/SRS are listed as "WGS84(DD)" even though it may have
 little relation to the actual CRS of the data.
 2.  CRS is horizontal, XY, only (see Range below for vertical, Z)
-3.  The response coverage is in the native CRS of the data (as the ``No
-Interpolation'' item implies).
+3.  The response coverage is in the native CRS of the data (as the "No
+Interpolation" item implies).
 4.  The netCDF-Java library understands a number of projections (a
 subset of  the
 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#grid-mappings-and-projections[CF
@@ -129,7 +129,7 @@ min/max/res).
 Range:
 
 1.  Each coverage has only one range field
-2.  ``Vertical'' is the range axis, only if the coordinate has a
+2.  "Vertical" is the range axis, only if the coordinate has a
 vertical component.
 3.  Range axis selection: only one value can be specified (no list or
 min/max/res).
@@ -137,7 +137,7 @@ min/max/res).
 Supported GetCoverage response formats:
 
 1.  **GeoTIFF**: A grayscale 8-bit GeoTIFF file
-2.  **GeoTIFFfloat**: A floating point ``Data Sample'' GeoTIFF file
+2.  **GeoTIFFfloat**: A floating point "Data Sample" GeoTIFF file
 3.  **NetCDF3**: A NetCDF file following the CF-1.0 convention
 
 === Upcoming WCS 1.0.0 Implementation (version=1.0.0.1)
@@ -147,12 +147,12 @@ Same as above (version=1.0.0) except:
 CRS/SRS
 
 1.  Some improvment in CRS encoding (i.e., not all are listed as
-``WGS84(DD)'')
+"WGS84(DD)")
 
 Temporal selection: only min/max is supported. No resolution is allowed
 on the min/max and no lists are allowed.
 
-``Vertical'' range axis selection: only min/max is supported. No
+"Vertical" range axis selection: only min/max is supported. No
 resolution is allowed on the min/max and no lists are allowed.
 
 Supported GetCoverage response formats:
@@ -162,7 +162,7 @@ Supported GetCoverage response formats:
 GeoTIFF (Only supports requests for single time and single height.)
 
 1.  **GeoTIFF**: A grayscale 8-bit GeoTIFF file****
-2.  **GeoTIFF_Float**: A floating point ``Data Sample'' GeoTIFF file
+2.  **GeoTIFF_Float**: A floating point "Data Sample" GeoTIFF file
 
 === Upcoming WCS 1.0.0+ Implementation (version=1.0.0.11)
 
@@ -189,7 +189,7 @@ Supported GetCoverage response formats:
 GeoTIFF (Only supports requests for single time and single height.)
 
 1.  **GeoTIFF**: A grayscale 8-bit GeoTIFF file****
-2.  **GeoTIFF_Float**: A floating point ``Data Sample'' GeoTIFF file
+2.  **GeoTIFF_Float**: A floating point "Data Sample" GeoTIFF file
 
 == WCS Dataset URLs
 
@@ -240,24 +240,15 @@ coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57]
 A few WCS clients we know of (though we haven’t tried all of them):
 
 * OWSlib [free] - http://pypi.python.org/pypi/OWSLib/ 
-* GI-go [free] -
-http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome
-* CADCorp [commercial] - http://www.cadcorp.com/ - has a ``no cost''
-product
-called http://www.cadcorp.com/products_geographical_information_systems/map_browser.htm[Map
-Browser]
+* GI-go [free] - http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome
+* CADCorp [commercial] - http://www.cadcorp.com/ - has a "no cost" product
+called http://www.cadcorp.com/products_geographical_information_systems/map_browser.htm[Map Browser]
 * IDL [commercial] - http://www.ittvis.com/ProductServices/IDL.aspx
 * gvSIG [free] - http://www.gvsig.org/web/
 
-This one is not a general client. It is a server site with a web
-interface for accessing their served data:
+This one is not a general client. It is a server site with a web interface for accessing their served data:
 
 * DATAFed - http://www.datafed.net/
 
- +
-
-'''''
-
-image:../thread.png[image]This document is maintained by Unidata and was
-last updated February 2009. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].
+''''
+image:../../thread.png[image] This document was last updated February 2009.

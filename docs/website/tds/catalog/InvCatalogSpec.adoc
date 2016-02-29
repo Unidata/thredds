@@ -1,5 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:gloss: ../Glossary.adoc
+:toc:
 
 = THREDDS Client Catalog Specification
 
@@ -977,16 +979,13 @@ Example:
 [source,xml]
 ----
 
-A _*dateType*_ follows the http://www.w3.org/TR/NOTE-datetime[W3C
-profile of ISO 8601 for date/time formats]. Note that it is a simple
-type, so that it can be used as the type of an attribute. It can be one
-of the following:
+A _*dateType*_ follows the <<{gloss}#W3C_Date,W3C Date>> profile of ISO 8601 for date/time formats].
+Note that it is a simple type, so that it can be used as the type of an attribute. It can be one of the following:
 
 1.  an http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#date[xsd:date], with form "CCYY-MM-DD"
 2.  an http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#dateTime[xsd:dateTime]
 with form "CCYY-MM-DDThh:mm:ss", "CCYY-MM-DDThh:mm:ssZ" or "CCYY-MM-DDThh:mm:ss-hh:ss"
-3.  a valid http://www.unidata.ucar.edu/packages/udunits/[udunits] date
-string
+3.  a valid http://www.unidata.ucar.edu/packages/udunits/[udunits] date string
 4.  the string "present"
 
 Examples:

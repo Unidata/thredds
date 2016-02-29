@@ -1,10 +1,8 @@
 :source-highlighter: coderay
 [[threddsDocs]]
-
+:toc:
 
 = TDS Web Map Service (WMS)
-
-'''''
 
 The TDS WMS implementation uses the
 http://www.resc.rdg.ac.uk/trac/ncWMS/[ncWMS software] developed by Jon

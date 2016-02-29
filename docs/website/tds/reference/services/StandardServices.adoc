@@ -1,5 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:toc:
 
 = TDS Services
 

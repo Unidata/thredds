@@ -6,8 +6,6 @@
 
 include::CdmrCommon.adoc[]
 
-'''''
-
 == CDM Remote Protocol (Index space Data Access)
 
 The client sends requests of the form **endpoint?query**. The possible query parameters are:
