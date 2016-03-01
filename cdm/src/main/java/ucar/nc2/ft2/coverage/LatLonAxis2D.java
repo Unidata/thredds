@@ -115,7 +115,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
 
   public double getCoord(int yindex, int xindex) {
     // assume values hold 2D coord
-    getValues();
+    loadValuesIfNeeded();
     int idx = yindex * shape[1] + xindex;
     return values[idx];
   }
@@ -151,7 +151,7 @@ public class LatLonAxis2D extends CoverageCoordAxis {
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(this);
 
     // subset the values
-    double[] values = getValues(); // make sure values are read in
+    double[] values = getValues();
     int nx = rangex.length();
     int ny = rangey.length();
     double[] svalues = new double[nx * ny];

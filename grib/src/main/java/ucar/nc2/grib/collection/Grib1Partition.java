@@ -81,7 +81,7 @@ public class Grib1Partition extends PartitionCollectionImmutable {
           FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
     GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-    return gribCov.makeCoverageCollection();
+    return gribCov.createCoverageCollection();
   }
 
   @Override

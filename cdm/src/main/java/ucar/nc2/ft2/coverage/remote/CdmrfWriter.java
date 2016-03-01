@@ -70,7 +70,7 @@ public class CdmrfWriter {
 
   //  must start with this "CDFF"
   static public final byte[] MAGIC_START = new byte[]{0x43, 0x44, 0x46, 0x46};
-  static public final int MAX_INLINE_NVALUES = 1000;
+  static public final int MAX_INLINE_NVALUES = 500;
   private static final boolean show = false;
 
   public long sendHeader(OutputStream out, CoverageCollection gridDataset, String location) throws IOException {
@@ -377,14 +377,16 @@ public class CdmrfWriter {
 
   static public CdmrFeatureProto.AxisSpacing convertSpacing(CoverageCoordAxis.Spacing type) {
     switch (type) {
-      case regular:
-        return CdmrFeatureProto.AxisSpacing.regular;
+      case regularPoint:
+        return CdmrFeatureProto.AxisSpacing.regularPoint;
       case irregularPoint:
         return CdmrFeatureProto.AxisSpacing.irregularPoint;
       case contiguousInterval:
         return CdmrFeatureProto.AxisSpacing.contiguousInterval;
       case discontiguousInterval:
         return CdmrFeatureProto.AxisSpacing.discontiguousInterval;
+      case regularInterval:
+        return CdmrFeatureProto.AxisSpacing.regularInterval;
     }
     throw new IllegalStateException("illegal data type " + type);
   }

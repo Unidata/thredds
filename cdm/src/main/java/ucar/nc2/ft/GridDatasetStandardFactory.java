@@ -67,8 +67,11 @@ public class GridDatasetStandardFactory implements FeatureDatasetFactory {
     // already been opened by isMine
     // DtCoverageCSBuilder dtCoverage =  (DtCoverageCSBuilder) analysis;
 
-    DtCoverageDataset dt = DtCoverageDataset.open(ncd);
-    return DtCoverageAdapter.factory(dt, errlog);
+    // look - use GridDataset 2/24/2016
+    //DtCoverageDataset dt = DtCoverageDataset.open(ncd);
+    //return DtCoverageAdapter.factory(dt, errlog);
+
+    return new ucar.nc2.dt.grid.GridDataset( ncd);
   }
 
   public FeatureType[] getFeatureTypes() {

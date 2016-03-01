@@ -47,10 +47,7 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.GribCollectionImmutable;
-import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollectionImmutable;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
@@ -89,7 +86,7 @@ public class TestGrib2CoordsMatch {
 
   @AfterClass
   static public void after() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
     Formatter out = new Formatter(System.out);
 
     FileCacheIF cache = GribCdmIndex.gribCollectionCache;

@@ -97,8 +97,6 @@ public class NcStreamWriter {
 
     // length of data uncompressed
     long uncompressedLength = section.computeSize();
-    //if (uncompressedLength == 0)
-    //  System.out.printf("HEY%n");
     if ((v.getDataType() != DataType.STRING) && (v.getDataType() != DataType.OPAQUE) && !v.isVariableLength())
       uncompressedLength *= v.getElementSize(); // nelems for vdata, else nbytes
 
@@ -147,6 +145,7 @@ public class NcStreamWriter {
     return size;
   }
 
+  // LOOK compression not used
   public long sendData2(Variable v, Section section, OutputStream out, NcStreamCompression compress) throws IOException, InvalidRangeException {
     if (show) System.out.printf(" %s section=%s%n", v.getFullName(), section);
 
@@ -167,16 +166,6 @@ public class NcStreamWriter {
     size += writeBytes(out, datab); // dataProto
     return size;
   }
-
-  /* public long sendData(WritableByteChannel out, StructureData sdata) throws IOException {
-    long size = 0;
-    ByteBuffer bb = IospHelper.copyToByteBuffer(sdata);
-    byte[] datab = bb.array();
-    size += writeBytes(out, NcStream.MAGIC_DATA); // magic
-    size += NcStream.writeVInt(out, datab.length); // data len
-    size += writeBytes(out, datab); // data
-    return size;
-  } */
 
   private int writeBytes(OutputStream out, byte[] b) throws IOException {
     out.write(b);

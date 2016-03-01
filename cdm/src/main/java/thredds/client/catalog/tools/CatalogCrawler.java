@@ -39,8 +39,17 @@ import com.beust.jcommander.ParameterException;
 import com.google.common.base.MoreObjects;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -367,6 +376,9 @@ public class CatalogCrawler {
     @Parameter(names = {"-o", "--openDataset"}, description = "try to open the dataset ")
     public boolean openDataset = false;
 
+    @Parameter(names = {"-r", "--readRandom"}, description = "read some random data")
+    public boolean readRandom = false;
+
     @Parameter(names = {"-skipScans", "--skipScans"}, description = "skip DatasetScans ")
     public boolean skipDatasetScan = true;
 
@@ -379,7 +391,7 @@ public class CatalogCrawler {
     private static class ParameterDescriptionComparator implements Comparator<ParameterDescription> {
       // Display parameters in this order in the usage information.
       private final List<String> orderedParamNames = Arrays.asList(
-              "--catalog", "--type", "--openDataset", "--skipScans", "--catrefLevel", "--showNames", "--help");
+              "--catalog", "--type", "--openDataset", "--skipScans",  "--readRandom", "--catrefLevel", "--showNames", "--help");
 
       @Override
       public int compare(ParameterDescription p0, ParameterDescription p1) {
@@ -420,9 +432,13 @@ public class CatalogCrawler {
 
   private static class Counter {
     int datasets = 0;
-    int open = 0;
-    int fail = 0;
+    int openFc = 0;
+    int failFc = 0;
     int failException = 0;
+    int openOdap = 0;
+    int failOdap = 0;
+    int openCdmr = 0;
+    int failCdmr = 0;
   }
 
   public static void main(String[] args) throws Exception {
@@ -459,18 +475,44 @@ public class CatalogCrawler {
               return;
 
             DataFactory fac = new DataFactory();
-            try {
-              DataFactory.Result result = fac.openFeatureDataset(dd, task);
+            try ( DataFactory.Result result = fac.openFeatureDataset(dd, task)) {
               if (result.fatalError) {
                 pw.format("  Dataset fatalError=%s%n", result.errLog);
-                c.fail++;
+                c.failFc++;
               } else {
                 pw.format("  Dataset '%s' opened as type=%s%n", dd.getName(), result.featureDataset.getFeatureType());
-                c.open++;
+                c.openFc++;
+                if (cmdLine.readRandom && result.featureDataset instanceof FeatureDatasetCoverage) {
+                  readRandom((FeatureDatasetCoverage) result.featureDataset, pw);
+                }
               }
             } catch (IOException e) {
               e.printStackTrace(pw);
               c.failException++;
+
+            } catch (InvalidRangeException e) {
+              e.printStackTrace();
+              c.failException++;
+            }
+
+            // opendap
+            Access opendap = dd.getAccess(ServiceType.OPENDAP);
+            if (opendap != null) {
+              if (readAccess(opendap, fac, pw))
+                c.openOdap++;
+              else
+                c.failOdap++;
+            } else {
+              System.out.printf("HEY%n");
+            }
+
+            // cdmremote
+            Access cdmremote = dd.getAccess(ServiceType.CdmRemote);
+            if (cdmremote != null) {
+              if (readAccess(cdmremote, fac, pw))
+                c.openCdmr++;
+              else
+                c.failCdmr++;
             }
 
           }
@@ -480,7 +522,6 @@ public class CatalogCrawler {
 
       int count = 0;
 
-      //count += crawler.crawl("file:B:/esgf/ncar/esgcet/catalog.xml", null, null, null);
       count += crawler.crawl(cmdLine.topCatalog);
       pw.flush();
 
@@ -489,17 +530,85 @@ public class CatalogCrawler {
       System.out.printf("count catalogs = %d%n", count);
       System.out.printf("count catrefs  = %d%n", filter.countCatrefs);
       System.out.printf("count skipped  = %d%n", filter.countSkip);
-      System.out.printf("count datasets = %d%n", c.datasets);
-      System.out.printf("count filterCalls = %d%n", filter.count);
+      System.out.printf("count filterCalls = %d%n%n", filter.count);
 
-      System.out.printf("%ncount open = %d%n", c.open);
-      System.out.printf("count fail = %d%n", c.fail);
-      System.out.printf("count failException = %d%n", c.failException);
+      System.out.printf("             count datasets = %d%n", c.datasets);
+      System.out.printf("count open featureCollection = %d%n", c.openFc);
+      System.out.printf("count fail featureCollection = %d%n", c.failFc);
+      System.out.printf("         count failException = %d%n", c.failException);
+      System.out.printf("          count open Opendap = %d%n", c.openOdap);
+      System.out.printf("          count fail Opendap = %d%n", c.failOdap);
+      System.out.printf("             count open Cdmr = %d%n", c.openCdmr);
+      System.out.printf("             count fail Cdmr = %d%n", c.failCdmr);
 
     } catch (ParameterException e) {
       System.err.println(e.getMessage());
       System.err.printf("Try \"%s --help\" for more information.%n", progName);
     }
+  }
+
+  private static boolean readRandom(FeatureDatasetCoverage covDataset, PrintWriter pw ) throws IOException, InvalidRangeException {
+    CoverageCollection cc = covDataset.getCoverageCollections().get(0);
+    int ncov = cc.getCoverageCount();
+    Random r = new Random(System.currentTimeMillis());
+    int randomIdx = r.nextInt(ncov);
+    int count = 0;
+    Coverage randomCov = null;
+    for (Coverage c : cc.getCoverages()) {
+      if (count == randomIdx) {
+        randomCov = c;
+        break;
+      }
+      count++;
+    }
+    if (randomCov == null) {
+      pw.format("Bad random coverage");
+      return false;
+    }
+
+    SubsetParams subset = new SubsetParams().setTimePresent();
+    GeoReferencedArray geo = randomCov.readData(subset);
+    Array data = geo.getData();
+    System.out.printf(" read data from %s shape = %s%n", randomCov.getName(), Misc.showInts(data.getShape()));
+    return true;
+  }
+
+  private static boolean readAccess(Access access, DataFactory fac, PrintWriter pw) {
+      Formatter log = new Formatter();
+      try (NetcdfDataset ncd = fac.openDataset(access, false, null, log)) {
+        if (ncd == null) {
+          pw.format("  Dataset opendap fatalError=%s%n", log);
+          return false;
+
+        } else {
+          pw.format("  Dataset '%s' opened as %s%n", access.getDataset().getName(), access.getService());
+          return readRandom(ncd, pw);
+        }
+      } catch (InvalidRangeException | IOException e) {
+        e.printStackTrace(pw);
+        return false;
+      }
+  }
+
+  private static boolean readRandom(NetcdfDataset ncd, PrintWriter pw ) throws IOException, InvalidRangeException {
+    int ncov = ncd.getVariables().size();
+    Random r = new Random(System.currentTimeMillis());
+    int randomIdx = r.nextInt(ncov);
+    Variable randomVariable = ncd.getVariables().get(randomIdx);
+
+    int[] shape = randomVariable.getShape();
+    int[] origin = new int[shape.length];
+    int[] size = new int[shape.length];
+    for (int i=0; i< shape.length; i++) {
+      origin[i] = r.nextInt(shape[i]);
+      size[i] = 1;
+    }
+
+    Array data = randomVariable.read(origin, size);
+    pw.format(" read data from %s origin = %s return = %s%n", randomVariable.getNameAndDimensions(), Misc.showInts(origin),
+            NCdumpW.toString(data));
+    return true;
+
   }
 
 }

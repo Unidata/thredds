@@ -42,13 +42,14 @@ import ucar.nc2.time.CalendarDate;
 import java.util.*;
 
 /**
- * An iterator over the coordinates in a set of coordinate axes.
+ * An iterator over the coordinates in a set of CoverageCoordAxis.
  * The independent axes are used to iterate.
  * Attached dependent axes are used to generate values also. Two cases handled so far:
  *   1) ConstantForecast: runtime (ind), timeOffset (dep), time (scalar)
  *   1) Best: time (ind), runtime (dep)
  *
  *  Grib: If theres a time offset, then there must be a runtime coordinate, and the time offset is reletive to that.
+ *  LOOK only used by Grib
  */
 @Immutable
 public class CoordsSet implements Iterable<Map<String, Object>> {
@@ -184,7 +185,7 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
 
         else if (!constantForecast && axis.getAxisType() == AxisType.TimeOffset) {
           result.put(timeOffsetCoord, coord);
-          double val = axis.isInterval() ? (axis1D.getCoordEdge1(coordIdx) + axis1D.getCoordEdge2(coordIdx)) / 2.0  : axis1D.getCoord(coordIdx);
+          double val = axis.isInterval() ? (axis1D.getCoordEdge1(coordIdx) + axis1D.getCoordEdge2(coordIdx)) / 2.0  : axis1D.getCoordMidpoint(coordIdx);
           assert runtime != null;
           result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, val)); // validation
         }
@@ -212,7 +213,7 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
       double mid = (adjustVal[0]+adjustVal[1]) / 2.0;
       result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, mid)); // validation
     } else {
-      double adjustVal = axis.getCoord(coordIdx) + adjust;
+      double adjustVal = axis.getCoordMidpoint(coordIdx) + adjust;
       result.put(timeOffsetCoord, adjustVal);
       result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, adjustVal)); // validation
     }

@@ -1,10 +1,7 @@
 /* Copyright */
 package ucar.nc2.ft.coverage;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -59,7 +56,7 @@ public class TestDtWithCoverageReadingP {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", FeatureType.GRID}); // SRC
 
     // not GRID
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.FMRC});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", FeatureType.GRID});
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/MM_cnrm_129_red.ncml", FeatureType.FMRC}); // ensemble, time-offset
     // result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/ukmo.nc", FeatureType.FMRC});              // scalar vert LOOK change to TimeOffset ??
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR});  // x,y axis but no projection
@@ -76,6 +73,7 @@ public class TestDtWithCoverageReadingP {
     this.expectType = expectType;
   }
 
+  @Ignore("takes too long")
   @Test
   public void testGridCoverageDataset() throws IOException {
     System.out.printf("Test Dataset %s%n", endpoint);

@@ -148,7 +148,13 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
       coverageMap.put(coverage.getName(), coverage);
       CoordSysSet gset = map.get(coverage.getCoordSysName());             // duplicates get eliminated here
       if (gset == null) {
-        gset = new CoordSysSet(findCoordSys(coverage.getCoordSysName())); // must use findByName because objects arent wired up yet
+        CoverageCoordSys ccsys = findCoordSys(coverage.getCoordSysName());
+        if (ccsys == null) {
+          findCoordSys(coverage.getCoordSysName());
+          throw new IllegalStateException("Cant find "+coverage.getCoordSysName());
+        }
+
+        gset = new CoordSysSet(ccsys); // must use findByName because objects arent wired up yet
         map.put(coverage.getCoordSysName(), gset);
         gset.getCoordSys().setDataset(this);  // wire dataset into coordSys
       }

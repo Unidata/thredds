@@ -20,6 +20,7 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,102 +32,6 @@ import java.util.Set;
 @Category(NeedsCdmUnitTest.class)
 
 public class TestTdsGrib {
-
-  @Test
-  public void testGribDataset2D() throws IOException {
-    String catalog = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";
-    Catalog cat = TdsLocalCatalog.open(catalog);
-
-    Dataset ds = cat.findDatasetByID("grib/NDFD/CONUS_5km/TwoD");
-    assert (ds != null) : "cant find dataset 'dataset=grib/NDFD/CONUS_5km/TwoD'";
-    assert ds.getFeatureType() == FeatureType.GRID;
-
-    DataFactory fac = new DataFactory();
-    try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
-
-      assert dataResult != null;
-      assert !dataResult.fatalError : dataResult.errLog;
-      assert dataResult.featureDataset != null;
-
-      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
-      String gridName = "Maximum_temperature_Forecast_height_above_ground_12_Hour_Maximum";
-      VariableSimpleIF vs = gds.getDataVariable(gridName);
-      Assert.assertNotNull(gridName, vs);
-
-      Assert.assertEquals(1, gds.getCoverageCollections().size());
-      CoverageCollection cc = gds.getCoverageCollections().get(0);
-      Coverage grid = cc.findCoverage(gridName);
-      Assert.assertNotNull(gridName, grid);
-
-      int[] expectShape = new int[] {4,4,1,689,1073};
-      Assert.assertArrayEquals(expectShape, grid.getShape());
-
-      CoverageCoordSys gcs = grid.getCoordSys();
-      Assert.assertNotNull(gcs);
-
-      CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
-      Assert.assertNotNull(reftime);
-      Assert.assertEquals(4, reftime.getNcoords());
-      double[] want = new double[]{0., 12., 24., 36.};
-      CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
-
-      CoverageCoordAxis time = gcs.getTimeAxis();
-      Assert.assertNotNull(time);
-      Assert.assertTrue(time instanceof FmrcTimeAxis2D);
-      Assert.assertEquals(16, time.getNcoords());
-
-      //double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
-      //assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
-    }
-  }
-
-  @Test
-  public void testGribLatest() throws IOException {
-    String catalog = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";
-    Catalog cat = TdsLocalCatalog.open(catalog);
-
-    Dataset ds = cat.findDatasetByID("latest.xml");
-    assert (ds != null) : "cant find dataset 'dataset=latest.xml'";
-    assert ds.getFeatureType() == FeatureType.GRID;
-
-    DataFactory fac = new DataFactory();
-    try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
-
-      assert dataResult != null;
-      assert !dataResult.fatalError : dataResult.errLog;
-      assert dataResult.featureDataset != null;
-
-      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
-      String gridName = "Maximum_temperature_Forecast_height_above_ground_12_Hour_Maximum";
-      VariableSimpleIF vs = gds.getDataVariable(gridName);
-      Assert.assertNotNull(gridName, vs);
-
-      Assert.assertEquals(1, gds.getCoverageCollections().size());
-      CoverageCollection cc = gds.getCoverageCollections().get(0);
-      Coverage grid = cc.findCoverage(gridName);
-      Assert.assertNotNull(gridName, grid);
-
-      int[] expectShape = new int[] {4,1,689,1073};
-      Assert.assertArrayEquals(expectShape, grid.getShape());
-
-      CoverageCoordSys gcs = grid.getCoordSys();
-      Assert.assertNotNull(gcs);
-
-      CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
-      Assert.assertNotNull(reftime);
-      Assert.assertEquals(1, reftime.getNcoords());
-      double[] runtimeValues = new double[]{0.};
-      CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(runtimeValues), false);
-
-      CoverageCoordAxis time = gcs.getTimeAxis();
-      Assert.assertNotNull(time);
-      Assert.assertEquals(4, time.getNcoords());
-      double[] timeValues = new double[]{108.,132.,156,180};
-      assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(timeValues), false);
-    }
-  }
 
   @Test
   public void testGribCatRefs() throws IOException {
@@ -216,7 +121,47 @@ public class TestTdsGrib {
   }
 
   ///////////////////////////////////////////////////
-  // work with catalogs with service elements removed
+  // work with catalogs useing declared services
+  /*   <service name="some" base="" serviceType="compound">
+    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
+    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+  </service> */
+
+  @Test
+  public void testDeclaredServices() throws IOException {
+    String catUrl = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";  // service name "some"
+    Catalog cat = TdsLocalCatalog.open(catUrl);
+    Assert.assertNotNull(catUrl, cat);
+
+    String id = "grib/NDFD/CONUS_5km/TwoD";
+    Dataset ds = cat.findDatasetByID(id);
+    Assert.assertNotNull("cant find dataset id=" + id, id);
+    List<Access> accesses = ds.getAccess();
+
+    Assert.assertEquals(3, accesses.size());
+    Assert.assertNull("should not have servicetype HTTP", ds.getAccess(ServiceType.HTTPServer));
+  }
+
+  @Test
+  public void testDeclaredServicesInNestedDatasets() throws IOException {
+    String catUrl = "catalog/grib/NDFD/CONUS_5km/NDFD_CONUS_5km_20131212_0000.grib2/catalog.xml";  // service name "some"
+    Catalog cat = TdsLocalCatalog.open(catUrl);
+    Assert.assertNotNull(catUrl, cat);
+
+    String id = "grib/NDFD/CONUS_5km/NDFD_CONUS_5km_20131212_0000.grib2";
+    Dataset ds = cat.findDatasetByID(id);
+    Assert.assertNotNull("cant find dataset id=" + id, id);
+    List<Access> accesses = ds.getAccess();
+
+    Assert.assertEquals(4, accesses.size());
+    Assert.assertNotNull("should have servicetype HTTP", ds.getAccess(ServiceType.HTTPServer));
+  }
+
+
+  ///////////////////////////////////////////////////
+  // work with catalogs ussing default services
 
   @Test
   public void testDefaultGribServices() throws IOException {

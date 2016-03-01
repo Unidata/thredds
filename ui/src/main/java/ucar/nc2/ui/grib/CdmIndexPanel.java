@@ -532,13 +532,19 @@ public class CdmIndexPanel extends JPanel {
     List<? extends Object> vals2 = coord2.getValues();
     f.format("Coordinate %s%n", coord1.getName());
     for (Object val1 : vals1) {
-      boolean missing = (!vals2.contains(val1));
-      f.format(" %s %s%n", val1, (missing ? "MISSING IN 2" : ""));
+      if (!vals2.contains(val1)) {
+        f.format(" %s ", val1);
+        if (val1 instanceof Long) f.format("(%s) ", CalendarDate.of((Long) val1));
+        f.format("MISSING IN 2%n");
+      }
     }
     f.format("%nCoordinate %s%n", coord2.getName());
     for (Object val2 : vals2) {
-      boolean missing = (!vals1.contains(val2));
-      f.format(" %s %s%n", val2, (missing ? "MISSING IN 1" : ""));
+      if (!vals1.contains(val2)) {
+        f.format(" %s ", val2);
+        if (val2 instanceof Long) f.format("(%s) ", CalendarDate.of((Long) val2));
+        f.format("MISSING IN 1%n");
+      }
     }
   }
 
@@ -1046,7 +1052,7 @@ public class CdmIndexPanel extends JPanel {
     }
 
     public String getResolMode() {
-      return (resolMode == null) ? "scalar" : resolMode.toString();
+      return (resolMode == null) ? "null" : resolMode.toString();
     }
 
     public String getValues() {
@@ -1057,7 +1063,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateTime2D) {
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-        CalendarDateRange dr = coord2D.makeCalendarDateRange(ucar.nc2.time.Calendar.proleptic_gregorian);
+        CalendarDateRange dr = coord2D.makeCalendarDateRange(null); // default calendar
         f.format("%s %s", dr.getStart(), dr.getEnd());
 
       } else {
@@ -1101,6 +1107,15 @@ public class CdmIndexPanel extends JPanel {
 
     public String getUnit() {
       return coord.getUnit();
+    }
+
+    public String getRefDate() {
+      if (coord instanceof CoordinateTimeAbstract)
+        return ((CoordinateTimeAbstract)coord).getRefDate().toString();
+      else if (coord instanceof CoordinateRuntime)
+        return ((CoordinateRuntime)coord).getFirstDate().toString();
+      else
+        return "";
     }
 
     public String getName() {

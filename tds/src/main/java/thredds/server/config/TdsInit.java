@@ -86,7 +86,7 @@ import java.util.concurrent.ExecutorService;
 @Component
 public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, DisposableBean {
   static private final Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  static private final Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger(TdsInit.class.getName() + ".catalogInit");
+  static private final Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger("catalogInit");
 
   @Autowired
   private TdsContext tdsContext;

@@ -36,6 +36,7 @@ ext {
         logger.warn "Skipping all NeedsCdmUnitTest tests."
     }
 
+    isRdaDataAvailable = false  // figure out how to set later
 
     // Do not propagate these system properties to the Gradle test executors.
     systemPropertiesBlackList = [
@@ -134,6 +135,11 @@ configure(javaProjects) {
             if (!isCdmUnitTestDirAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
                 excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
             }
+
+            if (!isRdaDataAvailable) {
+                excludeCategories 'ucar.unidata.test.util.NeedsRdaData'
+            }
+
         }
     }
 

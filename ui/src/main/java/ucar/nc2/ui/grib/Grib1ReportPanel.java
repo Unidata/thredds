@@ -44,7 +44,7 @@ import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.grib.GribData;
-import ucar.nc2.grib.collection.GribIosp;
+import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
@@ -577,7 +577,7 @@ public class Grib1ReportPanel extends ReportPanel {
           f.format("MISSING %s (%s)%n", gmOld.grid.getFullName(), gmOld.show());
           continue;
         }
-        Attribute att = gmOld.match.grid.findAttributeIgnoreCase(GribIosp.VARIABLE_ID_ATTNAME);
+        Attribute att = gmOld.match.grid.findAttributeIgnoreCase(Grib.VARIABLE_ID_ATTNAME);
         String varId = att == null ? "" : att.getStringValue();
         varNames.add(new VarName(mfile.getName(), gmOld.grid.getShortName(), gmOld.match.grid.getShortName(), varId));
       }

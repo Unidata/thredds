@@ -37,7 +37,9 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
+import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
@@ -193,25 +195,12 @@ public class Grib1DataTable extends JPanel {
       }
     });
 
-    varPopup.addAction("Show Data Cubic Interpolation", new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
-        if (bean != null) {
-          Formatter f = new Formatter();
-          showData(bean, true, GribData.InterpolationMethod.cubic, f);
-          infoPopup2.setText(f.toString());
-          infoPopup2.gotoTop();
-          infoWindow2.show();
-        }
-      }
-    });
-
     varPopup.addAction("Show Data Max/Min", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, false, GribData.InterpolationMethod.none, f);
+          showMinMax(bean, GribData.InterpolationMethod.none, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -224,7 +213,7 @@ public class Grib1DataTable extends JPanel {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, true, GribData.InterpolationMethod.none, f);
+          showData(bean, GribData.InterpolationMethod.none, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -237,7 +226,20 @@ public class Grib1DataTable extends JPanel {
         Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          showData(bean, true, GribData.InterpolationMethod.none, f);
+          showData(bean, GribData.InterpolationMethod.linear, f);
+          infoPopup2.setText(f.toString());
+          infoPopup2.gotoTop();
+          infoWindow2.show();
+        }
+      }
+    });
+
+    varPopup.addAction("Show Data Cubic Interpolation", new AbstractAction() {
+      public void actionPerformed(ActionEvent e) {
+        Grib1RecordBean bean = (Grib1RecordBean) record1BeanTable.getSelectedBean();
+        if (bean != null) {
+          Formatter f = new Formatter();
+          showData(bean, GribData.InterpolationMethod.cubic, f);
           infoPopup2.setText(f.toString());
           infoPopup2.gotoTop();
           infoWindow2.show();
@@ -626,20 +628,53 @@ public class Grib1DataTable extends JPanel {
     Grib1CollectionPanel.compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  private void showData(Grib1RecordBean bean1, boolean showData, GribData.InterpolationMethod method, Formatter f) {
+  private void showData(Grib1RecordBean bean, GribData.InterpolationMethod method, Formatter f) {
     float[] data;
     try {
-      data = bean1.readData(method);
+      data = bean.readData(method);
     } catch (IOException e) {
       f.format("IOException %s", e.getMessage());
       return;
     }
 
+    if (method == GribData.InterpolationMethod.none && bean.gds.isThin()) {
+      int[] lines = bean.gdss.getNptsInLine();
+      int count = 0;
+      for (int line=0; line<lines.length; line++) {
+        f.format(" %3d: ", line);
+        for (int i=0; i<lines[line]; i++) f.format("%f,", data[count++]);
+        f.format("%n");
+      }
+
+    } else {
+      int[] shape = new int[]{bean.gdss.getNy(), bean.gdss.getNx()};
+      Array dataA = Array.factory(DataType.FLOAT, shape, data);
+      f.format("%s%n", NCdumpW.toString(dataA));
+    }
 
     float max = -Float.MAX_VALUE;
     float min = Float.MAX_VALUE;
     for (float fd : data) {
-      if (showData) f.format("%f%n", fd);
+      if (Float.isNaN(fd)) continue;
+      max = Math.max(fd, max);
+      min = Math.min(fd, min);
+    }
+    f.format("max = %f%n", max);
+    f.format("min = %f%n", min);
+  }
+
+  private void showMinMax(Grib1RecordBean bean, GribData.InterpolationMethod method, Formatter f) {
+    float[] data;
+    try {
+      data = bean.readData(method);
+    } catch (IOException e) {
+      f.format("IOException %s", e.getMessage());
+      return;
+    }
+
+    float max = -Float.MAX_VALUE;
+    float min = Float.MAX_VALUE;
+    for (float fd : data) {
       if (Float.isNaN(fd)) continue;
       max = Math.max(fd, max);
       min = Math.min(fd, min);

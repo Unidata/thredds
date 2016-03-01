@@ -37,10 +37,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.collection.GribCollectionImmutable;
-import ucar.nc2.grib.collection.GribIosp;
-import ucar.nc2.grib.collection.PartitionCollectionImmutable;
+import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -71,14 +68,14 @@ public class TestGribCollectionsBig {
     PartitionCollectionImmutable.countPC = 0;
     RandomAccessFile.enableDefaultGlobalFileCache();
     RandomAccessFile.setDebugLeaks(true);
-    GribIosp.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/indexOnly"));
     GribCdmIndex.setGribCollectionCache(new ucar.nc2.util.cache.FileCacheGuava("GribCollectionCacheGuava", 100));
     GribCdmIndex.gribCollectionCache.resetTracking();
   }
 
   @AfterClass
   static public void after() {
-    GribIosp.setDebugFlags(new DebugFlagsImpl());
+    Grib.setDebugFlags(new DebugFlagsImpl());
     Formatter out = new Formatter(System.out);
 
     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
@@ -132,8 +129,9 @@ public class TestGribCollectionsBig {
     assert count.nmiss == 0;
   }
 
-  //@Test
-  public void testTPofTP() throws IOException {
+  @Ignore("takes too long")
+  @Test
+  public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
     TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation.ncx4");
 
@@ -144,7 +142,7 @@ public class TestGribCollectionsBig {
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     assert count.nerrs == 0;
-    assert count.nmiss == 492158;       // 6032888/7034124  vs 973046/13925312 LOOK   6035386/7038851
+    assert count.nmiss == 492158;       // 6032888/7034124  vs 973046/13925312 LOOK   6035386/7038851 // 0/984316/14077702
     assert count.nread == 7038851;
   }
 

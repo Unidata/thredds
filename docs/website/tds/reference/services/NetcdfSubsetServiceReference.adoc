@@ -1,6 +1,8 @@
 :source-highlighter: coderay
 :cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
+:gloss: ../Glossary.adoc
+:toc:
 
 = NetCDF Subset Service (NCSS) Reference
 
@@ -12,7 +14,7 @@ the underlying data arrays. The data arrays are subsetted but not resampled or r
 dataset.
 
 NCSS supports spatial and temporal subsetting on collections of grids, stations and points. A Dataset is described by a
-link:#DatasetDescription[Dataset Description] XML document, which describes the dataset in enough detail to enable a programmatic client to form valid
+*Dataset Description* XML document, which describes the dataset in enough detail to enable a programmatic client to form valid
 data requests.
 
 NCSS may return netCDF binary files (using {cf}[CF Conventions]),
@@ -24,11 +26,12 @@ http://www.w3.org/TR/xmlschema-2/[W3C XML Schema Datatypes] when applicable.
 
 === Dataset Descriptions
 
-Each dataset has an XML document called the __*Dataset Description Document*__. These are intended to perform the same function as OGC GetCapabilities
-or Atom Introspection, that is, __provide clients with the necessary information to formulate a valid request and send it to the serve__r. *The
+Each dataset has an XML document called the *_Dataset Description Document_*.
+These are intended to perform the same function as OGC GetCapabilities or Atom Introspection, that is,
+provide clients with the necessary information to formulate a valid request and send it to the server. *The
 content of these documents is still evolving.*
 
-Grid Dataset::
+Grid Dataset:
 
 A Grid Dataset is a collection of Grids which have horizontal (x,y) coordinates, and optional vertical, time, and ensemble coordinates. Grid data points next to
 each other in index space are next to each other in coordinate space.
@@ -172,8 +175,7 @@ valid temporal range containing the entire dataset time range.
 * One single time: Passing the parameter time will get the time slice closest to the requested time if it is within the time range of the dataset.
 * Valid time range: A valid time range is defined with two of the three parameters: time_start, time_end and time_duration.
 
-Times (time, time_start and time_end) must be specified as link:#W3Cdate[W3C date string] or "present" and time_duration as a link:#W3Cduration[W3C
-time duration]
+Times (time, time_start and time_end) must be specified as <<{gloss}#W3C_Date,W3C Date>> or "present" and time_duration as a <<{gloss}#W3C_Duration,W3C time duration>>
 
 Examples of time query strings with valid temporal ranges:
 
@@ -236,73 +238,6 @@ Examples:
 * http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Pacific_40km/best/dataset.html
 * http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_0p5deg/best?north=47.0126&west=-114.841&east=-112.641&south=44.8534&time_start=present&time_duration=PT3H&accept=netcdf&var=v-component_of_wind_height_above_ground,u-component_of_wind_height_above_ground
 
-== Reference
-
-=== W3C Time Duration
-
-The lexical representation for *duration* is the http://www.w3.org/TR/xmlschema-2/#ISO8601[[ISO 8601]] extended format P__n__Y__n__ M__n__DT__n__H
-__n__M__n__S, where __n__Y represents the number of years, __n__M the number of months, __n__D the number of days, 'T' is the date/time separator,
-__n__H the number of hours, __n__M the number of minutes and __n__S the number of seconds. The number of seconds can include decimal digits to
-arbitrary precision.
-
-The values of the Year, Month, Day, Hour and Minutes components are not restricted but allow an arbitrary unsigned integer, i.e., an integer that
-conforms to the pattern `[0-9]+`. Similarly, the value of the Seconds component allows an arbitrary unsigned decimal. According to
-http://www.w3.org/TR/xmlschema-2/#ISO8601[[ISO 8601]], at least one digit must follow the decimal point if it appears. That is, the value of the
-Seconds component must conform to the pattern `[0-9]+(\.[0-9]+)?`. Thus, the lexical representation of *duration* does not follow the alternative
-format of § 5.5.3.2.1 in http://www.w3.org/TR/xmlschema-2/#ISO8601[[ISO 8601]].
-
-An optional preceding minus sign (`-`) is allowed, to indicate a negative duration. If the sign is omitted, a positive duration is indicated. See also
-http://www.w3.org/TR/xmlschema-2/#isoformats[ISO 8601 Date and Time Formats (§D)].
-
-For example, to indicate a duration of 1 year, 2 months, 3 days, 10 hours, and 30 minutes, one would write: `P1Y2M3DT10H30M`. One could also indicate
-a duration of minus 120 days as: `-P120D`.
-
-Reduced precision and truncated representations of this format are allowed provided they conform to the following:
-
-* If the number of years, months, days, hours, minutes, or seconds in any expression equals zero, the number and its corresponding designator
-http://www.w3.org/TR/xmlschema-2/#dt-may[·may·] be omitted. However, at least one number and its designator
-http://www.w3.org/TR/xmlschema-2/#dt-must[·must·] be present.
-* The seconds part http://www.w3.org/TR/xmlschema-2/#dt-may[·may·] have a decimal fraction.
-* The designator 'T' must be absent if and only if all of the time items are absent. The designator 'P' must always be present.
-
-For example, `P1347Y`, `P1347M`, and `P1Y2MT2H` are all allowed, as are `P0Y1347M` and `P0Y1347M0D`.
-
-`P-1347M` is not allowed although `-P1347M` is. `P1Y2MT` is not.
-
-See XML Schema http://www.w3.org/TR/xmlschema-2/#duration[duration] for full details.
-
-W3C Dates
-^^^^^^^^^
-
-For our purposes, and ISO Date can be a dateTime or a date:
-
-*A dateTime* has the form: `'-'? yyyy '-' mm '-' dd 'T' hh ':' mm ':' ss ('.' s+)? (zzzzzz)?`
-
-where:
-
-* `'-'? yyyy` is a four-or-more digit, optionally negative-signed numeral that represents the year; if more than four digits, leading zeros are
-prohibited, and `'0000'` is prohibited (see the Note above http://www.w3.org/TR/xmlschema-2/#year-zero[(§3.2.7)]; also note that a plus sign is *not*
-permitted);
-* the remaining `'-'`s are separators between parts of the date portion;
-* the first `mm` is a two-digit numeral that represents the month;
-* `dd` is a two-digit numeral that represents the day;
-* `'T'` is a separator indicating that time-of-day follows;
-* `hh` is a two-digit numeral that represents the hour; `'24'` is permitted if the minutes and seconds represented are zero, and the *dateTime* value
-so represented is the first instant of the following day (the hour property of a *dateTime* object in the
-http://www.w3.org/TR/xmlschema-2/#dt-value-space[·value space·] cannot have a value greater than 23);
-* `':'` is a separator between parts of the time-of-day portion;
-* the second `mm` is a two-digit numeral that represents the minute;
-* `ss` is a two-integer-digit numeral that represents the whole seconds;
-* `'.' s+` (if present) represents the fractional seconds;
-* `zzzzzz` (if present) represents the time zone (as described below).
-
-For example, `2002-10-10T12:00:00-05:00` (noon on 10 October 2002, Central Daylight Savings Time as well as Eastern Standard Time in the U.S.) is
-`2002-10-10T17:00:00Z`, five hours later than `2002-10-10T12:00:00Z`.
-
-A *date* is the same as a dateTime without the time part : `'-'? yyyy '-' mm '-' dd     zzzzzz?`
-
-See XML Schema http://www.w3.org/TR/xmlschema-2/#dateTime[dateTime] and http://www.w3.org/TR/xmlschema-2/#date[date] for full details
-
 '''''
 
-image:../../images/thread.png[image]This document was last updated August 2015
+image:../../images/thread.png[image]This document was last updated Feb 2016

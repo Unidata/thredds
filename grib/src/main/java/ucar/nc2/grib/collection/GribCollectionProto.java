@@ -3974,7 +3974,7 @@ public final class GribCollectionProto {
      * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
      *
      * <pre>
-     * time index to runtime index, only Best Time and TimeIntv
+     * time index to runtime index, Best Time only
      * </pre>
      */
     java.util.List<java.lang.Integer> getTime2RuntimeList();
@@ -3982,7 +3982,7 @@ public final class GribCollectionProto {
      * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
      *
      * <pre>
-     * time index to runtime index, only Best Time and TimeIntv
+     * time index to runtime index, Best Time only
      * </pre>
      */
     int getTime2RuntimeCount();
@@ -3990,7 +3990,7 @@ public final class GribCollectionProto {
      * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
      *
      * <pre>
-     * time index to runtime index, only Best Time and TimeIntv
+     * time index to runtime index, Best Time only
      * </pre>
      */
     int getTime2Runtime(int index);
@@ -4445,7 +4445,7 @@ public final class GribCollectionProto {
      * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
      *
      * <pre>
-     * time index to runtime index, only Best Time and TimeIntv
+     * time index to runtime index, Best Time only
      * </pre>
      */
     public java.util.List<java.lang.Integer>
@@ -4456,7 +4456,7 @@ public final class GribCollectionProto {
      * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
      *
      * <pre>
-     * time index to runtime index, only Best Time and TimeIntv
+     * time index to runtime index, Best Time only
      * </pre>
      */
     public int getTime2RuntimeCount() {
@@ -4466,7 +4466,7 @@ public final class GribCollectionProto {
      * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
      *
      * <pre>
-     * time index to runtime index, only Best Time and TimeIntv
+     * time index to runtime index, Best Time only
      * </pre>
      */
     public int getTime2Runtime(int index) {
@@ -5736,7 +5736,7 @@ public final class GribCollectionProto {
        * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
        *
        * <pre>
-       * time index to runtime index, only Best Time and TimeIntv
+       * time index to runtime index, Best Time only
        * </pre>
        */
       public java.util.List<java.lang.Integer>
@@ -5747,7 +5747,7 @@ public final class GribCollectionProto {
        * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
        *
        * <pre>
-       * time index to runtime index, only Best Time and TimeIntv
+       * time index to runtime index, Best Time only
        * </pre>
        */
       public int getTime2RuntimeCount() {
@@ -5757,7 +5757,7 @@ public final class GribCollectionProto {
        * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
        *
        * <pre>
-       * time index to runtime index, only Best Time and TimeIntv
+       * time index to runtime index, Best Time only
        * </pre>
        */
       public int getTime2Runtime(int index) {
@@ -5767,7 +5767,7 @@ public final class GribCollectionProto {
        * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
        *
        * <pre>
-       * time index to runtime index, only Best Time and TimeIntv
+       * time index to runtime index, Best Time only
        * </pre>
        */
       public Builder setTime2Runtime(
@@ -5781,7 +5781,7 @@ public final class GribCollectionProto {
        * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
        *
        * <pre>
-       * time index to runtime index, only Best Time and TimeIntv
+       * time index to runtime index, Best Time only
        * </pre>
        */
       public Builder addTime2Runtime(int value) {
@@ -5794,7 +5794,7 @@ public final class GribCollectionProto {
        * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
        *
        * <pre>
-       * time index to runtime index, only Best Time and TimeIntv
+       * time index to runtime index, Best Time only
        * </pre>
        */
       public Builder addAllTime2Runtime(
@@ -5809,7 +5809,7 @@ public final class GribCollectionProto {
        * <code>repeated uint32 time2runtime = 10 [packed = true];</code>
        *
        * <pre>
-       * time index to runtime index, only Best Time and TimeIntv
+       * time index to runtime index, Best Time only
        * </pre>
        */
       public Builder clearTime2Runtime() {
@@ -10801,6 +10801,24 @@ public final class GribCollectionProto {
     ucar.nc2.grib.collection.GribCollectionProto.FcConfigOrBuilder getConfigOrBuilder();
 
     /**
+     * <code>optional uint64 startTime = 22;</code>
+     *
+     * <pre>
+     * calendar date, first valid time
+     * </pre>
+     */
+    long getStartTime();
+
+    /**
+     * <code>optional uint64 endTime = 23;</code>
+     *
+     * <pre>
+     * calendar date, last valid time
+     * </pre>
+     */
+    long getEndTime();
+
+    /**
      * <code>repeated .Partition partitions = 100;</code>
      *
      * <pre>
@@ -10899,6 +10917,8 @@ public final class GribCollectionProto {
       genProcessId_ = 0;
       backProcessId_ = 0;
       version_ = 0;
+      startTime_ = 0L;
+      endTime_ = 0L;
       partitions_ = java.util.Collections.emptyList();
       isPartitionOfPartitions_ = false;
       run2Part_ = java.util.Collections.emptyList();
@@ -11030,10 +11050,20 @@ public final class GribCollectionProto {
 
               break;
             }
+            case 176: {
+
+              startTime_ = input.readUInt64();
+              break;
+            }
+            case 184: {
+
+              endTime_ = input.readUInt64();
+              break;
+            }
             case 802: {
-              if (!((mutable_bitField0_ & 0x00008000) == 0x00008000)) {
+              if (!((mutable_bitField0_ & 0x00020000) == 0x00020000)) {
                 partitions_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Partition>();
-                mutable_bitField0_ |= 0x00008000;
+                mutable_bitField0_ |= 0x00020000;
               }
               partitions_.add(input.readMessage(ucar.nc2.grib.collection.GribCollectionProto.Partition.parser(), extensionRegistry));
               break;
@@ -11044,9 +11074,9 @@ public final class GribCollectionProto {
               break;
             }
             case 816: {
-              if (!((mutable_bitField0_ & 0x00020000) == 0x00020000)) {
+              if (!((mutable_bitField0_ & 0x00080000) == 0x00080000)) {
                 run2Part_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00020000;
+                mutable_bitField0_ |= 0x00080000;
               }
               run2Part_.add(input.readUInt32());
               break;
@@ -11054,9 +11084,9 @@ public final class GribCollectionProto {
             case 818: {
               int length = input.readRawVarint32();
               int limit = input.pushLimit(length);
-              if (!((mutable_bitField0_ & 0x00020000) == 0x00020000) && input.getBytesUntilLimit() > 0) {
+              if (!((mutable_bitField0_ & 0x00080000) == 0x00080000) && input.getBytesUntilLimit() > 0) {
                 run2Part_ = new java.util.ArrayList<java.lang.Integer>();
-                mutable_bitField0_ |= 0x00020000;
+                mutable_bitField0_ |= 0x00080000;
               }
               while (input.getBytesUntilLimit() > 0) {
                 run2Part_.add(input.readUInt32());
@@ -11082,10 +11112,10 @@ public final class GribCollectionProto {
         if (((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
           gds_ = java.util.Collections.unmodifiableList(gds_);
         }
-        if (((mutable_bitField0_ & 0x00008000) == 0x00008000)) {
+        if (((mutable_bitField0_ & 0x00020000) == 0x00020000)) {
           partitions_ = java.util.Collections.unmodifiableList(partitions_);
         }
-        if (((mutable_bitField0_ & 0x00020000) == 0x00020000)) {
+        if (((mutable_bitField0_ & 0x00080000) == 0x00080000)) {
           run2Part_ = java.util.Collections.unmodifiableList(run2Part_);
         }
         makeExtensionsImmutable();
@@ -11483,6 +11513,32 @@ public final class GribCollectionProto {
       return getConfig();
     }
 
+    public static final int STARTTIME_FIELD_NUMBER = 22;
+    private long startTime_;
+    /**
+     * <code>optional uint64 startTime = 22;</code>
+     *
+     * <pre>
+     * calendar date, first valid time
+     * </pre>
+     */
+    public long getStartTime() {
+      return startTime_;
+    }
+
+    public static final int ENDTIME_FIELD_NUMBER = 23;
+    private long endTime_;
+    /**
+     * <code>optional uint64 endTime = 23;</code>
+     *
+     * <pre>
+     * calendar date, last valid time
+     * </pre>
+     */
+    public long getEndTime() {
+      return endTime_;
+    }
+
     public static final int PARTITIONS_FIELD_NUMBER = 100;
     private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Partition> partitions_;
     /**
@@ -11640,6 +11696,12 @@ public final class GribCollectionProto {
       if (config_ != null) {
         output.writeMessage(21, getConfig());
       }
+      if (startTime_ != 0L) {
+        output.writeUInt64(22, startTime_);
+      }
+      if (endTime_ != 0L) {
+        output.writeUInt64(23, endTime_);
+      }
       for (int i = 0; i < partitions_.size(); i++) {
         output.writeMessage(100, partitions_.get(i));
       }
@@ -11717,6 +11779,14 @@ public final class GribCollectionProto {
       if (config_ != null) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(21, getConfig());
+      }
+      if (startTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(22, startTime_);
+      }
+      if (endTime_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(23, endTime_);
       }
       for (int i = 0; i < partitions_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
@@ -11905,16 +11975,20 @@ public final class GribCollectionProto {
           config_ = null;
           configBuilder_ = null;
         }
+        startTime_ = 0L;
+
+        endTime_ = 0L;
+
         if (partitionsBuilder_ == null) {
           partitions_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00008000);
+          bitField0_ = (bitField0_ & ~0x00020000);
         } else {
           partitionsBuilder_.clear();
         }
         isPartitionOfPartitions_ = false;
 
         run2Part_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         return this;
       }
 
@@ -11986,19 +12060,21 @@ public final class GribCollectionProto {
         } else {
           result.config_ = configBuilder_.build();
         }
+        result.startTime_ = startTime_;
+        result.endTime_ = endTime_;
         if (partitionsBuilder_ == null) {
-          if (((bitField0_ & 0x00008000) == 0x00008000)) {
+          if (((bitField0_ & 0x00020000) == 0x00020000)) {
             partitions_ = java.util.Collections.unmodifiableList(partitions_);
-            bitField0_ = (bitField0_ & ~0x00008000);
+            bitField0_ = (bitField0_ & ~0x00020000);
           }
           result.partitions_ = partitions_;
         } else {
           result.partitions_ = partitionsBuilder_.build();
         }
         result.isPartitionOfPartitions_ = isPartitionOfPartitions_;
-        if (((bitField0_ & 0x00020000) == 0x00020000)) {
+        if (((bitField0_ & 0x00080000) == 0x00080000)) {
           run2Part_ = java.util.Collections.unmodifiableList(run2Part_);
-          bitField0_ = (bitField0_ & ~0x00020000);
+          bitField0_ = (bitField0_ & ~0x00080000);
         }
         result.run2Part_ = run2Part_;
         result.bitField0_ = to_bitField0_;
@@ -12133,11 +12209,17 @@ public final class GribCollectionProto {
         if (other.hasConfig()) {
           mergeConfig(other.getConfig());
         }
+        if (other.getStartTime() != 0L) {
+          setStartTime(other.getStartTime());
+        }
+        if (other.getEndTime() != 0L) {
+          setEndTime(other.getEndTime());
+        }
         if (partitionsBuilder_ == null) {
           if (!other.partitions_.isEmpty()) {
             if (partitions_.isEmpty()) {
               partitions_ = other.partitions_;
-              bitField0_ = (bitField0_ & ~0x00008000);
+              bitField0_ = (bitField0_ & ~0x00020000);
             } else {
               ensurePartitionsIsMutable();
               partitions_.addAll(other.partitions_);
@@ -12150,7 +12232,7 @@ public final class GribCollectionProto {
               partitionsBuilder_.dispose();
               partitionsBuilder_ = null;
               partitions_ = other.partitions_;
-              bitField0_ = (bitField0_ & ~0x00008000);
+              bitField0_ = (bitField0_ & ~0x00020000);
               partitionsBuilder_ = 
                 com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                    getPartitionsFieldBuilder() : null;
@@ -12165,7 +12247,7 @@ public final class GribCollectionProto {
         if (!other.run2Part_.isEmpty()) {
           if (run2Part_.isEmpty()) {
             run2Part_ = other.run2Part_;
-            bitField0_ = (bitField0_ & ~0x00020000);
+            bitField0_ = (bitField0_ & ~0x00080000);
           } else {
             ensureRun2PartIsMutable();
             run2Part_.addAll(other.run2Part_);
@@ -13791,12 +13873,88 @@ public final class GribCollectionProto {
         return configBuilder_;
       }
 
+      private long startTime_ ;
+      /**
+       * <code>optional uint64 startTime = 22;</code>
+       *
+       * <pre>
+       * calendar date, first valid time
+       * </pre>
+       */
+      public long getStartTime() {
+        return startTime_;
+      }
+      /**
+       * <code>optional uint64 startTime = 22;</code>
+       *
+       * <pre>
+       * calendar date, first valid time
+       * </pre>
+       */
+      public Builder setStartTime(long value) {
+        
+        startTime_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint64 startTime = 22;</code>
+       *
+       * <pre>
+       * calendar date, first valid time
+       * </pre>
+       */
+      public Builder clearStartTime() {
+        
+        startTime_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private long endTime_ ;
+      /**
+       * <code>optional uint64 endTime = 23;</code>
+       *
+       * <pre>
+       * calendar date, last valid time
+       * </pre>
+       */
+      public long getEndTime() {
+        return endTime_;
+      }
+      /**
+       * <code>optional uint64 endTime = 23;</code>
+       *
+       * <pre>
+       * calendar date, last valid time
+       * </pre>
+       */
+      public Builder setEndTime(long value) {
+        
+        endTime_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint64 endTime = 23;</code>
+       *
+       * <pre>
+       * calendar date, last valid time
+       * </pre>
+       */
+      public Builder clearEndTime() {
+        
+        endTime_ = 0L;
+        onChanged();
+        return this;
+      }
+
       private java.util.List<ucar.nc2.grib.collection.GribCollectionProto.Partition> partitions_ =
         java.util.Collections.emptyList();
       private void ensurePartitionsIsMutable() {
-        if (!((bitField0_ & 0x00008000) == 0x00008000)) {
+        if (!((bitField0_ & 0x00020000) == 0x00020000)) {
           partitions_ = new java.util.ArrayList<ucar.nc2.grib.collection.GribCollectionProto.Partition>(partitions_);
-          bitField0_ |= 0x00008000;
+          bitField0_ |= 0x00020000;
          }
       }
 
@@ -13990,7 +14148,7 @@ public final class GribCollectionProto {
       public Builder clearPartitions() {
         if (partitionsBuilder_ == null) {
           partitions_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00008000);
+          bitField0_ = (bitField0_ & ~0x00020000);
           onChanged();
         } else {
           partitionsBuilder_.clear();
@@ -14095,7 +14253,7 @@ public final class GribCollectionProto {
           partitionsBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
               ucar.nc2.grib.collection.GribCollectionProto.Partition, ucar.nc2.grib.collection.GribCollectionProto.Partition.Builder, ucar.nc2.grib.collection.GribCollectionProto.PartitionOrBuilder>(
                   partitions_,
-                  ((bitField0_ & 0x00008000) == 0x00008000),
+                  ((bitField0_ & 0x00020000) == 0x00020000),
                   getParentForChildren(),
                   isClean());
           partitions_ = null;
@@ -14131,9 +14289,9 @@ public final class GribCollectionProto {
 
       private java.util.List<java.lang.Integer> run2Part_ = java.util.Collections.emptyList();
       private void ensureRun2PartIsMutable() {
-        if (!((bitField0_ & 0x00020000) == 0x00020000)) {
+        if (!((bitField0_ & 0x00080000) == 0x00080000)) {
           run2Part_ = new java.util.ArrayList<java.lang.Integer>(run2Part_);
-          bitField0_ |= 0x00020000;
+          bitField0_ |= 0x00080000;
          }
       }
       /**
@@ -14218,7 +14376,7 @@ public final class GribCollectionProto {
        */
       public Builder clearRun2Part() {
         run2Part_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00020000);
+        bitField0_ = (bitField0_ & ~0x00080000);
         onChanged();
         return this;
       }
@@ -19875,7 +20033,7 @@ public final class GribCollectionProto {
       "\004\022\007\n\003MRC\020\005\022\t\n\005MRSTC\020\006\022\t\n\005MRUTC\020\010\022\t\n\005MRST" +
       "P\020\007\022\010\n\004TwoD\020\001\022\010\n\004Best\020\002\022\t\n\005MRUTP\020\t\"N\n\005MF" +
       "ile\022\020\n\010filename\030\001 \001(\t\022\024\n\014lastModified\030\002 " +
-      "\001(\004\022\r\n\005index\030\003 \001(\r\022\016\n\006length\030\004 \001(\004\"\235\003\n\016G" +
+      "\001(\004\022\r\n\005index\030\003 \001(\r\022\016\n\006length\030\004 \001(\004\"\301\003\n\016G" +
       "ribCollection\022\014\n\004name\030\001 \001(\t\022\016\n\006topDir\030\002 " +
       "\001(\t\022\026\n\006mfiles\030\003 \003(\0132\006.MFile\022\031\n\007dataset\030\004",
       " \003(\0132\010.Dataset\022\021\n\003gds\030\005 \003(\0132\004.Gds\022\035\n\rmas" +
@@ -19884,30 +20042,31 @@ public final class GribCollectionProto {
       "ocal\030\n \001(\005\022\026\n\016genProcessType\030\013 \001(\005\022\024\n\014ge" +
       "nProcessId\030\014 \001(\005\022\025\n\rbackProcessId\030\r \001(\005\022" +
       "\017\n\007version\030\016 \001(\005\022\031\n\006config\030\025 \001(\0132\t.FcCon" +
-      "fig\022\036\n\npartitions\030d \003(\0132\n.Partition\022\037\n\027i" +
-      "sPartitionOfPartitions\030e \001(\010\022\024\n\010run2part" +
-      "\030f \003(\rB\002\020\001\"u\n\021PartitionVariable\022\017\n\007group" +
-      "no\030\001 \001(\r\022\r\n\005varno\030\002 \001(\r\022\016\n\006partno\030\004 \001(\r\022",
-      "\r\n\005ndups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007miss" +
-      "ing\030\n \001(\r\"h\n\tPartition\022\014\n\004name\030\001 \001(\t\022\020\n\010" +
-      "filename\030\002 \001(\t\022\024\n\014lastModified\030\004 \001(\004\022\016\n\006" +
-      "length\030\005 \001(\003\022\025\n\rpartitionDate\030\006 \001(\003\"(\n\tS" +
-      "tringMap\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\"\n" +
-      "\006IntMap\022\014\n\004from\030\001 \001(\021\022\n\n\002to\030\002 \001(\021\"F\n\nInt" +
-      "vFilter\022\022\n\nintvLength\030\001 \001(\021\022\022\n\nvariableI" +
-      "d\030\002 \001(\r\022\020\n\010intvProb\030\003 \001(\021\"\315\002\n\010FcConfig\022\014" +
-      "\n\004name\030\001 \001(\t\022\026\n\016collectionSpec\030\002 \001(\t\022\025\n\r" +
-      "partitionType\030\003 \001(\t\022\026\n\016dateFormatMark\030\004 ",
-      "\001(\t\022\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\025\n\rpdsU" +
-      "seGenType\030\014 \001(\010\022\032\n\022pdsUseTableVersion\030\r " +
-      "\001(\010\022\024\n\014pdsIntvMerge\030\016 \001(\010\022\024\n\014pdsUseCente" +
-      "r\030\017 \001(\010\022\027\n\017intvExcludeZero\030\020 \001(\010\022\037\n\nintv" +
-      "Filter\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitCon" +
-      "vert\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(" +
-      "\t*R\n\014GribAxisType\022\013\n\007runtime\020\000\022\010\n\004time\020\001" +
-      "\022\014\n\010timeIntv\020\002\022\010\n\004vert\020\003\022\n\n\006time2D\020\004\022\007\n\003" +
-      "ens\020\005B/\n\030ucar.nc2.grib.collectionB\023GribC" +
-      "ollectionProtob\006proto3"
+      "fig\022\021\n\tstartTime\030\026 \001(\004\022\017\n\007endTime\030\027 \001(\004\022" +
+      "\036\n\npartitions\030d \003(\0132\n.Partition\022\037\n\027isPar" +
+      "titionOfPartitions\030e \001(\010\022\024\n\010run2part\030f \003" +
+      "(\rB\002\020\001\"u\n\021PartitionVariable\022\017\n\007groupno\030\001",
+      " \001(\r\022\r\n\005varno\030\002 \001(\r\022\016\n\006partno\030\004 \001(\r\022\r\n\005n" +
+      "dups\030\010 \001(\r\022\020\n\010nrecords\030\t \001(\r\022\017\n\007missing\030" +
+      "\n \001(\r\"h\n\tPartition\022\014\n\004name\030\001 \001(\t\022\020\n\010file" +
+      "name\030\002 \001(\t\022\024\n\014lastModified\030\004 \001(\004\022\016\n\006leng" +
+      "th\030\005 \001(\003\022\025\n\rpartitionDate\030\006 \001(\003\"(\n\tStrin" +
+      "gMap\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\"\n\006Int" +
+      "Map\022\014\n\004from\030\001 \001(\021\022\n\n\002to\030\002 \001(\021\"F\n\nIntvFil" +
+      "ter\022\022\n\nintvLength\030\001 \001(\021\022\022\n\nvariableId\030\002 " +
+      "\001(\r\022\020\n\010intvProb\030\003 \001(\021\"\315\002\n\010FcConfig\022\014\n\004na" +
+      "me\030\001 \001(\t\022\026\n\016collectionSpec\030\002 \001(\t\022\025\n\rpart",
+      "itionType\030\003 \001(\t\022\026\n\016dateFormatMark\030\004 \001(\t\022" +
+      "\033\n\ngdsConvert\030\013 \003(\0132\007.IntMap\022\025\n\rpdsUseGe" +
+      "nType\030\014 \001(\010\022\032\n\022pdsUseTableVersion\030\r \001(\010\022" +
+      "\024\n\014pdsIntvMerge\030\016 \001(\010\022\024\n\014pdsUseCenter\030\017 " +
+      "\001(\010\022\027\n\017intvExcludeZero\030\020 \001(\010\022\037\n\nintvFilt" +
+      "er\030\021 \003(\0132\013.IntvFilter\022 \n\017timeUnitConvert" +
+      "\030\022 \003(\0132\007.IntMap\022\024\n\014userTimeUnit\030\023 \001(\t*R\n" +
+      "\014GribAxisType\022\013\n\007runtime\020\000\022\010\n\004time\020\001\022\014\n\010" +
+      "timeIntv\020\002\022\010\n\004vert\020\003\022\n\n\006time2D\020\004\022\007\n\003ens\020" +
+      "\005B/\n\030ucar.nc2.grib.collectionB\023GribColle",
+      "ctionProtob\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -19980,7 +20139,7 @@ public final class GribCollectionProto {
     internal_static_GribCollection_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_GribCollection_descriptor,
-        new java.lang.String[] { "Name", "TopDir", "Mfiles", "Dataset", "Gds", "MasterRuntime", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Version", "Config", "Partitions", "IsPartitionOfPartitions", "Run2Part", });
+        new java.lang.String[] { "Name", "TopDir", "Mfiles", "Dataset", "Gds", "MasterRuntime", "Center", "Subcenter", "Master", "Local", "GenProcessType", "GenProcessId", "BackProcessId", "Version", "Config", "StartTime", "EndTime", "Partitions", "IsPartitionOfPartitions", "Run2Part", });
     internal_static_PartitionVariable_descriptor =
       getDescriptor().getMessageTypes().get(10);
     internal_static_PartitionVariable_fieldAccessorTable = new

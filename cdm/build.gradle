@@ -101,6 +101,7 @@ task testJar(type: Jar, dependsOn: testClasses,
         include 'ucar/unidata/test/util/NeedsExternalResource.class'
         include 'ucar/unidata/test/util/NotJenkins.class'
         include 'ucar/unidata/test/util/NotTravis.class'
+        include 'ucar/unidata/test/util/NeedsRdaData.class'
         include 'ucar/unidata/test/util/Slow.class'
     }
     classifier = 'test'

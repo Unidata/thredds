@@ -170,17 +170,19 @@ public class FeatureDatasetCapabilitiesWriter {
       rootElem.addContent(writeVariable(v));
     }
 
-    CollectionInfo info;
+    /* CollectionInfo info;
     try {
       info = new DsgCollectionHelper(fc).calcBounds();
     } catch (IOException e) {
       throw new RuntimeException(e);
-    }
+    } */
 
-    rootElem.addContent(writeBoundingBox(info.bbox));
+    LatLonRect bb = fc.getBoundingBox();
+    if (bb != null)
+      rootElem.addContent(writeBoundingBox(bb));
 
     // add date range
-    CalendarDateRange dateRange = info.getCalendarDateRange(null);
+    CalendarDateRange dateRange = fc.getCalendarDateRange();
     if (dateRange != null) {
       Element drElem = new Element("TimeSpan"); // from KML
       drElem.addContent(new Element("begin").addContent(dateRange.getStart().toString()));

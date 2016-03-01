@@ -173,9 +173,10 @@ public class CalendarDateUnit {
   // given a CalendarDate, find the values in this unit (secs, days, etc) from the RefDate
   // inverse of makeCalendarDate
   public double makeOffsetFromRefDate( CalendarDate date) {
-    if (isCalendarField)
+    if (isCalendarField) {
+      if (date.equals(baseDate)) return 0.0;
       throw new UnsupportedOperationException(); // LOOK TODO
-    else {
+    } else {
       long msecs = date.getDifferenceInMsecs(baseDate);
       return msecs / period.getValueInMillisecs();
     }

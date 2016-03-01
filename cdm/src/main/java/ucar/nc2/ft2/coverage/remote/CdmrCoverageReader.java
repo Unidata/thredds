@@ -57,9 +57,11 @@ import ucar.nc2.ft2.coverage.CoverageReader;
 import ucar.nc2.ft2.coverage.GeoReferencedArray;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.stream.NcStream;
+import ucar.nc2.stream.NcStreamReader;
 
 /**
- * Client side cdmrFeature interface to GridCoverage
+ * Client side cdmrFeature interface to GridCoverage.
+ * This class handles reading the data, or the coordinates when the values are deferred.
  *
  * @author caron
  * @since 5/5/2015
@@ -90,14 +92,11 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
   @Override
   public GeoReferencedArray readData(Coverage coverage, SubsetParams subset, boolean canonicalOrder) throws IOException {
     if (httpClient == null)
-      httpClient = HTTPFactory.newSession(endpoint);
+      httpClient = HTTPFactory.newSession(endpoint); // LOOK is this ok? no authentication...
 
     Formatter f = new Formatter();
-    f.format("%s?req=data&var=%s", endpoint, urlParamEscaper.escape(coverage.getName()));  // LOOK full vs short name
-
-    for (Map.Entry<String,Object> entry : subset.getEntries()) {
-      f.format("&%s=%s", entry.getKey(), entry.getValue());
-    }
+    f.format("%s?", endpoint);
+    subset.encodeForCdmrfDataRequest(f, coverage.getName());
 
     if (showRequest)
       System.out.printf("CdmrFeature data request for gridCoverage: %s%n url=%s", coverage.getName(), f);
@@ -171,6 +170,34 @@ public class CdmrCoverageReader implements CoverageReader, CoordAxisReader {
 
   @Override
   public double[] readCoordValues(CoverageCoordAxis coordAxis) throws IOException {
-    return new double[0]; // LOOK
+    if (httpClient == null)
+      httpClient = HTTPFactory.newSession(endpoint); // LOOK is this ok? no authentication...
+
+    Formatter f = new Formatter();
+    f.format("%s?req=coord&var=%s", endpoint, urlParamEscaper.escape(coordAxis.getName()));
+
+    if (showRequest)
+      System.out.printf("CdmrFeature data request for gridCoverage: %s%n url=%s", coordAxis.getName(), f);
+
+    long start = System.currentTimeMillis();
+    try (HTTPMethod method = HTTPFactory.Get(httpClient, f.toString())) {
+      int statusCode = method.execute();
+
+      if (statusCode == 404)
+        throw new FileNotFoundException(getErrorMessage(method));
+
+      if (statusCode >= 300)
+        throw new IOException(getErrorMessage(method));
+
+      InputStream is = method.getResponseAsStream();
+
+      NcStreamReader reader = new NcStreamReader();
+      NcStreamReader.DataResult result = reader.readData(is, null, endpoint);
+
+      if (showRequest)
+        System.out.printf(" took %d msecs%n", System.currentTimeMillis()-start);
+
+      return (double []) result.data.getStorage();
+    }
   }
 }

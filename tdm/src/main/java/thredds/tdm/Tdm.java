@@ -38,7 +38,6 @@ package thredds.tdm;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.http.auth.*;
-import org.slf4j.Logger;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -68,17 +67,21 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Describe
+ * THREDDS Data Manager.
+ * Currently only manages GRIB Collection indices.
  *
  * @author caron
  * @since 12/13/13
  */
 public class Tdm {
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Tdm.class);
+  private static org.slf4j.Logger tdmLogger = org.slf4j.LoggerFactory.getLogger(Tdm.class);
+  private static org.slf4j.Logger detailLogger = org.slf4j.LoggerFactory.getLogger("tdmDetail");
   private static final boolean debug = false;
   private static final boolean debugOpenFiles = false;
+  private static final boolean debugTasks = true;
 
   private EventBus eventBus;
 
@@ -112,7 +115,7 @@ public class Tdm {
       this.name = name;
       this.session = session;
       System.out.printf("Server added %s%n", name);
-      log.info("TDS server added " + name);
+      tdmLogger.info("TDS server added " + name);
     }
   }
 
@@ -132,7 +135,7 @@ public class Tdm {
 
   public void setNThreads(int n) {
     executor = Executors.newFixedThreadPool(n);
-    log.info(" TDM nthreads= {}", n);
+    tdmLogger.info(" TDM nthreads= {}", n);
   }
 
   public void setForceOnStartup(boolean forceOnStartup) {
@@ -185,11 +188,11 @@ public class Tdm {
     System.setProperty("tds.log.dir", contentTdmDir.toString());
 
     if (!Files.exists(threddsConfig)) {
-      log.error("config file {} does not exist, set -Dtds.content.root.path=<dir>", threddsConfig);
+      tdmLogger.error("config file {} does not exist, set -Dtds.content.root.path=<dir>", threddsConfig);
       System.out.printf("threddsConfig does not exist=%s%n", threddsConfig);
       return false;
     }
-    ThreddsConfigReader reader = new ThreddsConfigReader(threddsConfig.toString(), log);
+    ThreddsConfigReader reader = new ThreddsConfigReader(threddsConfig.toString(), tdmLogger);
 
     for (String location : reader.getRootList("catalogRoot")) {
       Resource r = new FileSystemResource(contentThreddsDir.toString() + "/" + location);
@@ -214,7 +217,7 @@ public class Tdm {
     gribCache.setAlwaysUseCache(gribIndexAlwaysUse);
     gribCache.setNeverUseCache(gribIndexNeverUse);
     GribIndexCache.setDiskCache2(gribCache);
-    log.info("TDM set " + gribCache);
+    tdmLogger.info("TDM initialized {}", gribCache);
 
     return true;
   }
@@ -261,12 +264,12 @@ public class Tdm {
       if (forceOnStartup) // on startup, force rewrite of indexes
         config.tdmConfig.startupType = CollectionUpdateType.always;
 
-      Logger logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection (!!)
-      logger.info("FeatureCollection config=" + config);
+      // Logger logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection (!!)
+      detailLogger.info("FeatureCollection config=" + config);
 
       // now wire for events
-      fcMap.put(config.getCollectionName(), new Listener(config, logger));
-      collectionUpdater.scheduleTasks(config, logger);
+      fcMap.put(config.getCollectionName(), new Listener(config));
+      collectionUpdater.scheduleTasks(config, null);
     }
 
      /* show whats up
@@ -279,12 +282,12 @@ public class Tdm {
      System.out.printf("%s%n", f.toString()); */
   }
 
-    // called by eventBus
+  // called by eventBus
   @Subscribe
-  public void processEvent(CollectionUpdateEvent event)  {
+  public void processEvent(CollectionUpdateEvent event) {
     Listener fc = fcMap.get(event.getCollectionName());
     if (fc == null) {
-      log.error("Unkown colelction name "+ event);
+      tdmLogger.error("Unknown collection name from event bus " + event);
       return;
     }
     fc.processEvent(event.getType());
@@ -292,22 +295,24 @@ public class Tdm {
 
   Map<String, Listener> fcMap = new HashMap<>();
 
-  // these objects listen for schedule events from quartz.
+  // these objects recieve events from quartz schedular via the EventBus
   // one listener for each fc.
   private class Listener {
     FeatureCollectionConfig config;
-    //MCollection dcm;
     AtomicBoolean inUse = new AtomicBoolean(false);
-    org.slf4j.Logger logger;
+    // org.slf4j.Logger logger;
 
-    private Listener(FeatureCollectionConfig config, Logger logger) {
+    private Listener(FeatureCollectionConfig config) {
       this.config = config;
-      this.logger = logger;
     }
 
     public void processEvent(CollectionUpdateType event) {
-      if (!inUse.compareAndSet(false, true)) return; // if already working, skip another execution
-      executor.execute(new IndexTask(config, this, event, logger));
+      if (!inUse.compareAndSet(false, true)) {
+        tdmLogger.debug("Tdm event '{}' already in use on {}", event, config.getCollectionName());
+        return; // if already working, skip another execution
+      }
+      tdmLogger.debug("Tdm event '{}' received Task scheduled for {}", event, config.getCollectionName());
+      executor.execute(new IndexTask(config, this, event));
     }
   }
 
@@ -316,31 +321,39 @@ public class Tdm {
     // return "thredds/admin/collection/trigger?nocheck&collection=" + name;  // LOOK changed to nocheck for triggering 4.3, temp kludge
   }
 
+  private AtomicInteger indexTaskCount = new AtomicInteger();
+
   private class IndexTask implements Runnable {
     String name;
     FeatureCollectionConfig config;
     CollectionUpdateType updateType;
     Listener liz;
-    org.slf4j.Logger logger;
 
-    private IndexTask(FeatureCollectionConfig config, Listener liz, CollectionUpdateType updateType, org.slf4j.Logger logger) {
+    private IndexTask(FeatureCollectionConfig config, Listener liz, CollectionUpdateType updateType) {
       this.name = config.collectionName;
       this.config = config;
       this.liz = liz;
       this.updateType = updateType;
-      this.logger = logger;
     }
 
     @Override
     public void run() {
       try {
         // log.info("Tdm call GribCdmIndex.updateGribCollection "+config.collectionName);
-        if (debug) System.out.printf("---------------------%nIndexTask updateGribCollection %s%n", config.collectionName);
-        boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
-        log.info("GribCdmIndex.updateGribCollection {} changed {}", config.collectionName, changed);
+        if (debug)
+          System.out.printf("---------------------%nIndexTask updateGribCollection %s%n", config.collectionName);
+        long start = System.currentTimeMillis();
+        int taskNo = indexTaskCount.getAndIncrement();
+        tdmLogger.info("{} start {}", taskNo, config.collectionName);
+        boolean changed = GribCdmIndex.updateGribCollection(config, updateType, null);
 
-        logger.debug("{} {} changed {}", CalendarDate.present(), config.collectionName, changed);
-        if (changed) System.out.printf("%s %s changed%n", CalendarDate.present(), config.collectionName);
+        long took = System.currentTimeMillis() - start;
+        tdmLogger.info("{} done {}: changed {} took {} ms", taskNo, config.collectionName, changed, took);
+        System.out.printf("%s: %s changed %s took %d msecs%n", CalendarDate.present(), config.collectionName, changed, took);
+
+        if (debugTasks) {
+          System.out.printf("executor=%s%n", executor);
+        }
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
           String path = makeTriggerUrl(name);
@@ -348,13 +361,13 @@ public class Tdm {
           sendTriggers(path);
         }
       } catch (Throwable e) {
-        logger.error("Tdm.IndexTask " + name, e);
+        tdmLogger.error("Tdm.IndexTask " + name, e);
         e.printStackTrace();
 
       } finally {
         // tell liz that task is done
         if (!liz.inUse.getAndSet(false))
-          logger.warn("Listener InUse should have been set");
+          tdmLogger.warn("Listener InUse should have been set");
       }
 
       if (debugOpenFiles) {
@@ -370,25 +383,24 @@ public class Tdm {
 
     }
 
-    private void sendTriggers(String path)
-    {
-      for(Server server : servers) {
+    private void sendTriggers(String path) {
+      for (Server server : servers) {
         String url = server.name + path;
-        try {
-          try (HTTPMethod m = HTTPFactory.Get(server.session, url)) {
-            int status = m.execute();
-            if(status == 200)
-              logger.info("send trigger to {} status = {}", url, status);
-            else
-              logger.warn("FAIL send trigger to {} status = {}", url, status);
-          }
+        try (HTTPMethod m = HTTPFactory.Get(server.session, url)) {
+          detailLogger.debug("send trigger to {}", url);
+          int status = m.execute();
+          detailLogger.debug("return from {} status = {}", url, status);
+
+          if (status != 200)
+            detailLogger.warn("FAIL send trigger to {} status = {}", url, status);
+
         } catch (HTTPException e) {
           Throwable cause = e.getCause();
-          if(cause instanceof ConnectException) {
-            logger.warn("server {} not running", server.name);
+          if (cause instanceof ConnectException) {
+            detailLogger.warn("server {} not running", server.name);
           } else {
             e.printStackTrace();
-            logger.error("FAIL send trigger to " + url + " failed", cause);
+            tdmLogger.error("FAIL send trigger to " + url + " failed", cause);
           }
 
         }
@@ -466,7 +478,7 @@ public class Tdm {
       Tdm driver = (Tdm) springContext.getBean("TDM");
 
       Map<String, String> aliases = (Map<String, String>) springContext.getBean("dataRootLocationAliasExpanders");
-      for (Map.Entry<String,String> entry : aliases.entrySet())
+      for (Map.Entry<String, String> entry : aliases.entrySet())
         AliasTranslator.addAlias(entry.getKey(), entry.getValue());
 
       EventBus eventBus = (EventBus) springContext.getBean("fcTriggerEventBus");

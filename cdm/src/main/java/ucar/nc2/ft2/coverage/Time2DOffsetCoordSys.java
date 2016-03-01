@@ -117,7 +117,7 @@ public class Time2DOffsetCoordSys extends Time2DCoordSys {
 
     // subset on time, # runtimes = 1 (1b)
     if (runAxisSubset.getNcoords() == 1) {
-      double val = runAxisSubset.getCoord(0);   // not sure runAxis is needed. maybe use runtimeSubset
+      double val = runAxisSubset.getCoordMidpoint(0);   // not sure runAxis is needed. maybe use runtimeSubset
       CalendarDate runDate = runAxisSubset.makeDate(val);
       Optional<TimeOffsetAxis> too = timeOffset.subsetFromTime(params, runDate);
       if (!too.isPresent())
@@ -156,7 +156,7 @@ public class Time2DOffsetCoordSys extends Time2DCoordSys {
     List<Double> offset = new ArrayList<>();      // corresponding offset from start of run
     for (int i=0; i<runAxisSubset.getNcoords(); i++) {
       // public double getOffsetInTimeUnits(CalendarDate convertFrom, CalendarDate convertTo);
-      double runOffset = runAxisSubset.getCoord(i);
+      double runOffset = runAxisSubset.getCoordMidpoint(i);
       if (end + runOffset < wantOffset) continue;
       if (wantOffset < start + runOffset) break;
       int idx = helper.search(wantOffset - runOffset);
@@ -174,7 +174,7 @@ public class Time2DOffsetCoordSys extends Time2DCoordSys {
     int count = 0;
     for (int k=0; k<ncoords; k++) {
       offsetValues[count] = offset.get(k);
-      runValues[count++] = runAxisSubset.getCoord( runtimeIdx.get(k));
+      runValues[count++] = runAxisSubset.getCoordMidpoint(runtimeIdx.get(k));
     }
 
     CoverageCoordAxisBuilder runbuilder = new CoverageCoordAxisBuilder(runAxisSubset)
@@ -201,7 +201,8 @@ public class Time2DOffsetCoordSys extends Time2DCoordSys {
     atts.addAttribute(new Attribute(CF.CALENDAR, runAxisSubset.getCalendar().toString()));
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(name, runAxisSubset.getUnits(), desc, DataType.DOUBLE, AxisType.Time, atts,
-            CoverageCoordAxis.DependenceType.scalar, null, CoverageCoordAxis.Spacing.regular, 1, val, val, 0.0, null, null, true);
+            CoverageCoordAxis.DependenceType.scalar, null, CoverageCoordAxis.Spacing.regularPoint, 1, val, val, 0.0, null, null);
+    builder.setIsSubset(true);
 
     return new CoverageCoordAxis1D(builder);
   }
@@ -234,7 +235,8 @@ public class Time2DOffsetCoordSys extends Time2DCoordSys {
       double offset = timeAxisSubset.getOffsetInTimeUnits(runAxis.getRefDate(), timeAxisSubset.getRefDate());
 
       switch (timeAxisSubset.getSpacing()) {
-        case regular:
+        case regularInterval:
+        case regularPoint:
           builder.startValue = timeAxisSubset.getStartValue() + offset;
           builder.endValue = timeAxisSubset.getEndValue() + offset;
           break;

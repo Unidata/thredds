@@ -30,10 +30,11 @@ enum AxisType {  // same as ucar.nc2.constants.AxisType
 }
 
 enum AxisSpacing {  // same as CoverageCoordAxis.Spacing
-  regular=0;
+  regularPoint=0;
   irregularPoint=1;
   contiguousInterval=2;
   discontiguousInterval=3;
+  regularInterval=4;
 }
 
 enum DependenceType {  // same as CoverageCoordAxis.DependenceType

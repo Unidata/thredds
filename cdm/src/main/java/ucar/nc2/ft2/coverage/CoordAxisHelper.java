@@ -72,7 +72,8 @@ class CoordAxisHelper {
    */
   int findCoordElement(double target, boolean bounded) {
     switch (axis.getSpacing()) {
-      case regular:
+      case regularInterval:
+      case regularPoint:
         return findCoordElementRegular(target, bounded);
       case irregularPoint:
       case contiguousInterval:
@@ -88,9 +89,10 @@ class CoordAxisHelper {
     int n = axis.getNcoords();
     if (n == 1 && bounded) return 0;
 
-    double distance = coordValue - axis.getStartValue();
+    double distance = coordValue - axis.getCoordEdge1(0);
     double exactNumSteps = distance / axis.getResolution();
-    int index = (int) Math.round(exactNumSteps); // ties round to +Inf
+    //int index = (int) Math.round(exactNumSteps); // ties round to +Inf
+    int index = (int) exactNumSteps; // truncate down
 
     if (bounded && index < 0) return 0;
     if (bounded && index >= n) return n - 1;
@@ -229,7 +231,7 @@ class CoordAxisHelper {
     double useValue = Double.MIN_VALUE;
     int idxFound = -1;
     for (int i = 0; i < axis.getNcoords(); i++) {
-      double coord = axis.getCoord(i);
+      double coord = axis.getCoordMidpoint(i);
       double diff = Math.abs(coord - target);
       if (diff < minDiff || (diff == minDiff && coord > useValue)) {
         minDiff = diff;
@@ -333,7 +335,7 @@ class CoordAxisHelper {
   }
 
   private Optional<CoverageCoordAxisBuilder> subsetValuesDiscontinuous(double minValue, double maxValue, int stride) {
-    return Optional.empty("subsetValuesDiscontinuous not done yet");
+    return Optional.empty("subsetValuesDiscontinuous not done yet"); // LOOK
   }
 
   // Range must be contained in this range
@@ -349,7 +351,8 @@ class CoordAxisHelper {
     double[] values = axis.getValues();  // will be null for regular
     double[] subsetValues = null;
     switch (axis.getSpacing()) {
-      case regular:
+      case regularInterval:
+      case regularPoint:
         resolution = range.stride() * axis.getResolution();
         break;
 
@@ -369,7 +372,6 @@ class CoordAxisHelper {
       case discontiguousInterval:
         subsetValues = new double[2 * ncoords];            // need 2*npts
         for (int i : range) {
-          //for (int i = minIndex; i <= maxIndex; i += 2) {
           subsetValues[count2++] = values[2 * i];
           subsetValues[count2++] = values[2 * i + 1];
         }
@@ -378,7 +380,7 @@ class CoordAxisHelper {
 
     // subset(int ncoords, double start, double end, double[] values)
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
-    builder.subset(ncoords, axis.getCoord(range.first()), axis.getCoord(range.last()), resolution, subsetValues);
+    builder.subset(ncoords, axis.getCoordMidpoint(range.first()), axis.getCoordMidpoint(range.last()), resolution, subsetValues);
     builder.setRange(range);
     return builder;
   }
@@ -386,7 +388,7 @@ class CoordAxisHelper {
   @Nonnull
   private CoverageCoordAxisBuilder subsetValuesClosest(double want) {
     int closest_index = findCoordElement(want, true); // bounded, always valid index
-    double val = axis.getCoord(closest_index);
+    double val = axis.getCoordMidpoint(closest_index);
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
     builder.subset(1, val, val, 0.0, makeValues(closest_index));
@@ -400,10 +402,10 @@ class CoordAxisHelper {
 
   Optional<CoverageCoordAxisBuilder> subsetContaining(double want) {
     int index = findCoordElement(want, false); // not bounded, may not be valid index
-    if (index < 0 || index >= axis.ncoords)
+    if (index < 0 || index >= axis.getNcoords())
       return Optional.empty(String.format("value %f not in axis %s", want, axis.getName()));
 
-    double val = axis.getCoord(index);
+    double val = axis.getCoordMidpoint(index);
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
     builder.subset(1, val, val, 0.0, makeValues(index));
@@ -418,7 +420,7 @@ class CoordAxisHelper {
   @Nonnull
   private CoverageCoordAxisBuilder subsetValuesLatest() {
     int last = axis.getNcoords() - 1;
-    double val = axis.getCoord(last);
+    double val = axis.getCoordMidpoint(last);
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(axis);
     builder.subset(1, val, val, 0.0, makeValues(last));
@@ -436,7 +438,7 @@ class CoordAxisHelper {
     switch (axis.getSpacing()) {
       case irregularPoint:
         subsetValues = new double[1];
-        subsetValues[0] = axis.getCoord(index);
+        subsetValues[0] = axis.getCoordMidpoint(index);
         break;
 
       case discontiguousInterval:

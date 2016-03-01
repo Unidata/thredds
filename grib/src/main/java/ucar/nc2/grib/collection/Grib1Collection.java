@@ -114,7 +114,7 @@ public class Grib1Collection extends GribCollectionImmutable {
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
       GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-      return gribCov.makeCoverageCollection();
+      return gribCov.createCoverageCollection();
 
     } else {
       MFile wantFile = findMFileByName(filename);
@@ -122,7 +122,7 @@ public class Grib1Collection extends GribCollectionImmutable {
         GribCollectionImmutable gc = GribCdmIndex.openGribCollectionFromDataFile(true, wantFile, CollectionUpdateType.nocheck, gribConfig, errlog, logger);  // LOOK thread-safety : creating ncx
         if (gc == null) return null;
         GribCoverageDataset gribCov = new GribCoverageDataset(gc, null, null);
-        return gribCov.makeCoverageCollection();
+        return gribCov.createCoverageCollection();
       }
       return null;
     }
@@ -174,7 +174,7 @@ public class Grib1Collection extends GribCollectionImmutable {
     Grib1Customizer cust1 = (Grib1Customizer) gc.cust;
 
     // Grib attributes
-    v.addAttribute(new Attribute(GribIosp.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
+    v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
     v.addAttribute(new Attribute("Grib1_Center", gc.getCenter()));
     v.addAttribute(new Attribute("Grib1_Subcenter", gc.getSubcenter()));
     v.addAttribute(new Attribute("Grib1_TableVersion", vindex.getTableVersion()));

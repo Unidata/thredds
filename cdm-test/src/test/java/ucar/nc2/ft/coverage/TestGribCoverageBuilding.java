@@ -81,7 +81,7 @@ public class TestGribCoverageBuilding {
       CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
       Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
       Assert.assertTrue(runtime.getClass().getName(), runtime instanceof CoverageCoordAxis1D);
-      Assert.assertEquals(CoverageCoordAxis.Spacing.regular, runtime.getSpacing());
+      Assert.assertEquals(CoverageCoordAxis.Spacing.regularPoint, runtime.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.scalar, runtime.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(runtime.getStartValue()));
     }
@@ -138,14 +138,14 @@ public class TestGribCoverageBuilding {
       CoverageCoordSys csys = cov.getCoordSys();
       Assert.assertNotNull("CoverageCoordSys", csys);
 
-      CoverageCoordAxis time = csys.getAxis(AxisType.Time);
-      Assert.assertNotNull(AxisType.Time.toString(), time);
-      Assert.assertTrue(time.getClass().getName(), time instanceof CoverageCoordAxis1D);
+        CoverageCoordAxis time = csys.getAxis(AxisType.Time);
+        Assert.assertNotNull(AxisType.Time.toString(), time);
+        Assert.assertTrue(time.getClass().getName(), time instanceof CoverageCoordAxis1D);
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, time.getSpacing());
-      Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
-      Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), time.makeDate(0));
-      Assert.assertEquals(6.0, time.getResolution(), Misc.maxReletiveError);
-      Assert.assertEquals(false, csys.isTime2D(time));
+        Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
+        Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), time.makeDate(0));
+        Assert.assertEquals(6.0, time.getResolution(), Misc.maxReletiveError);
+        Assert.assertEquals(false, csys.isTime2D(time));
 
       CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
       Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
@@ -153,8 +153,8 @@ public class TestGribCoverageBuilding {
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, runtime.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.dependent, runtime.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(0));
+      }
     }
-  }
 
   @Test
   public void testTimeOffsetSubsetWhenTimePresent() throws IOException {
@@ -184,7 +184,7 @@ public class TestGribCoverageBuilding {
       CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
       Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
       Assert.assertTrue(runtime.getClass().getName(), runtime instanceof CoverageCoordAxis1D);
-      Assert.assertEquals(CoverageCoordAxis.Spacing.regular, runtime.getSpacing());
+      Assert.assertEquals(CoverageCoordAxis.Spacing.regularPoint, runtime.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.scalar, runtime.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(0));
     }
@@ -194,40 +194,6 @@ public class TestGribCoverageBuilding {
   public void testGaussianLats() throws IOException {
 
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/cfs.wmo";
-
-    try (DtCoverageDataset gds = DtCoverageDataset.open(filename)) {
-      Assert.assertNotNull(filename, gds);
-      String gridName =  "Albedo_surface_1_Month_Average";
-
-      DtCoverage grid = gds.findGridByShortName(gridName);
-      Assert.assertNotNull(gridName, grid);
-
-      DtCoverageCS gcs = grid.getCoordinateSystem();
-      Assert.assertNotNull(gridName+" cs", gcs);
-      Assert.assertEquals("ucar.nc2.ft2.coverage.adapter.GridCS", gcs.getClass().getName());
-      GridCS gridCS = (GridCS) gcs;
-
-      CoordinateAxis1D latAxis = gridCS.getYHorizAxis();
-      Assert.assertNotNull("latAxis axis", latAxis);
-      Assert.assertTrue(!latAxis.isRegular());
-      Attribute att = latAxis.findAttribute(CDM.GAUSSIAN);
-      Assert.assertNotNull(att);
-      Assert.assertEquals("true", att.getStringValue());
-
-      Formatter errlog = new Formatter();
-      try (FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog)) {
-        Assert.assertNotNull(filename, cc);
-        Assert.assertEquals(1, cc.getCoverageCollections().size());
-        CoverageCollection cd = cc.getCoverageCollections().get(0);
-        Coverage cov = cd.findCoverage(gridName);
-        Assert.assertNotNull(gridName, cov);
-
-        CoverageCoordAxis cca = cd.findCoordAxis(latAxis.getShortName());
-        Assert.assertNotNull(latAxis.getShortName(), cca);
-        Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, cca.getSpacing());
-      }
-    }
-
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
       String gridName =  "Albedo_surface_Average";

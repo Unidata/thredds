@@ -118,7 +118,7 @@ public class Grib2Collection extends GribCollectionImmutable {
 
     if (filename == null) {
       GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
-      return gribCov.makeCoverageCollection();
+      return gribCov.createCoverageCollection();
 
     } else {
       MFile wantFile = findMFileByName(filename);
@@ -127,7 +127,7 @@ public class Grib2Collection extends GribCollectionImmutable {
         if (gc == null) return null;
 
         GribCoverageDataset gribCov = new GribCoverageDataset(gc, null, null);
-        return gribCov.makeCoverageCollection();
+        return gribCov.createCoverageCollection();
       }
       return null;
     }
@@ -241,7 +241,7 @@ public class Grib2Collection extends GribCollectionImmutable {
   static void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable gc) {
     Grib2Customizer cust2 = (Grib2Customizer) gc.cust;
 
-    v.addAttribute(new Attribute(GribIosp.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
+    v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
     int[] param = new int[]{vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
     v.addAttribute(new Attribute("Grib2_Parameter", Array.makeFromJavaArray(param, false)));
     String disc = cust2.getTableValue("0.0", vindex.getDiscipline());

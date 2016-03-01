@@ -175,8 +175,7 @@ inside the TDS <**gribConfig**> element can be used inside the
 </netcdf>
 ----
 
-See <<../../../tds/reference/collections/GribConfig#,GRIB
-Collection Configuration>> for a description of all of the options.
+See <<../../../tds/reference/collections/GribConfig#,GRIB Collection Configuration>> for a description of all of the options.
 
 Note that you cannot use NcML to open a collection of GRIB files. You
 must generate the Grib Collection index file in a

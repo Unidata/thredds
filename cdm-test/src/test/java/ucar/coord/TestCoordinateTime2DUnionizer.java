@@ -114,11 +114,11 @@ public class TestCoordinateTime2DUnionizer {
         CoordinateTime2D.Time2D time2D = new CoordinateTime2D.Time2D(runDate, i, null);
         vals.add(time2D);
 
-        runBuilder.add(time2D.run);
-        CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(time2D.run);
+        runBuilder.add(time2D.refDate);
+        CoordinateBuilderImpl<Grib1Record> timeBuilder = timeBuilders.get(time2D.refDate);
         if (timeBuilder == null) {
           timeBuilder = new CoordinateTime.Builder1(null, code, timeUnit, time2D.getRefDate());
-          timeBuilders.put(time2D.run, timeBuilder);
+          timeBuilders.put(time2D.refDate, timeBuilder);
         }
         timeBuilder.add(time2D.time);
       }
@@ -135,6 +135,6 @@ public class TestCoordinateTime2DUnionizer {
 
     Collections.sort(vals);
 
-    return new CoordinateTime2D(code, timeUnit, vals, runCoord, times);
+    return new CoordinateTime2D(code, timeUnit, vals, runCoord, times, null);
   }
 }

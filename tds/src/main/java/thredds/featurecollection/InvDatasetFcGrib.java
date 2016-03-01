@@ -62,13 +62,13 @@ import java.util.*;
 
 /**
  * Implement FeatureCollection GRIB - a collection of Grib1 or Grib2 files that are served as Grids.
- * <p/>
+ * <p>
  * catalogs                                see makeCatalog()
  * path/catalog.xml                       // top catalog
  * path/partitionName/catalog.xml
  * path/partitionName/../partitionName/catalog.xml
  * path/latest.xml                       // latest (resolver)
- * <p/>
+ * <p>
  * datasets                                see findDataset()
  * path/dataset (dataset = BEST, TWOD, TP, "")  // top collection, single group
  * path/dataset/groupName                       // top collection, multiple group
@@ -76,7 +76,7 @@ import java.util.*;
  * path/partitionName/../partitionName/dataset
  * path/partitionName/dataset/groupName         // partition, multiple group
  * path/partitionName/../partitionName/dataset/groupName
- * <p/>
+ * <p>
  * files
  * path/partitionName/../partitionName/FILES/filename
  *
@@ -89,7 +89,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   static private final String BEST_DATASET = GribCollectionImmutable.Type.Best.toString();
   static private final String TWOD_DATASET = GribCollectionImmutable.Type.TwoD.toString();
-  static private final String TP_DATASET = "TP";
+  static private final String PARTITION_DATASET = "TP";
+  static private final String COLLECTION_DATASET = "GC";
 
   /////////////////////////////////////////////////////////////////////////////
   protected class StateGrib extends State {
@@ -154,7 +155,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
         logger.error("InvDatasetFcGrib.updateCollection failed " + this.config);
 
       logger.debug("{}: GribCollection object was recreated", name);
-      if (previous != null) previous.close();                 // LOOK may be another thread using - other thread will fail
+      if (previous != null)
+        previous.close();                 // LOOK may be another thread using - other thread will fail
       if (previousLatest != null) previousLatest.close();
 
     } catch (IOException ioe) {
@@ -175,7 +177,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   private DatasetBuilder makeDatasetFromCollection(URI catURI, boolean isTop, CatalogBuilder parentCatalog, String parentCollectionName, GribCollectionImmutable fromGc) throws IOException {
     if (fromGc == null)
-      throw new FileNotFoundException("Grib Collection '"+getName()+"' does not exist or is empty");
+      throw new FileNotFoundException("Grib Collection '" + getName() + "' does not exist or is empty");
 
     String dsName = isTop ? name : makeCollectionShortName(fromGc.getName());
     DatasetBuilder result = new DatasetBuilder(null);
@@ -204,12 +206,12 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           DatasetBuilder twoD = new DatasetBuilder(result);
           twoD.setName(getDatasetNameTwoD(result.getName()));
           String path = pathStart + "/" + TWOD_DATASET;
-          twoD.put(Dataset.UrlPath, path);
+          // twoD.put(Dataset.UrlPath, path);
           twoD.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Two time dimensions: reference and forecast; full access to all GRIB records"));
           result.addDataset(twoD);
 
           // Collections.sort(groups);
-          makeDatasetsFromGroups(catURI, twoD, groups, isSingleGroup);
+          makeDatasetsFromGroups(catURI, twoD, path, groups, isSingleGroup);
         }
 
       } else if (ds.getType() == GribCollectionImmutable.Type.Best) {
@@ -218,27 +220,28 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           DatasetBuilder best = new DatasetBuilder(result);
           best.setName(getDatasetNameBest(result.getName()));
           String path = pathStart + "/" + BEST_DATASET;
-          best.put(Dataset.UrlPath, path);
+          // best.put(Dataset.UrlPath, path);
           best.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Single time dimension: for each forecast time, use GRIB record with smallest offset from reference time"));
           result.addDataset(best);
 
-          makeDatasetsFromGroups(catURI, best, groups, isSingleGroup);
+          makeDatasetsFromGroups(catURI, best, path, groups, isSingleGroup);
         }
 
-      } else if (ds.getType() == GribCollectionImmutable.Type.MRSTP) {
+      } else if (ds.getType() == GribCollectionImmutable.Type.MRUTP) {
+
         DatasetBuilder tp = new DatasetBuilder(result);
         tp.setName(getDatasetNameTP(result.getName()));
-        String path = pathStart + "/" + TP_DATASET;
-        tp.put(Dataset.UrlPath, path);
-        tp.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference, single time Grib Partition"));
+        String path = pathStart + "/" + PARTITION_DATASET;
+        // tp.put(Dataset.UrlPath, path);
+        tp.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference, unique time Grib Partition"));
         result.addDataset(tp);
 
-        makeDatasetsFromGroups(catURI, tp, groups, isSingleGroup);
+        makeDatasetsFromGroups(catURI, tp, path, groups, isSingleGroup);
 
-      } else { // not a partition
+      } else { // not a partition: SRC, MRC, MRUTC
 
-        // must be a file partition with only one file
-        boolean isFilePartition = config.ptype == FeatureCollectionConfig.PartitionType.file;
+        // is it a file partition with only one file?
+        boolean isFilePartition = (config.ptype == FeatureCollectionConfig.PartitionType.file);
         boolean onlyOneFile = isFilePartition && fromGc.getFiles().size() == 1;
         if (onlyOneFile) {
           result.addServiceToCatalog(orgService);
@@ -250,7 +253,9 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
             result.put(Dataset.Dates, new DateType(cdate).setType("modified"));
           }
         }
-        result.put(Dataset.UrlPath, pathStart);
+
+        String path = pathStart; //  + "/" + COLLECTION_DATASET;
+        // result.put(Dataset.UrlPath, path);
 
         if (ds.getType() == GribCollectionImmutable.Type.SRC) {
           CoordinateRuntime runCoord = fromGc.getMasterRuntime();
@@ -259,14 +264,20 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Single reference time Grib Collection"));
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "Reference Time", runtime.toString()));
 
-        } else {
+        } else if (ds.getType() == GribCollectionImmutable.Type.MRC) {
           result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference time Grib Collection"));
+
+        } else if (ds.getType() == GribCollectionImmutable.Type.MRUTC) {
+          result.addToList(Dataset.Documentation, new Documentation(null, null, null, "summary", "Multiple reference, unique time Grib Collection"));
+
+        } else {
+          throw new IllegalStateException("Grib Collection '" + getName() + "' has illegal type " + ds.getType());
         }
 
-        makeDatasetsFromGroups(catURI, result, groups, isSingleGroup);
+        makeDatasetsFromGroups(catURI, result, path, groups, isSingleGroup);
 
         if (!onlyOneFile && config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Files)) {
-          addFileDatasets(parentCatalog, result, fromGc); // , config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
+          addFileDatasets(result, path, fromGc); // , config.gribConfig.hasDatasetType(FeatureCollectionConfig.GribDatasetType.Latest));
         }
       }
 
@@ -293,21 +304,22 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     return result;
   }
 
-  private void makeDatasetsFromGroups(URI catURI, DatasetBuilder parent, Iterable<GribCollectionImmutable.GroupGC> groups, boolean isSingleGroup) {
+  private void makeDatasetsFromGroups(URI catURI, DatasetBuilder parent, String parentPath, Iterable<GribCollectionImmutable.GroupGC> groups, boolean isSingleGroup) {
 
     for (GribCollectionImmutable.GroupGC group : groups) {
       DatasetBuilder ds;
       String dpath;
       if (isSingleGroup) {
         ds = parent;
-        dpath = (String) parent.get(Dataset.UrlPath);
-        ds.put(Dataset.Id, dpath);
+        dpath = parentPath;
+        ds.put(Dataset.Id, parentPath);
+        ds.put(Dataset.UrlPath, parentPath);
 
       } else {
         ds = new DatasetBuilder(parent);
         ds.setName(group.getDescription());
 
-        dpath = parent.get(Dataset.UrlPath) + "/" + group.getId();
+        dpath = parentPath + "/" + group.getId();
         ds.put(Dataset.Id, dpath);
         ds.put(Dataset.UrlPath, dpath);
 
@@ -349,7 +361,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }  */
 
   // this catalog lists the individual files comprising the collection.
-  protected void addFileDatasets(CatalogBuilder parentCatalog, DatasetBuilder parent, GribCollectionImmutable fromGc) throws IOException {
+  protected void addFileDatasets(DatasetBuilder parent, String parentPath, GribCollectionImmutable fromGc) throws IOException {
 
     DatasetBuilder filesParent = new DatasetBuilder(parent);
     filesParent.setName("Raw Files");
@@ -369,7 +381,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     for (MFile mfile : mfiles) {
       DatasetBuilder ds = new DatasetBuilder(parent);
       ds.setName(mfile.getName());
-      String lpath = parent.get(Dataset.UrlPath) + "/" + FILES + "/" + mfile.getName();
+      String lpath = parentPath + "/" + FILES + "/" + mfile.getName();
       ds.put(Dataset.UrlPath, lpath);
       ds.put(Dataset.Id, lpath);
       ds.put(Dataset.DataSize, mfile.getLength());
@@ -482,8 +494,8 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       }
 
       //synchronized (lock) {
-        localState.latest = latest;
-        localState.latestPath = f.toString();
+      localState.latest = latest;
+      localState.latestPath = f.toString();
       //}
     }
 
@@ -607,8 +619,6 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   // see top javadoc for possible URLs
   // returns visitor.obtain(), either a GridDataset or a NetcdfDataset
   private Object findDataset(String matchPath, GribCollectionImmutable topCollection, DatasetCreator visit) throws IOException {
-    // LOOK Do we need to strip off a GC in case of bookmarked URLs?
-
     String[] paths = matchPath.split("/");
     List<String> pathList = (paths.length < 1) ? new ArrayList<>() : Arrays.asList(paths);
     DatasetAndGroup dg = findDatasetAndGroup(pathList, topCollection);
@@ -632,7 +642,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
 
   /* case 0: path/dataset (dataset = "")              // single dataset
      case 1: path/dataset (dataset = BEST, TWOD, TP)  // single group
-     case 2: path/dataset/groupName
+     case 2: path/dataset/groupName                  // dataset with group
      case 3: path/groupName                           // single dataset not sure this is actually used ??
   */
   private DatasetAndGroup findDatasetAndGroup(List<String> paths, GribCollectionImmutable gc) {
@@ -642,33 +652,29 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
       return new DatasetAndGroup(ds, dg);
     }
 
-    GribCollectionImmutable.Dataset ds = gc.getDatasetByTypeName(paths.get(0));
-    if (ds != null) {
-      boolean isSingleGroup = ds.getGroupsSize() == 1;
-      if (paths.size() == 1) {                               // case 1
-        if (!isSingleGroup) return null;
-        GribCollectionImmutable.GroupGC g = ds.getGroup(0);
-        return new DatasetAndGroup(ds, g);
-      }
+    GribCollectionImmutable.Dataset ds = getSingleDatasetOrByTypeName(gc, paths.get(0));
+    if (ds == null) return null;
 
-      if (paths.size() == 2) {                              // case 2
-        String groupName = paths.get(1);
-        GribCollectionImmutable.GroupGC g = ds.findGroupById(groupName);
-        if (g != null)
-          return new DatasetAndGroup(ds, g);
-        else
-          return null;
-      }
+    boolean isSingleGroup = ds.getGroupsSize() == 1;
+    if (isSingleGroup) {
+      GribCollectionImmutable.GroupGC g = ds.getGroup(0); // case 1
+      return new DatasetAndGroup(ds, g);
     }
 
-    if (paths.size() == 1) {                               // case 3
-      String groupName = paths.get(0);
-      ds = gc.getDataset(0);
-      GribCollectionImmutable.GroupGC g = ds.findGroupById(groupName);
-      if (g != null)
-        return new DatasetAndGroup(ds, g);
-    }
+    // otherwise last component is group name
+    String groupName = (paths.size() == 1) ? paths.get(0) : paths.get(1); // case 3 else case 2
+    GribCollectionImmutable.GroupGC g = ds.findGroupById(groupName);
+    if (g != null)
+      return new DatasetAndGroup(ds, g);
 
+    return null;
+  }
+
+  // kinda kludgey, but trying not keep URLs stable
+  public GribCollectionImmutable.Dataset getSingleDatasetOrByTypeName(GribCollectionImmutable gc, String typeName) {
+    if (gc.getDatasets().size() == 1) return gc.getDataset(0);
+    for (GribCollectionImmutable.Dataset ds : gc.getDatasets())
+      if (ds.getType().toString().equalsIgnoreCase(typeName)) return ds;
     return null;
   }
 

@@ -72,7 +72,7 @@ public class TestGribCdmIndexUpdating {
     FeatureCollectionConfig config = new FeatureCollectionConfig("TestGribCdmIndex", "changing/filePartition", FeatureCollectionType.GRIB1,
             dataDir + "GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, null, "file", null);
     // String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen
-    result.add(new Object[]{dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "TestGribCdmIndex.ncx4", "VAR_7-0-2-52_L100", 4, 3});
+    result.add(new Object[]{dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "TestGribCdmIndex.ncx4", "Relative_humidity_isobaric", 144, 108});
 
     /* directory partition
     dataDir = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/";
@@ -96,15 +96,15 @@ public class TestGribCdmIndexUpdating {
   String newModel;
   FeatureCollectionConfig config;
   String indexFile;
-  String varIdValue;
+  String varName;
   int orgLen, remLen;
 
-  public TestGribCdmIndexUpdating(String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen, int remLen) {
+  public TestGribCdmIndexUpdating(String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varName, int orgLen, int remLen) {
     this.dataDir = dataDir;
     this.newModel = newModel;
     this.config = config;
     this.indexFile = indexFile;
-    this.varIdValue = varIdValue;
+    this.varName = varName;
     this.orgLen = orgLen;
     this.remLen = remLen;
   }
@@ -156,7 +156,7 @@ public class TestGribCdmIndexUpdating {
       try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
-        Variable v = ncfile.findVariableByAttribute(g, "Grib_Variable_Id", varIdValue);
+        Variable v = ncfile.findVariable(g, varName);
         assert v != null;
         System.out.printf("  Variable=%s%n", v.getFullName());
         Dimension dim0 = v.getDimension(0);
@@ -176,7 +176,7 @@ public class TestGribCdmIndexUpdating {
       try (NetcdfFile ncfile = NetcdfFile.open(dataDir + indexFile)) {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
-        Variable v = ncfile.findVariableByAttribute(g, "Grib_Variable_Id", varIdValue);
+        Variable v = ncfile.findVariable(g, varName);
         assert v != null;
 
         Dimension dim0 = v.getDimension(0);

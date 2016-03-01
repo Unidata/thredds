@@ -1,5 +1,7 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:gloss: ../Glossary.adoc
+:toc:
 
 = NCSS For Point Data
 
@@ -12,9 +14,10 @@
 |*stns* | no | Specify a list of stations (comma separated, no blanks) | Only on station datasets. |
 |*latitude, longitude* | no | Point location. units of degrees_east, degrees_north | Must be within the dataset bounding box |
 |*north, south, east, west* |no |lat/lon bounding box, units of degrees_east, degrees_north | south < north, west < east; if crossing 180 meridian, use east boundary > 180  |
-|*time* |no | Time as a link:{w3cDate}[W3C date] or _present_ or _all_ | |_present_
-|*time_window* |no | Use with *time*: how close a match; udunit time or link:{w3cDuration}[W3C time duration] | | _1 hour_
-|*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Times may be a link:#W3Cdate[W3C date] or _present_. Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
+|*time* |no | Time as a <<{gloss}#W3C_Date,W3C Date>> or _present_ or _all_ | |_present_
+|*time_window* |no | Use with *time*: how close a match; udunit time or <<{gloss}#W3C_Duration,W3C time duration>> | | _1 hour_
+|*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present).
+Times may be a <<{gloss}#W3C_Date,W3C Date>> or _present_. Duration is a udunit time or <<{gloss}#W3C_Duration,W3C time duration>> |The requested time range must intersect the dataset time range |
 |*accept* | no | The returned data format. | _netCDF_, _netCDF4_, _XML_, _CSV_, _WaterML2_ (station only) | _CSV_
 |=====================================================================================================================================================
 
@@ -77,8 +80,7 @@ valid temporal range containing the entire dataset time range.
 * One single time: Passing the parameter time will get the time slice closest to the requested time if it is within the time range of the dataset.
 * Valid time range: A valid time range is defined with two of the three parameters: time_start, time_end and time_duration.
 
-Times (time, time_start and time_end) must be specified as link:#W3Cdate[W3C date string] or "present" and time_duration as a link:#W3Cduration[W3C
-time duration]
+Times (time, time_start and time_end) must be specified as <<{gloss}#W3C_Date,W3C Date>> or "present" and time_duration as a <<{gloss}#W3C_Duration,W3C time duration>>
 
 Examples of time query strings with valid temporal ranges:
 

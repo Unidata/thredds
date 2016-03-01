@@ -113,6 +113,12 @@ public class FeatureDatasetCoverage implements FeatureDataset, Closeable {
     return null;
   }
 
+  public CoverageCollection findCoverageDataset( String name) {
+    for (CoverageCollection cd : covCollections)
+      if (cd.getName().equals(name)) return cd;
+    return null;
+  }
+
   /////////////////////////////////////////////
   // FeatureDataset
 

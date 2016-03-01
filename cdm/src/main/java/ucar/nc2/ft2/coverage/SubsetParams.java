@@ -33,12 +33,15 @@
  */
 package ucar.nc2.ft2.coverage;
 
+import com.google.common.escape.Escaper;
+import com.google.common.net.UrlEscapers;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.*;
 
@@ -46,36 +49,101 @@ import java.util.*;
  * Describes a subset of a Coverage.
  * Coordinate values only, no indices.
  *
+ * @see "docs/website/tds/reference/services/CdmrfParams.adoc"
+ *
  * @author caron
  * @since 5/6/2015
  */
 public class SubsetParams {
-  public static final String variables = "variables";           // value = List<String>
+  public static final String variables = "var";           // value = List<String>
 
   public static final String latlonBB = "latlonBB";     // value = LatLonRect
-  public static final String projBB = "projBB";         // value = ProjRect
+  public static final String projBB = "projBB";         // value = ProjectionRect
   public static final String horizStride = "horizStride";  // value = Integer
   public static final String latlonPoint = "latlonPoint";  // value = LatLonPointImpl
-  public static final String stns = "stns";           // value = List<String>
+  public static final String stns = "stn";           // value = List<String>
 
   public static final String time = "time";             // value = CalendarDate
   public static final String timeRange = "timeRange";   // value = CalendarDateRange
   public static final String timeStride = "timeStride"; // value = Integer
   public static final String timePresent = "timePresent"; // value = Boolean
   public static final String timeAll = "timeAll";         // value = Boolean
-  public static final String timeWindow = "timeWindow";         // value = CalendarPeriod
+  public static final String timeWindow = "timeWindow";   // value = CalendarPeriod
 
   public static final String runtime = "runtime";       // value = CalendarDate
-  public static final String runtimeRange = "runtimeRange";       // value = CalendarDateRange
+  // public static final String runtimeRange = "runtimeRange";       // value = CalendarDateRange
   public static final String runtimeLatest = "runtimeLatest"; // value = Boolean
   public static final String runtimeAll = "runtimeAll";       // value = Boolean
 
   public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
+  public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
 
-  public static final String vertRange = "vertRange";   // value = double[2]
+  public static final String vertRange = "vertRange";   // value = double[2] used WCS local, not remote
   public static final String vertCoord = "vertCoord";   // value = Double
   public static final String ensCoord = "ensCoord";     // value = double ??
+
+  /////////////////////////////////
+
+  public void encodeForCdmrfDataRequest(Formatter f, String varname) {
+    Escaper urlParamEscaper = UrlEscapers.urlFormParameterEscaper();
+    f.format("req=data&var=%s", urlParamEscaper.escape(varname));
+
+    for (Map.Entry<String,Object> entry : getEntries()) {
+      switch (entry.getKey()) {
+        case SubsetParams.latlonBB:
+          LatLonRect llbb = (LatLonRect) entry.getValue();
+          f.format("&north=%s&south=%s&west=%s&east=%s", llbb.getLatMax(), llbb.getLatMin(), llbb.getLonMin(), llbb.getLonMax());
+          break;
+        case SubsetParams.projBB:
+          ProjectionRect projRect = (ProjectionRect) entry.getValue();
+          f.format("&minx=%s&miny=%s&maxx=%s&maxy=%s", projRect.getMinX(), projRect.getMinY(), projRect.getMaxX(), projRect.getMaxY());
+          break;
+        case SubsetParams.latlonPoint:
+          LatLonPointImpl llPoint = (LatLonPointImpl) entry.getValue();
+          f.format("&lat=%s&lon=%s", llPoint.getLatitude(), llPoint.getLongitude());
+          break;
+        case SubsetParams.stns:
+          List<String> stns = (List<String>) entry.getValue();
+          int count = 0;
+          for (String stn : stns) {
+            if (count++ == 0)
+              f.format("&stn=%s",stn);
+            else
+              f.format(",%s",stn);
+          }
+          break;
+        case SubsetParams.timeRange:
+          CalendarDateRange timeRange = (CalendarDateRange) entry.getValue();
+          f.format("&time_start=%s&time_end=%s", timeRange.getStart(), timeRange.getEnd());
+          break;
+        case SubsetParams.timePresent:
+          f.format("&time=present");
+          break;
+        case SubsetParams.timeAll:
+          f.format("&time=all");
+          break;
+        case SubsetParams.runtimeLatest:
+          f.format("&runtime=latest");
+          break;
+        case SubsetParams.runtimeAll:
+          f.format("&runtime=all");
+          break;
+        case SubsetParams.timeOffsetAll:
+          f.format("&timeOffset=all");
+          break;
+        case SubsetParams.timeOffsetFirst:
+          f.format("&timeOffset=first");
+          break;
+        default:
+          f.format("&%s=%s", entry.getKey(), entry.getValue());
+          break;
+      }
+    }
+
+  }
+
+  ///////////////////////////////////////////////////
 
   private final Map<String, Object> req = new HashMap<>();
 
@@ -136,9 +204,11 @@ public class SubsetParams {
 
   public SubsetParams setHorizStride(int stride) {  set(horizStride, stride); return this; }
 
-
   public LatLonRect getLatLonBoundingBox() { return (LatLonRect) get(latlonBB);}
   public SubsetParams setLatLonBoundingBox(LatLonRect llbb) {  set(latlonBB, llbb); return this; }
+
+  public ProjectionRect getProjectionRect() { return (ProjectionRect) get(projBB);}
+  public SubsetParams setProjectionRect(ProjectionRect projRect) {  set(projBB, projRect); return this; }
 
   public LatLonPointImpl getLatLonPoint() { return (LatLonPointImpl) get(latlonPoint);}
   public SubsetParams setLatLonPoint(LatLonPointImpl pt) { set(latlonPoint, pt); return this; }
@@ -150,11 +220,18 @@ public class SubsetParams {
 
   public CalendarDate getTime() { return (CalendarDate) get(time);}
   public SubsetParams setTimePresent() {  set(timePresent, true); return this; }
+  public SubsetParams setTimeOffset(double offset) {  set(timeOffset, offset); return this; }
+  public SubsetParams setTime(CalendarDate date) {  set(time, date); return this; }
 
   public CalendarDateRange getTimeRange() { return (CalendarDateRange) get(timeRange);}
+  public SubsetParams setTimeRange(CalendarDateRange dateRange) {  set(timeRange, dateRange); return this; }
+
+  public SubsetParams setRunTime(CalendarDate date) {  set(runtime, date); return this; }
 
   public CalendarPeriod getTimeWindow() { return (CalendarPeriod) get(timeWindow);}
 
   public double[] getVertRange() { return (double []) get(vertRange);}
+  public SubsetParams setVertCoord(double coord) {
+    set(vertCoord, coord); return this; }
 
 }

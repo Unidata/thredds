@@ -190,6 +190,10 @@ public class CatalogBuilder {
       services.add(s);
   }
 
+  public void removeAnyService() {
+    services = null;
+  }
+
   public void addDataset(DatasetBuilder d) {
     if (d == null) return;
     if (datasetBuilders == null) datasetBuilders = new ArrayList<>();
@@ -242,6 +246,14 @@ public class CatalogBuilder {
     if (services == null) return false;
     for (Service s : services)
       if (s.getName().equalsIgnoreCase(name)) return true;
+    return false;
+  }
+
+  public boolean hasServiceInDataset(String name) {
+    for (DatasetBuilder dsb : datasetBuilders) {
+      for (Service s : dsb.getServices())
+        if (s.getName().equalsIgnoreCase(name)) return true;
+    }
     return false;
   }
 

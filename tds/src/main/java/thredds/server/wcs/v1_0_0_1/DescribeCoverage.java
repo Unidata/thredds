@@ -203,10 +203,10 @@ public class DescribeCoverage extends WcsRequest {
     // ../spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos [1] (space seperated list of double values)
     // ../spatialDomain/gml:RectifiedGrid/gml:origin/gml:pos@dimension [0..1]  (number of entries in list)
     double[] origin = new double[ndim];
-    origin[0] = xaxis.getCoord(0);
-    origin[1] = yaxis.getCoord(0);
+    origin[0] = xaxis.getCoordMidpoint(0);
+    origin[1] = yaxis.getCoordMidpoint(0);
     if (zaxis != null)
-      origin[2] = zaxis.getCoord(0);
+      origin[2] = zaxis.getCoordMidpoint(0);
 
     rectifiedGridElem.addContent(
             new Element("origin", gmlNS).addContent(
@@ -304,7 +304,7 @@ public class DescribeCoverage extends WcsRequest {
     Element temporalDomainElem = new Element("temporalDomain", wcsNS);
     // temporalDomain/timePosition [1..*]
     for (int i=0; i<timeAxis.getNcoords(); i++) {
-      double val = timeAxis.getCoord(i);
+      double val = timeAxis.getCoordMidpoint(i);
       temporalDomainElem.addContent( new Element("timePosition", gmlNS).addContent(timeAxis.makeDate(val).toString()));
     }
 

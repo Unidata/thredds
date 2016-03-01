@@ -1,7 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
-
 = NetCDF Streaming Format
 
 == Overview

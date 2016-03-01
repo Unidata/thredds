@@ -27,7 +27,7 @@
       <documentation type="summary">NCEP GFS Model : AWIPS 202 (I) Grid. National - CONUS (polar stereographic).</documentation>
     </metadata>
     <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
-    <gribConfig datasetTypes="Best LatestFile Files"/>
+    <gribConfig datasetTypes="TwoD Best LatestFile Files"/>
   </featureCollection>
 
   <!-- test GRIB collections using local service "cdmremoteOnly"  -->

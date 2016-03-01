@@ -1,8 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 :tdsDocs: ../../../tds/reference/services
-:w3cDate: {tdsDocs}/NetcdfSubsetServiceReference.adoc#W3Cdate
-:w3cDuration: {tdsDocs}/NetcdfSubsetServiceReference.adoc#W3Cduration
 
 = CDM Remote Feature for Point Data
 

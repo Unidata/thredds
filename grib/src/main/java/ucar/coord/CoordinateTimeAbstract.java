@@ -153,7 +153,6 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
 
   protected abstract CoordinateTimeAbstract makeBestFromComplete(int[] best, int n);
 
-
   public abstract CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal);
 
 }

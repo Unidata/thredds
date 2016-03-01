@@ -1,10 +1,8 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:gloss: ../Glossary.adoc
 
-:stylesheet: ../../tds_adoc.css
-:linkcss:
-
-=== CdmrFeature Subsetting Parameters
+=== CdmrFeature Coverage Subsetting Parameters
 
 [width="100%",cols="20%,10%,30%,30%,10%",options="header",]
 |=====================================================================================================================================================
@@ -13,10 +11,11 @@
 |*north, south, east, west* |no |lat/lon bounding box, units of degrees_east, degrees_north | south < north, west < east; if crossing 180 meridian, use east boundary > 180  |
 |*minx, miny, maxx, maxy* |no |Projection bounding box, in projection coordinate units (km) |min < max; use only for gridded data on a projection |
 |*horizStride* |no |Take only every nth point (both x and y) | |1
-|*time* |no | Datetime as a link:{w3cDate}[W3C date] or _present_ (the time slice closest to the requested time is returned) or _all_ (all times are returned) |Must be a time within the dataset time range |_present_
-|*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Datetime may be a link:#W3Cdate[W3C date] or _present_. Duration is a udunit time or link:{w3cDuration}[W3C time duration] |The requested time range must intersect the dataset time range |
+|*time* |no | Datetime as a <<{gloss}#W3C_Date,W3C Date>> or _present_ (the time slice closest to the requested time is returned) or _all_ (all times are returned) |Must be a time within the dataset time range |_present_
+|*time_start, time_end, time_duration* |no |Used to specify a time range (two of these must be present). Datetime may be a <<{gloss}#W3C_Date,W3C Date>> or _present_.
+  Duration is a udunit time or <<{gloss}#W3C_Duration,W3C time duration>> |The requested time range must intersect the dataset time range |
 |*timeStride*|no |Take every nth time in the available series |Used with time_range or _all_ | 1
-|*runtime*   |no |Datetime as a link:{w3cDate}[W3C date] or _latest_ (restrict to that runtime) or _all_. |Used only if there is an independent runtime coordinate. | _latest_
+|*runtime*   |no |Datetime as a <<{gloss}#W3C_Date,W3C Date>> or _latest_ (restrict to that runtime) or _all_. |Used only if there is an independent runtime coordinate. | _latest_
 |*timeOffset*|no |Time as an offset from the runtime coordinate, or _first_ or _all_ |Used only for 2D time coordinate, units same as the dataset | all
 |*vertCoord* |no |Restrict to specified vertical level coordinate value. |Used only if there is a vertical coordinate. |all
 |*ensCoord*  |no |Restrict to specified ensemble coordinate. |Used only if there is an ensemble coordinate. |all
@@ -48,8 +47,8 @@ Temporal subsetting::
 . _time_end, time_duration_ : starting from _time_end - time_duration_ until _time_end_
 * A time point will request the time that is closest to that value.
 * If you set __time="all"__, then all times are returned (__timeStride__ is used if present). All other time parameters are ignored.
-* time duration: 1) udunit time unit string or 2) link:{w3cDuration}[W3C time duration]
-* datetime: link:{w3cDate}[W3C date] or _present_
+* time duration: 1) udunit time unit string or 2) <<{gloss}#W3C_Duration,W3C time duration>>
+* datetime: <<{gloss}#W3C_Date,W3C Date>> or _present_
 * The dataset determines what Calendar is used, so you must use that calendar. There can only be one calendar per dataset.
 * If no time range or time point, a timeOffset can be used to specify the time point.
 
@@ -64,9 +63,9 @@ Temporal subsetting::
 . Runtime to set to _all_. Time point (date, or _present_) only can then be used.
 * If no runtime, timeOffset, or time parameters are set, then return all times for latest runtime.
 * Special cases:
-. Set specific runtime = constant runtime dataset
-. Set specific timeOffset, set runTime to _all_ = constant offset dataset
-. Set specific time, set runTime to _all_ = constant forecast dataset
+. Set specific runtime = _constant runtime dataset_
+. Set specific timeOffset, set runTime to _all_ = _constant offset dataset_
+. Set specific time, set runTime to _all_ = _constant forecast dataset_
 
 Interval coordinate::
 

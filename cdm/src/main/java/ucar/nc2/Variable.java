@@ -105,7 +105,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
   protected DataType dataType;
   protected int elementSize;
   protected List<Dimension> dimensions = new ArrayList<>(5);
-  // protected List<Attribute> attributes = new ArrayList<>();
   protected AttributeContainerHelper attributes;
 
   protected boolean isVariableLength = false;

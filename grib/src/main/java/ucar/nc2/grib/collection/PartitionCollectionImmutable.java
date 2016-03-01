@@ -42,6 +42,7 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
@@ -84,13 +85,13 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   private final boolean isPartitionOfPartitions;
   private final int[] run2part;   // masterRuntime.length; which partition to use for masterRuntime i
 
-  PartitionCollectionImmutable( PartitionCollectionMutable pc) {
+  PartitionCollectionImmutable(PartitionCollectionMutable pc) {
     super(pc);
 
     List<PartitionCollectionMutable.Partition> pcParts = pc.partitions;
     List<Partition> work = new ArrayList<>(pcParts.size());
     for (PartitionCollectionMutable.Partition pcPart : pcParts) {
-      work.add( new Partition(pcPart));
+      work.add(new Partition(pcPart));
     }
 
     this.partitions = Collections.unmodifiableList(work);
@@ -98,9 +99,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     this.run2part = pc.run2part;
   }
 
-    // return open GC
+  // return open GC
   public GribCollectionImmutable getLatestGribCollection(List<String> paths) throws IOException {
-    Partition last = partitions.get(partitions.size()-1);
+    Partition last = partitions.get(partitions.size() - 1);
     paths.add(last.getName());
 
     GribCollectionImmutable gc = last.getGribCollection();
@@ -140,10 +141,10 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   }
 
   public int getPartitionSize() {
-     return partitions.size();
-   }
+    return partitions.size();
+  }
 
-   public List<Partition> getPartitionsSorted() {
+  public List<Partition> getPartitionsSorted() {
     List<Partition> c = new ArrayList<>(partitions);
     Collections.sort(c);
     if (!this.config.getSortFilesAscending()) {
@@ -170,7 +171,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
   }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
 
   public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
@@ -193,59 +194,59 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   // wrapper around a GribCollection
   @Immutable
   public class Partition implements Comparable<Partition> {
-      private final String name; // partDirectory;
-      private final String filename;
-      private final long lastModified, fileSize;
-      private final CalendarDate partitionDate;
+    private final String name; // partDirectory;
+    private final String filename;
+    private final long lastModified, fileSize;
+    private final CalendarDate partitionDate;
 
-      // constructor from ncx
-      public Partition(PartitionCollectionMutable.Partition pcPart) {
-        this.name = pcPart.name;
-        this.filename = pcPart.filename; // grib collection ncx
-        this.lastModified = pcPart.lastModified;
-        this.fileSize = pcPart.fileSize;
-        //this.partDirectory = pcPart.directory;
-        this.partitionDate = pcPart.partitionDate;
-      }
+    // constructor from ncx
+    public Partition(PartitionCollectionMutable.Partition pcPart) {
+      this.name = pcPart.name;
+      this.filename = pcPart.filename; // grib collection ncx
+      this.lastModified = pcPart.lastModified;
+      this.fileSize = pcPart.fileSize;
+      //this.partDirectory = pcPart.directory;
+      this.partitionDate = pcPart.partitionDate;
+    }
 
-      public String getName() {
-        return name;
-      }
+    public String getName() {
+      return name;
+    }
 
-      public String getFilename() {
-        return filename;
-      }
+    public String getFilename() {
+      return filename;
+    }
 
       /* public String getDirectory() {
         return partDirectory;
       } */
 
-      public long getLastModified() {
-        return lastModified;
+    public long getLastModified() {
+      return lastModified;
+    }
+
+    public boolean isGrib1() {
+      return isGrib1;         // in GribCollection
+    }
+
+    public FeatureCollectionConfig getConfig() {
+      return config;   // in GribCollection
+    }
+
+    public org.slf4j.Logger getLogger() {
+      return logger;          // in TimePartition
+    }
+
+    public String getIndexFilenameInCache() throws FileNotFoundException {
+      File file = new File(directory, filename);
+      File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
+
+      if (existingFile == null) {
+        throw new FileNotFoundException("No index filename for partition= " + this.toString() + " looking for " + file.getPath());
       }
-
-      public boolean isGrib1() {
-        return isGrib1;         // in GribCollection
-      }
-
-      public FeatureCollectionConfig getConfig() {
-        return config;   // in GribCollection
-      }
-
-      public org.slf4j.Logger getLogger() {
-        return logger;          // in TimePartition
-      }
-
-      public String getIndexFilenameInCache() throws FileNotFoundException {
-        File file = new File(directory, filename);
-        File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
-
-        if (existingFile == null) {
-            throw new FileNotFoundException("No index filename for partition= " + this.toString()+" looking for "+file.getPath());
-        }
 
         /* if (existingFile == null) {
-          if (GribIosp.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
+          if (Grib.debugIndexOnly) {  // we are running in debug mode where we only have the indices, not the data files
             // tricky: substitute the current root
             File orgParentDir = new File(directory);
             File currentFile = new File(PartitionCollectionImmutable.this.indexFilename);
@@ -258,32 +259,32 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
             throw new FileNotFoundException("No index filename for partition= " + this.toString());
           } */
 
-        return existingFile.getPath();
-      }
-
-      // acquire or construct GribCollection - caller must call gc.close() when done
-      public GribCollectionImmutable getGribCollection() throws IOException {
-        String path = getIndexFilenameInCache();
-        return GribCdmIndex.acquireGribCollection(partitionCollectionFactory, path, path, -1, null, this);
-      }
-
-      @Override
-      public int compareTo(Partition o) {
-        return name.compareTo(o.name);
-      }
-
-      @Override
-      public String toString() {
-        return "Partition{ " + name + '\'' +
-        //        ", directory='" + directory + '\'' +
-                ", filename='" + filename + '\'' +
-                ", partitionDate='" + partitionDate + '\'' +
-                ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
-                ", fileSize='" + fileSize + '\'' +
-                '}';
-      }
-
+      return existingFile.getPath();
     }
+
+    // acquire or construct GribCollection - caller must call gc.close() when done
+    public GribCollectionImmutable getGribCollection() throws IOException {
+      String path = getIndexFilenameInCache();
+      return GribCdmIndex.acquireGribCollection(partitionCollectionFactory, path, path, -1, null, this);
+    }
+
+    @Override
+    public int compareTo(Partition o) {
+      return name.compareTo(o.name);
+    }
+
+    @Override
+    public String toString() {
+      return "Partition{ " + name + '\'' +
+              //        ", directory='" + directory + '\'' +
+              ", filename='" + filename + '\'' +
+              ", partitionDate='" + partitionDate + '\'' +
+              ", lastModified='" + CalendarDate.of(lastModified) + '\'' +
+              ", fileSize='" + fileSize + '\'' +
+              '}';
+    }
+
+  }
 
   @Immutable
   public class VariableIndexPartitioned extends GribCollectionImmutable.VariableIndex {
@@ -292,27 +293,29 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     final SmartArrayInt groupnoSA; // once you have the partition, which group in that partition's dataset? Partition.Dataset.Group[] -> Group
     final SmartArrayInt varnoSA;   // once you have the group, which variable? Group[] -> Variable
 
-        // partition only
+    // partition only
     // final SmartArrayInt time2runtime; // oneD only: for each timeIndex, which runtime coordinate does it use? 1-based so 0 = missing;
-                             // index into the corresponding 2D variable's runtime coordinate
+    // index into the corresponding 2D variable's runtime coordinate
 
     VariableIndexPartitioned(GribCollectionImmutable.GroupGC g, GribCollectionMutable.VariableIndex other) {
       super(g, other);
 
-      PartitionCollectionMutable.VariableIndexPartitioned pother  = (PartitionCollectionMutable.VariableIndexPartitioned) other;
+      PartitionCollectionMutable.VariableIndexPartitioned pother = (PartitionCollectionMutable.VariableIndexPartitioned) other;
       this.nparts = pother.nparts;
       // this.time2runtime =  pother.time2runtime;
 
-      this.partnoSA =  pother.partnoSA;
-      this.groupnoSA =  pother.groupnoSA;
-      this.varnoSA =  pother.varnoSA;
+      this.partnoSA = pother.partnoSA;
+      this.groupnoSA = pother.groupnoSA;
+      this.varnoSA = pother.varnoSA;
     }
 
     public int getNparts() {
       return nparts;
     }
 
-    public GribCollectionImmutable.Type getType() { return group.ds.gctype; }
+    public GribCollectionImmutable.Type getType() {
+      return group.ds.gctype;
+    }
 
     public void show(Formatter sb) {
       sb.format("VariableIndexPartitioned%n");
@@ -329,7 +332,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       int count = 0;
       sb.format("     %7s %3s %3s %6s %3s%n", "N", "dups", "Miss", "density", "partition");
       // int totalN = 0, totalDups = 0, totalMiss = 0;
-      for (int i=0; i<nparts; i++) {
+      for (int i = 0; i < nparts; i++) {
         int partWant = this.partnoSA.get(i);
         Partition part = partitions.get(partWant);
         sb.format("   %2d: %7d %s%n", count++, partWant, part.getFilename());
@@ -356,26 +359,45 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      */
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
-      if (GribIosp.debugRead) System.out.printf("%nPartitionCollection.getDataRecord index wanted = (%s) on %s type=%s%n",
-              Misc.showInts(indexWanted), indexFilename, group.ds.gctype);
+      if (Grib.debugRead)
+        System.out.printf("%nPartitionCollection.getDataRecord index wanted = (%s) on %s type=%s%n",
+                Misc.showInts(indexWanted), indexFilename, group.ds.gctype);
 
       // find the runtime index
       int firstIndex = indexWanted[0];
       int masterIdx;
-      if (group.ds.gctype == Type.TwoD || group.ds.gctype == Type.MRSTP) {
+      if (group.ds.gctype == Type.TwoD) {
         // find the partition by matching run coordinate with master runtime
         CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
         Object val = runtime.getValue(firstIndex);
         masterIdx = masterRuntime.getIndex(val);
-        if (GribIosp.debugRead) System.out.printf("  firstIndex = %d val=%s masterIdx=%d %n", firstIndex, val, masterIdx);
+        if (Grib.debugRead)
+          System.out.printf("  TwoD firstIndex = %d val=%s masterIdx=%d %n", firstIndex, val, masterIdx);
 
       } else if (group.ds.gctype == Type.Best) {
+        // find the partition from the "time2runtime" array in the time coordinate
         CoordinateTimeAbstract time = getCoordinateTime();
         masterIdx = time.getMasterRuntimeIndex(firstIndex) - 1;
-        if (GribIosp.debugRead) System.out.printf("  firstIndex = %d masterIdx=%d %n", firstIndex, masterIdx);
+        if (Grib.debugRead) System.out.printf("  Best firstIndex = %d masterIdx=%d %n", firstIndex, masterIdx);
+
+      } else if (group.ds.gctype == Type.MRUTP) {
+        /* find the partition from getRuntimeIdxFromMrutpTimeIndex
+        int[] timeIndices = time2D.getTimeIndicesFromMrutp(firstIndex);
+
+        int[] indexReallyWanted = new int[indexWanted.length+1];
+        indexReallyWanted[0] = timeIndices[0];
+        indexReallyWanted[1] = timeIndices[1];
+        System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length-1);
+        useIndex = indexReallyWanted; */
+
+        CoordinateTime2D time2D = (CoordinateTime2D) getCoordinateTime();
+        Object val = time2D.getRefDate(firstIndex);
+        masterIdx = masterRuntime.getIndex(val);
+
+        if (Grib.debugRead) System.out.printf("  MRUTP firstIndex = %d masterIdx=%d %n", firstIndex, masterIdx);
 
       } else {
-        throw new IllegalStateException("Unknown gctype= "+group.ds.gctype);
+        throw new IllegalStateException("Unknown gctype= " + group.ds.gctype + " on " + indexFilename);
       }
 
       int partno = run2part[masterIdx];
@@ -384,48 +406,68 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       }
 
       // find the 2D vi in that partition
-      GribCollectionImmutable.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
-      if (compVindex2D == null) return null; // missing
-      if (GribIosp.debugRead) System.out.printf("  compVindex2D = %s%n", compVindex2D.toStringFrom());
+      GribCollectionImmutable.VariableIndex vindex2Dpart = getVindex2D(partno); // the 2D component variable in the partno partition
+      if (vindex2Dpart == null) return null; // missing
+      if (Grib.debugRead) System.out.printf("  compVindex2D = %s%n", vindex2Dpart.toStringFrom());
 
       if (isPartitionOfPartitions) {
-        VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) compVindex2D;
+        VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) vindex2Dpart;
         return getDataRecordPofP(indexWanted, compVindex2Dp);
       }
 
       // translate to coordinates in vindex
-      int[] sourceIndex = group.isTwoD() ? translateIndex2D(indexWanted, compVindex2D) : translateIndex1D(indexWanted, compVindex2D);
+      int[] sourceIndex;
+      if (group.getType() == Type.Best)
+        sourceIndex = translateIndexBest(indexWanted, vindex2Dpart);
+      else
+        sourceIndex = translateIndex2D(indexWanted, vindex2Dpart);
+
       if (sourceIndex == null) return null; // missing
-      GribCollectionImmutable.Record record = compVindex2D.getRecordAt(sourceIndex);
+      GribCollectionImmutable.Record record = vindex2Dpart.getRecordAt(sourceIndex);
       if (record == null) {
         return null;
       }
 
-      if (GribIosp.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
-      return new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record);
+      if (Grib.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
+      return new DataRecord(PartitionCollectionImmutable.this, partno, vindex2Dpart.group.getGdsHorizCoordSys(), record);
     }
 
     /**
      * find DataRecord in a PofP
-     * @param indexWanted index into this PoP
+     *
+     * @param indexWanted   index into this PoP
      * @param compVindex2Dp 2D variable from the desired partition; may be PofP or PofGC
      * @return desired record to be read, from the GC, or null if missing
      * @throws IOException
      */
     private DataRecord getDataRecordPofP(int[] indexWanted, VariableIndexPartitioned compVindex2Dp) throws IOException {
-      if (group.isTwoD()) {
-        // corresponding index into compVindex2Dp
-        int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
-        if (GribIosp.debugRead) System.out.printf("  (2D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
+      if (group.getType() == Type.Best) {
+        int[] indexWantedP = translateIndexBest(indexWanted, compVindex2Dp);
+        if (Grib.debugRead) System.out.printf("  (Best) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
 
       } else {
-        int[] indexWantedP = translateIndex1D(indexWanted, compVindex2Dp);
-        if (GribIosp.debugRead) System.out.printf("  (1D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
+        // corresponding index into compVindex2Dp
+        int[] indexWantedP = translateIndex2D(indexWanted, compVindex2Dp);
+        if (Grib.debugRead) System.out.printf("  (2D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
         if (indexWantedP == null) return null;
         return compVindex2Dp.getDataRecord(indexWantedP);
-      }
+
+      } /* else if (group.getType() == Type.Best) {
+        int[] indexWantedP = translateIndexBest(indexWanted, compVindex2Dp);
+        if (Grib.debugRead) System.out.printf("  (Best) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
+        if (indexWantedP == null) return null;
+        return compVindex2Dp.getDataRecord(indexWantedP);
+
+      } /* else if (group.getType() == Type.MRUTP) {
+        int[] indexWantedP = translateIndex1D(masterIdx, indexWanted, compVindex2Dp);
+        if (Grib.debugRead) System.out.printf("  (1D) getDataRecordPofP= %s %n", Misc.showInts(indexWantedP));
+        if (indexWantedP == null) return null;
+        return compVindex2Dp.getDataRecord(indexWantedP);
+      } */
+
+      // throw new IllegalStateException("Not handling Type "+group.getType());
     }
 
     /**
@@ -439,14 +481,14 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // at this point, we need to instantiate the Partition and the vindex.records
 
       // the 2D vip for this variable
-      VariableIndexPartitioned vip =  isPartitionOfPartitions ? getVariable2DByHash(group.horizCoordSys, this) : this;
+      VariableIndexPartitioned vip = isPartitionOfPartitions ? getVariable2DByHash(group.horizCoordSys, this) : this;
 
       if (vip == null)
         throw new IllegalStateException();
 
       int partWant = vip.partnoSA.findIdx(partno); // which partition ? index into PartitionCollectionImmutable.partitions[]. variable doesnt have to exist in all partitions
-      if (partWant < 0 ||  partWant >= vip.nparts) {
-        if (GribIosp.debugRead) System.out.printf("  cant find partition=%d in vip=%s%n", partno, vip);
+      if (partWant < 0 || partWant >= vip.nparts) {
+        if (Grib.debugRead) System.out.printf("  cant find partition=%d in vip=%s%n", partno, vip);
         return null;
       }
       // LOOK was partVar = new PartitionForVariable2D(partnoSA.get(idx), groupnoSA.get(idx), varnoSA.get(idx));
@@ -466,14 +508,68 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
 
     /**
+     * MRUTP
      * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex (which will be 2D)
-     * by matching coordinate values. The 1D (Best) case.
+     * by matching coordinate values.
      *
-     * @param wholeIndex index in VariableIndexPartitioned
-     * @param compVindex2D     component 2D VariableIndex
+     * @param wholeIndex   index in VariableIndexPartitioned, runtime has been added
+     * @param vindex2Dpart component 2D VariableIndex
+     * @return corresponding index in compVindex2D, or null if missing
+     *
+    private int[] translateIndex1D(int[] wholeIndex, GribCollectionImmutable.VariableIndex vindex2Dpart) {
+      int[] result = new int[wholeIndex.length];
+
+      // figure out the runtime index in the partition
+      Coordinate runtime = vindex2Dpart.getCoordinate(0);
+      int runtimeIdxPart = matchCoordinate(masterRuntime, masterIdx, runtime);
+      if (runtimeIdxPart < 0)
+        return null;         // LOOK is this possible ?? should throw exception??
+      result[0] = runtimeIdxPart;
+
+      // figure out the other indexes in the partition
+      // assumes gc coordinates in same order as iosp
+      int countDim = 0;
+      while (countDim < wholeIndex.length) {
+        Coordinate wholeCoord = getCoordinate(countDim + 1);
+        int idx = wholeIndex[countDim];
+
+        Coordinate coordPart = vindex2Dpart.getCoordinate(countDim + 1); // wholeIndex(time, vert) -> vip(runtime, time, vert)
+        int resultIdx;
+        if (coordPart instanceof CoordinateTime2D) {
+          CoordinateTime2D coordPart2D = (CoordinateTime2D) coordPart; // partition coordinate
+          CoordinateTime2D coordWhole2D = (CoordinateTime2D) wholeCoord; // whole coordinate
+          CoordinateTime2D.Time2D wholeVal = coordWhole2D.getOrgValue(masterIdx, idx);
+          if (wholeVal == null)  // is this possible?
+            return null;
+
+          resultIdx = coordPart2D.matchTimeCoordinate(runtimeIdxPart, wholeVal);
+          // if (resultIdx < 0) resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate()); // debug
+
+        } else {
+          resultIdx = matchCoordinate(wholeCoord, idx, coordPart);
+          // if (resultIdx < 0) resultIdx = matchCoordinate(wholeCoord1D, idx, compCoord); // debug
+        }
+        if (resultIdx < 0) {
+          // logger.info("Couldnt match coordinates ({}) for variable {}", Misc.showInts(wholeIndex), compVindex2D.toStringFrom());
+          return null;
+        }
+        result[countDim + 1] = resultIdx;
+        countDim++;
+      }
+
+      return result;
+    } */
+
+    /**
+     * Best
+     * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex (which will be 2D)
+     * by matching coordinate values.
+     *
+     * @param wholeIndex   index in VariableIndexPartitioned
+     * @param compVindex2D component 2D VariableIndex
      * @return corresponding index in compVindex2D, or null if missing
      */
-    private int[] translateIndex1D(int[] wholeIndex, GribCollectionImmutable.VariableIndex compVindex2D) {
+    private int[] translateIndexBest(int[] wholeIndex, GribCollectionImmutable.VariableIndex compVindex2D) {
       int[] result = new int[wholeIndex.length + 1];
 
       // figure out the runtime
@@ -495,12 +591,16 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
         int resultIdx;
         if (compCoord.getType() == Coordinate.Type.time2D) {
           CoordinateTime2D compCoord2D = (CoordinateTime2D) compCoord; // of the component
-          CoordinateTimeAbstract wholeCoord1Dtime = (CoordinateTimeAbstract) wholeCoord1D;
-          Object wholeVal = wholeCoord1D.getValue(idx);
-          if (wholeVal == null)  // is this possible?
+          CoordinateTimeAbstract wholeCoord1Dtime = (CoordinateTimeAbstract) wholeCoord1D;// CoordinateTime or CoordinateTimeIntv
+          Object wholeVal1D = wholeCoord1D.getValue(idx);
+          if (wholeVal1D == null)  // is this possible?
             return null;
 
-          resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate());
+          CoordinateTime2D.Time2D wholeVal2D = compCoord2D.isTimeInterval() ?
+                  new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), null, (TimeCoord.Tinv) wholeVal1D) :
+                  new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), (Integer) wholeVal1D, null);
+
+          resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal2D);
           // if (resultIdx < 0) resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal, wholeCoord1Dtime.getRefDate()); // debug
 
         } else {
@@ -519,10 +619,12 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
 
     /**
+     * TwoD
      * Given the index in the whole (wholeIndex), translate to index in component (compVindex2D) by matching the coordinate values
-     * @param wholeIndex    index in the whole
-     * @param compVindex2D  want index in here
-     * @return  index into  compVindex2D, or null if missing
+     *
+     * @param wholeIndex   index in the whole
+     * @param compVindex2D want index in here
+     * @return index into  compVindex2D, or null if missing
      */
     private int[] translateIndex2D(int[] wholeIndex, GribCollectionImmutable.VariableIndex compVindex2D) {
       int[] result = new int[wholeIndex.length];
@@ -532,15 +634,16 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       CoordinateTime2D compTime2D = (CoordinateTime2D) compVindex2D.getCoordinate(Coordinate.Type.time2D);
       if (compTime2D != null) {
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
-        CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1], GribIosp.debugRead);
-        if (GribIosp.debugRead) System.out.printf("  translateIndex2D[runIdx=%d, timeIdx=%d] in componentVar coords = (%s,%s) %n",
-                wholeIndex[0], wholeIndex[1], (want == null) ? "null" : want.getRefDate(), want);
+        CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1]);
+        if (Grib.debugRead)
+          System.out.printf("  translateIndex2D[runIdx=%d, timeIdx=%d] in componentVar coords = (%s,%s) %n",
+                  wholeIndex[0], wholeIndex[1], (want == null) ? "null" : want.getRefDate(), want);
         if (want == null) {
-          // time2D.getOrgValue(wholeIndex[0], wholeIndex[1], GribIosp.debugRead); // debug
+          // time2D.getOrgValue(wholeIndex[0], wholeIndex[1], Grib.debugRead); // debug
           return null;
         }
         if (!compTime2D.getIndex(want, result)) {// sets the first 2 indices - run and time
-         // compTime2D.getIndex(want, result); // debug
+          // compTime2D.getIndex(want, result); // debug
           return null; // missing data
         }
         countDim = 2;
@@ -550,7 +653,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       while (countDim < wholeIndex.length) {
         int idx = wholeIndex[countDim];
         int resultIdx = matchCoordinate(getCoordinate(countDim), idx, compVindex2D.getCoordinate(countDim));
-        if (GribIosp.debugRead) System.out.printf("  translateIndex2D[idx=%d] resultIdx= %d %n", idx, resultIdx);
+        if (Grib.debugRead) System.out.printf("  translateIndex2D[idx=%d] resultIdx= %d %n", idx, resultIdx);
         if (resultIdx < 0) {   // partition variable doesnt have a coordinate value that is in the "whole" variable
           return null;
         }
@@ -578,7 +681,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // LOOK ok to use Best like this (see other getDataRecord) ?
 
       if (masterIdx < 0) { // means that the runtie is not in the masterRuntime list
-        throw new RuntimeException("masterRuntime does not contain runtime "+runtime);
+        throw new RuntimeException("masterRuntime does not contain runtime " + runtime);
       }
 
       // each runtime is mapped to a partition
@@ -589,7 +692,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // find the 2D vi in that partition
       GribCollectionImmutable.VariableIndex compVindex2D = getVindex2D(partno); // the 2D component variable in the partno partition
       if (compVindex2D == null) return null; // missing
-      if (GribIosp.debugRead) System.out.printf("  compVindex2D = %s%n", compVindex2D.toStringFrom());
+      if (Grib.debugRead) System.out.printf("  compVindex2D = %s%n", compVindex2D.toStringFrom());
 
       if (isPartitionOfPartitions) {
         VariableIndexPartitioned compVindex2Dp = (VariableIndexPartitioned) compVindex2D;
@@ -601,7 +704,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (record == null)
         return null;
 
-      if (GribIosp.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
+      if (Grib.debugRead) System.out.printf("  result success: partno=%d fileno=%d %n", partno, record.fileno);
       DataRecord dr = new DataRecord(PartitionCollectionImmutable.this, partno, compVindex2D.group.getGdsHorizCoordSys(), record);
       if (GribDataReader.validator != null) dr.validation = coords;
       return dr;
@@ -642,7 +745,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       return r == 0;
     }
 
-        //debugging
+    //debugging
     public void show() throws IOException {
       String dataFilename = usePartition.getFilename(partno, record.fileno);
       System.out.printf(" **DataReader partno=%d fileno=%d filename=%s startPos=%d%n", partno, record.fileno, dataFilename, record.pos);

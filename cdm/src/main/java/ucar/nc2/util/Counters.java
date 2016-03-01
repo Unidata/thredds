@@ -182,16 +182,27 @@ public class Counters {
       return last;
     }
 
+    // get the value with greatest number of values.
+    // if more than one, but all have same number, return null
     public Comparable getMode() {
+      if (set.size() == 1)
+        return set.keySet().iterator().next(); // if only one, return it
+
       int max = -1;
       Comparable mode = null;
+      boolean same = true; // are all keys the same ??
+      Comparable testKey = null;
       for (Map.Entry<Comparable, Integer> entry : set.entrySet()) {
+        Comparable entryKey = entry.getKey();
+        if (testKey != null && entryKey.compareTo(testKey) != 0) same = false;
+        testKey = entryKey;
+
         if (entry.getValue() > max) {
           max = entry.getValue();
           mode = entry.getKey();
         }
       }
-      return mode;
+      return same ? null : mode;
     }
 
     public int getTotal() {

@@ -83,10 +83,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   public enum Type {    // must match with GribCollectionProto.Dataset.Type
     SRC,               // GC: Single Runtime Collection                [ntimes]
     MRC,              // GC: Multiple Runtime Collection              [nruns, ntimes]
-    MRSTC,             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
+    // MRSTC,             // GC: Multiple Runtime Single Time Collection  [nruns, 1]
     MRUTC,             // GC: Multiple Runtime Unique Time Collection  [ntimes]
 
-    MRSTP,            // PC: Multiple Runtime Single Time Partition   [nruns, 1]
+    // MRSTP,            // PC: Multiple Runtime Single Time Partition   [nruns, 1]
     TwoD,            // PC: TwoD time partition                      [nruns, ntimes]
     Best,             // PC: Best time partition                      [ntimes]
     BestComplete,     // PC: Best complete time partition (not done)  [ntimes]
@@ -97,7 +97,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public boolean isUniqueTime() {
-      return this == MRUTC || this == MRUTP;
+      return this == MRUTC || this == MRUTP|| this == SRC;
     }
 
     public boolean isTwoD() {
@@ -166,12 +166,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   public Dataset getDataset(int idx) {
     return datasets.get(idx);
-  }
-
-  public Dataset getDatasetByTypeName(String name) {
-    for (Dataset ds : datasets)
-      if (ds.gctype.toString().equalsIgnoreCase(name)) return ds;
-    return null;
   }
 
   public Dataset getDatasetCanonical() {
@@ -373,8 +367,8 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.variList = Collections.unmodifiableList(work);
     }
 
-    public boolean isTwoD() {
-      return ds.gctype != Type.Best;
+    public Type getType() {
+      return ds.gctype;
     }
 
     public String getId() {
@@ -555,17 +549,19 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // experimental coord based record finding
+    // coord based record finding. note only one record at a time
     public synchronized Record getRecordAt(Map<String, Object> coords) {
       int[] want = new int[getRank()];
       int count = 0;
+      int runIdx = -1;
       for (Coordinate coord : getCoordinates()) {
         int idx = -1;
         Object coordVal = null;
         switch (coord.getType()) {
           case runtime:
             coordVal = coords.get(CoordsSet.runDate);  // CalendarDate or Long
-            idx = coord.getIndex( coordVal);
+            idx = coord.getIndex(coordVal);
+            runIdx = idx;
             break;
 
           case timeIntv:
@@ -585,11 +581,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
             if (coordVal != null) {
               if (coordVal instanceof Double) {
                 coordInt = ((Double) coordVal).intValue();
-                idx = ((CoordinateTime2D) coord).findTimeIndexInOtime(coordInt);
+                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordInt);
+
               } else if (coordVal instanceof double[]) {
                 double[] coordBounds = (double[]) coordVal;
                 TimeCoord.Tinv coordTinv = new TimeCoord.Tinv((int) coordBounds[0], (int) coordBounds[1]);
-                idx = ((CoordinateTime2D) coord).findTimeIndexInOtime(coordTinv);
+                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordTinv); // LOOK can only use if orthogonal
               }
               break;
             }
@@ -621,7 +618,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         }
 
         if (coordVal == null)
-          System.out.printf("GribCollectionImmutable: missing CoordVal for %s%n", coord.getName());
+          logger.warn("GribCollectionImmutable: missing CoordVal for {}%n", coord.getName());
 
         if (idx < 0) {
           logger.debug("Cant find index for value {} in axis {} in variable {}", coordVal, coord.getName(), name );
@@ -654,9 +651,10 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return null;
     }
 
+    // get the ith coordinate
     public Coordinate getCoordinate(int index) {
-      if (index >= coordIndex.size())
-        System.out.println("HEY GribCollectionImmutable index out of range");
+      //if (index >= coordIndex.size())
+      //  System.out.println("HEY GribCollectionImmutable index out of range");
       int grpIndex = coordIndex.get(index);
       return group.coords.get(grpIndex);
     }
@@ -788,7 +786,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       if (isGrib1)
         return ((Grib1Variable) gribVariable).makeVariableName(config.gribConfig);
       else
-        return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, GribCollectionImmutable.this, this, false);
+        return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, GribCollectionImmutable.this, this, config.gribConfig.useGenType);
     }
 
     public String makeVariableUnits() {
@@ -970,7 +968,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           nmissing += v.nmissing;
         }
         if (nrecords == 0) nrecords = 1;
-        f.format("%s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, g.getDescription(), nrecords, ndups, ((float) ndups / nrecords), nmissing, ((float) nmissing / nrecords));
+        f.format("%s, %s, %s, %s, %d, %d, %f, %d, %f%n", name, config.type, ds.getType(), g.getDescription(), nrecords, ndups, ((float) ndups / nrecords), nmissing, ((float) nmissing / nrecords));
       }
     } else {
       for (GroupGC g : ds.groups) {
@@ -980,7 +978,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           ndups += v.ndups;
           nmissing += v.nmissing;
         }
-        f.format(" Group %s total nrecords=%d", g.getDescription(), nrecords);
+        f.format(" Group %s (%s) total nrecords=%d", g.getDescription(), ds.getType(), nrecords);
         if (nrecords == 0) nrecords = 1;
         f.format(", ndups=%d (%f)", ndups, ((float) ndups / nrecords));
         f.format(", nmiss=%d (%f)%n", nmissing, ((float) nmissing / nrecords));

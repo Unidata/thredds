@@ -40,6 +40,7 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -54,6 +55,7 @@ import java.io.IOException;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCoverageRead {
+  CalendarDate useDate = CalendarDate.parseISOformat(null, "2014-10-27T06:00:00Z");
 
   @Test
   public void TestTwoDRead() throws IOException, InvalidRangeException {
@@ -70,9 +72,10 @@ public class TestGribCoverageRead {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
       long size = cover.getSizeInBytes();
-      Assert.assertEquals(151463520, size);
+      Assert.assertEquals(6*36*29*65*93*4, size);
 
-      SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 300.0).set(SubsetParams.timeOffset, 42.0);
+      // LOOK if we dont set the runtime, assume latest. driven by Cdmrf spec. could be different.
+      SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 300.0).setTime(useDate);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       System.out.printf("%s%n", Misc.showInts(data.getShape()));
@@ -81,8 +84,39 @@ public class TestGribCoverageRead {
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertEquals(241.899994, first, first*Misc.maxReletiveError);
-      Assert.assertEquals(226.399994, last, last*Misc.maxReletiveError);
+      Assert.assertEquals(241.699997, first, first*Misc.maxReletiveError);
+      Assert.assertEquals(225.099991, last, last*Misc.maxReletiveError);
+    }
+  }
+
+  @Test
+  public void TestBestRead() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4";
+    System.out.printf("open %s%n", endpoint);
+
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(2, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(1);
+      Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
+
+      String covName = "Temperature_isobaric";
+      Coverage cover = gds.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+      long size = cover.getSizeInBytes();
+      Assert.assertEquals(41*29*65*93*4, size);
+
+      SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 300.0).setTime(useDate);
+      GeoReferencedArray geo = cover.readData(subset);
+      Array data = geo.getData();
+      System.out.printf("%s%n", Misc.showInts(data.getShape()));
+      Assert.assertArrayEquals(new int[] {1,1,65,93}, data.getShape());
+
+      float first = data.getFloat(0);
+      float last = data.getFloat((int)data.getSize()-1);
+      System.out.printf("data first = %f last=%f%n", first, last);
+      Assert.assertEquals(241.699997, first, first*Misc.maxReletiveError);
+      Assert.assertEquals(225.099991, last, last*Misc.maxReletiveError);
     }
   }
 
@@ -112,7 +146,7 @@ public class TestGribCoverageRead {
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertEquals(219.5, first, first*Misc.maxReletiveError);
+      Assert.assertEquals(219.5, first, first * Misc.maxReletiveError);
       Assert.assertEquals(218.6, last, last*Misc.maxReletiveError);
     }
   }
@@ -150,5 +184,74 @@ public class TestGribCoverageRead {
 
     }
   }
+
+  @Test
+  public void TestMRUTPRead() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4";
+    System.out.printf("open %s%n", endpoint);
+
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
+      Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
+
+      String covName = "Relative_humidity_sigma";
+      Coverage cover = gds.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+      long size = cover.getSizeInBytes();
+      Assert.assertEquals(2*181*360*4, size);
+
+      SubsetParams subset = new SubsetParams().setTimeOffset(6);
+      GeoReferencedArray geo = cover.readData(subset);
+      Array data = geo.getData();
+      System.out.printf("%s%n", Misc.showInts(data.getShape()));
+      Assert.assertArrayEquals(new int[]{1, 1, 181, 360}, data.getShape());
+
+      float val = data.getFloat(3179);
+      System.out.printf("data val at %d = %f%n", 3179, val);
+      Assert.assertEquals(98.0, val, val * Misc.maxReletiveError);
+
+      val = data.getFloat(5020);
+      System.out.printf("data val at %d = %f%n", 5020, val);
+      Assert.assertEquals(60.0, val, val * Misc.maxReletiveError);
+
+    }
+  }
+
+  @Test
+  public void TestPofPRead() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4";
+    System.out.printf("open %s%n", endpoint);
+
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(2, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
+      Assert.assertEquals(FeatureType.FMRC, gds.getCoverageType());
+
+      String covName = "Vertical_velocity_pressure_isobaric";
+      Coverage cover = gds.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
+      long size = cover.getSizeInBytes();
+      Assert.assertEquals(6*35*9*65*93*4, size);
+
+      SubsetParams subset = new SubsetParams().setRunTime(CalendarDate.parseISOformat(null,"2014-10-24T12:00:00Z"))
+              .setTimeOffset(42).setVertCoord(500);
+      GeoReferencedArray geo = cover.readData(subset);
+      Array data = geo.getData();
+      System.out.printf("%s%n", Misc.showInts(data.getShape()));
+      Assert.assertArrayEquals(new int[]{1, 1, 1, 65, 93}, data.getShape());
+
+      float val = data.getFloat(0);
+      System.out.printf("data val first = %f%n", val);
+      Assert.assertEquals(-0.10470009, val, Misc.maxReletiveError);
+
+      val = data.getFloat( (int)data.getSize()-1);
+      System.out.printf("data val last = %f%n", val);
+      Assert.assertEquals(0.18079996, val, Misc.maxReletiveError);
+    }
+  }
+
 
 }

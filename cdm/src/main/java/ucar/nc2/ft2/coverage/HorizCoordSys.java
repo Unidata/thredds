@@ -292,13 +292,13 @@ public class HorizCoordSys {
 
   public LatLonPoint getLatLon(int yindex, int xindex) {
     if (isProjection) {
-      double x = xaxis.getCoord(xindex);
-      double y = yaxis.getCoord(xindex);
+      double x = xaxis.getCoordMidpoint(xindex);
+      double y = yaxis.getCoordMidpoint(xindex);
       ProjectionImpl proj = transform.getProjection();
       return proj.projToLatLon(x, y);
     } else {
-      double lat = lataxis.getCoord(yindex);
-      double lon = lonaxis.getCoord(xindex);
+      double lat = lataxis.getCoordMidpoint(yindex);
+      double lon = lonaxis.getCoordMidpoint(xindex);
       return new LatLonPointImpl(lat, lon);
     }
   }
@@ -458,8 +458,8 @@ public class HorizCoordSys {
       result.y = yhelper.findCoordElement(y, false);
 
       if (result.x >= 0 && result.x < xaxis.getNcoords() && result.y >= 0 && result.y < yaxis.getNcoords()) {
-        result.xcoord = xaxis.getCoord(result.x);
-        result.ycoord = yaxis.getCoord(result.y);
+        result.xcoord = xaxis.getCoordMidpoint(result.x);
+        result.ycoord = yaxis.getCoordMidpoint(result.y);
         return Optional.of(result);
       } else {
         return Optional.empty("not in grid");
@@ -473,8 +473,8 @@ public class HorizCoordSys {
       result.y = yhelper.findCoordElement(y, false);
 
       if (result.x >= 0 && result.x < lonaxis.getNcoords() && result.y >= 0 && result.y < lataxis.getNcoords()) {
-        result.xcoord = lonaxis.getCoord(result.x);
-        result.ycoord = lataxis.getCoord(result.y);
+        result.xcoord = lonaxis.getCoordMidpoint(result.x);
+        result.ycoord = lataxis.getCoordMidpoint(result.y);
         return Optional.of(result);
       } else {
         return Optional.empty("not in grid");

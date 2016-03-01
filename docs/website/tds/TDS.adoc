@@ -1,6 +1,7 @@
 :source-highlighter: coderay
 :cf: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html
 [[threddsDocs]]
+:toc:
 
 = THREDDS Data Server 5.0
 
@@ -114,9 +115,9 @@ Java 8 is necessary for production use of the TDS in all cases.
 === Standard TDS Services
 
 * http://opendap.org/pdf/dap_2_data_model.pdf[OPeNDAP (DAP2) protocol]
-* http://www.resc.rdg.ac.uk/trac/ncWMS/[ncWMS] implementing the <<reference/WMS#,Web Map Service>>
-* <<reference/WCS#,Web Coverage Service>>
-* http://www.ngdc.noaa.gov/eds/tds/[ncISO]
+* <<reference/services/WMS#,Web Map Service>>
+* <<reference/services/WCS#,Web Coverage Service>>
+* <<reference/services/ncISO#, ncISO>>
 * <<reference/services/NetcdfSubsetServiceReference#,Netcdf Subset Services>>
 * <<reference/services/CdmRemote#,Cdmremote and CdmrFeature web services>>
 

@@ -68,7 +68,7 @@ public class FeatureCollectionConfig {
   }
 
   public enum PartitionType {
-    none, directory, file, timePeriod
+    none, directory, file, timePeriod, all
   }
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FeatureCollectionConfig.class);
@@ -105,6 +105,7 @@ public class FeatureCollectionConfig {
       if (timePartition.equalsIgnoreCase("none")) ptype = PartitionType.none;
       else if (timePartition.equalsIgnoreCase("directory")) ptype = PartitionType.directory;
       else if (timePartition.equalsIgnoreCase("file")) ptype = PartitionType.file;
+      else if (timePartition.equalsIgnoreCase("all")) ptype = PartitionType.all;
       else {
         timePeriod = CalendarPeriod.of(timePartition);
         ptype = PartitionType.timePeriod;
