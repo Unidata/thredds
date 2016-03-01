@@ -4,7 +4,7 @@
 = CdmrFeature On-the-wire protocol (DRAFT)
 
 This describes the on-the-wire protocol for CdmrFeature.
-Follows or reuses the <<NcstreamGrammer,Ncstream grammer>> whenever possible.
+Follows or reuses the <<NcstreamGrammer#,Ncstream grammer>> whenever possible.
 This protocol is supported only by TDM/CDM version >= 5.0.
 
 == Grammer

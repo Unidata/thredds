@@ -12,7 +12,7 @@ This web service is available from THREDDS Data Servers for *Coverage feature Ty
 
 The client creates requests of the form *endpoint?query*, where _endpoint_ is the URL of a CdmrFeature service, and _query_ is one or more *_key=value_* parameters, as described below.
 
-See <<CdmrfGrammer,CdmrFeature Grammer>> for a description of the on-the-wire protocol.
+See <<CdmrfGrammer#,CdmrFeature Grammer>> for a description of the on-the-wire protocol.
 
 === Example service requests
 
