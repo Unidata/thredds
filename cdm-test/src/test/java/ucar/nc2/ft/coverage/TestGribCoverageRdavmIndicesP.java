@@ -44,6 +44,7 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.test.util.NeedsRdaData;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -57,7 +58,7 @@ import java.util.List;
  * @since 1/5/2016.
  */
 @RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
+@Category(NeedsRdaData.class)
 public class TestGribCoverageRdavmIndicesP {
   private static String topdir = "D:/work/rdavm/index/";
   private static boolean showDetails = false;

@@ -35,6 +35,7 @@ package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
@@ -42,6 +43,7 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsRdaData;
 
 import java.io.IOException;
 
@@ -51,6 +53,7 @@ import java.io.IOException;
  * @author caron
  * @since 2/24/2016.
  */
+@Category(NeedsRdaData.class)
 public class TestRdaReading {
 
   // time2D coordinate, not orthogonal, but times are unique

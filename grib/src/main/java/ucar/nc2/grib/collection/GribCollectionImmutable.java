@@ -786,7 +786,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       if (isGrib1)
         return ((Grib1Variable) gribVariable).makeVariableName(config.gribConfig);
       else
-        return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, GribCollectionImmutable.this, this, false);
+        return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, GribCollectionImmutable.this, this, config.gribConfig.useGenType);
     }
 
     public String makeVariableUnits() {

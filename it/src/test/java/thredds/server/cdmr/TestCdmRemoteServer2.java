@@ -73,7 +73,8 @@ public class TestCdmRemoteServer2 {
         System.out.printf("fatalError= %s%n", dataResult.errLog);
         assert false;
       }
-      assert dataResult.featureDataset != null;
+      Assert.assertNotNull(dataResult.featureDataset);
+      Assert.assertEquals(ucar.nc2.ft2.coverage.FeatureDatasetCoverage.class, dataResult.featureDataset.getClass());
 
       FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
       String gridName = "sst";

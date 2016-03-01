@@ -35,6 +35,7 @@ package thredds.server.cdmrf;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
@@ -47,15 +48,17 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.Misc;
+import ucar.unidata.test.util.NeedsRdaData;
 
 import java.io.IOException;
 
 /**
- * Describe
+ * Test RDA grib datasets in it
  *
  * @author caron
  * @since 2/24/2016.
  */
+@Category(NeedsRdaData.class)
 public class TestRdaProblems {
 
   // /thredds/cdmrfeature/grid/aggregations/g/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E?req=data&

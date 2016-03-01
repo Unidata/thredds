@@ -92,10 +92,9 @@ public class TestTdsGrib {
 
     DataFactory fac = new DataFactory();
     try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
-
-      assert dataResult != null;
-      assert !dataResult.fatalError : dataResult.errLog;
-      assert dataResult.featureDataset != null;
+      Assert.assertFalse(dataResult.errLog.toString(), dataResult.fatalError);
+      Assert.assertNotNull(dataResult.featureDataset);
+      Assert.assertEquals(FeatureDatasetCoverage.class, dataResult.featureDataset.getClass());
 
       FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
       String gridName = "Maximum_temperature_Forecast_height_above_ground_12_Hour_Maximum";
@@ -123,7 +122,7 @@ public class TestTdsGrib {
       CoverageCoordAxis time = gcs.getTimeAxis();
       Assert.assertNotNull(time);
       Assert.assertEquals(4, time.getNcoords());
-      double[] timeValues = new double[]{108.,132.,156,180};
+      double[] timeValues = new double[]{102.,126.,150,174};  // midpoints
       assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(timeValues), false);
     }
   }

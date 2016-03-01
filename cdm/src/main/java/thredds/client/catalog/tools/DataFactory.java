@@ -228,6 +228,13 @@ public class DataFactory {
   public DataFactory.Result openFeatureDataset(FeatureType wantFeatureType, Dataset ds, ucar.nc2.util.CancelTask task, Result result)
           throws IOException {
 
+    // deal with RESOLVER type
+    Access resolverAccess = findAccessByServiceType(ds.getAccess(), ServiceType.Resolver);
+    if (resolverAccess != null) {
+      Dataset rds = openResolver(resolverAccess.getStandardUrlName(), task, result);
+      if (rds != null) ds = rds;
+    }
+
     try {
       result.featureType = ds.getFeatureType();
       if (result.featureType == null)
