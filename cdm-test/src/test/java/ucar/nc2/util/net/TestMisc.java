@@ -72,14 +72,14 @@ public class TestMisc extends UnitTestCommon
     }
 
     static final String[] esinputs = {
-        "http://localhost:8081/dts/test.01",
-        "http://localhost:8081///xx/",
-        "http://localhost:8081/<>^/`/",
+            "http://localhost:8081/dts/test.01",
+            "http://localhost:8081///xx/",
+            "http://localhost:8081/<>^/`/",
     };
     static final String[] esoutputs = {
-        "http://localhost:8081/dts/test.01",
-        "http://localhost:8081///xx/",
-        "http://localhost:8081/%3c%3e%5e/%60/",
+            "http://localhost:8081/dts/test.01",
+            "http://localhost:8081///xx/",
+            "http://localhost:8081/%3c%3e%5e/%60/",
     };
 
     @Test
@@ -88,7 +88,7 @@ public class TestMisc extends UnitTestCommon
     {
         pass = true;
         assert (esinputs.length == esoutputs.length);
-        for(int i = 0;i < esinputs.length && pass;i++) {
+        for(int i = 0; i < esinputs.length && pass; i++) {
             String result = EscapeStrings.escapeURL(esinputs[i]);
             System.err.printf("input= |%s|\n", esinputs[i]);
             System.err.printf("result=|%s|\n", result);
@@ -105,7 +105,7 @@ public class TestMisc extends UnitTestCommon
     {
         pass = true;
 
-        String catalogName = "http://"+ TestDir.remoteTestServer+"/thredds/catalog.xml";
+        String catalogName = "http://" + TestDir.remoteTestServer + "/thredds/catalog.xml";
 
         try (HTTPMethod m = HTTPFactory.Get(catalogName)) {
             int statusCode = m.execute();
@@ -134,7 +134,7 @@ public class TestMisc extends UnitTestCommon
         String result = buf.toString();
         boolean ok = expected.equals(result);
         System.err.printf("path=|%s| result=|%s| pass=%s\n",
-            path, result, (ok ? "true" : "false"));
+                path, result, (ok ? "true" : "false"));
         System.err.flush();
         return ok;
     }
@@ -145,7 +145,7 @@ public class TestMisc extends UnitTestCommon
     {
         String tag = "TestMisc.testGetProtocols";
         Assert.assertTrue(tag, protocheck("http://server/thredds/dodsC/", "http:"));
-        Assert.assertTrue(tag, protocheck("dods://"+TestDir.remoteTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best", "dods:"));
+        Assert.assertTrue(tag, protocheck("dods://" + TestDir.remoteTestServer + "/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best", "dods:"));
         Assert.assertTrue(tag, protocheck("dap4://ucar.edu:8080/x/y/z", "dap4:"));
         Assert.assertTrue(tag, protocheck("dap4:https://ucar.edu:8080/x/y/z", "dap4:https:"));
         Assert.assertTrue(tag, protocheck("file:///x/y/z", "file:"));
@@ -162,4 +162,21 @@ public class TestMisc extends UnitTestCommon
         Assert.assertTrue(tag, protocheck("x/z::a", null));
     }
 
+    @Test
+    public void
+    testByteRange()
+    {
+        String file = "http://" + TestDir.remoteTestServer + "/thredds/fileServer/testdata/testData.nc";
+        try {
+            try (HTTPMethod m = HTTPFactory.Get(file)) {
+                m.setRange(0, 9);
+                int statusCode = m.execute();
+                System.out.printf("status = %d%n", statusCode);
+                Assert.assertTrue("Unexpected return code: "+statusCode,statusCode == 206);
+                byte[] result = m.getResponseAsBytes();
+                Assert.assertTrue("Wrong size result",result.length == 10);
+            }
+        } catch (Exception e) {
+        }
+    }
 }

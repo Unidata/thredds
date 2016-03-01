@@ -5,8 +5,6 @@
 
 package dap4.cdm;
 
-import dap4.cdmshared.CDMUtil;
-import dap4.cdmshared.NodeMap;
 import dap4.core.data.DataSort;
 import dap4.core.data.DataVariable;
 import dap4.core.dmr.*;

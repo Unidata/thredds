@@ -2,7 +2,7 @@
    See the LICENSE file for more information.
 */
 
-package dap4.cdmshared;
+package dap4.cdm;
 
 import dap4.core.data.DataException;
 import dap4.core.dmr.AtomicType;

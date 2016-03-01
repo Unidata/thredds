@@ -2,10 +2,10 @@ dependencies {
     // A lot of these depedencies should be in the testRuntime config, not testCompile.
 
     testCompile project(':dap4:d4core')
-    testCompile project(':dap4:d4cdmclient')
     testCompile project(':dap4:d4shared')
     testCompile project(':dap4:d4servletshared')
     testCompile project(':dap4:d4ts')
+    testCompile project(':dap4:d4cdm')
     testCompile project(':cdm')
     testCompile project(':httpservices')
 

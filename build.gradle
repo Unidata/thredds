@@ -36,7 +36,7 @@ ext {
     javaProjects = allprojects - nonJavaProjects
 
     internalProjects = allprojects.findAll { it.path in [
-            ':dap4', ':dap4:d4tests', ':dap4:d4ts', ':dap4:d4tswar', ':opendap:dtswar',
+            ':dap4', ':dap4:d4tests', ':dap4:d4ts', ':opendap:dtswar',
             ':ncIdv', ':it', ':cdm-test',
     ] }
     publishedProjects = allprojects - internalProjects      // Includes root project.

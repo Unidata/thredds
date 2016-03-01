@@ -34,7 +34,6 @@ abstract public class DSPFactory
         // Register known DSP classes: order is important.
         // Only used in server
         registerDSP(SynDSP.class, true);
-        registerDSP(CDMDSP.class, true);
     }
 
     //////////////////////////////////////////////////

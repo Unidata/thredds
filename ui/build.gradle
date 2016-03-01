@@ -152,8 +152,7 @@ javadoc {
 
     source = source.plus(fileTree(dir: '../dap4/d4core/src/main/java', include: '**/*.java'))
     source = source.plus(fileTree(dir: '../dap4/d4shared/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../dap4/d4cdmshared/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../dap4/d4cdmclient/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../dap4/d4cdm/src/main/java', include: '**/*.java'))
 }
 
 task releaseDocs(dependsOn: javadoc, group: 'Release') << {

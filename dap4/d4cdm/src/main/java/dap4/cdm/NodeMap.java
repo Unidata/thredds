@@ -2,7 +2,7 @@
    See the LICENSE file for more information.
 */
 
-package dap4.cdmshared;
+package dap4.cdm;
 
 import dap4.core.dmr.DapNode;
 import ucar.nc2.CDMNode;
