@@ -249,6 +249,14 @@ public class CatalogBuilder {
     return false;
   }
 
+  public boolean hasServiceInDataset(String name) {
+    for (DatasetBuilder dsb : datasetBuilders) {
+      for (Service s : dsb.getServices())
+        if (s.getName().equalsIgnoreCase(name)) return true;
+    }
+    return false;
+  }
+
 
 
   /////////////////////////////////////////////////////////////////////

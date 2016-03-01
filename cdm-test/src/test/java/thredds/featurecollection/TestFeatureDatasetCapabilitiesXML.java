@@ -123,7 +123,7 @@ public class TestFeatureDatasetCapabilitiesXML {
     System.out.printf("Calendar= %s%n", cdu.getCalendar());
 
     CalendarDateRange cd = FeatureDatasetCapabilitiesWriter.getTimeSpan(doc);
-    Assert.assertNotNull("cd", cd);
+    Assert.assertNotNull("CalendarDateRange", cd);
     System.out.printf("CalendarDateRange= %s%n", cd);
 
     LatLonRect bbox = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc);

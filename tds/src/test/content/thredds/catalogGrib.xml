@@ -5,7 +5,7 @@
 
   <service name="latest" serviceType="Resolver" base=""/>
 
-  <service name="all" base="" serviceType="compound">
+  <service name="some" base="" serviceType="compound">
     <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
@@ -15,7 +15,7 @@
   <!-- test GRIB collection  -->
   <featureCollection featureType="GRIB1" name="GFS_CONUS_80km" path="gribCollection/GFS_CONUS_80km">
     <metadata inherited="true">
-      <serviceName>all</serviceName>
+      <serviceName>some</serviceName>
 
       <documentation type="summary">NCEP GFS Model : AWIPS 202 (I) Grid. National - CONUS (polar stereographic).
         Model runs are made at 0, 6, 12, and 18Z, with analysis and forecasts every 6 hours out 5 days.
@@ -34,7 +34,7 @@
 
   <featureCollection name="NDFD-CONUS-5km" featureType="GRIB2" harvest="true" path="grib/NDFD/CONUS_5km">
     <metadata inherited="true">
-      <serviceName>all</serviceName>
+      <serviceName>some</serviceName>
     </metadata>
 
     <collection
@@ -56,7 +56,7 @@
   <!-- test restricted GRIB collection  -->
   <featureCollection featureType="GRIB1" name="GFS_CONUS_80km_restricted" path="restrictCollection/GFS_CONUS_80km" restrictAccess="tiggeData">
     <metadata inherited="true">
-      <serviceName>all</serviceName>
+      <serviceName>some</serviceName>
     </metadata>
 
     <collection spec="${cdmUnitTest}/ncss/GFS/CONUS_80km/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
@@ -66,16 +66,6 @@
   <featureCollection featureType="GRIB2" name="HRRR 2.5km analysis" path="HRRR/analysis" >
     <collection name="HRRRanalysis" spec="${cdmUnitTest}/gribCollections/anal/.*grib2$" timePartition="file"/>
     <update startup="test" />
-  </featureCollection>
-
-  <!-- test nonexistent GRIB collection directory -->
-  <featureCollection featureType="GRIB1" name="Nonexist" path="Grib/Nonexist">
-    <collection spec="${cdmUnitTest}/gribCollections/Nonexist/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
-  </featureCollection>
-
-  <!-- test empty GRIB collection directory -->
-  <featureCollection featureType="GRIB1" name="Emptiness" path="Grib/Emptiness">
-    <collection spec="${cdmUnitTest}/gribCollections/Emptiness/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
   </featureCollection>
 
   <!-- test nonexistent GRIB collection directory -->

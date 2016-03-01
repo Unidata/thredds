@@ -25,12 +25,12 @@ See <<CdmrfGrammer#,CdmrFeature Grammer>> for a description of the on-the-wire p
 |\http://server:8080/thredds/cdmrfeature/dataset.grib?*req=data&var=Albedo* | variable data <4> <5>
 |====
 
-<1> Test if an endpoint supports the *cdmrfeature* protocol, and if so, what the dataset feature type is.
+. Test if an endpoint supports the *cdmrfeature* protocol, and if so, what the dataset feature type is.
 A successful test returns HTTP status 200 with the name of the feature type in the response.
-<2> Get the <<CdmrfGrammer#header,CdmrFeature Header>>.
-<3> A request for coordinate data, used when the data is too large to be sent in the header message.
-<4> A request for variable data.
-<5> Variable names are case-sensitive and must be <<../../CDM/Identifiers#cdmremote,backslash-escaped>>
+. Get the <<CdmrfGrammer#header,CdmrFeature Header>>.
+. A request for coordinate data, used when the data is too large to be sent in the header message.
+. A request for variable data.
+. Variable names are case-sensitive and must be <<../../CDM/Identifiers#cdmremote,backslash-escaped>>
 
 include::{tdsDocs}/CdmrfParams.adoc[]
 

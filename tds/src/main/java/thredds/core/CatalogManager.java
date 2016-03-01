@@ -194,7 +194,7 @@ public class CatalogManager {
     if (!allServiceNames.isEmpty()) {
       List<Service> servicesMissing = new ArrayList<>();   // all services missing
       for (String name : allServiceNames) {
-        if (cat.hasService(name)) continue;
+        if (cat.hasServiceInDataset(name)) continue;
         Service s = globalServices.findGlobalService(name);
         if (s != null) servicesMissing.add(s);
       }
