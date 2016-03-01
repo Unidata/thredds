@@ -114,12 +114,12 @@ public class TestGrib1CoordsMatch {
   @Test
   public void problem() throws IOException {
     long start = System.currentTimeMillis();
-    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx4";
+    String filename = "ncss/GFS/CONUS_80km/GFS_CONUS_80km.ncx4";
     try (GridDataset gds = GridDataset.open(TestDir.cdmUnitTestDir + filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
-      assert iosp instanceof Grib;
-      iospGrib = (GribIosp) iosp;
+      assert iosp instanceof Grib1Iosp;
+      iospGrib = (Grib1Iosp) iosp;
 
       GridDatatype gdt = gds.findGridByName("TwoD/Total_precipitation_surface_Mixed_intervals_Accumulation");
       assert gdt != null;
@@ -151,8 +151,8 @@ public class TestGrib1CoordsMatch {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 37188;   // 1801/81340 ??
-    assert count.nmiss == 816;
+    assert count.nread == 28488;   // 0/612/28488
+    assert count.nmiss == 612;
     assert count.nerrs == 0;
   }
 
@@ -162,8 +162,8 @@ public class TestGrib1CoordsMatch {
     TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 51838;
-    assert count.nmiss == 1126;
+    assert count.nread == 50864; // 0/1081/50864
+    assert count.nmiss == 1081;
     assert count.nerrs == 0;
   }
 
@@ -176,9 +176,9 @@ public class TestGrib1CoordsMatch {
 
     // that took 63 secs total, 1.471143 msecs per record total == 4624/33718/43248
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 44827 ;
-    assert count.nmiss == 33718;
-    assert count.nerrs == 4624;
+    assert count.nread == 86496 ;  // 0/4224/86496
+    assert count.nmiss == 4224;
+    assert count.nerrs == 0;
   }
 
   /*
@@ -205,8 +205,8 @@ public class TestGrib1CoordsMatch {
     try (GridDataset gds = GridDataset.open(filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
-      assert iosp instanceof Grib;
-      iospGrib = (GribIosp) iosp;
+      assert iosp instanceof Grib1Iosp;
+      iospGrib = (Grib1Iosp) iosp;
 
       for (GridDatatype gdt: gds.getGrids()) {
         TestGribCollections.Count count = read(gdt);

@@ -141,8 +141,8 @@ public class TestGribCollections {
     Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 28488 : count.nread;
-    assert count.nmiss == 771;
+    assert count.nread == 28488 : count.nread;  // 0/612/28488
+    assert count.nmiss == 612;
     assert count.nerrs == 0;
   }
 
