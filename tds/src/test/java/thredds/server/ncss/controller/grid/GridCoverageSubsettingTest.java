@@ -193,7 +193,8 @@ public class GridCoverageSubsettingTest {
       System.out.printf("v.getShape()=%s%n", Misc.showInts(v.getShape()));
       assertArrayEquals(expect.shape, v.getShape());
 
-      System.out.printf("ProjectionRect=%s%n", prect.toString2(6));
+      System.out.printf("Expected ProjectionRect=%s%n", expect.rect.toString2(6));
+      System.out.printf("Actual ProjectionRect=%s%n", prect.toString2(6));
       assertTrue(expect.rect.closeEnough(prect));
     }
 

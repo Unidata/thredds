@@ -52,6 +52,8 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
+import ucar.nc2.ft2.coverage.remote.CdmrFeatureProto;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
@@ -164,7 +166,10 @@ public class TestWcsServer {
       Assert.assertEquals(1, time.getNcoords());
       CalendarDate date = time.makeDate( time.getStartValue());
       System.out.printf("date = %s%n", date);
-      Assert.assertEquals(date, CalendarDate.parseISOformat(null, "2002-12-01T00:00:00Z"));
+      CalendarDate expected = CalendarDate.parseISOformat(Calendar.gregorian.toString(), "2002-12-01T00:00:00Z"); // CF i guess
+      Assert.assertEquals(expected.getMillis(), date.getMillis());
+      Assert.assertEquals(expected.getCalendar(), date.getCalendar());
+      Assert.assertEquals(expected, date);
 
       HorizCoordSys hcs = csys.getHorizCoordSys();
       CoverageCoordAxis1D xaxis = hcs.getXAxis();

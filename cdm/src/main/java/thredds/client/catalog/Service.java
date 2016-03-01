@@ -90,7 +90,7 @@ public class Service {            // (7)
   }
 
   public List<Service> getNestedServices() {
-    return nestedServices == null ? new ArrayList<Service>(0) : nestedServices;
+    return nestedServices == null ? new ArrayList<>(0) : nestedServices;
   }
 
   public List<Property> getProperties() {

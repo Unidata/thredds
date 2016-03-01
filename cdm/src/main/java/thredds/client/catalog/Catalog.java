@@ -124,6 +124,12 @@ public class Catalog extends DatasetNode {
     return findService(services, serviceName);
   }
 
+  public Service findService(ServiceType type)  {
+    if (type == null) return null;
+    List<Service> services = (List<Service>) flds.get(Catalog.Services);
+    return findService(services, type);
+  }
+
   private Service findService(List<Service> services, String want)  {
     if (services == null) return null;
     for (Service s : services) {
@@ -131,6 +137,18 @@ public class Catalog extends DatasetNode {
     }
     for (Service s : services) {
       Service result = findService(s.getNestedServices(), want);
+      if (result != null) return result;
+    }
+    return null;
+  }
+
+  private Service findService(List<Service> services, ServiceType type)  {
+    if (services == null) return null;
+    for (Service s : services) {
+      if (s.getType() == type) return s;
+    }
+    for (Service s : services) {
+      Service result = findService(s.getNestedServices(), type);
       if (result != null) return result;
     }
     return null;

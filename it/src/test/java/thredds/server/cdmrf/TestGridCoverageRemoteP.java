@@ -68,7 +68,7 @@ public class TestGridCoverageRemoteP {
     result.add(new Object[]{"cdmrfeature/grid/scanCdmUnitTests/ft/grid/GFS_Global_onedeg_20081229_1800.grib2.nc", "Pressure_surface",
             "2008-12-29T18:00:00Z",  null, null, null});
 
-    result.add(new Object[]{"cdmrfeature/grid/grib.v5/NDFD/CONUS_5km/NDFD_CONUS_5km_20131212_0000.grib2", "Categorical_Rain_surface",
+    result.add(new Object[]{"cdmrfeature/grid/grib.v5/NDFD/CONUS_5km/NDFD_CONUS_5km_20131212_0000.grib2", "Categorical_Rain_Forecast_surface",
             "2013-12-12T00:00:00Z",  "2013-12-17T12:00:00Z", null, null});
 
     result.add(new Object[]{"cdmrfeature/grid/gribCollection.v5/GFS_CONUS_80km/Best", "Temperature_isobaric",
