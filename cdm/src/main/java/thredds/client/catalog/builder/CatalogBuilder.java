@@ -186,8 +186,18 @@ public class CatalogBuilder {
   public void addService(Service s) {
     if (s == null) return;
     if (services == null) services = new ArrayList<>();
-    if (!services.contains(s))
+    if (!services.contains(s) && !containsService(s.getName()))
       services.add(s);
+  }
+
+  private boolean containsService(String name) {
+    if (name == null) return false;
+    if (services == null) return false;
+    for (Service s : services) {
+      if (name.equals(s.getName()))
+        return true;
+    }
+    return false;
   }
 
   public void removeAnyService() {
