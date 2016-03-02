@@ -6,8 +6,6 @@ package   dap4.cdm;
 
 import dap4.core.dmr.*;
 import dap4.core.util.*;
-import dap4.cdmshared.CDMUtil;
-import dap4.cdmshared.NodeMap;
 import ucar.ma2.DataType;
 import ucar.ma2.ForbiddenConversionException;
 import ucar.nc2.*;

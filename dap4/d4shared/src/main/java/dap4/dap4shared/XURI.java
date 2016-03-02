@@ -6,9 +6,7 @@ package dap4.dap4shared;
 
 import dap4.core.util.DapUtil;
 import dap4.core.util.Escape;
-import org.apache.http.NameValuePair;
 import ucar.httpservices.HTTPUtil;
-
 import java.net.*;
 import java.nio.charset.Charset;
 import java.util.EnumSet;

@@ -5,8 +5,6 @@
 package dap4.cdm;
 
 import dap4.core.util.DapUtil;
-import dap4.cdmshared.CDMUtil;
-import dap4.cdmshared.NodeMap;
 import dap4.dap4shared.*;
 import ucar.ma2.*;
 import ucar.nc2.ParsedSectionSpec;

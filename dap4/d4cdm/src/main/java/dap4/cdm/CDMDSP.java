@@ -2,10 +2,8 @@
    See the LICENSE file for more information.
 */
 
-package dap4.servlet;
+package dap4.cdm;
 
-import dap4.cdmshared.CDMUtil;
-import dap4.cdmshared.NodeMap;
 import dap4.core.data.DataDataset;
 import dap4.core.data.DataException;
 import dap4.core.data.DataVariable;
@@ -76,7 +74,6 @@ public class CDMDSP extends AbstractDSP
                 NetcdfFile.registerIOProvider(NC4CLASS, false);
                 Nc4Iosp.setLibraryAndPath(null, null); // use defaults
             } catch (Throwable e) {
-                DapLog.error("Cant load IOSP Nc4Iosp");
                 throw new DapException(e.getMessage(), e.getCause());
             }
         }

@@ -12,7 +12,7 @@ dependencies {
     testRuntime project(":opendap")
     testRuntime project(":visadCdm")
 
-    testRuntime project(':dap4:d4cdmclient')
+    testRuntime project(':dap4:d4cdm')
 
     testRuntime libraries["jaxen"]
     testCompile libraries["jdom2"]

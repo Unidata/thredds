@@ -1,7 +1,7 @@
 /* Copyright 2012, UCAR/Unidata.
    See the LICENSE file for more information.
 */
-package dap4.dap4;
+package dap4.dap4shared;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
