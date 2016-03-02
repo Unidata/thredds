@@ -61,7 +61,7 @@ import java.io.IOException;
  * @author caron
  * @since 3/1/2016.
  */
-public class TestGribRegularTime {
+public class TestGribFmrcRegularTime {
 
   @Test
   public void testCoverageDataset2D() throws IOException {
