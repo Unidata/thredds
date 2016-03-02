@@ -17,8 +17,17 @@ public class Util {
    */
   static public String cleanUnit(String unit) {
     if (unit == null) return null;
-    if (unit.equalsIgnoreCase("-")) unit = "";
-    else {
+    // These specific words become dimensionless
+    if (unit.equalsIgnoreCase("Proportion") || unit.equalsIgnoreCase("Numeric"))
+      unit = "";
+    // So does '-'
+    else if (unit.equalsIgnoreCase("-")) {
+      unit = "";
+    // Make sure degree(s) true gets concatenated with '_'
+    } else if (unit.startsWith("degree") && unit.endsWith("true")) {
+      unit = unit.replace(' ', '_');
+    // And only do the rest of the conversion if it's not a "* table *" entry
+    } else if (!unit.contains(" table ")) {
       if (unit.startsWith("/")) unit = "1" + unit;
       unit = unit.trim();
       unit = StringUtil2.remove(unit, "**");
