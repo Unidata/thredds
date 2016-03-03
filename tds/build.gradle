@@ -4,6 +4,7 @@ ext.title = "THREDDS Data Server (TDS)"
 ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 
 apply plugin: 'war'
+apply plugin: 'gwt'
 
 dependencies {
     compile project(":bufr")
@@ -69,9 +70,12 @@ dependencies {
     compile libraries["edal-wms"]
     compile libraries["saxon-he"]
     compile libraries["edal-godiva"]
-
+    gwtSdk libraries["gwt-user"]
     // JSR 303 with Hibernate Validator, which is dragging in jboss logging
-    compile libraries["validation-api"]
+    compile(libraries["validation-api"]) {
+        // needed to override what comes with the gwt compiler
+        force = true
+    }
     runtime libraries["hibernate-validator"]
     testCompile libraries["javax.el-api"]
     testCompile libraries["javax.el"]
@@ -125,4 +129,9 @@ war {
         into 'docs'
         filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
     }
+}
+
+gwt {
+    gwtVersion='2.7.0'
+    modules 'Godiva3'
 }

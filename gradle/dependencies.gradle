@@ -44,6 +44,15 @@ libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-
 
 libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.1"
 
+libraries["gwt-gradle-plugin"] = dependencies.create('de.richsource.gradle.plugins:gwt-gradle-plugin:0.6') {
+    exclude group: 'com.google.gwt', module: 'gwt-user' 
+}
+
+libraries["gwt-user"] = dependencies.create('com.google.gwt:gwt-user:2.7.0') {
+    exclude group: 'javax.validation', module: 'validation-api' 
+}
+
+ 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
 versions["spring"] = "4.2.3.RELEASE"
@@ -201,11 +210,11 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["oro"] = "oro:oro:2.0.6"
 
-libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:1.0.5-SNAPSHOT"
+versions["edal"] = "1.1.1"
 
-// the 1.0.4-ud artifact lives on the unidata nexus server - it has a critical bug fix
-// applied to it, and is temporary until the next edal-java release.
-libraries["edal-cdm"] =  dependencies.create("uk.ac.rdg.resc:edal-cdm:1.0.5-SNAPSHOT") {
+libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
+
+libraries["edal-cdm"] =  dependencies.create("uk.ac.rdg.resc:edal-cdm:${versions["edal"]}") {
     // These are dependencies that are included in edal-cdm, but are provided by
     // us already, so we will exclude these from the edal-cdm artifact.
     exclude group: 'edu.ucar', module: 'grib'
@@ -215,11 +224,15 @@ libraries["edal-cdm"] =  dependencies.create("uk.ac.rdg.resc:edal-cdm:1.0.5-SNAP
     exclude group: 'oro', module: 'oro'
 }
 
-libraries["edal-wms"] = "uk.ac.rdg.resc:edal-wms:1.0.5-SNAPSHOT"
+libraries["edal-wms"] = "uk.ac.rdg.resc:edal-wms:${versions["edal"]}"
 
-libraries["edal-graphics"] = "uk.ac.rdg.resc:edal-graphics:1.0.5-SNAPSHOT"
+libraries["edal-graphics"] = "uk.ac.rdg.resc:edal-graphics:${versions["edal"]}"
 
-libraries["edal-godiva"] = "uk.ac.rdg.resc:edal-godiva:1.0.5-SNAPSHOT"
+libraries["edal-godiva"] = dependencies.create("uk.ac.rdg.resc:edal-godiva:${versions["edal"]}") {
+    exclude group: 'javax.validation', module: 'validation-api'
+}
+
+libraries["saxon-he"] = "net.sf.saxon:Saxon-HE:9.6.0-7"
 
 libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
 
