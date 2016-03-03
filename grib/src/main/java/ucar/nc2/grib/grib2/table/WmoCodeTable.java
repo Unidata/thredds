@@ -37,6 +37,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -170,7 +171,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   static public WmoTables readGribCodes(Version version) throws IOException {
     String[] elems = version.getElemNames();
     if (elems == null)
-      throw new IllegalStateException("unknon version = "+version);
+      throw new IllegalStateException("unknown version = "+version);
 
     try (InputStream ios = WmoCodeTable.class.getResourceAsStream(version.getResourceName())) {
       if (ios == null) {
@@ -441,61 +442,9 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       this.value = valueW;
 
       if (isParameter) {
-        /* StringBuilder sb = new StringBuilder(meaning); // all lower case, but first char gets capitalized below
-
-        // some need the () comment removed - must be hand specified
-        if (remove(this)) {
-          int pos1 = sb.indexOf("(");
-          int pos2 = sb.indexOf(")");
-          if ((pos1 > 0) && (pos2 > 0))
-            sb = sb.delete(pos1, sb.length()); // assume () is at the end of string
-        }
-
-        // some need to be truncated - must be hand specified
-        int atChar;
-        if ((atChar = truncateAtChar(this)) > 0) {
-          String atString = String.valueOf((char)atChar);
-          int pos = sb.indexOf( atString);
-          if (pos > 0)
-            sb = sb.delete(pos, sb.length());
-          else
-            System.out.printf("bugger no %s in %s%n", atChar, meaning);
-        }
-
-        // clean it up
-        sb = StringUtil2.trim(sb); // remove trailing and leading blanks
-        StringUtil2.replace(sb, "/. ", "-p_");
-        StringUtil2.remove(sb, "(),;");
-        char c = sb.charAt(0);
-        if (Character.isLetter(c)) {
-          if (Character.isLowerCase(c))
-            sb.setCharAt(0, Character.toUpperCase(c));
-        } else {
-          sb.insert(0, 'N');
-        }
-
-        // all other letters become lower case
-        for (int i=1; i<sb.length(); i++) {
-          c = sb.charAt(i);
-          if (Character.isLetter(c))
-            sb.setCharAt(i, Character.toLowerCase(c));
-        }
-
-        //this.name = sb.toString().trim(); // now its good for netcdf-3 name  */
-        // skip all that 6/6/2011
-
         // massage units
         if (unit != null) {
-          if (unit.equalsIgnoreCase("Proportion") || unit.equalsIgnoreCase("Numeric"))
-            unit = "";
-          else if (unit.equalsIgnoreCase("-")) unit = "";
-          else {
-            if (unit.startsWith("/")) unit = "1" + unit;
-            unit = unit.trim();
-            unit = StringUtil2.replace(unit, ' ', ".");
-          }
-          unitW = unit;
-
+          unitW = Util.cleanUnit(unit);
         } else {
           unitW = ""; // no null unit allowed
         }

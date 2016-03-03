@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.4">
+<title>Testing a new version of the TDS</title>
+<link rel="stylesheet" href="./../tds.css">
+<link rel="stylesheet" href="./coderay-asciidoctor.css">
+</head>
+<body class="article">
+<div id="header">
+<h1>Testing a new version of the TDS</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Upgrading to a new version of the TDS can be a daunting task, especially when trying to figure out if your data collections are still accessible as your users expect.
+Perhaps one of the best "tests" a TDS administrator can do, although certainly not 100% complete, is to replay old user requests against a new, parallel test server to assess any issues. Note that the overhead of running a parallel test instance of Tomcat should be quite small, especially if the server is restricted to internal users only.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_replaying_requests">Replaying Requests</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ToolsUI.jar contains a tool that can be used from the command line to replay user requests from one server against another server.
+In order to use this tool, you or your sever admin must configure Tomcat access logs to use the "combined plus response time" format (see <a href="AccessLog.html">here</a> for more informaion).</p>
+</div>
+<div class="sect2">
+<h3 id="_obtain_a_sample_of_user_requests">Obtain a sample of user requests</h3>
+<div class="paragraph">
+<p>The first step in replaying user requests against a test server is to obtain a sample of the user request logs. The access logs are contained in the <code>${TOMCAT_HOME}/logs</code> directory and have the output format of</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">174.16.142.252 - - [09/Feb/2016:14:55:34 -0700] &quot;GET /thredds/catalog.html HTTP/1.1&quot; 200 3346 &quot;-&quot; &quot;Brave/0.7.12&quot; 1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>There are a number of ways one can obtain these files:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>scp the files directly from the web server</p>
+</li>
+<li>
+<p>Download the files via the <a href="RemoteManagement.html">admin/debug</a> page of the TDS using your web browser (requires that remote management is enabled)</p>
+</li>
+<li>
+<p>Use the <a href="../tutorial/tdsMonitor.html">TdsMonitor</a> tool (again, requires that remote management is enabled)</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>Once the Tomcat access logs you wish to replay have been downloaded, place them in a flat directory (no subdirectories).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prepare_the_test_server">Prepare the test server</h3>
+<div class="paragraph">
+<p>To prepare the test server, make sure all access logs have been removed prior to replaying any logs.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_run_the_replaytdslogs_tool">Run the ReplayTdsLogs tool</h3>
+<div class="paragraph">
+<p>Make sure that you know the path to ToolsUI.jar and execute the following command to replay the subset of Tomcat access logs against an upgraded server:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">java -classpath &lt;path to toolsUI.jar&gt; thredds.logs.ReplayTdsLogs &lt;new server address&gt; &lt;path to Tomcat access logs to use&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For example, to test a new server (say, <a href="http://testmytds.me.org" class="bare">http://testmytds.me.org</a>) using logs that live in a directory called "old_logs", where directory structure looks like the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">&lt;current directory&gt;
+ToolsUI.jar
+old_logs/
+    access.2016-02-05.log
+    access.2016-02-06.log
+    access.2016-02-07.log</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>the following could be used, as executed from &lt;current directory&gt;:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="bash">java -classpath toolsUI.jar thredds.logs.ReplayTdsLogs http://testmytds.me.org old_logs/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Follow the progress and allow the tool to complete.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_examine_the_logs_on_the_test_server">Examine the logs on the test server</h3>
+<div class="paragraph">
+<p>The final step is to examine the logs on the test server.
+This includes examining the newly created access logs for any issues (i.e. response codes of 404s, 500s, etc. that were not in the initial access logs used for testing), as well as looking for issues within the TDS logs.
+For more information on the various Tomcat and TDS logs, please see our <a href="../tutorial/TDSMonitoringAndDebugging.html">logging</a> tutorial page.</p>
+</div>
+<div class="paragraph">
+<p>If you encounter errors with an http status code of 500 that you believe are valid requests, please submit a bug report on our <a href="https://github.com/unidata/thredds/issues">github issue tracker</a>.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2016-02-09 16:03:05 MST
+</div>
+</div>
+</body>
+</html>

@@ -36,6 +36,8 @@ package thredds.server.ncss.params;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.validation.TimeParamsConstraint;
 import thredds.server.ncss.validation.VarParamConstraint;
+import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.point.collection.UpdateableCollection;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -46,6 +48,7 @@ import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Formatter;
 import java.util.List;
@@ -59,6 +62,8 @@ import java.util.List;
 
 @TimeParamsConstraint
 public class NcssParamsBean {
+
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   protected String accept;
 
