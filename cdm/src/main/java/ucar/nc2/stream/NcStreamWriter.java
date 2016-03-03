@@ -138,10 +138,9 @@ public class NcStreamWriter {
     }
 
     // Writing the size of the block is handled for us.
-    DataOutputStream dos = compress.setupStream(out, (int) uncompressedLength);
-    v.readToStream(section, dos);
-    dos.flush();
-    size += dos.size();
+    out = compress.setupStream(out, (int)uncompressedLength);
+    size += v.readToStream(section, out);
+    out.flush();
     return size;
   }
 

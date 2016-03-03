@@ -199,7 +199,7 @@ libraries["jstl-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
-libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.4-SNAPSHOT") {
+libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.4") {
     // This is an external dependency on an old artifact of ours.
     // The "cdm" artifact that we build in this project will take its place.
     // This needs to be a local exclusion; globally excluding "edu.ucar:cdm" would be very bad.
@@ -208,7 +208,7 @@ libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.4-SNA
 
 libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
 
-libraries["threddsIso"] = "EDS:threddsIso:2.2.7"
+libraries["threddsIso"] = "EDS:threddsIso:2.2.8"
 
 /////////////////////////////////////////////////////////////////////////////////
 // Bean validation 1.1, used by TDS

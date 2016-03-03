@@ -264,7 +264,7 @@ public class NcepLocalTables extends LocalTables {
         return new GribLevelType(code, "m", null, true);
 
       case 241:
-        return new GribLevelType(code, "seq", null, true);   // eg see NCEP World Watch datasets
+        return new GribLevelType(code, "count", null, true);   // eg see NCEP World Watch datasets
 
       default:
         return super.getVertUnit(code);

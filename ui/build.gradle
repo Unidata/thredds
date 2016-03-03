@@ -32,6 +32,12 @@ dependencies {
 
 //////////////////////////////////////////////////////////
 
+task showDependencies << {
+    for (file in configurations.runtime.resolve()) {
+        println " " + file
+    }
+}
+
 jar {
     manifest {
         attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
@@ -59,7 +65,7 @@ ext {
     toolsUIjar = 'toolsUI-' + version + '.jar'
     webstartWorkingDir = "build/signed"
     if (project.hasProperty("webdir")) {
-        webstartDir = webdir + "webstart"
+        webstartDir = new File(webdir, "webstart")
     }
 
     depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']

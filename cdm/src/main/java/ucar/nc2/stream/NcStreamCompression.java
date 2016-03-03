@@ -33,7 +33,6 @@
 
 package ucar.nc2.stream;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -65,7 +64,7 @@ public class NcStreamCompression {
         return new NcStreamCompression(NcStreamProto.Compress.DEFLATE, level);
     }
 
-    public DataOutputStream setupStream(OutputStream out, int size)
+    public OutputStream setupStream(OutputStream out, int size)
             throws IOException
     {
         switch (type) {
@@ -83,9 +82,8 @@ public class NcStreamCompression {
             // In the case of no compression, go ahead and write the block
             // size so that the stream is ready for data
             case NONE:
-                DataOutputStream dos = new DataOutputStream(out);
-                NcStream.writeVInt(dos, size);
-                return dos;
+                NcStream.writeVInt(out, size);
+                return out;
         }
     }
 }
