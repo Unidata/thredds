@@ -72,15 +72,15 @@ public class TestFmrc {
 
             // String pathname, int ngrids, int ncoordSys, int ncoordAxes, int nVertCooordAxes, String gridName, int nruns, int ntimes, int nbest) {
             {datadir + "toms/hiig_#yyyyMMdd#.nc", 25, 11, 13, 2, "u", 4, 25, 58, true},
-            {TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 21, 6, "Pressure_tropopause", 3, 9, 9, true},
+            {TestDir.cdmUnitTestDir + "ncml/nc/ruc_conus40/RUC_CONUS_40km_#yyyyMMdd_HHmm#.grib1", 48, 12, 17, 6, "Pressure_tropopause", 3, 9, 9, true},
             {TestDir.cdmUnitTestDir + "ncml/agg/#yyyyMMdd_HHmm#.nc$", 10, 4, 8, 2, "Visibility", 4, 2, 8, true},
             {datadir + "bom/BoM_test.ncml", 1, 3, 8, 0, "eta_t", 2, 7, 10, true},
             {datadir + "ncom/ncom_fmrc.ncml", 1, 1, 5, 1, "surf_el", 3, 25, 41, true},
             // {datadir + "rtofs/rtofs.ncml", 9, 6, 10, 1, "N3-D_Temperature", 2, 3, 4, true}, // GRIB
 
             // ncml uses FMRC
-            {TestDir.cdmUnitTestDir + "ncml/AggFmrcGribRunseq.ncml", 13, 4, 10, 2, "Temperature_height_above_ground", 4, 29, 35, true},
-            // {TestDir.cdmUnitTestDir + "ncml/AggFmrcGrib.ncml", 58, 27, 22, 12, "Temperature_height_above_ground", 8, 29, 72, true}, bad idea FMRC on GRIB
+            // {TestDir.cdmUnitTestDir + "ncml/AggFmrcGribRunseq.ncml", 13, 4, 10, 2, "Temperature_height_above_ground", 4, 29, 35, true}, // bad idea FMRC on GRIB
+            // {TestDir.cdmUnitTestDir + "ncml/AggFmrcGrib.ncml", 58, 27, 22, 12, "Temperature_height_above_ground", 8, 29, 72, true}, // bad idea FMRC on GRIB
             {TestDir.cdmUnitTestDir + "ncml/AggFmrcNonuniform.ncml", 48, 12, 17, 6, "Temperature_height_above_ground", 3, 9, 9, true},
             {TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml", 41, 6, 10, 4, "u", 15, 11, 39, true},
 

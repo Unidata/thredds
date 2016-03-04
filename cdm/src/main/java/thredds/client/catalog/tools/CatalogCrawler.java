@@ -503,7 +503,7 @@ public class CatalogCrawler {
               else
                 c.failOdap++;
             } else {
-              System.out.printf("HEY%n");
+              // System.out.printf("HEY%n");
             }
 
             // cdmremote

@@ -724,29 +724,35 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
                     spacing, n, start, end, resol, values, this, false));
   } */
 
-  // runtime, time(runtime, time)
+  // time(runtime, time)
   private FmrcTimeAxis2D makeFmrcRegTimeAxis(CoordinateTime2D time2D) {
-    String dependsOn = time2D.getRuntimeCoordinate().getName(); // LOOK not sure of this
+    CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
+    String dependsOn = runtime.getName();
+    int nruns = time2D.getNruns();
+    int ntimes = time2D.getNtimes();
 
-    List<? extends Object> offsets = time2D.getOffsetsSorted();
-    int n = offsets.size();
-    double[] values;
+    int nvalues = time2D.isTimeInterval() ? nruns * ntimes * 2 : nruns * ntimes;
+    double[] values = new double[nvalues];
 
-    if (time2D.isTimeInterval()) {
-      values = new double[2 * n];
-      int count = 0;
-      for (Object offset : offsets) {
-        TimeCoord.Tinv tinv = (TimeCoord.Tinv) offset;
-        values[count++] = tinv.getBounds1();
-        values[count++] = tinv.getBounds2();
-      }
+    for (int runIdx=0; runIdx<nruns; runIdx++) {
+      int runOffset = time2D.getOffset(runIdx);
 
-    } else {
-      values = new double[n];
-      int count = 0;
-      for (Object val : offsets) {
-        Integer offset = (Integer) val;
-        values[count++] = offset;
+      CoordinateTimeAbstract time = time2D.getTimeCoordinate(runIdx);
+      if (time2D.isTimeInterval()) {
+        CoordinateTimeIntv coordIntv = (CoordinateTimeIntv) time;
+        int n = coordIntv.getSize(); // may be different than ntimes
+        for (int timeIdx=0; timeIdx<n; timeIdx++) {
+          TimeCoord.Tinv tinv = (TimeCoord.Tinv) coordIntv.getValue(timeIdx);
+          values[runIdx*ntimes+timeIdx] = tinv.getBounds1() + runOffset;
+          values[runIdx*ntimes+timeIdx+1] = tinv.getBounds2() + runOffset;
+        }
+      } else {
+        CoordinateTime coord = (CoordinateTime) time;
+        int n = coord.getSize(); // may be different than ntimes
+        for (int timeIdx=0; timeIdx<n; timeIdx++) {
+          Integer offset = (Integer) coord.getValue(timeIdx);
+          values[runIdx*ntimes+timeIdx] = offset + runOffset;
+        }
       }
     }
 
@@ -759,10 +765,10 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder(time2D.getName(), time2D.getUnit(), CDM.TIME_OFFSET, DataType.DOUBLE,
             AxisType.TimeOffset, atts,
-            CoverageCoordAxis.DependenceType.fmrcReg, dependsOn, null, n, 0.0, 0.0, 0.0, values, this);
+            CoverageCoordAxis.DependenceType.fmrcReg, dependsOn, null, nruns * ntimes, 0.0, 0.0, 0.0, values, this);
     builder.setSpacingFromValues(time2D.isTimeInterval());
 
-    return new FmrcTimeAxis2D(builder);
+    return new FmrcTimeAxis2D(builder); // LOOK should be FmrcTimeAxisReg2D to take advantage of regular
   }
 
   // orthogonal runtime, offset; both independent
