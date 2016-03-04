@@ -47,11 +47,13 @@ import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
@@ -123,29 +125,27 @@ public class TestTdsDodsServer {
 
     DataFactory fac = new DataFactory();
     try (DataFactory.Result dataResult = fac.openFeatureDataset(ds, null)) {
+      Assert.assertTrue(dataResult.errLog.toString(), !dataResult.fatalError);
+      Assert.assertNotNull(dataResult.featureDataset);
+      Assert.assertEquals( ucar.nc2.dt.grid.GridDataset.class, dataResult.featureDataset.getClass());
 
-      assert dataResult != null;
-      assert !dataResult.fatalError;
-      assert dataResult.featureDataset != null;
-
-      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      ucar.nc2.dt.grid.GridDataset gds = ( ucar.nc2.dt.grid.GridDataset) dataResult.featureDataset;
       String gridName = "Z_sfc";
       VariableSimpleIF vs = gds.getDataVariable(gridName);
       Assert.assertNotNull(gridName, vs);
 
-      Assert.assertEquals(1, gds.getCoverageCollections().size());
-      CoverageCollection cc = gds.getCoverageCollections().get(0);
-      Coverage grid = cc.findCoverage(gridName);
+      GeoGrid grid = gds.findGridByShortName(gridName);
       Assert.assertNotNull(gridName, grid);
 
-      CoverageCoordSys gcs = grid.getCoordSys();
+      GridCoordSystem gcs = grid.getCoordinateSystem();
       Assert.assertNotNull(gcs);
-      assert null == gcs.getZAxis();
+      assert null == gcs.getVerticalAxis();
 
-      CoverageCoordAxis time = gcs.getTimeAxis();
+      CoordinateAxis time = gcs.getTimeAxis();
       Assert.assertNotNull("time axis", time);
-      Assert.assertEquals(1, time.getNcoords());
-      Assert.assertEquals(102840.0,time.getStartValue(), Misc.maxReletiveError);
+      Assert.assertEquals(1, time.getSize());
+      Array data = time.read();
+      Assert.assertEquals(102840.0, data.getFloat(0), Misc.maxReletiveError);
     }
   }
 

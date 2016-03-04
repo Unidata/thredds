@@ -48,6 +48,7 @@ import java.util.Formatter;
 
 /**
  * FmrcTimeAxis2D: time(runtime, time)
+ * values will contain nruns * ntimes values
  *
  * @author caron
  * @since 7/15/2015
@@ -66,16 +67,17 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   protected void setDataset(CoordSysContainer dataset) {
     if (shape != null) throw new RuntimeException("Cant change axis once set");
     shape = new int[2];
-    String axisName = dependsOn.get(0);
-    CoverageCoordAxis axis = dataset.findCoordAxis(axisName);
-    if (axis == null)
-      throw new IllegalStateException("FmrcTimeAxis2D cant find axis with name "+axisName);
-    shape[0] = axis.getNcoords();
-    shape[1] = ncoords / shape[0];
+    String runtimeName = dependsOn.get(0);
+    CoverageCoordAxis runtime = dataset.findCoordAxis(runtimeName);
+    if (runtime == null)
+      throw new IllegalStateException("FmrcTimeAxis2D cant find runtime axis with name "+runtimeName);
 
-    assert axis instanceof CoverageCoordAxis1D;
-    assert axis.getAxisType() == AxisType.RunTime;
-    runCoord = (CoverageCoordAxis1D) axis;
+    assert runtime instanceof CoverageCoordAxis1D;
+    assert runtime.getAxisType() == AxisType.RunTime;
+    runCoord = (CoverageCoordAxis1D) runtime;
+
+    shape[0] = runtime.getNcoords();
+    shape[1] = ncoords / shape[0];
   }
 
   @Override

@@ -87,7 +87,7 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
   protected final DependenceType dependenceType;
   protected final List<String> dependsOn;
 
-  protected final int ncoords;            // number of coordinates (not values)
+  protected final int ncoords;            // number of coordinates (not always same as values)
   protected final Spacing spacing;
   protected final double startValue;
   protected final double endValue;

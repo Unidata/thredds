@@ -6,9 +6,10 @@ import org.junit.Test;
 import thredds.client.catalog.*;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
- * Describe
+ * Catalog processing for point Features type collections
  *
  * @author caron
  * @since 7/1/2015
@@ -19,31 +20,41 @@ public class TestTdsPoint {
   // work with catalogs with service elements removed
 
   @Test
-  public void testDefaultGribServices() throws IOException {
-    String catalog = "/catalog/testStationFeatureCollection.v5/catalog.xml";  // no service name, should use POINT default
+  public void testDefaultPointCollectionServices() throws IOException {
+    String catalog = "/catalog/testStationFeatureCollection.v5/catalog.xml";  // no service name, should use PointCollection default
     Catalog cat = TdsLocalCatalog.open(catalog);
-    testCat(cat, 7, false, null, 0);
+    List<Service> services = cat.getServices();
+    Assert.assertEquals(1, services.size());
 
-    Dataset top = cat.getDatasetsLocal().get(0);
-    Assert.assertTrue(!top.hasAccess());
-    for (Dataset ds : top.getDatasetsLocal()) {
-      if (!(ds instanceof CatalogRef)) {
-        Assert.assertTrue(ds.hasAccess());
+    Service service = cat.getServices().get(0);
+    Assert.assertEquals(ServiceType.Compound, service.getType());
+    Assert.assertEquals("PointCollectionServices", service.getName());
 
-      } else {
-        CatalogRef catref = (CatalogRef) ds;
-        Catalog cat2 = TdsLocalCatalog.openFromURI(catref.getURI());
-        testCat(cat2, 0, true, "PointServices", 8);
-        break;
-      }
-    }
+    List<Service> nested = service.getNestedServices();
+    Assert.assertEquals(1, nested.size());
+    Service nestedOne = nested.get(0);
+    Assert.assertEquals(ServiceType.NetcdfSubset, nestedOne.getType());
+  }
+
+  @Test
+  public void testDefaultPointFileServices() throws IOException {
+    String catalog = "/catalog/testStationFeatureCollection.v5/files/catalog.xml";
+    Catalog cat = TdsLocalCatalog.open(catalog);
+    List<Service> services = cat.getServices();
+    Assert.assertEquals(2, services.size());
+
+    Service service = cat.findService(ServiceType.CdmRemote);
+    Assert.assertNotNull(ServiceType.CdmRemote.toString(), service);
+
+    service = cat.findService(ServiceType.Resolver);
+    Assert.assertNotNull(ServiceType.Resolver.toString(), service);
   }
 
   @Test
   public void testGlobalServices() throws IOException {
-    String catalog = "/catalog/testSurfaceSynopticFeatureCollection.v5/catalog.xml"; // serviceName ="opendapOnly" from root catalog
+    String catalog = "/catalog/testSurfaceSynopticFeatureCollection.v5/files/catalog.xml"; // serviceName ="opendapOnly" from root catalog
     Catalog cat = TdsLocalCatalog.open(catalog);
-    testCat(cat, 0, false, "opendapOnly", 1);
+    testCat(cat, 0, true, "opendapOnly", 1);
 
     Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());
@@ -63,14 +74,11 @@ public class TestTdsPoint {
 
   @Test
   public void testUserDefinedServices() throws IOException {
-    String catalog = "/catalog/testBuoyFeatureCollection.v5/catalog.xml"; // serviceName ="cdmremoteOnly" from local catalog
+    String catalog = "/catalog/testBuoyFeatureCollection.v5/files/catalog.xml"; // serviceName ="cdmremoteOnly" from local catalog
     Catalog cat = TdsLocalCatalog.open(catalog);
     Service localServices = cat.findService("cdmremoteOnly");
     Assert.assertNotNull(localServices);
     Assert.assertEquals(ServiceType.CdmRemote, localServices.getType());
-
-    Assert.assertNull(cat.findService("Resolver"));
-
 
     Dataset top = cat.getDatasetsLocal().get(0);
     Assert.assertTrue(!top.hasAccess());

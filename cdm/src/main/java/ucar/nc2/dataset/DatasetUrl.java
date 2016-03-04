@@ -177,17 +177,17 @@ public class DatasetUrl {
     }
 
     // Add back the query and fragment (if any)
-    if(query != null || fragment != null) {
-	StringBuilder buf = new StringBuilder(trueurl);
-	if(query != null) {
-	    buf.append('?');
-	    buf.append(query);
-	}
-	if(fragment != null) {
-	    buf.append('#');
-	    buf.append(fragment);
-	}
-	trueurl = buf.toString();
+    if (query != null || fragment != null) {
+      StringBuilder buf = new StringBuilder(trueurl);
+      if (query != null) {
+        buf.append('?');
+        buf.append(query);
+      }
+      if (fragment != null) {
+        buf.append('#');
+        buf.append(fragment);
+      }
+      trueurl = buf.toString();
     }
     return new DatasetUrl(svctype, trueurl);
   }
@@ -455,7 +455,8 @@ public class DatasetUrl {
     this.trueurl = trueurl;
   }
 
-  @Override public boolean equals(Object o) {
+  @Override
+  public boolean equals(Object o) {
     if (this == o) {
       return true;
     }
@@ -466,7 +467,8 @@ public class DatasetUrl {
     return serviceType == that.serviceType && Objects.equals(trueurl, that.trueurl);
   }
 
-  @Override public int hashCode() {
+  @Override
+  public int hashCode() {
     return Objects.hash(serviceType, trueurl);
   }
 }

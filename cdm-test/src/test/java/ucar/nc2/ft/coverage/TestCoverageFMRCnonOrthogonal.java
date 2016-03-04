@@ -94,7 +94,7 @@ public class TestCoverageFMRCnonOrthogonal {
       CoverageCoordAxis time = gcs.getTimeAxis();
       Assert.assertNotNull(time);
       Assert.assertTrue(time instanceof FmrcTimeAxis2D);
-      Assert.assertEquals(8, time.getNcoords());
+      Assert.assertEquals(16, time.getNcoords());
 
       //double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
       //assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);

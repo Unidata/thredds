@@ -91,13 +91,13 @@ public class CatalogBuilder {
 
     this.baseURI = baseURI;
     readXML(location);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public Catalog buildFromURI(URI uri) throws IOException {
     this.baseURI = uri;
     readXML(uri);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public Catalog buildFromCatref(CatalogRef catref) throws IOException {
@@ -110,25 +110,25 @@ public class CatalogBuilder {
     this.baseURI = catrefURI;
     Catalog result =  buildFromURI(catrefURI);
     catref.setRead(!fatalError);
-    return result;
+    return fatalError ? null : result;
   }
 
   public Catalog buildFromString(String catalogAsString, URI docBaseUri) throws IOException {
     this.baseURI = docBaseUri;
     readXMLfromString(catalogAsString);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public Catalog buildFromStream(InputStream stream, URI docBaseUri) throws IOException {
     this.baseURI = docBaseUri;
     readXML(stream);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public Catalog buildFromJdom(Element root, URI docBaseUri) throws IOException {
     this.baseURI = docBaseUri;
     readCatalog(root);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public String getErrorMessage() {
@@ -186,8 +186,18 @@ public class CatalogBuilder {
   public void addService(Service s) {
     if (s == null) return;
     if (services == null) services = new ArrayList<>();
-    if (!services.contains(s))
+    if (!services.contains(s) && !containsService(s.getName()))
       services.add(s);
+  }
+
+  private boolean containsService(String name) {
+    if (name == null) return false;
+    if (services == null) return false;
+    for (Service s : services) {
+      if (name.equals(s.getName()))
+        return true;
+    }
+    return false;
   }
 
   public void removeAnyService() {

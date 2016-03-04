@@ -4,16 +4,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
-import thredds.server.ncss.format.SupportedFormat;
-import thredds.util.Constants;
 import thredds.util.ContentType;
-import ucar.httpservices.HTTPException;
-import ucar.httpservices.HTTPFactory;
-import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPSession;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.IO;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 
 import static org.junit.Assert.*;
@@ -93,7 +86,7 @@ public class NcssGridIntegrationTest {
       System.out.printf("%s%n", nf);
     }
 
-    IO.copy2File(content, "C:/temp/testNcssFailure.nc4");
+    // IO.copy2File(content, "C:/temp/testNcssFailure.nc4");
   }
 
 

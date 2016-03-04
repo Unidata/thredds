@@ -45,10 +45,13 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.CoordinateSystem;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
@@ -148,36 +151,27 @@ public class TestCdmRemoteServer2 {
 
     DataFactory fac = new DataFactory();
     try (DataFactory.Result dataResult = fac.openFeatureDataset( ds, null)) {
+      Assert.assertTrue(dataResult.errLog.toString(), !dataResult.fatalError);
+      Assert.assertNotNull(dataResult.featureDataset);
+      Assert.assertEquals( ucar.nc2.dt.grid.GridDataset.class, dataResult.featureDataset.getClass());
 
-      if (dataResult.fatalError) {
-        System.out.printf("fatalError= %s%n", dataResult.errLog);
-        assert false;
-      }
-      assert dataResult.featureDataset != null;
-
-      FeatureDatasetCoverage gds = (FeatureDatasetCoverage) dataResult.featureDataset;
+      ucar.nc2.dt.grid.GridDataset gds = ( ucar.nc2.dt.grid.GridDataset) dataResult.featureDataset;
       String gridName = "Pressure_surface";
       VariableSimpleIF vs = gds.getDataVariable(gridName);
       Assert.assertNotNull(gridName, vs);
 
-      Assert.assertEquals(1, gds.getCoverageCollections().size());
-      CoverageCollection cc = gds.getCoverageCollections().get(0);
-      Coverage grid = cc.findCoverage(gridName);
+      GeoGrid grid = gds.findGridByShortName(gridName);
       Assert.assertNotNull(gridName, grid);
 
-      CoverageCoordSys gcs = grid.getCoordSys();
+      GridCoordSystem gcs = grid.getCoordinateSystem();
       Assert.assertNotNull(gcs);
-      assert null == gcs.getZAxis();
+      assert null == gcs.getVerticalAxis();
 
-      CoverageCoordAxis time = gcs.getTimeAxis();
+      CoordinateAxis time = gcs.getTimeAxis();
       Assert.assertNotNull("time axis", time);
-      Assert.assertEquals(36, time.getNcoords());
+      Assert.assertEquals(36, time.getSize());
 
-      SubsetParams params  = new SubsetParams().setTimePresent().setHorizStride(2);
-      GeoReferencedArray geo = grid.readData(params);
-
-    } catch (InvalidRangeException e) {
-      e.printStackTrace();
+      Array data = grid.readDataSlice(0,0,0,0);
     }
   }
 

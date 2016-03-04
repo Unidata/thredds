@@ -499,11 +499,12 @@ public class ProjectionRect implements java.io.Serializable {
 
   // cannot do approx compare and be consistent with equals
   // so make it a seperate method
+  private static final double maxReletiveError = 1.0e-5;
   public boolean closeEnough(ProjectionRect that) {
-    if (!Misc.closeEnough(that.height, height)) return false;
-    if (!Misc.closeEnough(that.width, width)) return false;
-    if (!Misc.closeEnough(that.x, x)) return false;
-    if (!Misc.closeEnough(that.y, y)) return false;
+    if (!Misc.closeEnough(that.height, height, maxReletiveError)) return false;
+    if (!Misc.closeEnough(that.width, width, maxReletiveError)) return false;
+    if (!Misc.closeEnough(that.x, x, maxReletiveError)) return false;
+    if (!Misc.closeEnough(that.y, y, maxReletiveError)) return false;
 
     return true;
   }
