@@ -91,13 +91,13 @@ public class CatalogBuilder {
 
     this.baseURI = baseURI;
     readXML(location);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public Catalog buildFromURI(URI uri) throws IOException {
     this.baseURI = uri;
     readXML(uri);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public Catalog buildFromCatref(CatalogRef catref) throws IOException {
@@ -110,25 +110,25 @@ public class CatalogBuilder {
     this.baseURI = catrefURI;
     Catalog result =  buildFromURI(catrefURI);
     catref.setRead(!fatalError);
-    return result;
+    return fatalError ? null : result;
   }
 
   public Catalog buildFromString(String catalogAsString, URI docBaseUri) throws IOException {
     this.baseURI = docBaseUri;
     readXMLfromString(catalogAsString);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public Catalog buildFromStream(InputStream stream, URI docBaseUri) throws IOException {
     this.baseURI = docBaseUri;
     readXML(stream);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public Catalog buildFromJdom(Element root, URI docBaseUri) throws IOException {
     this.baseURI = docBaseUri;
     readCatalog(root);
-    return makeCatalog();
+    return fatalError ? null : makeCatalog();
   }
 
   public String getErrorMessage() {
