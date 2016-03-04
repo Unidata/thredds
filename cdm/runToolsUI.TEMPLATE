@@ -1,9 +1,0 @@
-CP="@CLASSPATH@"
-
-# To start JVM with JMX management agent, add "$JMX" to command.
-# (This will allow you to monitor the JVM with jconsole.)
-JMX="-Dcom.sun.management.jmxremote"
-
-echo "java -Xmx512m -classpath $CP ucar.nc2.ui.ToolsUI"
-
-java -Xmx512m -classpath $CP ucar.nc2.ui.ToolsUI
