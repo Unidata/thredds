@@ -124,7 +124,9 @@ public class NcStreamDataCol {
         IndexIterator iter = data.getIndexIterator();
         while (iter.hasNext()) {
           ByteBuffer bb = (ByteBuffer) iter.next();
-          builder.addOpaquedata(ByteString.copyFrom(bb));
+
+          // Need to use duplicate so that internal state of bb isn't affected
+          builder.addOpaquedata(ByteString.copyFrom(bb.duplicate()));
         }
       } else {
         throw new IllegalStateException("Unknown class for OPAQUE =" + data.getClass().getName());
