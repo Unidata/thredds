@@ -147,7 +147,8 @@ public class NcStream {
     NcStreamProto.Dimension.Builder dimBuilder = NcStreamProto.Dimension.newBuilder();
     if (dim.getShortName() != null)
       dimBuilder.setName(dim.getShortName());
-    dimBuilder.setLength(dim.getLength());
+    if (!dim.isVariableLength())
+      dimBuilder.setLength(dim.getLength());
     dimBuilder.setIsPrivate(!dim.isShared());
     dimBuilder.setIsVlen(dim.isVariableLength());
     dimBuilder.setIsUnlimited(dim.isUnlimited());
