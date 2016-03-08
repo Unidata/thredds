@@ -67,7 +67,7 @@ import java.util.List;
 @NcssRequestConstraint
 public class NcssParamsBean {
 
-  private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger("featureCollectionScan");
 
   private String accept;
 
