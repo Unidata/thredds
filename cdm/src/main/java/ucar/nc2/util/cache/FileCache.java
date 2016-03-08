@@ -33,12 +33,6 @@
 package ucar.nc2.util.cache;
 
 import net.jcip.annotations.GuardedBy;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.io.IOException;
-
 import net.jcip.annotations.ThreadSafe;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
@@ -46,7 +40,11 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Keep cache of open FileCacheable objects, for example NetcdfFile.
@@ -88,11 +86,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FileCache implements FileCacheIF {
   static protected final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileCache.class);
   static protected final org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
-  // static private ScheduledExecutorService exec;
-  static boolean debug = false;
-  static boolean debugPrint = false;
-  static boolean debugCleanup = false;
 
+  // static private ScheduledExecutorService exec;
+  static final boolean debug = false;
+  static final boolean debugPrint = false;
+  static final boolean debugCleanup = false;
+
+  // Shared mutable data. Access to it is limited to the following 3 synchronized methods.
   static private Timer timer;
 
   /**
@@ -106,11 +106,19 @@ public class FileCache implements FileCacheIF {
     timer = null;
   }
 
-  static private synchronized void startTimer() {
-    if (timer == null)
+  private static synchronized void scheduleAtFixedRate(TimerTask task, long delay, long period) {
+    if (timer == null) {
       timer = new Timer("FileCache");
+    }
+    timer.scheduleAtFixedRate(task, delay, period);
   }
 
+  private static synchronized void schedule(TimerTask task, long delay) {
+    if (timer == null) {
+      timer = new Timer("FileCache");
+    }
+    timer.schedule(task, delay);
+  }
 
   /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -174,8 +182,8 @@ public class FileCache implements FileCacheIF {
     boolean wantsCleanup = period > 0;
 
     if (wantsCleanup) {
-      startTimer();
-      timer.scheduleAtFixedRate(new CleanupTask(), 1000 * period, 1000 * period);
+      scheduleAtFixedRate(new CleanupTask(), 1000 * period, 1000 * period);
+
       if (cacheLog.isDebugEnabled())
         cacheLog.debug("FileCache " + name + " cleanup every " + period + " secs");
     }
@@ -318,8 +326,8 @@ public class FileCache implements FileCacheIF {
       cleanup(hardLimit);
 
     } else if (needSoft) {
-      startTimer();
-      timer.schedule(new CleanupTask(), 100); // immediate cleanup in 100 msec
+      schedule(new CleanupTask(), 100); // immediate cleanup in 100 msec
+
       if (debugCleanup) System.out.println("CleanupTask scheduled due to soft limit time=" + new Date());
     }
 
