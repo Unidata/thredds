@@ -32,33 +32,13 @@
  */
 package ucar.nc2.dataset;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Formatter;
-import java.util.List;
-import java.util.Set;
-
 import org.jdom2.Element;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.EnumTypedef;
-import ucar.nc2.FileWriter2;
-import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.Sequence;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
+import ucar.nc2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.ncml.NcMLReader;
@@ -68,6 +48,12 @@ import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.cache.FileFactory;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 /**
  * NetcdfDataset extends the netCDF API, adding standard attribute parsing such as
@@ -277,39 +263,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   // NetcdfFile caching
 
   static private ucar.nc2.util.cache.FileCache netcdfFileCache = null;
-  static private ucar.nc2.util.cache.FileFactory defaultNetcdfFileFactory = null;
-
-  /**
-   * Enable file caching. call this before calling acquireFile().
-   * When application terminates, call NetcdfDataset.shutdown().
-   *
-   * @param minElementsInMemory keep this number in the cache
-   * @param maxElementsInMemory trigger a cleanup if it goes over this number.
-   * @param period              (secs) do periodic cleanups every this number of seconds. set to < 0 to not cleanup
-   */
-  static public void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    netcdfFileCache = new ucar.nc2.util.cache.FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory, -1, period);
-    defaultNetcdfFileFactory = new MyNetcdfFileFactory();
-  }
-
-  /**
-   * Enable file caching. call this before calling acquireFile().
-   * When application terminates, call NetcdfDataset.shutdown().
-   *
-   * @param minElementsInMemory keep this number in the cache
-   * @param maxElementsInMemory trigger a cleanup if it goes over this number.
-   * @param hardLimit           if > 0, never allow more than this many elements. This causes a cleanup to be done in the calling thread.
-   * @param period              (secs) do periodic cleanups every this number of seconds.
-   */
-  static public void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit, int period) {
-    netcdfFileCache = new ucar.nc2.util.cache.FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory, hardLimit, period);
-    defaultNetcdfFileFactory = new MyNetcdfFileFactory();
-  }
-
-  static public void disableNetcdfFileCache() {
-    if (null != netcdfFileCache) netcdfFileCache.disable();
-    netcdfFileCache = null;
-  }
+  static private ucar.nc2.util.cache.FileFactory defaultNetcdfFileFactory = new MyNetcdfFileFactory();
 
   // no state, so a singleton is ok
   static private class MyNetcdfFileFactory implements ucar.nc2.util.cache.FileFactory {
@@ -319,11 +273,44 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
+   * Enable file caching. call this before calling acquireFile().
+   * When application terminates, call NetcdfDataset.shutdown().
+   *
+   * @param minElementsInMemory keep this number in the cache
+   * @param maxElementsInMemory trigger a cleanup if it goes over this number.
+   * @param period              (secs) do periodic cleanups every this number of seconds. set to < 0 to not cleanup
+   */
+  static public synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int period) {
+    initNetcdfFileCache(minElementsInMemory, maxElementsInMemory, -1, period);
+  }
+
+  /**
+   * Enable file caching. call this before calling acquireFile().
+   * When application terminates, call NetcdfDataset.shutdown().
+   *
+   * @param minElementsInMemory keep this number in the cache
+   * @param maxElementsInMemory trigger a cleanup if it goes over this number.
+   * @param hardLimit           if > 0, never allow more than this many elements. This causes a cleanup to be done in
+   *                            the calling thread.
+   * @param period              (secs) do periodic cleanups every this number of seconds.
+   */
+  static public synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit,
+                                                      int period) {
+    netcdfFileCache = new ucar.nc2.util.cache.FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory,
+                                                        hardLimit, period);
+  }
+
+  static public synchronized void disableNetcdfFileCache() {
+    if (null != netcdfFileCache) netcdfFileCache.disable();
+    netcdfFileCache = null;
+  }
+
+  /**
    * Call when application exits, if you have previously called initNetcdfFileCache.
    * This shuts down any background threads in order to get a clean process shutdown.
    */
-  static public void shutdown() {
-    if (netcdfFileCache != null) netcdfFileCache.clearCache(true);
+  static public synchronized void shutdown() {
+    disableNetcdfFileCache();
     FileCache.shutdown();
   }
 
@@ -332,7 +319,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *
    * @return File Cache or null if not enabled.
    */
-  static public ucar.nc2.util.cache.FileCacheIF getNetcdfFileCache() {
+  static public synchronized ucar.nc2.util.cache.FileCacheIF getNetcdfFileCache() {
     return netcdfFileCache;
   }
 
