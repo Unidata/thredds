@@ -473,6 +473,12 @@ public class GribCollectionMutable implements Closeable {
     return new VariableIndex(g, customizer, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
   }
 
+  public VariableIndex makeVariableIndex(GroupGC group, GribCollectionMutable.VariableIndex from) {
+    VariableIndex vip = new VariableIndex(group, from);
+    group.addVariable(vip);
+    return vip;
+  }
+
   public class VariableIndex implements Comparable<VariableIndex> {
     public final GroupGC group;     // belongs to this group
     public final int tableVersion;   // grib1 only : can vary by variable

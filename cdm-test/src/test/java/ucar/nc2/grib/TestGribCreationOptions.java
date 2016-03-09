@@ -49,7 +49,7 @@ import ucar.unidata.test.util.TestDir;
  * @since 3/11/2015
  */
 @Category(NeedsCdmUnitTest.class)
-public class GribTestCreationOptions {
+public class TestGribCreationOptions {
   @Test
   public void testTimeUnitOption() throws Exception {
     String config = TestDir.cdmTestDataDir + "ucar/nc2/grib/collection/hrrrConus3surface.xml";

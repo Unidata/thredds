@@ -136,7 +136,7 @@ public class TestGrib2CoordsMatch {
 
       GridDatatype gdt = gds.findGridByName("Geopotential_height_potential_vorticity_surface");
       assert gdt != null;
-      TestGribCollections.Count count = read(gdt);
+      TestGribCollectionMissing.Count count = read(gdt);
       System.out.printf("%n%50s == %d/%d%n", "total", count.nmiss, count.nread);
       long took = System.currentTimeMillis() - start;
       float r = ((float) took) / count.nread;
@@ -151,7 +151,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testDgexSRC() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2.ncx4");
+    TestGribCollectionMissing.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/DGEX_CONUS_12km_20141011_0600.grib2.ncx4");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 1009;
     assert count.nmiss == 0;
@@ -160,7 +160,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testDgexTP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx4");
+    TestGribCollectionMissing.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/20141011/dgex_46-20141011.ncx4");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 3140;
     assert count.nmiss == 0;
@@ -169,7 +169,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testDgexPofP() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx4");
+    TestGribCollectionMissing.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/dgex/dgex_46.ncx4");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
 
     // 2015/03/11: These tests were commented out, causing this test to be a no-op. Why?
@@ -182,7 +182,7 @@ public class TestGrib2CoordsMatch {
   public void testCfsrSingleFile() throws IOException {
     // CFSR dataset: 0-6 hour forecasts  x 124 runtimes (4x31)
     // there are  2 groups, likely miscoded, the smaller group has duplicate 0 hour, probably miscoded
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/cfrsAnalysis_46.ncx4");
+    TestGribCollectionMissing.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/cfsr/cfrsAnalysis_46.ncx4");
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 868;
     assert count.nmiss == 0;
@@ -191,7 +191,7 @@ public class TestGrib2CoordsMatch {
 
   @Test
   public void testGC() throws IOException {
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4");
+    TestGribCollectionMissing.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     //assert count.nread == 22909;                                    // 0/2535/23229 or 150/2535/22909
@@ -206,7 +206,7 @@ public class TestGrib2CoordsMatch {
   @Test
   @Ignore("test takes 45 minutes on jenkins - turn off for now")
   public void testPofG() throws IOException {                //ncss/GFS/CONUS_80km/GFS_CONUS_80km-CONUS_80km.ncx2
-    TestGribCollections.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4");
+    TestGribCollectionMissing.Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4");
 
     // that took 2497 secs total, 26.835802 msecs per record total == 671/10296/93052
 
@@ -231,7 +231,7 @@ public class TestGrib2CoordsMatch {
       assert iosp instanceof GribIosp;
       iospGrib = (GribIosp) iosp;
 
-      TestGribCollections.Count count = new TestGribCollections.Count();
+      TestGribCollectionMissing.Count count = new TestGribCollectionMissing.Count();
       int n = 1000;
       int first = 5500;
       readTimeRange(gdt, count, first, n);
@@ -250,10 +250,10 @@ public class TestGrib2CoordsMatch {
   ///////////////////////////////////////////////////////////////
   private GribIosp iospGrib;
 
-  private TestGribCollections.Count read(String filename) {
+  private TestGribCollectionMissing.Count read(String filename) {
     long start = System.currentTimeMillis();
     System.out.println("\n\nReading File " + filename);
-    TestGribCollections.Count allCount = new TestGribCollections.Count();
+    TestGribCollectionMissing.Count allCount = new TestGribCollectionMissing.Count();
     try (GridDataset gds = GridDataset.open(filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
@@ -261,7 +261,7 @@ public class TestGrib2CoordsMatch {
       iospGrib = (GribIosp) iosp;
 
       for (GridDatatype gdt: gds.getGrids()) {
-        TestGribCollections.Count count = read(gdt);
+        TestGribCollectionMissing.Count count = read(gdt);
         System.out.printf("%80s == %d/%d%n", gdt.getFullName(), count.nmiss, count.nread);
         allCount.add(count);
       }
@@ -288,7 +288,7 @@ public class TestGrib2CoordsMatch {
   private CalendarDate runtimeCoord;
   private ArrayDouble.D3 timeCoord2DBoundsArray;
 
-  private TestGribCollections.Count read(GridDatatype gdt) throws IOException {
+  private TestGribCollectionMissing.Count read(GridDatatype gdt) throws IOException {
     var_desc = gdt.findAttValueIgnoreCase("Grib2_Parameter_Name", "");
     Attribute paramAtt = gdt.findAttributeIgnoreCase("Grib2_Parameter");
     int disc = paramAtt.getNumericValue(0).intValue();
@@ -305,7 +305,7 @@ public class TestGrib2CoordsMatch {
     Dimension zDim = gdt.getZDimension();
 
     // loop over runtime
-    TestGribCollections.Count count = new TestGribCollections.Count();
+    TestGribCollectionMissing.Count count = new TestGribCollectionMissing.Count();
     if (rtDim != null) {
       CoordinateAxis1DTime rtcoord = gdc.getRunTimeAxis();
 
@@ -329,7 +329,7 @@ public class TestGrib2CoordsMatch {
   private CalendarDate timeCoordDate;
   private CalendarDate[] timeBoundsDate; // for intervals
 
-  private void readTimeRange(GridDatatype gdt, TestGribCollections.Count count, int start, int n) throws IOException {
+  private void readTimeRange(GridDatatype gdt, TestGribCollectionMissing.Count count, int start, int n) throws IOException {
     hasTime = true;
     CoordinateAxis tcoord = gdc.getTimeAxis();
     isTimeInterval = tcoord.isInterval();
@@ -349,7 +349,7 @@ public class TestGrib2CoordsMatch {
       }
     }
 
-  private void readTime(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
+  private void readTime(GridDatatype gdt, TestGribCollectionMissing.Count count, int rtIndex, Dimension timeDim, Dimension zDim) throws IOException {
     if (timeDim != null) {
       hasTime = true;
       CoordinateAxis tcoord = gdc.getTimeAxis();
@@ -403,7 +403,7 @@ public class TestGrib2CoordsMatch {
   private double[] edge;
   private boolean isLayer;
 
-  private void readVert(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, int tIndex, Dimension zDim) throws IOException {
+  private void readVert(GridDatatype gdt, TestGribCollectionMissing.Count count, int rtIndex, int tIndex, Dimension zDim) throws IOException {
     if (zDim != null) {
       hasVert = true;
       CoordinateAxis1D zcoord = gdc.getVerticalAxis();
@@ -424,7 +424,7 @@ public class TestGrib2CoordsMatch {
 
   private boolean show = false;
 
-  private void readAndTest(GridDatatype gdt, TestGribCollections.Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
+  private void readAndTest(GridDatatype gdt, TestGribCollectionMissing.Count count, int rtIndex, int tIndex, int zIndex) throws IOException {
     iospGrib.clearLastRecordRead();
 
     Array data = gdt.readDataSlice(rtIndex, -1, tIndex, zIndex, -1, -1);

@@ -281,7 +281,7 @@ public class ThreddsMetadataExtractor {
       if (maxDateRange == null)
         maxDateRange = dateRange;
       else
-        maxDateRange.extend(dateRange);
+        maxDateRange = maxDateRange.extend(dateRange);
     }
 
     return maxDateRange;

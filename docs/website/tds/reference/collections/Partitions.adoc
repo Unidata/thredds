@@ -1,5 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:toc:
 
 = Time Partitions
 
@@ -22,8 +23,20 @@ The time it takes to index also increases with the number of GRIB records (proba
 When your collection is changing, partitioned collections will only have to update the partitions that change.
 All of these are reasons you may want to use time partitioning.
 
-See <<TDM#,here>> for options on how to get your collections
-indexed.
+See <<TDM#,here>> for options on how to get your collections indexed.
+
+== Homogeneity requirements
+
+A _feature collection dataset_ is a homogeneous collection of records.
+That means that the metadata describing the dataset is approximately the
+same for all of the records. Each GRIB record is self-contained, in the
+sense that it does not reference other records, or an overall schema.
+The point of making a collection of GRIB records into a CDM dataset, is
+to allow the user to access the entire collection at once, using the
+netCDF API for multidimensionsal arrays. The user cannot, using the
+netCDF API, access the metadata for individual GRIB records. Instead, we
+assume that the metadata is uniform in the collection, and expose it
+with variable and global attributes.
 
 == Time Partitions
 
@@ -33,6 +46,7 @@ the reference time is usually the model run time). The partitioning
 is controlled by the *timePartition* attribute on the
 <**collection**> element inside the <**featureCollection**>, eg:
 
+[source,xml]
 -----------------------------------------------------------------------------------
   <featureCollection name="NCEP GFS model" featureType="GRIB1" path="test/all">
     <metadata inherited="true">
@@ -58,12 +72,12 @@ This is the only time you need to use a **dateFormatMark**.
 In order to use a directory partition, the directory structure must partition the data by reference time.
 That is, all of the data for any given reference time must be completely contained in the directory.
 Directories can be nested to any level.
-To use, put *timePartition="directory"*, or simply omit, as this is the default.
+To use, add the attribute *_timePartition="directory"_*, or simply omit, as this is the default.
 
 === File Partition
 
 In order to use a file partition, all of the records for a reference time must be contained in a single file.
-The common case is that each file contains all of the records for a single reference time. To use, put *timePartition="file"*.
+The common case is that each file contains all of the records for a single reference time. To use, put *_timePartition="file"_*.
 
 === Time Partition
 
@@ -74,19 +88,21 @@ The split-out of variables does not matter.
 
 If a collection is configured as a time partition, all of the filenames are read into memory at once.
 A date extractor must be specified, and is used to group the files into partitions.
-For example, if *timePartition = "1 year",* all of the files for each calendar year are made into a collection.
+For example, if *_timePartition = "1 year"_*, all of the files for each calendar year are made into a collection.
 The overall dataset is the collection of all of those yearly collections.
 
 === None Partition
 
-If a collection is configured with *timePartition="none"*, all of the records’ metadata (excluding the data itself) must be read into memory at once.
+If a collection is configured with *_timePartition="none"_*, all of the records’ metadata (excluding the data itself) will be read into memory at once.
 A single top-level collection is written.
 
 This option is good option for small-medium collections (say < 1M records) which are not time-partitioned by directory.
-Even then, this option takes the longest when indexing, and other strategies
-are preferred especially if the collection is dynamic and must be reindexed often.
+Note that this option takes the longest when indexing, and other strategies
+are preferred for large collections, especially if the collection is dynamic and must be reindexed often.
 
-=== Collection storage strategies
+== Collection storage strategies
+
+Assuming that you have control over how GRIB records are stored in the files, here are some best practices to consider.
 
 Generally, managing many small files has more overhead than managing
 smaller numbers of large files. For today’s disks, file sizes of of 100
@@ -105,39 +121,33 @@ are a small number of records for each runtime ( < a few tens of thousands?) you
 want to put more than one reference time in each file. Its essential
 that all the records for each runtime be in a single file.
 
-GRIB files are unordered collections of GRIB records. So you can
-concatenate GRIB files together just using the *cat* command. You can
-easily reorganize your collection (breaking up files requires GRIB-aware
-software, but is easy enough), just delete any old THREDDS indexes
-(.*gbx9* or .*ncx4*) and regenerate them with the TDM.
+GRIB files are unordered collections of GRIB records, and the CDM simply scans the files in the collection, looking for GRIB headers.
+So you can concatenate GRIB files together just using the *cat* command.
+You can also create tar files; the internal files are ignored and the tar file simply is seen as a collection of GRIB records.
+Other archives which dont compress are also useable. However zip and gzip are not currently useable in this way.
 
-=== Homogeneity requirements
+If you reorganize your file collection, delete any previous THREDDS index files
+(_.gbx9_ and _.ncx4_) and regenerate them with the TDM.
+If you store indexes seperate from the data, make sure you track down those directories and delete old index files.
 
-A _feature collection dataset_ is a homogeneous collection of records.
-That means that the metadata describing the dataset is approximately the
-same for all of the records. Each GRIB record is self-contained, in the
-sense that it does not reference other records, or an overall schema.
-The point of making a collection of GRIB records into a CDM dataset, is
-to allow the user to access the entire collection at once, using the
-netCDF API for multidimensionsal arrays. The user cannot, using the
-netCDF API, access the metadata for individual GRIB records. Instead, we
-assume that the metadata is uniform in the collection, and expose it
-with variable and global attributes.
+== Examples
 
-==
+=== Example 1 (timePartition="none"):
 
-== Example 1 (timePartition="none"):
+  <featureCollection featureType="GRIB1" name="gfsConus80_none" path="gribCollection/gfsConus80_none">
+    <collection spec="${cdmUnitTest}/gribCollections/gfs_conus80/**/.*grib1$" timePartition="none"/>
+  </featureCollection>
 
 [source,xml]
 ------------------------------------------------------------------------------------------------
-<featureCollection featureType="GRIB1" name="Dataset ds099.9" path="gribCollection/ds099.9"> # <1>
+<featureCollection featureType="GRIB1" name="gfsConus80_none" path="gribCollection/gfsConus80_none"> # <1>
  <metadata inherited="true"> # <2>
-      <documentation type="summary">The ds099.9 dataset blah blah blah</documentation>
+      <documentation type="summary">This dataset blah blah blah</documentation>
       <documentation xlink:href="http://www.rda.ucar.edu/rda/docs#ds099.9"
             xlink:title="RDA Information"/>
  </metadata>
 
- <collection name="ds099.9-none" # <3>
+ <collection name="ds099.9" # <3>
     spec="Q:/cdmUnitTest/gribCollections/rdavm/ds099.9/PofP/**/.*grib1" # <4>
     timePartition="none"/> # <5>
 
@@ -151,55 +161,24 @@ with variable and global attributes.
 The name is "human readable" and may change at will.
 Note that the *featureType* attribute must now equal _GRIB1_ or _GRIB2_, not plain _GRIB_.
 <2>  A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain, such as metadata.
+Do not set _dataType_ or _dataFormat_, as these are set automatically.
+Note that we dont set the serviceName, so the defualt service is used.
 <3>  The collection *name* should be short but descriptive, it must be unique across all collections on your TDS, and should not change.
 <4>  The <<CollectionSpecification#,collection specification>> defines the collection of files that are in this dataset.
-<5>  The <<Partitions#,partitionType>> is **none**.
+<5>  The partitionType is *_none_*.
 <6>  This *update* element tells the TDS to use the existing indices, and to read them only when an external trigger is sent.
 This is the default behavior, so could be ommitted
 <7>  This *tdm* element tells the <<TDM#,TDM>> to test every 15 minutes if the collection has changed, and to rewrite the indices when it has changed.
-<8>  <<GribConfig#,GRIB specific configuration>>.
+<8>  <<GribConfig#,GRIB specific configuration>>, in this case add both the full 2D time collection dataset and the Best, and also a resolver link to
+the latest file.
 
-== Example 1 (timePartition="none"):
+In this case, all files are read in by the TDS and a single collection index is made.
+Two datasets (TwoD and Best)are created for the entire collection. The simplified catalog is:
 
-[source,xml]
-------------------------------------------------------------------------------------------------
-<featureCollection featureType="GRIB1" name="Dataset ds099.9" path="gribCollection/ds099.9"> # <1>
- <metadata inherited="true"> # <2>
-      <documentation type="summary">The ds099.9 dataset blah blah blah</documentation>
-      <documentation xlink:href="http://www.rda.ucar.edu/rda/docs#ds099.9"
-            xlink:title="RDA Information"/>
- </metadata>
-
- <collection name="ds099.9-none" # <3>
-    spec="Q:/cdmUnitTest/gribCollections/rdavm/ds099.9/PofP/**/.*grib1" # <4>
-    timePartition="none"/> # <5>
-
-   <update startup="never" trigger="allow"/> # <6>
-   <tdm rewrite="test" rescan="0 0/15 * * * ? *" /> # <7>
-   <gribConfig datasetTypes="TwoD Latest Best" /> # <8>
-</featureCollection>
-------------------------------------------------------------------------------------------------
-
-<1>  A *featureCollection* must have a _name_, a _featureType_ and a _path_ (do *not* set an _ID_ attribute).
-The name is "human readable" and may change at will.
-Note that the *featureType* attribute must now equal _GRIB1_ or _GRIB2_, not plain _GRIB_.
-<2>  A featureCollection is an InvDataset, so it can contain any elements an InvDataset can contain, such as metadata.
-<3>  The collection *name* should be short but descriptive, it must be unique across all collections on your TDS, and should not change.
-<4>  The <<CollectionSpecification#,collection specification>> defines the collection of files that are in this dataset.
-<5>  The <<Partitions#,partitionType>> is **none**.
-<6>  This *update* element tells the TDS to use the existing indices, and to read them only when an external trigger is sent.
-This is the default behavior, so could be ommitted
-<7>  This *tdm* element tells the <<TDM#,TDM>> to test every 15 minutes if the collection has changed, and to rewrite the indices when it has changed.
-<8>  <<GribConfig#,GRIB specific configuration>>.
-
-=== Resulting Datasets:
-
-The above example generates a TwoD and Best dataset for the entire collection.
-
-The simplified catalog is:
+image::../images/Partition-none.png[]
 
 [source,xml]
------------------------------------------------------------------------------------------------------------------------------------------------------------
+----
   <dataset name="NCEP GFS Puerto_Rico (191km)">
     <metadata inherited="true">
       <serviceName>VirtualServices</serviceName>
@@ -216,51 +195,32 @@ The simplified catalog is:
       <serviceName>latest</serviceName>
     </dataset>
   </dataset>
------------------------------------------------------------------------------------------------------------------------------------------------------------
+----
 
-The catalogRefs are links to virtual datasets, formed from the
-collection of records for the specified reference time, and independent
-of which file stores them.
-
-== Example 2 (timePartition="directory"):
-
-Now suppose that we modify the above example and use timePartition="directory":
+=== Example 2 (timePartition="directory"):
 
 [source,xml]
---------------------------------------------------------------------------------------------------------------------------------------
+----
 <featureCollection featureType="GRIB1" name="rdavm partition directory" path="gribCollection/pofp">
-  <metadata inherited="true">
-    <serviceName>all</serviceName>
-    <dataType>Grid</dataType>
-  </metadata>
-
-  <collection name="ds083.2-directory" spec="Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1" timePartition="directory"/>
-  <update startup="test" />
-  <gribConfig datasetTypes="TwoD Latest Best" />
+  <collection name="ds083.2-directory" spec="Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1" timePartition="directory"/> # <1>
 </featureCollection>
+----
 
-<featureCollection name="NAM-Polar90" featureType="GRIB" path="grib/NCEP/NAM/Polar90">
-   <metadata inherited="true">
-     <dataFormat>GRIB-2</dataFormat>
-   </metadata>
-   <collection spec="G:/mlode/polar90/.*grib2$"
-1)     timePartition="file"
-2)     dateFormatMark="#NAM_Polar_90km_#yyyyMMdd_HHmm" />
-3) <update startup="true" trigger="allow"/>
+<1>  The collection is divided into partitions by directory. In order to use this, you cannot have two GRIB records with the same
+reference time in different directories.
+
+=== Example 3 (timePartition="file"):
+
+[source,xml]
+----
+<featureCollection featureType="GRIB1" name="rdavm partition directory" path="gribCollection/pofp">
+  <collection name="ds083.2-directory" spec="Q:/cdmUnitTest/gribCollections/rdavm/ds083.2/PofP/**/.*grib1" timePartition="file"/> # <1>
 </featureCollection>
---------------------------------------------------------------------------------------------------------------------------------------
+----
 
-1.  The collection is divided into partitions. In this case, each file
-becomes a seperate partition. In order to use this, each file must
-contain GRIB records from a single runtime.
-2.  The starting time of the partition must be encoded into the
-filename. One must define a date extractor in the
-<<CollectionSpecification#,collection specification>>, or by using
-a dateFormatMark, as in this example.
-3.  In this example, the collection is readied when the server starts
-up. Manual triggers for updating are enabled.
+<1>  The collection is divided into partitions by files. In order to use this, you cannot have two GRIB records with the same
+reference time in different files.
 
-=== Resulting Datasets:
 
 A time partition generates one collection dataset, one dataset for each
 partition, and one dataset for each individual file in the collection:
@@ -323,7 +283,7 @@ So the datasets that are generated from a Time Partition with **name**,
 |path/__files__/filename
 |=======================================================================
 
-== Example 3 (Multiple Groups)
+=== Example 3 (Multiple Groups)
 
 When a Grib Collection contains multiple horizontal domains (i.e.
 distinct Grid Definition Sections (GDS)), each domain gets placed into a
@@ -368,7 +328,7 @@ dataset has only a single (unnamed, aka __root__) group.
 <gribConfig> element to name them (see <<GribConfig#,below>> for
 details).
 
-=== Resulting Datasets:
+==== Resulting Datasets:
 
 For each group, this generates one collection dataset, and one dataset
 for each individual file in the group:
@@ -422,7 +382,7 @@ So the datasets that are generated from a Grib Collection with
 |path/_files_/filename
 |=======================================================================
 
-== Example 4 (Time Partition with Multiple Groups):
+=== Example 4 (Time Partition with Multiple Groups):
 
 Here is a time partitioned dataset with multiple groups:
 
@@ -457,7 +417,7 @@ for details).
 5.  Exclude GRIB records that have a time coordinate interval of (0,0)
 (see <<GribConfig#,below>> for details).
 
-=== Resulting Datasets:
+==== Resulting Datasets:
 
 A time partition with multiple groups generates an _overall collection
 dataset_ for each group, a collection dataset for each group in each
@@ -529,4 +489,4 @@ So the datasets that are generated from a Time Partition with **name**,
 
 '''''
 
-image:../../thread.png[image] This document was last updated Jan 2016
+image:../../thread.png[image] This document was last updated MAr 2016

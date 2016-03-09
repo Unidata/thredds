@@ -42,6 +42,7 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 
+import java.io.Closeable;
 import java.util.*;
 import java.io.IOException;
 
@@ -60,7 +61,7 @@ import java.io.IOException;
  * @since Jan 11, 2010
  */
 @ThreadSafe
-public class Fmrc {
+public class Fmrc implements Closeable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Fmrc.class);
 
   /**
@@ -142,7 +143,8 @@ public class Fmrc {
   }
 
   public void close() {
-    manager.close();
+    if (manager != null)
+      manager.close();
   }
 
   // exposed for debugging

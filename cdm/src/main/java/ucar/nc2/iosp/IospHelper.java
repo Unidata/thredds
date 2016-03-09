@@ -277,7 +277,7 @@ public class IospHelper {
    * Read data subset from ByteBuffer, create primitive array of size Layout.getTotalNelems.
    * Reading is controlled by the Layout object.
    *
-   * @param layout    handles skipping around in the file, privide ByteBuffer to read from
+   * @param layout    handles skipping around in the file, provide ByteBuffer to read from
    * @param dataType  dataType of the variable
    * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
    * @return primitive array with data read in

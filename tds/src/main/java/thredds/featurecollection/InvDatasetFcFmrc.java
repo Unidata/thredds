@@ -108,6 +108,13 @@ public class InvDatasetFcFmrc extends InvDatasetFeatureCollection {
     state = new State(null);
   }
 
+  @Override
+  public void close() {
+    if (fmrc != null)
+      fmrc.close();
+    super.close();
+  }
+
   /* @Override  // overriding superclass -WHY?
   public void update(CollectionUpdateType force) {
     fmrc.update();       // so when is work done?

@@ -159,11 +159,22 @@ public class TestGribIndexCreation {
   }
 
   @Test
-  public void testGFSconus80() throws IOException {
-    FeatureCollectionConfig config = new FeatureCollectionConfig("gfsConus80_46", "test/gfsConus80", FeatureCollectionType.GRIB1,
+  public void testGFSconus80_file() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("gfsConus80_file", "test/gfsConus80", FeatureCollectionType.GRIB1,
             TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null,  null, "file", null);
 
-    System.out.printf("===testGFSconus80 %n");
+    System.out.printf("===testGFSconus80_file %n");
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
+    System.out.printf("changed = %s%n", changed);
+  }
+
+  @Test
+  public void testGFSconus80_dir() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("gfsConus80_dir", "test/gfsConus80", FeatureCollectionType.GRIB1,
+            TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/**/.*grib1", null, null,  null, "directory", null);
+
+    System.out.printf("===testGFSconus80_dir %n");
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     boolean changed = GribCdmIndex.updateGribCollection(config, updateMode, logger);
     System.out.printf("changed = %s%n", changed);

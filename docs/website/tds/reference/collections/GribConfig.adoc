@@ -1,5 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:toc:
 
 = GRIB Collection Configuration
 
@@ -38,11 +39,11 @@ the TDS starts.
 
 These instructions are tailored for TDS users. To work with Grib
 Collections in client software using the CDM stack,
-see <<../../../netcdf-java/reference/formats/GribFiles#,CDM Grib Files>>.
+see <<../../../netcdf-java/reference/formats/GribFiles.adoc#,CDM Grib Files>>.
 
 == Stage One: GribCollection Creation
 
-=== *gdsHash*: Fix errors in GDS encoding
+=== *gdsHash*: Fix errors in GDS encoding [[gdsHash]]
 
 [source,xml]
 -----------------------------------------------------------------
@@ -94,7 +95,7 @@ the gdsHash to 0:
 
 will ignore any records with GDS hashcode 1450218978.
 
-=== *pdsHash*: Control how PDS are made into variables
+=== *pdsHash*: Control how PDS are made into variables [[pdsHash]]
 
 [source,xml]
 -----------------------------------------------------------------------
@@ -177,7 +178,7 @@ different centers will be ignored.
  </pdsHash>
 ------------------------------
 
-=== *intvFilter*: filter on Time Interval
+=== *intvFilter*: filter on Time Interval [[intvFilter]]
 
 [source,xml]
 --------------------------------------------------------------------------
@@ -265,7 +266,7 @@ Note that GRIB-1 uses ids of center-subcenter-version-param, eg "7-4-2-132", whi
 
 Also see <<../../../netcdf-java/reference/formats/GribFiles#intvFilter,CDM docs>>.
 
-=== *option*: set miscellaneous values
+=== *option*: set miscellaneous values [[option]]
 
 Miscellaneous values that control how the GribCollection is made can be
 set with *option* elements. All option elements are key / value pairs.
@@ -302,7 +303,7 @@ at the leaf collections (eg. a file or directory).
 
 == Stage Two: NetcdfFile Creation
 
-=== *gdsName*: Rename groups
+=== *gdsName*: Rename groups [[gdsName]]
 
 When a dataset has multiple groups, the groups are automatically named
 by the projection used and the horizontal dimension size, eg
@@ -334,8 +335,7 @@ then modify:
 <gdsName hash='1450192070' groupName='Gaussian latitude/longitude-576X1152'/>
 -----------------------------------------------------------------------------
 
-
-=== *datasetTypes* (TDS only)
+=== *datasetTypes* (TDS only) [[datasetTypes]]
 
 Define which datasets are available in the TDS catalog. By default, all are enabled.
 
@@ -350,7 +350,7 @@ Define which datasets are available in the TDS catalog. By default, all are enab
 <gribConfig datasetTypes="TwoD Best Latest" />
 ----------------------------------------------
 
-=== *latestNamer* (TDS only)
+=== *latestNamer* (TDS only) [[latestNamer]]
 
 Rename the latest file dataset
 
@@ -364,7 +364,7 @@ The datasetTypes options _*LatestFile*_ and __*Files*__, must be enabled. Note t
 </gribConfig>
 --------------------------------------
 
-=== *bestNamer* (TDS only)
+=== *bestNamer* (TDS only) [[bestNamer]]
 
 Rename the Best dataset
 
@@ -378,7 +378,7 @@ The datasetTypes *_Best_* option must be selected. Note that this does not affec
 </gribConfig>
 -----------------------------------
 
-=== *filesSort* (TDS only)
+=== *filesSort* (TDS only) [[fileSort]]
 
 Sort the dataset listings under the Files dataset
 
@@ -397,7 +397,7 @@ GRIB Feature Collection behavior is the same as __increasing = True__).
 The gribConfig schema definition, version 1.2
 
 see:
-http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd]
+http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd]
 
 [source,xml]
 --------------------------------------------------------------------------
@@ -450,7 +450,7 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unid
     </xsd:complexType>
   </xsd:element>
 
-6)<xsd:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+6)<xsd:element name="option" minOccurs="0" maxOccurs="unbounded">
      <xsd:complexType>
        <xsd:attribute name="name" type="xsd:string" use="required"/>
        <xsd:attribute name="value" type="xsd:string" use="required"/>
@@ -489,19 +489,19 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[http://www.unid
 </xsd:simpleType>
 ----------------------------------------
 
-. link:#gdsHash[gdsHash]: Fix errors in GDS encoding
-. link:#gdsName[gdsName]: Set group names
-. link:#pdsHash[pdsHash]: Control how GRIB records are grouped into variables
-. link:#intvFilter[intvFilter]: control how time intervals are handled
+. <<gdsHash>>
+. <<gdsName>>
+. <<pdsHash>>
+. <<intvFilter>>
 . timeUnitConvert: do not use
-. link:#parameter[parameter]: set miscellaneous values
-. link:#gdsName[latestName]: Rename the latest file dataset
-. link:#bestNamer[bestNamer]: Rename the best file dataset
-. link:#datasetTypes[datasetTypes]: which datasets appear in the TDS catalog:
+. <<option>>: set miscellaneous values
+. <<latestNamer>>
+. <<bestNamer>>: Rename the best file dataset
+. <<datasetTypes>>: which datasets appear in the TDS catalog:
 ..  *TwoD:* the full dataset with two time dimensions, reference time and forecast time.
-..  **Best**: the "best timeseries" of the collection dataset
-..  **Files**: each physical file is exposed as a dataset that can be downloaded.
-..  **Latest**: add latest resolver dataset to Files catalog (**Files** must also be selected)
+..  *Best*: the "best timeseries" of the collection dataset
+..  *Files*: each physical file is exposed as a dataset that can be downloaded.
+..  *Latest*: add latest resolver dataset to Files catalog (**Files** must also be selected)
 
 ''''
-image:../../thread.png[image] This document was last updated April 2015
+image:../../thread.png[image] This document was last updated March 2016

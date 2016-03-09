@@ -104,7 +104,7 @@ public class TestGribCollectionsBig {
 
   @Test
   public void testSRC() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx4");
+    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/2008.10/ds083.2_Aggregation-2008.10.ncx4");
 
     // roberto:    that took 6 secs total, 0.196227 msecs per record
     // jenkins:    that took 2 secs total, 0.083042 msecs per record
@@ -118,7 +118,7 @@ public class TestGribCollectionsBig {
   @Ignore("total == 366994/418704")
   @Test
   public void testTP() throws IOException {
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx4");
+    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/2008/ds083.2_Aggregation-2008.ncx4");
 
     // roberto:
     // jenkins:  that took 32 secs total, 0.077869 msecs per record
@@ -133,7 +133,7 @@ public class TestGribCollectionsBig {
   @Test
   public void testPofP() throws IOException {
     RandomAccessFile.setDebugLeaks(true);
-    TestGribCollections.Count count = TestGribCollections.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation.ncx4");
+    TestGribCollectionMissing.Count count = TestGribCollectionMissing.read(topdir + "/ds083.2/grib1/ds083.2_Aggregation.ncx4");
 
     // ROBERTO (local drive only, samba fails) that took that took 2177 secs total, 0.156383 msecs per record
     // 2D only      486523/6476133

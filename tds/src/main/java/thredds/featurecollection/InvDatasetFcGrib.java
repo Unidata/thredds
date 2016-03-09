@@ -129,6 +129,20 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
   }
 
   @Override
+  public void close() {
+    if (state != null) {
+      StateGrib stateGrib = (StateGrib) state;
+      if (stateGrib.gribCollection != null)
+        try {
+          stateGrib.gribCollection.close();
+        } catch (IOException e) {
+          logger.error("Cant close {}", stateGrib.gribCollection.getName(), e);
+        }
+    }
+    super.close();
+  }
+
+  @Override
   protected void _showStatus(Formatter f, boolean summaryOnly, String type) throws IOException {
     StateGrib localState;
     synchronized (lock) {
@@ -526,7 +540,7 @@ public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
     for (GribCollectionImmutable.GroupGC group : groups) {
       CalendarDateRange gc = group.makeCalendarDateRange();
       if (gcAll == null) gcAll = gc;
-      else gcAll.extend(gc);
+      else gcAll = gcAll.extend(gc);
     }
     return gcAll;
   }

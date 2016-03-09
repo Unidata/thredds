@@ -7,10 +7,11 @@
 == Overview
 
 GRIB Feature Collection Datasets are collections of GRIB records, which contain gridded data, typically from numeric model output.
-Because of the complexity of how GRIB data is written and stored, the TDS has developed specialized handling of GRIB datasets called *_GRIB Feature Collections_*.
+Because of the complexity of how GRIB data is written and stored, the TDS has developed specialized handling of GRIB datasets called
+*_GRIB Feature Collections_*.
 
 * The user specifies the collection of GRIB-1 or GRIB-2 files, and the software turns them into a dataset.
-* New indexing scheme allows fast access and scalability to very large datasets.
+* The indexes, once written, allow fast access and scalability to very large datasets.
 * Multiple horizontal domains are supported and placed into separate groups.
 * Interval time coordinates are fully supported.
 
@@ -20,16 +21,16 @@ Also see:
 * <<GribConfig#,GRIB specific configuration>>
 * <<GribCollectionFaq#,GRIB Collection FAQs>>
 * <<Partitions#,Partitions>>
-* <<../../../netcdf-java/reference/formats/GribFiles#,CDM GRIB Collection Processing>>
+* <<../../../netcdf-java/reference/formats/GribFiles.adoc#,CDM GRIB Collection Processing>>
 
 === Multiple Dataset Collections
 
-When a Grib Collection contains multiple runtimes, and the valid times (forecast times) overlap, a TwoD time dataset is created.
-From that, a Best time dataset is also created. One has the option of serving both or either of these.
+When a GRIB Collection contains multiple runtimes, and the valid times (forecast times) overlap, a TwoD time dataset is created.
+From that, a Best time dataset is also created.
 
 === Multiple Groups
 
-When a Grib Collection contains multiple horizontal domains (i.e. distinct Grid Definition Sections (GDS)),
+When a GRIB Collection contains multiple horizontal domains (i.e. distinct Grid Definition Sections (GDS)),
 each domain gets placed into a seperate group (CDM) or Dataset (TDS).
 
 === Generated URLs
@@ -43,7 +44,7 @@ Collection endpoints are of the form:
 where:
 
 . *path* : collection path
-. *partitionName* : used to disambiguate multiple dataset types within a collection: *_TwoD*, *Best*, *TP_*, or empty
+. *partitionName* : used to disambiguate multiple dataset types within a collection: *_TwoD* or *Best*
 . *groupName* : used only when there are multiple groups (horizontal coordinates): _group name_ or empty
 
 

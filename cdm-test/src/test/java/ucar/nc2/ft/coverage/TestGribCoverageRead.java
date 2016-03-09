@@ -59,7 +59,7 @@ public class TestGribCoverageRead {
 
   @Test
   public void TestTwoDRead() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     System.out.printf("open %s%n", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
@@ -91,7 +91,7 @@ public class TestGribCoverageRead {
 
   @Test
   public void TestBestRead() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     System.out.printf("open %s%n", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
@@ -221,7 +221,7 @@ public class TestGribCoverageRead {
 
   @Test
   public void TestPofPRead() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     System.out.printf("open %s%n", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {

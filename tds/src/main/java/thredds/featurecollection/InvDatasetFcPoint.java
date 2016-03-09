@@ -87,6 +87,17 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     this.wantDatasets = config.pointConfig.datasets;
   }
 
+  @Override
+  public void close() {
+    if (fd != null) {
+      try {
+        fd.close();
+      } catch (IOException e) {
+        logger.error("Cant close {}", fd.getLocation(), e);
+      }
+    }
+    super.close();
+  }
 
   @Override
   public FeatureDatasetPoint getPointDataset(String matchPath) {
@@ -96,7 +107,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
   @Override
   public void updateCollection(State localState, CollectionUpdateType force) {
     try {
-      ((UpdateableCollection)fd).update();
+      ((UpdateableCollection) fd).update();
     } catch (IOException e) {
       logger.error("update failed", e);
     }
@@ -130,7 +141,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     top.transferInheritedMetadata(parent); // make all inherited metadata local
     top.setName(name);
 
-    Service topService = allowedServices.getStandardCollectionServices( fd.getFeatureType());
+    Service topService = allowedServices.getStandardCollectionServices(fd.getFeatureType());
     top.addServiceToCatalog(topService);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();

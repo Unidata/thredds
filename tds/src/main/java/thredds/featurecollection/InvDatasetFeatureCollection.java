@@ -55,10 +55,7 @@ import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.log.LoggerFactoryImpl;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -75,7 +72,7 @@ import java.util.*;
  * @since Mar 3, 2010
  */
 @ThreadSafe
-public abstract class InvDatasetFeatureCollection {
+public abstract class InvDatasetFeatureCollection implements Closeable {
   private static org.slf4j.Logger oneLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
   static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
 
@@ -212,6 +209,11 @@ public abstract class InvDatasetFeatureCollection {
       }
     }
     virtualService = new Service("VirtualServices", "", ServiceType.Compound.toString(), null, null, nestedOk, orgService.getProperties());
+  }
+
+  public void close() {
+    if (datasetCollection != null)
+      datasetCollection.close();
   }
 
   //////////////////////////////////////////////////////

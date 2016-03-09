@@ -198,7 +198,7 @@ public class DtCoverageDataset implements Closeable {
         if (dateRangeMax == null)
           dateRangeMax = dateRange;
         else
-          dateRangeMax.extend(dateRange);
+          dateRangeMax = dateRangeMax.extend(dateRange);
       }
     }
   }

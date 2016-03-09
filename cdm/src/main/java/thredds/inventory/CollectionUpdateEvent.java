@@ -4,7 +4,8 @@ package thredds.inventory;
 import net.jcip.annotations.Immutable;
 
 /**
- * Events when a fc should be updated
+ * Events when a fc should be updated.
+ * guava.EventBus wires together listeners and sources, and
  *
  * @author caron
  * @since 6/30/2015
