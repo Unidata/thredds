@@ -200,8 +200,13 @@ public class DataRoot {
 
     // remove the matching part, the rest is the "data directory"
     String locationReletive = reqPath.substring(rootPath.length());
+    if (locationReletive.startsWith("/files"))
+      locationReletive = locationReletive.substring(7); // LOOK maybe only if its an fc ?? its a kludge here
+
     if (locationReletive.startsWith("/"))
       locationReletive = locationReletive.substring(1);
+
+
 
     if (!rootLocation.endsWith("/"))
       rootLocation = rootLocation + "/";

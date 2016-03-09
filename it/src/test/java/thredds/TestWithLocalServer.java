@@ -60,8 +60,8 @@ public class TestWithLocalServer {
     return server + StringUtils.stripStart(path, "/\\");  // Remove leading slashes from path.
   }
 
-  public static byte[] getContent(String endpoint, int expectCodes, ContentType expectContentType) {
-    return getContent(null, endpoint, new int[] {expectCodes}, expectContentType);
+  public static byte[] getContent(String endpoint, int expectCode, ContentType expectContentType) {
+    return getContent(null, endpoint, new int[] {expectCode}, expectContentType);
   }
 
   public static byte[] getContent(String endpoint, int[] expectCodes, ContentType expectContentType) {
