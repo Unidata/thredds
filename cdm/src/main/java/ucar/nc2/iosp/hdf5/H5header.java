@@ -3646,7 +3646,7 @@ public class H5header {
       data = new int[nValues];
       for (int i = 0; i < nValues; i++)
         data[i] = raf.readInt();
-      if ((nValues & 1) != 0)   // check if odd
+      if ((version == 1) && (nValues & 1) != 0)   // check if odd
         raf.skipBytes(4);
 
       if (debug1 && (debugOut != null)) debugOut.println(this);
