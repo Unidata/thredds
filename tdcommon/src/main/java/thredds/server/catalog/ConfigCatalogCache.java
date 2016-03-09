@@ -47,12 +47,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
  * Keep a cache of ConfigCatalog objects.
- * Uses guava com.google.common.cache
+ * Uses guava com.google.common.cache.
+ * If cache miss, call ConfigCatalogBuilder
  *
  * @author caron
  * @since 3/21/2015
@@ -94,16 +94,17 @@ public class ConfigCatalogCache implements CatalogReader {
     cache.put(catKey, cat);
   }
 
+  /*
   public void invalidate(String catKey) throws IOException {
     cache.invalidate(catKey);
   }
 
-  public void invalidateAll() {
-    cache.invalidateAll();
-  }
-
   public ConfigCatalog getIfPresent(String catKey) throws IOException {
     return cache.getIfPresent(catKey);
+  } */
+
+  public void invalidateAll() {
+    cache.invalidateAll();
   }
 
   public ConfigCatalog getFromAbsolutePath(String catalogFullPath) throws IOException {

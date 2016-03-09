@@ -102,7 +102,7 @@ public class TdsRequestedDataset {
   }
 
   public static File getFile(String reqPath) {
-    String location = getLocationFromRequestPath(reqPath);  // LOOK maybe go through DatasetManager
+    String location = getLocationFromRequestPath(reqPath);
     return (location == null) ? null : new File(location);
   }
 

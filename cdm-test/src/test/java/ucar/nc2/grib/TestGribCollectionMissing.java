@@ -63,7 +63,7 @@ import java.util.List;
  * @since 10/13/2014
  */
 @Category(NeedsCdmUnitTest.class)
-public class TestGribCollections {
+public class TestGribCollectionMissing {
 
   @BeforeClass
   static public void before() {
@@ -138,7 +138,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofG_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_46-20141024.ncx4");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/20141024/gfsConus80_dir-20141024.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 28488 : count.nread;  // 0/612/28488
@@ -148,7 +148,7 @@ public class TestGribCollections {
 
   @Test
   public void testPofP_Grib1() throws IOException {
-    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4");
+    Count count = read(TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_dir.ncx4");
 
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
     assert count.nread == 50864 : count.nread;

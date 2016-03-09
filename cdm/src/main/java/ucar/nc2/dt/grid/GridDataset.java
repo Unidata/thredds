@@ -202,7 +202,7 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
         if (dateRangeMax == null)
           dateRangeMax = dateRange;
         else
-          dateRangeMax.extend(dateRange);
+          dateRangeMax = dateRangeMax.extend(dateRange);
       }
     }
   }

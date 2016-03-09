@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
+import thredds.featurecollection.FeatureCollectionCache;
 import thredds.server.admin.DebugCommands;
 import thredds.server.catalog.*;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
@@ -87,6 +88,9 @@ public class ConfigCatalogInitialization {
 
   @Autowired
   private DebugCommands debugCommands;
+
+  @Autowired
+  private FeatureCollectionCache fcCache;
 
   ///////////////////////////////////////////////////////
   public enum ReadMode {always, check, triggerOnly;
@@ -157,6 +161,7 @@ public class ConfigCatalogInitialization {
     catPathMap = new HashSet<>();
     fcNameMap = new HashMap<>();
     if (ccc != null) ccc.invalidateAll(); // remove anything in cache
+    if (fcCache != null) fcCache.invalidateAll(); // remove anything in cache
 
     if (!isStartup && readMode == ReadMode.always) trackerNumber++;  // must write a new database if TDS is already running and rereading all
     if (!isDebugMode || this.datasetTracker == null)

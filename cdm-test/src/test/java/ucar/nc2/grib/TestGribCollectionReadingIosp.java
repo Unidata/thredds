@@ -60,7 +60,7 @@ public class TestGribCollectionReadingIosp {
 
   @Test
   public void testReadBest() throws IOException, InvalidRangeException {
-    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_46.ncx4";
+    String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     String covName = "Best/Temperature_height_above_ground";
     System.out.printf("open %s var=%s%n", endpoint, covName);
 

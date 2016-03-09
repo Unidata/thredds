@@ -78,5 +78,17 @@
     <collection spec="${cdmUnitTest}/gribCollections/Emptiness/GFS_CONUS_80km_#yyyyMMdd_HHmm#\.grib1$" timePartition="file"/>
   </featureCollection>
 
+  <!-- used in Partition.adoc -->
+  <featureCollection featureType="GRIB1" name="Example partition=none" path="gribCollection/gfsConus80_none">
+    <collection name="gfsConus80_none" spec="${cdmUnitTest}/gribCollections/gfs_conus80/**/.*grib1$" timePartition="none"/>
+  </featureCollection>
+
+  <featureCollection featureType="GRIB1" name="Example partition=directory" path="gribCollection/gfsConus80_dir">
+    <collection name="gfsConus80_dir" spec="${cdmUnitTest}/gribCollections/gfs_conus80/**/.*grib1$" timePartition="directory"/>
+  </featureCollection>
+
+  <featureCollection featureType="GRIB1" name="Example partition=file" path="gribCollection/gfsConus80_file">
+    <collection name="gfsConus80_file" spec="${cdmUnitTest}/gribCollections/gfs_conus80/**/.*grib1$" timePartition="file"/>
+  </featureCollection>
 
 </catalog>

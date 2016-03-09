@@ -58,7 +58,7 @@ import java.util.*;
  * @author caron
  * @since 2/21/14
  */
-abstract class GribPartitionBuilder  {
+abstract class GribPartitionBuilder {
 
   protected final PartitionManager partitionManager; // defines the partition
   protected String name;            // collection name
@@ -124,7 +124,7 @@ abstract class GribPartitionBuilder  {
   ///////////////////////////////////////////////////
   // build the index
 
-   // return true if changed, exception on failure
+  // return true if changed, exception on failure
   public boolean createPartitionedIndex(CollectionUpdateType forcePartition, Formatter errlog) throws IOException {
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 
@@ -146,22 +146,27 @@ abstract class GribPartitionBuilder  {
     PartitionCollectionMutable.Partition canon = result.getPartition(idx);
     logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
+    CalendarDateRange dateRangeAll = null;
     try (GribCollectionMutable gc = canon.makeGribCollection()) {  // LOOK open/close canonical partition
       if (gc == null)
-        throw new IllegalStateException("canon.makeGribCollection failed on =" + result.showLocation() + " "+ canon.getName()+"; errs="+errlog);
+        throw new IllegalStateException("canon.makeGribCollection failed on =" + result.showLocation() + " " + canon.getName() + "; errs=" + errlog);
 
-          // copy info from canon gribCollection to result partitionCollection
+      // copy info from canon gribCollection to result partitionCollection
       result.copyInfo(gc);
       result.isPartitionOfPartitions = (gc instanceof PartitionCollectionMutable);
+
+      if (dateRangeAll == null) dateRangeAll = gc.dateRange;
+      else dateRangeAll = dateRangeAll.extend(gc.dateRange);
     }
+    result.dateRange = dateRangeAll;
 
     // check consistency across vert and ens coords
     // create partitioned variables
     // partition index is used - do not resort partitions
-    PartitionCollectionMutable.Dataset ds2D = makeDataset2D(errlog);
+    GribCollectionMutable.Dataset ds2D = makeDataset2D(errlog);
     if (ds2D == null) {
       errlog.format(" ERR makeDataset2D failed, index not written on %s%n", result.showLocation());
-      throw new IllegalStateException("makeDataset2D failed, index not written on =" + result.showLocation()+"; errs="+errlog);
+      throw new IllegalStateException("makeDataset2D failed, index not written on =" + result.showLocation() + "; errs=" + errlog);
     }
 
     // Make Best for a TwoD
@@ -219,7 +224,7 @@ abstract class GribPartitionBuilder  {
     boolean rangeOverlaps = false;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
       try (GribCollectionMutable gc = tpp.makeGribCollection()) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
-                                // note its not recursive, maybe leave open, or cache; actually we keep a pointer to the partition's group in the GroupPartitions
+        // note its not recursive, maybe leave open, or cache; actually we keep a pointer to the partition's group in the GroupPartitions
         CoordinateRuntime partRuntime = gc.masterRuntime;
         runtimeAllBuilder.addAll(partRuntime);  // make a complete set of runtime Coordinates
         masterRuntimes.add(partRuntime);        // make master runtimes
@@ -231,7 +236,7 @@ abstract class GribPartitionBuilder  {
           dateRangeAll = gc.dateRange;
         else if (!rangeOverlaps) {
           rangeOverlaps = dateRangeAll.intersects(gc.dateRange);
-          dateRangeAll.extend(gc.dateRange);
+          dateRangeAll = dateRangeAll.extend(gc.dateRange);
         }
 
         /* see if its only got one time coord
@@ -272,8 +277,8 @@ abstract class GribPartitionBuilder  {
 
     if (!rangeOverlaps)
       ds2D.gctype = GribCollectionImmutable.Type.MRUTP;
-    //else if (allAre1D)
-    //  ds2D.gctype = GribCollectionImmutable.Type.MRSTP;
+      //else if (allAre1D)
+      //  ds2D.gctype = GribCollectionImmutable.Type.MRSTP;
     else
       ds2D.gctype = GribCollectionImmutable.Type.TwoD;
 
@@ -288,7 +293,7 @@ abstract class GribPartitionBuilder  {
       partIdx++;
     }
 
-     // do each horiz group
+    // do each horiz group
     for (GroupPartitions gp : groupPartitions) {
       GribCollectionMutable.GroupGC resultGroup = gp.resultGroup;
       gp.makeVariableIndexPartitioned();
@@ -310,7 +315,7 @@ abstract class GribPartitionBuilder  {
           GribCollectionMutable.VariableIndex vi = group.variList.get(varIdx);
           //int flag = 0;
           PartitionCollectionMutable.VariableIndexPartitioned vip = (PartitionCollectionMutable.VariableIndexPartitioned) resultGroup.findVariableByHash(vi);
-          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing, vi );
+          vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing, vi);
         } // loop over variable
       } // loop over partition
 
@@ -336,7 +341,7 @@ abstract class GribPartitionBuilder  {
             PartitionCollectionMutable.Partition part = ds2D.gctype.isUniqueTime() ? null : result.getPartition(partno);
             unionizer.addCoords(vi.getCoordinates(), part);
           } catch (IllegalStateException e) {
-            logger.error(e.getMessage()+" on dataset " +name);
+            logger.error(e.getMessage() + " on dataset " + name);
             return null;
           }
         }  // loop over partition
@@ -417,7 +422,7 @@ abstract class GribPartitionBuilder  {
       for (Coordinate coord : group2D.coords) {
         if (coord instanceof CoordinateRuntime) continue; // skip it
         if (coord instanceof CoordinateTime2D) {
-          CoordinateTimeAbstract best = ((CoordinateTime2D)coord).makeBestTimeCoordinate(result.masterRuntime);
+          CoordinateTimeAbstract best = ((CoordinateTime2D) coord).makeBestTimeCoordinate(result.masterRuntime);
           if (!isComplete) best = best.makeBestFromComplete();
           sharer.addCoordinate(best);
           map2DtoBest.put(coord, best);
@@ -436,7 +441,7 @@ abstract class GribPartitionBuilder  {
         // set shared coordinates
         List<Coordinate> newCoords = new ArrayList<>();
         for (Integer groupIndex : vi2d.coordIndex) {
-          Coordinate coord2D =  group2D.coords.get(groupIndex);
+          Coordinate coord2D = group2D.coords.get(groupIndex);
           if (coord2D instanceof CoordinateRuntime) continue; // skip runtime;
           if (coord2D instanceof CoordinateTime2D) {
             newCoords.add(map2DtoBest.get(coord2D)); // add the best coordinate for that CoordinateTime2D
@@ -484,7 +489,7 @@ abstract class GribPartitionBuilder  {
 
       //// header message
       raf.write(getMagicStart().getBytes(CDM.utf8Charset));
-      raf.writeInt( getVersion());
+      raf.writeInt(getVersion());
       raf.writeLong(0); // no record section
 
       /*
@@ -504,7 +509,10 @@ abstract class GribPartitionBuilder  {
         optional int32 genProcessId = 11;
         optional int32 backProcessId = 12;
 
-        repeated Parameter params = 20;      // not used yet
+        // repeated Parameter params = 20;      // not used
+        FcConfig config = 21;
+        uint64 startTime = 22; // calendar date, first valid time
+        uint64 endTime = 23;   // calendar date, last valid time
 
         extensions 100 to 199;
       }
@@ -540,6 +548,9 @@ abstract class GribPartitionBuilder  {
       indexBuilder.setGenProcessId(pc.genProcessId);
       indexBuilder.setGenProcessType(pc.genProcessType);
       indexBuilder.setBackProcessId(pc.backProcessId);
+
+      indexBuilder.setStartTime(pc.dateRange.getStart().getMillis());
+      indexBuilder.setEndTime(pc.dateRange.getEnd().getMillis());
 
       indexBuilder.setMasterRuntime(writer.writeCoordProto(pc.masterRuntime));
 
@@ -666,7 +677,7 @@ abstract class GribPartitionBuilder  {
     b.setDiscipline(vp.discipline);
     b.setPds(ByteString.copyFrom(vp.rawPds));
 
-        // extra id info
+    // extra id info
     b.addIds(vp.center);
     b.addIds(vp.subcenter);
 

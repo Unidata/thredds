@@ -5,7 +5,7 @@
 :linkcss:
 :toc:
 
-= Configuring TDS with the featureCollection element
+= Feature Collection configuration
 
 == Overview
 
@@ -19,16 +19,16 @@ minor changes to configuration and usage. The *featureCollection* element was fi
 versions. TDS 4.2 allowed featureType = _FMRC, Point,_ and __Station__. TDS 4.3 added featureType = __GRIB__, used for collections of GRIB files. TDS
 4.5 changed this usage to featureType = _GRIB1 or GRIB2_. TDS 5.0 added refinements for performance.
 
-*Currently, one should only serve GRIB files with featureCollection=GRIB1 or GRIB2. One
-should not use FMRC, or NcML Aggregations on GRIB files.*
+*Only serve GRIB files with featureCollection=GRIB1 or GRIB2. Do not use FMRC, or NcML Aggregations on GRIB files.*
 
 A fair amount of the complexity of feature collections is managing the collection of files on the server, both in creating indexes for performance,
 and in managing collections that change. For high-performance servers, it is necessary to let a background process manage indexing, and the THREDDS
 Data Manager (<<TDM#,TDM>>) is now available for that purpose.
 
-This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements, using the current server catalog XML Schema 1.2. For Feature Type specific information, see:
+This document gives an overview of Feature Collections, as well as a complete syntax of allowed elements.
+For Feature Type specific information, see:
 
-* <<FmrcCollection,FMRC Collections>> http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf,poster>>
+* <<FmrcCollection#,FMRC Collections>>
 * <<PointFeatures#,Point Collections>>
 * <<GribCollections#,GRIB Collections>>
 * <<GribConfig#,GRIB specific configuration>>
@@ -43,7 +43,7 @@ Also see:
 The *featureCollection* element is a subtype of *dataset* element. It defines a _logical dataset_ for the TDS. All of the elements that can be used
 inside of a *dataset* element can be used inside of a *featureCollection* element.
 
-=== Example 1: Simple case using defaults:
+=== Example 1: Simple case using defaults
 
 [source,xml]
 ----
@@ -53,13 +53,13 @@ inside of a *dataset* element can be used inside of a *featureCollection* elemen
 ----
 
 <1>  A GRIB2 Feature Collection dataset is defined, with the "human readable" name of "NCEP Polar Sterographic". Its URL path(s) will look like
-_http://server/thredds/<service>/grib/NCEP/NAM/Polar_90km/..._ The Dataset ID is automatically set to the path, so that its dataset page will be
-__http://server/thredds/catalog/grib/NCEP/NAM/Polar_90km/catalog.xml?dataset=grib/NCEP/NAM/Polar_90km__/...
+_\http://server/thredds/<service>/grib/NCEP/NAM/Polar_90km/..._ The Dataset ID is automatically set to the path, so that its dataset page will be
+__\http://server/thredds/catalog/grib/NCEP/NAM/Polar_90km/catalog.xml?dataset=grib/NCEP/NAM/Polar_90km__/...
 <2>  Defines the files in the collection as any files in the directory _/data/ldm/pub/native/grid/NCEP/NAM/Polar_90km/_ which match the regular
-expression __"NAM_Polar_90km_.*\.grib2$__" . In this case, it means any filename starting with _"NAM_Polar_90km_"_ and ending with "__.grib2__". The
-collection name is "NCEP-NAM-Polar_90km", which is used for index file names etc.
+expression _NAM_Polar_90km.*\.grib2$_. In this case, it means any filename starting with _NAM_Polar_90km_ and ending with _.grib2_.
+The collection name is _NCEP-NAM-Polar_90km_, which is used for index file names etc.
 
-=== Example 2: More fully specify the options explicitly:
+=== Example 2: Specify the options explicitly
 
 [source,xml]
 ----
@@ -75,7 +75,6 @@ collection name is "NCEP-NAM-Polar_90km", which is used for index file names etc
              olderThan="5 min"/> # <6>
  <update startup="nocheck"/> # <7>
  <tdm rewrite="test" rescan="0 0/15 * * * ? *" /> # <8>
- <gribConfig datasetTypes="TwoD Best Latest" /> # <9>
 </featureCollection>
 ----
 
@@ -89,11 +88,10 @@ date order.
 <6>  Only include files whose lastModified date is more than 5 minutes old. This is to exclude files that are actively being created.
 <7>  Instruct the TDS to use the collection index if it already exists, without testing if its up-to-date.
 <8>  Instruct the TDM to examine all the files to detect if they have changed since the index was written. Rescan every 15 minutes.
-<9>  (GRIB specific) Show the _TwoD_ and _Best_ datasets, as well as a link to the _latest_ partition.
 
 == Description of elements in TDS Configuration catalogs [[elements]]
 
-=== featureCollection element
+=== *featureCollection* element
 
 A *featureCollection* is a kind of *dataset* element, and so can contain the same elements and attributes of that element. Following is the XML Schema
 definition for the _featureCollection_ element:
@@ -112,7 +110,7 @@ definition for the _featureCollection_ element:
             <xsd:element type="fmrcConfigType" name="fmrcConfig" minOccurs="0"/>
             <xsd:element type="pointConfigType" name="pointConfig" minOccurs="0"/>
             <xsd:element type="gribConfigType" name="gribConfig" minOccurs="0"/>
-             <xsd:element type="fileSortType" name="filesSort" minOccurs="0" />
+            <xsd:element type="fileSortType" name="filesSort" minOccurs="0" />
             <xsd:element ref="ncml:netcdf" minOccurs="0"/>
           </xsd:sequence>
           <xsd:attribute name="featureType" type="featureTypeChoice" use="required"/>
@@ -172,7 +170,7 @@ using the default service, in this example the compound service __fullServices__
 <7>  This NcML wraps each dataset in the collection. This attribute overrides any existing one in the datasets; it tells the CDM to parse the station
 information using the CF Conventions.
 
-=== collection element
+=== *collection* element
 
 A *collection* element defines the collection of datasets. Example:
 
@@ -216,51 +214,10 @@ case the date must be contained just in the file name, as opposed to the complet
 this OR a date extractor in the specification string, but not both._
 <5>  *timePartition* (optional): Currently only used by GRIB collections, see <<Partitions#,here>> for more info.
 
-=== Date Extractor
-
-Feature Collections sometimes (Point, FMRC (ususally), and time partitioned GRIB) need to know how to sort the collection of files, and in those cases
-you need to have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute.
-
-If the date is in the filename only, you can use the <<CollectionSpecification#,collection specification>> string, aka a **_spec_**:
-
- /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.nc$
-
-applied to the file _/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20111226_1200.grib1_ this would extract the date _2011-11-26T12:00:00._
-
-In this case, _#yyyyMMdd_HHmm#_ is **positional**: it counts the charactors before the '#' and then extracts the charactors in the filename (here at
-position 17 though 30) and applies the <<SimpleDateFormat#,SimpleDateFormat>> _yyyyMMdd_HHmm_ pattern to them.
-
-When the date is in the directory name and not completely in the filename, you must use the **dateFormatMark**. For example with a file path
-
- /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1
-
-use
-
- dateFormatMark="#Alaska_191km/#yyyyMMdd'/Run_'HHmm"
-
-In this case, the _'#'_ characters delineate the *substring match* on the entire pathname. Immediately following the match comes the string to be
-given to <<SimpleDateFormat#,SimpleDateFormat>>, in this example:
-
- yyyyMMdd'/Run_'HHmm
-
-Note that the _/Run__ is enclosed in single quotes. This tells SimpleDateFormat to interpret these characters literally, and they must match
-characters in the filename exactly.
-
-You might also need to put the SimpleDateFormat before the substring match, eg in the following, _stuff_ differs for each subdirectory, so you can't
-match on it:
-
- /dataroot/stuff/20111226/Experiment-02387347.grib1
-
-However, you can match on _Experiment_ so you can use:
-
- dateFormatMark="yyyyMMdd#/Experiment#"
-
-Note that whatever you match on must be unique in the pathname.
-
-=== protoDataset element (Not used by GRIB).
+=== *protoDataset* element
 
 Provides control over the choice of the *_prototype dataset_* for the collection. The prototype dataset is used to populate the metadata for the
-feature collection. Example:
+feature collection. Note that this is not used by GRIB feature collections. Example:
 
 [source,xml]
 ----
@@ -301,12 +258,15 @@ have missing data for those times.
 3.  If a variable does not appears in the prototype dataset, it will not appear in the feature collection dataset, even if it appears in other
 datasets.
 
-=== [[update]] update element
+=== *update* element
 
 For collections that change, the *update* element provides options to update the collection, either synchronously (while a user request waits) or
-asynchronously (in a background task, so that requests do not wait). If there is no update element, then the dataset is considered __static__, and the
-indexes are never updated by the TDS. (To force updated indices, delete the collection index, usually **<collection root directory> / <dataset
-name>.ncx**.). Examples:
+asynchronously (in a background task, so that requests do not wait).
+
+For GRIB collections, dynamic updating of the collection by the TDS is no longer supported (use the TDM for this).
+Therefore _recheckAfter_ and _rescan_ are ignored on an _update_ element for a GRIB collection.
+
+Examples:
 
  <update startup="test" rescan="0 0/30 * * * ? *" trigger="false"/>
 
@@ -315,7 +275,7 @@ name>.ncx**.). Examples:
  <update startup="never" trigger="allow" />
 
 .  The first example says to test if the dataset has been updated when the TDS starts up, then test in a background process every 30 minutes. (Cannot
-use for GRIB collections, see _tdm_ element below). Do not allow external triggers.
+use for GRIB collections, see *tdm* element below). Do not allow external triggers.
 .  The second example says to test if the dataset has been updated only when a request comes in for it, and the dataset hasn't been checked for 15
 minutes.
 .  The third example tells the TDS to never update the collection indices, but to allow an external program (such as the TDM) to send a trigger
@@ -334,21 +294,21 @@ The XML Schema definition for the _update_ element:
  </xsd:complexType>
 ----
 
-<1>  **recheckAfter**: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait
-until the scan is finished and a new collection is built (if needed), and so is called __synchronous updating__. *This option will be ignored if you
+<1>  *recheckAfter*: This will cause a new scan whenever a request comes in and this much time has elapsed since the last scan. The request will wait
+until the scan is finished and a new collection is built (if needed), and so is called _synchronous updating_. *This option will be ignored if you
 are using the rescan attribute or if you have a tdm element.*
-<2>  **rescan**: uses a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] to specify when the collection should be
-rescanned in a background task, and testsed to see if it has changed. This is called __asynchronous updating__.
-<3>  **trigger**: if set to "allow" (default), then external triggering will be allowed. This allows collections to be updated by an external program
-(or person using a browser) sending an explicit "trigger" URL to the server. This URL is protected by HTTPS, so you must link:#trigger[enable
-triggers] for this to work. Set this to "false" to disable triggering.
-<4>  **startup**: [_never_ | _nocheck_ | _testIndexOnly_ | _test_ | _always_]. The collection is read on server startup, and tested whether
-it is up to date, depending on  the link:#collectionUpdateType[*_collectionUpdateType_*].
+<2>  *rescan*: uses a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] to specify when the collection should be
+rescanned in a background task, and testsed to see if it has changed. This is called _asynchronous updating_.
+<3>  *trigger*: if set to "allow" (default), then external triggering will be allowed. This allows collections to be updated by an external program
+(or person using a browser) sending an explicit "trigger" URL to the server. This URL is protected by HTTPS, so you must <<trigger,enable
+triggers>> for this to work. Set this to "false" to disable triggering.
+<4>  *startup*: [_never_ | _nocheck_ | _testIndexOnly_ | _test_ | _always_] (default _never_). The collection is read on server startup, and tested whether
+it is up to date, depending on the <<collectionUpdateType>>
 
-For GRIB collections, dynamic updating of the collection by the TDS is no longer supported (use the TDM for this). Therefore _recheckAfter_ and
-_rescan_ are ignored on an _update_ element for a GRIB collection.
+If there is no update element, then the dataset is considered _static_, and will not be updated by the TDS.
+However the TDS will re-read the dataset if it receives an <<trigger, external trigger>>.
 
-=== The *_collectionUpdateType_* [[collectionUpdateType]]
+==== *collectionUpdateType* [[collectionUpdateType]]
 
 [source,xml]
 ----
@@ -367,15 +327,15 @@ _rescan_ are ignored on an _update_ element for a GRIB collection.
  </xsd:simpleType>
 ----
 
-. *_never_*: the collection is used as it is, and no checking is done. The collection index must already exist. For a trigger, it means just reread the index. Use this for very large collections that you dont want to
-inadvertently scan.
-. *_nocheck_*: the collection index is used if it exists, without checking whether its up-to-date. If it doesnt exist, build it. *This is the default in version 5.*
+. *_never_*: the collection is used as it is, and no checking is done. The collection index must already exist.
+Use this for very large collections that you dont want to inadvertently scan.
+. *_nocheck_*: the collection index is used if it exists, without checking whether its up-to-date. If it doesnt exist, build it.
 . *_testIndexOnly_*: the collection index is used if it exists and it is newer than all of its immediate children.
 . *_test_* or *_true_*: the collection's data files are scanned and the new collection of children is compared to the old collection. If there are any
 changes, the index is rebuilt.
 . *_always_*: the collection is always rescanned and the indices are rebuilt.
 
-=== tdm element (GRIB only)
+=== *tdm* element (GRIB only)
 
 You must use the *tdm* element for GRIB collections that change. The <<TDM#,TDM>> is a separate process that uses the same configuration
 catalogs as the TDS, and updates GRIB collections in the background. Example:
@@ -387,8 +347,9 @@ catalogs as the TDS, and updates GRIB collections in the background. Example:
 
 * This example tells the TDM (not the TDS) to test if the dataset has changed 4 times every hour, specifically, at 4,19,34, and 49 minutes past the
 hour. If the collection has changed, new indices will be recreated, and a trigger will be sent to the TDS.
-* The TDM uses the trigger *\https://server/thredds/admin/collection/trigger?collection=_name_&trigger=nocheck* . It is sent when the TDM has done a rescan, and made
-  a new collection index, so the
+* The TDM uses the trigger *\https://server/thredds/admin/collection/trigger?collection=_name_&trigger=nocheck* .
+It is sent when the TDM has done a rescan, the collection has changed, and a new collection index was made.
+The trigger tells the TDS to read in the new collection index.
 
 The XML Schema definition for the _tdm_ element:
 
@@ -404,19 +365,10 @@ The XML Schema definition for the _tdm_ element:
 <2>  **rescan**: uses a http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] to specify when the collection should be
 rescanned.
 
-=== Enabling Triggers [[trigger]]
+=== *fileSort* element
 
-.  You can see a list of the Feature Collection datasets (and manually trigger a rescan) on the page
-*\https://server/thredds/admin/debug?Collections/showCollection*
-.  The URL for the actual trigger is *\https://server/thredds/admin/collection/trigger?collection=_name_&trigger=_type_*, where _name_ is the collection
-name, and _type_ is a link:#collectionUpdateType[collectionUpdateType].
-.  You must give the role _tdsTrigger_ to any user who has the right to send a trigger.
-.  Triggering is password protected and uses SSH, see <<../RemoteManagement#,enabling Remote Management>> to enable SSH.
-
-=== File Sorting
-
-When a collection shows a list of files, the files will be sorted by increasing name. To use a decreasing sort, use the fileSort inside the
-featureCollection element:
+When a collection shows a list of files, the files will be sorted by increasing name. To use a decreasing sort, use the *_fileSort_* element
+inside the featureCollection element:
 
 [source,xml]
 ----
@@ -426,16 +378,63 @@ featureCollection element:
  </featureCollection>
 ----
 
-== Static vs. changing datasets [[changing]]
+== Date Extractor
 
-There are several way to update a feature collection when it changes, specified by attributes on the *update* element:
+Feature Collections sometimes (Point, FMRC, and time partitioned GRIB) need to know how to sort the collection of files, and in those cases
+you need to have a date in the filename, and to specify a date extractor in the specification string or include a dateFormatMark attribute.
 
-1.  *recheckAfter* ** attribute**:** causes a directory scan whenever a request comes in and the specified time has elapsed since the last scan. The
-request waits until the scan is finished and a new collection is built. This is called __synchronous updating__.
-2.  *rescan* and *startup* attributes: uses a background thread to keep the collection updated, so that requests never wait. This is called
-__asynchronous updating__.
-3.  *trigger* attribute: allows a trigger to be sent to the TDS to tell it to update the collection. This is called __user controlled updating__.
-4.  *tdm* element: for GRIB collections, you may use the <<TDM#,TDM>> to do all index updating. This is called __external program updating__.
+If the date is in the filename only, you can use the <<CollectionSpecification#,collection specification>> string, aka a **_spec_**:
+
+ /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.nc$
+
+applied to the file _/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20111226_1200.grib1_ this would extract the date _2011-11-26T12:00:00._
+
+In this case, #_yyyyMMdd_HHmm_# is *positional*: it counts the charactors before the '#' and then extracts the charactors in the filename (here at
+position 17 though 30) and applies the <<SimpleDateFormat#,SimpleDateFormat>> _yyyyMMdd_HHmm_ pattern to them.
+
+When the date is in the directory name and not in the filename, you must use the *dateFormatMark*. For example with a file path
+
+ /data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/20111226/Run_1200.grib1
+
+use
+
+ dateFormatMark="#Alaska_191km/#yyyyMMdd'/Run_'HHmm"
+
+In this case, the _'#'_ characters delineate the *substring match* on the entire pathname. Immediately following the match comes the string to be
+given to <<SimpleDateFormat#,SimpleDateFormat>>, in this example:
+
+ yyyyMMdd'/Run_'HHmm
+
+Note that the _/Run__ is enclosed in single quotes. This tells SimpleDateFormat to interpret these characters literally, and they must match
+characters in the filename exactly.
+
+You might also need to put the SimpleDateFormat before the substring match, eg in the following, _stuff_ differs for each subdirectory, so you can't
+match on it:
+
+ /dataroot/stuff/20111226/Experiment-02387347.grib1
+
+However, you can match on _Experiment_ so you can use:
+
+ dateFormatMark="yyyyMMdd#/Experiment#"
+
+Note that whatever you match on must be unique in the pathname.
+
+== External Triggers [[trigger]]
+
+The TDS supports a REST interface that allows authorized users to send a _trigger_ to the TDS to tell it to reread a feature collection.
+The URL for the trigger is *\https://server/thredds/admin/collection/trigger?collection=_name_&trigger=_type_*, where _name_ is the collection
+name, and _type_ is a <<collectionUpdateType>>.
+
+Typically the trigger is used by the TDM, but it can also be used manually or by another program.
+
+.  Triggering is password protected and uses SSH (see <<../RemoteManagement.adoc#,enabling Remote Management>> to enable SSH).
+.  You must give the role *_tdsTrigger_* to any user you want to have the right to send a trigger.
+. To enable the TDM trigger, create a user named *_tdm_* and give that user the _tdsTrigger_ role.
+.  You can see a list of the Feature Collection datasets (and manually send a _trigger=nocheck_ to specific datasets) from the TDS _admin page_ at
+_\https://server/thredds/admin/debug?Collections/showCollection_. To have access to this page the user must have the role *_tdsConfig_*
+(see <<../RemoteManagement.adoc#,enabling Remote Management>>).
+
+== Static vs. changing datasets (Not GRIB) [[changing]]
 
 === Static Collection - Small or Rarely Used
 
@@ -467,8 +466,8 @@ link:#trigger[enable triggers].
 
 === Changing Collection - Small or Rarely Used
 
-For collections that change but are rarely used, use the *recheckAfter* ** attribute on the *update* element**.** This minimizes unneeded processing
-for lightly used collections. This is also a reasonable strategy for small collections which don't take very long to build.
+For collections that change but are rarely used, use the *recheckAfter* ** attribute on the *update* element. This minimizes unneeded processing
+for lightly used collections. This is also a reasonable strategy for small collections which don't take very long to scan.
 
  <update recheckAfter="15 min" />
 
@@ -477,42 +476,38 @@ Do not include both a *recheckAfter* and a *rescan* attribute. If you do, the *r
 === Changing Collection - Fast response
 
 When you want to ensure that requests are answered as quickly as possible, read it at startup and also update the collection in the background using
-**rescan**:
+*rescan*:
 
  <update startup="test" rescan="0 20 * * * ? *" />
 
-This http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expressio]n says to rescan the collection files every hour at 20 past the
+This http://www.quartz-scheduler.org/docs/tutorials/crontrigger.html[cron expression] says to rescan the collection files every hour at 20 past the
 hour, and rebuild the dataset if needed.
 
 === Sporadically changing Collection
 
-To externally control when a collection is updated, use:
+To externally control when a collection is updated, <<trigger,enable remote triggers>>, and when the dataset changes,
+send a trigger to the TDS.
 
- <update trigger="allow" />
-
-You must link:#trigger[enable remote triggers], and when the dataset changes, send a message to a special URL in the TDS.
-
-== GRIB Collections Only
+== Static vs. changing GRIB datasets
 
 === Changing GRIB Collection
 
 You have a GRIB collection that changes. The TDS can only scan/write indices at startup time. You must use the TDM to detect any changes.
 
- <update startup="test" trigger="allow"/>
- <tdm rewrite="test" rescan="0 0/15 * * * ? *" trigger="allow"/>
+ <tdm rewrite="test" rescan="0 0/15 * * * ? *" />
 
 The dataset will be read in at startup time by the TDS using the existing indexes, and will be scanned by the <<TDM#,TDM>> every 15 minutes,
 which will send a trigger as needed.
 
-=== Very Large GRIB Collection that doesnt change
+=== Very Large GRIB Collection that doesn't change
 
 You have a very large collection, which takes a long time to scan. You must carefully control when/if it will be scanned.
 
  <update startup="never"/>
  <tdm rewrite="test"/>
 
-The TDS never scans the collection, it always uses existing indices, which must already exist. Run the TDM first, then after the indices are made, you
-can stop the TDM and start the TDS.
+The TDS never scans the collection, it always uses existing indices, which must already exist.
+Run the TDM first, then after the indices are made, you can stop the TDM and start the TDS.
 
 === Very Large GRIB Collection that changes
 
@@ -521,9 +516,8 @@ You have a very large collection which changes, and takes a long time to scan. Y
  <update startup="never" trigger="allow"/>
  <tdm rewrite="test" rescan="0 0 3 * * ? *" />
 
-The dataset will be read in at startup time by using the existing indexes which must exist. The <<TDM#,TDM>> will test if its changed once a day
+The dataset will be read in at TDS startup time by using the existing indexes which must exist. The <<TDM#,TDM>> will test if its changed once a day
 at 3 am, and send a trigger to the TDS if needed.
-
 
 == NcML Modifications [[ncml]]
 

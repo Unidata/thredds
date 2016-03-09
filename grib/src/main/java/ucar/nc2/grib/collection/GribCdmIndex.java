@@ -153,7 +153,7 @@ public class GribCdmIndex implements IndexReader {
     idxPathname = StringUtil2.replace(idxPathname, '\\', "/");
     int pos = idxPathname.lastIndexOf('/');
     String idxFilename = (pos < 0) ? idxPathname : idxPathname.substring(pos + 1);
-    assert idxFilename.endsWith(NCX_SUFFIX);
+    assert idxFilename.endsWith(NCX_SUFFIX) : idxFilename;
     return idxFilename.substring(0, idxFilename.length() - NCX_SUFFIX.length());
   }
 

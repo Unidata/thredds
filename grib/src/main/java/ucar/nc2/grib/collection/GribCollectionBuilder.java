@@ -132,6 +132,8 @@ abstract class GribCollectionBuilder {
     return false;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
    // throw exception if failure
   public boolean createIndex(FeatureCollectionConfig.PartitionType ptype, Formatter errlog) throws IOException {
     if (ptype == FeatureCollectionConfig.PartitionType.all)
@@ -173,7 +175,7 @@ abstract class GribCollectionBuilder {
         if (coord instanceof CoordinateTimeAbstract) {
           CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
           if (calendarDateRangeAll == null) calendarDateRangeAll = calendarDateRange;
-          else calendarDateRangeAll.extend(calendarDateRange);
+          else calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
         }
       }
     }
@@ -192,16 +194,25 @@ abstract class GribCollectionBuilder {
     else
       this.type =  GribCollectionImmutable.Type.MRC;
 
+    /* GribCollectionMutable result = new GribCollectionMutable(name, directory, config, isGrib1);
+    GribCollectionMutable.Dataset dataset2D = result.makeDataset(this.type);
+    dataset2D.groups = groups; */
+
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);
     boolean ok = writeIndex(this.name, indexFileForRuntime.getPath(), masterRuntimes, groups, allFiles, calendarDateRangeAll);
+
+    /* if (this.type ==  GribCollectionImmutable.Type.MRC) {
+      GribBestDatasetBuilder.makeDatasetBest();
+    } */
 
     long took = System.currentTimeMillis() - start;
     logger.debug("That took {} msecs", took);
     return ok;
   }
 
-  // return true if success
+  // PartitionType = all; not currently used but leave it here in case it needs to be revived
+  // creates seperate collection and index for each runtime.
   private boolean createAllRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
     this.type =  GribCollectionImmutable.Type.SRC;
@@ -242,7 +253,7 @@ abstract class GribCollectionBuilder {
         if (coord instanceof CoordinateTimeAbstract) {
           CalendarDateRange calendarDateRange = ((CoordinateTimeAbstract) coord).makeCalendarDateRange(null);
           if (calendarDateRangeAll == null) calendarDateRangeAll = calendarDateRange;
-          else calendarDateRangeAll.extend(calendarDateRange);
+          else calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
         }
       }
 

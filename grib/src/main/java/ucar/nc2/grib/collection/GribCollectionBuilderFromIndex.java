@@ -133,7 +133,10 @@ abstract class GribCollectionBuilderFromIndex {
         optional int32 genProcessId = 11;
         optional int32 backProcessId = 12;
 
-        repeated Parameter params = 20;      // not used yet
+        // repeated Parameter params = 20;      // not used
+        FcConfig config = 21;
+        uint64 startTime = 22; // calendar date, first valid time
+        uint64 endTime = 23;   // calendar date, last valid time
 
         extensions 100 to 199;
       }

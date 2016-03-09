@@ -72,6 +72,7 @@ import java.util.*;
  * An Immutable GribCollection, corresponds to one index (ncx) file.
  * The index file has already been read; it is opened and the closed when a variable is first accessed to read in the record array (sa).
  *
+ *  possible we could use the Proto equivalents, and eliminate GribCollectionMutable ?
  * @author caron
  * @since 11/10/2014
  */
@@ -103,7 +104,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     public boolean isTwoD() {
       return this == MRC || this == TwoD;
     }
-
   }
 
   ////////////////////////////////////////////////////////////////
@@ -115,6 +115,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   protected final List<Dataset> datasets;
   protected final CoordinateRuntime masterRuntime;
+  protected final CalendarDateRange dateRange;
 
   protected final Map<Integer, MFile> fileMap; // all the files used in the GC; key is the index in original collection, GC has subset of them
   protected final GribTables cust;
@@ -122,7 +123,6 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   protected FileCacheIF objCache = null;  // optional object cache - used in the TDS
 
-  // possible we could use the Proto equivalents, and eliminate GribCollectionMutable ?
   GribCollectionImmutable(GribCollectionMutable gc) {
     countGC++;
 
@@ -142,6 +142,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     this.masterRuntime = gc.masterRuntime;
     this.fileMap = gc.fileMap;
     this.cust = gc.cust;
+    this.dateRange = gc.dateRange;
 
     if (gc.indexFilename != null) {
       indexFilename = gc.indexFilename;
@@ -1026,19 +1027,17 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       f.format("Files empty%n");
     } else {
       f.format("Files count = %d%n", fileMap.size());
-      /* for (int index : fileMap.keySet())
-        f.format("  %d: %s%n", index, fileMap.get(index));
-      f.format("%n");  */
     }
   }
 
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("GribCollectionImmutable{");
-    sb.append("\nname='").append(name).append('\'');
+    sb.append("\n name='").append(name).append('\'');
     sb.append("\n directory=").append(directory);
     sb.append("\n config=").append(config);
     sb.append("\n isGrib1=").append(isGrib1);
+    sb.append("\n dateRange=").append(dateRange);
     sb.append("\n}");
     return sb.toString();
   }
