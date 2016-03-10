@@ -1,7 +1,9 @@
 package ucar.nc2.util.cache
+
 import spock.lang.Specification
 import ucar.nc2.dataset.NetcdfDataset
 import ucar.unidata.test.util.TestDir
+
 /**
  * Tests caching behavior when datasets are closed and then reacquired.
  *
@@ -21,7 +23,7 @@ class ReacquireClosedDatasetSpec extends Specification {
 
     def "reacquire"() {
         when: 'Acquire and close dataset 4 times'
-        (1..4).each { println ''
+        (1..4).each {
             NetcdfDataset.acquireDataset(TestDir.cdmLocalTestDataDir + "jan.nc", null).close()
         }
 
@@ -33,6 +35,7 @@ class ReacquireClosedDatasetSpec extends Specification {
         // This is kludgy, but FileCache doesn't provide getHits() or getMisses() methods.
         formatter.toString().trim() ==~ /hits= 3 miss= 1 nfiles= \d+ elems= \d+/
 
-        // Prior to a bug fix in FileCache, this would record 0 hits and 4 misses.
+        // Prior to 2016-03-09 bug fix in AbstractIOServiceProvider.getLastModified(),
+        // this would record 0 hits and 4 misses.
     }
 }

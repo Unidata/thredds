@@ -46,26 +46,27 @@ import java.io.IOException;
  * @since Jun 2, 2008
  */
 public interface FileCacheable {
-
   /**
    * The location of the FileCacheable. This must be sufficient for FileFactory.factory() to create the FileCacheable object
    * @return location
    */
-  public String getLocation();
+  String getLocation();
 
   /**
    * Close the FileCacheable, release all resources.
    * Must call cache.release(this) if cache is not null.
    * @throws IOException on io error
    */
-  public void close() throws IOException;
+  void close() throws IOException;
 
   /**
-   * Get last modified date of underlying file(s).
-   * If changed since it was stored in the cache, it will be closed and recreated with FileFactory
-   * @return a sequence number (typically file date), 0 if cannot change
+   * Returns the time that the underlying file(s) were last modified. If they've changed since they were stored in the
+   * cache, they will be closed and reopened with {@link ucar.nc2.util.cache.FileFactory}.
+   *
+   * @return  a {@code long} value representing the time the file(s) were last modified or {@code 0L} if the
+   *          last-modified time couldn't be determined for any reason.
    */
-  public long getLastModified();
+  long getLastModified();
 
   /**
    * If the FileCache is not null, FileCacheable.close() must call FileCache.release()
@@ -80,13 +81,11 @@ public interface FileCacheable {
    *
    * @param fileCache must store this, use it on close as above.
    */
-  public void setFileCache( FileCacheIF fileCache);
+  void setFileCache( FileCacheIF fileCache);
 
   // release any resources like file handles
-  public void release() throws IOException;
+  void release() throws IOException;
 
   // reacquire any resources like file handles
-  public void reacquire() throws IOException;
-
-
+  void reacquire() throws IOException;
 }

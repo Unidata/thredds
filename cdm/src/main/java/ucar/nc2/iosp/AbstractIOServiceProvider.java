@@ -33,14 +33,18 @@
 
 package ucar.nc2.iosp;
 
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.ma2.StructureDataIterator;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Structure;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Format;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
@@ -152,14 +156,19 @@ public abstract class AbstractIOServiceProvider implements IOServiceProvider {
   }
 
   /**
-   * Get last modified date of underlying file. If changes, will be discarded.
-   * @return a sequence number (typically file date), 0 if cannot change
+   * Returns the time that the underlying file(s) were last modified. If they've changed since they were stored in the
+   * cache, they will be closed and reopened with {@link ucar.nc2.util.cache.FileFactory}.
+   *
+   * @return  a {@code long} value representing the time the file(s) were last modified or {@code 0L} if the
+   *          last-modified time couldn't be determined for any reason.
    */
   public long getLastModified() {
-    if (raf != null) {
-      return raf.getLastModified();
+    if (location != null) {
+      File file = new File(location);
+      return file.lastModified();
+    } else {
+      return 0;
     }
-    return 0;
   }
 
   @Override
