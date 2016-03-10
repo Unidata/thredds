@@ -46,7 +46,6 @@ import java.io.IOException;
  * @since Jun 2, 2008
  */
 public interface FileCacheable {
-
   /**
    * The location of the FileCacheable. This must be sufficient for FileFactory.factory() to create the FileCacheable object
    * @return location
@@ -61,9 +60,11 @@ public interface FileCacheable {
   void close() throws IOException;
 
   /**
-   * Get last modified date of underlying file(s).
-   * If changed since it was stored in the cache, it will be closed and recreated with FileFactory
-   * @return a sequence number (typically file date), 0 if cannot change
+   * Returns the time that the underlying file(s) were last modified. If they've changed since they were stored in the
+   * cache, they will be closed and reopened with {@link ucar.nc2.util.cache.FileFactory}.
+   *
+   * @return  a {@code long} value representing the time the file(s) were last modified or {@code 0L} if the
+   *          last-modified time couldn't be determined for any reason.
    */
   long getLastModified();
 

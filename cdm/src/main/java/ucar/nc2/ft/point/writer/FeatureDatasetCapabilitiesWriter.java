@@ -216,13 +216,26 @@ public class FeatureDatasetCapabilitiesWriter {
   }
 
   private Element writeBoundingBox(LatLonRect bb) {
+    int decToKeep = 6;
+    double bbExpand = Math.pow(10, -decToKeep);
+
+    // extend the bbox to make sure the implicit rounding does not result in a bbox that does not contain
+    //   any points (can happen when you have a single station with very precise lat/lon values)
+    //   See https://github.com/Unidata/thredds/issues/470
+    // This accounts for the implicit rounding errors that result from the use of
+    //   ucar.unidata.util.Format.dfrac when writing out the lat/lon box on the NCSS for Points dataset.html
+    //   page
+    LatLonPointImpl extendNorthEast = new LatLonPointImpl(bb.getLatMax() + bbExpand, bb.getLonMax() + bbExpand);
+    LatLonPointImpl extendSouthWest = new LatLonPointImpl(bb.getLatMin() - bbExpand, bb.getLonMin() - bbExpand);
+    bb.extend(extendNorthEast);
+    bb.extend(extendSouthWest);
+
     Element bbElem = new Element("LatLonBox"); // from KML
-    if (bb != null) {
-      bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMin(), 6)));
-      bbElem.addContent(new Element("east").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMax(), 6)));
-      bbElem.addContent(new Element("south").addContent(ucar.unidata.util.Format.dfrac(bb.getLatMin(), 6)));
-      bbElem.addContent(new Element("north").addContent(ucar.unidata.util.Format.dfrac(bb.getLatMax(), 6)));
-    }
+
+    bbElem.addContent(new Element("west").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMin(), decToKeep)));
+    bbElem.addContent(new Element("east").addContent(ucar.unidata.util.Format.dfrac(bb.getLonMax(), decToKeep)));
+    bbElem.addContent(new Element("south").addContent(ucar.unidata.util.Format.dfrac(bb.getLatMin(), decToKeep)));
+    bbElem.addContent(new Element("north").addContent(ucar.unidata.util.Format.dfrac(bb.getLatMax(), decToKeep)));
     return bbElem;
   }
 

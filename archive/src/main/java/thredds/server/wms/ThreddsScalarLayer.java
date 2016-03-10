@@ -176,41 +176,19 @@ class ThreddsScalarLayer extends AbstractScalarLayer implements ThreddsLayer {
       throw new IOException(e);
     }
     return horizontalPoints;
-
   }
     
   @Override
   public List<Float> readTimeseries(List<DateTime> times, double elevation, HorizontalPosition xy)
       throws InvalidDimensionValueException, IOException
   {
-      Domain<HorizontalPosition> singlePoint = new HorizontalDomain(xy);;
-      HorizontalGrid hg = CdmUtils.createHorizontalGrid(grid.getCoordinateSystem());
-      PixelMap pixelMap = new PixelMap(hg, singlePoint);
-      List<Float> timePoints = new ArrayList<Float>(times.size());
-      int zIndex = this.findAndCheckElevationIndex(elevation);
+      HorizontalGrid horizGrid = CdmUtils.createHorizontalGrid(grid.getCoordinateSystem());
+      List<Integer> tIndices = new ArrayList<Integer>(times.size());
       for (DateTime time : times)
-      {
-          int tIndex = this.findAndCheckTimeIndex(time);
-          try{
-              timePoints.add(CdmUtils.readHorizontalPoints(null, grid,  tIndex, zIndex, pixelMap, this.dataReadingStrategy, 1).get(0));
-          }catch(Exception e){
-              //Catching and wrapping any exception reading data into a new IOException
-              throw new IOException(e);
-          }
-      }
-      return timePoints;
+          tIndices.add(this.findAndCheckTimeIndex(time));
+      int zIndex = this.findAndCheckElevationIndex(elevation);
+      return CdmUtils.readTimeseries(null, grid, horizGrid, tIndices, zIndex, xy);
   }
-
-    /*public List<Float> readHorizonalPoints(DateTime time, double elevation, Domain<HorizontalPosition> domain)
-            throws InvalidDimensionValueException, IOException
-    {
-        int tIndex = this.findAndCheckTimeIndex(time);
-        int zIndex = this.findAndCheckElevationIndex(elevation);
-        Domain<HorizontalPosition> targetDomain = domain;
-        HorizontalGrid hg = CdmUtils.createHorizontalGrid(grid.getCoordinateSystem());
-        PixelMap pixelMap = new PixelMap(hg, targetDomain);
-        return CdmUtils.readHorizontalPoints(null, grid,  tIndex, zIndex, pixelMap, this.dataReadingStrategy, (int)targetDomain.size());
-    }*/
 
   public String getStandardName() {
     if (this.grid == null) return null;
