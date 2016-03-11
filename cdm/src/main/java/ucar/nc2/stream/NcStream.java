@@ -441,7 +441,8 @@ public class NcStream {
 
   static Dimension decodeDim(NcStreamProto.Dimension dim) {
     String name = (dim.getName().length() == 0 ? null : dim.getName());
-    return new Dimension(name, (int) dim.getLength(), !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
+    int dimLen = dim.getIsVlen() ? -1 : (int) dim.getLength();
+    return new Dimension(name, dimLen, !dim.getIsPrivate(), dim.getIsUnlimited(), dim.getIsVlen());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

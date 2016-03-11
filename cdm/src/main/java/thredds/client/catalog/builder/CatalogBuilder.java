@@ -180,7 +180,8 @@ public class CatalogBuilder {
   public void addProperty(Property p) {
     if (p == null) return;
     if (properties == null) properties = new ArrayList<>();
-    properties.add(p);
+    if (!properties.contains(p))  // O(n^2) but only done once
+      properties.add(p);
   }
 
   public void addService(Service s) {

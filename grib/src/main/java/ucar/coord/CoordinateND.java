@@ -68,16 +68,6 @@ public class CoordinateND<T> {
     return sa;
   }
 
-  /* public void showInfo(List<T> records, Formatter info) {
-    if (sa == null) buildSparseArray(records, info);
-
-    for (Coordinate coord : coordinates)
-      coord.showInfo(info, new Indent(2));
-    info.format("%n%n");
-    if (sa != null) sa.showInfo(info, null);
-    info.format("%n");
-  }  */
-
   public void showInfo(Formatter info, GribRecordStats all) {
     for (Coordinate coord : coordinates)
        coord.showInfo(info, new Indent(2));
@@ -132,7 +122,7 @@ public class CoordinateND<T> {
         int count = 0;
         for (CoordinateBuilder<T> builder : builders) {
           if (builder instanceof CoordinateBuilder.TwoD) {
-            CoordinateBuilder.TwoD<T> builder2D  = (CoordinateBuilder.TwoD<T>) builder;
+            CoordinateBuilder.TwoD<T> builder2D  = (CoordinateBuilder.TwoD) builder;
             int[] coordsIdx = builder2D.getCoordIndices(gr);
             index[count++] = coordsIdx[0];
             index[count++] = coordsIdx[1];

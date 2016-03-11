@@ -387,6 +387,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
     return Property.removeDups(result);
   }
 
+  // find the first property with that name
   public String findProperty(String name) {
     Property result = null;
     for (Property p : getProperties()) {
@@ -394,6 +395,10 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
         result = p;
     }
     return (result == null) ? null : result.getValue();
+  }
+
+  public boolean hasProperty(Property want) {
+    return getProperties().contains(want);
   }
 
   public boolean hasProperty(String name) {

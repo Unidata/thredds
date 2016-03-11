@@ -67,14 +67,18 @@ public class Property {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
+
     Property property = (Property) o;
+
     if (!name.equals(property.name)) return false;
-    return true;
+    return !(value != null ? !value.equals(property.value) : property.value != null);
   }
 
   @Override
   public int hashCode() {
-    return name.hashCode();
+    int result = name.hashCode();
+    result = 31 * result + (value != null ? value.hashCode() : 0);
+    return result;
   }
 
   // first one override

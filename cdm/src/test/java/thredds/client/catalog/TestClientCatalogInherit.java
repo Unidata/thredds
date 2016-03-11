@@ -32,7 +32,9 @@
  */
 package thredds.client.catalog;
 
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.nc2.constants.FeatureType;
@@ -60,7 +62,7 @@ public class TestClientCatalogInherit {
       assert false;
     }
   }
-  
+
   @Test
   public void testPropertyInherit() {
 
@@ -81,8 +83,7 @@ public class TestClientCatalogInherit {
     assert val.equals("Where have you gone?")  : val;
 
     Dataset nest12 = cat.findDatasetByID("nest12");
-    val = nest12.findProperty("GoodThing");
-    assert val.equals("override")  : val;
+    Assert.assertTrue(nest12.hasProperty(new Property("GoodThing", "override")));
   }
 
   @Test

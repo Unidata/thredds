@@ -89,7 +89,7 @@ public class TestGribFmrcRegularTime {
       Coverage grid = cc.findCoverage(gridName);
       Assert.assertNotNull(gridName, grid);
 
-      int[] expectShape = new int[] {4,2,1,689,1073};
+      int[] expectShape = new int[] {4,4,1,689,1073};
       Assert.assertArrayEquals(expectShape, grid.getShape());
 
       CoverageCoordSys gcs = grid.getCoordSys();
@@ -105,7 +105,7 @@ public class TestGribFmrcRegularTime {
       CoverageCoordAxis time = gcs.getTimeAxis();
       Assert.assertNotNull(time);
       Assert.assertTrue(time instanceof FmrcTimeAxis2D);
-      Assert.assertEquals(8, time.getNcoords());
+      Assert.assertEquals(16, time.getNcoords());
 
       //double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
       //assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
