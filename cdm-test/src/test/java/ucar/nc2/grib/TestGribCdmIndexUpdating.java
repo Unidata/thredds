@@ -33,6 +33,7 @@
 
 package ucar.nc2.grib;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -72,7 +73,8 @@ public class TestGribCdmIndexUpdating {
     FeatureCollectionConfig config = new FeatureCollectionConfig("TestGribCdmIndex", "changing/filePartition", FeatureCollectionType.GRIB1,
             dataDir + "GFS_CONUS_80km_#yyyyMMdd_HHmm#.grib1", null, null, null, "file", null);
     // String dataDir, String newModel, FeatureCollectionConfig config, String indexFile, String varIdValue, int orgLen
-    result.add(new Object[]{dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "TestGribCdmIndex.ncx4", "Relative_humidity_isobaric", 144, 108});
+    result.add(new Object[]{dataDir, "GFS_CONUS_80km_20141024_1200.grib1", config, "TestGribCdmIndex.ncx4", "Relative_humidity_isobaric",
+            4, 3});
 
     /* directory partition
     dataDir = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/";
@@ -157,10 +159,9 @@ public class TestGribCdmIndexUpdating {
         System.out.printf("opened = %s%n", ncfile.getLocation());
         Group g = ncfile.findGroup("TwoD");
         Variable v = ncfile.findVariable(g, varName);
-        assert v != null;
-        System.out.printf("  Variable=%s%n", v.getFullName());
+        Assert.assertNotNull(varName, v);
         Dimension dim0 = v.getDimension(0);
-        assert dim0.getLength() == remLen : dim0.getLength() + " should be " + remLen;
+        Assert.assertEquals(v.getFullName(), remLen, dim0.getLength());
       }
 
       // new file arrives

@@ -34,6 +34,7 @@
 package ucar.nc2.grib;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -50,7 +51,6 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -59,6 +59,7 @@ import java.util.List;
  * @author caron
  * @since 3/7/2016.
  */
+@Ignore("until we add MRC Best")
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGribPartitionTypesP {
