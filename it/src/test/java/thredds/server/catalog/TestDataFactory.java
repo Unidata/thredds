@@ -69,7 +69,7 @@ public class TestDataFactory {
             {"thredds:resolve:"+server+"catalog/grib/NDFD/CONUS_5km/latest.xml", FeatureType.GRID, ServiceType.CdmRemote},
             //           {"thredds:resolve:http://rdavm.ucar.edu:8080/thredds/catalog/aggregations/g/ds083.2/1/latest.xml", FeatureType.GRID, ServiceType.CdmrFeature},
             {"thredds:"+server+"catalog/gribCollection.v5/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/catalog.xml#gribCollection.v5/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1", FeatureType.GRID, ServiceType.CdmrFeature},
-            {"thredds:"+server+"catalog/rdaTest/ds094.2_dt/catalog.xml#rdaTest/ds094.2_dt/GaussLatLon_880X1760-0p0000N-180p0000E", FeatureType.GRID, ServiceType.CdmrFeature},
+            {"thredds:"+server+"catalog/rdaTest/ds094.2_dt/catalog.xml#rdaTest/ds094.2_dt/GaussLatLon_880X1760-0p00N-180p00E", FeatureType.GRID, ServiceType.CdmrFeature},
 
             // dataset or datasetScan
             {"thredds:"+server+"catalog/catalog.xml#testDataset", FeatureType.GRID, ServiceType.OPENDAP},
