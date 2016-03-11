@@ -436,64 +436,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
   */
 
-  private static final double smooshTolerence = .02;
-  private Map<String, String> substCoords = new HashMap<>();
-  private List<RuntimeSmoosher> runtimes = new ArrayList<>();
 
-  private class RuntimeSmoosher {
-    final CoverageCoordAxis1D runtime;
-    final double start, end, resol;
-    final int npts;
-    final boolean combined;
-
-    RuntimeSmoosher(CoverageCoordAxis1D runtime, double start, double end, double resol, int npts) {
-      this.runtime = runtime;
-      this.start = start;
-      this.end = end;
-      this.resol = resol;
-      this.npts = npts;
-      this.combined = true;
-    }
-
-    RuntimeSmoosher(CoverageCoordAxis1D runtime) {
-      this.runtime = runtime;
-      this.start = runtime.getStartValue();
-      this.end = runtime.getEndValue();
-      this.resol = runtime.getResolution();
-      this.npts = runtime.getNcoords();
-      this.combined = false;
-    }
-
-    RuntimeSmoosher combine(CoverageCoordAxis1D runtime) {
-      double start = Math.min(this.start, runtime.getStartValue());
-      double end = Math.max(this.end, runtime.getEndValue());
-      int npts = Math.max(this.npts, runtime.getNcoords());
-      return new RuntimeSmoosher(this.runtime, start, end, this.resol, npts);
-    }
-
-    // LOOK assumes regular
-    // try to merge runtime that are close enough: start, end, npts within percentTolerence, must have same resolution
-    public boolean closeEnough(RuntimeSmoosher that) {
-      // must be regular
-      if (!runtime.isRegular()) return false;
-      if (!that.runtime.isRegular()) return false;
-
-      double nptsP = Math.abs(npts - that.npts) / (double) npts;
-      if (nptsP > smooshTolerence) return false;
-
-      double total = (end - start);
-      double totalOther = (that.end - that.start);
-      if (!Misc.closeEnough(totalOther, total, smooshTolerence)) return false;
-
-      double startP = Math.abs(start - that.start) / total;
-      if (startP > smooshTolerence) return false;
-
-      double endP = Math.abs(end - that.end) / total;
-      if (endP > smooshTolerence) return false;
-
-      return Misc.closeEnough(that.resol, resol);
-    }
-  }
 
   /*
   private void makeRuntimeCoordAxes(List<CoverageCoordAxis> axes) {

@@ -123,7 +123,8 @@ public class FileCache implements FileCacheIF {
   /////////////////////////////////////////////////////////////////////////////////////////
 
   protected String name;
-  protected final int softLimit, minElements, hardLimit, period;
+  protected final int softLimit, minElements, hardLimit;
+  protected final long period; // msecs
 
   private final AtomicBoolean disabled = new AtomicBoolean(false);  // cache is disabled
   protected final AtomicBoolean hasScheduled = new AtomicBoolean(false); // a cleanup is scheduled
@@ -175,14 +176,14 @@ public class FileCache implements FileCacheIF {
     this.minElements = minElementsInMemory;
     this.softLimit = softLimit;
     this.hardLimit = hardLimit;
-    this.period = period;
+    this.period = (long) 1000 * period;
 
     cache = new ConcurrentHashMap<>(2 * softLimit, 0.75f, 8);
     files = new ConcurrentHashMap<>(4 * softLimit, 0.75f, 8);
     boolean wantsCleanup = period > 0;
 
     if (wantsCleanup) {
-      scheduleAtFixedRate(new CleanupTask(), 1000 * period, 1000 * period);
+      scheduleAtFixedRate(new CleanupTask(), this.period, this.period);
 
       if (cacheLog.isDebugEnabled())
         cacheLog.debug("FileCache " + name + " cleanup every " + period + " secs");
@@ -569,7 +570,7 @@ public class FileCache implements FileCacheIF {
     }
     Collections.sort(allFiles); // sort so oldest are on top
 
-    format.format("%nFileCache %s (min=%d softLimit=%d hardLimit=%d scour=%d):%n", name, minElements, softLimit, hardLimit, period);
+    format.format("%nFileCache %s (min=%d softLimit=%d hardLimit=%d scour=%d secs):%n", name, minElements, softLimit, hardLimit, period/1000);
     format.format(" isLocked  accesses lastAccess                   location %n");
     for (CacheElement.CacheFile file : allFiles) {
       String loc = file.ncfile != null ? file.ncfile.getLocation() : "null";

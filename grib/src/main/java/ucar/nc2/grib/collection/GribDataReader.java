@@ -162,6 +162,7 @@ public abstract class GribDataReader {
       if (vindexP.getType() == GribCollectionImmutable.Type.MRUTP) {
         // find the partition from getRuntimeIdxFromMrutpTimeIndex
         CoordinateTime2D time2D = (CoordinateTime2D) vindexP.getCoordinateTime();
+        assert time2D != null;
         int[] timeIndices = time2D.getTimeIndicesFromMrutp(indexWanted[0]);
 
         int[] indexReallyWanted = new int[indexWanted.length+1];

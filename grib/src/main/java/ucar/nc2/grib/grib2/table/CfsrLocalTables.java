@@ -150,6 +150,7 @@ public class CfsrLocalTables extends NcepLocalTables {
     if (!pds.isTimeInterval()) return null;
 
     int[] intv = getForecastTimeIntervalOffset(gr);
+    assert intv != null;
     int intvLen = intv[1]-intv[0];
 
     int timeUnitOrg = pds.getTimeUnit();

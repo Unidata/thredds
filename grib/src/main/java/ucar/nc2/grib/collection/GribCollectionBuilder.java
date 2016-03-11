@@ -256,6 +256,7 @@ abstract class GribCollectionBuilder {
           else calendarDateRangeAll = calendarDateRangeAll.extend(calendarDateRange);
         }
       }
+      assert calendarDateRangeAll != null;
 
       // for each Group write an index file
       ok &= writeIndex(gcname, indexFileForRuntime.getPath(), masterRuntimes, runGroupList, allFiles, calendarDateRangeAll);
