@@ -331,7 +331,7 @@ abstract class GribPartitionBuilder {
         vip.finish(); // create the SA, remove list LOOK, could do it differently
 
         // loop over partitions, make union coordinate; also time filter the intervals
-        CoordinateUnionizer unionizer = new CoordinateUnionizer(viResult, intvMap, logger);
+        CoordinatePartitionUnionizer unionizer = new CoordinatePartitionUnionizer(viResult, intvMap, logger);
         for (int partno = 0; partno < npart; partno++) {
           GribCollectionMutable.GroupGC group = gp.componentGroups[partno];
           if (group == null) continue; // tolerate missing groups
@@ -418,7 +418,7 @@ abstract class GribPartitionBuilder {
 
       // for each time2D, create the best time coordinates
       HashMap<Coordinate, CoordinateTimeAbstract> map2DtoBest = new HashMap<>(); // associate 2D coord with best
-      CoordinateUniquify sharer = new CoordinateUniquify();
+      CoordinateSharerBest sharer = new CoordinateSharerBest();
       for (Coordinate coord : group2D.coords) {
         if (coord instanceof CoordinateRuntime) continue; // skip it
         if (coord instanceof CoordinateTime2D) {
@@ -760,108 +760,3 @@ message Partition {
   }
 
 }
-
-/*
-  // maybe a mistake to try to track missing values, as it messes up the runtime accuracy ??
-  // for one vi, count the inventory, put results into the twot array
-  private void makeMissing(GroupPartitions gp, GribCollectionMutable.VariableIndex viResult) throws IOException {
-    Coordinate cr = viResult.getCoordinate(Coordinate.Type.runtime);  // this is all of the runtimes for this vip, across partitions
-    if (cr == null) {
-      logger.error("Missing runtime coordinate vi=" + viResult.toStringShort());
-      return;
-    }
-
-    CoordinateTimeAbstract ct = viResult.getCoordinateTime();          // this is all of the times for this vip, across partitions
-    if (ct == null) {
-      logger.error("Missing time coordinate vi=" + viResult.toStringShort());
-      return;
-    }
-    boolean isTwoD = ct instanceof CoordinateTime2D;
-    CoordinateTime2D ct2D = isTwoD ? (CoordinateTime2D) ct : null;
-
-    int ntimes = (ct instanceof CoordinateTime2D) ? ((CoordinateTime2D) ct).getNtimes() : ct.getSize();
-    viResult.twot = new TwoDTimeInventory(cr.getSize(), ntimes);       // track inventory for just this vip
-
-    // time coord val -> index in CoordinateTime, non-2D only
-    Map<Object, Integer> ctMap;
-    if (!isTwoD) {
-      ctMap = new HashMap<>(2 * ct.getSize());
-      for (int i = 0; i < ct.getSize(); i++) ctMap.put(ct.getValue(i), i);
-    }
-
-    // loop over partitions
-    // need to translate indices in vi to indices in vip
-    for (GribCollectionMutable.GroupGC group : gp.componentGroups) {  // We only do this for PofGC, so  partitions are GC and have only one runtime, so no duplicate counting
-      GribCollectionMutable.VariableIndex vi = group.findVariableByHash(viResult.cdmHash);  // get the variable for this partition
-      if (vi == null) continue; // tolerate missing variables
-
-      CoordinateTimeAbstract ctGC =  vi.getCoordinateTime();
-      CoordinateTime2D ctGC2d =  isTwoD ? (CoordinateTime2D) ctGC : null;
-
-      // we need the sparse array for this component vi
-      vi.readRecords();                                         // open/close cached RAF. could pre-read, since we know we need.
-      SparseArray<GribCollectionMutable.Record> sa = vi.getSparseArray();
-      Section s = new Section(sa.getShape());
-      Section.Iterator iter = s.getIterator(sa.getShape());
-
-      // run through all the inventory in this component vi
-      int[] indexInPartition = new int[sa.getRank()]; // this will hold the indices reletive to variable in one partition
-      int[] indexInResult = new int[sa.getRank()];    // this will hold the indices reletive to result variable (all partitions) HEY rank ok ?
-      while (iter.hasNext()) {
-        int linearIndex = iter.next(indexInPartition);
-        if (sa.getContent(linearIndex) == null) continue; // missing data
-
-        // convert value in component vi to index in viResult
-        // needed because orthogonal and regular will move the indices of the coordinates
-        int runIdxP = indexInPartition[0];
-        int timeIdxP = indexInPartition[1];
-        if (isTwoD) {
-          CoordinateTime2D.Time2D val = ctGC2d.getOrgValue(runIdxP, timeIdxP, false);
-          ct2D.getIndex(val, indexInResult);
-          if (indexInResult[0] <0 || indexInResult[1] <0) {
-            System.out.println("HEY");
-          }
-          viResult.twot.add(indexInResult[0], indexInResult[1]);
-
-        } else {
-          Object runval = ctGC.getValue(runIdxP);  // value from vi  HEY not tested, may not ever be used
-          int runIdxR = cr.getIndex(runval);       // index in vip
-
-          Object timeval = ctGC.getValue(timeIdxP); // value from vi
-          int timeIdxR = ct.getIndex(timeval);      // index in vip
-
-          viResult.twot.add(runIdxR, timeIdxR);
-        }
-      }
-    }   // loop over partitions
-
-    /* } else {  isDense or not
-
-      // loop over runtimes
-      int runIdx = 0;
-      for (int partno : result.run2part) {  // We only do this for PofGC, so partitions are GC and have only one runtime, so no duplicate counting
-        // get the partition/group/variable for this run
-        GribCollection.GroupGC group = gp.componentGroups[partno];
-        if (group == null) continue; // tolerate missing groups
-        GribCollection.VariableIndex vi = group.findVariableByHash(viResult.cdmHash);
-        if (vi == null) continue; // tolerate missing variables
-
-        // we need the sparse array for this component vi
-        vi.readRecords();  //  for each variable, for each partition: are we opening/closing raf ??  Or can we assume that we already have the sparse array ?
-        SparseArray<GribCollection.Record> sa = vi.getSparseArray();
-        Section s = new Section(sa.getShape());
-        Section.Iterator iter = s.getIterator(sa.getShape());
-
-        // run through all the inventory in this component vi  WRONG for orthogonal
-        int[] index = new int[sa.getRank()];
-        while (iter.hasNext()) {
-          int linearIndex = iter.next(index);
-          if (sa.getContent(linearIndex) == null) continue;  // ok, or use sa.getContent(int[] index) {
-          int timeIdx = index[1];
-          viResult.twot.add(runIdx, timeIdx); // runIdx ok, timeIdx is not
-        }
-
-        runIdx++;
-      }
-    }
-  } */

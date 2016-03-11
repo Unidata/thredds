@@ -35,26 +35,27 @@ package ucar.coord;
 import java.util.*;
 
 /**
- * Create shared coordinates across variables in the same group,
- * to form the set of group coordinates.
- * Use object.equals() to find unique coordinates.
+ * Create shared coordinate variables across the variables in the same group.
+ * Use Coordinate.equals(), hashCode() to find unique coordinate variables.
+ *
+ * Used by GribPartitionBuilder.makeBest(), for all coordinates not CoordinateTime2D and not CoordinateRuntime.
+ * Best coordinates are translated into equivilent 2D coordinate, thus we dont need seperate CoordinateND.
  *
  * @author caron
  * @since 12/10/13
  */
-public class CoordinateUniquify {
-  // static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateUniquify.class);
+public class CoordinateSharerBest {
+  private Map<Coordinate, Coordinate> runtimeBuilders = new HashMap<>();
+  private Map<Coordinate, Coordinate> timeBuilders = new HashMap<>();
+  private Map<Coordinate, Coordinate> timeIntvBuilders = new HashMap<>();
+  private Map<Coordinate, Coordinate> vertBuilders = new HashMap<>();
+  private Map<Coordinate, Coordinate> ensBuilders = new HashMap<>();
+  private Map<Coordinate, Coordinate> time2DBuilders = new HashMap<>();
+  private Map<Coordinate, Coordinate> swap = new HashMap<>();
 
-  HashMap<Coordinate, Coordinate> runtimeBuilders = new HashMap<>();
-  HashMap<Coordinate, Coordinate> timeBuilders = new HashMap<>();
-  HashMap<Coordinate, Coordinate> timeIntvBuilders = new HashMap<>();
-  HashMap<Coordinate, Coordinate> vertBuilders = new HashMap<>();
-  HashMap<Coordinate, Coordinate> ensBuilders = new HashMap<>();
-  HashMap<Coordinate, Coordinate> time2DBuilders = new HashMap<>();
-  HashMap<Coordinate, Coordinate> swap = new HashMap<>();
-
-  List<Coordinate> unionCoords;
-  Map<Coordinate, Integer> indexMap;
+  // results
+  private List<Coordinate> unionCoords;
+  private Map<Coordinate, Integer> indexMap;
 
   public void addCoordinates(List<Coordinate> coords) {
     for (Coordinate coord : coords) addCoordinate(coord);
@@ -123,7 +124,7 @@ public class CoordinateUniquify {
      for (Coordinate coord : ensBuilders.keySet()) unionCoords.add(coord);
 
      indexMap = new HashMap<>();
-     for (int i = 0; i < this.unionCoords.size(); i++) {
+     for (int i = 0; i < unionCoords.size(); i++) {
        indexMap.put(this.unionCoords.get(i), i);
      }
 

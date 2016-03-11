@@ -33,6 +33,8 @@
 package ucar.coord;
 
 import net.jcip.annotations.Immutable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
@@ -60,6 +62,8 @@ import java.util.*;
  */
 @Immutable
 public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate {
+  static private final Logger logger = LoggerFactory.getLogger(CoordinateTime.class);
+
   private final List<Integer> offsetSorted;
 
   public CoordinateTime(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<Integer> offsetSorted, int[] time2runtime) {
@@ -208,58 +212,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return new CoordinateTime(code, timeUnit, refDate, offsetSortedBest, time2runtimeBest);
   }
 
-
-  /* public CoordinateTime makeBestTimeCoordinate(List<Double> runOffsets) {
-    Set<Integer> values = new HashSet<>();
-    for (double runOffset : runOffsets) {
-      for (Integer val : getOffsetSorted())
-        values.add((int) (runOffset + val)); // LOOK possible roundoff
-    }
-
-    List<Integer> offsetSorted = new ArrayList<>(values.size());
-    for (Object val : values) offsetSorted.add( (Integer) val);
-    Collections.sort(offsetSorted);
-    return new CoordinateTime(getCode(), getTimeUnit(), getRefDate(), offsetSorted);
-  }
-
-  /*
-   * calculate which runtime to use, based on missing
-   * @param runOffsets for each runtime, the offset from base time
-   * @param coordBest  best time coordinate, from convertBestTimeCoordinate
-   * @param twot       variable missing array
-   * @return           for each time in coordBest, which runtime to use, as 1-based index into runtime runOffsets (0 = missing)
-   *
-  public int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTime coordBest, TwoDTimeInventory twot) {
-    int[] result = new int[ coordBest.getSize()];
-
-    Map<Integer, Integer> map = new HashMap<>();  // lookup coord val to index
-    int count = 0;
-    for (Integer val : coordBest.getOffsetSorted()) map.put(val, count++);
-
-    int runIdx = 0;
-    for (double runOffset : runOffsets) {
-      int timeIdx = 0;
-      for (Integer val : getOffsetSorted()) {
-        if (twot == null || twot.getCount(runIdx, timeIdx) > 0) { // skip missing
-          Integer bestVal = (int) (runOffset + val);
-          Integer bestValIdx = map.get(bestVal);
-          if (bestValIdx == null) throw new IllegalStateException();
-          result[bestValIdx] = runIdx+1; // use this partition; later ones override; 1-based so 0 = missing
-        }
-
-        timeIdx++;
-      }
-      runIdx++;
-    }
-    return result;
-  }   */
-
-  ////////////////////////////////////////////
-
-  /* @Override
-  public CoordinateBuilder makeBuilder() {
-    return new Builder(code);
-  } */
+  //////////////////////////////////////////////////////
 
   static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     private final int code;  // pdsFirst.getTimeUnit()
@@ -288,9 +241,12 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
       } else {
         CalendarPeriod period = Grib2Utils.getCalendarPeriod(tuInRecord);
+        if (period == null) {
+          logger.warn("Cant find period for time unit="+tuInRecord);
+          return offset;
+        }
         CalendarDate validDate = refDate.add(period.multiply(offset));
-        int newOffset = TimeCoord.getOffset(refDate, validDate, timeUnit); // offset in correct time unit
-        return newOffset;
+        return TimeCoord.getOffset(refDate, validDate, timeUnit);
       }
     }
 
@@ -328,8 +284,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
       } else {
         CalendarDate validDate = GribUtils.getValidTime(refDate, tuInRecord, offset);
-        int newOffset = TimeCoord.getOffset(refDate, validDate, timeUnit);
-        return newOffset;
+        return TimeCoord.getOffset(refDate, validDate, timeUnit);
       }
 
     }

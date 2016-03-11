@@ -256,45 +256,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return new CoordinateTimeIntv(code, timeUnit, refDate, timeIntervalsBest, time2runtimeBest);
   }
 
-  /* make the union of all the offsets from base date
-  public CoordinateTimeIntv makeBestTimeCoordinate(List<Double> runOffsets) {
-    Set<TimeCoord.Tinv> values = new HashSet<>();
-    for (double runOffset : runOffsets) {
-      for (TimeCoord.Tinv val : getTimeIntervals())
-        values.add( val.offset(runOffset)); // LOOK possible roundoff
-    }
-
-    List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
-    for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
-    Collections.sort(offsetSorted);
-    return new CoordinateTimeIntv(getCode(), getTimeUnit(), refDate, offsetSorted);
-  }
-
-  public int[] makeTime2RuntimeMap(List<Double> runOffsets, CoordinateTimeIntv coordBest, TwoDTimeInventory twot) {
-    int[] result = new int[ coordBest.getSize()];
-
-    Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index
-    int count = 0;
-    for (TimeCoord.Tinv val : coordBest.getTimeIntervals()) map.put(val, count++);
-
-    int runIdx = 0;
-    for (double runOffset : runOffsets) {
-      int timeIdx = 0;
-      for (TimeCoord.Tinv val : getTimeIntervals()) {
-        if (twot == null || twot.getCount(runIdx, timeIdx) > 0) { // skip missing;
-          TimeCoord.Tinv bestVal = val.offset(runOffset);
-          Integer bestValIdx = map.get(bestVal);
-          if (bestValIdx == null) throw new IllegalStateException();
-          result[bestValIdx] = runIdx+1; // use this partition; later ones override; one based so 0 = missing
-        }
-
-        timeIdx++;
-      }
-      runIdx++;
-    }
-    return result;
-  }  */
-
   ///////////////////////////////////////////////////////////
 
   static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {

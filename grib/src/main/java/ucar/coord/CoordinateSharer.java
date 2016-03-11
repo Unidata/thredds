@@ -32,22 +32,21 @@
  */
 package ucar.coord;
 
+import com.google.common.collect.Sets;
+
 import java.util.*;
 
 /**
- * Create shared coordinates across variables in the same group,
- * to form the set of group coordinates.
- * Use Coordinate.equals() to find unique coordinates.
+ * Create shared coordinate variables across the variables in the same group.
+ * Use Coordinate.equals(), hashCode() to find unique coordinate variables. (so not merging similar)
  *
+ * Used by GribCollectionBuilder and GribPartitionBuilder
  * This is a builder helper class.
  *
  * @author John
  * @since 1/4/14
  */
 public class CoordinateSharer<T> {
-  // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CoordinateSharer.class);
-
-  //////////////////////////////////////////
   boolean isRuntimeUnion;
   org.slf4j.Logger logger;
 
@@ -59,53 +58,25 @@ public class CoordinateSharer<T> {
     this.logger = logger;
   }
 
-  Set<Coordinate> runtimeBuilders = new HashSet<>();
-  Set<Coordinate> timeBuilders = new HashSet<>();
-  Set<Coordinate> timeIntvBuilders = new HashSet<>();
-  Set<Coordinate> vertBuilders = new HashSet<>();
-  Set<Coordinate> ensBuilders = new HashSet<>();
-  Set<Coordinate> time2DBuilders = new HashSet<>();
+  Set<Coordinate> runtimeSet = new HashSet<>();
+  Set<Coordinate> timeSet = new HashSet<>();
+  Set<Coordinate> timeIntvSet = new HashSet<>();
+  Set<Coordinate> vertSet = new HashSet<>();
+  Set<Coordinate> ensSet = new HashSet<>();
+  Set<Coordinate> time2DSet = new HashSet<>(); // LOOK could we use a fuzzy compare here?
 
-  List<Coordinate> unionCoords = new ArrayList<>();
-  Map<Coordinate, Integer> coordMap;
+  // result
+  List<Coordinate> unionCoords = new ArrayList<>(); // all the coordinates in the group
+  Map<Coordinate, Integer> coordMap;                // fast lookup of coordinate to list index
 
+  // isRuntimeUnion=true only
   CoordinateRuntime.Builder2 runtimeAllBuilder;
   CoordinateTime2DUnionizer  time2DUnionizer;
   CoordinateTime2DUnionizer  timeIntv2DUnionizer;
-  // CoordinateTime2D.Builder2 time2DAllBuilder;
   CoordinateRuntime runtimeAll;
   CoordinateTime2D time2Dall, timeIntv2Dall;
 
-  public void addCoordinate(Coordinate coord) {
-    switch (coord.getType()) {
-      case runtime:
-        runtimeBuilders.add(coord);   // unique coordinates
-        break;
-
-      case time:
-        timeBuilders.add(coord);
-        break;
-
-      case timeIntv:
-        timeIntvBuilders.add(coord);
-        break;
-
-      case time2D:
-          time2DBuilders.add(coord);
-        break;
-
-      case vert:
-        vertBuilders.add(coord);
-        break;
-
-      case ens:
-        ensBuilders.add(coord);
-        break;
-    }
-  }
-
   // add each variable's list of coordinate
-  // keep in Set, so it hold just the unique ones
   public void addCoords(List<Coordinate> coords) {
     CoordinateRuntime runtime = null;
     for (Coordinate coord : coords) {
@@ -117,15 +88,15 @@ public class CoordinateSharer<T> {
               runtimeAllBuilder = new CoordinateRuntime.Builder2(runtime.getTimeUnits());
             runtimeAllBuilder.addAll(coord);
           }
-          else runtimeBuilders.add(coord);   // unique coordinates
+          else runtimeSet.add(coord);   // unique coordinates
           break;
 
         case time:
-          timeBuilders.add(coord);
+          timeSet.add(coord);
           break;
 
         case timeIntv:
-          timeIntvBuilders.add(coord);
+          timeIntvSet.add(coord);
           break;
 
         case time2D:
@@ -142,7 +113,7 @@ public class CoordinateSharer<T> {
             //  time2DAllBuilder = new CoordinateTime2D.Builder2(time2D.isTimeInterval(), null, time2D.getTimeUnit(), time2D.getCode());
             // time2DAllBuilder.addAll(coord);
           } else {
-            time2DBuilders.add(coord);
+            time2DSet.add(coord);
           }
           // debug
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
@@ -151,24 +122,51 @@ public class CoordinateSharer<T> {
           break;
 
         case vert:
-          vertBuilders.add(coord);
+          vertSet.add(coord);
           break;
 
         case ens:
-          ensBuilders.add(coord);
+          ensSet.add(coord);
           break;
       }
     }
   }
 
-  //Map<CoordinateTime2D, CoordinateTime2D> resetSet;       // new, new
-  //Map<Coordinate, CoordinateTime2D> convert;  // prev, new
+  /* public void addCoordinate(Coordinate coord) {
+    switch (coord.getType()) {
+      case runtime:
+        runtimeBuilders.add(coord);   // unique coordinates
+        break;
+
+      case time:
+        timeBuilders.add(coord);
+        break;
+
+      case timeIntv:
+        timeIntvBuilders.add(coord);
+        break;
+
+      case time2D:
+        time2DBuilders.add(coord);
+        break;
+
+      case vert:
+        vertBuilders.add(coord);
+        break;
+
+      case ens:
+        ensBuilders.add(coord);
+        break;
+    }
+  } */
+
+  private Map<Coordinate, CoordinateTime2D> swap = new HashMap<>(); // old, new coordinate
   public void finish() {
     if (isRuntimeUnion) { // have to redo any time2D with runtimeAll
       runtimeAll = (CoordinateRuntime) runtimeAllBuilder.finish();
       unionCoords.add(runtimeAll);
       if (time2DUnionizer != null) {
-        time2DUnionizer.setRuntimeCoords(runtimeAll);    // make sure there a single runtime
+        time2DUnionizer.setRuntimeCoords(runtimeAll);    // make sure theres a single runtime
         time2Dall = (CoordinateTime2D) time2DUnionizer.finish();
         unionCoords.add(time2Dall);
       }
@@ -180,11 +178,11 @@ public class CoordinateSharer<T> {
 
     } else {  // not runtimeUnion
 
-      for (Coordinate coord : runtimeBuilders) unionCoords.add(coord);
+      for (Coordinate coord : runtimeSet) unionCoords.add(coord);
 
-      // try to regularize any time2D
+      // CoordinateTime2D.Builder uses general ctor, CoordinateTime2DUnionizer will build orthogonal / regular variants
       HashSet<CoordinateTime2D> coord2Dset = new HashSet<>();
-      for (Coordinate coord : time2DBuilders) {
+      for (Coordinate coord : time2DSet) {
         CoordinateTime2D coord2D = (CoordinateTime2D) coord;
         CoordinateTime2DUnionizer unionizer = new CoordinateTime2DUnionizer(coord2D.isTimeInterval(), coord2D.getTimeUnit(), coord2D.getCode(), true, logger);
         unionizer.addAll(coord2D);
@@ -195,7 +193,7 @@ public class CoordinateSharer<T> {
             unionCoords.add(result); // use the new one
             coord2Dset.add(result);
           }
-          swap.put(coord, result); // track old, new swap
+          swap.put(coord2D, result); // track old, new swap
 
         } else {
           unionCoords.add(coord2D); // use the old one
@@ -204,10 +202,10 @@ public class CoordinateSharer<T> {
       }
     }
 
-    for (Coordinate coord : timeBuilders) unionCoords.add(coord);
-    for (Coordinate coord : timeIntvBuilders) unionCoords.add(coord);
-    for (Coordinate coord : vertBuilders) unionCoords.add(coord);
-    for (Coordinate coord : ensBuilders) unionCoords.add(coord);
+    for (Coordinate coord : timeSet) unionCoords.add(coord);
+    for (Coordinate coord : timeIntvSet) unionCoords.add(coord);
+    for (Coordinate coord : vertSet) unionCoords.add(coord);
+    for (Coordinate coord : ensSet) unionCoords.add(coord);
 
     // fast lookup
     coordMap = new HashMap<>();
@@ -215,8 +213,6 @@ public class CoordinateSharer<T> {
       coordMap.put(this.unionCoords.get(i), i);
     }
   }
-
-  private Map<Coordinate, Coordinate> swap = new HashMap<>();
 
   // this is the set of shared coordinates to be stored in the group
   public List<Coordinate> getUnionCoords() {
@@ -351,12 +347,39 @@ public class CoordinateSharer<T> {
       sb.format(" %d == (%s) %s%n", coord.hashCode(), coord, coord.getName());
 
     sb.format("%ntime2DBuilders:%n");
-    for (Coordinate coord :  this.time2DBuilders)
+    for (Coordinate coord :  this.time2DSet)
       sb.format(" %d == (%s) %s%n", coord.hashCode(), coord, coord.getName());
 
     sb.format("%nswap:%n");
-    for (Map.Entry<Coordinate, Coordinate> entry :  this.swap.entrySet())
+    for (Map.Entry<Coordinate, CoordinateTime2D> entry :  this.swap.entrySet())
       sb.format(" %d (%s) %s -> %d (%s) %s%n", entry.getKey().hashCode(), entry.getKey(), entry.getKey().getName(),
               entry.getValue().hashCode(), entry.getValue(), entry.getValue().getName());
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+  // experimental
+
+  private static final double smooshTolerence = .10;
+  private List<RuntimeSmoosher> runtimes = new ArrayList<>();
+
+  private class RuntimeSmoosher {
+    private CoordinateRuntime runtime;
+    private Set<Long> coordSet = new HashSet<>();
+    private boolean combined;
+
+    RuntimeSmoosher(CoordinateRuntime runtime) {
+      this.runtime = runtime;
+      for (int i=0; i<runtime.getNCoords(); i++)
+        coordSet.add(runtime.getRuntime(i));
+    }
+
+    // try to merge runtime whose values differ by < smooshTolerence
+    public boolean closeEnough(RuntimeSmoosher that) {
+      Sets.SetView<Long> common = Sets.intersection(this.coordSet, that.coordSet);
+      int total = Math.min(this.runtime.getSize(), that.runtime.getSize());
+
+      double nptsP = common.size() / (double) total;
+      return (nptsP < smooshTolerence);
+    }
   }
 }

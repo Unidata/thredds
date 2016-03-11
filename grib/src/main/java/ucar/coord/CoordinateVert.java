@@ -33,7 +33,6 @@
 package ucar.coord;
 
 import net.jcip.annotations.Immutable;
-import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1Record;
