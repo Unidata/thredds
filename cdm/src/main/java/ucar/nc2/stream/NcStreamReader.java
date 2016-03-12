@@ -40,6 +40,7 @@ import ucar.nc2.Structure;
 import ucar.ma2.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -135,7 +136,8 @@ public class NcStreamReader {
   public DataResult readData(InputStream is, NetcdfFile ncfile, String location) throws IOException {
     byte[] b = new byte[4];
     int bytesRead = NcStream.readFully(is, b);
-    if (bytesRead < b.length) return null;
+    if (bytesRead < b.length)
+      throw new EOFException(location);
 
     if (NcStream.test(b,NcStream.MAGIC_DATA)) return readData1(is, ncfile);
     if (NcStream.test(b,NcStream.MAGIC_DATA2)) return readData2(is);

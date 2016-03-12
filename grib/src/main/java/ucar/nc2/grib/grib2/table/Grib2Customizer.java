@@ -102,6 +102,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   ///////////////////////////////////////////////////////////////
 
   protected final Grib2Table grib2Table;
+  private boolean timeUnitWarnWasSent;
 
   protected Grib2Customizer(Grib2Table grib2Table) {
     this.grib2Table = grib2Table;
@@ -223,8 +224,11 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
       if (ti.timeRangeUnit == 255)
         continue;
       if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
-        log.warn("TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
-        throw new RuntimeException("TimeInterval(2) has different units");
+        if (!timeUnitWarnWasSent) {
+          log.warn("TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
+          timeUnitWarnWasSent = true;
+          // throw new RuntimeException("TimeInterval(2) has different units");
+        }
       }
 
       range += ti.timeRangeLength;

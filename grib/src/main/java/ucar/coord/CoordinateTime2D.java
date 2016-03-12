@@ -583,6 +583,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     int[] time2runtime = new int[ offsetSorted.size()];
     for (int runIdx=0; runIdx<nruns; runIdx++) {
       CoordinateTime timeCoord = (times == null) ? (CoordinateTime) getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
+      assert timeCoord != null;
       for (Integer offset : timeCoord.getOffsetSorted()) {
         Integer bestValIdx = map.get(offset + getOffset(runIdx));
         if (bestValIdx == null) throw new IllegalStateException();
@@ -611,6 +612,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       Set<Integer> values = new HashSet<>();  // complete set of values
       for (int runIdx=0; runIdx<nruns; runIdx++) {   // use times array, passed into constructor, with original inventory, if possible
         CoordinateTime timeCoord = (times == null) ?  (CoordinateTime)  getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
+        assert timeCoord != null;
         for (Integer offset : timeCoord.getOffsetSorted()) {
           int offsetAbs = (offset + getOffset(runIdx)); // convert to absolute offset
           if (values.contains(offsetAbs)) return false;

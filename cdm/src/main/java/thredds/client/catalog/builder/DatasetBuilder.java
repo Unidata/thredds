@@ -186,6 +186,7 @@ public class DatasetBuilder {
   }
 
   public void addServiceToCatalog(Service s) {
+    if (s == null) return;
     if (services == null) services = new ArrayList<>();
     services.add(s);
   }

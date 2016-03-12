@@ -361,6 +361,12 @@ public class AdminCollectionController {
     }
 
     File idxFile = GribCdmIndex.getTopIndexFileFromConfig(want.getConfig());
+    if (idxFile == null) {
+      HttpHeaders responseHeaders = new HttpHeaders();
+      responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+      return new ResponseEntity<>(Escape.html(collectName) + " NOT FOUND", responseHeaders, HttpStatus.NOT_FOUND);
+    }
+
     ServletUtil.returnFile(req, res, idxFile, ContentType.binary.toString());
     return null;
   }

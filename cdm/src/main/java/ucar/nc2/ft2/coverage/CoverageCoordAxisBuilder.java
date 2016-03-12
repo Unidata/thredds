@@ -265,6 +265,7 @@ public class CoverageCoordAxisBuilder {
         nonModeCount += (multiple - 1) * resol.getCount(value);
       }
     }
+    if (modeCount == 0) return true; // cant happen i think
 
     // only tolerate these many missing values
     double ratio = (nonModeCount / (double) modeCount);

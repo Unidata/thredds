@@ -142,6 +142,7 @@ public class InvDatasetFcPoint extends InvDatasetFeatureCollection {
     top.setName(name);
 
     Service topService = allowedServices.getStandardCollectionServices(fd.getFeatureType());
+    assert topService != null;
     top.addServiceToCatalog(topService);
 
     ThreddsMetadata tmi = top.getInheritableMetadata();

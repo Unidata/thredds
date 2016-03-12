@@ -461,6 +461,7 @@ public class IgraPor extends AbstractIOServiceProvider {
     public boolean hasNext() throws IOException {
       if (!exists) return false;
       if (timeSeriesRaf == null) init();
+      assert timeSeriesRaf != null;
       return (timeSeriesRaf.getFilePointer() < totalBytes); // && (recno < 10);   LOOK not perfect, eg trailing blanks
     }
 

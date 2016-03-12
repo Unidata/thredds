@@ -456,27 +456,16 @@ public class ReqState {
 
   protected void processDodsURL() {
 
-    // Figure out the data set name and suffix
-
-    String path1 = myHttpRequest.getContextPath();
-    String path2 = myHttpRequest.getServletPath();
-    String path3 = myHttpRequest.getRequestURI();
-    String path4 = myHttpRequest.getPathInfo();
-
-    this.dataSetName = HTTPUtil.canonicalpath(myHttpRequest.getPathInfo());
-    if (dataSetName.startsWith("/dodsC")) dataSetName = dataSetName.substring(6);
     String cxtpath = HTTPUtil.canonicalpath(myHttpRequest.getContextPath());
-    String servletpath = HTTPUtil.canonicalpath(myHttpRequest.getServletPath());
-
-    // simplify subsequent tests
-    if (this.dataSetName != null && this.dataSetName.length() == 0) this.dataSetName = null;
     if (cxtpath != null && cxtpath.length() == 0) cxtpath = null;
+    if (cxtpath == null) cxtpath = "/"; // we are running as webapps/ROOT
+
+    String servletpath = HTTPUtil.canonicalpath(myHttpRequest.getServletPath());
     if (servletpath != null && servletpath.length() == 0) servletpath = null;
 
-    if (cxtpath == null) {
-      // we are running as webapps/ROOT
-      cxtpath = "/";
-    }
+    this.dataSetName = HTTPUtil.canonicalpath(myHttpRequest.getPathInfo());
+    if (this.dataSetName != null && this.dataSetName.length() == 0) this.dataSetName = null;
+
     if (this.dataSetName == null) {
       if (servletpath != null) {
         // use servlet path
@@ -486,23 +475,23 @@ public class ReqState {
           this.dataSetName = servletpath;
         }
       }
+    } else {
+      if (dataSetName.startsWith("/dodsC")) dataSetName = dataSetName.substring(6);
     }
 
     this.requestSuffix = null;
     if (this.dataSetName != null) {
-      // remove any leading '/'
       String name = this.dataSetName;
-      if (name.startsWith("/")) name = name.substring(1);
+      if (name.startsWith("/")) name = name.substring(1); // remove any leading '/'
       String[] pieces = name.split("/");
       if (pieces.length == 0 || pieces[0].length() == 0) {
         requestSuffix = "";
         this.dataSetName = name;
+
       } else {
         String endOPath = pieces[pieces.length - 1];
-        // Check the last element in the path for the
-        // character "."
+        // Check the last element in the path for the character "."
         int index = endOPath.lastIndexOf('.');
-        //System.out.println("last index of . in \""+ds+"\": "+index);
         // If a dot is found take the stuff after it as the DAP2 request suffix
         if (index > 0) {
           // pluck the DAP2 request suffix off of the end
@@ -512,7 +501,7 @@ public class ReqState {
           // suffix which we know exists in the last element
           // of the path.
           this.dataSetName = this.dataSetName.substring(1, this.dataSetName.lastIndexOf('.'));
-        } else { // strip the leading slash (/) from the dataset name and set the suffix to an empty string
+        } else {    // strip the leading slash (/) from the dataset name and set the suffix to an empty string
           requestSuffix = "";
           this.dataSetName = name;
         }
