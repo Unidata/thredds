@@ -143,8 +143,11 @@ public class ConfigCatalogCache implements CatalogReader {
 
     // see if it exists
     File catFile = new File(catalogFullPath);
-    if (!catFile.exists())
-      throw new FileNotFoundException();
+    if (!catFile.exists()) {
+      int pos = catalogFullPath.indexOf("content/thredds/");
+      String filename = (pos > 0) ? catalogFullPath.substring(pos+16) : catalogFullPath;
+      throw new FileNotFoundException(filename);
+    }
 
     URI uri;
     try {
@@ -155,25 +158,11 @@ public class ConfigCatalogCache implements CatalogReader {
     }
 
     ConfigCatalogBuilder builder = new ConfigCatalogBuilder();
-    //try {
-      // read the catalog
-      //logger.info("\n-------readCatalog(): full path=" + catalogFullPath + "; catKey=" + catKey);
-      ConfigCatalog cat = (ConfigCatalog) builder.buildFromURI(uri);          // LOOK use file and keep lastModified
-      if (builder.hasFatalError()) {
-        // logger.error(ERROR + "   invalid catalog -- " + builder.getErrorMessage());
-        throw new IOException("invalid catalog "+catalogFullPath);
-      }
-
-      //if (builder.getErrorMessage().length() > 0)
-      //  logger.debug(builder.getErrorMessage());
-
-      return cat;
-
-    //} catch (Throwable t) {
-    //  logger.error(ERROR + "  Exception on catalog=" + catalogFullPath + " " + t.getMessage() + "\n log=" + builder.getErrorMessage(), t);
-    //  return null;
-    //}
-
+    ConfigCatalog cat = (ConfigCatalog) builder.buildFromURI(uri);          // LOOK use file and keep lastModified
+    if (builder.hasFatalError()) {
+      throw new IOException("invalid catalog " + catalogFullPath);
+    }
+    return cat;
   }
 
 }
