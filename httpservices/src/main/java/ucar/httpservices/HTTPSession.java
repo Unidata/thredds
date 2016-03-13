@@ -47,7 +47,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -1128,10 +1127,14 @@ public class HTTPSession implements Closeable
                 this.cachevalid = true;
             }
         }
-        this.execution.request = (HttpRequestBase)rb.build();
-        try {
+	try {
+            this.execution.request = (HttpRequestBase) rb.build();
+            if(this.execution.request == null)
+	        throw new HTTPException("HTTPSession.execute: requestbuilder failed");
             HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
             this.execution.response = cachedclient.execute(targethost, this.execution.request, this.sessioncontext);
+            if(this.execution.response == null)
+	        throw new HTTPException("HTTPSession.execute: Response was null");
         } catch (IOException ioe) {
             throw new HTTPException(ioe);
         }
@@ -1160,8 +1163,8 @@ public class HTTPSession implements Closeable
             } else if(key == Prop.CONN_REQ_TIMEOUT) {
                 rcb.setConnectionRequestTimeout((Integer) value);
             } else if(key == Prop.MAX_THREADS) {
-                connmgr.setMaxTotal((Integer)value);
-                connmgr.setDefaultMaxPerRoute((Integer)value);
+                connmgr.setMaxTotal((Integer) value);
+                connmgr.setDefaultMaxPerRoute((Integer) value);
             } /* else ignore */
         }
         RequestConfig cfg = rcb.build();
@@ -1432,7 +1435,6 @@ public class HTTPSession implements Closeable
         }
         return null;
     }
-
 
 
     //////////////////////////////////////////////////

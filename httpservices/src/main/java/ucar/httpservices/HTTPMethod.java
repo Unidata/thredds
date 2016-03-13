@@ -326,8 +326,6 @@ public class HTTPMethod implements Closeable
             HTTPSession.ExecState estate = session.execute(this, methodurl, rb);
             this.request = estate.request;
             this.response = estate.response;
-            if(this.request == null || this.response == null)
-                throw new IllegalStateException("HTTPMethod.execute: request or response was null");
             HttpClientContext execcontext = session.getExecutionContext();
             int code = this.response.getStatusLine().getStatusCode();
             return code;
