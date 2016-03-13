@@ -41,10 +41,6 @@ import ucar.httpservices.HTTPAuthUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,130 +69,63 @@ public class Login extends JFrame implements CredentialsProvider
 
     public Credentials getCredentials(AuthScope scope)
     {
-        Credentials creds = cache.get(scope);
-        if(creds == null) {
-            AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope, cache.keySet());
-            if(bestMatch != null) {
-                creds = cache.get(bestMatch);
+        if(false) {
+            Credentials creds = cache.get(scope);
+            if(creds == null) {
+                AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope, cache.keySet());
+                if(bestMatch != null) {
+                    creds = cache.get(bestMatch);
+                }
             }
+            if(creds != null)
+                return creds;
         }
-        if(creds != null)
-            return creds;
         // Ok, ask and cache
-        String up = login(this);
+        String up = login();
         if(up == null) throw new IllegalStateException();
         String[] pieces = up.split("[:]");
-        if(DEBUG) {
-            System.out.println("user= (" + pieces[0] + ")");
-            System.out.println("password= (" + pieces[1] + ")");
-        }
-        // Is this really necessary?
-        UsernamePasswordCredentials upc = new UsernamePasswordCredentials(pieces[0], pieces[1]);
-        cache.put(scope, upc);
+        UsernamePasswordCredentials upc = null;
+        if(pieces.length == 2) {
+            if(DEBUG) {
+                System.out.println("user= (" + pieces[0] + ")");
+                System.out.println("password= (" + pieces[1] + ")");
+            }
+            // Is this really necessary?
+            upc = new UsernamePasswordCredentials(pieces[0], pieces[1]);
+            //cache.put(scope, upc);
+        } else
+            upc = null;
         return upc;
     }
 
-    protected String login(JFrame frame)
+    protected String login()
     {
         String user;
         String pwd;
         for(; ; ) {
             user = null;
             pwd = null;
-            LoginDialog dialog = new LoginDialog(frame);
-            dialog.setVisible(true);
-            if(dialog.cancelled) return null;
-            user = dialog.user;
-            pwd = dialog.pwd;
+
+            JPanel userPanel = new JPanel();
+            userPanel.setLayout(new GridLayout(2, 2));
+            JLabel usernameLbl = new JLabel("Username:");
+            JLabel passwordLbl = new JLabel("Password:");
+            JTextField userFld = new JTextField();
+            JPasswordField passwordFld = new JPasswordField();
+            userPanel.add(usernameLbl);
+            userPanel.add(userFld);
+            userPanel.add(passwordLbl);
+            userPanel.add(passwordFld);
+            userPanel.setSize(1000, 500);
+            userPanel.setVisible(true);
+            int input = JOptionPane.showConfirmDialog(null, userPanel, "Enter your password:"
+                    , JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            user = userFld.getText();
+            pwd = passwordFld.getText();
             if(user != null && pwd != null)
                 break;
         }
         return user + ":" + pwd;
     }
-
-    static class LoginDialog extends JDialog
-    {
-        protected final JLabel jlblUsername = new JLabel("Username");
-        protected final JLabel jlblPassword = new JLabel("Password");
-        protected final JTextField jtfUsername = new JTextField(15);
-        protected final JTextField jpfPassword = new JTextField(15);
-        protected final JButton jbtOk = new JButton("Login");
-        protected final JButton jbtCancel = new JButton("Cancel");
-        protected final JLabel jlblStatus = new JLabel(" ");
-
-        public LoginDialog()
-        {
-            this(null);
-        }
-
-        public String user = null;
-        public String pwd = null;
-        public boolean cancelled;
-
-        public LoginDialog(final JFrame parent)
-        {
-            super(parent, false);
-
-            user = null;
-            pwd = null;
-            cancelled = false;
-
-            JPanel p3 = new JPanel(new GridLayout(2, 1));
-            p3.add(jlblUsername);
-            p3.add(jlblPassword);
-
-            JPanel p4 = new JPanel(new GridLayout(2, 1));
-            p4.add(jtfUsername);
-            p4.add(jpfPassword);
-
-            JPanel p1 = new JPanel();
-            p1.add(p3);
-            p1.add(p4);
-
-            JPanel p2 = new JPanel();
-            p2.add(jbtOk);
-            p2.add(jbtCancel);
-
-            JPanel p5 = new JPanel(new BorderLayout());
-            p5.add(p2, BorderLayout.CENTER);
-            p5.add(jlblStatus, BorderLayout.NORTH);
-            jlblStatus.setForeground(Color.RED);
-            jlblStatus.setHorizontalAlignment(SwingConstants.CENTER);
-
-            setLayout(new BorderLayout());
-            add(p1, BorderLayout.CENTER);
-            add(p5, BorderLayout.SOUTH);
-            pack();
-            setLocationRelativeTo(null);
-            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-            addWindowListener(new WindowAdapter()
-            {
-                @Override
-                public void windowClosing(WindowEvent e)
-                {
-                }
-            });
-
-            jbtOk.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    user = jtfUsername.getText();
-                    pwd = jpfPassword.getText();
-                }
-            });
-            jbtCancel.addActionListener(new ActionListener()
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    setVisible(false);
-                    parent.dispose();
-                    cancelled = true;
-                }
-            });
-        }
-    }
 }
+
