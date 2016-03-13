@@ -63,6 +63,7 @@ public class TestFileServer {
     result.add(new Object[]{"fileServer/scanLocal/2004050312_eta_211.nc", ContentType.netcdf});
     result.add(new Object[]{"fileServer/scanLocal/esfgTest.html", ContentType.html});
     result.add(new Object[]{"fileServer/testNAMfmrc/files/20060925_0600.nc", ContentType.netcdf});
+    result.add(new Object[]{"fileServer/scanCdmUnitTests/formats/netcdf3/files/ctest0.nc", ContentType.netcdf}); // make sure files doesnt get removed
 
     return result;
   }
