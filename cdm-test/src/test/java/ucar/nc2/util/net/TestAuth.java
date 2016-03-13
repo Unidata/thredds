@@ -376,6 +376,32 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
+    @Test
+    public void
+    testCache2() throws Exception
+    {
+        System.err.println("*** Testing: Cache Invalidation visually");
+        for(AuthDataBasic data : basictests) {
+            System.out.println("*** URL: " + data.url);
+            CredentialsProvider cp = new Login();
+            try (HTTPSession session = HTTPFactory.newSession(data.url)) {
+                session.setCredentialsProvider(cp);
+                this.result = invoke(session, data.url);
+            }
+            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 401);
+if(false) {
+            // retry with correct password;
+            // AuthCache should automatically clear bad one from cache.
+            try (HTTPSession session = HTTPFactory.newSession(data.url)) {
+                session.setCredentialsProvider(this.provider);
+                this.result = invoke(session, data.url);
+            }
+            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404);
+}
+        }
+    }
+
+
 /*
     // This test actually is does nothing because I have no way to test it
     // since it requires a firwall proxy that requires username+pwd

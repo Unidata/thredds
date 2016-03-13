@@ -37,7 +37,10 @@ import org.apache.http.*;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.*;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
@@ -303,9 +306,29 @@ public class HTTPMethod implements Closeable
     /**
      * Create a request, add headers, and content,
      * then send to HTTPSession to do the bulk of the work.
+     *
+     * @return statuscode
      */
 
     public int execute()
+            throws HTTPException
+    {
+        CloseableHttpResponse res = executeRaw();
+        if(res != null)
+            return res.getStatusLine().getStatusCode();
+        else
+            throw new HTTPException("HTTPMethod.execute: null response");
+    }
+
+    /**
+     * Create a request, add headers, and content,
+     * then send to HTTPSession to do the bulk of the work.
+     *
+     * @return statuscode
+     */
+    // debug only
+    public CloseableHttpResponse
+    executeRaw()
             throws HTTPException
     {
         if(closed)
@@ -326,9 +349,7 @@ public class HTTPMethod implements Closeable
             HTTPSession.ExecState estate = session.execute(this, methodurl, rb);
             this.request = estate.request;
             this.response = estate.response;
-            HttpClientContext execcontext = session.getExecutionContext();
-            int code = this.response.getStatusLine().getStatusCode();
-            return code;
+            return this.response;
         } catch (Exception ie) {
             throw new HTTPException(ie);
         }
