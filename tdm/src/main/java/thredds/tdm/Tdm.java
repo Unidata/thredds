@@ -308,17 +308,16 @@ public class Tdm {
 
     public void processEvent(CollectionUpdateType event) {
       if (!inUse.compareAndSet(false, true)) {
-        tdmLogger.debug("Tdm event '{}' already in use on {}", event, config.getCollectionName());
+        detailLogger.debug("Tdm event type '{}' already in use on {}", event, config.getCollectionName());
         return; // if already working, skip another execution
       }
-      tdmLogger.debug("Tdm event '{}' received Task scheduled for {}", event, config.getCollectionName());
+      detailLogger.debug("Tdm event type '{}' scheduled for {}", event, config.getCollectionName());
       executor.execute(new IndexTask(config, this, event));
     }
   }
 
   private String makeTriggerUrl(String name) {
     return "thredds/admin/collection/trigger?trigger=never&collection=" + name;
-    // return "thredds/admin/collection/trigger?nocheck&collection=" + name;  // LOOK changed to nocheck for triggering 4.3, temp kludge
   }
 
   private AtomicInteger indexTaskCount = new AtomicInteger();
@@ -357,7 +356,6 @@ public class Tdm {
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
           String path = makeTriggerUrl(name);
-
           sendTriggers(path);
         }
       } catch (Throwable e) {
@@ -389,22 +387,24 @@ public class Tdm {
         try (HTTPMethod m = HTTPFactory.Get(server.session, url)) {
           detailLogger.debug("send trigger to {}", url);
           int status = m.execute();
-          detailLogger.debug("return from {} status = {}", url, status);
 
-          if (status != 200)
+          if (status != 200) {
+            tdmLogger.warn("FAIL send trigger to {} status = {}", url, status);
             detailLogger.warn("FAIL send trigger to {} status = {}", url, status);
+          } else {
+            tdmLogger.info("trigger sent {} status = {}", url, status);
+            detailLogger.debug("return from {} status = {}", url, status);
+          }
 
         } catch (HTTPException e) {
           Throwable cause = e.getCause();
           if (cause instanceof ConnectException) {
             detailLogger.warn("server {} not running", server.name);
           } else {
-            e.printStackTrace();
             tdmLogger.error("FAIL send trigger to " + url + " failed", cause);
+            detailLogger.error("FAIL send trigger to " + url + " failed", cause);
           }
-
         }
-
       }
     }
 
