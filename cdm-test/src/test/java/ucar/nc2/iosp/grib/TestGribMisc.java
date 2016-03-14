@@ -209,6 +209,7 @@ public class TestGribMisc {
     Grib1RecordScanner.setAllowBadIsLength(false);
   }
 
+  /*
   @Test
   public void testReadBadEcmwf2() throws IOException {
     //Grib1RecordScanner.setAllowBadDsLength(true);
@@ -231,7 +232,7 @@ public class TestGribMisc {
 
     //Grib1RecordScanner.setAllowBadDsLength(false);
     //Grib1RecordScanner.setAllowBadIsLength(false);
-  }
+  } */
 
 
 
