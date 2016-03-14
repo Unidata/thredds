@@ -201,6 +201,7 @@ public class TestAuth extends UnitTestCommon
         // See if TestDir.remoteTestServer is localhost
         String server = TestDir.remoteTestServer;
         this.remote = !server.startsWith("localhost");
+        choosetests();
     }
 
     //////////////////////////////////////////////////
@@ -250,10 +251,26 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
-    protected AuthDataBasic[] basictests = {
+    protected AuthDataBasic[] remotebasictests = {
             new AuthDataBasic("http://" + TestDir.remoteTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
                     "tiggeUser", "tigge"),
     };
+
+    protected AuthDataBasic[] localbasictests = {
+                new AuthDataBasic("http://localhost:8081/thredds/dodsC/protected/testData.nc.dds",
+                        "tiggeUser", "tigge"),
+        };
+
+    protected AuthDataBasic[] basictests = null;
+
+    protected void
+    choosetests()
+    {
+        if(this.remote)
+            basictests = remotebasictests;
+        else
+            basictests = localbasictests;
+    }
 
     @Test
     public void

@@ -78,6 +78,7 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
@@ -226,7 +227,7 @@ public class HTTPSession implements Closeable
      * Sub-class Hashmap<String,Object> for mnemonic convenience
      * and for synchronized access.
      */
-    static class Settings extends Hashmap<Prop, Object>
+    static class Settings extends HashMap<Prop, Object>
     {
         public Settings()
         {
