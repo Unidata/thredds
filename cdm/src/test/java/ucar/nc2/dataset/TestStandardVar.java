@@ -222,11 +222,11 @@ public class TestStandardVar extends TestCase {
     assert(null != (t2 = dsRead.findVariable("t2")));
     assert t2 instanceof VariableEnhanced;
     VariableDS vs = (VariableDS) t2;
-    assert( vs.getDataType() == DataType.SHORT) : vs.getDataType();
-    assert( !vs.hasMissing());
+    assert( vs.getDataType() == DataType.FLOAT) : vs.getDataType();
+    assert( vs.hasMissing());
 
     Array A = vs.read();
-    assert( A.getElementType() == short.class) : A.getElementType();
+    assert( A.getElementType() == float.class) : A.getElementType();
     Index ima = A.getIndex();
     int[] shape = A.getShape();
     int i,j;
@@ -312,6 +312,7 @@ public class TestStandardVar extends TestCase {
 
     // turn off missing data
     vs.setMissingDataIsMissing( false);
+    vs.setFillValueIsMissing(false);
     assert( vs.getDataType() == DataType.SHORT);
 
     assert( !vs.hasMissing());
@@ -342,8 +343,8 @@ public class TestStandardVar extends TestCase {
     assert( vs.hasMissing());
     assert( vs.hasMissingValue());
     double mv = 2 * (-9999) + 77;
-    assert( vs.isMissing( (double) mv));
-    assert( vs.isMissingValue( (double) mv));
+    assert( vs.isMissing( mv));
+    assert( vs.isMissingValue( mv));
 
     Array A = vs.read();
     Index ima = A.getIndex();
@@ -369,8 +370,8 @@ public class TestStandardVar extends TestCase {
     assert( vs.hasMissing());
     assert( vs.hasMissingValue());
     double mv2 = 2 * (-9999) + 77;
-    assert( vs.isMissing( (double) mv2));
-    assert( vs.isMissingValue( (double) mv2));
+    assert( vs.isMissing( mv2));
+    assert( vs.isMissingValue( mv2));
 
     Array A2 = vs.read();
     Index ima2 = A2.getIndex();

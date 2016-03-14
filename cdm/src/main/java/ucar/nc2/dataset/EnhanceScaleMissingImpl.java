@@ -263,7 +263,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (hasScaleOffset) {
 
       convertedDataType = forVar.getDataType();
-      if (hasMissing) {
+      if (hasMissing) { // with default fill, always has missing data unless explicitly turned off
         // has missing data : must be float or double
         if (rank(scaleType) > rank(convertedDataType))
           convertedDataType = scaleType;
