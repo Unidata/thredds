@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dataset;
 
+import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.ma2.Array;
@@ -40,7 +41,9 @@ import ucar.ma2.Range;
 import java.util.ArrayList;
 import java.util.List;
 
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.unidata.test.util.TestDir;
 
 /**
@@ -73,40 +76,72 @@ public class TestSectionFillValue {
     }
   }
 
-  /* @Test
+  @Test
   public void testImplicitFillValue() throws Exception {
-    String filename = TestDir.cdmLocalTestDataDir +"testWriteFill.nc";
-    String varWithFill = "temperature";
-    try (NetcdfDataset ncfile = NetcdfDataset.openDataset(filename)) {
-      VariableDS v = (VariableDS) ncfile.findVariable(varWithFill);
-      Assert.assertNotNull(varWithFill, v);
-      Assert.assertTrue(v.hasFillValue());
-      Assert.assertNotNull(v.findAttribute("_FillValue"));
+    String filename = TestDir.cdmLocalTestDataDir + "testWriteFill.nc";
+    List<String> varWithFill = Lists.newArrayList("temperature", "rtemperature");
+    try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null);
+         NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
 
-      Array data = v.read();
-      IndexIterator iter = data.getIndexIterator();
-      while (iter.hasNext()) {
-        double val = iter.getDoubleNext();
-        Assert.assertTrue( Double.toString(val), Double.isNaN(val));
-      }
+      for (Variable v : ncfile.getVariables()) {
+        if (!v.getDataType().isNumeric()) continue;
+        System.out.printf("testImplicitFillValue for %s type=%s%n", v.getShortName(), v.getDataType());
 
-      // all other variables are using the default fill values
-      for (Variable v2 : ncfile.getVariables()) {
-        if (v2.getShortName().equals(varWithFill)) continue;
-        VariableDS ve = (VariableDS) v2;
-        Assert.assertFalse(ve.getShortName(), ve.hasFillValue());
-        Assert.assertNull(ve.getShortName(), ve.findAttribute("_FillValue"));
+        VariableDS ve = (VariableDS) ncd.findVariable(v.getFullName());
+        if (varWithFill.contains(v.getShortName())) {
+          Assert.assertNotNull(v.findAttribute("_FillValue"));
+          Assert.assertTrue(ve.hasFillValue());
+          Number fillValue = v.findAttribute("_FillValue").getNumericValue();
 
-        Array data2 = v2.read();
-        IndexIterator iter2 = data2.getIndexIterator();
-        while (iter2.hasNext()) {
-          double val = iter2.getDoubleNext();
-          Assert.assertFalse(Double.toString(val), Double.isNaN(val));
+          Array data = v.read();
+          Array dataE = ve.read();
+
+          IndexIterator iter = data.getIndexIterator();
+          IndexIterator iterE = dataE.getIndexIterator();
+          while (iter.hasNext() && iterE.hasNext()) {
+            Object val = iter.next();
+            Object vale = iterE.next();
+            double vald = ((Number) val).doubleValue();
+            double valde = ((Number) vale).doubleValue();
+            if (ve.isFillValue(vald)) {
+              if (v.getDataType().isFloatingPoint())
+                Assert.assertTrue(Double.toString(valde), Double.isNaN(valde));
+              else
+                Assert.assertTrue(vale.toString(), fillValue.equals(vale));
+            }
+          }
+        } else {
+          Assert.assertNull(v.findAttribute("_FillValue"));
+          Assert.assertTrue(ve.hasFillValue());
+          Number fillValue = N3iosp.getFillValueDefault(v.getDataType());
+          Assert.assertNotNull(v.getDataType().toString(), fillValue);
+
+          Array data = v.read();
+          Array dataE = ve.read();
+
+          IndexIterator iter = data.getIndexIterator();
+          IndexIterator iterE = dataE.getIndexIterator();
+          while (iter.hasNext() && iterE.hasNext()) {
+            Object val = iter.next();
+            Object vale = iterE.next();
+            double vald = ((Number) val).doubleValue();
+            double valde = ((Number) vale).doubleValue();
+            if (val.equals(fillValue))
+              Assert.assertTrue(ve.isFillValue(vald));
+
+            if (ve.isFillValue(vald)) {
+              if (v.getDataType().isFloatingPoint())
+                Assert.assertTrue(Double.toString(valde), Double.isNaN(valde));
+              else
+                Assert.assertTrue(vale.toString(), fillValue.equals(vale));
+            }
+          }
         }
-      }
 
+
+      }
     }
-  } */
+  }
 
 
 }

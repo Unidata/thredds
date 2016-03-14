@@ -36,6 +36,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.ma2.*;
 
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.iosp.*;
@@ -183,13 +184,13 @@ public class H5iosp extends AbstractIOServiceProvider {
       if (vinfo.typeInfo.hdfType == 2) { // time
         readDtype = vinfo.mdt.timeType;
         elemSize = readDtype.getSize();
-        fillValue = vinfo.getFillValueDefault(readDtype);
+        fillValue = N3iosp.getFillValueDefault(readDtype);
 
       } else if (vinfo.typeInfo.hdfType == 8) { // enum
         H5header.TypeInfo baseInfo = vinfo.typeInfo.base;
         readDtype = baseInfo.dataType;
         elemSize = readDtype.getSize();
-        fillValue = vinfo.getFillValueDefault(readDtype);
+        fillValue = N3iosp.getFillValueDefault(readDtype);
         endian = baseInfo.endian;
 
       } else if (vinfo.typeInfo.hdfType == 9) { // vlen
