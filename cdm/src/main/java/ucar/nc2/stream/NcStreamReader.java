@@ -107,10 +107,10 @@ public class NcStreamReader {
     //cis.setSizeLimit(msize);
     //NcStreamProto.Stream proto = NcStreamProto.Stream.parseFrom(cis);
 
-    // LOOK why are we reading then ignoring the data?
+    /* why are we reading then ignoring the data?
     while (is.available() > 0) {
       readData(is, ncfile, ncfile.getLocation());
-    }
+    } */
 
     return ncfile;
   }

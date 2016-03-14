@@ -32,11 +32,15 @@
  */
 package ucar.nc2.dataset;
 
+import org.junit.Assert;
+import org.junit.Test;
+import ucar.ma2.Array;
+import ucar.ma2.IndexIterator;
 import ucar.ma2.Range;
-
 import java.util.ArrayList;
+import java.util.List;
 
-import junit.framework.TestCase;
+import ucar.nc2.Variable;
 import ucar.unidata.test.util.TestDir;
 
 /**
@@ -44,33 +48,65 @@ import ucar.unidata.test.util.TestDir;
  *
  * @author caron
  */
-public class TestSectionFillValue extends TestCase {
-  private String filename = TestDir.cdmLocalTestDataDir +"standardVar.nc";
+public class TestSectionFillValue {
 
-  public TestSectionFillValue( String name) {
-    super(name);
-  }
+  @Test
+  public void testExplicitFillValue() throws Exception {
+    String filename = TestDir.cdmLocalTestDataDir +"standardVar.nc";
+    try (NetcdfDataset ncfile = NetcdfDataset.openDataset(filename)) {
+      VariableDS v = (VariableDS) ncfile.findVariable("t3");
+      Assert.assertNotNull("t3", v);
+      Assert.assertTrue(v.hasFillValue());
+      Assert.assertNotNull(v.findAttribute("_FillValue"));
 
-  public void testNetcdfFile() throws Exception {
-    NetcdfDataset ncfile = NetcdfDataset.openDataset(filename);
-    VariableDS v = (VariableDS) ncfile.findVariable("t3");
-    assert (v != null);
-    assert (v.hasFillValue());
-    assert (v.findAttribute("_FillValue") != null);
+      int rank = v.getRank();
+      List<Range> ranges = new ArrayList<>();
+      ranges.add(null);
+      for (int i = 1; i < rank; i++) {
+        ranges.add(new Range(0, 1));
+      }
 
-    int rank = v.getRank();
-    ArrayList ranges = new ArrayList();
-    ranges.add(null);
-    for (int i = 1; i < rank; i++) {
-      ranges.add(new Range(0, 1));
+      VariableDS v_section = (VariableDS) v.section(ranges);
+      Assert.assertNotNull (v_section.findAttribute("_FillValue"));
+      System.out.println(v_section.findAttribute("_FillValue"));
+      Assert.assertTrue(v_section.hasFillValue());
     }
-
-    VariableDS v_section = (VariableDS) v.section(ranges);
-    assert (v_section.findAttribute("_FillValue") != null);
-    System.out.println(v_section.findAttribute("_FillValue"));
-    assert (v_section.hasFillValue());
-
-    ncfile.close();
   }
+
+  /* @Test
+  public void testImplicitFillValue() throws Exception {
+    String filename = TestDir.cdmLocalTestDataDir +"testWriteFill.nc";
+    String varWithFill = "temperature";
+    try (NetcdfDataset ncfile = NetcdfDataset.openDataset(filename)) {
+      VariableDS v = (VariableDS) ncfile.findVariable(varWithFill);
+      Assert.assertNotNull(varWithFill, v);
+      Assert.assertTrue(v.hasFillValue());
+      Assert.assertNotNull(v.findAttribute("_FillValue"));
+
+      Array data = v.read();
+      IndexIterator iter = data.getIndexIterator();
+      while (iter.hasNext()) {
+        double val = iter.getDoubleNext();
+        Assert.assertTrue( Double.toString(val), Double.isNaN(val));
+      }
+
+      // all other variables are using the default fill values
+      for (Variable v2 : ncfile.getVariables()) {
+        if (v2.getShortName().equals(varWithFill)) continue;
+        VariableDS ve = (VariableDS) v2;
+        Assert.assertFalse(ve.getShortName(), ve.hasFillValue());
+        Assert.assertNull(ve.getShortName(), ve.findAttribute("_FillValue"));
+
+        Array data2 = v2.read();
+        IndexIterator iter2 = data2.getIndexIterator();
+        while (iter2.hasNext()) {
+          double val = iter2.getDoubleNext();
+          Assert.assertFalse(Double.toString(val), Double.isNaN(val));
+        }
+      }
+
+    }
+  } */
+
 
 }

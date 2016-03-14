@@ -209,6 +209,31 @@ public class TestGribMisc {
     Grib1RecordScanner.setAllowBadIsLength(false);
   }
 
+  /*
+  @Test
+  public void testReadBadEcmwf2() throws IOException {
+    //Grib1RecordScanner.setAllowBadDsLength(true);
+    //Grib1RecordScanner.setAllowBadIsLength(true);
+
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/badEcmwf.grib1";
+    try (NetcdfFile nc = NetcdfFile.open(filename)) {
+
+      Variable var = nc.findVariable("2_metre_temperature_surface");
+      Array data = var.read();
+      int npts = 2560 * 5136;
+      Assert.assertEquals(npts, data.getSize());
+
+      float first = data.getFloat(0);
+      float last = data.getFloat(npts-1);
+
+      Assert.assertEquals(273.260162, first, 1e-6);
+      Assert.assertEquals(224.599670, last, 1e-6);
+    }
+
+    //Grib1RecordScanner.setAllowBadDsLength(false);
+    //Grib1RecordScanner.setAllowBadIsLength(false);
+  } */
+
 
 
 }

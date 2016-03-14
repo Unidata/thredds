@@ -171,24 +171,24 @@ public class DataRoot {
 
     if (datasetScan != null) {
       // LOOK should check to see if its been filtered out by scan
-      return getFileLocationFromRequestPath(reqPath, datasetScan.getPath(), datasetScan.getScanLocation());
+      return getFileLocationFromRequestPath(reqPath, datasetScan.getPath(), datasetScan.getScanLocation(), false);
 
     } else if (catScan != null) {
       // LOOK should check to see if its allowed in fc
-      return getFileLocationFromRequestPath(reqPath, catScan.getPath(), catScan.getLocation());
+      return getFileLocationFromRequestPath(reqPath, catScan.getPath(), catScan.getLocation(), false);
 
     } else if (featCollection != null) {
       // LOOK should check to see if its allowed in fc
-      return getFileLocationFromRequestPath(reqPath, featCollection.getPath(), featCollection.getTopDirectoryLocation());
+      return getFileLocationFromRequestPath(reqPath, featCollection.getPath(), featCollection.getTopDirectoryLocation(), true);
 
     } else {  // must be a datasetRoot
       // LOOK should check to see if it exists ??
-      return getFileLocationFromRequestPath(reqPath, getPath(), getDirLocation());
+      return getFileLocationFromRequestPath(reqPath, getPath(), getDirLocation(), false);
     }
 
   }
 
-  private String getFileLocationFromRequestPath(String reqPath, String rootPath, String rootLocation) {
+  private String getFileLocationFromRequestPath(String reqPath, String rootPath, String rootLocation, boolean isFeatureCollection) {
     if (reqPath == null) return null;
     if (reqPath.length() == 0) return null;
 
@@ -200,13 +200,11 @@ public class DataRoot {
 
     // remove the matching part, the rest is the "data directory"
     String locationReletive = reqPath.substring(rootPath.length());
-    if (locationReletive.startsWith("/files"))
+    if (isFeatureCollection && locationReletive.startsWith("/files"))
       locationReletive = locationReletive.substring(7); // LOOK maybe only if its an fc ?? its a kludge here
 
     if (locationReletive.startsWith("/"))
       locationReletive = locationReletive.substring(1);
-
-
 
     if (!rootLocation.endsWith("/"))
       rootLocation = rootLocation + "/";
