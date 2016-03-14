@@ -56,7 +56,6 @@ buildscript {
         classpath libraries["shadow"]
         classpath libraries["coveralls-gradle-plugin"]
         classpath libraries["gradle-extra-configurations-plugin"]
-        classpath libraries["gwt-gradle-plugin"]
     }
 }
 
