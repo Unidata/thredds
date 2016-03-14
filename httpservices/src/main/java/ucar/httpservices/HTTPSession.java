@@ -223,10 +223,10 @@ public class HTTPSession implements Closeable
     }
 
     /**
-     * Sub-class HashTable<String,Object> for mnemonic convenience
+     * Sub-class Hashmap<String,Object> for mnemonic convenience
      * and for synchronized access.
      */
-    static class Settings extends Hashtable<Prop, Object>
+    static class Settings extends Hashmap<Prop, Object>
     {
         public Settings()
         {
@@ -351,11 +351,8 @@ public class HTTPSession implements Closeable
     ////////////////////////////////////////////////////////////////////////
     // Static variables
 
-    static public org.slf4j.Logger log
+    static final public org.slf4j.Logger log
             = org.slf4j.LoggerFactory.getLogger(HTTPSession.class);
-
-    static protected PoolingHttpClientConnectionManager connmgr;
-
 
     // Define a settings object to hold all the
     // settable values; there will be one
@@ -363,23 +360,32 @@ public class HTTPSession implements Closeable
 
     static Settings globalsettings;
 
-    // Define interceptor instances
-    static List<HttpRequestInterceptor> reqintercepts = new ArrayList<HttpRequestInterceptor>();
-    static List<HttpResponseInterceptor> rspintercepts = new ArrayList<HttpResponseInterceptor>();
+    // Define interceptor instances; use copy on write for thread safety
+    static List<HttpRequestInterceptor> reqintercepts = new CopyOnWriteArrayList<HttpRequestInterceptor>();
+    static List<HttpResponseInterceptor> rspintercepts = new CopyOnWriteArrayList<HttpResponseInterceptor>();
+
     // This is a hack to suppress content-encoding headers from request
+    // Effectively final because its set in the static initializer and otherwise
+    // read only.
     static protected HttpResponseInterceptor CEKILL;
+
     // Debug Header interceptors
-    static protected List<HttpRequestInterceptor> dbgreq = new ArrayList<>();
-    static protected List<HttpResponseInterceptor> dbgrsp = new ArrayList<>();
+    static protected List<HttpRequestInterceptor> dbgreq = new CopyOnWriteArrayList<>();
+    static protected List<HttpResponseInterceptor> dbgrsp = new CopyOnWriteArrayList<>();
+
+    // Documentation claims that this is thread safe.
+    static protected PoolingHttpClientConnectionManager connmgr;
 
     static protected Map<String, InputStreamFactory> contentDecoderMap;
 
     //public final HttpClientBuilder setContentDecoderRegistry(Map<String,InputStreamFactory> contentDecoderMap)
 
     // Since can't access CredentialsProvider map, mimic
+    // All accessing procedures should be synchronized
     static protected Map<AuthScope, CredentialsProvider> globalcreds = new HashMap<>();
 
     // As taken from the command line, usually
+    // Should effectively be final if not null
     static protected KeyStore keystore = null;
     static protected KeyStore truststore = null;
     static protected String keypath = null;
@@ -389,6 +395,7 @@ public class HTTPSession implements Closeable
     static protected SSLConnectionSocketFactory globalsslfactory = null;
     static protected Registry<ConnectionSocketFactory> sslregistry = null;
 
+    // Should effectively be final if not null
     static protected HttpHost httpproxy = null;
     static protected HttpHost httpsproxy = null;
     static protected String proxyuser = null;
@@ -416,7 +423,7 @@ public class HTTPSession implements Closeable
     // Static Initialization
 
     // Provide defaults for a settings map
-    static protected void setDefaults(Settings props)
+    static synchronized protected void setDefaults(Settings props)
     {
         if(false) {// turn off for now
             props.setParameter(Prop.HANDLE_AUTHENTICATION, Boolean.TRUE);
@@ -462,6 +469,7 @@ public class HTTPSession implements Closeable
 
     //////////////////////////////////////////////////////////////////////////
     // Static Methods (Mostly global accessors)
+    // Synchronized as a rule.
 
     static synchronized public void setGlobalUserAgent(String userAgent)
     {
@@ -555,7 +563,7 @@ public class HTTPSession implements Closeable
         }
     }
 
-    static public void
+    static synchronized public void
     removeGlobalCompression()
     {
         if(globalsettings.removeParameter(Prop.COMPRESSION) != null) {
@@ -568,7 +576,8 @@ public class HTTPSession implements Closeable
         }
     }
 
-    static synchronized protected String checkCompressors(String compressors)
+    static synchronized protected String
+    checkCompressors(String compressors)
     {
         // Syntactic check of compressors
         Set<String> cset = new HashSet<>();
@@ -597,7 +606,7 @@ public class HTTPSession implements Closeable
      * @param provider
      * @throws HTTPException
      */
-    static public void
+    static synchronized public void
     setGlobalCredentialsProvider(CredentialsProvider provider)
             throws HTTPException
     {
@@ -1313,7 +1322,7 @@ public class HTTPSession implements Closeable
         return value;
     }
 
-    static void mapcreds(CredentialsProvider provider, AuthScope scope, Map<AuthScope, CredentialsProvider> authcreds)
+    static synchronized void mapcreds(CredentialsProvider provider, AuthScope scope, Map<AuthScope, CredentialsProvider> authcreds)
     {
         assert (provider != null);
         if(scope == null)
