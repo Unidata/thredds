@@ -280,8 +280,7 @@ is set to a constant.
 6.  You can remove attributes from the underlying variable.
 7.  The mandatory _*name*_ attribute must be unique among variables
 within its containing _*group, variable,* or_ *_netcdf_* element.
-8.  The _*type*_ attribute is one of the enumerated
-link:#DataType[DataTypes].
+8.  The _*type*_ attribute is one of the enumerated <<DataType>>.
 9.  The typedef is the name of an enumerated Typedef. Can be used only
 for *_type=enum1, enum2_* or **_enum4_**.
 10. The _*shape*_ attribute lists the names of the dimensions the
@@ -328,6 +327,13 @@ specify a global attribute, use __*@gattname*__. For a variable attribute
 use __*varName@attName*__. The data type and the shape of the variable
 must agree with the attribute.
 
+[source,xml]
+----
+  <variable name="station_name" shape="name_strlen" type="char">
+      <values>gaia</values>
+  </variable>
+----
+
 === *attribute* Element
 
 The _*attribute*_ elements represents a netCDF attribute, i.e. a
@@ -343,23 +349,20 @@ _*value*_ attribute or in the element content**.**
 (3)   <xsd:attribute name="value" type="xsd:string" />
 (4)   <xsd:attribute name="separator" type="xsd:string" />
 (5)   <xsd:attribute name="orgName" type="xsd:string"/>
-(6)   <xsd:attribute name="isUnsigned" type="xsd:boolean"/>
+(6)   <xsd:attribute name="isUnsigned" type="xsd:boolean"/> <!-- deprecated - use unsigned type -->
     </xsd:complexType>
   </xsd:element>
 ----
 
 1.  The mandatory _*name*_ attribute must be unique among attributes
 within its containing _*group, variable,*_ or *_netcdf_* element.
-2.  The _*type*_ attribute may be **String, byte, short, int, long,
-float, double**link:#DataType[]. If not specified, it defaults to a
-String.
+2.  The _*type*_ attribute may be any <<DataType>>. If not specified, it defaults to a String.
 3.  The _value_ attribute contains the actual data of the _attribute_
 element. In the most common case of single-valued attributes, a single
 number or string will be listed (as in value="3.0"), while in the less
 frequent case of multi-valued attributes, all the numbers will be listed
 and separated by a blank or optionally some other character (as in
-value="3.0 4.0 5.0"). Values can also be specified in the element
-content:
+value="3.0 4.0 5.0"). Values can also be specified in the element content:
 +
 [source,xml]
 ----
@@ -375,8 +378,7 @@ the list of values are separated by whitespace. A different token
 separator can be specified using the _*separator*_ attribute.
 5.  The optional attribute _*orgName*_ is used when renaming an existing
 attribute.
-6.  The attribute’s values may be unsigned (if _byte, short, int_ or
-__long__). By default, they are signed.
+6.  *_isUnsigned_* is deprecated. Use the type to specify signed or unsigned.
 
 === *DataType* enumeration
 
@@ -385,7 +387,7 @@ NcML _Variable_ objects.
 
 [source,xml]
 ----
- <xsd:simpleType name="DataType">
+  <xsd:simpleType name="DataType">
     <xsd:restriction base="xsd:token">
       <xsd:enumeration value="byte"/>
       <xsd:enumeration value="char"/>
@@ -402,14 +404,16 @@ NcML _Variable_ objects.
       <xsd:enumeration value="enum1"/>
       <xsd:enumeration value="enum2"/>
       <xsd:enumeration value="enum4"/>
+      <xsd:enumeration value="ubyte"/>
+      <xsd:enumeration value="ushort"/>
+      <xsd:enumeration value="uint"/>
+      <xsd:enumeration value="ulong"/>
     </xsd:restriction>
   </xsd:simpleType>
 ----
 
-* Unsigned integer types (byte, short, int) are indicated with an
-___Unsigned = "true__" attribute on the Variable.
-* A Variable with type enum1. enum2 or enum4 will refer to a
-*enumTypedef* object. Call Variable.getEnumTypedef().
+* Unsigned integer types (byte, short, int) are indicated with an ___Unsigned = "true__" attribute on the Variable.
+* A Variable with type enum1. enum2 or enum4 will refer to a *enumTypedef* object. Call Variable.getEnumTypedef().
 
 === *enumTypedef* element
 

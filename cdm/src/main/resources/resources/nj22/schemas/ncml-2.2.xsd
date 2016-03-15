@@ -114,7 +114,7 @@
       <xsd:attribute name="value" type="xsd:string"/>
       <xsd:attribute name="separator" type="xsd:string"/>
       <xsd:attribute name="orgName" type="xsd:string"/>
-      <xsd:attribute name="isUnsigned" type="xsd:boolean"/>
+      <xsd:attribute name="isUnsigned" type="xsd:boolean"/> <!-- deprecated - use unsigned type -->
     </xsd:complexType>
   </xsd:element>
 
@@ -136,6 +136,10 @@
       <xsd:enumeration value="enum1"/>
       <xsd:enumeration value="enum2"/>
       <xsd:enumeration value="enum4"/>
+      <xsd:enumeration value="ubyte"/>
+      <xsd:enumeration value="ushort"/>
+      <xsd:enumeration value="uint"/>
+      <xsd:enumeration value="ulong"/>
     </xsd:restriction>
   </xsd:simpleType>
 

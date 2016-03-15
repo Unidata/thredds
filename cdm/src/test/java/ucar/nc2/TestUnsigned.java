@@ -45,7 +45,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 /**
- * Test that adding _Unsigned attribute in NcML works correctly
+ * Test Unsigned values and attributes in NcML works correctly
  *
  * @author caron
  * @since Aug 7, 2008
@@ -54,41 +54,37 @@ public class TestUnsigned {
 
   @Test
   public void testSigned() throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWrite.nc");
+    try (NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testWrite.nc")) {
+      Variable v = ncfile.findVariable("bvar");
+      Assert.assertNotNull(v);
+      Assert.assertTrue(!v.getDataType().isUnsigned());
+      Assert.assertEquals(DataType.BYTE, v.getDataType());
 
-    Variable v = ncfile.findVariable("bvar");
-    Assert.assertNotNull(v);
-    Assert.assertTrue(!v.getDataType().isUnsigned());
-    Assert.assertEquals(DataType.BYTE, v.getDataType());
-
-    boolean hasSigned = false;
-    Array data = v.read();
-    while (data.hasNext()) {
-      byte b = data.nextByte();
-      if (b < 0) hasSigned = true;
+      boolean hasSigned = false;
+      Array data = v.read();
+      while (data.hasNext()) {
+        byte b = data.nextByte();
+        if (b < 0) hasSigned = true;
+      }
+      assert hasSigned;
     }
-    assert hasSigned;
-
-    ncfile.close();
   }
 
   @Test
   public void testUnsigned() throws IOException {
-    NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testUnsignedByte.ncml");
+    try (NetcdfFile ncfile = NetcdfDataset.openDataset(TestDir.cdmLocalTestDataDir + "testUnsignedByte.ncml")) {
+      Variable v = ncfile.findVariable("bvar");
+      Assert.assertNotNull(v);
+      Assert.assertEquals(DataType.FLOAT, v.getDataType()); // has float scale_factor
 
-    Variable v = ncfile.findVariable("bvar");
-    Assert.assertNotNull(v);
-    Assert.assertEquals(DataType.FLOAT, v.getDataType()); // has float scale_factor
-
-    boolean hasSigned = false;
-    Array data = v.read();
-    while (data.hasNext()) {
-      float b = data.nextFloat();
-      if (b < 0) hasSigned = true;
+      boolean hasSigned = false;
+      Array data = v.read();
+      while (data.hasNext()) {
+        float b = data.nextFloat();
+        if (b < 0) hasSigned = true;
+      }
+      Assert.assertTrue(!hasSigned);
     }
-    Assert.assertTrue(!hasSigned);
-
-    ncfile.close();
   }
 
   @Test
@@ -101,22 +97,150 @@ public class TestUnsigned {
         "   </variable>\n" +
         "</netcdf>";
 
-    NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
-    NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll());
+    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
+      NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll())) {
 
-    Variable v = ncd.findVariable("bvar");
-    Assert.assertNotNull(v);
-    Assert.assertEquals(DataType.FLOAT, v.getDataType());
+      Variable v = ncd.findVariable("bvar");
+      Assert.assertNotNull(v);
+      Assert.assertEquals(DataType.FLOAT, v.getDataType());
 
-    boolean hasSigned = false;
-    Array data = v.read();
-    while (data.hasNext()) {
-      float b = data.nextFloat();
-      if (b < 0) hasSigned = true;
+      boolean hasSigned = false;
+      Array data = v.read();
+      while (data.hasNext()) {
+        float b = data.nextFloat();
+        if (b < 0) hasSigned = true;
+      }
+      Assert.assertTrue(!hasSigned);
     }
-    Assert.assertTrue(!hasSigned);
-
-    ncd.close();
   }
+
+  @Test
+  public void testVarWithUnsignedAttribute() throws IOException {
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+            "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestDir.cdmLocalTestDataDir +"testWrite.nc'>\n" +
+            "  <variable name='bvar' shape='lat' type='byte'>\n" +
+            "    <attribute name='_Unsigned' value='true' />\n" +
+            "   </variable>\n" +
+            "</netcdf>";
+
+    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
+         NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll())) {
+
+      Variable v = ncd.findVariable("bvar");
+      Assert.assertNotNull(v);
+      Assert.assertEquals(DataType.UBYTE, v.getDataType());
+
+      boolean hasSigned = false;
+      Array data = v.read();
+      while (data.hasNext()) {
+        float b = data.nextFloat();
+        if (b < 0) hasSigned = true;
+      }
+      Assert.assertTrue(!hasSigned);
+    }
+  }
+
+  @Test
+  public void testVarWithUnsignedType() throws IOException {
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+            "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestDir.cdmLocalTestDataDir +"testWrite.nc'>\n" +
+            "  <variable name='bvar' shape='lat' type='ubyte'/>" +
+            "</netcdf>";
+
+    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
+         NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll())) {
+
+      Variable v = ncd.findVariable("bvar");
+      Assert.assertNotNull(v);
+      Assert.assertEquals(DataType.UBYTE, v.getDataType());
+
+      boolean hasSigned = false;
+      Array data = v.read();
+      while (data.hasNext()) {
+        float b = data.nextFloat();
+        if (b < 0) hasSigned = true;
+      }
+      Assert.assertTrue(!hasSigned);
+    }
+  }
+
+  @Test
+  public void testAttWithUnsignedType() throws IOException {
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+            "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestDir.cdmLocalTestDataDir +"testWrite.nc'>\n" +
+            "  <attribute name='gatt' type='ubyte'>1 0 -1</attribute>" +
+            "</netcdf>";
+
+    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
+         NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll())) {
+
+      Attribute att = ncd.findGlobalAttribute("gatt");
+      Assert.assertNotNull(att);
+      Assert.assertEquals(DataType.UBYTE, att.getDataType());
+
+      Assert.assertEquals(3, att.getLength());
+      Array gattValues = att.getValues();
+
+      boolean hasSigned = false;
+      while (gattValues.hasNext()) {
+        short b = gattValues.nextShort();
+        if (b < 0) hasSigned = true;
+      }
+      Assert.assertTrue(!hasSigned);
+    }
+  }
+
+  @Test
+  public void testAttWithUnsignedAtt() throws IOException {
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+            "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestDir.cdmLocalTestDataDir +"testWrite.nc'>\n" +
+            "  <attribute name='gatt' type='byte' isUnsigned='true'>1 0 -1</attribute>" +
+            "</netcdf>";
+
+    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
+         NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll())) {
+
+      Attribute att = ncd.findGlobalAttribute("gatt");
+      Assert.assertNotNull(att);
+      Assert.assertEquals(DataType.UBYTE, att.getDataType());
+
+      Assert.assertEquals(3, att.getLength());
+      Array gattValues = att.getValues();
+
+      boolean hasSigned = false;
+      while (gattValues.hasNext()) {
+        short b = gattValues.nextShort();
+        if (b < 0) hasSigned = true;
+      }
+      Assert.assertTrue(!hasSigned);
+    }
+  }
+
+  @Test
+  public void testAttWithUnsignedType2() throws IOException {
+    String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
+            "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2' location='"+TestDir.cdmLocalTestDataDir +"testWrite.nc'>\n" +
+            "  <attribute name='gatt' type='ubyte' value='1 0 -1' />" +
+            "</netcdf>";
+
+    try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
+         NetcdfFile ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getEnhanceAll())) {
+
+      Attribute att = ncd.findGlobalAttribute("gatt");
+      Assert.assertNotNull(att);
+      Assert.assertEquals(DataType.UBYTE, att.getDataType());
+
+      Assert.assertEquals(3, att.getLength());
+      Array gattValues = att.getValues();
+
+      boolean hasSigned = false;
+      while (gattValues.hasNext()) {
+        short b = gattValues.nextShort();
+        if (b < 0) hasSigned = true;
+      }
+      Assert.assertTrue(!hasSigned);
+    }
+  }
+
 
 }
