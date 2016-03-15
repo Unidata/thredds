@@ -511,7 +511,7 @@ public class Tdm {
       if (contentDir == null) contentDir = "../content";
       app.setContentDir(contentDir);
 
-      RandomAccessFile.setDebugLeaks(true);
+      // RandomAccessFile.setDebugLeaks(true);
       HTTPSession.setGlobalUserAgent("TDM v5.0");
       // GribCollection.getDiskCache2().setNeverUseCache(true);
       String logLevel;
