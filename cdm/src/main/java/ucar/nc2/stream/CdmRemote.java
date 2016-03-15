@@ -211,7 +211,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     String path = method.getURL();
     String status = method.getStatusLine();
     String content = method.getResponseAsString();
-    return (content == null) ? status + " " + path: status + " " + path +"\n "+content;
+    return (content == null) ? status + " " + path : status + " " + path +"\n "+content;
   }
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {
