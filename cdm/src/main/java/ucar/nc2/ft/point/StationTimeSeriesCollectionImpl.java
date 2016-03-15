@@ -79,7 +79,7 @@ public abstract class StationTimeSeriesCollectionImpl extends PointFeatureCCImpl
       }
     }
 
-    assert stationHelper != null : "We screwed this up.";
+    assert stationHelper != null : "stationHelper is null for StationTimeSeriesCollectionImpl"+getName();
     return stationHelper;
   }
 

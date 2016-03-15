@@ -120,7 +120,8 @@ from the producer is possible and send them to us.
 * http://www.unidata.ucar.edu/software/netcdf/examples/programs/[Example Basic Programs in C/C++/Fortran/Java]
 * <<reference/index#,Reference Documentation>>
 * <<CDM/index#,Common Data Model>>
-* <<ncml/index.adoc[NetCDF Markup Language] and link:ncml/AnnotatedSchema4#,annotated schema>>
+* <<ncml/index#,NetCDF Markup Language>>
+* <<ncml/AnnotatedSchema4#,NcML annotated schema>>
 
 === CF Conventions
 
