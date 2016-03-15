@@ -1061,6 +1061,7 @@ public class HTTPSession implements Closeable
             throws HTTPException
     {
         mapcreds(provider, scope, localcreds);
+        this.cachevalid = false;
         return this;
     }
 

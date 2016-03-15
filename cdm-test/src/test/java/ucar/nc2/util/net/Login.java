@@ -37,51 +37,41 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import ucar.httpservices.HTTPAuthUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Login extends JFrame implements CredentialsProvider
 {
     static final boolean DEBUG = true;
 
-    protected Map<AuthScope, Credentials> cache = new HashMap<>();
+    protected String dfaltuser = null;
+    protected String dfaltpwd = null;
 
     /**
      * constructor
      */
-    public Login()
+
+    public Login(String user, String pwd)
     {
+        this.setAlwaysOnTop(true);
+        this.dfaltuser = user;
+        this.dfaltpwd = pwd;
     }
 
     public void clear()
     {
-        this.cache.clear();
+	throw new UnsupportedOperationException();
     }
 
     public void setCredentials(AuthScope scope, Credentials cred)
     {
-        cache.put(scope, cred);
+	throw new UnsupportedOperationException();
     }
 
     public Credentials getCredentials(AuthScope scope)
     {
-        if(false) {
-            Credentials creds = cache.get(scope);
-            if(creds == null) {
-                AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope, cache.keySet());
-                if(bestMatch != null) {
-                    creds = cache.get(bestMatch);
-                }
-            }
-            if(creds != null)
-                return creds;
-        }
-        // Ok, ask and cache
-        String up = login();
+        String up = login(this.dfaltuser, this.dfaltpwd);
         if(up == null) throw new IllegalStateException();
         String[] pieces = up.split("[:]");
         UsernamePasswordCredentials upc = null;
@@ -98,7 +88,7 @@ public class Login extends JFrame implements CredentialsProvider
         return upc;
     }
 
-    protected String login()
+    protected String login(String defaltuser, String dfaltpwd)
     {
         String user;
         String pwd;
@@ -111,7 +101,11 @@ public class Login extends JFrame implements CredentialsProvider
             JLabel usernameLbl = new JLabel("Username:");
             JLabel passwordLbl = new JLabel("Password:");
             JTextField userFld = new JTextField();
-            JPasswordField passwordFld = new JPasswordField();
+            if(dfaltuser != null)
+                userFld.setText(dfaltuser);
+            JTextField passwordFld = new JTextField();
+            if(dfaltpwd != null)
+                passwordFld.setText(dfaltpwd);
             userPanel.add(usernameLbl);
             userPanel.add(userFld);
             userPanel.add(passwordLbl);

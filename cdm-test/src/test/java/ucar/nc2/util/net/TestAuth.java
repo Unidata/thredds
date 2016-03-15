@@ -38,6 +38,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
@@ -69,41 +70,12 @@ public class TestAuth extends UnitTestCommon
 
     static protected final boolean IGNORE = true;
 
-    /**
-     * Temporary data directory (for writing temporary data).
-     */
-    static public String TEMPROOT = "target/test/tmp/"; // relative to module root
-
     // Add a temporary control for remote versus localhost
     static boolean remote = false;
-
-    static public class Counter
-    {
-        protected int callcount = 0;// track # of times getCredentials is called
-
-        synchronized public void incr()
-        {
-            callcount++;
-        }
-
-        synchronized public void clear()
-        {
-            callcount = 0;
-        }
-
-        synchronized public int counter()
-        {
-            int c = callcount;
-            callcount = 0;
-            return c;
-        }
-    }
-
 
     static protected class Result
     {
         int status = 0;
-        int count = -1;
         byte[] contents = null;
 
         public String toString()
@@ -112,8 +84,6 @@ public class TestAuth extends UnitTestCommon
             b.append("{");
             b.append("status=");
             b.append(status);
-            b.append(", count=");
-            b.append(count);
             b.append("}");
             return b.toString();
         }
@@ -123,21 +93,22 @@ public class TestAuth extends UnitTestCommon
     //////////////////////////////////////////////////
     // Provide a non-interactive CredentialsProvider to hold
     // the user+pwd; used in several places
+
     static class TestProvider implements CredentialsProvider, Serializable
     {
-        Counter counter = null;
+        int counter = 0;
         String username = null;
         String password = null;
 
-        public TestProvider(Counter counter)
-        {
-            this.counter = counter;
-        }
-
-        public void setPWD(String username, String password)
+        public TestProvider(String username, String password)
         {
             this.username = username;
             this.password = password;
+        }
+
+        public void reset()
+        {
+            this.counter = 0;
         }
 
         // Credentials Provider Interface
@@ -147,7 +118,7 @@ public class TestAuth extends UnitTestCommon
             UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
             System.err.printf("TestCredentials.getCredentials called: creds=|%s| host=%s port=%d%n",
                     creds.toString(), scope.getHost(), scope.getPort());
-            this.counter.incr();
+            this.counter++;
             return creds;
         }
 
@@ -184,10 +155,6 @@ public class TestAuth extends UnitTestCommon
 
     protected String datadir = null;
     protected String threddsroot = null;
-
-    protected Counter counter = new Counter();
-    protected TestProvider provider = new TestProvider(counter);
-    protected Result result = new Result();
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -257,9 +224,9 @@ public class TestAuth extends UnitTestCommon
     };
 
     protected AuthDataBasic[] localbasictests = {
-                new AuthDataBasic("http://localhost:8081/thredds/dodsC/protected/testData.nc.dds",
-                        "tiggeUser", "tigge"),
-        };
+            new AuthDataBasic("http://localhost:8081/thredds/dodsC/protected/testData.nc.dds",
+                    "tiggeUser", "tigge"),
+    };
 
     protected AuthDataBasic[] basictests = null;
 
@@ -281,34 +248,34 @@ public class TestAuth extends UnitTestCommon
             System.out.println("Test global credentials provider");
             System.out.println("*** URL: " + data.url);
 
-            this.provider.setPWD(data.user, data.password);
-
             // Test global credentials provider
-            HTTPSession.setGlobalCredentialsProvider(this.provider);
+            TestProvider provider = new TestProvider(data.user, data.password);
+            HTTPSession.setGlobalCredentialsProvider(provider);
+            Result result;
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                this.result = invoke(session, data.url);
+                result = invoke(session, data.url);
             }
-            Assert.assertTrue("Incorrect return code: " + this.result.status,
-                    this.result.status == 200);
-            Assert.assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("Incorrect return code: " + result.status,
+                    result.status == 200);
+            Assert.assertTrue("no content", result.contents.length > 0);
             if(!remote)
-                Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
+                Assert.assertTrue("Credentials provider called: " + provider.counter, provider.counter == 1);
         }
 
         for(AuthDataBasic data : basictests) {
             System.out.println("Test local credentials provider");
             System.out.println("*** URL: " + data.url);
-            provider.setPWD(data.user, data.password);
 
-            //HTTPCachingProvider.clearCache();
+            TestProvider provider = new TestProvider(data.user, data.password);
+            Result result;
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                session.setCredentialsProvider(this.provider);
-                this.result = invoke(session, data.url);
+                session.setCredentialsProvider(provider);
+                result = invoke(session, data.url);
             }
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404); // non-existence is ok
-            Assert.assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404); // non-existence is ok
+            Assert.assertTrue("no content", result.contents.length > 0);
             if(!remote)
-                Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
+                Assert.assertTrue("Credentials provider called: " + provider.counter, provider.counter == 1);
         }
     }
 
@@ -319,11 +286,12 @@ public class TestAuth extends UnitTestCommon
         System.out.println("*** Testing: Http Basic Password Authorization inline in URL");
         for(AuthDataBasic data : basictests) {
             System.out.println("*** URL: " + data.inline());
+            Result result;
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                this.result = invoke(session, data.inline());
+                result = invoke(session, data.inline());
             }
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404); // non-existence is ok
-            Assert.assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404); // non-existence is ok
+            Assert.assertTrue("no content", result.contents.length > 0);
         }
     }
 
@@ -339,27 +307,26 @@ public class TestAuth extends UnitTestCommon
 
             // Test global credentials provider
             HTTPSession.setGlobalCredentials(creds);
-            //HTTPCachingProvider.clearCache();
+            Result result;
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                this.result = invoke(session, data.url);
+                result = invoke(session, data.url);
             }
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404); // non-existence is ok
-            Assert.assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404); // non-existence is ok
+            Assert.assertTrue("no content", result.contents.length > 0);
         }
 
         for(AuthDataBasic data : basictests) {
             Credentials creds = new UsernamePasswordCredentials(data.user, data.password);
             System.out.println("Test local credentials");
             System.out.println("*** URL: " + data.url);
-
-            //HTTPCachingProvider.clearCache();
+            Result result;
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 session.setCredentials(creds);
-                this.result = invoke(session, data.url);
+                result = invoke(session, data.url);
 
             }
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404); // non-existence is ok
-            Assert.assertTrue("no content", this.result.contents.length > 0);
+            Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404); // non-existence is ok
+            Assert.assertTrue("no content", result.contents.length > 0);
         }
     }
 
@@ -372,52 +339,64 @@ public class TestAuth extends UnitTestCommon
             System.out.println("*** URL: " + data.url);
 
             // Do each test with a bad password to cause cache invalidation
-            this.provider.setPWD(data.user, BADPASSWORD);
-
-            //HTTPCachingProvider.clearCache();
+            // Note that we need to use the same HTTPSession instance for all invocations.
+            TestProvider provider = new TestProvider(data.user, BADPASSWORD);
+            Result result;
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                session.setCredentialsProvider(this.provider);
-                this.result = invoke(session, data.url);
+                // 1. Bad password
+                session.setCredentialsProvider(provider);
+                result = invoke(session, data.url);
+                System.err.println("provider count: " + provider.counter);
+                Assert.assertTrue("Incorrect return code: " + result.status, result.status == 401);
+                if(!remote)
+                    Assert.assertTrue("Credentials provider called: " + provider.counter, provider.counter == 1);
+                // 2. Retry with good password;
+                // AuthCache should automatically clear bad one from cache.
+                provider = new TestProvider(data.user, data.password);
+                session.setCredentialsProvider(provider);
+                result = invoke(session, data.url);
+                System.err.println("provider count: " + provider.counter);
+                Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404);
+                // 3. Retry again with good credentials.
+                // Second call should leave counter at 0, but should succeed.
+                provider.reset();
+                result = invoke(session, data.url);
+                System.err.println("provider count: " + provider.counter);
+                Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404);
+                if(!remote)
+                    Assert.assertTrue("Credentials provider called: " + provider.counter, provider.counter == 0);
             }
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 401);
-            if(!remote)
-                Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
-            // retry with correct password;
-            // AuthCache should automatically clear bad one from cache.
-            this.provider.setPWD(data.user, data.password);
-            try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                session.setCredentialsProvider(this.provider);
-                this.result = invoke(session, data.url);
-            }
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404);
         }
     }
 
+    @Ignore("Requires access to a display")
     @Test
     public void
     testCache2() throws Exception
     {
-        System.err.println("*** Testing: Cache Invalidation visually");
+        System.err.println("*** Testing: Cache Invalidation Visually");
         for(AuthDataBasic data : basictests) {
             System.out.println("*** URL: " + data.url);
-            CredentialsProvider cp = new Login();
+
+            // Do each test with a bad password to cause cache invalidation
+            // Note that we need to use the same HTTPSession instance for all invocations.
+            Result result;
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                session.setCredentialsProvider(cp);
-                this.result = invoke(session, data.url);
+                // 1. Get bad password
+                Login provider = new Login(data.user, BADPASSWORD);
+                session.setCredentialsProvider(provider);
+                result = invoke(session, data.url);
+                Assert.assertTrue("Incorrect return code: " + result.status, result.status == 401);
+                // 2. Retry; assume user will provide proper correct pwd
+                // AuthCache should automatically clear bad one from cache.
+                result = invoke(session, data.url);
+                Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404);
+                // 3. Retry again with good credentials.
+                result = invoke(session, data.url);
+                Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404);
             }
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 401);
-if(false) {
-            // retry with correct password;
-            // AuthCache should automatically clear bad one from cache.
-            try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                session.setCredentialsProvider(this.provider);
-                this.result = invoke(session, data.url);
-            }
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404);
-}
         }
     }
-
 
 /*
     // This test actually is does nothing because I have no way to test it
@@ -445,14 +424,14 @@ if(false) {
             int status = method.execute();
             System.err.printf("\tlocal provider: status code = %d\n", status);
             System.err.flush();
-            Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404);
+            Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404);
             // Test global credentials provider
             HTTPSession.setGlobalProxy(host, port);
             HTTPSession.setGlobalCredentialsProvider(url, provider);
             try (HTTPSession session = HTTPFactory.newSession(url);
                  HTTPMethod method = HTTPFactory.Get(session, url)) {
                 int status = method.execute();
-                Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404);
+                Assert.assertTrue("Incorrect return code: " + result.status, result.status == 200 || result.status == 404);
             }
         }
     }
@@ -465,14 +444,10 @@ if(false) {
             throws IOException
     {
         Result result = new Result();
-        this.counter.clear();
         try {
             try (HTTPMethod method = HTTPFactory.Get(session, url)) {
                 result.status = method.execute();
                 System.err.printf("\tglobal provider: status code = %d\n", result.status);
-                //System.err.printf("\t|cache| = %d\n", HTTPCachingProvider.getCache().size());
-                // Get the number of calls to the credentialer
-                result.count = counter.counter();
                 // try to read in the content
                 result.contents = readbinaryfile(method.getResponseAsStream());
             }

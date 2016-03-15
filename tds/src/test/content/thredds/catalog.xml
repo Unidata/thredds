@@ -23,11 +23,13 @@
 
   <datasetRoot path="localContent" location="content/testdata/"/>
   <datasetRoot path="testRestrictedDataset" location="content/testdata/"/>
+  <datasetRoot path="protected" location="content/protected/"/>
   <datasetRoot path="cdmUnitTest" location="${cdmUnitTest}"/>
 
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="localContent/testData.nc" dataType="Grid"/>
-  <dataset name="Test Dap4 Dataset" ID="testDap4Dataset" serviceName="dap4" urlPath="cdmUnitTest/ft/grid/03061219_ruc.nc" dataType="Grid"/>
+  <dataset name="Test Dap4 Dataset" ID="testDap4Dataset" serviceName="dap4" urlPath="cdmUnitTest/ft/coverage/03061219_ruc.nc" dataType="Grid"/>
   <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" serviceName="all" urlPath="testRestrictedDataset/testData2.nc" restrictAccess="tiggeData"/>
+  <dataset name="Protected" ID="testProtected" serviceName="all" urlPath="protected/testData.nc" restrictAccess="tiggeData"/>
 
   <dataset name="Test With Viewer" ID="testDataset2" serviceName="odap" urlPath="localContent/2004050412_eta_211.nc" dataType="Grid">
     <property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/>
