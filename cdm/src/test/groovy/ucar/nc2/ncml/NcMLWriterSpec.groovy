@@ -130,7 +130,7 @@ recordsGroup/recordsStruct = UNREADABLE
   </enumTypedef>
   <dimension name="time" length="3" isUnlimited="true" />
   <variable name="dessert" shape="time" type="enum2" typedef="dessertType">
-    <attribute name="zero" type="ulong" isUnsigned="true" />
+    <attribute name="zero" type="ulong" />
     <values>18.0 268.0 3284.0</values>
   </variable>
   <variable name="time" shape="time" type="short">
@@ -148,7 +148,7 @@ recordsGroup/recordsStruct = UNREADABLE
     </variable>
     <attribute name="stooges" value="Moe Howard|Larry Fine|Curly Howard" separator="|" />
   </group>
-  <attribute name="primes" type="uint" value="2 3 5 7 11" isUnsigned="true" />
+  <attribute name="primes" type="uint" value="2 3 5 7 11" />
 </netcdf>
 '''
 

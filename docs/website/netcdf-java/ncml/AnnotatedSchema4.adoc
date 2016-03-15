@@ -406,13 +406,13 @@ NcML _Variable_ objects.
       <xsd:enumeration value="enum4"/>
       <xsd:enumeration value="ubyte"/>
       <xsd:enumeration value="ushort"/>
+      <xsd:enumeration value="ushort"/>
       <xsd:enumeration value="uint"/>
       <xsd:enumeration value="ulong"/>
     </xsd:restriction>
   </xsd:simpleType>
 ----
 
-* Unsigned integer types (byte, short, int) are indicated with an ___Unsigned = "true__" attribute on the Variable.
 * A Variable with type enum1. enum2 or enum4 will refer to a *enumTypedef* object. Call Variable.getEnumTypedef().
 
 === *enumTypedef* element

@@ -74,8 +74,9 @@ public class TestDataFactory {
             // dataset or datasetScan
             {"thredds:"+server+"catalog/catalog.xml#testDataset", FeatureType.GRID, ServiceType.OPENDAP},
             {"thredds:"+server+"catalog/testEnhanced/catalog.xml#testEnhanced/2004050412_eta_211.nc", FeatureType.GRID, ServiceType.OPENDAP},
+
             // test that cdmRemote takes precedence over OpenDAP
-            {"thredds:"+server+"catalog/hioos/model/wav/swan/oahu/catalog.xml#hioos/model/wav/swan/oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_fmrc.ncd", FeatureType.GRID, ServiceType.CdmRemote},
+            // {"thredds:"+server+"catalog/hioos/model/wav/swan/oahu/catalog.xml#hioos/model/wav/swan/oahu/SWAN_Oahu_Regional_Wave_Model_(500m)_fmrc.ncd", FeatureType.GRID, ServiceType.CdmRemote},
 
             /// point data
             {"thredds:"+server+"catalog/testStationScan/catalog.xml#testStationScan/Surface_METAR_20130824_0000.nc", FeatureType.STATION, ServiceType.CdmRemote},
