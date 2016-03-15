@@ -58,6 +58,3 @@ Thumbs.db
 # Coverity files 
 cov-int
 thredds.tgz
-
-# ignore shade plugin generated dependency-reduced-pom for ncIdv
-ncIdv/dependency-reduced-pom.xml

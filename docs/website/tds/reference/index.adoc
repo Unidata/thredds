@@ -5,9 +5,9 @@
 
 == THREDDS Catalogs
 
-* <<../tutorial/CatalogPrimer#,Primer>>
-* <<../catalog/InvCatalogSpec#,Specification>> (as annotated XML Schema)
-* <<../catalog/InvCatalogServerSpec#,Extensions for Server Configuration>>
+* <<../tutorial/CatalogPrimer.adoc#,Primer>>
+* <<../catalog/InvCatalogSpec.adoc#,Specification>> (as annotated XML Schema)
+* <<../catalog/InvCatalogServerSpec.adoc#,Extensions for Server Configuration>>
 
 == THREDDS Data Server (TDS)
 

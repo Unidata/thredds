@@ -60,8 +60,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String SCHEME = PROTOCOL+":";
 
   // static private org.slf4SCHEMEj.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  static private boolean showRequest = false;
-  static private boolean showUrl = false;
+  static private boolean showRequest = true;
   static private boolean compress = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
@@ -110,6 +109,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     httpClient = HTTPFactory.newSession(remoteURI);
     // get the header
     String url = remoteURI + "?req=header";
+    if (showRequest) System.out.printf(" CdmRemote request %s%n", url);
     try (HTTPMethod method = HTTPFactory.Get(httpClient, url)) {
       method.setFollowRedirects(true);
       int statusCode = method.execute();
@@ -173,7 +173,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
       throw new RuntimeException(e);
     }
 
-    if (showUrl)
+    if (showRequest)
       System.out.printf("CdmRemote data request for variable: '%s' section=(%s)%n url='%s'%n esc='%s'%n",
               v.getFullName(), section, url, escapedURI);
 
@@ -200,9 +200,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
 
       InputStream is = method.getResponseAsStream();  // Closed by HTTPMethod.close().
       NcStreamReader reader = new NcStreamReader();
-      // NcStreamReader.DataResult result = reader.readData(is, this);
       NcStreamReader.DataResult result = reader.readData(is, this, remoteURI);
-      // NcStreamReader.DataResult result = reader.readData3(is, this);
 
       assert v.getFullNameEscaped().equals(result.varNameFullEsc);
       return result.data;
@@ -213,7 +211,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
     String path = method.getURL();
     String status = method.getStatusLine();
     String content = method.getResponseAsString();
-    return (content == null) ? status + " " + path: status + " " + path +"\n "+content;
+    return (content == null) ? status + " " + path : status + " " + path +"\n "+content;
   }
 
   protected StructureDataIterator getStructureIterator(Structure s, int bufferSize) throws java.io.IOException {

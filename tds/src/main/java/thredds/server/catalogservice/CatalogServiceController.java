@@ -69,7 +69,7 @@ public class CatalogServiceController {
   @Autowired
   ConfigCatalogHtmlWriter writer;
 
-  @RequestMapping(value="**", method = {RequestMethod.GET})
+  @RequestMapping(value = "**", method = {RequestMethod.GET})
   protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response, CatalogRequest params) throws Exception {
 
     TdsRequestedDataset reqD = new TdsRequestedDataset(request, "/catalog");
@@ -89,9 +89,9 @@ public class CatalogServiceController {
       throw new URISyntaxException(msg, e.getReason());
     }
 
-      // no catalog found
-      if (catalog == null)
-        throw new FileNotFoundException(request.getRequestURI());
+    // no catalog found
+    if (catalog == null)
+      throw new FileNotFoundException(request.getRequestURI());
 
     // Otherwise, handle catalog as indicated by "command".
     if (params.dataset != null) {

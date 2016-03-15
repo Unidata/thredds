@@ -332,7 +332,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
       // redo the variables against the shared coordinates
       for (VariableBag vb : gribvars) {
-        vb.coordND = sharify.reindexCoordND(vb.coordND);              // LOOK consider orthogonalizing the Time2D
+        vb.coordND = sharify.reindexCoordND(vb.coordND);
         vb.coordIndex = sharify.reindex2shared(vb.coordND.getCoordinates());
         tot_used += vb.coordND.getSparseArray().countNotMissing();
         tot_dups += vb.coordND.getSparseArray().getNdups();

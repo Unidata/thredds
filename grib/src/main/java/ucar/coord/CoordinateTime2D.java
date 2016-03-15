@@ -197,6 +197,22 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return offsets;
   }
 
+  @Override
+  public void setName(String name) {
+    super.setName(name);
+    if (isOrthogonal())
+      otime.setName(name);
+    else if (isRegular()) {
+      for (CoordinateTimeAbstract time : regTimes.values())
+        time.setName(name);
+    } else {
+      for (Coordinate time : times)
+        ((CoordinateTimeAbstract) time).setName(name);
+    }
+  }
+
+  ///////////////////////////////////////////////////////
+
   public CoordinateRuntime getRuntimeCoordinate() {
     return runtime;
   }
@@ -440,11 +456,14 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   }
 
   private CoordinateTimeAbstract factory(CoordinateTimeAbstract org, CalendarDate refDate) {
+    CoordinateTimeAbstract result;
     if (isTimeInterval) {
-      return new CoordinateTimeIntv((CoordinateTimeIntv) org, refDate);
+      result = new CoordinateTimeIntv((CoordinateTimeIntv) org, refDate);
     } else {
-      return new CoordinateTime((CoordinateTime)org, refDate);
+      result = new CoordinateTime((CoordinateTime)org, refDate);
     }
+    result.setName(org.getName());
+    return result;
   }
 
   /**
@@ -564,6 +583,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     int[] time2runtime = new int[ offsetSorted.size()];
     for (int runIdx=0; runIdx<nruns; runIdx++) {
       CoordinateTime timeCoord = (times == null) ? (CoordinateTime) getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
+      assert timeCoord != null;
       for (Integer offset : timeCoord.getOffsetSorted()) {
         Integer bestValIdx = map.get(offset + getOffset(runIdx));
         if (bestValIdx == null) throw new IllegalStateException();
@@ -592,6 +612,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       Set<Integer> values = new HashSet<>();  // complete set of values
       for (int runIdx=0; runIdx<nruns; runIdx++) {   // use times array, passed into constructor, with original inventory, if possible
         CoordinateTime timeCoord = (times == null) ?  (CoordinateTime)  getTimeCoordinate(runIdx) : (CoordinateTime) times.get(runIdx);
+        assert timeCoord != null;
         for (Integer offset : timeCoord.getOffsetSorted()) {
           int offsetAbs = (offset + getOffset(runIdx)); // convert to absolute offset
           if (values.contains(offsetAbs)) return false;

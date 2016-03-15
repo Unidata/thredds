@@ -14,68 +14,11 @@ a human understandable name for each dataset, and a structure on which further d
 This document specifies the semantics of a THREDDS catalog, as well as its representation as an XML document.
 It is written to help clients read and understand THREDDS catalogs recieved from a server.
 
-=== Contents
+Related resources:
 
-* link:#baseElements[*Base Catalog Elements*:]
-** link:#catalog[catalog]
-** link:#service[service]
-** link:#dataset[dataset]
-** link:#access[access]
-** link:#catalogRef[catalogRef]
-** link:#XLink[XLink]
-
-* link:#dlElements[*Digital Library Metadata Elements*:]
-** link:#threddsMetadataGroup[threddsMetadataGroup]
-** link:#documentation[documentation]
-** link:#metadataElement[metadata]
-** link:#property[property]
-** link:#sourceType[sourceType]
-** link:#contributor[contributor]
-** link:#geospatialCoverage[geospatialCoverage]
-** link:#timeCoverage[timeCoverage]
-** link:#dateType[dateType]
-** link:#dateTypeFormatted[dateTypeFormatted]
-** link:#durationType[duration]
-** link:#dataSize[dataSize]
-** link:#controlledVocabulary[controlledVocabulary]
-** link:#variablesType[variables]
-
-* link:#Enumerations[Enumerations]
-
-* link:#Dataset_Access_Methods[Dataset Access Methods]
-
-* link:#constructingURLs[Constructing URLs]
-
-* link:#datasetClassification[Dataset Classification]
-
-* link:#webResources[Datasets as Web Resources]
-
-* link:#index[Index]
-
-=== Related resources:
-
-* Catalog <<../tutorial/CatalogPrimer#,Primer>>
-
+* Catalog <<../tutorial/CatalogPrimer.adoc#,Primer>>
 * Catalog link:Example1.0rc8.xml[Example]
-
-* Catalog XML Schema:
-
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[Version 1.2]
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd[Version 1.0.7]
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd[Version 1.0.6]
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd[Version 1.0.5]
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd[Version 1.0.4]
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd[Version 1.0.3]
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd[Version 1.0.2]
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd[Version 1.0.1]
-** http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd[Version 1.0]
-
-* <<../reference/DigitalLibraries#,Writing metadata for Digital Libraries>>
-
-* Java API to read catalogs in the http://www.unidata.ucar.edu/software/netcdf-java/[netCDF-Java library].
-
-* <<Changes#,Changes>> since version 1.0.1.
-
+* Catalog http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[XML Schema]
 * <<InvCatalogServerSpec#,Server-side catalog specification>>
 
 [[baseElements]]
@@ -103,8 +46,8 @@ It is written to help clients read and understand THREDDS catalogs recieved from
 ----
 
 The _catalog_ element is the top-level element. It may contain zero or
-more _link:#service[service]_ elements, followed by zero or more _link:#property[property]_ elements,
-followed by one or more _link:#dataset[dataset]_ elements. The _base_ is
+more <<service>> elements, followed by zero or more <<property>> elements,
+followed by one or more <<dataset>> elements. The _base_ is
 used to resolve any reletive URLs in the catalog such as catalogRefs,
 services, etc. It is usually the URL of the catalog document itself.
 Optionally the catalog may have a display __name__. The optionl _expires_
@@ -159,10 +102,10 @@ the optional _suffix_ attribute are both used in the construction of the
 dataset URL (see link:#constructingURLs[constructing URLS]). The _base_
 may be an absolute URL or it may be relative to the catalog’s base URL.
 The _service_ element has a _serviceType_ attribute whose value is
-typically one of the _link:#serviceTypes[serviceType]_ values.
+typically one of the <<serviceType>> values.
 The optional _desc_ attribute allows you to give a human-readable description of the service.
 
-A _service_ element may contain 0 or more _link:#property[property]_
+A _service_ element may contain 0 or more <<property>>
 elements to allow for the encoding of additional, service-specific information.
 
 Only _service_ element with _serviceType="Compound"_ may have nested
@@ -188,7 +131,7 @@ link:#constructingURLs[constructing URLS] for how the resolved URL is created):
 ----
 
 [[dataset]]
-=== __dataset__ element
+=== _dataset_ type
 
 [source,xml]
 ----
@@ -239,14 +182,14 @@ should be identical if possible.
 
 A _dataset_ element contains any number of elements from the
 link:#threddsMetadataGroup[threddsMetadataGroup] in any order. These are
-followed by 0 or more _link:#access[access]_ elements, followed by 0 or
+followed by 0 or more <<access>> elements, followed by 0 or
 more nested _dataset_ elements (actually you can use any element in the
 dataset substitution group: dataset or catalogRef). The data represented
 by a nested dataset element should be a subset, a specialization or in
 some other sense "contained" within the data represented by its parent
 dataset element.
 
-The _link:#collectionTypes[collectionType]_ attribute is used to
+The <<collectionType>> attribute is used to
 indicate that the dataset is a link:#coherentDataset[coherent
 collection] and the type of the collections coherence. A datasets data
 type is very useful to clients so they know how to present the data to
@@ -275,8 +218,7 @@ is still necessary.) The urlPath attribute, in combination with the
 applicable serviceName, is used to specify
 link:#Dataset_Access_Methods[data access methods]. When you have more
 than one way to access a dataset, either explicitly define them using
-more than one nested link:#access[_access_] elements, or use a
-link:#compoundService[compound service].
+more than one nested <<access> elements, or use a link:#compoundService[compound service].
 
 Examples:
 
@@ -305,7 +247,7 @@ logically replaces the alias dataset.
 ----
 
 [[access]]
-=== __access__ element
+=== _access_ element
 
 [source,xml]
 ----
@@ -322,7 +264,7 @@ logically replaces the alias dataset.
 ----
 
 An _access_ element specifies how a dataset can be accessed through a
-data link:#service[_service_]. It always refers to the dataset that it
+data <<service>>. It always refers to the dataset that it
 is immediately contained within.
 
 The _serviceName_ refers to the unique name of a service element. The
@@ -333,7 +275,7 @@ link:#serviceTypes[_serviceType_] is a bulk transport like _FTP_ or
 __HTTP__, as it specifies the format of the transferred file. It is not
 needed for client/server protocols like DODS or ADDE.
 
-An _access_ element may contain an optional link:#dataSize[_dataSize_]
+An _access_ element may contain an optional <<dataSize>>
 element to specify how large the dataset would be if it were to be
 copied to the client.
 
@@ -397,7 +339,7 @@ Example:
 ----
 
 [[XLink]]
-=== _XLink_ attributeGroup
+=== _XLink_ attribute group
 
 [source,xml]
 ----
@@ -432,7 +374,7 @@ These are catalog elements that are used in Digital Libraries entries,
 discovery centers, and for annotation and documentation of datasets.
 
 [[threddsMetadataGroup]]
-=== _threddsMetadataGroup_ Model Group
+=== _threddsMetadataGroup_ element group
 
 [source,xml]
 ----
@@ -555,7 +497,7 @@ Examples:
 ----
 
 [[documentation]]
-=== __documentation__ Type
+=== _documentation_ type
 
 [source,xml]
 ----
@@ -593,7 +535,7 @@ Examples:
 ----
 
 [[metadata]]
-=== __metadata__ element
+=== _metadata_ element
 
 [source,xml]
 ----
@@ -753,7 +695,7 @@ namespace:
 Property elements are arbitrary name/value pairs to associate with a
 link:#catalog[catalog], link:#dataset[dataset] or link:#service[service]
 element. Properties on datasets are added as global attributes to the
-THREDDS data model objects.
+THREDDS data model objects. Generally there may be multiple properties having the same name.
 
 Example:
 
@@ -763,7 +705,7 @@ Example:
 ----
 
 [[source]]
-=== __source__ Type
+=== _source_ type
 
 [source,xml]
 ----
@@ -799,7 +741,7 @@ Example:
 ----
 
 [[contributor]]
-=== __contributor__ Element
+=== _contributor_ element
 
 [source,xml]
 ----
@@ -827,7 +769,7 @@ Example:
 ----
 
 [[geospatialCoverage]]
-=== __geospatialCoverage__ Element
+=== _geospatialCoverage_ element
 
 [source,xml]
 ----
@@ -909,7 +851,7 @@ Example:
 ----
 
 [[timeCoverage]]
-=== __timeCoverage__ Type
+=== _timeCoverage_ type
 
 [source,xml]
 ----
@@ -954,7 +896,7 @@ Example:
 ----
 
 [[date]]
-=== __date__ Type
+=== _date_ type
 
 [source,xml]
 ----
@@ -1001,7 +943,7 @@ Examples:
 ----
 
 [[dateTypeFormatted]]
-=== __dateTypeFormatted__ Type
+=== _dateTypeFormatted_ type
 
 [source,xml]
 ----
@@ -1039,7 +981,7 @@ _Example_Format_String___________Example_Text___________________
 ----
 
 [[duration]]
-=== __duration__ Type
+=== _duration_ type
 
 [source,xml]
 ----
@@ -1084,7 +1026,7 @@ Example:
 ----
 
 [[dataSize]]
-=== __dataSize__ Element
+=== _dataSize_ element
 
 [source,xml]
 ----
@@ -1110,7 +1052,7 @@ Example:
 ----
 
 [[controlledVocabulary]]
-=== _controlledVocabulary_ Type
+=== _controlledVocabulary_ type
 
 [source,xml]
 ----
@@ -1135,7 +1077,7 @@ Example:
 ----
 
 [[variablesType]]
-=== __variables__ Element
+=== _variables_ element
 
 [source,xml]
 ----
@@ -1229,7 +1171,7 @@ mailto:thredds@unidata.ucar.edu[THREDDS mailgroup] for inclusion in
 future versions of this schema.
 
 [[dataFormat]]
-=== dataFormat types
+=== _dataFormat_ enumeration
 
 [source,xml]
 ----
@@ -1305,7 +1247,7 @@ Examples:
 ----
 
 [[dateType]]
-=== dataType types
+=== _dataType_ enumeration
 
 [source,xml]
 ----
@@ -1332,7 +1274,7 @@ Types>> of the datasets, which are used by clients to know how to display
 the data.
 
 [[dateEnumTypes]]
-=== date types
+=== _date_ enumeration
 
 [source,xml]
 ----
@@ -1363,7 +1305,7 @@ http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#token[xsd:toke
 data type).
 
 [[documentationEnumTypes]]
-=== documentation types
+=== _documentation_ enumeration
 
 [source,xml]
 ----
@@ -1392,7 +1334,7 @@ http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#token[xsd:toke
 data type).
 
 [[metadataType]]
-=== metadata types
+=== _metadata_ enumeration
 
 [source,xml]
 ----
@@ -1426,7 +1368,7 @@ http://www.w3.org/TR/2004/REC-xmlschema-2-20041028/datatypes.html#token[xsd:toke
 data type).
 
 [[serviceTypes]]
-=== serviceTypes Type
+=== _serviceTypes_ enumeration
 
 [source,xml]
 ----
@@ -1528,7 +1470,7 @@ handled internally by THREDDS. A
 link:#compoundService[Compound Service] just indicates that the service is composed of other services.
 
 [[variableNameVocabulary]]
-=== variableNameVocabulary types
+=== _variableNameVocabulary_ enumerations
 
 [source,xml]
 ----
@@ -1647,7 +1589,7 @@ _service_ element and the other using the "wcs" _service_ element,
 both using the _urlPath_ attribute value "cool/data.nc"
 
 [[constructingURLs]]
-== Constructing URLs
+=== Constructing URLs
 
 A dataset access URL is constructed by concatenating the service base
 URL with the access urlPath. If the service has a suffix attribute, that
@@ -1750,94 +1692,6 @@ http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.html?dataset=GFS_CO
 
 This URL, when sent to a THREDDS Data Server, shows the metadata for the dataset with ID _GFS_CONUS_80km/Best_
 in the catalog _\http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.html_.
-
-
-[[Index]]
-== Index
-
-* link:#access[access] element; defines a specific service and URL to
-access a dataset.
-* link:#authority[authority] : an element of a dataset; can also be
-specified as an attribute; used for unique IDs.
-* link:#base[service@base] : base URL is an attribute of a
-link:#service[service] element ; dataset URLs can be reletive to it .
-* link:#catalog[catalog] element; root XML element.
-* link:#catalogRef[catalogRef] element; refers to a nested THREDDS
-catalog.
-* link:#collectionTypes[collectionTypes] enumeration, used by
-link:#collection[collection] attribute of dataset.
-* link:#contact[contact] : an attribute used by publisher and creator
-elements.
-* link:#contributor[contributor] element, used in
-link:#threddsMetadataGroup[threddsMetadataGroup.]
-* link:#controlledVocabulary[controlledVocabulary] adds an optional
-vocabulary attribute to the string-valued element.
-* link:#creator[creator] element, used in
-link:#threddsMetadataGroup[threddsMetadataGroup.]
-* link:#dataFormatType[dataFormatTypes] enumeration, used by
-link:#dataFormatType[dataFormat] element, specifies the file format of
-the data.
-* link:#dataSize[dataSize] element; size of the dataset in bytes.
-* link:#dataType[dataTypes] enumeration, used by
-link:#dataType[dataType] attribute of dataset element, specifies the
-kind of data in the dataset.
-* link:#dataset[dataset] element; represents a coherent set of data.
-* link:#date[date] element, used in
-link:#threddsMetadataGroup[threddsMetadataGroup.]
-* link:#dateType[dateType] is an attribute or element specifying a date.
-* link:#dateTypeFormatted[dateTypeFormatted] is an element specifying a
-date, with optional formatting and type attributes.
-* link:#documentation[documentation] contains human readable information
-about the dataset.
-* link:#durationType[duration] a time range.
-* link:#expires[expires] : attribute of catalog, indicates how long the
-information is valid.
-* link:#geospatialCoverage[geospatialCoverage] element, defines the
-spatial area that the data covers, using
-link:#geospatialCoverageType[geospatialCoverageType].
-* link:#harvest[harvest]: an attribute of dataset, specifies that the
-dataset should be harvested into a Digital library record.
-* link:#keyword[keyword] element, used in
-link:#threddsMetadataGroup[threddsMetadataGroup.]
-* link:#metadata[metadata] element is a container or a pointer to other
-metadata elements.
-* link:#metadataType[metadataType] values are the "well known" types
-of metadata records, used in a metadata element.
-* link:#project[project] element, used in
-link:#threddsMetadataGroup[threddsMetadataGroup.]
-* link:#property[property] element, specifies name/value pairs.
-* link:#publisher[publisher] element, used in
-link:#threddsMetadataGroup[threddsMetadataGroup.]
-* link:#rights[rights] : a specialized documentation element; what
-restrictions are on the use of the dataset.
-* link:#service[service] element defines how and where a dataset is
-accessed.
-* link:#serviceTypes[serviceTypes] enumeration, used by serviceType
-attribute of link:#service[service]
-* link:#sourceType[sourceType] is the type of a creator and publisher
-element.
-* link:#spatialRange[spatialRange] is a data type used in a
-link:#geospatialCoverageType[geospatialCoverage] element.
-* link:#summary[summary] : a specialized documentation element, a short
-description or abstract of the dataset.
-* link:#timeCoverage[timeCoverage] element, defines the time range that
-the data covers, using link:#timeCoverageType[timeCoverageType].
-* link:#threddsMetadataGroup[threddsMetadataGroup] group of elements,
-used in dataset or metadata element.
-* link:#variablesType[variables] element, used in
-link:#threddsMetadataGroup[threddsMetadataGroup,] specifies the
-variables (aka _fields_ or __parameters__) available in the dataset.
-* link:#variableMap[variableMap] element is used in
-link:#variables[variables] to link to an external document specifying
-the variable names.
-* link:#variableNameVocabulary[variableNameVocabulary] is an enumeration
-of known vocabularies for standard variable names, used in the
-link:#variables[variables] element.
-* link:#XLink[XLink] group of attributes; defines a link to another
-document.
-* link:#zpositive[zpositive] is an attribute of
-link:#geospatialCoverageType[geospatialCoverage] element, indicating if
-the units of z goes up or down as z increases.
 
 '''''
 

@@ -134,7 +134,8 @@ public class GdsHorizCoordSys {
   }
 
   public String makeId() {
-    StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx+"-"+getCenterLatLon());
+    LatLonPointImpl center = (LatLonPointImpl) getCenterLatLon();
+    StringBuilder result = new StringBuilder(name + "_" + ny + "X" + nx+"-"+center.toString(2));
     StringUtil2.replace(result, ". ","p-");
     return result.toString();
   }

@@ -32,6 +32,7 @@
  */
 package ucar.nc2.dt.grid;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
@@ -44,7 +45,10 @@ import ucar.unidata.test.util.TestDir;
 public class Test3dFromOpendap {
   @Test
   public void test3D() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://"+ TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
+    String endpoint = "dods://"+ TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best";
+    try (GridDataset dataset = GridDataset.open(endpoint)) {
+      Assert.assertNotNull(endpoint, dataset);
+      System.out.printf("open %s%n", endpoint);
 
       GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
       assert null != grid;

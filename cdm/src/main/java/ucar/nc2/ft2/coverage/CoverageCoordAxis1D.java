@@ -483,10 +483,7 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     }
 
     public Object next() {
-      if (isInterval())
-        return getCoordMidpoint(current++);
-      else
-        return getCoordMidpoint(current++);
+      return getCoordMidpoint(current++);
     }
   }
 

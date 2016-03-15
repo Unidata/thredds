@@ -541,7 +541,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return new Variable(this);
   }
 
-  protected NetcdfFile getNetcdfFile() {
+  public NetcdfFile getNetcdfFile() {
     return ncfile;
   }
    

@@ -571,7 +571,8 @@ class Giniheader {
     ncfile.addVariable(null, yaxis);
 
     // coordinate transform variable
-    Variable ct = new Variable(ncfile, null, null, projection.getClassName());
+    String shortName = (projection == null) ? "unknown" : projection.getClassName();
+    Variable ct = new Variable(ncfile, null, null, shortName);
     ct.setDataType(DataType.CHAR);
     ct.setDimensions("");
     for (Parameter p : projection.getProjectionParameters()) {

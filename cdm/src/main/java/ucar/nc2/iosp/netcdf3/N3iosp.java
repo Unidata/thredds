@@ -91,6 +91,21 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   static public final long NC_FILL_UINT64 = 0; // (long) 18446744073709551614L;  // LOOK what is this as neg ?
   static public final String NC_FILL_STRING  = "";
 
+  static public Number getFillValueDefault(DataType dtype) {
+    if ((dtype == DataType.BYTE) || (dtype == DataType.ENUM1)) return N3iosp.NC_FILL_BYTE;
+    if (dtype == DataType.UBYTE) return N3iosp.NC_FILL_UBYTE;
+    if (dtype == DataType.CHAR) return (byte) 0;
+    if ((dtype == DataType.SHORT) || (dtype == DataType.ENUM2)) return N3iosp.NC_FILL_SHORT;
+    if (dtype == DataType.USHORT) return N3iosp.NC_FILL_USHORT;
+    if ((dtype == DataType.INT) || (dtype == DataType.ENUM4)) return N3iosp.NC_FILL_INT;
+    if (dtype == DataType.UINT) return N3iosp.NC_FILL_UINT;
+    if (dtype == DataType.LONG) return N3iosp.NC_FILL_LONG;
+    if (dtype == DataType.ULONG) return N3iosp.NC_FILL_UINT64;
+    if (dtype == DataType.FLOAT) return N3iosp.NC_FILL_FLOAT;
+    if (dtype == DataType.DOUBLE) return N3iosp.NC_FILL_DOUBLE;
+    return null;
+  }
+
   /* CLASSIC
      The maximum size of a record in the classic format in versions 3.5.1 and earlier is 2^32 - 4 bytes.
      In versions 3.6.0 and later, there is no such restriction on total record size for the classic format

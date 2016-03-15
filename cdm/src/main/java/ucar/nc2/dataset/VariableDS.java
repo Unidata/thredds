@@ -208,6 +208,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     }
   }
 
+  @Override
+  public NetcdfFile getNetcdfFile() {
+    return group.getNetcdfFile();
+  }
+
   // for section and slice
   @Override
   protected Variable copy() {

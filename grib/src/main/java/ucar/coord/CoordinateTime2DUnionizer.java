@@ -36,15 +36,19 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.util.Indent;
-import ucar.nc2.util.Misc;
 
 import java.util.*;
 
 /**
- * Create union  CoordinateTime2D's.
+ * Create union of CoordinateTime2D's, and/or convert CoordinateTime2D into using orthogonal or regular representation .
  * Will build orthogonal and regular if possible.
  * Does not actually depend on T.
+ *
+ * Used by CoordinatePartitionUnionizer to create union across partitions for one variable.
+ * Used by CoordinateSharer to create common time2D across variables in same partition, when isRuntimeUnion=true.
+ *
+ * Used by CoordinateSharer to regularize/orthogonalize time2D coords.
+ * CoordinateTime2D.Builder uses general ctor, this will build orthogonal / regular variants
  *
  * @author caron
  * @since 11/22/2014
@@ -58,7 +62,6 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   org.slf4j.Logger logger;
 
   SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
-  boolean shown;
 
   public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code,  boolean makeVals, org.slf4j.Logger logger) {
     this.isTimeInterval = isTimeInterval;
@@ -71,10 +74,11 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   @Override
   public void addAll(Coordinate coord) {
     CoordinateTime2D coordT2D = (CoordinateTime2D) coord;
-    for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {    // possible duplicate runtimes from different partitions
+    for (int runIdx = 0; runIdx < coordT2D.getNruns(); runIdx++) {
       CoordinateTimeAbstract times = coordT2D.getTimeCoordinate(runIdx);
       long runtime = coordT2D.getRuntime(runIdx);
-      timeMap.put(runtime, times);   // later partitions will override LOOK could check how many times there are and choose larger
+      timeMap.put(runtime, times);  // possible duplicate runtimes from different partitions
+                                    // later partitions will override LOOK could check how many times there are and choose larger
     }
   }
 
@@ -83,6 +87,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     throw new RuntimeException();
   }
 
+  // used when isRuntimeUnion=true
   // set the list of runtime coordinates; add any that are not already present, and make an empty CoordinateTimeAbstract for it
   public void setRuntimeCoords(CoordinateRuntime runtimes) {
     for (int idx=0; idx<runtimes.getSize(); idx++) {
@@ -111,7 +116,9 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
       if (makeVals) {
         CalendarDate cd = CalendarDate.of(runtime);
         for (Object timeVal : time.getValues())
-          allVals.add( isTimeInterval ? new CoordinateTime2D.Time2D(cd, null, (TimeCoord.Tinv) timeVal) : new CoordinateTime2D.Time2D(cd, (Integer) timeVal, null));
+          allVals.add( isTimeInterval ?
+                  new CoordinateTime2D.Time2D(cd, null, (TimeCoord.Tinv) timeVal) :
+                  new CoordinateTime2D.Time2D(cd, (Integer) timeVal, null));
       }
     }
     Collections.sort(allVals);

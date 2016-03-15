@@ -575,6 +575,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       // figure out the runtime
       int timeIdx = wholeIndex[0];
       CoordinateTimeAbstract time = getCoordinateTime();
+      assert time != null;
       int masterIdx = time.getMasterRuntimeIndex(timeIdx) - 1;
       int runtimeIdxPart = matchCoordinate(masterRuntime, masterIdx, compVindex2D.getCoordinate(0));
       if (runtimeIdxPart < 0)

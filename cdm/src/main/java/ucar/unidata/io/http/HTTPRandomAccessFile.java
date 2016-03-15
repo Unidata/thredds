@@ -33,15 +33,17 @@
 
 package ucar.unidata.io.http;
 
-import ucar.httpservices.*;
 import org.apache.http.Header;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.Urlencoded;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.channels.WritableByteChannel;
 import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * Gives access to files over HTTP, using "Accept-Ranges" HTTP header to do random access.
@@ -256,5 +258,14 @@ public class HTTPRandomAccessFile extends ucar.unidata.io.RandomAccessFile {
       return fileLength;
   }
 
+  /**
+   * Always returns {@code 0L}, as we cannot easily determine the last time that a remote file was modified.
+   *
+   * @return  {@code 0L}, always.
+   */
+  // LOOK: An idea of how we might implement this: https://github.com/Unidata/thredds/pull/479#issuecomment-194562614
+  @Override
+  public long getLastModified() {
+    return 0;
+  }
 }
-

@@ -60,7 +60,7 @@ public class GribBestDatasetBuilder {
 
       // for each time2D, create the best time coordinates
       HashMap<Coordinate, CoordinateTimeAbstract> map2DtoBest = new HashMap<>(); // associate 2D coord with best
-      CoordinateUniquify sharer = new CoordinateUniquify();
+      CoordinateSharerBest sharer = new CoordinateSharerBest();
       for (Coordinate coord : group2D.coords) {
         if (coord instanceof CoordinateRuntime) continue; // skip it
         if (coord instanceof CoordinateTime2D) {

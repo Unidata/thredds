@@ -45,6 +45,7 @@ import java.util.*;
  * The CoordinateBuilders create unique sets of Coordinates.
  * The CoordinateND result is then the cross-product of those Coordinates.
  *
+ * Used by GribPartitionBuilder
  * This is a builder helper class, the result is obtained from List<Coordinate> finish().
  *
  * So if theres a lot of missing records in that cross-product, we may have the variable wrong (?),
@@ -53,7 +54,7 @@ import java.util.*;
  * @author John
  * @since 12/10/13
  */
-public class CoordinateUnionizer {
+public class CoordinatePartitionUnionizer {
   static private final boolean debugPartitionErrors = true;
 
   private final FeatureCollectionConfig.GribIntvFilter intvFilter;
@@ -61,7 +62,7 @@ public class CoordinateUnionizer {
   private final GribCollectionMutable.VariableIndex vi;
   private final Map<Long, PartitionCollectionMutable.Partition> timeMap;
 
-  public CoordinateUnionizer(GribCollectionMutable.VariableIndex vi, FeatureCollectionConfig.GribIntvFilter intvFilter, org.slf4j.Logger logger) {
+  public CoordinatePartitionUnionizer(GribCollectionMutable.VariableIndex vi, FeatureCollectionConfig.GribIntvFilter intvFilter, org.slf4j.Logger logger) {
     this.vi = vi;
     this.intvFilter = intvFilter;
     this.logger = logger;

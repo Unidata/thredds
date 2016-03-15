@@ -20,13 +20,14 @@
         </service>
     </service>
 
-    <datasetScan name="GASS-YOTC-MIP data" ID="gass-ytoc-mip" path="gass-ytoc-mip" location="${cdmUnitTest}/formats/netcdf3" addLatest="true">
+    <datasetScan name="GASS-YOTC-MIP data" ID="gass-ytoc-mip" path="gass-ytoc-mip"
+                 location="${cdmUnitTest}/formats/netcdf3" addLatest="true">
         <serviceName>fileservice</serviceName>
         <filter>
-            <include wildcard="*.nc" />
+            <include wildcard="*.nc"/>
         </filter>
         <sort>
-            <lexigraphicByName increasing="true" />
+            <lexigraphicByName increasing="true"/>
         </sort>
     </datasetScan>
 
@@ -36,5 +37,47 @@
         </metadata>
     </datasetScan>
 
+    <dataset name="cmip3.ipsl_cm4.pdcntrl.run1.day.ta" ID="cmip3.ipsl_cm4.pdcntrl.run1.day.ta.v1" restrictAccess="esg-user">
+        <property name="dataset_id" value="cmip3.ipsl_cm4.pdcntrl.run1.day.ta"/>
+        <property name="dataset_version" value="1"/>
+        <property name="dataset_id_template_"
+                  value="%(project)s.%(model)s.%(experiment)s.%(ensemble)s.%(time_frequency)s.%(variable)s"/>
+        <property name="project" value="cmip3"/>
+        <property name="experiment" value="pdcntrl"/>
+        <property name="model" value="ipsl_cm4"/>
+        <property name="time_frequency" value="day"/>
+        <property name="realm" value=""/>
+        <property name="ensemble" value="run1"/>
+        <property name="title" value="IPSL  model output prepared for IPCC Fourth Assessment present-day control experiment"/>
+        <property name="creation_time" value="2016-03-10 15:07:49"/>
+        <property name="format" value="netCDF, CF-1.0"/>
+        <property name="institute" value="IPSL"/>
+        <property name="activity" value="DECK"/>
+        <property name="activity" value="CMIP"/>
+        <variables vocabulary="CF-1.0">
+            <variable name="ta" vocabulary_name="air_temperature" units="K">Temperature</variable>
+        </variables>
+        <metadata inherited="true">
+            <dataType>Grid</dataType>
+            <dataFormat>NetCDF</dataFormat>
+        </metadata>
+
+        <dataset name="ta_A2_2400-2409.nc" ID="cmip3.ipsl_cm4.pdcntrl.run1.day.ta.v1.ta_A2_2400-2409.nc" urlPath="cmip3_data/data1/pdcntrl/atm/da/ta/ipsl_cm4/run1/ta_A2_2400-2409.nc" restrictAccess="esg-user">
+            <serviceName>HTTPServer</serviceName>
+            <dataSize units="Mbytes">895.8</dataSize>
+            <property name="file_id" value="cmip3.ipsl_cm4.pdcntrl.run1.day.ta.ta_A2_2400-2409.nc" />
+            <property name="file_version" value="1" />
+            <property name="size" value="895890308" />
+            <property name="mod_time" value="2011-08-29 16:11:37" />
+            <property name="checksum" value="ecf5f850c97b140b1b80fff0e01606abb14ab2d9a83b2d9df5c09123e1456230" />
+            <property name="checksum_type" value="SHA256" />
+            <variables vocabulary="CF-1.0">
+                <variable name="ta" vocabulary_name="air_temperature" units="K">Temperature</variable>
+            </variables>
+            <access urlPath="/cmip3_data/data1/pdcntrl/atm/da/ta/ipsl_cm4/run1/ta_A2_2400-2409.nc" serviceName="GRIDFTP" />
+            <access urlPath="cmip3_data/data1/pdcntrl/atm/da/ta/ipsl_cm4/run1/ta_A2_2400-2409.nc" serviceName="OpenDAPServer" />
+        </dataset>
+
+    </dataset>
 
 </catalog>

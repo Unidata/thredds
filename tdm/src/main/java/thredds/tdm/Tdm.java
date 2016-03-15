@@ -35,6 +35,9 @@
 
 package thredds.tdm;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.http.auth.*;
@@ -157,8 +160,8 @@ public class Tdm {
   }
 
 
-  public void setCatalog(Resource catalog) {
-    this.catalog = catalog;
+  public void setCatalog(String catName) {
+    this.catalog = new FileSystemResource(catName);
   }
 
   public void setServerNames(String[] serverNames) {
@@ -173,12 +176,11 @@ public class Tdm {
 
     this.servers = new ArrayList<>(this.serverNames.length);
     for (String name : this.serverNames) {
-      try (HTTPSession session = HTTPFactory.newSession(name)) {
-        if (user != null && pass != null)
-          session.setCredentials(new UsernamePasswordCredentials(user, pass));
-        session.setUserAgent("TDM");
-        servers.add(new Server(name, session));
-      }
+      HTTPSession session = HTTPFactory.newSession(name);
+      if (user != null && pass != null)
+        session.setCredentials(new UsernamePasswordCredentials(user, pass));
+      session.setUserAgent("TDM");
+      servers.add(new Server(name, session));
     }
   }
 
@@ -308,17 +310,16 @@ public class Tdm {
 
     public void processEvent(CollectionUpdateType event) {
       if (!inUse.compareAndSet(false, true)) {
-        tdmLogger.debug("Tdm event '{}' already in use on {}", event, config.getCollectionName());
+        detailLogger.debug("Tdm event type '{}' already in use on {}", event, config.getCollectionName());
         return; // if already working, skip another execution
       }
-      tdmLogger.debug("Tdm event '{}' received Task scheduled for {}", event, config.getCollectionName());
+      detailLogger.debug("Tdm event type '{}' scheduled for {}", event, config.getCollectionName());
       executor.execute(new IndexTask(config, this, event));
     }
   }
 
   private String makeTriggerUrl(String name) {
     return "thredds/admin/collection/trigger?trigger=never&collection=" + name;
-    // return "thredds/admin/collection/trigger?nocheck&collection=" + name;  // LOOK changed to nocheck for triggering 4.3, temp kludge
   }
 
   private AtomicInteger indexTaskCount = new AtomicInteger();
@@ -344,11 +345,11 @@ public class Tdm {
           System.out.printf("---------------------%nIndexTask updateGribCollection %s%n", config.collectionName);
         long start = System.currentTimeMillis();
         int taskNo = indexTaskCount.getAndIncrement();
-        tdmLogger.info("{} start {}", taskNo, config.collectionName);
+        tdmLogger.debug("{} start {}", taskNo, config.collectionName);
         boolean changed = GribCdmIndex.updateGribCollection(config, updateType, null);
 
         long took = System.currentTimeMillis() - start;
-        tdmLogger.info("{} done {}: changed {} took {} ms", taskNo, config.collectionName, changed, took);
+        tdmLogger.debug("{} done {}: changed {} took {} ms", taskNo, config.collectionName, changed, took);
         System.out.printf("%s: %s changed %s took %d msecs%n", CalendarDate.present(), config.collectionName, changed, took);
 
         if (debugTasks) {
@@ -357,7 +358,6 @@ public class Tdm {
 
         if (changed && config.tdmConfig.triggerOk && sendTriggers) { // send a trigger if enabled
           String path = makeTriggerUrl(name);
-
           sendTriggers(path);
         }
       } catch (Throwable e) {
@@ -389,22 +389,25 @@ public class Tdm {
         try (HTTPMethod m = HTTPFactory.Get(server.session, url)) {
           detailLogger.debug("send trigger to {}", url);
           int status = m.execute();
-          detailLogger.debug("return from {} status = {}", url, status);
 
-          if (status != 200)
+          if (status != 200) {
+            tdmLogger.warn("FAIL send trigger to {} status = {}", url, status);
             detailLogger.warn("FAIL send trigger to {} status = {}", url, status);
+          } else {
+            int taskNo = indexTaskCount.get();
+            tdmLogger.info("{} trigger sent {} status = {}", taskNo, url, status);
+            detailLogger.debug("return from {} status = {}", url, status);
+          }
 
         } catch (HTTPException e) {
           Throwable cause = e.getCause();
           if (cause instanceof ConnectException) {
             detailLogger.warn("server {} not running", server.name);
           } else {
-            e.printStackTrace();
             tdmLogger.error("FAIL send trigger to " + url + " failed", cause);
+            detailLogger.error("FAIL send trigger to " + url + " failed", cause);
           }
-
         }
-
       }
     }
 
@@ -445,37 +448,55 @@ public class Tdm {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /* public static void main2(String[] args) throws IOException {
-    long start = System.currentTimeMillis();
+  /*
+    System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>]
+    [-cred <user:passwd>] [-showOnly] [-forceOnStartup]%n");
+    System.out.printf("example: /opt/jdk/bin/java -Xmx3g -Dtds.content.root.path=/my/content -jar tdm-4.5.jar -tds http://thredds-dev.unidata.ucar.edu/%n");
+      // /opt/jdk/bin/java -d64 -Xmx3g -jar -Dtds.content.root.path=/opt/tds-dev/content tdm-4.5.jar -cred tdm:trigger -tds "http://thredds-dev.unidata.ucar.edu/"
 
-    FeatureCollectionConfig config = FeatureCollectionReader.readFeatureCollection("F:/data/grib/idd/modelsNcep.xml#DGEX-CONUS_12km");
-    if (config == null) return;
+   */
+  private static class CommandLine {
+    @Parameter(names = {"-catalog"}, description = "name a specific catalog (reletive to content dir)", required = false)
+    public String catalog;
 
-     /* Formatter errlog = new Formatter();
-     Path topPath = Paths.get("B:/ndfd/200901/20090101");
-     GribCollection gc = makeGribCollectionIndexOneDirectory(config, CollectionManager.Force.always, topPath, errlog);
-     System.out.printf("%s%n", errlog);
-     gc.close();
+    @Parameter(names = {"-cred"}, description = "tds credentials (user:password)", required = false)
+    public String cred;
 
+    @Parameter(names = {"-forceOnStartup"}, description = "force read all collections on startup (override config)", required = false)
+    public boolean forceOnStartup;
 
-    //Path topPath = Paths.get("B:/ndfd/200906");
-    // rewriteIndexesPartitionAll(config, topPath);
-    //Grib2TimePartition tp = makeTimePartitionIndexOneDirectory(config, CollectionManager.Force.always, topPath);
-    //tp.close();
+    @Parameter(names = {"-log"}, description = "log level (debug | info)", required = false)
+    public String log;
 
-    System.out.printf("name = %s%n", config.name);
-    System.out.printf("spec = %s%n", config.spec);
+    @Parameter(names = {"-nthreads"}, description = "number of threads", required = false)
+    public int nthreads = 1;
 
-    GribCdmIndex2.rewriteFilePartition(config, CollectionManager.Force.always, CollectionManager.Force.always);
-    //rewriteDirectoryCollection(config, topPath, false);
+    @Parameter(names = {"-showOnly"}, description = "show collections and exit", required = false)
+    public boolean showOnly;
 
-    long took = System.currentTimeMillis() - start;
-    System.out.printf("that all took %s msecs%n", took);
-  } */
+    @Parameter(names = {"-tds"}, description = "list of tds programs to send triggers to", required = false)
+    public String tds;
+
+    @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
+    public boolean help = false;
+
+    private final JCommander jc;
+
+    public CommandLine(String progName, String[] args) throws ParameterException {
+      this.jc = new JCommander(this, args);  // Parses args and uses them to initialize *this*.
+      jc.setProgramName(progName);           // Displayed in the usage information.
+    }
+
+    public void printUsage() {
+      jc.usage();
+      System.out.printf("example: /opt/jdk/bin/java -Xmx3g -Dtds.content.root.path=/my/content -jar tdm-5.0.jar -tds http://thredds-dev.unidata.ucar.edu/ -cred tdm:trigger %n");
+    }
+
+  }
 
   public static void main(String args[]) throws IOException, InterruptedException {
     try (FileSystemXmlApplicationContext springContext = new FileSystemXmlApplicationContext("classpath:resources/application-config.xml")) {
-      Tdm driver = (Tdm) springContext.getBean("TDM");
+      Tdm app = (Tdm) springContext.getBean("TDM");
 
       Map<String, String> aliases = (Map<String, String>) springContext.getBean("dataRootLocationAliasExpanders");
       for (Map.Entry<String, String> entry : aliases.entrySet())
@@ -484,70 +505,68 @@ public class Tdm {
       EventBus eventBus = (EventBus) springContext.getBean("fcTriggerEventBus");
       CollectionUpdater collectionUpdater = (CollectionUpdater) springContext.getBean("collectionUpdater");
       collectionUpdater.setEventBus(eventBus);   // Autowiring not working
-      driver.setUpdater(collectionUpdater, eventBus);
+      app.setUpdater(collectionUpdater, eventBus);
 
       String contentDir = System.getProperty("tds.content.root.path");
       if (contentDir == null) contentDir = "../content";
-      driver.setContentDir(contentDir);
+      app.setContentDir(contentDir);
 
-      RandomAccessFile.setDebugLeaks(true);
+      // RandomAccessFile.setDebugLeaks(true);
       HTTPSession.setGlobalUserAgent("TDM v5.0");
       // GribCollection.getDiskCache2().setNeverUseCache(true);
       String logLevel;
 
-      // /opt/jdk/bin/java -d64 -Xmx3g -jar -Dtds.content.root.path=/opt/tds-dev/content tdm-4.5.jar -cred tdm:trigger -tds "http://thredds-dev.unidata.ucar.edu/"
-      for (int i = 0; i < args.length; i++) {
-        if (args[i].equalsIgnoreCase("-help")) {
-          System.out.printf("usage: <Java> <Java_OPTS> -Dtds.content.root.path=<contentDir> [-catalog <cat>] [-tds <tdsServer>] [-cred <user:passwd>] [-showOnly] [-forceOnStartup]%n");
-          System.out.printf("example: /opt/jdk/bin/java -Xmx3g -Dtds.content.root.path=/my/content -jar tdm-4.5.jar -tds http://thredds-dev.unidata.ucar.edu/%n");
-          System.exit(0);
+      String progName = Tdm.class.getName();
+
+      try {
+        CommandLine cmdLine = new CommandLine(progName, args);
+        if (cmdLine.help) {
+          cmdLine.printUsage();
+          return;
         }
 
-        if (args[i].equalsIgnoreCase("-contentDir")) {
-          driver.setContentDir(args[i + 1]);
-          i++;
+        if (cmdLine.catalog != null) {
+          app.setCatalog(cmdLine.catalog);
+        }
 
-        } else if (args[i].equalsIgnoreCase("-catalog")) {
-          Resource cat = new FileSystemResource(args[i + 1]);
-          driver.setCatalog(cat);
+        if (cmdLine.cred != null) {  // LOOK could be http://user:password@server
+          String[] split = cmdLine.cred.split(":");
+          app.user = split[0];
+          app.pass = split[1];
+          app.sendTriggers = true;
+        }
 
-        } else if (args[i].equalsIgnoreCase("-tds")) {
-          String tds = args[i + 1];
-          if (tds.equalsIgnoreCase("none")) {
-            driver.setServerNames(null);
-            driver.sendTriggers = false;
+        if (cmdLine.forceOnStartup)
+          app.setForceOnStartup(true);
+
+        if (cmdLine.log != null) {
+          app.setLoglevel(cmdLine.log);
+        }
+
+        if (cmdLine.nthreads != 0)
+          app.setNThreads(cmdLine.nthreads);
+
+        if (cmdLine.showOnly)
+          app.setShowOnly(true);
+
+        if (cmdLine.tds != null) {
+          if (cmdLine.tds.equalsIgnoreCase("none")) {
+            app.setServerNames(null);
+            app.sendTriggers = false;
 
           } else {
-            String[] tdss = tds.split(","); // comma separated
-            driver.setServerNames(tdss);
-            driver.sendTriggers = true;
+            String[] tdss = cmdLine.tds.split(","); // comma separated
+            app.setServerNames(tdss);
+            app.sendTriggers = true;
           }
         }
-        // scheme://username:password@domain:port/path?query_string#fragment_id
-        else if (args[i].equalsIgnoreCase("-cred")) {  // LOOK could be http://user:password@server
-          String cred = args[i + 1];
-          String[] split = cred.split(":");
-          driver.user = split[0];
-          driver.pass = split[1];
-          driver.sendTriggers = true;
 
-        } else if (args[i].equalsIgnoreCase("-nthreads")) {
-          int n = Integer.parseInt(args[i + 1]);
-          driver.setNThreads(n);
-
-        } else if (args[i].equalsIgnoreCase("-showOnly")) {
-          driver.setShowOnly(true);
-
-        } else if (args[i].equalsIgnoreCase("-log")) {
-          logLevel = args[i + 1];
-          driver.setLoglevel(logLevel);
-
-        } else if (args[i].equalsIgnoreCase("-forceOnStartup")) {
-          driver.setForceOnStartup(true);
-        }
+      } catch (ParameterException e) {
+        System.err.println(e.getMessage());
+        System.err.printf("Try \"%s --help\" for more information.%n", progName);
       }
 
-      if (!driver.showOnly && driver.pass == null && driver.sendTriggers) {
+      if (!app.showOnly && app.pass == null && app.sendTriggers) {
         Scanner scanner = new Scanner(System.in, CDM.UTF8);
         String passw;
         while (true) {
@@ -558,15 +577,15 @@ public class Tdm {
           if (ok.equalsIgnoreCase("Y")) break;
         }
         if (passw != null) {
-          driver.pass = passw;
-          driver.user = "tdm";
+          app.pass = passw;
+          app.user = "tdm";
         } else {
-          driver.sendTriggers = false;
+          app.sendTriggers = false;
         }
       }
 
-      if (driver.init()) {
-        driver.start();
+      if (app.init()) {
+        app.start();
       } else {
         System.out.printf("%nEXIT DUE TO ERRORS");
       }
