@@ -71,7 +71,7 @@ public class TestGridSubsetCoordinateSystem {
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", "Temperature_sigma"});         // SRC                               // TP
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFSonedega.ncx4", "Pressure_surface"});                                         // TP
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/2001/ds083.2_Aggregation-2001.ncx4", "Temperature_surface"});  // TP
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation.ncx4", "Best/Temperature_surface"});  // TPofP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/grib1/ds083.2_Aggregation.ncx4", "Temperature_surface"});
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "Best/Soil_temperature_depth_below_surface_layer"});  // TwoD Best
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4", "TwoD/Soil_temperature_depth_below_surface_layer"});  // TwoD
     result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds627.1/yearPartition-1979.ncx4", "Runoff_surface_12_Hour_Average"});  // MRSTC

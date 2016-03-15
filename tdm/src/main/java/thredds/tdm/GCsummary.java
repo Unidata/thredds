@@ -310,7 +310,6 @@ public class GCsummary {
         AliasTranslator.addAlias(entry.getKey(), entry.getValue());
 
       String progName = GCsummary.class.getName();
-      long start = System.currentTimeMillis();
 
       try {
         CommandLine cmdLine = new CommandLine(progName, args);

@@ -35,6 +35,8 @@ package ucar.nc2.dataset;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 
@@ -73,7 +75,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   private double valid_min = -Double.MAX_VALUE, valid_max = Double.MAX_VALUE;
 
   private boolean hasFillValue = false;
-  private double fillValue;
+  private double fillValue; // LOOK making it double not really correct
 
   private boolean hasMissingValue = false;
   private double[] missingValue;
@@ -114,6 +116,14 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     this.invalidDataIsMissing = invalidDataIsMissing;
     this.missingDataIsMissing = missingDataIsMissing;
 
+    boolean isNetcdfIosp = false;
+    NetcdfFile ncfile = forVar.getNetcdfFile();
+    if (ncfile != null) {
+      String iosp = ncfile.getFileTypeId();
+      isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(iosp) ||
+              DataFormatType.NETCDF4.getDescription().equals(iosp);
+    }
+
     // see if underlying variable has scale/offset already applied
     Variable orgVar = forVar.getOriginalVariable();
     if (orgVar instanceof VariableDS) {
@@ -128,7 +138,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     this.isUnsigned = isUnsigned(forVar);  // LOOK switch to unsigned var
     this.convertedDataType = forVar.getDataType().withSign(this.isUnsigned);  // only for netcDF !!??
 
-    DataType scaleType = null, missType = null, validType = null, fillType = null;
+    DataType scaleType = null, missType = null, validType = null;
     if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getFullName());
     Attribute att;
 
@@ -196,15 +206,18 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       hasValidRange = true;
 
     /// _FillValue
-    if ((null != (att = forVar.findAttribute(CDM.FILL_VALUE))) && !att.isString()) {
-      double[] values = getValueAsDouble(att);   // LOOK double WTF ??
-      if (values.length > 0) {
-        fillValue = values[0];
-        hasFillValue = true;
-        fillType = att.getDataType();
-        if (hasScaleOffset) forVar.remove(att);
-        if (debug) System.out.println("missing_datum from _FillValue = " + fillValue);
+    DataType fillType = null;
+    Attribute fillValueAtt = forVar.findAttribute(CDM.FILL_VALUE);
+    boolean fillAttOk = (null != fillValueAtt && !fillValueAtt.isString() && fillValueAtt.getLength() > 0);
+    if (fillAttOk || isNetcdfIosp) {
+      if (fillAttOk) {
+        fillValue = fillValueAtt.getNumericValue().doubleValue();
+      } else {
+        fillValue = N3iosp.getFillValueDefault(forVar.getDataType()).doubleValue();
       }
+      hasFillValue = true;
+      fillType = (null != fillValueAtt) ? fillValueAtt.getDataType() : forVar.getDataType();
+      if (hasScaleOffset) forVar.remove(fillValueAtt);
     }
 
     /// missing_value
@@ -250,7 +263,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (hasScaleOffset) {
 
       convertedDataType = forVar.getDataType();
-      if (hasMissing) {
+      if (hasMissing) { // with default fill, always has missing data unless explicitly turned off
         // has missing data : must be float or double
         if (rank(scaleType) > rank(convertedDataType))
           convertedDataType = scaleType;
