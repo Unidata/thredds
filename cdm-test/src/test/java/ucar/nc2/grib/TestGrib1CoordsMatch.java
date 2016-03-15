@@ -176,8 +176,8 @@ public class TestGrib1CoordsMatch {
 
     // that took 63 secs total, 1.471143 msecs per record total == 4624/33718/43248
     System.out.printf("%n%50s == %d/%d/%d%n", "total", count.nerrs, count.nmiss, count.nread);
-    assert count.nread == 86496 ;  // 0/4224/86496
-    assert count.nmiss == 4224;
+    assert count.nread == 43248 ;  // 0/4224/86496
+    assert count.nmiss == 2112;
     assert count.nerrs == 0;
   }
 
