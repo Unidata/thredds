@@ -14,7 +14,9 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 public class UnitTestCommon
@@ -410,6 +412,30 @@ public class UnitTestCommon
         sw.close();
         return sw.toString();
     }
+
+    /**
+     * @param prefix  - string to prefix all command line options: typically "--"
+     * @param options - list of option names of interest
+     * @return specified properties converted to command line form
+     */
+    static public String[]
+    propertiesToArgs(String prefix, String... options)
+    {
+        if(options == null || options.length == 0)
+            throw new IllegalArgumentException("No options specified");
+        if(prefix == null) prefix = "--";
+        List<String> args = new ArrayList<>();
+        Set<String> defined = System.getProperties().stringPropertyNames();
+        for(String key : options) {
+            if(!defined.contains(key)) continue; //not defined
+            String value = System.getProperty(key);
+            args.add(prefix + key);
+            if(value != null)
+                args.add(value);
+        }
+        return args.toArray(new String[args.size()]);
+    }
+
 
 }
 
