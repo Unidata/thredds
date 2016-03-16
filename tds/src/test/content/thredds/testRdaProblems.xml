@@ -17,4 +17,13 @@
         <collection spec="D:/work/rdavm/ds084.3/**/.*gbx9" />
     </featureCollection>
 
+    <featureCollection name="GSD HRRR CONUS 3km wrfprs" featureType="GRIB2" harvest="true" path="grib/HRRR/CONUS_3km/wrfprs">
+        <collection name="GSD_HRRR_CONUS_3km_wrfprs"
+                    spec="D:/work/unidata/wrfprs/.*grib2$"
+                    timePartition="file"
+                    dateFormatMark="#HRRR_CONUS_3km_wrfprs_#yyyyMMddHHmm"
+                    olderThan="5 min"/>
+        <tdm rewrite="test" rescan="0 0/15 * * * ? *" />
+    </featureCollection>
+
 </catalog>

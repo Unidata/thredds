@@ -200,23 +200,28 @@ public class DirectoryCollection extends CollectionAbstract {
   ////////////////////////////////////////////////////////////////////////////////////////////
   private static final boolean debug = false;
   private static int debugCount = 0;
-  // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure it closes. like++
+  // this idiom keeps the iterator from escaping, so that we can use try-with-resource, and ensure DirectoryStream closes. like++
   public void iterateOverMFileCollection(Visitor visit) throws IOException {
     if (debug) System.out.printf(" iterateOverMFileCollection %s ", collectionDir);
     int count = 0;
     try (DirectoryStream<Path> ds = Files.newDirectoryStream(collectionDir, new MyStreamFilter())) {
       for (Path p : ds) {
-        BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
-        if (!attr.isDirectory())
-          visit.consume(new MFileOS7(p));
-        if (debug) System.out.printf("%d ", count++);
+        try {
+          BasicFileAttributes attr = Files.readAttributes(p, BasicFileAttributes.class);
+          if (!attr.isDirectory())
+            visit.consume(new MFileOS7(p));
+          if (debug) System.out.printf("%d ", count++);
+        } catch (IOException ioe) {
+          // catch error and skip file
+          logger.error("Failed to read attributes from file found in Files.newDirectoryStream ", ioe);
+        }
       }
     }
     if (debug) System.out.printf("%d%n", count);
   }
 
   public interface Visitor {
-     public void consume(MFile mfile);
+     void consume(MFile mfile);
   }
 
 }

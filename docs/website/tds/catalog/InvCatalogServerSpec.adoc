@@ -1,7 +1,10 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:toc:
 
 = Server-side Catalog Specification
+
+== Overview
 
 The THREDDS Data Server (TDS) uses specialized catalogs to configure the
 server, called _server-side catalogs_ or __configuration catalogs__.
@@ -10,24 +13,16 @@ server-side specializations allowed in THREDDS catalogs. It should be
 used in conjunction with the <<InvCatalogSpec#,client-side
 catalog specification>>.
 
-== Contents:
-
-Server-side elements described in this document:
-
-* link:#catalog[catalog]
-* link:#catalogScan[catalogScan]
-* link:#dataset[dataset]
-* link:#datasetRoot[datasetRoot]
-* link:#datasetScan[datasetScan]
-
 Also see:
 
 * <<../reference/DatasetScan#,DatasetScan>> reference
 * <<../reference/collections/FeatureCollections#,FeatureCollection>> reference
 * http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[Catalog XML Schema] +
 
+== Server-side elements
+
 [[catalog]]
-== The catalog element
+=== *catalog* element
 
 In addition to all of the elements of a client catalog, a server catalog
 may have *datasetRoot* and *catalogScan* elements, and *dataset*
@@ -55,7 +50,7 @@ elements may be *datasetScan* or a *featureCollection* elements.
 ---------------------------------------------------------------------------
 
 [[datasetRoot]]
-== The datasetRoot Element
+=== *datasetRoot* element
 
 [source,xml]
 -----------------------------------------------------------------------
@@ -71,7 +66,7 @@ The _datasetRoot_ element associates a portion of the URL path with a
 directory on disk where the data files are stored. It must be contained
 directly in the catalog element. The *datasetRoots* are global to a TDS,
 they only need to be declared once; put them in a catalog that is
-processed before they are used, by convention, in the top catalog. +
+processed before they are used (by convention, put them in the top catalog).
 
 Example:
 
@@ -97,7 +92,7 @@ will be matched to the second datasetRoot, and so refers to the file
 **Q:/smaug/floober/dataset3.nc**.
 
 [[catalogScan]]
-== The catalogScan element
+=== *catalogScan* element
 
 [source,xml]
 ------------------------------------------------------
@@ -106,7 +101,6 @@ will be matched to the second datasetRoot, and so refers to the file
     <xsd:attribute name="name" type="xsd:string"/>
     <xsd:attribute name="path" type="xsd:string"/>
     <xsd:attribute name="location" type="xsd:string"/>
-    <xsd:attribute name="watch" type="xsd:boolean"/>
   </xsd:complexType>
 </xsd:element>
 ------------------------------------------------------
@@ -119,14 +113,11 @@ nested in a dataset). If using this element, do not name any of your
 catalogs "catalogScan.xml".
 
 * *name:* the name to display in the catalog
-* **path**: the logical URL path
-* **location**: the top directory to scan (and all subdirectories). Must
-be a path reletive to *$\{tds.content.root.path}.*
-* **watch**: true or false, if you want to watch for changes in this
-directory and all subdirectories. (NOT IMPLEMENTED)
+* *path*: the logical URL path
+* *location*: the top directory to scan (and all subdirectories). Must be a path reletive to *$\{tds.content.root.path}.*
 
 [[dataset]]
-== The dataset element
+=== *dataset* element
 
 The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side catalogs, along with the
 *<<../reference/RestrictedAccess#,restrictAccess>>* attribute:
@@ -138,7 +129,7 @@ The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side 
   <xsd:sequence>
     <xsd:group ref="threddsMetadataGroup" minOccurs="0" maxOccurs="unbounded" />
     <xsd:element ref="access" minOccurs="0" maxOccurs="unbounded"/>
-    <xsd:element ref="ncml:netcdf" minOccurs="0"/>
+    <xsd:element ref="ncml:netcdf" minOccurs="0"/> # <1>
     <xsd:element ref="dataset" minOccurs="0" maxOccurs="unbounded"/>
   </xsd:sequence>
 
@@ -149,21 +140,20 @@ The *link:../tutorial/NcML.htm[ncml:netcdf]* element is specific to server side 
   <xsd:attribute name="dataType" type="dataTypes"/>
   <xsd:attribute name="harvest" type="xsd:boolean"/>
   <xsd:attribute name="ID" type="xsd:token"/>
-  <xsd:attribute name="restrictAccess" type="xsd:string"/>
-  <xsd:attribute name="serviceName" type="xsd:string" />  <
+  <xsd:attribute name="restrictAccess" type="xsd:string"/> # <2>
+  <xsd:attribute name="serviceName" type="xsd:string" />
   <xsd:attribute name="urlPath" type="xsd:token" />
 </xsd:complexType>
 --------------------------------------------------------------------------------
 
-* The *restrictAccess* attribute is a server-side option that tells the
-TDS to <<../reference/RestrictedAccess#,restrict access>> to this
+
+<1> The *ncml:netcdf* element <<../tutorial/NcML,modifies the dataset with NcML>>.
+For the <<datasetScan>>, it modifies all contained datasets.
+<2> The *restrictAccess* attribute tells the TDS to <<../reference/RestrictedAccess#,restrict access>> to this
 dataset. It is always inherited by all contained datasets.
-* The *ncml:netcdf* element is used only on the server, it
-link:../tutorial/NcML.htm[modifies the dataset with NcML]. For
-link:#datasetScan[datasetScan], it modifies all contained datasets.
 
 [[datasetScan]]
-== __The datasetScan__ Element
+=== *datasetScan* element
 
 A _datasetScan_ can be used wherever a dataset element is allowed.
 
@@ -176,9 +166,9 @@ A _datasetScan_ can be used wherever a dataset element is allowed.
         <xsd:sequence>
           <xsd:element ref="filter" minOccurs="0" maxOccurs="1"/>
           <xsd:element ref="namer" minOccurs="0" maxOccurs="1"/>
-          <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>              <!-- use filesSort -->
+          <xsd:element ref="sort" minOccurs="0" maxOccurs="1"/>       <!-- use filesSort -->
           <xsd:element name="addLatest" type="addLatestType" minOccurs="0"/>
-          <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/>         <!-- use addLatest -->
+          <xsd:element ref="addProxies" minOccurs="0" maxOccurs="1"/> <!-- use addLatest -->
           <xsd:element ref="addTimeCoverage" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
 
@@ -253,7 +243,7 @@ like: +
 ----------------------------------------------------------------------------------------------------
 
 [[filter]]
-== filter Element +
+=== *filter* element
 
 [source,xml]
 -----------------------------------------------------------------------------
@@ -326,7 +316,7 @@ More examples are available in the
 datasetsScan documentation>>. +
 
 [[namer]]
-== namer Element +
+=== *namer* element
 
 [source,xml]
 -----------------------------------------------------------------
@@ -413,7 +403,7 @@ affected, not the urlPath or ID) : +
 -----------------------------------------------------------------------------------
 
 [[sort]]
-== sort Element +
+=== *sort* element
 
 [source,xml]
 ---------------------------------------------------------------
@@ -443,7 +433,7 @@ order by filename. To do a reverse sort:
 --------------------------------------------
 
 [[addLatest]]
-== addLatest Element +
+=== *addLatest* element
 
 [source,xml]
 ------------------------------------------------------------------------------
@@ -465,15 +455,12 @@ collection. If _lastModifedLimit_ attribute is set, the TDS will exclude
 any dataset that was last modified within the number of minutes
 specified by the _lastModifedLimit_ attribute. +
 
-An example is available in the
-<<../reference/DatasetScan#Adding_Proxy_Datasets,TDS
-datasetsScan documentation>>.
+An example is available in the <<../reference/DatasetScan#Adding_Proxy_Datasets,TDS datasetsScan documentation>>.
 
 [[addProxies]]
-== addProxies Element
+=== *addProxies* element (deprecated)
 
-For backwards compatibility, addProxies can still be used, with the same
-functionality as addLatest:
+For backwards compatibility, addProxies can still be used, with the same functionality as addLatest:
 
 [source,xml]
 ---------------------------------------------------------------
@@ -489,7 +476,7 @@ functionality as addLatest:
 ---------------------------------------------------------------
 
 [[addTimeCoverage]]
-== addTimeCoverage Element +
+=== *addTimeCoverage* element
 
 [source,xml]
 ----------------------------------------------------------------------------
@@ -514,7 +501,7 @@ _datasetNameMatchPattern_ attribute is used in a regular expression
 match on the dataset name. If the match succeeds, a capturing group
 replacement is performed on the _startTimeSubstitutionPattern_ attribute
 and the result is the start time string (see the _namer_ element
-description, link:#namer_Element[above], for more on regular expressions
+description, link:#namer_element[above], for more on regular expressions
 and capturing groups). The time coverage duration is given by the
 _duration_ attribute.
 
@@ -523,7 +510,7 @@ allow matching on the entire dataset path instead of just the dataset
 name. The two match pattern attributes should not be used together; if
 they are both given the datasetNameMatchPattern will be used. +
 
-Example: +
+Example:
 
 [source,xml]
 ---------------------------------------------------------------------------------------------------
@@ -535,8 +522,7 @@ Example: +
   </datasetScan>
 ---------------------------------------------------------------------------------------------------
 
-for the dataset named "2005071812_gfs_211.nc", results in the
-following timeCoverage element: +
+for the dataset named "2005071812_gfs_211.nc", results in the following timeCoverage element: +
 
 [source,xml]
 --------------------------------------
@@ -545,16 +531,4 @@ following timeCoverage element: +
     <duration>60 hours</duration>
   </timeCoverage>
 --------------------------------------
-
-[[Index]]
-== Index +
-
-* link:#addLatest[addLatest]
-* link:#addProxies[addProxies]
-* link:#addTimeCoverage[addTimeCoverage]
-* link:#datasetScan[datasetScan]: creates nested catalogs by scanning directories.
-* link:#datasetRoot[datasetRoot]: associates a local disk directory with a URL path +
-* link:#filter[filter]
-* link:#namer[namer]
-* link:#sort[sort]
 
