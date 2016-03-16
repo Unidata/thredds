@@ -61,17 +61,17 @@ public class Login extends JFrame implements CredentialsProvider
 
     public void clear()
     {
-	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public void setCredentials(AuthScope scope, Credentials cred)
     {
-	throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public Credentials getCredentials(AuthScope scope)
     {
-        String up = login(this.dfaltuser, this.dfaltpwd);
+        String up = login(this.dfaltuser, this.dfaltpwd, scope);
         if(up == null) throw new IllegalStateException();
         String[] pieces = up.split("[:]");
         UsernamePasswordCredentials upc = null;
@@ -88,16 +88,16 @@ public class Login extends JFrame implements CredentialsProvider
         return upc;
     }
 
-    protected String login(String defaltuser, String dfaltpwd)
+    protected String login(String defaltuser, String dfaltpwd, AuthScope scope)
     {
         String user;
         String pwd;
         for(; ; ) {
             user = null;
             pwd = null;
-
             JPanel userPanel = new JPanel();
-            userPanel.setLayout(new GridLayout(2, 2));
+            userPanel.setLayout(new GridLayout(2, 3));
+            userPanel.setPreferredSize(new Dimension(500,0));
             JLabel usernameLbl = new JLabel("Username:");
             JLabel passwordLbl = new JLabel("Password:");
             JTextField userFld = new JTextField();
@@ -108,18 +108,33 @@ public class Login extends JFrame implements CredentialsProvider
                 passwordFld.setText(dfaltpwd);
             userPanel.add(usernameLbl);
             userPanel.add(userFld);
+            userPanel.add(new JLabel(""));
             userPanel.add(passwordLbl);
             userPanel.add(passwordFld);
-            userPanel.setSize(1000, 500);
+            userPanel.add(new JLabel(""));
             userPanel.setVisible(true);
-            int input = JOptionPane.showConfirmDialog(null, userPanel, "Enter your password:"
-                    , JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-            user = userFld.getText();
-            pwd = passwordFld.getText();
-            if(user != null && pwd != null)
+            StringBuilder title = new StringBuilder();
+            title.append("Enter password for: ");
+            title.append(scope.getHost());
+            if(scope.getPort() > 0) {
+                title.append(":");
+                title.append(scope.getPort());
+            }
+            int optionindex = JOptionPane.showConfirmDialog(null, userPanel, title.toString(),
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            switch (optionindex) {
+            case 0: // ok
+                user = userFld.getText();
+                pwd = passwordFld.getText();
+                if(user != null && pwd != null)
+                    return user + ":" + pwd;
                 break;
+            default: // treat rest as cancel
+                break;
+            }
+            break;
         }
-        return user + ":" + pwd;
+        return null;
     }
 }
 
