@@ -146,7 +146,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
 
       } else if (curVariable.getShortName().equals("infraredImagery")) {
         curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
-        curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+        //curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
         curVariable.addAttribute(new Attribute(CDM.SCALE_FACTOR, new Float((310.0 - 190.0) / (256.0 - 1.0))));
         curVariable.addAttribute(new Attribute(CDM.ADD_OFFSET, new Float(190.0)));
         curVariable.addAttribute(new Attribute("description",
@@ -156,7 +156,7 @@ public class DMSPiosp extends AbstractIOServiceProvider {
 
       } else if (curVariable.getShortName().equals("visibleImagery")) {
         curVariable.addAttribute(new Attribute(_Coordinate.Axes, "latitude longitude time"));
-        curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
+        //curVariable.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
         curVariable.addAttribute(new Attribute("description",
                 "Visible pixels are relative values ranging from 0 to 63 rather than " +
                         "absolute values in Watts per m^2. Instrumental gain levels are adjusted " +
@@ -591,9 +591,9 @@ public class DMSPiosp extends AbstractIOServiceProvider {
             "longitude", "longitude of pixel", "degrees_east", DataType.FLOAT, -1, 1465);
 
     public final static VariableInfo VISIBLE_SCAN = new VariableInfo(
-            "visibleImagery", "visible imagery  (6-bit per pixel)", "", DataType.BYTE, 100, 1465);
+            "visibleImagery", "visible imagery  (6-bit per pixel)", "", DataType.UBYTE, 100, 1465);
     public final static VariableInfo THERMAL_SCAN = new VariableInfo(
-            "infraredImagery", "infrared imagery (8-bit per pixel)", "kelvin", DataType.BYTE, 1572, 1465);
+            "infraredImagery", "infrared imagery (8-bit per pixel)", "kelvin", DataType.UBYTE, 1572, 1465);
 
     // Infrared pixel values correspond to a temperature range of 190 to 310 Kelvins
     // in 256 equally spaced steps. Onboard calibration is performed during each scan.
@@ -622,13 +622,6 @@ public class DMSPiosp extends AbstractIOServiceProvider {
 
       list.add(this);
       hash.put(this.name, this);
-    }
-
-    public static VariableInfo findByName(String name) {
-      if (name == null) {
-        return (null);
-      }
-      return hash.get(name);
     }
 
     public static List getAll() {

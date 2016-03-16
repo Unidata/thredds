@@ -54,7 +54,7 @@ public class TestReadAndCountDods {
     List<Object[]> result = new ArrayList<>();
 
     // Grib files, one from each model
-    result.add(new Object[]{"catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml", 23, 11, 13, 8});
+    result.add(new Object[]{"catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml", 21, 11, 14, 8});
     // Geopotential_height_surface put out 6 and 18Z, ngrids osc between 22 and 23
     result.add(new Object[]{"catalog/grib/NCEP/DGEX/Alaska_12km/files/latest.xml", -1, 11, 13, 8});
 
