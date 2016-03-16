@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.Service;
 import thredds.client.catalog.ServiceType;
 import thredds.server.admin.DebugCommands;
+import thredds.server.catalog.AllowedServicesIF;
 import thredds.server.config.TdsContext;
 import ucar.nc2.constants.FeatureType;
 
@@ -54,7 +55,7 @@ import java.util.*;
  * @since 1/23/2015
  */
 @Component
-public class AllowedServices {
+public class AllowedServices implements AllowedServicesIF {
   static private final Logger logServerStartup = LoggerFactory.getLogger("serverStartup");
   static private org.slf4j.Logger logCatalogInit = org.slf4j.LoggerFactory.getLogger("catalogInit");
 

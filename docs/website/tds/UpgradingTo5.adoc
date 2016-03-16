@@ -1,5 +1,6 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:toc:
 
 = Upgrading to CDM / TDS version 5
 
@@ -115,7 +116,7 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 ** deprecated methods are removed: _setCachePathPolicy(int cachePathPolicy, String cachePathPolicyParam) , setPolicy(int cachePathPolicy)_
 ** logging of routine cache cleanup is now at _DEBUG_ level
 
-==== ucar.ma2.Range
+=== ucar.ma2.Range
 
 ** _Range.copy(String name)_ replaced by _Range.setName(String name)_
 ** _Range.getIterator()_ deprecated, use _Range.iterator()_
@@ -136,7 +137,7 @@ The interface is changed to remove _throws IOException_, which will now be wrapp
 
 === ucar.nc2.util.cache
 
-* *FileCache* and *FileFactory* take a `DatasetUrl` instead of a String location
+* *FileCache* and *FileFactory* take a _DatasetUrl_ instead of a String location
 
 === ucar.nc2.dataset
 
@@ -229,83 +230,16 @@ dimension isn't shared.
 * `NetcdfFileWriter.addDimension` methods no longer have an `isShared` parameter. Such dimensions should always be
 shared and allowing them to be private is confusing and error-prone.
 
-=== Catalogs
+=== Catalog API
 
 * All uses of classes in *thredds.catalog* are deprecated. If you still need these, you must add *legacy.jar* to your path.
-* TDS and CDM now use *thredds.server.catalog* and *thredds.client.catalog*
-* *thredds.client.DatasetNode* now has _getDatasetsLogical()_ and _getDatasetsLocal()_ that does or does not dereference a CatalogRef.
-You can also use _getDatasets()_ which uses a dereferenced catalog if it has already been read.
+* TDS and CDM now use *thredds.server.catalog* and *thredds.client.catalog*. The APIs are different, but with equivalent functionality
+to thredds.catalog.
+* *thredds.client.DatasetNode* now has _getDatasetsLogical()_ and _getDatasetsLocal()_ that does or does not dereference a CatalogRef, respectively.
+You can also use _getDatasets()_ which includes a dereferenced catalog if it has already been read.
 
-==== Catalog Schema changes
 
-Schema version is now 1.2.
-
-==== Client Catalogs
-
-* *service* elements may not be nested inside of *dataset* elements, they must be directly contained in the *catalog* element.
-
-==== Server Configuration Catalogs
-
-* The *catalogScan* element is now available, which scans a directory for catalog files (any file ending in xml)
-* The *datasetFmrc* element is no longer supported
-* *datasetRoot* elements may not be contained inside of *service* elements, they must be directly contained in the *catalog* element
-* *service* elements may not be nested inside of *dataset* elements, they must be directly contained in the *catalog* element.
-* *service* elements no longer need to be explicitly defined in each config catalog, but may reference user defined global services
-* If the *datatype/featureType* is defined for a dataset, then the *service* element may be ommited, and the default set of services for that *datatype* will be used.
-* The *expires* attribute is no longer used.
-
-==== Viewers
-
-* *thredds.servlet.Viewer* has *InvDatasetImpl* changed to *Dataset*
-* *thredds.servlet.ViewerLinkProvider* has *InvDatasetImpl* changed to *Dataset*
-* *thredds.server.viewer.dataservice.ViewerService* has *InvDatasetImpl* changed to *Dataset*
-
-==== DatasetScan
-
-* *addID* is no longer needed, ids are always added
-* *addDatasetSize* is no longer needed, the dataset size is always added
-* With **addLatest**, the *service* name is no longer used, it is always __Resolver__, and the correct service is automatically added. Use *addLatest*
-attribute for simple case.
-* *fileSort:* by default, datasets at each collection level are listed in increasing order by filename. To change to decreasing order, use the
-_<<reference/DatasetScan#filesSort,filesSort>>_ element.
-* *sort:* deprecated in favor of *filesSort*
-* *User pluggable classes implementing UserImplType* (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl,
-crawlableDatasetSorterImpl) are no longer supported. (This was never officially released or documented).
-* DatasetScan details are <<catalog/InvCatalogServerSpec#,here>>
-
-==== Standard Services
-
-* The TDS provides standard service elements, which know which services are appropriate for each Feature Type.
-* User defined services in the root catalog are global and can be referenced by name in any other config catalog.
-* User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
-* All services are enabled unless explicitly disabled
-** Except for remote catalog services
-* Standard service details are <<reference/Services#,here>>
-
-==== FeatureCollections
-
-* The *<<reference/collections/FeatureCollections#update,update>>* element default is now __startup="never"__, meaning do not update collection
-on startup, and use existing indices when the collection is accessed.
-* The *<<reference/collections/FeatureCollections#filesSort,fileSort>>* element is now inside the *featureCollection* itself, so it can be
-processed uniformly for all types of feature collections. When a collection shows a list of files, the files will be sorted by increasing name. To use
-a decreasing sort, use the element *<filesSort increasing="false" />* inside the *featureCollection* element. This supercedes the old way of placing
-that element in the *<gribConfig>* element, or the older verbose *lexigraphicByName* element:
-+
-[source,xml]
------------------------------------------------------------
-  <filesSort>
-    <lexigraphicByName increasing="false" />  // deprecated
-  </filesSort>
------------------------------------------------------------
-* Feature Collection details are <<reference/collections/FeatureCollections#,here>>
-
-==== Recommendations for 5.0 catalogs
-
-* Put all *datasetRoot* elements in root catalog.
-* Put all *catalogScan* elements in root catalog.
-* Use StandardServices when possible. Annotate your datasets with *featureType* / **dataType**.
-* Put all user-defined *service* elements in root catalog.
-* Only use user-defined *service* elements in non-root catalogs when they are experimental or truly a special case.
+== TDS Data Services
 
 === Netcdf Subset Service (NCSS)
 
@@ -343,11 +277,84 @@ A new TDS service has been added for remote access to CDM Feature Datasets.
 ----------------------
 * By default, most services are enabled, but may still be turned off in threddsConfig.xml.
 
-== Recommendations for ESGF
+== Catalogs
+
+=== Catalog Schema changes
+
+Schema version is now 1.2.
+
+=== Client Catalogs
+
+* *service* elements may not be nested inside of *dataset* elements, they must be directly contained in the *catalog* element.
+
+=== Server Configuration Catalogs
+
+* The *catalogScan* element is now available, which scans a directory for catalog files (any file ending in xml)
+* The *datasetFmrc* element is no longer supported
+* *datasetRoot* elements may not be contained inside of *service* elements, they must be directly contained in the *catalog* element
+* *service* elements may not be nested inside of *dataset* elements, they must be directly contained in the *catalog* element.
+* *service* elements no longer need to be explicitly defined in each config catalog, but may reference user defined global services
+* If the *datatype/featureType* is defined for a dataset, then the *service* element may be ommited, and the default set of services for that *datatype* will be used.
+* The *expires* attribute is no longer used.
+
+=== Viewers
+
+* *thredds.servlet.Viewer* has *InvDatasetImpl* changed to *Dataset*
+* *thredds.servlet.ViewerLinkProvider* has *InvDatasetImpl* changed to *Dataset*
+* *thredds.server.viewer.dataservice.ViewerService* has *InvDatasetImpl* changed to *Dataset*
+
+=== DatasetScan
+
+* *addID* is no longer needed, ids are always added
+* *addDatasetSize* is no longer needed, the dataset size is always added
+* With **addLatest**, the *service* name is no longer used, it is always __Resolver__, and the correct service is automatically added. Use *addLatest*
+attribute for simple case.
+* *fileSort:* by default, datasets at each collection level are listed in increasing order by filename. To change to decreasing order, use the
+_<<reference/DatasetScan#filesSort,filesSort>>_ element.
+* *sort:* deprecated in favor of *filesSort*
+* *User pluggable classes implementing UserImplType* (crawlableDatasetImpl, crawlableDatasetFilterImpl, crawlableDatasetLabelerImpl,
+crawlableDatasetSorterImpl) are no longer supported. (This was never officially released or documented).
+* DatasetScan details are <<catalog/InvCatalogServerSpec#,here>>
+
+=== Standard Services
+
+* The TDS provides standard service elements, which know which services are appropriate for each Feature Type.
+* User defined services in the root catalog are global and can be referenced by name in any other config catalog.
+* User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
+* All services are enabled unless explicitly disabled
+** Except for remote catalog services
+* Standard service details are <<reference/Services#,here>>
+
+=== FeatureCollections
+
+* The *<<reference/collections/FeatureCollections#update,update>>* element default is now __startup="never"__, meaning do not update collection
+on startup, and use existing indices when the collection is accessed.
+* The *<<reference/collections/FeatureCollections#filesSort,fileSort>>* element is now inside the *featureCollection* itself, so it can be
+processed uniformly for all types of feature collections. When a collection shows a list of files, the files will be sorted by increasing name. To use
+a decreasing sort, use the element *<filesSort increasing="false" />* inside the *featureCollection* element. This supercedes the old way of placing
+that element in the *<gribConfig>* element, or the older verbose *lexigraphicByName* element:
++
+[source,xml]
+-----------------------------------------------------------
+  <filesSort>
+    <lexigraphicByName increasing="false" />  // deprecated
+  </filesSort>
+-----------------------------------------------------------
+* Feature Collection details are <<reference/collections/FeatureCollections#,here>>
+
+=== Recommendations for 5.0 catalogs
+
+* Put all *datasetRoot* elements in root catalog.
+* Put all *catalogScan* elements in root catalog.
+* Use StandardServices when possible. Annotate your datasets with *featureType* / *dataType*.
+* Put all user-defined *service* elements in root catalog.
+* Only use user-defined *service* elements in non-root catalogs when they are experimental or truly a special case.
+
+=== Recommendations for ESGF
 
 You must determine the number of datasets that are contained in all of your catalogs. To get a report, enable
-<<reference/RemoteManagement#,Remote Management>>, and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__. This may
-take 5-20 minutes, depending on the numbers of catalogs.
+<<reference/RemoteManagement#,Remote Management>>, and from **https://server/thredds/admin/debug**, select __"Make Catalog Report"__.
+This may take 5-20 minutes, depending on the numbers of catalogs.
 
 Add the <<reference/ThreddsConfigXMLFile#CatalogCaching,ConfigCatalog>> element to threddsConfig.xml:
 
@@ -366,7 +373,7 @@ where:
 * *keepInMemory:* using the default value of 100 is probably good enough.
 * *reread:* use value of _check_ to only read changed catalogs when restarting TDS.
 * *dir* is where the catalog cache files are kept. Use the default directory (or symlink to another place) unless you have a good reason to change.
-* **maxDatasets**: this is the number you found in step 1. Typical values for ESGF are 1 - 7 million. This is a maximum, so its ok to make it bigger
+* *maxDatasets*: this is the number you found in step 1. Typical values for ESGF are 1 - 7 million. This is a maximum, so its ok to make it bigger
 than you need.
 
 Here are some additional, optional changes you can make to increase maintainability:
@@ -418,5 +425,3 @@ For example:
 
 </catalog>
 ----
-
-'''''

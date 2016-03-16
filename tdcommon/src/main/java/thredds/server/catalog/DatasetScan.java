@@ -69,11 +69,16 @@ import java.util.*;
 public class DatasetScan extends CatalogRef {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetScan.class);
   static private Service latestService;
+  static private AllowedServicesIF allowedServices;
 
   static public void setLatestService(Service _latestService) {
     if (latestService != null && !latestService.equals(_latestService)) // mocking framework sets multiple times
       throw new RuntimeException("latestService cannot be changed once set");
     latestService = _latestService;
+  }
+
+  static public void setAllowedServices(AllowedServicesIF _allowedServices) {
+    allowedServices = _allowedServices;
   }
 
   private final DatasetScanConfig config;
@@ -184,10 +189,29 @@ public class DatasetScan extends CatalogRef {
     top.setName(name);
     top.put(Dataset.Id, null); // no id for top
 
-    // move service name to inherited
+    // move service name, dataType to inherited
     String serviceName = getServiceNameDefault();
-    top.put(ServiceName, null);
-    top.putInheritedField(ServiceName, serviceName);
+    String featureTypeName = getFeatureTypeName();
+
+    if (serviceName == null && featureTypeName != null) {
+      ucar.nc2.constants.FeatureType ft = ucar.nc2.constants.FeatureType.getType(featureTypeName);
+      Service stdService = (ft != null) ? allowedServices.getStandardServices(ft) : null;
+      if (stdService != null) {
+        catBuilder.addService(stdService);
+        top.putInheritedField(ServiceName, stdService.getName());
+      }
+    }
+
+    if (serviceName != null) {
+      top.put(ServiceName, null);
+      top.putInheritedField(ServiceName, serviceName);
+    }
+
+    if (featureTypeName != null) {
+      top.put(FeatureType, null);
+      top.putInheritedField(FeatureType, featureTypeName);
+    }
+
     catBuilder.addDataset(top);
 
     Path p = Paths.get(dataDirComplete);

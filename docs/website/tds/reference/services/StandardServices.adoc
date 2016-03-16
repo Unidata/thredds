@@ -2,32 +2,12 @@
 [[threddsDocs]]
 :toc:
 
-= TDS Services
+= TDS Standard Data Services
 
-* link:#standard[Data Services]
-* link:#available[List of all TDS Services]
-** link:#serverInfo[Server Information Services]
-** link:#catalogServices[Catalog Services]
-** link:#metadataServices[Metadata Services]
-*** link:#ISO[ISO]
-*** link:#NCML[NCML]
-*** link:#UDDC[UDDC]
-** link:#dataAccessServices[Data Access Services]
-*** link:#DAP2[OPeNDAP DAP 2.0]
-*** link:#WCS[OGC WCS]
-*** link:#WMS[OGC WMS]
-*** link:#NCSS[NCSS]
-*** link:#cdmremote[CDMRemote]
-*** link:#HTTP[HTTP File Download]
-* link:#tdsServiceElemRequirements[TDS Requirements for THREDDS Catalog service Elements]
-
-== Data Services (new in 5.0)
-
-=== Standard Data Services
+== Overview
 
 The TDS has a set of Standard Data Services that are always available
-(unless explicitly disabled) and can be referenced from any
-configuration catalog:
+(unless explicitly disabled) and can be referenced from any configuration catalog:
 
 * cdmRemote
 * cdmrFeatureGrid
@@ -46,23 +26,20 @@ And, optionally, if the corresponding jar files are present:
 * ncml
 * uddc
 
-=== Available Services
-
-The TDS configures the appropriate set of standard data services for
-each **dataType/featureType**. You can configure the _available data
-services_ globally, and they will be applied to all datasets of that
-**dataType/featureType**. If you do not specify a service for a dataset,
-but you do specify its **dataType/featureType**, then the
+The TDS configures an appropriate set of standard data services for
+each *dataType/featureType*. This configuration is in _${tomcat}//webapps/thredds/WEB-INF/tdsGlobalConfig.xml_, and may be modified.
+These sets of services are the *_default services_* for that *dataType/featureType*.
+If you do not specify a service for a dataset, but you do specify its *dataType/featureType*, then the
 datatype-appropriate services will be enabled for it.
 
 === User defined Services
 
-You can still define your own services, either globally in the root
+The user can still define their own services, either globally in the root
 catalog, or locally in any configuration catalog.
 
-1.  Services placed in the root catalog are global and can be referenced
+1.  Services placed in the root catalog are *_global services_* and can be referenced
 in any other config catalog.
-2.  Services placed in any other catalog are local, are used only in
+2.  Services placed in any other catalog are *_local services_*, are used only in
 that catalog, and override (by name) any global services.
 
 == TDS Services
@@ -82,10 +59,10 @@ Notes:
 
 * Service *base* URLs are relative to the server so your catalogs are
 independent of your servers hostname or port.
-* For a particular dataset, you can refer to an individual service, or
-use a compound service (__all__ in the example
-link:#compoundExample[below]) which adds all the nested services to the
-dataset.
+* For a particular dataset, you can refer to an individual service, or use a compound service
+(_all_ in the <<compoundExample>>) which adds all the nested services to the dataset.
+
+LOOK NOT DONE BELOW THIS
 
 === Server Information Services
 

@@ -13,4 +13,7 @@
   <!-- test using local override -->
   <dataset name="Test SatelliteNcss" ID="SatelliteNcss" serviceName="opendapOnly" urlPath="localContent/SUPER-NATIONAL_1km_CTP_20140105_2300.gini" dataType="Grid"/>
 
+  <!--- test datasetScan using default services for Grid -->
+  <datasetScan name="Test Scan Grid Dataset" location="${cdmUnitTest}/ncss/CONUS_80km_nc/" path="datasetScan/ncss/CONUS_80km_nc/" dataType="Grid"/>
+
 </catalog>
