@@ -369,7 +369,7 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
-    //@Ignore("Requires access to a display")
+    @Ignore("Requires access to a display")
     @Test
     public void
     testCache2() throws Exception
