@@ -35,11 +35,11 @@
       <appender-ref ref="tdmLogger"/>
     </Logger>
 
-    <Logger name="tdmDetail" level="debug" additivity="false">
+    <Logger name="tdmDetail" level="info" additivity="false">
       <appender-ref ref="tdmDetailLogger"/>
     </Logger>
 
-    <Logger name="ucar.nc2.grib.collection" level="debug" additivity="false">
+    <Logger name="ucar.nc2.grib.collection" level="info" additivity="false">
       <appender-ref ref="tdmDetailLogger"/>
     </Logger>
 
@@ -51,7 +51,7 @@
       <appender-ref ref="tdmDetailLogger"/>
     </Logger>
 
-    <Logger name="org.quartz" level="debug" additivity="false">
+    <Logger name="org.quartz" level="info" additivity="false">
       <appender-ref ref="tdmDetailLogger"/>
     </Logger>
 
@@ -59,11 +59,11 @@
       <appender-ref ref="tdmDetailLogger"/>
     </Logger>
 
-    <Logger name="thredds.featurecollection.CollectionUpdater" level="debug" additivity="false">
+    <Logger name="thredds.featurecollection.CollectionUpdater" level="info" additivity="false">
       <appender-ref ref="tdmDetailLogger"/>
     </Logger>
 
-    <Logger name="org.apache.http" level="debug" additivity="false">
+    <Logger name="org.apache.http" level="info" additivity="false">
       <appender-ref ref="tdmDetailLogger"/>
     </Logger>
 

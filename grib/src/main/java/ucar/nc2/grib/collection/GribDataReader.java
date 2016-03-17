@@ -395,9 +395,9 @@ public abstract class GribDataReader {
 
       int len = (int) Section.computeSize(shape);
       if (len > 100 * 1000 * 1000*4) { // LOOK make configurable
-        logger.warn("Len greater that 100MB shape={}\n{}", Misc.showInts(shape),
+        logger.debug("Len greater that 100MB shape={}\n{}", Misc.showInts(shape),
                 Throwables.getStackTraceAsString(new Throwable()));
-        throw new IllegalArgumentException("Len greater that 100M ");
+        throw new IllegalArgumentException("RequestTooLarge: Len greater that 100M ");
       }
       float[] data = new float[len];
       Arrays.fill(data, Float.NaN); // prefill primitive array
