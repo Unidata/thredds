@@ -200,7 +200,7 @@ public class DatasetScan extends CatalogRef {
 
     if (serviceName == null && featureTypeName != null) {
       ucar.nc2.constants.FeatureType ft = ucar.nc2.constants.FeatureType.getType(featureTypeName);
-      Service stdService = (ft != null) ? allowedServices.getStandardServices(ft) : null;
+      Service stdService = (ft != null && allowedServices != null) ? allowedServices.getStandardServices(ft) : null;
       if (stdService != null) {
         catBuilder.addService(stdService);
         top.putInheritedField(ServiceName, stdService.getName());
@@ -253,9 +253,7 @@ public class DatasetScan extends CatalogRef {
         if (addTimeCoverage != null)
           addTimeCoverage.addMetadata(ds, mfile);
 
-        top.addDataset(ds);
-
-        if (!allowedServices.isAThreddsDataset(mfile.getName())) {
+        if (allowedServices != null && !allowedServices.isAThreddsDataset(mfile.getName())) {
           ds.addToList(Dataset.Properties, new Property(NotAThreddsDataset, "true"));
           top.put(ServiceName, fileService.getName());
         }
