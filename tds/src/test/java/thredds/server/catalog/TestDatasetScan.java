@@ -68,7 +68,9 @@ public class TestDatasetScan {
   public void setup() {
     AliasTranslator.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);
     StandardService ss = StandardService.resolver;
-    DatasetScan.setLatestService(new Service(ss.getType().toString(), ss.getBase(), ss.getType().toString(), null, null, null, null));
+    Service latest = new Service(ss.getType().toString(), ss.getBase(), ss.getType().toString(), null, null, null, null);
+
+    DatasetScan.setSpecialServices(latest, null);
   }
 
   @Test

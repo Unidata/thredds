@@ -179,7 +179,7 @@ public class ServletUtil {
    */
   public static void returnFile(HttpServletRequest req, HttpServletResponse res, File file, String contentType) throws IOException {
     res.setContentType(contentType);
-    res.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
+    // res.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
     // see if its a Range Request
     boolean isRangeRequest = false;

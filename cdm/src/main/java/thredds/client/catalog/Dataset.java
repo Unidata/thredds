@@ -78,6 +78,8 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   public static final String UrlPath = "UrlPath";                         // String
   public static final String UseRemoteCatalogService = "UseRemoteCatalogService";   // Boolean
 
+  public static final String NotAThreddsDataset = "NotAThreddsDataset";   // used to set Property in catalog
+
   public static final ImmutableSet<String> listFlds = ImmutableSet.of(Access, Contributors, Creators, Dates, Documentation, Keywords, MetadataOther, Projects,
           Properties, Publishers, VariableGroups);
 

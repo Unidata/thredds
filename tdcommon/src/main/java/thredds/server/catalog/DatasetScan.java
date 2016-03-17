@@ -68,13 +68,14 @@ import java.util.*;
 @Immutable
 public class DatasetScan extends CatalogRef {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DatasetScan.class);
-  static private Service latestService;
+  static private Service latestService, fileService;
   static private AllowedServicesIF allowedServices;
 
-  static public void setLatestService(Service _latestService) {
+  static public void setSpecialServices(Service _latestService, Service _fileService) {
     if (latestService != null && !latestService.equals(_latestService)) // mocking framework sets multiple times
       throw new RuntimeException("latestService cannot be changed once set");
     latestService = _latestService;
+    fileService = _fileService;
   }
 
   static public void setAllowedServices(AllowedServicesIF _allowedServices) {
@@ -129,7 +130,7 @@ public class DatasetScan extends CatalogRef {
       filter = new LastModifiedLimit(cfilter.lastModLimitAttVal);
 
     } else {
-      log.error("Unimplemented DatasetScan filter "+cfilter);
+      log.error("Unimplemented DatasetScan filter " + cfilter);
       return;
     }
 
@@ -139,9 +140,13 @@ public class DatasetScan extends CatalogRef {
       fileFilters.addFilter(filter, cfilter.includer);
   }
 
-  public String getPath() { return config.path; }
+  public String getPath() {
+    return config.path;
+  }
 
-  public String getScanLocation() { return config.scanDir; }
+  public String getScanLocation() {
+    return config.scanDir;
+  }
 
   DatasetScanConfig getConfig() {
     return config;
@@ -151,12 +156,12 @@ public class DatasetScan extends CatalogRef {
 
   /**
    * Called from DataRootManager.makeDynamicCatalog(), called from LocalCatalogServiceController ...
-   * <p/>
+   * <p>
    * Build a catalog for the given path by scanning the location
    * associated with this DatasetScan. The given path must start with the path of this DatasetScan.
    *
    * @param orgPath the part of the baseURI that is the path
-   * @param baseURI  the base URL for the catalog, used to resolve relative URLs.
+   * @param baseURI the base URL for the catalog, used to resolve relative URLs.
    * @return the catalog for this path or null if build unsuccessful.
    */
   public CatalogBuilder makeCatalogForDirectory(String orgPath, URI baseURI) throws IOException {
@@ -238,7 +243,7 @@ public class DatasetScan extends CatalogRef {
 
       } else {
         ds = new DatasetBuilder(top);
-        ds.setName( makeName(mfile));
+        ds.setName(makeName(mfile));
         String urlPath = parentPath + mfile.getName();
         ds.put(Dataset.UrlPath, urlPath);
         ds.put(Dataset.DataSize, mfile.getLength());   // <dataSize units="Kbytes">54.73</dataSize>
@@ -247,6 +252,13 @@ public class DatasetScan extends CatalogRef {
 
         if (addTimeCoverage != null)
           addTimeCoverage.addMetadata(ds, mfile);
+
+        top.addDataset(ds);
+
+        if (!allowedServices.isAThreddsDataset(mfile.getName())) {
+          ds.addToList(Dataset.Properties, new Property(NotAThreddsDataset, "true"));
+          top.put(ServiceName, fileService.getName());
+        }
 
         top.addDataset(ds);
       }
@@ -450,13 +462,13 @@ public class DatasetScan extends CatalogRef {
    * with the path of this DatasetScan and refer to a resolver
    * ProxyDatasetHandler that is part of this InvDatasetScan.
    *
-   * @param orgPath    the part of the baseURI that is the path
+   * @param orgPath the part of the baseURI that is the path
    * @param baseURI the base URL for the catalog, used to resolve relative URLs.
    * @return the resolver catalog for this path (uses version 1.1) or null if build unsuccessful.
    */
 
   public CatalogBuilder makeCatalogForLatest(String orgPath, URI baseURI) throws IOException {
-   // Get the dataset location.
+    // Get the dataset location.
     String dataDirReletive = translatePathToReletiveLocation(orgPath, config.path);
     if (dataDirReletive == null) {
       String tmpMsg = "makeCatalogForDirectory(): Requesting path <" + orgPath + "> must start with \"" + config.path + "\".";
@@ -500,7 +512,7 @@ public class DatasetScan extends CatalogRef {
       DatasetBuilder ds = new DatasetBuilder(null);
       ds.transferMetadata(this, true);
 
-      ds.setName( makeName(mfile));
+      ds.setName(makeName(mfile));
       String urlPath = parentPath + mfile.getName();
       ds.put(Dataset.UrlPath, urlPath);
       ds.put(Dataset.DataSize, mfile.getLength());   // <dataSize units="Kbytes">54.73</dataSize>

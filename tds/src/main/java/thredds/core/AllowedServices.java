@@ -337,8 +337,31 @@ public class AllowedServices implements AllowedServicesIF {
       }
     };
     debugHandler.addAction(act);
-
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  private List<String> isAThreddsDataset;
+  public void setIsAThreddsDataset(List<String> list) {
+    this.isAThreddsDataset = list;
+  }
+
+  private List<String> isNotAThreddsDataset;
+  public void setIsNotAThreddsDataset(List<String> list) {
+    this.isNotAThreddsDataset = list;
+  }
+
+  public boolean isAThreddsDataset(String filename) {
+    if (isAThreddsDataset != null) {
+      for (String suffix : isAThreddsDataset)
+        if (filename.endsWith(suffix)) return true;
+    }
+    if (isNotAThreddsDataset != null) {
+      for (String suffix : isNotAThreddsDataset)
+        if (filename.endsWith(suffix)) return false;
+    }
+
+    return true;
+  }
 
 }
