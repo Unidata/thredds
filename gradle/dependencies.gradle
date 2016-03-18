@@ -43,7 +43,7 @@ libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.2"
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
 libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.1"
-
+ 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
 versions["spring"] = "4.2.3.RELEASE"
@@ -199,16 +199,43 @@ libraries["jstl-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
-libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.5-SNAPSHOT") {
-    // This is an external dependency on an old artifact of ours.
-    // The "cdm" artifact that we build in this project will take its place.
-    // This needs to be a local exclusion; globally excluding "edu.ucar:cdm" would be very bad.
-    exclude group: 'edu.ucar', module: 'cdm'  // version "4.6.1"
+libraries["oro"] = "oro:oro:2.0.6"
+
+versions["edal"] = "1.1.1"
+
+libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
+
+libraries["edal-cdm"] = dependencies.create("uk.ac.rdg.resc:edal-cdm:${versions["edal"]}") {
+    // These are dependencies that are included in edal-cdm, but are provided by
+    // us already, so we will exclude these from the edal-cdm artifact.
+    exclude group: 'edu.ucar', module: 'grib'
+    exclude group: 'edu.ucar', module: 'netcdf4'
+    exclude group: 'edu.ucar', module: 'opendap'
+    exclude group: 'com.sleepycat', module: 'je'
+    exclude group: 'oro', module: 'oro'
 }
+
+libraries["edal-wms"] = "uk.ac.rdg.resc:edal-wms:${versions["edal"]}"
+
+libraries["edal-graphics"] = "uk.ac.rdg.resc:edal-graphics:${versions["edal"]}"
+
+libraries["edal-godiva"] = dependencies.create("uk.ac.rdg.resc:edal-godiva:${versions["edal"]}") {
+    // In edal-godiva's POM, this should have been marked "provided" instead of "compile", because it's
+    // not needed at runtime. We have to exclude it ourselves as a result.
+    exclude module: 'gwt-user'
+}
+
+libraries["saxon-he"] = "net.sf.saxon:Saxon-HE:9.6.0-7"
 
 libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.8"
+
+versions["gwt"] = "2.7.0"
+
+libraries["gwt-user"] =  "com.google.gwt:gwt-user:${versions["gwt"]}"
+
+libraries["gwt-dev"] = "com.google.gwt:gwt-dev:${versions["gwt"]}"
 
 /////////////////////////////////////////////////////////////////////////////////
 // Bean validation 1.1, used by TDS
@@ -279,5 +306,8 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
         // This is one of those bindings. Strangely, I have NO idea what dependency is dragging it in.
         // It doesn't matter though; we always want to see the logging messages.
         exclude group: 'org.slf4j', module: 'slf4j-nop'
+
+        // Another SLF4J binding that we don't want. Dragged in by edal-common.
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
 }

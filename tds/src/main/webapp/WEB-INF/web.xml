@@ -73,6 +73,31 @@
     <location>/WEB-INF/jsp/errorpages/500.jsp</location>
   </error-page>
 
+  <!-- edal-wms servlet -->
+
+  <servlet>
+    <servlet-name>wms</servlet-name>
+    <servlet-class>thredds.server.wms.ThreddsWmsServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>wms</servlet-name>
+    <url-pattern>/wms/*</url-pattern>
+  </servlet-mapping>
+
+  <filter>
+    <filter-name>RequestQueryFilter</filter-name>
+    <filter-class>thredds.servlet.filter.RequestQueryFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>RequestQueryFilter</filter-name>
+    <servlet-name>wms</servlet-name>
+  </filter-mapping>
+
+  <!-- end edal-wms servlet -->
+
   <!-- ++++++++++ Setup security restrictions ++++++++++ -->
   <!-- Do not allow anything but GET  LOOK doesnt work
   <security-constraint
