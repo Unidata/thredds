@@ -113,7 +113,7 @@ public class CoverageCoordSys {
         for (String indAxisName : axis.dependsOn) {
           CoverageCoordAxis independentAxis = dataset.findCoordAxis(indAxisName);
           if (independentAxis == null)
-            throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " NOT FOUND");
+            throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in Dataset");
           if (!axisNames.contains(indAxisName))
             throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in CoordSys");
 

@@ -38,7 +38,7 @@ import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dataset.CoordinateSystem;
 
 /**
- * Description
+ * Curvilinear Coordinate System.
  *
  * @author John
  * @since 12/25/12

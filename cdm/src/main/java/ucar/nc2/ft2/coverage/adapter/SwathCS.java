@@ -34,7 +34,7 @@
 package ucar.nc2.ft2.coverage.adapter;
 
 /**
- * Describe
+ * Swath Coordinate System.
  *
  * @author caron
  * @since 5/27/2015

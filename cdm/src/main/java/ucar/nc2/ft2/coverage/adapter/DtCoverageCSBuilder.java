@@ -35,7 +35,6 @@ package ucar.nc2.ft2.coverage.adapter;
 
 import com.beust.jcommander.internal.Lists;
 import ucar.nc2.Dimension;
-import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -61,14 +60,14 @@ public class DtCoverageCSBuilder {
     List<CoordinateSystem> css = new ArrayList<>(ds.getCoordinateSystems());
     Collections.sort(css, (o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
 
-    DtCoverageCSBuilder fac = null;
+    DtCoverageCSBuilder builder = null;
     for (CoordinateSystem cs : css) {
-      fac = new DtCoverageCSBuilder(ds, cs, errlog);
-      if (fac.type != null) break;
+      builder = new DtCoverageCSBuilder(ds, cs, errlog);
+      if (builder.type != null) break;
     }
-    if (fac == null) return null;
-    if (errlog != null) errlog.format("coverage = %s%n", fac.type);
-    return fac;
+    if (builder == null) return null;
+    if (errlog != null) errlog.format("coverage = %s%n", builder.type);
+    return builder;
   }
 
   public static String describe(NetcdfDataset ds, Formatter errlog) {

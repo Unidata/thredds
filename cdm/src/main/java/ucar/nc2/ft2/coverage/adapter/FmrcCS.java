@@ -37,7 +37,7 @@ package ucar.nc2.ft2.coverage.adapter;
 import ucar.nc2.dataset.*;
 
 /**
- * Fmrc Coordinate System Implementation
+ * FMRC Coordinate System Implementation
  *
  * @author John
  * @since 12/25/12

@@ -55,7 +55,8 @@ public enum AxisType {
   RadialDistance(8),
   RadialElevation(6),
   Spectral(1),
-  TimeOffset(1,"TO");  // time offset from runtime / reference time
+  TimeOffset(1,"TO"),  // time offset from runtime / reference time
+  Dimension(99,"Dim");      // used for dimension axis (experimental);
 
   private final int order; // canonical ordering runTime - ensemble - time - z - y - x  or elev - azimuth - distance
   private final String cfAxisName; // X, Y, Z, T from http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-types

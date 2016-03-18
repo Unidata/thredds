@@ -156,16 +156,8 @@ public class Coverage implements VariableSimpleIF, IsMissingEvaluator {
   ///////////////////////////////////////////////////////////////
 
   public long getSizeInBytes() {
-    long total = 1;
-    for (String axisName : coordSys.getAxisNames()) {  // LOOK this assumes a certain order
-      CoverageCoordAxis axis = coordSys.getAxis(axisName);
-      if (axis == null)
-        throw new IllegalStateException("Cant find axis with name "+axisName);
-      if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.independent) continue;
-      total *= axis.getNcoords();
-    }
-    total *= getDataType().getSize();
-    return total;
+    Section section = new Section(coordSys.getShape());
+    return section.computeSize() * getDataType().getSize();
   }
 
   // LOOK must conform to whatever grid.readData() returns

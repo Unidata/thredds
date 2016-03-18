@@ -76,16 +76,17 @@ abstract public class CoverageCoordAxis implements Comparable<CoverageCoordAxis>
     dependent,               // aux coordinate, eg reftime(time) or time_bounds(time);
     scalar,                  // eg reftime
     twoD,                    // lat(x,y)
-    fmrcReg                  // time(reftime, hourOfDay)
+    fmrcReg,                 // time(reftime, hourOfDay)
+    dimension                // swath(scan, scanAcross)
   }
 
   protected final String name;
   protected final String description;
   protected final DataType dataType;
-  protected final AxisType axisType;    // ucar.nc2.constants.AxisType ordinal
+  protected final AxisType axisType;        // ucar.nc2.constants.AxisType ordinal
   protected final AttributeContainer attributes;
   protected final DependenceType dependenceType;
-  protected final List<String> dependsOn;
+  protected final List<String> dependsOn;  // independent axes or dimensions
 
   protected final int ncoords;            // number of coordinates (not always same as values)
   protected final Spacing spacing;
