@@ -140,33 +140,34 @@ public class Grib2RecordScanner {
     }
 
     boolean more;
-    long stop = 0;
+    long gribStart = 0;
 
     while (true) { // scan until we get a GRIB-2 or more == false
       raf.seek(lastPos);
       more = raf.searchForward(matcher, -1); // will scan to end for a 'GRIB' string
       if (!more) break;
 
-      stop = raf.getFilePointer();           // this is where the next 'GRIB' starts
+      gribStart = raf.getFilePointer();           // this is where the next 'GRIB' starts
       // see if its GRIB-2
       raf.skipBytes(7);
       int edition = raf.read();
       if (edition == 2) break;
       lastPos = raf.getFilePointer();   // not edition 2 ! just skip it !! start scanning from there
-      log.warn("GRIB message at pos=" + stop + " not GRIB2; skip");
+      log.warn("GRIB message at pos=" + gribStart + " not GRIB2; skip");
     }
 
     if (more) {
-      int sizeHeader = (int) (stop - lastPos);  // wmo headers are embedded between records in some idd streams
+      int sizeHeader = (int) (gribStart - lastPos);  // wmo headers are embedded between records in some idd streams
       if (debugEnding) System.out.printf("bytes between last and next=%d%n", sizeHeader);
-      long startPos = stop-sizeHeader;
       if (sizeHeader > 100) sizeHeader = 100;   // maximum 100 bytes; more is likely to be garbage
+      long goBack = gribStart-sizeHeader;
       header = new byte[sizeHeader];
-      raf.seek(startPos);
+      raf.seek(goBack);
       raf.readFully(header);
-      raf.seek(stop);
+      raf.seek(gribStart);
+      this.lastPos = gribStart; // ok start from here next time
     }
-    if (debug) System.out.println(" more "+more+" at "+stop+" header at "+ lastPos);
+
     return more;
   }
 
