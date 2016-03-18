@@ -53,7 +53,7 @@ import java.text.ParseException;
 public class DMSPHeader
 {
   private String[] header = null;
-  private Map<String, String> headerInfo = new HashMap<String, String>();
+  private Map<String, String> headerInfo = new HashMap<>();
   private int headerSizeInBytes = 0;
   private int headerSizeInBytesGuess = 5000;
 
@@ -432,11 +432,11 @@ public class DMSPHeader
   private void handleProcessingInformation()
           throws IOException
   {
-    suborbitHistoryAtt = new Attribute( this.suborbitHistoryAttName,
-                                        (String) headerInfo.get( HeaderInfoTitle.SUBORBIT_HISTORY.toString() ) );
-    processingSystemAtt = new Attribute( this.processingSystemAttName,
-                                         (String) headerInfo.get( HeaderInfoTitle.PROCESSING_SYSTEM.toString() ) );
-    String processingDateString = (String) headerInfo.get( HeaderInfoTitle.PROCESSING_DATE.toString() );
+    suborbitHistoryAtt = new Attribute(this.suborbitHistoryAttName,
+            headerInfo.get(HeaderInfoTitle.SUBORBIT_HISTORY.toString()));
+    processingSystemAtt = new Attribute(this.processingSystemAttName,
+            headerInfo.get(HeaderInfoTitle.PROCESSING_SYSTEM.toString()));
+    String processingDateString = headerInfo.get(HeaderInfoTitle.PROCESSING_DATE.toString());
     try
     {
       processingDate = DateFormatHandler.ALT_DATE_TIME.getDateFromDateTimeString( processingDateString );
@@ -457,10 +457,10 @@ public class DMSPHeader
   {
     spacecraftIdAtt = new Attribute(
             this.spacecraftIdAttName,
-            (String) headerInfo.get( HeaderInfoTitle.SPACECRAFT_ID.toString() ) );
+            headerInfo.get(HeaderInfoTitle.SPACECRAFT_ID.toString()));
     noradIdAtt = new Attribute(
             this.noradIdAttName,
-            (String) headerInfo.get( HeaderInfoTitle.NORAD_ID.toString() ) );
+            headerInfo.get(HeaderInfoTitle.NORAD_ID.toString()));
   }
 
   private void handleOrbitInformation() throws IOException
@@ -751,7 +751,7 @@ public class DMSPHeader
    */
   static class HeaderInfoTitle
   {
-    private static java.util.Map<String, HeaderInfoTitle> hash = new java.util.HashMap<String, HeaderInfoTitle>( 20 );
+    private static java.util.Map<String, HeaderInfoTitle> hash = new java.util.HashMap<>( 20 );
 
     public final static HeaderInfoTitle FILE_ID = new HeaderInfoTitle( "file ID");                  // /dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp
     public final static HeaderInfoTitle DATA_SET_ID = new HeaderInfoTitle( "data set ID" );              // DMSP F14 OLS LS & TS
