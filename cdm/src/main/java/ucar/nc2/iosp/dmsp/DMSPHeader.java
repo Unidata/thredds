@@ -782,6 +782,16 @@ public class DMSPHeader
     public final static HeaderInfoTitle END_SUBSOLAR_COORD = new HeaderInfoTitle( "end sub-solar coord" );      // 20.87 201.16
     public final static HeaderInfoTitle START_LUNAR_COORD = new HeaderInfoTitle( "start lunar coord" );        // UNKNOWN
     public final static HeaderInfoTitle END_LUNAR_COORD = new HeaderInfoTitle( "end lunar coord" );          // UNKNOWN
+    public final static HeaderInfoTitle START_DIRECTION = new HeaderInfoTitle("start direction");
+    public final static HeaderInfoTitle QA_1_8 = new HeaderInfoTitle("QA 1/8");
+    public final static HeaderInfoTitle QA_2_8 = new HeaderInfoTitle("QA 2/8");
+    public final static HeaderInfoTitle QA_3_8 = new HeaderInfoTitle("QA 3/8");
+    public final static HeaderInfoTitle QA_4_8 = new HeaderInfoTitle("QA 4/8");
+    public final static HeaderInfoTitle QA_5_8 = new HeaderInfoTitle("QA 5/8");
+    public final static HeaderInfoTitle QA_6_8 = new HeaderInfoTitle("QA 6/8");
+    public final static HeaderInfoTitle QA_7_8 = new HeaderInfoTitle("QA 7/8");
+    public final static HeaderInfoTitle QA_8_8 = new HeaderInfoTitle("QA 8/8");
+    public final static HeaderInfoTitle DELTA_T = new HeaderInfoTitle("delta-t");
     public final static HeaderInfoTitle ASCENDING_NODE = new HeaderInfoTitle( "ascending node" );           // 320.55
     public final static HeaderInfoTitle NODE_HEADING = new HeaderInfoTitle( "node heading" );             // 8.64
     public final static HeaderInfoTitle EPHEMERIS_SOURCE = new HeaderInfoTitle( "ephemeris source" );         // NORAD
