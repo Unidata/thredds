@@ -391,9 +391,6 @@ public class DMSPHeader
         throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains no value.");
 
       curHeaderTitle = curHeaderLine.substring(0, lineSeperatorIndex).trim();
-      if (HeaderInfoTitle.getTitle(curHeaderTitle) == null)
-        throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains invalid title.");
-
       curHeaderValue = curHeaderLine.substring(lineSeperatorIndex + 1).trim();
       if (curHeaderValue.equals(""))
         throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains no value.");
@@ -420,10 +417,6 @@ public class DMSPHeader
     numDataRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_DATA_RECORDS.toString() ) );
     numDataRecordsDim = new Dimension( this.numDataRecordsDimName, numDataRecords, true, true, false);
     numArtificialDataRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_ARTIFICIAL_DATA_RECORDS.toString() ) );
-    if ( numHeaderRecords + numDataRecordsDim.getLength() + numArtificialDataRecords != numRecords )
-    {
-      throw new IOException( "Invalid DMSP file: the number of header records <" + this.numHeaderRecords + ">, data records <" + this.numDataRecordsDim.getLength() + ">, and artificial data records <" + this.numArtificialDataRecords + "> is not equal to total records <" + this.numRecords + ">." );
-    }
     this.headerSizeInBytes = this.numHeaderRecords * this.recordSizeInBytes;
     if ( numRecords * ((long) this.recordSizeInBytes) != this.actualSize )
     {
