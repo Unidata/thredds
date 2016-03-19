@@ -53,7 +53,7 @@ import java.text.ParseException;
 public class DMSPHeader
 {
   private String[] header = null;
-  private Map<String, String> headerInfo = new HashMap<String, String>();
+  private Map<String, String> headerInfo = new HashMap<>();
   private int headerSizeInBytes = 0;
   private int headerSizeInBytesGuess = 5000;
 
@@ -391,9 +391,6 @@ public class DMSPHeader
         throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains no value.");
 
       curHeaderTitle = curHeaderLine.substring(0, lineSeperatorIndex).trim();
-      if (HeaderInfoTitle.getTitle(curHeaderTitle) == null)
-        throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains invalid title.");
-
       curHeaderValue = curHeaderLine.substring(lineSeperatorIndex + 1).trim();
       if (curHeaderValue.equals(""))
         throw new IOException("Invalid DMSP file: header line <" + curHeaderLine + "> contains no value.");
@@ -420,10 +417,6 @@ public class DMSPHeader
     numDataRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_DATA_RECORDS.toString() ) );
     numDataRecordsDim = new Dimension( this.numDataRecordsDimName, numDataRecords, true, true, false);
     numArtificialDataRecords = Integer.parseInt( headerInfo.get( HeaderInfoTitle.NUM_ARTIFICIAL_DATA_RECORDS.toString() ) );
-    if ( numHeaderRecords + numDataRecordsDim.getLength() + numArtificialDataRecords != numRecords )
-    {
-      throw new IOException( "Invalid DMSP file: the number of header records <" + this.numHeaderRecords + ">, data records <" + this.numDataRecordsDim.getLength() + ">, and artificial data records <" + this.numArtificialDataRecords + "> is not equal to total records <" + this.numRecords + ">." );
-    }
     this.headerSizeInBytes = this.numHeaderRecords * this.recordSizeInBytes;
     if ( numRecords * ((long) this.recordSizeInBytes) != this.actualSize )
     {
@@ -439,11 +432,11 @@ public class DMSPHeader
   private void handleProcessingInformation()
           throws IOException
   {
-    suborbitHistoryAtt = new Attribute( this.suborbitHistoryAttName,
-                                        (String) headerInfo.get( HeaderInfoTitle.SUBORBIT_HISTORY.toString() ) );
-    processingSystemAtt = new Attribute( this.processingSystemAttName,
-                                         (String) headerInfo.get( HeaderInfoTitle.PROCESSING_SYSTEM.toString() ) );
-    String processingDateString = (String) headerInfo.get( HeaderInfoTitle.PROCESSING_DATE.toString() );
+    suborbitHistoryAtt = new Attribute(this.suborbitHistoryAttName,
+            headerInfo.get(HeaderInfoTitle.SUBORBIT_HISTORY.toString()));
+    processingSystemAtt = new Attribute(this.processingSystemAttName,
+            headerInfo.get(HeaderInfoTitle.PROCESSING_SYSTEM.toString()));
+    String processingDateString = headerInfo.get(HeaderInfoTitle.PROCESSING_DATE.toString());
     try
     {
       processingDate = DateFormatHandler.ALT_DATE_TIME.getDateFromDateTimeString( processingDateString );
@@ -464,10 +457,10 @@ public class DMSPHeader
   {
     spacecraftIdAtt = new Attribute(
             this.spacecraftIdAttName,
-            (String) headerInfo.get( HeaderInfoTitle.SPACECRAFT_ID.toString() ) );
+            headerInfo.get(HeaderInfoTitle.SPACECRAFT_ID.toString()));
     noradIdAtt = new Attribute(
             this.noradIdAttName,
-            (String) headerInfo.get( HeaderInfoTitle.NORAD_ID.toString() ) );
+            headerInfo.get(HeaderInfoTitle.NORAD_ID.toString()));
   }
 
   private void handleOrbitInformation() throws IOException
@@ -758,7 +751,7 @@ public class DMSPHeader
    */
   static class HeaderInfoTitle
   {
-    private static java.util.Map<String, HeaderInfoTitle> hash = new java.util.HashMap<String, HeaderInfoTitle>( 20 );
+    private static java.util.Map<String, HeaderInfoTitle> hash = new java.util.HashMap<>( 20 );
 
     public final static HeaderInfoTitle FILE_ID = new HeaderInfoTitle( "file ID");                  // /dmsp/moby-1-3/subscriptions/IBAMA/1353226646955.tmp
     public final static HeaderInfoTitle DATA_SET_ID = new HeaderInfoTitle( "data set ID" );              // DMSP F14 OLS LS & TS
@@ -782,6 +775,16 @@ public class DMSPHeader
     public final static HeaderInfoTitle END_SUBSOLAR_COORD = new HeaderInfoTitle( "end sub-solar coord" );      // 20.87 201.16
     public final static HeaderInfoTitle START_LUNAR_COORD = new HeaderInfoTitle( "start lunar coord" );        // UNKNOWN
     public final static HeaderInfoTitle END_LUNAR_COORD = new HeaderInfoTitle( "end lunar coord" );          // UNKNOWN
+    public final static HeaderInfoTitle START_DIRECTION = new HeaderInfoTitle("start direction");
+    public final static HeaderInfoTitle QA_1_8 = new HeaderInfoTitle("QA 1/8");
+    public final static HeaderInfoTitle QA_2_8 = new HeaderInfoTitle("QA 2/8");
+    public final static HeaderInfoTitle QA_3_8 = new HeaderInfoTitle("QA 3/8");
+    public final static HeaderInfoTitle QA_4_8 = new HeaderInfoTitle("QA 4/8");
+    public final static HeaderInfoTitle QA_5_8 = new HeaderInfoTitle("QA 5/8");
+    public final static HeaderInfoTitle QA_6_8 = new HeaderInfoTitle("QA 6/8");
+    public final static HeaderInfoTitle QA_7_8 = new HeaderInfoTitle("QA 7/8");
+    public final static HeaderInfoTitle QA_8_8 = new HeaderInfoTitle("QA 8/8");
+    public final static HeaderInfoTitle DELTA_T = new HeaderInfoTitle("delta-t");
     public final static HeaderInfoTitle ASCENDING_NODE = new HeaderInfoTitle( "ascending node" );           // 320.55
     public final static HeaderInfoTitle NODE_HEADING = new HeaderInfoTitle( "node heading" );             // 8.64
     public final static HeaderInfoTitle EPHEMERIS_SOURCE = new HeaderInfoTitle( "ephemeris source" );         // NORAD
