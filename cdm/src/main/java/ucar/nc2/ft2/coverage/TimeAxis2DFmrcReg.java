@@ -39,15 +39,15 @@ package ucar.nc2.ft2.coverage;
  * @author caron
  * @since 10/13/2015.
  */
-public class FmrcTimeAxisReg2D extends FmrcTimeAxis2D{
+public class TimeAxis2DFmrcReg extends TimeAxis2DFmrc {
 
-  public FmrcTimeAxisReg2D(CoverageCoordAxisBuilder builder) {
+  public TimeAxis2DFmrcReg(CoverageCoordAxisBuilder builder) {
     super(builder);
   }
 
   @Override
   public CoverageCoordAxis copy() {
-    return new FmrcTimeAxisReg2D(new CoverageCoordAxisBuilder(this));
+    return new TimeAxis2DFmrcReg(new CoverageCoordAxisBuilder(this));
   }
 
 }

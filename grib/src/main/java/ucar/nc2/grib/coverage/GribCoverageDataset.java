@@ -76,8 +76,6 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.util.Counters;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
@@ -668,7 +666,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   } */
 
   // time(runtime, time)
-  private FmrcTimeAxis2D makeFmrcRegTimeAxis(CoordinateTime2D time2D) {
+  private TimeAxis2DFmrc makeFmrcRegTimeAxis(CoordinateTime2D time2D) {
     CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
     String dependsOn = runtime.getName();
     int nruns = time2D.getNruns();
@@ -711,7 +709,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
             CoverageCoordAxis.DependenceType.fmrcReg, dependsOn, null, nruns * ntimes, 0.0, 0.0, 0.0, values, this);
     builder.setSpacingFromValues(time2D.isTimeInterval());
 
-    return new FmrcTimeAxis2D(builder); // LOOK should be FmrcTimeAxisReg2D to take advantage of regular
+    return new TimeAxis2DFmrc(builder); // LOOK should be FmrcTimeAxisReg2D to take advantage of regular
   }
 
   // orthogonal runtime, offset; both independent

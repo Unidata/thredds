@@ -104,7 +104,7 @@ public class TestGribFmrcRegularTime {
 
       CoverageCoordAxis time = gcs.getTimeAxis();
       Assert.assertNotNull(time);
-      Assert.assertTrue(time instanceof FmrcTimeAxis2D);
+      Assert.assertTrue(time instanceof TimeAxis2DFmrc);
       Assert.assertEquals(16, time.getNcoords());
 
       //double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};

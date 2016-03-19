@@ -65,8 +65,8 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
   public CoverageCoordAxis1D(CoverageCoordAxisBuilder builder) {
     super(builder);
 
-    //if (axisType == null && builder.dependenceType == DependenceType.independent)
-    //  throw new IllegalArgumentException("independent axis must have type");
+    if (axisType == null && builder.dependenceType == DependenceType.independent)
+      throw new IllegalArgumentException("independent axis must have type");
 
     // make sure range has axisType as the name
     String rangeName = (axisType != null) ? axisType.toString() : null;

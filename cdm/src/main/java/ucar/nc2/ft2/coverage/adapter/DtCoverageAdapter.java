@@ -39,6 +39,7 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.Misc;
@@ -85,10 +86,10 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
       for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordAxes()) {
         if (null == covAxesMap.get(axis.getFullName())) {
-          ucar.nc2.util.Optional<CoverageCoordAxis> opt = makeCoordAxis(gcs, axis, reader);
+          ucar.nc2.util.Optional<CoverageCoordAxis> opt = makeCoordAxis(proxy.getCoverageType(), axis, reader);
           if (!opt.isPresent()) {
             errlog.format("%s%n", opt.getErrorMessage());
-            break;
+            continue;
           }
           CoverageCoordAxis covAxis = opt.get();
           covAxes.add(covAxis);
@@ -142,7 +143,8 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       covAxes.add(covAxis);
       for (String dep : covAxis.getDependsOnList()) { // add in dependencies
         CoverageCoordAxis depAxis = covAxesMap.get(dep);
-        covAxes.add(depAxis);
+        if (depAxis != null)
+          covAxes.add(depAxis);
       }
     }
 
@@ -164,10 +166,10 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
   private static CoverageCoordAxis makeCoordAxisFromDimension(Dimension dim) {
     CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
-    builder.name = dim.getShortName();
+    builder.name = dim.getFullName();
     builder.dataType = DataType.INT;
     builder.axisType = AxisType.Dimension;
-    builder.dependenceType = CoverageCoordAxis.DependenceType.dimension; 
+    builder.dependenceType = CoverageCoordAxis.DependenceType.dimension;
     builder.spacing = CoverageCoordAxis.Spacing.regularPoint;
     builder.ncoords = dim.getLength();
     builder.startValue = 0;
@@ -177,7 +179,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     return new CoverageCoordAxis1D(builder);
   }
 
-  private static ucar.nc2.util.Optional<CoverageCoordAxis> makeCoordAxis(DtCoverageCS gcs, ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader) {
+  private static ucar.nc2.util.Optional<CoverageCoordAxis> makeCoordAxis(FeatureType ftype, ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader) {
     String name = dtCoordAxis.getFullName();
     DataType dataType = dtCoordAxis.getDataType();
     AxisType axisType = dtCoordAxis.getAxisType();
@@ -342,8 +344,13 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     // Fmrc Time
     if (axisType == AxisType.Time) {
-      builder.setDependsOn(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
-      return ucar.nc2.util.Optional.of(new FmrcTimeAxis2D(builder));
+      if (ftype == FeatureType.FMRC) {
+        builder.setDependsOn(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
+        return ucar.nc2.util.Optional.of(new TimeAxis2DFmrc(builder));
+
+      } else if (ftype == FeatureType.SWATH) {
+        return ucar.nc2.util.Optional.of(new TimeAxis2DSwath(builder));
+      }
     }
 
     // 2D Lat Lon
@@ -351,7 +358,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       return ucar.nc2.util.Optional.of(new LatLonAxis2D(builder));
     }
 
-    throw new IllegalStateException("Dont know what to do with axis " + dtCoordAxis);
+    return ucar.nc2.util.Optional.empty("Dont know what to do with axis " + dtCoordAxis);
   }
 
   ////////////////////////

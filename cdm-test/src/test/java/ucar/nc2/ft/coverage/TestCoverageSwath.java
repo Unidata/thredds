@@ -81,12 +81,8 @@ public class TestCoverageSwath {
 
       CoverageCoordSys csys = cover.getCoordSys();
       LatLonRect llbb = gds.getLatlonBoundingBox();
-      ProjectionRect projBB = gds.getProjBoundingBox();
-      ProjectionImpl proj = csys.getProjection();
-      ProjectionRect projBB2 = proj.latLonToProjBB(llbb);
-      System.out.printf("ProjRect =%s%n", projBB);
-      System.out.printf("LatLonBB =%s%n", llbb);
-      System.out.printf("ProjRect2=%s%n", projBB2);
+      Assert.assertNotNull("getLatlonBoundingBox", llbb);
+      System.out.printf("llbb=%s (%s)%n", llbb.toString2(), llbb);
 
       SubsetParams subset = new SubsetParams().setLatLonBoundingBox(gds.getLatlonBoundingBox()); // should be the same!
       Optional<CoverageCoordSys> opt = csys.subset(subset);

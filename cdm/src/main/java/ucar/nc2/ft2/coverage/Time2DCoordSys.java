@@ -33,7 +33,6 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import com.google.common.collect.Lists;
 import net.jcip.annotations.Immutable;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -42,7 +41,6 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Optional;
 
 import java.util.ArrayList;
@@ -59,9 +57,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Immutable
 public class Time2DCoordSys {
   public final CoverageCoordAxis1D runAxis;
-  public final FmrcTimeAxis2D timeAxis2D;
+  public final TimeAxis2DFmrc timeAxis2D;
 
-  public Time2DCoordSys(CoverageCoordAxis1D runAxis, FmrcTimeAxis2D timeAxis) {
+  public Time2DCoordSys(CoverageCoordAxis1D runAxis, TimeAxis2DFmrc timeAxis) {
     this.runAxis = runAxis;
     this.timeAxis2D = timeAxis;
   }
