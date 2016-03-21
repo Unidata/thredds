@@ -58,14 +58,24 @@ dependencies {
     // runtime libraries["threddsIso"]
     // compile libraries["ncwms"]
     // compile libraries["geoapi-pending"]
-    // compile libraries["oro"]
+    compile libraries["oro"]
 
     // Needed for XPath operations in mock tests
     testCompile libraries["jaxen"]
 
+    // edal ncwms related libs
+    compile libraries["edal-common"]
+    compile libraries["edal-cdm"]
+    compile libraries["edal-graphics"]
+    compile libraries["edal-wms"]
+    compile libraries["edal-godiva"]
+
+    runtime libraries["saxon-he"]
+
     // JSR 303 with Hibernate Validator, which is dragging in jboss logging
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]
+
     testCompile libraries["javax.el-api"]
     testCompile libraries["javax.el"]
 
@@ -118,4 +128,77 @@ war {
         into 'docs'
         filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
     }
+}
+
+///////////////////////////////// Godiva 3 /////////////////////////////////
+
+// Adapted from https://blog.eveoh.nl/2012/01/using-google-web-toolkit-with-gradle/
+// 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6' is also available, but it has problems.
+
+// First, it modifies the testRuntime configuration after project evaluation:
+// https://github.com/steffenschaefer/gwt-gradle-plugin/issues/89. In the case of TDS, this lead to an old version
+// of "validation-api" being present on the classpath, which caused hibernate-validator to fail.
+//
+// Second, it adds gwt-dev and gwt-user to the "compile" config and gwt-servlet to the "runtime" config.
+// None of those are necessary at runtime: http://stackoverflow.com/a/5135151/3874643.
+// Even worse, the JARs are *huge*, and inflated the size of tds.war by ~59 MB.
+
+dependencies {
+    // These are needed at compile-time by the GWT Compiler, but aren't necessary at runtime.
+    provided libraries["gwt-user"]
+    provided libraries["gwt-dev"]
+}
+
+ext {
+    gwtDir = "${project.buildDir}/gwt"
+    extraDir = "${project.buildDir}/extra"
+}
+
+task compileGwt (dependsOn: classes, type: JavaExec) {
+    inputs.source sourceSets.main.java.srcDirs
+    inputs.dir sourceSets.main.output.resourcesDir
+    outputs.dir gwtDir
+
+    doFirst {
+        file(gwtDir).mkdirs()
+    }
+
+    main = 'com.google.gwt.dev.Compiler'
+
+    classpath {
+        [
+            sourceSets.main.java.srcDirs,           // Java source
+            sourceSets.main.output.resourcesDir,    // Generated resources
+            sourceSets.main.output.classesDir,      // Generated classes
+            sourceSets.main.compileClasspath,       // Deps
+        ]
+    }
+
+    args = [
+        'Godiva3', // The GWT module, from edal-godiva.
+        '-war', gwtDir,
+
+        // When I set the log level to WARN and below, I get:
+        // [WARN] Detected warnings related to 'javax.validation.Validator'.
+        //        Are validation-api-<version>.jar and validation-api-<version>-sources.jar on the classpath?
+        // [WARN] Unknown type 'javax.validation.Validator' specified in deferred binding rule
+        // I believe this is because in :tds:dependencies...
+        // +--- com.google.gwt:gwt-user:2.7.0
+        // |    \--- javax.validation:validation-api:1.0.0.GA -> 1.1.0.Final
+        // That is, gwt-user is expecting version "1.0.0.GA" of validation-api but is getting "1.1.0.Final" instead
+        // because of Gradle's version resolution. I think that warning is safe to ignore.
+        '-logLevel', 'ERROR',  // Only get log messages at level ERROR or above. We don't want the spammy output.
+
+        '-localWorkers', '2',
+        '-compileReport',
+        '-extra', extraDir,
+        // '-draftCompile' // Speeds up compile with 25%
+    ]
+
+    maxHeapSize = '256M'
+}
+
+war {
+    dependsOn compileGwt
+    from gwtDir
 }

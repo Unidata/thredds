@@ -32,6 +32,7 @@
 
 package ucar.nc2.util.net;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.junit.Test;
@@ -225,7 +226,7 @@ public class TestMisc extends UnitTestCommon
         try {
             for(i = 0; i < 500; i++) {
                 HTTPMethod m = HTTPFactory.Get(CLOSEFILE);
-                CloseableHttpResponse res = m.executeRaw();
+                HttpResponse res = m.executeRaw();
                 Assert.assertFalse("Null response", res == null);
                 m.close();
             }

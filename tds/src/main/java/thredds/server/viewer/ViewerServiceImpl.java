@@ -54,6 +54,7 @@ import thredds.client.catalog.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
+import thredds.server.wms.Godiva3Viewer;
 
 @Component
 public class ViewerServiceImpl implements ViewerService {
@@ -133,7 +134,7 @@ public class ViewerServiceImpl implements ViewerService {
   @SuppressWarnings("unused")
   @PostConstruct
   private void registerViewers() {
-    // registerViewer(new ViewerGodiva());
+    registerViewer(new Godiva3Viewer());
     registerViewer(new ToolsUI());
     registerViewer(new IDV());
     registerViewer(new StaticView());

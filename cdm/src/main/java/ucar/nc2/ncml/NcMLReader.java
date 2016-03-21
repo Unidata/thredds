@@ -66,6 +66,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.CancelTask;
@@ -524,6 +525,7 @@ public class NcMLReader {
     Element aggElem = netcdfElem.getChild("aggregation", ncNS);
     if (aggElem != null) {
       Aggregation agg = readAgg(aggElem, ncmlLocation, targetDS, cancelTask);
+      if (agg == null) return; // cancel task
       targetDS.setAggregation(agg);
       agg.finish(cancelTask);
     }
@@ -603,11 +605,12 @@ public class NcMLReader {
         if (oldval != null)
           addAttribute(parent, new ucar.nc2.Attribute(name, oldatt.getValues()));
         else {  // weird corner case of attribute with no value - must use the type
-          String unS = attElem.getAttributeValue("isUnsigned");
-          boolean isUnsigned =  unS != null && unS.equalsIgnoreCase("true");        // LOOK
+          String unS = attElem.getAttributeValue("isUnsigned"); // deprecated but must deal with
+          boolean isUnsignedSet = unS != null && unS.equalsIgnoreCase("true");
           String typeS = attElem.getAttributeValue("type");
-          DataType type = typeS == null ? DataType.STRING : DataType.getType(typeS);
-          addAttribute(parent, new ucar.nc2.Attribute(name, type));
+          DataType dtype = typeS == null ? DataType.STRING : DataType.getType(typeS);
+          if (isUnsignedSet) dtype = dtype.withSign(true);
+          addAttribute(parent, new ucar.nc2.Attribute(name, dtype));
         }
       }
 
@@ -629,20 +632,26 @@ public class NcMLReader {
    */
   public static ucar.ma2.Array readAttributeValues(Element s) throws IllegalArgumentException {
     String valString = s.getAttributeValue("value");
-    // if (valString != null) valString = StringUtil2.unquoteXmlAttribute(valString); // dont need, JDOM does this LOOK
 
     // can also be element text
     if (valString == null) {
       valString = s.getTextNormalize();
     }
 
-    // no value specified  hmm technically this is not ilegal !!
+    // no value specified  hmm technically this is not illegal !!
     if (valString == null)
       throw new IllegalArgumentException("No value specified");
 
     String type = s.getAttributeValue("type");
     DataType dtype = (type == null) ? DataType.STRING : DataType.getType(type);
     if (dtype == DataType.CHAR) dtype = DataType.STRING;
+
+    // backwards compatibility with deprecated isUnsigned attribute
+    String unS = s.getAttributeValue("isUnsigned");
+    boolean isUnsignedSet =  unS != null && unS.equalsIgnoreCase("true");
+    if (isUnsignedSet && dtype.isIntegral() && !dtype.isUnsigned()) {
+      dtype = dtype.withSign(true);
+    }
 
     String sep = s.getAttributeValue("separator");
     if ((sep == null) && (dtype == DataType.STRING)) {
@@ -780,10 +789,14 @@ public class NcMLReader {
     for (Element e : etdElem.getChildren("enum", ncNS)) {
       String key = e.getAttributeValue("key");
       String value = e.getTextNormalize();
-      if (key == null)
+      if (key == null) {
         errlog.format("NcML enumTypedef enum key attribute is required (%s)%n", e);
-      if (value == null)
+        continue;
+      }
+      if (value == null) {
         errlog.format("NcML enumTypedef enum value is required (%s)%n", e);
+        continue;
+      }
       try {
         int keyi = Integer.parseInt(key);
         map.put(keyi, value);
@@ -794,7 +807,6 @@ public class NcMLReader {
 
     EnumTypedef td = new EnumTypedef(name, map, baseType);
     g.addEnumeration(td);
-
   }
 
   /**
@@ -994,6 +1006,14 @@ public class NcMLReader {
     java.util.List<Element> attList = varElem.getChildren("attribute", ncNS);
     for (Element attElem : attList) {
       readAtt(v, refv, attElem);
+    }
+
+    // deal with legacy use of attribute with Unsigned = true
+    Attribute att = v.findAttribute(CDM.UNSIGNED);
+    boolean isUnsignedSet = att != null && att.getStringValue().equalsIgnoreCase("true");
+    if (isUnsignedSet) {
+      dtype = dtype.withSign(true);
+      v.setDataType(dtype);
     }
 
     // process remove command
@@ -1426,7 +1446,7 @@ public class NcMLReader {
         }
 
         if ((cancelTask != null) && cancelTask.isCancel())
-          return null;
+          return agg;
         if (debugAggDetail) System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
       }
 
@@ -1497,7 +1517,7 @@ public class NcMLReader {
       agg.addExplicitDataset(cacheName, realLocation, id, ncoords, coordValueS, sectionSpec, reader);
 
       if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
+        return agg;
       if (debugAggDetail) System.out.println(" debugAgg: nested dataset = " + location);
     }
 
@@ -1526,7 +1546,7 @@ public class NcMLReader {
       agg.addDatasetScan(cdElement, dirLocation, suffix, regexpPatternString, dateFormatMark, enhanceMode, subdirs, olderS);
 
       if ((cancelTask != null) && cancelTask.isCancel())
-        return null;
+        return agg;
       if (debugAggDetail) System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
     }
 

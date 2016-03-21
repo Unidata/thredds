@@ -1,25 +1,27 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:toc:
 
 = Configuring TDS with DatasetScan
+
+== Overview
 
 The *datasetScan* element allows you to serve all files in a directory
 tree. The files must be homogenous enough that the same metadata can be
 applied to all of them.
 
-See <<../catalog/InvCatalogServerSpec#datasetScan,Server Catalog Spec>> for formal definition of the XML.
-
-== Example
+See <<../catalog/InvCatalogServerSpec#datasetScan,Server Catalog Spec>> for the formal definition of the XML.
 
 Here is a minimal catalog containing a datasetScan element:
 
+[source,xml]
 ----------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"
     xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
     xmlns:xlink="http://www.w3.org/1999/xlink">
-
   <service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" />
+
   <datasetScan name="NCEP Data" path="ncep" location="/data/ldm/pub/native/grid/NCEP/" >
     <serviceName>myserver</serviceName>
   </datasetScan >
@@ -28,15 +30,14 @@ Here is a minimal catalog containing a datasetScan element:
 
 The main points are:
 
-1.  The *path* attribute on the *datasetScan* element is the part of the
-URL that identifies this datasetScan and is used to map URLs to a file
-on disk. +
-2.  The *location* attribute on the *datasetScan* element gives the
-location of the dataset collection on the local file system.
+1.  The *path* attribute on the *datasetScan* element is the part of the URL that identifies this datasetScan and is used to map URLs to a file on disk.
+2.  The *location* attribute on the *datasetScan* element gives the location of the dataset collection on the local file system.
+3. The (path, location) of every datasetScan defines an implicit <<InvCatalogServerSpec#datasetRoot,datasetRoot>>.
+The *_datasetRoot path therefore must be unique_* across all datasetRoots in the server.
 
-In the catalog that the TDS server sends to any client, the datasetScan
-element is shown as a __*catalog reference*__:
+In the catalog that the TDS server sends to a client, the datasetScan element is shown as a *_catalog reference_*:
 
+[source,xml]
 -----------------------------------------------------------------------------------------------
 <catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"
     xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
@@ -71,6 +72,7 @@ For example, if the directory looked like:
 The result of a request for "**/thredds/catalog/ncep/catalog.xml**"
 might look like:
 
+[source,xml]
 ---------------------------------------------------------------------------
 <catalog ...>
   <service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" />
@@ -85,9 +87,9 @@ might look like:
 </catalog>
 ---------------------------------------------------------------------------
 
-and for a "**/thredds/catalog/ncep/GFS/CONUS_191km/catalog.xml**"
-request: +
+and for a "**/thredds/catalog/ncep/GFS/CONUS_191km/catalog.xml**" request:
 
+[source,xml]
 --------------------------------------------------------------------------------------
 <catalog ...>
   <service name="myserver" serviceType="OpenDAP" base="/thredds/dodsC/" />
@@ -109,29 +111,16 @@ request: +
 
 Note that:
 
-1.  Files are turned into *dataset* elements, subdirectories are turned
-into nested *catalogRef* elements.
-2.  All the catalog URLs are relative. If the original catalog URL is
-*http://server:8080/thredds/catalog.xml* then the first catalogRef
-xlink:href value of "/thredds/catalog/ncep/catalog.xml" resolves to
-**http://server:8080/thredds/catalog/ncep/catalog.xml**. From that
-catalog, the catalogRef xlink:href value of "GFS/catalog.xml" resolves
-to **http://server:8080/thredds/catalog/ncep/GFS/catalog.xml**.
-3.  The dataset access URLs are built from the service base attribute
-and the dataset urlPath attribute (see the
-<<../catalog/InvCatalogSpec#constructingURLs,THREDDS URL
-construction>> documentation). So the dataset URLs from the above catalog
-would be
-**http://server:8080/thredds/dodsC/ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1**.
-** You don’t have to worry about these URLs, as they are all generated
-for you.
-4.  Each datasetScan element must reference a service element (whether
-directly, as above, or inherited).
-5.  Because the TDS uses the set of all given path values to map URLs to
-datasets, __*each path value MUST be unique across all config catalogs
-on a given TDS installation*__.
-
-[link:#sample1[Sample config catalog 1]] +
+1.  Files are turned into *dataset* elements, subdirectories are turned into nested *catalogRef* elements.
+2.  All the catalog URLs are relative. If the original catalog URL is _\http://server:8080/thredds/catalog.xml_
+then the first catalogRef _/thredds/catalog/ncep/catalog.xml_ resolves to _\http://server:8080/thredds/catalog/ncep/catalog.xml_.
+From that catalog, the catalogRef _GFS/catalog.xml_ resolves to _\http://server:8080/thredds/catalog/ncep/GFS/catalog.xml_.
+3.  The dataset access URLs are built from the service base and the dataset urlPath (see <<../catalog/InvCatalogSpec#constructingURLs,THREDDS URL construction>>).
+So the dataset URLs from the above catalog would be _\http://server:8080/thredds/dodsC/ncep/GFS/CONUS_191km/GFS_CONUS_191km_20061107_0000.grib1_.
+(You don’t have to worry about these URLs, as they are all generated automatically).
+4.  Each datasetScan element must reference a service element (whether directly, as above, or inherited).
+5.  Because the TDS uses the set of all given path values to map URLs to datasets, *_each datasetScan path MUST be unique
+across all config catalogs on a given TDS installation_*.
 
 == Inherited Metadata
 
@@ -141,6 +130,7 @@ you want all of its contained datasets to inherit the metadata, so add
 an inherited *metadata* element contained in the *datasetScan* element,
 for example:
 
+[source,xml]
 ---------------------------------------------------------------------------------------
 <catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"
     xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0">
@@ -159,8 +149,7 @@ for example:
 == Including Only the Desired Files
 
 A _datasetScan_ element can specify which files and directories it will
-include with a _filter_ element (also see
-<<../catalog/InvCatalogServerSpec#,server catalog spec>> for
+include with a _filter_ element (also see <<../catalog/InvCatalogServerSpec#filter,server catalog spec>> for
 details). When no filter element is given, all files and directories are
 included in the generated catalog(s). Adding a *filter* element to your
 datasetScan element allows you to include (and/or exclude) the files and
@@ -168,6 +157,7 @@ directories as you desire. For instance, the following filter and
 selector elements will only include files that end in ".grib1" and
 exclude any file that ends with "*_0000.grib1".
 
+[source,xml]
 ------------------------------------
 <filter>
   <include wildcard="*.grib1"/>
@@ -175,20 +165,20 @@ exclude any file that ends with "*_0000.grib1".
 </filter>
 ------------------------------------
 
-You can specify which files to include or exclude using either wildcard
-patterns (with the _*wildcard*_ attribute) or
-http://www.regular-expressions.info/[regular expressions] (using the
-_*regExp*_ attribute). If the wildcard pattern (or the regular
-expression) matches the dataset name, the dataset is included or
-excluded as specified. By default, includes and excludes apply only to
-regular files (atomic datasets). You can specify that they apply to
-directories (collection datasets) as well by using the _*atomic*_ and
-_*collection*_ attributes. For instance, the additional selector in this
+You can specify which files to include or exclude using either wildcard patterns (with the *_wildcard_* attribute) or
+http://www.regular-expressions.info/[regular expressions] (with the *_regExp_* attribute).
+If the wildcard or regular expression matches the dataset name, the dataset is included or excluded as specified.
+By default, includes and excludes apply only to regular files (atomic datasets).
+You can specify that they apply to directories (collection datasets) as well by using the _*atomic*_ and
+_*collection*_ attributes.
+
+For instance, the additional selector in this
 filter element means that only directories that don’t start with
 "CONUS" will be cataloged (since the default value of *atomic* is
 true, we have to explicitly set it to false if we only want to filter
 directories):
 
+[source,xml]
 ---------------------------------------------------------------
 <filter>
   <include wildcard="*.grib1"/>
@@ -198,14 +188,14 @@ directories):
 ---------------------------------------------------------------
 
 Its a good idea to always use a filter element with explicit includes,
-so that if stray files accidentally get into your data directories, they
-wont generate erroneous catalog entries. This is also known as
-__whitelisting__.
+so if stray files accidentally get into your data directories, they
+wont generate erroneous catalog entries. This is known as _whitelisting_.
 
 [link:#sample2[Sample config catalog 2]] +
 
 Complicated matching can be done with regular expressions, eg:
 
+[source,xml]
 ----------------------------------------------------------
 <filter>
   <include regExp="PROFILER_.*_2013110[67]_[0-9]{4}\.nc"/>
@@ -227,6 +217,7 @@ catalog).
 Datasets at each collection level are listed in ascending order by name.
 To specify that they are to be sorted in reverse order:
 
+[source,xml]
 --------------------------------
 <filesSort increasing="false" />
 --------------------------------
@@ -245,33 +236,31 @@ The simplest way to enable this is to add the attribute
 _addLatest="true"_ to the *datasetScan* element. The _latest resolver
 service_ will be automatically added to the catalog.
 
+[source,xml]
 ---------------------------------------------------------------------------------------------------------------
-<datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver" addLatest="true" >
+<datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver"
+    addLatest="true" >
  ...
 </datasetScan>
 ---------------------------------------------------------------------------------------------------------------
 
-The *<addLatest>* child element allows more options in configuring the
-latest service:
+The *<addLatest>* child element allows more options in configuring the latest service:
 
+[source,xml]
 ----------------------------------------------------------------------------------------------
 <datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver" >
   <addLatest name="Latest Run" top="false" lastModifiedLimit="60000" />
 </datasetScan>
 ----------------------------------------------------------------------------------------------
 
-where the attributes mean:
+where the addLatest attributes mean:
 
-1.  **name**: the name of the dataset in the catalog (default
-"latest")
-2.  **top**: place link on top (try) or bottom (false) of the
-catalogScan (default true)
-3.  **lastModifiedLimit**: files whose last modified date is less than
-this amount (in minutes, may be fractional) are excluded. (default 0)
+1.  *name*: the name of the dataset in the catalog (default "latest")
+2.  *top*: place link on top (try) or bottom (false) of the catalogScan (default true)
+3.  *lastModifiedLimit*: files whose last modified date is less than this amount (in minutes, may be fractional) are excluded. (default 0)
 
 Also see
-<<../catalog/InvCatalogServerSpec#addProxies_Element,Server-side
-Catalog specification>> document.
+<<../catalog/InvCatalogServerSpec#addLatest,Server-side Catalog specification>> document.
 
 == Adding _timeCoverage_ Elements
 
@@ -293,8 +282,7 @@ coverage:
 
 1.  The _*datasetNameMatchPattern*_ attribute value is used for a
 regular expression match on the dataset name. If a match is found, a
-*timeCoverage* element is added to the dataset. The match pattern should
-include
+*timeCoverage* element is added to the dataset. The match pattern should include
 http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html#cg[capturing
 groups] which allow the match to save substrings from the dataset
 name. +
@@ -307,6 +295,7 @@ resulting *timeCoverage* element. +
 
 Example 1: The *addTimeCoverage* element,
 
+[source,xml]
 ----------------------------------------------------------------------------------------------
 <datasetScan name="GRIB2 Data" path="grib2" location="c:/data/grib2/" serviceName="myserver">
   <addTimeCoverage
@@ -318,6 +307,7 @@ Example 1: The *addTimeCoverage* element,
 
 results in the following timeCoverage element:
 
+[source,xml]
 -------------------------------------
  <timeCoverage>
    <start>2005-07-18T12:00:00</start>
@@ -333,12 +323,13 @@ attribute takes precedence.
 
 == Naming Datasets
 
-If no namer element is specified, all datasets are named with the
-corresponding file name. By adding a namer element, you can specify more
+By default, datasets are named with the corresponding file name.
+By adding a namer element, you can specify a more
 human readable dataset names. The following namer looks for datasets
 named "GFS" or "NCEP" and renames them with the corresponding
 replace string: +
 
+[source,xml]
 -------------------------------------------------------------------
 <namer>
   <regExpOnName regExp="GFS" replaceString="NCEP GFS model data" />
@@ -367,6 +358,7 @@ replacement in the string "$2 are $1." would result in the string
 
 Here’s an example namer:
 
+[source,xml]
 -----------------------------------------------------------------------------
 <namer>
   <regExpOnName regExp="([0-9]{4})([0-9]{2})([0-9]{2})_([0-9]{2})([0-9]{2})"
@@ -394,6 +386,7 @@ group references in the replaceString attribute value, we get the name
 "NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT". So, when cataloged,
 this dataset would end up as something like this: +
 
+[source,xml]
 --------------------------------------------------------------------------------------
 <dataset name="NCEP GFS 191km Alaska 2005-10-11 00:00:00 GMT"
          urlPath="models/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_20051011_0000.grib1"/>
@@ -403,6 +396,7 @@ this dataset would end up as something like this: +
 
 [[sample1]]Basic catalog:
 
+[source,xml]
 ----------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"
@@ -418,6 +412,7 @@ this dataset would end up as something like this: +
 
 [[sample2]]Catalog with wildcard *filter* element:
 
+[source,xml]
 ----------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"
@@ -439,6 +434,7 @@ this dataset would end up as something like this: +
 [[sample3]]Catalog with *filter* and *addTimeCoverage* elements using
 http://www.regular-expressions.info/[regular expressions]: +
 
+[source,xml]
 ---------------------------------------------------------------------------------------------------------------
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog name="Unidata Workshop 2006 - NCEP Model Data" version="1.0.1"

@@ -414,8 +414,8 @@ public class NcMLWriter {
       attElem.setAttribute("type", dt.toString());
 
     if (attribute.getLength() == 0) {
-      if (attribute.isUnsigned())
-        attElem.setAttribute("isUnsigned", "true");
+      //if (attribute.isUnsigned())
+      //  attElem.setAttribute("isUnsigned", "true");
       return attElem;
     }
 
@@ -430,6 +430,7 @@ public class NcMLWriter {
       attElem.setAttribute("value", Parse.cleanCharacterData(buff.toString()));
       if (attribute.getLength() > 1)
         attElem.setAttribute("separator", "|");
+
     } else {
       StringBuilder buff = new StringBuilder();
       for (int i = 0; i < attribute.getLength(); i++) {
@@ -439,8 +440,8 @@ public class NcMLWriter {
       }
       attElem.setAttribute("value", buff.toString());
 
-      if (attribute.isUnsigned())
-        attElem.setAttribute("isUnsigned", "true");
+      //if (attribute.isUnsigned())
+      //  attElem.setAttribute("isUnsigned", "true");
     }
     return attElem;
   }

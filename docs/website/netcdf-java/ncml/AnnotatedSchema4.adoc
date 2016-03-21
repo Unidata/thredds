@@ -1,12 +1,13 @@
 :source-highlighter: coderay
 [[threddsDocs]]
+:toc:
 
 = Annotated Schema for NcML
 
 == Overview
 
-An _*NcML document*_ is an XML document (aka an _instance_ document)
-whose contents are described and constrained by __*NcML Schema-2.2*__.
+An *_NcML document_* is an XML document (aka an _instance_ document)
+whose contents are described and constrained by *_NcML Schema-2.2_*.
 NcML Schema-2.2 combines the earlier _NcML core schema_ which is an XML
 description of the netCDF-Java / CDM data model, with the earlier __NcML
 dataset schema__, which allows you to define, redefine, aggregate, and
@@ -20,8 +21,7 @@ aggregation of netCDF files, or a self-contained dataset (i.e. all the
 data is included in the NcML document and there is no separate netCDF
 file holding the data). An NcML document therefore should not
 necessarily be thought of as a physical netCDF file, but rather the
-"public interface" to a set of data conforming to the netCDF data
-model.
+"public interface" to a set of data conforming to the netCDF data model.
 
 *_NcML Schema-2.2_* is written in the http://www.w3.org/XML/Schema[W3C XML Schema] language, and
  represents the netCDF-Java / CDM data model, which schematically looks like this in
@@ -36,18 +36,7 @@ _forecastModelRunCollection, forecastModelRunSingleCollection,
 joinExisting_ and _joinNew_ aggregation types are called *_outer
 aggregations_* because they work on the outer (first) dimension.
 
-=== schema Element
-
-[source,xml]
-----
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
-  elementFormDefault="qualified">
-----
-
-=== netcdf Element
+=== *netcdf* Element
 
 The element *_netcdf_* is the root tag of the NcML instance document, and is said to define a *_NetCDF dataset_*.
 
@@ -179,11 +168,10 @@ An example:
 </netcdf>
 ----
 
-=== *group Element*
+=== *group* Element
 
 A _*group*_ element represents a netCDF group, a container for
-__*variable*__, __*dimension*__, __*attribute*__, or other _*group*_
-elements.
+__*variable*__, __*dimension*__, __*attribute*__, or other _*group*_ elements.
 
 [source,xml]
 ----
@@ -212,7 +200,7 @@ remove elements coming from the referenced dataset.
 its containing _*group*_ or *_netcdf_* element.
 3.  The optional attribute _*orgName*_ is used when renaming a group.
 
-=== *dimension Element*
+=== *dimension* Element
 
 The _*dimension*_ element represents a netCDF dimension, i.e. a named
 index of specified length.
@@ -249,7 +237,7 @@ _false_ when the dimension is private to the variable.
 6.  The optional attribute _*orgName*_ is used when renaming a
 dimension.
 
-=== *variable Element*
+=== *variable* Element
 
 A _*variable*_ element represents a netCDF variable, i.e. a scalar or
 multidimensional array of specified type indexed by 0 or more
@@ -292,8 +280,7 @@ is set to a constant.
 6.  You can remove attributes from the underlying variable.
 7.  The mandatory _*name*_ attribute must be unique among variables
 within its containing _*group, variable,* or_ *_netcdf_* element.
-8.  The _*type*_ attribute is one of the enumerated
-link:#DataType[DataTypes].
+8.  The _*type*_ attribute is one of the enumerated <<DataType>>.
 9.  The typedef is the name of an enumerated Typedef. Can be used only
 for *_type=enum1, enum2_* or **_enum4_**.
 10. The _*shape*_ attribute lists the names of the dimensions the
@@ -305,14 +292,12 @@ variables may omit this attribute, although this is deprecated.
 11. The optional attribute _*orgName*_ is used when renaming a variable.
 .
 
-=== *values Element*
+=== *values* Element
 
-A _*values*_ element specifies the data values of a variable, either by
-listing them for example: *<values>-109.0 -107.0 -115.0
-93.923230</values>* or by specifying a start and increment, for example:
-**<values start="-109.5" increment="2.0" />**. For a
-multi-dimensional variable, the values must be listed compatibly with
-the size and shape of the variable (slowest varying dimension first).
+A *_values_* element specifies the data values of a variable, either by
+listing them for example: _<values>-109.0 -107.0 -115.0 93.923230</values>_ or by specifying a start and increment, for example:
+_<values start="-109.5" increment="2.0" />_.
+For a multi-dimensional variable, the values must be listed compatibly with the size and shape of the variable (slowest varying dimension first).
 
 [source,xml]
 ----
@@ -342,7 +327,14 @@ specify a global attribute, use __*@gattname*__. For a variable attribute
 use __*varName@attName*__. The data type and the shape of the variable
 must agree with the attribute.
 
-=== *attribute Element*
+[source,xml]
+----
+  <variable name="station_name" shape="name_strlen" type="char">
+      <values>gaia</values>
+  </variable>
+----
+
+=== *attribute* Element
 
 The _*attribute*_ elements represents a netCDF attribute, i.e. a
 name-value pair of specified type. Its value may be specified in the
@@ -357,23 +349,20 @@ _*value*_ attribute or in the element content**.**
 (3)   <xsd:attribute name="value" type="xsd:string" />
 (4)   <xsd:attribute name="separator" type="xsd:string" />
 (5)   <xsd:attribute name="orgName" type="xsd:string"/>
-(6)   <xsd:attribute name="isUnsigned" type="xsd:boolean"/>
+(6)   <xsd:attribute name="isUnsigned" type="xsd:boolean"/> <!-- deprecated - use unsigned type -->
     </xsd:complexType>
   </xsd:element>
 ----
 
 1.  The mandatory _*name*_ attribute must be unique among attributes
 within its containing _*group, variable,*_ or *_netcdf_* element.
-2.  The _*type*_ attribute may be **String, byte, short, int, long,
-float, double**link:#DataType[]. If not specified, it defaults to a
-String.
+2.  The _*type*_ attribute may be any <<DataType>>. If not specified, it defaults to a String.
 3.  The _value_ attribute contains the actual data of the _attribute_
 element. In the most common case of single-valued attributes, a single
 number or string will be listed (as in value="3.0"), while in the less
 frequent case of multi-valued attributes, all the numbers will be listed
 and separated by a blank or optionally some other character (as in
-value="3.0 4.0 5.0"). Values can also be specified in the element
-content:
+value="3.0 4.0 5.0"). Values can also be specified in the element content:
 +
 [source,xml]
 ----
@@ -389,17 +378,16 @@ the list of values are separated by whitespace. A different token
 separator can be specified using the _*separator*_ attribute.
 5.  The optional attribute _*orgName*_ is used when renaming an existing
 attribute.
-6.  The attribute’s values may be unsigned (if _byte, short, int_ or
-__long__). By default, they are signed.
+6.  *_isUnsigned_* is deprecated. Use the type to specify signed or unsigned.
 
-=== *DataType Type*
+=== *DataType* enumeration
 
 The DataType Type is an enumerated list of the data types allowed for
 NcML _Variable_ objects.
 
 [source,xml]
 ----
- <xsd:simpleType name="DataType">
+  <xsd:simpleType name="DataType">
     <xsd:restriction base="xsd:token">
       <xsd:enumeration value="byte"/>
       <xsd:enumeration value="char"/>
@@ -416,16 +404,18 @@ NcML _Variable_ objects.
       <xsd:enumeration value="enum1"/>
       <xsd:enumeration value="enum2"/>
       <xsd:enumeration value="enum4"/>
+      <xsd:enumeration value="ubyte"/>
+      <xsd:enumeration value="ushort"/>
+      <xsd:enumeration value="ushort"/>
+      <xsd:enumeration value="uint"/>
+      <xsd:enumeration value="ulong"/>
     </xsd:restriction>
   </xsd:simpleType>
 ----
 
-* Unsigned integer types (byte, short, int) are indicated with an
-___Unsigned = "true__" attribute on the Variable.
-* A Variable with type enum1. enum2 or enum4 will refer to a
-*enumTypedef* object. Call Variable.getEnumTypedef().
+* A Variable with type enum1. enum2 or enum4 will refer to a *enumTypedef* object. Call Variable.getEnumTypedef().
 
-=== *enumTypedef Element*
+=== *enumTypedef* element
 
 The enumTypedef element defines an enumeration.
 
@@ -473,7 +463,7 @@ Example:
 </netcdf>
 ----
 
-=== *remove Element*
+=== *remove* Element
 
 The remove element is used to remove attribute, dimension, variable or
 group objects that are in the referenced dataset. Place the remove
@@ -505,7 +495,7 @@ element in the container of the object to be removed.
 2.  The type of the object to remove: attribute, dimension, variable or
 group.
 
-=== logical view Elements
+=== *logical view* Elements
 
 _(since version 4.4)_
 
@@ -535,7 +525,7 @@ variable. Only one of the logical views can be used per variable.
  </xsd:element>
 ----
 
-=== logicalReduce example:
+==== logicalReduce example:
 
 The original variable has dimensions of length=1 named "latitude" and
 "longitude" :
@@ -566,7 +556,7 @@ Here is the NcML to remove them:
 
 *_Everything following pertains to aggregation, and can be ignored if you are not using aggregation._*
 
-=== aggregation Element
+=== *aggregation* Element
 
 The aggregation element allows multiple datasets to be combined into a
 single logical dataset. There can only be one aggregation element in a
@@ -731,7 +721,7 @@ variable may change, so examine them and do any appropriate conversion
 so that the aggregated coordinate values have consistent units.
 20. Experimental, do not use. +
 
-=== AggregationType Type
+=== *AggregationType* enumeration
 
 [source,xml]
 ----
@@ -753,7 +743,7 @@ forecastModelRunSingleCollection, joinExisting_ and _joinNew_
 aggregation types are called *_outer aggregations_* because they work on
 the outer (first) dimension. +
 
-=== *promoteGlobalAttribute Element*
+=== *promoteGlobalAttribute* Element
 
 [source,xml]
 ----
@@ -777,7 +767,7 @@ dimension and its type will be taken from the attribute type. If theres
 more than one slice in the file (eg in a *joinExisting),* the attribute
 value will be repeated for each coordinate in that file.** +
 
-=== cacheVariable Element
+=== *cacheVariable* Element
 
 [source,xml]
 ----
@@ -799,7 +789,7 @@ ignored, and all other spaces or new lines are collapsed to one single space.
 or "&", they must be encoded using standard XML escape sequences &gt;,
 &lt;, ", &amp; respectively.
 
-== The java.text.SimpleDateFormat
+=== Using java.text.SimpleDateFormat
 
 The following is taken from the javadoc, see
 http://java.sun.com/j2se/1.4.2/docs/api/index.html[here] for full info.
@@ -886,7 +876,7 @@ time zone] |`Pacific Standard Time`; `PST`; `GMT-08:00`
 822 time zone] |`-0800`
 |=======================================================================
 
-=== Examples
+==== Examples
 
 The following examples show how date and time patterns are interpreted
 in the U.S. locale. The given date and time are 2001-07-04 12:08:56
@@ -905,12 +895,11 @@ local time in the U.S. Pacific Time time zone.
 |`"yyMMddHHmmssZ"` |`010704120856-0700`
 |=================================================================
 
-== Regular Expressions : java.util.regexp
+=== Regular Expressions
 
 Regular expressions are used in *scan* elements to match filenames to be
 included in the aggregation. Note that the regexp pattern is matched
-against the _*full pathname*_ of the file (__/dir/file.nc,__ not
-__file.nc__).
+against the _*full pathname*_ of the file (__/dir/file.nc,__ not __file.nc__).
 
 When placing regular expressions in NcML, you don't need to use \\ for \, eg use
 
@@ -930,7 +919,7 @@ This may be confusing if you are used to having to double escape in Java Strings
   Pattern.compile(".*/AG.*\\.nc$")
 ----
 
-=== Examples
+==== Examples
 
 [width="100%",cols="34%,33%,33%",options="header",]
 |======================================
@@ -960,4 +949,4 @@ Resources:
 
 '''''
 
-image:../nc.gif[image] This document was last updated November 2015
+image:../nc.gif[image] This document was last updated March 2016

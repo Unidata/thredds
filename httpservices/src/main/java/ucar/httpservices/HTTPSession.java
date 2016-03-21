@@ -43,13 +43,10 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.DeflateDecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.entity.InputStreamFactory;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -58,7 +55,6 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.*;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
@@ -78,6 +74,7 @@ import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
@@ -149,6 +146,13 @@ public class HTTPSession implements Closeable
     //////////////////////////////////////////////////
     // Constants
 
+    /**
+     * Determine wether to use a Pooling connection manager
+     * or to manage a bunch of individual connections.
+     */
+    static protected final boolean USEPOOL = true;
+
+
     // Define all the legal properties
     // Previously taken from class AllClientPNames, but that is now
     // deprecated, so just use an enum
@@ -159,7 +163,7 @@ public class HTTPSession implements Closeable
         HANDLE_REDIRECTS,
         HANDLE_AUTHENTICATION,
         MAX_REDIRECTS,
-        MAX_THREADS,
+        MAX_CONNECTIONS,
         SO_TIMEOUT,
         CONN_TIMEOUT,
         CONN_REQ_TIMEOUT,
@@ -177,14 +181,14 @@ public class HTTPSession implements Closeable
     static final public String HEADER_USERAGENT = "User-Agent";
     static final public String ACCEPT_ENCODING = "Accept-Encoding";
 
-    static final int DFALTTHREADCOUNT = 50;
     static final int DFALTREDIRECTS = 25;
     static final int DFALTCONNTIMEOUT = 1 * 60 * 1000; // 1 minutes (60000 milliseconds)
     static final int DFALTCONNREQTIMEOUT = DFALTCONNTIMEOUT;
     static final int DFALTSOTIMEOUT = 5 * 60 * 1000; // 5 minutes (300000 milliseconds)
 
-    static final int DFALTRETRIES = 3;
-    static final int DFALTUNAVAILRETRIES = 3;
+    static final int DFALTMAXCONNS = 20;
+    static final int DFALTRETRIES = 1;
+    static final int DFALTUNAVAILRETRIES = 1;
     static final int DFALTUNAVAILINTERVAL = 3000; // 3 seconds
     static final String DFALTUSERAGENT = "/NetcdfJava/HttpClient4.4";
 
@@ -263,12 +267,12 @@ public class HTTPSession implements Closeable
     }
 
     // For communication between HTTPSession.execute and HTTPMethod.execute.
-    static /*package*/ class ExecState
+   /* static package class ExecState
     {
         public HttpRequestBase request = null;
-        public CloseableHttpResponse response = null;
+        public HttpResponse response = null;
     }
-
+        */
     static /*package*/ enum Methods
     {
         Get("get"), Head("head"), Put("put"), Post("post"), Options("options");
@@ -374,8 +378,7 @@ public class HTTPSession implements Closeable
     static protected List<HttpRequestInterceptor> dbgreq = new CopyOnWriteArrayList<>();
     static protected List<HttpResponseInterceptor> dbgrsp = new CopyOnWriteArrayList<>();
 
-    // Documentation claims that this is thread safe.
-    static protected PoolingHttpClientConnectionManager connmgr;
+    static protected HTTPConnections connmgr;
 
     static protected Map<String, InputStreamFactory> contentDecoderMap;
 
@@ -394,7 +397,6 @@ public class HTTPSession implements Closeable
     static protected String trustpath = null;
     static protected String trustpassword = null;
     static protected SSLConnectionSocketFactory globalsslfactory = null;
-    static protected Registry<ConnectionSocketFactory> sslregistry = null;
 
     // Should effectively be final if not null
     static protected HttpHost httpproxy = null;
@@ -406,6 +408,10 @@ public class HTTPSession implements Closeable
     static protected Boolean globaldebugheaders = null;
 
     static { // watch out: order is important for these initializers
+        if(USEPOOL)
+            connmgr = new HTTPConnectionPool();
+        else
+            connmgr = new HTTPConnectionSimple();
         CEKILL = new HTTPUtil.ContentEncodingInterceptor();
         contentDecoderMap = new HashMap<String, InputStreamFactory>();
         contentDecoderMap.put("zip", new ZipStreamFactory());
@@ -413,9 +419,8 @@ public class HTTPSession implements Closeable
         globalsettings = new Settings();
         setDefaults(globalsettings);
         processDFlags(); // Process all -D flags
-        connmgr = new PoolingHttpClientConnectionManager(sslregistry);
         setGlobalUserAgent(DFALTUSERAGENT);
-        // does not work setGlobalThreadCount(DFALTTHREADCOUNT);
+        setGlobalMaxConnections(DFALTMAXCONNS);
         setGlobalConnectionTimeout(DFALTCONNTIMEOUT);
         setGlobalSoTimeout(DFALTSOTIMEOUT);
     }
@@ -482,21 +487,15 @@ public class HTTPSession implements Closeable
         return (String) globalsettings.getParameter(Prop.USER_AGENT);
     }
 
-    static synchronized public void setGlobalThreadCount(int nthreads)
+    static synchronized public void setGlobalMaxConnections(int n)
     {
-        //globalsettings.setParameter(Prop.MAX_THREADS,nthreads);
-        throw new UnsupportedOperationException("HTTPSession.setGlobalThreadCount is currently not working");
+        globalsettings.setParameter(Prop.MAX_CONNECTIONS, n);
+        connmgr.setMaxConnections(n);
     }
 
-    // Alias
-    static public void setGlobalMaxConnections(int nthreads)
+    static synchronized public int getGlobalMaxConnection()
     {
-        setGlobalThreadCount(nthreads);
-    }
-
-    static synchronized public int getGlobalThreadCount()
-    {
-        return connmgr.getMaxTotal();
+        return (Integer) globalsettings.getParameter(Prop.MAX_CONNECTIONS);
     }
 
     // Timeouts
@@ -729,15 +728,12 @@ public class HTTPSession implements Closeable
             }
             globalsslfactory = new SSLConnectionSocketFactory(scxt, new NoopHostnameVerifier());
 
-            RegistryBuilder rb = RegistryBuilder.<ConnectionSocketFactory>create();
-            rb.register("https", globalsslfactory);
-            sslregistry = rb.build();
+            connmgr.addProtocol("http", PlainConnectionSocketFactory.getSocketFactory());
         } catch (KeyStoreException
                 | NoSuchAlgorithmException
                 | KeyManagementException
                 | UnrecoverableEntryException e) {
             log.error("Failed to set key/trust store(s): " + e.getMessage());
-            sslregistry = null;
             globalsslfactory = null;
         }
     }
@@ -782,7 +778,7 @@ public class HTTPSession implements Closeable
     // Since can't access CredentialsProvider map, mimic
     protected Map<AuthScope, CredentialsProvider> localcreds = new HashMap<>();
 
-    protected List<ucar.httpservices.HTTPMethod> methodList = new Vector<HTTPMethod>();
+    protected ConcurrentSkipListSet<HTTPMethod> methods = new ConcurrentSkipListSet<>();
     protected String identifier = "Session";
     protected Settings localsettings = new Settings();
 
@@ -794,12 +790,11 @@ public class HTTPSession implements Closeable
     // But we do need away to clear so that e.g. we can clear credentials cache
     protected HttpClientContext sessioncontext = HttpClientContext.create();
 
+    protected URI requestURI = null;  // full uri from the HTTPMethod call
+
     // cached and recreated as needed
     protected boolean cachevalid = false; // Are cached items up-to-date?
-    protected CloseableHttpClient cachedclient = null;
     protected RequestConfig cachedconfig = null;
-    protected URI requestURI = null;  // full uri from the HTTPMethod call
-    protected ExecState execution = new ExecState();
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -987,12 +982,6 @@ public class HTTPSession implements Closeable
 
     // make package specific
 
-    HttpClient
-    getClient()
-    {
-        return this.cachedclient;
-    }
-
     HttpClientContext
     getExecutionContext()
     {
@@ -1015,23 +1004,25 @@ public class HTTPSession implements Closeable
     {
         if(this.closed)
             return; // multiple calls ok
-        while(methodList.size() > 0) {
-            HTTPMethod m = methodList.get(0);
+        for(HTTPMethod m : methods) {
             m.close(); // forcibly close; will invoke removemethod().
+            connmgr.freeManager(m);
         }
+        methods.clear();
         closed = true;
     }
 
     synchronized HTTPSession addMethod(HTTPMethod m)
     {
-        if(!methodList.contains(m))
-            methodList.add(m);
+        if(methods.contains(m))
+            methods.add(m);
         return this;
     }
 
     synchronized HTTPSession removeMethod(HTTPMethod m)
     {
-        methodList.remove(m);
+        methods.remove(m);
+        connmgr.freeManager(m);
         return this;
     }
 
@@ -1111,45 +1102,52 @@ public class HTTPSession implements Closeable
      *
      * @param method
      * @param methoduri
-     * @param rb
+     * @param req
      * @return Request+Response pair
      * @throws HTTPException
      */
 
-    ExecState
-    execute(HTTPMethod method, URI methoduri, RequestBuilder rb)
+    HttpResponse
+    execute(HTTPMethod method, URI methoduri, HttpRequestBase req)
             throws HTTPException
     {
-        this.execution = new ExecState();
         this.requestURI = methoduri;
         AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(methoduri);
         AuthScope target = HTTPAuthUtil.authscopeUpgrade(this.scope, methodscope);
+        HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
+        HttpClient httpclient;
+        HttpClientBuilder cb = HttpClients.custom();
+        configClient(cb, method, localsettings);
+        setAuthenticationAndProxy(cb);
+        httpclient = cb.build();
+        try {
+            HttpResponse response = httpclient.execute(targethost, req, this.sessioncontext);
+            if(response == null)
+                throw new HTTPException("HTTPSession.execute: Response was null");
+            return response;
+        } catch (Exception ioe) {
+            throw new HTTPException(ioe);
+        }
+    }
+
+    public HttpRequestBase
+    buildrequest(RequestBuilder rb)
+            throws HTTPException
+    {
+        HttpRequestBase request;
         synchronized (this) {// keep coverity happy
             //Merge Settings;
             Settings merged = HTTPUtil.merge(globalsettings, localsettings);
-            if(!this.cachevalid) {
+            if(this.cachevalid) { // Needs rebuild
                 RequestConfig.Builder rcb = RequestConfig.custom();
                 this.cachedconfig = configureRequest(rcb, merged);
-                HttpClientBuilder cb = HttpClients.custom();
-                configClient(cb, merged);
-                setAuthenticationAndProxy(cb);
-                this.cachedclient = cb.build();
-                rb.setConfig(this.cachedconfig);
-                this.cachevalid = true;
             }
+            rb.setConfig(this.cachedconfig);
+            request = (HttpRequestBase) rb.build();
+            if(request == null)
+                throw new HTTPException("HTTPSession.buildrequest: requestbuilder failed");
         }
-	try {
-            this.execution.request = (HttpRequestBase) rb.build();
-            if(this.execution.request == null)
-	        throw new HTTPException("HTTPSession.execute: requestbuilder failed");
-            HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
-            this.execution.response = cachedclient.execute(targethost, this.execution.request, this.sessioncontext);
-            if(this.execution.response == null)
-	        throw new HTTPException("HTTPSession.execute: Response was null");
-        } catch (IOException ioe) {
-            throw new HTTPException(ioe);
-        }
-        return this.execution;
+        return request;
     }
 
     protected RequestConfig
@@ -1173,9 +1171,6 @@ public class HTTPSession implements Closeable
                 rcb.setConnectTimeout((Integer) value);
             } else if(key == Prop.CONN_REQ_TIMEOUT) {
                 rcb.setConnectionRequestTimeout((Integer) value);
-            } else if(key == Prop.MAX_THREADS) {
-                connmgr.setMaxTotal((Integer) value);
-                connmgr.setDefaultMaxPerRoute((Integer) value);
             } /* else ignore */
         }
         RequestConfig cfg = rcb.build();
@@ -1183,7 +1178,7 @@ public class HTTPSession implements Closeable
     }
 
     protected void
-    configClient(HttpClientBuilder cb, Settings settings)
+    configClient(HttpClientBuilder cb, HTTPMethod m, Settings settings)
             throws HTTPException
     {
         cb.useSystemProperties();
@@ -1192,6 +1187,7 @@ public class HTTPSession implements Closeable
             cb.setUserAgent(agent);
         setInterceptors(cb);
         cb.setContentDecoderRegistry(contentDecoderMap);
+        connmgr.setClientManager(cb, m);
     }
 
     /**
@@ -1343,23 +1339,13 @@ public class HTTPSession implements Closeable
 
     synchronized public int getMethodcount()
     {
-        return methodList.size();
+        return methods.size();
     }
 
     public RequestConfig
     getDebugConfig()
     {
         return (this.cachevalid ? this.cachedconfig : null);
-    }
-
-    public Header[]
-    getRequestHeaders()
-    {
-        if(!this.cachevalid) return null;
-        Header[] hdrs = null;
-        if(this.execution.request != null)
-            hdrs = this.execution.request.getAllHeaders();
-        return hdrs;
     }
 
     //////////////////////////////////////////////////
@@ -1370,30 +1356,16 @@ public class HTTPSession implements Closeable
     // When testing, we need to be able to clean up
     // all existing sessions because JUnit can run all
     // test within a single jvm.
-    static List<HTTPSession> sessionList = null; // List of all HTTPSession instances
+    static Set<HTTPSession> sessionList = null; // List of all HTTPSession instances
 
     // only used when testing flag is set
     static public boolean TESTING = false; // set to true during testing, should be false otherwise
-
-    static protected synchronized void kill()
-    {
-        if(sessionList != null) {
-            for(HTTPSession session : sessionList) {
-                session.close();
-            }
-            sessionList.clear();
-            // Rebuild the connection manager
-            connmgr.shutdown();
-            connmgr = new PoolingHttpClientConnectionManager(sslregistry);
-            setGlobalThreadCount(DFALTTHREADCOUNT);
-        }
-    }
 
     // If we are testing, then track the sessions for kill
     static protected synchronized void track(HTTPSession session)
     {
         if(sessionList == null)
-            sessionList = new ArrayList<HTTPSession>();
+            sessionList = new ConcurrentSkipListSet<HTTPSession>();
         sessionList.add(session);
     }
 
@@ -1562,4 +1534,24 @@ public class HTTPSession implements Closeable
         return getSessionURI();
     }
 
+
+    //////////////////////////////////////////////////
+    // obsolete
+
+    static protected synchronized void kill()
+    {
+        if(sessionList != null) {
+            for(HTTPSession session : sessionList) {
+                session.close();
+            }
+            sessionList.clear();
+            connmgr.close();
+        }
+    }
+
+
+    static public void validatestate()
+    {
+        connmgr.validate();
+    }
 }
