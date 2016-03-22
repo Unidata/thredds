@@ -727,8 +727,7 @@ public class HTTPSession implements Closeable
                 scxt = sslbuilder.build();
             }
             globalsslfactory = new SSLConnectionSocketFactory(scxt, new NoopHostnameVerifier());
-
-            connmgr.addProtocol("http", PlainConnectionSocketFactory.getSocketFactory());
+            connmgr.addProtocol("https", globalsslfactory);
         } catch (KeyStoreException
                 | NoSuchAlgorithmException
                 | KeyManagementException
