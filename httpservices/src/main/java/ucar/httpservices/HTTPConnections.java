@@ -58,7 +58,7 @@ abstract class HTTPConnections
     //////////////////////////////////////////////////
     // Constants
 
-    static final int DFALTMAXCONNS = 5;
+    static final int DFALTMAXCONNS = 10;
 
     //////////////////////////////////////////////////
     // Shared Instance variables
@@ -247,8 +247,10 @@ class HTTPConnectionPool extends HTTPConnections
     protected PoolingHttpClientConnectionManager
     getPool()
     {
-        if(poolmgr == null)
+        if(poolmgr == null) {
             this.poolmgr = new PoolingHttpClientConnectionManager(getRegistry());
+            setMaxConnections(this.maxconnections);
+        }
         return this.poolmgr;
     }
 
@@ -274,5 +276,20 @@ class HTTPConnectionPool extends HTTPConnections
             poolmgr = null;
         }
     }
+
+    @Override
+    public void setMaxConnections(int n)
+    {
+        if(n > 0) {
+            super.setMaxConnections(n);
+            synchronized (this) {
+                if(poolmgr != null) {
+                    poolmgr.setDefaultMaxPerRoute(n);
+                    poolmgr.setMaxTotal(n);
+                }
+            }
+        }
+    }
+
 
 }

@@ -46,7 +46,6 @@ import org.apache.http.client.entity.InputStreamFactory;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -228,7 +227,7 @@ public class HTTPSession implements Closeable
     }
 
     /**
-     * Sub-class Hashmap<String,Object> for mnemonic convenience
+     * Sub-class Hashmap<Prop,Object> for mnemonic convenience
      * and for synchronized access.
      */
     static class Settings extends HashMap<Prop, Object>
@@ -1100,60 +1099,77 @@ public class HTTPSession implements Closeable
      * has inserted its headers into request.
      *
      * @param method
-     * @param methoduri
-     * @param req
+     * @param rb
+     * @param settings
+     * @param userheaders
      * @return Request+Response pair
      * @throws HTTPException
      */
 
-    HttpResponse
-    execute(HTTPMethod method, URI methoduri, HttpRequestBase req)
+    HttpMessage[]
+    execute(HTTPMethod method, RequestBuilder rb, Settings settings, Map<String,String> userheaders)
             throws HTTPException
     {
-        this.requestURI = methoduri;
-        AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(methoduri);
+        HttpMessage[] result = new HttpMessage[]{null,null};
+        this.requestURI = method.getURI();
+        AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(this.requestURI);
         AuthScope target = HTTPAuthUtil.authscopeUpgrade(this.scope, methodscope);
         HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
         HttpClient httpclient;
         HttpClientBuilder cb = HttpClients.custom();
-        configClient(cb, method, localsettings);
+        configClient(cb, method, settings);
         setAuthenticationAndProxy(cb);
+        setheaders(rb,userheaders);
+        HttpRequestBase req = buildRequest(rb, settings);
+        result[0] = req;
         httpclient = cb.build();
         try {
             HttpResponse response = httpclient.execute(targethost, req, this.sessioncontext);
             if(response == null)
                 throw new HTTPException("HTTPSession.execute: Response was null");
-            return response;
+            result[1] = response;
         } catch (Exception ioe) {
             throw new HTTPException(ioe);
         }
+        return result;
     }
 
-    public HttpRequestBase
-    buildrequest(RequestBuilder rb)
-            throws HTTPException
+    /*package scope*/
+    Settings mergedSettings()
     {
-        HttpRequestBase request;
+        Settings merged;
         synchronized (this) {// keep coverity happy
             //Merge Settings;
-            Settings merged = HTTPUtil.merge(globalsettings, localsettings);
-            if(this.cachevalid) { // Needs rebuild
-                RequestConfig.Builder rcb = RequestConfig.custom();
-                this.cachedconfig = configureRequest(rcb, merged);
+            merged = HTTPUtil.merge(globalsettings, localsettings);
+        }
+        return merged;
+    }
+
+    protected HttpRequestBase
+    buildRequest(RequestBuilder rb, Settings settings)
+            throws HTTPException
+    {
+        HttpRequestBase req = null;
+        synchronized (this) {// keep coverity happy
+            if(!this.cachevalid) { // Needs rebuild
+                this.cachedconfig = buildRequestConfig(settings);
+                this.cachevalid = true;
             }
             rb.setConfig(this.cachedconfig);
-            request = (HttpRequestBase) rb.build();
-            if(request == null)
-                throw new HTTPException("HTTPSession.buildrequest: requestbuilder failed");
+            req = (HttpRequestBase) rb.build();
         }
-        return request;
+        if(req == null)
+            throw new HTTPException("HTTPSession.buildrequest: requestbuilder failed");
+        return req;
     }
 
     protected RequestConfig
-    configureRequest(RequestConfig.Builder rcb, Settings settings)
+    buildRequestConfig(Settings settings)
             throws HTTPException
     {
         // Configure the RequestConfig
+        HttpRequestBase request;
+        RequestConfig.Builder rcb = RequestConfig.custom();
         for(Prop key : settings.getKeys()) {
             Object value = settings.getParameter(key);
             boolean tf = (value instanceof Boolean ? (Boolean) value : false);
@@ -1188,6 +1204,18 @@ public class HTTPSession implements Closeable
         cb.setContentDecoderRegistry(contentDecoderMap);
         connmgr.setClientManager(cb, m);
     }
+
+    protected void
+    setheaders(RequestBuilder rb, Map<String,String> headers)
+    {
+        // Add any defined headers
+        if(headers.size() > 0) {
+            for(HashMap.Entry<String,String> entry : headers.entrySet()) {
+                rb.addHeader(entry.getKey(),entry.getValue());
+            }
+        }
+    }
+
 
     /**
      * Handle authentication and Proxy'ing

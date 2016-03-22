@@ -50,8 +50,9 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -180,7 +181,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     protected boolean closed = false;
     protected boolean executed = false;
 
-    protected List<Header> headers = new ArrayList<Header>();
+    protected Map<String, String> headers = new HashMap<String, String>();
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -272,21 +273,6 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     }
 
     protected void
-    setheaders(RequestBuilder rb)
-    {
-        if(range != null) {
-            rb.addHeader("Range", "bytes=" + range[0] + "-" + range[1]);
-            range = null;
-        }
-        // Add any defined headers
-        if(this.headers.size() > 0) {
-            for(Header h : this.headers) {
-                rb.addHeader(h);
-            }
-        }
-    }
-
-    protected void
     setcontent(RequestBuilder rb)
     {
         switch (this.methodkind) {
@@ -349,14 +335,18 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             throw new HTTPException("HTTPMethod: session incompatible url: " + this.methodurl);
 
         RequestBuilder rb = buildrequest();
+        HTTPSession.Settings merge = session.mergedSettings();
         try {
-            // Apply settings
             setcontent(rb);
-            // Add any user defined headers
-            setheaders(rb);
-            this.lastrequest = session.buildrequest(rb);
-            // use the session to do the heavy lifting.
-            this.lastresponse = session.execute(this, methodurl, this.lastrequest);
+            // add range header
+            if(this.range != null) {
+                this.headers.put("Range", "bytes=" + range[0] + "-" + range[1]);
+                range = null;
+            }            // use the session to do the heavy lifting.
+            // wish java had multiple return values
+            HttpMessage[] pair = session.execute(this, rb, merge, this.headers);
+            this.lastrequest = (HttpRequestBase) pair[0];
+            this.lastresponse = (HttpResponse) pair[1];
             return this.lastresponse;
         } catch (Exception ie) {
             throw new HTTPException(ie);
@@ -538,9 +528,9 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         return "UTF-8";
     }
 
-    public String getURL()
+    public URI getURI()
     {
-        return this.methodurl.toString();
+        return this.methodurl;
     }
 
    /* public String getProtocolVersion()
@@ -697,7 +687,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     {
         try {
             for(Header h : headers) {
-                this.headers.add(h);
+                this.headers.put(h.getName(), h.getValue());
             }
         } catch (Exception e) {
             throw new HTTPException(e);
@@ -717,7 +707,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     setRequestHeader(Header h) throws HTTPException
     {
         try {
-            headers.add(h);
+            this.headers.put(h.getName(), h.getValue());
         } catch (Exception e) {
             throw new HTTPException("cause", e);
         }
