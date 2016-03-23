@@ -98,14 +98,8 @@ public class TestHTTPMethod extends UnitTestCommon
             byte[] buffer = new byte[EXPECTED];
             int count = stream.read(buffer);
             stream.close(); /* should close the method also */
-            try {
-                method.execute();
-                pass = false;
-            } catch (HTTPException he) {
-                pass = true;
-            }
+            Assert.assertTrue("TestHTTPMethod: stream close did not close method",method.isClosed());
         }
-        Assert.assertTrue("TestHTTPMethod.testGetStream", pass);
     }
 
     @Test
@@ -124,14 +118,14 @@ public class TestHTTPMethod extends UnitTestCommon
             InputStream stream = method.getResponseBodyAsStream();
             byte[] buffer = new byte[EXPECTED];
             int count = stream.read(buffer, 0, 10); // partial read
+            Assert.assertTrue("TestHTTPMethod: partial stream read closed ,ethod",!method.isClosed());
             method.close();
+            Assert.assertTrue("TestHTTPMetthod: method.close() did not close",method.isClosed());
             try {
                 count = stream.read(buffer);
-                pass = false;
             } catch (Throwable t) {
-                pass = true;
+                Assert.assertTrue("TestHTTPMethod: stream read after method.close()",method.isClosed());
             }
         }
-        Assert.assertTrue("TestHTTPMethod.testGetStreamPartial", pass);
     }
 }

@@ -1001,25 +1001,24 @@ public class HTTPSession implements Closeable
     synchronized public void close()
     {
         if(this.closed)
-            return; // multiple calls ok
-        for(HTTPMethod m : methods) {
+                return; // multiple calls ok
+        closed = true;
+        for(HTTPMethod m : this.methods) {
             m.close(); // forcibly close; will invoke removemethod().
-            connmgr.freeManager(m);
         }
         methods.clear();
-        closed = true;
     }
 
     synchronized HTTPSession addMethod(HTTPMethod m)
     {
-        if(methods.contains(m))
-            methods.add(m);
+        if(!this.methods.contains(m))
+            this.methods.add(m);
         return this;
     }
 
     synchronized HTTPSession removeMethod(HTTPMethod m)
     {
-        methods.remove(m);
+        this.methods.remove(m);
         connmgr.freeManager(m);
         return this;
     }
@@ -1107,10 +1106,10 @@ public class HTTPSession implements Closeable
      */
 
     HttpMessage[]
-    execute(HTTPMethod method, RequestBuilder rb, Settings settings, Map<String,String> userheaders)
+    execute(HTTPMethod method, RequestBuilder rb, Settings settings, Map<String, String> userheaders)
             throws HTTPException
     {
-        HttpMessage[] result = new HttpMessage[]{null,null};
+        HttpMessage[] result = new HttpMessage[]{null, null};
         this.requestURI = method.getURI();
         AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(this.requestURI);
         AuthScope target = HTTPAuthUtil.authscopeUpgrade(this.scope, methodscope);
@@ -1119,7 +1118,7 @@ public class HTTPSession implements Closeable
         HttpClientBuilder cb = HttpClients.custom();
         configClient(cb, method, settings);
         setAuthenticationAndProxy(cb);
-        setheaders(rb,userheaders);
+        setheaders(rb, userheaders);
         HttpRequestBase req = buildRequest(rb, settings);
         result[0] = req;
         httpclient = cb.build();
@@ -1206,12 +1205,12 @@ public class HTTPSession implements Closeable
     }
 
     protected void
-    setheaders(RequestBuilder rb, Map<String,String> headers)
+    setheaders(RequestBuilder rb, Map<String, String> headers)
     {
         // Add any defined headers
         if(headers.size() > 0) {
-            for(HashMap.Entry<String,String> entry : headers.entrySet()) {
-                rb.addHeader(entry.getKey(),entry.getValue());
+            for(HashMap.Entry<String, String> entry : headers.entrySet()) {
+                rb.addHeader(entry.getKey(), entry.getValue());
             }
         }
     }

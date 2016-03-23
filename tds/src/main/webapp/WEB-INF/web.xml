@@ -156,7 +156,7 @@
     </user-data-constraint>
   </security-constraint>
 
-  <!-- default restricted access dataset uses DIGEST, but not HTTPS -->
+  <!-- default restricted access dataset uses BASIC, but not HTTPS -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>restricted access datasets</web-resource-name>
@@ -169,26 +169,6 @@
       <transport-guarantee>CONFIDENTIAL</transport-guarantee>
     </user-data-constraint -->
   </security-constraint>
-
-
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>restricted access datasets</web-resource-name>
-      <url-pattern>/protected/*</url-pattern>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>restrictedDatasetUser</role-name>
-    </auth-constraint>
-    <!-- user-data-constraint>
-      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint -->
-  </security-constraint>
-
-  <!-- can only have one login-config for entire context. -->
-  <login-config>
-    <auth-method>BASIC</auth-method>
-    <realm-name>THREDDS Data Server</realm-name>
-  </login-config>
 
   <!-- Define security roles. -->
   <security-role>
