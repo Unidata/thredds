@@ -119,6 +119,7 @@ public class UnitTestCommon
     protected boolean prop_debug = DEBUG;
     protected boolean prop_generate = true;
     protected String prop_controls = null;
+    protected boolean prop_display = false;
 
     protected String title = "Testing";
     protected String name = "testcommon";
@@ -177,6 +178,8 @@ public class UnitTestCommon
             prop_ascii = true;
         if(System.getProperty("utf8") != null)
             prop_ascii = false;
+        if(System.getProperty("hasdisplay") != null)
+            prop_display = true;
         if(prop_baseline && prop_diff)
             prop_diff = false;
         prop_controls = System.getProperty("controls", "");

@@ -369,12 +369,15 @@ public class TestAuth extends UnitTestCommon
         }
     }
 
-    @Ignore("Requires access to a display")
     @Test
     public void
     testCache2() throws Exception
     {
         System.err.println("*** Testing: Cache Invalidation Visually");
+        if(!prop_display) {
+            System.err.println("TestCache2 Requires access to a display");
+            return;
+        }
         for(AuthDataBasic data : basictests) {
             System.out.println("*** URL: " + data.url);
 
