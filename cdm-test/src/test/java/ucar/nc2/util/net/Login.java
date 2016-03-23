@@ -82,7 +82,6 @@ public class Login extends JFrame implements CredentialsProvider
             }
             // Is this really necessary?
             upc = new UsernamePasswordCredentials(pieces[0], pieces[1]);
-            //cache.put(scope, upc);
         } else
             upc = null;
         return upc;
