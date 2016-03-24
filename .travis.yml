@@ -22,7 +22,7 @@ before_install:
   - if [[ $TASK == "docs" ]]; then
       gem install asciidoctor coderay;
       pip install --user --upgrade pip;
-      pip install --user linkchecker;
+      pip install --user linkchecker certifi pyopenssl ndg-httpsclient pyasn1;
     fi
 
 install:
