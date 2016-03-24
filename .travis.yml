@@ -21,6 +21,8 @@ env:
 before_install:
   - if [[ $TASK == "docs" ]]; then
       gem install asciidoctor coderay;
+      pip install --user --upgrade pip;
+      pip install --user linkchecker;
     fi
 
 install:
@@ -41,6 +43,9 @@ script:
         echo Doc build produced errors:;
         cat build.log;
         false;
+      else
+        echo Checking links;
+        linkchecker --check-extern netcdf-java tds;
       fi;
     else
       echo If available, test report at;
