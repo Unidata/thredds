@@ -785,8 +785,9 @@ public class HTTPSession implements Closeable
 
     // This context is re-used over all method executions so that we maintain
     // cookies, credentials, etc.
-    // But we do need away to clear so that e.g. we can clear credentials cache
+    // But we do need a way to clear so that e.g. we can clear credentials cache
     protected HttpClientContext sessioncontext = HttpClientContext.create();
+    protected BasicAuthCache sessioncache = new BasicAuthCache();
 
     protected URI requestURI = null;  // full uri from the HTTPMethod call
 
@@ -833,7 +834,8 @@ public class HTTPSession implements Closeable
         this.scopeURI = HTTPAuthUtil.authscopeToURI(scope);
         this.cachevalid = false; // Force build on first use
         this.sessioncontext.setCookieStore(new BasicCookieStore());
-        this.sessioncontext.setAttribute(HttpClientContext.AUTH_CACHE, new BasicAuthCache());
+        this.sessioncache = new BasicAuthCache();
+        this.sessioncontext.setAuthCache(sessioncache);
     }
 
     //////////////////////////////////////////////////
@@ -973,10 +975,25 @@ public class HTTPSession implements Closeable
 
     public HTTPSession clearCredentialsCache()
     {
-        BasicAuthCache ac = (BasicAuthCache) this.sessioncontext.getAttribute(HttpClientContext.AUTH_CACHE);
-        if(ac != null) ac.clear();
+        if(this.sessioncache != null)
+            this.sessioncache.clear();
         return this;
     }
+
+    public HTTPSession clearCredentialsCache(AuthScope template)
+    {
+        if(this.sessioncache != null) {
+            HttpHost h = HTTPAuthUtil.authscopeToHost(template);
+            this.sessioncache.remove(h);
+        }
+        return this;
+    }
+
+    public BasicAuthCache getCredentialsCache()
+    {
+        return this.sessioncache;
+    }
+
 
     // make package specific
 
@@ -1001,7 +1018,7 @@ public class HTTPSession implements Closeable
     synchronized public void close()
     {
         if(this.closed)
-                return; // multiple calls ok
+            return; // multiple calls ok
         closed = true;
         for(HTTPMethod m : this.methods) {
             m.close(); // forcibly close; will invoke removemethod().
