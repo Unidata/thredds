@@ -16,7 +16,7 @@ sections for each of these services.
 
 ==== WCS Configuration
 
-To enable the <<../reference/WCS#,WCS service>> for locally served
+To enable the <<../reference/services/WCS#,WCS service>> for locally served
 datasets, you will need the following in your `threddsConfig.xml` file:
 
 ---------------------
@@ -27,13 +27,13 @@ datasets, you will need the following in your `threddsConfig.xml` file:
 
 Additional WCS configuration options can be set in the
 `threddsConfig.xml` file, more details are available in the
-<<../reference/ThreddsConfigXMLFile.adoc#WCS,WCS section>> of the
+<<../reference/ThreddsConfigXMLFile#WCS,WCS section>> of the
 `threddsConfig.xml` file documentation.
 
 [[wms_configuration]]
 ==== WMS Configuration
 
-To enable the <<../reference/WMS#,WMS service>> for locally served
+To enable the <<../reference/services/WMS#,WMS service>> for locally served
 datasets, you will need the following in your `threddsConfig.xml` file:
 
 ---------------------
@@ -44,12 +44,12 @@ datasets, you will need the following in your `threddsConfig.xml` file:
 
 Additional WMS configuration options can be set in the
 `threddsConfig.xml` file, more details are available in the
-<<../reference/ThreddsConfigXMLFile.adoc#WMS,WMS section>> of the
+<<../reference/ThreddsConfigXMLFile#WMS,WMS section>> of the
 `threddsConfig.xml` file documentation.
 
 ==== ncISO Configuration
 
-To enable the <<../reference/ncISO#,ncISO services>> for locally
+To enable the <<../reference/services/ncISO#,ncISO services>> for locally
 served datasets, you will need the following in your `threddsConfig.xml`
 file:
 
@@ -267,14 +267,9 @@ as base request.
 * IDV (WMS) [free]
 * ToolsUI (WMS) [free]
 * OWSlib (WMS and WCS) [free] - http://pypi.python.org/pypi/OWSLib/
-* GI-go (WMS and WCS) [free] -
-http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome
-* CADCorp (WMS and WCS [commercial] - http://www.cadcorp.com/ - has a
-``no cost'' product called
-http://www.cadcorp.com/products_geographical_information_systems/map_browser.htm[Map
-Browser]
+* GI-go (WMS and WCS) [free] - http://essi-lab.eu/do/view/GIgo/WebHome
 * IDL (WCS) [commercial] -
-http://www.ittvis.com/ProductServices/IDL.aspx
+http://www.harrisgeospatial.com/IntelliEarthSolutions/GeospatialProducts/IDL.aspx
 * gvSIG (WMS and WCS) [free] - http://www.gvsig.org/web/
 
 === Godiva2 WMS Client

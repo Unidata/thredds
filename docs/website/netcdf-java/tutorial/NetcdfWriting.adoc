@@ -9,7 +9,7 @@ the _FileWriter2_ class. If you just want to copy an existing CDM
 dataset, you can use the <<../reference/manPages#nccopy,CDM
 nccopy application>>. By combining nccopy and NcML, you can copy just
 parts of an existing dataset, as well as
-link:../ncml/index.htm#modify[make modifications to it with NcML].
+<<../ncml/index#modify,make modifications to it with NcML>>.
 
 Writing netCDF-4 files requires that you
 <<../reference/netcdf4Clibrary#,install the netCDF-4 C library>>
