@@ -1,9 +1,0 @@
-- Deprecate datasetRoot in service element and add to catalog element (??? or dataset element).
-- Change catalog@base to catalog@xml:base to conform with XML Base spec
-    "The xml:base attribute conforms to the XML Base spec <http://www.w3.org/TR/xmlbase/>. It
-     allows catalog authors to explicitly specify a catalogs base URI. A catalog's base
-     URI is used to resolve relative URIs in the catalog. If a base attribute is not given,
-     the catalog's base URI is the URI of the catalog."
-- Consider dropping (or de-emphasizing? or deprecating?) the metadata type. Is it used anywhere?
-
-- Version TDS datasetScan document to match schema versions (as with InvCat spec versions)
