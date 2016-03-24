@@ -1,8 +1,0 @@
-<h3>Create a dedicated user/group for running Tomcat</h3>
-<p>In this example, both the user and group names will be names <code>tomcat</code>, and the user's home directory, aka <code>${tomcat_home}</code>,  is <code>/opt/tomcat</code> (notice the symlink below).  The groupadd and useradd commands were run as the root:</p>
-<pre>
-<b>#</b> groupadd tomcat
-<b>#</b> useradd -g tomcat -d /opt/tomcat tomcat
-<b>#</b> passwd tomcat
-</pre>
-
