@@ -39,6 +39,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.DeflateDecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
@@ -247,7 +248,7 @@ public class HTTPSession implements Closeable
             return super.get(param);
         }
 
-        public long getIntParameter(Prop param)
+        public Long getIntParameter(Prop param)
         {
             return (Long) super.get(param);
         }
@@ -364,6 +365,8 @@ public class HTTPSession implements Closeable
 
     static Settings globalsettings;
 
+    static HttpRequestRetryHandler globalretryhandler = null;
+
     // Define interceptor instances; use copy on write for thread safety
     static List<HttpRequestInterceptor> reqintercepts = new CopyOnWriteArrayList<HttpRequestInterceptor>();
     static List<HttpResponseInterceptor> rspintercepts = new CopyOnWriteArrayList<HttpResponseInterceptor>();
@@ -383,9 +386,7 @@ public class HTTPSession implements Closeable
 
     //public final HttpClientBuilder setContentDecoderRegistry(Map<String,InputStreamFactory> contentDecoderMap)
 
-    // Since can't access CredentialsProvider map, mimic
-    // All accessing procedures should be synchronized
-    static protected Map<AuthScope, CredentialsProvider> globalcreds = new HashMap<>();
+    static protected Map<AuthScope, HTTPProviderFactory> globalcredfactories = new HashMap<>();
 
     // As taken from the command line, usually
     // Should effectively be final if not null
@@ -602,17 +603,6 @@ public class HTTPSession implements Closeable
     // Authorization
 
     /**
-     * @param provider
-     * @throws HTTPException
-     */
-    static synchronized public void
-    setGlobalCredentialsProvider(CredentialsProvider provider)
-            throws HTTPException
-    {
-        setGlobalCredentialsProvider(provider, (AuthScope) null);
-    }
-
-    /**
      * This is the most general case
      *
      * @param provider the credentials provider
@@ -620,10 +610,14 @@ public class HTTPSession implements Closeable
      * @throws HTTPException
      */
     static public void
-    setGlobalCredentialsProvider(CredentialsProvider provider, AuthScope scope)
+    setCredentialsProviderFactory(HTTPProviderFactory factory, AuthScope scope)
             throws HTTPException
     {
-        mapcreds(provider, scope, globalcreds);
+        if(factory == null)
+            throw new NullPointerException(HTTPSession.class.getName());
+        if(scope == null)
+            scope = AuthScope.ANY;
+        globalcredfactories.put(scope, factory);
     }
 
     /**
@@ -761,6 +755,14 @@ public class HTTPSession implements Closeable
             proxyuser = pieces[0];
             proxypwd = pieces[1];
         }
+    }
+
+    static synchronized public void setGlobalRetryCount(int n)
+    {
+        if(n < 0) //validate
+            throw new IllegalArgumentException("setGlobalRetryCount");
+        globalsettings.setParameter(Prop.RETRIES, n);
+        globalretryhandler = new DefaultHttpRequestRetryHandler(n, false);
     }
 
     //////////////////////////////////////////////////
@@ -1065,8 +1067,11 @@ public class HTTPSession implements Closeable
     public HTTPSession setCredentialsProvider(CredentialsProvider provider, AuthScope scope)
             throws HTTPException
     {
-        mapcreds(provider, scope, localcreds);
-        this.cachevalid = false;
+        if(provider != null)
+            throw new NullPointerException(this.getClass().getName());
+        if(scope == null)
+            scope = AuthScope.ANY;
+        localcreds.put(scope, provider);
         return this;
     }
 
@@ -1219,6 +1224,7 @@ public class HTTPSession implements Closeable
         setInterceptors(cb);
         cb.setContentDecoderRegistry(contentDecoderMap);
         connmgr.setClientManager(cb, m);
+        setRetryHandler(cb, settings);
     }
 
     protected void
@@ -1254,15 +1260,17 @@ public class HTTPSession implements Closeable
         // of the client supplied provider, so we are forced (for now)
         // to modify the client supplied provider.
 
-        // Look in the local authcreds for best scope match
+        // Look in the local credentials first for for best scope match
         AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope, localcreds.keySet());
         CredentialsProvider cp = null;
         if(bestMatch != null) {
             cp = localcreds.get(bestMatch);
         } else {
-            bestMatch = HTTPAuthUtil.bestmatch(scope, globalcreds.keySet());
-            if(bestMatch != null)
-                cp = globalcreds.get(bestMatch);
+            bestMatch = HTTPAuthUtil.bestmatch(scope, globalcredfactories.keySet());
+            if(bestMatch != null) {
+                HTTPProviderFactory factory = globalcredfactories.get(bestMatch);
+                cp = factory.getProvider(bestMatch);
+            }
         }
         // Build the proxy credentials and AuthScope
         Credentials proxycreds = null;
@@ -1286,6 +1294,15 @@ public class HTTPSession implements Closeable
         }
         if(cp != null)
             this.sessioncontext.setCredentialsProvider(cp);
+    }
+
+    synchronized protected void
+    setRetryHandler(HttpClientBuilder cb, Settings merged)
+            throws HTTPException
+    {
+        if(globalretryhandler != null) {
+            cb.setRetryHandler(globalretryhandler);
+        }
     }
 
     //////////////////////////////////////////////////
@@ -1361,14 +1378,6 @@ public class HTTPSession implements Closeable
             if(value.length() == 0) value = null;
         }
         return value;
-    }
-
-    static synchronized void mapcreds(CredentialsProvider provider, AuthScope scope, Map<AuthScope, CredentialsProvider> authcreds)
-    {
-        assert (provider != null);
-        if(scope == null)
-            scope = AuthScope.ANY;
-        authcreds.put(scope, provider);
     }
 
     //////////////////////////////////////////////////
@@ -1553,16 +1562,11 @@ public class HTTPSession implements Closeable
         setGlobalProxy(host, port);
     }
 
+
     @Deprecated
     static public void setGlobalCredentialsProvider(CredentialsProvider provider, String scheme) throws HTTPException
     {
         setGlobalCredentialsProvider(provider);
-    }
-
-    @Deprecated
-    static public void setRetryCount(int count)
-    {
-        throw new UnsupportedOperationException();
     }
 
     @Deprecated
@@ -1597,4 +1601,33 @@ public class HTTPSession implements Closeable
     {
         connmgr.validate();
     }
+
+    /**
+     * @param provider
+     * @throws HTTPException
+     */
+    @Deprecated
+    static public void
+    setGlobalCredentialsProvider(CredentialsProvider provider)
+            throws HTTPException
+    {
+        setGlobalCredentialsProvider(provider, (AuthScope) null);
+    }
+
+    /**
+     * This is the most general case
+     *
+     * @param provider the credentials provider
+     * @param scope    where to use it (i.e. on what host)
+     * @throws HTTPException
+     */
+    @Deprecated
+    static public void
+    setGlobalCredentialsProvider(CredentialsProvider provider, AuthScope scope)
+            throws HTTPException
+    {
+        HTTPProviderFactory factory = new SingleProviderFactory(provider);
+        setCredentialsProviderFactory(factory, scope);
+    }
+
 }
