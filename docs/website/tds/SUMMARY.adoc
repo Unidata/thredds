@@ -26,7 +26,7 @@ Documentation for the THREDDS Data Server.
 ... <<tutorial/ConfigCatalogs#,TDS Configuration Catalogs>>
 ... <<tutorial/BasicThreddsConfig_xml#,Basic threddsConfig.xml>>
 ... <<tutorial/AddingServices#,Adding OGC/ISO Services>>
-... <<reference/WMS#,Detailed WMS Configuration>>
+... <<reference/services/WMS#,Detailed WMS Configuration>>
 ... Netcdf Subset Service:
 .... <<reference/services/NetcdfSubsetServiceConfigure#,configure>>
 .... <<reference/services/NetcdfSubsetServiceReference#,reference>>
@@ -39,7 +39,7 @@ Documentation for the THREDDS Data Server.
 .... http://tomcat.apache.org/tomcat-7.0-doc/manager-howto.html[Tomcat manager application]
 .... Browser-based HTTP header viewers
 ..... http://www.youtube.com/watch?v=tKD50_zvZoo[Live HTTP Headers] (Firefox Add-On)
-..... https://developers.google.com/chrome-developer-tools/docs/network#http_header [DevTools (Chrome)]
+..... http://developers.google.com/web/tools/chrome-devtools/profile/network-performance/resource-loading [DevTools (Chrome)]
 .... JVM monitoring tools
 ..... http://visualvm.java.net/api-quickstart.html[VisualVM]
 ..... http://www.youtube.com/watch?v=Xy0tsT-GD68[JConsole]
@@ -62,7 +62,7 @@ Documentation for the THREDDS Data Server.
 ... <<reference/Viewers#,Viewer Links>>
 .. Metadata
 ... <<tutorial/Metadata#,THREDDS Metadata>>
-... <<reference/ncISO#,ISO metadata generation (ncIso)>>
+... <<reference/services/ncISO#,ISO metadata generation (ncIso)>>
 .. Production Servers
 ... <<tutorial/Checklist#,Installation Checklist for Production>>
 ... <<tutorial/TroubleShooting#,TroubleShooting Problems>>

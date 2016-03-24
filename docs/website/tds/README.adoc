@@ -19,14 +19,13 @@ Some of the technology in the TDS:
 1.  THREDDS <<catalog/index#,Dataset Inventory Catalogs>> are used
 to provide virtual directories of available data and their associated
 metadata. These catalogs can be generated dynamically or statically.
-2.  The link:../netcdf-java/documentation.htm[Netcdf-Java/CDM library]
+2.  The <<../netcdf-java/documentation#,Netcdf-Java/CDM library>>
 reads NetCDF, OpenDAP, and HDF5 datasets, as well as other binary
 formats such as GRIB and NEXRAD into a Common Data Model (CDM),
 essentially an (extended) netCDF view of the data. Datasets that can be
 read through the Netcdf-Java library are called __CDM datasets__.
-3.  TDS can use the link:../netcdf-java/ncml/index.htm[NetCDF Markup
-Language] (NcML) to modify and create virtual aggregations of CDM
-datasets.
+3.  TDS can use the <<../netcdf-java/ncml/index#,NetCDF Markup Language>>
+(NcML) to modify and create virtual aggregations of CDM datasets.
 4.  An integrated server provides http://www.opendap.org/[OPeNDAP]
 access to any CDM dataset. OPeNDAP is a widely used, subsetting data
 access method extending the HTTP protocol.
@@ -43,7 +42,7 @@ coordinate system information is complete. This software was developed
 by Jon Blower (University of Reading (UK) E-Science Center) as part of
 the http://behemoth.nerc-essc.ac.uk/ncWMS/godiva2.html[ESSC Web Map
 Service for environmental data] (aka Godiva2).
-8.  The integrated <<reference/ncISO#,ncISO server>> provides
+8.  The integrated <<reference/services/ncISO#,ncISO server>> provides
 automated metadata analysis and ISO metadata generation.
 9.  The integrated
 <<reference/services/NetcdfSubsetServiceReference#,NetCDF Subset
