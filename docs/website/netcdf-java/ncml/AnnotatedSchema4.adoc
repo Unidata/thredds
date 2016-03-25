@@ -943,7 +943,7 @@ false
 
 Resources:
 
-* http://java.sun.com/docs/books/tutorial/essential/regex/
+* https://docs.oracle.com/javase/tutorial/essential/regex/
 * http://en.wikipedia.org/wiki/Regular_expression
 * http://www.regular-expressions.info/
 

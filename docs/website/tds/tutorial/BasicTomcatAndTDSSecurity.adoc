@@ -469,7 +469,7 @@ Near the bottom of the deployment descriptor you will find this entry:
 
 For more information on how to configure security requirements for a web
 application in a deployment descriptor, see:
-http://java.sun.com/javaee/5/docs/tutorial/doc/bncbe.html[Defining
+http://docs.oracle.com/javaee/5/tutorial/doc/bncbe.html[Defining
 Security Requirements for Web Applications].
 
 The `         <user-data-constraint>       ` establishes a requirement

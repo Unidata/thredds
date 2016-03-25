@@ -110,7 +110,7 @@ system property to true. Setting this system property to true prevent
 graphics rendering code from assuming that a graphics console exists.
 
 More on using the headless mode in Java SE
-http://java.sun.com/developer/technicalArticles/J2SE/Desktop/headless/[here].
+http://www.oracle.com/technetwork/articles/javase/headless-136834.html[here].
 
 == Add a JVM Option to Avoid java.util.prefs Problem Storing System
 Preferences

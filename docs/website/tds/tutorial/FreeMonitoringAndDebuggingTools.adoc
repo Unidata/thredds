@@ -39,9 +39,9 @@ Headers]]
 
 ==== `JVM` monitoring tools
 
-* http://java.sun.com/javase/6/docs/technotes/tools/share/jvisualvm.html[`JVisualVM`]
+* https://docs.oracle.com/javase/8/docs/technotes/guides/visualvm/[`JVisualVM`]
 - Java Virtual Machine Monitoring, Troubleshooting and Profiling Tool.
-* http://java.sun.com/developer/technicalArticles/J2SE/jconsole.html[`JConsole`]
+* https://docs.oracle.com/javase/8/docs/technotes/guides/management/jconsole.html[`JConsole`]
 - Java Monitoring and Management Console.
 
 Both come packaged with the JDK (found in `$JAVA_HOME/bin`).

@@ -372,7 +372,7 @@ If you are interested in more details of the problem, here are two
 useful links:
 
 * Sun bug #
-http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4751177[4751177]
+http://bugs.java.com/bugdatabase/view_bug.do?bug_id=4751177[4751177]
 (``Preferences storage placed unavailable to non-root users'')
 * "http://allaboutbalance.com/articles/disableprefs/[Disabling Sun’s
 Java 1.4.x Preferences Subsystem]"
@@ -771,7 +771,7 @@ only happen on our test server.
 
 Resources:
 
-* http://blogs.sun.com/fkieviet/entry/classloader_leaks_the_dreaded_java[``Classloader
+* http://frankkieviet.blogspot.com/2006/10/classloader-leaks-dreaded-permgen-space.html[``Classloader
 leaks'' (sun blog)] (2006-10-16)
 * "http://my.opera.com/karmazilla/blog/2007/09/29/return-of-the-permgen[Return
 of the PermGen]" (2007-09-29)
