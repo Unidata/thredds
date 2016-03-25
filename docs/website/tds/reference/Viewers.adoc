@@ -177,7 +177,7 @@ image:images/validateViewer.png[image]
 Viewer links can also support on the fly generation of JNLP files. This
 can be very useful when using data viewing software that can be
 started with a JNLP file (i.e., running under
-http://java.sun.com/products/javawebstart/[Java Webstart]). For
+http://www.oracle.com/technetwork/java/javase/javawebstart/index.html[Java Webstart]). For
 instance, the automatically generated ``IDV'' and ``NetCDF-Java Tools''
 viewer links mentioned above use JNLP files to start. The JNLP
 generation can be used in other user configured viewer links as well.

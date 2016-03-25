@@ -30,13 +30,12 @@ significantly improve TDS throughput.
 If you have system admin resources, examine the possible file systems
 available for your OS, eg on Linux or Solaris. We are using the
 http://en.wikipedia.org/wiki/ZFS[ZFS file system] on Solaris-X86 and it
-is very fast. We usehttp://www.sun.com/software/solaris/ds/zfs.jsp[ZFS
+is very fast. We use https://docs.oracle.com/cd/E23824_01/html/821-1448/index.html[ZFS
 software RAID], which replaces hardware RAID.
 
 ==== *Resources:*
 
 * http://www.solarisinternals.com/wiki/index.php/ZFS_Evil_Tuning_Guide
-* http://blogs.sun.com/realneel/entry/zfs_and_databases
 * http://www.solarisinternals.com/wiki/index.php/ZFS_Best_Practices_Guide
 * http://www.redhat.com/gfs/ +
 
@@ -92,7 +91,7 @@ We recommend the latest version of JDK 8, and soon we will require it.
 
 * http://www.javaperformancetuning.com/[Java Performance Tuning] website
 with tuning tips
-* http://java.sun.com/performance/reference/whitepapers/tuning.html[Java
+* http://www.oracle.com/technetwork/java/tuning-139912.html[Java
 Tuning White Paper] whitepaper from Sun (2005)
 * http://oreilly.com/catalog/9780596003777/?CMP=OTC-KW7501011010&ATT=javapt2[Java
 performance tuning], Jack Shirazi (O’Reilly, 2003), classic book, a bit

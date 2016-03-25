@@ -7,7 +7,7 @@
 
 == Overview
 
-A _*Coordinate Transform*_ represents a mathmatical function that
+A _*Coordinate Transform*_ represents a mathematical function that
 transforms a dataset’s coordinates to a coordinates in a __*Reference
 Coordinate System*__. Currently the CDM has two kinds of transforms:
 *Projections* and **Vertical Transforms**. A _*Projection*_ maps between
@@ -82,11 +82,11 @@ cross a seam in the projection plane, such as for a cylindrical or conic
 projections. This helps drawing routines to eliminate spurious lines.
 The *constructCopy* method constructs a new, equivalent Projection
 object, which avoids the problems with clone (see Bloch,
-http://java.sun.com/developer/Books/effectivejava/Chapter3.pdf[Effective
+https://github.com/HackathonHackers/programming-ebooks/blob/master/Java/Effective%20Java%20(2nd%20Edition).pdf[Effective
 Java], item 10). The *equals* method should be overridden to make
 Projections equal that have the same parameters. You should also
 override *hashCode* to make it consistent with equals (see Bloch,
-http://java.sun.com/developer/Books/effectivejava/Chapter3.pdf[Effective
+https://github.com/HackathonHackers/programming-ebooks/blob/master/Java/Effective%20Java%20(2nd%20Edition).pdf[Effective
 Java], item 8). The *paramsToString* returns a String representation of
 the Projection parameters. Examine the classes in
 *ucar.unidata.geoloc.projection* for implementation examples.
