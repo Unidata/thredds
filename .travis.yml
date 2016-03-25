@@ -45,7 +45,7 @@ script:
         false;
       else
         echo Checking links;
-        linkchecker --check-extern netcdf-java tds;
+        linkchecker --anchors --check-extern --ignore localhost --ignore server netcdf-java tds;
       fi;
     else
       echo If available, test report at;
