@@ -110,7 +110,7 @@ has an access method only when it contains an access element?
 
 === *Benno’s suggestions*
 
-http://iridl.ldeo.columbia.edu/dochelp/topics/MIRROR/suggestions.html
+http://iridl.ldeo.columbia.edu/doc/dochelp/topics/MIRROR/suggestions.html
 
 === Dataset names
 

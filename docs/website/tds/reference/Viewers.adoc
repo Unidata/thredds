@@ -422,7 +422,7 @@ for example:
  </application-desc>
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-If you dont specify the <argument>, ToolsUI will still startup normally,
+If you don't specify the <argument>, ToolsUI will still startup normally,
 and not jump to the THREDDS catalog tab.
 
 === Review of how ToolsUI works:
@@ -438,9 +438,9 @@ browser has Java webstart installed as a helper application (which
 happens when you install Java on your computer), the jnlp file is
 handled by the ``Java plugin'' on your browser, which downloads ToolsUI
 from wherever the jnlp file specifies, currently
-*http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart* +
- +
- The jnlp file has been customized to include the command line argument
+https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp
+
+The jnlp file has been customized to include the command line argument
 of the form ``\{catalog}#\{dataset}'', and the ToolsUI application looks
 for this and uses it to open that catalog and display the named dataset
 in the ``Catalog Chooser'' tab. This UI component gives access to all

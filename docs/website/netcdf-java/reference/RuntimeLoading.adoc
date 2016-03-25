@@ -233,7 +233,7 @@ containing the line:
 com.mycompany.MyIOSP
 --------------------
 +
-See: http://docs.oracle.com/javase/1.4.2/docs/api/javax/imageio/spi/ServiceRegistry.html
+See: http://docs.oracle.com/javase/8/docs/api/javax/imageio/spi/ServiceRegistry.html
 
 (thanks to Tom Kunicki at USGS for this contribution)
 
