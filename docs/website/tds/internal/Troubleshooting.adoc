@@ -51,9 +51,9 @@ descriptors, run the following command:
 Its useful to clear the TDS cache:
 
 ---------------------------------------------------------------------------
-  https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/clearCache
-  https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/forceNCCache
-  https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/forceRAFCache
+  https://thredds.ucar.edu/thredds/admin/debug?Caches/clearCache
+  https://thredds.ucar.edu/thredds/admin/debug?Caches/forceNCCache
+  https://thredds.ucar.edu/thredds/admin/debug?Caches/forceRAFCache
 
 
 Then look at

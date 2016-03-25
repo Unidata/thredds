@@ -116,7 +116,7 @@ it, could show the anomolies against that.
 
 Defines the expected inventory of a Forecast Model Run Collection.
 Writes to an ``.fmrcDefinition.xml'' XML file. TDS keeps these in
-https://motherlode.ucar.edu:8443/thredds/content/modelInventory/.
+https://thredds.ucar.edu/thredds/content/modelInventory/.
 
 Can create one from a ForecastModelRunCollection:
 
