@@ -31,16 +31,15 @@ support-netcdf-java@unidata.ucar.edu.
 |=======================================================================
 |Id |Description |Reference URL
 |BUFR |WMO Binary Universal Form
-|http://www.wmo.int/pages/prog/www/WMOCodes/OperationalCodes.html
+|http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/VolumeI.2.html
 
 |CINRAD |Chinese Level-II Base Data |http://www.cinrad.com/
 
-|DMSP |Defense Meteorological Satellite Program
-|http://dmsp.ngdc.noaa.gov/
+|DMSP |Defense Meteorological Satellite Program|
 
 |DORADE |DOppler RAdar Data Exchange Format
 |http://www.eol.ucar.edu/rsf/UserGuides/SABL/DoradeFormat/DoradeFormat.html
-http://www.eol.ucar.edu/instrumentation/airborne-instruments/eldora/[]
+https://www.ral.ucar.edu/projects/titan/docs/radial_formats/#dorade
 
 |F-TDS |Ferret I/O Service Provider and Server-side Analysis
 |http://ferret.pmel.noaa.gov/LAS/documentation/the-ferret-thredds-data-server-f-tds
@@ -58,13 +57,13 @@ http://www.eol.ucar.edu/instrumentation/airborne-instruments/eldora/[]
 |http://weather.unisys.com/wxp/Appendices/Formats/GINI.html
 
 |GRIB-1 |WMO GRIB Edition 1
-|http://www.wmo.ch/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html
+|http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html
 
 |GRIB-2 |WMO GRIB Edition 2
-|http://www.wmo.ch/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf
+|http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/VolumeI.2.html
 
 |GTOPO |USGS GTOPO digital elevation model
-|http://edc.usgs.gov/products/elevation/gtopo30/gtopo30.html
+|https://lta.cr.usgs.gov/GTOPO30
 
 |HDF4 |Hierarchical Data Format, version 4
 |http://www.hdfgroup.org/products/hdf4/
@@ -77,7 +76,6 @@ http://www.eol.ucar.edu/instrumentation/airborne-instruments/eldora/[]
 
 |McIDASGrid |McIDAS grid file a|
 http://www.ssec.wisc.edu/mcidas/doc/prog_man/2006
-
 http://www.ssec.wisc.edu/mcidas/doc/prog_man/2006/formats-20.html#22077
 
 |netCDF |NetCDF classic format
@@ -87,15 +85,15 @@ http://www.ssec.wisc.edu/mcidas/doc/prog_man/2006/formats-20.html#22077
 |http://www.unidata.ucar.edu/software/netcdf/index.html
 
 |NEXRAD-2 |NEXRAD Level-II Base Data a|
+http://www.roc.noaa.gov/wsr88d/BuildInfo/Files.aspx
 http://www.ncdc.noaa.gov/oa/radar/radarresources.html
 
-http://www.tsc.com/SETS/_3TDWR.htm
+|NEXRAD-3 |NEXRAD Level-III Products a|
+http://www.roc.noaa.gov/wsr88d/BuildInfo/Files.aspx
+http://www.ncdc.noaa.gov/oa/radar/radarresources.html
 
-|NEXRAD-3 |NEXRAD Level-III Products
-|http://www.ncdc.noaa.gov/oa/radar/radarresources.html
-
-|NLDN |National Lightning Detection Network
-|http://www.vaisala.com/weather/products/aboutnldn.html
+|NLDN |National Lightning Detection Network a|
+http://www.vaisala.com/en/products/thunderstormandlightningdetectionsystems/Pages/NLDN.aspx
 
 |NMCon29 |NMC Office Note 29
 |http://www.emc.ncep.noaa.gov/mmb/data_processing/on29.htm
@@ -108,8 +106,8 @@ http://www.tsc.com/SETS/_3TDWR.htm
 
 |UAMIV |CAMx UAM-IV formatted files |http://www.camx.com/
 
-|UniversalRadarFormat |Universal Radar Format
-|ftp://ftp.sigmet.com/outgoing/manuals/program/cuf.pdf
+|UniversalRadarFormat |Universal Radar Format a|
+https://www.ral.ucar.edu/projects/titan/docs/radial_formats/#uf
 
 |USPLN |US Precision Lightning Network |http://www.uspln.com/
 |=======================================================================

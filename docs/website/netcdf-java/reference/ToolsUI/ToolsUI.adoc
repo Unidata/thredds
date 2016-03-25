@@ -71,8 +71,8 @@ image:writer1.png[Writer tab]
 
 === NCDump
 The NCDump tab offers functionality similar to<97>albeit more limited than<97>the
-link:https://www.unidata.ucar.edu/software/netcdf/docs/ncdump-man-1.html[ncdump] utility. The string that you enter in
-the "Command" field should be of the form:
+link:https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#ncdump_guide[ncdump] utility.
+The string that you enter in the "Command" field should be of the form:
 ----
 <filename> [-unsigned] [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]
 ----
