@@ -21,7 +21,7 @@ For criticism of GRIB table handling practices, see: http://www.unidata.ucar.edu
 ==== WMO
 - The GRIB Bible: http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/VolumeI.2.html[Manual on Codes (WMO-No. 306)]
 - WMO Standard Tables: http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
-- WMO now publishes their standard tables in XML for GRIB2 (though not GRIB1): http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/GRIB2_15_1_0.zip
+- WMO now publishes their standard tables in XML for GRIB2 (though not GRIB1): http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/GRIB2_16_0_0.zip
 
 ==== NCEP
 
