@@ -16,7 +16,7 @@ NOAA/FSL, as well as METAR, upper air, buoy, and SAO station data.
 link:/data/data.detail.html[Detailed Information on Data, Data Stream
 Products and Systems]
 
-== Catalogs and DQCs available on motherlode.ucar.edu
+== Catalogs and DQCs available on thredds.ucar.edu
 
 This high level server has knowledge about all the THREDDS datasets,
 it’s purpose is to hide the details of the individual dataset servers.
@@ -25,58 +25,58 @@ THREDDS catalogs. Currently it knows about Metars, Radars, ADDE, NCEP
 Models, Profilers, and Casestudy datasets.
 
        image:collection.gif[image]
-http://motherlode.ucar.edu:8080/thredds/topcatalog.xml[Top Level
-Catalog]     http:///motherlode.ucar.edu:8080/thredds/topcatalog.xml
+http://thredds.ucar.edu/thredds/topcatalog.xml[Top Level
+Catalog]     http:///thredds.ucar.edu/thredds/topcatalog.xml
 
        image:collection.gif[image]
-http://motherlode.ucar.edu:8080/thredds/catalog.xml[Motherlode Server
-Catalog]     http:///motherlode.ucar.edu:8080/thredds/catalog.xml
+http://thredds.ucar.edu/thredds/catalog.xml[Motherlode Server
+Catalog]     http:///thredds.ucar.edu/thredds/catalog.xml
 
        image:collection.gif[image]
-http://motherlode.ucar.edu:8080/thredds/ldm/MetarDQC.xml[Metar Data
+http://thredds.ucar.edu/thredds/ldm/MetarDQC.xml[Metar Data
 Query Capability file used to create queries for the MetarServer]    
-      http://motherlode.ucar.edu:8080/thredds/ldm/MetarDQC.xml
+      http://thredds.ucar.edu/thredds/ldm/MetarDQC.xml
 
        image:collection.gif[image]
-http://motherlode.ucar.edu:8080/thredds/ldm/RadarDQC.xml[Radar Data
+http://thredds.ucar.edu/thredds/ldm/RadarDQC.xml[Radar Data
 Query Capability file used to create queries for the RadarServer]    
-      http://motherlode.ucar.edu:8080/thredds/ldm/RadarDQC.xml
+      http://thredds.ucar.edu/thredds/ldm/RadarDQC.xml
 
        image:collection.gif[image]
-http://motherlode.ucar.edu:8080/thredds/ldm/ProfilerDQC.xml[Profiler
+http://thredds.ucar.edu/thredds/ldm/ProfilerDQC.xml[Profiler
 Data Query Capability file used to create queries for the
 ProfilerServer]    
-      http://motherlode.ucar.edu:8080/thredds/ldm/ProfilerDQC.xml
+      http://thredds.ucar.edu/thredds/ldm/ProfilerDQC.xml
 
        image:collection.gif[image]
-http://motherlode.ucar.edu:8080/thredds/ldm/addeDQC.xml[adde Data Query
+http://thredds.ucar.edu/thredds/ldm/addeDQC.xml[adde Data Query
 Capability file used to create queries for the addeServer]    
-      http://motherlode.ucar.edu:8080/thredds/ldm/addeDQC.xml
+      http://thredds.ucar.edu/thredds/ldm/addeDQC.xml
 
        image:collection.gif[image]
-http://motherlode.ucar.edu/thredds/casestudy/vgeeCatalog.xml[VGEE
+http://thredds.ucar.edu/thredds/casestudy/vgeeCatalog.xml[VGEE
 Catalog]    
-http:///motherlode.ucar.edu/thredds/casestudy/vgeeCatalog.xml
+http:///thredds.ucar.edu/thredds/casestudy/vgeeCatalog.xml
 
        image:collection.gif[image]
-http://motherlode.ucar.edu/thredds/casestudy/july18_2002cat.xml[July 18,
+http://thredds.ucar.edu/thredds/casestudy/july18_2002cat.xml[July 18,
 2002 Catalog]    
-http:///motherlode.ucar.edu/thredds/casestudy/july18_2002cat.xml
+http:///thredds.ucar.edu/thredds/casestudy/july18_2002cat.xml
 
        image:collection.gif[image]
-http://motherlode.ucar.edu/thredds/casestudy/ccs034Catalog.xml[Casestudy
+http://thredds.ucar.edu/thredds/casestudy/ccs034Catalog.xml[Casestudy
 34 Catalog]    
-http:///motherlode.ucar.edu/thredds/casestudy/ccs034Catalog.xml
+http:///thredds.ucar.edu/thredds/casestudy/ccs034Catalog.xml
 
 ===  
 
 == THREDDS IDD/LDM Server Information
 
-=== Metar server on motherlode.ucar.edu
+=== Metar server on thredds.ucar.edu
 
 syntax:
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/MetarServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
+http://thredds.ucar.edu/thredds/cgi-bin/MetarServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
 
 * default catalog file
 * ``qc'' querycapability file, used to generate queries on Metars
@@ -107,13 +107,13 @@ the current day
 * default/blank No action taken
 * ``lat:lon'' Expects latitude and longitude coordinates in degrees
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/MetarServer.pl?format=html&stn=KDEN&time=latest
+http://thredds.ucar.edu/thredds/cgi-bin/MetarServer.pl?format=html&stn=KDEN&time=latest
 
-=== Radar server on motherlode.ucar.edu
+=== Radar server on thredds.ucar.edu
 
 syntax:
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/RadarServer.pl?format=%value%&stn=%value%&product=%value%&time=%value%&since=%value%
+http://thredds.ucar.edu/thredds/cgi-bin/RadarServer.pl?format=%value%&stn=%value%&product=%value%&time=%value%&since=%value%
 
 * default catalog file
 * ``qc'' querycapability file, used to generate queries on Radars
@@ -143,13 +143,13 @@ http://motherlode.ucar.edu:8080/thredds/cgi-bin/RadarServer.pl?format=%value%&st
 * default/blank No action taken
 * ``lat:lon'' Expects latitude and longitude coordinates in degrees
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/RadarServer.pl?format=html&stn=FTG&product=N0R&time=latest
+http://thredds.ucar.edu/thredds/cgi-bin/RadarServer.pl?format=html&stn=FTG&product=N0R&time=latest
 
-=== Profiler server on motherlode.ucar.edu
+=== Profiler server on thredds.ucar.edu
 
 syntax:
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/ProfilerServer.pl?format=%value%&stn=%value%&product=%value%&time=%value%&since=%value%
+http://thredds.ucar.edu/thredds/cgi-bin/ProfilerServer.pl?format=%value%&stn=%value%&product=%value%&time=%value%&since=%value%
 
 * default catalog file
 * ``qc'' querycapability file, used to generate queries on Profilers
@@ -178,13 +178,13 @@ http://motherlode.ucar.edu:8080/thredds/cgi-bin/ProfilerServer.pl?format=%value%
 * default/blank No action taken
 * ``lat:lon'' Expects latitude and longitude coordinates in degrees
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/ProfilerServer.pl?format=html&stn=PLTC2&product=DEFAULT&time=latest[http://motherlode.ucar.edu:8080/thredds/cgi-bin/ProfilerServer.pl?format=html&stn=PLTC2&product=DAY&time=latest]
+http://thredds.ucar.edu/thredds/cgi-bin/ProfilerServer.pl?format=html&stn=PLTC2&product=DEFAULT&time=latest[http://thredds.ucar.edu/thredds/cgi-bin/ProfilerServer.pl?format=html&stn=PLTC2&product=DAY&time=latest]
 
-=== Upperair server on motherlode.ucar.edu
+=== Upperair server on thredds.ucar.edu
 
 syntax:
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/UpperairServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
+http://thredds.ucar.edu/thredds/cgi-bin/UpperairServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
 
 * default catalog file
 * ``qc'' querycapability file, used to generate queries on Upperairs
@@ -214,13 +214,13 @@ the current day
 * default/blank No action taken
 * ``lat:lon'' Expects latitude and longitude coordinates in degrees
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/UpperairServer.pl?format=html&stn=DNR&time=latest
+http://thredds.ucar.edu/thredds/cgi-bin/UpperairServer.pl?format=html&stn=DNR&time=latest
 
-=== Synoptic server on motherlode.ucar.edu
+=== Synoptic server on thredds.ucar.edu
 
 syntax:
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/SynopticServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
+http://thredds.ucar.edu/thredds/cgi-bin/SynopticServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
 
 * default catalog file
 * ``qc'' querycapability file, used to generate queries on Synoptics
@@ -250,13 +250,13 @@ the current day
 * default/blank No action taken
 * ``lat:lon'' Expects latitude and longitude coordinates in degrees
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/SynopticServer.pl?format=html&stn=DEN&time=latest
+http://thredds.ucar.edu/thredds/cgi-bin/SynopticServer.pl?format=html&stn=DEN&time=latest
 
-=== Buoy server on motherlode.ucar.edu
+=== Buoy server on thredds.ucar.edu
 
 syntax:
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/BuoyServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
+http://thredds.ucar.edu/thredds/cgi-bin/BuoyServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
 
 * default catalog file
 * ``catalog'' catalog file, gives URLs to access datasets
@@ -282,13 +282,13 @@ http://motherlode.ucar.edu:8080/thredds/cgi-bin/BuoyServer.pl?format=%value%&stn
 * ``hh:mm'' all stations that have reports greater that that time for
 the current day
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/BuoyServer.pl?format=html&stn=DACF&time=latest
+http://thredds.ucar.edu/thredds/cgi-bin/BuoyServer.pl?format=html&stn=DACF&time=latest
 
-=== Zone server on motherlode.ucar.edu
+=== Zone server on thredds.ucar.edu
 
 syntax:
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/ZoneServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
+http://thredds.ucar.edu/thredds/cgi-bin/ZoneServer.pl?format=%value%&stn=%value%&time=%value%&since=%value%
 
 * default catalog file
 * ``qc'' querycapability file, used to generate queries on Zones
@@ -321,7 +321,7 @@ current day
 http://www.erh.noaa.gov/rlx/prodex/rdfexplanation.html[How to interpet
 Zone forecast]
 
-http://motherlode.ucar.edu:8080/thredds/cgi-bin/ZoneServer.pl?format=html&stn=COZ039&time=latest
+http://thredds.ucar.edu/thredds/cgi-bin/ZoneServer.pl?format=html&stn=COZ039&time=latest
 
 '''''
 

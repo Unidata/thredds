@@ -32,7 +32,7 @@ No RAF is kept locked.
  
 
 From
-https://motherlode.ucar.edu:9443/thredds/admin/debug?Caches/showCaches
+https://thredds.ucar.edu/thredds/admin/debug?Caches/showCaches
 50 files are shown, (all GFS_Global_0p5deg).
 
 From MAT, it appears each dataset is holding on to 5.345M. total = 267M

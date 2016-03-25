@@ -225,14 +225,14 @@ The following are WCS URLs for our test datasets:
 
 Here are example WCS queries for the first dataset:
 
-* **GetCapabilities**:http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS[/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS]
+* **GetCapabilities**:http://thredds.ucar.edu/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS[/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS]
 * **DescribeCoverage**:
-http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta[/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta]
+http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta[/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta]
 * *GetCoverage* (GeoTIFF):
-http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20[/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&
+http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20[/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&
 coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57]
 * *GetCoverage* (NetCDF3) :
-http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20[/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&
+http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20[/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&
 coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57]
 
 == WCS Clients

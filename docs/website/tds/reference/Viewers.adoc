@@ -108,14 +108,14 @@ following:
 
 ----------------------------------------------------------------------------------------------------------------------
 <dataset name="Test Viewer2" ID="testViewer2" serviceName="dapService" urlPath="test/testData.nc" dataType="Grid"
-  <property name="viewer" value="http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL={url},Validation Service"/>
+  <property name="viewer" value="http://thredds.ucar.edu/cdmvalidator/validate?URL={url},Validation Service"/>
 </dataset>
 ----------------------------------------------------------------------------------------------------------------------
 
 results in the following viewer link:
 
 --------------------------------------------------------------------------------------------------------------------------------------------
-<a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/test/testData.nc">Validation Service</a>
+<a href="http://thredds.ucar.edu/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/test/testData.nc">Validation Service</a>
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 === Selecting the Dataset access URL used in the Viewer Link
@@ -145,7 +145,7 @@ For example, the following:
   </metadata>
 
   <dataset name="test viewer select service ds 1" ID="tvss/ds1" urlPath="tvss/ds1.nc">
-    <property name="viewer" value="http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL={OPENDAP},Validation Service" />
+    <property name="viewer" value="http://thredds.ucar.edu/cdmvalidator/validate?URL={OPENDAP},Validation Service" />
   </dataset>
   <dataset name="test viewer select service ds 2" ID="tvss/ds2" urlPath="tvss/ds2.nc">
     <property name="viewer" value="http://myhost:8080/wcsView/show?dataset={WCS},Validation Service" />
@@ -156,7 +156,7 @@ For example, the following:
 generates a viewer link URL for the first dataset of:
 
 ------------------------------------------------------------------------------------------------------
-http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/tvss/ds1.nc
+http://thredds.ucar.edu/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/tvss/ds1.nc
 ------------------------------------------------------------------------------------------------------
 
 and for the second dataset, the viewer link is:
@@ -166,7 +166,7 @@ http://myhost:8080/wmsView/show?dataset=http://myhost:8080/thredds/wcs/tvss/ds2.
 ----------------------------------------------------------------------------------
 
 If your server is publically accessible, this example calls
-thehttp://motherlode.ucar.edu:8080/cdmvalidator/validate.html[motherlode
+thehttp://thredds.ucar.edu/cdmvalidator/validate.html[motherlode
 validator service] for your dataset, using opendap. The dataset page now
 looks something like:
 
@@ -329,7 +329,7 @@ absolute URI
 Note that is has an href embedded in it, which will be displayed in this
 example as:
 +
-http://motherlode.ucar.edu:8080/thredds/view/idv.jnlp?url=http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NDFD/CONUS_5km/NDFD_CONUS_5km_20061106_1200.grib2[Integrated
+http://thredds.ucar.edu/thredds/view/idv.jnlp?url=http://thredds.ucar.edu/thredds/dodsC/model/NCEP/NDFD/CONUS_5km/NDFD_CONUS_5km_20061106_1200.grib2[Integrated
 Data Viewer (IDV) (webstart)]
 
 === Referencing an external URL
@@ -338,7 +338,7 @@ If the viewer you want to reference is not part of the TDS, just make
 the href absolute, e.g.:
 
 ------------------------------------------------------------------------------------------------------------------
-<a href='http://my.server/viewer?url=http://motherlode.ucar.edu:8080/thredds/dodsC/model/data.grib2'>My Server</a>
+<a href='http://my.server/viewer?url=http://thredds.ucar.edu/thredds/dodsC/model/data.grib2'>My Server</a>
 ------------------------------------------------------------------------------------------------------------------
 
 In this example, the server would see the OPeNDAP data access URL and
@@ -418,7 +418,7 @@ for example:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   <application-desc main-class="ucar.nc2.ui.ToolsUI">
-      <argument>http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/GFS/CONUS_95km/files/catalog.xml#fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20120414_0000.grib1</argument>
+      <argument>http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/GFS/CONUS_95km/files/catalog.xml#fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20120414_0000.grib1</argument>
  </application-desc>
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 

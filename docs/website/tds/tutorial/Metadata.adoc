@@ -35,9 +35,9 @@ Project] 
 * http://coast-enviro.er.usgs.gov/thredds/bathy_catalog.xml[Bathymetry]
 
 Unidata IDD Real-time Archive -
-http://motherlode.ucar.edu:8080/thredds/catalog.xml
+http://thredds.ucar.edu/thredds/catalog.xml
 
-* http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/CONUS_191km/files/catalog.xml[NCEP
+* http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/GFS/CONUS_191km/files/catalog.xml[NCEP
 GFS CONUS 191km]
 
 '''''

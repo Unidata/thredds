@@ -141,9 +141,9 @@ basically means that the session url, as a string, must be a prefix of
 the specified method url. This maintains the semantics of the Session
 but allows flexibility in accessing data from the server. As an example,
 if a session was created and specifed the URL
-"http://motherlode.ucar.edu", then any URL specified, in say,
+"http://thredds.ucar.edu", then any URL specified, in say,
 HTTPMethod.execute() must begin with the session URL. So, specifiying
-"http://motherlode.ucar.edu/path/file.nc.dds" would be a compatible
+"http://thredds.ucar.edu/path/file.nc.dds" would be a compatible
 url. Note that if the session was created with no url then a URL must be
 specified to the HTTPMethod object.
 

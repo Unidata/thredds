@@ -20,7 +20,7 @@ ________________________________________________________________________________
 where:
 
 * __\{server:port__}: name of the server machine, eg
-*motherlode.ucar.edu:8080*
+*thredds.ucar.edu*
 * *\{__contextPath}__* : name of war file, eg *thredds*
 * *\{__servletPath}__* : name of the servlet that handles this URL
 * ****__*\{dataRoot}*__ : matches a dataRoot, translates to
@@ -186,20 +186,20 @@ ________________________________________________________________________________
 We want to take a dataset URL, eg:
 
 -------------------------------------------------------------------------------------------
- http://motherlode.ucar.edu:9080/thredds/dodsC/model/NCEP/RUC2/CONUS_20km/hybrid/file.grib1
+ http://thredds.ucar.edu/thredds/dodsC/model/NCEP/RUC2/CONUS_20km/hybrid/file.grib1
 -------------------------------------------------------------------------------------------
 
 ** and find its containing catalog, by replacing the last part with
 catalog.xml (this does violate URL opacity):
 
 ------------------------------------------------------------------------------------------------------
- http://motherlode.ucar.edu:9080/thredds/dodsC/model/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml (or html)
+ http://thredds.ucar.edu/thredds/dodsC/model/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml (or html)
 ------------------------------------------------------------------------------------------------------
 
 This should be equivalent to:
 
 ----------------------------------------------------------------------------------------------
- http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml
+ http://thredds.ucar.edu/thredds/catalog/model/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml
 ----------------------------------------------------------------------------------------------
 
 Here we have a distinguished name, ``catalog.xml'' that we know should
@@ -209,7 +209,7 @@ have a different catalog name. Also, there’s no guarentee you can move
 up the chain:
 
 ---------------------------------------------------------------------------------------
- http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/catalog.xml
+ http://thredds.ucar.edu/thredds/catalog/model/NCEP/RUC2/CONUS_20km/catalog.xml
 ---------------------------------------------------------------------------------------
 
 However, an HTML display could sometimes provide a link up to the parent
