@@ -28,6 +28,8 @@ public class UnitTestCommon
 
     static public final Charset UTF8 = Charset.forName("UTF-8");
 
+    static protected final int[] OKCODES = new int[]{200, 404};
+
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
 
@@ -439,6 +441,19 @@ public class UnitTestCommon
         return args.toArray(new String[args.size()]);
     }
 
+    static protected boolean
+    check(int code)
+    {
+        return check(code, OKCODES);
+    }
 
+    static protected boolean
+    check(int code, int[] ok)
+    {
+        for(int okcode : ok) {
+            if(okcode == code) return true;
+        }
+        return false;
+    }
 }
 

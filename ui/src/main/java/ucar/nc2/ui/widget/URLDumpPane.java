@@ -381,7 +381,7 @@ public class URLDumpPane extends TextHistoryPane {
         }
 
       } else if (cmd == Command.OPTIONS)
-        printSet("AllowedMethods = ", HTTPMethod.getAllowedMethods());
+        printSet("AllowedMethods = ", HTTPFactory.getAllowedMethods());
 
     } catch (IOException e) {
       StringWriter sw = new StringWriter(5000);

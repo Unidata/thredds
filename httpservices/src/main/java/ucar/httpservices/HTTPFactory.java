@@ -34,7 +34,13 @@
 package ucar.httpservices;
 
 import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.client.methods.HttpOptions;
+import org.apache.http.message.BasicHttpResponse;
+
+import java.util.Set;
 
 /**
  * HTTPFactory creates method instance.
@@ -145,6 +151,13 @@ public class HTTPFactory
     static public HTTPMethod Options(String legalurl) throws HTTPException
     {
         return new HTTPMethod(HTTPSession.Methods.Options, legalurl);
+    }
+
+    static public Set<String> getAllowedMethods()
+    {
+        HttpResponse rs = new BasicHttpResponse(new ProtocolVersion("http", 1, 1), 0, "");
+        Set<String> set = new HttpOptions().getAllowedMethods(rs);
+        return set;
     }
 
 }

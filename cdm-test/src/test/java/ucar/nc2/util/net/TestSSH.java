@@ -186,13 +186,13 @@ public class TestSSH extends UnitTestCommon
         System.out.println("*** Testing: Simple Https");
 
         // Reset the ssl stores
-        HTTPSession.setGlobalSSLAuth(null, null, null, null);
+        HTTPSession.clearkeystore();
 
         for(String url : sshurls) {
             System.out.println("*** URL: " + url);
             try (HTTPSession session = HTTPFactory.newSession(url)) {
                 this.result = invoke(session, url);
-                Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200);
+                Assert.assertTrue("Incorrect return code: " + this.result.status, check(this.result.status));
             }
         }
     }
@@ -218,13 +218,13 @@ public class TestSSH extends UnitTestCommon
 
         // (Re-)Establish the client key store and password
         // Reset the ssl stores
-        HTTPSession.setGlobalSSLAuth(Dkeystore, Dkeystorepassword, null, null);
+        HTTPSession.rebuildkeystore(Dkeystore, Dkeystorepassword);
 
         for(String url : sshurls) {
             System.out.println("*** URL: " + url);
             try (HTTPSession session = HTTPFactory.newSession(url)) {
                 this.result = invoke(session, url);
-                Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200);
+                Assert.assertTrue("Incorrect return code: " + this.result.status, check(this.result.status));
             }
         }
     }

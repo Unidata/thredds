@@ -34,14 +34,16 @@
 package ucar.httpservices;
 
 import org.apache.http.*;
+import org.apache.http.annotation.NotThreadSafe;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpOptions;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.util.EntityUtils;
 
 import java.io.Closeable;
@@ -53,7 +55,8 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import static ucar.httpservices.HTTPSession.Prop;
 
 /**
  * HTTPMethod is the encapsulation of specific
@@ -75,9 +78,9 @@ import java.util.Set;
  * <p>
  * <li> Close the method.
  * </ol>
- * In practice, one has an HTTPMethod instance, one can
- * repeat the steps 2-5. Of course this assumes that one is
- * doing the same kind of action (e.g. GET).
+ * HTTPMethod is designed, at the moment, to be executed only once.
+ * Note also that HTTPMethod is not thread safe but since it cannot be
+ * executed multiple times, this should be irrelevant.
  * <p>
  * The arguments to the factory method are as follows.
  * <ul>
@@ -98,28 +101,23 @@ import java.util.Set;
  * <li> It may be specified as part of the HTTPMethod
  * constructor (via the factory). If none is specified,
  * then the session URL is used.
- * <p>
- * <li> It may be specified as an argument to the
- * execute() method. If none is specified, then
- * the factory constructor URL is used (which might,
- * in turn have come from the session).
  * </ol>
  * <p>
  * Legal url arguments to HTTPMethod are constrained by the URL
- * specified in creating the HTTPSession instance, if any.  If
+ * specified in creating the HTTPSession instance.  If
  * the session was constructed with a specified URL, then any
- * url specified to HTTMethod (via the factory or via
- * execute()) must be "compatible" with the session URL). The
- * term "compatible" basically means that the session url's host+port
- * is the same as that of the specified method url.  This
- * maintains the semantics of the Session but allows
+ * url specified to HTTMethod (via the factory)
+ * must be "compatible" with the session URL.
+ * The term "compatible" basically means that the session url's
+ * host+port is the same as that of the specified method url.
+ * This maintains the semantics of the Session but allows
  * flexibility in accessing data from the server.
  * <p>
  * <u>One-Shot Operation:</u>
  * A reasonably common use case is when a client
  * wants to create a method, execute it, get the response,
  * and close the method. For this use case, creating a session
- * and making sure it gets closed can be a tricky proposition.
+ * and making sure it gets closed can be a tedious proposition.
  * To support this use case, HTTPMethod supports what amounts
  * to a one-shot use. The steps are as follows:
  * <ol>
@@ -143,26 +141,26 @@ import java.util.Set;
  * </ol>
  * There are several things to note.
  * <ul>
- * <li> Closing the stream will close the underlying method, so it is not
- * necessary to call method.close().
- * <li> However, if you, for example, get the response body using getResponseBodyAsString(),
- * then you need to explicitly call method.close().
  * <li> Closing the method (directly or through stream.close())
  * will close the one-shot session created by the method.
+ * <li> Closing the stream will close the underlying method, so it is not
+ * necessary to call method.close().
+ * However, if you, for example, get the response body using getResponseBodyAsString(),
+ * then you need to explicitly call method.close().
+ * The reason is that the stream is likely to be passed out of the scope in which the
+ * method was created, hence method.close() is not easily accessible. In the second case,
+ * however, this will occur in the same scope as the method and so method.close()
+ * is accessible.
  * </ul>
  */
 
+@NotThreadSafe
 public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 {
-    //////////////////////////////////////////////////
-    // Static Methods
 
-    static public Set<String> getAllowedMethods()
-    {
-        HttpResponse rs = new BasicHttpResponse(new ProtocolVersion("http", 1, 1), 0, "");
-        Set<String> set = new HttpOptions().getAllowedMethods(rs);
-        return set;
-    }
+    //////////////////////////////////////////////////
+
+    public static boolean TESTING = false;
 
     //////////////////////////////////////////////////
     // Instance fields
@@ -183,11 +181,19 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 
     protected Map<String, String> headers = new HashMap<String, String>();
 
+    // At the point of execution, the settings of the parent session are
+    // captured as immutable
+
+    protected Map<Prop, Object> settings = null;
+
+    // For debugging
+    protected RequestConfig debugconfig = null;
+
     //////////////////////////////////////////////////
     // Constructor(s)
     // These are package scope to prevent public instantiation
 
-    HTTPMethod()
+    protected HTTPMethod()
             throws HTTPException
     {
     }
@@ -293,6 +299,39 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         this.content = null; // do not reuse
     }
 
+
+    //////////////////////////////////////////////////
+
+    /**
+     * Calling close will force the method to close, and will
+     * force any open stream to terminate. If the session is local,
+     * Then that too will be closed.
+     */
+    public synchronized void
+    close()
+    {
+        if(closed)
+            return; // multiple calls ok
+        closed = true; // mark as closed to prevent recursive calls
+        if(methodstream != null) {
+            try {
+                methodstream.close();
+            } catch (IOException ioe) {/*failure is ok*/}
+            ;
+            methodstream = null;
+        }
+        //this.request = null;
+        if(session != null) {
+            session.removeMethod(this);
+            if(localsession) {
+                session.close();
+                session = null;
+            }
+        }
+        // finally, make this reusable
+        if(this.lastrequest != null) this.lastrequest.reset();
+    }
+
     //////////////////////////////////////////////////
     // Execution support
 
@@ -334,53 +373,103 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         if(!localsession && !sessionCompatible(this.methodurl))
             throw new HTTPException("HTTPMethod: session incompatible url: " + this.methodurl);
 
-        RequestBuilder rb = buildrequest();
-        HTTPSession.Settings merge = session.mergedSettings();
+        // Capture the current state of the parent HTTPSession; never to be modified in this class
+        this.settings = session.mergedSettings();
+
         try {
-            setcontent(rb);
             // add range header
             if(this.range != null) {
                 this.headers.put("Range", "bytes=" + range[0] + "-" + range[1]);
                 range = null;
-            }            // use the session to do the heavy lifting.
-            // wish java had multiple return values
-            HttpMessage[] pair = session.execute(this, rb, merge, this.headers);
-            this.lastrequest = (HttpRequestBase) pair[0];
-            this.lastresponse = (HttpResponse) pair[1];
+            }
+            RequestBuilder rb = buildrequest();
+            setcontent(rb);
+            setheaders(rb, this.headers);
+            this.lastrequest = buildRequest(rb, this.settings);
+            AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(this.methodurl);
+            AuthScope target = HTTPAuthUtil.authscopeUpgrade(session.getSessionScope(), methodscope);
+            HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
+            HttpClientBuilder cb = HttpClients.custom();
+            configClient(cb, settings);
+            session.setAuthenticationAndProxy(cb);
+            HttpClient httpclient = cb.build();
+            this.lastresponse = httpclient.execute(targethost, this.lastrequest, session.getContext());
+            if(this.lastresponse == null)
+                throw new HTTPException("HTTPMethod.execute: Response was null");
             return this.lastresponse;
-        } catch (Exception ie) {
-            throw new HTTPException(ie);
+        } catch (IOException ioe) {
+            throw new HTTPException(ioe);
         }
     }
 
-    /**
-     * Calling close will force the method to close, and will
-     * force any open stream to terminate. If the session is local,
-     * Then that too will be closed.
-     */
-    public synchronized void
-    close()
+    protected RequestConfig
+    buildRequestConfig(Map<Prop, Object> settings)
+            throws HTTPException
     {
-        if(closed)
-            return; // multiple calls ok
-        closed = true; // mark as closed to prevent recursive calls
-        if(methodstream != null) {
-            try {
-                methodstream.close();
-            } catch (IOException ioe) {/*failure is ok*/}
-            ;
-            methodstream = null;
+        // Configure the RequestConfig
+        HttpRequestBase request;
+        RequestConfig.Builder rcb = RequestConfig.custom();
+        for(Prop key : settings.keySet()) {
+            Object value = settings.get(key);
+            boolean tf = (value instanceof Boolean ? (Boolean) value : false);
+            if(key == Prop.ALLOW_CIRCULAR_REDIRECTS) {
+                rcb.setCircularRedirectsAllowed(tf);
+            } else if(key == Prop.HANDLE_REDIRECTS) {
+                rcb.setRedirectsEnabled(tf);
+                rcb.setRelativeRedirectsAllowed(tf);
+            } else if(key == Prop.MAX_REDIRECTS) {
+                rcb.setMaxRedirects((Integer) value);
+            } else if(key == Prop.SO_TIMEOUT) {
+                rcb.setSocketTimeout((Integer) value);
+            } else if(key == Prop.CONN_TIMEOUT) {
+                rcb.setConnectTimeout((Integer) value);
+            } else if(key == Prop.CONN_REQ_TIMEOUT) {
+                rcb.setConnectionRequestTimeout((Integer) value);
+            } /* else ignore */
         }
-        //this.request = null;
-        if(session != null) {
-            session.removeMethod(this);
-            if(localsession) {
-                session.close();
-                session = null;
+        RequestConfig cfg = rcb.build();
+        if(TESTING)
+            this.debugconfig = cfg;
+        return cfg;
+    }
+
+
+    protected void
+    configClient(HttpClientBuilder cb, Map<Prop, Object> settings)
+            throws HTTPException
+    {
+        cb.useSystemProperties();
+        String agent = (String) settings.get(Prop.USER_AGENT);
+        if(agent != null)
+            cb.setUserAgent(agent);
+        session.setInterceptors(cb);
+        session.setContentDecoderRegistry(cb);
+        session.setClientManager(cb, this);
+        session.setRetryHandler(cb);
+    }
+
+    protected void
+    setheaders(RequestBuilder rb, Map<String, String> headers)
+    {
+        // Add any defined headers
+        if(headers.size() > 0) {
+            for(HashMap.Entry<String, String> entry : headers.entrySet()) {
+                rb.addHeader(entry.getKey(), entry.getValue());
             }
         }
-        // finally, make this reusable
-        if(this.lastrequest != null) this.lastrequest.reset();
+    }
+
+    protected HttpRequestBase
+    buildRequest(RequestBuilder rb, Map<Prop, Object> settings)
+            throws HTTPException
+    {
+        HttpRequestBase req;
+        RequestConfig config = buildRequestConfig(settings);
+        rb.setConfig(config);
+        req = (HttpRequestBase) rb.build();
+        if(req == null)
+            throw new HTTPException("HTTPMethod.buildrequest: requestbuilder failed");
+        return req;
     }
 
     //////////////////////////////////////////////////
@@ -427,6 +516,8 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     {
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
+        if(!executed)
+            throw new IllegalStateException("HTTPMethod: method has not been executed");
         if(this.methodstream != null) { // duplicate: caller's problem
             HTTPSession.log.warn("HTTPRequest.getResponseBodyAsStream: Getting method stream multiple times");
         } else { // first time
@@ -594,7 +685,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     public RequestConfig
     getDebugConfig()
     {
-        return this.session.getDebugConfig();
+        return this.debugconfig;
     }
 
     public HTTPMethod
@@ -645,6 +736,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         AuthScope other = HTTPAuthUtil.uriToAuthScope(otheruri);
         return sessionCompatible(other);
     }
+
 
     @Deprecated
     protected boolean sessionCompatible(HttpHost otherhost)

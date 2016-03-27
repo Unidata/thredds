@@ -45,6 +45,7 @@ import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
+import ucar.httpservices.*;
 
 import java.util.List;
 
@@ -75,6 +76,7 @@ public class TestHTTPSession extends UnitTestCommon
         super();
         setTitle("HTTP Session tests");
         HTTPSession.TESTING = true;
+        HTTPMethod.TESTING = true;
     }
 
     @Test

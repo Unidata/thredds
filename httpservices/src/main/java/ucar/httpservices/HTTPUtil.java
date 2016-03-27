@@ -45,6 +45,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 abstract public class HTTPUtil
 {
@@ -381,16 +383,16 @@ abstract public class HTTPUtil
         }
     }
 
-    static protected HTTPSession.Settings
-    merge(HTTPSession.Settings globalsettings, HTTPSession.Settings localsettings)
+    static protected Map<HTTPSession.Prop,Object>
+    merge(Map<HTTPSession.Prop,Object> globalsettings, Map<HTTPSession.Prop,Object> localsettings)
     {
         // merge global and local settings; local overrides global.
-        HTTPSession.Settings merge = new HTTPSession.Settings();
-        for(HTTPSession.Prop key : globalsettings.getKeys()) {
-            merge.setParameter(key, globalsettings.getParameter(key));
+        Map<HTTPSession.Prop,Object> merge = new ConcurrentHashMap<HTTPSession.Prop,Object>();
+        for(HTTPSession.Prop key : globalsettings.keySet()) {
+            merge.put(key, globalsettings.get(key));
         }
-        for(HTTPSession.Prop key : localsettings.getKeys()) {
-            merge.setParameter(key, localsettings.getParameter(key));
+        for(HTTPSession.Prop key : localsettings.keySet()) {
+            merge.put(key, localsettings.get(key));
         }
         return merge;
     }

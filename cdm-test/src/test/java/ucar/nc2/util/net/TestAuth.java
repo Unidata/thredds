@@ -71,8 +71,6 @@ public class TestAuth extends UnitTestCommon
 
     static protected final boolean IGNORE = true;
 
-    static protected final int[] OKCODES = new int[]{200, 404};
-
     /**
      * Temporary data directory (for writing temporary data).
      */
@@ -173,8 +171,8 @@ public class TestAuth extends UnitTestCommon
         setTitle("DAP Authorization tests");
         //HTTPSession.debugHeaders(true);
         HTTPSession.TESTING = true;
-        // See if TestDir.remoteTestServer is localhost
-        String server = TestDir.remoteTestServer;
+        // See if TestDir.threddsTestServer is localhost
+        String server = TestDir.threddsTestServer;
         this.remote = !server.startsWith("localhost");
         defineTestCases();
     }
@@ -233,11 +231,11 @@ public class TestAuth extends UnitTestCommon
     defineTestCases()
     {
         if(this.remote) {
-            basictests.add(new AuthDataBasic("http://" + TestDir.remoteTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
+            basictests.add(new AuthDataBasic("http://" + TestDir.threddsTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
                     "tiggeUser", "tigge"));
         } else {
             basictests.add(new AuthDataBasic("" +
-                    "http://" + TestDir.remoteTestServer + "/thredds/dodsC/testRestrictedDataset/testData2.nc.dds",
+                    "http://" + TestDir.threddsTestServer + "/thredds/dodsC/testRestrictedDataset/testData2.nc.dds",
                     "tiggeUser", "tigge"));
         }
     }
@@ -454,14 +452,7 @@ public class TestAuth extends UnitTestCommon
         return result;
     }
 
-    protected boolean
-    check(int code)
-    {
-        for(int okcode : OKCODES) {
-            if(okcode == code) return true;
-        }
-        return false;
-    }
+
 }
 
 /*
