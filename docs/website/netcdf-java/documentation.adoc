@@ -28,9 +28,9 @@ or browse] previous netCDF-Java support questions.
 == Overview
 
 The NetCDF-Java library implements a <<CDM/index#,Common Data Model>>(CDM), a generalization of the NetCDF, OpenDAP and HDF5 data models.
-The library is a prototype for the http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4 project],
+The library is a prototype for the http://www.unidata.ucar.edu/software/netcdf/[NetCDF project],
 which provides a C language API for the *_data access layer_* of the CDM, on top of the
-http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html[HDF5 file format].
+https://www.hdfgroup.org/HDF5/doc/H5.format.html[HDF5 file format].
 The NetCDF-Java library is a 100% Java framework for _reading_ netCDF and other file formats into the CDM, as well as _writing_ to the netCDF-3 file format.
 <<reference/netcdf4Clibrary#,Writing to the netCDF-4 file format>> requires installing the netCDF C library.
 The NetCDF-Java library also implements http://www.unidata.ucar.edu/software/netcdf/ncml/[NcML],
@@ -125,7 +125,7 @@ from the producer is possible and send them to us.
 
 === CF Conventions
 
-* http://thredds-test.unidata.ucar.edu/thredds/cf_examples.html[Sample CF DSG Files]
+* http://thredds-test.unidata.ucar.edu/thredds/catalog/cf_examples.html[Sample CF DSG Files]
 * http://www.cfconventions.org[CF Conventions Home page]
 * <<reference/FeatureDatasets/CFpointImplement#,Short guide to writing files using CF 1.6 discrete sampling features Conventions>>
 * <<CDM/CFdiff#,Differences between CF and CDM>>
@@ -133,7 +133,7 @@ from the producer is possible and send them to us.
 * http://www.ral.ucar.edu/projects/titan/docs/radial_formats/cfradial.html[CF/Radial RADAR/LIDAR Data Format]
 * CF Convention Conformance Checking:
 ** http://cfconventions.org/compliance-checker.html
-** http://htap.icg.kfa-juelich.de:50080/upload
+** http://join.iek.fz-juelich.de/htap/upload
 
 === Coordinate Systems
 
@@ -147,8 +147,8 @@ Working notes and documents on the *_Feature Type_* layer of the CDM:
 
 * <<CDM/index.adoc#ScientificFeatureTypes,Common Data Model (CDM) and Feature Types>>
 * <<reference/FeatureDatasets/Overview#,Feature Datasets (Overview)>>
-* <<CoverageFeatures#,Coverage Dataset>>: Data in a multidimensional grid, eg model output, satellite data.
-* <<PointFeatures#,Point Dataset>>: Discrete Sampling Geometry (DSG) datasets
+* <<reference/FeatureDatasets/CoverageFeatures#,Coverage Dataset>>: Data in a multidimensional grid, eg model output, satellite data.
+* <<reference/FeatureDatasets/PointFeatures#,Point Dataset>>: Discrete Sampling Geometry (DSG) datasets
 * <<reference/FeatureDatasets/CFpointImplement#,CDM implementation of CF discrete sampling features>>
 * link:reference/FeatureDatasets/PointFeatureUML.svg[Point Feature UML]
 * Adding unstructured grids to the CDM
@@ -159,12 +159,13 @@ http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_
 
 * <<reference/stream/NcStream#,NetCDF Streaming Format>>
 * <<reference/stream/CdmRemote#,CDM Remote Web Service>>
-* <<reference/stream/CdmrFeature#,CDM Remote Feature Web Service>>
+* <<reference/stream/CdmrFeatureGrid#,CDM Remote Grid Feature Web Service>>
+* <<reference/stream/CdmrFeaturePoint#,CDM Remote Point Feature Web Service>>
 
 === Metadata:
 
 * https://geo-ide.noaa.gov/wiki/index.php?title=NcISO[NcISO:] generation of ISO 19115-2 metadata from NetCDF data sources.
-* <<{tdsDocs}/ncISO#,TDS implementation>>
+* <<{tdsDocs}/services/ncISO#,TDS implementation>>
 * http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery[Attribute Convention for Dataset Discovery (current)]
 * <<metadata/DataDiscoveryAttConvention#,Attribute Convention for Dataset Discovery (version 1.0)>> (deprecated)
 
@@ -180,8 +181,6 @@ http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_
 (http://www.unidata.ucar.edu/staff/caron/presentations/DataSummit2010.pptx[pptx])
 * Talk at netCDF workshop 2009
 (http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2009.ppt[ppt])
-* http://coast-enviro.er.usgs.gov/models/share/toolsUI.wrf[ToolsUI] demo
-(You may need to download the http://www.webex.com/downloadplayer.html[free WebEx Player])
 
 === Software libraries used by the Netcdf-Java library:
 
@@ -190,7 +189,7 @@ http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_
 * http://www.joda.org/joda-time/[Joda-Time] for Calendar Date/Time parsing
 * http://www.jgoodies.com/[JGoodies] for UI stuff
 * http://www.jpeg.org/jpeg2000/[JPEG2000] library for decoding GRIB2 files
-* https://code.google.com/p/protobuf/[Protocol Buffers] from Google for fast object serialization
+* http://developers.google.com/protocol-buffers/[Protocol Buffers] from Google for fast object serialization
 * http://www.slf4j.org/[Simple Logging Facade for Java] (SLF4J) for logging
 * http://www.springframework.org/[Spring] lightweight application framework. Used in ToolsUI application.
 * http://www.ssec.wisc.edu/%7Ebillh/visad.html[VisAD] for reading McIDAS AREA files.
