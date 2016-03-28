@@ -76,9 +76,6 @@ public class TestAuth extends UnitTestCommon
      */
     static public String TEMPROOT = "target/test/tmp/"; // relative to module root
 
-    // Add a temporary control for remote versus localhost
-    static boolean remote = false;
-
     static protected class Result
     {
         int status = 0;
@@ -156,6 +153,9 @@ public class TestAuth extends UnitTestCommon
     }
 
     //////////////////////////////////////////////////
+    // Add a temporary control for remote versus localhost
+    protected boolean remote = false;
+    protected String server = null;
 
     // Define the test sets
 
@@ -171,8 +171,7 @@ public class TestAuth extends UnitTestCommon
         setTitle("DAP Authorization tests");
         //HTTPSession.debugHeaders(true);
         HTTPSession.TESTING = true;
-        // See if TestDir.threddsTestServer is localhost
-        String server = TestDir.threddsTestServer;
+        this.server = TestDir.remoteTestServer;
         this.remote = !server.startsWith("localhost");
         defineTestCases();
     }
@@ -231,11 +230,11 @@ public class TestAuth extends UnitTestCommon
     defineTestCases()
     {
         if(this.remote) {
-            basictests.add(new AuthDataBasic("http://" + TestDir.threddsTestServer + "/thredds/dodsC/restrict/testData.nc.dds",
+            basictests.add(new AuthDataBasic("http://" + this.server + "/thredds/dodsC/restrict/testData.nc.dds",
                     "tiggeUser", "tigge"));
         } else {
             basictests.add(new AuthDataBasic("" +
-                    "http://" + TestDir.threddsTestServer + "/thredds/dodsC/testRestrictedDataset/testData2.nc.dds",
+                    "http://" + this.server + "/thredds/dodsC/testRestrictedDataset/testData2.nc.dds",
                     "tiggeUser", "tigge"));
         }
     }
