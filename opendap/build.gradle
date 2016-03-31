@@ -9,6 +9,7 @@ dependencies {
     compile project(':cdm')
     compile project(':httpservices')
     compile project(':cdm-test')
+    testCompile project(':cdm-test')
 
     provided libraries["javax.servlet-api"]
     compile libraries["jdom2"]
