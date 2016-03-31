@@ -9,7 +9,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.NCdumpW.WantValues;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
@@ -220,7 +220,7 @@ public class TestNc4IospWriting {
                 out.close();
                 disk = out.toString();
             }
-            String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", mem, disk);
+            String diffs = CommonTestUtils.compare("TestNc4IospWriting.writeEnumType", mem, disk);
             Assert.assertTrue("Differences", diffs == null);
         } finally {
             ncFile.close();

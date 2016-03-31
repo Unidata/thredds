@@ -41,7 +41,7 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPMethodStream;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
@@ -56,7 +56,7 @@ import ucar.unidata.test.util.TestDir;
  * 4. test local session handling.
  */
 
-public class TestState extends UnitTestCommon
+public class TestState extends CommonTestUtils
 {
     //////////////////////////////////////////////////
     // Constants

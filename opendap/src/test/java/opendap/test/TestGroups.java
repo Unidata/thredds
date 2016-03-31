@@ -47,13 +47,13 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.test.Diff;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
-public class TestGroups extends UnitTestCommon
+public class TestGroups extends CommonTestUtils
 {
     // Collect results locally
     static private class Testcase

@@ -33,7 +33,6 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -41,14 +40,14 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.dataset.DatasetUrl;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.List;
 
-public class TestMisc extends UnitTestCommon
+public class TestMisc extends CommonTestUtils
 {
 
     static {

@@ -37,16 +37,15 @@ import java.io.InputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
 @Category(NeedsExternalResource.class)
-public class TestHTTPMethod extends UnitTestCommon
+public class TestHTTPMethod extends CommonTestUtils
 {
 
     //////////////////////////////////////////////////

@@ -44,8 +44,7 @@ import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.util.NotJenkins;
 import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.TestDir;
@@ -83,7 +82,7 @@ Notes:
  */
 
 @Category({NotJenkins.class, NotTravis.class})
-public class TestSSH extends UnitTestCommon
+public class TestSSH extends CommonTestUtils
 {
     static protected final boolean IGNORE = true;
 

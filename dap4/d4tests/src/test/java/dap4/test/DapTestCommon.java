@@ -173,7 +173,7 @@ public class DapTestCommon
     // Walk around the directory structure to locate
     // the path to the thredds root (which may not
     // be names "thredds").
-    // Same as code in UnitTestCommon, but for
+    // Same as code in CommonTestUtils, but for
     // some reason, Intellij will not let me import it.
 
     static String
