@@ -16,6 +16,7 @@ dependencies {
     ncIdv project(':netcdf4')
     ncIdv project(':opendap')
     ncIdv project(':visadCdm')
+    ncIdv project(':httpservices')
 
     tdmFat project(':tdm')
 
