@@ -15,6 +15,7 @@ dependencies {
     compile project(":tdcommon")
     runtime project(":visadCdm")
     compile project(":waterml")
+    testCompile project(":cdm-test")
 
     // DAP4 Dependencies (technically forward)
     compile project(":dap4:d4cdm")
