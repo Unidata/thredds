@@ -29,6 +29,10 @@ install:
   # Run "testClasses" instead of "assemble". We don't need the JARs/WARs for testing. Will reduce build time.
   - if [[ $TASK != "docs" ]]; then
       ./gradlew --info --stacktrace testClasses;
+    else
+      echo webdir=../docs/website/ >> gradle.properties;
+      ./gradlew :cdm:clean :cdm:releaseDocs;
+      ./gradlew :ui:clean :ui:releaseDocs;
     fi
 
 script:
@@ -45,7 +49,7 @@ script:
         false;
       else
         echo Checking links;
-        linkchecker --anchors --check-extern --ignore localhost --ignore server netcdf-java tds;
+        linkchecker --anchors --check-extern --ignore localhost --ignore server netcdf-java tds javadoc javadocAll;
       fi;
     else
       echo If available, test report at;
