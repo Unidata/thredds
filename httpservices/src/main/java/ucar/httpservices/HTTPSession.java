@@ -207,7 +207,9 @@ public class HTTPSession implements Closeable
     static /*package*/ enum AuthProp
     {
         KEYSTORE,
+        KEYPASSWORD,
         TRUSTSTORE,
+        TRUSTPASSWORD,
         SSLFACTORY,
         HTTPPROXY,
         HTTPSPROXY,
@@ -218,16 +220,16 @@ public class HTTPSession implements Closeable
     // Capture the value of various properties
     // Control read-only state; primarily for debugging
 
-    static class AuthControl extends ConcurrentHashMap<AuthProp, Object>
+    static class AuthControls extends ConcurrentHashMap<AuthProp, Object>
     {
         protected boolean readonly = false;
 
-        public AuthControl()
+        public AuthControls()
         {
             super();
         }
 
-        public AuthControl setReadOnly(boolean tf)
+        public AuthControls setReadOnly(boolean tf)
         {
             this.readonly = tf;
             return this;
@@ -411,9 +413,7 @@ public class HTTPSession implements Closeable
     static protected Map<AuthScope, HTTPProviderFactory> globalcredfactories = new HashMap<>();
 
     // As taken from the command line
-    static protected AuthControl keystores;
-
-    static protected AuthControl proxy;
+    static protected AuthControls authcontrols;
 
     static { // watch out: order is important for these initializers
         if(USEPOOL)
@@ -426,9 +426,13 @@ public class HTTPSession implements Closeable
         contentDecoderMap.put("gzip", new GZIPStreamFactory());
         globalsettings = new ConcurrentHashMap<Prop, Object>();
         setDefaults(globalsettings);
-        proxy = buildproxy();
-        keystores = buildkeystores();
-        connmgr.addProtocol("https", (ConnectionSocketFactory) keystores.get(AuthProp.SSLFACTORY));
+	authcontrols = new AuthControls();
+	authcontrols.setReadOnly(false);
+        buildproxy(authcontrols);
+        buildkeystores(authcontrols);
+        buildsslfactory(authcontrols);
+	    authcontrols.setReadOnly(true);
+        connmgr.addProtocol("https", (ConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
         setGlobalUserAgent(DFALTUSERAGENT);
         setGlobalMaxConnections(DFALTMAXCONNS);
         setGlobalConnectionTimeout(DFALTCONNTIMEOUT);
@@ -453,8 +457,17 @@ public class HTTPSession implements Closeable
         props.put(Prop.USER_AGENT, DFALTUSERAGENT);
     }
 
-    static final AuthControl
-    buildkeystores()
+    static final void
+    buildsslfactory(AuthControls authcontrols)
+    {
+        KeyStore keystore = (KeyStore)authcontrols.get(AuthProp.KEYSTORE);
+        String keypass = (String)authcontrols.get(AuthProp.KEYPASSWORD);
+        KeyStore truststore = (KeyStore)authcontrols.get(AuthProp.TRUSTSTORE);
+        buildsslfactory(authcontrols, truststore, keystore, keypass);
+    }
+
+    static final void
+    buildkeystores(AuthControls authcontrols)
     {
         // SSL flags
         String keypath = cleanproperty("keystore");
@@ -463,14 +476,11 @@ public class HTTPSession implements Closeable
         String trustpassword = cleanproperty("truststorepassword");
         KeyStore truststore = buildkeystore(trustpath, trustpassword);
         KeyStore keystore = buildkeystore(keypath, keypassword);
-        SSLConnectionSocketFactory sslfactory = buildsslfactory(truststore, keystore, keypassword);
 
-        AuthControl ac = new AuthControl();
-        ac.put(AuthProp.KEYSTORE, keystore);
-        ac.put(AuthProp.TRUSTSTORE, truststore);
-        ac.put(AuthProp.SSLFACTORY, sslfactory);
-        ac.setReadOnly(true);
-        return ac;
+        authcontrols.put(AuthProp.KEYSTORE, keystore);
+        authcontrols.put(AuthProp.KEYPASSWORD, keypassword);
+        authcontrols.put(AuthProp.TRUSTSTORE, truststore);
+        authcontrols.put(AuthProp.TRUSTPASSWORD, trustpassword);
     }
 
     static protected final KeyStore
@@ -494,13 +504,13 @@ public class HTTPSession implements Closeable
         return keystore;
     }
 
-    static final AuthControl
-    buildproxy()
+    static final void
+    buildproxy(AuthControls ac)
     {
         // Proxy flags
         String proxyurl = getproxyurl();
         if(proxyurl == null)
-            return new AuthControl().setReadOnly(true);
+            return;
         URI uri;
         try {
             uri = HTTPUtil.parseToURI(proxyurl);
@@ -528,13 +538,10 @@ public class HTTPSession implements Closeable
                 throw new IllegalArgumentException("Bad userinfo: " + proxyurl);
             }
         }
-        AuthControl ac = new AuthControl();
         ac.put(AuthProp.HTTPPROXY, httpproxy);
         ac.put(AuthProp.HTTPSPROXY, httpsproxy);
         ac.put(AuthProp.PROXYUSER, user);
         ac.put(AuthProp.PROXYPWD, pwd);
-        ac.setReadOnly(true);
-        return ac;
     }
 
     static final String
@@ -560,8 +567,8 @@ public class HTTPSession implements Closeable
 
     }
 
-    static final SSLConnectionSocketFactory
-    buildsslfactory(KeyStore truststore, KeyStore keystore, String keypassword)
+    static void
+    buildsslfactory(AuthControls authcontrols, KeyStore truststore, KeyStore keystore, String keypassword)
     {
         SSLConnectionSocketFactory globalsslfactory;
         try {
@@ -608,7 +615,8 @@ public class HTTPSession implements Closeable
             log.error("Failed to set key/trust store(s): " + e.getMessage());
             globalsslfactory = null;
         }
-        return globalsslfactory;
+        if(globalsslfactory != null)
+            authcontrols.put(AuthProp.SSLFACTORY, globalsslfactory);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -1162,7 +1170,7 @@ public class HTTPSession implements Closeable
             throws HTTPException
     {
         // First, setup the ssl factory
-        cb.setSSLSocketFactory((SSLConnectionSocketFactory) keystores.get(AuthProp.SSLFACTORY));
+        cb.setSSLSocketFactory((SSLConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
 
         // Second, Construct a CredentialsProvider that is
         // the union of the Proxy credentials plus
@@ -1186,10 +1194,10 @@ public class HTTPSession implements Closeable
         // Build the proxy credentials and AuthScope
         Credentials proxycreds = null;
         AuthScope proxyscope = null;
-        String user = (String) proxy.get(AuthProp.PROXYUSER);
-        String pwd = (String) proxy.get(AuthProp.PROXYPWD);
-        HttpHost httpproxy = (HttpHost) proxy.get(AuthProp.HTTPPROXY);
-        HttpHost httpsproxy = (HttpHost) proxy.get(AuthProp.HTTPSPROXY);
+        String user = (String) authcontrols.get(AuthProp.PROXYUSER);
+        String pwd = (String) authcontrols.get(AuthProp.PROXYPWD);
+        HttpHost httpproxy = (HttpHost) authcontrols.get(AuthProp.HTTPPROXY);
+        HttpHost httpsproxy = (HttpHost) authcontrols.get(AuthProp.HTTPSPROXY);
         if(user != null && (httpproxy != null || httpsproxy != null)) {
             if(httpproxy != null)
                 proxyscope = HTTPAuthUtil.hostToAuthScope(httpproxy);
@@ -1361,6 +1369,7 @@ public class HTTPSession implements Closeable
     // If we are testing, then track the sessions for kill
     static protected synchronized void track(HTTPSession session)
     {
+        if(!TESTING) throw new UnsupportedOperationException();
         if(sessionList == null)
             sessionList = new ConcurrentSkipListSet<HTTPSession>();
         sessionList.add(session);
@@ -1368,6 +1377,7 @@ public class HTTPSession implements Closeable
 
     static synchronized public void debugHeaders(boolean print)
     {
+        if(!TESTING) throw new UnsupportedOperationException();
         HTTPUtil.InterceptRequest rq = new HTTPUtil.InterceptRequest();
         HTTPUtil.InterceptResponse rs = new HTTPUtil.InterceptResponse();
         rq.setPrint(print);
@@ -1390,6 +1400,7 @@ public class HTTPSession implements Closeable
     public static void
     debugReset()
     {
+        if(!TESTING) throw new UnsupportedOperationException();
         for(HttpRequestInterceptor hri : reqintercepts) {
             if(hri instanceof HTTPUtil.InterceptCommon)
                 ((HTTPUtil.InterceptCommon) hri).clear();
@@ -1399,6 +1410,7 @@ public class HTTPSession implements Closeable
     public static HTTPUtil.InterceptRequest
     debugRequestInterceptor()
     {
+        if(!TESTING) throw new UnsupportedOperationException();
         for(HttpRequestInterceptor hri : reqintercepts) {
             if(hri instanceof HTTPUtil.InterceptRequest)
                 return ((HTTPUtil.InterceptRequest) hri);
@@ -1409,6 +1421,7 @@ public class HTTPSession implements Closeable
     public static HTTPUtil.InterceptResponse
     debugResponseInterceptor()
     {
+        if(!TESTING) throw new UnsupportedOperationException();
         for(HttpResponseInterceptor hri : rspintercepts) {
             if(hri instanceof HTTPUtil.InterceptResponse)
                 return ((HTTPUtil.InterceptResponse) hri);
@@ -1421,23 +1434,24 @@ public class HTTPSession implements Closeable
     static public void
     clearkeystore()
     {
-        if(!TESTING)
-            throw new UnsupportedOperationException();
-        keystores.setReadOnly(false);
-        keystores.clear();
-        keystores.setReadOnly(true);
+        if(!TESTING) throw new UnsupportedOperationException();
+        authcontrols.setReadOnly(false);
+	authcontrols.remove(AuthProp.KEYSTORE);
+	authcontrols.remove(AuthProp.KEYPASSWORD);
+	authcontrols.remove(AuthProp.TRUSTSTORE);
+	authcontrols.remove(AuthProp.TRUSTPASSWORD);
+        authcontrols.setReadOnly(true);
     }
 
     /* Only allow if debugging */
     static public void
     rebuildkeystore(String path, String pwd)
     {
-        if(!TESTING)
-            throw new UnsupportedOperationException();
+        if(!TESTING) throw new UnsupportedOperationException();
         KeyStore newks = buildkeystore(path, pwd);
-        keystores.setReadOnly(false);
-        keystores.put(AuthProp.KEYSTORE, newks);
-        keystores.setReadOnly(true);
+        authcontrols.setReadOnly(false);
+        authcontrols.put(AuthProp.KEYSTORE, newks);
+        authcontrols.setReadOnly(true);
     }
 
     //////////////////////////////////////////////////
@@ -1474,31 +1488,33 @@ public class HTTPSession implements Closeable
     }
 
     @Deprecated
-    public void
+    public HTTPSession
     setCredentials(String url, Credentials creds)
             throws HTTPException
     {
         assert (creds != null);
         AuthScope scope = HTTPAuthUtil.uriToAuthScope(url);
         setCredentials(creds, scope);
+        return this;
     }
 
     @Deprecated
-    public void
+    public HTTPSession
     setCredentialsProvider(String url, CredentialsProvider provider)
             throws HTTPException
     {
         assert (url != null && provider != null);
         AuthScope scope = HTTPAuthUtil.uriToAuthScope(url);
         setCredentialsProvider(provider, scope);
+        return this;
     }
 
     @Deprecated
-    public void
+    public HTTPSession
     setCredentialsProvider(AuthScope scope, CredentialsProvider provider)
             throws HTTPException
     {
-        setCredentialsProvider(provider, scope);
+        return setCredentialsProvider(provider, scope);
     }
 
     @Deprecated

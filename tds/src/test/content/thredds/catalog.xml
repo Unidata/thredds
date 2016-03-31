@@ -24,10 +24,14 @@
   <datasetRoot path="localContent" location="content/testdata/"/>
   <datasetRoot path="testRestrictedDataset" location="content/testdata/"/>
   <datasetRoot path="cdmUnitTest" location="${cdmUnitTest}"/>
+  <!-- urls intended to test container auth without spring -->
+  <datasetRoot path="containerauth" location="content/testdata"/>
 
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="localContent/testData.nc" dataType="Grid"/>
   <dataset name="Test Dap4 Dataset" ID="testDap4Dataset" serviceName="dap4" urlPath="cdmUnitTest/ft/grid/03061219_ruc.nc" dataType="Grid"/>
   <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" serviceName="all" urlPath="testRestrictedDataset/testData2.nc" restrictAccess="tiggeData"/>
+  <!-- Actual dataset intended to test container auth without spring -->
+  <dataset name="Test Container Authorization" ID="testcontainerauth" serviceName="all" urlPath="containerauth/testData2.nc" restrictAccess="containerauth"/>
 
   <dataset name="Test With Viewer" ID="testDataset2" serviceName="odap" urlPath="localContent/2004050412_eta_211.nc" dataType="Grid">
     <property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/>

@@ -39,6 +39,25 @@ public class UnitTestCommon
     static final Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
     //////////////////////////////////////////////////
+    // Type Decls
+
+    static public class Result
+    {
+        public int status = 0;
+        public byte[] contents = null;
+
+        public String toString()
+        {
+            StringBuilder b = new StringBuilder();
+            b.append("{");
+            b.append("status=");
+            b.append(status);
+            b.append("}");
+            return b.toString();
+        }
+    }
+
+    //////////////////////////////////////////////////
     // Static methods
 
     // Walk around the directory structure to locate
@@ -454,6 +473,20 @@ public class UnitTestCommon
             if(okcode == code) return true;
         }
         return false;
+    }
+
+    public void
+    report(Result result)
+    {
+        report(result,null);
+    }
+
+    public void
+    report(Result result, Integer counter)
+    {
+        System.err.printf("Result: code=%d content?=%b provider-calls=%d%n",
+                result.status, result.contents.length, counter);
+        System.err.flush();
     }
 }
 

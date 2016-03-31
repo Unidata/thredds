@@ -45,6 +45,8 @@ import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.UnitTestCommon;
 import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.test.util.NotJenkins;
+import ucar.unidata.test.util.NotTravis;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -54,46 +56,57 @@ import java.util.List;
 
 /**
  * This test is to check non-ssh related authorization: Basic primarily.
+ * It currently cannot be run except manually under Intellij.
  * Notes:
- * 1. If remotetestserver is not localhost, then we disable the
- * credentials call test. This is because e.g. remotetest.unidata.ucar.edu
- * is set up to use redirection on ../restrict/..., so the credentials
- * provider will be called twice. On localhost (using e.g. Intellij or
- * pure Tomcat) the provider will be called once.
+ * 1. Thredds currently suppports two authorization mechanisms: spring
+ *    and container-based (i.e. tomcat server.xml) This class tests
+ *    pure container-based authorization
+ * 2. Because this code need to depend on the tomcat server.xml being
+ *    properly set up, it cannot be run under Jenkins or Travis.
+ * 3. This requires, for tomcat 8, that the following be in tomcat-users.xml.
+ *        <role rolename="containerauth"/>
+ *        <user username="authuser" password="authpwd" roles="containerauth"/>
+ *    That user may need other roles to also work with spring authorization.
+ * 4. The web.xml file ./tds/src/main/webapp/WEB-INF/web.xml
+ *    also need to have the following:
+ *       <security-constraint>
+ *         <web-resource-collection>
+ *           <web-resource-name>tomcat only testing</web-resource-name>
+ *           <url-pattern>/containerauth/*</url-pattern>
+ *         </web-resource-collection>
+ *         <auth-constraint>
+ *           <role-name>containerauth</role-name>
+ *         </auth-constraint>
+ *         <!-- Do not require 'https' -->
+ *         <user-data-constraint>
+ *           <transport-guarantee>NONE</transport-guarantee>
+ *         </user-data-constraint>
+ *       </security-constraint>
+ *       <security-role>
+ *         <description>User who can access restricted datasets.</description>
+ *         <role-name>containerauth</role-name>
+ *       </security-role>
+ *
+ * 5. The catalog.xml file ./tds/src/test/content/thredds/catalog.xml
+ *    needs to have some url mappings and dataset defined.
+ *       <datasetRoot path="containerauth" location="content/testdata"/>
+ *       <dataset name="Test Container Authorization"
+ *                ID="testcontainerauth"
+ *                serviceName="all"
+ *                urlPath="containerauth/testData2.nc"
+
+*                restrictAccess="containerauth"/>
+ *
  */
 
-@Category(NeedsExternalResource.class)
-public class TestAuth extends UnitTestCommon
+@Category({NotJenkins.class,NotTravis.class})
+public class TestTomcatAuth extends UnitTestCommon
 {
     static final String BADPASSWORD = "bad";
 
     static protected final String MODULE = "httpclient";
 
     static protected final boolean IGNORE = true;
-
-    /**
-     * Temporary data directory (for writing temporary data).
-     */
-    static public String TEMPROOT = "target/test/tmp/"; // relative to module root
-
-    static protected class Result
-    {
-        int status = 0;
-        byte[] contents = null;
-
-        public String toString()
-        {
-            StringBuilder b = new StringBuilder();
-            b.append("{");
-            b.append("status=");
-            b.append(status);
-            b.append(", |contents|=");
-            b.append(contents == null ? 0 : contents.length);
-            b.append("}");
-            return b.toString();
-        }
-    }
-
 
     //////////////////////////////////////////////////
     // Provide a non-interactive TestProvider to hold
@@ -154,7 +167,7 @@ public class TestAuth extends UnitTestCommon
 
     //////////////////////////////////////////////////
     // Add a temporary control for remote versus localhost
-    protected boolean remote = false;
+
     protected String server = null;
 
     // Define the test sets
@@ -165,14 +178,13 @@ public class TestAuth extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public TestAuth()
+    public TestTomcatAuth()
     {
-        super("TestAuth");
-        setTitle("DAP Authorization tests");
+        super("TestTomcatAuth");
+        setTitle("Authorization tests");
         //HTTPSession.debugHeaders(true);
         HTTPSession.TESTING = true;
         this.server = TestDir.remoteTestServer;
-        this.remote = !server.startsWith("localhost");
         defineTestCases();
     }
 
@@ -225,18 +237,13 @@ public class TestAuth extends UnitTestCommon
 
     protected List<AuthDataBasic> basictests = new ArrayList<>();
 
-
     protected void
     defineTestCases()
     {
-        if(this.remote) {
-            basictests.add(new AuthDataBasic("http://" + this.server + "/thredds/dodsC/restrict/testData.nc.dds",
-                    "tiggeUser", "tigge"));
-        } else {
-            basictests.add(new AuthDataBasic("" +
-                    "http://" + this.server + "/thredds/dodsC/testRestrictedDataset/testData2.nc.dds",
-                    "tiggeUser", "tigge"));
-        }
+        basictests.add(new AuthDataBasic("http://"
+                + this.server
+                + "/thredds/dodsC/containerauth/testData2.nc.dds",
+                "authuser", "authpwd"));
     }
 
     @Test
@@ -256,10 +263,11 @@ public class TestAuth extends UnitTestCommon
             HTTPSession.setGlobalCredentialsProvider(provider);
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 result = invoke(session, data.url);
+                report(result,provider.counter);
             }
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status));
             Assert.assertTrue("no content", result.contents.length > 0);
-            Assert.assertTrue("Credentials provider called: " + provider.counter, provider.counter == 1);
+            Assert.assertTrue("Cre  dentials provider called: " + provider.counter, provider.counter == 1);
         }
 
         for(AuthDataBasic data : basictests) {
@@ -273,6 +281,7 @@ public class TestAuth extends UnitTestCommon
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 session.setCredentialsProvider(provider);
                 result = invoke(session, data.url);
+                report(result,provider.counter);
             }
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status)); // non-existence is ok
             Assert.assertTrue("no content", result.contents.length > 0);
@@ -290,6 +299,7 @@ public class TestAuth extends UnitTestCommon
             System.out.println("*** URL: " + data.inline());
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 result = invoke(session, data.inline());
+                report(result);
             }
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status)); // non-existence is ok
             Assert.assertTrue("no content", result.contents.length > 0);
@@ -311,6 +321,7 @@ public class TestAuth extends UnitTestCommon
             HTTPSession.setGlobalCredentials(creds);
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 result = invoke(session, data.url);
+                report(result);
             }
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status)); // non-existence is ok
             Assert.assertTrue("no content", result.contents.length > 0);
@@ -325,7 +336,7 @@ public class TestAuth extends UnitTestCommon
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 session.setCredentials(creds);
                 result = invoke(session, data.url);
-
+                report(result);
             }
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status)); // non-existence is ok
             Assert.assertTrue("no content", result.contents.length > 0);
@@ -348,6 +359,7 @@ public class TestAuth extends UnitTestCommon
             HTTPSession session = HTTPFactory.newSession(data.url);
             session.setCredentialsProvider(provider);
             result = invoke(session, data.url);
+            report(result,provider.counter);
             Assert.assertTrue("Incorrect return code: " + result.status, result.status == 401);
             Assert.assertTrue("Credentials provider called: " + provider.counter, provider.counter == 1);
 
@@ -356,6 +368,7 @@ public class TestAuth extends UnitTestCommon
             provider.setUserPwd(data.user, data.password);
             session.setCredentialsProvider(provider);
             result = invoke(session, data.url);
+            report(result,provider.counter);
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status));
             session.close();
         }
@@ -366,24 +379,27 @@ public class TestAuth extends UnitTestCommon
     testCache2() throws Exception
     {
         System.err.println("*** Testing: Cache Invalidation visually");
-        if(this.remote) {
-            System.err.println("Test aborted: requires localhost");
+        if(!this.prop_display) {
+            System.err.println("Test aborted: requires display");
             return;
-        }
+                }
         for(AuthDataBasic data : basictests) {
             Result result = null;
-            Login cp = new Login(data.user, data.password);
             System.out.println("*** URL: " + data.url);
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
+                Login cp = new Login(data.user, BADPASSWORD);
                 session.setCredentialsProvider(cp);
                 result = invoke(session, data.url);
+                report(result);
             }
             Assert.assertTrue("Incorrect return code: " + result.status, result.status == 401);
             // retry with correct password;
             // AuthCache should automatically clear bad one from cache.
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
+                Login cp = new Login(data.user, data.password);
                 session.setCredentialsProvider(cp);
                 result = invoke(session, data.url);
+                report(result);
             }
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status));
         }
@@ -450,7 +466,6 @@ public class TestAuth extends UnitTestCommon
         }
         return result;
     }
-
 
 }
 

@@ -5,14 +5,14 @@
          version="3.1">
 
   <display-name>THREDDS Data Server</display-name>
-  <description>THREDDS Data Server</description>
-
   <!-- Provide the context path at init time (otherwise, not available till a request is made). -->
   <!-- LOOK remove this -->
   <context-param>
     <param-name>ContextPath</param-name>
     <param-value>thredds</param-value>
   </context-param>
+
+  <description>THREDDS Data Server</description>
 
   <!--
      Spring listener to bootstrap Spring WebApplicationContext. Used to
@@ -28,7 +28,7 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <!-- **************************************************************************************** -->
+  <!-- ************************************************** -->
 
   <!-- filters are done in Spring config  -->
   <filter>
@@ -41,7 +41,7 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
+  <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ -->
 
   <!-- spring servlet -->
   <servlet>
@@ -99,15 +99,19 @@
   <!-- end edal-wms servlet -->
 
   <!-- ++++++++++ Setup security restrictions ++++++++++ -->
-  <!-- Do not allow anything but GET  LOOK doesnt work
-  <security-constraint
+  <!-- Following does not appear to work, so commented out -->
+  <!--
+  /*Do not allow anything but GET and HEAD*/
+  <security-constraint>
     <web-resource-collection>
       <web-resource-name>not allowed</web-resource-name>
       <url-pattern>/</url-pattern>
       <http-method-omission>GET</http-method-omission>
+      <http-method-omission>HEAD</http-method-omission>
     </web-resource-collection>
     <auth-constraint/>
-  </security-constraint -->
+  </security-constraint>
+  -->
 
   <!-- tdsConfig with HTTPS needed for /admin access  -->
   <security-constraint>
@@ -156,7 +160,7 @@
     </user-data-constraint>
   </security-constraint>
 
-  <!-- default restricted access dataset uses BASIC, but not HTTPS -->
+  <!-- default restricted access dataset for testing uses BASIC -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>restricted access datasets</web-resource-name>
@@ -165,10 +169,33 @@
     <auth-constraint>
       <role-name>restrictedDatasetUser</role-name>
     </auth-constraint>
-    <!-- user-data-constraint>
+    <!-- Do not require 'https'
+      <user-data-constraint>
       <transport-guarantee>CONFIDENTIAL</transport-guarantee>
-    </user-data-constraint -->
+      </user-data-constraint
+    -->
   </security-constraint>
+
+  <!-- Provide a constraint that is completely outside of any Spring security -->
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>tomcat only testing</web-resource-name>
+      <url-pattern>/containerauth/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>containerauth</role-name>
+    </auth-constraint>
+    <!-- Do not require 'https' -->
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <!-- can only have one login-config for entire context. -->
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>THREDDS Data Server</realm-name>
+  </login-config>
 
   <!-- Define security roles. -->
   <security-role>
@@ -189,6 +216,11 @@
   <security-role>
     <description>User who can access restricted datasets.</description>
     <role-name>restrictedDatasetUser</role-name>
+  </security-role>
+
+  <security-role>
+    <description>User who can access restricted datasets.</description>
+    <role-name>containerauth</role-name>
   </security-role>
 
   <!-- deny-uncovered-http-methods/ -->

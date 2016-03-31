@@ -57,8 +57,29 @@ import java.io.Serializable;
  * This test is to check ssh authorization.
  * As a rule, this needs to run against localhost:8443
  * using a pure tomcat server.
- * It currently cannot be run except manually under
- * Intellij.
+ * It currently cannot be run except manually under Intellij.
+In order to properly set up your local tomcat server to
+run these tests, you should follow the instructions in ?
+Plus the following notes.
+Notes:
+1. Before running testMutualSSH(), you should read
+   docs/website/netcdf-java/reference/ssh.adoc.
+2. Since the certificates required for testing have a finite lifetime,
+   you will need to regenerate a set of certificates (using certs.sh)
+   and keystores before testing. Use ClientKeystore.jks as the argument
+   to -Dkeystore and place ServerKeystore.jks and ServerTruststore.jks
+   in the tomcat conf directory. The password is always "password".
+3. In order to properly run the testMutualSSH() test, you will need to
+   do the following:
+   a. Change clientAuth="want" in server.xml to clientAuth="true"/
+      The value want indicates that client-side
+      certificate checking should be attempted, but it is ok if it fails.
+      To force use of a clientside certificate, you need to use
+      clientAuth="true". Note that this will cause testSSH() to fail.
+   b. You need to pass in the location of the clientside keystore
+      plus its password by adding the following to the jvm flags:
+          -Dkeystore=<absolute path to ClientKeystore.jks>
+	  -Dkeystorepassword=password
  */
 
 @Category({NotJenkins.class, NotTravis.class})
@@ -67,13 +88,13 @@ public class TestSSH extends UnitTestCommon
     static protected final boolean IGNORE = true;
 
     //static protected String SERVER = "localhost:8443";
-    static protected String SERVER = TestDir.threddsTestServer;
+    static protected String SERVER = TestDir.remoteTestServer;
 
     static protected String Dkeystore = null;
     static protected String Dkeystorepassword = null;
 
     static final String[] sshurls = {
-            "https://" + SERVER + "/thredds/dodsC/testdata/testData.nc.dds"
+            "https://" + SERVER + "/thredds/dodsC/localContent/testData.nc.dds"
     };
 
     static {
@@ -82,24 +103,8 @@ public class TestSSH extends UnitTestCommon
         Dkeystorepassword = System.getProperty("keystorepassword");
         // Set testing output
         HTTPSession.TESTING = true;
+        HTTPMethod.TESTING = true;
     }
-
-    static protected class Result
-    {
-        int status = 0;
-        byte[] contents = null;
-
-        public String toString()
-        {
-            StringBuilder b = new StringBuilder();
-            b.append("{");
-            b.append("status=");
-            b.append(status);
-            b.append("}");
-            return b.toString();
-        }
-    }
-
 
     //////////////////////////////////////////////////
     // Provide a non-interactive CredentialsProvider to hold
@@ -192,20 +197,12 @@ public class TestSSH extends UnitTestCommon
             System.out.println("*** URL: " + url);
             try (HTTPSession session = HTTPFactory.newSession(url)) {
                 this.result = invoke(session, url);
+report(this.result);
                 Assert.assertTrue("Incorrect return code: " + this.result.status, check(this.result.status));
             }
         }
     }
 
-    /**
-     * Client-side keys are difficult to test.
-     * To properly test, the clientAuth attribute
-     * in server.xml needs to be changed from
-     * "want" to "true". In that case, testSSH will fail
-     * but testMutualSSH will pass.
-     *
-     * @throws Exception
-     */
     @Test
     public void
     testMutualSSH() throws Exception
@@ -224,6 +221,7 @@ public class TestSSH extends UnitTestCommon
             System.out.println("*** URL: " + url);
             try (HTTPSession session = HTTPFactory.newSession(url)) {
                 this.result = invoke(session, url);
+                report(this.result);
                 Assert.assertTrue("Incorrect return code: " + this.result.status, check(this.result.status));
             }
         }

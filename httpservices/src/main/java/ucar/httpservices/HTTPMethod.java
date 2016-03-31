@@ -36,6 +36,7 @@ package ucar.httpservices;
 import org.apache.http.*;
 import org.apache.http.annotation.NotThreadSafe;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
@@ -682,12 +683,6 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     //////////////////////////////////////////////////
     // Pass thru's to HTTPSession
 
-    public RequestConfig
-    getDebugConfig()
-    {
-        return this.debugconfig;
-    }
-
     public HTTPMethod
     setCompression(String compressors)
     {
@@ -701,6 +696,18 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         return this;
     }
 
+    public HTTPMethod setMaxRedirects(int n)
+    {
+        this.session.setMaxRedirects(n);
+        return this;
+    }
+
+    public HTTPMethod setSOTimeout(int n)
+        {
+            this.session.setSoTimeout(n);
+            return this;
+        }
+
     public HTTPMethod setUserAgent(String agent)
     {
         this.session.setUserAgent(agent);
@@ -712,6 +719,22 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         this.session.setUseSessions(tf);
         return this;
     }
+
+    public HTTPMethod setCredentials(Credentials creds)
+            throws HTTPException
+    {
+        this.session.setCredentials(creds);
+        return this;
+    }
+
+    public HTTPMethod
+    setCredentials(Credentials creds, AuthScope scope)
+            throws HTTPException
+    {
+        this.session.setCredentials(creds, scope);
+        return this;
+    }
+
 
     //////////////////////////////////////////////////
     // Utilities
@@ -748,13 +771,22 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     //////////////////////////////////////////////////
     // debug interface
 
+    public RequestConfig
+    getDebugConfig()
+    {
+        if(!TESTING) throw new UnsupportedOperationException();
+        return this.debugconfig;
+    }
+
     public HttpMessage debugRequest()
     {
+        if(!TESTING) throw new UnsupportedOperationException();
         return (this.lastrequest);
     }
 
     public HttpResponse debugResponse()
     {
+        if(!TESTING) throw new UnsupportedOperationException();
         return (this.lastresponse);
     }
 
