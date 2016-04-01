@@ -50,8 +50,8 @@ the *UserDatabaseRealm* and enabling the **MemoryRealm**.
 * <<Security#ssl,Enable SSL>> by uncommenting the SSL Connector
 listening on port 8443, and add the required *keystoreFile* and
 *keystorePass* attributes.
-* link:../reference/Performance#enableCompression[Enable
-compression] by adding *compression* and *compressableMimeType*
+* <<../reference/Performance#enableCompression,Enable compression>>
+by adding *compression* and *compressableMimeType*
 attributes to 8080 Connector.
 * <<TDSMonitoringAndDebugging#access,Enable access logging>> by
 uncommenting the *AccessLogValve* and change the *prefix* and *suffix*
@@ -117,9 +117,8 @@ TDS.*
 * If you have enabled <<TomcatAndTDSLogs#access,access logging>>
 (and you should), zip up the unused access logs in
 *$\{tomcat_home}/logs/* and archive them off to another directory.
-* Likewise, zip up the unused link:TomcatAndTDSLogs#tds[TDS servlet
-logs] in *$\{tomcat_home}/content/thredds/logs* and archive them as
-well.
+* Likewise, zip up the unused <<TomcatAndTDSLogs#tds,TDS servlet logs>>
+in *$\{tomcat_home}/content/thredds/logs* and archive them as well.
 
 === Upgrading the TDS
 

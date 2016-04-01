@@ -36,7 +36,7 @@ read. Structures are a new part of NetCDF, introduced in the
 http://www.unidata.ucar.edu/software/netcdf-java/index.html[NetCDF-Java]
 library, version 2.2 as part of the Common Data Model (CDM), and also
 implemented in the
-http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4]
+https://www.unidata.ucar.edu/software/netcdf/index.html[NetCDF-4]
 library.
 
 Since data for Record variables is stored together on disk, this

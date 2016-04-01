@@ -24,9 +24,5 @@ Allows attributes on individual fields in a Compound type in a NetCDF4 file. See
 
 Also see:
 
-* http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#Attribute-Conventions[NetCDF User Guide Attribute Conventions]
+* http://www.unidata.ucar.edu/software/netcdf/docs/attribute_conventions.html[NetCDF User Guide Attribute Conventions]
 * http://cfconventions.org/[CF Conventions]
-
-'''''
-
-image:../nc.gif[image] This document was last updated November 2015
