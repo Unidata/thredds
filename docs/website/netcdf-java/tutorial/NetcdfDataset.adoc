@@ -47,7 +47,7 @@ the location is a URL that starts with *cdmremote:*
 * Opens an NcML dataset, if the location ends with *.xml* or *.ncml* ,
 or its a URL starting with *ncmdl:* (version 4.4+)
 * Otherwise, it calls **NetcdfFile.open**, which handles local file or
-<<NetcdfFile.adoc#HTTP,HTTP access>> to any CDM file.
+<<NetcdfFile#HTTP,HTTP access>> to any CDM file.
 
 == Using *_NetcdfDataset.openDataset_* to open an enhanced NetcdfDataset
 

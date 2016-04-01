@@ -6,7 +6,7 @@
 == Overview
 
 NcML is an XML representation of netCDF metadata, (approximately) the
-header information one gets from a netCDF file with the "ncdump -h" command. 
+header information one gets from a netCDF file with the "ncdump -h" command.
 NcML is similar to the netCDF
 http://www.unidata.ucar.edu/packages/netcdf/guidec/guidec-15.html#HEADING15-0[CDL]
 (network Common data form Description Language), except, of course, it
@@ -16,14 +16,14 @@ uses XML syntax.
 
 The simplest use of NcML is to describe the metadata and structural
 content of a netCDF file, like the output of **ncdump -h**. There are
-several ways to generate NcML ouput from an existing netCDF file:
+several ways to generate NcML output from an existing netCDF file:
 
 1.  In the
 https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp[ToolsUI]
 application, use the NcML tab to open a NetCDF dataset, and the NcML will be displayed.
 You can edit and then save the NcML with the _Save NcML_ button.
 2.  In the NetCDF-Java library, use *NetcdfFile.writeNcML()* or *NcMLWriter().writeXML()*
-3.  Use the NetCDF-Java library <<../reference/manPages.adoc#ncdump,ncdump application>>, eg:
+3.  Use the NetCDF-Java library <<../reference/manPages#ncdump,ncdump application>>, eg:
 +
 -------------------------------------------------------------------------
  java -classpath netcdfAll.jar ucar.nc2.NCdumpW <NetCDF-3 filename> -ncml
@@ -53,9 +53,9 @@ modifications in it.
 .  Using a text or XML editor, create the NcML file with an "xml" or
 "ncml" file extension. Reference the existing file using the
 _location_ attribute, and add, change or delete metadata in the NcML as
-in this <<Tutorial.adoc#modify,example>>.
+in this <<Tutorial#modify,example>>.
 .  Write the new file as a netCDF-3 format file:
-..  Use the NetCDF-Java library <<../reference/manPages.adoc#nccopy,nccopy application>> to write the new file, eg:
+..  Use the NetCDF-Java library <<../reference/manPages#nccopy,nccopy application>> to write the new file, eg:
 +
 ------------------------------------------------------------------------------------------------------
 java -Xmx1g -classpath netcdfAll-4.3.jar ucar.nc2.dataset.NetcdfDataset -in myFile.ncml -out myFile.nc

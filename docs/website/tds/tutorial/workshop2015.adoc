@@ -18,17 +18,17 @@
  * Review of schedule
  * Why use TDS? (link:TDSOverview.pptx[PPT])(link:TDSOverview.pdf[PDF])
  * TDS Resources: <<../TDS#,Web page>>,
-   <<../reference/index.adoc[Reference], link:../faq#,FAQ>>
+   <<../reference/index,Reference>>, <<../faq#,FAQ>>
  * link:http://www.unidata.ucar.edu/community/surveys/2015training/survey.html[Feedback/Evaluation
 Form] (Repeated submissions encouraged)
  * link:https://etherpad.net/p/TdsWorkshop2015[Etherpad] for real-time feedback!
 
 === 9:30 - 10:15 TDS with Docker (Sean)
  * Using the TDS and link:https://registry.hub.docker.com/u/unidata/tds-workshop/[Docker]
- * <<GettingStarted.adoc#tour,Tomcat Directory Structure: Quick Tour>>
- * <<GettingStarted.adoc#logs,Tomcat Log Files>>
- * <<GettingStarted.adoc#manager,Tomcat `manager` Application>>
- * link:http://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/BasicThreddsConfig_xml.html[Exercise]:
+ * <<GettingStarted#tour,Tomcat Directory Structure: Quick Tour>>
+ * <<GettingStarted#logs,Tomcat Log Files>>
+ * <<GettingStarted#manager,Tomcat `manager` Application>>
+ * <<BasicThreddsConfig_xml,Exercise>>:
        edit threddsConfig.xml to add local information
 
 === 10:15 - 10:30 Break
@@ -40,8 +40,8 @@ Form] (Repeated submissions encouraged)
  ** <<ConfigCatalogs#,TDS Configuration Catalogs - Intermediate>> (Ryan)
  *** Unidata's https://github.com/Unidata/TdsConfig[TDS Server catalogs]
  * <<../reference/ThreddsConfigXMLFile#,threddsConfig.xml Reference>> (Christian)
- * URL Construction (<<CatalogPrimer.adoc#Constructing_an_access_URL,tutorial>>)
-   (<<../catalog/InvCatalogSpec.adoc#constructingURLs,reference>>) (Christian)
+ * URL Construction (<<CatalogPrimer#Constructing_an_access_URL,tutorial>>)
+   (<<../catalog/InvCatalogSpec#constructingURLs,reference>>) (Christian)
 
 === 11:45 - 12:30 TDS Services - Catalogs, OPeNDAP, NCSS, ncWMS, ncISO, cdmremote (Dennis, Christian)
  * General Overview (Christian)
@@ -49,16 +49,16 @@ Form] (Repeated submissions encouraged)
  *** `serviceType` and `base` attributes are not configurable
  *** `HTTPServer` requires physical files, not virtual ones
  ** Using compound services
- ** Example: <<../reference/ThreddsConfigXMLFile.adoc#ncss,Turn on NCSS in threddsConfig.xml>>
+ ** Example: <<../reference/ThreddsConfigXMLFile#ncss,Turn on NCSS in threddsConfig.xml>>
  *** <<../../netcdf-java/reference/netcdf4Clibrary#,Enabling NetCDF4>> for NCSS: Compression!
  * Dataset Subsetting Services (Dennis) (<<Subset#,presentation>>)
- ** Netcdf Subset Service (<<../reference/NetcdfSubsetServiceConfigure.adoc[configure])(link:../reference/NetcdfSubsetServiceReference#,reference>>)
+ ** Netcdf Subset Service (<<../reference/NetcdfSubsetServiceConfigure,configure>>)(<<../reference/NetcdfSubsetServiceReference#,reference>>)
  ** OPeNDAP Services: DAP2 and DAP4 Protocols
- ** Other Services (Not covered) 
+ ** Other Services (Not covered)
  *** Catalog Service (<<../reference/CatalogService#,reference>>)
  *** WCS (<<../reference/WCS#,reference>>)
  *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(<<../reference/WMS#,reference>>)
- *** ncIso (<<AddingServices.adoc#Setup[configure])(link:../reference/ncISO#,reference>>)
+ *** ncIso (<<AddingServices#Setup,configure>>)(<<../reference/ncISO#,reference>>)
 
 === 12:30 - 2:00 Lunch
 
@@ -77,8 +77,8 @@ Form] (Repeated submissions encouraged)
 
 === 3:15 - 3:45 TDS Monitoring, Debugging, Logs (Sean)
  * Looking at logs while logged into the server (good for when things won't start!)
- ** <<TomcatAndTDSLogs.adoc#access,Tomcat>>
- ** <<TomcatAndTDSLogs.adoc#tds,TDS>>
+ ** <<TomcatAndTDSLogs#access,Tomcat>>
+ ** <<TomcatAndTDSLogs#tds,TDS>>
  * Looking at logs 'remotely' (good for when things do start):
  ** via http and the <<../reference/RemoteManagement#,debug>> page
  ** using the <<tdsMonitor#,TdsMonitor>> Desktop tool
@@ -101,7 +101,7 @@ Form] (Repeated submissions encouraged)
 
 === Day One Finish
 
-=== Dinner 6:00 at link:http://fatebrewingcompany.com/[Fate Brewing] (link:https://www.google.com/maps/place/FATE+Brewing+Company/@40.015095,-105.245735,17z/data=!4m2!3m1!1s0x0000000000000000:0xcb92fb30bcd7297b[directions]) 
+=== Dinner 6:00 at link:http://fatebrewingcompany.com/[Fate Brewing] (link:https://www.google.com/maps/place/FATE+Brewing+Company/@40.015095,-105.245735,17z/data=!4m2!3m1!1s0x0000000000000000:0xcb92fb30bcd7297b[directions])
 
 == 24 July 2015 : July 2015: Advanced Uses of TDS
 
@@ -159,7 +159,7 @@ to explore/discuss during this time. Potential topics include:
  ** Other:
  *** Some random table on some random dev's hard drive combined with (likely) wgrib(2)
  ** General GRIB file readers:
- *** link:http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm[netCDF-Java] (and thus the TDS)
+ *** link:http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.html[netCDF-Java] (and thus the TDS)
  * Using ToolsUI with GRIB
  ** Viewer
  ** IOSP
@@ -172,7 +172,7 @@ to explore/discuss during this time. Potential topics include:
  * <<GRIBFeatureCollectionTutorial#,GRIB Feature Collection Tutorial>>
  * Using the THREDDS Data Manager (TDM) <<../reference/collections/TDM#,TDM>>
  * <<GribCollectionExamples#,GRIB Collection Examples>>
- * <<../reference/ThreddsConfigXMLFile.adoc#GribIndexWriting,GRIB Index redirection>>
+ * <<../reference/ThreddsConfigXMLFile#GribIndexWriting,GRIB Index redirection>>
  * GRIB <<../reference/collections/GribCollectionFaq#,FAQ>>
 
 === Day Two Finish

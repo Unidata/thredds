@@ -44,7 +44,7 @@ library:
 4.  From your application, call
 *ucar.nc2.dataset.CoordTransBuilder.registerTransform( String
 transformName, Class c).*
-5.  The <<CoordSysBuilder.adoc#CoordTrans,Coordinate System Builder>>
+5.  The <<CoordSysBuilder#CoordTrans,Coordinate System Builder>>
 for your dataset must recognize the transform and add it to the
 coordinate system. If you use the CF-1.0 or the _Coordinate Conventions,
 this means that the dataset must contain a Coordinate Transform Variable

@@ -15,7 +15,7 @@ In **$\{tomcat}/content/thredds/threddsConfig.xml**, add or change the *<GribInd
 -----------------------------
 
 This will make all indices be written to **/my/directory/**.
-<<../ThreddsConfigXMLFile.adoc#GribIndexWriting,Details>>.
+<<../ThreddsConfigXMLFile#GribIndexWriting,Details>>.
 
 To do it from your Java program:
 

@@ -39,7 +39,7 @@ the TDS starts.
 
 These instructions are tailored for TDS users. To work with Grib
 Collections in client software using the CDM stack,
-see <<../../../netcdf-java/reference/formats/GribFiles.adoc#,CDM Grib Files>>.
+see <<../../../netcdf-java/reference/formats/GribFiles#,CDM Grib Files>>.
 
 == Stage One: GribCollection Creation
 

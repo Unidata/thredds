@@ -152,7 +152,7 @@ for the given *transformName* in the dataset. The type must be _vertical_ or __p
 7.  Load a <<formats/GribTables#,GRIB-1 parameter lookup table>> (versions < 4.3, deprecated)
 8.  Load a <<formats/GribTables#,GRIB-2 parameter lookup table>> (versions < 4.3, deprecated)
 9.  Load a <<formats/BufrTables#,BUFR table lookup>> file
-10. Turn <<formats/GribTables.adoc#strict,strict GRIB1 table handling>> off.
+10. Turn <<formats/GribTables#strict,strict GRIB1 table handling>> off.
 11. Configure how the <<netcdf4Clibrary#,netCDF-4 C library>> is discovered and used.
     ** `libraryPath`: The directory in which the native library is installed.
     ** `libraryName`: The name of the native library. This will be used to locate the proper .DLL, .SO, or .DYLIB file

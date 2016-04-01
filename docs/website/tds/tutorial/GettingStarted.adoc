@@ -552,7 +552,7 @@ well-formed and without error.
 
 ==== TDS Monitoring & Debugging Tools
 
-You will need to enable <<Security.adoc#ssl,Enable SSL encryption>> to
+You will need to enable <<Security#ssl,Enable SSL encryption>> to
 access a couple of TDS monitoring and debugging tools.
 
 * If you plan to deploy the TDS in a _production environment_ you will

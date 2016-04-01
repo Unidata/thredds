@@ -675,7 +675,7 @@ __NetcdfDataset.EnhanceMode.None__). Generally you should do this if the
 ncml needs to operate on the dataset after the CoordSysBuilder has
 augmented it. Otherwise, you should not enhance.
 14. A specialized scanFmrc element can be used for a
-_*<<FmrcAggregation.adoc#forecastModelRunSingleCollection,forecastModelRunSingleCollection>>*_
+_*<<FmrcAggregation#forecastModelRunSingleCollection,forecastModelRunSingleCollection>>*_
 aggregation, where forecast model run data is stored in multiple files,
 with one forecast time per file.
 15. For scanFmrc, the run date and the forecast date is extracted from

@@ -141,9 +141,9 @@ If *strictMode* is on, then
 * If (param > 127 or version > 127) a table must be found for all
 parameters, or else the file will fail to open.
 
-You can set strictMode programatically via
+You can set strictMode programmatically via
 *ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true);* or in
-the <<../RuntimeLoading.adoc#XML,RunTime configuration file>> by
+the <<../RuntimeLoading#XML,RunTime configuration file>> by
 adding
 
 ---------------------------

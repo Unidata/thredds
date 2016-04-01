@@ -504,7 +504,7 @@ roots'']
 
 A `datasetScan` element can specify which files and directories it will
 include with a `filter` element (see
-<<../catalog/InvCatalogServerSpec.adoc#filter_Element,spec>> for more
+<<../catalog/InvCatalogServerSpec#filter_Element,spec>> for more
 details). When no `filter` element is given, all files and directories
 are included in the generated catalog(s). Adding a `filter` element to
 your `datasetScan` element allows you to include (and/or exclude) the

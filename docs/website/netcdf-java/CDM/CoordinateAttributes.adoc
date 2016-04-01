@@ -12,7 +12,7 @@ image:../images/CoordSys.png[image]
 See also:
 
 * <<../tutorial/CoordinateAttributes#,Tutorial Examples>>
-* <<../CDM/index.adoc#CoordSys,CDM Coordinate System Object Model>>
+* <<../CDM/index#CoordSys,CDM Coordinate System Object Model>>
 
 There are many attribute conventions for encoding coordinate information into scientific datasets. While the CF
 Conventions are recommended in netCDF files intended for public use, the CDM also uses *_Coordinate attributes* for
@@ -24,7 +24,7 @@ This page documents their meaning and use.
 
 === _CoordinateAliasForDimension
 
-A one-dimensional variable with monotonic values can act as a coordinate variable for its dimension, even when it doesnt have the same name as the dimension.
+A one-dimensional variable with monotonic values can act as a coordinate variable for its dimension, even when it doesn't have the same name as the dimension.
 To indicate this, add an attribute to the variable called *\_CoordinateAliasForDimension*, whose value must be the name of its single dimension.
 The variable is now called a *_\_Coordinate Alias_*. A Coordinate Alias is automatically added to any Variable using that dimension.
 
@@ -157,7 +157,7 @@ _Height_ or _Pressure_ for the vertical axis. A _projection transform_ maps coor
 while a _vertical transform_ maps coordinates to/from Height or Pressure.
 
 A Transform is defined by creating a *_Coordinate Transform Variable_* (see
-<<../tutorial/CoordinateAttributes.adoc#Example4,Example>>. The attributes of the
+<<../tutorial/CoordinateAttributes#Example4,Example>>. The attributes of the
 Coordinate Transform Variable become the parameters of the transform. A
 variable is a Coordinate Transform Variable if one (or both) of these is true:
 

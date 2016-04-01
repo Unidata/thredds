@@ -48,7 +48,7 @@
 </netcdf>
 ----
 
-=== Rename a nested variable in a group: 
+=== Rename a nested variable in a group:
 
 [source,xml]
 ----
@@ -91,7 +91,7 @@ dimensions, variables, and attributes not wanted (leave just the ones
 that you want)
 3.  Use the ToolsUI NcML "Write Netcdf File" button to copy just those variables to a new netCDF file.
 4.  (or) Save the NcML file and use the
-<<../reference/Cookbook.adoc#writeClassic,command line copy>>. One can
+<<../reference/Cookbook#writeClassic,command line copy>>. One can
 generate the NcML from a script and automate the process.
 
 == Logical Views
@@ -136,7 +136,7 @@ Create union of datasets _cldc.mean.nc_ and _lflx.mean.nc_ located in the direct
 </netcdf>
 ----
 
-Create union of all datasets ending in _mean.nc_ located in the directory _nc_ reletive to where the NcML file is found:
+Create union of all datasets ending in _mean.nc_ located in the directory _nc_ relative to where the NcML file is found:
 
 [source,xml]
 ----
@@ -144,12 +144,12 @@ Create union of all datasets ending in _mean.nc_ located in the directory _nc_ r
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
   <attribute name="title" type="string" value="Union all mean.nc files"/>
   <aggregation type="union">
-    <scan location="file:src/test/data/ncml/nc/" suffix="mean.nc"/> 
+    <scan location="file:src/test/data/ncml/nc/" suffix="mean.nc"/>
   </aggregation>
 </netcdf>
 ----
 
-See <<../reference/DatasetUrls.adoc#NcmlScan,Dataset URLS>> for more information on the location attribute.
+See <<../reference/DatasetUrls#NcmlScan,Dataset URLS>> for more information on the location attribute.
 
 == JoinNew Aggregation
 
@@ -192,7 +192,7 @@ Assign coordinate values in the coordinate variable:
 </netcdf>
 ----
 
-Assign coordinate values to unknown number of datasets. You dont have
+Assign coordinate values to unknown number of datasets. You don't have
 to know the number of files found in the scan, but they must be evenly
 spaced, and they must be in alphabetic order.
 
@@ -214,7 +214,7 @@ spaced, and they must be in alphabetic order.
 
 Scan directory, assign date coordinate value from filename. The date
 coordinate must be derivable from the filename, using the
-<<Aggregation.adoc#dateFormatMark,dateFormatMark>> attribute. +
+<<Aggregation#dateFormatMark,dateFormatMark>> attribute. +
 
 [source,xml]
 ----
@@ -224,7 +224,7 @@ coordinate must be derivable from the filename, using the
     <variableAgg name="T"/>
     <scan location="/data/goes/" suffix=".gini" dateFormatMark="SUPER-NATIONAL_1km_SFC-T_#yyyyMMdd_HHmm" />
   </aggregation>
-</netcdf> 
+</netcdf>
 ----
 
 == JoinExisting Aggregation
@@ -240,7 +240,7 @@ A coordinate variable named _time_ must exist in each file.
    <netcdf location="file:src/test/data/ncml/nc/jan.nc"/>
    <netcdf location="file:src/test/data/ncml/nc/feb.nc"/>
  </aggregation>
-   
+
 </netcdf>
 ----
 
@@ -267,7 +267,7 @@ Overrides existing coordinate variable, if any.
 
 *Scan directory, assign date coordinate value from filename.*
 Each file must have exactly one time slice. The date coordinate must be derivable from the filename, using the
-<<Aggregation.adoc#dateFormatMark,dateFormatMark>> attribute. +
+<<Aggregation#dateFormatMark,dateFormatMark>> attribute. +
 
 [source,xml]
 ----
@@ -283,7 +283,7 @@ Each file must have exactly one time slice. The date coordinate must be derivabl
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
- <aggregation dimName="time" type="joinExisting" timeUnitsChange="true"> 
+ <aggregation dimName="time" type="joinExisting" timeUnitsChange="true">
   <netcdf location="20060925_0600.nc" ncoords="2"/>
   <netcdf location="20060925_1200.nc" ncoords="2"/>
   <netcdf location="20060925_1800.nc" ncoords="2"/>
@@ -299,13 +299,13 @@ Add the timeUnitsChange attribute.
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
- <aggregation dimName="time" type="joinExisting" timeUnitsChange="true"> 
+ <aggregation dimName="time" type="joinExisting" timeUnitsChange="true">
   <netcdf location="20060925_0600.nc" ncoords="2"/>
   <netcdf location="20060925_1200.nc" ncoords="2"/>
   <netcdf location="20060925_1800.nc" ncoords="2"/>
   <netcdf location="20060926_0000.nc" ncoords="2"/>
  </aggregation>
-</netcdf> 
+</netcdf>
 ----
 
 == Global Attributes to Variables

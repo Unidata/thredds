@@ -143,7 +143,7 @@ subset.
 
 * More details are available <<CatalogService#,here>>.
 * Services for remote catalogs can be enabled with the TDS Configuration
-File (<<ThreddsConfigXMLFile.adoc#Remote,threddsConfig.xml>>).
+File (<<ThreddsConfigXMLFile#Remote,threddsConfig.xml>>).
 
 Remote THREDDS Catalog Service
 
@@ -193,7 +193,7 @@ metadata
 
 * More details are available <<ncISO#,here>>.
 * Enable ncISO with the TDS Configuration File
-(<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
+(<<ThreddsConfigXMLFile#ncISO,threddsConfig.xml>>).
 
 NCML
 
@@ -222,7 +222,7 @@ Provide NCML representation of a dataset
 
 * More details are available <<ncISO#,here>>.
 * Enable ncISO with the TDS Configuration File
-(<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
+(<<ThreddsConfigXMLFile#ncISO,threddsConfig.xml>>).
 
 UDDC
 
@@ -254,7 +254,7 @@ Attribute Convention for Data Discovery (NACDD)]
 
 * More details are available <<ncISO#,here>>.
 * Enable ncISO with the TDS Configuration File
-(<<ThreddsConfigXMLFile.adoc#ncISO,threddsConfig.xml>>).
+(<<ThreddsConfigXMLFile#ncISO,threddsConfig.xml>>).
 
 === Data Access Services
 
@@ -290,7 +290,7 @@ Service Base URL
 OPeNDAP DAP2 data access protocol.
 
 * Several configuration options are available
-(<<../reference/ThreddsConfigXMLFile.adoc#opendap,details>>).
+(<<../reference/ThreddsConfigXMLFile#opendap,details>>).
 
 NetCDF Subset Service
 
@@ -321,7 +321,7 @@ NetCDF Subset Service: a data access protocol.
 <<NetcdfSubsetServiceReference#,here>>.
 * Enable NCSS and set other configuration options with the TDS
 Configuration File
-(<<ThreddsConfigXMLFile.adoc#ncss,threddsConfig.xml>>). More setup and
+(<<ThreddsConfigXMLFile#ncss,threddsConfig.xml>>). More setup and
 configuration details are available
 <<NetcdfSubsetServiceConfigure#,here>>.
 
@@ -384,7 +384,7 @@ OGC WCS supports access to geospatial data as ``coverages''.
 http://www.opengeospatial.org/standards/wcs[here].
 * Enable OGC WCS and set other configuration options with the TDS
 Configuration File
-(<<ThreddsConfigXMLFile.adoc#wcs,threddsConfig.xml>>). More setup,
+(<<ThreddsConfigXMLFile#wcs,threddsConfig.xml>>). More setup,
 configuration, and implementation details for the TDS’s OGC WCS
 implementation are available <<WCS#,here>>.
 
@@ -418,7 +418,7 @@ datasets.
 http://www.opengeospatial.org/standards/wms[here].
 * Enable OGC WMS and set other configuration options with the TDS
 Configuration File
-(<<ThreddsConfigXMLFile.adoc#wms,threddsConfig.xml>>). More setup,
+(<<ThreddsConfigXMLFile#wms,threddsConfig.xml>>). More setup,
 configuration, and implementation details for the TDS’s OGC WMS
 implementation are available <<WMS#,here>>. Including a link to
 configuration information for the underlying WMS implementation (ncWMS:
@@ -453,7 +453,7 @@ HTTP File Download (HTTP byte ranges are supported)
 * Files accessed through the HTTP file download have their file handles
 cached by default. Configuration settings for this caching can be set
 with the TDS Configuration File
-(<<ThreddsConfigXMLFile.adoc#FileCache,threddsConfig.xml>>).
+(<<ThreddsConfigXMLFile#FileCache,threddsConfig.xml>>).
 
 '''''
 

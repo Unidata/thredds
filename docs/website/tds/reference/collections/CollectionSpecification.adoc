@@ -137,7 +137,7 @@ directory and file names, with the exception of the `.'
 The *date extractor* can only be used on the filename in a collection
 specification string. If the date is part of a directory name, use the
 more general *dateFormatMark* on the
-*<<FeatureCollections.adoc#collection,collection>>* element.
+*<<FeatureCollections#collection,collection>>* element.
 
 The *date extractor* element cannot be used after the regular
 expression. So **GFS_Alaska_191km_#yyyyMMdd_HHmm#.*grib**$ is ok but

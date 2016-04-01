@@ -49,7 +49,7 @@ The returned message indicates if this was done or not.
 * *CDL* and *NcML* outputs are human-friendly listings of the CDM dataset's _structural metadata_, familiar to users of netCDF.
 * The *ncstream header* and *ncstream data* messages are for software consumption only.
 * A data request uses the _Section specification_ (same as Fortran-90 array notation) to ask for a subset in index space.
-* Variable names are case-sensitive and must be <<../../CDM/Identifiers.adoc#cdmremote,backslash-escaped>>
+* Variable names are case-sensitive and must be <<../../CDM/Identifiers#cdmremote,backslash-escaped>>
 
 == Client libraries
 

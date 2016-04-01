@@ -21,7 +21,7 @@ Also see:
 * <<GribConfig#,GRIB specific configuration>>
 * <<GribCollectionFaq#,GRIB Collection FAQs>>
 * <<Partitions#,Partitions>>
-* <<../../../netcdf-java/reference/formats/GribFiles.adoc#,CDM GRIB Collection Processing>>
+* <<../../../netcdf-java/reference/formats/GribFiles#,CDM GRIB Collection Processing>>
 
 === Multiple Dataset Collections
 
@@ -31,7 +31,7 @@ From that, a Best time dataset is also created.
 === Multiple Groups
 
 When a GRIB Collection contains multiple horizontal domains (i.e. distinct Grid Definition Sections (GDS)),
-each domain gets placed into a seperate group (CDM) or Dataset (TDS).
+each domain gets placed into a separate group (CDM) or Dataset (TDS).
 
 === Generated URLs
 

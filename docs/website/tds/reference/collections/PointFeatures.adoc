@@ -15,7 +15,7 @@ can recognize as containing
 _*Point*_ or _*Station*_ Feature type by the CDM software.
 * The component files must be partitioned by time. The starting time
 must be part of the filename, in a way that can be extracted with a
-<<FeatureCollections.adoc#dateExtractor,DateExtractor>>.
+<<FeatureCollections#dateExtractor,DateExtractor>>.
 * The component files are assumed to be homogenous, that is, they
 contain the same collection of variables and attributes, and they must
 be on the same horizontal and vertical grid. The component files can

@@ -95,7 +95,7 @@ FeatureDataset FeatureDatasetFactoryManager.open( FeatureType want, String endpo
 ----
 
 where _endpoint_ is a remote dataset represented as a URL (eg using *_cdmrFeature_*, *_cdmremote_*, or *_OPeNDAP_* protocols) or a local file pathname
-(see <<../DatasetUrls.adoc#FeatureDataset,here>> for details).
+(see <<../DatasetUrls#FeatureDataset,here>> for details).
 
 or if you already have an opened NetcdfDataset:
 

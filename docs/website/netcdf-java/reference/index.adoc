@@ -20,7 +20,7 @@
 * <<formats/FileTypes#,File Types>>
 * <<formats/GribFiles#,GRIB Files>>
 * <<formats/GribTables#,GRIB Tables>>
-* HTTP <<Auth.adoc[Authentication] and link:Session#,Session Control>>
+* HTTP <<Auth#,Authentication>> and <<Session#,Session Control>>
 * <<HTTPservice#,HTTP Server: remote files using HTTP>>
 * <<netcdf4Clibrary#,NetCDF-4 file writing>>
 * <<../ncml/index#,NcML>>
