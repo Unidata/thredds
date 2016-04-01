@@ -557,7 +557,3 @@ global attribute named _speech_ and 2 attributes on the variable named __mixed_l
 Also see:
 
 * <<FCvsAgg#,Feature Collections vs Aggregations>>
-
-'''''
-
-image:../../thread.png[image] This document was last updated September 2015

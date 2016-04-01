@@ -106,7 +106,3 @@ Examples:
 | _Temperature_pressure at a particular vertical level: 1000 mb_ | *?var=Temperature_pressure&vertCoord=1000*
 | _Air_temperature for stations named LECO, LEST and LEVX_ | *?var=air_temperature&subset=stns&stns=LECO,LEST,LEVX*
 |====
-
-'''''
-
-image:../../images/thread.png[image]This document was last updated September 2015

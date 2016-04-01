@@ -313,9 +313,3 @@ descriptive and include the hostname, for example:
     <realm-name>Unidata IDD Server (motherload.ucar.edu))</realm-name>
   </login-config>
 ----------------------------------------------------------------------
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated October 2012. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

@@ -529,8 +529,3 @@ Note: The required *serviceType* and *base* values are shown in bold.
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
 </service>
 -------------------------------------------------------------------------------------
-
-'''''
-
-image:../thread.png[THREDDS] This document last changed July 2015. Send
-comments to mailto:support-thredds@unidata.ucar.edu[THREDDS support].

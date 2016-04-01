@@ -936,11 +936,3 @@ ________________________________________________________________________________
 You must use a version of Tomcat >= 7.0.43. See
 http://logging.apache.org/log4j/2.0/manual/webapp.html[log4j2 docs].
 ____________________________________________________________________________________________________________________
-
- 
-
-'''''
-
-image:thread.png[THREDDS] This document is maintained by Unidata and was
-last updated Oct 2014. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

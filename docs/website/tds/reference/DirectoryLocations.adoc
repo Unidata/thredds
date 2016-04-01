@@ -108,9 +108,3 @@ reinitialization.
 *** `ehcache/`
 *** `ncss/`
 *** `wcs/`
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata .
-Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS
-support].

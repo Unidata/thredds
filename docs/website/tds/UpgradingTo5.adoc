@@ -394,8 +394,8 @@ For example:
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink"
       xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
       xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0 http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd">
-      
- <datasetRoot location="/esg/data" path="esg_testroot"/> 
+
+ <datasetRoot location="/esg/data" path="esg_testroot"/>
  <datasetRoot location="/esg/arc/data/" path="esg_obs4MIPs"/>
  <datasetRoot location="/esg/cordex/data/" path="esg_cordex"/>
  <datasetRoot location="/esg/specs/data/" path="esg_specs"/>
@@ -412,7 +412,7 @@ For example:
     <property name="application" value="Web Script"/>
   </service>
   <service base="gsiftp://cmip-bdm1.badc.rl.ac.uk/" desc="GridFTP" name="GridFTPServer" serviceType="GridFTP">
-    <property name="requires_authorization" value="true"/> 
+    <property name="requires_authorization" value="true"/>
     <property name="application" value="DataMover-Lite"/>
   </service>
   <service base="/thredds/dodsC/" desc="OpenDAP" name="OpenDAPFiles" serviceType="OpenDAP">
@@ -424,4 +424,3 @@ For example:
  <catalogScan name="ESGF catalogs" path="esgcet" location="esgcet" />
 
 </catalog>
-----

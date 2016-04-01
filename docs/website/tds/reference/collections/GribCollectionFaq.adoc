@@ -21,7 +21,7 @@ To do it from your Java program:
 
 -----------------------------------------------------------------
  // place cdm indices somewhere other than default
- GribIndexCache.setDiskCache2(DiskCache2 dc); 
+ GribIndexCache.setDiskCache2(DiskCache2 dc);
 
  // optional object caching for performance
  ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
@@ -101,12 +101,12 @@ If the variable needs two time dimensions, this will look like:
       :long_name = "Geopotential height @ Isobaric surface";
       :units = "gpm";
       :coordinates = "reftime time1 isobaric y x";
- 
+
 double reftime(reftime=742);
    :units = "Hour since 2015-03-03T00:00:00Z";
    :standard_name = "forecast_reference_time";
    :long_name = "GRIB reference time";
-   
+
 double time(reftime=742, time=18);
    :units = "Hour since 2015-03-03T00:00:00Z";
    :standard_name = "time";
@@ -145,7 +145,7 @@ double reftime;
   :units = "Minute since 2015-03-30T06:00:00Z";
   :standard_name = "forecast_reference_time";
   :long_name = "GRIB reference time";
- 
+
 double time(time=14);
   :units = "Minute since 2015-03-30T06:00:00Z";
   :standard_name = "time";
@@ -154,7 +154,3 @@ double time(time=14);
 
 This is a _one-dimensional_ time variable, and we use a scalar to avoid
 introducing an unneeded dimension of length 1.
-
-'''''
-
-image:../../thread.png[image] This document was last updated Mar 2015

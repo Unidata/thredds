@@ -160,7 +160,3 @@ Examples:
 
 * note that the vertical level value must be in the same units used in the dataset - in this example we assume millibars but you will need to check
 the dataset description to be sure.
-
-'''''
-
-image:../../images/thread.png[image]This document was last updated August 2015

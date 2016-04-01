@@ -29,7 +29,3 @@ configuration catalogs. For server-side catalogs, see:
 
 * <<InvCatalogServerSpec#,Server-side Catalog Specification>>
 * <<../tutorial/index#,THREDDS Data Server Administration Tutorial>>
-
-'''''
-
-image:../thread.png[image]This document was last updated July 2015
