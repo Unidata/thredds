@@ -28,7 +28,7 @@ issues and user forums.
 * http://www.unidata.ucar.edu/mailing_lists/[`thredds` mailing list] +
  The THREDDS mailing list where announcements of new releases will be
 made.
-* http://www.securityfocus.com/vulnerabilities[Buqtraq vunerability
+* http://www.securityfocus.com/vulnerabilities[Buqtraq vulnerability
 database] +
  SecurityFocus’ database of all known vulnerabilities for all different
 types of software from different vendors.
@@ -250,8 +250,3 @@ Manager HOW-TO] documentation.
 == Online Resources
 
 * http://wiki.apache.org/tomcat/FAQ/Security[Tomcat Security FAQ]
-
-'''''
-
-image:../images/thread.png[THREDDS]Last changed Sep 2012. Please send
-comments to mailto:support-thredds@unidata.ucar.edu[THREDDS support].

@@ -125,7 +125,7 @@ Variables, its value is a space-separated list of names of Coordinate Transform 
 --------------------------------------------------------------------------
 
 This is a general mechanism for any transformation a file writer wants to define.
-The Netcdf-Java library has a <<StandardCoordinateTransforms#,set of transforms that it recognizes>>, mostly based on the CF Conventions.
+The Netcdf-Java library has a <<../reference/StandardCoordinateTransforms#,set of transforms that it recognizes>>, mostly based on the CF Conventions.
 
 === _CoordinateTransformType
 

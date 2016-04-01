@@ -53,7 +53,7 @@ NetCDF files conforming to this specification must add the global
 attribute:
 
 ------------------------------------------------------------
-  :Metadata_Conventions = "Unidata Dataset Discovery v1.0"; 
+  :Metadata_Conventions = "Unidata Dataset Discovery v1.0";
 ------------------------------------------------------------
 
 When following multiple metadata conventions, list them with a comma
@@ -377,14 +377,14 @@ link:#note_email_address_persistence[email address persistence] +
 The "standard_name" variable attribute provides a name for the
 variable from a standard list of names. I.e., the value is from a
 controlled vocabulary of variable names. We recommend using the
-http://www.cgd.ucar.edu/cms/eaton/cf-metadata/[CF convention] and the
+link:http://cfconventions.org/[CF convention] and the
 variable names from the
-http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#sname[CF
-standard name] table. Use of this attribute is highly recommended and
+link:http://cfconventions.org/standard-names.html[CF standard name]
+table. Use of this attribute is highly recommended and
 its value will be used by THREDDS as the variable’s name in the variable
 mapping. (For THREDDS use, this attribute takes precedence over the
 "long_name" attribute.) This attribute is recommended by the
-http://www.cgd.ucar.edu/cms/eaton/cf-metadata/[CF convention]. +
+link:http://cfconventions.org/[CF convention]. +
 
 Note: Just remember, for a file to be CF compliant, all the
 standard_name values must be from the CF standard name table. +
@@ -404,7 +404,7 @@ standard_name values are from the CF convention standard name table. +
 |=======================================================================
 |Vocabulary ID + |Reference URL +
 |"CF-1.0" +
-|http://www.cgd.ucar.edu/cms/eaton/cf-metadata/standard_name.html +
+|http://cfconventions.org/standard-names.html +
 
 |"GCMD Science Keywords"
 |http://gcmd.gsfc.nasa.gov/Resources/valids/gcmd_parameters.html
@@ -447,21 +447,21 @@ The "title" attribute gives a brief description of the dataset. Its
 use is highly recommended and its value will be used by THREDDS as the
 name of the dataset. It therefore should be human readable and
 reasonable to display in a list of such names. The "title" attribute
-is recommended by the "link:/packages/netcdf/docs/netcdf/[NetCDF Users
-Guide]" and the http://www.cgd.ucar.edu/cms/eaton/cf-metadata/[CF
-convention].
+is recommended by the
+"link:https://www.unidata.ucar.edu/software/netcdf/docs/user_guide.html[NetCDF
+Users Guide]" and the link:http://cfconventions.org/[CF convention].
 
 === units Attribute
 
 The "units" variable attribute gives the units of the data contained
 by that variable. The value of the "units" attribute should be a valid
-link:/software/udunits/[udunits] string. Its use is highly recommended
+link:https://www.unidata.ucar.edu/software/udunits/[udunits] string. Its
+use is highly recommended
 and its value will be used by THREDDS as the variable’s units in the
 variable mapping. The "units" attribute is recommended by the
 "link:/software/netcdf/docs/[NetCDF Users Guide]", the
 http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html[COARDS
-convention], and the http://www.cgd.ucar.edu/cms/eaton/cf-metadata/[CF
-convention].
+convention], and the link:http://cfconventions.org/[CF convention].
 
 == Notes
 
@@ -473,4 +473,3 @@ provide this information. +
 4.  Since data files are often archived, try using email address that
 will work for the long-term. Perhaps use an institutional email address
 like support@<institution> or data@<institution> +
-

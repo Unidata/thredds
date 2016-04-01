@@ -22,7 +22,7 @@ in a single read. Structures are a new part of NetCDF, introduced in the
 http://www.unidata.ucar.edu/software/netcdf-java/index.html[NetCDF-Java]
 library, version 2.2 as part of the Common Data Model, and will also be
 implemented in
-http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html[NetCDF-4].
+https://www.unidata.ucar.edu/software/netcdf/index.html[NetCDF-4].
 
 In the NetCDF version 3 data model, _*Record variables*_ are ones that
 use the *unlimited dimension* (also known as the **record dimension**),
@@ -36,11 +36,11 @@ a NetCDF file.
 Since data for Record variables is stored contiguously on disk in this
 manner, we can think of the records as a Structure containing the Record
 variables. Our motivation is to efficiently access all of the data in
-the Record variables for some record, ie use a single read to fetch the
+the Record variables for some record, i.e. use a single read to fetch the
 ith record. The usefulness of this obviously depends on your data access
 patterns. If the dominant access pattern is to read all the data for one
 Variable, then it will be more efficient to store that data
-continuously, ie make it a non-record Variable. If the data access
+continuously, i.e. make it a non-record Variable. If the data access
 pattern is to iterator over (for example) time, and read all the data
 for all Variables for each time step, then using Record variables will
 be more efficient. Efficiency differences can easily be an order of
