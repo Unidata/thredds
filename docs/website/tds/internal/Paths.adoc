@@ -31,22 +31,22 @@ decides what the valid dataPaths are.
 === Servlets
 
 * CatalogGenServlet: _/cataloggen/*_
-* <<Paths.adoc#catalogService,CatalogServicesServlet>>:
+* <<Paths#catalogService,CatalogServicesServlet>>:
 _/catalogServices/*, /catalog.html_
-* <<Paths.adoc#catalog,CatalogServlet>>: _/catalog/*_
-* <<Paths.adoc#cdmValidate,CoordSysValidatorServlet>>: _/cdmValidate_
-* <<Paths.adoc#DLWriter,DLwriterServlet>>: _/DLwriter_
+* <<Paths#catalog,CatalogServlet>>: _/catalog/*_
+* <<Paths#cdmValidate,CoordSysValidatorServlet>>: _/cdmValidate_
+* <<Paths#DLWriter,DLwriterServlet>>: _/DLwriter_
 * DqcServlet: _/dqc/*_
-* <<Paths.adoc#FileServer,FileServerServlet>>: _/fileServer/*_
-* <<Paths.adoc#modelInventory,FmrcInventoryServlet>>__:
+* <<Paths#FileServer,FileServerServlet>>: _/fileServer/*_
+* <<Paths#modelInventory,FmrcInventoryServlet>>__:
 /modelInventory/*__
 * MetarServlet: _/idd/metar/*_
-* <<Paths.adoc#dodsC,NcDODSServlet>>: _/dodsC/*_
-* <<Paths.adoc#ncss,NetcdfServlet>>: _/ncss/grid/*_
+* <<Paths#dodsC,NcDODSServlet>>: _/dodsC/*_
+* <<Paths#ncss,NetcdfServlet>>: _/ncss/grid/*_
 * StationObsCollectionServlet: _/obsServer/*_
 * ThreddsDefaultServlet__: everything else__
-* <<Paths.adoc#view,ViewServlet>>__: /view/*__
-* <<Paths.adoc#wcs,WCSServlet>>: _/wcs/*_
+* <<Paths#view,ViewServlet>>__: /view/*__
+* <<Paths#wcs,WCSServlet>>: _/wcs/*_
 
 '''''
 

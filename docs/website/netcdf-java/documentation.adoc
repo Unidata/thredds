@@ -103,8 +103,8 @@ from the producer is possible and send them to us.
 * Indexing has changed since 4.3 (this will be detected automatically).
 * Evolving documentation for GRIB is at:
 
-** <<reference/formats/GribTables#,GribTables.adoc>>
-** <<reference/formats/GribFiles#,GribFiles.adoc>>
+** <<reference/formats/GribTables#,GribTables>>
+** <<reference/formats/GribFiles#,GribFiles>>
 
 === Caveats and not-so-stable APIs:
 
@@ -139,13 +139,13 @@ from the producer is possible and send them to us.
 
 Working notes and documentation on the *_Coordinate System_* layer of the CDM:
 
-* <<CDM/index.adoc#CoordSys,Common Data Model (CDM) and Coordinate Systems>>
+* <<CDM/index#CoordSys,Common Data Model (CDM) and Coordinate Systems>>
 
 === Feature Datasets
 
 Working notes and documents on the *_Feature Type_* layer of the CDM:
 
-* <<CDM/index.adoc#ScientificFeatureTypes,Common Data Model (CDM) and Feature Types>>
+* <<CDM/index#ScientificFeatureTypes,Common Data Model (CDM) and Feature Types>>
 * <<reference/FeatureDatasets/Overview#,Feature Datasets (Overview)>>
 * <<reference/FeatureDatasets/CoverageFeatures#,Coverage Dataset>>: Data in a multidimensional grid, eg model output, satellite data.
 * <<reference/FeatureDatasets/PointFeatures#,Point Dataset>>: Discrete Sampling Geometry (DSG) datasets

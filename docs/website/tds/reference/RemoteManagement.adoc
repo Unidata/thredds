@@ -64,7 +64,7 @@ The list of users, their names and passwords, are whatever you want them
 to be. Note that after you get this set up, you can manage users
 remotely through the administrator interface. Note also that before you
 go into production mode, you should change to using digest passwords by
-following the instructions <<TomcatSecurity.adoc#Digest,here>>.
+following the instructions <<TomcatSecurity#Digest,here>>.
 
 Note that any changes won’t take effect until you restart Tomcat.
 

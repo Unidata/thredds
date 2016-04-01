@@ -427,12 +427,12 @@ name, and _type_ is a <<collectionUpdateType>>.
 
 Typically the trigger is used by the TDM, but it can also be used manually or by another program.
 
-.  Triggering is password protected and uses SSH (see <<../RemoteManagement.adoc#,enabling Remote Management>> to enable SSH).
+.  Triggering is password protected and uses SSH (see <<../RemoteManagement#,enabling Remote Management>> to enable SSH).
 .  You must give the role *_tdsTrigger_* to any user you want to have the right to send a trigger.
 . To enable the TDM trigger, create a user named *_tdm_* and give that user the _tdsTrigger_ role.
 .  You can see a list of the Feature Collection datasets (and manually send a _trigger=nocheck_ to specific datasets) from the TDS _admin page_ at
 _\https://server/thredds/admin/debug?Collections/showCollection_. To have access to this page the user must have the role *_tdsConfig_*
-(see <<../RemoteManagement.adoc#,enabling Remote Management>>).
+(see <<../RemoteManagement#,enabling Remote Management>>).
 
 == Static vs. changing datasets (Not GRIB) [[changing]]
 
