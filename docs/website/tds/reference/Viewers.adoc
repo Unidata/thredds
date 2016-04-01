@@ -445,9 +445,3 @@ of the form ``\{catalog}#\{dataset}'', and the ToolsUI application looks
 for this and uses it to open that catalog and display the named dataset
 in the ``Catalog Chooser'' tab. This UI component gives access to all
 the metadata and access protocols of that dataset.
-
-'''''
-
-image:../thread.png[image] This document is maintained by Unidata and
-was last updated May 2013. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

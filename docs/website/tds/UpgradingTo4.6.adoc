@@ -105,11 +105,3 @@ find and fix more than 4000 defects. Defect count now < 1 / 1000 LOC.
  
 
 === Upgrading from 4.3
-
- 
-
-'''''
-
-image:thread.png[TDS]This document is maintained by Unidata and was last
-updated Aug 2015. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

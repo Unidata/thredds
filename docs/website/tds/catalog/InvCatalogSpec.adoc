@@ -1692,8 +1692,3 @@ http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.html?dataset=GFS_CO
 
 This URL, when sent to a THREDDS Data Server, shows the metadata for the dataset with ID _GFS_CONUS_80km/Best_
 in the catalog _\http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.html_.
-
-'''''
-
-image:../thread.png[THREDDS]This document was last updated Ocober 2015.
-Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS support].

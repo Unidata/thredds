@@ -611,9 +611,3 @@ We have compiled a list of a few
 take to help secure Tomcat and your TDS server. This is not a complete
 laundry list of security fixes! Please use it as a starting point when
 securing your server.
-
-'''''
-
-image:../images/thread.png[THREDDS]This document is maintained by
-Unidata staff. Please send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

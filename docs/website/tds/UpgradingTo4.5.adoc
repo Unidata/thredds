@@ -193,11 +193,3 @@ soon.
 analysis now being done. 3000+ defects eliminated, about 1000 to go.
 * Code being converted to use Java 7 constructs, eg try-with-resources,
 generics.
-
- 
-
-'''''
-
-image:thread.png[TDS]This document is maintained by Unidata and was last
-updated Aug 2015. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

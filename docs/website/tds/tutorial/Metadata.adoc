@@ -261,9 +261,3 @@ a *documentation* element:
 -----------------------------------------------------------------------------------
 <documentation xlink:title="My Data" xlink:href="http://my.server/md/data1.html" />
 -----------------------------------------------------------------------------------
-
-'''''
-
-image:../thread.png[THREDDS]This document is maintained by Unidata
-staff. Please send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

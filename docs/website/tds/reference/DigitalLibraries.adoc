@@ -77,9 +77,3 @@ already configured for use with the TDS.
 == Related Documents
 
 * <<DLexport#,Exporting THREDDS Datasets to Digital Libraries>>
-
-'''''
-
-image:../thread.png[image]This document is maintained by Unidata and was
-last updated February 2009. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

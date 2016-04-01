@@ -107,8 +107,3 @@ the values should be
 * `             req.getServerName(): localhost           `
 * `             req.getServerPort(): 8080           `
 * `             req.getContextPath(): /thredds           `
-
-'''''
-
-This document is maintained by Unidata. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

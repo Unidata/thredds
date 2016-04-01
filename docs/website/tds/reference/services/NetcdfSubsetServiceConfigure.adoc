@@ -71,9 +71,3 @@ then the data should be served correctly by the TDS.
 Open your file in the ToolsUI program using the
 FeatureTypes->PointFeature tab. In the top table, verify that
 ``featureType'' is either ``POINT'' or ``STATION''.
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated Oct 2014. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

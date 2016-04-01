@@ -105,13 +105,3 @@ If it does change, the *X-Last-Modified-Invalid* header is updated. The
 * TDS aquires/releases the dataset for each request.
 * The dataset may change between requests. Client can examine the
 Last-XXX headers..
-
-'''''
-
-_Comments to mailto:thredds@unidata.ucar.edu[THREDDS mailgroup] or
-mailto:support-thredds@unidata.ucar.edu[THREDDS support]  _
-
-_Go to:
-http://www.unidata.ucar.edu/projects/THREDDS/tech/index.html[THREDDS
-Tech Page]_ or _http://www.unidata.ucar.edu/projects/THREDDS/[THREDDS
-Home Page]_ image:../../thredds.jpg[image] +

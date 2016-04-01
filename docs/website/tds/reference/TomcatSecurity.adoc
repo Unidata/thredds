@@ -228,9 +228,3 @@ FAQ]
 Tomcat Security Handbook] (2003) dated but still useful, e.g. to use the
 Java Security Manager. Chapter 1 is online
 http://www.theserverside.com/articles/content/TomcatSecurity/TomcatSecurity.pdf[here].
-
-'''''
-
-image:../thread.png[THREDDS] This document was last updated May, 2014.
-Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS
-support].

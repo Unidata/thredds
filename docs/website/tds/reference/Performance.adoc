@@ -216,13 +216,3 @@ the <<collections/TDM#,TDM>>, users get much faster response time.
 As of TDS 4.6+ f these collections change, you must use the TDM to
 detect those changes, the TDS will no longer update GRIB collections on
 the fly.
-
- 
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated Jan 2015. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].
-
-===

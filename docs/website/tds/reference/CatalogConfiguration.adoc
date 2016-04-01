@@ -97,9 +97,3 @@ Assuming you are authorized with tdsConfig role, you can send commands to the TD
 All are clickable from this page:
 
   https://server/thredds/admin/debug
-
-'''''
-
-image:../thread.png[THREDDS] Last updated Dec 2015. Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS support].
-
-

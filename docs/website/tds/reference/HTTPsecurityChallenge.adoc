@@ -195,9 +195,3 @@ HTTP/1.x 200 OK
    Transfer-Encoding: chunked
    Date: Wed, 04 Apr 2007 00:56:23 GMT
 ----------------------------------------
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated April 3, 2007. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

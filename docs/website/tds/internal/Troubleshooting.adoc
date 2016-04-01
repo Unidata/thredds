@@ -79,7 +79,3 @@ Use sysinternals process explorer
 sudo /opt/jdk/bin/jmap -J-d64 -dump:format=b,file=dump.hprof -F
 
 ==  +
-
--
- 
--

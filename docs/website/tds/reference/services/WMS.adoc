@@ -178,9 +178,3 @@ http://servername:8080/thredds/wms?dataset=http://las.pfeg.noaa.gov/cgi-bin/nph-
 -----------------------------------------------------------------------------------------------------------------------
 
 == Capabilities/Limitations
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata.
-Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS
-support].

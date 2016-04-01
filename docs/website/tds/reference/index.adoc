@@ -89,7 +89,3 @@ TDM does background Indexing for GRIB and Point Feature Collections
 * http://www.ntu.edu.sg/home/ehchua/programming/howto/Tomcat_More.html[Advanced Tutorial on Tomcat]
 * http://tomcat.apache.org/tomcat-8.0-doc/security-howto.html[Tomcat Security]
 * https://www.mulesoft.com/tcat/tomcat-classpath[Understanding The Tomcat Classpath]
-
-'''''
-
-image:../thread.png[THREDDS] This document was last updated Dec 2015
