@@ -82,7 +82,7 @@ task testJar(type: Jar, dependsOn: testClasses,
         group: 'build', description: 'Assembles a JAR containing the test utility classes.') {
     from sourceSets.test.output.getAsFileTree().matching {
         include 'ucar/nc2/TestLocal.class'
-        include 'ucar/nc2/util/UnitTestCommon.class'
+        include 'ucar/nc2/util/CommonTestUtils.class'
         include 'ucar/unidata/test/util/CompareNetcdf.class'
         include 'ucar/unidata/test/util/TestDir*.class'
         include 'ucar/unidata/test/util/TestFileDirUtils.class'

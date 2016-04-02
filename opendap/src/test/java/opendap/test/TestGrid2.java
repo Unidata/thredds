@@ -157,6 +157,7 @@ public class TestGrid2 extends CommonTestUtils
         return sw.toString();
     }
 
+
     static protected final String BASELINE =
             "netcdf dods://localhost:8080/thredds/dodsC/testdods/testgrid2.nc {\n"
                     + "  dimensions:\n"

@@ -4,6 +4,7 @@
 
 package ucar.nc2.util;
 
+import org.junit.Assert;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -19,7 +20,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class CommonTestUtils
+abstract public class CommonTestUtils
 {
     //////////////////////////////////////////////////
     // Static Constants
@@ -37,25 +38,6 @@ public class CommonTestUtils
 
     // NetcdfDataset enhancement to use: need only coord systems
     static final Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
-
-    //////////////////////////////////////////////////
-    // Type Decls
-
-    static public class Result
-    {
-        public int status = 0;
-        public byte[] contents = null;
-
-        public String toString()
-        {
-            StringBuilder b = new StringBuilder();
-            b.append("{");
-            b.append("status=");
-            b.append(status);
-            b.append("}");
-            return b.toString();
-        }
-    }
 
     //////////////////////////////////////////////////
     // Static methods
@@ -146,7 +128,6 @@ public class CommonTestUtils
     protected String name = "testcommon";
 
     protected String threddsroot = null;
-    protected String dtsServer = null;
     protected String threddsServer = null;
 
     //////////////////////////////////////////////////
@@ -154,30 +135,19 @@ public class CommonTestUtils
 
     public CommonTestUtils()
     {
-        this("UnitTest");
+        this("Testing");
     }
 
     public CommonTestUtils(String name)
     {
-        this.name = name;
+        this.title = name;
         setSystemProperties();
-        initPaths();
-    }
-
-    protected void
-    initPaths()
-    {
         // Compute the root path
         this.threddsroot = locateThreddsRoot();
-        // Compute server names
-        this.dtsServer = TestDir.dap2TestServer;
-        if(DEBUG) {
-            System.err.println("CommonTestUtils: dtsServer=" + dtsServer);
-        }
+        Assert.assertTrue("Cannot locate /thredds parent dir", this.threddsroot != null);
         this.threddsServer = TestDir.remoteTestServer;
-        if(DEBUG) {
+        if(DEBUG)
             System.err.println("CommonTestUtils: threddsServer=" + threddsServer);
-        }
     }
 
     /**
@@ -229,6 +199,12 @@ public class CommonTestUtils
         return this.name;
     }
 
+    public String
+    getResourceDir()
+    {
+        throw new UnsupportedOperationException();
+    }
+
     //////////////////////////////////////////////////
     // Instance Utilities
 
@@ -250,17 +226,21 @@ public class CommonTestUtils
             sep.append(marker);
         }
         System.out.println(sep.toString());
+        System.out.println("Testing " + title + ": " + header + ":");
+        System.out.println("---------------");
         System.out.print(captured);
         System.out.println(sep.toString());
+        System.out.println("---------------");
     }
 
-    static public String compare(String tag, String baseline, String s)
+    static public String
+    compare(String tag, String baseline, String testresult)
     {
         try {
             // Diff the two print results
             Diff diff = new Diff(tag);
             StringWriter sw = new StringWriter();
-            boolean pass = !diff.doDiff(baseline, s, sw);
+            boolean pass = !diff.doDiff(baseline, testresult, sw);
             return (pass ? null : sw.toString());
         } catch (Exception e) {
             System.err.println("UnitTest: Diff failure: " + e);
@@ -268,17 +248,17 @@ public class CommonTestUtils
         }
     }
 
-    protected String
-    findServer(String servlet, String svcname, String schema)
-            throws Exception
+    static public boolean
+    same(String tag, String baseline, String testresult)
     {
-        if(servlet.startsWith("/"))
-            servlet = servlet.substring(1);
-        String svc = "http://" + svcname + "/" + servlet;
-        if(!checkServer(svc))
-            throw new Exception("Server not reachable:" + svc);
-        // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
-        return schema + "://" + svcname + "/" + servlet;
+        String result = compare(tag, baseline, testresult);
+        if(result == null) {
+            System.err.println("Files are Identical");
+            return true;
+        } else {
+            System.err.println(result);
+            return false;
+        }
     }
 
     protected boolean
@@ -297,8 +277,6 @@ public class CommonTestUtils
         } catch (IOException ie) {
             System.err.println(" ; fail");
             return false;
-        } finally {
-// requires httpclient4            HTTPSession.setRetryCount(savecount);
         }
     }
 
@@ -403,6 +381,17 @@ public class CommonTestUtils
         System.err.flush();
     }
 
+    static public String canonjoin(String prefix, String suffix)
+    {
+        if(prefix == null) prefix = "";
+        if(suffix == null) suffix = "";
+        StringBuilder result = new StringBuilder(prefix);
+        if(!prefix.endsWith("/"))
+            result.append("/");
+        result.append(suffix.startsWith("/") ? suffix.substring(1) : suffix);
+        return result.toString();
+    }
+
     static protected String
     ncdumpmetadata(NetcdfFile ncfile)
             throws Exception
@@ -475,18 +464,5 @@ public class CommonTestUtils
         return false;
     }
 
-    public void
-    report(Result result)
-    {
-        report(result,null);
-    }
-
-    public void
-    report(Result result, Integer counter)
-    {
-        System.err.printf("Result: code=%d content?=%b provider-calls=%d%n",
-                result.status, result.contents.length, counter);
-        System.err.flush();
-    }
 }
 

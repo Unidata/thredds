@@ -56,29 +56,8 @@ import java.io.Serializable;
  * This test is to check ssh authorization.
  * As a rule, this needs to run against localhost:8443
  * using a pure tomcat server.
- * It currently cannot be run except manually under Intellij.
-In order to properly set up your local tomcat server to
-run these tests, you should follow the instructions in ?
-Plus the following notes.
-Notes:
-1. Before running testMutualSSH(), you should read
-   docs/website/netcdf-java/reference/ssh.adoc.
-2. Since the certificates required for testing have a finite lifetime,
-   you will need to regenerate a set of certificates (using certs.sh)
-   and keystores before testing. Use ClientKeystore.jks as the argument
-   to -Dkeystore and place ServerKeystore.jks and ServerTruststore.jks
-   in the tomcat conf directory. The password is always "password".
-3. In order to properly run the testMutualSSH() test, you will need to
-   do the following:
-   a. Change clientAuth="want" in server.xml to clientAuth="true"/
-      The value want indicates that client-side
-      certificate checking should be attempted, but it is ok if it fails.
-      To force use of a clientside certificate, you need to use
-      clientAuth="true". Note that this will cause testSSH() to fail.
-   b. You need to pass in the location of the clientside keystore
-      plus its password by adding the following to the jvm flags:
-          -Dkeystore=<absolute path to ClientKeystore.jks>
-	  -Dkeystorepassword=password
+ * It currently cannot be run except manually under
+ * Intellij.
  */
 
 @Category({NotJenkins.class, NotTravis.class})
@@ -87,13 +66,13 @@ public class TestSSH extends CommonTestUtils
     static protected final boolean IGNORE = true;
 
     //static protected String SERVER = "localhost:8443";
-    static protected String SERVER = TestDir.remoteTestServer;
+    static protected String SERVER = TestDir.threddsTestServer;
 
     static protected String Dkeystore = null;
     static protected String Dkeystorepassword = null;
 
     static final String[] sshurls = {
-            "https://" + SERVER + "/thredds/dodsC/localContent/testData.nc.dds"
+            "https://" + SERVER + "/thredds/dodsC/testdata/testData.nc.dds"
     };
 
     static {
@@ -102,10 +81,35 @@ public class TestSSH extends CommonTestUtils
         Dkeystorepassword = System.getProperty("keystorepassword");
         // Set testing output
         HTTPSession.TESTING = true;
-        HTTPMethod.TESTING = true;
     }
 
     //////////////////////////////////////////////////
+    static public class Result
+    {
+        public int status = 0;
+        public byte[] contents = null;
+
+        public String toString()
+        {
+            return String.format("{status=%d |contents|=%d}",
+                    status, (contents == null ? 0 : contents.length));
+        }
+    }
+
+    static public void
+        report(Result result)
+        {
+            report(result, null);
+        }
+
+        static public void
+        report(Result result, Integer counter)
+        {
+            System.err.printf("Result: code=%d content?=%b provider-calls=%d%n",
+                    result.status, result.contents.length, counter);
+            System.err.flush();
+        }
+
     // Provide a non-interactive CredentialsProvider to hold
     // the user+pwd; used in several places
 
@@ -190,18 +194,26 @@ public class TestSSH extends CommonTestUtils
         System.out.println("*** Testing: Simple Https");
 
         // Reset the ssl stores
-        HTTPSession.clearkeystore();
+        HTTPSession.setGlobalSSLAuth(null, null, null, null);
 
         for(String url : sshurls) {
             System.out.println("*** URL: " + url);
             try (HTTPSession session = HTTPFactory.newSession(url)) {
                 this.result = invoke(session, url);
-report(this.result);
-                Assert.assertTrue("Incorrect return code: " + this.result.status, check(this.result.status));
+                Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200);
             }
         }
     }
 
+    /**
+     * Client-side keys are difficult to test.
+     * To properly test, the clientAuth attribute
+     * in server.xml needs to be changed from
+     * "want" to "true". In that case, testSSH will fail
+     * but testMutualSSH will pass.
+     *
+     * @throws Exception
+     */
     @Test
     public void
     testMutualSSH() throws Exception
@@ -214,14 +226,13 @@ report(this.result);
 
         // (Re-)Establish the client key store and password
         // Reset the ssl stores
-        HTTPSession.rebuildkeystore(Dkeystore, Dkeystorepassword);
+        HTTPSession.setGlobalSSLAuth(Dkeystore, Dkeystorepassword, null, null);
 
         for(String url : sshurls) {
             System.out.println("*** URL: " + url);
             try (HTTPSession session = HTTPFactory.newSession(url)) {
                 this.result = invoke(session, url);
-                report(this.result);
-                Assert.assertTrue("Incorrect return code: " + this.result.status, check(this.result.status));
+                Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200);
             }
         }
     }

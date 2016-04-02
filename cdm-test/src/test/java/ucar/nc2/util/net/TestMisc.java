@@ -32,7 +32,6 @@
 
 package ucar.nc2.util.net;
 
-import org.apache.http.HttpResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -40,8 +39,8 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.dataset.DatasetUrl;
-import ucar.nc2.util.CommonTestUtils;
 import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
@@ -173,67 +172,11 @@ public class TestMisc extends CommonTestUtils
                 m.setRange(0, 9);
                 int statusCode = m.execute();
                 System.out.printf("status = %d%n", statusCode);
-                Assert.assertTrue("Unexpected return code: " + statusCode, statusCode == 206);
+                Assert.assertTrue("Unexpected return code: "+statusCode,statusCode == 206);
                 byte[] result = m.getResponseAsBytes();
-                Assert.assertTrue("Wrong size result", result.length == 10);
+                Assert.assertTrue("Wrong size result",result.length == 10);
             }
         } catch (Exception e) {
         }
     }
-
-    /**
-     * Test that a large number of open/close does not lose connections.
-     * This test uses a single HTTPSession.
-     */
-
-    static String CLOSEFILE =
-            "http://" + TestDir.remoteTestServer + "/thredds/fileServer/testdata/testData.nc";
-    //"http://rdavm.ucar.edu:8443/thredds/admin/collection/trigger?trigger=never&collection=ds083.2_Grib1";
-
-    @Test
-    public void
-    testClosing1()
-    {
-        int i = -1;
-        try {
-            HTTPSession s = HTTPFactory.newSession(CLOSEFILE);
-            for(i = 0; i < 500; i++) {
-                HTTPMethod m = HTTPFactory.Head(s);
-                int statusCode = m.execute();
-                Assert.assertTrue("Unexpected return code: " + statusCode, statusCode == 200);
-                m.close();
-            }
-            s.close();
-        } catch (Throwable e) {
-            System.err.println("failure at index=" + i);
-            System.err.flush();
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Test that a large number of open/close does not lose connections;
-     * check for null response.
-     * This test uses an implicit HTTPSession.
-     */
-
-    @Test
-    public void
-    testClosing2()
-    {
-        int i = -1;
-        try {
-            for(i = 0; i < 500; i++) {
-                HTTPMethod m = HTTPFactory.Get(CLOSEFILE);
-                HttpResponse res = m.executeRaw();
-                Assert.assertFalse("Null response", res == null);
-                m.close();
-            }
-        } catch (Throwable e) {
-            System.err.println("failure at index=" + i);
-            System.err.flush();
-            e.printStackTrace();
-        }
-    }
 }
-
