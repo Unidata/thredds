@@ -268,7 +268,7 @@ public class TestTomcatAuth extends CommonTestUtils
         basictests.add(new AuthDataBasic("http://"
                 + this.server
                 + "/thredds/dodsC/containerauth/testData2.nc.dds",
-                "authuser", "authpwd"));
+                "tiggeUser", "tigge"));
     }
 
     @Test

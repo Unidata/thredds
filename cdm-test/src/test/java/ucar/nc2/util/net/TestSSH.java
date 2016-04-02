@@ -66,13 +66,13 @@ public class TestSSH extends CommonTestUtils
     static protected final boolean IGNORE = true;
 
     //static protected String SERVER = "localhost:8443";
-    static protected String SERVER = TestDir.threddsTestServer;
+    static protected String SERVER = TestDir.remoteTestServer;
 
     static protected String Dkeystore = null;
     static protected String Dkeystorepassword = null;
 
     static final String[] sshurls = {
-            "https://" + SERVER + "/thredds/dodsC/testdata/testData.nc.dds"
+            "https://" + SERVER + "/thredds/dodsC/localContent/testData.nc.dds"
     };
 
     static {
@@ -194,7 +194,7 @@ public class TestSSH extends CommonTestUtils
         System.out.println("*** Testing: Simple Https");
 
         // Reset the ssl stores
-        HTTPSession.setGlobalSSLAuth(null, null, null, null);
+        HTTPSession.clearkeystore();
 
         for(String url : sshurls) {
             System.out.println("*** URL: " + url);
@@ -226,7 +226,7 @@ public class TestSSH extends CommonTestUtils
 
         // (Re-)Establish the client key store and password
         // Reset the ssl stores
-        HTTPSession.setGlobalSSLAuth(Dkeystore, Dkeystorepassword, null, null);
+        HTTPSession.rebuildkeystore(Dkeystore, Dkeystorepassword);
 
         for(String url : sshurls) {
             System.out.println("*** URL: " + url);

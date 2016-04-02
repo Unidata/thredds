@@ -219,7 +219,7 @@
   </security-role>
 
   <security-role>
-    <description>User who can access restricted datasets.</description>
+    <description>User who can access tomcat container protected datasets.</description>
     <role-name>containerauth</role-name>
   </security-role>
 

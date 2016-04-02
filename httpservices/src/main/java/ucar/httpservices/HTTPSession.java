@@ -426,12 +426,12 @@ public class HTTPSession implements Closeable
         contentDecoderMap.put("gzip", new GZIPStreamFactory());
         globalsettings = new ConcurrentHashMap<Prop, Object>();
         setDefaults(globalsettings);
-	authcontrols = new AuthControls();
-	authcontrols.setReadOnly(false);
+        authcontrols = new AuthControls();
+        authcontrols.setReadOnly(false);
         buildproxy(authcontrols);
         buildkeystores(authcontrols);
         buildsslfactory(authcontrols);
-	    authcontrols.setReadOnly(true);
+        authcontrols.setReadOnly(true);
         connmgr.addProtocol("https", (ConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
         setGlobalUserAgent(DFALTUSERAGENT);
         setGlobalMaxConnections(DFALTMAXCONNS);
@@ -460,9 +460,9 @@ public class HTTPSession implements Closeable
     static final void
     buildsslfactory(AuthControls authcontrols)
     {
-        KeyStore keystore = (KeyStore)authcontrols.get(AuthProp.KEYSTORE);
-        String keypass = (String)authcontrols.get(AuthProp.KEYPASSWORD);
-        KeyStore truststore = (KeyStore)authcontrols.get(AuthProp.TRUSTSTORE);
+        KeyStore keystore = (KeyStore) authcontrols.get(AuthProp.KEYSTORE);
+        String keypass = (String) authcontrols.get(AuthProp.KEYPASSWORD);
+        KeyStore truststore = (KeyStore) authcontrols.get(AuthProp.TRUSTSTORE);
         buildsslfactory(authcontrols, truststore, keystore, keypass);
     }
 
@@ -1436,10 +1436,10 @@ public class HTTPSession implements Closeable
     {
         if(!TESTING) throw new UnsupportedOperationException();
         authcontrols.setReadOnly(false);
-	authcontrols.remove(AuthProp.KEYSTORE);
-	authcontrols.remove(AuthProp.KEYPASSWORD);
-	authcontrols.remove(AuthProp.TRUSTSTORE);
-	authcontrols.remove(AuthProp.TRUSTPASSWORD);
+        authcontrols.remove(AuthProp.KEYSTORE);
+        authcontrols.remove(AuthProp.KEYPASSWORD);
+        authcontrols.remove(AuthProp.TRUSTSTORE);
+        authcontrols.remove(AuthProp.TRUSTPASSWORD);
         authcontrols.setReadOnly(true);
     }
 
