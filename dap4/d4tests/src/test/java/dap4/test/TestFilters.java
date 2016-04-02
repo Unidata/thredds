@@ -271,7 +271,7 @@ public class TestFilters extends DapTestCommon
             // Read the baseline file
             System.out.println("Note Comparison:");
             String baselinecontent = readfile(testcase.baselinepath + ".dap");
-            pass = compare(baselinecontent, sdata);
+            pass = same(getTitle(),baselinecontent, sdata);
             System.out.println(pass ? "Pass" : "Fail");
         }
 

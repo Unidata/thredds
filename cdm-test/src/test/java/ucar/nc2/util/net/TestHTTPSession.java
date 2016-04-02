@@ -43,7 +43,7 @@ import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
@@ -52,7 +52,7 @@ import java.util.List;
 import static ucar.httpservices.HTTPSession.*;
 
 @Category(NeedsExternalResource.class)
-public class TestHTTPSession extends UnitTestCommon
+public class TestHTTPSession extends CommonTestUtils
 {
     //////////////////////////////////////////////////
     // Constants

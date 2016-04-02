@@ -50,8 +50,6 @@ public class TestFrontPage extends DapTestCommon
     public void testFrontPage()
         throws Exception
     {
-	org.junit.Assume.assumeTrue(usingIntellij);
-
         boolean pass = true;
         String url = FAKEURLPREFIX; // no file specified
 
@@ -81,7 +79,7 @@ public class TestFrontPage extends DapTestCommon
             // Read the baseline file
             String baselinecontent = readfile(baselinepath);
             System.out.println("HTML Comparison:");
-            pass = compare(baselinecontent, html);
+            pass = same(getTitle(),baselinecontent, html);
             System.out.println(pass ? "Pass" : "Fail");
         }
         Assert.assertTrue(pass);

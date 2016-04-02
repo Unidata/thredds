@@ -33,7 +33,7 @@
 
 package opendap.test;
 
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 
 import java.io.File;
 import java.io.FileReader;
@@ -41,7 +41,7 @@ import java.io.FileReader;
 // WARNING: assumes we are operating inside module directory
 // when invoked
 
-abstract public class TestFiles extends UnitTestCommon
+abstract public class TestFiles extends CommonTestUtils
 {
     static final boolean DEBUG = false;
 

@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Category(NotJenkins.class)
-public class TestH5Iosp extends DapTestCommon {
+public class TestH5Iosp extends DapTestCommon
+{
     static protected final boolean DEBUG = false;
 
     static protected final boolean NCDUMP = true;
@@ -177,13 +178,13 @@ public class TestH5Iosp extends DapTestCommon {
                 // Read the baseline file(s)
                 System.out.println("DMR Comparison:");
                 baselinecontent = readfile(baselinefile + ".dmr");
-                pass = pass && compare(baselinecontent, metadata);
+                pass = pass && same(getTitle(),baselinecontent, metadata);
                 System.out.println(pass ? "Pass" : "Fail");
             }
             if(mode == Mode.DATA || mode == Mode.BOTH) {
                 System.out.println("DATA Comparison:");
                 baselinecontent = readfile(baselinefile + ".dap");
-                pass = pass && compare(baselinecontent, data);
+                pass = pass && same(getTitle(),baselinecontent, data);
                 System.out.println(pass ? "Pass" : "Fail");
             }
         }

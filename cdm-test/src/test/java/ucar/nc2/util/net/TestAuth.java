@@ -43,7 +43,7 @@ import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
@@ -61,7 +61,7 @@ import java.io.Serializable;
  */
 
 @Category(NeedsExternalResource.class)
-public class TestAuth extends UnitTestCommon
+public class TestAuth extends CommonTestUtils
 {
     static final String BADPASSWORD = "bad";
 
@@ -98,27 +98,6 @@ public class TestAuth extends UnitTestCommon
             return c;
         }
     }
-
-
-    static protected class Result
-    {
-        int status = 0;
-        int count = -1;
-        byte[] contents = null;
-
-        public String toString()
-        {
-            StringBuilder b = new StringBuilder();
-            b.append("{");
-            b.append("status=");
-            b.append(status);
-            b.append(", count=");
-            b.append(count);
-            b.append("}");
-            return b.toString();
-        }
-    }
-
 
     //////////////////////////////////////////////////
     // Provide a non-interactive CredentialsProvider to hold
@@ -205,6 +184,32 @@ public class TestAuth extends UnitTestCommon
 
     //////////////////////////////////////////////////
 
+    static public class Result
+    {
+        public int status = 0;
+        public byte[] contents = null;
+
+        public String toString()
+        {
+            return String.format("{status=%d |contents|=%d}",
+                    status, (contents == null ? 0 : contents.length));
+        }
+    }
+
+    static public void
+    report(Result result)
+    {
+        report(result, null);
+    }
+
+    static public void
+    report(Result result, Integer counter)
+    {
+        System.err.printf("Result: code=%d content?=%b provider-calls=%d%n",
+                result.status, result.contents.length, counter);
+        System.err.flush();
+    }
+
     static class AuthDataBasic
     {
         String url;
@@ -275,7 +280,7 @@ public class TestAuth extends UnitTestCommon
                     this.result.status == 200);
             Assert.assertTrue("no content", this.result.contents.length > 0);
             if(!remote)
-                Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
+                Assert.assertTrue("Credentials provider called: " + provider.counter.counter(), provider.counter.counter() == 1);
         }
 
         for(AuthDataBasic data : basictests) {
@@ -291,7 +296,7 @@ public class TestAuth extends UnitTestCommon
             Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 200 || this.result.status == 404); // non-existence is ok
             Assert.assertTrue("no content", this.result.contents.length > 0);
             if(!remote)
-                Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
+                Assert.assertTrue("Credentials provider called: " + provider.counter.counter(), provider.counter.counter() == 1);
         }
     }
 
@@ -364,7 +369,7 @@ public class TestAuth extends UnitTestCommon
             }
             Assert.assertTrue("Incorrect return code: " + this.result.status, this.result.status == 401);
             if(!remote)
-                Assert.assertTrue("Credentials provider called: " + this.result.count, this.result.count == 1);
+                Assert.assertTrue("Credentials provider called: " + provider.counter.counter(), provider.counter.counter() == 1);
             // retry with correct password;
             // AuthCache should automatically clear bad one from cache.
             this.provider.setPWD(data.user, data.password);
@@ -428,8 +433,6 @@ public class TestAuth extends UnitTestCommon
                 result.status = method.execute();
                 System.err.printf("\tglobal provider: status code = %d\n", result.status);
                 //System.err.printf("\t|cache| = %d\n", HTTPCachingProvider.getCache().size());
-                // Get the number of calls to the credentialer
-                result.count = counter.counter();
                 // try to read in the content
                 result.contents = readbinaryfile(method.getResponseAsStream());
             }

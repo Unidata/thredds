@@ -269,7 +269,7 @@ public class TestCDMClient extends DapTestCommon
             // Read the baseline file(s)
             String baselinecontent = readfile(baselinefile);
             System.out.println("Comparison: vs " + baselinefile);
-            pass = pass && compare(baselinecontent, testoutput);
+            pass = pass && same(getTitle(),baselinecontent, testoutput);
             System.out.println(pass ? "Pass" : "Fail");
         }
         return pass;

@@ -39,7 +39,7 @@ import opendap.servers.*;
 import opendap.servers.parsers.CeParser;
 import org.junit.Assert;
 import org.junit.Test;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 //import opendap.dts.*;
 
 import java.util.*;
@@ -48,7 +48,7 @@ import java.io.*;
 // Test that the Constraint parsing is correct
 
 
-public class TestCeParser extends UnitTestCommon
+public class TestCeParser extends CommonTestUtils
 {
   static final boolean DEBUGPARSER = false;
 
