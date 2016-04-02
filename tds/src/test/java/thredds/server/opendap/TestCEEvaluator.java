@@ -39,7 +39,7 @@ import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
 import org.junit.Test;
 import thredds.server.opendap.GuardedDatasetCacheAndClone;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.Diff;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -51,7 +51,7 @@ import java.util.Enumeration;
 
 // Test that the Constraint parsing is correct
 
-public class TestCEEvaluator extends UnitTestCommon
+public class TestCEEvaluator extends CommonTestUtils
 {
     static boolean DEBUG = false;
 

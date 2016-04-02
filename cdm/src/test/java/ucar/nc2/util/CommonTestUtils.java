@@ -4,6 +4,7 @@
 
 package ucar.nc2.util;
 
+import org.junit.Assert;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -14,10 +15,12 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
-public class UnitTestCommon
+abstract public class CommonTestUtils
 {
     //////////////////////////////////////////////////
     // Static Constants
@@ -25,6 +28,8 @@ public class UnitTestCommon
     static public final boolean DEBUG = false;
 
     static public final Charset UTF8 = Charset.forName("UTF-8");
+
+    static protected final int[] OKCODES = new int[]{200, 404};
 
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
@@ -40,7 +45,7 @@ public class UnitTestCommon
     // Walk around the directory structure to locate
     // the path to the thredds root (which may not
     // be names "thredds").
-    // Same as code in UnitTestCommon, but for
+    // Same as code in CommonTestUtils, but for
     // some reason, Intellij will not let me import it.
 
     static String
@@ -117,43 +122,32 @@ public class UnitTestCommon
     protected boolean prop_debug = DEBUG;
     protected boolean prop_generate = true;
     protected String prop_controls = null;
+    protected boolean prop_display = false;
 
     protected String title = "Testing";
     protected String name = "testcommon";
 
     protected String threddsroot = null;
-    protected String dtsServer = null;
     protected String threddsServer = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public UnitTestCommon()
+    public CommonTestUtils()
     {
-        this("UnitTest");
+        this("Testing");
     }
 
-    public UnitTestCommon(String name)
+    public CommonTestUtils(String name)
     {
-        this.name = name;
+        this.title = name;
         setSystemProperties();
-        initPaths();
-    }
-
-    protected void
-    initPaths()
-    {
         // Compute the root path
         this.threddsroot = locateThreddsRoot();
-        // Compute server names
-        this.dtsServer = TestDir.dap2TestServer;
-        if(DEBUG) {
-            System.err.println("UnitTestCommon: dtsServer=" + dtsServer);
-        }
+        Assert.assertTrue("Cannot locate /thredds parent dir", this.threddsroot != null);
         this.threddsServer = TestDir.remoteTestServer;
-        if(DEBUG) {
-            System.err.println("UnitTestCommon: threddsServer=" + threddsServer);
-        }
+        if(DEBUG)
+            System.err.println("CommonTestUtils: threddsServer=" + threddsServer);
     }
 
     /**
@@ -175,6 +169,8 @@ public class UnitTestCommon
             prop_ascii = true;
         if(System.getProperty("utf8") != null)
             prop_ascii = false;
+        if(System.getProperty("hasdisplay") != null)
+            prop_display = true;
         if(prop_baseline && prop_diff)
             prop_diff = false;
         prop_controls = System.getProperty("controls", "");
@@ -203,6 +199,12 @@ public class UnitTestCommon
         return this.name;
     }
 
+    public String
+    getResourceDir()
+    {
+        throw new UnsupportedOperationException();
+    }
+
     //////////////////////////////////////////////////
     // Instance Utilities
 
@@ -224,17 +226,21 @@ public class UnitTestCommon
             sep.append(marker);
         }
         System.out.println(sep.toString());
+        System.out.println("Testing " + title + ": " + header + ":");
+        System.out.println("---------------");
         System.out.print(captured);
         System.out.println(sep.toString());
+        System.out.println("---------------");
     }
 
-    static public String compare(String tag, String baseline, String s)
+    static public String
+    compare(String tag, String baseline, String testresult)
     {
         try {
             // Diff the two print results
             Diff diff = new Diff(tag);
             StringWriter sw = new StringWriter();
-            boolean pass = !diff.doDiff(baseline, s, sw);
+            boolean pass = !diff.doDiff(baseline, testresult, sw);
             return (pass ? null : sw.toString());
         } catch (Exception e) {
             System.err.println("UnitTest: Diff failure: " + e);
@@ -242,17 +248,17 @@ public class UnitTestCommon
         }
     }
 
-    protected String
-    findServer(String servlet, String svcname, String schema)
-            throws Exception
+    static public boolean
+    same(String tag, String baseline, String testresult)
     {
-        if(servlet.startsWith("/"))
-            servlet = servlet.substring(1);
-        String svc = "http://" + svcname + "/" + servlet;
-        if(!checkServer(svc))
-            throw new Exception("Server not reachable:" + svc);
-        // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
-        return schema + "://" + svcname + "/" + servlet;
+        String result = compare(tag, baseline, testresult);
+        if(result == null) {
+            System.err.println("Files are Identical");
+            return true;
+        } else {
+            System.err.println(result);
+            return false;
+        }
     }
 
     protected boolean
@@ -271,8 +277,6 @@ public class UnitTestCommon
         } catch (IOException ie) {
             System.err.println(" ; fail");
             return false;
-        } finally {
-// requires httpclient4            HTTPSession.setRetryCount(savecount);
         }
     }
 
@@ -377,6 +381,17 @@ public class UnitTestCommon
         System.err.flush();
     }
 
+    static public String canonjoin(String prefix, String suffix)
+    {
+        if(prefix == null) prefix = "";
+        if(suffix == null) suffix = "";
+        StringBuilder result = new StringBuilder(prefix);
+        if(!prefix.endsWith("/"))
+            result.append("/");
+        result.append(suffix.startsWith("/") ? suffix.substring(1) : suffix);
+        return result.toString();
+    }
+
     static protected String
     ncdumpmetadata(NetcdfFile ncfile)
             throws Exception
@@ -409,6 +424,44 @@ public class UnitTestCommon
         }
         sw.close();
         return sw.toString();
+    }
+
+    /**
+     * @param prefix  - string to prefix all command line options: typically "--"
+     * @param options - list of option names of interest
+     * @return specified properties converted to command line form
+     */
+    static public String[]
+    propertiesToArgs(String prefix, String... options)
+    {
+        if(options == null || options.length == 0)
+            throw new IllegalArgumentException("No options specified");
+        if(prefix == null) prefix = "--";
+        List<String> args = new ArrayList<>();
+        Set<String> defined = System.getProperties().stringPropertyNames();
+        for(String key : options) {
+            if(!defined.contains(key)) continue; //not defined
+            String value = System.getProperty(key);
+            args.add(prefix + key);
+            if(value != null)
+                args.add(value);
+        }
+        return args.toArray(new String[args.size()]);
+    }
+
+    static protected boolean
+    check(int code)
+    {
+        return check(code, OKCODES);
+    }
+
+    static protected boolean
+    check(int code, int[] ok)
+    {
+        for(int okcode : ok) {
+            if(okcode == code) return true;
+        }
+        return false;
     }
 
 }

@@ -39,7 +39,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
@@ -58,7 +58,7 @@ import ucar.unidata.test.util.TestDir;
  * } testgrid2;
  */
 
-public class TestGrid2 extends UnitTestCommon
+public class TestGrid2 extends CommonTestUtils
 {
     static final protected String DATASET = "testgrid2.nc";
 
@@ -156,6 +156,7 @@ public class TestGrid2 extends UnitTestCommon
         sw.close();
         return sw.toString();
     }
+
 
     static protected final String BASELINE =
             "netcdf dods://localhost:8080/thredds/dodsC/testdods/testgrid2.nc {\n"

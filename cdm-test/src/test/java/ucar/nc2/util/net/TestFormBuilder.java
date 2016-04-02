@@ -38,7 +38,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.httpservices.*;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
  * Test HttpFormBuilder
  */
 @Category(NeedsExternalResource.class)
-public class TestFormBuilder extends UnitTestCommon
+public class TestFormBuilder extends CommonTestUtils
 {
 
     //////////////////////////////////////////////////
@@ -135,7 +135,7 @@ public class TestFormBuilder extends UnitTestCommon
             body = genericize(body, OSTEXT, null, null);
             if(DEBUG)
                 visual("TestFormBuilder.testsimple.LOCALIZED", body);
-            String diffs = UnitTestCommon.compare("TestFormBuilder.testSimpl", simplebaseline, body);
+            String diffs = CommonTestUtils.compare("TestFormBuilder.testSimpl", simplebaseline, body);
             if(diffs != null) {
                 System.err.println("TestFormBuilder.testsimple.diffs:\n" + diffs);
                 Assert.assertTrue("TestFormBuilder.testSimple: ***FAIL", false);
@@ -188,7 +188,7 @@ public class TestFormBuilder extends UnitTestCommon
             body = genericize(body, OSTEXT, boundary, attach3);
             if(DEBUG)
                 visual("TestFormBuilder.testmultipart.LOCALIZED", body);
-            String diffs = UnitTestCommon.compare("TestFormBuilder.testMultiPart", multipartbaseline, body);
+            String diffs = CommonTestUtils.compare("TestFormBuilder.testMultiPart", multipartbaseline, body);
             if(diffs != null) {
                 System.err.println("TestFormBuilder.testmultipart.diffs:\n" + diffs);
                 Assert.assertTrue("TestFormBuilder.testmultipart: ***FAIL", false);

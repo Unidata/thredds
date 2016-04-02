@@ -3,7 +3,10 @@ package dap4.test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.test.util.NotJenkins;
+import ucar.unidata.test.util.NotTravis;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -264,10 +267,10 @@ public class TestHyrax extends DapTestCommon
     // Junit test method
 
     @Test
+    @Category({NotJenkins.class,NotTravis.class})
     public void testHyrax()
         throws Exception
     {
-	org.junit.Assume.assumeTrue(usingIntellij);
         boolean pass = true;
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) pass = false;
@@ -317,7 +320,7 @@ public class TestHyrax extends DapTestCommon
             // Read the baseline file(s)
             String baselinecontent = readfile(baselinefile);
             System.out.println("Comparison: vs " + baselinefile);
-            pass = pass && compare(baselinecontent, testoutput);
+            pass = pass && same(getTitle(),baselinecontent, testoutput);
             System.out.println(pass ? "Pass" : "Fail");
         }
         return pass;

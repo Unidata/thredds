@@ -37,7 +37,7 @@ import org.junit.Test;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.nc2.util.CommonTestUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,7 +46,7 @@ import java.net.URISyntaxException;
  * Test HTTPUtil.parseToURI on a variety of input cases.
  */
 
-public class TestURIParse extends UnitTestCommon
+public class TestURIParse extends CommonTestUtils
 {
     static public boolean DEBUG = false;
     static public boolean DOCARON = false;
