@@ -97,6 +97,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -117,6 +118,7 @@ public class ToolsUI extends JPanel {
   static private final String USMap = "/resources/nj22/ui/maps/us_state.shp";
 
   static private final String FRAME_SIZE = "FrameSize";
+  static private final String DIALOG_VERSION = "5.0";
   static private final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
   static private final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
   static private boolean debugListen = false;
@@ -5655,7 +5657,7 @@ public class ToolsUI extends JPanel {
     // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
 
     // put UI in a JFrame
-    frame = new JFrame("NetCDF (5.0) Tools");
+    frame = new JFrame("NetCDF ("+DIALOG_VERSION+") Tools");
     ui = new ToolsUI(prefs, frame);
 
     frame.setIconImage(BAMutil.getImage("netcdfUI"));
@@ -5674,7 +5676,7 @@ public class ToolsUI extends JPanel {
 
     frame.getContentPane().add(ui);
     Rectangle have = frame.getGraphicsConfiguration().getBounds();
-    Rectangle def = new Rectangle(50, 50, 800, 450);
+    Rectangle def = new Rectangle(50, 50, 800, 800);
     Rectangle want = (Rectangle) prefs.getBean(FRAME_SIZE, def);
     if (want.getX() > have.getWidth() - 25) want = def; // may be off screen when switcing between 2 monitor system
 
@@ -5823,7 +5825,7 @@ public class ToolsUI extends JPanel {
 
       UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
       try {
-        HTTPSession.setGlobalCredentialsProvider(provider, AuthSchemes.BASIC);
+        HTTPSession.setGlobalCredentialsProvider(provider);
       }catch (HTTPException e) {
         log.error("Failed to set global credentials");
       }

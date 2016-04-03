@@ -34,13 +34,17 @@
 package ucar.httpservices;
 
 import org.apache.http.*;
+import org.apache.http.annotation.NotThreadSafe;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.*;
-import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.util.EntityUtils;
 
 import java.io.Closeable;
@@ -49,9 +53,11 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+
+import static ucar.httpservices.HTTPSession.Prop;
 
 /**
  * HTTPMethod is the encapsulation of specific
@@ -73,9 +79,9 @@ import java.util.Set;
  * <p>
  * <li> Close the method.
  * </ol>
- * In practice, one has an HTTPMethod instance, one can
- * repeat the steps 2-5. Of course this assumes that one is
- * doing the same kind of action (e.g. GET).
+ * HTTPMethod is designed, at the moment, to be executed only once.
+ * Note also that HTTPMethod is not thread safe but since it cannot be
+ * executed multiple times, this should be irrelevant.
  * <p>
  * The arguments to the factory method are as follows.
  * <ul>
@@ -96,28 +102,23 @@ import java.util.Set;
  * <li> It may be specified as part of the HTTPMethod
  * constructor (via the factory). If none is specified,
  * then the session URL is used.
- * <p>
- * <li> It may be specified as an argument to the
- * execute() method. If none is specified, then
- * the factory constructor URL is used (which might,
- * in turn have come from the session).
  * </ol>
  * <p>
  * Legal url arguments to HTTPMethod are constrained by the URL
- * specified in creating the HTTPSession instance, if any.  If
+ * specified in creating the HTTPSession instance.  If
  * the session was constructed with a specified URL, then any
- * url specified to HTTMethod (via the factory or via
- * execute()) must be "compatible" with the session URL). The
- * term "compatible" basically means that the session url's host+port
- * is the same as that of the specified method url.  This
- * maintains the semantics of the Session but allows
+ * url specified to HTTMethod (via the factory)
+ * must be "compatible" with the session URL.
+ * The term "compatible" basically means that the session url's
+ * host+port is the same as that of the specified method url.
+ * This maintains the semantics of the Session but allows
  * flexibility in accessing data from the server.
  * <p>
  * <u>One-Shot Operation:</u>
  * A reasonably common use case is when a client
  * wants to create a method, execute it, get the response,
  * and close the method. For this use case, creating a session
- * and making sure it gets closed can be a tricky proposition.
+ * and making sure it gets closed can be a tedious proposition.
  * To support this use case, HTTPMethod supports what amounts
  * to a one-shot use. The steps are as follows:
  * <ol>
@@ -141,26 +142,26 @@ import java.util.Set;
  * </ol>
  * There are several things to note.
  * <ul>
- * <li> Closing the stream will close the underlying method, so it is not
- * necessary to call method.close().
- * <li> However, if you, for example, get the response body using getResponseBodyAsString(),
- * then you need to explicitly call method.close().
  * <li> Closing the method (directly or through stream.close())
  * will close the one-shot session created by the method.
+ * <li> Closing the stream will close the underlying method, so it is not
+ * necessary to call method.close().
+ * However, if you, for example, get the response body using getResponseBodyAsString(),
+ * then you need to explicitly call method.close().
+ * The reason is that the stream is likely to be passed out of the scope in which the
+ * method was created, hence method.close() is not easily accessible. In the second case,
+ * however, this will occur in the same scope as the method and so method.close()
+ * is accessible.
  * </ul>
  */
 
-public class HTTPMethod implements Closeable
+@NotThreadSafe
+public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 {
-    //////////////////////////////////////////////////
-    // Static Methods
 
-    static public Set<String> getAllowedMethods()
-    {
-        HttpResponse rs = new BasicHttpResponse(new ProtocolVersion("http", 1, 1), 0, "");
-        Set<String> set = new HttpOptions().getAllowedMethods(rs);
-        return set;
-    }
+    //////////////////////////////////////////////////
+
+    public static boolean TESTING = false;
 
     //////////////////////////////////////////////////
     // Instance fields
@@ -172,18 +173,28 @@ public class HTTPMethod implements Closeable
     protected HttpEntity content = null;
     protected HTTPSession.Methods methodkind = null;
     protected HTTPMethodStream methodstream = null; // wrapper for strm
-    protected boolean closed = false;
-    protected HttpRequestBase request = null;
-    protected CloseableHttpResponse response = null;
+    protected HttpRequestBase lastrequest = null;
+    protected HttpResponse lastresponse = null;
     protected long[] range = null;
+    // State tracking
+    protected boolean closed = false;
+    protected boolean executed = false;
 
-    protected List<Header> headers = new ArrayList<Header>();
+    protected Map<String, String> headers = new HashMap<String, String>();
+
+    // At the point of execution, the settings of the parent session are
+    // captured as immutable
+
+    protected Map<Prop, Object> settings = null;
+
+    // For debugging
+    protected RequestConfig debugconfig = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
     // These are package scope to prevent public instantiation
 
-    HTTPMethod()
+    protected HTTPMethod()
             throws HTTPException
     {
     }
@@ -203,6 +214,7 @@ public class HTTPMethod implements Closeable
     HTTPMethod(HTTPSession.Methods m, HTTPSession session, String url)
             throws HTTPException
     {
+        if(HTTPSession.TESTING) HTTPMethod.TESTING = true;
         url = HTTPUtil.nullify(url);
         if(url == null && session != null)
             url = session.getSessionURI();
@@ -230,6 +242,13 @@ public class HTTPMethod implements Closeable
         }
         this.session.addMethod(this);
         this.methodkind = m;
+    }
+
+    public int compareTo(HTTPMethod o)
+    {
+        if(o == this) return 0;
+        if(o == null) return -1;
+        return (this.hashCode() - o.hashCode());
     }
 
     protected RequestBuilder
@@ -262,21 +281,6 @@ public class HTTPMethod implements Closeable
     }
 
     protected void
-    setheaders(RequestBuilder rb)
-    {
-        if(range != null) {
-            rb.addHeader("Range", "bytes=" + range[0] + "-" + range[1]);
-            range = null;
-        }
-        // Add any defined headers
-        if(this.headers.size() > 0) {
-            for(Header h : this.headers) {
-                rb.addHeader(h);
-            }
-        }
-    }
-
-    protected void
     setcontent(RequestBuilder rb)
     {
         switch (this.methodkind) {
@@ -297,44 +301,8 @@ public class HTTPMethod implements Closeable
         this.content = null; // do not reuse
     }
 
+
     //////////////////////////////////////////////////
-    // Execution support
-
-    /**
-     * Create a request, add headers, and content,
-     * then send to HTTPSession to do the bulk of the work.
-     */
-
-    public int execute()
-            throws HTTPException
-    {
-        if(closed)
-            throw new HTTPException("HTTPMethod: attempt to execute closed method");
-        if(this.methodurl == null)
-            throw new HTTPException("HTTPMethod: no url specified");
-        if(!localsession && !sessionCompatible(this.methodurl))
-            throw new HTTPException("HTTPMethod: session incompatible url: " + this.methodurl);
-
-        RequestBuilder rb = buildrequest();
-        try {
-            // Apply settings
-            setcontent(rb);
-            // Add any user defined headers
-            setheaders(rb);
-
-            // use the session to do the heavy lifting.
-            HTTPSession.ExecState estate = session.execute(this, methodurl, rb);
-            this.request = estate.request;
-            this.response = estate.response;
-            if(this.request == null || this.response == null)
-                throw new IllegalStateException("HTTPMethod.execute: request or response was null");
-            HttpClientContext execcontext = session.getExecutionContext();
-            int code = this.response.getStatusLine().getStatusCode();
-            return code;
-        } catch (Exception ie) {
-            throw new HTTPException(ie);
-        }
-    }
 
     /**
      * Calling close will force the method to close, and will
@@ -363,7 +331,147 @@ public class HTTPMethod implements Closeable
             }
         }
         // finally, make this reusable
-        if(this.request != null) this.request.reset();
+        if(this.lastrequest != null) this.lastrequest.reset();
+    }
+
+    //////////////////////////////////////////////////
+    // Execution support
+
+    /**
+     * Create a request, add headers, and content,
+     * then send to HTTPSession to do the bulk of the work.
+     *
+     * @return statuscode
+     */
+
+    public int execute()
+            throws HTTPException
+    {
+        HttpResponse res = executeRaw();
+        if(res != null)
+            return res.getStatusLine().getStatusCode();
+        else
+            throw new HTTPException("HTTPMethod.execute: null response");
+    }
+
+    /**
+     * Create a request, add headers, and content,
+     * then send to HTTPSession to do the bulk of the work.
+     *
+     * @return statuscode
+     */
+    // debug only
+    public HttpResponse
+    executeRaw()
+            throws HTTPException
+    {
+        if(this.closed)
+            throw new IllegalStateException("HTTPMethod: attempt to execute closed method");
+        if(this.executed)
+            throw new IllegalStateException("HTTPMethod: attempt to re-execute method");
+        this.executed = true;
+        if(this.methodurl == null)
+            throw new HTTPException("HTTPMethod: no url specified");
+        if(!localsession && !sessionCompatible(this.methodurl))
+            throw new HTTPException("HTTPMethod: session incompatible url: " + this.methodurl);
+
+        // Capture the current state of the parent HTTPSession; never to be modified in this class
+        this.settings = session.mergedSettings();
+
+        try {
+            // add range header
+            if(this.range != null) {
+                this.headers.put("Range", "bytes=" + range[0] + "-" + range[1]);
+                range = null;
+            }
+            RequestBuilder rb = buildrequest();
+            setcontent(rb);
+            setheaders(rb, this.headers);
+            this.lastrequest = buildRequest(rb, this.settings);
+            AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(this.methodurl);
+            AuthScope target = HTTPAuthUtil.authscopeUpgrade(session.getSessionScope(), methodscope);
+            HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
+            HttpClientBuilder cb = HttpClients.custom();
+            configClient(cb, settings);
+            session.setAuthenticationAndProxy(cb);
+            HttpClient httpclient = cb.build();
+            this.lastresponse = httpclient.execute(targethost, this.lastrequest, session.getContext());
+            if(this.lastresponse == null)
+                throw new HTTPException("HTTPMethod.execute: Response was null");
+            return this.lastresponse;
+        } catch (IOException ioe) {
+            throw new HTTPException(ioe);
+        }
+    }
+
+    protected RequestConfig
+    buildRequestConfig(Map<Prop, Object> settings)
+            throws HTTPException
+    {
+        // Configure the RequestConfig
+        HttpRequestBase request;
+        RequestConfig.Builder rcb = RequestConfig.custom();
+        for(Prop key : settings.keySet()) {
+            Object value = settings.get(key);
+            boolean tf = (value instanceof Boolean ? (Boolean) value : false);
+            if(key == Prop.ALLOW_CIRCULAR_REDIRECTS) {
+                rcb.setCircularRedirectsAllowed(tf);
+            } else if(key == Prop.HANDLE_REDIRECTS) {
+                rcb.setRedirectsEnabled(tf);
+                rcb.setRelativeRedirectsAllowed(tf);
+            } else if(key == Prop.MAX_REDIRECTS) {
+                rcb.setMaxRedirects((Integer) value);
+            } else if(key == Prop.SO_TIMEOUT) {
+                rcb.setSocketTimeout((Integer) value);
+            } else if(key == Prop.CONN_TIMEOUT) {
+                rcb.setConnectTimeout((Integer) value);
+            } else if(key == Prop.CONN_REQ_TIMEOUT) {
+                rcb.setConnectionRequestTimeout((Integer) value);
+            } /* else ignore */
+        }
+        RequestConfig cfg = rcb.build();
+        if(TESTING)
+            this.debugconfig = cfg;
+        return cfg;
+    }
+
+
+    protected void
+    configClient(HttpClientBuilder cb, Map<Prop, Object> settings)
+            throws HTTPException
+    {
+        cb.useSystemProperties();
+        String agent = (String) settings.get(Prop.USER_AGENT);
+        if(agent != null)
+            cb.setUserAgent(agent);
+        session.setInterceptors(cb);
+        session.setContentDecoderRegistry(cb);
+        session.setClientManager(cb, this);
+        session.setRetryHandler(cb);
+    }
+
+    protected void
+    setheaders(RequestBuilder rb, Map<String, String> headers)
+    {
+        // Add any defined headers
+        if(headers.size() > 0) {
+            for(HashMap.Entry<String, String> entry : headers.entrySet()) {
+                rb.addHeader(entry.getKey(), entry.getValue());
+            }
+        }
+    }
+
+    protected HttpRequestBase
+    buildRequest(RequestBuilder rb, Map<Prop, Object> settings)
+            throws HTTPException
+    {
+        HttpRequestBase req;
+        RequestConfig config = buildRequestConfig(settings);
+        rb.setConfig(config);
+        req = (HttpRequestBase) rb.build();
+        if(req == null)
+            throw new HTTPException("HTTPMethod.buildrequest: requestbuilder failed");
+        return req;
     }
 
     //////////////////////////////////////////////////
@@ -377,12 +485,12 @@ public class HTTPMethod implements Closeable
 
     public int getStatusCode()
     {
-        return (this.response == null) ? 0 : this.response.getStatusLine().getStatusCode();
+        return (this.lastresponse == null) ? 0 : this.lastresponse.getStatusLine().getStatusCode();
     }
 
     public String getStatusLine()
     {
-        return (this.response == null) ? null : this.response.getStatusLine().toString();
+        return (this.lastresponse == null) ? null : this.lastresponse.getStatusLine().toString();
     }
 
     public String getRequestLine()
@@ -410,13 +518,15 @@ public class HTTPMethod implements Closeable
     {
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
+        if(!executed)
+            throw new IllegalStateException("HTTPMethod: method has not been executed");
         if(this.methodstream != null) { // duplicate: caller's problem
             HTTPSession.log.warn("HTTPRequest.getResponseBodyAsStream: Getting method stream multiple times");
         } else { // first time
             HTTPMethodStream stream = null;
             try {
-                if(this.response == null) return null;
-                stream = new HTTPMethodStream(this.response.getEntity().getContent(), this);
+                if(this.lastresponse == null) return null;
+                stream = new HTTPMethodStream(this.lastresponse.getEntity().getContent(), this);
             } catch (Exception e) {
                 stream = null;
             }
@@ -441,9 +551,9 @@ public class HTTPMethod implements Closeable
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         byte[] content = null;
-        if(this.response != null)
+        if(this.lastresponse != null)
             try {
-                content = EntityUtils.toByteArray(this.response.getEntity());
+                content = EntityUtils.toByteArray(this.lastresponse.getEntity());
             } catch (Exception e) {/*ignore*/}
         return content;
     }
@@ -453,10 +563,10 @@ public class HTTPMethod implements Closeable
         if(closed)
             throw new IllegalStateException("HTTPMethod: method is closed");
         String content = null;
-        if(this.response != null)
+        if(this.lastresponse != null)
             try {
                 Charset cset = Charset.forName(charset);
-                content = EntityUtils.toString(this.response.getEntity(), cset);
+                content = EntityUtils.toString(this.lastresponse.getEntity(), cset);
             } catch (Exception e) {
                 throw new IllegalArgumentException(e.getMessage());
             }
@@ -482,7 +592,7 @@ public class HTTPMethod implements Closeable
     public Header getResponseHeader(String name)
     {
         try {
-            return this.response == null ? null : this.response.getFirstHeader(name);
+            return this.lastresponse == null ? null : this.lastresponse.getFirstHeader(name);
         } catch (Exception e) {
             return null;
         }
@@ -491,9 +601,9 @@ public class HTTPMethod implements Closeable
     public Header[] getResponseHeaders()
     {
         try {
-            if(this.response == null)
+            if(this.lastresponse == null)
                 return null;
-            Header[] hs = this.response.getAllHeaders();
+            Header[] hs = this.lastresponse.getAllHeaders();
             return hs;
         } catch (Exception e) {
             return null;
@@ -511,9 +621,9 @@ public class HTTPMethod implements Closeable
         return "UTF-8";
     }
 
-    public String getURL()
+    public URI getURI()
     {
-        return this.methodurl.toString();
+        return this.methodurl;
     }
 
    /* public String getProtocolVersion()
@@ -566,19 +676,13 @@ public class HTTPMethod implements Closeable
         return this;
     }
 
-    //////////////////////////////////////////////////
-    // Pass thru's to HTTPSession
-
     public Header[] getRequestHeaders()
     {
-        return this.session.getRequestHeaders();
+        return this.lastrequest == null ? null : this.lastrequest.getAllHeaders();
     }
 
-    public RequestConfig
-    getDebugConfig()
-    {
-        return this.session.getDebugConfig();
-    }
+    //////////////////////////////////////////////////
+    // Pass thru's to HTTPSession
 
     public HTTPMethod
     setCompression(String compressors)
@@ -593,6 +697,18 @@ public class HTTPMethod implements Closeable
         return this;
     }
 
+    public HTTPMethod setMaxRedirects(int n)
+    {
+        this.session.setMaxRedirects(n);
+        return this;
+    }
+
+    public HTTPMethod setSOTimeout(int n)
+        {
+            this.session.setSoTimeout(n);
+            return this;
+        }
+
     public HTTPMethod setUserAgent(String agent)
     {
         this.session.setUserAgent(agent);
@@ -604,6 +720,22 @@ public class HTTPMethod implements Closeable
         this.session.setUseSessions(tf);
         return this;
     }
+
+    public HTTPMethod setCredentials(Credentials creds)
+            throws HTTPException
+    {
+        this.session.setCredentials(creds);
+        return this;
+    }
+
+    public HTTPMethod
+    setCredentials(Credentials creds, AuthScope scope)
+            throws HTTPException
+    {
+        this.session.setCredentials(creds, scope);
+        return this;
+    }
+
 
     //////////////////////////////////////////////////
     // Utilities
@@ -629,6 +761,7 @@ public class HTTPMethod implements Closeable
         return sessionCompatible(other);
     }
 
+
     @Deprecated
     protected boolean sessionCompatible(HttpHost otherhost)
     {
@@ -639,14 +772,23 @@ public class HTTPMethod implements Closeable
     //////////////////////////////////////////////////
     // debug interface
 
+    public RequestConfig
+    getDebugConfig()
+    {
+        if(!TESTING) throw new UnsupportedOperationException();
+        return this.debugconfig;
+    }
+
     public HttpMessage debugRequest()
     {
-        return (this.request);
+        if(!TESTING) throw new UnsupportedOperationException();
+        return (this.lastrequest);
     }
 
     public HttpResponse debugResponse()
     {
-        return (this.response);
+        if(!TESTING) throw new UnsupportedOperationException();
+        return (this.lastresponse);
     }
 
     //////////////////////////////////////////////////
@@ -670,7 +812,7 @@ public class HTTPMethod implements Closeable
     {
         try {
             for(Header h : headers) {
-                this.headers.add(h);
+                this.headers.put(h.getName(), h.getValue());
             }
         } catch (Exception e) {
             throw new HTTPException(e);
@@ -690,7 +832,7 @@ public class HTTPMethod implements Closeable
     setRequestHeader(Header h) throws HTTPException
     {
         try {
-            headers.add(h);
+            this.headers.put(h.getName(), h.getValue());
         } catch (Exception e) {
             throw new HTTPException("cause", e);
         }

@@ -107,7 +107,7 @@ public class TestDir {
   // thredd-test Test server (for testing)
 
   static public String threddsTestServerPropName = "threddstestserver";
-  static public String threddsTestServer = "thredds-dev.unidata.ucar.edu";
+  static public String threddsTestServer = "thredds-test.unidata.ucar.edu";
 
   // Remote Test server(s)
 
