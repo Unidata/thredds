@@ -139,7 +139,7 @@ public class TestConfigCatalogBuilder {
     List<DatasetRootConfig> roots = cat.getDatasetRoots();
     for (DatasetRootConfig root : roots)
       System.out.printf("DatasetRoot %s -> %s%n", root.path, root.location);
-    assert roots.size() == 3;
+    assert roots.size() == 4;
 
     Dataset ds = cat.findDatasetByID("Hyrax2TDS");
     assert ds != null;

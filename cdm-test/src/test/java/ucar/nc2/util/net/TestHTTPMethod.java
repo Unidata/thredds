@@ -78,7 +78,6 @@ public class TestHTTPMethod extends CommonTestUtils
         super();
         setTitle("HTTP Method tests");
         HTTPSession.TESTING = true;
-        HTTPMethod.TESTING = true;
     }
 
     @Test

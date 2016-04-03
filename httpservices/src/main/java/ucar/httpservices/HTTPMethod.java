@@ -214,6 +214,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     HTTPMethod(HTTPSession.Methods m, HTTPSession session, String url)
             throws HTTPException
     {
+        if(HTTPSession.TESTING) HTTPMethod.TESTING = true;
         url = HTTPUtil.nullify(url);
         if(url == null && session != null)
             url = session.getSessionURI();
