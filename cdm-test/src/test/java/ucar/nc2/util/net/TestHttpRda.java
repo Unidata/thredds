@@ -77,6 +77,26 @@ public class TestHttpRda {
     result.add(new Object[]{"ds628.1_anl_land"});
     result.add(new Object[]{"ds628.1_anl_isentrop"});
 
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    result.add(new Object[]{"ds628.1_anl_isentrop"});
 
     return result;
   }
@@ -107,7 +127,7 @@ public class TestHttpRda {
     this.fullUrl = url + ds;
   }
 
-  @Ignore("Failing - HTTP hangs")
+  //@Ignore("Failing - HTTP hangs")
   @Test
   public void testSession() throws Exception {
 

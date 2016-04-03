@@ -208,7 +208,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   }
 
   private static String getErrorMessage(HTTPMethod method) {
-    String path = method.getURL();
+    String path = method.getURI().toString();
     String status = method.getStatusLine();
     String content = method.getResponseAsString();
     return (content == null) ? status + " " + path : status + " " + path +"\n "+content;

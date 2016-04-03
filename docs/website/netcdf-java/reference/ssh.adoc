@@ -1,0 +1,198 @@
+:source-highlighter: coderay
+[[threddsDocs]]
+
+= Tomcat SSH Authentication Setup
+
+:toc:
+
+== Introduction
+
+When installing a new thredds server, it may be desirable/necessary
+to setup SSH so that the 'https' protocol may be used.
+The process used at Unidata is as follows.
+
+For purposes of this process, you will need to locate the following files.
+
+* threddsConfig.xml
+* catalog.xml
+* $CATALINA_HOME/conf/server.xml
+
+The first two will typically be in the thredds installation.
+
+== Changes to $CATALINA_HOME/conf/server.xml (Optional)
+On a one time basis, you will need to modify _$CATALINA_HOME/conf/server.xml_
+to support SSL and (optionally) client-side certificate support.
+
+=== Enabling Standard SSL (https) Access
+
+Uncomment the following <Connector> in conf/server.xml
+....
+<Connector
+port="8443"
+protocol="org.apache.coyote.http11.Http11NioProtocol"
+maxThreads="150"
+SSLEnabled="true"
+scheme="https"
+secure="true" 
+clientAuth="false"
+sslProtocol="TLS"
+keystoreFile="conf/ServerKeystore.jks"
+keystorePass="password"
+/>
+....
+
+In order for SSL to work, you will need to generate a
+public+private key pair to use to construct certificates
+that allow a client to validate the server.
+This is described link:#KeystoreGeneration[later in this document].
+
+The generated keystore should be placed in _$CATALINA_HOME/conf_
+and the actual keystore file name used in the connector
+in place of `conf/ServerKeystore.jks`
+
+=== Enabling Client-Side Certificate Support (Optional)
+	
+It is possible to have the thredds server ask the client for
+a certificate to verify that it is communicating with an
+authorized client.
+
+Modify the `port="8443"` <Connector> above to add some
+additional attributes.
+....
+<Connector
+port="8443"
+. . . 
+keystorePass="password"
+truststoreFile="conf/ServerTruststore.jks"
+truststorePass="password"
+/>
+....
+
+The idea is that we need an additional keystore to hold the known public
+keys of the authorized clients. This is specified by the attribute
+'trustStoreFile' and its associated password 'truststorePass'.
+Again, the process for generating such a trust store is described link:#KeystoreGeneration[later in this document].
+
+One additional change to the connector is needed. The line
+`clientAuth="false"` needs to be changed to `clientAuth="true"`
+to cause tomcat to ask the client for a certificate.
+
+There is an alternative value `clientAuth="want"`.
+This tells tomcat to attempt
+to use client-side keys but if not successful, ignore and continue.
+
+[[KeystoreGeneration]]
+== Key/Trust Store Construction and Installation:
+
+Most of the knowledge about generating the necessary key and trust stores
+is encoded in the #certs.sh[certs.sh] shell program.
+This will construct JKS format key and trust stores.
+
+1. Run certs.sh to produce
+   * ServerKeystore.jks
+   * ClientKeystore.jks
+   * ClientTruststore.jks
+2. Put ServerKeystore.jks and ClientTruststore.jks into ${CATALINA_HOME}/conf
+3. Put ClientKeyStore.jks somewhere and add this to your Java command line.
+....
+java ... -Dkeystore=<.../ClientKeyStore.jks> -Dkeystorepassword=<password>
+....
+
+An important note. This shell script creates self-signed certificates,
+so the client does not need a truststore and the server truststore need
+only contain the authorized client's public key. If you need a more
+complex keystore signing chain, you have to look elsewhere
+for that process.
+
+== Appendix: Certs.sh Shell File
+....
+rm -f serverKey.pem serverCert.pem
+rm -fr ServerKeystore.pkcs12 ServerKeystore.jks
+rm -f ServerTruststore.jks
+
+##################################################
+# Server Key Generation:
+
+# Generate server private key :
+openssl genrsa -des3 -passout pass:password -out serverKey.pem 2048
+
+# Generate the self-signed certificate for the server,
+openssl req -new -x509 -key serverKey.pem  -out serverCert.pem -days 3650 \
+	-subj "/C=US/ST=Colorado/L=Boulder/O=UCAR/OU=Unidata/CN=www.ucar.edu" \
+	-passin pass:password -passout pass:password
+
+# Generate a keystore in JKS format
+openssl pkcs12 -export -out ServerKeystore.pkcs12 -in serverCert.pem -inkey serverKey.pem -passin pass:password -passout pass:password
+
+# Convert serverkeystore.pkcs12 file to JKS format keystore
+keytool -importkeystore -alias 1 -srckeystore ServerKeystore.pkcs12 -srcstoretype PKCS12 -destkeystore ServerKeystore.jks -deststoretype JKS \
+-srcstorepass password -srckeypass password -deststorepass password -destkeypass password -noprompt
+
+##################################################
+rm -f clientKey.pem clientCert.pem
+rm -fr ClientKeystore.pkcs12 ClientKeystore.jks
+
+# Client Key Generation:
+
+# Generate client private key :
+openssl genrsa -des3 -passout pass:password -out clientKey.pem 2048
+
+# Generate the self-signed certificate for the client,
+openssl req -new -x509 -key clientKey.pem  -out clientCert.pem -days 3650 \
+	-subj "/C=US/ST=Colorado/L=Boulder/O=UCAR/OU=Unidata/CN=www.ucar.edu" \
+	-passin pass:password -passout pass:password
+
+# Generate a keystore in JKS format
+openssl pkcs12 -export -out ClientKeystore.pkcs12 -in clientCert.pem -inkey clientKey.pem -passin pass:password -passout pass:password
+
+# Convert clientkeystore.pkcs12 file to JKS format keystore
+keytool -importkeystore -alias 1 -srckeystore ClientKeystore.pkcs12 -srcstoretype PKCS12 -destkeystore ClientKeystore.jks -deststoretype JKS \
+-srcstorepass password -srckeypass password -deststorepass password -destkeypass password -noprompt
+
+##################################################
+# Generate the trust store for the server
+# This will contain only the client's certificate since
+# all the certificates are self-signed.
+
+keytool -importcert -alias mockdis -keystore ServerTruststore.jks -file clientCert.pem -storepass password -keypass password -trustcacerts <<EOF
+yes
+EOF
+
+# Cleanup
+rm -f serverKey.pem serverCert.pem
+rm -fr ServerKeystore.pkcs12
+rm -f clientKey.pem clientCert.pem
+rm -fr ClientKeystore.pkcs12
+exit
+
+
+##################################################
+# Ignore below this
+# pkcs12 - to browser
+`openssl pkcs12 -export -out clientKeystore.pkcs12 -in clientCert.pem -inkey clientKey.pem`
+
+# Import this clientkeystore.pkcs12 file into firefox browser.
+# Get client keystore file.
+keytool -import -alias mockdis -keystore clientTrustore.jks -file clientCert.pem
+
+# Tomcat configuration :
+# <Connector port="8443" protocol="HTTP/1.1"
+#		maxThreads="150"
+#		SSLEnabled="true"
+#		scheme="https"
+#		secure="true"
+#		clientAuth="true"
+#		sslProtocol="TLS"
+#		keyAlias="1"
+#		keystoreFile="D:\OpenSSL-Win32\bin\ServerKeystore.jks"
+#		keystorePass="changeit"
+#		truststoreFile="D:\OpenSSL-Win32\bin\clientTrustore.jks"
+#		truststorePass="changeit"
+#		/> 
+....
+
+== Author
+
+Author: Dennis Heimbigner +
+ Affiliation: UCAR/Unidata +
+ email: dmh at ucar.edu

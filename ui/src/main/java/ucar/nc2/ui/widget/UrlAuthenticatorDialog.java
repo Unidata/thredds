@@ -69,8 +69,6 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
   private Field.Password passwF;
   private boolean debug = false;
 
-  private Map<AuthScope, Credentials> cache = new HashMap<>();
-
   /**
    * constructor
    *
@@ -116,12 +114,10 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
   public void clear()
   {
-      this.cache.clear();
   }
 
   public void setCredentials(AuthScope scope, Credentials cred)
   {
-      cache.put(scope, cred);
   }
 
     // java.net calls this:
@@ -153,16 +149,6 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
   // http client calls this:
  public Credentials getCredentials(AuthScope scope)
  {
-     Credentials creds = cache.get(scope);
-     if(creds == null) {
-       AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope,cache.keySet());
-       if(bestMatch != null) {
-         creds = cache.get(bestMatch);
-       }  
-    }
-    if(creds != null)
-      return creds;
-   // Ok, ask and cache
     serverF.setText(scope.getHost()+":"+scope.getPort());
     realmF.setText(scope.getRealm());
     dialog.setVisible( true);
@@ -173,7 +159,6 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     }
     // Is this really necessary?
     UsernamePasswordCredentials upc = new UsernamePasswordCredentials(pwa.getUserName(), new String(pwa.getPassword()));
-    cache.put(scope, upc);
     return upc;
   }
 }

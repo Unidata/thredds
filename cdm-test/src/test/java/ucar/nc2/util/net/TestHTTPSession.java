@@ -33,7 +33,6 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.Header;
-import org.apache.http.HttpMessage;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
@@ -48,8 +47,6 @@ import ucar.unidata.test.util.NeedsExternalResource;
 import ucar.unidata.test.util.TestDir;
 
 import java.util.List;
-
-import static ucar.httpservices.HTTPSession.*;
 
 @Category(NeedsExternalResource.class)
 public class TestHTTPSession extends CommonTestUtils
@@ -89,27 +86,27 @@ public class TestHTTPSession extends CommonTestUtils
         System.out.println("Test: HTTPSession.setGlobalUserAgent(" + GLOBALAGENT + ")");
 
         HTTPSession.debugHeaders(false);
-
         HTTPSession.setGlobalUserAgent(GLOBALAGENT);
         try (HTTPSession session = HTTPFactory.newSession(TESTURL1)) {
+            List<Header> agents = null;
             HTTPMethod method = HTTPFactory.Get(session, TESTURL1);
             method.execute();
             // Use special interface to access the request
             // Look for the user agent header
-            List<Header> agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
+            agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
             Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
             Assert.assertFalse("Multiple User-Agent Headers", agents.size() > 1);
             Assert.assertTrue(String.format("User-Agent mismatch: expected %s found:%s",
                     GLOBALAGENT, agents.get(0).getValue()),
                     GLOBALAGENT.equals(agents.get(0).getValue()));
             System.out.println("*** Pass: set global agent");
+            //method.close();
 
             System.out.println("Test: HTTPSession.setUserAgent(" + SESSIONAGENT + ")");
             HTTPSession.debugReset();
             session.setUserAgent(SESSIONAGENT);
             method = HTTPFactory.Get(session, TESTURL1);
             method.execute();
-
             // Use special interface to access the request
             agents = HTTPSession.debugRequestInterceptor().getHeaders(HTTPSession.HEADER_USERAGENT);
             Assert.assertFalse("User-Agent Header not found", agents.size() == 0);
@@ -118,11 +115,11 @@ public class TestHTTPSession extends CommonTestUtils
                     SESSIONAGENT, agents.get(0).getValue()),
                     SESSIONAGENT.equals(agents.get(0).getValue()));
             System.out.println("*** Pass: set session agent");
+            method.close();
         }
     }
 
-    // Verify that other configuration parameters
-    // Can at least be set.
+    // Verify that other configuration parameters Can at least be set.
     @Test
     public void
     testConfigure() throws Exception
@@ -162,7 +159,7 @@ public class TestHTTPSession extends CommonTestUtils
             n = dbgcfg.getConnectTimeout();
             Assert.assertTrue("*** Fail: Connection Timeout", n == 37777);
             System.out.println("*** Pass: SO Timeout");
-
+            method.close();
         }
     }
 }
