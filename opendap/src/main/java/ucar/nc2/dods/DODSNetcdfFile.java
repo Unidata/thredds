@@ -213,9 +213,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
   public DODSNetcdfFile(String datasetURL, CancelTask cancelTask) throws IOException {
     super();
     long start = System.currentTimeMillis();
-    if(datasetURL.endsWith("SWAN_Oahu_Regional_Wave_Model_(500m)_fmrc.ncd")) {
-      int x = 0;
-    }
+
     // canonicalize name
     String urlName = datasetURL; // actual URL uses http:
     this.location = datasetURL; // canonical name uses "dods:"

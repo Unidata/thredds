@@ -48,6 +48,20 @@ public class Login extends JFrame implements CredentialsProvider
     protected String dfaltuser = null;
     protected String dfaltpwd = null;
 
+  // In order to act as a proper CredentialsProvider, this class
+  // needs to support the setCredentials operation properly.
+  // This means that it must provide an internal database of
+  // AuthScope->Credentials.
+  // Because this class is interactive, entries in the internal database
+  // must only be set by explicit calls to setCredentials().
+  // Why do we need this? Because this provider will be used everywhere
+  // in the path to the server to provide credentials at intermediate point.
+  // So, it must be possible to set proxy credentials as well as 
+  // possible redirections (e.g. OAUTH2).
+
+  private Map<AuthScope, Credentials> creds = new HashMap<>();
+
+
     /**
      * constructor
      */
@@ -61,16 +75,25 @@ public class Login extends JFrame implements CredentialsProvider
 
     public void clear()
     {
-        throw new UnsupportedOperationException();
+      this.creds.clear();
     }
 
     public void setCredentials(AuthScope scope, Credentials cred)
     {
-        throw new UnsupportedOperationException();
+      this.creds.put(scope, cred);
     }
 
     public Credentials getCredentials(AuthScope scope)
     {
+     Credentials credentials = this.creds.get(scope);
+     if(credentials == null) {
+       AuthScope bestMatch = HTTPAuthUtil.bestmatch(scope,this.creds.keySet());
+       if(bestMatch != null)
+         credentials = this.creds.get(bestMatch);
+    }
+    if(credentials != null)
+      return credentials;
+
         String up = login(this.dfaltuser, this.dfaltpwd, scope);
         if(up == null) throw new IllegalStateException();
         String[] pieces = up.split("[:]");

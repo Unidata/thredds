@@ -19,7 +19,6 @@ dependencies {
     testCompile libraries["commons-compress"]
     testCompile libraries["jj2000"]
     testCompile libraries["jdom2"]
-    testCompile libraries["quartz"]
 
     testCompile libraries["slf4j-api"]
 }

@@ -44,7 +44,7 @@ script:
     else
       echo If available, test report at;
       echo http://unidata-tds-tests.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
-      ./gradlew --info assemble testAll;
+      ./gradlew --info testAll;
     fi
 
 cache:
