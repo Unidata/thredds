@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/thredds/v4.6/netcdf-java/webstart" href="netCDFtools.jnlp">
   <information>
-    <title>NetCDF Tools UI 4.6.4</title>
+    <title>NetCDF Tools UI 4.6.5</title>
     <vendor>Unidata</vendor>
     <homepage href="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"/>
     <description kind="short">Graphical interface to netCDF-Java / Common Data Model</description>
@@ -17,7 +17,7 @@
 
   <resources>
     <j2se version="1.7+" max-heap-size="1500m"/>
-    <jar href="ui-4.6.4.jar"/>
+    <jar href="ui-4.6.5.jar"/>
     <extension name="netcdfUI Extra" href="netCDFtoolsExtraJars.jnlp"/>
   </resources>
 

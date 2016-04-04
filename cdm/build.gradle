@@ -53,7 +53,7 @@ javadoc {
 
 // TODO: Use the Sync task for this.
 task releaseDocs(dependsOn: javadoc, group: 'Release') << {
-    def releaseDir = webdir + "javadoc"
+    String releaseDir = new File(webdir, "javadoc").absolutePath
 
     ant.delete(dir: releaseDir)
     ant.mkdir(dir: releaseDir)
