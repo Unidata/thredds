@@ -163,7 +163,7 @@ javadoc {
 
 task releaseDocs(dependsOn: javadoc, group: 'Release') << {
     if (project.hasProperty("webdir")) {
-        def releaseDir = webdir + "javadocAll"
+        String releaseDir = new File(webdir, "javadocAll").absolutePath
 
         ant.delete(dir: releaseDir)
         ant.mkdir(dir: releaseDir)
