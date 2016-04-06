@@ -36,6 +36,10 @@ configure(javaProjects) {
 
         componentArtifacts << new DefaultPublishArtifact(tasks.javadocJar.archiveName, 'jar', 'jar', 'javadoc', null,
                                                          tasks.javadocJar.archivePath, tasks.javadocJar)
+    } else if (project.hasProperty("publishSources")) {
+        components.java.usages.first().artifacts << new DefaultPublishArtifact(
+            tasks.sourcesJar.archiveName, 'jar', 'jar', 'sources',
+            null, tasks.sourcesJar.archivePath, tasks.sourcesJar)
     }
 
 
