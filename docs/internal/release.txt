@@ -152,7 +152,7 @@ Making a release for CDM/TDS using Gradle
       have been merged into "master" since 2016-02-12:
       https://github.com/Unidata/thredds/pulls?q=base%3Amaster+merged%3A%3E%3D2016-02-12
 
-26. Make blog post for the release. Example: http://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds1
+26. Make blog post for the release.
     - Example: http://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds1
     - Best to leave it relatively short and just link to the GitHub release.
 
