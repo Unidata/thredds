@@ -133,6 +133,8 @@ Making a release for CDM/TDS using Gradle
     - Make the commit message something like "Release {release.minor}".
 
 22. Create a tag for the release: "v{release.minor}".
+    - In IntelliJ, do VCS->Git->Tag...
+    - Apparently tags don't ever get moved from GitHub pull requests. Might need a different way to tag releases.
 
 23. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
@@ -144,10 +146,19 @@ Making a release for CDM/TDS using Gradle
     - Be sure to include the tag you created.
       * In IntelliJ, check the "Push Tags" box in the "Push Commits" dialog.
 
-25. Make blog post for the release. Example: http://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds1
+25. Make a release announcement on GitHub.
+    - Example: https://github.com/Unidata/thredds/releases/tag/v4.6.4
+    - To help create the changelog, examine the pull requests on GitHub. For example, this URL shows all PRs that
+      have been merged into "master" since 2016-02-12:
+      https://github.com/Unidata/thredds/pulls?q=base%3Amaster+merged%3A%3E%3D2016-02-12
 
-26. Make a release announcement to the mailing lists. It should build off the blog post.
-    Example: http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2016/msg00001.html
+26. Make blog post for the release. Example: http://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds1
+    - Example: http://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds1
+    - Best to leave it relatively short and just link to the GitHub release.
+
+27. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu and thredds@unidata.ucar.edu
+    - Example: http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2016/msg00001.html
+    - Best to leave it relatively short and just link to the GitHub release.
 
 NOTE 1: In the Maven build, the maven-release-plugin roughly handled steps 2-6 and 21-24 for us. In the future, we
 should investigate similar Gradle plugins that offer the same functionality.
