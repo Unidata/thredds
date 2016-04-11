@@ -1,4 +1,4 @@
-![THREDDS icon](http://www.unidata.ucar.edu/img/v3/logos/thredds-75x75.png)
+![THREDDS icon](http://www.unidata.ucar.edu/images/logos/thredds_netcdf-75x75.png)
 [![Travis Build Status](https://secure.travis-ci.org/Unidata/thredds.svg?branch=master)](http://travis-ci.org/Unidata/thredds)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/388/badge.svg)](https://scan.coverity.com/projects/388)
 
