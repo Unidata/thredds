@@ -45,10 +45,9 @@ our link:https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus r
 
 However, it may happen that you need artifacts for the in-development version of THREDDS, which we usually don't
 upload to Nexus. Never fear: you can build them yourself and publish them to your local Maven repository!
-The optional `-PpublishSources` flag publishes sources jars that are otherwise not published for SNAPSHOTS.
 ----
 git checkout master
-./gradlew -PpublishSources publishToMavenLocal
+./gradlew publishToMavenLocal
 ----
 
 You will find the artifacts in `~/.m2/repository/edu/ucar/`. If you're building your projects using Maven, artifacts
