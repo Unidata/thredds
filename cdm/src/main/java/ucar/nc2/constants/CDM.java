@@ -75,6 +75,7 @@ public interface CDM {
   public static final String FILE_FORMAT = "file_format";
   public static final String LAT_UNITS = "degrees_north";
   public static final String LON_UNITS = "degrees_east";
+  public static final String RLATLON_UNITS = "degrees";
   public static final String TIME_INTERVAL = "time_interval";
 
 }
