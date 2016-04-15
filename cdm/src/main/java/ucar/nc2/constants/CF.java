@@ -113,6 +113,9 @@ public interface CF {
   public static final String PROJECTION_X_COORDINATE = "projection_x_coordinate";
   public static final String PROJECTION_Y_COORDINATE = "projection_y_coordinate";
 
+  public static final String GRID_LONGITUDE = "grid_longitude";
+  public static final String GRID_LATITUDE = "grid_latitude";
+
   // cf_role
   public static final String PROFILE_ID = "profile_id";
   public static final String TIMESERIES_ID = "timeseries_id"; // alias STATION_ID
