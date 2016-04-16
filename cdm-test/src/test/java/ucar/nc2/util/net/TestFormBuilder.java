@@ -100,6 +100,7 @@ public class TestFormBuilder extends CommonTestUtils
         setTitle("HTTPFormBuilder test(s)");
         setSystemProperties();
         // Turn on Session debugging
+        HTTPSession.TESTING = true;
         HTTPSession.debugHeaders(false);
     }
 

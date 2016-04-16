@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
@@ -31,10 +31,18 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
+
+/**
+ * Re: github issue https://github.com/Unidata/thredds/issues/431
+ * Test that a single HTTPSession with many method invocations
+ * does not hang properly releases the connections.
+ */
+
 package ucar.nc2.util.net;
 
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -47,76 +55,56 @@ import ucar.unidata.test.util.NeedsCdmUnitTest;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Describe
- *
- * @author caron
- * @since 2/17/2016.
- */
-
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
-public class TestHttpRda {
-  static private HTTPSession session;
-  static private String user = "tdm";
-  static private String pass = "tdsTrig";
-  static private String name = "TestHttpRda";
+public class TestHang
+{
 
-  static private String server = "https://rdavm.ucar.edu:8443";
-  static private String url = server + "/thredds/admin/collection/trigger?trigger=never&collection=";
+    static final int NCONN = 25;
 
-  @Parameterized.Parameters(name = "{0}")
-  public static List<Object[]> getTestParameters() {
-    List<Object[]> result = new ArrayList<>();
+    static private HTTPSession session;
 
-    result.add(new Object[]{"ds628.1_anl_isentrop125"});
-    result.add(new Object[]{"ds083.2_Grib1"});
-    result.add(new Object[]{"ds083.2_Grib2"});
-    result.add(new Object[]{"ds628.1_anl_column"});
-    result.add(new Object[]{"ds628.1_anl_column125"});
-    result.add(new Object[]{"ds628.1_anl_land"});
-    result.add(new Object[]{"ds628.1_anl_isentrop"});
+    //  static private String server = "https://rdavm.ucar.edu:8443";
+//  static private String url = server + "/thredds/admin/collection/trigger?trigger=never&collection=";
+    static protected final String server = "http://remotetest.unidata.ucar.edu";
 
+    static protected final String url = server + "/dts/test.%02d";
 
-    return result;
-  }
-
-  // @BeforeClass
-  public static void setupWrong() throws HTTPException {
-    try (HTTPSession sess = HTTPFactory.newSession(server)) {
-      if (user != null && pass != null)
-        sess.setCredentials(new UsernamePasswordCredentials(user, pass));
-      sess.setUserAgent(name);
-      session = sess;
-    } // LOOK closed here. introduced apparently 1/11/16 or 1/16/16
-  }
-
-  @BeforeClass
-  public static void setupCorrect() throws HTTPException {
-    HTTPSession sess = HTTPFactory.newSession(server);
-      if (user != null && pass != null)
-        sess.setCredentials(new UsernamePasswordCredentials(user, pass));
-      sess.setUserAgent(name);
-      session = sess;
-  }
-
-  ///////////
-  String fullUrl;
-
-  public TestHttpRda(String ds) {
-    this.fullUrl = url + ds;
-  }
-
-  @Ignore("Failing - HTTP hangs")
-  @Test
-  public void testSession() throws Exception {
-
-    try (HTTPMethod m = HTTPFactory.Get(session, fullUrl)) {
-      System.out.printf("send trigger to %s%n", fullUrl);
-      int status = m.execute();
-      System.out.printf("    return from %s status= %d%n", fullUrl, status);
-
-      Assert.assertEquals(200, status);
+    @Parameterized.Parameters(name = "{0}")
+    public static List<Object[]> getTestParameters()
+    {
+        List<Object[]> result = new ArrayList<>();
+        for(int i = 0; i < NCONN; i++) {
+            result.add(new Object[]{String.format(url, i)});
+        }
+        return result;
     }
-  }
+
+    @BeforeClass
+    public static void setupCorrect() throws HTTPException
+    {
+        HTTPSession sess = HTTPFactory.newSession(server);
+        session = sess;
+    }
+
+    ///////////
+
+    String fullUrl;
+
+    public TestHang(String ds)
+    {
+        this.fullUrl = url + ds;
+    }
+
+    @Test
+    public void testSession() throws Exception
+    {
+
+        try (HTTPMethod m = HTTPFactory.Get(session, fullUrl)) {
+            System.out.printf("Connecting to %s%n", fullUrl);
+            int status = m.execute();
+            System.out.printf("    return from %s status= %d%n", fullUrl, status);
+            Assert.assertTrue("Bad return status: " + status, status == 200 || status == 404);
+        }
+    }
 }
