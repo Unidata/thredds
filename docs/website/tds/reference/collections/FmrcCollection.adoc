@@ -283,9 +283,3 @@ is updated
 ``prototypical'' dataset
 4.  *fmrcConfig* (optional) allows control over which FMRC virtual
 datasets are made available
-
- 
-
-'''''
-
-image:../../thread.png[image] This document was last updated Sept 2015.

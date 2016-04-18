@@ -64,7 +64,7 @@ The list of users, their names and passwords, are whatever you want them
 to be. Note that after you get this set up, you can manage users
 remotely through the administrator interface. Note also that before you
 go into production mode, you should change to using digest passwords by
-following the instructions <<TomcatSecurity.adoc#Digest,here>>.
+following the instructions <<TomcatSecurity#Digest,here>>.
 
 Note that any changes won’t take effect until you restart Tomcat.
 
@@ -98,23 +98,23 @@ What is your first and last name? [Unknown]: www.mydomain.edu
 -------------------------------------------------------------
 
 ---------------------------------------------------------
-What is the name of your organizational unit? [Unknown]: 
+What is the name of your organizational unit? [Unknown]:
 ---------------------------------------------------------
 
 --------------------------------------------------
-What is the name of your organization? [Unknown]: 
+What is the name of your organization? [Unknown]:
 --------------------------------------------------
 
 ------------------------------------------------------
-What is the name of your City or Locality? [Unknown]: 
+What is the name of your City or Locality? [Unknown]:
 ------------------------------------------------------
 
 -------------------------------------------------------
-What is the name of your State or Province? [Unknown]: 
+What is the name of your State or Province? [Unknown]:
 -------------------------------------------------------
 
 --------------------------------------------------------------
-What is the two-letter country code for this unit? [Unknown]: 
+What is the two-letter country code for this unit? [Unknown]:
 --------------------------------------------------------------
 
 -----------------------------------------------------------------------------------------------------------------------------------------
@@ -147,8 +147,8 @@ it, and modify it so it looks like:
 +
 ---------------------------------------------------------------------------------------
     <!-- Define a SSL Coyote HTTP/1.1 Connector on port 8443 -->
-    <Connector port="8443"  protocol="org.apache.coyote.http11.http11NioProtocol" 
-               SSLEnabled="true"    
+    <Connector port="8443"  protocol="org.apache.coyote.http11.http11NioProtocol"
+               SSLEnabled="true"
                maxThreads="150" minSpareThreads="25"
                enableLookups="false" disableUploadTimeout="true"
                acceptCount="100" scheme="https" secure="true"
@@ -211,7 +211,7 @@ If there are spaces, you need to quote the filename, eg:
 
 -----------------------------------------------------------------------------
  -keystore "C:/Program Files (x86)/Java/jdk1.7.0_04/jre/lib/security/cacerts"
-  
+
 -----------------------------------------------------------------------------
 
 If the certificate is not correctly installed (eg you put it in the
@@ -228,7 +228,7 @@ the ports are correctly configured. You should see lines like:
 
 -----------------------------------------------------------------
   TCP    127.0.0.1:8080         0.0.0.0:0              LISTENING
-  TCP    127.0.0.1:8443         0.0.0.0:0              LISTENING 
+  TCP    127.0.0.1:8443         0.0.0.0:0              LISTENING
 -----------------------------------------------------------------
 
 You also need to make sure that your firewall is allowing those ports

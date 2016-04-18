@@ -30,13 +30,12 @@ significantly improve TDS throughput.
 If you have system admin resources, examine the possible file systems
 available for your OS, eg on Linux or Solaris. We are using the
 http://en.wikipedia.org/wiki/ZFS[ZFS file system] on Solaris-X86 and it
-is very fast. We usehttp://www.sun.com/software/solaris/ds/zfs.jsp[ZFS
+is very fast. We use https://docs.oracle.com/cd/E23824_01/html/821-1448/index.html[ZFS
 software RAID], which replaces hardware RAID.
 
 ==== *Resources:*
 
 * http://www.solarisinternals.com/wiki/index.php/ZFS_Evil_Tuning_Guide
-* http://blogs.sun.com/realneel/entry/zfs_and_databases
 * http://www.solarisinternals.com/wiki/index.php/ZFS_Best_Practices_Guide
 * http://www.redhat.com/gfs/ +
 
@@ -50,7 +49,7 @@ check this value on Unix, use:
 -----------
 
 If you are using the default
-<<ThreddsConfigXMLFile.adoc#FileCache,TDS configuration values>>, this
+<<ThreddsConfigXMLFile#FileCache,TDS configuration values>>, this
 value should be 1024 or greater. Otherwise you can tune this number
 based on your own settings. For example, to set this value to 2048 in
 the _*tomcat startup.sh*_ script:
@@ -92,7 +91,7 @@ We recommend the latest version of JDK 8, and soon we will require it.
 
 * http://www.javaperformancetuning.com/[Java Performance Tuning] website
 with tuning tips
-* http://java.sun.com/performance/reference/whitepapers/tuning.html[Java
+* http://www.oracle.com/technetwork/java/tuning-139912.html[Java
 Tuning White Paper] whitepaper from Sun (2005)
 * http://oreilly.com/catalog/9780596003777/?CMP=OTC-KW7501011010&ATT=javapt2[Java
 performance tuning], Jack Shirazi (O’Reilly, 2003), classic book, a bit
@@ -171,18 +170,18 @@ The TDS caches file handles to minimize OS overhead. Currently the
 defaults assume that the tomcat process is limited to 1024 file handles.
 If you can allow more, you can increase the sizes of the FileCaches for
 more performance. You can change these settings in the
-<<ThreddsConfigXMLFile.adoc#FileCache,threddsConfig.xml>> file.
+<<ThreddsConfigXMLFile#FileCache,threddsConfig.xml>> file.
 
 These numbers limit performance, but not functionality. For example, the
 number of files in an aggregation is not limited by these file handle
 limits.
 
-Each NetcdfFile object encapsolates a file. NcML aggregations are
+Each NetcdfFile object encapsulates a file. NcML aggregations are
 careful not to keep component files open. When number of cache files >
 maxElementsInMemory, a cleanup thread starts after 100 msecs. So the
 number of cached files can get larger than maxElementsInMemory in the
 interim, but unless you are really hammering the OS by opening many
-files per scond, it shouldnt get too much bigger. But leave some
+files per second, it shouldn't get too much bigger. But leave some
 cushion, depending on your expected rate of opening files.
 
 === Consolidate cache / temporary directories
@@ -217,13 +216,3 @@ the <<collections/TDM#,TDM>>, users get much faster response time.
 As of TDS 4.6+ f these collections change, you must use the TDM to
 detect those changes, the TDS will no longer update GRIB collections on
 the fly.
-
- 
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated Jan 2015. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].
-
-===

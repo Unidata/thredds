@@ -58,7 +58,7 @@ Current version is 3.10 as of this writing.
 2.  You can use the Tomcat manager to upload the war file and install on
 your server.
 3.  The OAI manager will be at http://server:8080/oai/ (see motherlode
-http://motherlode.ucar.edu:8080/oai/[example]). Follow the documentation
+http://thredds.ucar.edu/oai/[example]). Follow the documentation
 to configure.
 
 * Repository name:
@@ -77,9 +77,3 @@ already configured for use with the TDS.
 == Related Documents
 
 * <<DLexport#,Exporting THREDDS Datasets to Digital Libraries>>
-
-'''''
-
-image:../thread.png[image]This document is maintained by Unidata and was
-last updated February 2009. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

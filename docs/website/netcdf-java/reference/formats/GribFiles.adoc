@@ -86,7 +86,7 @@ necessary for users to contact the data producer to obtain the correct
 tables for the particular dataset they want to read. This is also
 necessary for other GRIB reading tools like
 http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html[wgrib] (NCEP)
-and http://www.ecmwf.int/products/data/software/grib.html[gribex]
+and https://software.ecmwf.int/wiki/display/GRIB/Home[ECMWF GRIB API]
 (ECMWF).
 
 The CDM has a <<GribTables#,number of ways>> to allow you to use
@@ -95,7 +95,7 @@ news is that if users contribute these fixes back to the CDM, everyone
 can take advantage of them and the set of "correct" datasets will
 grow. The WMO has greatly improved the process of using the standard
 tables, and hopefully GRIB data producers will continue to
-<<GribTables#,improve methods for writing GRIB>>and maintaining
+<<GribTables#,improve methods for writing GRIB>> and maintaining
 local tables.
 
 == Opening a GRIB Collection in the CDM

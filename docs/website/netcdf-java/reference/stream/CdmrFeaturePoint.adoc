@@ -231,9 +231,9 @@ So the URLs are
 ----
  http://server:port/thredds/cdmremote/path?req
 eg:
- http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/gempak
- http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/metar/ncdecoded
- http://motherlode.ucar.edu:8081/thredds/cdmremote/idd/bufr/quickScat
+ http://thredds.ucar.edu/thredds/cdmremote/idd/metar/gempak
+ http://thredds.ucar.edu/thredds/cdmremote/idd/metar/ncdecoded
+ http://thredds.ucar.edu/thredds/cdmremote/idd/bufr/quickScat
  http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocal
  http://localhost:8080/thredds/cdmremote/idd/metar/ncdecodedLocalHome?req=form
 ----

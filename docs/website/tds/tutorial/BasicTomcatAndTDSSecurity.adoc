@@ -469,7 +469,7 @@ Near the bottom of the deployment descriptor you will find this entry:
 
 For more information on how to configure security requirements for a web
 application in a deployment descriptor, see:
-http://java.sun.com/javaee/5/docs/tutorial/doc/bncbe.html[Defining
+http://docs.oracle.com/javaee/5/tutorial/doc/bncbe.html[Defining
 Security Requirements for Web Applications].
 
 The `         <user-data-constraint>       ` establishes a requirement
@@ -611,9 +611,3 @@ We have compiled a list of a few
 take to help secure Tomcat and your TDS server. This is not a complete
 laundry list of security fixes! Please use it as a starting point when
 securing your server.
-
-'''''
-
-image:../images/thread.png[THREDDS]This document is maintained by
-Unidata staff. Please send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

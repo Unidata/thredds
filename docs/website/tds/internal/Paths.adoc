@@ -20,7 +20,7 @@ ________________________________________________________________________________
 where:
 
 * __\{server:port__}: name of the server machine, eg
-*motherlode.ucar.edu:8080*
+*thredds.ucar.edu*
 * *\{__contextPath}__* : name of war file, eg *thredds*
 * *\{__servletPath}__* : name of the servlet that handles this URL
 * ****__*\{dataRoot}*__ : matches a dataRoot, translates to
@@ -31,22 +31,22 @@ decides what the valid dataPaths are.
 === Servlets
 
 * CatalogGenServlet: _/cataloggen/*_
-* <<Paths.adoc#catalogService,CatalogServicesServlet>>:
+* <<Paths#catalogService,CatalogServicesServlet>>:
 _/catalogServices/*, /catalog.html_
-* <<Paths.adoc#catalog,CatalogServlet>>: _/catalog/*_
-* <<Paths.adoc#cdmValidate,CoordSysValidatorServlet>>: _/cdmValidate_
-* <<Paths.adoc#DLWriter,DLwriterServlet>>: _/DLwriter_
+* <<Paths#catalog,CatalogServlet>>: _/catalog/*_
+* <<Paths#cdmValidate,CoordSysValidatorServlet>>: _/cdmValidate_
+* <<Paths#DLWriter,DLwriterServlet>>: _/DLwriter_
 * DqcServlet: _/dqc/*_
-* <<Paths.adoc#FileServer,FileServerServlet>>: _/fileServer/*_
-* <<Paths.adoc#modelInventory,FmrcInventoryServlet>>__:
+* <<Paths#FileServer,FileServerServlet>>: _/fileServer/*_
+* <<Paths#modelInventory,FmrcInventoryServlet>>__:
 /modelInventory/*__
 * MetarServlet: _/idd/metar/*_
-* <<Paths.adoc#dodsC,NcDODSServlet>>: _/dodsC/*_
-* <<Paths.adoc#ncss,NetcdfServlet>>: _/ncss/grid/*_
+* <<Paths#dodsC,NcDODSServlet>>: _/dodsC/*_
+* <<Paths#ncss,NetcdfServlet>>: _/ncss/grid/*_
 * StationObsCollectionServlet: _/obsServer/*_
 * ThreddsDefaultServlet__: everything else__
-* <<Paths.adoc#view,ViewServlet>>__: /view/*__
-* <<Paths.adoc#wcs,WCSServlet>>: _/wcs/*_
+* <<Paths#view,ViewServlet>>__: /view/*__
+* <<Paths#wcs,WCSServlet>>: _/wcs/*_
 
 '''''
 
@@ -186,20 +186,20 @@ ________________________________________________________________________________
 We want to take a dataset URL, eg:
 
 -------------------------------------------------------------------------------------------
- http://motherlode.ucar.edu:9080/thredds/dodsC/model/NCEP/RUC2/CONUS_20km/hybrid/file.grib1
+ http://thredds.ucar.edu/thredds/dodsC/model/NCEP/RUC2/CONUS_20km/hybrid/file.grib1
 -------------------------------------------------------------------------------------------
 
 ** and find its containing catalog, by replacing the last part with
 catalog.xml (this does violate URL opacity):
 
 ------------------------------------------------------------------------------------------------------
- http://motherlode.ucar.edu:9080/thredds/dodsC/model/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml (or html)
+ http://thredds.ucar.edu/thredds/dodsC/model/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml (or html)
 ------------------------------------------------------------------------------------------------------
 
 This should be equivalent to:
 
 ----------------------------------------------------------------------------------------------
- http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml
+ http://thredds.ucar.edu/thredds/catalog/model/NCEP/RUC2/CONUS_20km/hybrid/catalog.xml
 ----------------------------------------------------------------------------------------------
 
 Here we have a distinguished name, ``catalog.xml'' that we know should
@@ -209,7 +209,7 @@ have a different catalog name. Also, there’s no guarentee you can move
 up the chain:
 
 ---------------------------------------------------------------------------------------
- http://motherlode.ucar.edu:9080/thredds/catalog/model/NCEP/RUC2/CONUS_20km/catalog.xml
+ http://thredds.ucar.edu/thredds/catalog/model/NCEP/RUC2/CONUS_20km/catalog.xml
 ---------------------------------------------------------------------------------------
 
 However, an HTML display could sometimes provide a link up to the parent
@@ -508,9 +508,3 @@ ncmlElement)
 5.  wrap in ncmlElement if it exists
 
 Currently ncmlElements can only be associated with a datasetScan.
-
-'''''
-
-image:../images/thread.png[image]This document is maintained by
-mailto:caron@unidata.ucar.edu[John Caron] and was last updated on Feb
-13, 2007

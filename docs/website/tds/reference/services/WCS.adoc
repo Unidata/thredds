@@ -7,7 +7,7 @@
 The THREDDS WCS Server implements the
 http://www.opengeospatial.org/[OGC] Web Coverage Service
 (http://www.opengeospatial.org/standards/wcs[WCS]) 1.0.0
-http://www.opengeospatial.org/docs/03-065r6.pdf[specification]. It
+https://portal.opengeospatial.org/files/03-065r6[specification]. It
 serves gridded data in http://trac.osgeo.org/geotiff/[GeoTIFF] or NetCDF
 format allowing WCS clients to specify a subset of a gridded dataset and
 download the resulting GeoTIFF or netCDF files.
@@ -54,7 +54,7 @@ compound service) by the service name:
 ------------------------------------------------------------
 
 The dataset can be configured by datasetRoot or datasetScan as
-appropriate (see <<../tutorial/BasicConfigCatalogs#,Basic
+appropriate (see <<../../tutorial/BasicConfigCatalogs#,Basic
 Configuration>>)They are listed in the resulting THREDDS catalogs as
 are other datasets. WCS clients may not be able to directly use the
 THREDDS catalogs to find the WCS services but the catalogs are useful
@@ -225,30 +225,25 @@ The following are WCS URLs for our test datasets:
 
 Here are example WCS queries for the first dataset:
 
-* **GetCapabilities**:http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS[/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS]
+* **GetCapabilities**:http://thredds.ucar.edu/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS[/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&version=1.0.0&service=WCS]
 * **DescribeCoverage**:
-http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta[/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta]
+http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta[/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&version=1.0.0&service=WCS&coverage=ta]
 * *GetCoverage* (GeoTIFF):
-http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20[/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&
+http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20[/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=GeoTIFF&
 coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57]
 * *GetCoverage* (NetCDF3) :
-http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20[/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&
+http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57%20[/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&version=1.0.0&service=WCS&format=NetCDF3&
 coverage=ta&time=2005-05-10T00:00:00Z&vertical=100.0&bbox=-134,11,-47,57]
 
 == WCS Clients
 
 A few WCS clients we know of (though we haven’t tried all of them):
 
-* OWSlib [free] - http://pypi.python.org/pypi/OWSLib/ 
-* GI-go [free] - http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome
-* CADCorp [commercial] - http://www.cadcorp.com/ - has a "no cost" product
-called http://www.cadcorp.com/products_geographical_information_systems/map_browser.htm[Map Browser]
-* IDL [commercial] - http://www.ittvis.com/ProductServices/IDL.aspx
+* OWSlib [free] - http://pypi.python.org/pypi/OWSLib/
+* GI-go [free] - http://essi-lab.eu/do/view/GIgo/WebHome
+* IDL [commercial] - http://www.harrisgeospatial.com/IntelliEarthSolutions/GeospatialProducts/IDL.aspx
 * gvSIG [free] - http://www.gvsig.org/web/
 
 This one is not a general client. It is a server site with a web interface for accessing their served data:
 
 * DATAFed - http://www.datafed.net/
-
-''''
-image:../../thread.png[image] This document was last updated February 2009.

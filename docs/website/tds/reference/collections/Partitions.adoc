@@ -486,7 +486,3 @@ So the datasets that are generated from a Time Partition with **name**,
 |individual files |path/partitionName/groupName/__files/catalog.xml__
 |partitionName/filename |path/__files__/filename
 |=======================================================================
-
-'''''
-
-image:../../thread.png[image] This document was last updated MAr 2016

@@ -149,7 +149,7 @@ for the given *transformName* in the dataset. The type must be _vertical_ or __p
 7.  Load a <<formats/GribTables#,GRIB-1 parameter lookup table>> (versions < 4.3, deprecated)
 8.  Load a <<formats/GribTables#,GRIB-2 parameter lookup table>> (versions < 4.3, deprecated)
 9.  Load a <<formats/BufrTables#,BUFR table lookup>> file
-10. Turn <<formats/GribTables.adoc#strict,strict GRIB1 table handling>> off.
+10. Turn <<formats/GribTables#strict,strict GRIB1 table handling>> off.
 11. Set the <<netcdf4Clibrary#,netCDF-4 C library>> path and name.
 
 There are several ways pass the Runtime Configuration XML to the CDM
@@ -233,7 +233,7 @@ containing the line:
 com.mycompany.MyIOSP
 --------------------
 +
-See: http://docs.oracle.com/javase/1.4.2/docs/api/javax/imageio/spi/ServiceRegistry.html
+See: http://docs.oracle.com/javase/8/docs/api/javax/imageio/spi/ServiceRegistry.html
 
 (thanks to Tom Kunicki at USGS for this contribution)
 

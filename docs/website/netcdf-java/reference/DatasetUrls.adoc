@@ -62,8 +62,8 @@ the dataset with Coordinate System information, scale/offset processing, dataset
 
 NetcdfDataset can open *_OPeNDAP_* datasets, which use a _dods:_ or _http:_ prefix, for example:
 
-* _\http://motherlode.ucar.edu:8080/thredds/dodsC/fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20070319_0600.grib1_
-* _dods://motherlode.ucar.edu:8080/thredds/models/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20070313_1200.nc_
+* _\http://thredds.ucar.edu/thredds/dodsC/fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20070319_0600.grib1_
+* _dods://thredds.ucar.edu/thredds/models/NCEP/GFS/Global_5x2p5deg/GFS_Global_5x2p5deg_20070313_1200.nc_
 
 To avoid confusion with remote HTTP files, OPeNDAP URLs may use the _dods:_ prefix. Also note that when passing an
 OPeNDAP dataset URL to the netCDF-Java library, do not include any the access suffixes, e.g. _.dods, .ascii, .dds_, etc.
@@ -113,7 +113,7 @@ The *_resolverURL_* must return a catalog with a single top level dataset, which
 
 * _thredds:resolve:http://thredds.ucar.edu:8080/thredds/catalog/model/NCEP/NAM/CONUS_12km/latest.xml_
 
-In this case, _\http://motherlode.ucar.edu:8080/thredds/catalog/model/NCEP/NAM/CONUS_12km/latest.xml_
+In this case, _\http://thredds.ucar.edu/thredds/catalog/model/NCEP/NAM/CONUS_12km/latest.xml_
 returns a catalog contining the latest dataset in the *NCEP/NAM/CONUS_12km* collection.
 NetcdfDataset will read the catalog, extract the THREDDS dataset, and open it as in section 3 above.
 

@@ -323,7 +323,7 @@ stand-alone in that sense.
 === Reference documentation
 
 A complete listing of recognized service types can be found in the
-<<../catalog/InvCatalogSpec.adoc#serviceTypes,catalog specification>>.
+<<../catalog/InvCatalogSpec#serviceTypes,catalog specification>>.
 
 Datasets can be made available through more than one access method by
 defining and then referencing a *compound* `service` element. The

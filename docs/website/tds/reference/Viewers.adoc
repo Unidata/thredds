@@ -108,14 +108,14 @@ following:
 
 ----------------------------------------------------------------------------------------------------------------------
 <dataset name="Test Viewer2" ID="testViewer2" serviceName="dapService" urlPath="test/testData.nc" dataType="Grid"
-  <property name="viewer" value="http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL={url},Validation Service"/>
+  <property name="viewer" value="http://thredds.ucar.edu/cdmvalidator/validate?URL={url},Validation Service"/>
 </dataset>
 ----------------------------------------------------------------------------------------------------------------------
 
 results in the following viewer link:
 
 --------------------------------------------------------------------------------------------------------------------------------------------
-<a href="http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/test/testData.nc">Validation Service</a>
+<a href="http://thredds.ucar.edu/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/test/testData.nc">Validation Service</a>
 --------------------------------------------------------------------------------------------------------------------------------------------
 
 === Selecting the Dataset access URL used in the Viewer Link
@@ -145,7 +145,7 @@ For example, the following:
   </metadata>
 
   <dataset name="test viewer select service ds 1" ID="tvss/ds1" urlPath="tvss/ds1.nc">
-    <property name="viewer" value="http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL={OPENDAP},Validation Service" />
+    <property name="viewer" value="http://thredds.ucar.edu/cdmvalidator/validate?URL={OPENDAP},Validation Service" />
   </dataset>
   <dataset name="test viewer select service ds 2" ID="tvss/ds2" urlPath="tvss/ds2.nc">
     <property name="viewer" value="http://myhost:8080/wcsView/show?dataset={WCS},Validation Service" />
@@ -156,7 +156,7 @@ For example, the following:
 generates a viewer link URL for the first dataset of:
 
 ------------------------------------------------------------------------------------------------------
-http://motherlode.ucar.edu:8080/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/tvss/ds1.nc
+http://thredds.ucar.edu/cdmvalidator/validate?URL=http://myhost:8080/thredds/dodsC/tvss/ds1.nc
 ------------------------------------------------------------------------------------------------------
 
 and for the second dataset, the viewer link is:
@@ -166,7 +166,7 @@ http://myhost:8080/wmsView/show?dataset=http://myhost:8080/thredds/wcs/tvss/ds2.
 ----------------------------------------------------------------------------------
 
 If your server is publically accessible, this example calls
-thehttp://motherlode.ucar.edu:8080/cdmvalidator/validate.html[motherlode
+thehttp://thredds.ucar.edu/cdmvalidator/validate.html[motherlode
 validator service] for your dataset, using opendap. The dataset page now
 looks something like:
 
@@ -177,7 +177,7 @@ image:images/validateViewer.png[image]
 Viewer links can also support on the fly generation of JNLP files. This
 can be very useful when using data viewing software that can be
 started with a JNLP file (i.e., running under
-http://java.sun.com/products/javawebstart/[Java Webstart]). For
+http://www.oracle.com/technetwork/java/javase/javawebstart/index.html[Java Webstart]). For
 instance, the automatically generated ``IDV'' and ``NetCDF-Java Tools''
 viewer links mentioned above use JNLP files to start. The JNLP
 generation can be used in other user configured viewer links as well.
@@ -329,7 +329,7 @@ absolute URI
 Note that is has an href embedded in it, which will be displayed in this
 example as:
 +
-http://motherlode.ucar.edu:8080/thredds/view/idv.jnlp?url=http://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NDFD/CONUS_5km/NDFD_CONUS_5km_20061106_1200.grib2[Integrated
+http://thredds.ucar.edu/thredds/view/idv.jnlp?url=http://thredds.ucar.edu/thredds/dodsC/model/NCEP/NDFD/CONUS_5km/NDFD_CONUS_5km_20061106_1200.grib2[Integrated
 Data Viewer (IDV) (webstart)]
 
 === Referencing an external URL
@@ -338,7 +338,7 @@ If the viewer you want to reference is not part of the TDS, just make
 the href absolute, e.g.:
 
 ------------------------------------------------------------------------------------------------------------------
-<a href='http://my.server/viewer?url=http://motherlode.ucar.edu:8080/thredds/dodsC/model/data.grib2'>My Server</a>
+<a href='http://my.server/viewer?url=http://thredds.ucar.edu/thredds/dodsC/model/data.grib2'>My Server</a>
 ------------------------------------------------------------------------------------------------------------------
 
 In this example, the server would see the OPeNDAP data access URL and
@@ -418,11 +418,11 @@ for example:
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   <application-desc main-class="ucar.nc2.ui.ToolsUI">
-      <argument>http://motherlode.ucar.edu:8081/thredds/catalog/fmrc/NCEP/GFS/CONUS_95km/files/catalog.xml#fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20120414_0000.grib1</argument>
+      <argument>http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/GFS/CONUS_95km/files/catalog.xml#fmrc/NCEP/GFS/CONUS_95km/files/GFS_CONUS_95km_20120414_0000.grib1</argument>
  </application-desc>
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-If you dont specify the <argument>, ToolsUI will still startup normally,
+If you don't specify the <argument>, ToolsUI will still startup normally,
 and not jump to the THREDDS catalog tab.
 
 === Review of how ToolsUI works:
@@ -438,16 +438,10 @@ browser has Java webstart installed as a helper application (which
 happens when you install Java on your computer), the jnlp file is
 handled by the ``Java plugin'' on your browser, which downloads ToolsUI
 from wherever the jnlp file specifies, currently
-*http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart* +
- +
- The jnlp file has been customized to include the command line argument
+https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp
+
+The jnlp file has been customized to include the command line argument
 of the form ``\{catalog}#\{dataset}'', and the ToolsUI application looks
 for this and uses it to open that catalog and display the named dataset
 in the ``Catalog Chooser'' tab. This UI component gives access to all
 the metadata and access protocols of that dataset.
-
-'''''
-
-image:../thread.png[image] This document is maintained by Unidata and
-was last updated May 2013. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

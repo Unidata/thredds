@@ -64,7 +64,7 @@ following:
   <param-name>log4jExposeWebAppRoot</param-name>
   <param-value>false</param-value>
 </context-param>
-    
+
 ------------------------------------------------
 2.  In
 `${tomcat_home}/webapps/thredds2/WEB-INF/classes/thredds/server/tds.properties`,
@@ -90,9 +90,3 @@ sections that require editing the TDS default properties file
 Java system properties. The details of how Java system properties are
 set will depend on the particulars of the web application container you
 are using.
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated November 2010. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

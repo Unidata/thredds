@@ -141,7 +141,3 @@ Ferret-THREDDS Data Server (F-TDS)]
 * <<catalog/index#,THREDDS Catalogs>>
 * Fact Sheet http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.doc[Word]
 http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.pdf[PDF]
-
-'''''
-
-image:thread.png[THREDDS] This document was last updated Nov 2015

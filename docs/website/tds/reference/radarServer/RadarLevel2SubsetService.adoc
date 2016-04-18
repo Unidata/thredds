@@ -137,8 +137,3 @@ This returns data from all available times.
 
 The accept parameter default is xml and it is the only legal one at this
 time.
-
-'''''
-
-image:../../thread.png[image]This document was last updated on May 21,
-2015

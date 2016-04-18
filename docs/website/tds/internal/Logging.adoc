@@ -24,7 +24,7 @@ JAVA_HOME/jre/lib/logging.properties
 == Tomcat Access Logs
 
 Files are *\{tomcat_home}/logs/access.YYYY-MM-DD.log* or use
-https://motherlode.ucar.edu:9443/thredds/admin/logs/[admin] interface
+https://thredds.ucar.edu/thredds/admin/logs/[admin] interface
 
 Rolls over each day
 

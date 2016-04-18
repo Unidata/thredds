@@ -11,8 +11,8 @@
 === Download and run locally
 You can download `toolsUI.jar` from either the NetCDF-Java
 link:/downloads/netcdf/netcdf-java-4/index.jsp[downloads] or
-link:../../documentation.htm#current[documentation] pages.
-You can then run the ToolsUI application using a command similar to: 
+<<../../documentation#current,documentation>> pages.
+You can then run the ToolsUI application using a command similar to:
 ----
 java -Xmx1g -jar toolsUI.jar
 ----
@@ -31,7 +31,7 @@ The NetCDF-Java library can read data from a wide variety of <<../formats/FileTy
 To check that your dataset can be read by NetCDF-Java, try to open it in the Viewer tab. You can open it in two ways:
 
 * Enter the URL or file path of the dataset in the "dataset" field. Then hit the "Enter" key.
-* Click the folder icon and select the file in the FileChooser dialog that pops up. 
+* Click the folder icon and select the file in the FileChooser dialog that pops up.
 
 If the dataset can be opened, you will see its dimensions, variables, and other details in the window. For example:
 
@@ -39,9 +39,9 @@ image:viewer1.png[Viewer tab]
 
 ==== Showing data values
 Select a variable in the table, right-click to open its context menu, and choose "NCdump Data".
-The "NCDump Variable Data" dialog will pop up. Here you can print (i.e. "dump") its values to the screen. 
+The "NCDump Variable Data" dialog will pop up. Here you can print (i.e. "dump") its values to the screen.
 
-Here<97>using link:http://www.adt.unipd.it/corsi/Bianco/www.pcc.qub.ac.uk/tec/courses/f90/stu-notes/F90_notesMIF_5.html#HEADING41[Fortran 90 array section syntax] 
+Here<97>using link:http://www.adt.unipd.it/corsi/Bianco/www.pcc.qub.ac.uk/tec/courses/f90/stu-notes/F90_notesMIF_5.html#HEADING41[Fortran 90 array section syntax]
 (`start:end:stride`)<97>you can print (i.e. "dump") all or part of the variable's values to the screen. By default,
 the full extent of the variable's dimensions are shown, where `start` and `end` are inclusive and zero-based.
 For example:
@@ -71,8 +71,8 @@ image:writer1.png[Writer tab]
 
 === NCDump
 The NCDump tab offers functionality similar to<97>albeit more limited than<97>the
-link:https://www.unidata.ucar.edu/software/netcdf/docs/ncdump-man-1.html[ncdump] utility. The string that you enter in
-the "Command" field should be of the form:
+link:https://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#ncdump_guide[ncdump] utility.
+The string that you enter in the "Command" field should be of the form:
 ----
 <filename> [-unsigned] [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]
 ----

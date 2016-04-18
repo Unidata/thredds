@@ -220,8 +220,8 @@ inside the jar file **/resources/application-config.xml**:
  <property name="catalog" value="classpath:/resources/indexNomads.xml"/> <!--2-->
    <property name="serverNames">
     <list>
-     <value>http://motherlode.ucar.edu:8081/</value> <!--3-->
-     <value>http://motherlode.ucar.edu:9080/</value>
+     <value>http://thredds.ucar.edu/</value> <!--3-->
+     <value>http://thredds.ucar.edu/</value>
     </list>
    </property>
  </bean>

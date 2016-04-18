@@ -5,9 +5,9 @@
 
 == THREDDS Catalogs
 
-* <<../tutorial/CatalogPrimer.adoc#,Primer>>
-* <<../catalog/InvCatalogSpec.adoc#,Specification>> (as annotated XML Schema)
-* <<../catalog/InvCatalogServerSpec.adoc#,Extensions for Server Configuration>>
+* <<../tutorial/CatalogPrimer#,Primer>>
+* <<../catalog/InvCatalogSpec#,Specification>> (as annotated XML Schema)
+* <<../catalog/InvCatalogServerSpec#,Extensions for Server Configuration>>
 
 == THREDDS Data Server (TDS)
 
@@ -52,7 +52,7 @@
 ** <<DigitalLibraries#,OAI Metadata harvesting>>
 ** also see:
 http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discovery[Attribute Conventions for Dataset Discovery (ACDD)]
-* <<ThreddsConfigXMLFile.adoc#Server_Info_Docs,Server Information>>
+* <<ThreddsConfigXMLFile#Server_Info_Docs,Server Information>>
 
 === Customization
 
@@ -70,7 +70,7 @@ http://wiki.esipfed.org/index.php/Category:Attribute_Conventions_Dataset_Discove
 TDM does background Indexing for GRIB and Point Feature Collections
 
 * <<collections/TDM#,Thredds Data Manager (TDM)>>
-* <<collections/TDM.adoc#GCPass1,GCPass1>> is a utility program to examine the files in a collection before actually indexing them.
+* <<collections/TDM#GCPass1,GCPass1>> is a utility program to examine the files in a collection before actually indexing them.
 
 == Also see:
 
@@ -89,7 +89,3 @@ TDM does background Indexing for GRIB and Point Feature Collections
 * http://www.ntu.edu.sg/home/ehchua/programming/howto/Tomcat_More.html[Advanced Tutorial on Tomcat]
 * http://tomcat.apache.org/tomcat-8.0-doc/security-howto.html[Tomcat Security]
 * https://www.mulesoft.com/tcat/tomcat-classpath[Understanding The Tomcat Classpath]
-
-'''''
-
-image:../thread.png[THREDDS] This document was last updated Dec 2015

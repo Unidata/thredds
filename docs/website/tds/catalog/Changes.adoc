@@ -94,7 +94,3 @@ All enumeration values should be tested case-insensitive.
 * Add _last update time_ of the catalog, for caching. Could use HTTP
 headers. (Benno, LEAD).
 * _Extended inheritance_ across catalog references (Michael Burek)
-
-'''''
-
-_Comments to mailto:thredds@unidata.ucar.edu[THREDDS mailgroup]_

@@ -12,13 +12,13 @@ These catalogs provide a simple hierarchical structure for organizing a collecti
 a human understandable name for each dataset, and a structure on which further descriptive information can be placed.
 
 This document specifies the semantics of a THREDDS catalog, as well as its representation as an XML document.
-It is written to help clients read and understand THREDDS catalogs recieved from a server.
+It is written to help clients read and understand THREDDS catalogs received from a server.
 
 Related resources:
 
-* Catalog <<../tutorial/CatalogPrimer.adoc#,Primer>>
+* Catalog <<../tutorial/CatalogPrimer#,Primer>>
 * Catalog link:Example1.0rc8.xml[Example]
-* Catalog http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[XML Schema]
+* Catalog link:http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[XML Schema]
 * <<InvCatalogServerSpec#,Server-side catalog specification>>
 
 [[baseElements]]
@@ -1692,8 +1692,3 @@ http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.html?dataset=GFS_CO
 
 This URL, when sent to a THREDDS Data Server, shows the metadata for the dataset with ID _GFS_CONUS_80km/Best_
 in the catalog _\http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.html_.
-
-'''''
-
-image:../thread.png[THREDDS]This document was last updated Ocober 2015.
-Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS support].

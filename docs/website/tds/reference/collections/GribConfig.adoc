@@ -39,7 +39,7 @@ the TDS starts.
 
 These instructions are tailored for TDS users. To work with Grib
 Collections in client software using the CDM stack,
-see <<../../../netcdf-java/reference/formats/GribFiles.adoc#,CDM Grib Files>>.
+see <<../../../netcdf-java/reference/formats/GribFiles#,CDM Grib Files>>.
 
 == Stage One: GribCollection Creation
 
@@ -410,14 +410,14 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[http://www.unidat
      <xsd:attribute name="to" type="xsd:int" use="required"/>
    </xsd:complexType>
   </xsd:element>
-  
+
 2)<xsd:element name="gdsName" minOccurs="0" maxOccurs="unbounded">
    <xsd:complexType>
      <xsd:attribute name="hash" type="xsd:int"/>
      <xsd:attribute name="groupName" type="xsd:string"/>
    </xsd:complexType>
   </xsd:element>
-     
+
 3)<xsd:element name="pdsHash" minOccurs="0" maxOccurs="unbounded">
    <xsd:complexType>
     <xsd:sequence>
@@ -427,7 +427,7 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[http://www.unidat
     </xsd:sequence>
    </xsd:complexType>
   </xsd:element>
-  
+
 4)<xsd:element name="intvFilter" minOccurs="0" maxOccurs="unbounded">
    <xsd:complexType>
     <xsd:sequence>
@@ -456,7 +456,7 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[http://www.unidat
        <xsd:attribute name="value" type="xsd:string" use="required"/>
      </xsd:complexType>
   </xsd:element>
-    
+
 7)<xsd:element name="latestNamer" minOccurs="0" maxOccurs="1">
    <xsd:complexType>
      <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -502,6 +502,3 @@ http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.2.xsd[http://www.unidat
 ..  *Best*: the "best timeseries" of the collection dataset
 ..  *Files*: each physical file is exposed as a dataset that can be downloaded.
 ..  *Latest*: add latest resolver dataset to Files catalog (**Files** must also be selected)
-
-''''
-image:../../thread.png[image] This document was last updated March 2016

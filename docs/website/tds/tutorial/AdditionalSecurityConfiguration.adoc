@@ -22,13 +22,13 @@ associated with each Tomcat release.
 * http://tomcat.apache.org/lists.html[`tomcat-users` mailing list] +
  A high-traffic mailing list made up of Tomcat users. New releases of
 Tomcat are likely to be announced here.
-* http://java.sun.com/javase/technologies/security/[Java SE Security] +
+* http://www.oracle.com/technetwork/java/javase/tech/index-jsp-136007.html[Java SE Security] +
  Sun’s Java security page which includes a chronology of Java security
 issues and user forums.
 * http://www.unidata.ucar.edu/mailing_lists/[`thredds` mailing list] +
  The THREDDS mailing list where announcements of new releases will be
 made.
-* http://www.securityfocus.com/vulnerabilities[Buqtraq vunerability
+* http://www.securityfocus.com/vulnerabilities[Buqtraq vulnerability
 database] +
  SecurityFocus’ database of all known vulnerabilities for all different
 types of software from different vendors.
@@ -250,8 +250,3 @@ Manager HOW-TO] documentation.
 == Online Resources
 
 * http://wiki.apache.org/tomcat/FAQ/Security[Tomcat Security FAQ]
-
-'''''
-
-image:../images/thread.png[THREDDS]Last changed Sep 2012. Please send
-comments to mailto:support-thredds@unidata.ucar.edu[THREDDS support].

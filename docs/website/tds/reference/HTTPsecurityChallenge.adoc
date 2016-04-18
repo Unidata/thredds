@@ -9,7 +9,7 @@
 
 --------------------------------------------------------------------------------------------------------------
 GET /thredds/dodsC/restrict/testData.nc.html HTTP/1.1
-   Host: motherlode.ucar.edu:9080
+   Host: thredds.ucar.edu
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
    Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
    Accept-Language: en-us,en;q=0.5
@@ -27,7 +27,7 @@ HTTP/1.x 302 Moved Temporarily
    Server: Apache-Coyote/1.1
    Last-Modified: Tue, 30 Jan 2007 17:29:35 GMT
    Set-Cookie: JSESSIONID=77421EB5C6EEA0BD2AA59BE8A0950F33; Path=/thredds
-   Location: http://motherlode.ucar.edu:9080/thredds/restrictedAccess/tiggeData
+   Location: http://thredds.ucar.edu/thredds/restrictedAccess/tiggeData
    Content-Length: 0
    Date: Wed, 04 Apr 2007 00:27:14 GMT
 -------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ HTTP/1.x 302 Moved Temporarily
 
 --------------------------------------------------------------------------------------------------------------
 GET /thredds/restrictedAccess/tiggeData HTTP/1.1
-   Host: motherlode.ucar.edu:9080
+   Host: thredds.ucar.edu
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
    Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
    Accept-Language: en-us,en;q=0.5
@@ -56,7 +56,7 @@ HTTP/1.x 302 Moved Temporarily
    Pragma: No-cache
    Cache-Control: no-cache
    Expires: Wed, 31 Dec 1969 17:00:00 MST
-   Location: https://motherlode.ucar.edu:9443/thredds/restrictedAccess/tiggeData
+   Location: https://thredds.ucar.edu/thredds/restrictedAccess/tiggeData
    Content-Length: 0
    Date: Wed, 04 Apr 2007 00:27:14 GMT
 --------------------------------------------------------------------------------
@@ -65,7 +65,7 @@ HTTP/1.x 302 Moved Temporarily
 
 --------------------------------------------------------------------------------------------------------------
 GET /thredds/restrictedAccess/tiggeData HTTP/1.1
-   Host: motherlode.ucar.edu:9443
+   Host: thredds.ucar.edu
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
    Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
    Accept-Language: en-us,en;q=0.5
@@ -98,7 +98,7 @@ and repeat the request:*
 
 --------------------------------------------------------------------------------------------------------------
 GET /thredds/restrictedAccess/tiggeData HTTP/1.1
-   Host: motherlode.ucar.edu:9443
+   Host: thredds.ucar.edu
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
    Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
    Accept-Language: en-us,en;q=0.5
@@ -119,7 +119,7 @@ HTTP/1.x 302 Moved Temporarily
    Pragma: No-cache
    Cache-Control: no-cache
    Expires: Wed, 31 Dec 1969 17:00:00 MST
-   Location: http://motherlode.ucar.edu:9080/thredds/dodsC/restrict/testData.nc.html
+   Location: http://thredds.ucar.edu/thredds/dodsC/restrict/testData.nc.html
    Content-Length: 0
    Date: Wed, 04 Apr 2007 00:27:52 GMT
 ------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ sending all along)*
 
 --------------------------------------------------------------------------------------------------------------
 GET /thredds/dodsC/restrict/testData.nc.html HTTP/1.1
-   Host: motherlode.ucar.edu:9080
+   Host: thredds.ucar.edu
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
    Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
    Accept-Language: en-us,en;q=0.5
@@ -175,7 +175,7 @@ session Cookie, the request is honored without further challenge:*
 
 --------------------------------------------------------------------------------------------------------------
 GET /thredds/dodsC/restrict/testData.nc.ascii?reftime[0:1:0] HTTP/1.1
-   Host: motherlode.ucar.edu:9080
+   Host: thredds.ucar.edu
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.11) Gecko/20070312 Firefox/1.5.0.11
    Accept: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
    Accept-Language: en-us,en;q=0.5
@@ -195,9 +195,3 @@ HTTP/1.x 200 OK
    Transfer-Encoding: chunked
    Date: Wed, 04 Apr 2007 00:56:23 GMT
 ----------------------------------------
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata and
-was last updated April 3, 2007. Send comments to
-mailto:support-thredds@unidata.ucar.edu[THREDDS support].

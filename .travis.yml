@@ -21,11 +21,17 @@ env:
 before_install:
   - if [[ $TASK == "docs" ]]; then
       gem install asciidoctor coderay;
+      pip install --user --upgrade pip;
+      pip install --user linkchecker pyopenssl ndg-httpsclient pyasn1;
     fi
 
 install:
   - if [[ $TASK != "docs" ]]; then
       ./gradlew assemble;
+    else
+      echo webdir=../docs/website/ >> gradle.properties;
+      ./gradlew :cdm:clean :cdm:releaseDocs;
+      ./gradlew :ui:clean :ui:releaseDocs;
     fi
 
 script:
@@ -40,6 +46,9 @@ script:
         echo Doc build produced errors:;
         cat build.log;
         false;
+      else
+        echo Checking links;
+        linkchecker --anchors --check-extern --ignore localhost --ignore server netcdf-java tds javadoc javadocAll;
       fi;
     else
       echo If available, test report at;

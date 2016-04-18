@@ -58,7 +58,7 @@ separate search services (e.g., OGC catalog services).
 
 Additional WMS configuration options can be set in the
 `threddsConfig.xml` file. More details on these options are available
-<<ThreddsConfigXMLFile.adoc#WMS,here>>.
+<<ThreddsConfigXMLFile#WMS,here>>.
 
 Further WMS configuration properties are set in the `wmsConfig.xml`
 file. These properties are mainly related with styling of WMS images.
@@ -80,7 +80,7 @@ have to copy the default file from
 
 The number of CRS listed in the WMS GetCapabilities documents has been
 reduced between TDS 4.1 and 4.2. More information is available at
-<<../faq.adoc#wmsLimitedCRS,this FAQ entry>>.
+<<../faq#wmsLimitedCRS,this FAQ entry>>.
 
 == Add a JVM Option to Avoid an X Server Bug
 
@@ -110,7 +110,7 @@ system property to true. Setting this system property to true prevent
 graphics rendering code from assuming that a graphics console exists.
 
 More on using the headless mode in Java SE
-http://java.sun.com/developer/technicalArticles/J2SE/Desktop/headless/[here].
+http://www.oracle.com/technetwork/articles/javase/headless-136834.html[here].
 
 == Add a JVM Option to Avoid java.util.prefs Problem Storing System
 Preferences
@@ -136,7 +136,7 @@ java.util.prefs code will use the given directory to persist the system
 (as opposed to user) preferences.
 
 More information on the issue can be found on the
-<<../faq.adoc#javaUtilPrefs,TDS FAQ page>>.
+<<../faq#javaUtilPrefs,TDS FAQ page>>.
 
 == Serving Remote Datasets
 
@@ -178,9 +178,3 @@ http://servername:8080/thredds/wms?dataset=http://las.pfeg.noaa.gov/cgi-bin/nph-
 -----------------------------------------------------------------------------------------------------------------------
 
 == Capabilities/Limitations
-
-'''''
-
-image:../thread.png[THREDDS] This document is maintained by Unidata.
-Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS
-support].

@@ -96,7 +96,7 @@ public interface ucar.unidata.geoloc.EarthLocation {
 The _latitude_ and _longitude_ are required, while the _altitude_ may be missing and if so, is set to __Double.NaN__.
 The altitude units (if they exist) can be found from _getFeatureCollection().getAltUnits()_.
 
-The actual data of the observation is contained in a **<<../StructureData.adoc#StructureData,ucar.ma2.StructureData>>**, which has a collection of
+The actual data of the observation is contained in a **<<../StructureData#StructureData,ucar.ma2.StructureData>>**, which has a collection of
 *StructureMembers* which describe the individual data members**,** along with many convenience routines for extracting the data.
 
 === PointFeatureCollection

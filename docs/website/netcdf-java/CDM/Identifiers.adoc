@@ -37,7 +37,7 @@ http://unicode.org/reports/tr15/[NFC normalized]. There are some
 restrictions on the valid characters used in a netCDF identifier:
 
 --------------------------------------------------------------
-  ID = ([a-zA-Z0-9_]|{MUTF8})([^\x00-\x1F\x2F/\x7F]|{MUTF8})* 
+  ID = ([a-zA-Z0-9_]|{MUTF8})([^\x00-\x1F\x2F/\x7F]|{MUTF8})*
 
 where:
   MUTF8 = multibyte UTF8 encoded char
@@ -59,7 +59,7 @@ See:
 
 == CDL
 
-A http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/CDL-Syntax.html[CDL]
+A link:http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_utilities_guide.html#cdl_syntax[CDL]
 (netCDF Definition Language) document is encoded in UTF-8. Certain
 characters must be escaped. The escape mechanism is to prepend a
 backslash *"\"* before the character.
@@ -67,7 +67,7 @@ backslash *"\"* before the character.
 Which characters in an identifier must be escaped in CDL?
 
 --------------------------------
-[^\x00-\x1F\x7F/_.@+-a-zA-Z0-9] 
+[^\x00-\x1F\x7F/_.@+-a-zA-Z0-9]
 --------------------------------
 
 Alternatively, we can enumerate the escaped characters (using the
@@ -215,7 +215,7 @@ The characters MUST be either upper or lower case letters, numbers or from the s
 Any other characters MUST be escaped.
 
 
-To escape a character in a name, the character is replaced by the sequence %<Character Code> where 
+To escape a character in a name, the character is replaced by the sequence %<Character Code> where
 Character Code is the two hex digit code corresponding to the US-ASCII character.
 ____
 

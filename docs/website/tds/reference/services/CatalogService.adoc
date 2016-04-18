@@ -19,14 +19,14 @@ The following returns an HTML view of the main TDS catalog on
 motherlode:
 
 ------------------------------------------------------------
-http://motherlode.ucar.edu:8080/thredds/catalog/catalog.html
+http://thredds.ucar.edu/thredds/catalog/catalog.html
 ------------------------------------------------------------
 
 The following returns an HTML view of one of the datasets from the same
 catalog: +
 
 ---------------------------------------------------------------------------------------------------------------------------
-http://motherlode.ucar.edu:8080/thredds/catalog/galeon/testdata/catalog.html?dataset=galeon/testdata/GFS_Global_5x2p5deg.nc
+http://thredds.ucar.edu/thredds/catalog/galeon/testdata/catalog.html?dataset=galeon/testdata/GFS_Global_5x2p5deg.nc
 ---------------------------------------------------------------------------------------------------------------------------
 
 == Catalog Services for Remote Catalog

@@ -35,21 +35,21 @@ is acceptable but ambiguous.
 *GRIB-1* : (octet 4 of the PDS) If you are only using WMO standard
 tables (all parameter ids < 128) then you should use version number = 1,
 2, or 3, corresponding to the WMO standard table version. The
-ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf[Current
+http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html[Current
 WMO GRIB-1 table version] is 3. Using only parameters from the standard
 tables is best practice for the _international exchange_ of GRIB
 messages. If you are using non-standard (aka __local__) parameters, then
 you should use a version number in the range 128-254, which names your
 version of the tables.
 
-**GRIB-2**: Use the correct version of the Master table in octect 10 of
+**GRIB-2**: Use the correct version of the Master table in octet 10 of
 the Identification section. All parameters with numbers in the range
 0-191 will be taken from that table. If you use any local tables, encode
-the version of your local table in octect 11 of the Identification
+the version of your local table in octet 11 of the Identification
 section, otherwise set the local version to 0. "__In any case, the use
 of Local tables in messages intended for non-local or international
 exchange is strongly discouraged." from
-ftp://www.wmo.int/Documents/MediaPublic/Publications/CodesManual_WMO_no_306/WMO306_Vol_I.2_2010_en.pdf[WMO
+http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/VolumeI.2.html[WMO
 Manual on Codes].__
 
 === *Using local tables*
@@ -141,9 +141,9 @@ If *strictMode* is on, then
 * If (param > 127 or version > 127) a table must be found for all
 parameters, or else the file will fail to open.
 
-You can set strictMode programatically via
+You can set strictMode programmatically via
 *ucar.nc2.grib.grib1.tables.Grib1StandardTables.setStrict(true);* or in
-the <<../RuntimeLoading.adoc#XML,RunTime configuration file>> by
+the <<../RuntimeLoading#XML,RunTime configuration file>> by
 adding
 
 ---------------------------
@@ -164,7 +164,7 @@ format] we made up.
 ftp://ftp.cpc.ncep.noaa.gov/wd51we/wgrib/usertables.txt[format] that
 http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html[wgrib] uses.
 3.  *A file starting with "table_2_" or "local_table_2_"* : the
-format the http://www.ecmwf.int/products/data/software/grib.html[ECMWF
+format the https://software.ecmwf.int/wiki/display/GRIB/Home[ECMWF
 software] uses.
 
 === Adding to the standard table mapping
@@ -228,7 +228,7 @@ Place the table inside of a <iospParam> element. For example:
 ==== Reference to a Grib Parameter table in NcML
 
 You can reference the table in NcML, with the table being in any
-http://www.ecmwf.int/products/data/software/grib.html[GRIB parameter
+https://software.ecmwf.int/wiki/display/GRIB/Home[GRIB parameter
 table format] that that CDM recognizes. To do so, you pass the string
 *"GribParameterTable=<absolute file path to table>"* in the iospParam
 attribute of the netcdf element:
@@ -322,7 +322,7 @@ in a TDS configuration catalog:
   <collection spec="/NCEP/GFS/Global_0p5deg/GFS_Global_0p5deg_#yyyyMMdd_HHmm#.grib2$"  name="GFS_Global_0p5deg" />
   <gribConfig>
     <gribParameterTableLookup>/data/NCEP/grib1/version123.txt</gribParameterTableLookup>
-  </gribConfig> 
+  </gribConfig>
 </featureCollection>
 ----
 
@@ -361,12 +361,12 @@ Derived from NCAR DSS format with additional "name" element.
       <xs:attribute name="code" use="required" type="xs:integer"/>
     </xs:complexType>
   </xs:element>
-  
+
   <xs:element name="description" type="xs:string"/>
   <xs:element name="units" type="xs:string"/>
   <xs:element name="name" type="xs:string"/>
   <xs:element name="CF" type="xs:NCName"/>
-  
+
   <xs:element name="GCMD">
     <xs:complexType mixed="true">
       <xs:attribute name="ifLevelType" type="xs:integer"/>
@@ -430,7 +430,7 @@ bytes for the center and the subcenter. The WMO manual on codes
 describes the version byte as:
 
 ---------------------------------------------------------------------------------------------------------------------------
-4: GRIB tables Version No. (currently 3 for international  exchange) – Version numbers 128–254 are reserved for local use  
+4: GRIB tables Version No. (currently 3 for international  exchange) – Version numbers 128–254 are reserved for local use
 ---------------------------------------------------------------------------------------------------------------------------
 
 So the rules for GRIB-1 seem to be in actual practice:
@@ -445,13 +445,13 @@ version, as well as a Discipline: +
 ----------------------------------------------------------------------------------------------------------------------------------------------
     7:  Discipline – GRIB  Master table number (see Code table 0.0)
    10: GRIB Master tables version number (see Code table 1.0 and  Note 1)
-   11: Version number of GRIB Local tables used to augment  Master tables (see Code table 1.1 and Note 2) 
+   11: Version number of GRIB Local tables used to augment  Master tables (see Code table 1.1 and Note 2)
 Notes:
     (1) Local tables shall define those parts of the Master table which are reserved for local use except for the case described below.
   In any case, the use of Local tables in  messages intended for non-local or international exchange is strongly discouraged.
-    (2) If octet 10 contains 255 then only Local tables are in  use, the Local table version number (octet 11) must not be zero nor missing,  
+    (2) If octet 10 contains 255 then only Local tables are in  use, the Local table version number (octet 11) must not be zero nor missing,
         and Local tables may include entries from the entire range of the tables.
-    (3) If octet 11 is zero, octet 10 must contain a valid Master  table version number and only those parts of the tables not reserved 
+    (3) If octet 11 is zero, octet 10 must contain a valid Master  table version number and only those parts of the tables not reserved
         for local use may be used.
 ----------------------------------------------------------------------------------------------------------------------------------------------
 

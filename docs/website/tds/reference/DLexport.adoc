@@ -142,11 +142,3 @@ professional''
 |geospatialCoverage |geospatialCoverages |not done
 |timeCoverage |temporalCoverages |not done
 |=================================================
-
- 
-
-'''''
-
-last update: June 1, 2004 +
- Comments to mailto:caron@unidata.ucar.edu[John Caron] or
-mailto:thredds@unidata.ucar.edu[THREDDS mailgroup]

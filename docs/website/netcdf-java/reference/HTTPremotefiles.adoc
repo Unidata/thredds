@@ -64,18 +64,18 @@ Firefox.
 \2. Try a URL in firefox:
 
 -------------------------------------------------------------------------------------------------
-  http://motherlode.ucar.edu:8080/thredds/fileServer/station/metar/Surface_METAR_20090209_0000.nc
+  http://thredds.ucar.edu/thredds/fileServer/station/metar/Surface_METAR_20090209_0000.nc
 -------------------------------------------------------------------------------------------------
 
 (this file is probably timed off, but you can go to
-*http://motherlode.ucar.edu:8080/thredds/catalog/station/metar/catalog.html*
+*http://thredds.ucar.edu/thredds/catalog/station/metar/catalog.html*
 to find a current one)
 
 You should get something like the following in the Live Headers window:
 
 ------------------------------------------------------------------------------------------------------------------------------
 GET /thredds/fileServer/station/metar/Surface_METAR_20090209_0000.nc HTTP/1.1
-   Host: motherlode.ucar.edu:8080
+   Host: thredds.ucar.edu
    User-Agent: Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.9.0.6) Gecko/2009011913 Firefox/3.0.6 (.NET CLR 3.5.30729)
    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
    Accept-Language: en-us,en;q=0.5

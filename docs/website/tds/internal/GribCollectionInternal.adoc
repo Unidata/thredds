@@ -366,21 +366,21 @@ scalability.
 path = grib/NCEP/GFS/CONUS_191km
 
 dataset catalog =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html
 
 server://thredds/catalog/path/catalog.xml
 
 collection dataset
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km
 
 best dataset
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/CONUS_191km/catalog.html?dataset=grib/NCEP/GFS/CONUS_191km/collection
 
 files catalog
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/CONUS_191km/files/catalog.html
 
 latest
-http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Alaska_191km/files/latest.html
+http://thredds.ucar.edu/thredds/catalog/fmrc/NCEP/GFS/Alaska_191km/files/latest.html
 
 == time partition
 
@@ -400,28 +400,28 @@ http://motherlode.ucar.edu:8080/thredds/catalog/fmrc/NCEP/GFS/Alaska_191km/files
 path = grib/NCEP/GFS/Global_0p5deg
 
 dataset catalog =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html
 
 collection dataset =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg
 
 best dataset catalog =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html
 
 best dataset =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg/collection
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/collection/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg/collection
 
 partition catalog =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html
 
 partition dataset =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/collection
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/collection
 
 partittion files catalog =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html
 
 partittion files =
-http://motherlode.ucar.edu:9080/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121010_0000.grib2
+http://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p5deg/GFS-Global_0p5deg_20121010/files/catalog.html?dataset=grib/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20121010_0000.grib2
 
  
 
