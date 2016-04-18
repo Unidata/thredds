@@ -35,6 +35,7 @@ package ucar.nc2.ft.coverage;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
@@ -44,6 +45,7 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
@@ -56,6 +58,7 @@ import java.io.IOException;
  */
 public class TestCoverageSwath {
 
+  @Category(NeedsCdmUnitTest.class)
   @Test
   public void TestCoverageSize() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "formats/dmsp/F14200307192230.s.OIS";
