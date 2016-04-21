@@ -314,9 +314,16 @@ public class ConfigCatalogHtmlWriter {
           }
           sb.append(tmpName);
           sb.append("</tt></a></td>\r\n");
-        }
-        // Dataset with an ID.
-        else if (ds.getID() != null) {
+
+        } else if (ds.findProperty(Dataset.NotAThreddsDataset) != null) { // Dataset can only be file served
+          // Write link to HTML dataset page.
+          sb.append("<a href='");
+          sb.append(Escape.html(makeFileServerUrl(ds)));
+          sb.append("'><tt>");
+          sb.append(name);
+          sb.append("</tt></a></td>\r\n");
+
+        } else if (ds.getID() != null) { // Dataset with an ID.
           // Write link to HTML dataset page.
           sb.append("<a href='");
           sb.append(Escape.html(catHtml));
@@ -325,9 +332,8 @@ public class ConfigCatalogHtmlWriter {
           sb.append("'><tt>");
           sb.append(name);
           sb.append("</tt></a></td>\r\n");
-        }
-        // Dataset without an ID.
-        else {
+
+        } else { // Dataset without an ID.
           sb.append("<tt>");
           sb.append(name);
           sb.append("</tt></td>\r\n");
@@ -354,7 +360,6 @@ public class ConfigCatalogHtmlWriter {
       }
 
       sb.append("</tt></td>\r\n");
-
       sb.append("</tr>\r\n");
 
       if (!(ds instanceof CatalogRef)) {
@@ -363,6 +368,12 @@ public class ConfigCatalogHtmlWriter {
     }
 
     return shade;
+  }
+
+  private String makeFileServerUrl(Dataset ds) {
+    Access acc = ds.getAccess(ServiceType.HTTPServer);
+    assert acc != null;
+    return acc.getStandardUrlName();
   }
 
   private String convertDatasetToHtml(String catURL, Dataset dataset,

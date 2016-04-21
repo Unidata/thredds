@@ -63,8 +63,8 @@ public class DatasetScanBuilder extends DatasetBuilder {
     String xlink = "/thredds/catalog/"+config.path+"/catalog.xml";   // LOOK hardcoded thredds, need context, or make it reletive ??
     DatasetScan dscan = new DatasetScan(parent, name, xlink, flds, accessBuilders, datasetBuilders, config);
 
-    if (null == dscan.getServiceNameDefault())
-      logger.error("DatasetScan "+name+" does not have a default serviceName");
+    if (null == dscan.getServiceNameDefault() && null == dscan.getFeatureType())
+      logger.error("DatasetScan "+name+" does not have a default serviceName or dataType/featureType");
 
     return dscan;
   }

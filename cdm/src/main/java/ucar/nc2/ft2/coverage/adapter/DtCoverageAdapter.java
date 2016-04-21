@@ -39,6 +39,7 @@ import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.Misc;
@@ -49,7 +50,8 @@ import java.util.*;
 
 /**
  * Adapt a DtCoverageDataset to a ucar.nc2.ft2.coverage.CoverageCollection
- * Forked from ucar.nc2.dt.GeoGridDataset
+ * This is how we read non-GRIB files into a Coverage, using the NetcdfDataset/CoordinateSystem.
+ * Forked from ucar.nc2.dt.GeoGridDataset.
  *
  * @author caron
  * @since 5/1/2015
@@ -66,7 +68,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     for (DtCoverage dtGrid : proxy.getGrids())
       pgrids.add(makeCoverage(dtGrid, reader));
 
-    Set<String> transformNames = new HashSet<>();
+    Set<String> transformNames = new HashSet<>(); // unique transforms
     List<CoverageTransform> transforms = new ArrayList<>();
     for (DtCoverageDataset.Gridset gset : proxy.getGridsets()) {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
@@ -77,29 +79,50 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
         }
     }
 
-    List<CoverageCoordSys> pcoordSys = new ArrayList<>();
-    List<CoverageCoordAxis> axes = new ArrayList<>();
+    List<CoverageCoordAxis> covAxes = new ArrayList<>();
 
-    Set<String> allAxisNameSet = new HashSet<>();
+    Map<String, CoverageCoordAxis> covAxesMap = new HashMap<>(); // unique axes (by name)
     for (DtCoverageDataset.Gridset gset : proxy.getGridsets()) {
       DtCoverageCS gcs = gset.getGeoCoordSystem();
       for (ucar.nc2.dataset.CoordinateAxis axis : gcs.getCoordAxes()) {
-        if (!allAxisNameSet.contains(axis.getFullName())) {
-          ucar.nc2.util.Optional<CoverageCoordAxis> opt = makeCoordAxis(gcs, axis, reader);
-          if (opt.isPresent()) {
-            axes.add(opt.get());
-            allAxisNameSet.add(axis.getFullName());
-          } else {
+        if (null == covAxesMap.get(axis.getFullName())) {
+          ucar.nc2.util.Optional<CoverageCoordAxis> opt = makeCoordAxis(proxy.getCoverageType(), axis, reader);
+          if (!opt.isPresent()) {
             errlog.format("%s%n", opt.getErrorMessage());
+            continue;
           }
+          CoverageCoordAxis covAxis = opt.get();
+          covAxes.add(covAxis);
+          covAxesMap.put(covAxis.getName(), covAxis);
         }
       }
-      pcoordSys.add(makeCoordSys(gset.getGeoCoordSystem(), allAxisNameSet));
+      // pcoordSys.add(makeCoordSys(gset.getGeoCoordSystem(), allAxisNameSet));
+    }
+
+    // add dimension axis: needed for swath, others?
+    List<CoverageCoordAxis> tmpList = new ArrayList<>(covAxes);
+    for (CoverageCoordAxis covAxis : tmpList) {
+      if (covAxis.getDependsOn() == null) continue;
+      for (String dep : covAxis.getDependsOnList()) {
+        if (covAxesMap.get(dep) == null) {
+          // assume its an "index" coord var from a dimension
+          Dimension dim = proxy.findDimension( dep);
+          CoverageCoordAxis dimAxis = makeCoordAxisFromDimension( dim);
+          covAxes.add(dimAxis);
+          covAxesMap.put(dimAxis.getName(), dimAxis);
+        }
+      }
+    }
+
+    // now make coordsys, so we can include dimension axes
+    List<CoverageCoordSys> pcoordSys = new ArrayList<>();
+    for (DtCoverageDataset.Gridset gset : proxy.getGridsets()) {
+      pcoordSys.add(makeCoordSys(gset.getGeoCoordSystem(), covAxesMap));
     }
 
     CoverageCollection cd = new CoverageCollection(proxy.getName(), proxy.getCoverageType(), atts,
             null, null, proxy.getCalendarDateRange(),
-            pcoordSys, transforms, axes, pgrids, reader);
+            pcoordSys, transforms, covAxes, pgrids, reader);
 
     return new FeatureDatasetCoverage(reader.getLocation(), reader, cd);
   }
@@ -108,27 +131,55 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     return new Coverage(dt.getName(), dt.getDataType(), dt.getAttributes(), dt.getCoordinateSystem().getName(), dt.getUnitsString(), dt.getDescription(), reader, dt);
   }
 
-  private static CoverageCoordSys makeCoordSys(DtCoverageCS dt, Set<String> allAxisNameSet) {
+  private static CoverageCoordSys makeCoordSys(DtCoverageCS dt, Map<String, CoverageCoordAxis> covAxesMap) {
     List<String> transformNames = new ArrayList<>();
     for (CoordinateTransform ct : dt.getCoordTransforms())
       transformNames.add(ct.getName());
-    List<String> axisNames = new ArrayList<>();
-    for (CoordinateAxis axis : dt.getCoordAxes())
-      if (allAxisNameSet.contains(axis.getFullName())) // some may have been rejected
-        axisNames.add(axis.getFullName());
 
-    return new CoverageCoordSys(dt.getName(), axisNames, transformNames, dt.getCoverageType());
+    Set<CoverageCoordAxis> covAxes = new HashSet<>();
+    for (CoordinateAxis axis : dt.getCoordAxes()) {
+      CoverageCoordAxis covAxis = covAxesMap.get(axis.getFullName());
+      if (covAxis == null) continue; // some may have been rejected
+      covAxes.add(covAxis);
+      for (String dep : covAxis.getDependsOnList()) { // add in dependencies
+        CoverageCoordAxis depAxis = covAxesMap.get(dep);
+        if (depAxis != null)
+          covAxes.add(depAxis);
+      }
+    }
+
+    // make list of names - sorted by axis type
+    List<CoverageCoordAxis> covAxesList = new ArrayList<>(covAxes);
+    Collections.sort(covAxesList);
+    List<String> covAxesNames = new ArrayList<>();
+    for (CoverageCoordAxis axis : covAxesList) covAxesNames.add(axis.getName());
+
+    return new CoverageCoordSys(dt.getName(), covAxesNames, transformNames, dt.getCoverageType());
   }
 
   private static CoverageTransform makeTransform(ucar.nc2.dataset.CoordinateTransform dt) {
     AttributeContainerHelper atts = new AttributeContainerHelper(dt.getName());
     for (Parameter p : dt.getParameters())
       atts.addAttribute(new Attribute(p));
-    //   public CoverageCoordTransform(String name, AttributeContainerHelper attributes, boolean isHoriz) {
     return new CoverageTransform(dt.getName(), atts, dt.getTransformType() == TransformType.Projection);
   }
 
-  private static ucar.nc2.util.Optional<CoverageCoordAxis> makeCoordAxis(DtCoverageCS gcs, ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader) {
+  private static CoverageCoordAxis makeCoordAxisFromDimension(Dimension dim) {
+    CoverageCoordAxisBuilder builder = new CoverageCoordAxisBuilder();
+    builder.name = dim.getFullName();
+    builder.dataType = DataType.INT;
+    builder.axisType = AxisType.Dimension;
+    builder.dependenceType = CoverageCoordAxis.DependenceType.dimension;
+    builder.spacing = CoverageCoordAxis.Spacing.regularPoint;
+    builder.ncoords = dim.getLength();
+    builder.startValue = 0;
+    builder.endValue = dim.getLength()-1;
+    builder.resolution = 1;
+
+    return new CoverageCoordAxis1D(builder);
+  }
+
+  private static ucar.nc2.util.Optional<CoverageCoordAxis> makeCoordAxis(FeatureType ftype, ucar.nc2.dataset.CoordinateAxis dtCoordAxis, DtCoverageAdapter reader) {
     String name = dtCoordAxis.getFullName();
     DataType dataType = dtCoordAxis.getDataType();
     AxisType axisType = dtCoordAxis.getAxisType();
@@ -137,7 +188,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     AttributeContainer atts = dtCoordAxis.getAttributeContainer();
 
     if (axisType == null)
-      return ucar.nc2.util.Optional.empty("Coordinate "+name+" has no axisType");
+      return ucar.nc2.util.Optional.empty("Coordinate " + name + " has no axisType");
 
     CoverageCoordAxis.DependenceType dependenceType;
     String dependsOn = null;
@@ -155,17 +206,17 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       dependsOn = f.toString().trim();
 
     } else {
-      Dimension d0 = dtCoordAxis.getDimension(0);
+      /* Dimension d0 = dtCoordAxis.getDimension(0);
       if (dtCoordAxis.getRank() == 1 && null == gcs.findCoordAxis(d0.getShortName())) { // use it as independent
         dependenceType = CoverageCoordAxis.DependenceType.independent;
 
-      } else {
-        dependenceType = CoverageCoordAxis.DependenceType.dependent;
-        Formatter f = new Formatter();
-        for (Dimension d : dtCoordAxis.getDimensions())
-          f.format("%s ", d.getFullName());
-        dependsOn = f.toString().trim();
-      }
+      } else { */
+      dependenceType = CoverageCoordAxis.DependenceType.dependent;
+      Formatter f = new Formatter();
+      for (Dimension d : dtCoordAxis.getDimensions()) // LOOK axes may not exist
+        f.format("%s ", d.getFullName());
+      dependsOn = f.toString().trim();
+      // }
     }
 
     int ncoords = (int) dtCoordAxis.getSize();
@@ -184,12 +235,12 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       if (axis1D.isRegular() || axis1D.isScalar()) {
         spacing = CoverageCoordAxis.Spacing.regularPoint;
         values = null;
-        resolution = (ncoords == 1) ? 0.0 : (endValue - startValue) / (ncoords-1);
+        resolution = (ncoords == 1) ? 0.0 : (endValue - startValue) / (ncoords - 1);
 
       } else if (!dtCoordAxis.isInterval()) {
         spacing = CoverageCoordAxis.Spacing.irregularPoint;
         values = axis1D.getCoordValues();
-        resolution = (ncoords == 1) ? 0.0 : (endValue - startValue) / (ncoords-1);
+        resolution = (ncoords == 1) ? 0.0 : (endValue - startValue) / (ncoords - 1);
 
       } else if (dtCoordAxis.isContiguous()) {
         spacing = CoverageCoordAxis.Spacing.contiguousInterval;
@@ -230,7 +281,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       if (axisType == AxisType.TimeOffset)
         return ucar.nc2.util.Optional.of(new TimeOffsetAxis(builder));
       else
-       return ucar.nc2.util.Optional.of(new CoverageCoordAxis1D(builder));
+        return ucar.nc2.util.Optional.of(new CoverageCoordAxis1D(builder));
     }
 
     // TwoD case
@@ -249,13 +300,13 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       if (bounds == null) throw new IllegalStateException("No bounds array");
       int[] shape = bounds.getShape();
       int count = 0;
-      values = new double[ncoords+1];
+      values = new double[ncoords + 1];
       for (int i = 0; i < shape[0]; i++) {
         for (int j = 0; j < shape[1]; j++) {
           values[count++] = bounds.get(i, j, 0);
         }
       }
-      values[count] = bounds.get(shape[0]-1, shape[1]-1, 1); // last edge
+      values[count] = bounds.get(shape[0] - 1, shape[1] - 1, 1); // last edge
 
     } else {
       spacing = CoverageCoordAxis.Spacing.discontiguousInterval;
@@ -293,16 +344,21 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     // Fmrc Time
     if (axisType == AxisType.Time) {
-      builder.setDependsOn(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
-      return ucar.nc2.util.Optional.of( new FmrcTimeAxis2D(builder));
+      if (ftype == FeatureType.FMRC) {
+        builder.setDependsOn(dtCoordAxis.getDimension(0).getFullName());  // only the first dimension
+        return ucar.nc2.util.Optional.of(new TimeAxis2DFmrc(builder));
+
+      } else if (ftype == FeatureType.SWATH) {
+        return ucar.nc2.util.Optional.of(new TimeAxis2DSwath(builder));
+      }
     }
 
     // 2D Lat Lon
     if (axisType == AxisType.Lat || axisType == AxisType.Lon) {
-      return ucar.nc2.util.Optional.of( new LatLonAxis2D(builder));
+      return ucar.nc2.util.Optional.of(new LatLonAxis2D(builder));
     }
 
-    throw new IllegalStateException("Dont know what to do with axis " + dtCoordAxis);
+    return ucar.nc2.util.Optional.empty("Dont know what to do with axis " + dtCoordAxis);
   }
 
   ////////////////////////
@@ -341,7 +397,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     boolean hasComposite = false;
     for (RangeIterator ri : rangeIters) {
       if (ri instanceof RangeComposite) hasComposite = true;
-      else ranges.add( (Range) ri);
+      else ranges.add((Range) ri);
     }
 
     if (!hasComposite) {
@@ -356,7 +412,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     ranges.add(null); // make room for last
     int n = rangeIters.size();
-    RangeComposite comp = (RangeComposite) rangeIters.get(n-1);
+    RangeComposite comp = (RangeComposite) rangeIters.get(n - 1);
     for (RangeIterator ri : comp.getRanges()) {
       // read the data
       ranges.set(n - 1, (Range) ri.setName(comp.getName())); // add last
@@ -373,10 +429,10 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
       IndexIterator resultIter = result.getRangeIterator(sectionInResult.getRanges());
       IndexIterator dataIter = data.getIndexIterator();
       while (dataIter.hasNext())
-        resultIter.setDoubleNext( dataIter.getDoubleNext()); // look converting to double
+        resultIter.setDoubleNext(dataIter.getDoubleNext()); // look converting to double
 
       // get ready for next
-      origin[n-1] += data.getShape()[n-1]; // look assumes compose only in last dimension; could be generalized
+      origin[n - 1] += data.getShape()[n - 1]; // look assumes compose only in last dimension; could be generalized
     }
 
     return new GeoReferencedArray(coverage.getName(), coverage.getDataType(), result, subsetCoordSys);
@@ -400,7 +456,7 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
   @Override
   public double[] readCoordValues(CoverageCoordAxis coordAxis) throws IOException {
     ucar.nc2.dataset.CoordinateAxis dtCoordAxis = proxy.getNetcdfDataset().findCoordinateAxis(coordAxis.getName());
-    if (dtCoordAxis == null) throw new IllegalStateException("Cants find Coordinate Axis "+coordAxis.getName());
+    if (dtCoordAxis == null) throw new IllegalStateException("Cants find Coordinate Axis " + coordAxis.getName());
 
     if (dtCoordAxis instanceof CoordinateAxis1D) {
 
@@ -437,130 +493,5 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
 
     return result;
   }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /*
-
-
-
-    //DtCoverageCS gcs = grid.getCoordinateSystem();
-    CoverageCoordSys ccsys = coverage.getCoordSys();
-
-    List<Range> section = new ArrayList<>();
-    for (String key : params.getKeys()) {
-      switch (key) {
-
-        case SubsetParams.time: { // CalendarDate
-          CalendarDate cdate = (CalendarDate) params.get(key);
-          CoverageCoordAxis taxisOrg = ccsys.getTimeAxis();
-          if (taxisOrg != null && !taxisOrg.isScalar()) {
-            CoverageCoordAxis taxisWant = taxisOrg.subset(params);
-            section.add(new Range(AxisType.Time.toString(), taxisWant.getMinIndex(), taxisWant.getMaxIndex()));
-
-          if (taxis != null && !taxis.isScalar()) {
-            if (taxis instanceof CoordinateAxis1DTime) {
-              CoordinateAxis1DTime time1d = (CoordinateAxis1DTime) taxis;
-              int wantIndex = time1d.findTimeIndexFromCalendarDate(cdate);               // LOOK change to closest
-              section.add(new Range(AxisType.Time.toString(), wantIndex, wantIndex));
-
-            } else if (taxis instanceof CoordinateAxis2D) {      // LOOK what to do ?
-              // CoordinateAxis2D time2d = (CoordinateAxis2D) taxis;
-              // time = time2d.findTimeIndexFromCalendarDate(cdate);
-            }
-          }
-          break;
-        }
-
-        case SubsetParams.timeRange: { // CalendarDate
-          CalendarDateRange dateRange = (CalendarDateRange) params.get(key);
-          CoordinateAxis taxis = gcs.getTimeAxis();
-          if (taxis != null && !taxis.isScalar()) {
-            if (taxis instanceof CoordinateAxis1DTime) {
-              CoordinateAxis1DTime time1d = (CoordinateAxis1DTime) taxis;
-              int startIndex = time1d.findTimeIndexFromCalendarDate(dateRange.getStart());   // LOOK change to closest
-              int endIndex = time1d.findTimeIndexFromCalendarDate(dateRange.getEnd());
-              Integer stride = params.getInteger(SubsetParams.timeStride);
-              if (stride == null)
-                section.add(new Range(AxisType.Time.toString(), startIndex, endIndex));
-              else
-                section.add(new Range(AxisType.Time.toString(), startIndex, endIndex, stride));
-            }
-          }
-          break;
-        }
-
-        case SubsetParams.timePresent: {
-          CoordinateAxis taxis = gcs.getTimeAxis();
-          if (taxis != null && !taxis.isScalar()) {
-            int wantIndex = (int) taxis.getSize() - 1;
-            section.add(new Range(AxisType.Time.toString(), wantIndex, wantIndex));
-          }
-          break;
-        }
-
-        case SubsetParams.runtime: { // CalendarDate
-          CalendarDate cdate = (CalendarDate) params.get(key);
-          CoordinateAxis1DTime rtaxis = gcs.getRunTimeAxis();
-          if (rtaxis != null && !rtaxis.isScalar()) {
-            int wantIndex = rtaxis.findTimeIndexFromCalendarDate(cdate);                   // LOOK change to closest
-            section.add(new Range(AxisType.RunTime.toString(), wantIndex, wantIndex));
-          }
-          break;
-        }
-
-        case SubsetParams.runtimeRange: { // CalendarDateRange
-          CalendarDateRange dateRange = (CalendarDateRange) params.get(key);
-          CoordinateAxis1DTime rtaxis = gcs.getRunTimeAxis();
-          if (rtaxis != null && !rtaxis.isScalar()) {
-            int startIndex = rtaxis.findTimeIndexFromCalendarDate(dateRange.getStart());   // LOOK change to closest
-            int endIndex = rtaxis.findTimeIndexFromCalendarDate(dateRange.getEnd());
-            section.add(new Range(AxisType.RunTime.toString(), startIndex, endIndex));
-          }
-          break;
-        }
-
-        case SubsetParams.vertCoord: { // double
-          CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-          if (zaxis != null && !zaxis.isScalar()) {
-            double zval = params.getDouble(key);
-            int wantIndex = zaxis.findCoordElement(zval);
-            if (wantIndex < 0) {
-              System.out.println("HEY");
-              zaxis.findCoordElement(zval);
-            }
-            section.add(new Range(AxisType.GeoZ.toString(), wantIndex, wantIndex));
-          }
-          break;
-        }
-
-        case SubsetParams.vertIndex: {    // LOOK should we allow this ??
-          CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-          if (zaxis != null && !zaxis.isScalar()) {
-            int wantIndex = params.getInteger(key);
-            section.add(new Range(AxisType.GeoZ.toString(), wantIndex, wantIndex));
-          }
-          break;
-        }
-
-        case SubsetParams.ensCoord: { // double
-          CoordinateAxis1D eaxis = gcs.getEnsembleAxis();
-          if (eaxis != null && !eaxis.isScalar()) {
-            int wantIndex = eaxis.findCoordElement(params.getDouble(key));
-            section.add(new Range(AxisType.Ensemble.toString(), wantIndex, wantIndex));
-          }
-          break;
-        }
-
-        case SubsetParams.projBB: { // ProjRect
-          if (!ccsys.getHorizCoordSys().hasProjection) continue;
-          ProjectionRect projRect = (ProjectionRect) params.get(key);
-          ccsys.getHorizCoordSys().subset(params);
-          break;
-        }
-
-      }
-    }
-   */
 
 }

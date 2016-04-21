@@ -85,8 +85,11 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
   public ResponseEntity<String> handle(IllegalArgumentException ex) {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    // ex.printStackTrace();
-    return new ResponseEntity<>("IllegalArgumentException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
+    String mess = ex.getMessage();
+    if (mess != null && mess.startsWith("RequestTooLarge")) // RequestTooLargeException only avail in tds module
+      return new ResponseEntity<>("Request Too Large: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
+    else
+      return new ResponseEntity<>("IllegalArgumentException: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(NcssException.class)

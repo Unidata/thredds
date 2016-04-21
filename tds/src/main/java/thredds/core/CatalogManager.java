@@ -224,64 +224,6 @@ public class CatalogManager {
       findServices(ds.getDatasets(), serviceNames); // recurse
     }
   }
-
-
-  /* private Catalog addGlobalServices(ConfigCatalog cat) {
-    Set<String> serviceNames = new HashSet<>();
-    for (Dataset ds : cat.getDatasets())
-      findServices(ds, serviceNames);
-    if (serviceNames.isEmpty()) return cat;
-
-    List<Service> services = new ArrayList<>(cat.getServices());
-    for (String name : serviceNames) {
-      if (cat.hasService(name)) continue;
-      Service s = globalServices.findGlobalService(name);
-      if (s != null) services.add(s);
-    }
-    if (services.isEmpty()) return cat;
-
-    return ConfigCatalogBuilder.makeCatalogWithServices(cat, services);
-  } */
-
-  /* private void addGlobalServices(Catalog cat) {
-    Set<String> serviceNames = new HashSet<>();
-    for (Dataset ds : cat.getDatasets())
-      findServices(ds, serviceNames);
-    if (serviceNames.isEmpty()) return;
-
-    Set<Service> services = new HashSet<>();
-    for (String name : serviceNames) {
-      if (cat.hasService(name)) continue;
-      Service s = globalServices.findGlobalService(name);
-      if (s != null) services.add(s);
-    }
-    if (services.isEmpty()) return;
-
-    for (Service s : services)
-      cat.addService(s);
-
-    // look for datasets that want to use standard services
-    for (Dataset node : cat.getDatasets()) {
-      String sname = node.getServiceNameDefault();
-      String urlPath = node.getUrlPath();
-      FeatureType ftype = node.getFeatureType();
-      if (sname == null && urlPath != null && ftype != null) {
-        Service s = globalServices.getStandardServices(ftype);
-        if (s != null) {
-          node.setServiceNameDefault(sname);
-          cat.addService(s);
-        }
-      }
-    }
-  }
-
-  private void findServices(Dataset ds, Set<String> serviceNames) {
-    String sname = (String) ds.get(Dataset.ServiceName);
-    if (sname != null)
-      serviceNames.add(sname);
-    for (Dataset nested : ds.getDatasets())
-      findServices(nested, serviceNames);
-  } */
 }
 
 

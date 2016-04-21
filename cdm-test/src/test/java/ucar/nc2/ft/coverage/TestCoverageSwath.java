@@ -37,67 +37,68 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.AxisType;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.util.CompareNetcdf2;
+import ucar.nc2.util.Misc;
+import ucar.nc2.util.Optional;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.test.util.NeedsCdmUnitTest;
 import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
-import java.util.Formatter;
 
 /**
- * Grib 2D time that is regular, not orthogonal.
+ * Test swath data as coverage
  *
  * @author caron
- * @since 10/12/2015.
+ * @since 3/17/2016.
  */
-@Category(NeedsCdmUnitTest.class)
-public class TestCoverageFMRCnonOrthogonal {
+public class TestCoverageSwath {
 
+  @Category(NeedsCdmUnitTest.class)
   @Test
-  public void testRegularTime2D() throws IOException {
-    String filename = TestDir.cdmUnitTestDir + "datasets/NDFD-CONUS-5km/NDFD-CONUS-5km.ncx4";
-    String gridName = "Maximum_temperature_height_above_ground_12_Hour_Maximum";
-    System.out.printf("file %s coverage %s%n", filename, gridName);
+  public void TestCoverageSize() throws IOException, InvalidRangeException {
+    String endpoint = TestDir.cdmUnitTestDir + "formats/dmsp/F14200307192230.s.OIS";
+    System.out.printf("open %s%n", endpoint);
 
-    // FeatureType wantFeatureType, String location, ucar.nc2.util.CancelTask task, Formatter errlog
-    Formatter errlog = new Formatter();
-    try (FeatureDatasetCoverage fdc = (FeatureDatasetCoverage) FeatureDatasetFactoryManager.open(null, filename, null, errlog)) {
-      Assert.assertNotNull(errlog.toString(), fdc);
+    try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
+      assert cc != null;
+      Assert.assertEquals(1, cc.getCoverageCollections().size());
+      CoverageCollection gds = cc.getCoverageCollections().get(0);
+      Assert.assertNotNull(endpoint, gds);
+      Assert.assertEquals(FeatureType.SWATH, gds.getCoverageType());
 
-      VariableSimpleIF vs = fdc.getDataVariable(gridName);
-      Assert.assertNotNull(gridName, vs);
+      String covName = "visibleImagery";
+      Coverage cover = gds.findCoverage(covName);
+      Assert.assertNotNull(covName, cover);
 
-      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
-      Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
+      int[] shape = cover.getShape();
+      System.out.printf("%s%n", Misc.showInts(shape));
+      Assert.assertArrayEquals(new int[]{1631, 1465}, shape);
 
-      Coverage cov = cc.findCoverage(gridName);
-      Assert.assertNotNull(gridName, cov);
+      long size = cover.getSizeInBytes();
+      Assert.assertEquals(1631*1465, size);
 
-      int[] expectShape = new int[] {4,4,1,689,1073};
-      Assert.assertArrayEquals(expectShape, cov.getShape());
+      CoverageCoordSys csys = cover.getCoordSys();
+      LatLonRect llbb = gds.getLatlonBoundingBox();
+      Assert.assertNotNull("getLatlonBoundingBox", llbb);
+      System.out.printf("llbb=%s (%s)%n", llbb.toString2(), llbb);
 
-      CoverageCoordSys gcs = cov.getCoordSys();
-      Assert.assertNotNull(gcs);
+      SubsetParams subset = new SubsetParams().setLatLonBoundingBox(gds.getLatlonBoundingBox()); // should be the same!
+      Optional<CoverageCoordSys> opt = csys.subset(subset);
+      Assert.assertTrue(opt.isPresent());
 
-      CoverageCoordAxis reftime = gcs.getAxis(AxisType.RunTime);
-      Assert.assertNotNull(reftime);
-      Assert.assertEquals(4, reftime.getNcoords());
-      double[] want = new double[]{0., 12., 24., 36.};
-      CompareNetcdf2 cn = new CompareNetcdf2();
-      assert cn.compareData("time", reftime.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+      CoverageCoordSys csyss = opt.get();
+      Assert.assertEquals(csys.getXAxis().getNcoords(), csyss.getXAxis().getNcoords());
+      Assert.assertEquals(csys.getYAxis().getNcoords(), csyss.getYAxis().getNcoords());
 
-      CoverageCoordAxis time = gcs.getTimeAxis();
-      Assert.assertNotNull(time);
-      Assert.assertTrue(time instanceof TimeAxis2DFmrc);
-      Assert.assertEquals(16, time.getNcoords());
-
-      //double[] want = new double[]{108.000000, 132.000000, 156.000000, 180.000000};
-      //assert cn.compareData("time", time.getCoordsAsArray(), Array.makeFromJavaArray(want), false);
+      GeoReferencedArray geo = cover.readData(subset);
+      Array data = geo.getData();
+      System.out.printf("%s%n", Misc.showInts(data.getShape()));
     }
   }
+
 }

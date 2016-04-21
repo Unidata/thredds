@@ -18,7 +18,7 @@ class DataState {
   CoverageCoordAxis1D taxis;
   CoverageCoordAxis1D rtaxis;
   CoverageCoordAxis1D ensaxis;
-  FmrcTimeAxis2D taxis2D;
+  TimeAxis2DFmrc taxis2D;
 
   public DataState(CoverageCollection coverageDataset, Coverage grid) {
     this.coverageDataset = coverageDataset;
@@ -31,8 +31,8 @@ class DataState {
     CoverageCoordAxis taxis = geocs.getTimeAxis();
     if (taxis != null && taxis instanceof CoverageCoordAxis1D)
       this.taxis = (CoverageCoordAxis1D) taxis;
-    if (taxis != null && taxis instanceof FmrcTimeAxis2D)
-      this.taxis2D = (FmrcTimeAxis2D) taxis;
+    if (taxis != null && taxis instanceof TimeAxis2DFmrc)
+      this.taxis2D = (TimeAxis2DFmrc) taxis;
 
     CoverageCoordAxis rtaxis = geocs.getAxis(AxisType.RunTime);
     if (rtaxis != null && rtaxis instanceof CoverageCoordAxis1D)

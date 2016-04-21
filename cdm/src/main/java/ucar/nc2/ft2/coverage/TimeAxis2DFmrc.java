@@ -47,19 +47,19 @@ import javax.annotation.Nonnull;
 import java.util.Formatter;
 
 /**
- * FmrcTimeAxis2D: time(runtime, time)
+ * Fmrc TimeAxis: time(runtime, time)
  * values will contain nruns * ntimes values
  *
  * @author caron
  * @since 7/15/2015
  */
-public class FmrcTimeAxis2D extends CoverageCoordAxis {
+public class TimeAxis2DFmrc extends CoverageCoordAxis {
 
   // can only be set once, needed for subsetting
   private int[] shape;
   private CoverageCoordAxis1D runCoord;
 
-  public FmrcTimeAxis2D(CoverageCoordAxisBuilder builder) {
+  public TimeAxis2DFmrc(CoverageCoordAxisBuilder builder) {
     super(builder);
   }
 
@@ -82,7 +82,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
 
   @Override
   public CoverageCoordAxis copy() {
-    return new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this));
+    return new TimeAxis2DFmrc(new CoverageCoordAxisBuilder(this));
   }
 
   @Override
@@ -101,7 +101,7 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
   @Override
   public Optional<CoverageCoordAxis> subset(SubsetParams params) {
     if (params == null)
-      return Optional.of(new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this)));
+      return Optional.of(new TimeAxis2DFmrc(new CoverageCoordAxisBuilder(this)));
 
     CalendarDate rundate = (CalendarDate) params.get(SubsetParams.runtime);
     boolean runtimeAll = (Boolean) params.get(SubsetParams.runtimeAll);
@@ -122,12 +122,12 @@ public class FmrcTimeAxis2D extends CoverageCoordAxis {
     }
 
     // no subsetting needed
-    return Optional.of(new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this)));
+    return Optional.of(new TimeAxis2DFmrc(new CoverageCoordAxisBuilder(this)));
   }
 
   @Override
   public Optional<CoverageCoordAxis> subset(double minValue, double maxValue, int stride) { // LOOK not implemented, maybe illegal ??
-    return Optional.of(new FmrcTimeAxis2D(new CoverageCoordAxisBuilder(this)));
+    return Optional.of(new TimeAxis2DFmrc(new CoverageCoordAxisBuilder(this)));
   }
 
   @Override

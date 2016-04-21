@@ -72,6 +72,23 @@
       </list>
     </property>
 
+    <!-- for datasetScan blacklist -->
+    <property name="isNotAThreddsDataset">
+      <list>
+        <value>.html</value>
+        <value>.csv</value>
+        <value>.txt</value>
+        <value>.doc</value>
+      </list>
+    </property>
+
+    <!--  for datasetScan whitelist -->
+    <property name="isAThreddsDataset">
+      <list>
+        <value>.nc</value>
+        <value>.nc4</value>
+      </list>
+    </property>
 
   </bean>
 

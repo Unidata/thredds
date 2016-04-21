@@ -33,35 +33,27 @@
  */
 package ucar.nc2.ft2.coverage.adapter;
 
-import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.*;
-import ucar.nc2.ft2.coverage.CoverageCoordSys;
-import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.LatLonProjection;
-import ucar.unidata.geoloc.projection.VerticalPerspectiveView;
-import ucar.unidata.geoloc.projection.sat.Geostationary;
-import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 
 import java.io.IOException;
 import java.util.*;
 
 /**
- * fork ucar.nc2.dt.grid.GridCoordSys for adaption of GridCoverage
+ * fork ucar.nc2.dt.grid.GridCoordSys for adaption of GridCoverage.
+ * Minimalist, does not do subsetting, vertical transform.
  *
  * @author caron
  * @since 5/26/2015
  */
 public class DtCoverageCS {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DtCoverageCS.class);
-  static private final boolean warnUnits = false;
+  //static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DtCoverageCS.class);
+  //static private final boolean warnUnits = false;
 
   /////////////////////////////////////////////////////////////////////////////
   protected DtCoverageCSBuilder builder;
@@ -70,28 +62,16 @@ public class DtCoverageCS {
   private GeoGridCoordinate2D g2d;
   private boolean isLatLon = false;
 
-  //private VerticalCT vCT;
-  //private VerticalTransform vt;
-  //private Dimension timeDim;
-
   /**
    * Create a GeoGridCoordSys from an existing Coordinate System.
    * This will choose which axes are the XHoriz, YHoriz, Vertical, Time, RunTIme, Ensemble.
    * If theres a Projection, it will set its map area
    *
-   * @param builder    create from this
+   * @param builder create from this
    */
   public DtCoverageCS(DtCoverageCSBuilder builder) {
     super();
     this.builder = builder;
-
-    /* look for VerticalCT
-    for (CoordinateTransform ct : getCoordTransforms()) {
-      if (ct instanceof VerticalCT) {
-        vCT = (VerticalCT) ct;
-        break;
-      }
-    } */
 
     // make name based on coordinate
     this.name = CoordinateSystem.makeName(builder.allAxes);
@@ -102,12 +82,533 @@ public class DtCoverageCS {
       setHorizStaggerType(att.getStringValue());
 
     if (builder.orgProj != null) {
-        proj = builder.orgProj.constructCopy();
-        // proj.setDefaultMapArea( getBoundingBox());  // LOOK LOOK too expensive for 2D
+      proj = builder.orgProj.constructCopy();
     }
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public FeatureType getCoverageType() {
+    return builder.type;
+  }
+
+  public List<CoordinateAxis> getCoordAxes() {
+    return builder.allAxes;
+  }
+
+  public CoordinateAxis findCoordAxis(String shortName) {
+    for (CoordinateAxis axis : builder.allAxes) {
+      if (axis.getShortName().equals(shortName)) return axis;
+    }
+    return null;
+  }
+
+  public List<CoordinateTransform> getCoordTransforms() {
+    return builder.coordTransforms;
+  }
+
   /**
+   * get the X Horizontal axis (either GeoX or Lon)
+   */
+  public CoordinateAxis getXHorizAxis() {
+    return builder.xaxis;
+  }
+
+  /**
+   * get the Y Horizontal axis (either GeoY or Lat)
+   */
+  public CoordinateAxis getYHorizAxis() {
+    return builder.yaxis;
+  }
+
+  /**
+   * get the Vertical axis (either Geoz, Height, or Pressure)
+   */
+  public CoordinateAxis1D getVerticalAxis() {
+    return builder.vertAxis;
+  }
+
+
+  public CoordinateAxis getTimeAxis() {
+    return builder.timeAxis;
+  }
+
+  public CoordinateAxis1DTime getRunTimeAxis() {
+    return builder.rtAxis;
+  }
+
+  public CoordinateAxis1D getEnsembleAxis() {
+    return builder.ensAxis;
+  }
+
+  public ProjectionImpl getProjection() {
+    return proj;
+  }
+
+  /**
+   * is this a Lat/Lon coordinate system?
+   */
+  public boolean isLatLon() {
+    return isLatLon;
+  }
+
+  /**
+   * Is this a global coverage over longitude ?
+   *
+   * @return true if isLatLon and longitude wraps
+   */
+  public boolean isGlobalLon() {
+    if (!isLatLon) return false;
+    if (!(getXHorizAxis() instanceof CoordinateAxis1D)) return false;
+    CoordinateAxis1D lon = (CoordinateAxis1D) getXHorizAxis();
+    double first = lon.getCoordEdge(0);
+    double last = lon.getCoordEdge((int) lon.getSize());
+    double min = Math.min(first, last);
+    double max = Math.max(first, last);
+    return (max - min) >= 360;
+  }
+
+  /**
+   * true if x and y axes are CoordinateAxis1D and are regular
+   */
+  public boolean isRegularSpatial() {
+    if (!isRegularSpatial(getXHorizAxis())) return false;
+    if (!isRegularSpatial(getYHorizAxis())) return false;
+    return true;
+  }
+
+  private boolean isRegularSpatial(CoordinateAxis axis) {
+    if (axis == null) return true;
+    if (!(axis instanceof CoordinateAxis1D)) return false;
+    return ((CoordinateAxis1D) axis).isRegular();
+  }
+
+  private String horizStaggerType;
+
+  public String getHorizStaggerType() {
+    return horizStaggerType;
+  }
+
+  public void setHorizStaggerType(String horizStaggerType) {
+    this.horizStaggerType = horizStaggerType;
+  }
+
+  private ProjectionRect mapArea = null;
+
+  /**
+   * Get the x,y bounding box in projection coordinates.
+   */
+  public ProjectionRect getBoundingBox() {
+    if (mapArea == null) {
+
+      CoordinateAxis horizXaxis = getXHorizAxis();
+      CoordinateAxis horizYaxis = getYHorizAxis();
+      if ((horizXaxis == null) || !horizXaxis.isNumeric() || (horizYaxis == null) || !horizYaxis.isNumeric())
+        return null; // impossible
+
+      // x,y may be 2D
+      if ((horizXaxis instanceof CoordinateAxis2D) && (horizYaxis instanceof CoordinateAxis2D)) {
+        // could try to optimize this - just get corners or something
+        CoordinateAxis2D xaxis2 = (CoordinateAxis2D) horizXaxis;
+        CoordinateAxis2D yaxis2 = (CoordinateAxis2D) horizYaxis;
+
+        mapArea = null; // getBBfromCorners(xaxis2, yaxis2);  LOOK LOOK
+
+        // mapArea = new ProjectionRect(horizXaxis.getMinValue(), horizYaxis.getMinValue(),
+        //         horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
+
+      } else {
+
+        CoordinateAxis1D xaxis1 = (CoordinateAxis1D) horizXaxis;
+        CoordinateAxis1D yaxis1 = (CoordinateAxis1D) horizYaxis;
+
+        /* add one percent on each side if its a projection. WHY?
+        double dx = 0.0, dy = 0.0;
+        if (!isLatLon()) {
+          dx = .01 * (xaxis1.getCoordEdge((int) xaxis1.getSize()) - xaxis1.getCoordEdge(0));
+          dy = .01 * (yaxis1.getCoordEdge((int) yaxis1.getSize()) - yaxis1.getCoordEdge(0));
+        }
+
+        mapArea = new ProjectionRect(xaxis1.getCoordEdge(0) - dx, yaxis1.getCoordEdge(0) - dy,
+            xaxis1.getCoordEdge((int) xaxis1.getSize()) + dx,
+            yaxis1.getCoordEdge((int) yaxis1.getSize()) + dy); */
+
+        mapArea = new ProjectionRect(xaxis1.getCoordEdge(0), yaxis1.getCoordEdge(0),
+                xaxis1.getCoordEdge((int) xaxis1.getSize()),
+                yaxis1.getCoordEdge((int) yaxis1.getSize()));
+      }
+    }
+
+    return mapArea;
+  }
+
+  /**
+   * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices
+   *
+   * @param xindex x index
+   * @param yindex y index
+   * @return lat/lon coordinate of the midpoint of the cell
+   */
+  public LatLonPoint getLatLon(int xindex, int yindex) {
+    double x, y;
+
+    CoordinateAxis horizXaxis = getXHorizAxis();
+    CoordinateAxis horizYaxis = getYHorizAxis();
+    if (horizXaxis instanceof CoordinateAxis1D) {
+      CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizXaxis;
+      x = horiz1D.getCoordValue(xindex);
+    } else {
+      CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizXaxis;
+      x = horiz2D.getCoordValue(yindex, xindex);
+    }
+
+    if (horizYaxis instanceof CoordinateAxis1D) {
+      CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizYaxis;
+      y = horiz1D.getCoordValue(yindex);
+    } else {
+      CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizYaxis;
+      y = horiz2D.getCoordValue(yindex, xindex);
+    }
+
+    return isLatLon() ? new LatLonPointImpl(y, x) : getLatLon(x, y);
+  }
+
+  public LatLonPoint getLatLon(double xcoord, double ycoord) {
+    Projection dataProjection = getProjection();
+    return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord), new LatLonPointImpl());
+  }
+
+  private LatLonRect llbb = null;
+
+  /**
+   * Get horizontal bounding box in lat, lon coordinates.
+   *
+   * @return lat, lon bounding box.
+   */
+  public LatLonRect getLatLonBoundingBox() {
+
+    if (llbb == null) {
+
+      if ((getXHorizAxis() instanceof CoordinateAxis2D) && (getYHorizAxis() instanceof CoordinateAxis2D)) {
+        return null;
+      }
+
+      CoordinateAxis horizXaxis = getXHorizAxis();
+      CoordinateAxis horizYaxis = getYHorizAxis();
+      if (isLatLon()) {
+        double startLat = horizYaxis.getMinValue();
+        double startLon = horizXaxis.getMinValue();
+
+        double deltaLat = horizYaxis.getMaxValue() - startLat;
+        double deltaLon = horizXaxis.getMaxValue() - startLon;
+
+        LatLonPoint llpt = new LatLonPointImpl(startLat, startLon);
+        llbb = new LatLonRect(llpt, deltaLat, deltaLon);
+
+      } else {
+        ProjectionImpl dataProjection = getProjection();
+        ProjectionRect bb = getBoundingBox();
+        if (bb != null)
+          llbb = dataProjection.projToLatLonBB(bb);
+      }
+    }
+
+    return llbb;
+
+      /*  // look at all 4 corners of the bounding box
+        LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
+        LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
+        LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
+        LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
+
+        // Check if grid contains poles.
+        boolean includesNorthPole = false;
+        int[] resultNP;
+        resultNP = findXYindexFromLatLon(90.0, 0, null);
+        if (resultNP[0] != -1 && resultNP[1] != -1)
+          includesNorthPole = true;
+        boolean includesSouthPole = false;
+        int[] resultSP;
+        resultSP = findXYindexFromLatLon(-90.0, 0, null);
+        if (resultSP[0] != -1 && resultSP[1] != -1)
+          includesSouthPole = true;
+
+        if (includesNorthPole && !includesSouthPole) {
+          llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+          llbb.extend(lrpt);
+          llbb.extend(urpt);
+          llbb.extend(ulpt);
+          // OR
+          //llbb.extend( new LatLonRect( llpt, lrpt ));
+          //llbb.extend( new LatLonRect( lrpt, urpt ) );
+          //llbb.extend( new LatLonRect( urpt, ulpt ) );
+          //llbb.extend( new LatLonRect( ulpt, llpt ) );
+        } else if (includesSouthPole && !includesNorthPole) {
+          llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+          llbb.extend(lrpt);
+          llbb.extend(urpt);
+          llbb.extend(ulpt);
+        } else {
+          double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
+          double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
+
+          // longitude is a bit tricky as usual
+          double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
+          double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
+
+          llpt.set(latMin, lonMin);
+          urpt.set(latMax, lonMax);
+
+          llbb = new LatLonRect(llpt, urpt);
+        }
+      }
+    }  */
+
+  }
+
+  @Override
+  public String toString() {
+    Formatter buff = new Formatter();
+    show(buff, false);
+    return buff.toString();
+  }
+
+  public void show(Formatter f, boolean showCoords) {
+    f.format("Coordinate System (%s)%n", getName());
+
+    showCoordinateAxis(getRunTimeAxis(), f, showCoords);
+    showCoordinateAxis(getEnsembleAxis(), f, showCoords);
+    showCoordinateAxis(getTimeAxis(), f, showCoords);
+    showCoordinateAxis(getVerticalAxis(), f, showCoords);
+    showCoordinateAxis(getYHorizAxis(), f, showCoords);
+    showCoordinateAxis(getXHorizAxis(), f, showCoords);
+
+    if (proj != null)
+      f.format(" Projection: %s %s%n", proj.getName(), proj.paramsToString());
+  }
+
+  private void showCoordinateAxis(CoordinateAxis axis, Formatter f, boolean showCoords) {
+    if (axis == null) return;
+    f.format(" rt=%s (%s)", axis.getNameAndDimensions(), axis.getClass().getName());
+    if (showCoords) showCoords(axis, f);
+    f.format("%n");
+  }
+
+  private void showCoords(CoordinateAxis axis, Formatter f) {
+    try {
+      if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
+        CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
+        if (!axis1D.isInterval()) {
+          double[] e = axis1D.getCoordEdges();
+          for (double anE : e) {
+            f.format("%f,", anE);
+          }
+        } else {
+          double[] b1 = axis1D.getBound1();
+          double[] b2 = axis1D.getBound2();
+          for (int i = 0; i < b1.length; i++) {
+            f.format("(%f,%f) = %f%n", b1[i], b2[i], b2[i] - b1[i]);
+          }
+        }
+      } else {
+        f.format("%s", NCdumpW.printVariableData(axis, null));
+      }
+    } catch (IOException ioe) {
+      f.format(ioe.getMessage());
+    }
+    f.format(" %s%n", axis.getUnitsString());
+  }
+
+  public CalendarDateRange getCalendarDateRange() {
+    CoordinateAxis timeTaxis = getTimeAxis();
+    if (timeTaxis != null && timeTaxis instanceof CoordinateAxis1DTime)
+      return ((CoordinateAxis1DTime) timeTaxis).getCalendarDateRange();
+
+    CoordinateAxis1DTime rtaxis = getRunTimeAxis();
+    if (rtaxis != null) {
+      return rtaxis.getCalendarDateRange();
+    }
+
+    return null;
+  }
+
+  public int getDomainRank() {
+    return CoordinateSystem.makeDomain(builder.independentAxes).size();
+  }
+
+  public int getRangeRank() {
+    return builder.allAxes.size(); // not right
+  }
+}
+
+  ///////////////////////////////////////////////////////////////////////
+  /* experimental
+
+  static private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
+    double midpoint = (lon1 + lon2) / 2;
+    lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
+    lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
+
+    return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
+  }
+
+  static public LatLonRect getLatLonBoundingBox(Projection proj, double startx, double starty, double endx, double endy) {
+
+    if (proj instanceof LatLonProjection) {
+      double deltaLat = endy - starty;
+      double deltaLon = endx - startx;
+
+      LatLonPoint llpt = new LatLonPointImpl(starty, startx);
+      return new LatLonRect(llpt, deltaLat, deltaLon);
+
+    }
+
+    ProjectionRect bb = new ProjectionRect(startx, starty, endx, endy);
+
+    // look at all 4 corners of the bounding box
+    LatLonPointImpl llpt = (LatLonPointImpl) proj.projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
+    LatLonPointImpl lrpt = (LatLonPointImpl) proj.projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
+    LatLonPointImpl urpt = (LatLonPointImpl) proj.projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
+    LatLonPointImpl ulpt = (LatLonPointImpl) proj.projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
+
+    // Check if grid contains poles. LOOK disabled
+    boolean includesNorthPole = false;
+    /* int[] resultNP = new int[2];
+    resultNP = findXYindexFromLatLon(90.0, 0, null);
+    if (resultNP[0] != -1 && resultNP[1] != -1)
+      includesNorthPole = true;  //
+
+    boolean includesSouthPole = false;
+    /* int[] resultSP = new int[2];
+    resultSP = findXYindexFromLatLon(-90.0, 0, null);
+    if (resultSP[0] != -1 && resultSP[1] != -1)
+      includesSouthPole = true;  //
+
+    LatLonRect llbb;
+
+    if (includesNorthPole && !includesSouthPole) {
+      llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
+      llbb.extend(lrpt);
+      llbb.extend(urpt);
+      llbb.extend(ulpt);
+
+    } else if (includesSouthPole && !includesNorthPole) {
+      llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
+      llbb.extend(lrpt);
+      llbb.extend(urpt);
+      llbb.extend(ulpt);
+
+    } else {
+      double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
+      double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
+
+      // longitude is a bit tricky as usual
+      double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
+      double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
+
+      llpt.set(latMin, lonMin);
+      urpt.set(latMax, lonMax);
+
+      llbb = new LatLonRect(llpt, urpt);
+    }
+    return llbb;
+  }
+
+}
+
+/*
+
+  public List<CalendarDate> getCalendarDates() {
+    CoordinateAxis timeTaxis = getTimeAxis();
+    if (timeTaxis != null && timeTaxis instanceof CoordinateAxis1DTime)
+      return ((CoordinateAxis1DTime) timeTaxis).getCalendarDates();
+
+    CoordinateAxis1DTime rtaxis = getRunTimeAxis();
+    if (rtaxis != null) {
+      return rtaxis.getCalendarDates();
+    }
+
+    return null;
+  }
+
+
+ */
+
+ /**
+   * Get the list of time names, to be used for user selection.
+   * The ith one refers to the ith time coordinate.
+   *
+   * @return List of ucar.nc2.util.NamedObject, or empty list.
+   *
+public List<NamedObject> getTimes() {
+  List<CalendarDate> cdates = getCalendarDates();
+  if (cdates == null) throw new IllegalStateException("No CalendarDates");
+  List<NamedObject> times = new ArrayList<>(cdates.size());
+  for (CalendarDate cd : cdates) {
+    times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));
+  }
+  return times;
+}
+
+
+*/
+
+  /**
+   * Get the list of level names, to be used for user selection.
+   * The ith one refers to the ith level coordinate.
+   *
+   * @return List of ucar.nc2.util.NamedObject, or empty list.
+   *
+public List<NamedObject> getLevels() {
+  CoordinateAxis1D vertZaxis = getVerticalAxis();
+  if (vertZaxis == null)
+    return new ArrayList<>(0);
+
+  int n = (int) vertZaxis.getSize();
+  List<NamedObject> levels = new ArrayList<>(n);
+  for (int i = 0; i < n; i++)
+    levels.add(new ucar.nc2.util.NamedAnything(vertZaxis.getCoordName(i), vertZaxis.getUnitsString()));
+
+  return levels;
+}
+
+
+*/
+  /**
+   * Get the String name for the ith level(z) coordinate.
+   *
+   * @param index which level coordinate
+   * @return level name
+   *
+public String getLevelName(int index) {
+  CoordinateAxis1D vertZaxis = getVerticalAxis();
+  if ((vertZaxis == null) || (index < 0) || (index >= vertZaxis.getSize()))
+    throw new IllegalArgumentException("getLevelName = " + index);
+  return vertZaxis.getCoordName(index).trim();
+}
+
+  /**
+   * Get the index corresponding to the level name.
+   *
+   * @param name level name
+   * @return level index, or -1 if not found
+   *
+  public int getLevelIndex(String name) {
+    CoordinateAxis1D vertZaxis = getVerticalAxis();
+    if ((vertZaxis == null) || (name == null)) return -1;
+
+    for (int i = 0; i < vertZaxis.getSize(); i++) {
+      if (vertZaxis.getCoordName(i).trim().equals(name))
+        return i;
+    }
+    return -1;
+  }
+
+
+*/
+  /*
    * Create a GeoGridCoordSys as a section of an existing GeoGridCoordSys.
    * This will create sections of the corresponding CoordinateAxes.
    *
@@ -118,7 +619,7 @@ public class DtCoverageCS {
    * @param y_range  subset the y dimension, or null if you want all of it
    * @param x_range  subset the x dimension, or null if you want all of it
    * @throws InvalidRangeException if any of the ranges are illegal
-   */
+   *
   public DtCoverageCS subset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
     /* super();
 
@@ -233,11 +734,12 @@ public class DtCoverageCS {
       }
     }
 
-    setHorizStaggerType(from.getHorizStaggerType()); */
+    setHorizStaggerType(from.getHorizStaggerType()); //
 
     return null;
-  }
+  } */
 
+  /*
   private CoordinateAxis convertUnits(CoordinateAxis axis) {
     String units = axis.getUnitsString();
     SimpleUnit axisUnit = SimpleUnit.factory(units);
@@ -286,172 +788,14 @@ public class DtCoverageCS {
     }
   }
 
-  ////////////////////
-
-
-  public String getName() {
-    return name;
-  }
-
-  public FeatureType getCoverageType() {
-    return builder.type;
-  }
-
-  public List<CoordinateAxis> getCoordAxes() {
-    return builder.allAxes;
-  }
-
-  public CoordinateAxis findCoordAxis(String shortName) {
-    for  (CoordinateAxis axis : builder.allAxes) {
-      if (axis.getShortName().equals(shortName)) return axis;
-    }
-    return null;
-  }
-
-
-  public List<CoordinateTransform> getCoordTransforms() {
-    return builder.coordTransforms;
-  }
-
-  /**
-   * Get the vertical transform function, or null if none
-   *
-   * @return the vertical transform function, or null if none
-   *
-  public VerticalTransform getVerticalTransform() {
-    return vt;
-  }
-
   /*
-   * Get the Coordinate Transform description.
-   *
-   * @return Coordinate Transform description, or null if none
-   *
-  public VerticalCT getVerticalCT() {
-    return vCT;
-  }
-
-  // we have to delay making these, since we dont identify the dimensions specifically until now
-  void makeVerticalTransform(DtCoverageDataset gds, Formatter parseInfo) {
-    if (vt != null) return; // already done
-    if (vCT == null) return;  // no vt
-
-    vt = vCT.makeVerticalTransform(gds.getNetcdfDataset(), timeDim);
-
-    if (vt == null) {
-      if (parseInfo != null)
-        parseInfo.format("  - ERR can't make VerticalTransform = %s%n", vCT.getVerticalTransformType());
-    } else {
-      if (parseInfo != null) parseInfo.format("  - VerticalTransform = %s%n", vCT.getVerticalTransformType());
-    }
-  }   */
-
-  /**
-   * get the X Horizontal axis (either GeoX or Lon)
-   */
-  public CoordinateAxis getXHorizAxis() {
-    return builder.xaxis;
-  }
-
-  /**
-   * get the Y Horizontal axis (either GeoY or Lat)
-   */
-  public CoordinateAxis getYHorizAxis() {
-    return builder.yaxis;
-  }
-
-  /**
-   * get the Vertical axis (either Geoz, Height, or Pressure)
-   */
-  public CoordinateAxis1D getVerticalAxis() {
-    return builder.vertAxis;
-  }
-
-
-  public CoordinateAxis getTimeAxis() {
-    return builder.timeAxis;
-  }
-
-  public CoordinateAxis1DTime getRunTimeAxis() {
-    return builder.rtAxis;
-  }
-
-  public CoordinateAxis1D getEnsembleAxis() {
-    return builder.ensAxis;
-  }
-
-  public ProjectionImpl getProjection() {
-    return proj;
-  }
-
-  /**
-   * is this a Lat/Lon coordinate system?
-   */
-  public boolean isLatLon() {
-    return isLatLon;
-  }
-
-  /**
-   * Is this a global coverage over longitude ?
-   * @return true if isLatLon and longitude wraps
-   */
-  public boolean isGlobalLon() {
-    if (!isLatLon) return false;
-    if (!(getXHorizAxis() instanceof CoordinateAxis1D)) return false;
-    CoordinateAxis1D lon = (CoordinateAxis1D) getXHorizAxis();
-    double first = lon.getCoordEdge(0);
-    double last = lon.getCoordEdge((int) lon.getSize());
-    double min = Math.min(first, last);
-    double max =  Math.max(first, last);
-    return (max - min) >= 360;
-  }
-
-  /*
-   * true if increasing z coordinate values means "up" in altitude
-   *
-  public boolean isZPositive() {
-    if (vertZaxis == null) return false;
-    if (vertZaxis.getPositive() != null) {
-      return vertZaxis.getPositive().equalsIgnoreCase(ucar.nc2.constants.CF.POSITIVE_UP);
-    }
-    if (vertZaxis.getAxisType() == AxisType.Height) return true;
-    return vertZaxis.getAxisType() != AxisType.Pressure;
-  } */
-
-  /**
-   * true if x and y axes are CoordinateAxis1D and are regular
-   */
-  public boolean isRegularSpatial() {
-    if (!isRegularSpatial(getXHorizAxis())) return false;
-    if (!isRegularSpatial(getYHorizAxis())) return false;
-    //if (!isRegularSpatial(getVerticalAxis())) return false; LOOK removed July 30, 2006 for WCS
-    return true;
-  }
-
-  private boolean isRegularSpatial(CoordinateAxis axis) {
-    if (axis == null) return true;
-    if (!(axis instanceof CoordinateAxis1D)) return false;
-    return ((CoordinateAxis1D) axis).isRegular();
-  }
-
-  private String horizStaggerType;
-
-  public String getHorizStaggerType() {
-    return horizStaggerType;
-  }
-
-  public void setHorizStaggerType(String horizStaggerType) {
-    this.horizStaggerType = horizStaggerType;
-  }
-
-  /**
    * Given a point in x,y coordinate space, find the x,y index in the coordinate system.
    *
    * @param x_coord position in x coordinate space.
    * @param y_coord position in y coordinate space.
    * @param result  put result (x,y) index in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
-   */
+   *
   public int[] findXYindexFromCoord(double x_coord, double y_coord, int[] result) {
     if (result == null)
       result = new int[2];
@@ -490,7 +834,7 @@ public class DtCoverageCS {
    * @param y_coord position in y coordinate space.
    * @param result  put result in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point.
-   */
+   *
   public int[] findXYindexFromCoordBounded(double x_coord, double y_coord, int[] result) {
     if (result == null)
       result = new int[2];
@@ -524,7 +868,7 @@ public class DtCoverageCS {
    * @param lon    longitude position.
    * @param result put result in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point. These will be -1 if out of range.
-   */
+   *
   public int[] findXYindexFromLatLon(double lat, double lon, int[] result) {
     Projection dataProjection = getProjection();
     ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
@@ -540,7 +884,7 @@ public class DtCoverageCS {
    * @param lon    longitude position.
    * @param result put result in here, may be null
    * @return int[2], 0=x,1=y indices in the coordinate system of the point.
-   */
+   *
   public int[] findXYindexFromLatLonBounded(double lat, double lon, int[] result) {
     Projection dataProjection = getProjection();
     ProjectionPoint pp = dataProjection.latLonToProj(new LatLonPointImpl(lat, lon), new ProjectionPointImpl());
@@ -548,194 +892,20 @@ public class DtCoverageCS {
     return findXYindexFromCoordBounded(pp.getX(), pp.getY(), result);
   }
 
-
-  private ProjectionRect mapArea = null;
-
-  /**
-   * Get the x,y bounding box in projection coordinates.
-   */
-  public ProjectionRect getBoundingBox() {
-    if (mapArea == null) {
-
-      CoordinateAxis horizXaxis = getXHorizAxis();
-      CoordinateAxis horizYaxis = getYHorizAxis();
-      if ((horizXaxis == null) || !horizXaxis.isNumeric() || (horizYaxis == null) || !horizYaxis.isNumeric())
-        return null; // impossible
-
-      // x,y may be 2D
-      if ((horizXaxis instanceof CoordinateAxis2D) && (horizYaxis instanceof CoordinateAxis2D)) {
-        // could try to optimize this - just get corners or something
-        CoordinateAxis2D xaxis2 = (CoordinateAxis2D) horizXaxis;
-        CoordinateAxis2D yaxis2 = (CoordinateAxis2D) horizYaxis;
-
-        mapArea = null; // getBBfromCorners(xaxis2, yaxis2);  LOOK LOOK
-
-       // mapArea = new ProjectionRect(horizXaxis.getMinValue(), horizYaxis.getMinValue(),
-       //         horizXaxis.getMaxValue(), horizYaxis.getMaxValue());
-
-      } else {
-
-        CoordinateAxis1D xaxis1 = (CoordinateAxis1D) horizXaxis;
-        CoordinateAxis1D yaxis1 = (CoordinateAxis1D) horizYaxis;
-
-        /* add one percent on each side if its a projection. WHY?
-        double dx = 0.0, dy = 0.0;
-        if (!isLatLon()) {
-          dx = .01 * (xaxis1.getCoordEdge((int) xaxis1.getSize()) - xaxis1.getCoordEdge(0));
-          dy = .01 * (yaxis1.getCoordEdge((int) yaxis1.getSize()) - yaxis1.getCoordEdge(0));
-        }
-
-        mapArea = new ProjectionRect(xaxis1.getCoordEdge(0) - dx, yaxis1.getCoordEdge(0) - dy,
-            xaxis1.getCoordEdge((int) xaxis1.getSize()) + dx,
-            yaxis1.getCoordEdge((int) yaxis1.getSize()) + dy); */
-
-        mapArea = new ProjectionRect(xaxis1.getCoordEdge(0), yaxis1.getCoordEdge(0),
-                xaxis1.getCoordEdge((int) xaxis1.getSize()),
-                yaxis1.getCoordEdge((int) yaxis1.getSize()));
-      }
-    }
-
-    return mapArea;
-  }
-
-  /**
-   * Get the Lat/Lon coordinates of the midpoint of a grid cell, using the x,y indices
-   *
-   * @param xindex x index
-   * @param yindex y index
-   * @return lat/lon coordinate of the midpoint of the cell
-   */
-  public LatLonPoint getLatLon(int xindex, int yindex) {
-    double x, y;
-
-    CoordinateAxis horizXaxis = getXHorizAxis();
-    CoordinateAxis horizYaxis = getYHorizAxis();
-    if (horizXaxis instanceof CoordinateAxis1D) {
-      CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizXaxis;
-      x = horiz1D.getCoordValue(xindex);
-    } else {
-      CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizXaxis;
-      x = horiz2D.getCoordValue( yindex, xindex);
-    }
-
-    if (horizYaxis instanceof CoordinateAxis1D) {
-      CoordinateAxis1D horiz1D = (CoordinateAxis1D) horizYaxis;
-      y = horiz1D.getCoordValue(yindex);
-    } else {
-      CoordinateAxis2D horiz2D = (CoordinateAxis2D) horizYaxis;
-      y = horiz2D.getCoordValue( yindex, xindex);
-    }
-
-    return isLatLon() ? new LatLonPointImpl(y, x) : getLatLon(x, y);
-  }
-
-  public LatLonPoint getLatLon(double xcoord, double ycoord) {
-    Projection dataProjection = getProjection();
-    return dataProjection.projToLatLon(new ProjectionPointImpl(xcoord, ycoord), new LatLonPointImpl());
-  }
-
-  private LatLonRect llbb = null;
-
-  /**
-   * Get horizontal bounding box in lat, lon coordinates.
-   *
-   * @return lat, lon bounding box.
-   */
-  public LatLonRect getLatLonBoundingBox() {
-
-    if (llbb == null) {
-
-      if ((getXHorizAxis() instanceof CoordinateAxis2D) && (getYHorizAxis() instanceof CoordinateAxis2D)) {
-        return null;
-      }
-
-      CoordinateAxis horizXaxis = getXHorizAxis();
-      CoordinateAxis horizYaxis = getYHorizAxis();
-      if (isLatLon()) {
-        double startLat = horizYaxis.getMinValue();
-        double startLon = horizXaxis.getMinValue();
-
-        double deltaLat = horizYaxis.getMaxValue() - startLat;
-        double deltaLon = horizXaxis.getMaxValue() - startLon;
-
-        LatLonPoint llpt = new LatLonPointImpl(startLat, startLon);
-        llbb = new LatLonRect(llpt, deltaLat, deltaLon);
-
-      } else {
-        ProjectionImpl dataProjection = getProjection();
-        ProjectionRect bb = getBoundingBox();
-        if (bb != null)
-          llbb = dataProjection.projToLatLonBB(bb);
-      }
-    }
-
-    return llbb;
-
-      /*  // look at all 4 corners of the bounding box
-        LatLonPointImpl llpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
-        LatLonPointImpl lrpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
-        LatLonPointImpl urpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
-        LatLonPointImpl ulpt = (LatLonPointImpl) dataProjection.projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
-
-        // Check if grid contains poles.
-        boolean includesNorthPole = false;
-        int[] resultNP;
-        resultNP = findXYindexFromLatLon(90.0, 0, null);
-        if (resultNP[0] != -1 && resultNP[1] != -1)
-          includesNorthPole = true;
-        boolean includesSouthPole = false;
-        int[] resultSP;
-        resultSP = findXYindexFromLatLon(-90.0, 0, null);
-        if (resultSP[0] != -1 && resultSP[1] != -1)
-          includesSouthPole = true;
-
-        if (includesNorthPole && !includesSouthPole) {
-          llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
-          llbb.extend(lrpt);
-          llbb.extend(urpt);
-          llbb.extend(ulpt);
-          // OR
-          //llbb.extend( new LatLonRect( llpt, lrpt ));
-          //llbb.extend( new LatLonRect( lrpt, urpt ) );
-          //llbb.extend( new LatLonRect( urpt, ulpt ) );
-          //llbb.extend( new LatLonRect( ulpt, llpt ) );
-        } else if (includesSouthPole && !includesNorthPole) {
-          llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
-          llbb.extend(lrpt);
-          llbb.extend(urpt);
-          llbb.extend(ulpt);
-        } else {
-          double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-          double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
-
-          // longitude is a bit tricky as usual
-          double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-          double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
-
-          llpt.set(latMin, lonMin);
-          urpt.set(latMax, lonMax);
-
-          llbb = new LatLonRect(llpt, urpt);
-        }
-      }
-    }  */
-
-  }
-
-  /**
+    /**
    * Get Index Ranges for the given lat, lon bounding box.
    * For projection, only an approximation based on latlon corners.
    * Must have CoordinateAxis1D or 2D for x and y axis.
    *
    * @param rect the requested lat/lon bounding box
    * @return list of 2 Range objects, first y then x.
-   */
+   *
   public List<Range> getRangesFromLatLonRect(LatLonRect rect) throws InvalidRangeException {
     double minx, maxx, miny, maxy;
 
     ProjectionImpl proj = getProjection();
     if (proj != null && !(proj instanceof VerticalPerspectiveView) && !(proj instanceof MSGnavigation)
-         && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
+            && !(proj instanceof Geostationary)) { // LOOK kludge - how to do this generrally ??
       // first clip the request rectangle to the bounding box of the grid
       LatLonRect bb = getLatLonBoundingBox();
       if (bb == null) throw new IllegalStateException("No LatLonBoundingBox");
@@ -783,9 +953,8 @@ public class DtCoverageCS {
       minx = Math.min(ll.getX(), ul.getX());
       miny = Math.min(ll.getY(), lr.getY());
       maxx = Math.max(ur.getX(), lr.getX());
-      maxy = Math.max(ul.getY(), ur.getY()); */
+      maxy = Math.max(ul.getY(), ur.getY());
     }
-
 
     if ((xaxis instanceof CoordinateAxis1D) && (yaxis instanceof CoordinateAxis1D)) {
       CoordinateAxis1D xaxis1 = (CoordinateAxis1D) xaxis;
@@ -890,238 +1059,7 @@ public class DtCoverageCS {
    }
 
    return bbShape;
- } */
+ }
 
-  /**
-   * String representation.
-   */
-  @Override
-  public String toString() {
-    Formatter buff = new Formatter();
-    show(buff, false);
-    return buff.toString();
-  }
 
-  public void show(Formatter f, boolean showCoords) {
-    f.format("Coordinate System (%s)%n", getName());
-
-    showCoordinateAxis(getRunTimeAxis(), f, showCoords);
-    showCoordinateAxis(getEnsembleAxis(), f, showCoords);
-    showCoordinateAxis(getTimeAxis(), f, showCoords);
-    showCoordinateAxis(getVerticalAxis(), f, showCoords);
-    showCoordinateAxis(getYHorizAxis(), f, showCoords);
-    showCoordinateAxis(getXHorizAxis(), f, showCoords);
-
-    if (proj != null)
-      f.format(" Projection: %s %s%n", proj.getName(), proj.paramsToString());
-  }
-
-  private void showCoordinateAxis(CoordinateAxis axis, Formatter f, boolean showCoords) {
-    if (axis == null) return;
-    f.format(" rt=%s (%s)", axis.getNameAndDimensions(), axis.getClass().getName());
-    if (showCoords) showCoords(axis, f);
-    f.format("%n");
-  }
-
-  private void showCoords(CoordinateAxis axis, Formatter f) {
-    try {
-      if (axis instanceof CoordinateAxis1D && axis.isNumeric()) {
-        CoordinateAxis1D axis1D = (CoordinateAxis1D) axis;
-        if (!axis1D.isInterval()) {
-          double[] e = axis1D.getCoordEdges();
-          for (double anE : e) {
-            f.format("%f,", anE);
-          }
-        } else {
-          double[] b1 = axis1D.getBound1();
-          double[] b2 = axis1D.getBound2();
-          for (int i=0; i<b1.length; i++) {
-            f.format("(%f,%f) = %f%n", b1[i], b2[i], b2[i] - b1[i]);
-          }
-        }
-      } else {
-        f.format("%s", NCdumpW.printVariableData(axis, null));
-      }
-    } catch (IOException ioe) {
-      f.format(ioe.getMessage());
-    }
-    f.format(" %s%n", axis.getUnitsString());
-  }
-
-  /////////////////////////////////////////////////////////////////
-
-  /**
-   * Get the list of time names, to be used for user selection.
-   * The ith one refers to the ith time coordinate.
-   *
-   * @return List of ucar.nc2.util.NamedObject, or empty list.
-   */
-  public List<NamedObject> getTimes() {
-    List<CalendarDate> cdates = getCalendarDates();
-    if (cdates == null) throw new IllegalStateException("No CalendarDates");
-    List<NamedObject> times = new ArrayList<>( cdates.size());
-    for (CalendarDate cd: cdates) {
-      times.add(new ucar.nc2.util.NamedAnything(cd.toString(), "calendar date"));
-    }
-    return times;
-  }
-
-  public CalendarDateRange getCalendarDateRange() {
-    CoordinateAxis timeTaxis = getTimeAxis();
-    if (timeTaxis != null && timeTaxis instanceof CoordinateAxis1DTime)
-      return ((CoordinateAxis1DTime)timeTaxis).getCalendarDateRange();
-
-    CoordinateAxis1DTime rtaxis = getRunTimeAxis();
-    if (rtaxis != null) {
-      return rtaxis.getCalendarDateRange();
-    }
-
-    return null;
-  }
-
-  public List<CalendarDate> getCalendarDates() {
-    CoordinateAxis timeTaxis = getTimeAxis();
-    if (timeTaxis != null && timeTaxis instanceof CoordinateAxis1DTime)
-      return ((CoordinateAxis1DTime)timeTaxis).getCalendarDates();
-
-    CoordinateAxis1DTime rtaxis = getRunTimeAxis();
-    if (rtaxis != null) {
-      return rtaxis.getCalendarDates();
-    }
-
-    return null;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////
-  // cruft
-
-  /**
-   * Get the list of level names, to be used for user selection.
-   * The ith one refers to the ith level coordinate.
-   *
-   * @return List of ucar.nc2.util.NamedObject, or empty list.
-   */
-  public List<NamedObject> getLevels() {
-    CoordinateAxis1D vertZaxis = getVerticalAxis();
-    if (vertZaxis == null)
-      return new ArrayList<>(0);
-
-    int n = (int) vertZaxis.getSize();
-    List<NamedObject> levels = new ArrayList<>(n);
-    for (int i = 0; i < n; i++)
-      levels.add(new ucar.nc2.util.NamedAnything(vertZaxis.getCoordName(i), vertZaxis.getUnitsString()));
-
-    return levels;
-  }
-
- /**
-   * Get the String name for the ith level(z) coordinate.
-   *
-   * @param index which level coordinate
-   * @return level name
-   */
-  public String getLevelName(int index) {
-    CoordinateAxis1D vertZaxis = getVerticalAxis();
-    if ((vertZaxis == null) || (index < 0) || (index >= vertZaxis.getSize()))
-      throw new IllegalArgumentException("getLevelName = " + index);
-    return vertZaxis.getCoordName(index).trim();
-  }
-
-  /**
-   * Get the index corresponding to the level name.
-   *
-   * @param name level name
-   * @return level index, or -1 if not found
-   */
-  public int getLevelIndex(String name) {
-    CoordinateAxis1D vertZaxis = getVerticalAxis();
-    if ((vertZaxis == null) || (name == null)) return -1;
-
-    for (int i = 0; i < vertZaxis.getSize(); i++) {
-      if (vertZaxis.getCoordName(i).trim().equals(name))
-        return i;
-    }
-    return -1;
-  }
-
-  ///////////////////////////////////////////////////////////////////////
-  // experimental
-
-  static private double getMinOrMaxLon(double lon1, double lon2, boolean wantMin) {
-    double midpoint = (lon1 + lon2) / 2;
-    lon1 = LatLonPointImpl.lonNormal(lon1, midpoint);
-    lon2 = LatLonPointImpl.lonNormal(lon2, midpoint);
-
-    return wantMin ? Math.min(lon1, lon2) : Math.max(lon1, lon2);
-  }
-
-  static public LatLonRect getLatLonBoundingBox(Projection proj, double startx, double starty, double endx, double endy) {
-
-    if (proj instanceof LatLonProjection) {
-      double deltaLat = endy - starty;
-      double deltaLon = endx - startx;
-
-      LatLonPoint llpt = new LatLonPointImpl(starty, startx);
-      return new LatLonRect(llpt, deltaLat, deltaLon);
-
-    }
-
-    ProjectionRect bb = new ProjectionRect(startx, starty, endx, endy);
-
-    // look at all 4 corners of the bounding box
-    LatLonPointImpl llpt = (LatLonPointImpl) proj.projToLatLon(bb.getLowerLeftPoint(), new LatLonPointImpl());
-    LatLonPointImpl lrpt = (LatLonPointImpl) proj.projToLatLon(bb.getLowerRightPoint(), new LatLonPointImpl());
-    LatLonPointImpl urpt = (LatLonPointImpl) proj.projToLatLon(bb.getUpperRightPoint(), new LatLonPointImpl());
-    LatLonPointImpl ulpt = (LatLonPointImpl) proj.projToLatLon(bb.getUpperLeftPoint(), new LatLonPointImpl());
-
-    // Check if grid contains poles. LOOK disabled
-    boolean includesNorthPole = false;
-    /* int[] resultNP = new int[2];
-    resultNP = findXYindexFromLatLon(90.0, 0, null);
-    if (resultNP[0] != -1 && resultNP[1] != -1)
-      includesNorthPole = true;  */
-
-    boolean includesSouthPole = false;
-    /* int[] resultSP = new int[2];
-    resultSP = findXYindexFromLatLon(-90.0, 0, null);
-    if (resultSP[0] != -1 && resultSP[1] != -1)
-      includesSouthPole = true;  */
-
-    LatLonRect llbb;
-
-    if (includesNorthPole && !includesSouthPole) {
-      llbb = new LatLonRect(llpt, new LatLonPointImpl(90.0, 0.0)); // ??? lon=???
-      llbb.extend(lrpt);
-      llbb.extend(urpt);
-      llbb.extend(ulpt);
-
-    } else if (includesSouthPole && !includesNorthPole) {
-      llbb = new LatLonRect(llpt, new LatLonPointImpl(-90.0, -180.0)); // ??? lon=???
-      llbb.extend(lrpt);
-      llbb.extend(urpt);
-      llbb.extend(ulpt);
-
-    } else {
-      double latMin = Math.min(llpt.getLatitude(), lrpt.getLatitude());
-      double latMax = Math.max(ulpt.getLatitude(), urpt.getLatitude());
-
-      // longitude is a bit tricky as usual
-      double lonMin = getMinOrMaxLon(llpt.getLongitude(), ulpt.getLongitude(), true);
-      double lonMax = getMinOrMaxLon(lrpt.getLongitude(), urpt.getLongitude(), false);
-
-      llpt.set(latMin, lonMin);
-      urpt.set(latMax, lonMax);
-
-      llbb = new LatLonRect(llpt, urpt);
-    }
-    return llbb;
-  }
-
-  public int getDomainRank() {
-    return CoordinateSystem.makeDomain(builder.independentAxes).size();
-  }
-
-  public int getRangeRank() {
-    return builder.allAxes.size(); // not right
-  }
-}
+*/

@@ -37,17 +37,13 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Variable;
-import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
@@ -57,9 +53,10 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
 
 /**
- * fork ucar.nc2.dt.grid for adaption of GridCoverage
- * this class can evolve as needed and not worry about backwards compatibility
+ * fork ucar.nc2.dt.grid for adaption to Coverage (this class can evolve as needed and not worry about backwards compatibility).
+ * uses NetcdfDataset / CoordinateSystem.
  *
+ * @see DtCoverageAdapter
  * @author caron
  * @since 5/26/2015
  */
@@ -259,6 +256,10 @@ public class DtCoverageDataset implements Closeable {
 
   public List<Attribute> getGlobalAttributes() {
     return ncd.getGlobalAttributes();
+  }
+
+  public Dimension findDimension(String name) {
+    return ncd.findDimension(name);
   }
 
   public Attribute findGlobalAttributeIgnoreCase(String name) {

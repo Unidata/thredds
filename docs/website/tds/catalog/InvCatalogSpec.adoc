@@ -108,6 +108,7 @@ The optional _desc_ attribute allows you to give a human-readable description of
 A _service_ element may contain 0 or more <<property>>
 elements to allow for the encoding of additional, service-specific information.
 
+[[compoundService]]
 Only _service_ element with _serviceType="Compound"_ may have nested
 service elements. Compound services are used when there is
 more than one way to access a dataset (e.g.__DODS__ and __FTP__), *and*
@@ -145,37 +146,33 @@ link:#constructingURLs[constructing URLS] for how the resolved URL is created):
 
   <xsd:attribute name="name" type="xsd:string" use="required"/>
   <xsd:attribute name="alias" type="xsd:token"/>
-  <xsd:attribute name="authority" type="xsd:string"/> <!-- deprecated : use element -->
-  <xsd:attribute name="collectionType" type="collectionTypes"/>
-  <xsd:attribute name="dataType" type="dataTypes"/> <!-- deprecated : use element -->
+  <xsd:attribute name="authority" type="xsd:string"/>
+  <xsd:attribute name="collectionType" type="collectionTypes"/> <!-- deprecated -->
+  <xsd:attribute name="dataType" type="dataTypes"/>
   <xsd:attribute name="harvest" type="xsd:boolean"/>
   <xsd:attribute name="ID" type="xsd:token"/>
   <xsd:attribute name="restrictAccess" type="xsd:string"/>
 
-  <xsd:attribute name="serviceName" type="xsd:string" /> <!-- deprecated : use element -->
+  <xsd:attribute name="serviceName" type="xsd:string" />
   <xsd:attribute name="urlPath" type="xsd:token" />
 </xsd:complexType>
 ----
 
 A _dataset_ element represents a named, logical set of data at a level
-of granularity appropriate for presentation to a user. A dataset is
-*_link:#directDataset[direct]_* if it contains at least one
+of granularity appropriate for presentation to a user. A dataset is a
+_<<directDataset>>_ if it contains at least one
 link:#Dataset_Access_Methods[dataset access method], otherwise it is
-just a container for nested datasets, called a
-_*link:#collection[collection]*_ dataset. The name of the dataset
-element should be a human readable name that will be displayed to users.
-Multiple access methods specify different services for accessing the
-same dataset.
+a container for nested datasets, called a _<<collectionDataset>>_.
 
 A dataset must have a _name_ attribute, and may have other attributes.
+The name of the dataset should be a human readable name that will be displayed to users.
+
 If an _ID_ attribute is given, its value must be unique within the
 catalog. We highly recommend that all datasets be given a unique ID.
 This allows for a number of capabilities including XPath ID reference. A
 dataset may have a naming _authority_ specified within itself or in a
-parent dataset. (The _authority_ attribute has been deprecated. Instead
-you should use the _authority_ element which can be contained in a
-_dataset_ or _metadata_ element.) If a dataset has an _ID_ and an
-_authority_ attribute, then the combination of the two should be
+parent dataset. (You may also use an _authority_ element rather than an attribute.)
+If a dataset has an _ID_ and an _authority_ attribute, then the combination of the two should be
 globally unique for all time. If the same dataset is specified in
 multiple catalogs, then the combination of its _authority_ and _ID_
 should be identical if possible.
@@ -189,18 +186,11 @@ by a nested dataset element should be a subset, a specialization or in
 some other sense "contained" within the data represented by its parent
 dataset element.
 
-The <<collectionType>> attribute is used to
-indicate that the dataset is a link:#coherentDataset[coherent
-collection] and the type of the collections coherence. A datasets data
-type is very useful to clients so they know how to present the data to
-the user. (You can also use a link:#dataType_descrip[_dataType_] element
-which can be contained in a _dataset_ or _metadata_ element. This allows
-the data type to be inherited.) If the _harvest_ attribute is true, then
+If the _harvest_ attribute is true, then
 this dataset is available to be placed into digital libraries or other
 discovery services. Note that the harvest attribute should be carefully
 placed to get the right level of granularity for digital library
-entries, and is typically placed on link:#collection[collection]
-datasets.
+entries, and is typically placed on _collection_ datasets.
 
 If you want the same dataset to appear in multiple places in the same
 catalog, use an _alias_ attribute. Define it in one place (with all
@@ -211,14 +201,13 @@ referred to by a _catalogRef_ element.) In this case, any other
 properties of the dataset are ignored, and the dataset to which the
 alias refers is used in its place.
 
-The _dataset_ element’s _serviceName_ attribute has been deprecated in
-favor of the _serviceName_ element which can be contained in a _dataset_
-or _metadata_ element. (The _access_ element’s _serviceName_ attribute
-is still necessary.) The urlPath attribute, in combination with the
-applicable serviceName, is used to specify
+The _dataset_ element’s _serviceName_ (which can also be specified as a _serviceName_ element)
+specifies which service to use for this dataset. As of 5.0, it is optional as long as you
+specify the _dataType_ or _featureType_ of the dataset.
+The urlPath attribute, in combination with the applicable service, is used to specify
 link:#Dataset_Access_Methods[data access methods]. When you have more
 than one way to access a dataset, either explicitly define them using
-more than one nested <<access> elements, or use a link:#compoundService[compound service].
+more than one nested <<access>> elements, or use a <<compoundService>>.
 
 Examples:
 
@@ -286,8 +275,7 @@ Example:
 <access serviceName="ftpServer" urlPath="SOLVE_DC8_19991119.nc" dataFormat="NetCDF" />
 ----
 
-The common case is that the access element is __implicit__, based on the
-dataset’s _serviceName_ and __urlPath__.
+The common case is that the access element is _implicit_, based on the dataset's _serviceName_ and _urlPath_.
 
 [[catalogRef]]
 === _catalogRef_ element
@@ -443,8 +431,7 @@ ways to map the names to standard vocabularies.
 The _dataType_ element is used to indicate the high-level semantic type
 of the dataset (e.g., grid, point, trajectory) and can be used by
 clients to decide how to display the data. The values come from the
-link:#dataType_types_[data type enumeration] which are intended to map
-to the scientific data types from
+<<dataType>> which are intended to map to the scientific data types from
 the http://www.unidata.ucar.edu/software/netcdf/CDM/[Common Data Model
 (CDM)]. The _dataFormat_ element indicates the format of the data and is
 mainly used so clients can determine how to read data that is accessed
@@ -1246,7 +1233,7 @@ Examples:
 <dataFormat>video/quicktime</dataFormat>
 ----
 
-[[dateType]]
+[[dataType]]
 === _dataType_ enumeration
 
 [source,xml]
@@ -1466,8 +1453,7 @@ dataFormatType.
 
 The last set of service types are THREDDS defined types. The *Catalog*
 and *Resolver* types return XML documents over HTTP. These are generally
-handled internally by THREDDS. A
-link:#compoundService[Compound Service] just indicates that the service is composed of other services.
+handled internally by THREDDS. A <<compoundService>> indicates that the service is composed of other services.
 
 [[variableNameVocabulary]]
 === _variableNameVocabulary_ enumerations
@@ -1516,20 +1502,20 @@ Each _access_ element defines one or more access methods.
 The values of the _access_ element’s _urlPath_ and _serviceName_ attributes specify one or more access methods.
 If the _access_ element does not include a _serviceName_ attribute, the _dataset_ default service is used.
 
-(*) Multiple access methods are defined whenever the service element is a compound service. More on this in the
-link:#compound[Access Methods and Compound Services] section below. +
+(*) Multiple access methods are defined whenever the service element is a <<compoundService>>. +
 
+[[defaultService]]
 === Dataset Default Service
 
-A dataset may have a *_serviceName attribute_* or *_serviceName element_* directly in it.
-If not, then it may *_inherit_* a serviceName from a parent dataset.
+. A dataset may have a *_serviceName_* attribute or element directly in it.
+. A dataset may _inherit_ a *_serviceName_* from a parent dataset.
+. A dataset may contain an access element that defines a  *_serviceName_* and *_urlPath_*.
+. A dataset may have a *_featureType_* or *_dataType_* defined and a *_urlPath_*, in which case it will use the default services for that type.
 
 ==== Examples
 
-1. A _dataset_ element has a _urlPath_ attribute and inherits a
-_serviceName_ element from a parent/ancestor dataset. This is probably
-the most common case as many catalogs will contain datasets that all
-refer to one service.
+1. A _dataset_ element has a _urlPath_ attribute and inherits a _serviceName_ from a parent/ancestor dataset.
+This is a common case as many catalogs will contain datasets that all refer to te same service.
 +
 [source,xml]
 ----
@@ -1563,6 +1549,15 @@ refer to one service.
   <access serviceName="myservice" urlPath="myData.nc" />
 </dataset>
 ----
+
+4. A _dataset_ may have a _featureType_ or <<dataType>> defined and a _urlPath_. Example:
++
+[source,xml]
+----
+<dataset name="my dataset"  dataType="Grid" urlPath="myData.nc" />
+----
+
+The <<../reference/services/StandardServices#,standard services>> for Grids will be used.
 
 
 [[compound]]
@@ -1613,8 +1608,7 @@ resolved against the catalog base URL. For example if the catalog base
 URL is _\http://thredds.ucar.edu/thredds/dodsC/catalog.xml_, and a
 service base is _airtemp/_, then the resolved base is
 _\http://thredds.ucar.edu/thredds/dodsC/airtemp/_. Note that if the
-service base is _/airtemp/_, the resolved URL is
-_\http://thredds.ucar.edu/thredds/airtemp/_.
+service base is _/airtemp/_, the resolved URL is _\http://thredds.ucar.edu/thredds/airtemp/_.
 
 [[datasetClassification]]
 == Dataset Classification
@@ -1628,28 +1622,23 @@ dataset_* (content is generated by a call to a server).
 
 [[directDataset]]
 A *_direct access dataset_* has an access URL and a *_service type_* (like
-__FTP__, __DODS__, _WMS_, etc.) that allows a THREDDS-enabled
+_FTP_, _DODS_, _WMS_, etc.) that allows a THREDDS-enabled
 application to directly access its data, using the specified service’s
-protocol. It is represented simply by a *<dataset>* element.
+protocol. It is represented simply by a *<<dataset>>* element.
 
+[[collectionDataset]]
 A *_collection dataset_* has nested *<dataset>* elements. We distinguish two types:
 
 * A *_heterogeneous collection dataset_* may have arbitrarily-deep
-nested datasets, and there are no constraints on how the datasets are
-related.
+nested datasets, and there are no constraints on how the datasets are related.
 * A *_coherent collection dataset_* contains nested datasets which must
 be direct and coherently related. A coherent dataset should have a
-_collectionType_ attribute that describes the relationship of its nested
-datasets.
+_collectionType_ attribute that describes the relationship of its nested datasets.
 
 A *_dynamic dataset_* has an access URL and a service type _Catalog_, or _Resolver_.
 Its contents are generated dynamically by making a call to a server, and describe datasets that are
 constantly changing, and/or are too large to list exhaustively.
 
-* A *_query dataset_* is a dynamic dataset with service type
-__Catalog__. Dereferencing the URL returns another catalog, whose
-contents can be thought of as 1) the contents of the query dataset, and
-2) the result of the query.
 * A *_resolver dataset_* is a kind of query dataset, with service type
 __Resolver__. It returns a catalog which must contain either a direct
 dataset, or a coherent collection dataset. It is typically used to
@@ -1695,5 +1684,4 @@ in the catalog _\http://localhost:8081/thredds/catalog/GFS_CONUS_80km/catalog.ht
 
 '''''
 
-image:../thread.png[THREDDS]This document was last updated Ocober 2015.
-Send comments to mailto:support-thredds@unidata.ucar.edu[THREDDS support].
+image:../thread.png[THREDDS]This document was last updated March 2016.

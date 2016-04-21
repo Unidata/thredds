@@ -64,7 +64,7 @@ public class TestRdaReading {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
 
     String endpoint = "D:/work/rdavm/ds277.6/monthly/ds277.6.ncx4";
-    String ccName = "ds277.6#MRUTC-LatLon_418X360-4p8338S-179p5000W";
+    String ccName = "ds277.6#MRUTC-LatLon_418X360-4p83S-179p50W";
     String covName = "Salinity_depth_below_sea_Average";
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, fdc);
@@ -91,7 +91,7 @@ public class TestRdaReading {
     String covName = "v-component_of_wind_potential_vorticity_surface";
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, fdc);
-      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
+      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
       Coverage cov = cc.findCoverage(covName);
       Assert.assertNotNull(covName, cov);
@@ -116,7 +116,7 @@ Caused by: java.lang.RuntimeException: masterRuntime does not contain runtime 20
 	at thredds.server.cdmrfeature.CdmrGridController.handleDataRequest(CdmrGridController.java:253) ~[classes/:5.0.0-SNAPSHOT]
  */
 
-  @Test
+  //@Test
   public void testWrongRuntime() throws IOException, InvalidRangeException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
 
@@ -161,7 +161,7 @@ Im thinking a bad integer causing huge mem alloc.
     String covName = "Geopotential_height_isobaric";
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, fdc);
-      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.FMRC);
+      CoverageCollection cc = fdc.findCoverageDataset(FeatureType.GRID);
       Assert.assertNotNull(FeatureType.FMRC.toString(), cc);
       Coverage cov = cc.findCoverage(covName);
       Assert.assertNotNull(covName, cov);

@@ -301,7 +301,7 @@ message CoordAxis {
     builder.shape = shape.length > 0 ? shape : null;
 
     if (dependenceType == CoverageCoordAxis.DependenceType.fmrcReg) {
-      return new FmrcTimeAxisReg2D(builder);
+      return new TimeAxis2DFmrcReg(builder);
     } else if (dependenceType == CoverageCoordAxis.DependenceType.twoD && (axisType == AxisType.Lat || axisType == AxisType.Lon)) {
       return new LatLonAxis2D(builder);
     } else if (axisType == AxisType.TimeOffset) {

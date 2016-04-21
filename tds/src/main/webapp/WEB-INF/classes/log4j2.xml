@@ -124,10 +124,6 @@
       <appender-ref ref="fmrc"/>
     </logger>
 
-    <logger name="thredds.servlet.DataRootHandler.fcScan" level="info" additivity="false">
-      <appender-ref ref="fmrc"/>
-    </logger>
-
     <logger name="thredds.inventory.CollectionManagerAbstract" level="info" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
@@ -153,23 +149,11 @@
       <appender-ref ref="fcScan"/>
     </logger>
 
-    <logger name="ucar.nc2.grib" level="info" additivity="false">
-      <appender-ref ref="fcScan"/>
-    </logger>
-
     <logger name="ucar.nc2.grib.grib1.builder.Grib1CollectionBuilder" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 
     <logger name="ucar.nc2.grib.grib2.builder.Grib2CollectionBuilder" level="info" additivity="false">
-      <appender-ref ref="fcScan"/>
-    </logger>
-
-    <logger name="thredds.featurecollection.InvDatasetFeatureCollection" level="info" additivity="false">
-      <appender-ref ref="fcScan"/>
-    </logger>
-
-    <logger name="thredds.featurecollection.InvDatasetFcGrib" level="info" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>
 

@@ -40,8 +40,6 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.util.NamedObject;
-import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Format;
 
@@ -51,7 +49,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * fork ucar.nc2.dt.grid.GeoGrid for adaption of GridCoverage
+ * fork ucar.nc2.dt.grid.GeoGrid for adaption of GridCoverage.
+ * Minimalist, does not do make a "logical GeoGrid subset"
  * LOOK maybe can only be used for GRID ?
  *
  * @author caron
@@ -333,20 +332,6 @@ public class DtCoverage implements IsMissingEvaluator {
    */
   public ProjectionImpl getProjection() {
     return gcs.getProjection();
-  }
-
-  /**
-   * @return List of thredds.util.NamedObject, from the vertical axis, or empty list if none.
-   */
-  public List<NamedObject> getLevels() {
-    return gcs.getLevels();
-  }
-
-  /**
-   * @return ArrayList of thredds.util.NamedObject, from the GeoGridCoordSys.
-   */
-  public List<NamedObject> getTimes() {
-    return gcs.getTimes();
   }
 
   /**
@@ -646,107 +631,6 @@ public class DtCoverage implements IsMissingEvaluator {
     }
 
     return needPermute ? permuteIndex : null;
-  }
-
-
-  //////////////////////////////////
-
-  /**
-   * Create a new GeoGrid that is a logical subset of this GeoGrid.
-   *
-   * @param t_range  subset the time dimension, or null if you want all of it
-   * @param z_range  subset the vertical dimension, or null if you want all of it
-   * @param bbox     a lat/lon bounding box, or null if you want all x,y
-   * @param z_stride use only if z_range is null, then take all z with this stride (1 means all)
-   * @param y_stride use this stride on the y coordinate (1 means all)
-   * @param x_stride use this stride on the x coordinate (1 means all)
-   * @return subsetted GeoGrid
-   * @throws InvalidRangeException if bbox does not intersect GeoGrid
-   */
-  public DtCoverage subset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
-
-    if ((z_range == null) && (z_stride > 1)) {
-      Dimension zdim = getZDimension();
-      if (zdim != null)
-        z_range = new Range(0, zdim.getLength() - 1, z_stride);
-    }
-
-    Range y_range = null, x_range = null;
-    if (bbox != null) {
-      List yx_ranges = gcs.getRangesFromLatLonRect(bbox);
-      y_range = (Range) yx_ranges.get(0);
-      x_range = (Range) yx_ranges.get(1);
-    }
-
-    if (y_stride > 1) {
-      if (y_range == null) {
-        Dimension ydim = getYDimension();
-        if (ydim != null) y_range = new Range(0, ydim.getLength() - 1, y_stride);
-      } else {
-        y_range = new Range(y_range.first(), y_range.last(), y_stride);
-      }
-    }
-
-    if (x_stride > 1) {
-      if (x_range == null) {
-        Dimension xdim = getXDimension();
-        if (xdim != null) x_range = new Range(0, xdim.getLength() - 1, x_stride);
-      } else {
-        x_range = new Range(x_range.first(), x_range.last(), x_stride);
-      }
-    }
-
-    return subset(t_range, z_range, y_range, x_range);
-  }
-
-  public DtCoverage makeSubset(Range t_range, Range z_range, LatLonRect bbox, int z_stride, int y_stride, int x_stride) throws InvalidRangeException {
-    return subset(t_range, z_range, bbox, z_stride, y_stride, x_stride);
-  }
-
-  /**
-   * Create a new GeoGrid that is a logical subset of this GeoGrid.
-   *
-   * @param t_range subset the time dimension, or null if you want all of it
-   * @param z_range subset the vertical dimension, or null if you want all of it
-   * @param y_range subset the y dimension, or null if you want all of it
-   * @param x_range subset the x dimension, or null if you want all of it
-   * @return subsetted GeoGrid
-   * @throws InvalidRangeException if any of the ranges are invalid
-   */
-  public DtCoverage subset(Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
-    return makeSubset(null, null, t_range, z_range, y_range, x_range);
-  }
-
-  public DtCoverage makeSubset(Range rt_range, Range e_range, Range t_range, Range z_range, Range y_range, Range x_range) throws InvalidRangeException {
-    // get the ranges list
-    int rank = getRank();
-    Range[] ranges = new Range[rank];
-    if (null != getXDimension())
-      ranges[xDimOrgIndex] = x_range;
-    if (null != getYDimension())
-      ranges[yDimOrgIndex] = y_range;
-    if (null != getZDimension())
-      ranges[zDimOrgIndex] = z_range;
-    if (null != getTimeDimension())
-      ranges[tDimOrgIndex] = t_range;
-    if (null != getRunTimeDimension())
-      ranges[rtDimOrgIndex] = rt_range;
-    if (null != getEnsembleDimension())
-      ranges[eDimOrgIndex] = e_range;
-    List<Range> rangesList = Arrays.asList(ranges);
-
-    // subset the variable
-    VariableDS v_section = (VariableDS) vs.section(new Section(rangesList));
-    List<Dimension> dims = v_section.getDimensions();
-    for (Dimension dim : dims) {
-      dim.setShared(true); // make them shared (section will make them unshared)
-    }
-
-    // subset the axes in the GeoGridCoordSys
-    DtCoverageCS gcs_section = gcs.subset(rt_range, e_range, t_range, z_range, y_range, x_range);
-
-    // now we can make the geogrid
-    return new DtCoverage(dataset, gcs_section, v_section);
   }
 
   /////////////////////////////////////////////////////////////////////////////////

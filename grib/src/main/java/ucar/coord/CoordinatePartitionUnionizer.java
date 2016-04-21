@@ -78,6 +78,8 @@ public class CoordinatePartitionUnionizer {
   CoordinateBuilder ensBuilder;
   CoordinateTime2DUnionizer time2DBuilder;
 
+  boolean duplicateRuntimeMessage; // only one message per CoordinatePartitionUnionizer instance
+
   public void addCoords(List<Coordinate> coords, PartitionCollectionMutable.Partition part) {
     Coordinate runtime = null;
     for (Coordinate coord : coords) {
@@ -87,7 +89,7 @@ public class CoordinatePartitionUnionizer {
           if (runtimeBuilder == null) runtimeBuilder = new CoordinateRuntime.Builder2(rtime.getTimeUnits());
           runtimeBuilder.addAll(coord);
           runtime = coord;
-          if (debugPartitionErrors && part != null)
+          if (debugPartitionErrors && !duplicateRuntimeMessage && part != null)
             testDuplicateRuntime(rtime, part);
           break;
 
@@ -133,9 +135,10 @@ public class CoordinatePartitionUnionizer {
       long time = runtime.getRuntime(idx);
       PartitionCollectionMutable.Partition prevPart = timeMap.get(time);
       if (prevPart != null && prevPart != part && prevPart != shownPrevPart) {
-        System.out.printf("Variable %s Runtime %s in part %s and partition %s%n", vi.id(), CalendarDate.of(time), prevPart.getName(), part.getName());
+        // System.out.printf("Variable %s Runtime %s in part %s and partition %s%n", vi.id(), CalendarDate.of(time), prevPart.getName(), part.getName());
         logger.warn("Variable {} Runtime {} in part {} and partition {}", vi.id(), CalendarDate.of(time), prevPart.getName(), part.getName());
         shownPrevPart = prevPart; // eliminate extra messages
+        duplicateRuntimeMessage = true;
       }
       timeMap.put(time, part);
     }

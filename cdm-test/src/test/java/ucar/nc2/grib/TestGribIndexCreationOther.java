@@ -353,6 +353,32 @@ public class TestGribIndexCreationOther {
 
   @Category(NeedsRdaData.class)
   @Test
+  public void testRdvamds093p2() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.2", "test/ds093.2", FeatureCollectionType.GRIB2,
+            "D:/work/rdavm/ds093.2/diurnal/.*grb2",
+            null, null, null, "directory", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    Grib.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Category(NeedsRdaData.class)
+  @Test
+  public void testRdvamds093p2tar() throws IOException {
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.2tar", "test/ds093.2/tar", FeatureCollectionType.GRIB2,
+            "D:/work/rdavm/ds093.2/diurnal/.*grb2",
+            null, null, null, "directory", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
+    System.out.printf("changed = %s%n", changed);
+    Grib.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Category(NeedsRdaData.class)
+  @Test
   public void testRdvamds094p1() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds094.1_Aggregation", "test/ds094.1", FeatureCollectionType.GRIB2,

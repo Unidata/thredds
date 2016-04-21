@@ -144,7 +144,7 @@ public class Grib1RecordScanner {
       raf.seek(startPos);
       raf.readFully(header);
       raf.seek(foundAt);
-      if (debug) System.out.println(" 'GRIB' found at "+foundAt+" starting from lastPos "+ lastPos);
+      this.lastPos = foundAt; // ok start from here next time
     }
 
     return more;

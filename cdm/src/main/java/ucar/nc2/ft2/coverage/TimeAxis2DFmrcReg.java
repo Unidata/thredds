@@ -31,18 +31,23 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package ucar.nc2.ft2.coverage.adapter;
+package ucar.nc2.ft2.coverage;
 
 /**
- * Swath Coordinate System.
+ * Describe
  *
  * @author caron
- * @since 5/27/2015
+ * @since 10/13/2015.
  */
-public class SwathCS extends CurvilinearCS {
+public class TimeAxis2DFmrcReg extends TimeAxis2DFmrc {
 
-  SwathCS(DtCoverageCSBuilder builder) {
+  public TimeAxis2DFmrcReg(CoverageCoordAxisBuilder builder) {
     super(builder);
+  }
+
+  @Override
+  public CoverageCoordAxis copy() {
+    return new TimeAxis2DFmrcReg(new CoverageCoordAxisBuilder(this));
   }
 
 }

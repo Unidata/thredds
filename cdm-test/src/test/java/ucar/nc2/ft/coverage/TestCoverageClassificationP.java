@@ -21,6 +21,7 @@ import ucar.unidata.test.util.TestDir;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
 
 /**
@@ -45,8 +46,13 @@ public class TestCoverageClassificationP {
 
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/coverage/Run_20091025_0000.nc", FeatureType.CURVILINEAR, 4, 6, 20});  // x,y axis but no projection
     result.add(new Object[]{TestDir.cdmUnitTestDir + "ft/fmrc/rtofs/ofs.20091122/ofs_atl.t00z.F024.grb.grib2", FeatureType.CURVILINEAR, 4, 5, 7});  // GRIB Curvilinear
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc", FeatureType.CURVILINEAR, 4, 4, 24});  // netcdf Curvilinear
 
-    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", FeatureType.GRID, 4, 5, 65}); // SRC                               // TP
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "gribCollections/tp/GFS_Global_onedeg_ana_20150326_0600.grib2.ncx4", FeatureType.GRID, 4, 5, 65}); // SRC
+
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/dmsp/F14200307192230.s.OIS", FeatureType.SWATH, 2, 3, 2});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/AIRS.2003.01.24.116.L2.RetStd_H.v5.0.14.0.G07295101113.hdf", FeatureType.SWATH, 2, 3, 93});
+    result.add(new Object[]{TestDir.cdmUnitTestDir + "formats/hdf4/ssec/MYD06_L2.A2006188.1655.005.2006194124315.hdf", FeatureType.SWATH, 3, 5, 28});
 
     return result;
   }
@@ -76,12 +82,13 @@ public class TestCoverageClassificationP {
 
     // check DtCoverageCS
     try (NetcdfDataset ds = NetcdfDataset.openDataset(endpoint)) {
-      DtCoverageCSBuilder builder = DtCoverageCSBuilder.classify(ds, null);
-      Assert.assertNotNull(builder);
+      Formatter errlog = new Formatter();
+      DtCoverageCSBuilder builder = DtCoverageCSBuilder.classify(ds, errlog); // uses cs with largest # axes
+      Assert.assertNotNull(errlog.toString(), builder);
       DtCoverageCS cs = builder.makeCoordSys();
       Assert.assertEquals(expectType, cs.getCoverageType());
-      Assert.assertEquals("NIndCoordAxes", domain, CoordinateSystem.makeDomain(cs.getCoordAxes()).size());
-      Assert.assertEquals("NCoordAxes", range, cs.getCoordAxes().size());
+      Assert.assertEquals("Domain", domain, CoordinateSystem.makeDomain(cs.getCoordAxes()).size());
+      Assert.assertEquals("Range", range, cs.getCoordAxes().size());
     }
   }
 

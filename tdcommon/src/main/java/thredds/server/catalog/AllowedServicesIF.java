@@ -31,18 +31,18 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package ucar.nc2.ft2.coverage.adapter;
+package thredds.server.catalog;
+
+import thredds.client.catalog.Service;
+import ucar.nc2.constants.FeatureType;
 
 /**
- * Swath Coordinate System.
+ * Describe
  *
  * @author caron
- * @since 5/27/2015
+ * @since 3/16/2016.
  */
-public class SwathCS extends CurvilinearCS {
-
-  SwathCS(DtCoverageCSBuilder builder) {
-    super(builder);
-  }
-
+public interface AllowedServicesIF {
+  Service getStandardServices(FeatureType featType);
+  boolean isAThreddsDataset(String filename);
 }

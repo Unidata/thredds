@@ -253,7 +253,9 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
     allowedServices.finish(); // finish when we know everything is wired
     InvDatasetFeatureCollection.setAllowedServices(allowedServices);
-    DatasetScan.setLatestService(allowedServices.getStandardService(StandardService.resolver));
+    DatasetScan.setSpecialServices(allowedServices.getStandardService(StandardService.resolver),
+              allowedServices.getStandardService(StandardService.httpServer));
+    DatasetScan.setAllowedServices(allowedServices);
     allowedServices.makeDebugActions();
 
     /* <Netcdf4Clibrary>

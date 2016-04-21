@@ -71,7 +71,14 @@ public class HorizCoordSys2D extends HorizCoordSys {
 
   @Override
   public LatLonRect makeLatlonBB(ProjectionRect projBB) {
-    return null; // look
+    synchronized (this) {
+      if (edges == null) edges = new Edges();
+    }
+    LatLonPointImpl min = new LatLonPointImpl(edges.latMinMax.min, edges.lonMinMax.min);
+    double height = edges.latMinMax.max - edges.latMinMax.min;
+    double width = edges.lonMinMax.max - edges.lonMinMax.min;
+    return new LatLonRect(min, height, width);
+
   }
 
     @Override

@@ -113,7 +113,7 @@ public class CoverageCoordSys {
         for (String indAxisName : axis.dependsOn) {
           CoverageCoordAxis independentAxis = dataset.findCoordAxis(indAxisName);
           if (independentAxis == null)
-            throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " NOT FOUND");
+            throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in Dataset");
           if (!axisNames.contains(indAxisName))
             throw new RuntimeException("Dependent axis " + axis.getName() + " depends on " + indAxisName + " not in CoordSys");
 
@@ -128,7 +128,7 @@ public class CoverageCoordSys {
     }
 
     // see if we need a Time2DCoordSys
-    FmrcTimeAxis2D time2DAxis = null;
+    TimeAxis2DFmrc time2DAxis = null;
     TimeOffsetAxis timeOffsetAxis = null;
     CoverageCoordAxis1D runtimeAxis = null;
 
@@ -144,10 +144,10 @@ public class CoverageCoordSys {
           throw new RuntimeException("Cant have multiple RunTime axes in a CoverageCoordSys");
         runtimeAxis = (CoverageCoordAxis1D) axis;
       }
-      if (axis instanceof FmrcTimeAxis2D) {
+      if (axis instanceof TimeAxis2DFmrc) {
         if (time2DAxis != null)
           throw new RuntimeException("Cant have multiple TimeAxis2D axes in a CoverageCoordSys");
-        time2DAxis = (FmrcTimeAxis2D) axis;
+        time2DAxis = (TimeAxis2DFmrc) axis;
       }
     }
 
@@ -407,7 +407,7 @@ public class CoverageCoordSys {
   public boolean isTime2D( CoverageCoordAxis axis) {
     if (time2DCoordSys == null) return false;
     if (axis instanceof TimeOffsetAxis) return true;
-    if (axis instanceof FmrcTimeAxis2D) return true;
+    if (axis instanceof TimeAxis2DFmrc) return true;
     return (axis.getAxisType() == AxisType.RunTime) && (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent);
   }
 

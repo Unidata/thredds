@@ -32,6 +32,7 @@
  */
 package thredds.server.catalog;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -53,7 +54,6 @@ import thredds.inventory.MFile;
 import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.test.util.TestDir;
 import ucar.unidata.test.util.TestFileDirUtils;
-
 
 public class TestDatasetScanFilter {
   private static File tmpTestDataDir;
@@ -100,8 +100,11 @@ public class TestDatasetScanFilter {
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131108_0016.nc");
 
     StandardService ss = StandardService.resolver;
+    Service latest = new Service(ss.getType().toString(), ss.getBase(), ss.getType().toString(), null, null, null, null);
+    StandardService ss2 = StandardService.httpServer;
+    Service httpServer = new Service(ss2.getType().toString(), ss2.getBase(), ss2.getType().toString(), null, null, null, null);
 
-    DatasetScan.setLatestService(new Service(ss.getType().toString(), ss.getBase(), ss.getType().toString(), null, null, null, null));
+    DatasetScan.setSpecialServices(latest, httpServer);
   }
 
   /* public void createEtaDirWithCvsAndDotGitDirs( File targetDir) {
@@ -171,7 +174,7 @@ public class TestDatasetScanFilter {
     System.out.printf("%n%s%n", writer.writeXML(scanCat));
     assert scanCat.getDatasets().size() == 1;
     root = scanCat.getDatasets().get(0);
-    assert root.getDatasets().size() == 3;
+    Assert.assertEquals(3, root.getDatasets().size());
 
     scanCat = dss.makeCatalogForDirectory("testGridScan/testDatafilesInDateTimeNestedDirs/profiles/20131107", cat.getBaseURI()).makeCatalog();
     System.out.printf("%n%s%n", writer.writeXML(scanCat));
@@ -210,7 +213,7 @@ public class TestDatasetScanFilter {
     System.out.printf("%n%s%n", writer.writeXML(scanCat));
     assert scanCat.getDatasets().size() == 1;
     root = scanCat.getDatasets().get(0);
-    assert root.getDatasets().size() == 3;
+    Assert.assertEquals(3, root.getDatasets().size());
 
     scanCat = dss.makeCatalogForDirectory("testGridScanReg/testDatafilesInDateTimeNestedDirs/profiles/20131107", cat.getBaseURI()).makeCatalog();
     System.out.printf("%n%s%n", writer.writeXML(scanCat));
@@ -250,7 +253,7 @@ public class TestDatasetScanFilter {
     System.out.printf("%n%s%n", writer.writeXML(scanCat));
     assert scanCat.getDatasets().size() == 1;
     root = scanCat.getDatasets().get(0);
-    assert root.getDatasets().size() == 3;
+    Assert.assertEquals(3, root.getDatasets().size());
   }
 
   @Test

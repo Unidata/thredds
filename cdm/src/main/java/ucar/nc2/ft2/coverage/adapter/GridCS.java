@@ -78,8 +78,9 @@ public class GridCS extends DtCoverageCS {
     return (CoordinateAxis1DTime) super.getTimeAxis();
   }
 
-  @Override
-  public List<CalendarDate> getCalendarDates() {
+  /*
+   @Override
+ public List<CalendarDate> getCalendarDates() {
     if (getTimeAxis() != null)
       return getTimeAxis().getCalendarDates();
 
@@ -89,6 +90,7 @@ public class GridCS extends DtCoverageCS {
     else
       return new ArrayList<>();
   }
+  */
 
   @Override
   public CalendarDateRange getCalendarDateRange() {
