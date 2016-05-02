@@ -1,10 +1,10 @@
 package thredds.client.catalog
 
+import org.junit.experimental.categories.Category
 import spock.lang.Specification
 import spock.lang.Unroll
-import ucar.unidata.test.util.NeedsExternalResource
-import org.junit.experimental.categories.Category
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir
+import ucar.unidata.util.test.category.NeedsExternalResource
 
 /**
  * @author cwardgar

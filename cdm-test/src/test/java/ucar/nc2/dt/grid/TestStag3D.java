@@ -36,8 +36,8 @@ import org.junit.experimental.categories.Category;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
 import junit.framework.TestCase;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.util.Formatter;
 

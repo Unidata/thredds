@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.servlet.ThreddsConfig;
 import ucar.nc2.util.DiskCache2;
-import ucar.unidata.test.util.NeedsContentRoot;
+import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

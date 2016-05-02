@@ -47,8 +47,8 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.writer.CatalogXmlWriter;
 import thredds.inventory.MFile;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.TestFileDirUtils;
 
 
 public class TestDatasetScanFilter {

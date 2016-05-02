@@ -1,0 +1,7 @@
+description = "A collection of reusable classes to be used in testing."
+ext.title = "Testing utilities"
+
+dependencies {
+    compile project(":cdm")
+    compile libraries["junit"]
+}

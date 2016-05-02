@@ -46,7 +46,7 @@ import ucar.ma2.ArrayShort;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Variable;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /** Test nc2 dods in the JUnit framework. */
 @Category(NeedsExternalResource.class)

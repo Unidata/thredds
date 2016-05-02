@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import thredds.mock.web.MockTdsContextLoader;
-import ucar.unidata.test.util.NeedsContentRoot;
+import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import static org.junit.Assert.assertEquals;
 

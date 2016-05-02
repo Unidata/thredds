@@ -50,7 +50,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.writer.Grib2NetcdfWriter;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
 import java.nio.ByteBuffer;

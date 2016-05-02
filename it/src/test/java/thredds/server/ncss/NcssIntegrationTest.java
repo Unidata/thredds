@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import thredds.TestWithLocalServer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.io.Reader;

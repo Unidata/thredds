@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.mock.web.MockTdsContextLoader;
-import ucar.unidata.test.util.NeedsContentRoot;
+import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

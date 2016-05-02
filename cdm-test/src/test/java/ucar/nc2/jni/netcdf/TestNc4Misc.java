@@ -11,7 +11,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;

@@ -34,7 +34,7 @@
 package ucar.nc2.util;
 
 import junit.framework.TestCase;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.net.URI;
 import java.net.URL;

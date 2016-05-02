@@ -34,8 +34,8 @@ package ucar.nc2;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -93,7 +93,7 @@ public class TestCompareFileWriter {
     NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(fin.getPath(), null);
     FileWriter2 fileWriter = new FileWriter2(ncfileIn, fout.getPath(), NetcdfFileWriter.Version.netcdf3, null);
     NetcdfFile ncfileOut = fileWriter.write();
-    ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfileIn, ncfileOut);
+    ucar.unidata.util.test.CompareNetcdf.compareFiles(ncfileIn, ncfileOut);
 
     ncfileIn.close();
     ncfileOut.close();

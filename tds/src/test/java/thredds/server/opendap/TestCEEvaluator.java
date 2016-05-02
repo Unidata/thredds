@@ -39,8 +39,8 @@ import opendap.servlet.AsciiWriter;
 import opendap.servlet.GuardedDataset;
 import org.junit.Test;
 import thredds.server.opendap.GuardedDatasetCacheAndClone;
-import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.Diff;
+import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.Diff;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 

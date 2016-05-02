@@ -39,8 +39,8 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.filter.StreamFilter;
 import thredds.inventory.partition.DirectoryCollection;
 import thredds.inventory.partition.TimePartition;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.nio.file.Path;

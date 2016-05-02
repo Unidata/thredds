@@ -37,8 +37,8 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.netcdf3.N3channelWriter;
 import ucar.nc2.iosp.netcdf3.N3outputStreamWriter;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +75,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
     file2.close();
@@ -93,7 +93,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
     file2.close();
@@ -112,7 +112,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.test.util.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
+    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
     file2.close();

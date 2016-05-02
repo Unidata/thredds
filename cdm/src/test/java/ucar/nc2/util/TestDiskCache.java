@@ -31,10 +31,10 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.unidata.test.util;
+package ucar.nc2.util;
 
 import org.junit.Test;
-import ucar.nc2.util.DiskCache2;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 

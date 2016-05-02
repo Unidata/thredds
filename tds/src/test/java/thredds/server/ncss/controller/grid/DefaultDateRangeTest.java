@@ -40,7 +40,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.controller.GridDatasetResponder;
 import thredds.server.ncss.params.NcssParamsBean;
 import ucar.nc2.time.*;
-import ucar.unidata.test.util.NeedsContentRoot;
+import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import java.text.ParseException;
 import java.util.Arrays;

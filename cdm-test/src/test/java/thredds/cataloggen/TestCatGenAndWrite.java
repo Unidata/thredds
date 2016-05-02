@@ -46,8 +46,8 @@ import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.catalog.InvService;
 import thredds.catalog.InvCatalogFactory;
 import thredds.catalog.InvCatalogImpl;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.TestFileDirUtils;
 
 /**
  * _more_

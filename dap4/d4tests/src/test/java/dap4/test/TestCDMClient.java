@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.File;
 import java.io.FileFilter;

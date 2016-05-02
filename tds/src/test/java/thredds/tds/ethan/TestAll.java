@@ -73,8 +73,8 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ogc.EPSG_OGC_CF_Helper;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * _more_

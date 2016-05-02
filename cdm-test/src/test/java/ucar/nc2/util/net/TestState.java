@@ -41,9 +41,9 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPMethodStream;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.UnitTestCommon;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * Test the proper state transitions of HTTPSession

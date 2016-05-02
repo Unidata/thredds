@@ -21,7 +21,7 @@ import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.util.ContentType;
 import thredds.util.xml.XmlUtil;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.util.Arrays;
 import java.util.Collection;
