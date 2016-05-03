@@ -35,7 +35,7 @@ package ucar.nc2.dt.grid;
 import junit.framework.*;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
 

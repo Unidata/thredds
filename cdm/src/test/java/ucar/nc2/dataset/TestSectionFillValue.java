@@ -37,7 +37,7 @@ import ucar.ma2.Range;
 import java.util.ArrayList;
 
 import junit.framework.TestCase;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 /**
  *  from (WUB-664639) (Didier Earith)

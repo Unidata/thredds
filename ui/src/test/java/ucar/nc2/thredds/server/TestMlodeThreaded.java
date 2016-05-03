@@ -41,7 +41,7 @@ import java.awt.*;
 
 import thredds.catalog.crawl.CatalogExtractor;
 import thredds.catalog.crawl.CatalogCrawler;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import javax.swing.*;
 

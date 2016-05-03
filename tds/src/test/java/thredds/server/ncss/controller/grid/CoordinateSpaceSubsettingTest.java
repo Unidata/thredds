@@ -63,7 +63,7 @@ import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
  * @author mhermida

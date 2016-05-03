@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import thredds.mock.web.MockTdsContextLoader;
-import ucar.unidata.test.util.NeedsContentRoot;
+import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import java.io.IOException;
 

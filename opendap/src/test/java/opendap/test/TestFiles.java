@@ -33,7 +33,7 @@
 
 package opendap.test;
 
-import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.File;
 import java.io.FileReader;

@@ -29,7 +29,7 @@ import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.exception.VariableNotContainedInDatasetException;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration

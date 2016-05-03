@@ -37,7 +37,7 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib2.table.Grib2Table;
 import ucar.nc2.grib.grib2.table.KmaLocalTables;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;

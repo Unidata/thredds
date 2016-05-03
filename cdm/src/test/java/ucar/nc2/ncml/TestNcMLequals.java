@@ -64,7 +64,7 @@ public class TestNcMLequals extends TestCase {
     String locref  = ncd.getReferencedFile().getLocation();
     NetcdfDataset ncdref = NetcdfDataset.openDataset(locref, false, null);
 
-    ucar.unidata.test.util.CompareNetcdf.compareFiles(ncd, ncdref, false, true, false);
+    ucar.unidata.util.test.CompareNetcdf.compareFiles(ncd, ncdref, false, true, false);
 
     ncd.close();
     ncdref.close();
@@ -78,7 +78,7 @@ public class TestNcMLequals extends TestCase {
     String locref  = ncml.getReferencedFile().getLocation();
     NetcdfDataset ncdrefEnhanced = NetcdfDataset.openDataset(locref, true, null);
 
-    ucar.unidata.test.util.CompareNetcdf.compareFiles(ncmlEnhanced, ncdrefEnhanced, false, true, false);
+    ucar.unidata.util.test.CompareNetcdf.compareFiles(ncmlEnhanced, ncdrefEnhanced, false, true, false);
 
     ncml.close();
     ncdrefEnhanced.close();

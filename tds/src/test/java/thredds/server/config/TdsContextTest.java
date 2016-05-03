@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import thredds.mock.web.MockTdsContextLoader;
-import ucar.unidata.test.util.NeedsContentRoot;
+import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import static org.junit.Assert.assertNotNull;
 

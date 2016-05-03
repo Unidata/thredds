@@ -32,7 +32,6 @@
  */
 package thredds.crawlabledataset.filter;
 
-import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.*;
 
@@ -43,8 +42,8 @@ import java.util.*;
 import thredds.crawlabledataset.CrawlableDatasetFilter;
 import thredds.crawlabledataset.CrawlableDataset;
 import thredds.crawlabledataset.CrawlableDatasetFile;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.TestFileDirUtils;
 
 /**
  * _more_

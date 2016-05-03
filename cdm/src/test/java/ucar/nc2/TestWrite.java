@@ -1037,7 +1037,7 @@ public class TestWrite {
       Array result2 = ncFile.readSection("time");
       Assert.assertEquals("0 12 24 36 48 60 72 84 96 108", result2.toString().trim());
 
-      ucar.unidata.test.util.CompareNetcdf.compareData(result1, result2);
+      ucar.unidata.util.test.CompareNetcdf.compareData(result1, result2);
     }
   }
 }

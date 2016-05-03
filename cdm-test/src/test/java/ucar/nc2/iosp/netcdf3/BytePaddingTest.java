@@ -10,9 +10,9 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriteable;
 import ucar.nc2.Variable;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.TestFileDirUtils;
 
 import java.io.File;
 import java.io.IOException;

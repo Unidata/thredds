@@ -37,7 +37,7 @@ import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
  * Test catalog utilities

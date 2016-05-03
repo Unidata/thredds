@@ -8,8 +8,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.client.catalog.Catalog;
 import thredds.tds.ethan.TestAll;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 import static org.junit.Assert.assertNotNull;
 

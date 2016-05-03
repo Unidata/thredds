@@ -1,17 +1,14 @@
 package ucar.nc2.dataset.conv;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.junit.Test;
 
 import ucar.ma2.Array;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 public class TestWRFTime {
 

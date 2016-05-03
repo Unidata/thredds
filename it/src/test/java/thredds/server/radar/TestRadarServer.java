@@ -7,7 +7,7 @@ import thredds.TestWithLocalServer;
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
 import ucar.nc2.util.IO;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.io.InputStream;

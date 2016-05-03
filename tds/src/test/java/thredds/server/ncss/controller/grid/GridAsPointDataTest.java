@@ -32,7 +32,7 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.grid.GridAsPointDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration

@@ -9,10 +9,10 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.NCdumpW.WantValues;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.util.test.UnitTestCommon;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
 import java.util.Formatter;

@@ -15,7 +15,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
 import ucar.nc2.dt.GridDataset;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext-tdsConfig.xml"}, loader=MockTdsContextLoader.class)

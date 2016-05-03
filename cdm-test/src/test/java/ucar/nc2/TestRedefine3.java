@@ -38,7 +38,7 @@ import junit.framework.TestCase;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 public class TestRedefine3 extends TestCase {
 
@@ -76,7 +76,7 @@ public class TestRedefine3 extends TestCase {
     NetcdfFile nc = NetcdfFile.open(filename, null);
     Variable v = nc.findVariable("jill");
     Array jillRead = v.read();
-    ucar.unidata.test.util.CompareNetcdf.compareData(jillArray, jillRead);
+    ucar.unidata.util.test.CompareNetcdf.compareData(jillArray, jillRead);
 
     nc.close();
   }

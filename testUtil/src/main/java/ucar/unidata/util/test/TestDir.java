@@ -1,4 +1,4 @@
-package ucar.unidata.test.util;
+package ucar.unidata.util.test;
 
 import thredds.featurecollection.FeatureCollectionConfigBuilder;
 import thredds.util.PathAliasReplacementFromMap;

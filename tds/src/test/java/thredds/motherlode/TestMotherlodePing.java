@@ -38,8 +38,8 @@ import java.io.IOException;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.util.IO;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * Run sanity check on motherlode

@@ -39,7 +39,7 @@ import opendap.servers.*;
 import opendap.servers.parsers.CeParser;
 import org.junit.Assert;
 import org.junit.Test;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.util.test.UnitTestCommon;
 //import opendap.dts.*;
 
 import java.util.*;

@@ -38,8 +38,8 @@ import java.util.Properties;
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * _more_

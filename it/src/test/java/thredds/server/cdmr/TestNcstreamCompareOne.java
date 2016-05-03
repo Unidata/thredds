@@ -38,7 +38,7 @@ package thredds.server.cdmr;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
