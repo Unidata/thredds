@@ -45,8 +45,8 @@ import ucar.nc2.dataset.*;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 

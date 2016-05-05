@@ -41,12 +41,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.collection.Grib;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestGribEnsembles {

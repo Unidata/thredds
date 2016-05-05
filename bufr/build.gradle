@@ -9,5 +9,3 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["slf4j-api"]
 }
-
-apply plugin: 'java'

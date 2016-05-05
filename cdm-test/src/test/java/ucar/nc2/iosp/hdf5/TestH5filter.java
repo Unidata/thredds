@@ -38,7 +38,7 @@ import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 

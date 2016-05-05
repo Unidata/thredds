@@ -9,9 +9,9 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 public class TestCoverageHorizSubset {
 

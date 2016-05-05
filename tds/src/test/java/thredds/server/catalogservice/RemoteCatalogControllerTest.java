@@ -18,9 +18,9 @@ import org.springframework.web.context.WebApplicationContext;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
 import thredds.mock.web.MockTdsContextLoader;
-import ucar.unidata.test.util.NeedsContentRoot;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsContentRoot;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration

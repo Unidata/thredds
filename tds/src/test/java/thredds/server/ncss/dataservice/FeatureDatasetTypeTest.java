@@ -52,7 +52,7 @@ import thredds.core.TdsRequestedDataset;
 import thredds.mock.web.MockTdsContextLoader;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
  * 

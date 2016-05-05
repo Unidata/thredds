@@ -55,7 +55,7 @@ import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
  * @author mhermida

@@ -44,7 +44,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import thredds.mock.web.MockTdsContextLoader;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 

@@ -37,8 +37,8 @@ package ucar.nc2.ncml;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 

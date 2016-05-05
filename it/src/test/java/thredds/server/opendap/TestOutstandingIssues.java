@@ -41,7 +41,7 @@ import thredds.TestWithLocalServer;
 import ucar.ma2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.*;
 

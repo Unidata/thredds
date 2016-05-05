@@ -44,7 +44,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.stream.CdmRemote;
-import ucar.unidata.test.util.NeedsRdaData;
+import ucar.unidata.util.test.category.NeedsRdaData;
 
 import java.io.IOException;
 

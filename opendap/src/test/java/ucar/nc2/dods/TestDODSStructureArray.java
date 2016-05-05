@@ -51,8 +51,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.UtilsTestStructureArray;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.UtilsTestStructureArray;
 
 /** Test nc2 dods in the JUnit framework. */
 @Category(NeedsExternalResource.class)

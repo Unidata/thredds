@@ -14,8 +14,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import ucar.unidata.test.Diff;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.Diff;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 @Category(NeedsExternalResource.class)
 public class TestDConnect2 extends TestSources {

@@ -43,7 +43,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 import timing.Average;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * Class Description.

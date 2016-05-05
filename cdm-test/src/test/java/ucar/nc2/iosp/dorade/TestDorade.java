@@ -40,8 +40,8 @@ import ucar.nc2.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 

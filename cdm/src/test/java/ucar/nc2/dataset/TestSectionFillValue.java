@@ -44,7 +44,7 @@ import java.util.List;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.netcdf3.N3iosp;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 /**
  *  from (WUB-664639) (Didier Earith)

@@ -48,8 +48,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 /** Test remote netcdf over HTTP in the JUnit framework. */
 @Category(NeedsExternalResource.class)

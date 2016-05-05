@@ -323,10 +323,10 @@ public class CF1Convention extends CSMConvention {
       if (sname.equalsIgnoreCase(CF.LONGITUDE))
         return AxisType.Lon;
 
-      if (sname.equalsIgnoreCase(CF.PROJECTION_X_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LONGITUDE))
+      if (sname.equalsIgnoreCase(CF.PROJECTION_X_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LONGITUDE) || sname.equalsIgnoreCase("rotated_longitude"))
         return AxisType.GeoX;
 
-      if (sname.equalsIgnoreCase(CF.PROJECTION_Y_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LATITUDE))
+      if (sname.equalsIgnoreCase(CF.PROJECTION_Y_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LATITUDE) || sname.equalsIgnoreCase("rotated_latitude"))
         return AxisType.GeoY;
 
       if (sname.equalsIgnoreCase( CF.TIME_REFERENCE))

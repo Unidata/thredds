@@ -51,8 +51,8 @@ import ucar.nc2.ft2.coverage.adapter.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * Description

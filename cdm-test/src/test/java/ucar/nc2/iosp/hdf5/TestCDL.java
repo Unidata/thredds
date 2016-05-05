@@ -40,7 +40,7 @@ import ucar.nc2.util.Misc;
 
 import java.io.*;
 
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * Compare CDL from NCDump to ncdump -h

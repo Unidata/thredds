@@ -59,9 +59,9 @@ import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 public class TestGridSubset {
 
@@ -872,7 +872,7 @@ public class TestGridSubset {
       NCdumpW.printArray(data, "org", pw, null);
       NCdumpW.printArray(data2, "subset", pw, null);
 
-      ucar.unidata.test.util.CompareNetcdf.compareData(data, data2);
+      ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
     }
   }
 
@@ -979,7 +979,7 @@ public class TestGridSubset {
       NCdumpW.printArray(data, "org", pw, null);
       NCdumpW.printArray(data2, "subset", pw, null);
 
-      ucar.unidata.test.util.CompareNetcdf.compareData(data, data2);
+      ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
     }
   }
 

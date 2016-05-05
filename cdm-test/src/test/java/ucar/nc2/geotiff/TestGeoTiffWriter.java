@@ -49,9 +49,9 @@ import ucar.nc2.dataset.CoordinateAxis2D;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ft2.coverage.*;
-import ucar.unidata.test.util.CompareNetcdf;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.CompareNetcdf;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;

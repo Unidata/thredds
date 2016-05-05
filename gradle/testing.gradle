@@ -95,12 +95,8 @@ configure(javaProjects) {
     apply from: "$rootDir/gradle/dependencies.gradle"
 
     dependencies {
+        testCompile project(":testUtil")  // Contains stuff like the JUnit @Category classes.
         testCompile libraries["junit"]
-
-        if (name != "cdm") {
-            // Applying this to "cdm" creates a circular dependency.
-            testCompile project(path: ':cdm', configuration: 'testArtifacts')
-        }
     }
 
     tasks.withType(Test).all {
@@ -120,24 +116,24 @@ configure(javaProjects) {
 
         useJUnit {
             if (isJenkins) {
-                excludeCategories 'ucar.unidata.test.util.NotJenkins'
+                excludeCategories 'ucar.unidata.util.test.category.NotJenkins'
             }
 
             if (isTravis) {
-                excludeCategories 'ucar.unidata.test.util.NotTravis'
-                excludeCategories 'ucar.unidata.test.util.NeedsExternalResource'
+                excludeCategories 'ucar.unidata.util.test.category.NotTravis'
+                excludeCategories 'ucar.unidata.util.test.category.NeedsExternalResource'
             }
 
             if (!isContentRootAvailable && !isJenkins) {     // Don't skip tests on Jenkins, except NotJenkins ones.
-                excludeCategories 'ucar.unidata.test.util.NeedsContentRoot'
+                excludeCategories 'ucar.unidata.util.test.category.NeedsContentRoot'
             }
 
             if (!isCdmUnitTestDirAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
-                excludeCategories 'ucar.unidata.test.util.NeedsCdmUnitTest'
+                excludeCategories 'ucar.unidata.util.test.category.NeedsCdmUnitTest'
             }
 
             if (!isRdaDataAvailable) {
-                excludeCategories 'ucar.unidata.test.util.NeedsRdaData'
+                excludeCategories 'ucar.unidata.util.test.category.NeedsRdaData'
             }
 
         }
