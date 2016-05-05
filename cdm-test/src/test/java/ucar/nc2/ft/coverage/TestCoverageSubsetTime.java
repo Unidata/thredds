@@ -25,8 +25,8 @@ import ucar.nc2.ft2.coverage.TimeOffsetAxis;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * Test CoverageSubsetTime, esp 2DTime

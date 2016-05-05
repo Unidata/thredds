@@ -46,7 +46,7 @@ import ucar.ma2.ArrayShort;
 import ucar.ma2.DataType;
 import ucar.nc2.Variable;
 import ucar.nc2.util.Misc;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /** Test nc2 dods in the JUnit framework. */
 @Category(NeedsExternalResource.class)

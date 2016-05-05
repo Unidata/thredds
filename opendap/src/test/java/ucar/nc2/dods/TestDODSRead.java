@@ -36,7 +36,7 @@ import java.io.IOException;
 
 import opendap.test.TestSources;
 import org.junit.experimental.categories.Category;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /** Test nc2 dods in the JUnit framework.
  *  Open and read various test datasets from the dts server.

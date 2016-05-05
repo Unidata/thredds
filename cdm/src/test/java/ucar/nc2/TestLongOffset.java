@@ -34,7 +34,7 @@ package ucar.nc2;
 
 import junit.framework.*;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
 

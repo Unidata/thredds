@@ -31,20 +31,19 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.unidata.test.util;
+package ucar.unidata.util.test;
 
 import org.junit.Assert;
 import ucar.nc2.dataset.VariableEnhanced;
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.*;
 import ucar.ma2.*;
 
-import java.util.List;
-import java.util.Formatter;
-import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Compare two NetcdfFile. Uses assert.

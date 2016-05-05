@@ -141,7 +141,7 @@ public class TestSlice {
 
       Array org = var.read("3,3,:,:");
       Array data = sliced2.read();
-      ucar.unidata.test.util.CompareNetcdf.compareData(org, data);
+      ucar.unidata.util.test.CompareNetcdf.compareData(org, data);
     }
   }
 }

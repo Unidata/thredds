@@ -14,8 +14,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import thredds.server.dap4.Dap4Controller;
 import ucar.httpservices.HTTPUtil;
-import ucar.nc2.util.CommonTestUtils;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 
 @ContextConfiguration
 @WebAppConfiguration("file:src/test/data")
-public class DapTestCommon extends CommonTestUtils
+public class DapTestCommon extends UnitTestCommon
 {
     //////////////////////////////////////////////////
     // Constants

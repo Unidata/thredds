@@ -27,7 +27,7 @@ import thredds.util.xml.NcmlParserUtil;
 import thredds.util.xml.XmlUtil;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.stream.NcStream;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;

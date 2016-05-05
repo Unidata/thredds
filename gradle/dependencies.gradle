@@ -43,7 +43,7 @@ libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.2"
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
 libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.1"
- 
+
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
 versions["spring"] = "4.2.3.RELEASE"

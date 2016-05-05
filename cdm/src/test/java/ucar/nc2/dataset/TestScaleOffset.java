@@ -97,7 +97,7 @@ public class TestScaleOffset {
       Variable v = ncfileRead.findVariable("packed");
       assert v != null;
       readPacked = v.read();
-      ucar.unidata.test.util.CompareNetcdf.compareData(readPacked, packed);
+      ucar.unidata.util.test.CompareNetcdf.compareData(readPacked, packed);
     }
 
     Array readEnhanced;
@@ -148,7 +148,7 @@ public class TestScaleOffset {
       Array    readSection = sec.read();
       NCdumpW.printArray(readSection);
 
-      ucar.unidata.test.util.CompareNetcdf.compareData(readEnhanced, readSection);
+      ucar.unidata.util.test.CompareNetcdf.compareData(readEnhanced, readSection);
     }
   }
 }

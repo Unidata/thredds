@@ -7,7 +7,7 @@ import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import static org.junit.Assert.*;
 

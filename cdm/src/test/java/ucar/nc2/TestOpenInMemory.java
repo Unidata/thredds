@@ -39,7 +39,7 @@ import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.ArrayChar;
 import ucar.nc2.util.IO;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 

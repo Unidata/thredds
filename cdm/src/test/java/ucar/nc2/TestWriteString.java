@@ -3,7 +3,7 @@ package ucar.nc2;
 import org.junit.Test;
 import ucar.ma2.DataType;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;

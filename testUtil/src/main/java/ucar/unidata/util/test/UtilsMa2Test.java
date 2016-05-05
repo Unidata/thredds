@@ -1,6 +1,5 @@
-package ucar.unidata.test.util;
+package ucar.unidata.util.test;
 
-import org.junit.Test;
 import ucar.ma2.Array;
 
 /**

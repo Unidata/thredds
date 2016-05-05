@@ -39,9 +39,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.CommonTestUtils;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * Test nc2 dods in the JUnit framework.
@@ -58,7 +58,7 @@ import ucar.unidata.test.util.TestDir;
  * } testgrid2;
  */
 
-public class TestGrid2 extends CommonTestUtils
+public class TestGrid2 extends UnitTestCommon
 {
     static final protected String DATASET = "testgrid2.nc";
 

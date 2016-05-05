@@ -16,7 +16,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.units.DateType;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.HashSet;
