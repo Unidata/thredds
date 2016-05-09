@@ -38,7 +38,7 @@ ext {
 
 libraries["gretty"] = "org.akhikhl.gretty:gretty:1.2.0"
 
-libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.2"
+libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
