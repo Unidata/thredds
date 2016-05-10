@@ -56,7 +56,7 @@ import java.nio.charset.Charset;
  */
 public class CodeFlagTables {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CodeFlagTables.class);
-  static private final String CodeFlagFilename = "wmo/BUFRCREX_22_0_1_CodeFlag_en.xml";
+  static private final String CodeFlagFilename = "wmo/BUFRCREX_25_0_0_CodeFlag_en.xml";
   static Map<Short, CodeFlagTables> tableMap;
 
   static public CodeFlagTables getTable(short id) {
