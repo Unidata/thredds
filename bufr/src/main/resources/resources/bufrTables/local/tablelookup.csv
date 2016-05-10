@@ -60,8 +60,9 @@ ECMWF.13, 98,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local
 #
 # EUMETSAT
 # name,     center,subcenter,master,local,cat,  tableB,tableBformat,tableD,tableDformat, mode
+EUMETSAT.11, 254,    -1,       11,    -1,   -1, resource:/resources/bufrTables/local/eumetsat.B3L-254-011-B.diff, mel_bufr, , ,
 EUMETSAT.13, 254,    -1,       13,    -1,   -1, resource:/resources/bufrTables/local/eumetsat_b_v13.txt, ecmwf, , ,
-EUMETSAT.11, 254,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/eumetsat.B3L-254-011-B.diff, mel_bufr, , ,
+EUMETSAT.19, 254,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/eumetsat.B0000000000254019001.txt, ecmwf, resource:/resources/bufrTables/local/eumetsat.D0000000000254019001.txt, ecmwf
 #
 # EUMETNET OPERA - using -1 !!!!
 #255,  255,       -1,    5,   -1, resource:/resources/bufrTables/local/opera/localtabb_65535_5.csv, opera, resource:/resources/bufrTables/local/opera/localtabd_65535_5.csv, opera,
