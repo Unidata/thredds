@@ -49,7 +49,7 @@ import java.util.Map;
  */
 public class TableA {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TableA.class);
-  static private final String TABLEA_FILENAME = "wmo/BUFR_22_0_1_TableA_en.xml";
+  static private final String TABLEA_FILENAME = "wmo/BUFR_25_0_0_TableA_en.xml";
   private static Map<Integer, String> tableA = null;
 
   /*
