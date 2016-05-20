@@ -34,9 +34,10 @@ package thredds.catalog;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-
+import thredds.cataloggen.catalogrefexpander.BooleanCatalogRefExpander;
 import thredds.crawlabledataset.sorter.LexigraphicByNameSorter;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.TestFileDirUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,9 +45,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import thredds.cataloggen.catalogrefexpander.BooleanCatalogRefExpander;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import static org.junit.Assert.*;
 
 /**
  * test dataset scan with subdirs

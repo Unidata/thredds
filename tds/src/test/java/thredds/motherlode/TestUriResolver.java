@@ -40,7 +40,7 @@ import java.net.URISyntaxException;
 import org.junit.experimental.categories.Category;
 import thredds.util.HttpUriResolver;
 import thredds.util.HttpUriResolverFactory;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

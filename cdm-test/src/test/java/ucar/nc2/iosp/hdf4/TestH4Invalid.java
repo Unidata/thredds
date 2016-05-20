@@ -35,7 +35,7 @@ package ucar.nc2.iosp.hdf4;
 
 import org.junit.Test;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.EOFException;
 import java.io.IOException;

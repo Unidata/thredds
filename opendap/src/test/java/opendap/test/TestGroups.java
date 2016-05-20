@@ -47,11 +47,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.util.test.UnitTestCommon;
 import ucar.nc2.util.rc.RC;
-import ucar.unidata.test.Diff;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.Diff;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 public class TestGroups extends UnitTestCommon
 {

@@ -12,7 +12,7 @@ import thredds.mock.params.GridPathParams;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.controller.AbstractNcssController;
 import thredds.servlet.DataRootHandler;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.util.List;
 

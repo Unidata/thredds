@@ -17,7 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.config.TdsServerInfo;
-import ucar.unidata.test.util.NeedsContentRoot;
+import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.ModelAndViewAssert.assertAndReturnModelAttributeOfType;

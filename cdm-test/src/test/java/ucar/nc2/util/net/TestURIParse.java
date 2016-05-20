@@ -37,7 +37,7 @@ import org.junit.Test;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
-import ucar.nc2.util.UnitTestCommon;
+import ucar.unidata.util.test.UnitTestCommon;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -52,7 +52,7 @@ import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.DebugFlagsImpl;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /**
  * Test nc2 dods in the JUnit framework.

@@ -2,14 +2,12 @@
    See the LICENSE file for more information.
 */
 
-package ucar.nc2.util;
+package ucar.unidata.util.test;
 
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.Diff;
-import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.nio.charset.Charset;

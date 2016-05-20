@@ -40,7 +40,7 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import static org.junit.Assert.assertEquals;
 

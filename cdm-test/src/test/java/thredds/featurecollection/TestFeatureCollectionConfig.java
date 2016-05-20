@@ -10,8 +10,8 @@ import thredds.filesystem.MFileOS7;
 import thredds.inventory.*;
 import thredds.inventory.filter.WildcardMatchOnName;
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;

@@ -38,8 +38,8 @@ import java.util.Properties;
 import com.meterware.httpunit.WebConversation;
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * A description

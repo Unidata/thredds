@@ -37,7 +37,7 @@ import opendap.dap.parsers.*;
 import opendap.dap.*;
 import org.junit.Assert;
 import org.junit.Test;
-import ucar.unidata.test.Diff;
+import ucar.unidata.util.test.Diff;
 
 import java.io.*;
 

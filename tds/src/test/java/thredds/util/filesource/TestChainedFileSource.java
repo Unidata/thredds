@@ -38,8 +38,8 @@ import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.TestFileDirUtils;
 
 
 

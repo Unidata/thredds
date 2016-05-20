@@ -54,3 +54,8 @@ D:
  download http://www.eumetsat.int/groups/ops/documents/document/bufr_tbl_txt_b_v13.txt
  and use now for any center 254 version 13.
  rename to eumetsat_b_v13.txt
+
+5/9/2016
+ Pull tables for 254 19 1 from ECMWF BufrDC--this is for both B and D. Problem
+ was missing descriptor 3 10 195. Just pulled the raw ECMWF formatted-table and
+ put into resources.

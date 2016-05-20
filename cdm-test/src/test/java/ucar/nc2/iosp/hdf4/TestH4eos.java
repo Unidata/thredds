@@ -42,8 +42,8 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 
@@ -118,7 +118,7 @@ public class TestH4eos {
       for (int i = 0; i < 3; i++)
         assert Asection.getShape()[i] == dshape[i];
 
-      ucar.unidata.test.util.CompareNetcdf.compareData(data, Asection);
+      ucar.unidata.util.test.CompareNetcdf.compareData(data, Asection);
     }
   }
 

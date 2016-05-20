@@ -38,8 +38,8 @@ import static org.junit.Assert.*;
 
 import thredds.catalog.util.DeepCopyUtils;
 import ucar.nc2.time.CalendarDate;
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.TestFileDirUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

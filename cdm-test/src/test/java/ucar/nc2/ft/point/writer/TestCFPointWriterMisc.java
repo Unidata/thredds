@@ -43,7 +43,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.ft.*;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;

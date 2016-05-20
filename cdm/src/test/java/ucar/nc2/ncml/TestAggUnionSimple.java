@@ -333,7 +333,7 @@ public class TestAggUnionSimple extends TestCase {
   public void testScan() throws IOException {
     String filename = "file:./" + TestNcML.topDir + "aggUnionScan.xml";
     NetcdfDataset scanFile = NetcdfDataset.openDataset(filename, false, null);
-    ucar.unidata.test.util.CompareNetcdf.compareFiles(ncfile, scanFile, true, true, false);
+    ucar.unidata.util.test.CompareNetcdf.compareFiles(ncfile, scanFile, true, true, false);
     scanFile.close();
   }
 

@@ -40,7 +40,7 @@ import ucar.ma2.DataType;
 import ucar.nc2.dt.TrajectoryObsDataset;
 import ucar.nc2.dt.TypedDatasetFactory;
 import ucar.nc2.constants.FeatureType;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.io.File;

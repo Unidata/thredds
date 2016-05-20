@@ -35,29 +35,56 @@
 
 package ucar.nc2.grib.collection;
 
-import org.jdom2.Element;
-import thredds.client.catalog.Catalog;
-import thredds.featurecollection.FeatureCollectionConfig;
-import thredds.inventory.CollectionUpdateType;
-import ucar.coord.*;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.nc2.constants.*;
-import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.Misc;
-import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.Parameter;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Formatter;
+import java.util.List;
+
+import org.jdom2.Element;
+
+import thredds.client.catalog.Catalog;
+import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.CollectionUpdateType;
+import ucar.coord.Coordinate;
+import ucar.coord.CoordinateEns;
+import ucar.coord.CoordinateRuntime;
+import ucar.coord.CoordinateTime;
+import ucar.coord.CoordinateTime2D;
+import ucar.coord.CoordinateTimeAbstract;
+import ucar.coord.CoordinateTimeIntv;
+import ucar.coord.CoordinateVert;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.ma2.Section;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.Group;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.grib.EnsCoord;
+import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.grib2.Grib2Utils;
+import ucar.nc2.iosp.AbstractIOServiceProvider;
+import ucar.nc2.time.Calendar;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.projection.RotatedPole;
+import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.Parameter;
 
 /**
  * Grib Collection IOSP, version 2.
@@ -236,10 +263,28 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     String horizDims;
 
+    boolean isRotatedLatLon = !isGrib1 && hcs.proj instanceof RotatedPole;
     boolean isLatLon2D = !isGrib1 && Grib2Utils.isLatLon2D(hcs.template, gribCollection.getCenter());
     boolean isLatLon = isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());
 
-    if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
+    if (isRotatedLatLon) {
+      Variable hcsV = ncfile.addVariable(g, new Variable(ncfile, g, null, grid_mapping, DataType.INT, ""));
+      hcsV.setCachedData(Array.factory(DataType.INT, new int[0], new int[] { 0 }));
+      for (Parameter p : hcs.proj.getProjectionParameters()) {
+        hcsV.addAttribute(new Attribute(p));
+      }
+      horizDims = "rlat rlon";
+      ncfile.addDimension(g, new Dimension("rlat", hcs.ny));
+      ncfile.addDimension(g, new Dimension("rlon", hcs.nx));
+      Variable rlat = ncfile.addVariable(g, new Variable(ncfile, g, null, "rlat", DataType.FLOAT, "rlat"));
+      rlat.addAttribute(new Attribute(CF.STANDARD_NAME, CF.GRID_LATITUDE));
+      rlat.addAttribute(new Attribute(CDM.UNITS, CDM.RLATLON_UNITS));
+      rlat.setCachedData(Array.makeArray(DataType.FLOAT, hcs.ny, hcs.starty, hcs.dy));
+      Variable rlon = ncfile.addVariable(g, new Variable(ncfile, g, null, "rlon", DataType.FLOAT, "rlon"));
+      rlon.addAttribute(new Attribute(CF.STANDARD_NAME, CF.GRID_LONGITUDE));
+      rlon.addAttribute(new Attribute(CDM.UNITS, CDM.RLATLON_UNITS));
+      rlon.setCachedData(Array.makeArray(DataType.FLOAT, hcs.nx, hcs.startx, hcs.dx));
+    } else if (isLatLon2D) { // CurvilinearOrthogonal - lat and lon fields must be present in the file
       horizDims = "lat lon";
 
       // LOOK - assume same number of points for all grids

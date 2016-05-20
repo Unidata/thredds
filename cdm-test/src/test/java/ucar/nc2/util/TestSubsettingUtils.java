@@ -87,7 +87,7 @@ public class TestSubsettingUtils {
       for (int i = 0; i < ashape.length; i++)
         assert sshape[i] == ashape[i];
 
-      ucar.unidata.test.util.CompareNetcdf.compareData(sdata, Asection);
+      ucar.unidata.util.test.CompareNetcdf.compareData(sdata, Asection);
   }
 
   private static Section randomSubset(Section all, int stride) throws InvalidRangeException {

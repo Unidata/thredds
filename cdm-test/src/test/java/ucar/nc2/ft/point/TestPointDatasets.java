@@ -48,8 +48,8 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.*;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
