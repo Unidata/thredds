@@ -33,11 +33,6 @@
 
 package thredds.catalog;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*;
-import java.net.URI;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.FeatureType;
@@ -48,6 +43,14 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Concrete implementation of a thredds Dataset, for reading and writing from XML.
@@ -247,10 +250,7 @@ public class InvDatasetImpl extends InvDataset {
       tc = tmd.getTimeCoverage();
 
     for (InvProperty item : tmd.getProperties()) {
-      if (!properties.contains(item)) { // dont add properties with same name
-        if (debugInherit) System.out.println("  add Property " + item + " to " + getID());
-        properties.add(item);
-      }
+      properties.add(item);
     }
 
     creators.addAll(tmd.getCreators());
