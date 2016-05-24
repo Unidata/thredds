@@ -33,11 +33,6 @@
 
 package thredds.catalog;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*;
-import java.net.URI;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.FeatureType;
@@ -48,6 +43,14 @@ import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * Concrete implementation of a thredds Dataset, for reading and writing from XML.
@@ -87,9 +90,6 @@ public class InvDatasetImpl extends InvDataset {
   // filter
   protected boolean mark = false;
 
-  // debug                                                             lsls -
-  private boolean debugInherit = false, debugInherit2 = false;
-
   /**
    * Constructor from Catalog XML info. You must call finish() before this object
    * is ready to be used. We had to do it this way so that nested service elements could be added
@@ -119,7 +119,7 @@ public class InvDatasetImpl extends InvDataset {
   public boolean finish() {
     boolean ok = true;
     java.util.Iterator iter;
-    if (debugInherit) System.out.println("Now finish " + getName() + " id= " + getID());
+    logger.debug("Now finish " + getName() + " id= " + getID());
 
     authorityName = null;
     dataType = null;
@@ -183,7 +183,7 @@ public class InvDatasetImpl extends InvDataset {
    */
   private void transferInheritable2PublicMetadata(InvDatasetImpl parent) {
     if (parent == null) return;
-    if (debugInherit) System.out.println(" inheritFromParent= " + parent.getID());
+    logger.debug(" inheritFromParent= " + parent.getID());
 
     transfer2PublicMetadata(parent.getLocalMetadataInheritable(), true);
     //transfer2PublicMetadata(parent.getCat6Metadata(), true);
@@ -218,7 +218,7 @@ public class InvDatasetImpl extends InvDataset {
   private void transfer2PublicMetadata(ThreddsMetadata tmd, boolean inheritAll) {
     if (tmd == null) return;
 
-    if (debugInherit) System.out.println("  transferMetadata " + tmd);
+    logger.debug("  transferMetadata " + tmd);
 
     if (authorityName == null)
       authorityName = tmd.getAuthority();
@@ -247,10 +247,8 @@ public class InvDatasetImpl extends InvDataset {
       tc = tmd.getTimeCoverage();
 
     for (InvProperty item : tmd.getProperties()) {
-      if (!properties.contains(item)) { // dont add properties with same name
-        if (debugInherit) System.out.println("  add Property " + item + " to " + getID());
-        properties.add(item);
-      }
+      logger.debug("  add Property " + item + " to " + getID());
+      properties.add(item);
     }
 
     creators.addAll(tmd.getCreators());
@@ -269,7 +267,7 @@ public class InvDatasetImpl extends InvDataset {
         if (!meta.isThreddsMetadata()) {
           metadata.add(meta);
         } else {
-          if (debugInherit) System.out.println("  add metadata Element " + tmd.isInherited() + " " + meta);
+          logger.debug("  add metadata Element " + tmd.isInherited() + " " + meta);
           meta.finish(); // make sure XLink is read in.
           transfer2PublicMetadata(meta.getThreddsMetadata(), inheritAll);
           metadata.add(meta);
@@ -288,7 +286,7 @@ public class InvDatasetImpl extends InvDataset {
    */
   public void transferMetadata(InvDatasetImpl fromDs, boolean copyInheritedMetadataFromParents) {
     if (fromDs == null) return;
-    if (debugInherit2) System.out.println(" transferMetadata= " + fromDs.getName());
+    logger.debug(" transferMetadata= " + fromDs.getName());
 
     if (this != fromDs)
       getLocalMetadata().add(fromDs.getLocalMetadata(), false);
@@ -307,7 +305,7 @@ public class InvDatasetImpl extends InvDataset {
   private void transferInheritableMetadata(InvDatasetImpl fromDs, ThreddsMetadata target,
                                            boolean copyInheritedMetadataFromParents) {
     if (fromDs == null) return;
-    if (debugInherit2) System.out.println(" transferInheritedMetadata= " + fromDs.getName());
+    logger.debug(" transferInheritedMetadata= " + fromDs.getName());
 
     target.add(fromDs.getLocalMetadataInheritable(), true);
 
@@ -320,7 +318,7 @@ public class InvDatasetImpl extends InvDataset {
         if (!meta.isThreddsMetadata()) {
           tmc.addMetadata( meta);
         } else {
-          if (debugInherit2) System.out.println("  transferInheritedMetadata "+meta.hashCode()+" = "+meta);
+          logger.debug("  transferInheritedMetadata "+meta.hashCode()+" = "+meta);
           meta.finish(); // LOOK ?? make sure XLink is read in.
           tmc.add( meta.getThreddsMetadata(), true);
         }

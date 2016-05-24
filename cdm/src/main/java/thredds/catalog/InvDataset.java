@@ -33,13 +33,13 @@
 
 package thredds.catalog;
 
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
-import java.util.*;
-
-import ucar.nc2.constants.FeatureType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Public interface to a thredds dataset, basic abstraction for data.
@@ -322,12 +322,17 @@ public abstract class InvDataset {
   }
 
   /**
-   * Find named property. This may have been specified
-   * in the dataset or an enclosing parent element.
+   * Finds the <b>first</b> property declared in the dataset with the given name. If a property other than the first
+   * is desired, it can be obtained via {@link #getProperties}.
+   * <p>
+   * The property may have been specified in the dataset or in an enclosing parent element.
    *
-   * @param name match on this name
-   * @return string value of property or null if not exist.
+   * @param name  the name of the property.
+   * @return  the string value of the <b>first</b> property with the given name or
+   *          {@code null} if no such property exists.
    */
+  // TODO: Change the name of this method to something like "findFirstProperty".
+  // This is an API change, so will have to be done in a major release.
   public String findProperty(String name) {
     InvProperty result = null;
     for (InvProperty p : getProperties()) {
