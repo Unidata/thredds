@@ -131,6 +131,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           "/home/dmh/opt/netcdf4/lib", //temporary
           "c:/opt/netcdf", // Windows
           "/usr/jna_lib/",
+          "/usr/local/lib/", // MacOSX homebrew default
+          "/opt/local/lib/", // MacOSX MacPorts default
   };
 
   static private String jnaPath = null;
