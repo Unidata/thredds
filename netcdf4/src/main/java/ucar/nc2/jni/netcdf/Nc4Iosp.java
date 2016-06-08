@@ -84,12 +84,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
   //static protected String netcdf4libname = DEFAULTNETCDF4LIBNAME;
 
+/*
   static String[] DEFAULTNETCDF4PATH = new String[]{
           "/opt/netcdf4/lib",
           "/home/dmh/opt/netcdf4/lib", //temporary
           "c:/opt/netcdf", // Windows
           "/usr/jna_lib/",
   };
+*/
 
   static private String jnaPath = null;
   static private String libName = DEFAULTNETCDF4LIBNAME;
@@ -107,6 +109,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    *
    * @return true if we set jna.library.path
    */
+/*
   static private String defaultNetcdf4Library() {
     StringBuilder pathlist = new StringBuilder();
     for (String path : DEFAULTNETCDF4PATH) {
@@ -120,6 +123,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     }
     return pathlist.length() == 0 ? null : pathlist.toString();
   }
+*/
 
   /**
    * set the path and name of the netcdf c library.
@@ -143,9 +147,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (jna_path == null) {
       jna_path = nullify(System.getenv(JNA_PATH_ENV));   // Next, try environment variable.
     }
+/*
     if (jna_path == null) {
       jna_path = defaultNetcdf4Library();                // Last, try some default paths.
     }
+*/
 
     if (jna_path != null) {
       System.setProperty(JNA_PATH, jna_path);
@@ -165,7 +171,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         // jna_path may still be null (the user didn't specify a "jna.library.path"), but try to load anyway;
         // the necessary libs may be on the system PATH.
         nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
-
+	// Make the library synchronized
+	nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
         String message = String.format("NetCDF-4 C library loaded (jna_path='%s', libname='%s').", jnaPath, libName);
         startupLog.info(message);
 
