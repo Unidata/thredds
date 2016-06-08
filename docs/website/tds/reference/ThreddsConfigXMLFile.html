@@ -11,7 +11,7 @@
 <hr>
 <p>The TDS configuration file <code>${tomcat_home}/content/thredds/threddsConfig.xml</code> allows the TDS
     administrator to control the behavior of the TDS.
-  This is the complete reference document for TDS version 4.5.</p>
+  This is the complete reference document for TDS version 4.6.</p>
 
 <p>In general, you do not have to change any of these parameters, since the TDS will
   use default settings. If you do change any of these, you must restart the thredds
@@ -19,8 +19,11 @@
   exception is that the <code>catalogRoot</code> elements will be reread by
   doing a <strong>Debug/Reinit</strong>, if you have remote management enabled.</p>
 
-<p>Here is an annotated example <a href="threddsConfig.xml.txt">threddsConfig.xml</a>.</p>
+<p><a href="https://raw.githubusercontent.com/Unidata/thredds/master/tds/src/main/webapp/WEB-INF/altContent/startup/threddsConfig.xml">Here</a>
+  is an annotated example <code>threddsConfig.xml</code>.</p>
+
 <hr style="width: 100%; height: 2px;">
+
 <p><strong>Contents</strong></p>
 
 <ul>
@@ -390,13 +393,25 @@ where:
 <h3><a name="netcdfCLibrary" id="netcdfCLibrary">NetCDF-4 C library loading</a></h3>
 <pre>
 &lt;Netcdf4Clibrary&gt;
-  &lt;libraryPath&gt;C:/cdev/lib/&lt;/libraryPath&gt;
-  &lt;libraryName&gt;netcdf4&lt;/libraryName&gt;
+  &lt;libraryPath&gt;/usr/local/lib&lt;/libraryPath&gt;
+  &lt;libraryName&gt;netcdf&lt;/libraryName&gt;
+  &lt;useForReading&gt;false&lt;/useForReading&gt;
 &lt;/Netcdf4Clibrary&gt;
 </pre>
-<p align="justify">In order to write netCDF-4 files, you must have the <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">netCDF-4 C library</a>,
-  version 4.2.1 or above, compiled and available on your system, along with all supporting libraries (hdf5 etc). The
-  <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">details</a> of this differ for each operating system.</p>
+<p align="justify">In order to write netCDF-4 files, you must have the
+  <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">netCDF-4 C library</a>&mdash;version 4.3.1 or
+  above&mdash;compiled and available on your system, along with all supporting libraries (HDF5, zlib, and curl). The
+  <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html">details</a> of this differ
+  for each operating system. The elements above allow you to configure how the library is discovered and used.</p>
+
+<ul>
+  <li><strong>libraryPath</strong>: The directory in which the native library is installed.</li>
+  <li><strong>libraryName</strong>: The name of the native library. This will be used to locate the proper
+    .DLL, .SO, or .DYLIB file within the <strong>libraryPath</strong> directory.</li>
+  <li><strong>useForReading</strong>: By default, the native library is only used for writing NetCDF-4 files; a
+    pure-Java layer is responsible for reading them. However, if this property is set to <code>true</code>, then
+    it will be used for reading NetCDF-4 (and HDF5) files as well.</li>
+</ul>
 
 <p align="justify">For TDS users, we recommend setting the library path and name in <code>threddsConfig.xml</code> as in the above example.</p>
 
@@ -736,7 +751,7 @@ sum of the maxFiles does not exceed your OS maximum. For better performance, mak
 <hr width="100%">
 <address>
   <img alt="THREDDS" src="../thread.png" height="108" width="110">
-  This document is maintained by elves and was last updated April 2015.
+  This document is maintained by elves and was last updated June 2016.
   Send comments to
 <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS support</a>.
 </address>

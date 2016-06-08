@@ -142,4 +142,13 @@
     <maxAge>90 days</maxAge>
     <cachePathPolicy>OneDirectory</cachePathPolicy>
   </AggregationCache>
+
+  <Netcdf4Clibrary>
+    <!--
+    <libraryPath>/usr/local/lib</libraryPath>
+    <libraryName>netcdf</libraryName>
+    -->
+    <!-- Test this prop in ThreddsConfigTest.testNetcdf4ClibraryUseForReading() -->
+    <useForReading>false</useForReading>
+  </Netcdf4Clibrary>
 </threddsConfig>
