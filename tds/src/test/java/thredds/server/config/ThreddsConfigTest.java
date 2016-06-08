@@ -28,9 +28,7 @@ public class ThreddsConfigTest {
 
 	@Before
 	public void setUp(){
-		
-		//It uses maven path for resources and default threddsConfig
-		//threddsConfigPath ="C:/dev/github/thredds3/tds/src/test/content/thredds/threddsConfig.xml";
+		//threddsConfigPath ="/thredds/tds/src/test/content/thredds/threddsConfig.xml";
 		threddsConfigPath= tdsContext.getContentRootPath() +  "/thredds/threddsConfig.xml";
 		ThreddsConfig.init(threddsConfigPath);
 	}
@@ -45,7 +43,7 @@ public class ThreddsConfigTest {
 	
 	@Test 
 	public void testHasElement(){
-	   assertFalse(ThreddsConfig.hasElement("Netcdf4Clibrary") );
+	   assertFalse(ThreddsConfig.hasElement("CORS") );
 	}
 
 	// Tests the "cachePathPolicy" element, added in response to this message on the thredds mailing list:
@@ -57,5 +55,10 @@ public class ThreddsConfigTest {
 
 		DiskCache2.CachePathPolicy policyObj = DiskCache2.CachePathPolicy.valueOf(policyStr);
 		assertSame(DiskCache2.CachePathPolicy.OneDirectory, policyObj);
+	}
+
+	@Test
+	public void testNetcdf4ClibraryUseForReading() {
+		assertFalse(ThreddsConfig.getBoolean("Netcdf4Clibrary.useForReading", true));
 	}
 }

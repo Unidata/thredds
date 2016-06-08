@@ -33,8 +33,12 @@
 
 package ucar.nc2.util.xml;
 
-import org.jdom2.*;
-import org.jdom2.input.*;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.constants.FeatureType;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -42,8 +46,6 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
-
-import ucar.nc2.constants.FeatureType;
 
 /**
  * Read Runtime Configuration
@@ -263,28 +265,42 @@ public class RuntimeConfigParser {
         }
 
       } else if (elem.getName().equals("Netcdf4Clibrary")) {
-        /* <Netcdf4Clibrary>
-             <libraryPath>C:/cdev/lib/</libraryPath>
-             <libraryName>netcdf4</libraryName>
-           </Netcdf4Clibrary> */
+        // cdm does not have a dependency on netcdf4 (and we don't want to introduce one),
+        // so we cannot refer to the Nc4Iosp.class object.
+        String nc4IospClassName = "ucar.nc2.jni.netcdf.Nc4Iosp";
+
+        /*
+          <Netcdf4Clibrary>
+            <libraryPath>/usr/local/lib</libraryPath>
+            <libraryName>netcdf</libraryName>
+            <useForReading>false</useForReading>
+          </Netcdf4Clibrary>
+        */
         String path = elem.getChildText("libraryPath");
         String name = elem.getChildText("libraryName");
-        if (path != null && name != null) {
 
+        if (path != null && name != null) {
           // reflection is used to decouple optional jars
           try {
-            Class nc4IospClass = RuntimeConfigParser.class.getClassLoader().loadClass("ucar.nc2.jni.netcdf.Nc4Iosp");
+            Class nc4IospClass = RuntimeConfigParser.class.getClassLoader().loadClass(nc4IospClassName);
             Method method = nc4IospClass.getMethod("setLibraryAndPath", new Class[] {String.class, String.class});
             method.invoke(null, path, name); // static method has null for object
           } catch (Throwable e) {
-              errlog.append("ucar.nc2.jni.netcdf.Nc4Iosp is not on classpath\n");
+              errlog.append(nc4IospClassName + " is not on classpath\n");
           }
         }
 
-
+        boolean useForReading = Boolean.parseBoolean(elem.getChildText("useForReading"));
+        if (useForReading) {
+          try {
+            // Registers Nc4Iosp in front of all the other IOSPs already registered in NetcdfFile.<clinit>().
+            // Crucially, this means that we'll try to open a file with Nc4Iosp before we try it with H5iosp.
+            NetcdfFile.registerIOProvider(nc4IospClassName);
+          } catch (IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+            errlog.append(String.format("Could not register IOSP '%s': %s%n", nc4IospClassName, e.getMessage()));
+          }
+        }
       }
     }
   }
-
 }
-

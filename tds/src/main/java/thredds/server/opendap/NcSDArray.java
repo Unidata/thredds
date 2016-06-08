@@ -117,7 +117,7 @@ public class NcSDArray extends SDArray implements HasNetcdfVariable {
       } catch (java.lang.ArrayIndexOutOfBoundsException t) {
         log.error(getRequestedRange(), t);
         throw new RuntimeException("NcSDArray java.lang.ArrayIndexOutOfBoundsException=" + t.getMessage()+
-            " for request= "+ getRequestedRange()+" dataset= "+ datasetName);
+            " for request= "+ getRequestedRange()+" dataset= "+ datasetName, t);
       }
 
       if (debug)

@@ -103,7 +103,7 @@ public class Tiling {
     int useRank = Math.min(rank, pt.length); // eg varlen (datatype 9) has mismatch
     int[] tile = new int[useRank];
     for (int i = 0; i < useRank; i++) {
-      assert shape[i] >= pt[i];
+      assert shape[i] >= pt[i] : String.format("shape[%s] (%s) >= pt[%s] (%s)", i, shape[i], i, pt[i]);
       tile[i] = pt[i] / chunk[i];        // seems wrong, rounding down ??
     }
     return tile;

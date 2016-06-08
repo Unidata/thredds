@@ -45,6 +45,7 @@ import thredds.inventory.CollectionUpdater;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.servlet.ThreddsConfig;
 import thredds.util.LoggerFactorySpecial;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
@@ -119,10 +120,12 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
     InvDatasetFeatureCollection.setLoggerFactory(fac);
 
-    /* <Netcdf4Clibrary>
-       <libraryPath>C:/cdev/lib/</libraryPath>
-       <libraryName>netcdf4</libraryName>
-     </Netcdf4Clibrary>
+    /*
+      <Netcdf4Clibrary>
+        <libraryPath>/usr/local/lib</libraryPath>
+        <libraryName>netcdf</libraryName>
+        <useForReading>false</useForReading>
+      </Netcdf4Clibrary>
     */
     String libraryPath = ThreddsConfig.get("Netcdf4Clibrary.libraryPath", null);
     String libraryName = ThreddsConfig.get("Netcdf4Clibrary.libraryName", null);
@@ -130,15 +133,26 @@ public class CdmInit implements InitializingBean,  DisposableBean{
       Nc4Iosp.setLibraryAndPath(libraryPath, libraryName);
     }
 
-    //Netcdf4 library could be set as a environment variable or as a jvm parameter
+    Boolean useForReading = ThreddsConfig.getBoolean("Netcdf4Clibrary.useForReading", false);
+    if (useForReading) {
       if (Nc4Iosp.isClibraryPresent()) {
-          FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
-//      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4EXT, true);
-
-          if (libraryName == null) libraryName = "netcdf";
-          startupLog.info("netcdf4 c library loaded from jna_path='" + System.getProperty("jna.library.path") + "' " +
-                  "libname=" + libraryName + "");
+        try {
+          // Registers Nc4Iosp in front of all the other IOSPs already registered in NetcdfFile.<clinit>().
+          // Crucially, this means that we'll try to open a file with Nc4Iosp before we try it with H5iosp.
+          NetcdfFile.registerIOProvider(Nc4Iosp.class);
+        } catch (IllegalAccessException | InstantiationException e) {
+          startupLog.error("CdmInit: Unable to register IOSP: " + Nc4Iosp.class.getCanonicalName(), e);
+        }
+      } else {
+        startupLog.warn("CdmInit: In threddsConfig.xml, 'Netcdf4Clibrary.useForReading' is 'true' but the native C " +
+                "library couldn't be found on the system. Falling back to the pure-Java reader.");
       }
+    }
+
+    if (Nc4Iosp.isClibraryPresent()) {  // NetCDF-4 lib could be set as an environment variable or as a JVM parameter.
+      FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4, true);
+      // FormatsAvailabilityService.setFormatAvailability(SupportedFormat.NETCDF4EXT, true);
+    }
 
     // how to choose the typical dataset ?
     String typicalDataset = ThreddsConfig.get("Aggregation.typicalDataset", "penultimate");
@@ -157,7 +171,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     long maxSize = ThreddsConfig.getBytes("DiskCache.maxSize", (long) 1000 * 1000 * 1000);  // default 1 Gbyte
     DiskCache.setRootDirectory(dir);
     DiskCache.setCachePolicy(alwaysUse);
-    startupLog.info("CdmInit:  CdmCache= "+dir+" scour = "+scourSecs+" maxSize = "+maxSize);
+    startupLog.info("CdmInit: CdmCache= "+dir+" scour = "+scourSecs+" maxSize = "+maxSize);
     if (scourSecs > 0) {
       Calendar c = Calendar.getInstance(); // contains current startup time
       c.add(Calendar.SECOND, scourSecs / 2); // starting in half the scour time
@@ -173,7 +187,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     aggCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     aggCache.setPolicy(cachePathPolicy);
     Aggregation.setPersistenceCache(aggCache);
-    startupLog.info("CdmInit:  AggregationCache= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
+    startupLog.info("CdmInit: AggregationCache= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = ThreddsConfig.get("GribIndex.dir", new File( tdsContext.getContentDirectory().getPath(), "/cache/grib/").getPath());
@@ -196,7 +210,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     maxAgeSecs = ThreddsConfig.getSeconds("CdmRemote.maxAge", 60 * 60);
     cdmrCache = new DiskCache2(dir, false, maxAgeSecs / 60, scourSecs / 60);
     //CdmrFeatureController.setDiskCache(cdmrCache);
-    startupLog.info("CdmInit:  CdmRemote= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
+    startupLog.info("CdmInit: CdmRemote= "+dir+" scour = "+scourSecs+" maxAgeSecs = "+maxAgeSecs);
 
 
     // turn back on for 4.6 needed for FMRC
@@ -264,7 +278,7 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     secs = ThreddsConfig.getSeconds("NetcdfFileCache.scour", 12 * 60);
     if (max > 0) {
       NetcdfDataset.initNetcdfFileCache(min, max, secs);
-      startupLog.info("NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
+      startupLog.info("CdmInit: NetcdfDataset.initNetcdfFileCache= ["+min+","+max+"] scour = "+secs);
     }
 
     // GribCollection partitions: default is allow 100 - 150 objects, cleanup every 13 minutes

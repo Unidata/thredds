@@ -85,8 +85,12 @@
 <strong>7)</strong> &lt;<strong>table</strong> type="GRIB1" filename="/grib/tables/userlookup.lst"/&gt;
 <strong>8)</strong> &lt;<strong>table</strong> type="GRIB2" filename="/grib/tables/grib2userparameters&quot; /&gt;
 <strong>9)</strong> &lt;<strong>bufrtable</strong> filename="C:/my/files/lookup.txt&quot; /&gt;
-10)&lt;<strong>grib1Table</strong> strict=&quot;false&quot;/&gt;
-11)&lt;<strong>Netcdf4Clibrary</strong>&gt;<br>     &lt;<strong>libraryPath</strong>&gt;C:/cdev/lib/&lt;/<strong>libraryPath</strong>&gt;<br>     &lt;<strong>libraryName</strong>&gt;netcdf4&lt;/<strong>libraryName</strong>&gt;<br>   &lt;/<strong>Netcdf4Clibrary</strong>&gt;
+<strong>10)</strong>&lt;<strong>grib1Table</strong> strict=&quot;false&quot;/&gt;
+<strong>11)</strong>&lt;<strong>Netcdf4Clibrary</strong>&gt;
+     &lt;<strong>libraryPath</strong>&gt;/usr/local/lib&lt;/<strong>libraryPath</strong>&gt;
+     &lt;<strong>libraryName</strong>&gt;netcdf&lt;/<strong>libraryName</strong>&gt;
+     &lt;<strong>useForReading</strong>&gt;false&lt;/<strong>useForReading</strong>&gt;
+  &lt;/<strong>Netcdf4Clibrary</strong>&gt;
 &lt;/nj22Config&gt;</pre>
 <ol>
   <li>Loads an <strong>IOServiceProvider</strong> with the given class name</li>
@@ -101,7 +105,16 @@
   <li>Load a <a href="formats/GribTables.html">GRIB-2 parameter lookup table</a> (versions &lt; 4.3, deprecated)</li>
   <li>Load a <a href="formats/BufrTables.html">BUFR table lookup</a> file</li>
   <li>Turn <a href="formats/GribTables.html#strict">strict GRIB1 table handling</a> off.</li>
-  <li>Set the<a href="netcdf4Clibrary.html"> netCDF-4 C library</a> path and name.</li>
+  <li>Configure how the <a href="netcdf4Clibrary.html">NetCDF-4 C library</a> is discovered and used.
+    <ul>
+      <li><strong>libraryPath</strong>: The directory in which the native library is installed.</li>
+      <li><strong>libraryName</strong>: The name of the native library. This will be used to locate the proper
+        .DLL, .SO, or .DYLIB file within the <strong>libraryPath</strong> directory.</li>
+      <li><strong>useForReading</strong>: By default, the native library is only used for writing NetCDF-4 files; a
+        pure-Java layer is responsible for reading them. However, if this property is set to <code>true</code>, then
+        it will be used for reading NetCDF-4 (and HDF5) files as well.</li>
+    </ul>
+  </li>
 </ol>
 <p>There are several ways pass the Runtime Configuration XML to the CDM library. From your application, you can pass a <strong>java.io.InputStream</strong> (or
   <a href="http://www.jdom.org/">JDOM</a> element) to <strong>ucar.nc2.util.xml.RuntimeConfigParser</strong>, as in the following examples: </p>
@@ -154,7 +167,7 @@
 </blockquote>
 <hr WIDTH="100%">
 <address>
-  <img src="../nc.gif" width="64" height="64" alt=""> This document was last updated on March 2015
+  <img src="../nc.gif" width="64" height="64" alt=""> This document was last updated on June 2016.
 </address>
 </body>
 </html>
