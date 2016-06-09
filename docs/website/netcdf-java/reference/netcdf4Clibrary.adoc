@@ -112,6 +112,8 @@ configuration file>>.
 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/javadocAll/ucar/nc2/jni/netcdf/Nc4Iosp.html#setLibraryAndPath(java.lang.String,%20java.lang.String)[Nc4Iosp.setLibraryAndPath()]
 from your Java program
 
+In all cases, it is recommended that you use an absolute path to specify the library location.
+
 === Troubleshooting
 
 If you get a message like this:
