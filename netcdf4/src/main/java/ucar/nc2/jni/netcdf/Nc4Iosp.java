@@ -98,12 +98,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private String jnaPath = null;
   static private String libName = DEFAULTNETCDF4LIBNAME;
 
-  static private final boolean debug = false,
-          debugCompound = false,
-          debugCompoundAtt = false,
-          debugDim = false,
-          debugUserTypes = false,
-          debugWrite = false;
+  // TODO: These flags currently control debug messages that are printed to STDOUT. They ought to be logged to SLF4J.
+  // We could use SLF4J markers to filter which debug-level messages are printed.
+  // See http://stackoverflow.com/questions/12201112/can-i-add-custom-levels-to-slf4j
+  static private final boolean debugCompound = false;
+  static private final boolean debugCompoundAtt = false;
+  static private final boolean debugDim = false;
+  static private final boolean debugUserTypes = false;
+  static private final boolean debugWrite = false;
 
   /**
    * Use the default path to try to set jna.library.path
@@ -214,8 +216,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     skipEos = flags.isSet("HdfEos/turnOff");
   }
 
-  static final private boolean trace = false;
-
   //////////////////////////////////////////////////
   // Instance Variables
 
@@ -310,10 +310,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         raf.close(); // not used
 
     // open
-    if (debug) System.out.println("open " + ncfile.getLocation());
+    // netcdf-c can't handle "file:" prefix. Must remove it.
+    String location = NetcdfFile.canonicalizeUriString(ncfile.getLocation());
+    log.debug("open {}", location);
+
     IntByReference ncidp = new IntByReference();
-    if (trace) System.out.printf("nc4.nc_open %s%n", ncfile.getLocation());
-    int ret = nc4.nc_open(ncfile.getLocation(), readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
+    int ret = nc4.nc_open(location, readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     ncid = ncidp.getValue();
 
@@ -322,7 +324,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ret = nc4.nc_inq_format(ncid, formatp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     format = formatp.getValue();
-    if (debug) System.out.printf("open %s id=%d format=%d %n", ncfile.getLocation(), ncid, format);
+    log.debug("open {} id={} format={}", ncfile.getLocation(), ncid, format);
 
     // read root group
     makeGroup(new Group4(ncid, ncfile.getRootGroup(), null));
@@ -349,7 +351,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     List<Attribute> gatts = makeAttributes(g4.grpid, Nc4prototypes.NC_GLOBAL, ngattsp.getValue(), null);
     for (Attribute att : gatts) {
       ncfile.addAttribute(g4.g, att);
-      if (debug) System.out.printf(" add Global Attribute %s %n", att);
+      log.debug(" add Global Attribute {}", att);
     }
 
     makeVariables(g4);
@@ -406,7 +408,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       boolean isUnlimited = containsInt(nunlimdimsp.getValue(), unlimdimids, i);
       Dimension dim = new Dimension(dname, lenp.getValue().intValue(), true, isUnlimited, false);
       ncfile.addDimension(g4.g, dim);
-      if (debug) System.out.printf(" add Dimension %s (%d) %n", dim, dimids[i]);
+      log.debug("add Dimension {} ({})", dim, dimids[i]);
     }
   }
 
@@ -951,7 +953,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     int nvars = nvarsp.getValue();
-    if (debug) System.out.printf(" nvars= %d %n", nvars);
+    log.debug("nvars= {}", nvars);
 
     int[] varids = new int[nvars];
     ret = nc4.nc_inq_varids(g4.grpid, nvarsp, varids);
@@ -1018,7 +1020,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         v.addAttribute(att);
       }
 
-      if (debug) System.out.printf(" added Variable %s %n", v);
+      log.debug("added Variable {}", v);
     }
   }
 
@@ -1383,7 +1385,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       String name = makeString(nameb);
       int utype = classp.getValue();
-      if (debug) System.out.printf(" user type id=%d name=%s size=%d baseType=%d nfields=%d class=%d%n",
+      log.debug("user type id={} name={} size={} baseType={} nfields={} class={}",
               typeid, name, sizep.getValue().longValue(), baseType.getValue(), nfieldsp.getValue().longValue(), utype);
 
       UserType ut = new UserType(grpid, typeid, name, sizep.getValue().longValue(), baseType.getValue(),
@@ -2253,7 +2255,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ncfile.finish();
 
     // create new file
-    if (debug) System.out.println("create " + ncfile.getLocation());
+    log.debug("create {}", ncfile.getLocation());
     int ret;
 
     /* IntByReference oldFormat = new IntByReference();
