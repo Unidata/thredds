@@ -41,8 +41,8 @@ import org.junit.rules.TemporaryFolder;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTaskImpl;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;

@@ -85,10 +85,7 @@ elsewhere.
 
 ==== Mac
 
-The system library path maps to the `DYLD_LIBRARY_PATH` environment
-variable.
-
-TODO: Where is NetCDF typically installed on Mac?
+The system library path maps to the `DYLD_LIBRARY_PATH` environment variable. If you use Homebrew or MacPorts to install netCDF-4, netCDF-Java will check their default installation directories automatically (`/usr/local/lib/` and `/opt/local/lib/`, respectively).
 
 === Alternate methods
 
@@ -114,6 +111,8 @@ configuration file>>.
 ** directly call
 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/javadocAll/ucar/nc2/jni/netcdf/Nc4Iosp.html#setLibraryAndPath(java.lang.String,%20java.lang.String)[Nc4Iosp.setLibraryAndPath()]
 from your Java program
+
+In all cases, it is recommended that you use an absolute path to specify the library location.
 
 === Troubleshooting
 

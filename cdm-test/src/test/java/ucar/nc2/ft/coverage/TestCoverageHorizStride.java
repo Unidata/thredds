@@ -19,8 +19,8 @@ import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * Created by John on 9/11/2015.

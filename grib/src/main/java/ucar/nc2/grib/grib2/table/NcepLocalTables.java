@@ -273,7 +273,6 @@ public class NcepLocalTables extends LocalTables {
 
   @Override
   public String getLevelNameShort(int id) {
-    if (id < 192) return super.getLevelNameShort(id);
     switch (id) {
       case 200:
         return "entire_atmosphere_single_layer";
@@ -362,7 +361,6 @@ public class NcepLocalTables extends LocalTables {
 
   @Override
   public String getStatisticNameShort(int id) {
-    if (id < 192) return super.getStatisticNameShort(id);
     switch (id) {
       case 192:
         return "ClimatologicalMeanValue";

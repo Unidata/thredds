@@ -38,8 +38,8 @@ import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 @Category(NeedsExternalResource.class)
 public class Test3dFromOpendap {

@@ -42,7 +42,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DebugFlagsImpl;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.util.List;

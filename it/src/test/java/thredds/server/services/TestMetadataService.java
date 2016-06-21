@@ -8,7 +8,7 @@ import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.util.ArrayList;
 import java.util.List;

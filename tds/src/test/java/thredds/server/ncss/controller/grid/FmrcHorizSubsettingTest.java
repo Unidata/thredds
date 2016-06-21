@@ -26,7 +26,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.Arrays;

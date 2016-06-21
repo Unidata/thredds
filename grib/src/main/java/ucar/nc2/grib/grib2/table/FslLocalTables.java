@@ -139,24 +139,22 @@ public class FslLocalTables extends NcepLocalTables {
 
   @Override
   public String getLevelNameShort(int id) {
-    if (id < 192) return super.getLevelNameShort(id);
     switch (id) {
       case 200:
         return "Entire_atmosphere";
       default:
-        return null;
+        return super.getLevelNameShort(id);
     }
   }
 
   @Override
 
   public String getLevelName(int id) {
-    if (id < 192) return super.getLevelName(id);
     switch (id) {
       case 200:
         return "Entire atmosphere layer";
       default:
-        return null;
+        return super.getLevelName(id);
     }
   }
 

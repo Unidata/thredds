@@ -37,12 +37,12 @@ import org.junit.Test;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.CommonTestUtils;
+import ucar.unidata.util.test.UnitTestCommon;
 
 /**
  * Test interaction of multi-threading with httpservices.
  */
-public class TestThreading extends CommonTestUtils
+public class TestThreading extends UnitTestCommon
 {
     //////////////////////////////////////////////////.
     // Constants

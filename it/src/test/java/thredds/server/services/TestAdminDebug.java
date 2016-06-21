@@ -10,8 +10,8 @@ import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.NotJenkins;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NotJenkins;
 
 import java.net.URL;
 import java.util.ArrayList;

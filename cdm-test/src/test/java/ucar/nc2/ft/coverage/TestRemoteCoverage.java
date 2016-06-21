@@ -40,7 +40,7 @@ import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.unidata.test.util.NeedsExternalResource;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 
 /**

@@ -5,8 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.util.NotJenkins;
-import ucar.unidata.test.util.NotTravis;
+import ucar.unidata.util.test.category.NotJenkins;
+import ucar.unidata.util.test.category.NotTravis;
 
 import java.io.IOException;
 import java.io.StringWriter;

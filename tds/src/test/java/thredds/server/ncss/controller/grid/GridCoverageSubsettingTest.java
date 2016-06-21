@@ -66,8 +66,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration

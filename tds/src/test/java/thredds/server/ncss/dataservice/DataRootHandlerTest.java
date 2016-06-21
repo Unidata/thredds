@@ -14,7 +14,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.core.DataRootManager;
 import thredds.server.ncss.controller.AbstractNcssController;
 import thredds.server.ncss.controller.NcssDiskCache;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.util.List;
 

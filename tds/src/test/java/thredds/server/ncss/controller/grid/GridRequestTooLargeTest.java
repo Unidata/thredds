@@ -47,7 +47,7 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.server.ncss.controller.NcssGridController;
 import thredds.server.exception.RequestTooLargeException;
 import thredds.server.ncss.params.NcssGridParamsBean;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.ArrayList;

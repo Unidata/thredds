@@ -1,6 +1,9 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+// Enables non-selectable callout icons drawn using CSS.
+:icons: font
+
 = TDS Configuration file
 
 The TDS configuration file
@@ -8,8 +11,8 @@ The TDS configuration file
 administrator to control the behavior of the TDS.
 
 As of 5.0, if this file is missing, then default settings will be used.
-We strongly encourage you to fill in the link:#Server_Description[Server
-Information] fields, but all other fields are optional, and default
+We strongly encourage you to fill in the <<Server Information>> fields,
+but all other fields are optional, and default
 settings are used whenever you dont override. Generally its good
 practice to only include the elements you want to change from the
 defaults.
@@ -17,54 +20,55 @@ defaults.
 When changing `threddsConfig.xml`, you must restart the thredds webapp
 (e.g., through the Tomcat manager application) for them to take effect.
 
-Here is an annotated example
-link:threddsConfig.xml.txt[threddsConfig.xml].
+link:https://raw.githubusercontent.com/Unidata/thredds/master/tds/src/main/webapp/WEB-INF/altContent/startup/threddsConfig.xml[Here]
+is an annotated example of `threddsConfig.xml`.
 
 '''''
 
 *Contents*
 
-TDS global configuration options
+.<<TDS global configuration options>>
 
-* link:#Server_Description[Server Information]
-* link:#Generated_HTML_Pages[Generated HTML Pages]
-* link:#catalogOutput[Controlling THREDDS catalog output] +
-* link:#catalogRoots[Hidden Root Catalogs]
-* link:#Viewers[Adding a Viewer]
-* link:#DatasetSource[Adding a Dataset Source]
-* link:#LogVersionInfo[Checking for updates]
+* <<Server Information>>
+* <<Generated HTML Pages>>
+* <<Controlling THREDDS catalog output>>
+* <<Extra Catalog Roots>>
+* <<Adding Viewers>>
+* <<Adding Dataset Sources>>
+* <<Checking for Updates>>
 
-Controlling Data Services
+.<<Controlling Data Services>>
 
-* link:#Remote[Remote Catalog Services]
-* link:#opendap[OPeNDAP]
-* link:#WCS[WCS]
-* link:#WMS[WMS]
-* link:#ncss[NetCDF Subset Service] +
-* link:#ncISO[ncISO] +
+* <<Remote Catalog Service for Catalogs>>
+* <<OPeNDAP Service>>
+* <<WCS Service>>
+* <<WMS Service>>
+* <<NetCDF Subset Service (NCSS)>>
+* <<ncISO Service>>
 
-CDM Configuration
+.<<CDM Configuration>>
 
-* link:#Aggregation[Aggregation]
-* link:#FeatureCollections[Feature Collections]
-* link:#netcdfCLibrary[Netcdf-4 C Library Loading]
-* link:#runtime[NetCDF-Java runtime Loading]
+* <<Feature Collections>>
+* <<NetCDF-4 C library loading>>
+* <<NetCDF-Java runtime Loading>>
+* <<Aggregation>>
 
-Disk Caching
+.<<Disk Caching and temporary files>>
 
-* link:#DiskCache[CDM Disk cache]
-* link:#AggregationCache[Aggregation Cache]
-* link:#FeatureCollectionCache[FMRC cache]
-* link:#GribIndexWriting[Grib Index redirection]
+* <<CDM library Disk cache>>
+* <<Aggregation Cache>>
+* <<FeatureCollection cache>>
+* <<GRIB Index redirection>>
 
-Object caching
+.<<Object Caching>>
 
-* link:#RafCache[File Handles]
-* link:#FileCache[NetcdfFile Object]
+* <<File Handle Caching>>
+* <<NetcdfFile Objects>>
 
-Catalog Processing
+.<<Catalog Processing>>
 
-* link:#CatalogCaching[Config Catalog caching] +
+* <<Configuration Catalog>>
+* <<User Triggering>>
 
 '''''
 
@@ -76,6 +80,7 @@ In the `serverInformation` element, you provide basic information about
 your server including contact information, and information about the
 group that hosts the server. +
 
+[source,xml]
 -------------------------------------------------------------------------------
 <serverInformation>
     <name>Initial TDS Installation</name>
@@ -113,6 +118,7 @@ NOTE: The best way to use your own logo is to put it in the
 `${tomcat_home}/content/thredds/public/` directory, and specify it in
 _serverInformation_ as `/thredds/<name>`, e.g.:
 
+[source,xml]
 ----------------------------------------
 <logoUrl>/thredds/yourIcon.gif</logoUrl>
 ----------------------------------------
@@ -136,26 +142,25 @@ by placing the appropriate CSS files in the
 *$\{tomcat_home}/content/thredds/public/* directory and pointing to them
 here:
 
+[source,xml]
 ------------------------------------------------------------
 <htmlSetup>
-1)  <standardCssUrl>tds.css</standardCssUrl>
-2)  <catalogCssUrl>tdsCat.css</catalogCssUrl>
-3)  <openDapCssUrl>tdsDap.css</openDapCssUrl>
-4)  <googleTrackingCode>239487348739933</googleTrackingCode>
+  <standardCssUrl>tds.css</standardCssUrl>  <!--1-->
+  <catalogCssUrl>tdsCat.css</catalogCssUrl>  <!--2-->
+  <openDapCssUrl>tdsDap.css</openDapCssUrl>  <!--3-->
+  <googleTrackingCode>239487348739933</googleTrackingCode>  <!--4-->
 </htmlSetup>
 ------------------------------------------------------------
-
-where:
-
-1.  The CSS used in TDS dataset pages.
-2.  The CSS used in TDS catalogs pages
-3.  The CSS used in the OPeNDAP form.
-4.  Google Analytics Tracking Code (GATC) enables tracking catalog use.
+<1> The CSS used in TDS dataset pages.
+<2> The CSS used in TDS catalogs pages
+<3> The CSS used in the OPeNDAP form.
+<4> Google Analytics Tracking Code (GATC) enables tracking catalog use.
 Obtain the GATC from http://www.google.com/analytics/[Google] and enter
 it here to enable this feature.
 
 === Controlling THREDDS catalog output
 
+[source,xml]
 --------------------------------------------------
 <catalogWriting>
   <useBytesForDataSize>false<useBytesForDataSize/>
@@ -169,6 +174,7 @@ appropriately
 [[catalogRoots]]
 === Extra Catalog Roots
 
+[source,xml]
 ----------------------------------------------------------------
 <catalogRoot>tempCatalog.xml</catalogRoot>
 <catalogRoot>idd/catalog.xml</catalogRoot>
@@ -185,6 +191,7 @@ static catalogs must live within the *$\{tomcat_home}/content/thredds* directory
 
 === Adding Viewers
 
+[source,xml]
 ------------------------------------
 <Viewer>my.package.MyViewer</Viewer>
 ------------------------------------
@@ -195,6 +202,7 @@ the config file only if you are writing your own Java class.
 
 === Adding Dataset Sources
 
+[source,xml]
 -----------------------------------------------------------
 <datasetSource>my.package.DatasetSourceImpl</datasetSource>
 -----------------------------------------------------------
@@ -205,6 +213,7 @@ source>> at runtime.
 
 === Checking for Updates
 
+[source,xml]
 ---------------------------------------
 <TdsUpdateConfig>
   <logVersionInfo>true</logVersionInfo>
@@ -218,8 +227,6 @@ log that information in the TDS _*serverStartup.log*_ file as INFO
 entries. If you do not want the TDS to check for this on startup, set
 this to __false__.
 
-'''''
-
 == Controlling Data Services
 
 === Remote Catalog Service for Catalogs
@@ -228,6 +235,7 @@ Catalog services are available by default for catalogs served by the
 local TDS. But for remote catalogs these services must be explicitly
 enabled in threddsConfig.xml:
 
+[source,xml]
 ---------------------------------
 <CatalogServices>
   <allowRemote>true</allowRemote>
@@ -236,6 +244,7 @@ enabled in threddsConfig.xml:
 
 === OPeNDAP Service
 
+[source,xml]
 --------------------------------------------
 <Opendap>
   <ascLimit>50</ascLimit>
@@ -263,6 +272,7 @@ The OGC WCS service provided as part of the TDS is described in more
 detail <<WCS#,here>>. By default this service is enabled, and can
 be disabled by including the following in the `threddsConfig.xml` file:
 
+[source,xml]
 ----------------------
 <WCS>
   <allow>false</allow>
@@ -272,6 +282,7 @@ be disabled by including the following in the `threddsConfig.xml` file:
 The following shows all the configuration options available in the WCS
 section of the `threddsConfig.xml` file with the default values shown:
 
+[source,xml]
 ---------------------------------
 <WCS>
   <allow>true</allow>
@@ -303,6 +314,7 @@ The OGC WMS service provided as part of the TDS is described in more
 detail <<WMS#,here>>. By default this service is enabled, and can
 be disabled by including the following in the `threddsConfig.xml` file:
 
+[source,xml]
 ----------------------
 <WMS>
   <allow>false</allow>
@@ -312,6 +324,7 @@ be disabled by including the following in the `threddsConfig.xml` file:
 The following shows all the configuration options available in the WMS
 section of the `threddsConfig.xml` file with the default values shown:
 
+[source,xml]
 ------------------------------------------------------------
 <WMS>
   <allow>true</allow>
@@ -348,6 +361,7 @@ more detail <<NetcdfSubsetServiceReference#,here>>. By default
 this service is enabled, and can be disabled by including the following
 in the `threddsConfig.xml` file:
 
+[source,xml]
 ----------------------
 <NetcdfSubsetService>
   <allow>false</allow>
@@ -358,6 +372,7 @@ The following shows all the configuration options available in the
 NetcdfSubsetService section of the `threddsConfig.xml` file with the
 default values shown:
 
+[source,xml]
 ---------------------------------------------------
 <NetcdfSubsetService>
   <allow>true</allow>
@@ -392,6 +407,7 @@ Optional; default is that there is no size limitation. If the file is >
 By default these services are enabled, and can be disabled by including
 the following in the `threddsConfig.xml` file:
 
+[source,xml]
 ------------------------------
 <NCISO>
   <ncmlAllow>false</ncmlAllow>
@@ -404,12 +420,11 @@ Each of the *allow* elements above enables the corresponding ncISO
 service (NCML, UDDC, and ISO). The ncISO services are described in more
 detail on the <<ncISO#,ncISO page>>.
 
-'''''
-
-== CDM configuration
+== CDM Configuration
 
 === Feature Collections
 
+[source,xml]
 -----------------------------------
 <FeatureCollection>
   <RollingFileAppender>
@@ -430,25 +445,33 @@ will apply to all Feature Collections).
 
 === NetCDF-4 C library loading
 
+[source,xml]
 -----------------------------------------
 <Netcdf4Clibrary>
-  <libraryPath>C:/cdev/lib/</libraryPath>
-  <libraryName>netcdf4</libraryName>
+  <libraryPath>/usr/local/lib</libraryPath>
+  <libraryName>netcdf</libraryName>
+  <useForReading>false</useForReading>
 </Netcdf4Clibrary>
 -----------------------------------------
 
 In order to write netCDF-4 files, you must have the
-http://www.unidata.ucar.edu/downloads/netcdf/index.jsp[netCDF-4 C
-library], version 4.2.1 or above, compiled and available on your system,
-along with all supporting libraries (hdf5 etc). The
-http://www.unidata.ucar.edu/software/netcdf-java/reference/netcdf4Clibrary.html[details]
-of this differ for each operating system.
+http://www.unidata.ucar.edu/downloads/netcdf/index.jsp[netCDF-4 C library]—version 4.3.1 or above—compiled and
+available on your system, along with all supporting libraries (HDF5, zlib, and curl). The
+<<../../netcdf-java/reference/netcdf4Clibrary.html#,details>> of this differ for each operating system. The elements
+above allow you to configure how the library is discovered and used.
 
-For TDS users, we recommend setting the library path and name in
-`threddsConfig.xml` as in the above example.
+* `libraryPath`: The directory in which the native library is installed.
+* `libraryName`: The name of the native library. This will be used to locate the proper .DLL, .SO, or .DYLIB file
+  within the `libraryPath` directory.
+* `useForReading`: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is
+  responsible for reading them. However, if this property is set to true, then it will be used for reading
+  NetCDF-4 (and HDF5) files as well.
+
+For TDS users, we recommend setting the library path and name in `threddsConfig.xml` as in the above example.
 
 === NetCDF-Java runtime Loading
 
+[source,xml]
 -------------------------------------------------------------------------------------------------------
 <nj22Config>
   <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>
@@ -469,6 +492,7 @@ for an overview.
 
 === Aggregation
 
+[source,xml]
 ----------------------------------------------
 <Aggregation>
   <typicalDataset>penultimate</typicalDataset>
@@ -479,8 +503,6 @@ You can control how NcML Aggregation chooses its typical/template
 dataset — the one it uses to populate the metadata for the resulting
 aggregated dataset. Valid values are **first, random, latest**, and
 *penultimate* (latest but one). The default is **penultimate**.
-
-'''''
 
 == Disk Caching and temporary files
 
@@ -539,6 +561,7 @@ scouring of each of these.
 
 === CDM library Disk cache
 
+[source,xml]
 ------------------------------
 <DiskCache>
   <alwaysUse>false</alwaysUse>
@@ -577,6 +600,7 @@ you use this default, by not specifying the *DiskCache.dir* element.
 
 === Aggregation Cache
 
+[source,xml]
 ----------------------------------------------------
 <AggregationCache>
   <dir>/tomcat_home/content/thredds/cache/agg/</dir>
@@ -620,6 +644,7 @@ This is where persistent information is kept about FMRCs, in order to
 speed them up. We recommend that you use the default settings, by not
 specifying this option.
 
+[source,xml]
 ------------------------------------------------------------
  <FeatureCollection>
    <dir>/tomcat_home/content/thredds/cache/collection/</dir>
@@ -641,6 +666,7 @@ memory, ie -Xmx value. **maxSize** will override if present. Default is
 
 === GRIB Index redirection
 
+[source,xml]
 -----------------------------------------------------
 <GribIndex>
   <alwaysUse>false</alwaysUse>
@@ -704,6 +730,7 @@ effect.
 
 === File Handle Caching
 
+[source,xml]
 --------------------------
 <RandomAccessFile>
   <minFiles>400</minFiles>
@@ -720,6 +747,7 @@ these numbers as high as possible.
 
 === NetcdfFile Objects
 
+[source,xml]
 --------------------------
 <NetcdfFileCache>
   <minFiles>100</minFiles>
@@ -728,6 +756,7 @@ these numbers as high as possible.
 </NetcdfFileCache>
 --------------------------
 
+[source,xml]
 --------------------------
 <TimePartition>
   <minFiles>100</minFiles>
@@ -748,6 +777,7 @@ to 0.
 
 === Configuration Catalog
 
+[source,xml]
 --------------------------------------------------------
 <ConfigCatalog>
   <keepInMemory>100</keepInMemory>
@@ -806,8 +836,6 @@ to:
 * *https://server/thredds/admin/catalog?req=readAll*
 * *https://server/thredds/admin/catalog?req=readChanged*
 
- 
-
 === Watch Mode (NOT IMPLEMENTED YET)
 
 In this mode, the TDS will not read all catalogs in when starting. but
@@ -822,4 +850,3 @@ the top catalog (__$tomcat/content/thredds/catalog.xml__), plus any
 other catalogs specified in a link:catalogRoots[catalogRoot element].
 * all catalogs are referenced in a *catalogRef* element in a root
 catalog, or you are using *catalogScan* from a root catalog.
-

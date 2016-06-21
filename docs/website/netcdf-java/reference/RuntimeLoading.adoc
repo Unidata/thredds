@@ -1,6 +1,8 @@
 :source-highlighter: coderay
 [[threddsDocs]]
 
+// Enables non-selectable callout icons drawn using CSS.
+:icons: font
 
 = Runtime Loading
 
@@ -121,24 +123,25 @@ The configuration file looks like this:
 ----
 <?xml version="1.0"?>
 <nj22Config>
-
-1) <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>
-2) <coordSysBuilder convention="foo" class="test.Foo"/>
-3) <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>
-4) <featureDatasetFactory featureType="Point" class="gov.noaa.obscure.file.Flabulate"/>
-5) <gribParameterTable edition="1" center="58" subcenter="-1" version="128">C:/grib/tables/ons288.xml</gribParameterTable>
-6) <gribParameterTableLookup edition="1">C:/grib/tables/ncepLookup.txt</gribParameterTableLookup>
-7) <table type="GRIB1" filename="/grib/tables/userlookup.lst"/>
-8) <table type="GRIB2" filename="/grib/tables/grib2userparameters" />
-9) <bufrtable filename="C:/my/files/lookup.txt" />
-10)<grib1Table strict="false"/>
-11)<Netcdf4Clibrary>
-     <libraryPath>C:/cdev/lib/</libraryPath>
-     <libraryName>netcdf4</libraryName>
-   </Netcdf4Clibrary>
+  <ioServiceProvider  class="edu.univ.ny.stuff.FooFiles"/>  <!--1-->
+  <coordSysBuilder convention="foo" class="test.Foo"/>  <!--2-->
+  <coordTransBuilder name="atmos_ln_sigma_coordinates" type="vertical" class="my.stuff.atmosSigmaLog"/>  <!--3-->
+  <featureDatasetFactory featureType="Point" class="gov.noaa.obscure.file.Flabulate"/>  <!--4-->
+  <gribParameterTable edition="1" center="58" subcenter="-1" version="128">C:/grib/tables/ons288.xml</gribParameterTable>  <!--5-->
+  <gribParameterTableLookup edition="1">C:/grib/tables/ncepLookup.txt</gribParameterTableLookup>  <!--6-->
+  <table type="GRIB1" filename="/grib/tables/userlookup.lst"/>  <!--7-->
+  <table type="GRIB2" filename="/grib/tables/grib2userparameters" />  <!--8-->
+  <bufrtable filename="C:/my/files/lookup.txt" />  <!--9-->
+  <grib1Table strict="false"/>  <!--10-->
+  <Netcdf4Clibrary>  <!--11-->
+     <libraryPath>/usr/local/lib</libraryPath>
+     <libraryName>netcdf</libraryName>
+     <useForReading>false</useForReading>
+  </Netcdf4Clibrary>
 </nj22Config>
 ----
-
+// We're doing a normal numbered list here instead of callout items because item 11 requires a nested list.
+// However, callout items do not support complex content: https://github.com/asciidoctor/asciidoctor/issues/1478
 1.  Loads an `IOServiceProvider` with the given class name
 2.  Loads a `CoordSysBuilderIF` with the given class name, which looks for the given *Convention* attribute value.
 3.  Loads a `CoordTransBuilderIF` with the given class name, which looks
@@ -150,7 +153,13 @@ for the given *transformName* in the dataset. The type must be _vertical_ or __p
 8.  Load a <<formats/GribTables#,GRIB-2 parameter lookup table>> (versions < 4.3, deprecated)
 9.  Load a <<formats/BufrTables#,BUFR table lookup>> file
 10. Turn <<formats/GribTables.adoc#strict,strict GRIB1 table handling>> off.
-11. Set the <<netcdf4Clibrary#,netCDF-4 C library>> path and name.
+11. Configure how the <<netcdf4Clibrary#,netCDF-4 C library>> is discovered and used.
+    ** `libraryPath`: The directory in which the native library is installed.
+    ** `libraryName`: The name of the native library. This will be used to locate the proper .DLL, .SO, or .DYLIB file
+        within the `libraryPath` directory.
+    ** `useForReading`: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is
+       responsible for reading them. However, if this property is set to true, then it will be used for reading
+       NetCDF-4 (and HDF5) files as well.
 
 There are several ways pass the Runtime Configuration XML to the CDM
 library. From your application, you can pass a `java.io.InputStream` (or http://www.jdom.org/[JDOM] element) to
@@ -236,6 +245,3 @@ com.mycompany.MyIOSP
 See: http://docs.oracle.com/javase/1.4.2/docs/api/javax/imageio/spi/ServiceRegistry.html
 
 (thanks to Tom Kunicki at USGS for this contribution)
-
-'''''
-image:../nc.gif[image] This document was last updated October 2015
