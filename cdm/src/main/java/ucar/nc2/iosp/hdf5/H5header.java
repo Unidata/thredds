@@ -4345,6 +4345,7 @@ public class H5header {
     H5header.HeapIdentifier heapId = new HeapIdentifier(heapIdAddress);
     H5header.GlobalHeap.HeapObject ho = heapId.getHeapObject();
     if (ho == null) throw new IllegalStateException("Cant find Heap Object,heapId="+heapId);
+    if (ho.dataSize > 1000 * 1000) return String.format("Bad HeapObject.dataSize=%s", ho);
     raf.seek(ho.dataPos);
     return readStringFixedLength((int) ho.dataSize);
   }
@@ -4525,10 +4526,11 @@ public class H5header {
         int dsize = ((int) o.dataSize) + padding((int) o.dataSize, 8);
         countBytes += dsize + 16;
 
-        //System.out.printf("%d heapId=%d dataSize=%d countBytes=%d%n", count, o.id, o.dataSize, countBytes);
+        // System.out.printf("%d heapId=%d dataSize=%d countBytes=%d%n", count, o.id, o.dataSize, countBytes);
         if (o.id == 0) break; // ?? look
         if (o.dataSize < 0) break; // ran off the end, must be done
         if (countBytes < 0) break; // ran off the end, must be done
+        if (countBytes > sizeBytes) break; // ran off the end
 
         if (debugDetail && (debugOut != null)) debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
                   " dataSize = " + o.dataSize + " dataPos = " + o.dataPos + " count= " + count + " countBytes= " + countBytes);
