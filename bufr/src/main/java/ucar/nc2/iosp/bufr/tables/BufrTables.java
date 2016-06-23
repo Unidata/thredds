@@ -32,26 +32,26 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.TableLookup;
 import ucar.nc2.util.TableParser;
-
-import java.lang.*;     // Standard java functions
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.io.*;
-import java.net.URL;
-
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import ucar.nc2.wmo.Util;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
+
+import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Reads BUFR tables of various forms. Interacts with TableLookup.

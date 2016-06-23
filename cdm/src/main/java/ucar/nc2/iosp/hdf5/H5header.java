@@ -1348,12 +1348,11 @@ public class H5header {
           vinfo.fillValue = fvm.value;
       }
 
-          Object fillValue = vinfo.getFillValueNonDefault();
-          if (fillValue != null) {
-              Object defFillValue = N3iosp.getFillValueDefault(vinfo.typeInfo.dataType);
-              if (!fillValue.equals(defFillValue))
-                  fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
-          }
+      Object fillValue = vinfo.getFillValueNonDefault();
+      if (fillValue != null) {
+        Object defFillValue = N3iosp.getFillValueDefault(vinfo.typeInfo.dataType);
+        if (!fillValue.equals(defFillValue))
+          fillAttribute = new Attribute(CDM.FILL_VALUE, (Number) fillValue, vinfo.typeInfo.unsigned);
       }
     }
 
