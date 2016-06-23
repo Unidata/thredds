@@ -28,7 +28,8 @@ WMO.17, 0,     0,        17,    0,    -1,   resource:/resources/bufrTables/wmo/B
 WMO.18, 0,     0,        18,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_18_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_18_0_0_TableD_en.xml, wmo_xml
 WMO.19, 0,     0,        19,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_19_1_1_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_19_1_1_TableD_en.xml, wmo_xml
 WMO.22, 0,     0,        22,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_22_0_1_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_22_0_1_TableD_en.xml, wmo_xml
-WMO.any, 0,     0,       -1,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_22_0_1_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_22_0_1_TableD_en.xml, wmo_xml
+WMO.25, 0,     0,        25,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_25_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_25_0_0_TableD_en.xml, wmo_xml
+WMO.any, 0,     0,       -1,    0,    -1,   resource:/resources/bufrTables/wmo/BUFRCREX_25_0_0_TableB_en.xml, wmo_xml, resource:/resources/bufrTables/wmo/BUFR_25_0_0_TableD_en.xml, wmo_xml
 #
 # NCEP
 # see http://www.emc.ncep.noaa.gov/mmb/data_processing/bufrtab_tablea.htm#1
@@ -60,8 +61,9 @@ ECMWF.13, 98,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local
 #
 # EUMETSAT
 # name,     center,subcenter,master,local,cat,  tableB,tableBformat,tableD,tableDformat, mode
+EUMETSAT.11, 254,    -1,       11,    -1,   -1, resource:/resources/bufrTables/local/eumetsat.B3L-254-011-B.diff, mel_bufr, , ,
 EUMETSAT.13, 254,    -1,       13,    -1,   -1, resource:/resources/bufrTables/local/eumetsat_b_v13.txt, ecmwf, , ,
-EUMETSAT.11, 254,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/eumetsat.B3L-254-011-B.diff, mel_bufr, , ,
+EUMETSAT.19, 254,    -1,       -1,    -1,   -1, resource:/resources/bufrTables/local/eumetsat.B0000000000254019001.txt, ecmwf, resource:/resources/bufrTables/local/eumetsat.D0000000000254019001.txt, ecmwf
 #
 # EUMETNET OPERA - using -1 !!!!
 #255,  255,       -1,    5,   -1, resource:/resources/bufrTables/local/opera/localtabb_65535_5.csv, opera, resource:/resources/bufrTables/local/opera/localtabd_65535_5.csv, opera,
