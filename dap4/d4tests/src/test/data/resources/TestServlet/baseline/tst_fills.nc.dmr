@@ -4,7 +4,11 @@
          dmrVersion="1.0"
          xmlns="http://xml.opendap.org/ns/DAP/4.0#"
          xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
-    <UInt8 name="uv8"/>
+    <UInt8 name="uv8">
+        <Attribute name="_FillValue" type="UInt8">
+            <Value value="255"/>
+        </Attribute>
+    </UInt8>
     <Int16 name="v16"/>
     <Int32 name="uv32">
         <Attribute name="_FillValue" type="Int32">

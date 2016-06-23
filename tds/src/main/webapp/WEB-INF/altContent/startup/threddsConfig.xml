@@ -256,5 +256,20 @@
   </FeatureCollection>
   -->
 
-
+  <!--
+    Configure how the NetCDF-4 C library is discovered and used.
+    libraryPath: The directory in which the native library is installed.
+    libraryName: The name of the native library. This will be used to locate the proper .DLL, .SO, or .DYLIB file
+      within the libraryPath directory.
+    useForReading: By default, the native library is only used for writing NetCDF-4 files; a pure-Java layer is
+      responsible for reading them. However, if this property is set to true, then it will be used for reading
+      NetCDF-4 (and HDF5) files as well.
+  -->
+  <!--
+  <Netcdf4Clibrary>
+    <libraryPath>/usr/local/lib</libraryPath>
+    <libraryName>netcdf</libraryName>
+    <useForReading>false</useForReading>
+  </Netcdf4Clibrary>
+  -->
 </threddsConfig>
