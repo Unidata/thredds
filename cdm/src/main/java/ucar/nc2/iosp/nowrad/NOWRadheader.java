@@ -90,7 +90,7 @@ public class NOWRadheader {
     // production dessciption block
     private int                              numX;
     private int                              numY;
-    private ucar.unidata.io.RandomAccessFile raf;
+    ucar.unidata.io.RandomAccessFile raf;
 
     /**
      * check if this file is a nids / tdwr file
