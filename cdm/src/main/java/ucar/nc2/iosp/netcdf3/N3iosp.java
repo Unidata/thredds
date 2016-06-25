@@ -947,10 +947,16 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   public void close() throws java.io.IOException {
     if (raf != null) {
       long size = header.calcFileSize();
-      raf.setMinLength( size);
+      raf.setMinLength(size);
       raf.close();
     }
     raf = null;
+  }
+
+  @Override
+  public void reacquire() throws IOException {
+    super.reacquire();
+    header.raf = this.raf;
   }
 
   /**
