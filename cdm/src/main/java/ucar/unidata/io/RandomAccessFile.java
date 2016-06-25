@@ -421,14 +421,16 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    * @throws IOException if an I/O error occurrs.
    */
   public synchronized void close() throws IOException {
-    if (cacheState > 0) {
-      if (cacheState == 1) {
-        cacheState = 2;
-        if (cache.release(this))  // return true if in the cache, otherwise was opened regular, so must be closed regular
-          return;
-        cacheState = 0; // release failed, bail out
-      } else {
-        return; // close has been called more than once - ok
+    if (cache != null) {
+      if (cacheState > 0) {
+        if (cacheState == 1) {
+          cacheState = 2;
+          if (cache.release(this))  // return true if in the cache, otherwise was opened regular, so must be closed regular
+            return;
+          cacheState = 0; // release failed, bail out
+        } else {
+          return; // close has been called more than once - ok
+        }
       }
     }
 

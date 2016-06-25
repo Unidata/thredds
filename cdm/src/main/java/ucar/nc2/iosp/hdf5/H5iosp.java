@@ -554,25 +554,21 @@ public class H5iosp extends AbstractIOServiceProvider {
   }
 
   //////////////////////////////////////////////////////////////////////////
-  // utilities
+  // override base class
 
-  /**
-   * Close the file.
-   *
-   * @throws IOException on io error
-   */
+  @Override
   public void close() throws IOException {
-    if (raf != null) {
-      raf.close();
-      // log.warn("H5iosp.close called on "+myRaf.getLocation()+" for ncfile="+ncfile.hashCode()+" for iosp="+this.hashCode());
-    }
-    raf = null;
+    super.close();
     headerParser.close();
   }
 
-  /**
-   * Debug info for this object.
-   */
+  @Override
+  public void reacquire() throws IOException {
+    super.reacquire();
+    headerParser.raf = this.raf;
+  }
+
+  @Override
   public String toStringDebug(Object o) {
     if (o instanceof Variable) {
       Variable v = (Variable) o;
@@ -582,6 +578,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     return null;
   }
 
+  @Override
   public String getDetailInfo() {
     Formatter f = new Formatter();
     ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
@@ -601,7 +598,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     return f.toString();
   }
 
-  // debug
+  @Override
   public Object sendIospMessage(Object message) {
     if (message.toString().equals(IOSP_MESSAGE_INCLUDE_ORIGINAL_ATTRIBUTES)) {
       includeOriginalAttributes = true;
@@ -619,6 +616,7 @@ public class H5iosp extends AbstractIOServiceProvider {
     return super.sendIospMessage(message);
   }
 
+  // debug
   NetcdfFile getNetcdfFile() {
     return headerParser.ncfile;
   }
