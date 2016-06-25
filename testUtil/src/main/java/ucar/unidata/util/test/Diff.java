@@ -1,4 +1,4 @@
-package ucar.unidata.test;
+package ucar.unidata.util.test;
 
 
 // Diff -- text file difference utility.

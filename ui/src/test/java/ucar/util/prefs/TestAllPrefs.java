@@ -34,7 +34,7 @@
 
 package ucar.util.prefs;
 
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 import ucar.util.prefs.ui.*;
 import junit.framework.*;
 

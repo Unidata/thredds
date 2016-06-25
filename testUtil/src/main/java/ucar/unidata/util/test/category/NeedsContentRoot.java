@@ -1,4 +1,4 @@
-package ucar.unidata.test.util;
+package ucar.unidata.util.test.category;
 
 /**
  * A marker to be used with JUnit categories to indicate that a test method or test class requires that a TDS

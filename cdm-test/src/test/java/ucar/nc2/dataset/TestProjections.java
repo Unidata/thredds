@@ -46,8 +46,8 @@ import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
@@ -212,7 +212,7 @@ public class TestProjections {
 
       if (ctv != null) {
         Formatter f = new Formatter(System.out);
-        ucar.unidata.test.util.CompareNetcdf.checkContains(ctv.getAttributes(), ctvSyn.getAttributes(), f);
+        ucar.unidata.util.test.CompareNetcdf.checkContains(ctv.getAttributes(), ctvSyn.getAttributes(), f);
       }
 
       if (testPt != null) {

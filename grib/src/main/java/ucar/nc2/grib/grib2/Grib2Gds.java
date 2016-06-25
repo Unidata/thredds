@@ -35,17 +35,25 @@ package ucar.nc2.grib.grib2;
 
 import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
+import java.util.Arrays;
+import java.util.Formatter;
+
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.util.Misc;
-import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.EarthEllipsoid;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
-
-import java.util.Arrays;
-import java.util.Formatter;
 
 /**
  * Template-specific fields for Grib2SectionGridDefinition
@@ -93,6 +101,9 @@ public abstract class Grib2Gds {
       // LOOK NCEP specific
       case 204:
         result = new CurvilinearOrthogonal(data);
+        break;
+      case 32769:
+        result = new RotatedLatLon32769(data);
         break;
 
       default:
@@ -391,31 +402,27 @@ public abstract class Grib2Gds {
       la2 = getOctet4(56) * scale;
       lo2 = getOctet4(60) * scale;
 
-      if (lo2 < lo1) lo2 += 360.0F;
-      if (Misc.closeEnough(lo1, lo2)) { // canadian met has global with lo1 = lo2 = 180
-        lo1 -= 360.0F;
-      }
-
       scanMode = getOctet(72);
       lastOctet = 73;
     }
 
     public void testScanMode(Formatter f) {
-      float scale = getScale();
-      float firstLat = getOctet4(47) * scale;
-      float lastLat = getOctet4(56) * scale;
-      float dLat = getOctet4(68) * scale;       // may be pos or neg
       if (GribUtils.scanModeYisPositive(scanMode)) {
-        if (firstLat > lastLat)
-          f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, dLat, firstLat, lastLat);
+        if (la1 > la2)
+          f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, deltaLat, la1, la2);
       } else {
-        if (firstLat < lastLat)
-          f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, dLat, firstLat, lastLat);
+        if (la1 < la2)
+          f.format("  **latlon scan mode=%d dLat=%f lat=(%f,%f)%n", scanMode, deltaLat, la1, la2);
       }
     }
 
     protected void finish() {
       super.finish();
+
+      if (lo2 < lo1) lo2 += 360.0F;
+      if (Misc.closeEnough(lo1, lo2)) { // canadian met has global with lo1 = lo2 = 180
+        lo1 -= 360.0F;
+      }
 
       // GFS_Puerto_Rico_0p5deg seems to have deltaLat, deltaLon incorrectly encoded
       float scale = getScale();
@@ -536,18 +543,53 @@ Template 3.1 (Grid definition template 3.1 - rotated latitude/longitude (or equi
    81-84 (4): Angle of rotation of projection
    85-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Note 3)#GRIB2_6_0_1_temp.doc#G2_Gdt31n
    */
-  public static class RotatedLatLon extends LatLon {
-    public float latSouthPole, lonSouthPole, angleRotation;
+  public static class RotatedLatLon extends AbstractRotatedLatLon {
 
     RotatedLatLon(byte[] data) {
       super(data);
-      this.template = 1;
-
-      float scale = getScale();
-      latSouthPole = getOctet4(73) * scale;
-      lonSouthPole = getOctet4(77) * scale;
-      angleRotation = getOctet4(81) * scale;
+      template = 1;
       lastOctet = 85;
+      float scale = getScale();
+      float latSouthPole = getOctet4(73) * scale;
+      float lonSouthPole = getOctet4(77) * scale;
+      float angleRotation = getOctet4(81) * scale;
+      if (angleRotation != 0) {
+        throw new RuntimeException("Unsupported nonzero GRIB2 GDS template 1 angle of rotation: " + angleRotation);
+      }
+      latNorthPole = -LatLonPointImpl.latNormal(latSouthPole);
+      lonNorthPole = LatLonPointImpl.lonNormal(lonSouthPole + 180);
+      // la1/lo1/la2/lo2 are the grid corners in rotated coordinates,
+      // as in COSMO test data; normalise to improve interoperability
+      la1 = (float) LatLonPointImpl.latNormal(la1);
+      lo1 = (float) LatLonPointImpl.lonNormal(lo1);
+      la2 = (float) LatLonPointImpl.latNormal(la2);
+      lo2 = (float) LatLonPointImpl.lonNormal(lo2);
+      // if the corners wrap the rotated antimeridian or the domain does not
+      // contain the origin, then something is very wrong: the reason rotated
+      // latitude/longitude is used is to place the region of interest near
+      // the origin
+      if (la1 >= 0) {
+        throw new RuntimeException("Unexpected nonnegative lower left rotated latitude: " + la1);
+      }
+      if (lo1 >= 0) {
+        throw new RuntimeException("Unexpected nonnegative lower left rotated longitude: " + lo1);
+      }
+      if (la2 <= 0) {
+        throw new RuntimeException("Unexpected nonpositive upper right rotated latitude: " + la2);
+      }
+      if (lo2 <= 0) {
+        throw new RuntimeException("Unexpected nonpositive upper right rotated longitude: " + lo2);
+      }
+    }
+  }
+
+  public abstract static class AbstractRotatedLatLon extends LatLon {
+
+    public double latNorthPole;
+    public double lonNorthPole;
+
+    AbstractRotatedLatLon(byte[] data) {
+      super(data);
     }
 
     @Override
@@ -555,25 +597,23 @@ Template 3.1 (Grid definition template 3.1 - rotated latitude/longitude (or equi
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
       if (!super.equals(o)) return false;
-
-      RotatedLatLon other = (RotatedLatLon) o;
-      if (!Misc.closeEnough(angleRotation, other.angleRotation)) return false;
-      return true;
+      AbstractRotatedLatLon other = (AbstractRotatedLatLon) o;
+      return this.latNorthPole == other.latNorthPole && this.lonNorthPole == other.lonNorthPole;
     }
 
     @Override
     public int hashCode() {
       if (hashCode == 0) {
         int result = super.hashCode();
-        result = 31 * result + (angleRotation != +0.0f ? Float.floatToIntBits(angleRotation) : 0);
+        result = 31 * result + (new Double(latNorthPole)).hashCode();
+        result = 31 * result + (new Double(lonNorthPole)).hashCode();
         hashCode = result;
       }
       return hashCode;
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ucar.unidata.geoloc.projection.RotatedLatLon proj =
-              new ucar.unidata.geoloc.projection.RotatedLatLon(latSouthPole, lonSouthPole, angleRotation);
+      RotatedPole proj = new RotatedPole(latNorthPole, lonNorthPole);
       // LOOK dont transform - works for grib1 Q:/cdmUnitTest/transforms/HIRLAMhybrid.grib
       // LatLonPoint startLL = proj.projToLatLon(new ProjectionPointImpl(lo1, la1));
       //double startx = startLL.getLongitude();
@@ -598,6 +638,64 @@ Template 3.1 (Grid definition template 3.1 - rotated latitude/longitude (or equi
       double endx = cs.startx + (getNx() - 1) * cs.dx;
       double endy = cs.starty + (getNy() - 1) * cs.dy;
       f.format("   should end at x= (%f,%f)%n", endx, endy);
+    }
+
+  }
+
+  /*
+   * GRIB2 - GRID DEFINITION TEMPLATE 3.32769
+   * Rotate Latitude/Longitude (Arakawa Non-E Staggered grid)
+   * http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_temp3-32769.shtml
+   *
+   * This grid is like template 1 (rotated lat/lon) except it has only 80 octets,
+   * changed definition of La2 and Lo2, and is missing the projection south pole
+   * and angle of rotation fields:
+   * [...]
+   * 56-59 La2—center latitude of grid point (see Note1)
+   * 60-63 Lo2—Center longitude of grid point (see Note 1)
+   * [...]
+   * Notes: 4. The rotation of the Latitude/Longitude grid is such that
+   * the intersection of the "prime meridian" and the "equator" has been
+   * located at the central Latitude and Longitude at the area represented
+   */
+  public static class RotatedLatLon32769 extends AbstractRotatedLatLon {
+
+    RotatedLatLon32769(byte[] data) {
+      super(data);
+      template = 32769;
+      lastOctet = 81;
+      // at this point the LatLon constructor has extracted la1/lo1/la2/lo2;
+      // la1/lo1 is the lower left corner and la2/lo2 is the grid centre, both
+      // in unrotated coordinates, so must use them to recalculate
+      // la1/lo1/la2/lo2 as corners in rotated coordinates, as expected by
+      // LatLon methods
+      float latCentre = la2;
+      float lonCentre = lo2;
+      // position of north pole of rotated grid
+      if (latCentre > 0) {
+        latNorthPole = 90 - LatLonPointImpl.latNormal(latCentre);
+        lonNorthPole = LatLonPointImpl.lonNormal(lonCentre + 180);
+      } else {
+        latNorthPole = 90 + LatLonPointImpl.latNormal(latCentre);
+        lonNorthPole = LatLonPointImpl.lonNormal(lonCentre);
+      }
+      RotatedPole proj = new RotatedPole(latNorthPole, lonNorthPole);
+      // recalculate la1/lo1/la2/lo2 in rotated coordinates
+      LatLonPointImpl unrotated = new LatLonPointImpl(la1, lo1);
+      ProjectionPointImpl rotated = new ProjectionPointImpl();
+      proj.latLonToProj(unrotated, rotated);
+      // expect grid centred on origin in rotated coordinates
+      if (rotated.getX() >= 0) {
+        throw new RuntimeException("Unexpected nonnegative lower left rotated longitude: " + rotated.getX());
+      }
+      if (rotated.getY() >= 0) {
+        throw new RuntimeException("Unexpected nonnegative lower left rotated latitude: " + rotated.getY());
+      }
+      la1 = (float) rotated.getY();
+      lo1 = (float) rotated.getX();
+      // by symmetry about the centre
+      la2 = -la1;
+      lo2 = -lo1;
     }
 
   }

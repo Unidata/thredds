@@ -79,6 +79,7 @@ public class CDM {
   public static final String GAUSSIAN = "gaussian_lats";
   public static final String LAT_UNITS = "degrees_north";
   public static final String LON_UNITS = "degrees_east";
+  public static final String RLATLON_UNITS = "degrees";
   public static final String TIME_OFFSET = "time offset from runtime";
 
     // class not interface, per Bloch edition 2 item 19

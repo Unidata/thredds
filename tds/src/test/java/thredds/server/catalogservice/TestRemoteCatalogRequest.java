@@ -34,7 +34,7 @@ package thredds.server.catalogservice;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.BindingResult;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * _defunct for now

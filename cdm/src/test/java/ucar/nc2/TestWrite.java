@@ -1042,7 +1042,6 @@ public class TestWrite {
   @Test
   public void testRecordSizeBug() throws IOException, InvalidRangeException {
     String filename = tempFolder.newFile("foo.nc").getAbsolutePath();
-    Array result1;
     int size = 10;
     Array timeDataAll = Array.factory(DataType.INT, new int[]{size});
 
@@ -1066,9 +1065,8 @@ public class TestWrite {
     }
 
     try (NetcdfFile ncFile = NetcdfFile.open(filename)) {
-      Array result2 = ncFile.readSection("time");
-      System.out.println(result2);
-      ucar.unidata.test.util.CompareNetcdf.compareData(timeDataAll, result2);
+      Array result = ncFile.readSection("time");
+      Assert.assertEquals("0 12 24 36 48 60 72 84 96 108", result.toString().trim());
     }
   }
 }

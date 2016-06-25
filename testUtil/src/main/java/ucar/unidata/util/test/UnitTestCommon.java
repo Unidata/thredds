@@ -2,7 +2,7 @@
    See the LICENSE file for more information.
 */
 
-package ucar.nc2.util;
+package ucar.unidata.util.test;
 
 import org.junit.Assert;
 import ucar.httpservices.HTTPFactory;
@@ -10,8 +10,6 @@ import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.test.Diff;
-import ucar.unidata.test.util.TestDir;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -20,7 +18,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-abstract public class CommonTestUtils
+abstract public class UnitTestCommon
 {
     //////////////////////////////////////////////////
     // Static Constants
@@ -133,12 +131,12 @@ abstract public class CommonTestUtils
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public CommonTestUtils()
+    public UnitTestCommon()
     {
         this("Testing");
     }
 
-    public CommonTestUtils(String name)
+    public UnitTestCommon(String name)
     {
         this.title = name;
         setSystemProperties();

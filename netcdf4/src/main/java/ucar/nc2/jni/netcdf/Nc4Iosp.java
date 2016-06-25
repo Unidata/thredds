@@ -82,14 +82,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
 
   static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
-  //static protected String netcdf4libname = DEFAULTNETCDF4LIBNAME;
-
-  static String[] DEFAULTNETCDF4PATH = new String[]{
-          "/opt/netcdf4/lib",
-          "/home/dmh/opt/netcdf4/lib", //temporary
-          "c:/opt/netcdf", // Windows
-          "/usr/jna_lib/",
-  };
 
   static private String jnaPath = null;
   static private String libName = DEFAULTNETCDF4LIBNAME;
@@ -101,25 +93,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           debugUserTypes = false,
           debugLoad = true,
           debugWrite = false;
-
-  /**
-   * Use the default path to try to set jna.library.path
-   *
-   * @return true if we set jna.library.path
-   */
-  static private String defaultNetcdf4Library() {
-    StringBuilder pathlist = new StringBuilder();
-    for (String path : DEFAULTNETCDF4PATH) {
-      File f = new File(path);
-      if (f.exists() && f.canRead()) {
-        if (pathlist.length() > 0)
-          pathlist.append(File.pathSeparator);
-        pathlist.append(path);
-        break;
-      }
-    }
-    return pathlist.length() == 0 ? null : pathlist.toString();
-  }
 
   /**
    * set the path and name of the netcdf c library.
@@ -143,9 +116,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (jna_path == null) {
       jna_path = nullify(System.getenv(JNA_PATH_ENV));   // Next, try environment variable.
     }
-    if (jna_path == null) {
-      jna_path = defaultNetcdf4Library();                // Last, try some default paths.
-    }
 
     if (jna_path != null) {
       System.setProperty(JNA_PATH, jna_path);
@@ -165,7 +135,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         // jna_path may still be null (the user didn't specify a "jna.library.path"), but try to load anyway;
         // the necessary libs may be on the system PATH.
         nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
-
+	// Make the library synchronized
+	nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
         String message = String.format("NetCDF-4 C library loaded (jna_path='%s', libname='%s').", jnaPath, libName);
         startupLog.info(message);
 
@@ -497,12 +468,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       count++; // dont include the terminating 0
     }
     return new String(b, 0, count, CDM.utf8Charset); // all strings are considered to be UTF-8 unicode.
-    /*
- char[] carray = new char[count];
- for (int i=0; i<count; i++)
-   carray[i] = (char) DataType.unsignedByteToShort(b[i]);
-
- return new String(carray); */
   }
 
   private List<Attribute> makeAttributes(int grpid, int varid, int natts, Variable v) throws IOException {

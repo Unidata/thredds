@@ -7,7 +7,7 @@ apply plugin: 'groovy'  // For Spock tests.
 dependencies {
     compile project(':udunits')
     compile project(':httpservices')
-    
+
     compile libraries["joda-time"]
     compile libraries["jdom2"]
     compile libraries["jcip-annotations"]
@@ -25,11 +25,6 @@ dependencies {
 
     testCompile libraries["commons-io"]
     testCompile libraries["equalsverifier"]
-}
-
-test {
-    // Causes JUnit to throw an exception: "No tests found in ucar.nc2.util.UnitTestCommon"
-    exclude 'ucar/nc2/util/UnitTestCommon.class'
 }
 
 javadoc {
@@ -53,7 +48,7 @@ javadoc {
 
 // TODO: Use the Sync task for this.
 task releaseDocs(dependsOn: javadoc, group: 'Release') << {
-    def releaseDir = webdir + "javadoc"
+    String releaseDir = new File(webdir, "javadoc").absolutePath
 
     ant.delete(dir: releaseDir)
     ant.mkdir(dir: releaseDir)
@@ -66,52 +61,3 @@ task releaseDocs(dependsOn: javadoc, group: 'Release') << {
 }
 
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'
-
-//////////////////////////////////////// Test artifacts ////////////////////////////////////////
-
-// This technique was inspired by:
-// https://softnoise.wordpress.com/2014/09/07/gradle-sub-project-test-dependencies-in-multi-project-builds/
-
-configurations {
-    // Define a custom configuration and fill it with our test code's runtime dependencies.
-    testArtifacts.extendsFrom testRuntime
-    testArtifacts.exclude(module: "slf4j-jdk14")  // Exclude the slf4j binding.
-}
-
-task testJar(type: Jar, dependsOn: testClasses,
-        group: 'build', description: 'Assembles a JAR containing the test utility classes.') {
-    from sourceSets.test.output.getAsFileTree().matching {
-        include 'ucar/nc2/TestLocal.class'
-        include 'ucar/nc2/util/CommonTestUtils.class'
-        include 'ucar/unidata/test/util/CompareNetcdf.class'
-        include 'ucar/unidata/test/util/TestDir*.class'
-        include 'ucar/unidata/test/util/TestFileDirUtils.class'
-        include 'ucar/unidata/test/util/UtilsMa2Test.class'
-        include 'ucar/unidata/test/util/UtilsTestStructureArray.class'
-
-        // All 3 of these are included in the same source file: ucar/unidata/test/Diff.java
-        // Also, 2 of the class names aren't capitalized. Ugh.
-        include 'ucar/unidata/test/Diff.class'
-        include 'ucar/unidata/test/fileInfo.class'
-        include 'ucar/unidata/test/node.class'
-
-        // JUnit categories
-        include 'ucar/unidata/test/util/NeedsCdmUnitTest.class'
-        include 'ucar/unidata/test/util/NeedsContentRoot.class'
-        include 'ucar/unidata/test/util/NeedsExternalResource.class'
-        include 'ucar/unidata/test/util/NotJenkins.class'
-        include 'ucar/unidata/test/util/NotTravis.class'
-        include 'ucar/unidata/test/util/NeedsRdaData.class'
-        include 'ucar/unidata/test/util/Slow.class'
-    }
-    classifier = 'test'
-}
-
-artifacts {
-    // Add the result of the testJar task (i.e. cdm-<version>-test.jar) to the testArtifacts configuration.
-    // The config already contains the deps that our test classes require (added above in the configurations block).
-    testArtifacts testJar
-}
-
-// Other projects can depend on these artifacts using:
-//     testCompile project(path: ':cdm', configuration: 'testArtifacts')

@@ -85,11 +85,11 @@ public class TestWriteMisc {
       }
     }
 
-    try (NetcdfFile ncFile = NetcdfFile.open(filename)) {
-      Array result2 = ncFile.readSection("time");
-      System.out.println(result2);
-      //ucar.unidata.test.util.CompareNetcdf.compareData(result1, result2);
-    }
+     try (NetcdfFile ncFile = NetcdfFile.open(filename)) {
+       Array result2 = ncFile.readSection("time");
+       System.out.println(result2);
+       //ucar.unidata.util.test.CompareNetcdf.compareData(result1, result2);
+     }
   }
 
   // test writing big format

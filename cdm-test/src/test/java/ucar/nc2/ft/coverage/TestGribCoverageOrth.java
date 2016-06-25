@@ -43,8 +43,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.NeedsRdaData;
+import ucar.unidata.util.test.category.NeedsRdaData;
 
 import java.io.IOException;
 import java.util.ArrayList;

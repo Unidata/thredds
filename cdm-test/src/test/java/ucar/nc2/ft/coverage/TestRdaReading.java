@@ -43,7 +43,7 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.Misc;
-import ucar.unidata.test.util.NeedsRdaData;
+import ucar.unidata.util.test.category.NeedsRdaData;
 
 import java.io.IOException;
 

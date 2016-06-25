@@ -40,13 +40,13 @@ import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.EscapeStrings;
-import ucar.nc2.util.CommonTestUtils;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 import java.util.List;
 
-public class TestMisc extends CommonTestUtils
+public class TestMisc extends UnitTestCommon
 {
 
     static {

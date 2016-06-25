@@ -42,14 +42,14 @@ import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.CommonTestUtils;
-import ucar.unidata.test.util.NeedsExternalResource;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+import ucar.unidata.util.test.TestDir;
 
 import java.util.List;
 
 @Category(NeedsExternalResource.class)
-public class TestHTTPSession extends CommonTestUtils
+public class TestHTTPSession extends UnitTestCommon
 {
     //////////////////////////////////////////////////
     // Constants

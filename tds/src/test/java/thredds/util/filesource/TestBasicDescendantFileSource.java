@@ -39,8 +39,8 @@ import junit.framework.TestCase;
 
 import org.springframework.util.StringUtils;
 
-import ucar.unidata.test.util.TestDir;
-import ucar.unidata.test.util.TestFileDirUtils;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.TestFileDirUtils;
 
 /**
  * _more_

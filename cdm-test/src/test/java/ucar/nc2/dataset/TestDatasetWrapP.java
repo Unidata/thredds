@@ -39,8 +39,8 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
-import ucar.unidata.test.util.NeedsCdmUnitTest;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class TestDatasetWrapP {
       NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null);
       System.out.println(" dataset wraps= " + durl.trueurl);
 
-      ucar.unidata.test.util.CompareNetcdf.compareFiles(ncd, ncWrap);
+      ucar.unidata.util.test.CompareNetcdf.compareFiles(ncd, ncWrap);
     }
   }
 }

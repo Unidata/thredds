@@ -31,7 +31,7 @@
  *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-package ucar.unidata.test.util;
+package ucar.unidata.util.test.category;
 
 /**
  * Describe

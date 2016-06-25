@@ -9,7 +9,7 @@ import ucar.nc2.ft.FeatureDatasetPoint
 import ucar.nc2.ft.PointFeatureCollection
 import ucar.nc2.ft.point.FlattenedDatasetPointCollection
 import ucar.nc2.ft.point.PointTestUtil
-import ucar.unidata.test.util.TestDir
+import ucar.unidata.util.test.TestDir
 
 /**
  * @author cwardgar

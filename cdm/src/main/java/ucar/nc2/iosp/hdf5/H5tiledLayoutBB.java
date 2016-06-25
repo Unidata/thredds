@@ -32,18 +32,20 @@
  */
 package ucar.nc2.iosp.hdf5;
 
-import ucar.ma2.InvalidRangeException;
+import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import ucar.ma2.DataType;
+import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
+import ucar.nc2.Variable;
 import ucar.nc2.iosp.LayoutBB;
 import ucar.nc2.iosp.LayoutBBTiled;
-import ucar.nc2.Variable;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
 
-import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -160,10 +162,33 @@ class H5tiledLayoutBB implements LayoutBB {
   }
 
   private class DataChunk implements ucar.nc2.iosp.LayoutBBTiled.DataChunk {
+    // Copied from ArrayList.
+    private static final int MAX_ARRAY_LEN = Integer.MAX_VALUE - 8;
+
     DataBTree.DataChunk delegate;
 
     DataChunk(DataBTree.DataChunk delegate) {
       this.delegate = delegate;
+
+      // Check that the chunk length (delegate.size) isn't greater than the maximum array length that we can
+      // allocate (MAX_ARRAY_LEN). This condition manifests in two ways.
+      // 1) According to the HDF docs (https://www.hdfgroup.org/HDF5/doc/Advanced/Chunking/, "Chunk Maximum Limits"),
+      //    max chunk length is 4GB (i.e. representable in an unsigned int). Java, however, only has signed ints.
+      //    So, if we try to store a large unsigned int in a singed int, it'll overflow, and the signed int will come
+      //    out negative. We're trusting here that the chunk size read from the HDF file is never negative.
+      // 2) In most JVM implementations MAX_ARRAY_LEN is actually less than Integer.MAX_VALUE (see note in ArrayList).
+      //    So, we could have: "MAX_ARRAY_LEN < chunkSize <= Integer.MAX_VALUE".
+      if (delegate.size < 0 || delegate.size > MAX_ARRAY_LEN) {
+        // We want to report the size of the chunk, but we may be in an arithmetic overflow situation. So to get the
+        // correct value, we're going to reinterpet the integer's bytes as long bytes.
+        byte[] intBytes = Ints.toByteArray(delegate.size);
+        byte[] longBytes = new byte[8];
+        System.arraycopy(intBytes, 0, longBytes, 4, 4);   // Copy int bytes to the lowest 4 positions.
+        long chunkSize = Longs.fromByteArray(longBytes);  // Method requires an array of length 8.
+
+        throw new IllegalArgumentException(String.format("Filtered data chunk is %s bytes and we must load it all " +
+                "into memory. However the maximum length of a byte array in Java is %s.", chunkSize, MAX_ARRAY_LEN));
+      }
     }
 
     public int[] getOffset() {
@@ -176,10 +201,11 @@ class H5tiledLayoutBB implements LayoutBB {
     }
 
     public ByteBuffer getByteBuffer() throws IOException {
-      // read the data
-      byte[] data = new byte[delegate.size];
-      raf.seek(delegate.filePos);
-      raf.readFully(data);
+      try {
+        // read the data
+        byte[] data = new byte[delegate.size];
+        raf.seek(delegate.filePos);
+        raf.readFully(data);
 
       // apply filters backwards
       for (int i = filters.length - 1; i >= 0; i--) {
@@ -200,9 +226,15 @@ class H5tiledLayoutBB implements LayoutBB {
           throw new RuntimeException("Unknown filter type="+f.id);
       }
 
-      ByteBuffer result = ByteBuffer.wrap(data);
-      result.order(byteOrder);
-      return result;
+        ByteBuffer result = ByteBuffer.wrap(data);
+        result.order(byteOrder);
+        return result;
+      } catch (OutOfMemoryError e) {
+        Error oom =  new OutOfMemoryError("Ran out of memory trying to read HDF5 filtered chunk. Either increase the " +
+                "JVM's heap size (use the -Xmx switch) or reduce the size of the dataset's chunks (use nccopy -c).");
+        oom.initCause(e);  // OutOfMemoryError lacks a constructor with a cause parameter.
+        throw oom;
+      }
     }
 
     /**
@@ -216,7 +248,8 @@ class H5tiledLayoutBB implements LayoutBB {
       // run it through the Inflator
       ByteArrayInputStream in = new ByteArrayInputStream(compressed);
       java.util.zip.InflaterInputStream inflater = new java.util.zip.InflaterInputStream(in);
-      ByteArrayOutputStream out = new ByteArrayOutputStream(8 * compressed.length);
+      ByteArrayOutputStream out = new ByteArrayOutputStream(
+              Math.min(8 * compressed.length, MAX_ARRAY_LEN));  // Fixes KXL-349288
       IO.copy(inflater, out);
 
       byte[] uncomp = out.toByteArray();

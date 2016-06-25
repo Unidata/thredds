@@ -43,10 +43,10 @@ import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.nc2.util.CommonTestUtils;
-import ucar.unidata.test.util.NotJenkins;
-import ucar.unidata.test.util.NotTravis;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.category.NotJenkins;
+import ucar.unidata.util.test.category.NotTravis;
+import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -99,7 +99,7 @@ import java.util.List;
  */
 
 @Category({NotJenkins.class, NotTravis.class})
-public class TestTomcatAuth extends CommonTestUtils
+public class TestTomcatAuth extends UnitTestCommon
 {
     static final String BADPASSWORD = "bad";
 

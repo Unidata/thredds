@@ -32,7 +32,7 @@
  */
 package ucar.nc2.ncml;
 
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
 
 /**
  * TestSuite that runs all the sample tests   - data in TestAll.cdmLocalTestDataDir

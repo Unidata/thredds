@@ -1,8 +1,5 @@
 package ucar.nc2;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -10,8 +7,11 @@ import ucar.ma2.ArrayFloat;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.test.util.NotTravis;
-import ucar.unidata.test.util.TestDir;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NotTravis;
+
+import java.io.File;
+import java.io.IOException;
 
 /*
 On Travis, this class was causing:

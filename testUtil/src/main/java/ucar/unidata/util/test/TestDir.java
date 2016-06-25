@@ -1,4 +1,4 @@
-package ucar.unidata.test.util;
+package ucar.unidata.util.test;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
