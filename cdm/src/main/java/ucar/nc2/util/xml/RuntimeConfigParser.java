@@ -291,6 +291,8 @@ public class RuntimeConfigParser {
         }
 
         boolean useForReading = Boolean.parseBoolean(elem.getChildText("useForReading"));
+	if(!useForReading && System.getProperty("Netcdf4Clibrary.useForReading") != null)
+	    useForReading = true;
         if (useForReading) {
           try {
             // Registers Nc4Iosp in front of all the other IOSPs already registered in NetcdfFile.<clinit>().
