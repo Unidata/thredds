@@ -260,7 +260,7 @@ class Nidsheader{
     }
  //////////////////////////////////////////////////////////////////////////////////
 
-    private ucar.unidata.io.RandomAccessFile raf;
+    ucar.unidata.io.RandomAccessFile raf;
     private ucar.nc2.NetcdfFile ncfile;
     //private PrintStream out = System.out;
     //private Vinfo myInfo;
