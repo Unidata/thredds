@@ -114,6 +114,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     }
     try {
       registerIOProvider("ucar.nc2.iosp.hdf5.H5iosp");
+      if(System.getProperty("Netcdf4Clibrary.useForReading") != null)
+	registerIOProvider("ucar.nc2.jni.netcdf.Nc4Iosp"); // Make sure it precedes hdf5 IOSP
     } catch (Throwable e) {
       if (loadWarnings) log.info("Cant load class H5iosp: {}", e);
     }

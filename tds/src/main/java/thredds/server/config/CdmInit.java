@@ -134,9 +134,6 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     }
 
     Boolean useForReading = ThreddsConfig.getBoolean("Netcdf4Clibrary.useForReading", false);
-    if(!useForReading && System.getProperty("Netcdf4Clibrary.useForReading") != null)
-	useForReading = Boolean.TRUE;
-
     if (useForReading) {
       if (Nc4Iosp.isClibraryPresent()) {
         try {
