@@ -30,11 +30,8 @@ dependencies {
     compile libraries["httpcore"]
 
     compile libraries["coverity-escapers"]
-    // compile libraries["commons-fileupload"]
     compile libraries["jdom2"]
     compile libraries["quartz"]
-    // compile libraries["commons-lang3"]
-    // compile libraries["commons-io"]
     compile libraries["jcip-annotations"]
     compile libraries["guava"]
     compile libraries["joda-time"]
@@ -52,12 +49,6 @@ dependencies {
     runtime libraries["spring-security-config"]
     runtime libraries["spring-security-web"]
 
-    // Need to update cas
-    // compile "org.jasig.cas:cas-client-core:________"
-
-    // runtime libraries["threddsIso"]
-    // compile libraries["ncwms"]
-    // compile libraries["geoapi-pending"]
     compile libraries["oro"]
 
     // Needed for XPath operations in mock tests
@@ -76,10 +67,7 @@ dependencies {
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]
 
-    testCompile libraries["javax.el-api"]
-    testCompile libraries["javax.el"]
-
-    compile "org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE"
+    compile libraries["thymeleaf-spring4"]
 
     // Testing
     testCompile libraries["spring-test"]
@@ -177,18 +165,7 @@ task compileGwt (dependsOn: classes, type: JavaExec) {
     args = [
         'Godiva3', // The GWT module, from edal-godiva.
         '-war', gwtDir,
-
-        // When I set the log level to WARN and below, I get:
-        // [WARN] Detected warnings related to 'javax.validation.Validator'.
-        //        Are validation-api-<version>.jar and validation-api-<version>-sources.jar on the classpath?
-        // [WARN] Unknown type 'javax.validation.Validator' specified in deferred binding rule
-        // I believe this is because in :tds:dependencies...
-        // +--- com.google.gwt:gwt-user:2.7.0
-        // |    \--- javax.validation:validation-api:1.0.0.GA -> 1.1.0.Final
-        // That is, gwt-user is expecting version "1.0.0.GA" of validation-api but is getting "1.1.0.Final" instead
-        // because of Gradle's version resolution. I think that warning is safe to ignore.
-        '-logLevel', 'ERROR',  // Only get log messages at level ERROR or above. We don't want the spammy output.
-
+        '-logLevel', 'WARN',  // Only get log messages at level WARN or above. We don't want the spammy output.
         '-localWorkers', '2',
         '-compileReport',
         '-extra', extraDir,
