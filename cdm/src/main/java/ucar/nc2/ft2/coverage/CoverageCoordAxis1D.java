@@ -365,9 +365,14 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
       case GeoZ:
       case Pressure:
       case Height:
-        Double dval = params.getDouble(SubsetParams.vertCoord);
+        Double dval = params.getVertCoord();
         if (dval != null)
           return Optional.of(helper.subsetClosest(dval));
+        // use midpoint of interval LOOK may not always be unique
+        double[] intv = params.getVertCoordIntv();
+        if (intv != null)
+          return Optional.of(helper.subsetClosest((intv[0]+intv[1])/2));
+
         double[] vertRange = params.getVertRange(); // used by WCS
         if (vertRange != null)
           return helper.subset(vertRange[0], vertRange[1], 1);
@@ -407,9 +412,28 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
           return helper.subset(dateRange, stride);
 
         // If no time range or time point, a timeOffset can be used to specify the time point.
-        Double timeOffset = params.getDouble(SubsetParams.timeOffset);
-        if (timeOffset != null)
-          return Optional.of(helper.subsetClosest(timeOffset));
+        /* CalendarDate timeOffsetDate = params.getTimeOffsetDate();
+        if (timeOffsetDate != null) {
+          return Optional.of(helper.subsetClosest(timeOffsetDate));
+        } */
+
+        // A time offset or time offset interval starts from the rundate of the offset
+        Double timeOffset = params.getTimeOffset();
+        CalendarDate runtime = params.getRunTime();
+        if (timeOffset != null && runtime != null) {
+          date = makeDateInTimeUnits(runtime, timeOffset);
+          return Optional.of(helper.subsetClosest(date));
+        }
+
+        // If a time interval is sent, search for match.
+        double[] timeOffsetIntv = params.getTimeOffsetIntv();
+        if (timeOffsetIntv != null && runtime != null) {
+          // double midOffset = (timeOffsetIntv[0] + timeOffsetIntv[1]) / 2;
+          CalendarDate[] dateIntv = new CalendarDate[2];
+          dateIntv[0] = makeDateInTimeUnits(runtime, timeOffsetIntv[0]);
+          dateIntv[1] = makeDateInTimeUnits(runtime, timeOffsetIntv[1]);
+          return Optional.of(helper.subsetClosest(dateIntv));
+        }
 
         if (stride != 1)
           try {

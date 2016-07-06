@@ -76,10 +76,6 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
     return code;
   }
 
-  public CalendarPeriod getPeriod() {
-    return timeUnit;
-  }
-
   @Override
   public String getUnit() {
     return periodName;
@@ -102,8 +98,6 @@ public abstract class CoordinateTimeAbstract implements Coordinate {
   public CalendarDate getRefDate() {
     return refDate;
   }
-
-  public double getTimeUnitScale() { return timeUnit.getValue(); }
 
   public CalendarPeriod getTimeUnit() {
     return timeUnit;

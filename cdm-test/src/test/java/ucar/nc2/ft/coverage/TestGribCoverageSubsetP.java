@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mostly checks GeoReferencedArray matches request
+ * Mostly checks GeoReferencedArray matches request.
+ * Requires that the data exist, not just the gbx9.
  *
  * @author John
  * @since 8/15/2015
@@ -41,7 +42,6 @@ public class TestGribCoverageSubsetP {
   public static void after() {
     GribDataReader.validator = null;
   }
-
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {

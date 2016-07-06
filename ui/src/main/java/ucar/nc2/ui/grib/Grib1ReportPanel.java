@@ -264,7 +264,6 @@ public class Grib1ReportPanel extends ReportPanel {
       fm.format("Failed on %s == %s%n", path, ioe.getMessage());
       System.out.printf("Failed on %s%n", path);
       ioe.printStackTrace();
-
     }
   }
 

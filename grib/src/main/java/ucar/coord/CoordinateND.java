@@ -113,7 +113,7 @@ public class CoordinateND<T> {
         if (coord.getType() == Coordinate.Type.time2D)
           sizeArray[i] = ((CoordinateTime2D) coord).getNtimes();
         else
-          sizeArray[i] = coordb.get(i).getSize();
+          sizeArray[i] = coord.getSize();
       }
       SparseArray.Builder<T> saBuilder = new SparseArray.Builder<>(sizeArray);
 
@@ -138,17 +138,30 @@ public class CoordinateND<T> {
       return saBuilder.finish();
     }
 
-     /**
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
      * Reindex the sparse array, based on the new Coordinates.
      * Do this by running all the Records through the Coordinates, assigning each to a new spot in the new sparse array.
      *
-     * @param prev must have same list of Coordinates, with possibly additional values.
+     * @param newCoords must have same list of Coordinates as prev, with possibly additional values.
      */
     public CoordinateND<T> reindex(List<Coordinate> newCoords, CoordinateND<T> prev) {
+      assert  newCoords.size() == prev.getNCoordinates();
+
+      boolean has2Dcoord = false;
+      for (Coordinate coord : newCoords) {
+        if (coord.getType() == Coordinate.Type.time2D)
+          has2Dcoord = true;
+      }
+
+      return (has2Dcoord) ? reindex2D(newCoords, prev) : reindexOrth(newCoords, prev);
+    }
+
+    private CoordinateND<T> reindexOrth(List<Coordinate> newCoords, CoordinateND<T> prev) {
       SparseArray<T> prevSA = prev.getSparseArray();
       List<Coordinate> prevCoords = prev.getCoordinates();
 
-            // make a working sparse array with new shape
+      // make a working sparse array with new shape
       int[] sizeArray = new int[newCoords.size()];
       for (int i = 0; i < newCoords.size(); i++) {
         Coordinate coord = newCoords.get(i);
@@ -157,13 +170,10 @@ public class CoordinateND<T> {
       SparseArray.Builder<T> workingSAbuilder = new SparseArray.Builder<>(sizeArray);
 
       // for each coordinate, calculate the map of oldIndex -> newIndex
-      List<IndexMapIF> indexMaps = new ArrayList<>();
+      List<IndexMap> indexMaps = new ArrayList<>();
       int count = 0;
-      for (Coordinate curr : newCoords) {
-        if (curr.getType() == Coordinate.Type.time2D)
-          indexMaps.add(new Time2DIndexMap((CoordinateTime2D) curr, (CoordinateTime2D) prevCoords.get(count++)));
-        else
-          indexMaps.add(new IndexMap(curr, prevCoords.get(count++)));
+      for (Coordinate coord : newCoords) {
+        indexMaps.add(new IndexMap(coord, prevCoords.get(count++)));
       }
 
       int[] currIndex = new int[newCoords.size()];
@@ -180,13 +190,11 @@ public class CoordinateND<T> {
 
         // calculate position in the current track array, and store the value there
         int coordIdx = 0;
-        for (IndexMapIF indexMap : indexMaps) {
+        for (IndexMap indexMap : indexMaps) {
           currIndex[coordIdx] = indexMap.map(prevIndex[coordIdx]);
           coordIdx++;
         }
         int trackIdx = workingSAbuilder.calcIndex(currIndex);
-        if (trackIdx >= track.length)
-          System.out.println("HEY CoordinateND trackIdx >= track.length");
         track[trackIdx] = oldTrackValue;
       }
 
@@ -195,14 +203,8 @@ public class CoordinateND<T> {
       return new CoordinateND<>(newCoords, newSA);                                      // reindexed result
     }
 
-    //////////////////////////////////////////////
-
-     // a quick lookup of values from prev coordinate to current coordinate.
-    private interface IndexMapIF {
-      int map(int oldIndex);
-    }
-
-    private static class IndexMap implements IndexMapIF {
+    // every coord in prev must be in curr
+    private static class IndexMap {
       boolean identity = true;
       int[] indexMap;
 
@@ -215,7 +217,7 @@ public class CoordinateND<T> {
         int count = 0;
         Map<Object, Integer> currValMap = new HashMap<>();
         if (curr.getValues() == null)
-          System.out.println("HEY CoordinateND curr.getValues() == null");
+          throw new IllegalStateException();
         for (Object val : curr.getValues()) currValMap.put(val, count++);
 
         count = 0;
@@ -229,41 +231,92 @@ public class CoordinateND<T> {
         if (identity) return oldIndex;
         return indexMap[oldIndex];
       }
-
     }
 
-    private static class Time2DIndexMap implements IndexMapIF {
-      int[] indexMap;
+    //////////////////////////////////////////////
 
-      Time2DIndexMap(CoordinateTime2D curr, CoordinateTime2D prev) {
-        assert curr.getType() == prev.getType() : curr.getType()+" != "+prev.getType();
+    private CoordinateND<T> reindex2D(List<Coordinate> newCoords, CoordinateND<T> prev) {
+      SparseArray<T> prevSA = prev.getSparseArray();
+      List<Coordinate> prevCoords = prev.getCoordinates();
+      CoordinateTime2D prev2Dcoord = null;
 
-        int[] index2D = new int[2];
-        Map<Object, Integer> currValMap = new HashMap<>();
-        for (Object val : curr.getValues()) {
-          boolean ok = curr.getIndex((CoordinateTime2D.Time2D) val, index2D);
-          if (!ok)
-            System.out.println("HEY CoordinateND !ok");   // LOOK
-          currValMap.put(val, index2D[1]); // want the time index
-        }
+      // make a working sparse array with new shape
+      int ncoords = newCoords.size();
+      int[] sizeArray = new int[ncoords];
+      for (int i = 0; i < ncoords; i++) {
+        Coordinate coord = newCoords.get(i);
+        sizeArray[i] = (coord instanceof CoordinateTime2D) ? ((CoordinateTime2D) coord).getNtimes() : coord.getSize();
+      }
+      SparseArray.Builder<T> workingSAbuilder = new SparseArray.Builder<>(sizeArray);
 
-        int count = 0;
-        indexMap = new int[prev.getSize()];
-        for (Object val : prev.getValues()) {
-          if (currValMap.get(val) == null)
-            System.out.printf("HEY Time2DIndexMap %s%n", val); // LOOK
-          else
-            indexMap[count++] = currValMap.get(val); // where does this value fit in the curr coordinates?
+      // for each coordinate, calculate the map of oldIndex -> newIndex
+      IndexMap[] indexMaps = new IndexMap[ncoords];
+      Time2DIndexMap timeIndexMap = null;
+      for (int i = 0; i < ncoords; i++) {
+        Coordinate coord = newCoords.get(i);
+        if (coord.getType() == Coordinate.Type.time2D) {
+          prev2Dcoord = (CoordinateTime2D) prevCoords.get(i);
+          timeIndexMap = new Time2DIndexMap((CoordinateTime2D) coord, prev2Dcoord);
+        } else {
+          indexMaps[i] = new IndexMap(coord, prevCoords.get(i));
         }
       }
 
-      public int map(int oldIndex) {
-        return indexMap[oldIndex];
+      int[] currIndex = new int[ncoords];
+      int[] prevIndex = new int[ncoords];
+      int[] track = new int[SparseArray.calcTotalSize(sizeArray)];
+
+      // iterate through the contents of the prev track array
+      Section section = new Section(prevSA.getShape());
+      Section.Iterator iter = section.getIterator(prevSA.getShape());
+      while (iter.hasNext()) {
+        int oldTrackIdx = iter.next(prevIndex); // gets both the oldTrackIdx (1D) and prevIndex (nD)
+        int oldTrackValue = prevSA.getTrack(oldTrackIdx);
+        if (oldTrackValue == 0) continue; // skip missing values
+
+        for (int i = 0; i < ncoords; i++) {
+          Coordinate coord = newCoords.get(i);
+          if (coord.getType() == Coordinate.Type.time2D) {
+            CoordinateTime2D.Time2D prevValue = prev2Dcoord.getOrgValue(prevIndex[0], prevIndex[1]);
+            currIndex[i] = timeIndexMap.map(prevValue);
+          } else {
+            currIndex[i] = indexMaps[i].map(prevIndex[i]);
+          }
+        }
+        int trackIdx = workingSAbuilder.calcIndex(currIndex);
+        track[trackIdx] = oldTrackValue;
+      }
+
+      // now that we have the track, make the real SA
+      SparseArray<T> newSA = new SparseArray<>(sizeArray, track, prevSA.getContent(), prevSA.getNdups());  // content (list of records) is the same
+      return new CoordinateND<>(newCoords, newSA);                                      // reindexed result
+    }
+
+    private static class Time2DIndexMap {
+      Map<Object, Integer> currValMap;
+
+      // every coord in prev must be in curr
+      Time2DIndexMap(CoordinateTime2D curr, CoordinateTime2D prev) {
+        assert curr.getType() == prev.getType() : curr.getType()+" != "+prev.getType();
+        currValMap = new HashMap<>(2*curr.getValues().size());
+
+        int[] index2D = new int[2];
+        for (Object val : prev.getValues()) {
+          if (!curr.getIndex((CoordinateTime2D.Time2D) val, index2D))
+            throw new IllegalStateException();
+          currValMap.put(val, index2D[1]); // save the time index
+        }
+      }
+
+      public int map(CoordinateTime2D.Time2D prevCoord) {
+        Integer val = currValMap.get(prevCoord);
+        if (val == null)
+          throw new IllegalStateException("reindex does not have coordinate Time2D "+prevCoord);
+        return val;
       }
 
     }
 
   }
-
-
 }
+

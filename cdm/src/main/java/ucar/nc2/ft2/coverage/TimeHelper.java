@@ -37,10 +37,7 @@ import net.jcip.annotations.Immutable;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
-import ucar.nc2.time.Calendar;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateRange;
-import ucar.nc2.time.CalendarDateUnit;
+import ucar.nc2.time.*;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 
@@ -146,7 +143,7 @@ public class TimeHelper {
   }
 
   public CalendarDate makeDateInTimeUnits(CalendarDate start, double addTo) {
-    return start.add(addTo, dateUnit.getCalendarField());
+    return start.add(CalendarPeriod.of((int) addTo, dateUnit.getCalendarField()));
   }
 
   public static ucar.nc2.time.Calendar getCalendarFromAttribute(AttributeContainer atts) {
