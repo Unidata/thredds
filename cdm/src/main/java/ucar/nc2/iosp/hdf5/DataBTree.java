@@ -65,7 +65,6 @@ public class DataBTree {
   private static java.io.PrintStream debugOut = System.out;
 
   private final H5header h5;
-  private final RandomAccessFile raf;
   private final MemTracker memTracker;
 
   private final long rootNodeAddress;
@@ -76,7 +75,6 @@ public class DataBTree {
 
   DataBTree(H5header h5, long rootNodeAddress, int[] varShape, int[] storageSize, MemTracker memTracker) throws IOException {
     this.h5 = h5;
-    this.raf = h5.raf;
     this.rootNodeAddress = rootNodeAddress;
     this.tiling = new Tiling(varShape, storageSize);
     this.ndimStorage = storageSize.length;
@@ -199,17 +197,17 @@ public class DataBTree {
       if (debugDataBtree) debugOut.println("\n--> DataBTree read tree at address=" + address + " parent= " + parent +
               " owner= " + owner.getNameAndDimensions());
 
-      raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
-      raf.seek( h5.getFileOffset(address));
+      h5.raf.order(RandomAccessFile.LITTLE_ENDIAN); // header information is in le byte order
+      h5.raf.seek( h5.getFileOffset(address));
       this.address = address;
 
-      String magic = raf.readString(4);
+      String magic = h5.raf.readString(4);
       if (!magic.equals("TREE"))
         throw new IllegalStateException("DataBTree doesnt start with TREE");
 
-      int type = raf.readByte();
-      level = raf.readByte();
-      nentries = raf.readShort();
+      int type = h5.raf.readByte();
+      level = h5.raf.readByte();
+      nentries = h5.raf.readShort();
       if (type != wantType)
         throw new IllegalStateException("DataBTree must be type " + wantType);
 
@@ -234,9 +232,9 @@ public class DataBTree {
         offset = new int[nentries + 1][ndimStorage];
         childPointer = new long[nentries + 1];
         for (int i = 0; i <= nentries; i++) {
-          raf.skipBytes(8); // skip size, filterMask
+          h5.raf.skipBytes(8); // skip size, filterMask
           for (int j = 0; j < ndimStorage; j++) {
-            long loffset = raf.readLong();
+            long loffset = h5.raf.readLong();
             assert loffset < Integer.MAX_VALUE;
             offset[i][j] = (int) loffset;
           }
@@ -347,11 +345,11 @@ public class DataBTree {
     long filePos;   // filePos of a single raw data chunk, already shifted by the offset if needed
 
     DataChunk(int ndim, boolean last) throws IOException {
-      this.size = raf.readInt();
-      this.filterMask = raf.readInt();
+      this.size = h5.raf.readInt();
+      this.filterMask = h5.raf.readInt();
       offset = new int[ndim];
       for (int i = 0; i < ndim; i++) {
-        long loffset = raf.readLong();
+        long loffset = h5.raf.readLong();
         assert loffset < Integer.MAX_VALUE;
         offset[i] = (int) loffset;
       }

@@ -114,7 +114,7 @@ public class H4header {
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
   private ucar.nc2.NetcdfFile ncfile;
-  private RandomAccessFile raf;
+  RandomAccessFile raf;
   private boolean isEos;
 
   private List<Tag> alltags;
@@ -1180,6 +1180,7 @@ public class H4header {
     }
   }
 
+  // public for debugging (ucar.nc2.ui.Hdf4Table)
   // Tag == "Data Descriptor" (DD) and (usually) a "Data Element" that the offset/length points to
   public class Tag {
     short code;
@@ -1191,7 +1192,7 @@ public class H4header {
     Vinfo vinfo;
 
     // read just the DD part of the tag. see p 11
-    Tag(short code) throws IOException {
+    private Tag(short code) throws IOException {
       this.extended = (code & 0x4000) != 0;
       this.code = (short) (code & 0x3FFF);
       refno = raf.readShort();
@@ -1205,7 +1206,7 @@ public class H4header {
     }
 
     // read the offset/length part of the tag. overridden by subclasses
-    void read() throws IOException {
+    protected void read() throws IOException {
     }
 
     public String detail() {
@@ -1274,7 +1275,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       if (extended) {
         raf.seek(offset);
         ext_type = raf.readShort();  // note size wrong in doc
@@ -1322,7 +1323,7 @@ public class H4header {
     byte[] sp_tag_header;
 
 
-    void read() throws IOException {
+    private void read() throws IOException {
       head_len = raf.readInt();
       version = raf.readByte();
       raf.skipBytes(3);
@@ -1440,8 +1441,7 @@ public class H4header {
     // compress_type == 4
     short deflateLevel;
 
-
-    void read() throws IOException {
+    private void read() throws IOException {
       version = raf.readShort();
       uncomp_length = raf.readInt();
       data_ref = raf.readShort();
@@ -1490,7 +1490,7 @@ public class H4header {
     short blk_len, num_blk, link_ref;
     List<TagLinkedBlock> linkedDataBlocks;
 
-    void read() throws IOException {
+    private void read() throws IOException {
       length = raf.readInt();
       first_len = raf.readInt();
       blk_len = raf.readShort(); // note size wrong in doc
@@ -1530,7 +1530,7 @@ public class H4header {
       super(code);
     }
 
-    void read2(int nb, List<TagLinkedBlock> dataBlocks) throws IOException {
+    private void read2(int nb, List<TagLinkedBlock> dataBlocks) throws IOException {
       raf.seek(offset);
       next_ref = raf.readShort();
       block_ref = new short[nb];
@@ -1575,7 +1575,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       major = raf.readInt();
       minor = raf.readInt();
@@ -1600,7 +1600,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       text = raf.readStringMax(length);
     }
@@ -1620,7 +1620,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       obj_tagno = raf.readShort();
       obj_refno = raf.readShort();
@@ -1641,7 +1641,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       version = raf.readByte();
       type = raf.readByte();
@@ -1669,7 +1669,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       xdim = raf.readInt();
       ydim = raf.readInt();
@@ -1697,7 +1697,7 @@ public class H4header {
     }
 
     // cant read without info from other tags
-    void read(int nx, int ny) throws IOException {
+    protected void read(int nx, int ny) throws IOException {
       raf.seek(offset);
       table = new int[nx * ny];
       raf.readInt(table, 0, nx * ny);
@@ -1715,7 +1715,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       rank = raf.readShort();
       shape = new int[rank];
@@ -1772,7 +1772,7 @@ public class H4header {
     }
 
 
-    void read(int n) throws IOException {
+    protected void read(int n) throws IOException {
       text = new String[n];
 
       raf.seek(offset);
@@ -1800,7 +1800,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       byte[] buff = new byte[length];
       raf.readFully(buff);
@@ -1850,7 +1850,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       nelems = length / 4;
 
@@ -1886,7 +1886,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       nelems = raf.readShort();
 
@@ -1950,7 +1950,7 @@ public class H4header {
       super(code);
     }
 
-    void read() throws IOException {
+    protected void read() throws IOException {
       raf.seek(offset);
       interlace = raf.readShort();
       nvert = raf.readInt();
