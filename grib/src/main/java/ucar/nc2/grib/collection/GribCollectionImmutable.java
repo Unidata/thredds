@@ -45,8 +45,8 @@ import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -71,8 +71,9 @@ import java.util.*;
 /**
  * An Immutable GribCollection, corresponds to one index (ncx) file.
  * The index file has already been read; it is opened and the closed when a variable is first accessed to read in the record array (sa).
+ * <p>
+ * possible we could use the Proto equivalents, and eliminate GribCollectionMutable ?
  *
- *  possible we could use the Proto equivalents, and eliminate GribCollectionMutable ?
  * @author caron
  * @since 11/10/2014
  */
@@ -98,7 +99,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public boolean isUniqueTime() {
-      return this == MRUTC || this == MRUTP|| this == SRC;
+      return this == MRUTC || this == MRUTP || this == SRC;
     }
 
     public boolean isTwoD() {
@@ -257,7 +258,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   }
 
   public abstract void addGlobalAttributes(AttributeContainer result);
+
   public abstract void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex);
+
   protected abstract String makeVariableId(VariableIndex v);
 
   public static class Info {
@@ -551,78 +554,77 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // coord based record finding. note only one record at a time
-    public synchronized Record getRecordAt(Map<String, Object> coords) {
+    public synchronized Record getRecordAt(SubsetParams coords) {
       int[] want = new int[getRank()];
       int count = 0;
       int runIdx = -1;
       for (Coordinate coord : getCoordinates()) {
         int idx = -1;
-        Object coordVal = null;
         switch (coord.getType()) {
           case runtime:
-            coordVal = coords.get(CoordsSet.runDate);  // CalendarDate or Long
-            idx = coord.getIndex(coordVal);
+            CalendarDate runtimeCooord = coords.getRunTime();
+            idx = coord.getIndex(runtimeCooord);
             runIdx = idx;
             break;
 
           case timeIntv:
-            coordVal = coords.get(CoordsSet.timeOffsetCoord); // double[]
-            double[] val = (double []) coordVal;
-            idx = coord.getIndex(new TimeCoord.Tinv( (int) val[0], (int) val[1])); // TimeCoord.Tinv
+            double[] timeIntv = coords.getTimeOffsetIntv();
+            idx = coord.getIndex(new TimeCoord.Tinv((int) timeIntv[0], (int) timeIntv[1]));
             break;
 
           case time:
-            coordVal = coords.get(CoordsSet.timeOffsetCoord); // Double
-            int coordInt = ((Double) coordVal).intValue();
+            Double timeOffset = coords.getTimeOffset(); // Double
+            int coordInt = timeOffset.intValue();
             idx = coord.getIndex(coordInt);
             break;
 
           case time2D:
-            coordVal = coords.get(CoordsSet.timeOffsetCoord); // double[] or Double
-            if (coordVal != null) {
-              if (coordVal instanceof Double) {
-                coordInt = ((Double) coordVal).intValue();
-                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordInt);
+            timeIntv = coords.getTimeOffsetIntv();
+            if (timeIntv != null) {
+              TimeCoord.Tinv coordTinv = new TimeCoord.Tinv((int) timeIntv[0], (int) timeIntv[1]);
+              idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordTinv); // LOOK can only use if orthogonal
+              break;
+            }
+            Double timeCoord = coords.getTimeOffset();
+            if (timeCoord != null) {
+              coordInt = timeCoord.intValue();
+              idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordInt);
+              break;
+            }
 
-              } else if (coordVal instanceof double[]) {
-                double[] coordBounds = (double[]) coordVal;
-                TimeCoord.Tinv coordTinv = new TimeCoord.Tinv((int) coordBounds[0], (int) coordBounds[1]);
-                idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordTinv); // LOOK can only use if orthogonal
-              }
-              break;
-            }
-            CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-            // the OneTime case
-            if (coord2D.getNtimes() == 1) {
-              idx = 0;
-              break;
-            }
-            throw new IllegalStateException("time2D must have timeOffsetCoord");
+          // the OneTime case
+          CoordinateTime2D coord2D = (CoordinateTime2D) coord;
+          if (coord2D.getNtimes() == 1) {
+            idx = 0;
+            break;
+          }
+          throw new IllegalStateException("time2D must have timeOffset ot timeOffsetIntv coordinare");
 
           case vert:
-            coordVal = coords.get(CoordsSet.vertCoord);  // VertCoord.Level
-            VertCoord.Level coordVert = null;
-            if (coordVal instanceof Double)
-              coordVert = new VertCoord.Level((Double) coordVal);
-            else if (coordVal instanceof double[]) {
-              double[] coordBounds = (double[]) coordVal;
-              coordVert = new VertCoord.Level(coordBounds[0], coordBounds[1]);
+            double[] vertIntv = coords.getVertCoordIntv();
+            if (vertIntv != null) {
+              VertCoord.Level coordVert = new VertCoord.Level(vertIntv[0], vertIntv[1]);
+              idx = coord.getIndex(coordVert);
+              break;
             }
-            assert coordVert != null;
-            idx = coord.getIndex(coordVert);
+            Double vertCoord = coords.getVertCoord();
+            if (vertCoord != null) {
+              VertCoord.Level coordVert = new VertCoord.Level(vertCoord);
+              idx = coord.getIndex(coordVert);
+            }
             break;
 
           case ens:
-            coordVal = coords.get(CoordsSet.ensCoord);  // EnsCoord.Coord
-            idx = ((CoordinateEns)coord).getIndexByMember((Double) coordVal);
+            Double ensVal = coords.getEnsCoord();
+            idx = ((CoordinateEns) coord).getIndexByMember(ensVal);
             break;
+
+          default:
+            logger.warn("GribCollectionImmutable: missing CoordVal for {}%n", coord.getName());
         }
 
-        if (coordVal == null)
-          logger.warn("GribCollectionImmutable: missing CoordVal for {}%n", coord.getName());
-
         if (idx < 0) {
-          logger.debug("Cant find index for value {} in axis {} in variable {}", coordVal, coord.getName(), name );
+          logger.debug("Cant find index for value in axis {} in variable {}", coord.getName(), name);
           return null;
         }
 
@@ -791,19 +793,19 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public String makeVariableUnits() {
-       if (isGrib1)
-         return Grib1Iosp.makeVariableUnits((Grib1Customizer) cust, GribCollectionImmutable.this, this);
-       else
-         return Grib2Iosp.makeVariableUnits((Grib2Customizer) cust, this);
-     }
+      if (isGrib1)
+        return Grib1Iosp.makeVariableUnits((Grib1Customizer) cust, GribCollectionImmutable.this, this);
+      else
+        return Grib2Iosp.makeVariableUnits((Grib2Customizer) cust, this);
+    }
 
     public String makeVariableDescription() {
-       if (isGrib1)
-         return Grib1Iosp.makeVariableLongName((Grib1Customizer) cust, getCenter(), getSubcenter(), getTableVersion(), getParameter(),
-                 getLevelType(), isLayer(), getIntvType(), getIntvName(), getProbabilityName());
-       else
-         return Grib2Iosp.makeVariableLongName((Grib2Customizer) cust, this, config.gribConfig.useGenType);
-     }
+      if (isGrib1)
+        return Grib1Iosp.makeVariableLongName((Grib1Customizer) cust, getCenter(), getSubcenter(), getTableVersion(), getParameter(),
+                getLevelType(), isLayer(), getIntvType(), getIntvName(), getProbabilityName());
+      else
+        return Grib2Iosp.makeVariableLongName((Grib2Customizer) cust, this, config.gribConfig.useGenType);
+    }
 
     public GribTables.Parameter getGribParameter() {
       if (isGrib1)
@@ -1098,17 +1100,22 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return want;
   }
 
+  public String getDataRafFilename(int fileno) throws IOException {
+    MFile mfile = fileMap.get(fileno);
+    return mfile.getPath();
+  }
+
   ///////////////////////
 
   // stuff needed by InvDatasetFcGrib
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
-                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+                                                                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
   public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
-                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+                                                              FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
   public abstract CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
-                  FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
+                                                     FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
 
 }

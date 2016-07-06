@@ -189,8 +189,6 @@ abstract class GribCollectionBuilder {
       this.type = GribCollectionImmutable.Type.SRC;
     else if (allTimesAreUnique)
       this.type =  GribCollectionImmutable.Type.MRUTC;
-    //else if (allTimesAreOne)
-    //  this.type =  GribCollectionImmutable.Type.MRSTC;
     else
       this.type =  GribCollectionImmutable.Type.MRC;
 

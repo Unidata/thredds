@@ -6,6 +6,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -351,6 +352,7 @@ public class TestDir {
       if (f.isDirectory())
         continue;
       if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude") ) {
+        name = StringUtil2.substitute(name, "\\", "/");
         System.out.println("----acting on file "+name);
         count += act.doAct(name);
       }

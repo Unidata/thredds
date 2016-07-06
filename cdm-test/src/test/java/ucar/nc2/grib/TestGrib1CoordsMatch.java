@@ -63,7 +63,9 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Describe
+ * Check that coordinate values match Grib Records.
+ * Using GridDataset.
+ * These require real data files (not just gbx).
  *
  * @author caron
  * @since 11/5/2014

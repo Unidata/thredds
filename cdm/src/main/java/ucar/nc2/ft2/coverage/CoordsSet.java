@@ -52,13 +52,13 @@ import java.util.*;
  *  LOOK only used by Grib
  */
 @Immutable
-public class CoordsSet implements Iterable<Map<String, Object>> {
-  public static final String runDate = "runDate";                 // CalendarDate
+public class CoordsSet implements Iterable<SubsetParams> {
+  /* public static final String runDate = "runDate";                 // CalendarDate
   public static final String timeOffsetCoord = "timeOffsetCoord";   // Double or double[] (intv)
   public static final String timeOffsetDate = "timeOffsetDate";   // CalendarDate (validation only)
   // public static final String timeCoord = "timeCoord";   // Double or double[] (intv)
   public static final String vertCoord = "vertCoord";   // Double or double[] (intv)
-  public static final String ensCoord = "ensCoord";   // Double
+  public static final String ensCoord = "ensCoord";   // Double */
 
   public static CoordsSet factory(boolean constantForecast, List<CoverageCoordAxis> axes) {
     return new CoordsSet(constantForecast, axes);
@@ -107,11 +107,11 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
   }
 
   @Override
-  public Iterator<Map<String, Object>> iterator() {
+  public Iterator<SubsetParams> iterator() {
     return new CoordIterator();
   }
 
-  private class CoordIterator implements Iterator<Map<String, Object>> {
+  private class CoordIterator implements Iterator<SubsetParams> {
     private int[] odo = new int[getRank()];
     private int[] shape = getShape();
     private long done, total;
@@ -125,8 +125,8 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
       return done < total;
     }
 
-    public Map<String, Object> next() {
-      Map<String, Object> next = currentElement();
+    public SubsetParams next() {
+      SubsetParams next = currentElement();
       done++;
       if (done < total) incr(); // increment for next call
       return next;
@@ -145,8 +145,8 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
       }
     }
 
-    private Map<String, Object> currentElement() {
-      Map<String, Object> result = new HashMap<>();
+    private SubsetParams currentElement() {
+      SubsetParams result = new SubsetParams();
       int odoIndex = 0;
       CalendarDate runtime = null;
       for (CoverageCoordAxis axis : axes) {
@@ -158,7 +158,7 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
 
         if (axis.getAxisType() == AxisType.RunTime) {
           runtime = (CalendarDate) coord;
-          result.put(runDate, runtime);
+          result.setRunTime(runtime);
 
           if (constantForecast) {
             CoverageCoordAxis1D timeOffsetCF = findDependent(axis, AxisType.TimeOffset);
@@ -171,23 +171,36 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
           CoverageCoordAxis1D runtimeForBest = findDependent(axis, AxisType.RunTime);
           if (runtimeForBest != null) {
             runtime = (CalendarDate) runtimeForBest.getCoordObject(coordIdx); // CalendarDate
-            result.put(runDate, runtime);
+            result.setRunTime(runtime);
           }
           assert runtime != null;
           addAdjustedTimeCoords(result, axis1D, coordIdx, runtime);
         }
 
-        else if (axis.getAxisType().isVert())
-          result.put(vertCoord, coord);
+        else if (axis.getAxisType().isVert()) {
+          if (coord instanceof Double)
+            result.setVertCoord( (Double) coord);
+          else if (coord instanceof double[])
+            result.setVertCoordIntv((double[]) coord);
+          else
+            throw new IllegalStateException("unknow vert coord type "+coord.getClass().getName());
+        }
 
         else if (axis.getAxisType() == AxisType.Ensemble)
-          result.put(ensCoord, coord);
+          result.setEnsCoord((Double) coord);
 
         else if (!constantForecast && axis.getAxisType() == AxisType.TimeOffset) {
-          result.put(timeOffsetCoord, coord);
+          if (coord instanceof Double)
+            result.setTimeOffset( (Double) coord);
+          else if (coord instanceof double[])
+            result.setTimeOffsetIntv((double[]) coord);
+          else
+            throw new IllegalStateException("unknow time coord type "+coord.getClass().getName());
+
           double val = axis.isInterval() ? (axis1D.getCoordEdge1(coordIdx) + axis1D.getCoordEdge2(coordIdx)) / 2.0  : axis1D.getCoordMidpoint(coordIdx);
           assert runtime != null;
-          result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, val)); // validation
+          result.set(SubsetParams.timeOffsetDate, axis.makeDateInTimeUnits(runtime, val)); // validation
+          result.set(SubsetParams.timeOffsetUnit, axis.getCalendarDateUnit()); // validation
         }
 
         if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.independent)
@@ -198,7 +211,7 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
 
   }
 
-  private void addAdjustedTimeCoords(Map<String, Object> result, CoverageCoordAxis1D axis, int coordIdx, CalendarDate runtime) {
+  private void addAdjustedTimeCoords(SubsetParams result, CoverageCoordAxis1D axis, int coordIdx, CalendarDate runtime) {
     // this must be adjusted to be offset from the runtime.
     // adjust = end - start
     // axisCoordOffset + axis.reftime = offset + runtime
@@ -209,13 +222,15 @@ public class CoordsSet implements Iterable<Map<String, Object>> {
     double adjust = axis.getOffsetInTimeUnits(runtime, axis.getRefDate());
     if (axis.isInterval()) {
       double[] adjustVal = new double[] {axis.getCoordEdge1(coordIdx)+adjust, axis.getCoordEdge2(coordIdx)+adjust};
-      result.put(timeOffsetCoord, adjustVal);
+      result.setTimeOffsetIntv(adjustVal);
       double mid = (adjustVal[0]+adjustVal[1]) / 2.0;
-      result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, mid)); // validation
+      result.set(SubsetParams.timeOffsetUnit, axis.makeDateInTimeUnits(runtime, mid)); // validation
+      result.set(SubsetParams.timeOffsetUnit, axis.getCalendarDateUnit()); // validation
     } else {
       double adjustVal = axis.getCoordMidpoint(coordIdx) + adjust;
-      result.put(timeOffsetCoord, adjustVal);
-      result.put(timeOffsetDate, axis.makeDateInTimeUnits(runtime, adjustVal)); // validation
+      result.setTimeOffset(adjustVal);
+      result.set(SubsetParams.timeOffsetDate, axis.makeDateInTimeUnits(runtime, adjustVal)); // validation
+      result.set(SubsetParams.timeOffsetUnit, axis.getCalendarDateUnit()); // validation
     }
   }
 

@@ -182,7 +182,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     int[] offsets = new int[nruns];
     for (int idx=0; idx<nruns; idx++) {
       CoordinateTimeAbstract coordTime = (CoordinateTimeAbstract) orgTimes.get(idx);
-      CalendarPeriod period = coordTime.getPeriod(); // LOOK are we assuming all have same period ??
+      CalendarPeriod period = coordTime.getTimeUnit(); // LOOK are we assuming all have same period ??
       offsets[idx] = period.getOffset(firstDate, runtime.getRuntimeDate(idx)); // LOOK possible loss of precision
     }
     return offsets;
@@ -725,22 +725,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (isOrthogonal)
       return otime.getIndex(val);
 
-    // LOOK regular case ??
-    if (isRegular)
-      System.out.printf("HEY%n");
-
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
     if (time.getNCoords() == 1) return 0;
     return time.getIndex(val); // not sure if its reletive to runtime ??
   }
-
-  /* public int findIndexContaining(int runIdx, double value, CalendarDate refDateOfValue) {
-    if (!isOrthogonal)
-      throw new IllegalStateException();
-
-    int offset = timeUnit.getOffset(getRefDate(runIdx), refDateOfValue);
-    return otime.findIndexContaining(offset + value);
-  } */
 
   /**
    * Get a sorted list of the unique time coordinates
