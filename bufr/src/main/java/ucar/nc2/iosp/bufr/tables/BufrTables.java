@@ -32,26 +32,26 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.TableLookup;
 import ucar.nc2.util.TableParser;
-
-import java.lang.*;     // Standard java functions
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.io.*;
-import java.net.URL;
-
-import org.jdom2.input.SAXBuilder;
-import org.jdom2.Element;
-import org.jdom2.JDOMException;
 import ucar.nc2.wmo.Util;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
+
+import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Reads BUFR tables of various forms. Interacts with TableLookup.
@@ -1302,8 +1302,11 @@ public class BufrTables {
 
       try {
         String fxys;
-        String[] flds = line.split("[\\s]+");
-        if (n == 0) {
+        // Need to do fixed-width parsing since, spaces can disappear (if
+        // middle number is triple digits, it can end up right against the
+        // first number
+        if (line.length() > 6) {
+          String[] flds = {line.substring(0, 6), line.substring(6, 9), line.substring(9)};
           fxys = flds[0].trim();
           int fxy = Integer.parseInt(fxys);
           int y = fxy % 1000;
@@ -1311,10 +1314,10 @@ public class BufrTables {
           int x = fxy % 100;
           currDesc = t.addDescriptor((short) x, (short) y, "", new ArrayList<Short>());
           //System.out.printf("Add seq %s = %d %d%n", fxys, x, y);
-          n = Integer.parseInt(flds[1]);
+          n = Integer.parseInt(flds[1].trim());
           fxys = flds[2].trim();
         } else {
-          fxys = flds[0].trim();
+          fxys = line;
         }
 
         int fxy = Integer.parseInt(fxys);
