@@ -243,10 +243,8 @@ libraries["gwt-dev"] = "com.google.gwt:gwt-dev:${versions["gwt"]}"
 // hibernate-validator 4.3.2.Final is limited to validation-api 1.0.0.GA. We can't update to validation-api 1.1.0.Final
 
 libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
-//libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:5.2.2.Final"
 
 libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
-//libraries["validation-api"] = "javax.validation:validation-api:1.1.0.Final"
 
 ////////////////////////////////////////// ToolsUI //////////////////////////////////////////
 
