@@ -74,7 +74,7 @@ public class GribCoordsMatchGbx {
   private static final String KIND_GRID = "grid";
   private static final String KIND_COVERAGE = "coverage";
   private static final int MAX_READS = -1;
-  private static final boolean showMissing = false;
+  private static final boolean showMissing = true;
 
   public static Counters getCounters() {
     Counters countersAll = new Counters();
@@ -93,7 +93,6 @@ public class GribCoordsMatchGbx {
     this.filename = filename;
     this.counters = counters;
   }
-
 
   private CalendarDate[] makeDateBounds(SubsetParams coords, CalendarDate runtime) {
     double[] time_bounds = coords.getTimeOffsetIntv();
@@ -164,6 +163,7 @@ public class GribCoordsMatchGbx {
         readCoverageData(coverage, coords);
       }
     } catch (AssertionError e) {
+      e.printStackTrace();
       return false;
 
     } catch (Throwable t) {
@@ -182,8 +182,12 @@ public class GribCoordsMatchGbx {
     GeoReferencedArray geoArray = cover.readData(coords);
     int[] shape = geoArray.getData().getShape();
 
+    if (shape[1] != 1) {
+      cover.readData(coords);
+    }
+
     for (int i = 0; i < shape.length - 2; i++) {
-      Assert.assertEquals(1, shape[i]);
+      Assert.assertEquals(Misc.showInts(shape), 1, shape[i]);
     }
 
     if (isGrib1)
@@ -207,7 +211,6 @@ public class GribCoordsMatchGbx {
     try (GridDataset gds = GridDataset.open(filename)) {
       NetcdfFile ncfile = gds.getNetcdfFile();
       IOServiceProvider iosp = ncfile.getIosp();
-      assert iosp instanceof GribIosp;
       isGrib1 = iosp instanceof Grib1Iosp;
 
       for (GridDatatype gdt : gds.getGrids()) {
@@ -250,6 +253,7 @@ public class GribCoordsMatchGbx {
       timeCoord2DBoundsArray = null;
 
     } catch (AssertionError e) {
+      e.printStackTrace();
       return false;
 
     } catch (Throwable t) {
@@ -267,7 +271,6 @@ public class GribCoordsMatchGbx {
       isTimeInterval = tcoord.isInterval();
 
       if (rtIndex < 0) {
-        assert (tcoord instanceof CoordinateAxis1DTime);
         CoordinateAxis1DTime tcoord1D = (CoordinateAxis1DTime) tcoord;
 
         for (int t = 0; t < timeDim.getLength(); t++) {
@@ -281,7 +284,6 @@ public class GribCoordsMatchGbx {
           readVert(gdt, rtIndex, t, zDim);
         }
       } else {
-        assert (tcoord instanceof CoordinateAxis2D);
         CoordinateAxis2D tcoord2D = (CoordinateAxis2D) tcoord;
         CoordinateAxisTimeHelper helper = tcoord2D.getCoordinateAxisTimeHelper();
         if (timeCoord2DBoundsArray == null)
@@ -402,7 +404,7 @@ public class GribCoordsMatchGbx {
         } catch (InvalidRangeException e) {
           e.printStackTrace();
         }
-        System.out.printf("    %s failed on runtime %s != gbx %s %n", name, rt_val, gribDate);
+        System.out.printf("  %s %s failed on runtime %s != gbx %s %n", kind, name, rt_val, gribDate);
       }
       Assert.assertEquals(gribDate, rt_val);
     }
@@ -420,7 +422,7 @@ public class GribCoordsMatchGbx {
       }
       if (!date_bounds[0].equals(gbxInv[0]) || !date_bounds[1].equals(gbxInv[1])) {
         tryAgain(coords);
-        System.out.printf(" %s failed on time intv: coord=[%s,%s] gbx =[%s,%s] %n", name, date_bounds[0], date_bounds[1], gbxInv[0], gbxInv[1]);
+        System.out.printf(" %s %s failed on time intv: coord=[%s,%s] gbx =[%s,%s] %n", kind, name, date_bounds[0], date_bounds[1], gbxInv[0], gbxInv[1]);
       }
       Assert.assertArrayEquals(date_bounds, gbxInv);
 
@@ -428,7 +430,7 @@ public class GribCoordsMatchGbx {
       CalendarDate gbxDate = getForecastDate(pdss, ptime);
       if (!time_val.equals(gbxDate)) {
         tryAgain(coords);
-        System.out.printf("  %s failed on time: coord=%s gbx = %s%n", name, time_val, gbxDate);
+        System.out.printf("  %s %s failed on time: coord=%s gbx = %s%n", kind, name, time_val, gbxDate);
       }
       Assert.assertEquals(time_val, gbxDate);
     }
@@ -512,7 +514,7 @@ public class GribCoordsMatchGbx {
       runtimeOk &= rt_val.equals(gribDate);
       if (!runtimeOk) {
         tryAgain(coords);
-        System.out.printf("    %s failed on time %s != %s %n", name, rt_val, gribDate);
+        System.out.printf("   %s %s failed on time %s != %s %n", kind, name, rt_val, gribDate);
       }
     }
 
@@ -534,7 +536,7 @@ public class GribCoordsMatchGbx {
       }
       if (!timeOk) {
         tryAgain(coords);
-        System.out.printf("    %s failed on timeIntv [%s,%s] != %s %n", name, date_bounds[0], date_bounds[1], bean.getTimeCoord());
+        System.out.printf("   %s %s failed on timeIntv [%s,%s] != %s %n", kind, name, date_bounds[0], date_bounds[1], bean.getTimeCoord());
       }
 
     } else if (time_val != null) {
@@ -543,7 +545,7 @@ public class GribCoordsMatchGbx {
       timeOk &= closeEnough(time_val, dateFromGribRecord);
       if (!timeOk) {
         tryAgain(coords);
-        System.out.printf("    %s failed on time %s != %s %n", name, time_val, bean.getTimeCoord());
+        System.out.printf("   %s %s failed on time %s != %s %n", kind, name, time_val, bean.getTimeCoord());
       }
     }
 
@@ -558,13 +560,13 @@ public class GribCoordsMatchGbx {
       vertOk &= Misc.closeEnough(hi, bean.getLevelHighValue());
       if (!vertOk) {
         tryAgain(coords);
-        System.out.printf("  %s failed on vert [%s,%s] != [%s,%s] %n", name, low, hi, bean.getLevelLowValue(), bean.getLevelHighValue());
+        System.out.printf("  %s %s failed on vert [%s,%s] != [%s,%s] %n", kind, name, low, hi, bean.getLevelLowValue(), bean.getLevelHighValue());
       }
     } else if (vert_val != null) {
       vertOk &= Misc.closeEnough(vert_val, bean.getLevelValue1());
       if (!vertOk) {
         tryAgain(coords);
-        System.out.printf("  %s failed on vert %s != %s %n", name, vert_val, bean.getLevelValue1());
+        System.out.printf("  %s %s failed on vert %s != %s %n", kind, name, vert_val, bean.getLevelValue1());
       }
     }
 

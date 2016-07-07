@@ -216,7 +216,11 @@ public class SubsetParams {
   }
 
   public boolean hasTimeOffsetParam() {
-    return get(timeOffset) != null || get(timeOffsetFirst) != null;
+    return get(timeOffset) != null  || get(timeOffsetFirst) != null || get(timeOffsetIntv) != null;
+  }
+
+  public boolean hasTimeOffsetIntvParam() {
+    return get(timeOffsetIntv) != null || get(timeOffsetFirst) != null;
   }
 
   public SubsetParams setHorizStride(int stride) {  set(horizStride, stride); return this; }

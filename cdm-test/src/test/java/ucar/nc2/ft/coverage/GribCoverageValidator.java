@@ -96,8 +96,17 @@ public class GribCoverageValidator implements GribDataValidator {
     CalendarDate wantTimeOffset = (CalendarDate) coords.get(SubsetParams.timeOffsetDate);
     if (gr.getPDS().isTimeInterval()) {
       TimeCoord.TinvDate tinv = cust.getForecastTimeInterval(gr);
-      Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset));          // lower <= time
-      Assert.assertTrue("time coord upper", !tinv.getEnd().isBefore(wantTimeOffset));         // upper >= time
+      double[] wantTimeOffsetIntv = coords.getTimeOffsetIntv();
+      if (wantTimeOffset != null) {
+        Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset));          // lower <= time
+        Assert.assertTrue("time coord upper", !tinv.getEnd().isBefore(wantTimeOffset));// upper >= time
+
+      } else if (wantTimeOffsetIntv != null) {
+        int[] gribIntv = cust.getForecastTimeIntervalOffset(gr);
+
+        Assert.assertTrue("time coord lower", wantTimeOffsetIntv[0] == gribIntv[0]);
+        Assert.assertTrue("time coord upper", wantTimeOffsetIntv[1] == gribIntv[1]);
+      }
 
     } else {
       CalendarDate fdate = cust.getForecastDate(gr);
@@ -121,7 +130,7 @@ public class GribCoverageValidator implements GribDataValidator {
       Assert.assertEquals("vert coord 1", vertCoordIntv[0], level1val, Misc.maxReletiveError);
       Assert.assertEquals("vert coord 2", vertCoordIntv[1], level2val, Misc.maxReletiveError);
 
-    } else {
+    } else if (vertCoord != null) {
       Assert.assertEquals("vert coord", vertCoord, level1val, Misc.maxReletiveError);
     }
 

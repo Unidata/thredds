@@ -403,7 +403,7 @@ public class TestCoverageSubsetTime {
 
       SubsetParams params = new SubsetParams();
       params.set(SubsetParams.timePresent, true);
-      params.set(SubsetParams.vertCoord, 3658.0);
+      params.setVertCoord(3658.0);
       System.out.printf("  subset %s%n", params);
 
       GeoReferencedArray geo = cover.readData(params);
@@ -433,8 +433,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      params.set(SubsetParams.time, CalendarDate.parseISOformat(null, "2015-03-03T00:00:00Z"));
-      params.set(SubsetParams.vertCoord, 3658.0);
+      params.setTime(CalendarDate.parseISOformat(null, "2015-03-03T00:00:00Z"));
+      params.setVertCoord(3658.0);
       System.out.printf("  subset %s%n", params);
 
       GeoReferencedArray geo = cover.readData(params);
@@ -464,8 +464,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      params.set(SubsetParams.timeOffset, 48.0);
-      params.set(SubsetParams.vertCoord, 3658.0);
+      params.setTimeOffset(48.0);
+      params.setVertCoord(3658.0);
       System.out.printf("  subset %s%n", params);
 
       GeoReferencedArray geo = cover.readData(params);

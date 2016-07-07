@@ -187,13 +187,13 @@ public class TestGribCoverageSubsetP {
 
     SubsetParams subset = new SubsetParams();
     if (rt_val != null)
-      subset.set(SubsetParams.runtime, rt_val);
+      subset.setRunTime(rt_val);
     if (time_val != null)
-      subset.set(SubsetParams.time, time_val);
+      subset.setTime(time_val);
     if (time_offset != null)
-      subset.set(SubsetParams.timeOffset, time_offset);
+      subset.setTimeOffset(time_offset);
     if (vert_level != null)
-      subset.set(SubsetParams.vertCoord, vert_level);
+      subset.setVertCoord(vert_level);
 
     GeoReferencedArray geoArray = cover.readData(subset);
     CoverageCoordSys geoCs = geoArray.getCoordSysForData();
