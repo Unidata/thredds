@@ -6,6 +6,7 @@ import dap4.dap4shared.ChunkInputStream;
 import dap4.dap4shared.RequestMode;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -299,6 +300,7 @@ public class TestServletConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Junit test methods
     @Test
+    @Ignore
     public void testServletConstraints()
             throws Exception
     {
