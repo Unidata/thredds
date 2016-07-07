@@ -466,6 +466,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
           return Optional.of(helper.subsetClosest(oval));
         }
 
+        // If a time interval is sent, search for match.
+        timeOffsetIntv = params.getTimeOffsetIntv();
+        if (timeOffsetIntv != null) {
+          return Optional.of(helper.subsetClosest((timeOffsetIntv[0]+timeOffsetIntv[1])/2));
+        }
+
+
         if (params.isTrue(SubsetParams.timeOffsetFirst)) {
           try {
             return Optional.of(helper.subsetByIndex(new Range(1)));

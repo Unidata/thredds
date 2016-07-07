@@ -84,9 +84,8 @@ public class TestRdaCoordsMatchGbx {
     result.add( new Object[] {topdir+"ds094.2/timeseries/ds094.2_t.ncx4"});
     result.add( new Object[] {topdir+"ds277.6/monthly/ds277.6.ncx4"});
     result.add( new Object[] {topdir+"ds628.0/fcst_surf/2012/ds628.0_fcst_surf_local.ncx4"});
-    result.add( new Object[] {topdir+"ds628.0/fcst_surf/2012/ds628.0_fcst_surf-2012.ncx4"});
     result.add( new Object[] {topdir+"ds628.0/ll125/ds628.0_ll125.ncx4"});
-    result.add( new Object[] {topdir+"ds628.2/fcst_column125/1986/ds628.2.fcst_column125-1986.ncx4"});
+    result.add( new Object[] {topdir+"ds628.2/fcst_column125/1986/ds628.2-1986.ncx4"});
     result.add( new Object[] {topdir+"ds628.5/fcst_surf125_var_diurnal/1972/ds628.5.MRUTC-1972.ncx4"});
     return result;
   }

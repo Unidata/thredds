@@ -337,7 +337,7 @@ public class TestGribIndexCreationOther {
 
   /// rdavm
 
-  //// @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds084p3() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -351,7 +351,21 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  //// @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
+  @Test
+  public void testRdvamds084p4() throws IOException {
+    Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds084.4", "test/ds084.4", FeatureCollectionType.GRIB2,
+            "D:/work/rdavm/ds084.4/**/.*gbx9",
+            null, null, null, "directory", null);
+
+    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.nocheck, logger);
+    System.out.printf("changed = %s%n", changed);
+    Grib.setDebugFlags(new DebugFlagsImpl());
+  }
+
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds093p2() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.2", "test/ds093.2", FeatureCollectionType.GRIB2,
@@ -364,7 +378,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds093p2tar() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.2tar", "test/ds093.2/tar", FeatureCollectionType.GRIB2,
@@ -377,7 +391,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds094p1() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -393,7 +407,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds094p1p2013() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -409,7 +423,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds094p2t_dlw() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -425,7 +439,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds094p2t() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -442,7 +456,7 @@ public class TestGribIndexCreationOther {
   }
 
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds094p2dt() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -458,8 +472,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds277p6() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -473,7 +486,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds626p0() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -489,7 +502,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds628p0() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds628.0_ll125", "test/ds628.0_ll125", FeatureCollectionType.GRIB1,
@@ -501,7 +514,7 @@ public class TestGribIndexCreationOther {
     System.out.printf("changed = %s%n", changed);
   }
 
-  // // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds628p0fcst_surf() throws IOException {
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds628.0_fcst_surf_local", "test/ds628.0_fcst_surf", FeatureCollectionType.GRIB1,
@@ -513,13 +526,13 @@ public class TestGribIndexCreationOther {
     System.out.printf("changed = %s%n", changed);
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds628p2() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     FeatureCollectionConfig config = new FeatureCollectionConfig("ds628.2", "test/ds628.2", FeatureCollectionType.GRIB1,
             "D:/work/rdavm/ds628.2/fcst_column125/**/.*gbx9$",
-            null, null, null, "none", null);
+            null, null, null, "directory", null);
 
     org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("always");
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
@@ -527,7 +540,7 @@ public class TestGribIndexCreationOther {
     Grib.setDebugFlags(new DebugFlagsImpl());
   }
 
-  // @Category(NeedsRdaData.class) 
+  @Category(NeedsRdaData.class) 
   @Test
   public void testRdvamds628p5() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));

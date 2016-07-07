@@ -148,7 +148,7 @@ public class TestCoverageCurvilinear {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
 
-      SubsetParams params = new SubsetParams().set(SubsetParams.vertCoord, -.05).set(SubsetParams.timePresent, true);
+      SubsetParams params = new SubsetParams().setVertCoord(-.05).set(SubsetParams.timePresent, true);
       GeoReferencedArray geo = cover.readData(params);
 
       Array data = geo.getData();
