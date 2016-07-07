@@ -124,9 +124,8 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
 libraries["commons-io"] = "commons-io:commons-io:2.4"
-libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
 
-libraries["equalsverifier"] = "nl.jqno.equalsverifier:equalsverifier:1.7.5"
+libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
 
 // These four are all for Spock.
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
@@ -139,7 +138,6 @@ libraries["cglib-nodep"] = "com.github.cglib.cglib:cglib-nodep:5503bcca74"
 
 // In Spock, allows mocking of classes without default constructor (together with CGLIB).
 libraries["objenesis"] = "org.objenesis:objenesis:2.2"
-
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 
@@ -195,11 +193,14 @@ libraries["chronicle-map"] = "net.openhft:chronicle-map:2.3.9"
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
 libraries["jstl-api"] = "org.apache.taglibs:taglibs-standard-spec:1.2.5"
+
 libraries["jstl-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["oro"] = "oro:oro:2.0.6"
+
+libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE"
 
 versions["edal"] = "1.1.1"
 
@@ -237,22 +238,13 @@ libraries["gwt-user"] =  "com.google.gwt:gwt-user:${versions["gwt"]}"
 
 libraries["gwt-dev"] = "com.google.gwt:gwt-dev:${versions["gwt"]}"
 
-/////////////////////////////////////////////////////////////////////////////////
-// Bean validation 1.1, used by TDS
+// Version update note:
+// spring-context 4.x is limited to hibernate-validator 4.3.2.Final. We can't update to hibernate-validator 5.x
+// hibernate-validator 4.3.2.Final is limited to validation-api 1.0.0.GA. We can't update to validation-api 1.1.0.Final
 
-libraries["validation-api"] = "javax.validation:validation-api:1.1.0.Final"
-libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:5.2.2.Final"
-libraries["javax.el-api"] = "javax.el:javax.el-api:2.2.4"
-libraries["javax.el"] = "org.glassfish.web:javax.el:2.2.4"
+libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
 
-
-////////////////////////////// Testing ///////////////////////////////////////////
-
-//libraries["commons-fileupload"] = "commons-fileupload:commons-fileupload:1.2.2"
-
-//libraries["geoapi-pending"] = "org.opengis:geoapi-pending:3.1-M04"
-
-//libraries["oro"] = "oro:oro:2.0.8"
+libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
 
 ////////////////////////////////////////// ToolsUI //////////////////////////////////////////
 

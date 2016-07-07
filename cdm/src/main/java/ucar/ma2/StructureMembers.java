@@ -32,17 +32,11 @@
  */
 package ucar.ma2;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import com.google.common.base.MoreObjects;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.Indent;
+
+import java.util.*;
 
 /**
  * A Collection of members contained in a StructureData.
@@ -200,29 +194,6 @@ public final class StructureMembers {
     }
     return memberHash.get(memberName);
   }
-
-  /*
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof StructureMembers)) {
-      return false;
-    }
-
-    StructureMembers that = (StructureMembers) o;
-    return  Objects.equals(this.getStructureSize(), that.getStructureSize()) &&
-            Objects.equals(this.getName(), that.getName()) &&
-            Objects.equals(this.getMembers(), that.getMembers());
-    // memberHash is derived from shape. No need to include it in computation.
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getStructureSize(), getName(), getMembers());
-    // memberHash is derived from shape. No need to include it in computation.
-  } */
 
   @Override
   public String toString() {
@@ -474,41 +445,5 @@ public final class StructureMembers {
     public String toString() { 
       return name;
     }
-
-    /*
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (!(o instanceof Member)) {
-        return false;
-      }
-
-      // getStructureMembers() points to the outer class instance. Calling equals() would result in an infinite loop!
-      assert this.getStructureMembers() != StructureMembers.this : "setStructureMembers should've prevented this";
-
-      Member that = (Member) o;
-      return  Objects.equals(this.getName(), that.getName()) &&
-              Objects.equals(this.getDescription(), that.getDescription()) &&
-              Objects.equals(this.getUnitsString(), that.getUnitsString()) &&
-              Objects.equals(this.getDataType(), that.getDataType()) &&
-              Objects.deepEquals(this.getShape(), that.getShape()) &&
-              Objects.equals(this.getStructureMembers(), that.getStructureMembers()) &&
-              MAMath.equals(this.getDataArray(), that.getDataArray()) &&
-              Objects.equals(this.getDataObject(), that.getDataObject()) &&
-              Objects.equals(this.getDataParam(), that.getDataParam());
-      // size and isVariableLength are derived from shape. No need to include them in computation.
-    }
-
-    @Override
-    public int hashCode() {
-      // getStructureMembers() points to the outer class instance. Calling hashCode() would result in an infinite loop!
-      assert this.getStructureMembers() != StructureMembers.this : "setStructureMembers should've prevented this";
-
-      return Objects.hash(getName(), getDescription(), getUnitsString(), getDataType(), Arrays.hashCode(getShape()),
-              getStructureMembers(), MAMath.hashCode(getDataArray()), getDataObject(), getDataParam());
-      // size and isVariableLength are derived from shape. No need to include them in computation.
-    } */
   }
 }
