@@ -147,7 +147,7 @@ public class TestGribCoverageRead {
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
       Assert.assertEquals(219.5, first, first * Misc.maxReletiveError);
-      Assert.assertEquals(218.6, last, last*Misc.maxReletiveError);
+      Assert.assertEquals(218.6, last, last * Misc.maxReletiveError);
     }
   }
 

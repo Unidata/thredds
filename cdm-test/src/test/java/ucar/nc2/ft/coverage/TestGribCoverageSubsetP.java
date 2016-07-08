@@ -253,7 +253,9 @@ public class TestGribCoverageSubsetP {
         CoverageCoordAxis zAxis = geoCs.getZAxis();
         Assert.assertNotNull(AxisType.Pressure.toString(), zAxis);
         Assert.assertEquals(1, zAxis.getNcoords());
-        double val = zAxis.getStartValue();
+        double val = ((CoverageCoordAxis1D) zAxis).getCoordMidpoint(0);
+        if (!Misc.closeEnough(val, vert_level.doubleValue()))
+          System.out.printf("HEY%n");
         Assert.assertEquals(vert_level.doubleValue(), val, Misc.maxReletiveError);
       }
     }
