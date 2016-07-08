@@ -74,7 +74,7 @@ public class GribCoordsMatchGbx {
   private static final String KIND_GRID = "grid";
   private static final String KIND_COVERAGE = "coverage";
   private static final int MAX_READS = -1;
-  private static final boolean showMissing = true;
+  private static final boolean showMissing = false;
 
   public static Counters getCounters() {
     Counters countersAll = new Counters();

@@ -420,9 +420,13 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
         // A time offset or time offset interval starts from the rundate of the offset
         Double timeOffset = params.getTimeOffset();
         CalendarDate runtime = params.getRunTime();
-        if (timeOffset != null && runtime != null) {
-          date = makeDateInTimeUnits(runtime, timeOffset);
-          return Optional.of(helper.subsetClosest(date));
+        if (timeOffset != null) {
+          if (runtime != null) {
+            date = makeDateInTimeUnits(runtime, timeOffset);
+            return Optional.of(helper.subsetClosest(date));
+          } else {
+            return Optional.of(helper.subsetClosest(timeOffset));
+          }
         }
 
         // If a time interval is sent, search for match.

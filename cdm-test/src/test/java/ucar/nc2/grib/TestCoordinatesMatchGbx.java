@@ -117,12 +117,21 @@ public class TestCoordinatesMatchGbx {
     System.out.printf("counters= %s%n", counters);
   }
 
-  @Test
   public void testProblem2() throws IOException {
     ucar.nc2.util.Counters counters = GribCoordsMatchGbx.getCounters();
     String filename = "D:/work/rdavm/ds084.3/2015/20150201/ds084.3-20150201.ncx4";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     // helper.readGridDataset();
+    helper.readCoverageDataset();
+    System.out.printf("counters= %s%n", counters);
+  }
+
+  @Test
+  public void testRdaPofP() throws IOException {
+    ucar.nc2.util.Counters counters = GribCoordsMatchGbx.getCounters();
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/rdavm/ds083.2/PofP/ds083.2-pofp.ncx4";
+    GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
+    helper.readGridDataset();
     helper.readCoverageDataset();
     System.out.printf("counters= %s%n", counters);
   }
