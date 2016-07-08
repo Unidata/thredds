@@ -110,7 +110,7 @@ public class TestCoordinatesMatchGbx {
     ucar.nc2.util.Counters counters = GribCoordsMatchGbx.getCounters();
     // String filename = "D:/cdmUnitTest/formats/grib1/complex_packing.grib1";
     //String filename = "D:/cdmUnitTest/formats/grib1/QPE.20101005.009.157";
-    String filename = "D:/cdmUnitTest/formats/grib2/berkes.grb2";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib2/berkes.grb2";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     helper.readGridDataset();
     helper.readCoverageDataset();
