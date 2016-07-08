@@ -202,7 +202,7 @@ libraries["oro"] = "oro:oro:2.0.6"
 
 libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE"
 
-versions["edal"] = "1.1.1"
+versions["edal"] = "1.1.2"
 
 libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
 
