@@ -65,7 +65,7 @@ public class TestCoordinatesMatchGbx {
   static public void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
     System.out.printf("countersAll = %s%n", countersAll);
-    Variable.permitCaching = false;
+    Variable.permitCaching = true;
   }
 
   static ucar.nc2.util.Counters countersAll;
