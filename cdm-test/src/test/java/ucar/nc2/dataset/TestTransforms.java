@@ -58,6 +58,7 @@ import java.util.List;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestTransforms {
+  private static final boolean show = false;
   private String testDir= TestDir.cdmUnitTestDir + "transforms/";
 
   @Test
@@ -248,7 +249,7 @@ public class TestTransforms {
 
     VariableDS lev = (VariableDS) ncd.findVariable(levName);
     assert lev != null;
-    System.out.println(" dump of ctv = \n" + lev);
+    if (show) System.out.println(" dump of ctv = \n" + lev);
 
     VariableDS v = (VariableDS) ncd.findVariable(varName);
     assert v != null;
@@ -274,7 +275,7 @@ public class TestTransforms {
     assert vct.getVerticalTransformType() == vtype : vct.getVerticalTransformType();
 
     VariableDS ctv = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-    System.out.println(" dump of equivilent ctv = \n" + ctv);
+    if (show) System.out.println(" dump of equivilent ctv = \n" + ctv);
 
     VerticalTransform vt = null;
     if (timeName == null) {
@@ -284,7 +285,7 @@ public class TestTransforms {
       assert (null != coordVals);
 
       Section cSection = new Section(coordVals.getShape());
-      System.out.printf(" coordVal shape = %s %n", cSection);
+      if (show) System.out.printf(" coordVal shape = %s %n", cSection);
       assert varSection.computeSize() == cSection.computeSize();
 
     } else {
@@ -299,10 +300,8 @@ public class TestTransforms {
         ucar.ma2.ArrayDouble.D3 coordVals = vt.getCoordinateArray(i);
         assert (null != coordVals);
         Section cSection = new Section(coordVals.getShape());
-        System.out.printf("%s: varSection shape = %s %n", v.getFullName(), varSection);
-        System.out.printf("%s: coordVal shape = %s %n", v.getFullName(), cSection);
-        if (varSection.computeSize() != cSection.computeSize())
-          System.out.println("HEY");
+        if (show) System.out.printf("%s: varSection shape = %s %n", v.getFullName(), varSection);
+        if (show) System.out.printf("%s: coordVal shape = %s %n", v.getFullName(), cSection);
         if (varsMatch) assert varSection.computeSize() == cSection.computeSize();
       }
     }

@@ -148,7 +148,7 @@ public class TestNc4IospWriting {
         NetcdfFile ncfileIn = ucar.nc2.NetcdfFile.open(datasetIn, null);
         FileWriter2 writer2 = new FileWriter2(ncfileIn, datasetOut, version, null);
         NetcdfFile ncfileOut = writer2.write();
-        compare(ncfileIn, ncfileOut, true, false, true);
+        compare(ncfileIn, ncfileOut, false, false, true);
         ncfileIn.close();
         ncfileOut.close();
         // System.out.println("NetcdfFile written = " + ncfileOut);

@@ -201,10 +201,10 @@ public class TestGribCoverageSubsetP {
     System.out.printf("%ngeoArray shape=%s%n", Misc.showInts(geoArray.getData().getShape()));
 
     if (rt_val != null) {
-      CoverageCoordAxis runAxis = geoCs.getAxis(AxisType.RunTime);
+      CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
       if (runAxis != null) {
         Assert.assertEquals(1, runAxis.getNcoords());
-        double val = runAxis.getStartValue();
+        double val = runAxis.getCoordMidpoint(0);
         CalendarDate runDate = runAxis.makeDate(val);
         Assert.assertEquals(rt_val, runDate);
       }
@@ -217,7 +217,7 @@ public class TestGribCoverageSubsetP {
         CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
         Assert.assertNotNull(AxisType.RunTime.toString(), runAxis);
         Assert.assertEquals(1, runAxis.getNcoords());
-        double val = runAxis.getStartValue();
+        double val = runAxis.getCoordMidpoint(0);
         CalendarDate runDate = runAxis.makeDate(val);
         if (rt_val != null)
           Assert.assertEquals(rt_val, runDate);

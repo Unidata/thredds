@@ -107,8 +107,7 @@ public class HorizCoordSys {
     }
     this.hasLatLon2D = hasLatLon2D;
     if (!isProjection && hasLatLon2D && !(this instanceof HorizCoordSys2D))
-      System.out.printf("HEY%n");
-
+      System.out.printf("HEY Should be HorizCoordSys2D%n");
 
       if (isLatLon1D) {
       this.lataxis = (CoverageCoordAxis1D) lataxis;

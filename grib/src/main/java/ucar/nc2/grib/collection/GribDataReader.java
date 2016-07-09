@@ -396,13 +396,13 @@ public abstract class GribDataReader {
       this.xRange = xRange;
       this.horizSize = yRange.length() * xRange.length();
 
-      int len = (int) Section.computeSize(shape);
+      long len = Section.computeSize(shape);
       if (len > 100 * 1000 * 1000*4) { // LOOK make configurable
         logger.debug("Len greater that 100MB shape={}\n{}", Misc.showInts(shape),
                 Throwables.getStackTraceAsString(new Throwable()));
         throw new IllegalArgumentException("RequestTooLarge: Len greater that 100M ");
       }
-      float[] data = new float[len];
+      float[] data = new float[ (int) len];
       Arrays.fill(data, Float.NaN); // prefill primitive array
       dataArray = Array.factory(DataType.FLOAT, shape, data);
     }

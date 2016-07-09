@@ -160,10 +160,10 @@ public class TestWcsServer {
       CoverageCoordSys csys = cov.getCoordSys();
       assertNotNull("csys", csys);
 
-      CoverageCoordAxis time = csys.getAxis(AxisType.Time);
+      CoverageCoordAxis1D time = (CoverageCoordAxis1D) csys.getAxis(AxisType.Time);
       assertNotNull("time", time);
       Assert.assertEquals(1, time.getNcoords());
-      CalendarDate date = time.makeDate( time.getStartValue());
+      CalendarDate date = time.makeDate( time.getCoordMidpoint(0));
       System.out.printf("date = %s%n", date);
       CalendarDate expected = CalendarDate.parseISOformat(Calendar.gregorian.toString(), "2002-12-01T00:00:00Z"); // CF i guess
       Assert.assertEquals(expected.getMillis(), date.getMillis());
@@ -173,13 +173,13 @@ public class TestWcsServer {
       HorizCoordSys hcs = csys.getHorizCoordSys();
       CoverageCoordAxis1D xaxis = hcs.getXAxis();
       Assert.assertEquals(291, xaxis.getNcoords());
-      Assert.assertEquals(10.5, xaxis.getStartValue(), Misc.maxReletiveError);
+      Assert.assertEquals(10.5, xaxis.getCoordMidpoint(0), Misc.maxReletiveError);
       Assert.assertEquals(300.5, xaxis.getEndValue(), Misc.maxReletiveError); // LOOK is that ok? BB = 10-300: its just catching the edge
       Assert.assertEquals(1.0, xaxis.getResolution(), Misc.maxReletiveError);
 
       CoverageCoordAxis1D yaxis = hcs.getYAxis();
       Assert.assertEquals(81, yaxis.getNcoords());
-      Assert.assertEquals(79.5, yaxis.getStartValue(), Misc.maxReletiveError);
+      Assert.assertEquals(79.5, yaxis.getCoordMidpoint(0), Misc.maxReletiveError);
       Assert.assertEquals(-.5, yaxis.getEndValue(), Misc.maxReletiveError); // LOOK is that ok? BB = 0-80: its just catching the edge
       Assert.assertEquals(-1.0, yaxis.getResolution(), Misc.maxReletiveError);
     }
@@ -238,17 +238,17 @@ public class TestWcsServer {
       CoverageCoordSys csys = cov.getCoordSys();
       assertNotNull("csys", csys);
 
-      CoverageCoordAxis time = csys.getAxis(AxisType.Time);
+      CoverageCoordAxis1D time = (CoverageCoordAxis1D) csys.getAxis(AxisType.Time);
       assertNotNull("time", time);
       Assert.assertEquals(1, time.getNcoords());
-      CalendarDate date = time.makeDate(time.getStartValue());
+      CalendarDate date = time.makeDate(time.getCoordMidpoint(0));
       System.out.printf("date = %s%n", date);
       Assert.assertEquals(date, CalendarDate.parseISOformat(null, "2012-04-19T00:00:00Z"));
 
-      CoverageCoordAxis vert = csys.getZAxis();
+      CoverageCoordAxis1D vert = (CoverageCoordAxis1D) csys.getZAxis();
       assertNotNull("vert", vert);
       Assert.assertEquals(1, vert.getNcoords());
-      double vertCoord = vert.getStartValue();
+      double vertCoord = vert.getCoordMidpoint(0);
       System.out.printf("date = %s%n", date);
       Assert.assertEquals(800.0, vertCoord, Misc.maxReletiveError);
     }
