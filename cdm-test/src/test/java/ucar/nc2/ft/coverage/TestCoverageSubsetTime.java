@@ -232,8 +232,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(timeAxis);
       Assert.assertEquals(92, timeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.discontiguousInterval, timeAxis.getSpacing());
-      Assert.assertEquals(0.0, timeAxis.getCoordMidpoint(0), Misc.maxReletiveError);
-      Assert.assertEquals(384.0, timeAxis.getCoordMidpoint(timeAxis.getNcoords()-1), Misc.maxReletiveError);
+      Assert.assertEquals(0.0, timeAxis.getStartValue(), Misc.maxReletiveError);
+      Assert.assertEquals(384.0, timeAxis.getEndValue(), Misc.maxReletiveError);
 
       // LOOK need to test data
     }

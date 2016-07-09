@@ -161,14 +161,11 @@ public class TestBufrRead {
     return totalObs;
   }
 
+  // just open and see if it barfs
   private void openNetcdf(String filename) throws IOException {
     System.out.printf("%n***openNetcdf bufr %s%n", filename);
-    NetcdfFile ncfile = null;
-    try {
-      ncfile = NetcdfFile.open(filename);
-      System.out.printf("%s%n", ncfile);
-    } finally {
-      if (ncfile != null) ncfile.close();
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      if (show) System.out.printf("%s%n", ncfile);
     }
   }
 
