@@ -33,11 +33,9 @@
  */
 package ucar.nc2.grib;
 
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.experimental.categories.Category;
+import ucar.nc2.Variable;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.util.test.TestDir;
@@ -58,12 +56,16 @@ public class TestCoordinatesMatchGbx {
   static public void before() {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
     countersAll = GribCoordsMatchGbx.getCounters();
+
+    // cant allow caching to interfere with "get last record read from GribCollectionImmutable"
+    Variable.permitCaching = false;
   }
 
   @AfterClass
   static public void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
     System.out.printf("countersAll = %s%n", countersAll);
+    Variable.permitCaching = false;
   }
 
   static ucar.nc2.util.Counters countersAll;
@@ -105,12 +107,63 @@ public class TestCoordinatesMatchGbx {
     Assert.assertEquals(0, fail);
   }
 
-  @Test
-  public void testProblem() throws IOException {
+  /*
+   time intervals =
+   discontiguous values (240)=
+   (0.000000,1.000000) (0.000000,6.000000) (6.000000,12.000000) (12.000000,18.000000) (18.000000,24.000000) (1.000000,2.000000)
+   (1.000000,7.000000) (7.000000,13.000000) (13.000000,19.000000) (19.000000,25.000000) (2.000000,3.000000) (2.000000,8.000000)
+   (8.000000,14.000000) (14.000000,20.000000) (20.000000,26.000000) (3.000000,4.000000) (3.000000,9.000000) (9.000000,15.000000)
+   (15.000000,21.000000) (21.000000,27.000000) (4.000000,5.000000) (4.000000,10.000000) (10.000000,16.000000) (16.000000,22.000000)
+   (22.000000,28.000000) (5.000000,6.000000) (5.000000,11.000000) (11.000000,17.000000) (17.000000,23.000000) (23.000000,29.000000)
+   (6.000000,7.000000) (6.000000,12.000000) (12.000000,18.000000) (18.000000,24.000000) (24.000000,30.000000) (7.000000,8.000000)
+   (7.000000,13.000000) (13.000000,19.000000) (19.000000,25.000000) (25.000000,31.000000) (8.000000,9.000000) (8.000000,14.000000)
+   (14.000000,20.000000) (20.000000,26.000000) (26.000000,32.000000) (9.000000,10.000000) (9.000000,15.000000) (15.000000,21.000000)
+   (21.000000,27.000000) (27.000000,33.000000) (10.000000,11.000000) (10.000000,16.000000) (16.000000,22.000000) (22.000000,28.000000)
+   (28.000000,34.000000) (11.000000,12.000000) (11.000000,17.000000) (17.000000,23.000000) (23.000000,29.000000) (29.000000,35.000000)
+   (12.000000,13.000000) (12.000000,18.000000) (18.000000,24.000000) (24.000000,30.000000) (30.000000,36.000000) (13.000000,14.000000)
+   (13.000000,19.000000) (19.000000,25.000000) (25.000000,31.000000) (31.000000,37.000000) (14.000000,15.000000) (14.000000,20.000000) (
+   (20.000000,26.000000) (26.000000,32.000000) (32.000000,38.000000) (15.000000,16.000000) (15.000000,21.000000) (21.000000,27.000000)
+   (27.000000,33.000000) (33.000000,39.000000) (16.000000,17.000000) (16.000000,22.000000) (22.000000,28.000000) (28.000000,34.000000)
+   (34.000000,40.000000) (17.000000,18.000000) (17.000000,23.000000) (23.000000,29.000000) (29.000000,35.000000) (35.000000,41.000000)
+   (18.000000,19.000000) (18.000000,24.000000) (24.000000,30.000000) (30.000000,36.000000) (36.000000,42.000000) (19.000000,20.000000)
+   (19.000000,25.000000) (25.000000,31.000000) (31.000000,37.000000) (37.000000,43.000000) (20.000000,21.000000) (20.000000,26.000000)
+   (26.000000,32.000000) (32.000000,38.000000) (38.000000,44.000000) (21.000000,22.000000) (21.000000,27.000000) (27.000000,33.000000)
+   (33.000000,39.000000) (39.000000,45.000000) (22.000000,23.000000) (22.000000,28.000000) (28.000000,34.000000) (34.000000,40.000000)
+   (40.000000,46.000000) (23.000000,24.000000) (23.000000,29.000000) (29.000000,35.000000) (35.000000,41.000000) (41.000000,47.000000)
+    (24, 30) repeated twice.
+    Problem is the actual coords are unique (so made into a MRUTC) but we have:
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      XXXXX
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+      X----
+
+      should remove the missing records.
+      https://github.com/Unidata/thredds/issues/584
+   */
+  @Ignore("Overlapping time interval")
+  public void testNonUniqueTimeCoordsProblem() throws IOException {
     ucar.nc2.util.Counters counters = GribCoordsMatchGbx.getCounters();
-    // String filename = "D:/cdmUnitTest/formats/grib1/complex_packing.grib1";
-    //String filename = "D:/cdmUnitTest/formats/grib1/QPE.20101005.009.157";
-    String filename = TestDir.cdmUnitTestDir + "formats/grib2/berkes.grb2";
+    String filename = TestDir.cdmUnitTestDir + "formats/grib1/problem/QPE.20101005.009.157";
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     helper.readGridDataset();
     helper.readCoverageDataset();

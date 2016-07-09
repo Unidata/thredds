@@ -399,11 +399,7 @@ public class GribCoordsMatchGbx {
       CalendarDate gribDate = pdss.getReferenceDate();
       runtimeOk &= rt_val.equals(gribDate);
       if (!runtimeOk) {
-        try {
-          if (cover != null) cover.readData(coords);
-        } catch (InvalidRangeException e) {
-          e.printStackTrace();
-        }
+        tryAgain(coords);
         System.out.printf("  %s %s failed on runtime %s != gbx %s %n", kind, name, rt_val, gribDate);
       }
       Assert.assertEquals(gribDate, rt_val);
@@ -433,6 +429,31 @@ public class GribCoordsMatchGbx {
         System.out.printf("  %s %s failed on time: coord=%s gbx = %s%n", kind, name, time_val, gbxDate);
       }
       Assert.assertEquals(time_val, gbxDate);
+    }
+
+    // check vert
+    boolean vertOk = true;
+    Double vert_val = coords.getVertCoord();
+    Grib1ParamLevel plevel = cust1.getParamLevel(gr1.getPDSsection());
+    if (cust1.isLayer(plevel.getLevelType())) {
+      double[] edge = coords.getVertCoordIntv();
+      if (edge != null) {
+       // double low = Math.min(edge[0], edge[1]);
+        //double hi = Math.max(edge[0], edge[1]);
+        vertOk &= Misc.closeEnough(edge[0], plevel.getValue1());
+        vertOk &= Misc.closeEnough(edge[1], plevel.getValue2());
+        if (!vertOk) {
+          tryAgain(coords);
+          System.out.printf("  %s %s failed on vert [%s,%s] != [%s,%s] %n", kind, name, edge[0], edge[1],
+                  plevel.getValue1(), plevel.getValue2());
+        }
+      }
+    } else if (vert_val != null) {
+      vertOk &= Misc.closeEnough(vert_val,  plevel.getValue1());
+      if (!vertOk) {
+        tryAgain(coords);
+        System.out.printf("  %s %s failed on vert %s != %s %n", kind, name, vert_val,  plevel.getValue1());
+      }
     }
   }
 
@@ -514,7 +535,7 @@ public class GribCoordsMatchGbx {
       runtimeOk &= rt_val.equals(gribDate);
       if (!runtimeOk) {
         tryAgain(coords);
-        System.out.printf("   %s %s failed on time %s != %s %n", kind, name, rt_val, gribDate);
+        System.out.printf("   %s %s failed on runtime %s != %s %n", kind, name, rt_val, gribDate);
       }
     }
 
