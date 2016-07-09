@@ -387,10 +387,10 @@ public class TestDir {
         for (Variable v : ncfile.getVariables()) {
           if (v.getSize() > max_size) {
             Section s = makeSubset(v);
-            System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+            //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
             v.read(s);
           } else {
-            System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+            //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
             v.read();
           }
         }
