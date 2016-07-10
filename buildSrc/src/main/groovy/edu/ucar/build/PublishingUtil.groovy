@@ -1,6 +1,8 @@
 package edu.ucar.build
 
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.DependencySet
 import org.gradle.api.component.SoftwareComponent
 import org.gradle.api.publish.maven.MavenArtifact
 import org.gradle.api.publish.maven.MavenPublication
@@ -77,6 +79,49 @@ abstract class PublishingUtil {
                                 // So, we explicitly set it to 'jar'.
                                 pom.packaging = 'jar'
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Ensures that the project's compile-time dependencies will have a scope of 'compile' in the Maven POMs that are
+     * generated, instead of 'runtime'. This addresses a known bug in the maven-publish plugin:
+     * https://discuss.gradle.org/t/maven-publish-plugin-generated-pom-making-dependency-scope-runtime/
+     *
+     * @param project  the project to adjust POM scopes for.
+     */
+    static void adjustMavenPublicationPomScopes(Project project) {
+        project.with {
+            apply plugin: 'maven-publish'
+
+            // Adapted from code in the above-mentioned Gradle Forums thread but expanded for clarity.
+            publishing {
+                publications.all {
+                    pom.withXml {
+                        Node pomProjectNode = asNode()
+                        assert pomProjectNode.name().localPart == 'project'
+
+                        // The '*' is an alias for Node.breadthFirst(). See http://goo.gl/Bp8s0k
+                        List<Node> pomDependencyNodes = pomProjectNode.dependencies.'*'
+                        assert pomDependencyNodes*.name()*.localPart.toUnique() == ['dependency']
+
+                        // The compile-scoped dependencies of the project. The provided-scoped dependencies are
+                        // already being handled by gradle-extra-configurations-plugin: https://goo.gl/xzRuLu
+                        DependencySet projCompileDeps = project.configurations.compile.dependencies
+
+                        List<Node> depNodesToFix = pomDependencyNodes.findAll { Node pomDependencyNode ->
+                            boolean nodeShouldHaveCompileScope = projCompileDeps.find { Dependency projCompileDep ->
+                                projCompileDep.name == pomDependencyNode.artifactId.text()
+                            }
+
+                            nodeShouldHaveCompileScope && pomDependencyNode.scope.text() != 'compile'
+                        }
+
+                        depNodesToFix.each { Node depNode ->
+                            depNode.scope*.value = 'compile'
                         }
                     }
                 }
