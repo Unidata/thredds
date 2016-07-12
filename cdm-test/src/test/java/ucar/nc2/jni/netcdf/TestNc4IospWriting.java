@@ -348,20 +348,21 @@ public class TestNc4IospWriting {
             }
          */
 
-        NetcdfFile ncFile = NetcdfFile.open(outFile.getAbsolutePath());
-        Variable tableVar = ncFile.findVariable(null, "table");
-        Array actualVals = tableVar.read();
+        try (NetcdfFile ncFile = NetcdfFile.open(outFile.getAbsolutePath())) {
+            Variable tableVar = ncFile.findVariable(null, "table");
+            Array actualVals = tableVar.read();
 
-        int fill = -2147483647;  // See EnhanceScaleMissingImpl.NC_FILL_INT
-        int[] expectedData = new int[] {
-                1,    fill, 3,    fill, 5,
-                2,    2,    3,    fill, 5,
-                fill, fill, 3,    fill, 5,
-                4,    4,    4,    4,    5,
-                fill, fill, fill, fill, 5
-        };
-        Array expectedVals = Array.factory(DataType.INT, new int[] { 5, 5 }, expectedData);
+            int fill = -2147483647;  // See EnhanceScaleMissingImpl.NC_FILL_INT
+            int[] expectedData = new int[] {
+                    1,    fill, 3,    fill, 5,
+                    2,    2,    3,    fill, 5,
+                    fill, fill, 3,    fill, 5,
+                    4,    4,    4,    4,    5,
+                    fill, fill, fill, fill, 5
+            };
+            Array expectedVals = Array.factory(DataType.INT, new int[] { 5, 5 }, expectedData);
 
-        Assert.assertTrue(MAMath.isEqual(expectedVals, actualVals));
+            Assert.assertTrue(MAMath.isEqual(expectedVals, actualVals));
+        }
     }
 }
