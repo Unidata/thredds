@@ -327,6 +327,10 @@ public class TestNc4IospWriting {
             shape = new int[] { 5, 1 };
             data = new int[] { 5, 5, 5, 5, 5 };
             writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
+        } catch (IOException e) {
+            if ("NetCDF: Start+count exceeds dimension bound".equals(e.getMessage())) {
+                throw new IOException("This test requires netcdf-c 4.4.0+.", e);
+            }
         }
 
         /*
