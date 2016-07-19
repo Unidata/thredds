@@ -75,7 +75,7 @@ public class N3header {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private ucar.unidata.io.RandomAccessFile raf;
+  ucar.unidata.io.RandomAccessFile raf;
   private ucar.nc2.NetcdfFile ncfile;
   private List<Variable> uvars = new ArrayList<Variable>(); // vars that have the unlimited dimension
   private Dimension udim; // the unlimited dimension

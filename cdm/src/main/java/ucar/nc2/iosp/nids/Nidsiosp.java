@@ -1937,32 +1937,10 @@ short arrowHeadValue = 0;    */
 
   }
 
-  /* public short convertunsignedByte2Short(byte b) {
-    return (short) ((b < 0) ? (short) b + 256 : (short) b);
-  }
-
-  public static int unsignedByteToInt(byte b) {
-    return (int) b & 0xFF;
-  } */
-
-  protected boolean fill;
-  protected HashMap dimHash = new HashMap(50);
-
-  public static void main(String args[]) throws Exception, IOException, InstantiationException, IllegalAccessException {
-    String fileIn = "/home/yuanho/NIDS/N0R_20041102_2111";
-    //String fileIn = "c:/data/image/Nids/n0r_20041013_1852";
-    ucar.nc2.NetcdfFile.registerIOProvider(ucar.nc2.iosp.nids.Nidsiosp.class);
-    ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn);
-
-    //List alist = ncf.getGlobalAttributes();
-
-    ucar.nc2.Variable v = ncf.findVariable("BaseReflectivity");
-
-    int[] origin = {0, 0};
-    int[] shape = {300, 36};
-
-    v.read(origin, shape);
-    ncf.close();
+  @Override
+  public void reacquire() throws IOException {
+    super.reacquire();
+    headerParser.raf = this.raf;
   }
 
 }
