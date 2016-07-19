@@ -36,9 +36,11 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-libraries["gretty"] = "org.akhikhl.gretty:gretty:1.2.0"
+// Original plugin (last release was 1.2.4): https://github.com/akhikhl/gretty
+// Fork of original (first release was 1.2.5): https://github.com/saladinkzn/gretty
+libraries["gretty"] = "ru.shadam.gretty:gretty:1.3.0"
 
-libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.2"
+libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
@@ -244,10 +246,5 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
         // and we don't use the "tidy" functionality (i.e. HTML pretty printing) anyway.
         // Dragged in by httpunit.
         exclude group: 'jtidy', module: 'jtidy'
-
-        // On TDS startup, I'm getting "Class path contains multiple SLF4J bindings" warnings.
-        // This is one of those bindings. Strangely, I have NO idea what dependency is dragging it in.
-        // It doesn't matter though; we always want to see the logging messages.
-        exclude group: 'org.slf4j', module: 'slf4j-nop'
     }
 }

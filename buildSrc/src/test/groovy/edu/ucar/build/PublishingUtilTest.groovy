@@ -3,21 +3,37 @@ package edu.ucar.build
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.testkit.runner.BuildResult
+import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
+import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 /**
- * Test PublishingUtil with some dummy Projects.
+ * Test PublishingUtil with ProjectBuilder and GradleRunner.
  *
  * @author cwardgar
  * @since 2016-01-16
  */
-// Adapted from Griffon's "GenerateBomTaskTest": https://goo.gl/IB54cK
 class PublishingUtilTest extends Specification {
-    Project rootProject
+    def "test createDependencyManagement() using ProjectBuilder"() {
+        setup: "Build a test Project using ProjectBuilder"
+        Project rootProject = setupTestProject()
+        List<MavenPublication> pubs = rootProject.allprojects.publishing.publications.flatten()
 
-    def setup() {
+        when: "Create a dependencyManagement section from the project's publications."
+        String actualDepMgmtXml = asString PublishingUtil.createDependencyManagement(pubs)
+
+        then: "It matches the expected value."
+        expectedDepMgmtXml.trim() == actualDepMgmtXml.trim()
+    }
+
+    // Adapted from Griffon's "GenerateBomTaskTest": https://goo.gl/IB54cK
+    Project setupTestProject() {
         // Create root project 'root' with 3 subprojects: 'foo', 'bar', and 'baz'. They all start off empty.
-        rootProject = new ProjectBuilder().withName('root').build()
+        Project rootProject = new ProjectBuilder().withName('root').build()
         new ProjectBuilder().withName('foo').withParent(rootProject).build()
         new ProjectBuilder().withName('bar').withParent(rootProject).build()
         new ProjectBuilder().withName('baz').withParent(rootProject).build()
@@ -28,6 +44,7 @@ class PublishingUtilTest extends Specification {
                 version = '1.0'
 
                 apply plugin: 'java'
+
                 PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
             }
 
@@ -79,9 +96,20 @@ class PublishingUtilTest extends Specification {
                 apply plugin: 'war'
             }
         }
+
+        rootProject
     }
 
-    def expectedXml = '''
+    String asString(Node node) {
+        StringWriter sw = new StringWriter()
+        PrintWriter pw = new PrintWriter(sw)
+        XmlNodePrinter nodePrinter = new XmlNodePrinter(pw)
+        nodePrinter.setPreserveWhitespace(true)
+        nodePrinter.print(node)
+        return sw.toString()
+    }
+
+    def expectedDepMgmtXml = '''
 <dependencyManagement>
   <dependencies>
     <dependency>
@@ -150,23 +178,78 @@ class PublishingUtilTest extends Specification {
 </dependencyManagement>
 '''
 
-    def "generate dependencyManagement"() {
-        setup:
-        List<MavenPublication> pubs = rootProject.allprojects.publishing.publications.flatten()
+    @Rule TemporaryFolder testProjectDir = new TemporaryFolder()
 
-        when:
-        String actualXml = asString PublishingUtil.createDependencyManagement(pubs)
+    def "test adjustMavenPublicationPomScopes() using GradleRunner"() {
+        setup: "Setup GradleRunner and execute it to get build result."
+        BuildResult buildResult = doGradleBuild()
 
-        then:
-        expectedXml.trim() == actualXml.trim()
+        expect: "Task succeeded."
+        buildResult.task(':generatePomFileForTestJavaPublication')?.outcome == TaskOutcome.SUCCESS
+
+        and: "It created a POM file."
+        File pomFile = new File("${testProjectDir.root}/build/publications/testJava/pom-default.xml")
+        pomFile.exists()
+
+        and: "POM has 3 dependencies. junit and groovy-all were not included because they're test deps."
+        Node projectNode = new XmlParser().parse(pomFile)
+        List<Node> depNodes = projectNode.dependencies.dependency
+        depNodes.size() == 3
+
+        and: "One is hamcrest-core, with runtime scope."
+        Node hamcrestDepNode = depNodes.find { it.artifactId.text() == 'hamcrest-core' }
+        hamcrestDepNode?.scope.text() == 'runtime'
+
+        and: "One is slf4j-api, with compile scope. Corrected by adjustMavenPublicationPomScopes()."
+        Node slf4jDepNode = depNodes.find { it.artifactId.text() == 'slf4j-api' }
+        slf4jDepNode?.scope.text() == 'compile'
+
+        and: "One is objenesis, with compile scope. Corrected by adjustMavenPublicationPomScopes()."
+        Node objenesisDepNode = depNodes.find { it.artifactId.text() == 'objenesis' }
+        objenesisDepNode?.scope.text() == 'compile'
     }
 
-    private String asString(Node node) {
-        StringWriter sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        XmlNodePrinter nodePrinter = new XmlNodePrinter(pw);
-        nodePrinter.setPreserveWhitespace(true);
-        nodePrinter.print(node);
-        return sw.toString();
+    BuildResult doGradleBuild() {
+        // This reads from a file generated by the java-gradle-plugin.
+        // It is intended for use with GradleRunner.withPluginClasspath(), but that doesn't quite work for us because
+        // we're not testing a plugin here; only the code in :buildSrc. So instead, we're going to feed those files
+        // into the test build's buildscript classpath.
+        List<File> buildSrcClasspath = PluginUnderTestMetadataReading.readImplementationClasspath()
+
+        File settingsFile = testProjectDir.newFile('settings.gradle')
+        settingsFile << "rootProject.name = 'test'"
+
+        File buildFile = testProjectDir.newFile('build.gradle')
+        buildFile <<
+"""
+group = 'edu.ucar'
+version = '1.0'
+
+apply plugin: 'java'
+
+buildscript {
+    dependencies {
+        // Need this in order to resolve PublishingUtil.
+        String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',')}'
+        classpath files(buildSrcClasspathAsCsvString.split(','))
+    }
+}
+
+import edu.ucar.build.PublishingUtil
+PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
+PublishingUtil.adjustMavenPublicationPomScopes(project)   // Testing this.
+
+dependencies {
+    compile "org.slf4j:slf4j-api:1.7.7"
+    runtime "org.hamcrest:hamcrest-core:1.3"
+    testCompile "junit:junit:4.12"
+    testRuntime "org.codehaus.groovy:groovy-all:2.4.5"
+    compile "org.objenesis:objenesis:2.2"
+}
+"""
+        GradleRunner.create()
+                .withProjectDir(testProjectDir.root)
+                .withArguments(':generatePomFileForTestJavaPublication')
+                .build()
     }
 }
