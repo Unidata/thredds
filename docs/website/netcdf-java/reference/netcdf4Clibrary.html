@@ -1,5 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN""http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
     <title>NetCDF-4 C library</title>
@@ -10,92 +10,137 @@
 <h1>NetCDF-4 C Library Loading</h1>
 
 <p>In order to write NetCDF-4 files, you must have the <a href="https://www.unidata.ucar.edu/software/netcdf/">NetCDF-4
-    C library</a>&mdash;version 4.3.1 or above&mdash;available on your system, along with all supporting libraries
-    (HDF5, zlib, etc). The details of this differ for each operating system, and our experience (so far) is documented
-    below.</p>
+    C library (libnetcdf)</a>&mdash;version 4.3.1 or above&mdash;available on your system, along with all supporting
+    libraries (libhdf5, libz, etc). The details of this differ for each operating system, and our experiences (so far)
+    are documented below.</p>
 
 <h2><a name="installation" id="installation">Installation</a></h2>
 
 <p>For all platforms, we strongly recommend 64-bit Java, if you can run it. Also, be sure to use the latest version, as
     security improvements are constantly being made.</p>
 
-<h3><a name="installation_windows" id="installation_windows">Windows</a></h3>
+<h3><a name="thread_safety" id="thread_safety">Thread safety</a></h3>
 
-<p>The simplest option is to download and install one of the <a
-        href="http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html">pre-built binaries</a>. If you're feeling
-    intrepid, it's also possible to <a
-            href="http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#netCDF-CMake">build
-        from source</a>.</p>
+<p>Any pre-built version of libnetcdf that you install&mdash;whether from a package manager or from a download
+    page&mdash;is likely to <strong>not</strong> be thread-safe. This is because
+    <a href="https://www.hdfgroup.org/HDF5/">libhdf5</a> (which libnetcdf depends on
+    to write NetCDF-4 files) is usually not configured for thread safety when it's built. As a result,
+    concurrent writing of NetCDF-4 files will sometimes produce unexpected results.</p>
+
+<p>When might you do concurrent writes of NetCDF-4 files? For <a href="../../tds/TDS.html">TDS</a> administrators,
+    this can often happen in the <a href="../../tds/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service
+        (NCSS)</a>. Therefore, we recommend that TDS admins who enable NCSS with NetCDF-4 output
+    <a href="#installation_linux_source_build">build thread-safe libraries from source</a> instead.</p>
 
 <h3><a name="installation_linux" id="installation_linux">Linux</a></h3>
 
-<p>The easiest way to get NetCDF is through a package management program, such as rpm, yum, adept, and others. Details
-    will vary with each program but &quot;netcdf&quot; is usually the package name you want. Of course, it's also
-    possible to build from source, as described <a
-            href="http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html">here</a>.</p>
+<h4><a name="installation_linux_pre_built" id="installation_linux_pre_built">Pre-built</a></h4>
 
-<h4><a name="installation_linux_hdf5" id="installation_linux_hdf5">A note on HDF5</a></h4>
+<p>The easiest way to get libnetcdf is through a package management program, such as rpm, yum, adept, and others.
+    Details will vary with each program but &quot;netcdf&quot; is usually the package name you want.</p>
 
-<p>When building HDF5, you <strong>must</strong> do so with both the <code>--enable-threadsafe</code> and <code>--with-pthread=DIR</code>
-    options. The <code>--with-pthread</code> option must point to the directory that contains the POSIX Threads library
-    install (<code>[DIR]/includes/pthread.h</code>, <code>[DIR]/lib/libpthread*</code>). For more information, please
-    see the <a href="http://www.hdfgroup.org/hdf5-quest.html#mthread">HDF5 FAQ</a>.</p>
+<span id="installation_linux_hdf5"/>  <!-- Preserve an anchor from a previous revision of this document. -->
+<h4><a name="installation_linux_source_build" id="installation_linux_source_build">Build from source</a></h4>
+
+<p>Instructions for how to build libnetcdf from source can be found <a
+        href="http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html">here</a>. However,
+   in order to produce a thread-safe version of libhdf5, you'll want to run the <code>configure</code>
+   script with the following arguments:</p>
+<pre>
+./configure --with-zlib=${ZDIR} --prefix=${H5DIR} --enable-threadsafe --with-pthread=${PDIR} --enable-unsupported
+</pre>
+
+<p><code>PDIR</code> must point to the directory that contains the
+    <a href="https://computing.llnl.gov/tutorials/pthreads/">POSIX Threads library</a>. That is,
+    <code>${PDIR}/include/pthread.h</code> and <code>${PDIR}/lib/libpthread*</code> both must exist. On many *nix
+    systems, <code>PDIR</code> is often <code>/usr</code>. For more information, please see the
+    <a href="http://www.hdfgroup.org/hdf5-quest.html#mthread">HDF5 FAQ</a>.</p>
 
 <h3><a name="installation_mac" id="installation_mac">Mac</a></h3>
 
-<p>The installation process is hopefully similar to Linux. <a
-        href="http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg11807.html">Here</a> is a support question
-    that may be useful.</p>
+<h4><a name="installation_mac_pre_built" id="installation_mac_pre_built">Pre-built</a></h4>
+
+<p>As with Linux, a package manager is usually the easiest option. libnetcdf is known to be available both from
+    <a href="http://brew.sh/">Homebrew</a> and <a href="https://www.macports.org/">MacPorts</a>. &quot;netcdf&quot; is
+    usually the package name you want. <a
+            href="http://www.unidata.ucar.edu/support/help/MailArchives/netcdf/msg11807.html">Here</a> is a support
+    question that may be useful.</p>
+
+<h4><a name="installation_mac_source_build" id="installation_mac_source_build">Build from source</a></h4>
+
+<p>This is identical to the <a href="#installation_linux_source_build">Linux build</a>.</p>
+
+<h3><a name="installation_windows" id="installation_windows">Windows</a></h3>
+
+<h4><a name="installation_windows_pre_built" id="installation_windows_pre_built">Pre-built</a></h4>
+
+<p>Pre-built binaries are available <a href="http://www.unidata.ucar.edu/software/netcdf/docs/winbin.html">here</a>.</p>
+
+<h4><a name="installation_windows_source_build" id="installation_windows_source_build">Build from source</a></h4>
+
+<p>Instructions for how to build libnetcdf from source can be found <a
+        href="http://www.unidata.ucar.edu/software/netcdf/docs/getting_and_building_netcdf.html#netCDF-CMake">here</a>.
+    Currently, it's unknown how&mdash;or even <em>if</em>&mdash;thread-safe libhdf5 binaries can be built on Windows. If
+    you've tried it yourself, please <a href="mailto:support-netcdf-java@unidata.ucar.edu">let us know</a> your results!
+</p>
 
 <h2><a name="loading" id="loading">Loading</a></h2>
 
-<p>In order to use NetCDF-4, the CDM must know the location of the &quot;netcdf&quot; shared library, as well as the
-    location(s) of its dependencies. These files will have different extensions depending on your platform:</p>
+<p>In order to use libnetcdf, the CDM must know its location, as well as the location(s) of its dependencies.
+    These binaries will have different extensions depending on your platform:</p>
 
 <ul>
-    <li>On Windows, they will be .DLL files.</li>
     <li>On Linux, they will be .SO files.</li>
     <li>On Mac, they will be .DYLIB files.</li>
+    <li>On Windows, they will be .DLL files.</li>
 </ul>
 
-<p>There are several ways to specify their locations.</p>
+<p>There are several ways to specify their location(s).</p>
 
 <h3><a name="loading_preferred" id="loading_preferred">Preferred method (requires NetCDF-Java 4.5.4 or later)</a></h3>
 
-<p>Set the system library path. This is the path that the OS will search whenever it needs to find a shared library that
-    it doesn't already know the location of. It is not Java-, NetCDF-, or CDM-specific. As usual, details will vary with
-    each platform.</p>
-
-<h4><a name="loading_preferred_windows" id="loading_preferred_windows">Windows</a></h4>
-
-<p>The system library path maps to the <code>PATH</code> environment variable. To find NetCDF-4 and its dependencies,
-    you'll want to add <code>$NC4_INSTALL_DIR/bin</code>, <code>$NC4_INSTALL_DIR/deps/$ARCH/bin</code>, and
-    <code>$NC4_INSTALL_DIR/deps/$ARCH/lib</code> to the <code>PATH</code> variable. <code>NC4_INSTALL_DIR</code>
-    is the location where you installed the C library and <code>ARCH</code> is its architecture
-    (either &quot;w32&quot; or &quot;x64&quot;).</p>
+<p>Set the system library path. This is the path that the operating system will search whenever it needs to find a
+    shared library that it doesn't already know the location of. It is not Java-, NetCDF-, or CDM-specific. As usual,
+    details will vary with each platform.</p>
 
 <h4><a name="loading_preferred_linux" id="loading_preferred_linux">Linux</a></h4>
 
-<p>The system library path maps to the <code>LD_LIBRARY_PATH</code> environment variable. If you used the default
-    installation directory when building, NetCDF-4 and its dependencies will all be in <code>/usr/local/lib</code>. If
-    you got NetCDF from a package manager, it'll likely have been installed elsewhere.</p>
+<p>The system library path maps to the <code>LD_LIBRARY_PATH</code> environment variable. If you built from source
+    and used the default installation directory, libnetcdf and its dependencies will all be in
+    <code>/usr/local/lib</code>. If you got libnetcdf from a package manager, it might've been installed elsewhere.</p>
+
+<p>Note that <code>/usr/local/lib</code> is often included in the default shared library search path of many flavors of
+    Linux. Therefore, it may not be necessary to set <code>LD_LIBRARY_PATH</code> at all. Notable exceptions include
+    many RedHat-derived distributions. Read <a
+            href="http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html#AEN62">this</a> for more info.</p>
 
 <h4><a name="loading_preferred_mac" id="loading_preferred_mac">Mac</a></h4>
 
-<p>The system library path maps to the <code>DYLD_LIBRARY_PATH</code> environment variable. If you use Homebrew or
-    MacPorts to install netCDF-4, netCDF-Java will check their default installation directories automatically (
-    <code>/usr/local/lib/</code> and <code>/opt/local/lib/</code>, respectively).</p>
+<p>The system library path maps to the <code>DYLD_LIBRARY_PATH</code> environment variable. If you built from source
+    and used the default installation directory, libnetcdf and its dependencies will all be in
+    <code>/usr/local/lib</code>. They will also be installed there if you obtained them using Homebrew. MacPorts, on
+    the other had, installs binaries to <code>/opt/local/lib</code>.</p>
 
+<p>Note that <code>/usr/local/lib</code> is part of the default library search path on Mac. Therefore, it may not be
+    necessary to set <code>DYLD_LIBRARY_PATH</code> at all.
+
+<h4><a name="loading_preferred_windows" id="loading_preferred_windows">Windows</a></h4>
+
+<p>The system library path maps to the <code>PATH</code> environment variable. To find libnetcdf and its dependencies,
+    you'll want to add <code>$NC4_INSTALL_DIR/bin</code>, <code>$NC4_INSTALL_DIR/deps/$ARCH/bin</code>, and
+    <code>$NC4_INSTALL_DIR/deps/$ARCH/lib</code> to the <code>PATH</code> variable. <code>NC4_INSTALL_DIR</code>
+    is the location where you installed libnetcdf and <code>ARCH</code> is its architecture
+    (either &quot;w32&quot; or &quot;x64&quot;).</p>
 
 <h3><a name="loading_alternate" id="loading_alternate">Alternate methods</a></h3>
 
-<p>The following alternatives are Java- and/or CDM-specific. To use these, <strong>it is required that NetCDF and all of
-    its dependencies live in the same directory</strong>. So, if that is not the case in your current configuration, you
-    must manually copy them all to the same place. This is a particular issue on Windows, because the libraries are
-    guaranteed to be in separate locations by default.</p>
+<p>The following alternatives are Java- and/or CDM-specific. To use these, <strong>it is required that libnetcdf and
+    all of its dependencies live in the same directory</strong>. So, if that is not the case in your current
+    configuration, you must manually copy them all to the same place. This is a particular issue on Windows, because
+    the libraries are installed in separate locations by default.</p>
 
-<p>In addition to the library path, the CDM also needs to know the library name. This is almost always &quot;netcdf&quot;,
-    unless you've renamed it.</p>
+<p>In addition to the library path, the CDM also needs to know the library name. This is almost always
+    &quot;netcdf&quot;, unless you've renamed it.</p>
 
 <ul>
     <li>For TDS users, we recommend setting the library path and name in the <a
@@ -135,7 +180,7 @@
  Bye...
 </pre>
 
-<p>Make sure that you don't have an old version of the HDF5 library in your system library path.</p>
+<p>Make sure that you don't have an old version of libhdf5 in your system library path.</p>
 
 <hr/>
 
