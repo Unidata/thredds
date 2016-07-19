@@ -21,6 +21,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.util.CompareNetcdf2;
@@ -209,7 +210,8 @@ public class DsgSubsetWriterTest {
     private static class NcssNetcdfObjFilter implements CompareNetcdf2.ObjFilter {
         @Override
         public boolean attCheckOk(Variable v, Attribute att) {
-            return !att.getShortName().equals(CDM.TITLE);  // Ignore the "title" attribute.
+            return !att.getShortName().equals(CDM.TITLE) &&  // Ignore the "title" attribute.
+                   !att.getShortName().equals(Nc4.NETCDF4_NC_PROPERTIES);
         }
 
         @Override
