@@ -1,9 +1,8 @@
 package ucar.ma2;
 
+import org.junit.Assert;
 import org.junit.Test;
 import ucar.nc2.util.Misc;
-
-import java.io.IOException;
 
 /**
  * Created with IntelliJ IDEA.
@@ -43,8 +42,14 @@ public class ArrayTest {
     double sum = MAMath.sumDouble(data);
     double sumReduce = MAMath.sumDouble(data.reduce(0));
     assert Misc.closeEnough(sum, sumReduce);
+  }
 
-    System.out.printf(" sum =          %f%n", MAMath.sumDouble(data));
-    System.out.printf(" sum2 =          %f%n", MAMath.sumDouble(data.reduce(0)));
+  // Demonstrates bug in https://github.com/Unidata/thredds/issues/581.
+  @Test
+  public void testConstantArray_get1DJavaArray() {
+    Array array = Array.factoryConstant(int.class, new int[] {3}, new int[] {47});
+
+    // Prior to fix, the actual value returned by get1DJavaArray was {47}.
+    Assert.assertArrayEquals(new int[] {47, 47, 47}, (int[]) array.get1DJavaArray(int.class));
   }
 }
