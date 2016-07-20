@@ -25,7 +25,7 @@ before_install:
 
 install:
   - if [[ $TASK != "docs" ]]; then
-      ./gradlew assemble;
+      ./gradlew --info --stacktrace assemble;
     fi
 
 script:
