@@ -187,6 +187,24 @@ class PublishingUtilTest extends Specification {
     // into the test build's buildscript classpath.
     List<File> buildSrcClasspath = PluginUnderTestMetadataReading.readImplementationClasspath()
     
+    // The GradleRunner tests below used to fail on Windows when I just had:
+    //     String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',')}'
+    // because the backslashes in the Windows paths were being interpreted as escape sequences.
+    // This test asserts that adding
+    //     .replace('\\', '/')
+    // to the expression fixes the problem. Originally discovered by Dennis.
+    def "buildSrcClasspathAsCsvString with Windows paths"() {
+        setup: "windows paths"
+        buildSrcClasspath = [ new File("C:\\Users\\cwardgar\\Desktop"), new File("D:\\git\\gh958") ]
+        
+        and: "create buildSrcClasspathAsCsvString"
+        // This line appears in each of our build scripts below.
+        String buildSrcClasspathAsCsvString = "${buildSrcClasspath.join(',').replace('\\', '/')}"
+        
+        expect: "backslashes have been replaced by forward slashes"
+        buildSrcClasspathAsCsvString == "C:/Users/cwardgar/Desktop,D:/git/gh958"
+    }
+    
     def "adjustMavenPublicationPomScopes() on Java pub with various deps"() {
         setup: "settings file"
         File settingsFile = testProjectDir.newFile('settings.gradle')
@@ -203,7 +221,7 @@ class PublishingUtilTest extends Specification {
             buildscript {
                 dependencies {
                     // Need this in order to resolve PublishingUtil.
-                    String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',')}'
+                    String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',').replace('\\', '/')}'
                     classpath files(buildSrcClasspathAsCsvString.split(','))
                 }
             }
@@ -267,7 +285,7 @@ class PublishingUtilTest extends Specification {
             buildscript {
                 dependencies {
                     // Need this in order to resolve PublishingUtil.
-                    String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',')}'
+                    String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',').replace('\\', '/')}'
                     classpath files(buildSrcClasspathAsCsvString.split(','))
                 }
             }
@@ -312,7 +330,7 @@ class PublishingUtilTest extends Specification {
             buildscript {
                 dependencies {
                     // Need this in order to resolve PublishingUtil.
-                    String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',')}'
+                    String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',').replace('\\', '/')}'
                     classpath files(buildSrcClasspathAsCsvString.split(','))
                 }
             }
