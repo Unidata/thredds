@@ -747,7 +747,7 @@ backslashEscapeDapString(String s)
         if(c == '"') {
             buf.append("\\\"");
         } else if(c == '\\') {
-            buf.append('\\');
+            buf.append("\\\\");
         } else
             buf.append((char)c);
     }
