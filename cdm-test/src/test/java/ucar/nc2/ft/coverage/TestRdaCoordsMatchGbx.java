@@ -74,11 +74,12 @@ public class TestRdaCoordsMatchGbx {
 
   static ucar.nc2.util.Counters countersAll;
 
-  static String topdir = "D:/work/rdavm/";
+  static String topdir = "D:/work/rdavm/"; // LOOK how can we handle this better?
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-    result.add( new Object[] {"D:/work/rdavm/ds084.3/2015/20150201/ds084.3-20150201.ncx4"});
+    result.add( new Object[] {topdir+"ds628.0/fcst_surf/2012/ds628.0_fcst_surf-2012.ncx4"});
+    result.add( new Object[] {topdir+"ds084.3/2015/20150201/ds084.3-20150201.ncx4"});
     result.add( new Object[] {topdir+"ds084.4/2016/201602/ds084.4-201602.ncx4"});
     result.add( new Object[] {topdir+"ds094.1/2013/ds094.1_Test2013.ncx4"});
     result.add( new Object[] {topdir+"ds094.2/timeseries/ds094.2_t.ncx4"});
