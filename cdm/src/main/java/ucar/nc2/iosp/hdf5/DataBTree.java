@@ -36,6 +36,7 @@ package ucar.nc2.iosp.hdf5;
 import ucar.ma2.Section;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.LayoutTiled;
+import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
@@ -267,7 +268,9 @@ public class DataBTree {
       } else {
         currentNode = null;
         for (currentEntry = 0; currentEntry < nentries; currentEntry++) {
-          if (debugChunkOrder) System.out.printf(" Entry=%d: Tile order %d-%d%n", currentEntry, tiling.order(offset[currentEntry]), tiling.order(offset[currentEntry + 1]));
+          if (debugChunkOrder) System.out.printf(" Entry=%3d offset [%-15s]: Tile order %d-%d%n", currentEntry,
+                  Misc.showInts(offset[currentEntry]),
+                  tiling.order(offset[currentEntry]), tiling.order(offset[currentEntry + 1]));
           if ((wantOrigin == null) || tiling.compare(wantOrigin, offset[currentEntry + 1]) < 0) {
             currentNode = new Node(childPointer[currentEntry], this.address);
             if (debugChunkOrder) System.out.printf("Level %d use entry= %d%n", level, currentEntry);
