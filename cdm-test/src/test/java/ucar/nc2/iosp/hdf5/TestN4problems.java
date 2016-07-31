@@ -63,7 +63,18 @@ public class TestN4problems {
     H5header.setDebugFlags(new DebugFlagsImpl(""));  // make sure debug flags are off
   }
 
-    // margolis@ucar.edu
+  @Test
+  public void testTiling2() throws IOException, InvalidRangeException {
+    // java.lang.AssertionError: shape[2] (385) >= pt[2] (390)
+    String filename = TestN4reading.testDir+"UpperDeschutes_t4p10_swemelt.nc";
+    try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
+      Variable v = ncfile.findVariable(null, "UpperDeschutes_t4p10_swemelt");
+      Array data = v.read("8087, 150:155, 150:155");
+      assert data != null;
+    }
+  }
+
+  // margolis@ucar.edu
   // I really don't think this is a problem with your code
   // may be bug in HDF5 1.8.4-patch1
   //@Test
