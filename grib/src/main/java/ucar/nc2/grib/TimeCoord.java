@@ -187,10 +187,6 @@ public class TimeCoord {
       return calendarPeriod.getField().toString() + " since " + runDate;
   }
 
-  public double getTimeUnitScale() {
-    return calendarPeriod.getValue();
-  }
-
   public CalendarPeriod getTimeUnit() {
     return calendarPeriod;
   }
@@ -224,7 +220,7 @@ public class TimeCoord {
     }
 
     if (same) {
-      firstValue = (int) (firstValue * getTimeUnitScale());
+      firstValue = (firstValue * calendarPeriod.getValue());
       return firstValue + "_" + calendarPeriod.getField().toString();
     } else {
       return CoordinateTimeAbstract.MIXED_INTERVALS;
@@ -385,19 +381,13 @@ public class TimeCoord {
   // use for time intervals not represented by integer bounds from reference
   public static class TinvDate implements Comparable<TinvDate>  {
     private final CalendarDate start, end;
-    //private final CalendarPeriod period;
-    // public int index = -1; //
 
     public TinvDate(CalendarPeriod period, CalendarDate end) {
-      //super(0, period.getValue()); // kludge
-      //this.period = period;
       this.end = end;
       this.start = end.subtract(period);
     }
 
     public TinvDate(CalendarDate start, CalendarPeriod period) {
-      //super(0, period.getValue()); // kludge
-      //this.period = period;
       this.start = start;
       this.end = start.add(period);
     }
@@ -415,9 +405,10 @@ public class TimeCoord {
       return end;
     }
 
+    // what is the offset in units of timeUnit from the given reference date
     public Tinv convertReferenceDate(CalendarDate refDate, CalendarPeriod timeUnit) {
       if (timeUnit == null) return null;
-      int startOffset = timeUnit.getOffset(refDate, start);   // LOOK wrong - not dealing with value
+      int startOffset = timeUnit.getOffset(refDate, start);   // LOOK wrong - not dealing with value ??
       int endOffset = timeUnit.getOffset(refDate, end);
       return new TimeCoord.Tinv(startOffset, endOffset);
     }
@@ -452,6 +443,20 @@ public class TimeCoord {
       out.format("(%s,%s)", start, end);
       return out.toString();
     }
+
+  }
+
+  public static void main(String[] args) {
+    CalendarDate start = CalendarDate.of(1269820799000L);
+    CalendarDate end = CalendarDate.of(1269824399000L);
+    TinvDate tinvDate = new TinvDate(start, end);
+    System.out.printf("tinvDate = %s%n", tinvDate);
+
+    CalendarDate refDate = CalendarDate.of(1269820800000L);
+    CalendarPeriod timeUnit = CalendarPeriod.of("Hour");
+
+    Tinv tinv = tinvDate.convertReferenceDate(refDate, timeUnit);
+    System.out.printf("tinv = %s offset from %s%n", tinv, refDate);
 
   }
 

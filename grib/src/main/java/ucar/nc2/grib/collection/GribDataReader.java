@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import ucar.coord.CoordinateTime2D;
 import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.CoordsSet;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.*;
 
 import ucar.nc2.grib.grib1.Grib1ParamTime;
@@ -79,7 +80,9 @@ public abstract class GribDataReader {
   protected abstract void show(RandomAccessFile rafData, long dataPos) throws IOException;
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  static public GribCollectionImmutable.Record currentDataRecord;
   static public GribDataValidator validator;
+  static public String currentDataRafFilename;
   static boolean show = false;   // debug
 
   protected final GribCollectionImmutable gribCollection;
@@ -206,7 +209,7 @@ public abstract class GribDataReader {
 
     // collect all the records that need to be read
     int resultIndex = 0;
-    for (Map<String, Object> coords : want) {
+    for (SubsetParams coords : want) {
       GribCollectionImmutable.Record record = vindex.getRecordAt(coords);
       if (record != null) {
         DataRecord dr = new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys());
@@ -225,7 +228,7 @@ public abstract class GribDataReader {
 
     // collect all the records that need to be read
     int resultPos = 0;
-    for (Map<String, Object> coords : want) {
+    for (SubsetParams coords : want) {
       PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(coords);
       if (record != null) {
         record.resultIndex = resultPos;
@@ -272,6 +275,8 @@ public abstract class GribDataReader {
       for (DataRecord dr : records) {
         if (Grib.debugIndexOnly || Grib.debugGbxIndexOnly) {
           GribIosp.debugIndexOnlyCount++;
+          currentDataRecord = dr.record;
+          currentDataRafFilename = gribCollection.getDataRafFilename(dr.record.fileno);
           if (Grib.debugIndexOnlyShow) dr.show(gribCollection);
           dataReceiver.setDataToZero();
           continue;
@@ -303,11 +308,9 @@ public abstract class GribDataReader {
     }
   }
 
-  private void show(Map<String, Object> validation) {
+  private void show(SubsetParams validation) {
     if (validation == null) return;
-    System.out.printf("Coords wanted%n");
-    for (Map.Entry<String, Object> coord : validation.entrySet())
-      System.out.printf(" %s==%s%n", coord.getKey(), coord.getValue());
+    System.out.printf("Coords wanted%n %s", validation);
   }
 
   private void readPartitioned(DataReceiverIF dataReceiver) throws IOException {
@@ -355,7 +358,7 @@ public abstract class GribDataReader {
     int resultIndex; // index into the result array
     GribCollectionImmutable.Record record;
     GdsHorizCoordSys hcs;
-    Map<String, Object> validation;
+    SubsetParams validation;
 
     DataRecord(int resultIndex, GribCollectionImmutable.Record record, GdsHorizCoordSys hcs) {
       this.resultIndex = resultIndex;
@@ -393,13 +396,13 @@ public abstract class GribDataReader {
       this.xRange = xRange;
       this.horizSize = yRange.length() * xRange.length();
 
-      int len = (int) Section.computeSize(shape);
+      long len = Section.computeSize(shape);
       if (len > 100 * 1000 * 1000*4) { // LOOK make configurable
         logger.debug("Len greater that 100MB shape={}\n{}", Misc.showInts(shape),
                 Throwables.getStackTraceAsString(new Throwable()));
         throw new IllegalArgumentException("RequestTooLarge: Len greater that 100M ");
       }
-      float[] data = new float[len];
+      float[] data = new float[ (int) len];
       Arrays.fill(data, Float.NaN); // prefill primitive array
       dataArray = Array.factory(DataType.FLOAT, shape, data);
     }

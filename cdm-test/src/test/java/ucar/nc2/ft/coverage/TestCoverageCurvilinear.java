@@ -148,7 +148,7 @@ public class TestCoverageCurvilinear {
       Coverage cover = gds.findCoverage(covName);
       Assert.assertNotNull(covName, cover);
 
-      SubsetParams params = new SubsetParams().set(SubsetParams.vertCoord, -.05).set(SubsetParams.timePresent, true);
+      SubsetParams params = new SubsetParams().setVertCoord(-.05).set(SubsetParams.timePresent, true);
       GeoReferencedArray geo = cover.readData(params);
 
       Array data = geo.getData();
@@ -185,7 +185,7 @@ public class TestCoverageCurvilinear {
       Index ima = data.getIndex();
       int[] expectedShape = new int[] {1,151,171};
       Assert.assertArrayEquals(expectedShape, data.getShape());
-      NCdumpW.printArray(data);
+      // NCdumpW.printArray(data);
       Assert.assertEquals(1.782, data.getDouble(ima.set(0, 0, 0)), Misc.maxReletiveError);
       Assert.assertEquals(1.769, data.getDouble(ima.set(0, 11, 0)), Misc.maxReletiveError);
     } catch (InvalidRangeException e) {

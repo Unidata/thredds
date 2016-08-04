@@ -93,7 +93,8 @@ class GribCollectionWriter {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType( convertAxisType (coord.getType()));
     b.setCode(coord.getCode());
-    if (coord.getUnit() != null) b.setUnit(coord.getUnit());
+    if (coord.getUnit() != null)
+      b.setUnit(coord.getUnit());
 
     for (int idx=0; idx<coord.getSize(); idx++) {
       long runtime = coord.getRuntime(idx);

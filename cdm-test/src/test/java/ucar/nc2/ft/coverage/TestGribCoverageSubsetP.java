@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Mostly checks GeoReferencedArray matches request
+ * Mostly checks GeoReferencedArray matches request.
+ * Requires that the data exist, not just the gbx9.
  *
  * @author John
  * @since 8/15/2015
@@ -41,7 +42,6 @@ public class TestGribCoverageSubsetP {
   public static void after() {
     GribDataReader.validator = null;
   }
-
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -187,13 +187,13 @@ public class TestGribCoverageSubsetP {
 
     SubsetParams subset = new SubsetParams();
     if (rt_val != null)
-      subset.set(SubsetParams.runtime, rt_val);
+      subset.setRunTime(rt_val);
     if (time_val != null)
-      subset.set(SubsetParams.time, time_val);
+      subset.setTime(time_val);
     if (time_offset != null)
-      subset.set(SubsetParams.timeOffset, time_offset);
+      subset.setTimeOffset(time_offset);
     if (vert_level != null)
-      subset.set(SubsetParams.vertCoord, vert_level);
+      subset.setVertCoord(vert_level);
 
     GeoReferencedArray geoArray = cover.readData(subset);
     CoverageCoordSys geoCs = geoArray.getCoordSysForData();
@@ -201,10 +201,10 @@ public class TestGribCoverageSubsetP {
     System.out.printf("%ngeoArray shape=%s%n", Misc.showInts(geoArray.getData().getShape()));
 
     if (rt_val != null) {
-      CoverageCoordAxis runAxis = geoCs.getAxis(AxisType.RunTime);
+      CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
       if (runAxis != null) {
         Assert.assertEquals(1, runAxis.getNcoords());
-        double val = runAxis.getStartValue();
+        double val = runAxis.getCoordMidpoint(0);
         CalendarDate runDate = runAxis.makeDate(val);
         Assert.assertEquals(rt_val, runDate);
       }
@@ -217,7 +217,7 @@ public class TestGribCoverageSubsetP {
         CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
         Assert.assertNotNull(AxisType.RunTime.toString(), runAxis);
         Assert.assertEquals(1, runAxis.getNcoords());
-        double val = runAxis.getStartValue();
+        double val = runAxis.getCoordMidpoint(0);
         CalendarDate runDate = runAxis.makeDate(val);
         if (rt_val != null)
           Assert.assertEquals(rt_val, runDate);
@@ -253,7 +253,7 @@ public class TestGribCoverageSubsetP {
         CoverageCoordAxis zAxis = geoCs.getZAxis();
         Assert.assertNotNull(AxisType.Pressure.toString(), zAxis);
         Assert.assertEquals(1, zAxis.getNcoords());
-        double val = zAxis.getStartValue();
+        double val = ((CoverageCoordAxis1D) zAxis).getCoordMidpoint(0);
         Assert.assertEquals(vert_level.doubleValue(), val, Misc.maxReletiveError);
       }
     }

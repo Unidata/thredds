@@ -140,10 +140,10 @@ public class TestGridCoverageRemoteP {
     System.out.printf("%ngeoArray shape=%s%n", Misc.showInts(geoArray.getData().getShape()));
 
     if (rt_val != null) {
-      CoverageCoordAxis runAxis = geoCs.getAxis(AxisType.RunTime);
+      CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
       if (runAxis != null) {
         Assert.assertEquals(1, runAxis.getNcoords());
-        double val = runAxis.getStartValue();
+        double val = runAxis.getCoordMidpoint(0);
         CalendarDate runDate = runAxis.makeDate(val);
         Assert.assertEquals(rt_val, runDate);
       }
@@ -156,7 +156,7 @@ public class TestGridCoverageRemoteP {
         CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
         Assert.assertNotNull(AxisType.RunTime.toString(), runAxis);
         Assert.assertEquals(1, runAxis.getNcoords());
-        double val = runAxis.getStartValue();
+        double val = runAxis.getCoordMidpoint(0);
         CalendarDate runDate = runAxis.makeDate(val);
         Assert.assertEquals(rt_val, runDate);
         Assert.assertEquals(1, timeOffsetAxis.getNcoords());
@@ -188,10 +188,10 @@ public class TestGridCoverageRemoteP {
       }
 
       if (vert_level != null) {
-        CoverageCoordAxis zAxis = geoCs.getZAxis();
+        CoverageCoordAxis1D zAxis = (CoverageCoordAxis1D) geoCs.getZAxis();
         Assert.assertNotNull(AxisType.Pressure.toString(), zAxis);
         Assert.assertEquals(1, zAxis.getNcoords());
-        double val = zAxis.getStartValue();
+        double val = zAxis.getCoordMidpoint(0);
         Assert.assertEquals(vert_level.doubleValue(), val, Misc.maxReletiveError);
       }
     }

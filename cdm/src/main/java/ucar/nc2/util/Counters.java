@@ -64,6 +64,12 @@ public class Counters {
       c.show(f);
   }
 
+  public String toString() {
+    Formatter f = new Formatter();
+    show(f);
+    return f.toString();
+  }
+
   public Counter get(String name) {
     return map.get(name);
   }

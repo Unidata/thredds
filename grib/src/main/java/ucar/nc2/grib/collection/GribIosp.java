@@ -48,6 +48,7 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.time.Calendar;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.io.RandomAccessFile;
@@ -615,6 +616,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   // only for the 2d times
   private Array makeLazyTime2Darray(Variable coord, Time2Dinfo info) {
     CoordinateTime2D time2D = info.time2D;
+    CalendarPeriod timeUnit = time2D.getTimeUnit();
 
     int nruns = time2D.getNruns();
     int ntimes = time2D.getNtimes();
@@ -633,7 +635,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
           for (int val : coordTime.getOffsetSorted()) {
-            data[runIdx * ntimes + timeIdx] = val + time2D.getOffset(runIdx);
+            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * val + time2D.getOffset(runIdx);
             timeIdx++;
           }
         }
@@ -644,7 +646,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTime coordTime = (CoordinateTime) time2D.getTimeCoordinate(runIdx);
           for (int val : coordTime.getOffsetSorted())
-            data[count++] = val + time2D.getOffset(runIdx);
+            data[count++] = timeUnit.getValue() * val + time2D.getOffset(runIdx);
         }
         break;
 
@@ -653,7 +655,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
           for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes + timeIdx] = tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for coord value
+            data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for coord value
             timeIdx++;
           }
         }
@@ -664,7 +666,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for coord value
+            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx); // use upper bounds for coord value
           }
         }
         break;
@@ -693,8 +695,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
           for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
-            data[runIdx * ntimes * 2 + timeIdx] = tinv.getBounds1() + time2D.getOffset(runIdx);
-            data[runIdx * ntimes * 2 + timeIdx + 1] = tinv.getBounds2() + time2D.getOffset(runIdx);
+            data[runIdx * ntimes * 2 + timeIdx] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
+            data[runIdx * ntimes * 2 + timeIdx + 1] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
             timeIdx += 2;
           }
         }
@@ -705,8 +707,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
-            data[count++] = tinv.getBounds1() + time2D.getOffset(runIdx);
-            data[count++] = tinv.getBounds2() + time2D.getOffset(runIdx);
+            data[count++] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
+            data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
           }
         }
         break;
@@ -724,7 +726,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String dims = coordTime.getName();
     ncfile.addDimension(g, new Dimension(tcName, ntimes));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
-    String units = coordTime.getUnit() + " since " + coordTime.getRefDate();
+    String units = coordTime.getTimeUdUnit();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
@@ -760,7 +762,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     String dims = coordTime.getName();
     ncfile.addDimension(g, new Dimension(tcName, ntimes));
     Variable v = ncfile.addVariable(g, new Variable(ncfile, g, null, tcName, DataType.DOUBLE, dims));
-    String units = coordTime.getUnit() + " since " + coordTime.getRefDate();
+    String units = coordTime.getTimeUdUnit();
     v.addAttribute(new Attribute(CDM.UNITS, units));
     v.addAttribute(new Attribute(CF.STANDARD_NAME, CF.TIME));
     v.addAttribute(new Attribute(CDM.LONG_NAME, Grib.GRIB_VALID_TIME));
@@ -1046,5 +1048,4 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   abstract public Object getLastRecordRead();
   abstract public void clearLastRecordRead();
   abstract public Object getGribCustomizer();
-
 }

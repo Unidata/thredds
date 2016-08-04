@@ -71,7 +71,6 @@ public class TestDODScompareWithFiles {
     result.add( new Object[]{"conventions/zebra/SPOL_3Volumes.nc"});
     result.add( new Object[]{"conventions/coards/inittest24.QRIDV07200.ncml"}); //
     result.add( new Object[]{"conventions/atd/rgg.20020411.000000.lel.ll.nc"}); //
-    result.add( new Object[]{"conventions/awips/awips.nc"}); //
     result.add( new Object[]{"conventions/cf/ipcc/cl_A1.nc"}); //
     result.add( new Object[]{"conventions/csm/o3monthly.nc"}); //
     result.add( new Object[]{"conventions/gdv/OceanDJF.nc"}); //

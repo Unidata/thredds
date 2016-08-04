@@ -86,7 +86,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, true);
+    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
     file2.close();
@@ -105,7 +105,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, true);
+    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
     file2.close();
@@ -127,7 +127,7 @@ public class TestStreamWriter {
     System.out.println("N3streamWriter took " + took + " msecs");
 
     NetcdfFile file2 = NetcdfFile.open(fileOut);
-    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, true);
+    assert ucar.unidata.util.test.CompareNetcdf.compareFiles(fileIn, file2, true, false, false);
 
     fileIn.close();
     file2.close();

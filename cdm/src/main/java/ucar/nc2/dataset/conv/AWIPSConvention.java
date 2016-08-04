@@ -59,6 +59,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.dataset.VariableEnhanced;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.CancelTask;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -617,6 +618,9 @@ public class AWIPSConvention extends CoordSysBuilder {
     } catch (IOException ioe) {
       return null;
     }
+    if (refValue == N3iosp.NC_FILL_DOUBLE)
+      return null;
+
     // construct the values array - make it a double to be safe
     Array dvals = Array.factory(DataType.DOUBLE, vals.getShape());
     IndexIterator diter = dvals.getIndexIterator();

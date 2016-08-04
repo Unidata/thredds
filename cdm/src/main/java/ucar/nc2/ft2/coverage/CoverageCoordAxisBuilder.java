@@ -222,6 +222,13 @@ public class CoverageCoordAxisBuilder {
 
     boolean regular = isRegular(resol);
 
+    // not dealing correctly with n == 2 case
+    if (ncoords == 2) {
+      double diff0 = values[1] - values[0];
+      double diff1 = values[3] - values[2];
+      regular = Misc.closeEnough(diff0, diff1);
+    }
+
     if (regular && isContiguous) {
       this.spacing = CoverageCoordAxis.Spacing.regularInterval;
       this.values = null;

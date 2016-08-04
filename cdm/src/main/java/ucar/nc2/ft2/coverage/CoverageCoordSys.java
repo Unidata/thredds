@@ -420,7 +420,8 @@ public class CoverageCoordSys {
     List<CoverageCoordAxis> subsetAxes = new ArrayList<>();
     for (CoverageCoordAxis axis : getAxes()) {
       if (axis.getDependenceType() == CoverageCoordAxis.DependenceType.dependent) continue;
-      if (axis.getAxisType().isHoriz() || isTime2D(axis)) continue;
+      if (axis.getAxisType().isHoriz()) continue;
+      if (isTime2D(axis)) continue;
 
       ucar.nc2.util.Optional<CoverageCoordAxis> axiso = axis.subset(params);
       if (!axiso.isPresent())

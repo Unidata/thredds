@@ -740,14 +740,6 @@ public class Grib1CollectionPanel extends JPanel {
       return Grib1Iosp.makeVariableName(cust, config.gribConfig, pds);
     }
 
-    /* public String getOldName() {
-      GridParameter oldParam = ucar.grib.grib1.GribPDSParamTable.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
-      if (oldParam == null) return "";
-      String oldName = oldParam.getDescription();
-      boolean diff = !oldName.equalsIgnoreCase(getName());
-      return diff ? "*" + oldName : oldName;
-    } */
-
     public String getUnit() {
       return (param == null) ? null : param.getUnit();
     }

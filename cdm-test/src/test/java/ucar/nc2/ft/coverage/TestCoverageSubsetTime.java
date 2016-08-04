@@ -228,9 +228,8 @@ public class TestCoverageSubsetTime {
       CoverageCoordAxis1D runtimeAxis1D = (CoverageCoordAxis1D) runtimeAxis;
       Assert.assertEquals("runtime coord", runtime, runtimeAxis.makeDate(runtimeAxis1D.getCoordMidpoint(0)));
 
-      CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
+      CoverageCoordAxis1D timeAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.TimeOffset);
       Assert.assertNotNull(timeAxis);
-      Assert.assertTrue(timeAxis instanceof CoverageCoordAxis1D);
       Assert.assertEquals(92, timeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.discontiguousInterval, timeAxis.getSpacing());
       Assert.assertEquals(0.0, timeAxis.getStartValue(), Misc.maxReletiveError);
@@ -263,12 +262,11 @@ public class TestCoverageSubsetTime {
       GeoReferencedArray geo = cover.readData(params);
       CoverageCoordSys geoCs = geo.getCoordSysForData();
 
-      CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);
+      CoverageCoordAxis1D runtimeAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
       Assert.assertNotNull(runtimeAxis);
-      Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
       Assert.assertEquals(4, runtimeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.regularPoint, runtimeAxis.getSpacing());
-      Assert.assertEquals(0.0, runtimeAxis.getStartValue(), Misc.maxReletiveError);
+      Assert.assertEquals(0.0, runtimeAxis.getCoordMidpoint(0), Misc.maxReletiveError);
       Assert.assertEquals(6.0, runtimeAxis.getResolution(), Misc.maxReletiveError);
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
@@ -311,12 +309,11 @@ public class TestCoverageSubsetTime {
       GeoReferencedArray geo = cover.readData(params);
       CoverageCoordSys geoCs = geo.getCoordSysForData();
 
-      CoverageCoordAxis runtimeAxis = geoCs.getAxis(AxisType.RunTime);
+      CoverageCoordAxis1D runtimeAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
       Assert.assertNotNull(runtimeAxis);
-      Assert.assertTrue(runtimeAxis instanceof CoverageCoordAxis1D);
       Assert.assertEquals(3, runtimeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, runtimeAxis.getSpacing());
-      Assert.assertEquals(0.0, runtimeAxis.getStartValue(), Misc.maxReletiveError);
+      Assert.assertEquals(0.0, runtimeAxis.getCoordMidpoint(0), Misc.maxReletiveError);
       Assert.assertEquals(6.0, runtimeAxis.getResolution(), Misc.maxReletiveError);
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.Time);
@@ -403,7 +400,7 @@ public class TestCoverageSubsetTime {
 
       SubsetParams params = new SubsetParams();
       params.set(SubsetParams.timePresent, true);
-      params.set(SubsetParams.vertCoord, 3658.0);
+      params.setVertCoord(3658.0);
       System.out.printf("  subset %s%n", params);
 
       GeoReferencedArray geo = cover.readData(params);
@@ -433,8 +430,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      params.set(SubsetParams.time, CalendarDate.parseISOformat(null, "2015-03-03T00:00:00Z"));
-      params.set(SubsetParams.vertCoord, 3658.0);
+      params.setTime(CalendarDate.parseISOformat(null, "2015-03-03T00:00:00Z"));
+      params.setVertCoord(3658.0);
       System.out.printf("  subset %s%n", params);
 
       GeoReferencedArray geo = cover.readData(params);
@@ -464,8 +461,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      params.set(SubsetParams.timeOffset, 48.0);
-      params.set(SubsetParams.vertCoord, 3658.0);
+      params.setTimeOffset(48.0);
+      params.setVertCoord(3658.0);
       System.out.printf("  subset %s%n", params);
 
       GeoReferencedArray geo = cover.readData(params);

@@ -30,6 +30,7 @@ import java.util.Formatter;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribIndexCreation {
+  private static final boolean show = false;
   private static CollectionUpdateType updateMode = CollectionUpdateType.always;
 
   @BeforeClass
@@ -55,14 +56,14 @@ public class TestGribIndexCreation {
     Formatter out = new Formatter(System.out);
 
     FileCacheIF cache = GribCdmIndex.gribCollectionCache;
-    if (cache != null) {
+    if (show && cache != null) {
       cache.showTracking(out);
       cache.showCache(out);
       cache.clearCache(false);
     }
 
     FileCacheIF rafCache = RandomAccessFile.getGlobalFileCache();
-    if (rafCache != null) {
+    if (show && rafCache != null) {
       rafCache.showCache(out);
     }
 
