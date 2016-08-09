@@ -34,6 +34,7 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import com.google.protobuf.ExtensionRegistry;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
