@@ -24,8 +24,9 @@ before_install:
     fi
 
 install:
+  # Run "testClasses" instead of "assemble". We don't need the JARs/WARs for testing. Will reduce build time.
   - if [[ $TASK != "docs" ]]; then
-      ./gradlew --info --stacktrace assemble;
+      ./gradlew --info --stacktrace testClasses;
     fi
 
 script:
@@ -44,9 +45,15 @@ script:
     else
       echo If available, test report at;
       echo http://unidata-tds-tests.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
-      ./gradlew --info testAll;
+      ./gradlew --info --stacktrace testAll;
     fi
+
+# See https://docs.travis-ci.com/user/languages/java/#Projects-Using-Gradle
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 
 cache:
   directories:
-    - $HOME/.gradle
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/

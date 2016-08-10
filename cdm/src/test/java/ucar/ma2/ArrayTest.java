@@ -46,7 +46,7 @@ public class ArrayTest {
   // Demonstrates bug in https://github.com/Unidata/thredds/issues/581.
   @Test
   public void testConstantArray_get1DJavaArray() {
-    Array array = Array.factoryConstant(int.class, new int[] {3}, new int[] {47});
+    Array array = Array.factoryConstant(DataType.INT, new int[] {3}, new int[] {47});
 
     // Prior to fix, the actual value returned by get1DJavaArray was {47}.
     Assert.assertArrayEquals(new int[] {47, 47, 47}, (int[]) array.get1DJavaArray(int.class));

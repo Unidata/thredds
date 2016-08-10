@@ -271,8 +271,8 @@ public class TestNc4IospWriting {
 
         try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(
                 NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
-            Dimension rowDim = writer.addDimension(null, "row", 0, true, true, false);
-            Dimension colDim = writer.addDimension(null, "col", 0, true, true, false);
+            Dimension rowDim = writer.addDimension(null, "row", 0, true, false);
+            Dimension colDim = writer.addDimension(null, "col", 0, true, false);
             Variable tableVar = writer.addVariable(null, "table", DataType.INT, "row col");
             writer.create();
 
@@ -359,7 +359,7 @@ public class TestNc4IospWriting {
             };
             Array expectedVals = Array.factory(DataType.INT, new int[] { 5, 5 }, expectedData);
 
-            Assert.assertTrue(MAMath.isEqual(expectedVals, actualVals));
+            Assert.assertTrue(MAMath.equals(expectedVals, actualVals));
         }
     }
 }

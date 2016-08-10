@@ -32,21 +32,11 @@
  */
 package thredds.server.ncss.view.dsg.station;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Nonnull;
-
 import thredds.server.ncss.exception.FeaturesNotFoundException;
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.view.dsg.DsgSubsetWriter;
 import ucar.ma2.StructureData;
-import ucar.nc2.ft.DsgFeatureCollection;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.PointFeature;
-import ucar.nc2.ft.PointFeatureIterator;
-import ucar.nc2.ft.StationTimeSeriesFeature;
-import ucar.nc2.ft.StationTimeSeriesFeatureCollection;
+import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.PointIteratorFiltered;
 import ucar.nc2.ft.point.StationFeature;
 import ucar.nc2.ft.point.StationPointFeature;
@@ -58,6 +48,11 @@ import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by cwardgar on 2014/05/20.
@@ -207,8 +202,8 @@ public abstract class AbstractStationSubsetWriter extends DsgSubsetWriter {
     List<StationFeature> wantedStations;
 
     // verify SpatialSelection has some stations
-    if (ncssParams.getStns() != null) {
-      List<String> stnNames = ncssParams.getStns();
+    if (ncssParams.getStations() != null) {
+      List<String> stnNames = ncssParams.getStations();
 
       if (stnNames.get(0).equals("all")) {
         wantedStations = stationFeatCol.getStationFeatures();

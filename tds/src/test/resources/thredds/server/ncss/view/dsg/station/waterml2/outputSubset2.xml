@@ -10,7 +10,7 @@
             <om:phenomenonTime>
                 <gml:TimePeriod gml:id="TimePeriodType.1">
                     <gml:beginPosition>1970-01-21T00:00:00Z</gml:beginPosition>
-                    <gml:endPosition>1970-01-21T02:00:00Z</gml:endPosition>
+                    <gml:endPosition>1970-01-21T00:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>
@@ -55,7 +55,7 @@
             <om:phenomenonTime>
                 <gml:TimePeriod gml:id="TimePeriodType.2">
                     <gml:beginPosition>1970-01-21T00:00:00Z</gml:beginPosition>
-                    <gml:endPosition>1970-01-21T02:00:00Z</gml:endPosition>
+                    <gml:endPosition>1970-01-21T00:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>
@@ -100,7 +100,7 @@
             <om:phenomenonTime>
                 <gml:TimePeriod gml:id="TimePeriodType.3">
                     <gml:beginPosition>1970-01-21T00:00:00Z</gml:beginPosition>
-                    <gml:endPosition>1970-01-21T02:00:00Z</gml:endPosition>
+                    <gml:endPosition>1970-01-21T00:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>
@@ -145,7 +145,7 @@
             <om:phenomenonTime>
                 <gml:TimePeriod gml:id="TimePeriodType.4">
                     <gml:beginPosition>1970-01-21T00:00:00Z</gml:beginPosition>
-                    <gml:endPosition>1970-01-21T02:00:00Z</gml:endPosition>
+                    <gml:endPosition>1970-01-21T00:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>
@@ -190,7 +190,7 @@
             <om:phenomenonTime>
                 <gml:TimePeriod gml:id="TimePeriodType.5">
                     <gml:beginPosition>1970-01-21T00:00:00Z</gml:beginPosition>
-                    <gml:endPosition>1970-01-21T02:00:00Z</gml:endPosition>
+                    <gml:endPosition>1970-01-21T00:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>
@@ -235,7 +235,7 @@
             <om:phenomenonTime>
                 <gml:TimePeriod gml:id="TimePeriodType.6">
                     <gml:beginPosition>1970-01-21T00:00:00Z</gml:beginPosition>
-                    <gml:endPosition>1970-01-21T02:00:00Z</gml:endPosition>
+                    <gml:endPosition>1970-01-21T00:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>

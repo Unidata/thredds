@@ -10,8 +10,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.format.SupportedFormat;
-import thredds.server.ncss.params.NcssParamsBean;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -21,11 +21,16 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
+import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.iosp.netcdf4.Nc4;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ogc.MarshallingUtil;
+import ucar.nc2.time.CalendarDate;
+import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.DiskCache2;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -48,12 +53,12 @@ public class DsgSubsetWriterTest {
         }
     }
 
-    private static DiskCache2 diskCache;
+    private static NcssDiskCache ncssDiskCache;
 
-    private static NcssParamsBean ncssParamsAll;
-    private static NcssParamsBean ncssParamsPoint;
-    private static NcssParamsBean ncssParamsStation1;
-    private static NcssParamsBean ncssParamsStation2;
+    private static SubsetParams subsetParamsAll;
+    private static SubsetParams subsetParamsPoint;
+    private static SubsetParams subsetParamsStation1;
+    private static SubsetParams subsetParamsStation2;
 
     // @BeforeClass  <-- Can't use: JUnit won't invoke this method before getTestParameters().
     public static void setupClass() throws URISyntaxException {
@@ -63,28 +68,29 @@ public class DsgSubsetWriterTest {
         MarshallingUtil.fixedGenerationDate = new DateTime(1970, 1, 1, 0, 0, DateTimeZone.UTC);
         MarshallingUtil.fixedResultTime     = new DateTime(1970, 1, 1, 0, 0, DateTimeZone.UTC);
 
-        diskCache = DiskCache2.getDefault();
+        ncssDiskCache = new NcssDiskCache(DiskCache2.getDefault().getRootDirectory());
 
-        ncssParamsAll = new NcssParamsBean();
-        ncssParamsAll.setVar(Arrays.asList("pr", "tas"));
+        subsetParamsAll = new SubsetParams();
+        subsetParamsAll.setVariables(Arrays.asList("pr", "tas"));
 
-        ncssParamsPoint = new NcssParamsBean();
-        ncssParamsPoint.setVar(Arrays.asList("pr"));
-        ncssParamsPoint.setTime("1970-01-01 02:00:00Z");
-        ncssParamsPoint.setNorth(53.0);   // Full extension == 68.0
-        ncssParamsPoint.setSouth(40.0);   // Full extension == 40.0
-        ncssParamsPoint.setWest(-100.0);  // Full extension == -100.0
-        ncssParamsPoint.setEast(-58.0);   // Full extension == -58.0
+        subsetParamsPoint = new SubsetParams();
+        subsetParamsPoint.setVariables(Arrays.asList("pr"));
+        subsetParamsPoint.setTime(CalendarDate.parseISOformat(null, "1970-01-01 02:00:00Z"));
+        // Full extension is (40.0, -100.0) to (68.0, -58.0).
+        LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), new LatLonPointImpl(53.0, -58.0));
+        subsetParamsPoint.setLatLonBoundingBox(bbox);
 
-        ncssParamsStation1 = new NcssParamsBean();
-        ncssParamsStation1.setVar(Arrays.asList("tas"));
-        ncssParamsStation1.setTime_start("1970-01-05T00:00:00Z");
-        ncssParamsStation1.setTime_end("1970-02-05T00:00:00Z");
-        ncssParamsStation1.setStns(Arrays.asList("AAA", "CCC"));
+        subsetParamsStation1 = new SubsetParams();
+        subsetParamsStation1.setVariables(Arrays.asList("tas"));
+        CalendarDate start = CalendarDate.parseISOformat(null, "1970-01-05T00:00:00Z");
+        CalendarDate end = CalendarDate.parseISOformat(null, "1970-02-05T00:00:00Z");
+        subsetParamsStation1.setTimeRange(CalendarDateRange.of(start, end));
+        subsetParamsStation1.setStations(Arrays.asList("AAA", "CCC"));
 
-        ncssParamsStation2 = new NcssParamsBean();
-        ncssParamsStation2.setVar(Arrays.asList("pr", "tas"));
-        ncssParamsStation2.setTime("1970-01-21 01:00:00Z");  // The nearest will be "1970-01-21 00:00:00Z"
+        subsetParamsStation2 = new SubsetParams();
+        subsetParamsStation2.setVariables(Arrays.asList("pr", "tas"));
+        // The nearest will be "1970-01-21 00:00:00Z"
+        subsetParamsStation2.setTime(CalendarDate.parseISOformat(null, "1970-01-21 01:00:00Z"));
     }
 
     @Parameterized.Parameters(name = "{0}/{1}/{3}")
@@ -97,53 +103,53 @@ public class DsgSubsetWriterTest {
 
         return Arrays.asList(new Object[][] {
                 // Point
-                { FeatureType.POINT,   SupportedFormat.CSV_FILE, ncssParamsAll,      "outputAll.csv"      },
-                { FeatureType.POINT,   SupportedFormat.CSV_FILE, ncssParamsPoint,    "outputSubset.csv"   },
+                { FeatureType.POINT,   SupportedFormat.CSV_FILE, subsetParamsAll,      "outputAll.csv"      },
+                { FeatureType.POINT,   SupportedFormat.CSV_FILE, subsetParamsPoint,    "outputSubset.csv"   },
 
-                { FeatureType.POINT,   SupportedFormat.XML_FILE, ncssParamsAll,      "outputAll.xml"      },
-                { FeatureType.POINT,   SupportedFormat.XML_FILE, ncssParamsPoint,    "outputSubset.xml"   },
+                { FeatureType.POINT,   SupportedFormat.XML_FILE, subsetParamsAll,      "outputAll.xml"      },
+                { FeatureType.POINT,   SupportedFormat.XML_FILE, subsetParamsPoint,    "outputSubset.xml"   },
 
-                { FeatureType.POINT,   SupportedFormat.NETCDF3,  ncssParamsAll,      "outputAll.ncml"     },
-                { FeatureType.POINT,   SupportedFormat.NETCDF3,  ncssParamsPoint,    "outputSubset.ncml"  },
+                { FeatureType.POINT,   SupportedFormat.NETCDF3,  subsetParamsAll,      "outputAll.ncml"     },
+                { FeatureType.POINT,   SupportedFormat.NETCDF3,  subsetParamsPoint,    "outputSubset.ncml"  },
 
-                { FeatureType.POINT,   SupportedFormat.NETCDF4,  ncssParamsAll,      "outputAll.ncml"     },
-                { FeatureType.POINT,   SupportedFormat.NETCDF4,  ncssParamsPoint,    "outputSubset.ncml"  },
+                { FeatureType.POINT,   SupportedFormat.NETCDF4,  subsetParamsAll,      "outputAll.ncml"     },
+                { FeatureType.POINT,   SupportedFormat.NETCDF4,  subsetParamsPoint,    "outputSubset.ncml"  },
 
                 // Station
-                { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsAll,      "outputAll.csv"      },
-                { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsStation1, "outputSubset1.csv"  },
-                { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsStation2, "outputSubset2.csv"  },
+                { FeatureType.STATION, SupportedFormat.CSV_FILE, subsetParamsAll,      "outputAll.csv"      },
+                { FeatureType.STATION, SupportedFormat.CSV_FILE, subsetParamsStation1, "outputSubset1.csv"  },
+                { FeatureType.STATION, SupportedFormat.CSV_FILE, subsetParamsStation2, "outputSubset2.csv"  },
 
-                { FeatureType.STATION, SupportedFormat.XML_FILE, ncssParamsAll,      "outputAll.xml"      },
-                { FeatureType.STATION, SupportedFormat.XML_FILE, ncssParamsStation1, "outputSubset1.xml"  },
-                { FeatureType.STATION, SupportedFormat.XML_FILE, ncssParamsStation2, "outputSubset2.xml"  },
+                { FeatureType.STATION, SupportedFormat.XML_FILE, subsetParamsAll,      "outputAll.xml"      },
+                { FeatureType.STATION, SupportedFormat.XML_FILE, subsetParamsStation1, "outputSubset1.xml"  },
+                { FeatureType.STATION, SupportedFormat.XML_FILE, subsetParamsStation2, "outputSubset2.xml"  },
 
-                { FeatureType.STATION, SupportedFormat.WATERML2, ncssParamsAll,      "outputAll.xml"      },
-                { FeatureType.STATION, SupportedFormat.WATERML2, ncssParamsStation1, "outputSubset1.xml"  },
-                { FeatureType.STATION, SupportedFormat.WATERML2, ncssParamsStation2, "outputSubset2.xml"  },
+                { FeatureType.STATION, SupportedFormat.WATERML2, subsetParamsAll,      "outputAll.xml"      },
+                { FeatureType.STATION, SupportedFormat.WATERML2, subsetParamsStation1, "outputSubset1.xml"  },
+                { FeatureType.STATION, SupportedFormat.WATERML2, subsetParamsStation2, "outputSubset2.xml"  },
 
-                { FeatureType.STATION, SupportedFormat.NETCDF3,  ncssParamsAll,      "outputAll.ncml"     },
-                { FeatureType.STATION, SupportedFormat.NETCDF3,  ncssParamsStation1, "outputSubset1.ncml" },
-                { FeatureType.STATION, SupportedFormat.NETCDF3,  ncssParamsStation2, "outputSubset2.ncml" },
+                { FeatureType.STATION, SupportedFormat.NETCDF3,  subsetParamsAll,      "outputAll.ncml"     },
+                { FeatureType.STATION, SupportedFormat.NETCDF3,  subsetParamsStation1, "outputSubset1.ncml" },
+                { FeatureType.STATION, SupportedFormat.NETCDF3,  subsetParamsStation2, "outputSubset2.ncml" },
 
-                { FeatureType.STATION, SupportedFormat.NETCDF4,  ncssParamsAll,      "outputAll.ncml"     },
-                { FeatureType.STATION, SupportedFormat.NETCDF4,  ncssParamsStation1, "outputSubset1.ncml" },
-                { FeatureType.STATION, SupportedFormat.NETCDF4,  ncssParamsStation2, "outputSubset2.ncml" },
+                { FeatureType.STATION, SupportedFormat.NETCDF4,  subsetParamsAll,      "outputAll.ncml"     },
+                { FeatureType.STATION, SupportedFormat.NETCDF4,  subsetParamsStation1, "outputSubset1.ncml" },
+                { FeatureType.STATION, SupportedFormat.NETCDF4,  subsetParamsStation2, "outputSubset2.ncml" },
         });
     }
 
     private final FeatureType wantedType;
     private final String datasetResource;
     private final SupportedFormat format;
-    private final NcssParamsBean ncssParams;
+    private final SubsetParams subsetParams;
     private final String expectedResultResource;
 
-    public DsgSubsetWriterTest(FeatureType wantedType, SupportedFormat format, NcssParamsBean ncssParams,
+    public DsgSubsetWriterTest(FeatureType wantedType, SupportedFormat format, SubsetParams subsetParams,
             String expectedResultResource) throws URISyntaxException {
         this.wantedType = wantedType;
         this.datasetResource = wantedType.name().toLowerCase() + "/input.ncml";
         this.format = format;
-        this.ncssParams = ncssParams;
+        this.subsetParams = subsetParams;
         this.expectedResultResource =
                 wantedType.name().toLowerCase() + "/" + format.name().toLowerCase() + "/" + expectedResultResource;
     }
@@ -171,10 +177,10 @@ public class DsgSubsetWriterTest {
         File actualResultFile = File.createTempFile(basename + "_", "." + extension);
 
         try {
-            try (   FeatureDatasetPoint fdPoint = openPointDataset(wantedType, datasetFile);
+            try (FeatureDatasetPoint fdPoint = openPointDataset(wantedType, datasetFile);
                     OutputStream outFileStream = new BufferedOutputStream(new FileOutputStream(actualResultFile))) {
-                DsgSubsetWriter subsetWriterFile = DsgSubsetWriterFactory.newInstance(
-                        fdPoint, ncssParams, diskCache, outFileStream, format);
+                DsgSubsetWriter subsetWriterFile =
+                        DsgSubsetWriterFactory.newInstance(fdPoint, subsetParams, ncssDiskCache, outFileStream, format);
                 subsetWriterFile.write();
             }
 
@@ -185,10 +191,14 @@ public class DsgSubsetWriterTest {
             } else {
                 Assert.assertTrue(compareText(expectedResultFile, actualResultFile));
             }
-        } finally {
-            if (!actualResultFile.delete()) {
+
+            if (!actualResultFile.delete()) {  // Don't delete the file if assertion fails. We'll need it to debug.
                 logger.warn("Failed to delete " + actualResultFile);
             }
+        } catch (AssertionError e) {
+            String message = String.format(
+                    "Files differed:\n\texpected: %s\n\tactual: %s", expectedResultFile, actualResultFile);
+            throw new AssertionError(message, e);  // Rethrow with debugging message.
         }
     }
 
