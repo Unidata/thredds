@@ -4,6 +4,7 @@ configure(publishedProjects) { Project project ->
     apply plugin: 'maven-publish'
 
     PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
+    PublishingUtil.adjustMavenPublicationPomScopes(project)
 
     publishing {
         repositories {

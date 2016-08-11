@@ -260,8 +260,8 @@ public class GaussianLatitudes {
     GaussianLatitudes glat = new GaussianLatitudes(nlats);
     for (int i=0; i<nlats; i++) {
       System.out.print(" lat "+i+" = "+ Format.dfrac( glat.latd[i], 4));
-      if (i < nlats-1)
-        System.out.print(" diff = " + (glat.latd[i+1]-glat.latd[i]));
+      if (i < nlats - 1)
+        System.out.print(" diff = " + (glat.latd[i + 1] - glat.latd[i]));
       System.out.println(" weight= "+ Format.dfrac( glat.gaussw[i], 6));
     }
   }

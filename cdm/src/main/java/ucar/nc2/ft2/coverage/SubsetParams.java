@@ -60,7 +60,7 @@ public class SubsetParams {
   public static final String projBB = "projBB";         // value = ProjectionRect
   public static final String horizStride = "horizStride";  // value = Integer
   public static final String latlonPoint = "latlonPoint";  // value = LatLonPointImpl
-  public static final String stns = "stn";           // value = List<String>
+  public static final String stations = "stn";           // value = List<String>
 
   public static final String time = "time";             // value = CalendarDate
   public static final String timeRange = "timeRange";   // value = CalendarDateRange
@@ -109,7 +109,7 @@ public class SubsetParams {
           LatLonPointImpl llPoint = (LatLonPointImpl) entry.getValue();
           f.format("&lat=%s&lon=%s", llPoint.getLatitude(), llPoint.getLongitude());
           break;
-        case SubsetParams.stns:
+        case SubsetParams.stations:
           List<String> stns = (List<String>) entry.getValue();
           int count = 0;
           for (String stn : stns) {
@@ -234,7 +234,8 @@ public class SubsetParams {
   public LatLonPointImpl getLatLonPoint() { return (LatLonPointImpl) get(latlonPoint);}
   public SubsetParams setLatLonPoint(LatLonPointImpl pt) { set(latlonPoint, pt); return this; }
 
-  public List<String> getStns() { return (List<String>) get(stns);}
+  public List<String> getStations() { return (List<String>) get(stations);}
+  public SubsetParams setStations(List<String> stns) { set(stations, stns); return this; }
 
   public List<String> getVariables() { return (List<String>) get(variables);}
   public SubsetParams setVariables(List<String> vars) { set(variables, vars); return this; }

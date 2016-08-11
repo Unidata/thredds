@@ -6,13 +6,14 @@ import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
 import ucar.nc2.*;
 import ucar.nc2.NCdumpW.WantValues;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
 import java.util.Formatter;
@@ -261,6 +262,104 @@ public class TestNc4IospWriting {
             Assert.assertEquals(5, data.length);
             Assert.assertArrayEquals(new float[]{2.f, 4.f, 6.f, 8.f, 10.f},
                     data, 1e-6f);
+        }
+    }
+
+    @Test
+    public void expandUnlimitedDimensions() throws IOException, InvalidRangeException {
+        File outFile = tempFolder.newFile("expandUnlimitedDimensions.nc4");
+
+        try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(
+                NetcdfFileWriter.Version.netcdf4, outFile.getAbsolutePath())) {
+            Dimension rowDim = writer.addDimension(null, "row", 0, true, false);
+            Dimension colDim = writer.addDimension(null, "col", 0, true, false);
+            Variable tableVar = writer.addVariable(null, "table", DataType.INT, "row col");
+            writer.create();
+
+            // Start with a 1x1 block. Table will look like:
+            //      1
+            int[] origin = new int[] { 0, 0 };
+            int[] shape = new int[] { 1, 1 };
+            int[] data = new int [] { 1 };
+            writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
+
+            // Add a row. Table will look like:
+            //      1 _
+            //      2 2
+            origin = new int[] { 1, 0 };
+            shape = new int[] { 1, 2 };
+            data = new int[] { 2, 2 };
+            writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
+
+            // Add a column. Table will look like:
+            //      1 _ 3
+            //      2 2 3
+            //      _ _ 3
+            origin = new int[] { 0, 2 };
+            shape = new int[]{ 3, 1 };
+            data = new int[] { 3, 3, 3 };
+            writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
+
+            // Add a row. Table will look like:
+            //      1 _ 3 _
+            //      2 2 3 _
+            //      _ _ 3 _
+            //      4 4 4 4
+            origin = new int[] { 3, 0 };
+            shape = new int[] { 1, 4 };
+            data = new int[] { 4, 4, 4, 4 };
+            writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
+
+            // Add a column. Table will look like:
+            //      1 _ 3 _ 5
+            //      2 2 3 _ 5
+            //      _ _ 3 _ 5
+            //      4 4 4 4 5
+            //      _ _ _ _ 5
+            origin = new int[] { 0, 4 };
+            shape = new int[] { 5, 1 };
+            data = new int[] { 5, 5, 5, 5, 5 };
+            writer.write(tableVar, origin, Array.factory(DataType.INT, shape, data));
+        } catch (IOException e) {
+            if ("NetCDF: Start+count exceeds dimension bound".equals(e.getMessage())) {
+                throw new IOException("This test requires netcdf-c 4.4.0+.", e);
+            }
+        }
+
+        /*
+        File should look like:
+            netcdf expandUnlimitedDimensions {
+            dimensions:
+                row = UNLIMITED ; // (5 currently)
+                col = UNLIMITED ; // (5 currently)
+            variables:
+                int table(row, col) ;
+            data:
+
+             table =
+              {1, _, 3, _, 5},
+              {2, 2, 3, _, 5},
+              {_, _, 3, _, 5},
+              {4, 4, 4, 4, 5},
+              {_, _, _, _, 5} ;
+            }
+         */
+
+        try (NetcdfFile ncFile = NetcdfFile.open(outFile.getAbsolutePath())) {
+            Variable tableVar = ncFile.findVariable(null, "table");
+            Array actualVals = tableVar.read();
+
+            int fill = -2147483647;  // See EnhanceScaleMissingImpl.NC_FILL_INT
+            int[] expectedData = new int[] {
+                    1,    fill, 3,    fill, 5,
+                    2,    2,    3,    fill, 5,
+                    fill, fill, 3,    fill, 5,
+                    4,    4,    4,    4,    5,
+                    fill, fill, fill, fill, 5
+            };
+            Array expectedVals = Array.factory(DataType.INT, new int[] { 5, 5 }, expectedData);
+
+            Assert.assertTrue(MAMath.equals(expectedVals, actualVals));
         }
     }
 }

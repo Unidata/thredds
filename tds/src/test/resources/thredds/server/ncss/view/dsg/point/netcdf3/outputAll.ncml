@@ -3,8 +3,9 @@
   <dimension name="obs" length="15" isUnlimited="true" />
   
   <variable name="time" shape="obs" type="double">
-    <attribute name="units" value="minutes since 1970-01-01 00:00:00" />
+    <attribute name="units" value="Minute since 1970-01-01T00:00:00Z" />
     <attribute name="long_name" value="time of measurement" />
+    <attribute name="calendar" value="proleptic_gregorian" />
 	<values>0.0 20.0 40.0 60.0 80.0 100.0 120.0 140.0 160.0 180.0 200.0 220.0 240.0 260.0 280.0</values>
   </variable>
   
@@ -43,7 +44,6 @@
 	<values>10.0 40.0 70.0 100.0 130.0 160.0 190.0 220.0 250.0 280.0 310.0 340.0 370.0 400.0 430.0</values>
   </variable>
   
-  <attribute name="featureType" value="point" />
   <attribute name="Conventions" value="CF-1.6" />
   <attribute name="history" value="Written by CFPointWriter" />
   <attribute name="title" value="Extracted data from TDS Feature Collection file:C:\Users\cwardgar\dev\projects\thredds\tds\src\test\resources\thredds\server\ncss\view\dsg\point.ncml" />
@@ -53,4 +53,6 @@
   <attribute name="geospatial_lat_max" type="double" value="68.0" />
   <attribute name="geospatial_lon_min" type="double" value="-100.0" />
   <attribute name="geospatial_lon_max" type="double" value="-58.0" />
+  <attribute name="featureType" value="point" />
+  <attribute name="DSG_representation" value="Point Data, H.1" />
 </netcdf>

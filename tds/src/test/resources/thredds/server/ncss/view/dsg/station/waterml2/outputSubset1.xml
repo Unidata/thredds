@@ -9,8 +9,8 @@
         <om:OM_Observation gml:id="OMObservationType.1">
             <om:phenomenonTime>
                 <gml:TimePeriod gml:id="TimePeriodType.1">
-                    <gml:beginPosition>1970-01-05T00:00:00Z</gml:beginPosition>
-                    <gml:endPosition>1970-02-05T00:00:00Z</gml:endPosition>
+                    <gml:beginPosition>1970-01-11T00:00:00Z</gml:beginPosition>
+                    <gml:endPosition>1970-01-31T00:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>
@@ -66,8 +66,8 @@
         <om:OM_Observation gml:id="OMObservationType.2">
             <om:phenomenonTime>
                 <gml:TimePeriod gml:id="TimePeriodType.2">
-                    <gml:beginPosition>1970-01-05T00:00:00Z</gml:beginPosition>
-                    <gml:endPosition>1970-02-05T00:00:00Z</gml:endPosition>
+                    <gml:beginPosition>1970-01-11T00:00:00Z</gml:beginPosition>
+                    <gml:endPosition>1970-01-31T00:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>

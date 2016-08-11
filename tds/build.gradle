@@ -155,10 +155,10 @@ task compileGwt (dependsOn: classes, type: JavaExec) {
 
     classpath {
         [
-            sourceSets.main.java.srcDirs,           // Java source
-            sourceSets.main.output.resourcesDir,    // Generated resources
-            sourceSets.main.output.classesDir,      // Generated classes
-            sourceSets.main.compileClasspath,       // Deps
+            // For com.google.gwt.dev.Compiler in "gwt-dev" and 'uk/ac/rdg/resc/godiva/Godiva.gwt.xml' in "edal-java".
+            sourceSets.main.compileClasspath,
+            // For Godiva3.gwt.xml in 'tds/src/main/resources'.
+            sourceSets.main.resources.srcDirs
         ]
     }
 
@@ -169,7 +169,6 @@ task compileGwt (dependsOn: classes, type: JavaExec) {
         '-localWorkers', '2',
         '-compileReport',
         '-extra', extraDir,
-        // '-draftCompile' // Speeds up compile with 25%
     ]
 
     maxHeapSize = '256M'

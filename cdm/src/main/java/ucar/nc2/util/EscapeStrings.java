@@ -507,30 +507,27 @@ public class EscapeStrings {
    */
   static public String backslashEscapeDapString(String s) {
     StringBuilder buf = new StringBuilder();
-    for (int i = 0; i < s.length(); i++) {
-      int c = s.charAt(i);
-      if (true) {
-        if (c < ' ') {
-          switch (c) {
-            case '\n':
-            case '\r':
-            case '\t':
-            case '\f':
-              buf.append((char) c);
-              break;
-            default:
-              buf.append(String.format("\\x%02x", (c & 0xff)));
-              break;
-          }
-          continue;
+    for(int i=0;i<s.length();i++) {
+	int c = s.charAt(i);
+        if(true) {
+            if(c < ' ') {
+                switch (c) {
+                case '\n': case '\r': case '\t': case '\f':
+                    buf.append((char)c);
+                    break;
+                default:
+                    buf.append(String.format("\\x%02x",(c&0xff)));
+                    break;
+                }
+                continue;
+            }
         }
-      }
-      if (c == '"') {
-        buf.append("\\\"");
-      } else if (c == '\\') {
-        buf.append('\\');
-      } else
-        buf.append((char) c);
+        if(c == '"') {
+            buf.append("\\\"");
+        } else if(c == '\\') {
+            buf.append("\\\\");
+        } else
+            buf.append((char)c);
     }
     return buf.toString();
   }

@@ -3,8 +3,9 @@
   <dimension name="obs" length="4" isUnlimited="true" />
 
   <variable name="time" shape="obs" type="double">
-    <attribute name="units" value="minutes since 1970-01-01 00:00:00" />
+    <attribute name="units" value="Minute since 1970-01-01T00:00:00Z" />
     <attribute name="long_name" value="time of measurement" />
+    <attribute name="calendar" value="proleptic_gregorian" />
 	<values>60.0 80.0 100.0 120.0</values>
   </variable>
   
@@ -45,4 +46,5 @@
   <attribute name="geospatial_lon_min" type="double" value="-91.0" />
   <attribute name="geospatial_lon_max" type="double" value="-82.0" />
   <attribute name="featureType" value="point" />
+  <attribute name="DSG_representation" value="Point Data, H.1" />
 </netcdf>
