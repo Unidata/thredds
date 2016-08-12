@@ -204,15 +204,17 @@ libraries["oro"] = "oro:oro:2.0.6"
 
 libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE"
 
-versions["edal"] = "1.1.2"
+versions["edal"] = "1.2.1"
 
 libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
 
 libraries["edal-cdm"] = dependencies.create("uk.ac.rdg.resc:edal-cdm:${versions["edal"]}") {
     // These are dependencies that are included in edal-cdm, but are provided by
     // us already, so we will exclude these from the edal-cdm artifact.
-    exclude group: 'edu.ucar', module: 'grib'
+    exclude group: 'edu.ucar', module: 'cdm'
+    exclude group: 'edu.ucar', module: 'udunits'
     exclude group: 'edu.ucar', module: 'netcdf4'
+    exclude group: 'edu.ucar', module: 'grib'
     exclude group: 'edu.ucar', module: 'opendap'
     exclude group: 'com.sleepycat', module: 'je'
     exclude group: 'oro', module: 'oro'
