@@ -230,17 +230,18 @@ libraries["edal-godiva"] = dependencies.create("uk.ac.rdg.resc:edal-godiva:${ver
     exclude module: 'gwt-user'
 }
 
-libraries["saxon-he"] = "net.sf.saxon:Saxon-HE:9.6.0-7"
-
-libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
-
-libraries["threddsIso"] = "EDS:threddsIso:2.2.8"
-
 versions["gwt"] = "2.7.0"
 
 libraries["gwt-user"] =  "com.google.gwt:gwt-user:${versions["gwt"]}"
 
 libraries["gwt-dev"] = "com.google.gwt:gwt-dev:${versions["gwt"]}"
+
+libraries["threddsIso"] = "EDS:threddsIso:2.3.0-SNAPSHOT"
+
+libraries["saxon-he"] = "net.sf.saxon:Saxon-HE:9.6.0-7"
+
+libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
+
 
 // Version update note:
 // spring-context 4.x is limited to hibernate-validator 4.3.2.Final. We can't update to hibernate-validator 5.x
