@@ -420,7 +420,7 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
              */
             @Override
             public PlottingStyleParameters getDefaultPlottingParameters() {
-                Extent<Float> scaleRange = null;
+                List<Extent<Float>> scaleRanges = null;
                 String palette = null;
                 Color aboveMaxColour = null;
                 Color belowMinColour = null;
@@ -429,11 +429,36 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
                 Integer numColourBands = null;
                 Float opacity = 1.0f;
 
-                return new PlottingStyleParameters(scaleRange, palette, aboveMaxColour,
+                return new PlottingStyleParameters(scaleRanges, palette, aboveMaxColour,
                         belowMinColour, noDataColour, logScaling, numColourBands,
                         opacity);
 
             }
+
+            /**
+             * @return Whether or not this layer can be queried with GetFeatureInfo requests
+             */
+            @Override
+            public boolean isQueryable() {
+                return false;
+            };
+
+            /**
+             * @return Whether or not this layer can be downloaded in CSV/CoverageJSON format
+             */
+            @Override
+            public boolean isDownloadable() {
+                return false;
+            };
+
+            /**
+             * @return Whether this layer is disabled
+             */
+            @Override
+            public boolean isDisabled() {
+                return false;
+            };
+
         };
     }
 }
