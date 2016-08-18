@@ -28,6 +28,8 @@ limitations under the License.
 
 package ucar.unidata.geoloc.projection.proj4;
 
+import java.util.Objects;
+
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
@@ -57,6 +59,8 @@ public class CylindricalEqualAreaProjection extends ProjectionImpl {
 
   public CylindricalEqualAreaProjection(double lon0, double trueScaleLatitude, double falseEasting, double falseNorthing, Earth earth) {
     super("CylindricalEqualAreaProjection", false);
+
+    Objects.requireNonNull(earth, "CEA constructor requires non-null Earth");
 
     this.lon0 = lon0;
 
