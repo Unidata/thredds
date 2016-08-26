@@ -35,9 +35,10 @@ package opendap.test;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /**
  * Test nc2 dods in the JUnit framework.
@@ -61,9 +62,9 @@ public class TestGrid1 extends TestSources
     static final protected String DATASET = "testgrid1.nc";
 
     static final protected String URLPATH_REMOTE =
-            "/thredds/dodsC/testdods/"+DATASET;
+            "/thredds/dodsC/testdods/" + DATASET;
     static final protected String URLPATH_LOCAL =
-            "/thredds/dodsC/testdods/"+DATASET;
+            "/thredds/dodsC/testdods/" + DATASET;
 
     protected String testserver = null;
 
@@ -111,42 +112,46 @@ public class TestGrid1 extends TestSources
                 visual(getTitle() + ".dods", data);
 
             if(prop_diff) { //compare with baseline
-                // Read the baseline file(s)
-                String diffs = compare("TestGrid1", "netcdf " + url + BASELINE,
+                // Compare to the baseline file(s)
+                String ncurl = NetcdfFile.makeValidCDLName(url);
+                // strip trailing .nc
+                if(ncurl.endsWith(".nc"))
+                    ncurl = ncurl.substring(0,ncurl.length()-3);
+                String diffs = compare("TestGrid1", "netcdf " + ncurl + BASELINE,
                         data);
                 if(diffs != null)
                     pass = false;
+                System.err.println(diffs);
             }
-        }
-        Assert.assertTrue("Testing TestGrid1" + getTitle(), pass
+        }Assert.assertTrue("Testing TestGrid1" + getTitle(), pass
 
         );
     }
 
     static protected final String BASELINE =
-     " {\n"
-    +"dimensions:\n"
-    +"lat = 2;\n"
-    +"lon = 2;\n"
-    +"variables:\n"
-    +"double var(lat=2, lon=2);\n"
-    +":_CoordinateAxes = \"lat lon \";\n"
-    +"float lat(lat=2);\n"
-    +":_CoordinateAxisType = \"Lat\";\n"
-    +"float lon(lon=2);\n"
-    +":_CoordinateAxisType = \"Lon\";\n"
-    +"// global attributes:\n"
-    +":_CoordSysBuilder = \"ucar.nc2.dataset.conv.DefaultConvention\";\n"
-    +"data:\n"
-    +"var =\n"
-    +"{\n"
-    +"{0.0, 1.0},\n"
-    +"{2.0, 3.0}\n"
-    +"}\n"
-    +"lat =\n"
-    +"{17.0, 23.0}\n"
-    +"lon =\n"
-    +"{-15.0, -1.0}\n"
-    +"}\n"
+            " {\n"
+                    +"dimensions:\n"
+                    +"lat = 2;\n"
+                    +"lon = 2;\n"
+                    +"variables:\n"
+                    +"double var(lat, lon);\n"
+                    +"var:_CoordinateAxes = \"lat lon \";\n"
+                    +"float lat(lat);\n"
+                    +"lat:_CoordinateAxisType = \"Lat\";\n"
+                    +"float lon(lon);\n"
+                    +"lon:_CoordinateAxisType = \"Lon\";\n"
+                    +"// global attributes:\n"
+                    +":_CoordSysBuilder = \"ucar.nc2.dataset.conv.DefaultConvention\";\n"
+        +"data:\n"
+        +"var =\n"
+        +"{\n"
+        +"{0.0, 1.0},\n"
+        +"{2.0, 3.0}\n"
+        +"}\n"
+        +"lat =\n"
+        +"{17.0, 23.0}\n"
+        +"lon =\n"
+        +"{-15.0, -1.0}\n"
+        +"}\n"
     ;
 }

@@ -56,6 +56,9 @@ abstract public class HTTPUtil
 
     static final public Charset UTF8 = Charset.forName("UTF-8");
     static final public Charset ASCII = Charset.forName("US-ASCII");
+    static final public String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+    static final public String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static final public String DRIVELETTERS = LOWERCASE + UPPERCASE;
 
     //////////////////////////////////////////////////
 
@@ -383,11 +386,11 @@ abstract public class HTTPUtil
         }
     }
 
-    static protected Map<HTTPSession.Prop,Object>
-    merge(Map<HTTPSession.Prop,Object> globalsettings, Map<HTTPSession.Prop,Object> localsettings)
+    static protected Map<HTTPSession.Prop, Object>
+    merge(Map<HTTPSession.Prop, Object> globalsettings, Map<HTTPSession.Prop, Object> localsettings)
     {
         // merge global and local settings; local overrides global.
-        Map<HTTPSession.Prop,Object> merge = new ConcurrentHashMap<HTTPSession.Prop,Object>();
+        Map<HTTPSession.Prop, Object> merge = new ConcurrentHashMap<HTTPSession.Prop, Object>();
         for(HTTPSession.Prop key : globalsettings.keySet()) {
             merge.put(key, globalsettings.get(key));
         }
@@ -421,18 +424,152 @@ abstract public class HTTPUtil
     }
 
     /**
+     * Join two string together to form proper path
+     * WITHOUT trailing slash
+     *
+     * @param prefix
+     * @param suffix
+     * @return
+     */
+    static public String
+    canonjoin(String prefix, String suffix)
+    {
+        if(prefix == null) prefix = "";
+        if(suffix == null) suffix = "";
+        prefix = HTTPUtil.canonicalpath(prefix);
+        suffix = HTTPUtil.canonicalpath(suffix);
+        StringBuilder result = new StringBuilder();
+        result.append(prefix);
+        int prelen = prefix.length();
+        if(prelen > 0 && result.charAt(prelen - 1) != '/') {
+            result.append('/');
+            prelen++;
+        }
+        if(suffix.length() > 0 && suffix.charAt(0) == '/')
+            result.append(suffix.substring(1));
+        else
+            result.append(suffix);
+        int len = result.length();
+        if(len > 0 && result.charAt(len - 1) == '/') {
+            result.deleteCharAt(len - 1);
+            len--;
+        }
+        return result.toString();
+    }
+
+    /**
      * Convert path to use '/' consistently and
      * to remove any trailing '/'
      *
      * @param path convert this path
      * @return canonicalized version
      */
-    static public String canonicalpath(String path)
+
+    static public String
+    canonicalpath(String path)
     {
         if(path == null) return null;
-        path = path.replace('\\', '/');
-        if(path.endsWith("/"))
-            path = path.substring(0, path.length() - 1);
-        return path;
+        StringBuilder b = new StringBuilder(path);
+        canonicalpath(b);
+        return b.toString();
+    }
+
+    static protected void
+    canonicalpath(StringBuilder s)
+    {
+        if(s == null || s.length() == 0)
+            return;
+        int index = 0;
+        // "\\" -> "/"
+        for(; ; ) {
+            index = s.indexOf("\\", index);
+            if(index < 0) break;
+            s.replace(index, index + 1, "/");
+        }
+        boolean isabs = (s.charAt(0) == '/'); // remember
+        for(; ; ) { // kill any leading '/'s
+            if(s.charAt(0) != '/') break;
+            s.deleteCharAt(0);
+        }
+        // Do we have drive letter?
+        boolean hasdrive = hasDriveLetter(s);
+
+        if(hasdrive)
+            s.setCharAt(0, Character.toLowerCase(s.charAt(0)));
+
+        while(s.charAt(s.length() - 1) == '/')
+            s.deleteCharAt(s.length() - 1); // kill any trailing '/'s
+
+        // Add back leading '/', if any
+        if(!hasdrive && isabs)
+            s.insert(0, '/');
+    }
+
+    /**
+     * Convert path to remove any leading '/' or drive letter assumes canonical.
+     *
+     * @param path convert this path
+     * @return relatived version
+     */
+    static public String relpath(String path)
+    {
+        if(path == null) return null;
+        StringBuilder b = new StringBuilder(path);
+        canonicalpath(b);
+        if(b.charAt(0) == '/')
+            b.deleteCharAt(0);
+        if(hasDriveLetter(b))
+            b.delete(0,2);
+        return b.toString();
+    }
+
+    /**
+     * @param path to test
+     * @return true if path appears to start with Windows drive letter
+     */
+    static public boolean
+    hasDriveLetter(String path)
+    {
+        return (path != null && path.length() >= 2
+                && path.charAt(1) == ':'
+                && DRIVELETTERS.indexOf(path.charAt(0)) >= 0);
+    }
+
+    // Support function
+    static protected boolean
+    hasDriveLetter(StringBuilder path)
+    {
+        return (path.length() >= 2
+                && path.charAt(1) == ':'
+                && DRIVELETTERS.indexOf(path.charAt(0)) >= 0);
+    }
+
+    /**
+     * @param path to test
+     * @return true if path is absolute
+     */
+    static public boolean
+    isAbsolutePath(String path)
+    {
+        return (path != null && path.length() > 0
+                && (path.charAt(0) == '/' || hasDriveLetter(path)));
+    }
+
+    /**
+     * Convert path to add a  leading '/'; assumes canonical.
+     *
+     * @param path convert this path
+     * @return absolute version
+     */
+    static public String abspath(String path)
+    {
+        if(path == null) return "/";
+        StringBuilder b = new StringBuilder(path);
+        canonicalpath(b);
+        if(b.charAt(0) == '/')
+            b.deleteCharAt(0);
+        if(b.charAt(0) != '/' || !hasDriveLetter(b))
+            b.insert(0, '/');
+        return b.toString();
     }
 }

@@ -2371,7 +2371,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   // reservedSectionCdl defines the characters that must be escaped
   // when what?
-  static public final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~.\\";
+  static public final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~\\";
 
   /**
    * Create a valid CDM object name.
