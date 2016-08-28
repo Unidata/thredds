@@ -57,6 +57,12 @@ gretty {
     // Also, a comment in the bug report mentions that this issue has been fixed as of Tomcat 7.0.53.
     // However, it is actually still present as of 7.0.55
     secureRandom = true
+    
+    // These enable HTTPS authentication, which is needed to access the TDS admin interface.
+    httpsEnabled = true
+    sslKeyStorePath = "${sourceSets.test.output.resourcesDir}/auth/keystore"
+    sslKeyStorePassword = 'secret666'
+    realmConfigFile = "${sourceSets.test.output.resourcesDir}/auth/tomcat-users.xml"
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
@@ -76,10 +82,10 @@ task integrationTest(type: Test, group: 'Verification') {
 
     doLast {
         // Remove the system properties that Gretty added in AppBeforeIntegrationTestTask.integrationTestTask().
-        // org.gradle.api.internal.changedetection.changes.DefaultTaskArtifactStateRepository.TaskArtifactStateImpl.afterTask()
-        // seems to indicate that input/output snapshots are taken AFTER a task is executed, whereas snapshot checking
-        // occurs BEFORE. So, in order for the UP-TO-DATE machinery to work properly, we must undo the changes to
-        // input that Gretty made during the execution phase.
+        // org.gradle.api.internal.changedetection.changes.DefaultTaskArtifactStateRepository.TaskArtifactStateImpl
+        // .afterTask() seems to indicate that input/output snapshots are taken AFTER a task is executed, whereas
+        // snapshot checking occurs BEFORE. So, in order for the UP-TO-DATE machinery to work properly, we must undo
+        // the changes to input that Gretty made during the execution phase.
         // TODO: Can I find anything more authoritive vis-a-vis snapshot time? Ask at the Gradle forums?
         // TODO: Open an issue--or even a pull request--for this problem on the Gretty Github.
         systemProperties.keySet().removeAll { it.startsWith("gretty.") }

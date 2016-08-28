@@ -3,7 +3,9 @@ package thredds.server.catalog;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.*;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,6 +16,9 @@ import java.util.List;
  * @author caron
  * @since 7/1/2015
  */
+// These tests all rely on collections defined in tds/src/test/content/thredds/catalogs5/pointCatalog5.xml
+// In turn, those collections all have "${cdmUnitTest}" in their spec.
+@Category(NeedsCdmUnitTest.class)
 public class TestTdsPoint {
 
    ///////////////////////////////////////////////////

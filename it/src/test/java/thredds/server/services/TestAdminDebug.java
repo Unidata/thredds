@@ -3,36 +3,34 @@ package thredds.server.services;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.category.NotJenkins;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test Admin services, needs authentications
+ * Test Admin services, needs authentication
  *
  * @author caron
  * @since 7/6/2015
  */
 @RunWith(Parameterized.class)
-@Category({NeedsCdmUnitTest.class, NotJenkins.class})
 public class TestAdminDebug
 {
-
     static final boolean show = false;
 
-    static final String DFALTHOST = "localhost:8080";
-    static final String DFALTUSERPWD = "caron:secret666";
-    static final String BADUSERPWD = "bad:worse";
+    static final String DFALTHOST = "localhost:8443";
+
+    // Defined in it/src/test/resources/auth/keystore
+    static final String DEFAULT_USER = "tds";
+    static final String DEFAULT_PASSWORD = "secret666";
+    static final String DFALTUSERPWD = DEFAULT_USER + ":" + DEFAULT_PASSWORD;
 
     @Parameterized.Parameters(name = "{0}")
     public static List<Object[]> getTestParameters()
