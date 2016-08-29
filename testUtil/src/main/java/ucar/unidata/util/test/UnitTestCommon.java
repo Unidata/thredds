@@ -390,6 +390,48 @@ abstract public class UnitTestCommon
         return result.toString();
     }
 
+    /**
+     * Convert path to:
+     * 1. use '/' consistently
+     * 2. remove any trailing '/'
+     * 3. trim blanks
+     *
+     * @param path convert this path
+     * @return canonicalized version
+     */
+    static public String
+    canonicalpath(String path)
+    {
+        if(path == null) return null;
+        path = path.trim();
+        path = path.replace('\\', '/');
+        if(path.endsWith("/"))
+            path = path.substring(0, path.length() - 1);
+        // As a last step, lowercase the drive letter, if any
+        if(hasDriveLetter(path))
+            path = path.substring(0, 1).toLowerCase() + path.substring(1);
+        return path;
+    }
+
+    /**
+     * return true if this path appears to start with a windows drive letter
+     *
+     * @param path
+     * @return
+     */
+
+    static public boolean
+    hasDriveLetter(String path)
+    {
+        if(path != null && path.length() >= 2) {
+            return (DRIVELETTERS.indexOf(path.charAt(0)) >= 0 && path.charAt(1) == ':');
+        }
+        return false;
+    }
+    static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    + "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase();
+
+
     static protected String
     ncdumpmetadata(NetcdfFile ncfile)
             throws Exception
@@ -397,7 +439,7 @@ abstract public class UnitTestCommon
         StringWriter sw = new StringWriter();
         // Print the meta-databuffer using these args to NcdumpW
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, "-strict -unsigned", sw, null))
                 throw new Exception("NcdumpW failed");
         } catch (IOException ioe) {
             throw new Exception("NcdumpW failed", ioe);
@@ -414,7 +456,7 @@ abstract public class UnitTestCommon
         // Dump the databuffer
         sw = new StringWriter();
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-vall -unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, "-strict -vall -unsigned", sw, null))
                 throw new Exception("NCdumpW failed");
         } catch (IOException ioe) {
             ioe.printStackTrace();

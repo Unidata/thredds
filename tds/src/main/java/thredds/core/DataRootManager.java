@@ -104,6 +104,11 @@ public class DataRootManager implements InitializingBean {
         AliasTranslator.addAlias("content", StringUtils.cleanPath(file.getPath())); // LOOK
     }
 
+    File  uploaddir = tdsContext.getUploadDir();
+    if(uploaddir != null) {
+      AliasTranslator.addAlias("${tds.upload.dir}",StringUtils.cleanPath(uploaddir.getAbsolutePath()));
+    }
+
     makeDebugActions();
     startupLog.info("DataRootManager:" + AliasTranslator.size() +" aliases set ");
   }

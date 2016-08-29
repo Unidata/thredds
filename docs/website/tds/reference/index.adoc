@@ -47,6 +47,8 @@
 ** <<services/CdmrFeature#,CdmrFeature web service>>
 ** <<services/WCS#,WCS 1.0 Service>>
 ** <<services/WMS#,WMS 1.3.0 Service>>
+** Upload/Download Service:
+<<services/Reify#,Upload and Download Services>>
 * Metadata
 ** <<services/ncISO#,ncISO: Dataset Metadata Services>>
 ** <<DigitalLibraries#,OAI Metadata harvesting>>
