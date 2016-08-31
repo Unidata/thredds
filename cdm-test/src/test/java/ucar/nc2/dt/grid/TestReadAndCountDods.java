@@ -90,9 +90,9 @@ public class TestReadAndCountDods {
     result.add(new Object[]{"catalog/grib/NCEP/NAM/CONUS_20km/noaaport/files/latest.xml", 33, 9, 11, 7});   // ngrids keeps bouning between 33 and 40
     result.add(new Object[]{"catalog/grib/NCEP/NAM/CONUS_80km/files/latest.xml", 41, 11, 13, 8});
 
-    result.add(new Object[]{"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 53, 12, 14, 9});
-    result.add(new Object[]{"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 89, 18, 20, 14});
-    result.add(new Object[]{"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 89, 18, 20, 14});
+    result.add(new Object[]{"catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml", 51, 12, 14, 8});
+    result.add(new Object[]{"catalog/grib/NCEP/RAP/CONUS_20km/files/latest.xml", 92, 18, 20, 15});
+    result.add(new Object[]{"catalog/grib/NCEP/RAP/CONUS_40km/files/latest.xml", 92, 18, 20, 15});
     return result;
   }
 
