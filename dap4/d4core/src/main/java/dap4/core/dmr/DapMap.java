@@ -10,7 +10,7 @@ package dap4.core.dmr;
 
 public class DapMap extends DapNode
 {
-    DapAtomicVariable actualvar = null;
+    DapVariable actualvar = null;
 
     //////////////////////////////////////////////////
     // Constructors
@@ -20,7 +20,7 @@ public class DapMap extends DapNode
         super();
     }
 
-    public DapMap(DapAtomicVariable var)
+    public DapMap(DapVariable var)
     {
 	    this();
 	    setVariable(var);
@@ -29,8 +29,8 @@ public class DapMap extends DapNode
     //////////////////////////////////////////////////
     // Get/set
     
-    public DapAtomicVariable getVariable() {return actualvar;}
-    public void setVariable(DapAtomicVariable var) {this.actualvar = var;}
+    public DapVariable getVariable() {return actualvar;}
+    public void setVariable(DapVariable var) {this.actualvar = var;}
 
     //////////////////////////////////////////////////
     // Overrides

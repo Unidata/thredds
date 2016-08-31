@@ -4,6 +4,7 @@ package dap4.test;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import thredds.server.dap4.Dap4Controller;
 
 /**
  * TestFrontPage verifies the front page
@@ -17,9 +18,7 @@ public class TestDSR extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
-    static protected String TESTDATADIR = DATADIR + "/resources/";
-    static protected String BASELINEDIR = DATADIR + "/resources/TestDSR/baseline";
+    static protected String BASELINEDIR = "/TestDSR/baseline";
 
     // constants for Fake Request
     static protected final String FAKEDATASET = "test1";
@@ -30,16 +29,11 @@ public class TestDSR extends DapTestCommon
 
     protected String datasetpath = null;
 
-    protected String root = null;
-
     //////////////////////////////////////////////////
 
     @Before
     public void setup() throws Exception {
-        this.root = getDAP4Root();
-        if(this.root == null)
-            throw new Exception("dap4 root not found");
-        this.datasetpath = this.root + "/" + DATADIR;
+        this.datasetpath = getResourceRoot();
     }
 
     //////////////////////////////////////////////////
@@ -70,7 +64,7 @@ public class TestDSR extends DapTestCommon
             visual("TestDSR", dsr);
 
         // Figure out the baseline
-        String baselinepath = this.root + "/" + BASELINEDIR + "/" + FAKEDATASET + ".dsr";
+        String baselinepath = getResourceRoot() + BASELINEDIR + "/" + FAKEDATASET + ".dsr";
 
         if(prop_baseline) {
             writefile(baselinepath, dsr);
@@ -86,23 +80,6 @@ public class TestDSR extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Utility methods
-
-    //////////////////////////////////////////////////
-    // Stand alone
-
-    static public void
-    main(String[] argv)
-    {
-        try {
-            new TestFrontPage().testFrontPage();
-        } catch (Exception e) {
-            System.err.println("*** FAIL");
-            e.printStackTrace();
-            System.exit(1);
-        }
-        System.err.println("*** PASS");
-        System.exit(0);
-    }// main
 
 }
 

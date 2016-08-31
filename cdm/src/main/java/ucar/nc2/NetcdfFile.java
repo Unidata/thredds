@@ -1222,6 +1222,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * It may possibly be nested in multiple groups and/or structures.
    * An embedded "." is interpreted as structure.member.
    * An embedded "/" is interpreted as group/group or group/variable.
+   * An embedded "@" is interpreted as variable@attribute
    * If the name actually has a ".", you must escape it (call NetcdfFile.escapeName(varname))
    * Any other chars may also be escaped, as they are removed before testing.
    *

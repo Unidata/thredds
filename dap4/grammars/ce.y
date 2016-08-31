@@ -10,15 +10,15 @@ Comment out in case we are using an older version of bison
 %define api.push-pull pull
 */
 %define abstract
-%define package {dap4.ce.parser}
-%define parser_class_name {CEParserBody}
+%define package {dap4.core.ce.parser}
+%define parser_class_name {CEBisonParser}
 %define throws {ParseException}
 %define lex_throws {ParseException}
 
 %code imports {
 import dap4.core.util.Slice;
 import dap4.core.dmr.parser.ParseException;
-import dap4.ce.CEAST;
+import dap4.core.ce.CEAST;
 }
 
 %code {

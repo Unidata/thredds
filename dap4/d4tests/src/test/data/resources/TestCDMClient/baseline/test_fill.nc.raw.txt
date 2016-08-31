@@ -1,0 +1,34 @@
+netcdf test_fill.nc.raw {
+  variables:
+    ubyte uv8;
+      uv8:_DAP4_Checksum_CRC32 = "0x9011b263";
+
+    short v16;
+      v16:_DAP4_Checksum_CRC32 = "0xe09112c3";
+
+    uint uv32;
+      uv32:_FillValue = 17S;
+      uv32:_DAP4_Checksum_CRC32 = "0x30b13283";
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+}
+netcdf test_fill.nc.raw {
+  variables:
+    ubyte uv8;
+      :_DAP4_Checksum_CRC32 = "0x9011b263";
+
+    short v16;
+      :_DAP4_Checksum_CRC32 = "0xe09112c3";
+
+    uint uv32;
+      :_FillValue = 17S; // short
+      :_DAP4_Checksum_CRC32 = "0x30b13283";
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+uv8 =240
+v16 =32700
+uv32 =111000
+}

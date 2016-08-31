@@ -157,7 +157,7 @@ javadoc {
     source = source.plus(fileTree(dir: '../waterml/src/main/java', include: '**/*.java'))
 
     source = source.plus(fileTree(dir: '../dap4/d4core/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../dap4/d4shared/src/main/java', include: '**/*.java'))
+    source = source.plus(fileTree(dir: '../dap4/d4lib/src/main/java', include: '**/*.java'))
     source = source.plus(fileTree(dir: '../dap4/d4cdm/src/main/java', include: '**/*.java'))
 }
 

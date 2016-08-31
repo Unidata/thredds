@@ -44,6 +44,8 @@ import ucar.httpservices.HTTPSession;
 import ucar.httpservices.HTTPUtil;
 import ucar.unidata.util.StringUtil2;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,7 +58,7 @@ import javax.servlet.http.HttpServletResponse;
 
 public class ReqState {
   private static final String defaultSchemaName = "opendap-0.0.0.xsd";
-  private static final String testdatasetspath = "/WEB-INF/resources/testdatasets";
+  private static final String testdatasetspath = "/resources/testdatasets";
 
   /**
    * ************************************************************************
@@ -119,6 +121,9 @@ public class ReqState {
   private String serverClassName;
   private String requestURL;   // encoded
 
+  private ServletConfig myServletConfig = null;
+  private ServletContext myServletContext = null;
+
   private HttpServletRequest myHttpRequest;
   private HttpServletResponse response;
   //private ServletConfig myServletConfig;
@@ -145,15 +150,11 @@ public class ReqState {
   }
 
   // this is used by DTS
-  public ReqState(HttpServletRequest myRequest, HttpServletResponse response, String rootPath2,
-                  String serverClassName, String encodedurl, String encodedquery) {
-    //this.myServletConfig = sv.getServletConfig();
-    //this.myServletContext = sv.getServletContext();
+  public ReqState(AbstractServlet sv, HttpServletRequest myRequest, HttpServletResponse response, String rootPath2,
+                  String encodedurl, String encodedquery) {
+    this.myServletConfig = sv.getServletConfig();
+    this.myServletContext = sv.getServletContext();
     //this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
-    //if (this.rootpath == null) {
-   //   this.rootpath = "";
-    //}
-
     this.myHttpRequest = myRequest;
     this.response = response;
     this.rootpath = StringUtil2.replace(rootPath2, "\\", "/");
@@ -285,23 +286,22 @@ public class ReqState {
   }
 
   /**
-   * @param realpath path to this servlet's dir in webapps
-   * @param which    parameter name to check
+   * @param realpath path to this servlet's dir in webapps (typically nding in WEB-INF)
+   * @param which    parameter name to check: typically a relative path
    * @param dfalt    for parameter
-   * @return The name of the cache directory(ending in '/').
+   * @return The absolute path froom the which directory(ending in '/').
    */
   private String getCachedString(String realpath, String which, String dfalt) {
-    //String cacheDir = null; // getInitParameter(which);
-   // if (cacheDir == null)
-    //  cacheDir = dfalt;
-    //else {
-    String  cacheDir = HTTPUtil.canonicalpath(dfalt);
-      if (cacheDir.startsWith("/"))
-        cacheDir = cacheDir.substring(1);
-      cacheDir = realpath + "/" + cacheDir;
-    //}
-    if (!cacheDir.endsWith("/")) cacheDir += "/";
-    return (cacheDir);
+    String dir = getInitParameter(which);
+    if(dir == null)
+      dir = dfalt;
+    if(HTTPUtil.isAbsolutePath(dir))
+      dir = HTTPUtil.canonicalpath(dir);
+    else
+      dir = HTTPUtil.relpath(dir);
+    dir = HTTPUtil.canonjoin(realpath,dir);
+    if (!dir.endsWith("/")) dir += "/";
+    return (dir);
   }
 
   /**
@@ -543,7 +543,7 @@ public class ReqState {
   } */
 
   public String getInitParameter(String name) {
-    return null; // (myServletConfig.getInitParameter(name));
+    return (myServletConfig.getInitParameter(name));
   }
 
   public String getDodsBlobURL_OLDANDBUSTED() {

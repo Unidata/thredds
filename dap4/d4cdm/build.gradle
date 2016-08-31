@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':dap4:d4shared')
+    compile project(':dap4:d4lib')
     compile project(':cdm')
     compile project(':netcdf4')
     provided libraries["javax.servlet-api"]

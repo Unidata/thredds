@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 the University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
@@ -80,7 +80,7 @@ public class FeatureDatasetFactoryManager {
     }
 
     registerFactory(FeatureType.ANY_POINT, PointDatasetStandardFactory.class);
-
+    
     registerFactory(FeatureType.COVERAGE, GridDatasetStandardFactory.class); // LOOK - why not use FeatureType[] getFeatureType(
     registerFactory(FeatureType.SWATH, GridDatasetStandardFactory.class);
     registerFactory(FeatureType.GRID, GridDatasetStandardFactory.class);

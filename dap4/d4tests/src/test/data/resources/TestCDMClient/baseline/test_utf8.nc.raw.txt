@@ -1,0 +1,22 @@
+netcdf test_utf8.nc.raw {
+  dimensions:
+    d2 = 2;
+  variables:
+    String vs(d2);
+      vs:_DAP4_Checksum_CRC32 = "0x20c1e2f3";
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+}
+netcdf test_utf8.nc.raw {
+  dimensions:
+    d2 = 2;
+  variables:
+    String vs(d2=2);
+      :_DAP4_Checksum_CRC32 = "0x20c1e2f3";
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+vs =  "Καλημέα",   "Καλημέα"
+}

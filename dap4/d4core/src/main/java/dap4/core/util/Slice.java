@@ -4,12 +4,11 @@
 
 package dap4.core.util;
 
+import dap4.core.util.DapException;
 import dap4.core.dmr.DapDimension;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * A Slice is used for two purposes
@@ -144,7 +143,7 @@ public class Slice
      * Perform sanity checks on a slice and repair where possible.
      *
      * @return this (fluent interface)
-     * @throws DapException if slice is malformed
+     * @throws dap4.core.util.DapException if slice is malformed
      */
     public Slice
     finish()
@@ -351,7 +350,7 @@ public class Slice
     @Override
     public int hashCode()
     {
-        return (int)(getFirst()<<20 | getLast()<<10 | getStride());
+        return (int) (getFirst() << 20 | getLast() << 10 | getStride());
     }
 
     @Override
@@ -400,25 +399,6 @@ public class Slice
             return String.format("[%d:%d:%d]", this.first, this.stride, this.last);
     }
 
-    //////////////////////////////////////////////////
-    // Contiguous slice extraction
-
-    public boolean
-    isContiguous()
-    {
-        return (this.stride == 1);
-    }
-
-    public List<Slice>
-    getContiguous()
-    {
-        List<Slice> contig = new ArrayList();
-        if(this.stride == 1)
-            contig.add(this);
-        return contig;
-    }
-
-    //////////////////////////////////////////////////
     // Static Utilities
 
     /**
@@ -461,5 +441,6 @@ public class Slice
             throw new DapException("i must be <= last");
         return target.getFirst() + i * target.getStride();
     }
+
 
 }

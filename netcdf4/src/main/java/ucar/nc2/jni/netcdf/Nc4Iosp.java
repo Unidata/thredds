@@ -2400,7 +2400,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     } else if(v.getDataType().isEnum()) {
         EnumTypedef en = v.getEnumTypedef();
-        UserType ut = (UserType) en.getAnnotation("UserType");
+        UserType ut = (UserType) en.annotation();
         typid = ut.typeid;
         vinfo = new Vinfo(g4, -1, typid);
 
@@ -2501,7 +2501,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         UserType ut = new UserType(
                 g4.grpid, typeid, name, en.getBaseType().getSize(), basetype, (long) emap.size(), NC_ENUM);
         userTypes.put(typeid, ut);
-        en.annotate("UserType", ut);  // dont know the varid yet
+        en.annotate(ut);  // dont know the varid yet
     }
 
   /////////////////////////////////////

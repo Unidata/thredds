@@ -1670,7 +1670,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     query = EscapeStrings.unescapeURLQuery(query);
 
     try {
-      rs = new ReqState(request, response, rootpath, getServerName(), baseurl, query);
+      rs = new ReqState(this, request, response, rootpath, baseurl, query);
     } catch (Exception bue) {
       rs = null;
     }

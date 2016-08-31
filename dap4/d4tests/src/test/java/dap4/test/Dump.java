@@ -11,9 +11,9 @@ import dap4.core.util.Escape;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
 
 public class Dump
 {
@@ -38,10 +38,10 @@ public class Dump
     //////////////////////////////////////////////////
     // Instance databuffer
 
-    public InputStream reader = null;
-    public boolean checksumming = true;
-    public ByteOrder order = null;
-    public StringBuilder buf = null;
+    protected ByteBuffer reader = null;
+    protected boolean checksumming = true;
+    protected ByteOrder order = null;
+    protected StringBuilder buf = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -54,10 +54,11 @@ public class Dump
     // Command processing
 
     public String
-    dumpdata(InputStream reader, boolean checksumming, ByteOrder order, Commands commands)
-        throws IOException
+    dumpdata(InputStream stream, boolean checksumming, ByteOrder order, Commands commands)
+            throws IOException
     {
-        this.reader = reader;
+        // Hack for debugging; use a bytebuffer internally
+        this.reader = ByteBuffer.wrap(DapUtil.readbinaryfile(stream));
         this.checksumming = checksumming;
         this.order = order;
         this.buf = new StringBuilder();
@@ -67,24 +68,26 @@ public class Dump
 
     public int
     printcount()
-        throws IOException
+            throws IOException
     {
         ByteBuffer bytes = ByteBuffer.allocate(8).order(order);
-        for(int i = 0;i < 8;i++) {
-            int c = reader.read();
-            if(c < 0)
+        for(int i = 0; i < 8; i++) {
+            try {
+                int c = this.reader.get();
+                bytes.put((byte) (c & 0xFF));
+            } catch (BufferUnderflowException e) {
                 throw new IOException("Short DATADMR");
-            bytes.put((byte) (c & 0xFF));
+            }
         }
         bytes.flip();
         long l = bytes.getLong();
-        buf.append(String.format("count=%d%n",l));
+        buf.append(String.format("count=%d%n", l));
         return (int) l;
     }
 
     public void
     printvalue(char cmd, int typesize, int... indices)
-        throws IOException
+            throws IOException
     {
         long l = 0;
         ByteBuffer bytes = null;
@@ -92,12 +95,13 @@ public class Dump
         if(typesize == 0) {
             bytes = readn(8);
             l = bytes.getLong();
-            bytes = readn((int)l);
+            bytes = readn((int) l);
         } else
             bytes = readn(typesize);
         if(indices != null && indices.length > 0) {
-            for(int index : indices)
+            for(int index : indices) {
                 buf.append(" [" + Integer.toString(index) + "]");
+            }
         }
         buf.append(" ");
         int switcher = (((int) cmd) << 4) + typesize;
@@ -163,7 +167,7 @@ public class Dump
             break;
         case ('O' << 4) + 0:
             buf.append("0x");
-            for(i = 0;i < bytes.limit();i++) {
+            for(i = 0; i < bytes.limit(); i++) {
                 int uint8 = bytes.get();
                 char c = hexchar((uint8 >> 4) & 0xF);
                 buf.append(c);
@@ -178,14 +182,15 @@ public class Dump
 
     public void
     printchecksum()
-        throws IOException
+            throws IOException
     {
         if(!checksumming)
             return;
         buf.append("\tchecksum = ");
         ByteBuffer bbuf = readn(DapUtil.CHECKSUMSIZE);
-        for(int i=0;i<bbuf.limit();i++)
+        for(int i = 0; i < bbuf.limit(); i++) {
             buf.append(String.format("%02x", (bbuf.get() & 0xFF)));
+        }
         buf.append("\n");
     }
 
@@ -197,16 +202,16 @@ public class Dump
 
     ByteBuffer
     readn(int n)
-        throws IOException
+            throws IOException
     {
+        ByteBuffer result;
         byte[] bytes = new byte[n];
-        for(int i = 0;i < n;i++) {
-            int c = reader.read();
-            if(c < 0)
-                throw new IOException("Short DATADMR");
-            bytes[i] = (byte) (c & 0xFF);
+        try {
+            this.reader.get(bytes);
+        } catch (BufferUnderflowException e) {
+            throw new IOException("Short DATADMR");
         }
-        ByteBuffer result = ByteBuffer.wrap(bytes).order(order);
+        result = ByteBuffer.wrap(bytes).order(order);
         return result;
     }
 

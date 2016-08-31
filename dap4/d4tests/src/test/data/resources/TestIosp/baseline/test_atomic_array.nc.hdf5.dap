@@ -9,15 +9,11 @@ netcdf test_atomic_array.nc {
     d4 = 4;
     d5 = 5;
   variables:
-    byte vu8(d2=2, d3=3);
-      :_FillValue = -1B; // byte
-      :_Unsigned = "true";
+    ubyte vu8(d2=2, d3=3);
 
     short v16(d4=4);
 
-    int vu32(d2=2, d3=3);
-      :_FillValue = -1; // int
-      :_Unsigned = "true";
+    uint vu32(d2=2, d3=3);
 
     double vd(d2=2);
 
@@ -27,7 +23,7 @@ netcdf test_atomic_array.nc {
 
     opaque vo(d1=1, d2=2);
 
-    enum cloud_class_t primary_cloud(d5=5);
+    enum primary_cloud primary_cloud(d5=5);
       :_FillValue = "Missing";
 
   // global attributes:
@@ -49,8 +45,8 @@ vd =
   {17.9, 1024.8}
 vc =  "@&"
 vs =
-  {  "hello	world",   "abc",  "
-",   "Καλημέα"
+  {  "hello	world", "
+", "Καλημέα", "abc"
   }
 vo =  0x0123456789abcdef,
   0xabcdef0000000000;

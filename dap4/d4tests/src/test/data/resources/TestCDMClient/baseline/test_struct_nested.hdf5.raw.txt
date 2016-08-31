@@ -1,0 +1,58 @@
+netcdf test_struct_nested.hdf5.raw {
+  variables:
+
+    Structure {
+
+      Structure {
+        int x;
+          x:_CoordinateAxisType = "GeoX";
+        int y;
+          y:_CoordinateAxisType = "GeoY";
+      } field1;
+
+
+      Structure {
+        int x;
+        int y;
+      } field2;
+
+    } x;
+      x:_DAP4_Checksum_CRC32 = "0x1041a2d3";
+
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+}
+netcdf test_struct_nested.hdf5.raw {
+  variables:
+
+    Structure {
+
+      Structure {
+        int x;
+          :_CoordinateAxisType = "GeoX";
+        int y;
+          :_CoordinateAxisType = "GeoY";
+      } field1;
+
+
+      Structure {
+        int x;
+        int y;
+      } field2;
+
+    } x;
+      :_DAP4_Checksum_CRC32 = "0x1041a2d3";
+
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+x =    field1 =
+      {
+StructureMembers{name=field1, members=[x, y], structureSize=-1}      }
+    field2 =
+      {
+StructureMembers{name=field2, members=[x, y], structureSize=-1}      }
+
+}

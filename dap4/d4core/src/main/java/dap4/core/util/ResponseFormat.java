@@ -16,9 +16,12 @@ public enum ResponseFormat {
 
     private String format;
     ResponseFormat(String format) {this.format = format;}
+
     public String format() {return format;}
+
     static public ResponseFormat formatFor(String s)
     {
+        if(s == null) return null;
         for(ResponseFormat format: ResponseFormat.values())  {
 	    if(s.equalsIgnoreCase(format.format)
 	       || s.equalsIgnoreCase("."+format.format))

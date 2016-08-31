@@ -7,7 +7,8 @@ package dap4.core.dmr;
 import dap4.core.util.DapException;
 import dap4.core.util.DapSort;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class defines a non-groupd group:
@@ -22,7 +23,7 @@ public class DapGroup extends DapNode implements DapDecl
 
     protected List<DapNode> decls = new ArrayList<DapNode>();
     protected List<DapGroup> groups = new ArrayList<DapGroup>();
-    protected List<DapEnum> enums = new ArrayList<DapEnum>();
+    protected List<DapEnumeration> enums = new ArrayList<DapEnumeration>();
     protected List<DapDimension> dimensions = new ArrayList<DapDimension>();
     protected List<DapVariable> variables = new ArrayList<DapVariable>();
 
@@ -49,7 +50,7 @@ public class DapGroup extends DapNode implements DapDecl
 
     public void
     setDecls(List<? extends DapNode> decls)
-        throws DapException
+            throws DapException
     {
         decls.clear();
         groups.clear();
@@ -67,29 +68,37 @@ public class DapGroup extends DapNode implements DapDecl
 
     public void
     addDecl(DapNode newdecl)
-        throws DapException
+            throws DapException
     {
         DapSort newsort = newdecl.getSort();
         String newname = newdecl.getShortName();
+        boolean suppress = false;
         // Look for name conflicts (ignore anonymous dimensions)
         if(newsort != DapSort.DIMENSION || newname != null) {
             for(DapNode decl : decls) {
                 if(newsort == decl.getSort()
-                    && newname.equals(decl.getShortName()))
+                        && newname.equals(decl.getShortName()))
                     throw new DapException("DapGroup: attempt to add duplicate decl: " + newname);
             }
         } else { // Anonymous
             DapDimension anon = (DapDimension) newdecl;
             assert (newsort == DapSort.DIMENSION && newname == null);
             // Search for matching anonymous dimension
+            boolean found = false;
             for(DapDimension dim : dimensions) {
-                if(!dim.isShared() && dim.getSize() == anon.getSize())
-                    throw new DapException("DapGroup: attempt to add duplicate anonymous dimension: " + dim.getSize());
+                if(!dim.isShared() && dim.getSize() == anon.getSize()) {
+                    found = true;
+                    break;
+                }
             }
+            // Define the anondecl in root group
+            if(!found && !isTopLevel()) getDataset().addDecl(anon);
+            suppress = found || !isTopLevel();
         }
-        decls.add(newdecl);
-        // Cross link
-        newdecl.setParent(this);
+        if(!suppress) {
+            decls.add(newdecl);
+            newdecl.setParent(this); // Cross link
+        }
         switch (newdecl.getSort()) {
         case ATTRIBUTE:
         case ATTRIBUTESET:
@@ -97,10 +106,11 @@ public class DapGroup extends DapNode implements DapDecl
             super.addAttribute((DapAttribute) newdecl);
             break;
         case DIMENSION:
-            dimensions.add((DapDimension) newdecl);
+            if(!suppress)
+                dimensions.add((DapDimension) newdecl);
             break;
         case ENUMERATION:
-            enums.add((DapEnum) newdecl);
+            enums.add((DapEnumeration) newdecl);
             break;
         case ATOMICVARIABLE:
         case STRUCTURE:
@@ -138,7 +148,7 @@ public class DapGroup extends DapNode implements DapDecl
         return groups;
     }
 
-    public List<DapEnum> getEnums()
+    public List<DapEnumeration> getEnums()
     {
         return enums;
     }
@@ -157,50 +167,31 @@ public class DapGroup extends DapNode implements DapDecl
     // Lookup Functions
 
     public DapNode
-    findByName(String name, DapSort sort)
-    {
-        return findInGroup(name, sort);
-    }
-
-    public List<DapNode>
-    findByName(String name, EnumSet<DapSort> sortset)
+    findByName(String name, DapSort... sortset)
     {
         return findInGroup(name, sortset);
     }
 
     public DapNode
-    findInGroup(String name, DapSort sort)
+    findInGroup(String name, DapSort... sortset)
     {
-        List<DapNode> set = findInGroup(name, EnumSet.of(sort));
-        assert set.size() <= 1;
-        if(set.size() == 0)
-            return null;
-        return set.get(0);
-    }
-
-    public List<DapNode>
-    findInGroup(String name, EnumSet<DapSort> sortset)
-    {
-        List<DapNode> matches = new ArrayList<DapNode>();
         for(DapSort sort : sortset) {
             switch (sort) {
             case ATTRIBUTE:
             case ATTRIBUTESET:
             case OTHERXML:
                 DapAttribute attr = super.getAttributes().get(name);
-                matches.add(attr);
-                break;
+                return attr;
             case DIMENSION:
                 for(DapDimension x : dimensions) {
                     if(x.getShortName().equals(name))
-                        matches.add(x);
+                        return x;
                 }
                 break;
-
             case ENUMERATION:
-                for(DapEnum x : enums) {
+                for(DapEnumeration x : enums) {
                     if(x.getShortName().equals(name))
-                        matches.add(x);
+                        return x;
                 }
                 break;
             case ATOMICVARIABLE:
@@ -208,7 +199,7 @@ public class DapGroup extends DapNode implements DapDecl
                     if(x.getSort() != sort)
                         continue;
                     if(x.getShortName().equals(name))
-                        matches.add(x);
+                        return x;
                 }
                 break;
             case STRUCTURE:
@@ -216,7 +207,7 @@ public class DapGroup extends DapNode implements DapDecl
                     if(x.getSort() != sort)
                         continue;
                     if(x.getShortName().equals(name))
-                        matches.add(x);
+                        return x;
                 }
                 break;
             case SEQUENCE:
@@ -224,21 +215,20 @@ public class DapGroup extends DapNode implements DapDecl
                     if(x.getSort() != sort)
                         continue;
                     if(x.getShortName().equals(name))
-                        matches.add(x);
+                        return (x);
                 }
                 break;
             case GROUP:
                 for(DapGroup x : groups) {
                     if(x.getShortName().equals(name))
-                        matches.add(x);
+                        return (x);
                 }
                 break;
-
             default:
                 break;
             }
         }
-        return matches;
+        return null;
     }
 
     /**
@@ -247,23 +237,13 @@ public class DapGroup extends DapNode implements DapDecl
      * to DapDataset.findByFQN(). Relative FQNs are assumed
      * to be WRT to the FQN of this node
      *
-     * @param fqn  the fully qualified name
-     * @param sort the kind of object we are looking for
+     * @param fqn     the fully qualified name
+     * @param sortset the kinds of object we are looking for
      * @return the matching Dap Node or null if not found
      */
     public DapNode
-    findByFQN(String fqn, DapSort sort)
-        throws DapException
-    {
-        List<DapNode> nodes = findByFQN(fqn, EnumSet.of(sort));
-        if(nodes == null || nodes.size() == 0)
-            throw new DapException("No such sort:" + sort);
-        return nodes.get(0);
-    }
-
-    public List<DapNode>
-    findByFQN(String fqn, EnumSet<DapSort> sortset)
-        throws DapException
+    findByFQN(String fqn, DapSort... sortset)
+            throws DapException
     {
         fqn = fqn.trim();
         if(fqn == null)

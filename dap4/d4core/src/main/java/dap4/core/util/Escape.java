@@ -6,6 +6,8 @@ package dap4.core.util;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provide various methods for (un)escaping text
@@ -33,7 +35,7 @@ public class Escape
     static private final String nonAlphaNumeric = " !\"#$%&'()*+,-./:;<=>?@[]\\^_`|{}~";
 
     // define the printable backslash characters to escape (control chars not included)
-    static public final String BACKSLASHESCAPE = "./\\\"'";
+    static public final String BACKSLASHESCAPE = "/\\\"'";
 
     // Define the alphan characters
 
@@ -151,6 +153,7 @@ public class Escape
     /**
      * Escape control chars plus
      * selected other characters in a string using backslash
+     * The definitive list is in netcdf-c/ncgen/ncgen.l.
      */
     static public String
     backslashEscape(String s, String wrt)
@@ -219,6 +222,37 @@ public class Escape
                 clear.append(c);
         }
         return clear.toString();
+    }
+
+    /**
+     * Split a string with respect to a separator
+     * character and taking backslashes into consideration.
+     *
+     * @param s   The string to split
+     * @param sep The character on which to split
+     * @return a List of strings (all with escaping still intact)
+     * representing s split at unescaped instances of sep.
+     */
+    static public List<String>
+    backslashsplit(String s, char sep)
+    {
+        List<String> path = new ArrayList<String>();
+        int len = s.length();
+        StringBuilder piece = new StringBuilder();
+        int i = 0;
+        for(; i <= len - 1; i++) {
+            char c = s.charAt(i);
+            if(c == '\\' && i < (len - 1)) {
+                piece.append(c); // keep escapes in place
+                piece.append(s.charAt(++i));
+            } else if(c == sep) {
+                path.add(piece.toString());
+                piece.setLength(0);
+            } else
+                piece.append(c);
+        }
+        path.add(piece.toString());
+        return path;
     }
 
 /*    static public String backslashEscape(String s, String wrt)

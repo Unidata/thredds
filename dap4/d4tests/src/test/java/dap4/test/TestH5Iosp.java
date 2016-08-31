@@ -27,7 +27,7 @@ public class TestH5Iosp extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
+    static protected String DATADIR = "src/test/data"; // relative to dap4 root
     static protected String TESTDATADIR = DATADIR + "/resources/";
     static protected String BASELINEDIR = DATADIR + "/resources/TestIosp/baseline";
     static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
@@ -77,20 +77,24 @@ public class TestH5Iosp extends DapTestCommon
 
     protected String datasetpath = null;
 
-    protected String root = null;
+    protected String testroot = null;
 
     //////////////////////////////////////////////////
     @Before
     public void setup() throws Exception {
-        this.root = getDAP4Root();
-        if(this.root == null)
-            throw new Exception("dap4 root not found");
-        File f = new File(root + "/" + BASELINEDIR);
+        this.testroot = getTestFilesDir();
+        File f = new File(testroot + "/" + BASELINEDIR);
         if(!f.exists()) f.mkdir();
-        this.datasetpath = this.root + "/" + DATADIR;
-        defineAllTestcases(this.root);
+        this.datasetpath = this.testroot + "/" + DATADIR;
+        defineAllTestcases(this.testroot);
         chooseTestcases();
     }
+
+    protected String
+       getTestFilesDir()
+       {
+           return TESTINPUTDIR;
+       }
 
     //////////////////////////////////////////////////
     // Define test cases

@@ -1,9 +1,0 @@
-dependencies {
-    compile project(':dap4:d4core')
-    compile project(':httpservices')
-
-    compile libraries["jcommander"]
-    compile libraries["slf4j-api"]
-    compile libraries["httpclient"]
-    compile libraries["httpcore"]
-}

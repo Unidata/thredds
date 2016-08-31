@@ -1,0 +1,23 @@
+netcdf test_one_vararray.nc.raw {
+  dimensions:
+    d2 = 2;
+  variables:
+    int t(d2);
+      t:_DAP4_Checksum_CRC32 = "0xd0b1d243";
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+}
+netcdf test_one_vararray.nc.raw {
+  dimensions:
+    d2 = 2;
+  variables:
+    int t(d2=2);
+      :_DAP4_Checksum_CRC32 = "0xd0b1d243";
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+t =
+  {17, 37}
+}

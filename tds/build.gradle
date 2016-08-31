@@ -18,7 +18,7 @@ dependencies {
 
     // DAP4 Dependencies (technically forward)
     compile project(":dap4:d4cdm")
-    compile project(":dap4:d4servletshared")
+    compile project(":dap4:d4servlet")
 
     // Server stuff
     provided libraries["javax.servlet-api"]

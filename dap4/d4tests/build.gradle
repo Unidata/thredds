@@ -2,8 +2,8 @@ dependencies {
     // A lot of these depedencies should be in the testRuntime config, not testCompile.
 
     testCompile project(':dap4:d4core')
-    testCompile project(':dap4:d4shared')
-    testCompile project(':dap4:d4servletshared')
+    testCompile project(':dap4:d4lib')
+    testCompile project(':dap4:d4servlet')
     testCompile project(':dap4:d4ts')
     testCompile project(':dap4:d4cdm')
     testCompile project(':cdm')
@@ -16,8 +16,16 @@ dependencies {
     }
 
     testCompile libraries["javax.servlet-api"]
-    testCompile libraries["spring-test"]
     testCompile libraries["slf4j-api"]
+
+    // Spring
+    compile libraries["spring-test"]
+    compile libraries["spring-core"]
+    compile libraries["spring-context"]
+    compile libraries["spring-beans"]
+    compile libraries["spring-web"]
+    compile libraries["spring-webmvc"]
+
 }
 
 test {

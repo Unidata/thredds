@@ -22,6 +22,7 @@
   </service>
 
   <datasetRoot path="localContent" location="content/testdata/"/>
+  <datasetRoot path="protected" location="content/protected/"/>
   <datasetRoot path="testRestrictedDataset" location="content/testdata/"/>
   <datasetRoot path="cdmUnitTest" location="${cdmUnitTest}"/>
 

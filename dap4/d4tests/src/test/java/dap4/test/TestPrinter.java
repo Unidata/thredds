@@ -4,12 +4,11 @@
 
 package dap4.test;
 
-import dap4.cdm.DapNetcdfFile;
+import dap4.cdm.nc2.DapNetcdfFile;
 import dap4.core.dmr.DapDataset;
 import dap4.core.util.*;
-import dap4.dap4shared.DSP;
-import dap4.servlet.DMRPrint;
-import dap4.dap4shared.D4DSP;
+import dap4.core.data.DSP;
+import dap4.dap4lib.DMRPrinter;
 import ucar.nc2.*;
 
 import java.io.IOException;
@@ -57,7 +56,7 @@ public class TestPrinter
         setVarMap(null);
     }
 
-    public TestPrinter(D4DSP dsp, PrintWriter writer)
+    public TestPrinter(DSP dsp, PrintWriter writer)
     {
         try {
             setDSP(dsp);
@@ -118,8 +117,8 @@ public class TestPrinter
         throws IOException
     {
         printer.setIndent(0);
-        DMRPrint dmrprinter = new DMRPrint(writer);
-        dmrprinter.printDMR(this.dmr);
+        DMRPrinter dmrprinter = new DMRPrinter(this.dmr,writer);
+        dmrprinter.print();
         dmrprinter.flush();
     }
 
