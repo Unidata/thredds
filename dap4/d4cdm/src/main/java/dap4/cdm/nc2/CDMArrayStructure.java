@@ -44,17 +44,21 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
     //////////////////////////////////////////////////
     // Type decls
 
-    // Define an open wrapper around a field array in order
-    // to make the code somewhat more clear
-
-    static protected class FieldSet
+    /**
+     * We need to keep a map of index X fieldno -> Array
+     * representing the Array behind each field for each
+     * struct instance in a matrix of struct instances.
+     * To promote some clarity a eschew Array[|dimset|][|fields|]
+     * in favor of FieldArrays[|dimset|].
+     */
+    static protected class FieldArrays
     {
-        public Array[] fields;
-
-        FieldSet(int nfields)
+         public Array[] fields; // Make externally accessible
+        FieldArrays(int nfields)
         {
             fields = new Array[nfields];
         }
+
     }
 
     //////////////////////////////////////////////////
@@ -83,7 +87,7 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
     // Note: term records here means the elements of the array,
     // not record as in Sequence
 
-    protected FieldSet[] records = null; // list of Structure elements
+    protected FieldArrays[] records = null; // list of Structure elements
 
 
     //////////////////////////////////////////////////
@@ -112,20 +116,26 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
 
         // Fill in the structdata (in parent) and instance vectors
         super.sdata = new StructureDataA[(int) this.dimsize];
-        records = new FieldSet[(int) this.dimsize];
+        records = new FieldArrays[(int) this.dimsize];
         for(int i = 0; i < dimsize; i++) {
             super.sdata[i] = new StructureDataA(this, i);
-            records[i] = new FieldSet(this.nmembers);
+            records[i] = new FieldArrays(this.nmembers);
         }
     }
 
+    /**
+     *
+     * @param recno   struct instance
+     * @param fieldno  field of that struct
+     * @param field   Array backing this field in this struct instance
+     */
     /*package*/
     void
     add(long recno, int fieldno, Array field)
     {
-        FieldSet fs = records[(int) recno];
+        FieldArrays fs = records[(int) recno];
         if(fs == null)
-            records[(int) recno] = (fs = new FieldSet(this.nmembers));
+            records[(int) recno] = (fs = new FieldArrays(this.nmembers));
         fs.fields[fieldno] = field;
     }
     //////////////////////////////////////////////////
@@ -508,6 +518,11 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
         return sm;
     }
 
+    /**
+     * @param recno The instance # of the array of Structure instances
+     * @param memberindex    The member of interest in the Structure instance
+     * @return The ucar.ma2.Array instance corresponding to the instance.
+     */
     protected Array
     memberArray(int recno, int memberindex)
     {
@@ -517,13 +532,9 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
         if(base == null)
             throw new IllegalStateException("Unknown field type: " + field);
         Object[] values = new Object[(int) field.getCount()];
-        FieldSet fs = records[recno];
+        FieldArrays fs = records[recno];
         Array fa = fs.fields[memberindex];
-        DataType dt = CDMTypeFcns.daptype2cdmtype(base);
-        Object storage = fa.get1DJavaArray(dt);
-        Class elemtype = CDMTypeFcns.cdmElementClass(dt);
-        int shape[] = new int[]{(int)field.getCount()};
-        return Array.makeFromJavaArray(storage, dt.isUnsigned());
+        return fa;
     }
 
     static protected int

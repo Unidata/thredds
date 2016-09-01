@@ -1,4 +1,4 @@
-/* Copyright 2012, UCAR/Unidata.
+ /* Copyright 2012, UCAR/Unidata.
    See the LICENSE file for more information.
 */
 

@@ -171,7 +171,7 @@ public class TestCDMClient extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("file:", "test_atomic_array.nc.raw");
+            chosentests = locate("file:", "test_struct_nested.hdf5.raw");
             prop_visual = true;
             prop_baseline = false;
         } else {
@@ -291,7 +291,7 @@ public class TestCDMClient extends DapTestCommon
         // Dump the databuffer
         sw = new StringWriter();
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-vall -unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, "-strict -vall -unsigned", sw, null))
                 throw new Exception("NCdumpW failed");
         } catch (IOException ioe) {
             ioe.printStackTrace();

@@ -45,11 +45,11 @@ netcdf test_groups1.nc.raw {
       dimensions:
         dim3 = 7;
       variables:
-        int v1(dim1=5);
-          :_DAP4_Checksum_CRC32 = "0x20211213";
+        int v1(dim1);
+          v1:_DAP4_Checksum_CRC32 = "0x20211213";
 
-        float v2(dim2=3);
-          :_DAP4_Checksum_CRC32 = "0x4021e203";
+        float v2(dim2);
+          v2:_DAP4_Checksum_CRC32 = "0x4021e203";
 
     }
 
@@ -57,11 +57,11 @@ netcdf test_groups1.nc.raw {
       dimensions:
         dim3 = 7;
       variables:
-        int v1(dim1=5);
-          :_DAP4_Checksum_CRC32 = "0xf0a1b2a3";
+        int v1(dim1);
+          v1:_DAP4_Checksum_CRC32 = "0xf0a1b2a3";
 
-        float v3(dim3=7);
-          :_DAP4_Checksum_CRC32 = "0x10e1f223";
+        float v3(dim3);
+          v3:_DAP4_Checksum_CRC32 = "0x10e1f223";
 
     }
   }

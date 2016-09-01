@@ -16,14 +16,14 @@ netcdf test_fill.nc.raw {
 netcdf test_fill.nc.raw {
   variables:
     ubyte uv8;
-      :_DAP4_Checksum_CRC32 = "0x9011b263";
+      uv8:_DAP4_Checksum_CRC32 = "0x9011b263";
 
     short v16;
-      :_DAP4_Checksum_CRC32 = "0xe09112c3";
+      v16:_DAP4_Checksum_CRC32 = "0xe09112c3";
 
     uint uv32;
-      :_FillValue = 17S; // short
-      :_DAP4_Checksum_CRC32 = "0x30b13283";
+      uv32:_FillValue = 17S;
+      uv32:_DAP4_Checksum_CRC32 = "0x30b13283";
 
   // global attributes:
   :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";

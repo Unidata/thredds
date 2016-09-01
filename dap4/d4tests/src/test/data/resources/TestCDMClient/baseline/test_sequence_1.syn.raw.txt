@@ -18,7 +18,7 @@ netcdf test_sequence_1.syn.raw {
       int i1;
       short sh1;
     } s(*);
-      :_DAP4_Checksum_CRC32 = "0x4091b2b3";
+      s:_DAP4_Checksum_CRC32 = "0x4091b2b3";
 
 
   // global attributes:
