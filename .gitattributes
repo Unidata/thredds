@@ -1,0 +1,9 @@
+# Unset the text attribute for all files. This tells Git not to attempt any end-of-line conversions
+# upon check-in or check-out. See https://help.github.com/articles/dealing-with-line-endings/
+* -text
+
+# Override default behavior: SH files always have LF line endings.
+*.sh text eol=lf
+
+# Override default behavior: BAT files always have CRLF line endings.
+*.bat text eol=crlf
