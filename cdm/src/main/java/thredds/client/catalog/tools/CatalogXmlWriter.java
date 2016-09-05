@@ -385,8 +385,12 @@ public class CatalogXmlWriter {
   private Element writeService(Service service) {
     Element serviceElem = new Element("service", Catalog.defNS);
     serviceElem.setAttribute("name", service.getName());
-    serviceElem.setAttribute("serviceType", service.getServiceTypeName());
-    serviceElem.setAttribute("base", service.getBase());
+    String svctype = service.getServiceTypeName();
+    serviceElem.setAttribute("serviceType", svctype);
+    String base = service.getBase();
+    if("compound".equalsIgnoreCase(svctype) && base == null)
+      base = ""; // Add some error tolerance
+    serviceElem.setAttribute("base", base);
     if ((service.getSuffix() != null) && (service.getSuffix().length() > 0))
       serviceElem.setAttribute("suffix", service.getSuffix());
 

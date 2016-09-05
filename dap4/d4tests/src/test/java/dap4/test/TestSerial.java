@@ -1,10 +1,12 @@
 package dap4.test;
 
+import dap4.core.util.DapUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
@@ -30,7 +32,7 @@ public class TestSerial extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected final String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
+    static protected final String DATADIR = "src/test/data"; // relative to dap4 root
     static protected final String TESTDATADIR = DATADIR + "/resources/TestCDMClient";
     static protected final String BASELINEDIR = TESTDATADIR + "/baseline";
 
@@ -96,7 +98,7 @@ public class TestSerial extends DapTestCommon
     protected List<ClientTest> alltestcases = new ArrayList<ClientTest>();
     protected List<ClientTest> chosentests = new ArrayList<ClientTest>();
 
-    protected String root = null;
+    protected String resourceroot = null;
     protected String datasetpath = null;
 
     protected String sourceurl = null;
@@ -105,18 +107,16 @@ public class TestSerial extends DapTestCommon
 
     @Before
     public void setup() throws Exception {
-        this.root = getDAP4Root();
-        if(this.root == null)
-            throw new Exception("dap4 root cannot be located");
+        this.resourceroot = getResourceRoot();
         // Check for windows path
-        if(alpha.indexOf(this.root.charAt(0)) >= 0 && this.root.charAt(1) == ':') {
-        } else if(this.root.charAt(0) != '/')
-            this.root = "/" + this.root;
-        this.datasetpath = this.root + "/" + BASELINEDIR;
-        findServer(this.datasetpath);
-        this.sourceurl = d4tsServer;
+        if(!DapUtil.hasDriveLetter(this.resourceroot))
+            this.resourceroot = DapUtil.absolutize(this.resourceroot);
+        this.datasetpath = this.resourceroot + "/" + BASELINEDIR;
+        //findServer(this.datasetpath);
+        //this.sourceurl = this.d4tsserver;
+        this.sourceurl = TestDir.dap4TestServer;
         System.out.println("Using source url " + this.sourceurl);
-        defineAllTestcases(this.root, this.sourceurl);
+        defineAllTestcases(this.resourceroot, this.sourceurl);
         chooseTestcases();
     }
 

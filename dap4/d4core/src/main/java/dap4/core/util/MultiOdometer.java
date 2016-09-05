@@ -33,10 +33,16 @@ public class MultiOdometer extends Odometer
     {
     }
 
-    public MultiOdometer(List<Slice> set, List<DapDimension> dimset, boolean usecontiguous)
+    public MultiOdometer(List<Slice> set)
             throws DapException
     {
-        super(set, dimset, usecontiguous);
+	this(set,null);
+    }
+
+    public MultiOdometer(List<Slice> set, List<DapDimension> dimset)
+            throws DapException
+    {
+        super(set, dimset);
         this.cache = set.toArray(new Slice[set.size()]);
         this.sizes = new long[this.rank];
         for(int i = 0; i < this.rank; i++) {
@@ -49,7 +55,7 @@ public class MultiOdometer extends Odometer
                 this.sizes[i] = ((MultiSlice) sl).getSlices().size();
             }
         }
-        int truerank = this.rank - contiguousdelta;
+        int truerank = this.rank;
         if(truerank == 0)
             this.setindices = null;
         else {
@@ -128,7 +134,7 @@ public class MultiOdometer extends Odometer
     }
 
     @Override
-    public Long
+    public Index
     next()
     {
         if(super.hasNext())
@@ -182,19 +188,5 @@ public class MultiOdometer extends Odometer
         }
         return size;
     }
-
-    @Override
-    public boolean
-    isContiguous()
-    {
-        return cache[cache.length - 1].isContiguous();
-    }
-
-    public List<Slice>
-    getContiguous()
-    {
-        return cache[cache.length - 1].getContiguous();
-    }
-
 
 }

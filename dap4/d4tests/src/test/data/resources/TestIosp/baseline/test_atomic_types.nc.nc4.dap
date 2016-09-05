@@ -5,27 +5,19 @@ netcdf test_atomic_types.nc {
   variables:
     byte v8;
 
-    byte vu8;
-      :_FillValue = -1B; // byte
-      :_Unsigned = "true";
+    ubyte vu8;
 
     short v16;
 
-    short vu16;
-      :_FillValue = -1S; // short
-      :_Unsigned = "true";
+    ushort vu16;
 
     int v32;
 
-    int vu32;
-      :_FillValue = -1; // int
-      :_Unsigned = "true";
+    uint vu32;
 
     long v64;
 
-    long vu64;
-      :_FillValue = -2L; // long
-      :_Unsigned = "true";
+    ulong vu64;
 
     float vf;
 
@@ -37,10 +29,10 @@ netcdf test_atomic_types.nc {
 
     opaque vo;
 
-    enum cloud_class_t primary_cloud;
+    enum primary_cloud primary_cloud;
       :_FillValue = "Missing";
 
-    enum cloud_class_t secondary_cloud;
+    enum secondary_cloud secondary_cloud;
       :_FillValue = "Missing";
 
   // global attributes:

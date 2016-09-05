@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 the University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
@@ -33,14 +33,19 @@
 
 package thredds.server.dap4;
 
-import dap4.core.util.*;
-import dap4.cdm.CDMDSP;
+import dap4.cdm.dsp.CDMDSP;
+import dap4.core.util.DapContext;
+import dap4.core.util.DapException;
+import dap4.core.util.DapUtil;
+import dap4.dap4lib.DapCodes;
 import thredds.core.TdsRequestedDataset;
-import ucar.nc2.*;
-import ucar.nc2.util.CancelTask;
+import ucar.nc2.NetcdfFile;
+
+import java.io.File;
 
 /**
  * CDM->DAP DSP
+ * Used (for now) only on server side.
  */
 
 public class ThreddsDSP extends CDMDSP
@@ -57,36 +62,12 @@ public class ThreddsDSP extends CDMDSP
     {
     }
 
-    public ThreddsDSP(String path, DapContext cxt)
+    public ThreddsDSP(String path)
             throws DapException
     {
-        super(path,cxt);
-//        init(createNetcdfFile(path, null));
+        super(path);
     }
-
-    public ThreddsDSP(NetcdfFile ncd, DapContext cxt)
-            throws DapException
-    {
-        super(ncd,cxt);
-//        init(ncd);
-    }
-
 
     //////////////////////////////////////////////////
-
-    @Override
-    protected NetcdfFile
-    createNetcdfFile(String location, CancelTask canceltask)
-            throws DapException
-    {
-        try {
-            path = DapUtil.canonicalpath(location);
-            NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(this.request, this.response, null);
-//            NetcdfFile ncfile = DatasetHandler.getNetcdfFile(this.request, this.response,location);
-            return ncfile;
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
 }

@@ -62,7 +62,7 @@ public class TdsRequestedDataset {
   // private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TdsRequestedDataset.class);
 
   // LOOK maybe static not such a good idea? can 3rd parties wire in an instance ??
-  static void setDatasetManager(DatasetManager _datasetManager) {
+  static public void setDatasetManager(DatasetManager _datasetManager) {
     datasetManager = _datasetManager;
   }
 

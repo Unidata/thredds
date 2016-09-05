@@ -288,7 +288,8 @@ abstract public class SaxEventHandler extends DefaultHandler
     protected String
     locatedError(String msg)
     {
-        String locmsg = msg + String.format("; near %s%n", this.locator.toString());
+        String locmsg = msg + String.format("; near %d::%d%n",
+                this.locator.getLineNumber(),this.locator.getColumnNumber());
         return locmsg;
     }
 

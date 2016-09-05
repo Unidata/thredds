@@ -2,7 +2,7 @@ netcdf test_vlen4.nc {
   variables:
 
     Structure {
-      int f1(=2, *, *);
+      int f1(2, *);
     } v1;
 
 

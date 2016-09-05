@@ -91,7 +91,7 @@ public class Synthesize
     {
         int typesize = daptype.getSize();
         if(daptype.isFixedSize()) {
-            ByteBuffer tmp = SerialWriter.encodeObject(daptype, value, this.order);
+            ByteBuffer tmp = SerialWriter.encodeArray(daptype, value, this.order);
         } else if(daptype == DapType.STRING) {
             String s = (String) value;
             putcount(s.length());

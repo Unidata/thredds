@@ -9,9 +9,9 @@ import org.xml.sax.SAXException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static dap4.core.dmr.parser.Dap4ParserBody.Lexer.*;
-import static dap4.core.dmr.parser.Dap4ParserBody.YYABORT;
-import static dap4.core.dmr.parser.Dap4ParserBody.YYACCEPT;
+import static dap4.core.dmr.parser.Dap4BisonParser.Lexer.*;
+import static dap4.core.dmr.parser.Dap4BisonParser.YYABORT;
+import static dap4.core.dmr.parser.Dap4BisonParser.YYACCEPT;
 
 public class Dap4EventHandler extends SaxEventHandler
 {
@@ -198,7 +198,7 @@ public class Dap4EventHandler extends SaxEventHandler
             break;
 
         case ATTRIBUTE:
-            attr = attributemap.get(name);
+            attr = attributemap.get(name.toLowerCase());
             if(attr == null)
                 yytoken = UNKNOWN_ATTR;
             else
@@ -235,10 +235,10 @@ public class Dap4EventHandler extends SaxEventHandler
         int status = 0;
         try {
             Locator loc = getLocator();
-            Dap4ParserBody parser = (Dap4ParserBody)this;
-            Bison.Position pos = new Bison.Position(loc);
-            Dap4Parser.Location yyloc = parser.new Location(pos);
-            status = parser.push_parse(yytoken, saxtoken, yyloc);
+            Dap4BisonParser parser = (Dap4BisonParser)this;
+            //Bison.Position pos = new Bison.Position(loc);
+            //Dap4BisonParser.Location yyloc = parser.new Location(pos);
+            status = parser.push_parse(yytoken, saxtoken);
         } catch (Exception e) {
             throw new SAXException(e);
         }

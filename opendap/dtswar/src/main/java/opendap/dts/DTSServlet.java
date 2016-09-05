@@ -366,7 +366,7 @@ public class DTSServlet extends AbstractServlet
 
         servletConfig = this.getServletConfig();
         servletContext = servletConfig.getServletContext();
-        rootpath = servletContext.getRealPath("/");
+        rootpath = servletContext.getRealPath("/WEB-INF");
         log.debug("rootpath=" + rootpath);
     }
     /***************************************************************************/
@@ -1753,7 +1753,7 @@ public class DTSServlet extends AbstractServlet
         String query = request.getQueryString();
         query = EscapeStrings.unescapeURLQuery(query);
 
-        rs = new ReqState(request, response, rootpath, getServerName(), baseurl, query);
+        rs = new ReqState(this, request, response, rootpath, baseurl, query);
 
         return rs;
     }

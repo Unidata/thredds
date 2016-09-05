@@ -32,24 +32,22 @@
 
     <!-- The following directory paths should be
          relative to dts path (e.g $CATALINA_HOME/webapps/dts) -->
-    <!-- Ignore for now
     <init-param>
       <param-name>INFOcache</param-name>
-      <param-value>WEB-INF/resources/testdatasets/info</param-value>
+      <param-value>resources/testdatasets/info</param-value>
     </init-param>
     <init-param>
       <param-name>DDScache</param-name>
-      <param-value>WEB-INF/resources/testdatasets/dds</param-value>
+      <param-value>resources/testdatasets/dds</param-value>
     </init-param>
     <init-param>
       <param-name>DAScache</param-name>
-      <param-value>WEB-INF/resources/testdatasets/das</param-value>
+      <param-value>resources/testdatasets/das</param-value>
     </init-param>
     <init-param>
       <param-name>DDXcache</param-name>
-      <param-value>WEB-INF/resources/testdatasets/ddx</param-value>
+      <param-value>resources/testdatasets/ddx</param-value>
     </init-param>
-    -->
   </servlet>
 
   <servlet-mapping>

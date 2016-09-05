@@ -5,13 +5,14 @@
 package dap4.core.util;
 
 /**
- Define an enumeration for all the DapNode subclasses to
- avoid use of instanceof().  Note that this mixes
- DAP2 and DAP4 for eventual joint support.
+ * Define an enumeration for all the DapNode subclasses to
+ * avoid use of instanceof().  Note that this mixes
+ * DAP2 and DAP4 for eventual joint support.
+ * TODO: verify that this is faster than using instanceof, and if not,
+ * go back to using instanceof.
  */
 
-import java.util.EnumSet;
-import java.util.Iterator;
+import dap4.core.dmr.*;
 
 /**
  * Define the kinds of AST objects to avoid having to do instanceof.
@@ -19,36 +20,57 @@ import java.util.Iterator;
  */
 public enum DapSort
 {
-    ATTRIBUTE("Attribute"),
-    ATTRIBUTESET("AttributeSet"),
-    OTHERXML("OtherXML"),
-    XML("XML"),
-    DIMENSION("Dimension"),
-    MAP("Map"),
-    ENUMERATION("Enumeration"),
-    ATOMICVARIABLE("AtomicVariable"),
-    GRID("Grid"),
-    SEQUENCE("Sequence"),
-    STRUCTURE("Structure"),
-    GROUP("Group"),
-    DATASET("Dataset"),
-    TYPE("Type"); // for DapType
+    ATOMICTYPE("AtomicType", DapType.class),
+    ATTRIBUTESET("AttributeSet", DapAttributeSet.class),
+    OTHERXML("OtherXML", DapOtherXML.class),
+    ATTRIBUTE("Attribute", DapAttribute.class, ATTRIBUTESET, OTHERXML),
+    DIMENSION("Dimension", DapDimension.class),
+    MAP("Map", DapMap.class),
+    ATOMICVARIABLE("Variable", DapVariable.class),
+    DATASET("Dataset", DapDataset.class),
+    GROUP("Group", DapGroup.class, DATASET),
+    ENUMERATION("Enumeration", DapEnumeration.class),
+    ENUMCONST("EnumConst", DapEnumConst.class),
+    SEQUENCE("Sequence", DapSequence.class),
+    STRUCTURE("Structure", DapStructure.class,SEQUENCE),;
 
     private final String name;
+    private final Class classfor;
+    private final DapSort[] subsorts;
 
-    DapSort(String name)
+    DapSort(String name, Class classfor, DapSort... subsorts)
     {
         this.name = name;
+        this.classfor = classfor;
+        this.subsorts = subsorts;
     }
 
-    public String getName()
+    public final String getName()
     {
-        return name;
+        return this.name;
     }
-    
-    // Define a constant enumset of all variables.
-    static public final EnumSet<DapSort> VARIABLE
-            = EnumSet.of(DapSort.ATOMICVARIABLE, DapSort.STRUCTURE, DapSort.SEQUENCE);
 
+    public final Class getClassFor()
+    {
+        return this.classfor;
+    }
+
+    public boolean isa(DapSort supersort)
+    {
+        if(supersort == this)
+            return true;
+        for(DapSort sub : supersort.subsorts) {
+            if(sub == this) return true;
+        }
+        return false;
+    }
+
+    public boolean oneof(DapSort... which)
+    {
+        for(DapSort sub : which) {
+            if(sub == this) return true;
+        }
+        return false;
+    }
 };
 

@@ -37,13 +37,25 @@ abstract public class UnitTestCommon
     // NetcdfDataset enhancement to use: need only coord systems
     static final Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
+    static protected String threddsroot = null;
+    static protected String threddsServer = null;
+
+    static {
+        // Compute the root path
+        threddsroot = locateThreddsRoot();
+        assert threddsroot != null: "Cannot locate /thredds parent dir";
+        threddsServer = TestDir.remoteTestServer;
+        if(DEBUG)
+            System.err.println("UnitTestCommon: threddsServer=" + threddsServer);
+    }
+
     //////////////////////////////////////////////////
     // Static methods
 
     // Walk around the directory structure to locate
     // the path to the thredds root (which may not
     // be names "thredds").
-    // Same as code in CommonTestUtils, but for
+    // Same as code in UnitTestCommon, but for
     // some reason, Intellij will not let me import it.
 
     static String
@@ -125,9 +137,6 @@ abstract public class UnitTestCommon
     protected String title = "Testing";
     protected String name = "testcommon";
 
-    protected String threddsroot = null;
-    protected String threddsServer = null;
-
     //////////////////////////////////////////////////
     // Constructor(s)
 
@@ -140,12 +149,6 @@ abstract public class UnitTestCommon
     {
         this.title = name;
         setSystemProperties();
-        // Compute the root path
-        this.threddsroot = locateThreddsRoot();
-        Assert.assertTrue("Cannot locate /thredds parent dir", this.threddsroot != null);
-        this.threddsServer = TestDir.remoteTestServer;
-        if(DEBUG)
-            System.err.println("CommonTestUtils: threddsServer=" + threddsServer);
     }
 
     /**
@@ -218,17 +221,17 @@ abstract public class UnitTestCommon
         if(!captured.endsWith("\n"))
             captured = captured + "\n";
         // Dump the output for visual comparison
-        System.out.println("Testing " + getName() + ": " + header + ":");
+        System.err.println("Testing " + getName() + ": " + header + ":");
         StringBuilder sep = new StringBuilder();
         for(int i = 0; i < 10; i++) {
             sep.append(marker);
         }
-        System.out.println(sep.toString());
-        System.out.println("Testing " + title + ": " + header + ":");
-        System.out.println("---------------");
-        System.out.print(captured);
-        System.out.println(sep.toString());
-        System.out.println("---------------");
+        System.err.println(sep.toString());
+        System.err.println("Testing " + title + ": " + header + ":");
+        System.err.println("===============");
+        System.err.print(captured);
+        System.err.println(sep.toString());
+        System.err.println("===============");
     }
 
     static public String
@@ -503,6 +506,7 @@ abstract public class UnitTestCommon
         }
         return false;
     }
+
 
 }
 

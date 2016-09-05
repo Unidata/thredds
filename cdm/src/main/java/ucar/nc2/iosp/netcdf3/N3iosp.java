@@ -88,7 +88,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   static public final short NC_FILL_USHORT = (short) 65535;
   static public final int NC_FILL_UINT = (int) 4294967295L;
   static public final long NC_FILL_INT64 = (long) -9223372036854775806L;
-  static public final long NC_FILL_UINT64 = 0; // (long) 18446744073709551614L;  // LOOK what is this as neg ?
+  static public final long NC_FILL_UINT64 = -2; // (long) 18446744073709551614L;  // LOOK what is this as neg ?
   static public final String NC_FILL_STRING  = "";
 
   static public Number getFillValueDefault(DataType dtype) {

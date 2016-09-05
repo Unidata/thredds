@@ -4,6 +4,8 @@
 
 package dap4.core.util;
 
+import dap4.core.util.DapException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,7 @@ public class MultiSlice extends Slice
     // Constructor(s)
 
     public MultiSlice(List<Slice> slices)
-            throws DapException
+            throws dap4.core.util.DapException
     {
         super();
         this.sort = Sort.Multi;
@@ -67,7 +69,7 @@ public class MultiSlice extends Slice
             List<Slice> tmp = new ArrayList<Slice>();
             tmp.add((Slice)o);
             o = new MultiSlice(tmp);
-        } catch (DapException de) {
+        } catch (dap4.core.util.DapException de) {
             throw new IllegalArgumentException();
         }
         if(!(o instanceof MultiSlice)) return false;
@@ -105,7 +107,7 @@ public class MultiSlice extends Slice
     @Override
     public Slice
     finish()
-            throws DapException
+            throws dap4.core.util.DapException
     {
         this.size = -1;
         for(int i = 0; i < slices.size(); i++) {// size is max size
@@ -116,7 +118,7 @@ public class MultiSlice extends Slice
                 this.size = sl.getMaxSize();
         }
         if(this.size < 0)
-            throw new DapException("Cannot compute multislice size");
+            throw new dap4.core.util.DapException("Cannot compute multislice size");
         for(int i = 0; i < slices.size(); i++) {
             this.slices.get(i).setMaxSize(this.size);
         }
@@ -151,30 +153,6 @@ public class MultiSlice extends Slice
         for(int i = 0; i < slices.size(); i++) {
             slices.get(i).setMaxSize(size);
         }
-    }
-
-    //////////////////////////////////////////////////
-    // Contiguous slice extraction
-
-    @Override
-    public boolean
-    isContiguous()
-    {
-        for(int i = 0; i < slices.size(); i++) {
-            if(slices.get(i).getStride() != 1)
-                return false;
-        }
-        return true;
-    }
-
-    @Override
-    public List<Slice>
-    getContiguous()
-    {
-        List<Slice> contig = new ArrayList();
-        if(isContiguous())
-            contig.addAll(this.slices);
-        return contig;
     }
 
 }
