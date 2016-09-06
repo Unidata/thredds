@@ -167,7 +167,7 @@ public class GeoGridTable extends JPanel {
 
   public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
 
-    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
+    AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
     infoButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {

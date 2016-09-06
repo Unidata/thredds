@@ -35,6 +35,7 @@ package thredds.server.cdmrf;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
@@ -51,6 +52,7 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.util.CompareNetcdf2;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
@@ -61,8 +63,15 @@ import java.io.IOException;
  * @author caron
  * @since 3/1/2016.
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestGribFmrcRegularTime {
-
+  /* Relies on:
+  <featureCollection name="NDFD-CONUS-5km.v5" featureType="GRIB2" harvest="true" path="grib.v5/NDFD/CONUS_5km">
+    <collection spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$" timePartition="file" />
+    ..
+  </featureCollection>
+  in tds/src/test/content/thredds/catalogs5/catalogGrib5.xml
+   */
   @Test
   public void testCoverageDataset2D() throws IOException {
     String catalog = "/catalog/grib.v5/NDFD/CONUS_5km/catalog.xml";
@@ -112,6 +121,13 @@ public class TestGribFmrcRegularTime {
     }
   }
 
+  /* Relies on:
+  <featureCollection name="NDFD-CONUS-5km.v5" featureType="GRIB2" harvest="true" path="grib.v5/NDFD/CONUS_5km">
+    <collection spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$" timePartition="file" />
+    ..
+  </featureCollection>
+  in tds/src/test/content/thredds/catalogs5/catalogGrib5.xml
+   */
   @Test
   public void testCoverageLatest() throws IOException {
     String catalog = "/catalog/grib.v5/NDFD/CONUS_5km/catalog.xml";
@@ -160,6 +176,14 @@ public class TestGribFmrcRegularTime {
 
   // this is the same dataset, seem through cdmremote / gridDataset
 
+  /* Relies on:
+  <featureCollection name="NDFD-CONUS-5km" featureType="GRIB2" harvest="true" path="grib/NDFD/CONUS_5km">
+    ...
+    <collection spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$"
+    ...
+  </featureCollection>
+  in tds/src/test/content/thredds/catalogGrib.xml
+   */
   @Test
   public void testGribDataset2D() throws IOException {
     String catalog = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";
@@ -206,6 +230,14 @@ public class TestGribFmrcRegularTime {
     }
   }
 
+  /* Relies on:
+  <featureCollection name="NDFD-CONUS-5km" featureType="GRIB2" harvest="true" path="grib/NDFD/CONUS_5km">
+    ...
+    <collection spec="${cdmUnitTest}/datasets/NDFD-CONUS-5km/.*grib2$"
+    ...
+  </featureCollection>
+  in tds/src/test/content/thredds/catalogGrib.xml
+   */
   @Test
   public void testGribLatest() throws IOException {
     String catalog = "/catalog/grib/NDFD/CONUS_5km/catalog.xml";
@@ -250,5 +282,4 @@ public class TestGribFmrcRegularTime {
       assert cn.compareData("time", time.read(), Array.makeFromJavaArray(timeValues), false);
     }
   }
-
 }

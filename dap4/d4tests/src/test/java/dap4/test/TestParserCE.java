@@ -5,12 +5,13 @@
 package dap4.test;
 
 
-import dap4.ce.CEConstraint;
-import dap4.ce.CECompiler;
-import dap4.ce.parser.CEParser;
+import dap4.core.ce.CECompiler;
+import dap4.core.ce.CEConstraint;
+import dap4.core.ce.parser.CEParserImpl;
+import dap4.core.dmr.DMRFactory;
 import dap4.core.dmr.DapDataset;
-import dap4.core.dmr.DapFactoryDMR;
 import dap4.core.dmr.parser.Dap4Parser;
+import dap4.core.dmr.parser.Dap4ParserImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +27,9 @@ public class TestParserCE extends DapTestCommon
     // Constants
     static final boolean DMRPARSEDEBUG = false;
     static final boolean CEPARSEDEBUG = false;
-    static final String TESTCASEDIR = "d4tests/src/test/data/resources/TestParsers"; // relative to dap4 root
+    static final String TESTCASEDIR = "src/test/data/resources/TestParsers"; // relative to dap4 root
+
+    static final boolean USEDOM = false;
 
     //////////////////////////////////////////////////
     // Type decls
@@ -77,7 +80,8 @@ public class TestParserCE extends DapTestCommon
 
     //////////////////////////////////////////////////
     @Before
-    public void setup() {
+    public void setup()
+    {
         try {
             defineAllTestCases();
             chooseTestcases();
@@ -157,12 +161,14 @@ public class TestParserCE extends DapTestCommon
 
         // Create the DMR tree
         System.out.println("Parsing DMR");
-        Dap4Parser pushparser = new Dap4Parser(new DapFactoryDMR());
+        Dap4Parser parser;
+        if(!USEDOM)
+            parser = new Dap4ParserImpl(new DMRFactory());
         if(DMRPARSEDEBUG)
-            pushparser.setDebugLevel(1);
-        boolean parseok = pushparser.parse(testset.dmr);
+            parser.setDebugLevel(1);
+        boolean parseok = parser.parse(testset.dmr);
         if(parseok)
-            dmr = pushparser.getDMR();
+            dmr = parser.getDMR();
         if(dmr == null)
             parseok = false;
         if(!parseok)
@@ -175,14 +181,14 @@ public class TestParserCE extends DapTestCommon
         CEConstraint ceroot = null;
         System.out.println("constraint: " + testset.constraint);
         System.out.flush();
-        CEParser ceparser = null;
+        CEParserImpl ceparser = null;
         try {
-            ceparser = new CEParser(dmr);
+            ceparser = new CEParserImpl(dmr);
             if(CEPARSEDEBUG)
                 ceparser.setDebugLevel(1);
             parseok = ceparser.parse(testset.constraint);
             CECompiler compiler = new CECompiler();
-            ceroot = compiler.compile(dmr, ceparser.getConstraint());
+            ceroot = compiler.compile(dmr, ceparser.getCEAST());
         } catch (Exception e) {
             e.printStackTrace();
             parseok = false;
@@ -200,7 +206,7 @@ public class TestParserCE extends DapTestCommon
         if(prop_diff) { //compare with baseline
             // Read the baseline file
             String baselinecontent = testset.expected;
-            pass = same(getTitle(),baselinecontent, results);
+            pass = same(getTitle(), baselinecontent, results);
         }
         return pass;
     }

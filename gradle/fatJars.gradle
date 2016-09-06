@@ -1,14 +1,13 @@
 configurations {
-    dap4
     ncIdv
     tdmFat
     netcdfAll
     toolsUI
+    dap4lib
+    d4ts
 }
 
 dependencies {
-    dap4 project(':dap4:d4shared')
-
     ncIdv project(':cdm')
     ncIdv project(':clcommon')
     ncIdv project(':bufr')
@@ -29,6 +28,11 @@ dependencies {
     netcdfAll project(":httpservices")
 
     toolsUI project(':ui')
+
+    dap4lib project(':dap4:d4core')
+    dap4lib project(':dap4:d4lib')
+    dap4lib libraries["slf4j-jdk14"]
+    d4ts project(':dap4:d4ts')
 }
 
 buildscript {
@@ -47,17 +51,6 @@ apply plugin: 'com.github.johnrengelman.shadow'
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 def fatJarTasks = []
-
-fatJarTasks << tasks.create(name: 'buildDap4', type: ShadowJar) {
-    baseName = 'dap4'
-    configurations = [project.configurations.dap4]
-
-    doFirst {
-        // This script is evaluated before :dap4:d4shared, so we must wait until execution time to get its properties.
-        // This does not affect the incremental build. The main disadvantage is that failure (if any) is delayed.
-        manifest.attributes project(':dap4:d4shared').tasks.jar.manifest.attributes
-    }
-}
 
 fatJarTasks << tasks.create(name: 'buildNcIdv', type: ShadowJar) {
     baseName = 'ncIdv'
@@ -96,9 +89,24 @@ fatJarTasks << tasks.create(name: 'buildNetcdfAll', type: ShadowJar) {
 fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
     baseName = 'toolsUI'
     configurations = [project.configurations.toolsUI]
-
     doFirst {
         manifest.attributes project(':ui').tasks.jar.manifest.attributes
+    }
+}
+
+fatJarTasks << tasks.create(name: 'buildDap4Lib', type: ShadowJar) {
+    baseName = 'dap4lib'
+//    configurations = [project.configurations.dap4shared]
+    doFirst {
+        manifest.attributes project(':dap4:d4lib').tasks.jar.manifest.attributes
+    }
+}
+
+fatJarTasks << tasks.create(name: 'buildD4TS', type: ShadowJar) {
+    baseName = 'd4ts'
+    configurations = [project.configurations.d4ts]
+    doFirst {
+        manifest.attributes project(':dap4:d4ts').tasks.jar.manifest.attributes
     }
 }
 
@@ -145,9 +153,10 @@ apply plugin: 'base'
 
 // The base-plugin's "assemble" task automatically creates all artifacts added to the "archives" configuration.
 artifacts {
-    archives buildDap4
     archives buildNcIdv
     archives buildTdmFat
     archives buildNetcdfAll
     archives buildToolsUI
+    archives buildDap4Lib
+    archives buildD4TS
 }

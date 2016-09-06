@@ -1246,6 +1246,8 @@ public class CdmIndexPanel extends JPanel {
           SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
           sa.showInfo(f, null);
           f.format("%n");
+          sa.showTracks(f);
+          f.format("%n");
           sa.showContent(f);
         }
       }

@@ -1,0 +1,30 @@
+netcdf test_atomic_array.6 {
+  variables:
+    ubyte vu8(1, 2);
+      vu8:_DAP4_Checksum_CRC32 = "0xb0b19213";
+
+    double vd(1);
+      vd:_DAP4_Checksum_CRC32 = "0xf0a1c273";
+
+    String vs(1, 1);
+      vs:_DAP4_Checksum_CRC32 = "0x20312213";
+
+    opaque vo(1, 1);
+      vo:_edu.ucar.opaque.size = 8L;
+      vo:_DAP4_Checksum_CRC32 = "0xd0d142d3";
+
+  // global attributes:
+  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+ data:
+vu8 =
+  {
+    {3, 5}
+  }
+vd =
+  {1024.8}
+vs =
+  {  "Καλημέα"
+  }
+vo =  0x0123456789abcdef;
+
+}

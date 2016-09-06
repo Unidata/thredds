@@ -43,7 +43,6 @@ package ucar.nc2.iosp.netcdf4;
  * @see "http://www.unidata.ucar.edu/software/netcdf/docs/"
  */
 public class Nc4 {
-
   // special attribute names used by netcdf4 library
   static public final String NETCDF4_COORDINATES  = "_Netcdf4Coordinates"; // only on the multi-dimensional coordinate variables of the netCDF model (2D chars)
                                                                            // appears to hold the dimension ids of the 2 dimensions
@@ -51,6 +50,10 @@ public class Nc4 {
                                                                // used to maintain creation order
   static public final String NETCDF4_STRICT  = "_nc3_strict";  // global - when using classic model
   static public final String NETCDF4_NON_COORD  = "_nc4_non_coord_";  // appended to variable when it conflicts with dimension scale
+
+  // This is a persistent attribute added in netcdf-c-4.4.1-RC2. It'll look something like:
+  //     _NCProperties = "version=1|netcdflibversion=4.4.1|hdf5libversion=1.8.17"
+  static public final String NETCDF4_NC_PROPERTIES = "_NCProperties";
 }
 
 /*

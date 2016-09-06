@@ -113,7 +113,7 @@ public class TestReadandCount {
     result.add(new Object[]{griddir+"wrf/","wrfrst_d01_2002-07-02_12_00_00.nc", 162, 11, 8, 3});
 
     result.add(new Object[]{griddir+"awips/","19981109_1200.nc", 36, 13, 14, 11});
-    result.add(new Object[]{griddir+"awips/","awips.nc", 38, 12, 13, 10}); //
+    result.add(new Object[]{griddir+"awips/","20150602_0830_sport_imerg_noHemis_rr.nc", 1, 1, 2, 0});
 
     result.add(new Object[]{griddir+"ifps/","HUNGrids.netcdf", 26, 26, 29, 0}); // *
 

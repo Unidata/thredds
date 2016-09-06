@@ -42,6 +42,8 @@ abstract public class DapDump
         buf0.get(bytes, 0, limit0 - skipcount);
         buf0.position(savepos);
 
+        System.err.println("order="+buf0.order());
+
         ByteBuffer buf = ByteBuffer.wrap(bytes).order(buf0.order());
         dumpbytes(buf);
     }
@@ -80,7 +82,7 @@ abstract public class DapDump
                 String s = Character.toString(c);
                 if(c == '\r') s = "\\r";
                 else if(c == '\n') s = "\\n";
-                else if(c < ' ') s = "?";
+                else if(c < ' ' || c >= 0x7f) s = "?";
                 System.err.printf("[%03d] %02x %03d %4d '%s'", i, ub, ub, ib, s);
                 System.err.printf("\t%12d 0x%08x", iv, uiv);
                 System.err.printf("\t%5d\t0x%04x", sv, usv);

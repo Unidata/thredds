@@ -76,52 +76,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return timeIntervals;
   }
 
-  /* @Override
-  public int findIndexContaining(Object need) {
-    int idx = findSingleHit(need);
-    if (idx >= 0) return idx;
-    if (idx == -1) return -1;
-    // multiple hits = choose closest to the midpoint
-    return findClosest(need);
-  }
-
-   // return index if only one match, if no matches return -1, if > 1 match return -nhits
-  private int findSingleHit(double target) {
-    int hits = 0;
-    int idxFound = -1;
-    for (int i = 0; i < timeIntervals.size(); i++) {
-      TimeCoord.Tinv level = timeIntervals.get(i);
-      if (contains(target, level)) {
-        hits++;
-        idxFound = i;
-      }
-    }
-    if (hits == 1) return idxFound;
-    if (hits == 0) return -1;
-    return -hits;
-  }
-
-  // return index of closest value to target
-  private int findClosest(double target) {
-    double minDiff =  Double.MAX_VALUE;
-    int idxFound = -1;
-    for (int i = 0; i < timeIntervals.size(); i++) {
-      TimeCoord.Tinv level = timeIntervals.get(i);
-      double midpoint = (level.getBounds1()+level.getBounds2())/2.0;
-      double diff =  Math.abs(midpoint - target);
-      if (diff < minDiff) {
-        minDiff = diff;
-        idxFound = i;
-      }
-    }
-    return idxFound;
-  }
-
-  private boolean contains(double target, TimeCoord.Tinv level) {
-    if (level.getBounds1() <= target && target <= level.getBounds2()) return true;
-    return level.getBounds1() >= target && target >= level.getBounds2();
-  } */
-
   @Override
   public List<? extends Object> getValues() {
     return timeIntervals;
@@ -165,7 +119,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       else if (value != firstValue) return MIXED_INTERVALS;
     }
 
-    firstValue = (int) (firstValue * getTimeUnitScale());
+    firstValue = (firstValue * timeUnit.getValue());
     return firstValue + "_" + timeUnit.getField().toString();
   }
 
@@ -177,8 +131,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   @Override
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
     CalendarDateUnit cdu = CalendarDateUnit.of(cal, timeUnit.getField(), refDate);
-    CalendarDate start = cdu.makeCalendarDate(timeIntervals.get(0).getBounds2());
-    CalendarDate end = cdu.makeCalendarDate(timeIntervals.get(getSize()-1).getBounds2());
+    CalendarDate start = cdu.makeCalendarDate( timeUnit.getValue() * timeIntervals.get(0).getBounds2());
+    CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * timeIntervals.get(getSize()-1).getBounds2());
     return CalendarDateRange.of(start, end);
   }
 
@@ -194,7 +148,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Time Interval offsets: (%s) ref=%s%n", getUnit(), getRefDate());
+    info.format("Time Interval offsets: (%s) ref=%s%n", getTimeUnit(), getRefDate());
     for (TimeCoord.Tinv cd : timeIntervals)
       info.format("   (%3d - %3d)  %d%n", cd.getBounds1(), cd.getBounds2(), cd.getBounds2() - cd.getBounds1());
   }

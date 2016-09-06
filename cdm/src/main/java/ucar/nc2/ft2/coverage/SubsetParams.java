@@ -38,7 +38,6 @@ import com.google.common.net.UrlEscapers;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
@@ -61,7 +60,7 @@ public class SubsetParams {
   public static final String projBB = "projBB";         // value = ProjectionRect
   public static final String horizStride = "horizStride";  // value = Integer
   public static final String latlonPoint = "latlonPoint";  // value = LatLonPointImpl
-  public static final String stns = "stn";           // value = List<String>
+  public static final String stations = "stn";           // value = List<String>
 
   public static final String time = "time";             // value = CalendarDate
   public static final String timeRange = "timeRange";   // value = CalendarDateRange
@@ -78,10 +77,17 @@ public class SubsetParams {
   public static final String timeOffset = "timeOffset"; // value = Double
   public static final String timeOffsetFirst = "timeOffsetFirst"; // value = Boolean
   public static final String timeOffsetAll = "timeOffsetAll"; // value = Boolean
+  public static final String timeOffsetIntv = "timeOffsetIntv"; // value = double[2]
 
-  public static final String vertRange = "vertRange";   // value = double[2] used WCS local, not remote
   public static final String vertCoord = "vertCoord";   // value = Double
-  public static final String ensCoord = "ensCoord";     // value = double ??
+  public static final String vertIntv = "vertIntv"; // value = double[2]
+  public static final String vertRange = "vertRange";   // value = double[2] used WCS local, not remote
+
+  public static final String ensCoord = "ensCoord";     // value = Double
+
+  // cant use these for selecting, used for validation
+  public static final String timeOffsetDate = "timeOffsetDate"; // value = CalendarDate
+  public static final String timeOffsetUnit = "timeOffsetUnit"; // value = CalendarDateUnit
 
   /////////////////////////////////
 
@@ -103,7 +109,7 @@ public class SubsetParams {
           LatLonPointImpl llPoint = (LatLonPointImpl) entry.getValue();
           f.format("&lat=%s&lon=%s", llPoint.getLatitude(), llPoint.getLongitude());
           break;
-        case SubsetParams.stns:
+        case SubsetParams.stations:
           List<String> stns = (List<String>) entry.getValue();
           int count = 0;
           for (String stn : stns) {
@@ -189,8 +195,19 @@ public class SubsetParams {
   @Override
   public String toString() {
     Formatter f = new Formatter();
-    for (Map.Entry<String,Object> entry : req.entrySet())
-      f.format(" %s == %s,", entry.getKey(), entry.getValue());
+    for (Map.Entry<String,Object> entry : req.entrySet()) {
+      f.format(" %s == ", entry.getKey());
+      Object val = entry.getValue();
+      if (val instanceof CalendarDate[]) {
+        CalendarDate[] cd = ((CalendarDate[]) val);
+        f.format("[%s,%s]", cd[0], cd[1]);
+      } else if (val instanceof double[]) {
+        double[] d = ((double[]) val);
+        f.format("[%f,%f]", d[0], d[1]);
+      } else {
+        f.format("%s,", entry.getValue());
+      }
+    }
     return f.toString();
   }
 
@@ -199,7 +216,11 @@ public class SubsetParams {
   }
 
   public boolean hasTimeOffsetParam() {
-    return get(timeOffset) != null || get(timeOffsetFirst) != null;
+    return get(timeOffset) != null  || get(timeOffsetFirst) != null || get(timeOffsetIntv) != null;
+  }
+
+  public boolean hasTimeOffsetIntvParam() {
+    return get(timeOffsetIntv) != null || get(timeOffsetFirst) != null;
   }
 
   public SubsetParams setHorizStride(int stride) {  set(horizStride, stride); return this; }
@@ -213,25 +234,40 @@ public class SubsetParams {
   public LatLonPointImpl getLatLonPoint() { return (LatLonPointImpl) get(latlonPoint);}
   public SubsetParams setLatLonPoint(LatLonPointImpl pt) { set(latlonPoint, pt); return this; }
 
-  public List<String> getStns() { return (List<String>) get(stns);}
+  public List<String> getStations() { return (List<String>) get(stations);}
+  public SubsetParams setStations(List<String> stns) { set(stations, stns); return this; }
 
   public List<String> getVariables() { return (List<String>) get(variables);}
   public SubsetParams setVariables(List<String> vars) { set(variables, vars); return this; }
 
+  public SubsetParams setTime(CalendarDate date) {  set(time, date); return this; }
   public CalendarDate getTime() { return (CalendarDate) get(time);}
   public SubsetParams setTimePresent() {  set(timePresent, true); return this; }
-  public SubsetParams setTimeOffset(double offset) {  set(timeOffset, offset); return this; }
-  public SubsetParams setTime(CalendarDate date) {  set(time, date); return this; }
 
   public CalendarDateRange getTimeRange() { return (CalendarDateRange) get(timeRange);}
   public SubsetParams setTimeRange(CalendarDateRange dateRange) {  set(timeRange, dateRange); return this; }
 
+  public CalendarDate getRunTime() { return (CalendarDate) get(runtime);}
   public SubsetParams setRunTime(CalendarDate date) {  set(runtime, date); return this; }
 
   public CalendarPeriod getTimeWindow() { return (CalendarPeriod) get(timeWindow);}
 
   public double[] getVertRange() { return (double []) get(vertRange);}
-  public SubsetParams setVertCoord(double coord) {
-    set(vertCoord, coord); return this; }
+  public Double getVertCoord() { return (Double) get(vertCoord);}
+  public SubsetParams setVertCoord(double coord) { set(vertCoord, coord); return this; }
+
+  public Double getEnsCoord() { return (Double) get(ensCoord);}
+  public SubsetParams setEnsCoord(double coord) { set(ensCoord, coord); return this; }
+
+  public SubsetParams setVertCoordIntv(double [] vertCoordIntv) {  set(vertIntv, vertCoordIntv); return this; }
+  public double[] getVertCoordIntv() { return (double[]) get(vertIntv);}
+
+  // A time offset or time offset interval starts from the rundate of that point, in the units of the coordinate
+  // eg "calendar Month since 2004-12-30T00:00:00Z" or "Hours since 2004-12-30T00:00:00Z"
+  public SubsetParams setTimeOffset(double offset) {  set(timeOffset, offset); return this; }
+  public Double getTimeOffset() {  return (Double) get(timeOffset); }
+
+  public SubsetParams setTimeOffsetIntv(double [] timeCoordIntv) {  set(timeOffsetIntv, timeCoordIntv); return this; }
+  public double [] getTimeOffsetIntv() { return (double []) get(timeOffsetIntv); }
 
 }

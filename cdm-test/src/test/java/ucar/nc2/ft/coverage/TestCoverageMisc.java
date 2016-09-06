@@ -203,7 +203,7 @@ public class TestCoverageMisc {
       long size = cover.getSizeInBytes();
       Assert.assertEquals(25243920, size);
 
-      SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 300.0).set(SubsetParams.timeOffset, 42.0);
+      SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTimeOffset(42.0);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       System.out.printf("%s%n", Misc.showInts(data.getShape()));

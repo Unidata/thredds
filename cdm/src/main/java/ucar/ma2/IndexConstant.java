@@ -108,6 +108,15 @@ public class IndexConstant extends Index {
     return this;
   }
 
+  // This method is only used in Array.get1DJavaArray(Class), where it's used to decide whether a copy is necessary.
+  // In the case of a constant array, we DO need a copy because the size of our backing storage (length=1) is likely
+  // not the size of the Array.
+  // Fixes bug in https://github.com/Unidata/thredds/issues/581
+  @Override
+  boolean isFastIterator() {
+    return false;
+  }
+
   ///////////////////////
 
   IndexIterator getIndexIterator(Array maa) {

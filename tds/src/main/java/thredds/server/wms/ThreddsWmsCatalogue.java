@@ -36,17 +36,19 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
-import ucar.nc2.dt.grid.GridDataset;
+import uk.ac.rdg.resc.edal.dataset.DataSource;
 import uk.ac.rdg.resc.edal.dataset.Dataset;
+import uk.ac.rdg.resc.edal.dataset.DiscreteLayeredDataset;
 import uk.ac.rdg.resc.edal.dataset.cdm.CdmGridDatasetFactory;
 import uk.ac.rdg.resc.edal.domain.Extent;
+import uk.ac.rdg.resc.edal.domain.MapDomain;
 import uk.ac.rdg.resc.edal.exceptions.EdalException;
 import uk.ac.rdg.resc.edal.feature.DiscreteFeature;
 import uk.ac.rdg.resc.edal.graphics.exceptions.EdalLayerNotFoundException;
-import uk.ac.rdg.resc.edal.graphics.style.util.*;
+import uk.ac.rdg.resc.edal.graphics.utils.*;
+import uk.ac.rdg.resc.edal.metadata.DiscreteLayeredVariableMetadata;
 import uk.ac.rdg.resc.edal.metadata.VariableMetadata;
 import uk.ac.rdg.resc.edal.util.CollectionUtils;
-import uk.ac.rdg.resc.edal.util.PlottingDomainParams;
 import uk.ac.rdg.resc.edal.wms.WmsCatalogue;
 import uk.ac.rdg.resc.edal.wms.util.ContactInfo;
 import uk.ac.rdg.resc.edal.wms.util.ServerInfo;
@@ -96,7 +98,7 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
     /*
      * The Dataset associated with this catalogue
      */
-    private Dataset dataset;
+    private DiscreteLayeredDataset<? extends DataSource, ? extends DiscreteLayeredVariableMetadata> dataset;
 
     /*
      * A StyleCatalogue allows us to support different styles for different
@@ -120,8 +122,10 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
          * Caching of individual features (i.e. 2d plottable map features) can
          * go here if caching is desired for the TDS WMS.
          */
+        MapDomain mapDomain = new MapDomain(params.getBbox(), params.getWidth(), params.getHeight(),
+                params.getTargetZ(), null);
         List<? extends DiscreteFeature<?, ?>> extractedFeatures = dataset.extractMapFeatures(
-                CollectionUtils.setOf(layerName), params);
+                CollectionUtils.setOf(layerName), mapDomain);
         return new FeaturesAndMemberName(extractedFeatures, layerName);
     }
 
@@ -416,7 +420,7 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
              */
             @Override
             public PlottingStyleParameters getDefaultPlottingParameters() {
-                Extent<Float> scaleRange = null;
+                List<Extent<Float>> scaleRanges = null;
                 String palette = null;
                 Color aboveMaxColour = null;
                 Color belowMinColour = null;
@@ -425,11 +429,36 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
                 Integer numColourBands = null;
                 Float opacity = 1.0f;
 
-                return new PlottingStyleParameters(scaleRange, palette, aboveMaxColour,
+                return new PlottingStyleParameters(scaleRanges, palette, aboveMaxColour,
                         belowMinColour, noDataColour, logScaling, numColourBands,
                         opacity);
 
             }
+
+            /**
+             * @return Whether or not this layer can be queried with GetFeatureInfo requests
+             */
+            @Override
+            public boolean isQueryable() {
+                return false;
+            };
+
+            /**
+             * @return Whether or not this layer can be downloaded in CSV/CoverageJSON format
+             */
+            @Override
+            public boolean isDownloadable() {
+                return false;
+            };
+
+            /**
+             * @return Whether this layer is disabled
+             */
+            @Override
+            public boolean isDisabled() {
+                return false;
+            };
+
         };
     }
 }

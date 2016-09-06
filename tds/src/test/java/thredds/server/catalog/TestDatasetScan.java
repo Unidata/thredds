@@ -59,7 +59,20 @@ import static org.junit.Assert.assertEquals;
  *
  * @author caron
  * @since 1/21/2015
+ * 
+ * Excution notes:
+ * If you plan to run this under Intellij IDE,
+ * you will need to modify the 'Before Launch' window
+ * in the Edit Configuration window and add the following
+ * two gradle tasks in the thredds:tds project
+ * 1. processResources
+ * 2. processTestResources
+ * For both of them, you will need to ensure that the following
+ * VM arguments are defined.
+ * 1. -Dunidata.testdata.path=...
+ * 2. -Dtds.content.root.path=.../tds/src/test/content
  */
+
 @Category(NeedsCdmUnitTest.class)
 public class TestDatasetScan {
   static private final boolean showCats = true;
@@ -85,14 +98,14 @@ public class TestDatasetScan {
     List<DatasetRootConfig> roots = cat.getDatasetRoots();
     for (DatasetRootConfig root : roots)
       System.out.printf("DatasetRoot %s -> %s%n", root.path, root.location);
-    assert roots.size() == 4;
+    Assert.assertTrue("Incorrect # of catalog roots: expect 5 found "+roots.size(),roots.size() == 5);
 
     Dataset ds = cat.findDatasetByID("scanCdmUnitTests");
-    assert ds != null;
-    assert (ds instanceof DatasetScan);
+    Assert.assertTrue("Null dataset", ds != null);
+    Assert.assertTrue("dataset not DatasetScan", ds instanceof DatasetScan);
     DatasetScan dss = (DatasetScan) ds;
     String serviceName = dss.getServiceNameDefault();
-    assert serviceName.equals("all");
+    Assert.assertTrue("Servicename default is not 'all'",serviceName.equals("all"));
     Assert.assertTrue("has DatasetScan property", ds.hasProperty("DatasetScan"));
 
     DatasetScanConfig config = dss.getConfig();

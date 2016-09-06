@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/thredds/v4.6/netcdf-java/webstart"
-      href="netCDFtools.jnlp">
+<jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart">
     <information>
-        <title>NetCDF Tools UI 4.6.5</title>
+        <title>NetCDF Tools UI</title>
         <vendor>Unidata</vendor>
         <homepage href="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"/>
         <description kind="short">Graphical interface to netCDF-Java / Common Data Model</description>
@@ -11,29 +10,30 @@
     </information>
 
     <component-desc/>
+
     <security>
         <all-permissions/>
     </security>
 
     <update check="timeout" policy="always"/>
 
-    <!-- Review the JNLP spec: http://docs.oracle.com/javase/8/docs/technotes/guides/javaws/developersguide/syntax.html -->
-    <!-- In particular, all of these jars should have the download="lazy" attribute. -->
     <resources>
         <j2se version="1.7+" max-heap-size="1500m"/>
-        <!-- Updated by hand for 4.6.5, using :ui:showDependencies to print the deps.
-        In the future, we should be generating this file in Gradle. -->
 
+        <jar href="ui-4.6.6.jar" download="eager"/>
+
+        <!-- Updated by hand for 4.6.6, using :ui:showDependencies to print the deps.
+             In the future, we should be generating this file in Gradle. -->
         <!-- In theory, Webstart will use these in conjunction with ui.jar/META-INF/INDEX.LIST to download
              the minimum number of dependencies when running the application. -->
-        <jar href="cdm-4.6.5.jar" download="lazy"/>
-        <jar href="clcommon-4.6.5.jar" download="lazy"/>
-        <jar href="bufr-4.6.5.jar" download="lazy"/>
-        <jar href="grib-4.6.5.jar" download="lazy"/>
-        <jar href="netcdf4-4.6.5.jar" download="lazy"/>
-        <jar href="opendap-4.6.5.jar" download="lazy"/>
-        <jar href="waterml-4.6.5.jar" download="lazy"/>
-        <jar href="httpservices-4.6.5.jar" download="lazy"/>
+        <jar href="cdm-4.6.6.jar" download="lazy"/>
+        <jar href="clcommon-4.6.6.jar" download="lazy"/>
+        <jar href="bufr-4.6.6.jar" download="lazy"/>
+        <jar href="grib-4.6.6.jar" download="lazy"/>
+        <jar href="netcdf4-4.6.6.jar" download="lazy"/>
+        <jar href="opendap-4.6.6.jar" download="lazy"/>
+        <jar href="waterml-4.6.6.jar" download="lazy"/>
+        <jar href="httpservices-4.6.6.jar" download="lazy"/>
         <jar href="ehcache-core-2.6.2.jar" download="lazy"/>
         <jar href="jdom2-2.0.4.jar" download="lazy"/>
         <jar href="spring-context-4.1.6.RELEASE.jar" download="lazy"/>
@@ -49,7 +49,7 @@
         <jar href="guava-18.0.jar" download="lazy"/>
         <jar href="slf4j-api-1.7.7.jar" download="lazy"/>
         <jar href="slf4j-jdk14-1.7.7.jar" download="lazy"/>
-        <jar href="udunits-4.6.5.jar" download="lazy"/>
+        <jar href="udunits-4.6.6.jar" download="lazy"/>
         <jar href="joda-time-2.8.1.jar" download="lazy"/>
         <jar href="jcip-annotations-1.0.jar" download="lazy"/>
         <jar href="quartz-2.2.0.jar" download="lazy"/>

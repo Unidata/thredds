@@ -20,12 +20,25 @@ public class DapAtomicVariable extends DapVariable
         super();
     }
 
-    public DapAtomicVariable(String name)
+    public DapAtomicVariable(String name, DapType basetype)
     {
         super(name);
+        this.basetype = basetype;
     }
 
-    public boolean isLeaf() {return true;}
+    public boolean isLeaf()
+    {
+        return true;
+    }
+
+    public DapType getTrueBaseType()
+    {
+        DapType bt = getBaseType();
+        if(bt.getTypeSort() == TypeSort.Enum)
+            return ((DapEnumeration) bt).getBaseType();
+        else
+            return bt;
+    }
 
 
 }

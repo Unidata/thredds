@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 the University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
@@ -33,16 +33,22 @@
 
 package thredds.server.dap4;
 
+import dap4.core.data.DSPRegistry;
+import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.servlet.*;
+import dap4.dap4lib.DapCodes;
+import dap4.servlet.DSPFactory;
+import dap4.servlet.DapCache;
+import dap4.servlet.DapController;
+import dap4.servlet.DapRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import thredds.core.TdsRequestedDataset;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
-import java.net.URL;
 
 @Controller
 @RequestMapping("/dap4")
@@ -67,8 +73,10 @@ public class Dap4Controller extends DapController
 
         public Dap4Factory()
         {
-            // Register known DSP classes: order is important.
-            registerDSP(ThreddsDSP.class, true);
+            // For TDS, we only need to register one DSP type: ThreddsDSP.
+            // This is because we will always serve only NetcdfFile objects.
+            // See D4TSServlet for a multiple registration case.
+            DapCache.dspregistry.register(ThreddsDSP.class, DSPRegistry.LAST);
         }
 
     }
@@ -92,14 +100,21 @@ public class Dap4Controller extends DapController
 
     public Dap4Controller()
     {
-        super("dap4");
+        super();
     }
 
     //////////////////////////////////////////////////////////
 
     @Override
+    public void initialize()
+    {
+
+    }
+
+
+    @Override
     protected void
-    doFavicon(DapRequest drq, String icopath)
+    doFavicon(DapRequest drq, String icopath, DapContext cxt)
             throws IOException
     {
         throw new UnsupportedOperationException("Favicon");
@@ -107,7 +122,7 @@ public class Dap4Controller extends DapController
 
     @Override
     protected void
-    doCapabilities(DapRequest drq)
+    doCapabilities(DapRequest drq, DapContext cxt)
             throws IOException
     {
         addCommonHeaders(drq);
@@ -118,36 +133,41 @@ public class Dap4Controller extends DapController
     }
 
     @Override
-    protected long
+    public long
     getBinaryWriteLimit()
     {
         return DEFAULTBINARYWRITELIMIT;
     }
 
     @Override
-    protected String
-    getResourcePath(DapRequest drq, String relpath)
+    public String
+    getServletID()
+    {
+        return "dap4";
+    }
+
+    @Override
+    public String
+    getResourcePath(DapRequest drq, String location)
             throws IOException
     {
-        // Using context information, we need to
-        // construct a file path to the specified dataset
-        URL realpathurl = servletcontext.getResource(relpath);
-        String realpath = null;
-        if(realpathurl.getProtocol().equalsIgnoreCase("file"))
-            realpath = realpathurl.getPath();
-        else
-            throw new DapException("Requested file not found " + realpathurl)
-                                .setCode(HttpServletResponse.SC_NOT_FOUND);
+        String prefix = (String) this.dapcxt.get("RESOURCEDIR");
+        String realpath;
+        if(prefix != null) {
+            realpath = DapUtil.canonjoin(prefix, location);
+        } else
+            realpath = TdsRequestedDataset.getLocationFromRequestPath(location);
 
-        // See if it really exists and is readable and of proper type
-        File dataset = new File(realpath);
-        if(!dataset.exists())
-            throw new DapException("Requested file does not exist: " + realpath)
-                    .setCode(HttpServletResponse.SC_NOT_FOUND);
-
-        if(!dataset.canRead())
-            throw new DapException("Requested file not readable: " + realpath)
-                    .setCode(HttpServletResponse.SC_FORBIDDEN);
+        if(!TESTING) {
+            if(!TdsRequestedDataset.resourceControlOk(drq.getRequest(), drq.getResponse(), realpath))
+                throw new DapException("Not authorized: " + location)
+                        .setCode(DapCodes.SC_FORBIDDEN);
+        }
+        File f = new File(realpath);
+        if(!f.exists() || !f.canRead())
+            throw new DapException("Not found: " + location)
+                    .setCode(DapCodes.SC_NOT_FOUND);
+        //ncfile = TdsRequestedDataset.getNetcdfFile(this.request, this.response, path);
         return realpath;
     }
 

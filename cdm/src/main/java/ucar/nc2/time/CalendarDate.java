@@ -308,22 +308,26 @@ public class CalendarDate implements Comparable<CalendarDate> {
 
   // old style udunits compatible.
   // fixes from https://github.com/jonescc 8/26/14
+
+  /**
+   * @deprecated use CalendarDate add(CalendarPeriod period)
+   */
   public CalendarDate add(double value, CalendarPeriod.Field unit) {
     switch (unit) {
       case Millisec:
-        return new CalendarDate(cal, dateTime.plus( Math.round(value) ));
+        return new CalendarDate(cal, dateTime.plus(Math.round(value)));
       case Second:
-        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_SECOND) ));
+        return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_SECOND)));
       case Minute:
-        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_MINUTE) ));
+        return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_MINUTE)));
       case Hour:
-        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_HOUR) ));
+        return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_HOUR)));
       case Day:
-        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_DAY) ));
+        return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_DAY)));
       case Month: // LOOK should we throw warning ?
-        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_MONTH) ));
+        return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_MONTH)));
       case Year:  // LOOK should we throw warning ?
-        return new CalendarDate(cal, dateTime.plus(  Math.round(value * MILLISECS_IN_YEAR) ));
+        return new CalendarDate(cal, dateTime.plus(Math.round(value * MILLISECS_IN_YEAR)));
     }
     throw new UnsupportedOperationException("period units = "+unit);
   }
@@ -332,19 +336,19 @@ public class CalendarDate implements Comparable<CalendarDate> {
   public CalendarDate add(CalendarPeriod period) {
     switch (period.getField()) {
       case Millisec:
-        return new CalendarDate(cal, dateTime.plusMillis( period.getValue() ));
+        return new CalendarDate(cal, dateTime.plusMillis(period.getValue()));
       case Second:
-        return new CalendarDate(cal, dateTime.plusSeconds( period.getValue() ));
+        return new CalendarDate(cal, dateTime.plusSeconds(period.getValue()));
       case Minute:
         return new CalendarDate(cal, dateTime.plusMinutes(period.getValue()));
       case Hour:
         return new CalendarDate(cal, dateTime.plusHours(period.getValue()));
       case Day:
-        return new CalendarDate(cal, dateTime.plusDays( period.getValue() ));
+        return new CalendarDate(cal, dateTime.plusDays(period.getValue()));
       case Month:
-        return new CalendarDate(cal, dateTime.plusMonths( period.getValue() ));
+        return new CalendarDate(cal, dateTime.plusMonths(period.getValue()));
       case Year:
-        return new CalendarDate(cal, dateTime.plusYears( period.getValue() ));
+        return new CalendarDate(cal, dateTime.plusYears(period.getValue()));
     }
     throw new UnsupportedOperationException("period units = "+period);
   }
@@ -353,19 +357,19 @@ public class CalendarDate implements Comparable<CalendarDate> {
   public CalendarDate subtract(CalendarPeriod period) {
     switch (period.getField()) {
       case Millisec:
-        return new CalendarDate(cal, dateTime.minusMillis( period.getValue() ));
+        return new CalendarDate(cal, dateTime.minusMillis(period.getValue()));
       case Second:
-        return new CalendarDate(cal, dateTime.minusSeconds( period.getValue() ));
+        return new CalendarDate(cal, dateTime.minusSeconds(period.getValue()));
       case Minute:
         return new CalendarDate(cal, dateTime.minusMinutes(period.getValue()));
       case Hour:
         return new CalendarDate(cal, dateTime.minusHours(period.getValue()));
       case Day:
-        return new CalendarDate(cal, dateTime.minusDays( period.getValue() ));
+        return new CalendarDate(cal, dateTime.minusDays(period.getValue()));
       case Month:
-        return new CalendarDate(cal, dateTime.minusMonths( period.getValue() ));
+        return new CalendarDate(cal, dateTime.minusMonths(period.getValue()));
       case Year:
-        return new CalendarDate(cal, dateTime.minusYears( period.getValue() ));
+        return new CalendarDate(cal, dateTime.minusYears(period.getValue()));
     }
     throw new UnsupportedOperationException("period units = "+period);
   }
@@ -406,6 +410,38 @@ public class CalendarDate implements Comparable<CalendarDate> {
    * @return  (this minus o) difference in millisecs
    */
   public long getDifferenceInMsecs(CalendarDate o) {
+    return dateTime.getMillis() - o.dateTime.getMillis();
+  }
+
+  /**
+   * Get difference between two calendar dates in given Field units
+   * @param o  other calendar date
+   * @return  (this minus o) difference in units of this Field
+   */
+  public long getDifference(CalendarDate o, CalendarPeriod.Field fld) {
+    switch (fld) {
+      case Millisec:
+        return getDifferenceInMsecs(o);
+      case Second:
+        return (long) (getDifferenceInMsecs(o) / MILLISECS_IN_SECOND);
+      case Minute:
+        return (long) (getDifferenceInMsecs(o) / MILLISECS_IN_MINUTE);
+      case Hour:
+        return (long) (getDifferenceInMsecs(o) / MILLISECS_IN_HOUR);
+      case Day:
+        return (long) (getDifferenceInMsecs(o) / MILLISECS_IN_DAY);
+
+      case Month:
+        int tmonth = getFieldValue(CalendarPeriod.Field.Month);
+        int omonth = o.getFieldValue(CalendarPeriod.Field.Month);
+        int years = (int) this.getDifference(o, CalendarPeriod.Field.Year);
+        return tmonth-omonth + 12 * years;
+
+      case Year:
+        int tyear = getFieldValue(CalendarPeriod.Field.Year);
+        int oyear = o.getFieldValue(CalendarPeriod.Field.Year);
+        return tyear - oyear;
+    }
     return dateTime.getMillis() - o.dateTime.getMillis();
   }
 

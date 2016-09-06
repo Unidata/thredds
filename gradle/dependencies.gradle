@@ -36,7 +36,9 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-libraries["gretty"] = "org.akhikhl.gretty:gretty:1.2.0"
+// Original plugin (last release was 1.2.4): https://github.com/akhikhl/gretty
+// Fork of original (first release was 1.2.5): https://github.com/saladinkzn/gretty
+libraries["gretty"] = "ru.shadam.gretty:gretty:1.3.0"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
@@ -124,14 +126,13 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
 libraries["commons-io"] = "commons-io:commons-io:2.4"
-libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
 
-libraries["equalsverifier"] = "nl.jqno.equalsverifier:equalsverifier:1.7.5"
+libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
 
 // These four are all for Spock.
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
 
-libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.5"
+libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.7"
 
 // In Spock, allows mocking of classes (in addition to interfaces).
 // 5503bcca74 is the most recent commit on the cglib master branch as of 2015-08-26.
@@ -139,7 +140,6 @@ libraries["cglib-nodep"] = "com.github.cglib.cglib:cglib-nodep:5503bcca74"
 
 // In Spock, allows mocking of classes without default constructor (together with CGLIB).
 libraries["objenesis"] = "org.objenesis:objenesis:2.2"
-
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 
@@ -195,21 +195,26 @@ libraries["chronicle-map"] = "net.openhft:chronicle-map:2.3.9"
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
 libraries["jstl-api"] = "org.apache.taglibs:taglibs-standard-spec:1.2.5"
+
 libraries["jstl-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["oro"] = "oro:oro:2.0.6"
 
-versions["edal"] = "1.1.1"
+libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:2.1.4.RELEASE"
+
+versions["edal"] = "1.2.2"
 
 libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
 
 libraries["edal-cdm"] = dependencies.create("uk.ac.rdg.resc:edal-cdm:${versions["edal"]}") {
     // These are dependencies that are included in edal-cdm, but are provided by
     // us already, so we will exclude these from the edal-cdm artifact.
-    exclude group: 'edu.ucar', module: 'grib'
+    exclude group: 'edu.ucar', module: 'cdm'
+    exclude group: 'edu.ucar', module: 'udunits'
     exclude group: 'edu.ucar', module: 'netcdf4'
+    exclude group: 'edu.ucar', module: 'grib'
     exclude group: 'edu.ucar', module: 'opendap'
     exclude group: 'com.sleepycat', module: 'je'
     exclude group: 'oro', module: 'oro'
@@ -225,34 +230,26 @@ libraries["edal-godiva"] = dependencies.create("uk.ac.rdg.resc:edal-godiva:${ver
     exclude module: 'gwt-user'
 }
 
-libraries["saxon-he"] = "net.sf.saxon:Saxon-HE:9.6.0-7"
-
-libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
-
-libraries["threddsIso"] = "EDS:threddsIso:2.2.8"
-
 versions["gwt"] = "2.7.0"
 
 libraries["gwt-user"] =  "com.google.gwt:gwt-user:${versions["gwt"]}"
 
 libraries["gwt-dev"] = "com.google.gwt:gwt-dev:${versions["gwt"]}"
 
-/////////////////////////////////////////////////////////////////////////////////
-// Bean validation 1.1, used by TDS
+libraries["threddsIso"] = "EDS:threddsIso:2.3.0-SNAPSHOT"
 
-libraries["validation-api"] = "javax.validation:validation-api:1.1.0.Final"
-libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:5.2.2.Final"
-libraries["javax.el-api"] = "javax.el:javax.el-api:2.2.4"
-libraries["javax.el"] = "org.glassfish.web:javax.el:2.2.4"
+libraries["saxon-he"] = "net.sf.saxon:Saxon-HE:9.6.0-7"
+
+libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.2"
 
 
-////////////////////////////// Testing ///////////////////////////////////////////
+// Version update note:
+// spring-context 4.x is limited to hibernate-validator 4.3.2.Final. We can't update to hibernate-validator 5.x
+// hibernate-validator 4.3.2.Final is limited to validation-api 1.0.0.GA. We can't update to validation-api 1.1.0.Final
 
-//libraries["commons-fileupload"] = "commons-fileupload:commons-fileupload:1.2.2"
+libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
 
-//libraries["geoapi-pending"] = "org.opengis:geoapi-pending:3.1-M04"
-
-//libraries["oro"] = "oro:oro:2.0.8"
+libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
 
 ////////////////////////////////////////// ToolsUI //////////////////////////////////////////
 
@@ -301,12 +298,7 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
         // and we don't use the "tidy" functionality (i.e. HTML pretty printing) anyway.
         // Dragged in by httpunit.
         exclude group: 'jtidy', module: 'jtidy'
-
-        // On TDS startup, I'm getting "Class path contains multiple SLF4J bindings" warnings.
-        // This is one of those bindings. Strangely, I have NO idea what dependency is dragging it in.
-        // It doesn't matter though; we always want to see the logging messages.
-        exclude group: 'org.slf4j', module: 'slf4j-nop'
-
+    
         // Another SLF4J binding that we don't want. Dragged in by edal-common.
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }

@@ -288,7 +288,7 @@ public class QuasiRegular {
     int lowIdx = iIdx + low;
 
     if (lowIdx >= inpt.length || hiIdx >= inpt.length)
-      System.out.printf("HEY%n");
+      System.out.printf("HEY QuasiRegular%n");
 
     outpt[oIdx] = (float) (a * inpt[lowIdx] + b * inpt[hiIdx]);
 

@@ -5,7 +5,7 @@ netcdf test_enum_array.nc {
   dimensions:
     d5 = 5;
   variables:
-    enum cloud_class_t primary_cloud(d5=5);
+    enum primary_cloud primary_cloud(d5=5);
       :_FillValue = "Missing";
 
   // global attributes:

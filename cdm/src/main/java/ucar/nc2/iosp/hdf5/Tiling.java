@@ -103,7 +103,11 @@ public class Tiling {
     int useRank = Math.min(rank, pt.length); // eg varlen (datatype 9) has mismatch
     int[] tile = new int[useRank];
     for (int i = 0; i < useRank; i++) {
-      assert shape[i] >= pt[i];
+      // 7/30/2016 jcaron. Apparently in some cases, at the end of the array, the index can be greater than the shape.
+      // eg cdmUnitTest/formats/netcdf4/UpperDeschutes_t4p10_swemelt.nc
+      // Presumably to have even chunks. Could try to calculate the last even chunk.
+      // For now im removing this consistency check.
+      //  assert shape[i] >= pt[i] : String.format("shape[%s]=(%s) should not be less than pt[%s]=(%s)", i, shape[i], i, pt[i]);
       tile[i] = pt[i] / chunk[i];        // seems wrong, rounding down ??
     }
     return tile;

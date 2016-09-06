@@ -79,6 +79,9 @@ import java.util.Formatter;
  *
  * @author caron
  * @since 1/23/2015
+ *
+ * This needs revision to separate out the url path stuff from the more general
+ * file stuff.
  */
 @Component
 public class DatasetManager implements InitializingBean {

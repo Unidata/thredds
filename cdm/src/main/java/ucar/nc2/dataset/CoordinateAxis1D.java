@@ -901,7 +901,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       value2[i] = data.getDouble(ima.set1(1));
     }
 
-    // flip if needed
+    /* flip if needed
     boolean firstLower = true; // in the first interval, is lower < upper ?
     for (int i = 0; i < value1.length; i++) {
       if (Misc.closeEnough(value1[i], value2[i])) continue; // skip when lower == upper
@@ -914,7 +914,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       double[] temp = value1;
       value1 = value2;
       value2 = temp;
-    }
+    } */
 
     // decide if they are contiguous
     boolean contig = true;

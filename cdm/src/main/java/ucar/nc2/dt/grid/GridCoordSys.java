@@ -369,6 +369,7 @@ public class GridCoordSys extends CoordinateSystem implements ucar.nc2.dt.GridCo
           if (sbuff != null)
             sbuff.format("%s: Error reading time coord= %s err= %s%n", t.getDatasetLocation(), t.getFullName(), e.getMessage());
           log.error(t.getDatasetLocation()+": Error reading time coord= "+t.getFullName(), e);
+          throw new IllegalStateException("CoordinateSystem does not have a usable time axis");
         }
 
       } else { // 2d

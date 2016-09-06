@@ -28,13 +28,18 @@ C=tst_fills tst_h5fill
 
 BUGS=
 
-all::
-	which ncgen ; which ncdump
+all:: all2 all3
+
+all1:
 	for x in ${C} ; do \
 	    gcc -g -O0 -o $$x.exe $$x.c -L/usr/local/lib -lnetcdf -lcurl -lhdf5 -lhdf5_hl ; \
 	    ./$$x ; \
 	done
+
+all2:
 	for x in ${NC} ${HDF5} ; do ncgen -k3 $${x}.cdl ; done
+
+all3:
 	for x in ${HDF5} ; do cp $${x}.nc $${x}.hdf5 ; done 
 
 clean::

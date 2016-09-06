@@ -78,12 +78,13 @@ public class TestGribCoverageBuilding {
       CoverageCoordSys csys = cov.getCoordSys();
       Assert.assertNotNull("CoverageCoordSys", csys);
 
-      CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
+      CoverageCoordAxis1D runtime = (CoverageCoordAxis1D) csys.getAxis(AxisType.RunTime);
       Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
       Assert.assertTrue(runtime.getClass().getName(), runtime instanceof CoverageCoordAxis1D);
       Assert.assertEquals(CoverageCoordAxis.Spacing.regularPoint, runtime.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.scalar, runtime.getDependenceType());
-      Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(runtime.getStartValue()));
+      CalendarDate startDate = runtime.makeDate(runtime.getCoordMidpoint(0));
+      Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), startDate);
     }
   }
 

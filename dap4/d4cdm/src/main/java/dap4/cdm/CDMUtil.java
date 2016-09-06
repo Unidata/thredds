@@ -4,16 +4,13 @@
 
 package dap4.cdm;
 
-import dap4.core.data.DataException;
-import dap4.core.dmr.AtomicType;
+import dap4.core.data.DataCursor;
 import dap4.core.dmr.DapDimension;
-import dap4.core.dmr.DapEnum;
 import dap4.core.dmr.DapType;
+import dap4.core.dmr.TypeSort;
 import dap4.core.util.DapException;
-import dap4.core.util.DapUtil;
+import dap4.core.util.Index;
 import dap4.core.util.Slice;
-import dap4.dap4shared.D4DataAtomic;
-import ucar.ma2.DataType;
 import ucar.ma2.ForbiddenConversionException;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
@@ -24,9 +21,6 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +43,7 @@ abstract public class CDMUtil
      */
     static public List<Slice>
     createSlices(List<Range> rangelist)
-            throws DapException
+            throws dap4.core.util.DapException
     {
         List<Slice> slices = new ArrayList<Slice>(rangelist.size());
         for(int i = 0; i < rangelist.size(); i++) {
@@ -79,15 +73,15 @@ abstract public class CDMUtil
 
     static public boolean
     isWhole(List<Range> rangelist, List<DapDimension> dimset, int start, int stop)
-            throws DapException
+            throws dap4.core.util.DapException
     {
         int rsize = (rangelist == null ? 0 : rangelist.size());
         if(rsize != dimset.size())
-            throw new DapException("range/dimset rank mismatch");
+            throw new dap4.core.util.DapException("range/dimset rank mismatch");
         if(rsize == 0)
             return true;
         if(start < 0 || stop < start || stop > rsize)
-            throw new DapException("Invalid start/stop indices");
+            throw new dap4.core.util.DapException("Invalid start/stop indices");
 
         for(int i = start; i < stop; i++) {
             Range r = rangelist.get(i);
@@ -109,7 +103,7 @@ abstract public class CDMUtil
      */
     static public boolean
     isWhole(List<Range> rangelist, List<Slice> slices)
-            throws DapException
+            throws dap4.core.util.DapException
     {
         if(rangelist.size() != slices.size())
             return false;
@@ -133,7 +127,7 @@ abstract public class CDMUtil
      */
     static public boolean
     isWhole(List<Range> rangelist, Variable var)
-            throws DapException
+            throws dap4.core.util.DapException
     {
         List<Dimension> dimset = var.getDimensions();
         if(rangelist.size() != dimset.size())
@@ -241,215 +235,6 @@ abstract public class CDMUtil
         return false;
     }
 
-    static public DataType
-    enumtypefor(DapType dt)
-    {
-        switch (dt.getAtomicType()) {
-        case Char:
-        case Int8:
-        case UInt8:
-            return DataType.ENUM1;
-        case Int16:
-        case UInt16:
-            return DataType.ENUM2;
-        case Int32:
-        case UInt32:
-            return DataType.ENUM4;
-        case Enum:
-            //Coverity[FB.BC_UNCONFIRMED_CAST]
-            return enumtypefor(((DapEnum) dt).getBaseType());
-        default:
-            break;
-        }
-        return null;
-    }
-
-
-    static public DapType
-    cdmtype2daptype(DataType datatype)
-    {
-        switch (datatype) {
-        case CHAR:
-            return DapType.CHAR;
-        case BYTE:
-            return DapType.INT8;
-        case SHORT:
-            return DapType.INT16;
-        case INT:
-            return DapType.INT32;
-        case LONG:
-            return DapType.INT64;
-        case UBYTE:
-            return DapType.UINT8;
-        case USHORT:
-            return DapType.UINT16;
-        case UINT:
-            return DapType.UINT32;
-        case ULONG:
-            return DapType.UINT64;
-        case FLOAT:
-            return DapType.FLOAT32;
-        case DOUBLE:
-            return DapType.FLOAT64;
-        case STRING:
-            return DapType.STRING;
-        case OPAQUE:
-            return DapType.OPAQUE;
-
-        // For these, return the integer basetype
-        case ENUM1:
-            return DapType.INT8;
-        case ENUM2:
-            return DapType.INT16;
-        case ENUM4:
-            return DapType.INT32;
-
-        // Undefined
-        case SEQUENCE:
-        case STRUCTURE:
-        default:
-            break;
-        }
-        return null;
-    }
-
-    static public DataType
-    daptype2cdmtype(DapType daptype)
-    {
-        AtomicType atomtype = daptype.getPrimitiveType();
-        switch (atomtype) {
-        case Char:
-            return DataType.CHAR;
-        case UInt8:
-            return DataType.UBYTE;
-        case Int8:
-            return DataType.BYTE;
-        case Int16:
-            return DataType.SHORT;
-        case UInt16:
-            return DataType.USHORT;
-        case Int32:
-            return DataType.INT;
-        case UInt32:
-            return DataType.UINT;
-        case Int64:
-            return DataType.LONG;
-        case UInt64:
-            return DataType.ULONG;
-        case Float32:
-            return DataType.FLOAT;
-        case Float64:
-            return DataType.DOUBLE;
-        case String:
-        case URL:
-            return DataType.STRING;
-        case Opaque:
-            return DataType.OPAQUE;
-        case Enum:
-            //Coverity[FB.BC_UNCONFIRMED_CAST]
-            DapEnum dapenum = (DapEnum) daptype;
-            switch (dapenum.getBaseType().getAtomicType()) {
-            case Char:
-            case UInt8:
-            case Int8:
-                return DataType.ENUM1;
-            case Int16:
-            case UInt16:
-                return DataType.ENUM2;
-            case Int32:
-            case UInt32:
-                return DataType.ENUM4;
-            case Int64:
-            case UInt64:
-                // since there is no ENUM8, use ENUM4
-                return DataType.ENUM4;
-            default:
-                break;
-            }
-            break;
-        case Structure:
-            return DataType.STRUCTURE;
-        default:
-            break;
-        }
-        return null;
-    }
-
-    /**
-     * Conmpute the size, in databuffer,
-     * of the daptype wrt to a serialization;
-     * 0 if undefined.
-     *
-     * @param atomtype The type of interest
-     * @return the size, in databuffer
-     */
-    static public int
-    daptypeSize(AtomicType atomtype)
-    {
-        switch (atomtype) {
-        case Char: // remember serial size is 1, not 2.
-        case UInt8:
-        case Int8:
-            return 1;
-        case Int16:
-        case UInt16:
-            return 2;
-        case Int32:
-        case UInt32:
-        case Float32:
-            return 4;
-        case Int64:
-        case UInt64:
-        case Float64:
-            return 8;
-        default:
-            break;
-        }
-        return 0;
-    }
-
-    /* Needed to implement Array.getElement() */
-    static public Class
-    cdmElementClass(DataType dt)
-    {
-        switch (dt) {
-        case BOOLEAN:
-            return boolean.class;
-        case ENUM1:
-        case BYTE:
-            return byte.class;
-        case CHAR:
-            return char.class;
-        case ENUM2:
-        case SHORT:
-            return short.class;
-        case ENUM4:
-        case INT:
-            return int.class;
-        case LONG:
-            return long.class;
-        case FLOAT:
-            return float.class;
-        case DOUBLE:
-            return double.class;
-        case STRING:
-            return String.class;
-        case OPAQUE:
-            return ByteBuffer.class;
-        case UBYTE:
-            return Byte.class;
-        case USHORT:
-            return Short.class;
-        case UINT:
-            return Integer.class;
-        case ULONG:
-            return Long.class;
-        default:
-            break;
-        }
-        return null;
-    }
-
     /**
      * Compute the shape inferred from a set of slices.
      * 'Effective' means that any trailing vlen will be
@@ -482,7 +267,7 @@ abstract public class CDMUtil
         case ATOMICVARIABLE:
 	        // This does not work for String or Opaque.
             DapType dt = ((DapAtomicVariable) var).getBaseType();
-            elementsize =  CDMUtil.daptypeSize(dt.getAtomicType());
+            elementsize =  CDMUtil.daptypeSize(dt.getTypeSort());
             break;
         case STRUCTURE:
         case SEQUENCE:
@@ -505,23 +290,11 @@ abstract public class CDMUtil
      * is presumed correct.
      *
      * @param atomtype type of object to extract ; must not be Enum
-     * @param dataset  D4Data containing the objects
+     * @param dataset  Data containing the objects
      * @param index    Which element of dataset to read
      * @return resulting value as an Object; value does not necessarily conform
      * to Convert.ValueClass.
      */
-
-    static Object
-    extractObject(AtomicType atomtype, D4DataAtomic dataset, long index)
-            throws DataException
-    {
-        try {
-            Object result = dataset.read(index);
-            return result;
-        } catch (IOException ioe) {
-            throw new DataException(ioe);
-        }
-    }
 
     /**
      * Extract, as a long, value from a (presumably)
@@ -529,59 +302,19 @@ abstract public class CDMUtil
      * is presumed correct.
      *
      * @param atomtype type of object to extract
-     * @param dataset  D4Data containing the objects
+     * @param dataset  Data containing the objects
      * @param index    Which element of dataset to read
      * @return resulting value as a long
      * @throws ForbiddenConversionException if cannot convert to long
      */
 
     static public long
-    extractLongValue(AtomicType atomtype, D4DataAtomic dataset, long index)
-            throws DataException
+    extractLongValue(TypeSort atomtype, DataCursor dataset, Index index)
+            throws DapException
     {
         Object result;
-        try {
-            result = dataset.read(index);
-        } catch (IOException ioe) {
-            throw new DataException(ioe);
-        }
-        long lvalue;
-        switch (atomtype) {
-        case Int8:
-            lvalue = (long) ((Byte) result).byteValue();
-            break;
-        case Char:
-        case UInt8:
-            lvalue = (long) ((Byte) result).byteValue();
-            lvalue = lvalue & 0xFFL;
-            break;
-        case Int16:
-            lvalue = (long) ((Short) result).shortValue();
-            break;
-        case UInt16:
-            lvalue = (long) ((Short) result).shortValue();
-            lvalue = lvalue & 0xFFFFL;
-            break;
-        case Int32:
-            lvalue = (long) ((Integer) result).intValue();
-            break;
-        case UInt32:
-            lvalue = (long) ((Integer) result).intValue();
-            lvalue = lvalue & 0xFFFFFFFFL;
-            break;
-        case Int64:
-        case UInt64:
-            lvalue = ((Long) result).longValue();
-            break;
-        case Float32:
-            lvalue = (long) ((Float) result).floatValue();
-            break;
-        case Float64:
-            lvalue = (long) ((Double) result).doubleValue();
-            break;
-        default:
-            throw new ForbiddenConversionException("Type not convertible to long");
-        }
+        result = dataset.read(index);
+        long lvalue = CDMTypeFcns.extract(atomtype, result);
         return lvalue;
     }
 
@@ -591,29 +324,25 @@ abstract public class CDMUtil
      * is presumed correct.
      *
      * @param atomtype type of object to extract
-     * @param dataset  D4Data containing the objects
+     * @param dataset  Data containing the objects
      * @param index    Which element of dataset to read
      * @return resulting value as a double
      * @throws ForbiddenConversionException if cannot convert to double
      */
 
     static public double
-    extractDoubleValue(AtomicType atomtype, D4DataAtomic dataset, int index)
-            throws DataException
+    extractDoubleValue(TypeSort atomtype, DataCursor dataset, Index index)
+            throws DapException
     {
         Object result;
-        try {
-            result = dataset.read(index);
-        } catch (IOException ioe) {
-            throw new DataException(ioe);
-        }
+        result = dataset.read(index);
         double dvalue = 0.0;
         if(atomtype.isIntegerType() || atomtype.isEnumType()) {
             long lvalue = extractLongValue(atomtype, dataset, index);
             dvalue = (double) lvalue;
-        } else if(atomtype == AtomicType.Float32) {
+        } else if(atomtype == TypeSort.Float32) {
             dvalue = (double) ((Float) result).floatValue();
-        } else if(atomtype == AtomicType.Float64) {
+        } else if(atomtype == TypeSort.Float64) {
             dvalue = ((Double) result).doubleValue();
         } else
             throw new ForbiddenConversionException();
@@ -624,7 +353,7 @@ abstract public class CDMUtil
      * Extract, as an object, n consecutive values
      * of an atomic typed array of values
      *
-     * @param dataset  D4Data containing the objects
+     * @param dataset  Data containing the objects
      * @param index    Starting element to read
      * @param count    Number of elements to read
      * @return resulting array of values as an object
@@ -632,14 +361,14 @@ abstract public class CDMUtil
 
     /*
     static public Object
-    extractVector(D4DataAtomic dataset, long index, long count, long offset)
-        throws DataException
+    extractVector(DataAtomic dataset, long index, long count, long offset)
+        throws DapException
     {
         Object vector = createVector(dataset.getType().getPrimitiveType(),count);
         try {
             dataset.read(index, count, vector, offset);
         } catch (IOException ioe) {
-            throw new DataException(ioe);
+            throw new DapException(ioe);
         }
         return vector;
     }
@@ -659,656 +388,18 @@ abstract public class CDMUtil
     {
         int i;
 
-        AtomicType srcatomtype = srctype.getPrimitiveType();
-        AtomicType dstatomtype = dsttype.getPrimitiveType();
+        TypeSort srcatomtype = srctype.getAtomicType();
+        TypeSort dstatomtype = dsttype.getAtomicType();
 
         if(srcatomtype == dstatomtype) {
             return src;
         }
         if(srcatomtype.isIntegerType()
-                && AtomicType.getSignedVersion(srcatomtype) == AtomicType.getSignedVersion(dstatomtype))
+                && TypeSort.getSignedVersion(srcatomtype) == TypeSort.getSignedVersion(dstatomtype))
             return src;
 
-        Object result = null;
-        boolean ok = true;
-        int len = 0;
-        char[] csrc;
-        byte[] bsrc;
-        short[] shsrc;
-        int[] isrc;
-        long[] lsrc;
-        float[] fsrc;
-        double[] dsrc;
-        char[] cresult;
-        byte[] bresult;
-        short[] shresult;
-        int[] iresult;
-        long[] lresult;
-        float[] fresult;
-        double[] dresult;
-        BigInteger bi;
-        boolean srcunsigned = srcatomtype.isUnsigned();
-        boolean dstunsigned = dstatomtype.isUnsigned();
-
-        // Do a double switch src X dst (ugh!)
-        switch (srcatomtype) {
-
-        case Char: //Char->
-            csrc = (char[]) src;
-            len = csrc.length;
-            switch (dstatomtype) {
-            case Char: //char->char
-            case Int8: //char->int8
-            case UInt8: //char->uint8
-                return src;
-            case Int16: //char->Int16
-            case UInt16://char->UInt16;
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) (((int) csrc[i]) & 0xFF);
-                }
-                break;
-            case Int32: //char->Int32
-            case UInt32://char->UInt32;
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    iresult[i] = (int) (((int) csrc[i]) & 0xFF);
-                }
-                break;
-            case Int64: //char->Int64
-            case UInt64://char->UInt64;
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    lresult[i] = (long) (((int) csrc[i]) & 0xFF);
-                }
-                break;
-            case Float32:
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) (((int) csrc[i]) & 0xFF);
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) (((int) csrc[i]) & 0xFF);
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case Int8: //Int8->
-            bsrc = (byte[]) src;
-            len = bsrc.length;
-            switch (dstatomtype) {
-            case Char: //int8->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (((int) bsrc[i]) & 0xFF);
-                }
-                break;
-            case Int16: //int8->Int16
-            case UInt16://int8->UInt16;
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) bsrc[i];
-                }
-                if(dstunsigned) {
-                    for(i = 0; i < len; i++) {
-                        shresult[i] &= (short) 0xFF;
-                    }
-                }
-                break;
-            case Int32: //int8->Int32
-            case UInt32://int8->UInt32;
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    iresult[i] = (int) bsrc[i];
-                }
-                if(dstunsigned) {
-                    for(i = 0; i < len; i++) {
-                        iresult[i] &= 0xFF;
-                    }
-                }
-                break;
-            case Int64: //int8->Int64
-            case UInt64://int8->UInt64;
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    lresult[i] = (long) bsrc[i];
-                }
-                if(dstunsigned) {
-                    for(i = 0; i < len; i++) {
-                        lresult[i] &= 0xFFL;
-                    }
-                }
-                break;
-            case Float32: //int8->float
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) bsrc[i];
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) bsrc[i];
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case UInt8: //UInt8->
-            bsrc = (byte[]) src;
-            len = bsrc.length;
-            switch (dstatomtype) {
-            case Char: //Byte->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (((int) bsrc[i]) & 0xFF);
-                }
-                break;
-            case Int16: //Byte->Int16
-            case UInt16://Byte->UInt16;
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) (((int) bsrc[i]) & 0xFF);
-                }
-                break;
-            case Int32: //Byte->Int32
-            case UInt32://Byte->UInt32;
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    iresult[i] = ((int) bsrc[i]) & 0xFF;
-                }
-                break;
-            case Int64: //Byte->Int64
-            case UInt64://Byte->UInt64;
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    lresult[i] = ((long) bsrc[i]) & 0xFFL;
-                }
-                break;
-            case Float32: //Byte->float
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) ((int) bsrc[i] & 0xFF);
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) ((int) bsrc[i] & 0xFF);
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case Int16: //Int16->
-            shsrc = (short[]) src;
-            len = shsrc.length;
-            switch (dstatomtype) {
-            case Char: //int16->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (((int) shsrc[i]) & 0xFF);
-                }
-                break;
-            case Int8: //int16->Int8
-            case UInt8://int16->UInt8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    bresult[i] = (byte) shsrc[i];
-                }
-                break;
-            case Int32: //int16->Int32
-            case UInt32://int16->UInt32;
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    iresult[i] = (int) shsrc[i];
-                }
-                if(dstunsigned) {
-                    for(i = 0; i < len; i++) {
-                        iresult[i] &= 0xFFFF;
-                    }
-                }
-                break;
-            case Int64: //int16->Int64
-            case UInt64://int16->UInt64;
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    lresult[i] = (long) shsrc[i];
-                }
-                if(dstunsigned) {
-                    for(i = 0; i < len; i++) {
-                        lresult[i] &= 0xFFFFL;
-                    }
-                }
-                break;
-            case Float32: //int16->float
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) shsrc[i];
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) shsrc[i];
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case UInt16: //UInt16->
-            shsrc = (short[]) src;
-            len = shsrc.length;
-            switch (dstatomtype) {
-            case Char: //UInt16->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (((int) shsrc[i]) & 0xFF);
-                }
-                break;
-            case Int8: //UInt16->Int8
-            case UInt8://UInt16->UInt8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    bresult[i] = (byte) shsrc[i];
-                }
-                break;
-            case Int32: //UInt16->Int32
-            case UInt32://UInt16->UInt32;
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    iresult[i] = ((int) shsrc[i]) & 0xFFFF;
-                }
-                break;
-            case Int64: //UInt16->Int64
-            case UInt64://UInt16->UInt64;
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    lresult[i] = ((long) shsrc[i]) & 0xFFFFL;
-                }
-                break;
-            case Float32: //UInt16->float
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) ((int) shsrc[i] & 0xFFFF);
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) ((int) shsrc[i] & 0xFFFF);
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case Int32: //Int32->
-            isrc = (int[]) src;
-            len = isrc.length;
-            switch (dstatomtype) {
-            case Char: //int32->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (isrc[i] & 0xFF);
-                }
-                break;
-            case Int8: //Int32->Int8
-            case UInt8://Int32->UInt8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    bresult[i] = (byte) isrc[i];
-                }
-                break;
-            case Int16: //Int32->Int16
-            case UInt16://Int32->UInt16;
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) isrc[i];
-                }
-                break;
-            case Int64: //Int32->Int64
-            case UInt64://Int32->UInt64
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    lresult[i] = (long) isrc[i];
-                }
-                if(dstunsigned) {
-                    for(i = 0; i < len; i++) {
-                        lresult[i] &= 0xFFFFL;
-                    }
-                }
-                break;
-            case Float32: //int32->float
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) isrc[i];
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) isrc[i];
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case UInt32: //UInt32->
-            isrc = (int[]) src;
-            len = isrc.length;
-            switch (dstatomtype) {
-            case Char: //UInt32->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (((int) isrc[i]) & 0xFF);
-                }
-                break;
-            case Int8: //Int32->Int8
-            case UInt8://UInt32->UInt8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    bresult[i] = (byte) isrc[i];
-                }
-                break;
-            case Int16: //Int32->Int16
-            case UInt16://UInt32->UInt16
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) isrc[i];
-                }
-                break;
-            case Int64: //Int32->Int64
-            case UInt64://UInt32->UInt64;
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    lresult[i] = (long) isrc[i];
-                }
-                if(dstunsigned) {
-                    for(i = 0; i < len; i++) {
-                        lresult[i] &= 0xFFFFFFFFL;
-                    }
-                }
-                break;
-            case Float32: //UInt32->float
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) ((int) isrc[i] & 0xFFFF);
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) ((int) isrc[i] & 0xFFFF);
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case Int64: //Int64->
-            lsrc = (long[]) src;
-            len = lsrc.length;
-            switch (dstatomtype) {
-            case Char: //Int64->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (lsrc[i] & 0xFF);
-                }
-                break;
-            case Int8: //Int64->Int8
-            case UInt8://Int64->UInt8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    bresult[i] = (byte) lsrc[i];
-                }
-                break;
-            case Int16: //Int64->Int16
-            case UInt16://Int64->UInt16;
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) lsrc[i];
-                }
-                break;
-            case Int32: //Int64->Int32
-            case UInt32://Int64->UInt32;
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    iresult[i] = (int) lsrc[i];
-                }
-                break;
-            case Float32: //Int64->float
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) lsrc[i];
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) lsrc[i];
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case UInt64: //UInt64->
-            lsrc = (long[]) src;
-            len = lsrc.length;
-            switch (dstatomtype) {
-            case Char: //UInt64->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (lsrc[i] & 0xFFL);
-                }
-                break;
-            case Int8: //Int64->Int8
-            case UInt8://UInt64->UInt8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    bresult[i] = (byte) lsrc[i];
-                }
-                break;
-            case Int16: //Int64->Int16
-            case UInt16://UInt64->UInt16
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) lsrc[i];
-                }
-                break;
-            case Int32: //Int64->Int32
-            case UInt32://UInt64->UInt32
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    iresult[i] = (int) lsrc[i];
-                }
-                break;
-            case Float32: //UInt64->float
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    bi = BigInteger.valueOf(lsrc[i]);
-                    bi = bi.and(DapUtil.BIG_UMASK64);
-                    fresult[i] = bi.floatValue();
-                }
-                break;
-            case Float64:
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    bi = BigInteger.valueOf(lsrc[i]);
-                    bi = bi.and(DapUtil.BIG_UMASK64);
-                    dresult[i] = bi.doubleValue();
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case Float32: //Float32->
-            fsrc = (float[]) src;
-            len = fsrc.length;
-            switch (dstatomtype) {
-            case Char: //Float32->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (((int) fsrc[i]) & 0xFF);
-                }
-                break;
-            case Int8: //Float32->Int8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    bresult[i] = (byte) fsrc[i];
-                }
-                break;
-            case UInt8://Float32->UInt8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    if(fsrc[i] < 0) {
-                        ok = false;
-                        break;
-                    }
-                    bresult[i] = (byte) fsrc[i];
-                }
-                break;
-            case Int16: //Float32->Int16
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) fsrc[i];
-                }
-                break;
-            case UInt16://Float32->UInt16
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    if(fsrc[i] < 0) {
-                        ok = false;
-                        break;
-                    }
-                    shresult[i] = (short) fsrc[i];
-                }
-                break;
-            case Int32: //Float32->Int32
-            case UInt32://Float32->UInt32
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    if(fsrc[i] < 0) {
-                        ok = false;
-                        break;
-                    }
-                    iresult[i] = (int) fsrc[i];
-                }
-                break;
-            case Int64: //Float32->Int64
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    BigDecimal bd = new BigDecimal(fsrc[i]);
-                    lresult[i] = bd.toBigInteger().longValue();
-                }
-                break;
-            case UInt64://Float32->UInt64
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    if(fsrc[i] < 0) {
-                        ok = false;
-                        break;
-                    } // not convertible
-                    BigDecimal bd = new BigDecimal(fsrc[i]);
-                    lresult[i] = bd.toBigInteger().longValue();
-                }
-                break;
-            case Float64://Float32->Float64
-                result = (dresult = new double[len]);
-                for(i = 0; i < len; i++) {
-                    dresult[i] = (double) fsrc[i];
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-        case Float64: //Float64->
-            dsrc = (double[]) src;
-            len = dsrc.length;
-            switch (dstatomtype) {
-            case Char: //Float64->char
-                result = (cresult = new char[len]);
-                for(i = 0; i < len; i++) {
-                    cresult[i] = (char) (((int) dsrc[i]) & 0xFF);
-                }
-                break;
-            case Int8: //Float64->Int8
-            case UInt8://Float64->UInt8
-                result = (bresult = new byte[len]);
-                for(i = 0; i < len; i++) {
-                    bresult[i] = (byte) dsrc[i];
-                }
-                break;
-            case Int16: //Float64->Int16
-            case UInt16://Float64->UInt16
-                result = (shresult = new short[len]);
-                for(i = 0; i < len; i++) {
-                    shresult[i] = (short) dsrc[i];
-                }
-                break;
-            case Int32: //Float64->Int32
-            case UInt32://Float64->UInt32
-                result = (iresult = new int[len]);
-                for(i = 0; i < len; i++) {
-                    iresult[i] = (int) dsrc[i];
-                }
-                break;
-            case Int64: //Float64->Int64
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    BigDecimal bd = new BigDecimal(dsrc[i]);
-                    lresult[i] = bd.toBigInteger().longValue();
-                }
-                break;
-            case UInt64://Float64->UInt64
-                result = (lresult = new long[len]);
-                for(i = 0; i < len; i++) {
-                    if(dsrc[i] < 0) {
-                        ok = false;
-                        break;
-                    } // not convertible
-                    BigDecimal bd = new BigDecimal(dsrc[i]);
-                    lresult[i] = bd.toBigInteger().longValue();
-                }
-                break;
-            case Float32://Float32->Float64
-                result = (fresult = new float[len]);
-                for(i = 0; i < len; i++) {
-                    fresult[i] = (float) dsrc[i];
-                }
-                break;
-            default:
-                ok = false;
-                break;
-            }
-            break;
-
-        default:
-            throw new ForbiddenConversionException();
-        }
-        if(!ok)
+        Object result = CDMTypeFcns.convert(dstatomtype, srcatomtype, src);
+        if(result == null)
             throw new ForbiddenConversionException();
         return result;
     }
@@ -1319,7 +410,7 @@ abstract public class CDMUtil
      * section.  For now, we create a simple array of the relevant
      * type and fill it by extracting the values specified by the
      * section.
-     * <p/>
+     * <p>
      * param array   the array from which the section is extracted
      * param section determines what to extract
      * throws DapException
@@ -1373,50 +464,6 @@ abstract public class CDMUtil
                 throw new UnsupportedOperationException(); // same as other cdm
         }
     }*/
-    static public Object
-    createVector(AtomicType atype, long count)
-    {
-        int icount = (int) count;
-        Object vector = null;
-        switch (atype) {
-        case Char:
-            vector = new char[icount];
-            break;
-        case UInt8:
-        case Int8:
-            vector = new byte[icount];
-            break;
-        case Int16:
-        case UInt16:
-            vector = new short[icount];
-            break;
-        case Int32:
-        case UInt32:
-            vector = new int[icount];
-            break;
-        case Int64:
-        case UInt64:
-            vector = new long[icount];
-            break;
-        case Float32:
-            vector = new float[icount];
-            break;
-        case Float64:
-            vector = new double[icount];
-            break;
-        case String:
-        case URL:
-            vector = new String[icount];
-            break;
-        case Opaque:
-            vector = new ByteBuffer[icount];
-            break;
-        default:
-            throw new ForbiddenConversionException();
-        }
-        return vector;
-    }
-
     static public String
     getChecksumString(byte[] checksum)
     {
@@ -1431,8 +478,8 @@ abstract public class CDMUtil
 
     /**
      * Convert a Section + variable to a constraint
-     * <p/>
-     * <p/>
+     * <p>
+     * <p>
      * static public View
      * sectionToView(CDMDSP dsp, Variable v, Section section)
      * throws DapException
@@ -1472,7 +519,7 @@ abstract public class CDMUtil
 
     static public List<Range>
     dimsetToRanges(List<DapDimension> dimset)
-            throws DapException
+            throws dap4.core.util.DapException
     {
         if(dimset == null)
             return null;
@@ -1483,7 +530,7 @@ abstract public class CDMUtil
                 Range r = new Range(dim.getShortName(), 0, (int) dim.getSize() - 1, 1);
                 ranges.add(r);
             } catch (InvalidRangeException ire) {
-                throw new DapException(ire);
+                throw new dap4.core.util.DapException(ire);
             }
         }
         return ranges;
@@ -1491,7 +538,7 @@ abstract public class CDMUtil
 
     static public List<Slice>
     shapeToSlices(int[] shape)
-            throws DapException
+            throws dap4.core.util.DapException
     {
         if(shape == null)
             return null;
@@ -1502,4 +549,30 @@ abstract public class CDMUtil
         }
         return slices;
     }
+
+    static public dap4.core.util.Index
+    cdmIndexToIndex(ucar.ma2.Index cdmidx)
+    {
+        int rank = cdmidx.getRank();
+        int[] shape = cdmidx.getShape();
+        long[] indices = new long[shape.length];
+        for(int i = 0; i < rank; i++) {
+            indices[i] = shape[i];
+        }
+        dap4.core.util.Index dapidx = new dap4.core.util.Index(indices, indices);
+        return dapidx;
+    }
+
+    static public ucar.ma2.Index
+    indexToCcMIndex(dap4.core.util.Index d4)
+    {
+        int rank = d4.getRank();
+        int[] shape = new int[rank];
+        for(int i = 0; i < rank; i++) {
+            shape[i] = (int)d4.get(i);
+        }
+        ucar.ma2.Index cdm =  ucar.ma2.Index.factory(shape);
+        return cdm;
+    }
+
 }

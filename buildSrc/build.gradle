@@ -1,4 +1,5 @@
 apply plugin: 'groovy'
+apply plugin: 'java-gradle-plugin'  // Adds gradleApi() compile dep and gradleTestKit() testCompile dep.
 
 // We'd normally apply the dependencies with something like:
 //     apply from: "$rootDir/gradle/dependencies.gradle"
@@ -7,8 +8,6 @@ apply plugin: 'groovy'
 apply from: "../gradle/dependencies.gradle"
 
 dependencies {
-    compile gradleApi()  // We're working with Gradle classes like org.gradle.api.Project.
-
     testCompile (libraries["spock-core"]) {
         // The Gradle API drags in the bundled version of Groovy that Gradle ships with (localGroovy()) –
         // see https://discuss.gradle.org/t/unable-to-force-gradle-to-use-groovy-2-0-0-for-the-project/7021.

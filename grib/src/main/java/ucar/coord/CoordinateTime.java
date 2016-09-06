@@ -80,29 +80,6 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return offsetSorted;
   }
 
-  /* @Override
-  public int findIndexContaining(double need) {
-    double bestDiff = Double.MAX_VALUE;
-    int bestIdx = 0;
-    for (int i = 0; i < offsetSorted.size(); i++) {
-      Integer coord = offsetSorted.get(i);
-      double diff = Math.abs(need - coord);
-      if (diff < bestDiff) {
-        bestDiff = diff;
-        bestIdx = i;
-      }
-    }
-    return bestIdx;
-  }
-  @Override
-  public int findIndexContaining(double need) {
-    for (int i = 0; i < offsetSorted.size(); i++) {
-      Integer coord = offsetSorted.get(i);
-      if (coord == (int) need) return i;
-    }
-    return -1;
-  } */
-
   @Override
   public List<? extends Object> getValues() {
     return offsetSorted;
@@ -138,8 +115,8 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   @Override
   public CalendarDateRange makeCalendarDateRange(ucar.nc2.time.Calendar cal) {
     CalendarDateUnit cdu = CalendarDateUnit.withCalendar(cal, periodName + " since " + refDate.toString());
-    CalendarDate start = cdu.makeCalendarDate(offsetSorted.get(0));
-    CalendarDate end = cdu.makeCalendarDate(offsetSorted.get(getSize() - 1));
+    CalendarDate start = cdu.makeCalendarDate(timeUnit.getValue() * offsetSorted.get(0));
+    CalendarDate end = cdu.makeCalendarDate(timeUnit.getValue() * offsetSorted.get(getSize() - 1));
     return CalendarDateRange.of(start, end);
   }
 
@@ -155,7 +132,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public void showCoords(Formatter info) {
-    info.format("Time offsets: (%s) ref=%s %n", getUnit(), getRefDate());
+    info.format("Time offsets: (%s) ref=%s %n", getTimeUnit(), getRefDate());
     for (Integer cd : offsetSorted)
       info.format("   %3d%n", cd);
   }

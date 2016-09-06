@@ -48,7 +48,7 @@ import ucar.unidata.util.test.category.NeedsRdaData;
 import java.io.IOException;
 
 /**
- * Describe
+ * Test RDA datasets not in cdmUnitTest.
  *
  * @author caron
  * @since 2/24/2016.

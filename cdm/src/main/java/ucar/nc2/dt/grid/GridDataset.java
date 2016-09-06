@@ -410,6 +410,8 @@ public class GridDataset implements ucar.nc2.dt.GridDataset, FeatureDataset {
     getInfo(buff);
     buff.format("%n%n----------------------------------------------------%n");
     try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ncd)) {
+      buff.format("%s%n", info.writeXML());
+      buff.format("------------------------------------------");
       buff.format("%s", info.getParseInfo());
     } catch (IOException e) {
       buff.format("NetcdfDatasetInfo failed");

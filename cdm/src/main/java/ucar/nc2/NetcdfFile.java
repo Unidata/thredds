@@ -524,19 +524,11 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (iospMessage != null)
       spi.sendIospMessage(iospMessage);
 
-    // get rid of file prefix, if any
-    String uriString = location.trim();
-    if (uriString.startsWith("file://"))
-      uriString = uriString.substring(7);
-    else if (uriString.startsWith("file:"))
-      uriString = uriString.substring(5);
-
-    // get rid of crappy microsnot \ replace with happy /
-    uriString = StringUtil2.replace(uriString, '\\', "/");
-
     if (bufferSize <= 0)
       bufferSize = default_buffersize;
-    ucar.unidata.io.RandomAccessFile raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, bufferSize);
+
+    ucar.unidata.io.RandomAccessFile raf =
+            ucar.unidata.io.RandomAccessFile.acquire(canonicalizeUriString(location), bufferSize);
 
     NetcdfFile result = new NetcdfFile(spi, raf, location, cancelTask);
 
@@ -545,6 +537,25 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       spi.sendIospMessage(iospMessage);
 
     return result;
+  }
+
+  /**
+   * Removes the {@code "file:"} or {@code "file://"} prefix from the location, if necessary. Also replaces
+   * back slashes with forward slashes.
+   *
+   * @param location  a URI string.
+   * @return  a canonical URI string.
+   */
+  public static String canonicalizeUriString(String location) {
+    // get rid of file prefix, if any
+    String uriString = location.trim();
+    if (uriString.startsWith("file://"))
+      uriString = uriString.substring(7);
+    else if (uriString.startsWith("file:"))
+      uriString = uriString.substring(5);
+
+    // get rid of crappy microsnot \ replace with happy /
+    return StringUtil2.replace(uriString, '\\', "/");
   }
 
   static private ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
@@ -1211,6 +1222,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * It may possibly be nested in multiple groups and/or structures.
    * An embedded "." is interpreted as structure.member.
    * An embedded "/" is interpreted as group/group or group/variable.
+   * An embedded "@" is interpreted as variable@attribute
    * If the name actually has a ".", you must escape it (call NetcdfFile.escapeName(varname))
    * Any other chars may also be escaped, as they are removed before testing.
    *
@@ -2360,7 +2372,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
   // reservedSectionCdl defines the characters that must be escaped
   // when what?
-  static public final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~.\\";
+  static public final String reservedCdl = "[ !\"#$%&'()*,:;<=>?[]^`{|}~\\";
 
   /**
    * Create a valid CDM object name.

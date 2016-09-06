@@ -705,7 +705,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   /**
    * Define the dap4 path
    */
-  static private final String DAP4_PATH = "dap4.cdm";
+  static private final String DAP4_PATH = "dap4.cdm.nc2";
 
   static private NetcdfFile acquireDODS(FileCache cache, FileFactory factory, Object hashKey,
                                         String location, int buffer_size, ucar.nc2.util.CancelTask cancelTask, Object spiObject) throws IOException {
@@ -776,7 +776,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     NetcdfFile file;
     String target = DAP4_PATH + ".DapNetcdfFile";
     try {
-      dap4class = NetcdfDataset.class.getClassLoader().loadClass(target);
+      dap4class = NetcdfFile.class.getClassLoader().loadClass(target);
       constructormethod = dap4class.getConstructor(String.class, ucar.nc2.util.CancelTask.class);
       file = (NetcdfFile) constructormethod.newInstance(location, cancelTask);
       return file;
@@ -789,7 +789,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       log.error(msg);
       throw new IOException(msg);
     } catch (InstantiationException e) {
-      String msg = "DapNetcdfFileFactory constructor cannot be invoked";
+      String msg = "DapNetcdfFile constructor cannot be invoked";
       log.error(msg);
       throw new IOException(msg);
     } catch (IllegalAccessException iace) {

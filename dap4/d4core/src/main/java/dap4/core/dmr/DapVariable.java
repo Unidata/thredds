@@ -42,23 +42,10 @@ abstract public class DapVariable extends DapNode implements DapDecl
     //////////////////////////////////////////////////
     // Accessors
 
-    public DapType getBaseType()
+    public DapType
+    getBaseType()
     {
-        return basetype;
-    }
-
-    public void setBaseType(DapType basetype)
-    {
-        this.basetype = basetype;
-    }
-
-    public DapType getTrueBaseType()
-    {
-        DapType bt = getBaseType();
-        if(bt.getAtomicType() == AtomicType.Enum)
-            return ((DapEnum) bt).getBaseType();
-        else
-            return bt;
+        return this.basetype;
     }
 
     public int getRank()

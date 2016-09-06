@@ -37,7 +37,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.units.TimeDuration;
 import ucar.unidata.geoloc.LatLonPointImpl;
 
 import java.util.List;
@@ -82,7 +81,7 @@ public class NcssPointParamsBean extends NcssParamsBean {
 
     // horiz
     if (stns != null)
-      subset.set(SubsetParams.stns, stns);
+      subset.set(SubsetParams.stations, stns);
     else if (hasLatLonBB())
       subset.set(SubsetParams.latlonBB, getLatLonBoundingBox());
     else if (hasLatLonPoint())

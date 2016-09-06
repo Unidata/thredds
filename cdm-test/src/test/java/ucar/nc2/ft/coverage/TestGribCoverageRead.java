@@ -75,7 +75,7 @@ public class TestGribCoverageRead {
       Assert.assertEquals(6*36*29*65*93*4, size);
 
       // LOOK if we dont set the runtime, assume latest. driven by Cdmrf spec. could be different.
-      SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 300.0).setTime(useDate);
+      SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTime(useDate);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       System.out.printf("%s%n", Misc.showInts(data.getShape()));
@@ -106,7 +106,7 @@ public class TestGribCoverageRead {
       long size = cover.getSizeInBytes();
       Assert.assertEquals(41*29*65*93*4, size);
 
-      SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 300.0).setTime(useDate);
+      SubsetParams subset = new SubsetParams().setVertCoord(300.0).setTime(useDate);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       System.out.printf("%s%n", Misc.showInts(data.getShape()));
@@ -137,7 +137,7 @@ public class TestGribCoverageRead {
       long size = cover.getSizeInBytes();
       Assert.assertEquals(25243920, size);
 
-      SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 200.0).set(SubsetParams.timeOffset, 42.0);
+      SubsetParams subset = new SubsetParams().setVertCoord(200.0).setTimeOffset(42.0);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       System.out.printf("%s%n", Misc.showInts(data.getShape()));
@@ -147,7 +147,7 @@ public class TestGribCoverageRead {
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
       Assert.assertEquals(219.5, first, first * Misc.maxReletiveError);
-      Assert.assertEquals(218.6, last, last*Misc.maxReletiveError);
+      Assert.assertEquals(218.6, last, last * Misc.maxReletiveError);
     }
   }
 
@@ -168,7 +168,7 @@ public class TestGribCoverageRead {
       long size = cover.getSizeInBytes();
       Assert.assertEquals(4*5*1377*2145*4, size);
 
-      SubsetParams subset = new SubsetParams().set(SubsetParams.vertCoord, 70000).set(SubsetParams.timeOffset, 2);
+      SubsetParams subset = new SubsetParams().setVertCoord(70000).setTimeOffset(2);
       GeoReferencedArray geo = cover.readData(subset);
       Array data = geo.getData();
       System.out.printf("%s%n", Misc.showInts(data.getShape()));

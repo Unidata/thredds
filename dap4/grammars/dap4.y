@@ -1,19 +1,22 @@
 %language "Java"
 %debug
 %error-verbose
+/*
 %locations
+%define api.position.type {Bison.Position}
+*/
 
 %define api.push-pull push
-%define api.position.type {Bison.Position}
 %define abstract
 %define package {dap4.core.dmr.parser}
-%define parser_class_name {Dap4ParserBody}
+%define parser_class_name {Dap4BisonParser}
 %define extends {Dap4Actions}
 %define throws {DapException}
 %define lex_throws {DapException}
 
 %code imports {
 import dap4.core.util.DapException;
+import dap4.core.dmr.DapXML;
 }
 
 %code lexer {
@@ -21,7 +24,7 @@ public Object getLVal() {return null;}
 public int yylex() {return 0;}
 public Bison.Position getStartPos() {return null;}
 public Bison.Position getEndPos() {return null;}
-public void yyerror(Location loc, String s)
+public void yyerror(String s)
 {
 System.err.println(s);
 System.err.printf("near %s%n",getLocator());
@@ -82,9 +85,10 @@ System.err.printf("near %s%n",getLocator());
 %type <SaxEvent> namespace
 %type <SaxEvent> atomictype_
 %type <SaxEvent> _atomictype
-%type <DapNode> element_or_text
 %type <SaxEvent> xml_open xml_close xml_attribute
-
+%type <DapXML.XMLList> xml_body
+%type <DapXML> element_or_text
+%type <String> textstring
 
 %start response
 
@@ -96,21 +100,29 @@ response:
 	;
 
 dataset:
-	DATASET_
-	xml_attribute_map
-		{enterdataset($2);}
+	datasetprefix
 	groupbody
 	_DATASET
 		{leavedataset();}
 	;
 
+datasetprefix:
+	DATASET_
+	xml_attribute_map
+		{enterdataset($2);}
+	;
+
 group:
-	GROUP_
-	ATTR_NAME
-		{entergroup($2);}
+	groupprefix
 	groupbody
 	_GROUP
 		{leavegroup();}
+	;
+
+groupprefix:
+	GROUP_
+	ATTR_NAME
+		{entergroup($2);}
 	;
 
 /* The decls are directly inserted into the current group,
@@ -129,12 +141,16 @@ groupbody:
 	;
 
 enumdef:
-	ENUMERATION_
-	xml_attribute_map
-		{enterenumdef($2);}
+	enumdefprefix
 	enumconst_list
 	_ENUMERATION
 		{leaveenumdef();}
+	;
+
+enumdefprefix:
+	ENUMERATION_
+	xml_attribute_map
+		{enterenumdef($2);}
 	;
 
 enumconst_list:
@@ -150,12 +166,16 @@ enumconst:
 	;
 
 dimdef:
-	DIMENSION_
-	xml_attribute_map
-		{enterdimdef($2);}
+	dimdefprefix
 	metadatalist
 	_DIMENSION
 		{leavedimdef();}
+	;
+
+dimdefprefix:
+	DIMENSION_
+	xml_attribute_map
+		{enterdimdef($2);}
 	;
 
 dimref:
@@ -174,23 +194,31 @@ variable:
 
 /* Use atomic type to avoid rule explosion */
 atomicvariable:
-	atomictype_
-	ATTR_NAME
-		{enteratomicvariable($1,$2);}
+	atomicvariableprefix
 	varbody
 	_atomictype
-		{leaveatomicvariable($5);}
+		{leaveatomicvariable($3);}
 
 	;
 
+atomicvariableprefix:
+	atomictype_
+	ATTR_NAME
+		{enteratomicvariable($1,$2);}
+	;
+
 enumvariable:
+	enumvariableprefix
+	varbody
+	_ENUM
+		{leaveenumvariable($3);}
+
+	;
+
+enumvariableprefix:
 	ENUM_
 	xml_attribute_map
 		{enterenumvariable($2);}
-	varbody
-	_ENUM
-		{leaveenumvariable($5);}
-
 	;
 
 /* Does not include enum */
@@ -239,21 +267,29 @@ varbody:
 	;
 
 mapref:
-	MAP_
-	ATTR_NAME
-		{entermap($2);}
+	maprefprefix
 	metadatalist
 	_MAP
 		{leavemap();}
 	;
 
+maprefprefix:
+	MAP_
+	ATTR_NAME
+		{entermap($2);}
+	;
+
 structurevariable:
+	structurevariableprefix
+	structbody
+	_STRUCTURE
+		{leavestructurevariable($3);}
+	;
+
+structurevariableprefix:
 	STRUCTURE_
 	ATTR_NAME
 		{enterstructurevariable($2);}
-	structbody
-	_STRUCTURE
-		{leavestructurevariable($5);}
 	;
 
 structbody:
@@ -265,12 +301,16 @@ structbody:
 	;
 
 sequencevariable:
+	sequencevariableprefix
+	sequencebody
+	_SEQUENCE
+		{leavesequencevariable($3);}
+	;
+
+sequencevariableprefix:
 	SEQUENCE_
 	ATTR_NAME
 		{entersequencevariable($2);}
-	sequencebody
-	_SEQUENCE
-		{leavesequencevariable($5);}
 	;
 
 sequencebody:
@@ -299,20 +339,21 @@ attribute:
 
 /* We have to case this out to avoid empty list followed by empty list */
 atomicattribute:
-	  ATTRIBUTE_
-	  xml_attribute_map
-	  namespace_list
-		{enteratomicattribute($2,$3);}
+	atomicattributeprefix
 	  valuelist
 	  _ATTRIBUTE
 		{leaveatomicattribute();}
 	|
+	atomicattributeprefix
+	  _ATTRIBUTE
+		{leaveatomicattribute();}
+	;
+
+atomicattributeprefix:
 	  ATTRIBUTE_
 	  xml_attribute_map
 	  namespace_list
 		{enteratomicattribute($2,$3);}
-	  _ATTRIBUTE
-		{leaveatomicattribute();}
 	;
 
 namespace_list:
@@ -330,13 +371,17 @@ namespace:
 	;
 
 containerattribute:
+	containerattributeprefix
+	  attributelist
+	  _ATTRIBUTE
+		{leavecontainerattribute();}
+	;
+
+containerattributeprefix:
 	  ATTRIBUTE_
 	  xml_attribute_map
 	  namespace_list
 		{entercontainerattribute($2,$3);}
-	  attributelist
-	  _ATTRIBUTE
-		{leavecontainerattribute();}
 	;
 
 /* Cannot be empty */
@@ -352,7 +397,7 @@ valuelist:
 	;
 
 value:
-	  VALUE_ TEXT _VALUE /* text can contain multiple values */
+	  VALUE_ textstring _VALUE /* text can contain multiple values */
 		{value($2);}
 	| VALUE_ ATTR_VALUE _VALUE /* Single Value */
 		{value($2);}
@@ -361,26 +406,24 @@ value:
 otherxml:
 	OTHERXML_
 	xml_attribute_map
-		{enterotherxml($2);}
-	xml_body
+	element_or_text
 	_OTHERXML
-		{leaveotherxml();}
+		{otherxml($2,$3);}
 	;
 
 xml_body:
-	  element_or_text
-	| xml_body element_or_text
+	  element_or_text {$$=xml_body(null,$1);}
+	| xml_body element_or_text {$$=xml_body($1,$2);}
 	;
 
 element_or_text:
 	  xml_open
 	  xml_attribute_map
-		{enterxmlelement($1,$2);}
 	  xml_body
 	  xml_close
-		{leavexmlelement($5);}
+		{$$=element_or_text($1,$2,$3,$4);}
 	| TEXT
-		{xmltext($1);}
+		{$$=xmltext($1);}
 	;
 
 /* Use a generic map of xml attributes; action
@@ -480,14 +523,17 @@ xml_close:
 	;
 
 error_response:
+	error_responseprefix
+	error_body
+	_ERROR
+	    {leaveerror();}
+	;
+
+error_responseprefix:
 	ERROR_
 	xml_attribute_map
 	    /* optional attribute name="httpcode" data type="dap4_integer" */
 	    {entererror($2);}
-
-	error_body
-	_ERROR
-	    {leaveerror();}
 	;
 
 error_body:
@@ -496,11 +542,17 @@ error_body:
 	;
 
 error_element:
-	  MESSAGE_ TEXT _MESSAGE
+	  MESSAGE_ textstring _MESSAGE
 		{errormessage($2);}
-	| CONTEXT_ TEXT _CONTEXT
+	| CONTEXT_ textstring _CONTEXT
 		{errorcontext($2);}
-	| OTHERINFO_ TEXT _OTHERINFO
+	| OTHERINFO_ textstring _OTHERINFO
 		{errorotherinfo($2);}
-	
+	;
+
+textstring:
+	  TEXT
+		{$$=textstring(null,$1);}
+	| textstring TEXT
+		{$$=textstring($1,$2);}
 	;

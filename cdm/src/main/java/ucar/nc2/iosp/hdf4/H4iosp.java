@@ -485,7 +485,12 @@ public class H4iosp extends AbstractIOServiceProvider {
 
   }
 
-    // debug
+  @Override
+  public void reacquire() throws IOException {
+    super.reacquire();
+    header.raf = this.raf;
+  }
+
   public Object sendIospMessage(Object message) {
     if (message.toString().equals("header"))
       return header;

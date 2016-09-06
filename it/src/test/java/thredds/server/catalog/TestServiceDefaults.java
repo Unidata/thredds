@@ -3,8 +3,10 @@ package thredds.server.catalog;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.*;
 import ucar.nc2.constants.FeatureType;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
@@ -33,7 +35,12 @@ public class TestServiceDefaults {
     Assert.assertEquals(11, s.getNestedServices().size());
   }
 
+  // Relies on:
+  // <datasetScan name="Test Scan Grid Dataset" location="${cdmUnitTest}/ncss/CONUS_80km_nc/"
+  //     path="datasetScan/ncss/CONUS_80km_nc/" dataType="Grid"/>
+  // In tds/src/test/content/thredds/catalogs5/testServices.xml
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testStandardServicesDatasetScan() throws IOException {
     String catalog = "/catalog/datasetScan/ncss/CONUS_80km_nc/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);

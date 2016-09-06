@@ -5,13 +5,14 @@ package dap4.core.util;
 
 import dap4.core.dmr.*;
 
-import java.awt.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 /**
@@ -49,8 +50,9 @@ abstract public class DapUtil // Should only contain static methods
 
     static final public int CHECKSUMSIZE = 4; // bytes if CRC32
     static final public String DIGESTER = "CRC32";
+    static final public String CHECKSUMATTRNAME = "_DAP4_Checksum_CRC32";
 
-    static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     //////////////////////////////////////////////////
     // return last name part of an fqn; result will be escaped.
@@ -129,13 +131,6 @@ abstract public class DapUtil // Should only contain static methods
             }
             break;
 
-        // Following can never have/be sequence
-        case GRID:
-        case ENUMERATION:
-        case ATTRIBUTE:
-        case DIMENSION:
-        case ATOMICVARIABLE:
-        case XML:
         default: /* ignore */
             break;
         }
@@ -221,6 +216,7 @@ abstract public class DapUtil // Should only contain static methods
      * 1. use '/' consistently
      * 2. remove any trailing '/'
      * 3. trim blanks
+     * 4. Be aware of possible windows drive letter
      *
      * @param path convert this path
      * @return canonicalized version
@@ -269,7 +265,6 @@ abstract public class DapUtil // Should only contain static methods
 
         case STRUCTURE:
         case SEQUENCE:
-        case GRID:
             for(DapVariable field : ((DapStructure) var).getFields()) {
                 if(!checkFixedSize(field)) return false;
             }
@@ -311,7 +306,7 @@ abstract public class DapUtil // Should only contain static methods
                 if(cnt <= 0) break;
                 bytes.write(tmp, 0, cnt);
             } catch (IOException ioe) {
-                throw new DapException(ioe);
+                throw new dap4.core.util.DapException(ioe);
             }
         }
         return bytes.toByteArray();
@@ -382,6 +377,16 @@ abstract public class DapUtil // Should only contain static methods
         return (path != null && path.length() == 0 ? null : path);
     }
 
+    static public long[]
+    getDimSizes(List<DapDimension> dims)
+    {
+        long[] sizes = new long[dims.size()];
+        for(int i = 0; i < dims.size(); i++) {
+            sizes[i] = dims.get(i).getSize();
+        }
+        return sizes;
+    }
+
     static public long dimProduct(List<DapDimension> dimset) // dimension crossproduct
     {
         long count = 1;
@@ -419,7 +424,7 @@ abstract public class DapUtil // Should only contain static methods
 */
     static public List<Slice>
     dimsetSlices(List<DapDimension> dimset)
-            throws DapException
+            throws dap4.core.util.DapException
     {
         List<Slice> slices = new ArrayList<Slice>(dimset.size());
         for(int i = 0; i < dimset.size(); i++) {
@@ -457,9 +462,10 @@ abstract public class DapUtil // Should only contain static methods
     sliceProduct(List<Slice> slices) // another crossproduct
     {
         long count = 1;
-        for(Slice slice : slices) {
-            count *= slice.getCount();
-        }
+        if(slices != null)
+            for(Slice slice : slices) {
+                count *= slice.getCount();
+            }
         return count;
     }
 
@@ -529,34 +535,38 @@ abstract public class DapUtil // Should only contain static methods
     /**
      * Return the set of leading protocols for a url; may be more than one.
      *
-     * @param url the url whose protocols to return
+     * @param url        the url whose protocols to return
+     * @param breakpoint return the index past last protocol
      * @return list of leading protocols without the trailing :
      */
     static public List<String>
-    getProtocols(String url)
+    getProtocols(String url, int[] breakpoint)
     {
         // break off any leading protocols;
         // there may be more than one.
         // Watch out for Windows paths starting with a drive letter.
-        // Each protocol does not have trailing :
+        // Each protocol has trailing ':'  removed
 
         List<String> allprotocols = new ArrayList<>(); // all leading protocols upto path or host
 
         // Note, we cannot use split because of the context sensitivity
         StringBuilder buf = new StringBuilder(url);
+        int protosize = 0;
         for(; ; ) {
             int index = buf.indexOf(":");
             if(index < 0) break; // no more protocols
             String protocol = buf.substring(0, index);
             // Check for windows drive letter
-            if(index == 1 //=>|protocol| == 1
+            if(index == 1 //=>|protocol| == 1 => windows drive letter
                     && "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                     .indexOf(buf.charAt(0)) >= 0) break;
             allprotocols.add(protocol);
             buf.delete(0, index + 1); // remove the leading protocol
+            protosize += (index + 1);
             if(buf.indexOf("/") == 0)
                 break; // anything after this is not a protocol
         }
+        breakpoint[0] = protosize;
         return allprotocols;
     }
 
@@ -592,19 +602,6 @@ abstract public class DapUtil // Should only contain static methods
         return buf.toString();
     }
 
-    static public boolean
-    isContiguous(List<Slice> slices)
-    {
-        if(slices == null)
-            return false;
-        for(Slice s : slices) {
-            if(!s.isContiguous())
-                return false;
-        }
-        return true;
-    }
-
-
     /**
      * Re-throw run-time exceptions
      */
@@ -616,14 +613,128 @@ abstract public class DapUtil // Should only contain static methods
 
     static public String canonjoin(String prefix, String suffix)
     {
-        StringBuilder result = new StringBuilder(prefix);
+        StringBuilder result = new StringBuilder();
         if(prefix == null) prefix = "";
         if(suffix == null) suffix = "";
+        prefix = DapUtil.canonicalpath(prefix);
+        suffix = DapUtil.canonicalpath(suffix);
+        result.append(prefix);
         if(!prefix.endsWith("/"))
             result.append("/");
         result.append(suffix.startsWith("/") ? suffix.substring(1) : suffix);
         return result.toString();
     }
 
-} // class DapUtil
+    static public boolean
+    hasWindowsDrive(final String path)
+    {
+        if(path != null && path.length() >= 2 && path.charAt(1) == ':') {
+            final char c = path.charAt(0);
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        }
+        return false;
+    }
+
+    static public boolean
+    isAbsolutePath(final String path)
+    {
+        return path != null && (hasWindowsDrive(path)
+                || path.charAt(0) == '/'
+                || path.charAt(0) == '\\');
+    }
+
+    static public String canonFileURL(String url)
+    {
+        if(url == null || url.startsWith("file:"))
+            return url;
+        return "file:" + absolutize(url);
+    }
+
+    //////////////////////////////////////////////////
+
+    /**
+     * Helper functions for reading
+     */
+
+    /**
+     * Provide a helper function to convert an Index object to
+     * a slice list.
+     *
+     * @param indices  indicate value to read
+     * @param template variable template
+     * @return corresponding List<Slice>
+     * @throws DapException
+     */
+
+    static public List<Slice>
+    indexToSlices(Index indices, DapVariable template)
+            throws dap4.core.util.DapException
+    {
+        List<DapDimension> dims = template.getDimensions();
+        List<Slice> slices = indexToSlices(indices, dims);
+        return slices;
+    }
+
+    static public List<Slice>
+    indexToSlices(Index indices, List<DapDimension> dimset)
+            throws dap4.core.util.DapException
+    {
+        List<Slice> slices = indexToSlices(indices);
+        return slices;
+    }
+
+    /**
+     * Provide a helper function to convert an offset  to
+     * a slice list.
+     *
+     * @param offset
+     * @param template variable template
+     * @return
+     * @throws dap4.core.util.DapException
+     */
+    static public List<Slice>
+    offsetToSlices(long offset, DapVariable template)
+            throws DapException
+    {
+        List<DapDimension> dims = template.getDimensions();
+        long[] dimsizes = DapUtil.getDimSizes(dims);
+        return indexToSlices(Index.offsetToIndex(offset, dimsizes), template);
+    }
+
+    /**
+     * Given an offset (single index) and a set of dimensions
+     * compute the set of dimension indices that correspond
+     * to the offset.
+     */
+
+    static public List<Slice>
+    indexToSlices(Index indices)
+            throws DapException
+    {
+        // offset = d3*(d2*(d1*(x1))+x2)+x3
+        List<Slice> slices = new ArrayList<>(indices.rank);
+        for(int i = 0; i < indices.rank; i++) {
+            long isize = indices.indices[i];
+            slices.add(new Slice(isize, isize, 1, indices.dimsizes[i]));
+        }
+        return slices;
+    }
+
+    /**
+     * Test if a set of slices represent a contiguous region
+     * This is equivalent to saying all strides are one
+     *
+     * @param slices
+     * @return
+     */
+    static public boolean
+    isContiguous(List<Slice> slices)
+    {
+        for(Slice sl : slices) {
+            if(sl.getStride() != 1) return false;
+        }
+        return true;
+    }
+
+}
 

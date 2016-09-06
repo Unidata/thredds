@@ -16,7 +16,7 @@ public class TestFrontPage extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
+    static protected String DATADIR = "src/test/data"; // relative to dap4 root
     static protected String TESTDATADIR = DATADIR + "/resources/";
     static protected String BASELINEDIR = DATADIR + "/resources/TestServlet/baseline";
     static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
@@ -31,16 +31,14 @@ public class TestFrontPage extends DapTestCommon
 
     protected String datasetpath = null;
 
-    protected String root = null;
+    protected String resourceroot = null;
 
     //////////////////////////////////////////////////
 
     @Before
     public void setup() throws Exception {
-        this.root = getDAP4Root();
-        if(this.root == null)
-            throw new Exception("dap4 root not found");
-        this.datasetpath = this.root + "/" + DATADIR;
+        this.resourceroot = getResourceRoot();
+        this.datasetpath = this.resourceroot + "/" + DATADIR;
     }
 
     //////////////////////////////////////////////////
@@ -71,7 +69,7 @@ public class TestFrontPage extends DapTestCommon
             visual("Front Page", html);
 
 	    // Figure out the baseline
-        String baselinepath = this.root + "/" + BASELINEDIR + "/" + TESTFILE;
+        String baselinepath = this.resourceroot + "/" + BASELINEDIR + "/" + TESTFILE;
 	
         if(prop_baseline) {
             writefile(baselinepath, html);

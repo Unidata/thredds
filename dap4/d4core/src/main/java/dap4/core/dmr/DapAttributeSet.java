@@ -27,7 +27,7 @@ public class DapAttributeSet extends DapAttribute
 
     public DapAttributeSet(String name)
     {
-        super(name);
+        super(name,null);
     }
 
     //////////////////////////////////////////////////

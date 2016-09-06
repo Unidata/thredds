@@ -22,10 +22,9 @@
   </service>
 
   <datasetRoot path="localContent" location="content/testdata/"/>
+  <datasetRoot path="protected" location="content/protected/"/>
   <datasetRoot path="testRestrictedDataset" location="content/testdata/"/>
   <datasetRoot path="cdmUnitTest" location="${cdmUnitTest}"/>
-  <!-- urls intended to test container auth without spring -->
-  <datasetRoot path="containerauth" location="content/testdata"/>
 
   <dataset name="Test Single Dataset" ID="testDataset" serviceName="odap" urlPath="localContent/testData.nc" dataType="Grid"/>
   <dataset name="Test Dap4 Dataset" ID="testDap4Dataset" serviceName="dap4" urlPath="cdmUnitTest/ft/grid/03061219_ruc.nc" dataType="Grid"/>
@@ -224,5 +223,8 @@
   <catalogRef xlink:title="RDA" xlink:href="testRdaProblems.xml" name=""/>
 
   <catalogScan location="catalogs5" path="catalogs5" name="catalog scan with version 5 features"/>
+
+  <!-- urls intended to test container auth without spring -->
+  <datasetRoot path="containerauth" location="content/testdata"/>
 
 </catalog>

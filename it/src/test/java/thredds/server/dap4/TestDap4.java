@@ -2,7 +2,9 @@
 package thredds.server.dap4;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TdsLocalCatalog;
@@ -13,11 +15,12 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestDap4 {
-
   @Test
   public void testSimpleDap4GridDataset() throws IOException {
     Catalog cat = TdsLocalCatalog.open(null);  // default catalog
@@ -54,6 +57,5 @@ public class TestDap4 {
       Assert.assertArrayEquals(expect, have, Misc.maxReletiveError);
     }
   }
-
 }
 

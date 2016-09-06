@@ -6,6 +6,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.util.*;
@@ -351,6 +352,7 @@ public class TestDir {
       if (f.isDirectory())
         continue;
       if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude") ) {
+        name = StringUtil2.substitute(name, "\\", "/");
         System.out.println("----acting on file "+name);
         count += act.doAct(name);
       }
@@ -385,10 +387,10 @@ public class TestDir {
         for (Variable v : ncfile.getVariables()) {
           if (v.getSize() > max_size) {
             Section s = makeSubset(v);
-            System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+            //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
             v.read(s);
           } else {
-            System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+            //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
             v.read();
           }
         }

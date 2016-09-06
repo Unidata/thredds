@@ -1,6 +1,6 @@
 Making a release for CDM/TDS using Gradle
 
-{release.minor} refers to the full, 3-part version, e.g. "4.6.5"
+{release.minor} refers to the full, 3-part version, e.g. "4.6.6"
 {release.major} refers to the truncated, 2-part version, e.g. "4.6"
 
 1. Prepare ncWMS and threddsIso
@@ -12,7 +12,7 @@ Making a release for CDM/TDS using Gradle
 3. Pull all of the latest changes from upstream.
 
 4. In "/build.gradle", update the project's version for the release.
-   Likely, this means removing the '-SNAPSHOT' prefix, e.g. '4.6.5-SNAPSHOT' to '4.6.5'.
+   Likely, this means removing the '-SNAPSHOT' prefix, e.g. '4.6.6-SNAPSHOT' to '4.6.6'.
 
 5. In "/gradle/dependencies.gradle", update the "uk.ac.rdg.resc:ncwms" and "EDS:threddsIso" dependencies to the
    versions deployed in step 1. Also, remove any dependencies on SNAPSHOT versions of libraries.
@@ -123,7 +123,7 @@ Making a release for CDM/TDS using Gradle
     - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
       * modify www:/content/downloads/netcdf/netcdf-java-4/toc.xml as needed
 
-20. Edit www:/web/content/software/thredds/latest.xml to reflect the correct
+20. Edit www:/content/software/thredds/latest.xml to reflect the correct
     {release.minor} version for stable and development. This file is read by all
     TDS > v4.6 to make log entries regarding current stable and development versions
     to give users a heads-up of the need to update.
@@ -138,9 +138,9 @@ Making a release for CDM/TDS using Gradle
 
 23. Prepare for next round of development.
     - Update the project version. Increment it and add the "-SNAPSHOT" suffix.
-      * For example, if {release.minor}="4.6.5", the next version will be "4.6.6-SNAPSHOT".
+      * For example, if {release.minor}="4.6.6", the next version will be "4.6.7-SNAPSHOT".
     - Commit the change.
-      * The commit message should be something like "Begin work on 4.6.6-SNAPSHOT".
+      * The commit message should be something like "Begin work on 4.6.7-SNAPSHOT".
 
 24. Push the commits upstream.
     - Be sure to include the tag you created.

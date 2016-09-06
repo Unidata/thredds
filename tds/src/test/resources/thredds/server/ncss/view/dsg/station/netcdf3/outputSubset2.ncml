@@ -38,8 +38,9 @@
   </variable>
   
   <variable name="time" shape="obs" type="double">
-    <attribute name="units" value="days since 1970-01-01 00:00:00" />
+    <attribute name="units" value="Day since 1970-01-01T00:00:00Z" />
     <attribute name="long_name" value="time of measurement" />
+    <attribute name="calendar" value="proleptic_gregorian" />
 	<values>20.0 20.0 20.0</values>
   </variable>
   
@@ -64,8 +65,7 @@
 	<attribute name="coordinates" value="time latitude longitude stationAltitude" />
 	<values>70.0 220.0 370.0</values>
   </variable>
-  
-  <attribute name="featureType" value="timeSeries" />
+    
   <attribute name="Conventions" value="CF-1.6" />
   <attribute name="history" value="Written by CFPointWriter" />
   <attribute name="title" value="Extracted data from TDS using CDM remote subsetting" />
@@ -75,4 +75,6 @@
   <attribute name="geospatial_lat_max" type="double" value="44.0005" />
   <attribute name="geospatial_lon_min" type="double" value="-100.0005" />
   <attribute name="geospatial_lon_max" type="double" value="-93.9995" />
+  <attribute name="featureType" value="timeSeries" />
+  <attribute name="DSG_representation" value="Timeseries of station data in the indexed ragged array representation, H.2.5" />
 </netcdf>

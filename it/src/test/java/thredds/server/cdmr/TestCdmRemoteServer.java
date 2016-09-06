@@ -34,26 +34,28 @@ package thredds.server.cdmr;
 
 import org.junit.Assert;
 import org.junit.Test;
-import thredds.client.catalog.*;
-import thredds.client.catalog.tools.CatalogCrawler;
+import org.junit.experimental.categories.Category;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TdsLocalCatalog;
 import ucar.ma2.DataType;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.dataset.*;
-import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestCdmRemoteServer {
 
+  /* Relies on:
+  <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all"
+          urlPath="cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc" dataType="Grid"/>
+      in tds/src/test/content/thredds/catalog.xml
+   */
   @Test
   public void testSingleDataset() throws IOException {
     Catalog cat = TdsLocalCatalog.open(null);
@@ -92,17 +94,4 @@ public class TestCdmRemoteServer {
       Assert.assertArrayEquals(expect, have, Misc.maxReletiveError);
     }
   }
-
-  private void doOne(Dataset ds) throws IOException {
-    Access access = ds.getAccess(ServiceType.CdmRemote);
-    if (access == null) {
-      System.out.printf("No cdmremote access for %s%n", ds);
-      return;
-    }
-
-    DataFactory fac = new DataFactory();
-    DataFactory.Result dataResult = fac.openFeatureDataset( access, null);
-    System.out.println("ThreddsDataFactory.Result= "+dataResult);
-  }
-
 }

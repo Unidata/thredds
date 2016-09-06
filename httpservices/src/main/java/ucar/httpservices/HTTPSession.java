@@ -1156,7 +1156,6 @@ public class HTTPSession implements Closeable
     //////////////////////////////////////////////////
     // Called only by HTTPMethod.execute to get relevant session state.
 
-
     /**
      * Handle authentication and Proxy'ing
      *

@@ -40,6 +40,7 @@ tds/src/test/data/thredds/logs/
 opendap/src/test/data/test.*.*
 tds/src/test/content/thredds/logs
 tds/src/test/content/thredds/cache
+tds/src/test/content/thredds/state
 
 # OS generated files 
 .DS_Store*

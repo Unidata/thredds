@@ -24,7 +24,6 @@ dependencies {
     testCompile libraries["spock-core"]
 
     testCompile libraries["commons-io"]
-    testCompile libraries["equalsverifier"]
 }
 
 javadoc {

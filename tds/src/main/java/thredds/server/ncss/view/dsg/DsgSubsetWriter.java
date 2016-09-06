@@ -106,9 +106,11 @@ public abstract class DsgSubsetWriter {
 
     // TODO: This needs testing.
     public static CalendarDateRange getWantedDateRange(SubsetParams ncssParams) throws NcssException {
-
-        if (ncssParams.isTrue(SubsetParams.timeAll )) {  // Client explicitly requested all times.
-            return null;   // "null" means that we want ALL times, i.e. "do not subset".
+        if (ncssParams.isTrue(SubsetParams.timePresent)) {  // present
+            CalendarDate time = CalendarDate.present();
+            CalendarPeriod timeWindow = ncssParams.getTimeWindow();
+            if (timeWindow == null) timeWindow = CalendarPeriod.Hour;
+            return CalendarDateRange.of(time.subtract(timeWindow), time.add(timeWindow));
 
         } else if (ncssParams.getTime() != null) {  // Means we want just one single time.
             CalendarDate time = ncssParams.getTime();
@@ -127,12 +129,11 @@ public abstract class DsgSubsetWriter {
         } else if (ncssParams.getTimeRange() != null) {
             return ncssParams.getTimeRange();
 
-        } else  { // present
-            CalendarDate time = CalendarDate.present();
-            CalendarPeriod timeWindow = ncssParams.getTimeWindow();
-            if (timeWindow == null) timeWindow = CalendarPeriod.Hour;
-            return CalendarDateRange.of(time.subtract(timeWindow), time.add(timeWindow));
+        } else if (ncssParams.isTrue(SubsetParams.timeAll )) {  // Client explicitly requested all times.
+            return null;   // "null" means that we want ALL times, i.e. "do not subset".
 
+        } else {          // Client didn't specify a time parameter.
+            return null;  // Do not subset.
         }
     }
 }
