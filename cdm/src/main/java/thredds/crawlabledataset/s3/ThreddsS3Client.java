@@ -55,5 +55,26 @@ public interface ThreddsS3Client {
      *          Returns {@code null} if there is no S3 bucket with the specified name that has the specified key.
      * @throws IOException  if some I/O error occurred on the local filesystem while writing to file.
      */
+
     File saveObjectToFile(S3URI s3uri, File file) throws IOException;
+
+    /**
+     * Returns metadata for the "virtual directory" or S3 object at the specified Amazon S3 URI.
+     *
+     * @param s3uri  the Amazon S3 URI of the "virtual directory" or S3 object whose metadata is being retrieved.
+     * @return metadata for the "virtual directory" or S3 object at the specified Amazon S3 URI.
+     *         Will be {@code null} if there is no S3 object or "virtual directory" at the specified Amazon S3 URI.
+     */
+    ThreddsS3Metadata getMetadata(S3URI s3uri);
+
+    /**
+     * Returns a listing of the "virtual directories" and S3 objects contained in the "virtual directory" at the
+     * specified Amazon S3 URI.
+     *
+     * @param s3uri  the Amazon S3 URI of the "virtual directory" whose contents are to be listed.
+     * @return a listing of the "virtual directories" and/or S3 objects at the specified Amazon S3 URI.
+     *         Will be {@code null} if there is no "virtual directory" at the specified Amazon S3 URI.
+     */
+    ThreddsS3Listing listContents(S3URI s3uri);
+
 }

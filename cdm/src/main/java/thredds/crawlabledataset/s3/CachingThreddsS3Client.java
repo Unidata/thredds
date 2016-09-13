@@ -32,6 +32,8 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
     private final Cache<S3URI, Optional<ObjectMetadata>> objectMetadataCache;
     private final Cache<S3URI, Optional<ObjectListing>> objectListingCache;
     private final Cache<S3URI, Optional<File>> objectFileCache;
+    private final Cache<S3URI, Optional<ThreddsS3Metadata>> metadataCache;
+    private final Cache<S3URI, Optional<ThreddsS3Listing>> listingCache;
 
     public CachingThreddsS3Client(ThreddsS3Client threddsS3Client) {
         this(threddsS3Client, new ObjectFileCacheRemovalListener());
@@ -54,6 +56,14 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
                 .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_FILE_ENTRIES)
                 .removalListener(removalListener)
+                .build();
+        this.metadataCache = CacheBuilder.newBuilder()
+                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
+                .maximumSize(MAX_METADATA_ENTRIES)
+                .build();
+        this.listingCache = CacheBuilder.newBuilder()
+                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
+                .maximumSize(MAX_METADATA_ENTRIES)
                 .build();
     }
 
@@ -96,6 +106,41 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
         }
 
         return objectListing.orNull();
+    }
+
+    @Override
+    public ThreddsS3Metadata getMetadata(S3URI s3uri) {
+        Optional<ThreddsS3Metadata> metadata = metadataCache.getIfPresent(s3uri);
+        if (metadata == null) {
+            logger.debug(String.format("ThreddsS3Metadata cache MISS: '%s'", s3uri));
+            metadata = Optional.fromNullable(threddsS3Client.getMetadata(s3uri));
+            metadataCache.put(s3uri, metadata);
+        } else {
+            logger.debug(String.format("ThreddsS3Metadata cache hit: '%s'", s3uri));
+        }
+
+        return metadata.orNull();
+    }
+
+    @Override
+    public ThreddsS3Listing listContents(S3URI s3uri) {
+        Optional<ThreddsS3Listing> listing = listingCache.getIfPresent(s3uri);
+        if (listing == null) {
+            logger.debug(String.format("ThreddsS3Listing cache MISS: '%s'", s3uri));
+            listing = Optional.fromNullable(threddsS3Client.listContents(s3uri));
+            listingCache.put(s3uri, listing);
+            if (listing.isPresent()) {
+                // add contents of listing to metadata cache as well so additional requests
+                // do not need to be made to get them later
+                for (ThreddsS3Metadata metadata : listing.get().getContents()) {
+                    metadataCache.put(metadata.getS3uri(), Optional.fromNullable(metadata));
+                }
+            }
+        } else {
+            logger.debug(String.format("ThreddsS3Listing cache hit: '%s'", s3uri));
+        }
+
+        return listing.orNull();
     }
 
     /**
@@ -143,5 +188,7 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
         objectMetadataCache.invalidateAll();
         objectListingCache.invalidateAll();
         objectFileCache.invalidateAll();
+        metadataCache.invalidateAll();
+        listingCache.invalidateAll();
     }
 }

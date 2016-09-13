@@ -1,5 +1,6 @@
 package thredds.crawlabledataset.s3;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
@@ -20,7 +21,13 @@ import java.util.Objects;
 public class ThreddsS3ClientImpl implements ThreddsS3Client {
     private static final Logger logger = LoggerFactory.getLogger(ThreddsS3ClientImpl.class);
 
+    private static int maxListingPages = Integer.MAX_VALUE;
+
     private final AmazonS3Client s3Client;
+
+    public static void setMaxListingPages(int i) {
+        maxListingPages = i;
+    };
 
     public ThreddsS3ClientImpl() {
         // Use HTTP; it's much faster.
@@ -116,4 +123,67 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             }
         }
     }
+
+    @Override
+    public ThreddsS3Metadata getMetadata(S3URI s3uri) {
+        ObjectMetadata metadata = getObjectMetadata(s3uri);
+
+        if (metadata != null) {
+            return new ThreddsS3Object(s3uri, metadata.getLastModified(), metadata.getContentLength());
+        } else if (isDirectory(s3uri)) {
+            return new ThreddsS3Directory(s3uri);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ThreddsS3Listing listContents(S3URI s3uri) {
+        ThreddsS3Listing listing = new ThreddsS3Listing(s3uri);
+        ObjectListing page = listObjects(s3uri);
+
+        if (page == null) {
+            return null;
+        }
+
+        listing.add(page);
+        int pageNo = 2;
+
+        while (page.isTruncated() && pageNo <= maxListingPages) {
+            page = s3Client.listNextBatchOfObjects(page);
+            logger.info(String.format("Downloaded page %d of S3 listing '%s'", pageNo, s3uri));
+            listing.add(page);
+            pageNo++;
+        }
+
+        if (page.isTruncated()) {
+            logger.warn(
+                    String.format("Maximum number of S3 listing pages (%d) exceeded. " +
+                            "Not all content for %s retrieved", maxListingPages, s3uri));
+        }
+
+        return listing;
+    }
+
+    private boolean isDirectory(S3URI s3uri) {
+        try {
+            ListObjectsRequest listObjectsRequest =
+                    new ListObjectsRequest().withBucketName(s3uri.getBucket()).withDelimiter(S3URI.S3_DELIMITER);
+
+            listObjectsRequest.setPrefix(s3uri.getKeyWithTrailingDelimiter());
+            listObjectsRequest.setMaxKeys(1);
+
+            ObjectListing objectListing = s3Client.listObjects(listObjectsRequest);
+
+            return !objectListing.getCommonPrefixes().isEmpty() || !objectListing.getObjectSummaries().isEmpty();
+        } catch (AmazonServiceException e) {
+            if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                logger.debug(String.format("There is no S3 bucket '%s'.", s3uri.getBucket()));
+                return false;
+            } else {
+                throw e;
+            }
+        }
+    }
+
 }

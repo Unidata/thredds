@@ -231,7 +231,7 @@ public class S3URI {
 
         S3URI other = (S3URI) o;
         return this.bucket.equals(other.bucket) &&
-               this.key == null ? other.key == null : this.key.equals(other.key);
+                (this.key == null ? other.key == null : this.key.equals(other.key));
     }
 
     @Override

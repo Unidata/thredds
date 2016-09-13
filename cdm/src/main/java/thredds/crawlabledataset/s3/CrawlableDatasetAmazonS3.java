@@ -7,13 +7,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.crawlabledataset.CrawlableDataset;
@@ -28,14 +22,6 @@ import thredds.crawlabledataset.CrawlableDatasetFile;
  */
 public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
     private static final Logger logger = LoggerFactory.getLogger(CrawlableDatasetAmazonS3.class);
-
-    private static final long ENTRY_EXPIRATION_TIME = 1;  // In hours.
-    private static final long MAX_SUMMARY_ENTRIES = 10000;
-
-    private static final Cache<S3URI, S3ObjectSummary> objectSummaryCache = CacheBuilder.newBuilder()
-            .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
-            .maximumSize(MAX_SUMMARY_ENTRIES)
-            .build();
 
     private static ThreddsS3Client defaultThreddsS3Client = new CachingThreddsS3Client(new ThreddsS3ClientImpl());
 
@@ -72,10 +58,6 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
 
     public static void setDefaultThreddsS3Client(ThreddsS3Client threddsS3Client) {
         defaultThreddsS3Client = threddsS3Client;
-    }
-
-    public static void clearCache() {
-        objectSummaryCache.invalidateAll();
     }
 
     //////////////////////////////////////// Getters ////////////////////////////////////////
@@ -124,48 +106,33 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
 
     @Override
     public boolean exists() {
-        return objectSummaryCache.getIfPresent(s3uri)   != null ||
-               threddsS3Client.getObjectMetadata(s3uri) != null ||
-               threddsS3Client.listObjects(s3uri)       != null;
+        return threddsS3Client.getMetadata(s3uri) != null;
     }
 
     @Override
     public boolean isCollection() {
-        return objectSummaryCache.getIfPresent(s3uri) == null &&
-               threddsS3Client.listObjects(s3uri)     != null;
+        return threddsS3Client.getMetadata(s3uri) instanceof ThreddsS3Directory;
     }
 
     @Override
     public List<CrawlableDataset> listDatasets() throws IOException {
-        boolean isCachedObject = objectSummaryCache.getIfPresent(s3uri) != null;  // Cached objects aren't collections.
-        ObjectListing objectListing;
+        ThreddsS3Listing listing = threddsS3Client.listContents(s3uri);
 
-        if (isCachedObject || (objectListing = threddsS3Client.listObjects(s3uri)) == null) {
+        if (listing == null) {
             String tmpMsg = String.format("'%s' is not a collection dataset.", s3uri);
-            logger.error("listDatasets(): " + tmpMsg);
+            logger.error("listContents(): " + tmpMsg);
             throw new IllegalStateException(tmpMsg);
         }
 
         List<CrawlableDataset> crawlableDsets = new ArrayList<>();
 
-        for (final S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
-            S3URI childS3uri = new S3URI(objectSummary.getBucketName(), objectSummary.getKey());
+        for (final ThreddsS3Metadata metadata: listing.getContents()) {
             CrawlableDatasetAmazonS3 crawlableDset =
-                    new CrawlableDatasetAmazonS3(childS3uri, getConfigObject(), threddsS3Client);
+                    new CrawlableDatasetAmazonS3(metadata.getS3uri(), getConfigObject(), threddsS3Client);
             crawlableDsets.add(crawlableDset);
 
-            // Add summary to the cache. The cache will be queried in length() and lastModified().
-            objectSummaryCache.put(childS3uri, objectSummary);
         }
 
-        for (String commonPrefix : objectListing.getCommonPrefixes()) {
-            S3URI childS3uri = new S3URI(s3uri.getBucket(), commonPrefix);
-            CrawlableDatasetAmazonS3 crawlableDset =
-                    new CrawlableDatasetAmazonS3(childS3uri, getConfigObject(), threddsS3Client);
-            crawlableDsets.add(crawlableDset);
-        }
-
-        assert !crawlableDsets.isEmpty() : "This is a collection and collections shouldn't be empty.";
         return crawlableDsets;
     }
 
@@ -176,24 +143,10 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
      */
     @Override
     public long length() {
-        // If the summary is already in the cache, return it.
-        // It'll have been added by a listDatasets() call on the parent directory.
-        S3ObjectSummary objectSummary = objectSummaryCache.getIfPresent(s3uri);
-        if (objectSummary != null) {
-            return objectSummary.getSize();
-        }
+        ThreddsS3Metadata metadata = threddsS3Client.getMetadata(s3uri);
 
-        /* Get the metadata directly from S3. This will be expensive.
-         * We get punished hard if length() and/or lastModified() is called on a bunch of datasets without
-         * listDatasets() first being called on their parent directory.
-         *
-         * So, is the right thing to do here "getParentDataset().listDatasets()" and then query the cache again?
-         * Perhaps, but listDatasets() throws an IOException, and length() and lastModified() do not.
-         * We would have to change their signatures and the upstream client code to make it work.
-         */
-        ObjectMetadata metadata = threddsS3Client.getObjectMetadata(s3uri);
-        if (metadata != null) {
-            return metadata.getContentLength();
+        if (metadata instanceof ThreddsS3Object) {
+            return ((ThreddsS3Object)metadata).getLength();
         } else {
             // "this" may be a collection or non-existent. In both cases, we return 0.
             return 0;
@@ -207,14 +160,10 @@ public class CrawlableDatasetAmazonS3 extends CrawlableDatasetFile {
      */
     @Override
     public Date lastModified() {
-        S3ObjectSummary objectSummary = objectSummaryCache.getIfPresent(s3uri);
-        if (objectSummary != null) {
-            return objectSummary.getLastModified();
-        }
+        ThreddsS3Metadata metadata = threddsS3Client.getMetadata(s3uri);
 
-        ObjectMetadata metadata = threddsS3Client.getObjectMetadata(s3uri);
-        if (metadata != null) {
-            return metadata.getLastModified();
+        if (metadata instanceof ThreddsS3Object) {
+            return ((ThreddsS3Object)metadata).getLastModified();
         } else {
             // "this" may be a collection or non-existent. In both cases, we return null.
             return null;

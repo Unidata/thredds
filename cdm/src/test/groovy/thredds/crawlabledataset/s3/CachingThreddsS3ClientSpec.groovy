@@ -171,4 +171,57 @@ class CachingThreddsS3ClientSpec extends Specification {
         file.createNewFile()
         file
     }
+
+    def "getMetadata"() {
+        setup: "create URI and mock return value"
+        S3URI s3uri = new S3URI("s3://bucket/existing-key")
+        ThreddsS3Metadata mockMetadata = Mock(ThreddsS3Metadata)
+
+        when: "caching client's getMetadata() is called twice"
+        cachingThreddsS3Client.getMetadata(s3uri)
+        cachingThreddsS3Client.getMetadata(s3uri)
+
+        then: "mocking client's getMetadata() is called exactly once. It is stubbed to return mockMetadata"
+        1 * mockThreddsS3Client.getMetadata(s3uri) >> mockMetadata
+
+        and: "caching client is returning mockMetadata"
+        cachingThreddsS3Client.getMetadata(s3uri) is mockMetadata
+    }
+
+    def "listContents"() {
+        setup: "create URIs and mock return values"
+        S3URI s3uri = new S3URI("s3://bucket/parent_dir")
+        S3URI objectUri = new S3URI("s3://bucket/parent_dir/object")
+        S3URI childDirUri = new S3URI("s3://bucket/parent_dir/child_dir")
+
+        ThreddsS3Object mockObject = Mock(ThreddsS3Object) {
+            getS3uri() >> objectUri
+        }
+        ThreddsS3Directory mockDirectory = Mock(ThreddsS3Directory) {
+            getS3uri() >> childDirUri
+        }
+        ThreddsS3Listing mockListing = Mock(ThreddsS3Listing) {
+            getContents() >> [mockDirectory, mockObject]
+        }
+
+        when: "caching client's listContents() is called twice"
+        cachingThreddsS3Client.listContents(s3uri)
+        cachingThreddsS3Client.listContents(s3uri)
+
+        and: "caching client's getMetadata() is called once for each entry returned by listContents"
+        cachingThreddsS3Client.getMetadata(objectUri)
+        cachingThreddsS3Client.getMetadata(childDirUri)
+
+        then: "mocking client's listContents() is called exactly once. It is stubbed to return mockListing"
+        1 * mockThreddsS3Client.listContents(s3uri) >> mockListing
+
+        and: "mocking client's getMetadata() is never called for the entries returned by listContents"
+        0 * mockThreddsS3Client.getMetadata(*_)
+
+        and: "caching client is returning mockListing, mockDirectory and mockObject"
+        cachingThreddsS3Client.listContents(s3uri) is mockListing
+        cachingThreddsS3Client.getMetadata(objectUri) is mockObject
+        cachingThreddsS3Client.getMetadata(childDirUri) is mockDirectory
+    }
+
 }
