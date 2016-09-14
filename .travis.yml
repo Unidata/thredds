@@ -7,6 +7,7 @@ addons:
     paths:
       - $TRAVIS_UPLOAD_PATH
     target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
+    sonarqube: true
 
 jdk:
   - oraclejdk8
@@ -19,9 +20,13 @@ env:
     # Ordinarily, this wouldn't be a problem because libnetcdf would include an rpath reference to libhdf5, but the
     # binaries were built on a different system than the Travis VMs, so it doesn't work.
     - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64
+    # define SONAR_TOKEN
+    - secure: r59iEQuNVKa+ntx7PfkrLRi6PvGU6LqYNgtWgiWFAQPVLA2ctE2E8CeRY6/VB4MK/Q/fYgMmqPINihWFb0F8KiVi0jo43BpjBcknV6lGPClqpzYMD7XJAEG9hmphEwncVuyOlQmUpV+oEK8hRilVFOjZzx7OvjbdJ+QSqlXmPkw=
+
   matrix:
     - TASK="build"
     - TASK="docs"
+    - TASK="sonarqube"
 
 before_install:
   - if [[ $TASK == "docs" ]]; then
@@ -40,6 +45,10 @@ script:
   # If we need to do an IDV build, run the script
   - if [[ $TASK == "build_idv" ]]; then
       travis/build_idv.sh;
+    elif [[ $TASK == "sonarqube" ]]; then
+       export SONAR_SCANNER_HOME=${TRAVIS_BUILD_DIR}/travis/sonar-scanner;
+       chmod u+x ${SONAR_SCANNER_HOME}/bin/sonar-scanner;
+       ${SONAR_SCANNER_HOME}/bin/sonar-scanner -Dsonar.login=$SONAR_TOKEN;
     elif [[ $TASK == "docs" ]]; then
       echo Building docs;
       cd docs/website;
@@ -59,6 +68,7 @@ script:
 
       ./gradlew $SYSTEM_PROPS --info --stacktrace testAll;
     fi
+
 
 # See https://docs.travis-ci.com/user/languages/java/#Caching
 before_cache:
