@@ -5,6 +5,13 @@ ext.title = "OPeNDAP"
 ext.vendor = "OPeNDAP"
 ext.url = "http://opendap.org/"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 dependencies {
     compile project(':cdm')
     compile project(':httpservices')

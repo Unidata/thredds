@@ -1,5 +1,11 @@
 ext.title = "HttpClient Wrappers"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// httpservices has no tests
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 dependencies {
     compile libraries["jcip-annotations"]
     compile libraries["httpclient"]

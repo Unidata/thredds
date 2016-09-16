@@ -2,6 +2,13 @@ description = "Package that generates a jar file of legacy classes for backwards
 ext.title = "legacyJar Module"
 ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {

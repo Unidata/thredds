@@ -1,33 +1,10 @@
-import edu.ucar.build.PublishingUtil
-
-configure(publishedProjects) { Project project ->
-    apply plugin: 'maven-publish'
-
-    PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
-    PublishingUtil.adjustMavenPublicationPomScopes(project)
-
-    publishing {
-        repositories {
-            String version = rootProject.version as String
-            if (version.endsWith('SNAPSHOT')) {
-                maven {
-                    name = 'snapshots'
-                    url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots/'
-                    // Set credentials in taskGraph.whenReady {}
-                }
-            } else {
-                maven {
-                    name = 'releases'
-                    url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/'
-                    // Set credentials in taskGraph.whenReady {}
-                }
-            }
-        }
-    }
+if (name != "thredds") {
+    throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
-///////////////////////////////////////////////// Root /////////////////////////////////////////////////
+apply plugin: 'maven-publish'
 
+import edu.ucar.build.PublishingUtil
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
 
 publishing {
@@ -36,24 +13,25 @@ publishing {
         rootProject.configurations.archives.allArtifacts.each {
             if (it instanceof ArchivePublishArtifact) {
                 AbstractArchiveTask task = (it as ArchivePublishArtifact).archiveTask
-
+                
                 "$task.baseName"(MavenPublication) {
                     artifactId task.baseName
                     artifact task
                 }
             }
         }
-
+        
         threddsParent(MavenPublication) {  // Maven BOM publication
             artifactId 'thredds-parent'
-
+            
             pom.withXml{
+                List<Project> publishedProjects = allprojects*.findAll { it.plugins.withType(MavenPublishPlugin) }
                 List<MavenPublication> allPubs = publishedProjects.publishing.publications.flatten()
                 List<MavenPublication> webAndJavaPubs = allPubs.findAll {
                     // Don't include threddsParent or any of the fatJar pubs in dependencyManagement.
                     it.name.contains('Web') || it.name.contains('Java')
                 }
-
+                
                 asNode().append PublishingUtil.createDependencyManagement(webAndJavaPubs)
             }
         }
@@ -63,16 +41,16 @@ publishing {
 gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
     Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll { it instanceof PublishToMavenRepository }
-
+    
     if (!mavenPublishTasks) {
         return  // We're not running any tasks that publish to a (remote) Maven repo.
     }
-
+    
     Closure nexusCredentials = {
         username = getPropertyOrFailBuild 'nexus.username'
         password = getPropertyOrFailBuild 'nexus.password'
     }
-
+    
     mavenPublishTasks.each {
         it.repository.credentials nexusCredentials
     }

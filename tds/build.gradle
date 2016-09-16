@@ -3,6 +3,13 @@ description = "The THREDDS Data Server (TDS) is a web server that provides catal
 ext.title = "THREDDS Data Server (TDS)"
 ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 apply plugin: 'war'
 
 dependencies {

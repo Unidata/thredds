@@ -1,6 +1,12 @@
 description = "A collection of utilities needed server-side, including THREDDS catalog handling."
 ext.title = "Server-side common library "
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// tdcommon has no tests
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 dependencies {
     compile project(':cdm')
     compile project(':grib')

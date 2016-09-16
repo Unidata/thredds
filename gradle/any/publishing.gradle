@@ -1,0 +1,26 @@
+import edu.ucar.build.PublishingUtil
+
+apply plugin: 'maven-publish'
+
+// These are safe to apply to the root project. They'll basically have no effect.
+PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
+PublishingUtil.adjustMavenPublicationPomScopes(project)
+
+publishing {
+    repositories {
+        String version = rootProject.version as String
+        if (version.endsWith('SNAPSHOT')) {
+            maven {
+                name = 'snapshots'
+                url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots/'
+                // Set credentials in taskGraph.whenReady {}
+            }
+        } else {
+            maven {
+                name = 'releases'
+                url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/'
+                // Set credentials in taskGraph.whenReady {}
+            }
+        }
+    }
+}
