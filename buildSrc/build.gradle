@@ -4,10 +4,6 @@ apply plugin: 'java-gradle-plugin'  // Adds gradleApi() compile dep and gradleTe
 // We'd normally refer to these scripts with the 'rootDir' property. However, 'buildSrc' is a SEPARATE build from
 // every other project in thredds (see https://goo.gl/45RFqd), so "$rootDir" actually points to the directory that
 // THIS file is in.
-//
-// Another consequence of 'buildSrc' being a separate project is that it will not inherit any properties defined in
-// 'thredds'. Therefore, we must explicitly apply 'root/dependencies.gradle' here, unlike in the subprojects.
-apply from: "../gradle/root/dependencies.gradle"
 apply from: "../gradle/any/dependencies.gradle"
 apply from: "../gradle/any/coverage.gradle"
 

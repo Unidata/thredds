@@ -5,16 +5,13 @@
 // exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.
 // Thus, as long as we declare all plugins here, no child needs its own buildscript block. See http://goo.gl/2y3KhZ.
 buildscript {
-    // Must add extra properties here. They should be usable from the rest of the build script, though.
+    // Add the "libraries" ExtraProperty. It should be usable from the rest of this script as well.
     // See http://goo.gl/9bixNV
-    apply from: "$rootDir/gradle/root/dependencies.gradle"
+    apply from: "$rootDir/gradle/any/dependencies.gradle"
     
-    // The buildscript block is odd. We cannot do:
-    //     apply from: "$rootDir/gradle/any/dependencies.gradle"
-    // and get the repositories defined within. Yay for duplication.
+    // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
+    // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
     repositories {
-        // Prefer JCenter to Maven Central. See
-        // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
         jcenter()
     }
     
@@ -65,16 +62,7 @@ apply from: "$rootDir/gradle/root/coverage.gradle"
 apply from: "$rootDir/gradle/root/fatJars.gradle"
 apply from: "$rootDir/gradle/root/publishing.gradle" // Creates pubs for artifacts created in fatJars.gradle
 
-// Some tasks pull down there own dependencies and need repositories defined in order to to so.
-// :rootJacocoReport (from root/coverage.gradle) is one such task. If I don't apply this script plugin, I get:
-// Cannot resolve external dependency org.jacoco:org.jacoco.ant:0.7.6.201602180812 because no repositories are defined.
-apply from: "$rootDir/gradle/any/dependencies.gradle"
-
-// Modifies Test task from root/testing.gradle and JacocoReport task from root/coverage.gradle
-apply from: "$rootDir/gradle/any/coverage.gradle"
-
-// Modifies Jar tasks created in fatJars.gradle
-apply from: "$rootDir/gradle/any/archiving.gradle"
-
-// Modifies pubs created in root/publishing.gradle
-apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"    // Modifies Test task from root/testing.gradle and
+                                                     // JacocoReport task from root/coverage.gradle
+apply from: "$rootDir/gradle/any/archiving.gradle"   // Modifies Jar tasks created in fatJars.gradle
+apply from: "$rootDir/gradle/any/publishing.gradle"  // Modifies pubs created in root/publishing.gradle

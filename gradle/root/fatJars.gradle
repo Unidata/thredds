@@ -1,11 +1,8 @@
-// The buildscript {} block is evaluated before anything else in the script (regardless of location in file).
-// See http://goo.gl/EO8S1k. So, might as well put it first.
-//
-// In Gradle, dependencies specified in a parent's buildscript block are visible to all children.
+// In Gradle, dependencies specified in a parent's buildscript {} block are visible to all children.
 // However, that behavior doesn't seem to hold for script plugins (this file) applied from the parent script.
-// So we have to repeat ourselves.
+// So we have to repeat ourselves. See the root projects build script for more notes on buildscript {} block weirdness.
 buildscript {
-    apply from: "$rootDir/gradle/root/dependencies.gradle"
+    apply from: "$rootDir/gradle/any/dependencies.gradle"
 
     repositories {
         jcenter()
