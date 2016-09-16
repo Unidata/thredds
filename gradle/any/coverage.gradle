@@ -1,0 +1,27 @@
+// The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
+apply plugin: "jacoco"
+
+jacoco {
+    toolVersion = "0.7.6.201602180812"  // The latest version as of 2016-09-13.
+}
+
+Collection<Task> testTasks = tasks.withType(Test)
+Collection<Task> jacocoReportTasks = tasks.withType(JacocoReport)
+
+// Will apply to ":<subproject>:test" and ":it:integrationTest".
+testTasks.all {
+    // Add the execution data that Jacoco generates as a task output.
+    outputs.file jacoco.destinationFile
+}
+
+// Will apply to ":<subproject>:jacocoTestReport", ":it:integrationTestReport" and ":rootJacocoReport".
+jacocoReportTasks.all {
+    group = 'Reports'
+    dependsOn testTasks
+    
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        csv.enabled = false
+    }
+}

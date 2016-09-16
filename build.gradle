@@ -1,3 +1,31 @@
+// The buildscript {} block is evaluated before anything else in the script (regardless of location in file).
+// See http://goo.gl/EO8S1k. So, might as well put it first.
+//
+// Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
+// exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.
+// Thus, as long as we declare all plugins here, no child needs its own buildscript block. See http://goo.gl/2y3KhZ.
+buildscript {
+    // Must add extra properties here. They should be usable from the rest of the build script, though.
+    // See http://goo.gl/9bixNV
+    apply from: "$rootDir/gradle/root/dependencies.gradle"
+    
+    // The buildscript block is odd. We cannot do:
+    //     apply from: "$rootDir/gradle/any/dependencies.gradle"
+    // and get the repositories defined within. Yay for duplication.
+    repositories {
+        // Prefer JCenter to Maven Central. See
+        // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
+        jcenter()
+    }
+    
+    dependencies {
+        classpath libraries["gretty"]
+        classpath libraries["shadow"]
+        classpath libraries["coveralls-gradle-plugin"]
+        classpath libraries["gradle-extra-configurations-plugin"]
+    }
+}
+
 allprojects {
     // Matches Maven's "project.groupId". Used in MANIFEST.MF for "Implementation-Vendor-Id".
     group = "edu.ucar"
@@ -30,42 +58,23 @@ ext {
 
     SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
     buildTimestamp = iso_8601_format.format(new Date())
-
-    // Project groups:
-    nonJavaProjects = allprojects.findAll { it.path in [ ':', ':dap4' ] }
-    javaProjects = allprojects - nonJavaProjects
-
-    internalProjects = allprojects.findAll { it.path in [
-            ':dap4', ':dap4:d4tests', ':dap4:d4ts', ':opendap:dtswar',
-            ':it', ':cdm-test', ':testUtil'
-    ] }
-    publishedProjects = allprojects - internalProjects      // Includes root project.
 }
 
-// Due to a Gradle limitation, we cannot externalize this buildscript block into a script plugin. However, we can
-// exploit the fact that dependencies specified in a parent's buildscript block are visible to all children.
-// Thus, as long as we declare all plugins here, no child needs its own buildscript block. See http://goo.gl/2y3KhZ.
-buildscript {
-    apply from: "$rootDir/gradle/dependencies.gradle"
+apply from: "$rootDir/gradle/root/testing.gradle"
+apply from: "$rootDir/gradle/root/coverage.gradle"
+apply from: "$rootDir/gradle/root/fatJars.gradle"
+apply from: "$rootDir/gradle/root/publishing.gradle" // Creates pubs for artifacts created in fatJars.gradle
 
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath libraries["gretty"]
-        classpath libraries["shadow"]
-        classpath libraries["coveralls-gradle-plugin"]
-        classpath libraries["gradle-extra-configurations-plugin"]
-    }
-}
+// Some tasks pull down there own dependencies and need repositories defined in order to to so.
+// :rootJacocoReport (from root/coverage.gradle) is one such task. If I don't apply this script plugin, I get:
+// Cannot resolve external dependency org.jacoco:org.jacoco.ant:0.7.6.201602180812 because no repositories are defined.
+apply from: "$rootDir/gradle/any/dependencies.gradle"
 
-apply from: "$rootDir/gradle/dependencies.gradle"
+// Modifies Test task from root/testing.gradle and JacocoReport task from root/coverage.gradle
+apply from: "$rootDir/gradle/any/coverage.gradle"
 
-apply from: "$rootDir/gradle/testing.gradle"
-apply from: "$rootDir/gradle/java.gradle"
-apply from: "$rootDir/gradle/coverage.gradle"
-apply from: "$rootDir/gradle/archiving.gradle"
+// Modifies Jar tasks created in fatJars.gradle
+apply from: "$rootDir/gradle/any/archiving.gradle"
 
-// Order dependency: publishing.gradle creates publications for artifacts created in fatJars.gradle.
-apply from: "$rootDir/gradle/fatJars.gradle"
-apply from: "$rootDir/gradle/publishing.gradle"
+// Modifies pubs created in root/publishing.gradle
+apply from: "$rootDir/gradle/any/publishing.gradle"

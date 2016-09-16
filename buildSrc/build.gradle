@@ -1,11 +1,15 @@
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'  // Adds gradleApi() compile dep and gradleTestKit() testCompile dep.
 
-// We'd normally apply the dependencies with something like:
-//     apply from: "$rootDir/gradle/dependencies.gradle"
-// However, 'buildSrc' is a *separate build* from every other project in thredds (see https://goo.gl/45RFqd),
-// so "$rootDir" actually points to the directory that *this* file is in.
-apply from: "../gradle/dependencies.gradle"
+// We'd normally refer to these scripts with the 'rootDir' property. However, 'buildSrc' is a SEPARATE build from
+// every other project in thredds (see https://goo.gl/45RFqd), so "$rootDir" actually points to the directory that
+// THIS file is in.
+//
+// Another consequence of 'buildSrc' being a separate project is that it will not inherit any properties defined in
+// 'thredds'. Therefore, we must explicitly apply 'root/dependencies.gradle' here, unlike in the subprojects.
+apply from: "../gradle/root/dependencies.gradle"
+apply from: "../gradle/any/dependencies.gradle"
+apply from: "../gradle/any/coverage.gradle"
 
 dependencies {
     testCompile (libraries["spock-core"]) {
@@ -27,35 +31,4 @@ dependencies {
         // of the configuration.
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
-}
-
-// Configure Jacoco
-// This code duplicates much of coverage.gradle. However, since :buildSrc is a separate build from thredds, it's not
-// appropriate to just apply that build script here (it references properties defined in thredds rootProject).
-// TODO: Can that script be modified so that it can be applied to both projects?
-// TODO: Alternately, can some of that code be moved to classes in :buildSrc? Would we then be able to use those
-// classes in this script?
-
-// The jacoco plugin adds the jacocoTestReport task, but only if the java or groovy plugin is already applied.
-apply plugin: "jacoco"
-
-jacoco {
-    toolVersion = '0.7.5.201505241946'  // The latest version as of 2015-06-26.
-}
-
-jacocoTestReport {
-    dependsOn tasks.test
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-        csv.enabled = false
-    }
-}
-
-tasks.test {
-    finalizedBy tasks.jacocoTestReport
-
-    // Add the execution data that Jacoco generates as a task output.
-    outputs.file jacoco.destinationFile
 }

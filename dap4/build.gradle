@@ -1,5 +1,7 @@
 ext.title = "Data Access Protocol (DAP) version 4.0"  // Will be inherited by subprojects.
 
+// dap4 has no source code nor any artifacts to publish
+
 // NON-TRANSITIVE Dependency graph:
 // 	module		depends on
 // ----------------------------------------

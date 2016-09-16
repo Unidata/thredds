@@ -2,6 +2,12 @@ description = "Classes for CDM unit and integration testing. Relies on having ac
         " only be run at Unidata."
 ext.title = "Test CDM (upc/share - Unidata only)"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+// cdm-test is not published
+
 dependencies {
     testCompile project(":cdm")
     testCompile project(":bufr")
@@ -26,6 +32,13 @@ dependencies {
 task testIndexCreation(type: Test, dependsOn: [classes, testClasses], group: 'Verification',
              description: 'Tests creation of Grib and collection indexes, which will be used by subsequent tests.') {
     include 'ucar/nc2/grib/TestGribIndexCreation.class'
+    
+    // We don't care about the HTML report for this individual test, especially since its results will eventually get
+    // rolled into the allTests aggregate HTML report.
+    // More importantly, leaving this 'true' causes this task and :cdm-test:test to never be UP-TO-DATE because:
+    //   Output file thredds/cdm-test/build/reports/tests/index.html has changed.
+    // That's because – by default – both tasks write their HTML results to the same location.
+    reports.html.enabled = false
 }
 
 test {
@@ -35,6 +48,6 @@ test {
     // this statement also excludes the results of TestGribIndexCreation from appearing in the cdm-test report:
     // "/thredds/cdm-test/build/reports/tests/index.html". It's not easy to add them back in. Fortunately, those
     // results will be included in the allTests aggregate report: "/thredds/build/reports/allTests/index.html".
-    // The should also still get picked up by Jenkins.
+    // They should also still get picked up by Jenkins.
     exclude 'ucar/nc2/grib/TestGribIndexCreation.class'
 }

@@ -1,6 +1,12 @@
 description = "Reading BUFR files with the NetCDF-java library."
 ext.title = "BUFR IOSP"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// bufr doesn't have any JUnit tests
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 dependencies {
     compile project(":cdm")
     compile libraries["jdom2"]

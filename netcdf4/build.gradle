@@ -2,6 +2,12 @@ description = "An IOSP for NetCDF-4 that loads the C library to read and write f
 ext.title = "NetCDF-4 IOSP"
 ext.url = "https://www.unidata.ucar.edu/software/netcdf/"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// netcdf4 has no tests
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 dependencies {
     compile project(':cdm')
     compile libraries["jna"]

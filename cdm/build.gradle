@@ -2,6 +2,13 @@ description = "The NetCDF-Java Library is a Java interface to NetCDF files, as w
         "scientific data formats."
 ext.title = "CDM core library"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {

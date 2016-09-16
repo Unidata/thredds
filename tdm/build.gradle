@@ -1,5 +1,11 @@
 ext.title = "THREDDS Data Manager (TDM)"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// tdm has no tests
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 dependencies {
     compile project(':httpservices')
     compile project(':cdm')

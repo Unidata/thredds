@@ -5,6 +5,13 @@ description = "The ucar.units Java package is for decoding and encoding formatte
 ext.title = "UDUNITS"
 ext.url = "http://www.unidata.ucar.edu/software/udunits/"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 dependencies {
     compile libraries["joda-time"]
     compile libraries["jcip-annotations"]

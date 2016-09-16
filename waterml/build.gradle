@@ -1,6 +1,13 @@
 description = "Converts CDM DSGs to WaterML 2.0 timeseries and vice-versa."
 ext.title = "NetCDF to WaterML Converter"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 // TODO: Add to dependencies.gradle
 repositories {
     maven {

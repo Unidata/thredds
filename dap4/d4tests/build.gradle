@@ -1,3 +1,9 @@
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+// d4tests is not published
+
 dependencies {
     // A lot of these depedencies should be in the testRuntime config, not testCompile.
 

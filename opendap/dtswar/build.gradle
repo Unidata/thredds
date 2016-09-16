@@ -1,6 +1,11 @@
 description = "DAP server to serve up DAP test cases."
 ext.title = "DAP Test Server (DTS) webapp"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// dtswar has no tests
+// dtswar is not published
+
 apply plugin: 'war'
 
 dependencies {

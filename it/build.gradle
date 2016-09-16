@@ -4,6 +4,12 @@ description = "TDS - NetCDF-Java library integration Test module. This module co
 ext.title = "Test Integration"
 ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
+// 'it' is not published
+
 dependencies {
     testCompile project(":cdm")
     testRuntime project(":clcommon")
@@ -141,7 +147,7 @@ afterEvaluate {
             // checking. LOOK: The Test tasks have "true" here, yet I don't notice the undesirable behavior. Why?
             append = false
 
-            // Don't use the same name as our integration task's execution data.
+            // Don't use the same name as our integration test task's execution data.
             // That data may be useless (is it?), but overwriting it during execution foils UP-TO-DATE checking.
             // destinationFile = new File(buildDir, 'jacoco/integrationTest.exec')
         }

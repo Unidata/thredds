@@ -1,0 +1,60 @@
+// Dependencies can be found in gradle/root/dependencies.gradle
+// They are defined in the root project's ExtraPropertiesExtension ("ext"). They'll be inherited by subprojects.
+
+//================================================ Repositories ================================================//
+
+// TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
+// Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
+repositories {
+    mavenCentral()
+    maven {
+        // JitPack builds GitHub projects on demand and publishes ready-to-use packages.
+        // We need this because Spock requires CGLIB 3.2+ in order to work on Java 8.
+        // However, as of 2015-08-26, v3.2 hasn't been released, even though working code exists on master.
+        // So, using JitPack, we're going to grab an appropriate CGLIB artifact.
+        // See https://github.com/cglib/cglib/issues/32
+        url "https://jitpack.io"  // For libraries["cglib-nodep"]
+    }
+    maven {
+        url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
+    }
+    maven {
+        url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+    }
+}
+
+//============================= Transitive dependency replacements and exclusions =============================//
+
+// Executes the given closure against all objects in this collection, and any objects subsequently added to this
+// collection. See org.gradle.api.DomainObjectCollection.all(Closure)
+configurations.all {
+    // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j".
+    // This effectively converts every jcl call to an slf4j call.
+    // "commons-logging" is dragged in by spring-core and httpclient.
+    resolutionStrategy.eachDependency { DependencyResolveDetails dep ->
+        if (dep.requested.name == 'commons-logging') {
+            dep.useTarget libraries["jcl-over-slf4j"]
+        }
+    }
+    
+    // STAX comes with Java 1.6+
+    // Dragged in by xmlbeans
+    exclude group: 'stax', module: 'stax-api'
+    
+    // Xerces comes with Java 1.6+
+    // This SHOULD be okay, but see http://stackoverflow.com/questions/1167757
+    // Dragged in by 52n-oxf-xmlbeans
+    exclude group: 'xerces', module: 'xercesImpl'
+    
+    // This is an old version of the servlet API: v2. We're using v3.
+    // Dragged in by httpunit.
+    exclude group: 'javax.servlet', module: 'servlet-api'
+    
+    // Includes a lot of classes that already come with Java 1.6+
+    // and we don't use the "tidy" functionality (i.e. HTML pretty printing) anyway.
+    // Dragged in by httpunit.
+    exclude group: 'jtidy', module: 'jtidy'
+    
+    // Another SLF4J binding that we don't want. Dragged in by edal-common.
+    exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+}

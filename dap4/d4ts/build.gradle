@@ -1,3 +1,8 @@
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// d4ts has no tests
+// d4ts is not published
+
 apply plugin: 'war'
 
 dependencies {

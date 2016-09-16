@@ -1,6 +1,11 @@
 description = "A collection of reusable classes to be used in testing."
 ext.title = "Testing utilities"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// testUtil has no tests of its own
+// testUtil is not published
+
 dependencies {
     compile project(":cdm")
     compile libraries["junit"]

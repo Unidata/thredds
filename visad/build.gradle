@@ -2,6 +2,12 @@ description = "Several netCDF-Java IOSPs that depend on the VisAD library includ
         "and sounding datasets; a McIDAS IOSP for grid datasets; and an ADDE IOSP for image and station datasets."
 ext.title = "VisAD-based IOSPs"
 
+apply from: "$rootDir/gradle/any/dependencies.gradle"
+apply from: "$rootDir/gradle/any/java.gradle"
+// visadCdm has no tests
+apply from: "$rootDir/gradle/any/archiving.gradle"
+apply from: "$rootDir/gradle/any/publishing.gradle"
+
 dependencies {
     compile project(':cdm')
     compile project(':grib')

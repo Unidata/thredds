@@ -1,0 +1,28 @@
+// Safe for root project: no plugins applied.
+
+tasks.withType(Jar).all {   // Applies to Jar, War, Ear and ShadowJar tasks.
+    // Fails the build when an attempt is made to add a duplicate entry to an archive.
+    duplicatesStrategy = 'fail'
+    
+    manifest {
+        // Subprojects have not yet been configured, but they may want to reassign these attributes.
+        // So, we're going to delay evaluation by using lazy GStrings: http://goo.gl/zwWnPh
+        // Evaluation will happen when these strings are read, which should first occur during the UP-TO-DATE
+        // check of the execution phase.
+        attributes 'Implementation-Title': "${-> project.title}",
+                   'Implementation-Version': "${-> project.version}",
+                   'Implementation-Vendor-Id': "${-> project.group}",
+                   'Implementation-Vendor': "${-> project.vendor}",
+                   'Implementation-URL': "${-> project.url}",
+                   'Created-By': "Gradle $gradle.gradleVersion",
+                   'Build-Jdk': System.properties['java.version'],
+                   'Built-By': System.properties['user.name']
+    }
+    
+    doFirst {
+        // We cannot add this attribute during the configuration phase because it'll cause the jar task to never
+        // be UP-TO-DATE: http://goo.gl/kbVWXR. Adding it during the execution phase removes it as an input to
+        // Gradle's incremental build machinery.
+        manifest.attributes 'Built-On': project.buildTimestamp  // Defined in root project.
+    }
+}
