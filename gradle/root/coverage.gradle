@@ -81,16 +81,17 @@ gradle.projectsEvaluated {
      * meaning it's most likely a Gradle bug, not a coveralls-gradle-plugin bug. That's not surprising: there are lots
      * of weird and poorly-defined limitations about what you can and can't do in a script plugin.
      */
-    tasks.coveralls {
+    tasks.coveralls { Task task ->
         group = 'Reports'
         description = 'Uploads the aggregate coverage report to Coveralls'
         dependsOn tasks.rootJacocoReport
         
-        // This task logs the entire coveralls.io JSON payload (~27 MB) to the INFO log level. We don't want to see it.
-        // Causes a deprecation warning:
-        //      "LoggingManager.setLevel(LogLevel) has been deprecated and is scheduled to be removed in Gradle 3.0."
-        // There may be no replacement for it. Will have to experiment in Gradle 3.0.
-        logging.level = LogLevel.LIFECYCLE
+        // This task logs the entire coveralls.io JSON payload (~27 MB) to the INFO log level.
+        // We don't want to see it, so we're going to bump this task's log level up to LIFECYCLE.
+        //
+        // In Gradle 3.0, LoggingManager.setLevel() was removed without an appropriate (public) replacement.
+        // So, we have no choice but to use the deprecated, internal class's method.
+        (task.logging as org.gradle.logging.LoggingManagerInternal).level = LogLevel.LIFECYCLE
         
         // We want to add the COVERALLS_REPO_TOKEN entry, but coveralls.env is an UnmodifiableMap.
         // So, create a copy of env, add our entry, then replace the old map with it.
@@ -102,7 +103,9 @@ gradle.projectsEvaluated {
         // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
         coveralls {
             jacocoReportPath = tasks.rootJacocoReport.reports.xml.destination
-            sourceDirs = tasks.rootJacocoReport.sourceDirectories.files.collect { it.getPath() }
+            sourceDirs = tasks.rootJacocoReport.sourceDirectories.files.collect { task.path }
+    
+            sendToCoveralls = true
             saveAsFile = true  // Save JSON payload to file, so we can use it for UP-TO-DATE checking.
     
             inputs.file jacocoReportPath

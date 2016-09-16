@@ -2,7 +2,7 @@
 apply plugin: "jacoco"
 
 jacoco {
-    toolVersion = "0.7.6.201602180812"  // The latest version as of 2016-09-13.
+    toolVersion = "0.7.7.201606060606"  // The latest version as of 2016-09-16.
 }
 
 Collection<Task> testTasks = tasks.withType(Test)
