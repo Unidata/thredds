@@ -46,12 +46,7 @@ ext {
     systemPropertiesBlackList = [
         // Passing this causes "java.lang.ClassNotFoundException: org.jacoco.agent.rt.internal_932a715.PreMain"
         // See https://discuss.gradle.org/t/jacoco-related-failure-in-multiproject-build/6216
-        'user.dir',
-        // Gradle is also using JNA and it sets this property when it runs. However, it is an old, incompatible version
-        // (3.2.7). We'll fail to load NetCDF-C if we try to do it using JNA v3.
-        // What we want is for JNA to look in the JNA jar file for the lib, which it'll do if this prop is *undefined*.
-        // See http://twall.github.io/jna/4.1.0/overview-summary.html#loading
-        'jna.boot.library.path'
+        'user.dir'
     ]
 }
 
