@@ -32,7 +32,7 @@
  */
 package ucar.ma2;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Helper class for StructureDataAscii

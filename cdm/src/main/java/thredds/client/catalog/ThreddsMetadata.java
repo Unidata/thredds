@@ -32,7 +32,6 @@
 
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
@@ -41,12 +40,11 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.util.URLnaming;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
+import javax.annotation.concurrent.Immutable;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 /**

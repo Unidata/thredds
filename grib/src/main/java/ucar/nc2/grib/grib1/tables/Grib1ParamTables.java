@@ -33,17 +33,15 @@
 
 package ucar.nc2.grib.grib1.tables;
 
-import net.jcip.annotations.Immutable;
-
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

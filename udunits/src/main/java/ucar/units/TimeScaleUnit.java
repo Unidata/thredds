@@ -32,10 +32,10 @@
  */
 package ucar.units;
 
-import net.jcip.annotations.Immutable;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 
 /**

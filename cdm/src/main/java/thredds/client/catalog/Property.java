@@ -32,10 +32,10 @@
  */
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 

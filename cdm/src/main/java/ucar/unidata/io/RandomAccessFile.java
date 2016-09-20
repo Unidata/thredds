@@ -33,7 +33,6 @@
 
 package ucar.unidata.io;
 
-import net.jcip.annotations.NotThreadSafe;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
@@ -43,12 +42,13 @@ import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.util.cache.FileFactory;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
 import java.nio.ByteOrder;
+import java.nio.channels.WritableByteChannel;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.nio.channels.WritableByteChannel;
 
 
 /**

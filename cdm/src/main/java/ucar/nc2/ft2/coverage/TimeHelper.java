@@ -33,7 +33,6 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
@@ -41,6 +40,7 @@ import ucar.nc2.time.*;
 import ucar.nc2.util.NamedAnything;
 import ucar.nc2.util.NamedObject;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 

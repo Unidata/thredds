@@ -34,7 +34,6 @@
 package ucar.httpservices;
 
 import org.apache.http.*;
-import org.apache.http.annotation.ThreadSafe;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -58,6 +57,7 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
 
+import javax.annotation.concurrent.ThreadSafe;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;

@@ -32,10 +32,10 @@
  */
 package ucar.nc2.util;
 
-import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
 
-import java.lang.reflect.*;
+import javax.annotation.concurrent.ThreadSafe;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.CopyOnWriteArrayList;

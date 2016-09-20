@@ -32,10 +32,10 @@
  */
 package ucar.coord;
 
-import net.jcip.annotations.Immutable;
 import ucar.ma2.Section;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**

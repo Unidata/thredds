@@ -33,10 +33,7 @@
 
 package thredds.inventory;
 
-import net.jcip.annotations.Immutable;
-import thredds.inventory.filter.CompositeMFileFilter;
-
-import java.util.List;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Configuration object for a collection of managed files.

@@ -32,7 +32,6 @@
  */
 package ucar.nc2.grib.grib2.table;
 
-import net.jcip.annotations.Immutable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -40,6 +39,7 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;

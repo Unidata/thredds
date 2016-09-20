@@ -33,11 +33,13 @@
 
 package ucar.nc2.grib.collection;
 
-import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.coord.*;
+import ucar.coord.Coordinate;
+import ucar.coord.CoordinateRuntime;
+import ucar.coord.CoordinateTime2D;
+import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
@@ -51,10 +53,14 @@ import ucar.nc2.util.cache.FileFactory;
 import ucar.nc2.util.cache.SmartArrayInt;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * An Immutable PartitionCollection

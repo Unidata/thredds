@@ -33,32 +33,10 @@
 
 package ucar.nc2.ft.fmrc;
 
-import java.io.IOException;
-import java.util.*;
-
-import net.jcip.annotations.ThreadSafe;
-
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.EnumTypedef;
-import ucar.nc2.Group;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.ProxyReader;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.CF;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.constants._Coordinate;
+import ucar.ma2.*;
+import ucar.nc2.*;
+import ucar.nc2.constants.*;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
@@ -67,6 +45,10 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.CancelTask;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Helper class for Fmrc.

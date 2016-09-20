@@ -13,8 +13,8 @@ dependencies {
     compile project(':opendap')
 
     provided libraries["javax.servlet-api"]
-    runtime libraries["jstl-api"]
-    runtime libraries["jstl-impl"]
+    runtime libraries["taglibs-standard-spec"]
+    runtime libraries["taglibs-standard-impl"]
 
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]

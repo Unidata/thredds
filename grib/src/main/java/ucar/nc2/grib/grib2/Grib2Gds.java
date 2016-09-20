@@ -33,27 +33,20 @@
 
 package ucar.nc2.grib.grib2;
 
-import net.jcip.annotations.Immutable;
-import ucar.nc2.grib.GribNumbers;
-import java.util.Arrays;
-import java.util.Formatter;
-
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.util.Misc;
-import ucar.unidata.geoloc.Earth;
-import ucar.unidata.geoloc.EarthEllipsoid;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionPoint;
-import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.RotatedPole;
 import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
+
+import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
+import java.util.Formatter;
 
 /**
  * Template-specific fields for Grib2SectionGridDefinition

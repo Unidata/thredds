@@ -33,7 +33,6 @@
 
 package ucar.nc2.ft.fmrc;
 
-import net.jcip.annotations.ThreadSafe;
 import org.jdom2.Element;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
@@ -42,9 +41,10 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.Closeable;
-import java.util.*;
 import java.io.IOException;
+import java.util.*;
 
 /**
  * Forecast Model Run Collection, manages dynamic collections of GridDatasets.

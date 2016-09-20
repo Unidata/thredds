@@ -32,10 +32,11 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import net.jcip.annotations.Immutable;
-import ucar.nc2.iosp.bufr.tables.*;
+import ucar.nc2.iosp.bufr.tables.BufrTables;
+import ucar.nc2.iosp.bufr.tables.TableB;
+import ucar.nc2.iosp.bufr.tables.TableD;
 
-import java.util.*;
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
 /**

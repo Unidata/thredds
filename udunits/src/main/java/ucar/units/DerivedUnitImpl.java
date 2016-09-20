@@ -32,8 +32,6 @@
  */
 package ucar.units;
 
-import net.jcip.annotations.Immutable;
-
 /**
  * Provides support for a concrete implementation of derived units.
  * 

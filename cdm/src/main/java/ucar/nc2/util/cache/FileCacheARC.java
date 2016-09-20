@@ -33,16 +33,18 @@
 
 package ucar.nc2.util.cache;
 
-import net.jcip.annotations.ThreadSafe;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;

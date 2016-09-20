@@ -33,7 +33,6 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.AttributeContainerHelper;
@@ -41,6 +40,7 @@ import ucar.nc2.dataset.CoordTransBuilder;
 import ucar.nc2.util.Indent;
 import ucar.unidata.geoloc.ProjectionImpl;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 
 /**

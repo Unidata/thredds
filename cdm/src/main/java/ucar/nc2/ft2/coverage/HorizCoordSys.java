@@ -34,13 +34,15 @@
 package ucar.nc2.ft2.coverage;
 
 import com.google.common.collect.Lists;
-import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.MAMath;
+import ucar.ma2.RangeIterator;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;

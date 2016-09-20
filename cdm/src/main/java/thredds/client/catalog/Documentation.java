@@ -32,9 +32,9 @@
  */
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.constants.CDM;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URI;

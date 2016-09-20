@@ -36,7 +36,6 @@
 
 package ucar.nc2.grib.grib1;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -47,6 +46,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.Formatter;
 import java.util.zip.CRC32;

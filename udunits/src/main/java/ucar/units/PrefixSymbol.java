@@ -32,7 +32,7 @@
  */
 package ucar.units;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Provides support for prefix symbols.
@@ -42,7 +42,6 @@ import net.jcip.annotations.Immutable;
  * @author Steven R. Emmerson
  */
 @Immutable
-
 public final class
 PrefixSymbol
     extends	Prefix

@@ -33,7 +33,6 @@
 
 package ucar.nc2.grib.grib1;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 

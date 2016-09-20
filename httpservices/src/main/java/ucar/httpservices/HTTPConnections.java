@@ -33,7 +33,6 @@
 
 package ucar.httpservices;
 
-import org.apache.http.annotation.ThreadSafe;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
@@ -43,6 +42,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.HashMap;
 import java.util.Map;
 

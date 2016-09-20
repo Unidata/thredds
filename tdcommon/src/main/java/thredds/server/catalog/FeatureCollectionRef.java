@@ -32,7 +32,6 @@
 
 package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.DatasetNode;
 import thredds.client.catalog.builder.AccessBuilder;
@@ -42,6 +41,7 @@ import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionSpecParser;
 import ucar.nc2.util.AliasTranslator;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.List;
 import java.util.Map;
 

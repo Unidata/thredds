@@ -32,7 +32,7 @@
  */
 package ucar.units;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Provides support for the dimension of a quantity.  For example, the

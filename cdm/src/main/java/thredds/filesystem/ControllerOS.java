@@ -32,12 +32,13 @@
 
 package thredds.filesystem;
 
-import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.CollectionConfig;
-import thredds.inventory.*;
+import thredds.inventory.MController;
+import thredds.inventory.MFile;
 
-import java.util.*;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
+import java.util.*;
 
 /**
  * Implements an MController without caching, reading from OS each time.

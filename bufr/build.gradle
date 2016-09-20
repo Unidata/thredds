@@ -10,7 +10,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 dependencies {
     compile project(":cdm")
     compile libraries["jdom2"]
-    compile libraries["jcip-annotations"]
+    compile libraries["jsr305"]
     compile libraries["jcommander"]
     compile libraries["protobuf-java"]
     compile libraries["slf4j-api"]

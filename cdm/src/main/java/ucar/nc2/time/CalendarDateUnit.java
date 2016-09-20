@@ -32,7 +32,7 @@
  */
 package ucar.nc2.time;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import java.util.Date;
 import java.util.Formatter;

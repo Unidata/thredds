@@ -7,7 +7,7 @@ apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
 
 dependencies {
-    compile libraries["jcip-annotations"]
+    compile libraries["jsr305"]
     compile libraries["httpclient"]
     compile libraries["httpcore"]
     compile libraries["httpmime"]

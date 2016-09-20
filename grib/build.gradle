@@ -12,7 +12,7 @@ dependencies {
     compile project(':cdm')
     compile libraries["protobuf-java"]
     compile libraries["jdom2"]
-    compile libraries["jcip-annotations"]
+    compile libraries["jsr305"]
     compile libraries["jj2000"]
     compile libraries["guava"]
     compile libraries["slf4j-api"]

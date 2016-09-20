@@ -33,7 +33,6 @@
 package thredds.featurecollection;
 
 import com.google.common.eventbus.EventBus;
-import net.jcip.annotations.ThreadSafe;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
@@ -43,6 +42,7 @@ import org.springframework.stereotype.Component;
 import thredds.inventory.CollectionUpdateEvent;
 import thredds.inventory.CollectionUpdateType;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.Date;
 
 /**

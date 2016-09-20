@@ -33,17 +33,17 @@
 
 package thredds.inventory;
 
-import net.jcip.annotations.ThreadSafe;
 import thredds.client.catalog.Access;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.units.DateType;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Formatter;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 
 /**

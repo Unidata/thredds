@@ -32,7 +32,6 @@
  */
 package ucar.coord;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -45,7 +44,11 @@ import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
-import java.util.*;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Vertical GRIB coordinates

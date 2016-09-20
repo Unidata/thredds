@@ -35,12 +35,13 @@ package ucar.nc2.time;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import net.jcip.annotations.Immutable;
 import org.joda.time.DurationFieldType;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
 import ucar.nc2.units.TimeDuration;
 import ucar.unidata.util.StringUtil2;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A CalendarPeriod is a logical duration of time, it requires a Calendar to convert to an actual duration of time.

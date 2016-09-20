@@ -33,16 +33,15 @@
 
 package thredds.server.ncss.controller;
 
-import java.io.File;
-
-import net.jcip.annotations.Immutable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import thredds.server.config.TdsContext;
-import thredds.servlet.ServletUtil;
 import thredds.server.config.ThreddsConfig;
+import thredds.servlet.ServletUtil;
 import ucar.nc2.util.DiskCache2;
+
+import java.io.File;
 
 @Component
 @DependsOn("TdsContext")

@@ -33,7 +33,6 @@
 
 package ucar.nc2.grib.collection;
 
-import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -58,6 +57,7 @@ import ucar.nc2.util.cache.FileCacheable;
 import ucar.nc2.wmo.CommonCodeTable;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;

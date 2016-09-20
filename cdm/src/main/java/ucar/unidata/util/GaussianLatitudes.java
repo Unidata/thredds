@@ -33,8 +33,9 @@
 
 package ucar.unidata.util;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.util.HashMapLRU;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Calculate Gaussian Latitudes by finding the roots of the ordinary Legendre polynomial of degree

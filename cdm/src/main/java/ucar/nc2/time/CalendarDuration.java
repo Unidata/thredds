@@ -33,8 +33,9 @@
 
 package ucar.nc2.time;
 
-import net.jcip.annotations.Immutable;
 import org.joda.time.Period;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A replacement for ucar.nc2.units.TimeDuration. incomplete.

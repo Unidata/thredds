@@ -34,15 +34,14 @@
 package ucar.nc2.grib.collection;
 
 import com.google.common.base.Throwables;
-import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.coord.CoordinateTime2D;
 import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.ft2.coverage.SubsetParams;
-import ucar.nc2.grib.*;
-
+import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -54,6 +53,7 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.*;
 

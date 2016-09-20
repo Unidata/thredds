@@ -32,7 +32,7 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Represents  Section 4 of a BUFR message.

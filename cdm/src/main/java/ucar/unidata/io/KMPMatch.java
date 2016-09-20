@@ -32,7 +32,7 @@
  */
 package ucar.unidata.io;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Knuth-Morris-Pratt Algorithm for Pattern Matching.

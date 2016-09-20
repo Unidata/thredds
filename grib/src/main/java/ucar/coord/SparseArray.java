@@ -32,12 +32,15 @@
  */
 package ucar.coord;
 
-import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
 
-import java.util.*;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Store objects of type T in a sparse array.

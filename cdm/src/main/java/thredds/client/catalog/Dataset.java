@@ -33,13 +33,16 @@
 package thredds.client.catalog;
 
 import com.google.common.collect.ImmutableSet;
-import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 
-import java.util.*;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A Client Catalog Dataset

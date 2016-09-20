@@ -32,10 +32,10 @@
  */
 package thredds.server.opendap;
 
-import net.jcip.annotations.Immutable;
 import opendap.servlet.GuardedDataset;
 import ucar.nc2.NetcdfFile;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
 /**

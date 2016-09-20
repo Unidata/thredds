@@ -34,15 +34,15 @@
 package ucar.nc2.grib.grib1;
 
 import com.google.common.base.MoreObjects;
-import net.jcip.annotations.Immutable;
-import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GdsHorizCoordSys;
+import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.projection.Stereographic;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Formatter;
 

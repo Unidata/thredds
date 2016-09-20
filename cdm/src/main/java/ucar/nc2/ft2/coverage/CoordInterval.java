@@ -33,8 +33,9 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
 import ucar.unidata.util.Format;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Convenience wrapper for interval coordinates.

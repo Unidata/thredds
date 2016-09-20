@@ -32,11 +32,11 @@
  */
 package ucar.nc2.dataset;
 
+import ucar.unidata.util.Parameter;
+
+import javax.annotation.concurrent.ThreadSafe;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.jcip.annotations.ThreadSafe;
-import ucar.unidata.util.Parameter;
 
 /**
  * A CoordinateTransform is an abstraction of a function from a CoordinateSystem to a

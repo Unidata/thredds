@@ -32,7 +32,7 @@
  */
 package ucar.units;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Provides support for units that are based on a logarithm of the ratio of a

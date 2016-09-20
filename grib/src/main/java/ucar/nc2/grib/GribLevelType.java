@@ -33,7 +33,7 @@
 
 package ucar.nc2.grib;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
 * Encapsulate the semantics in GRIB level types  (Grib1 table 3, Grib2 code table 4.5).

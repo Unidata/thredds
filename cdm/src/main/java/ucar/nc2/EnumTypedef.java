@@ -33,10 +33,10 @@
 
 package ucar.nc2;
 
-import net.jcip.annotations.Immutable;
 import ucar.ma2.DataType;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**

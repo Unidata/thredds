@@ -32,7 +32,7 @@
  */
 package ucar.nc2.iosp.bufr.tables;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import java.util.*;
 
