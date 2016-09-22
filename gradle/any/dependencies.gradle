@@ -36,6 +36,8 @@ libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-
 
 libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:3.1.0"
 
+libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.1"
+
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
 versions["spring"] = "4.3.2.RELEASE"
