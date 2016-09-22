@@ -1,16 +1,6 @@
 language: java
 sudo: false
 
-addons:
-  artifacts:
-    bucket: unidata-tds-tests
-    paths:
-      - $TRAVIS_UPLOAD_PATH
-    target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
-
-jdk:
-  - oraclejdk8
-
 env:
   global:
     # Must specify libnetcdf location this way; the 'jna.library.path' system property does not work.
@@ -18,10 +8,27 @@ env:
     # That dependency is searched for by the *OS*, not by JNA, and it knows nothing about 'jna.library.path'.
     # Ordinarily, this wouldn't be a problem because libnetcdf would include an rpath reference to libhdf5, but the
     # binaries were built on a different system than the Travis VMs, so it doesn't work.
-    - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64
+    - LD_LIBRARY_PATH="$TRAVIS_BUILD_DIR/travis/lib/ubuntu-12.04.5-amd64"
+
+    # For artifact upload. It's important to use relative paths here; otherwise, the entire absolute path would
+    # become part of the S3 URL.
+    - TEST_REPORT_DIR="build/reports/allTests"
+    - TDS_LOGS_DIR="tds/src/test/content/thredds/logs"
   matrix:
     - TASK="build"
     - TASK="docs"
+
+addons:
+  # See the note in travis/after_script.sh about the environment variables that Travis artifact uploading requires.
+  artifacts:
+    bucket: unidata-tds-tests
+    paths:
+      - $TEST_REPORT_DIR
+      - $TDS_LOGS_DIR
+    target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
+
+jdk:
+  - oraclejdk8
 
 before_install:
   - if [[ $TASK == "docs" ]]; then
@@ -33,32 +40,10 @@ before_install:
 install: true
 
 script:
-  # When processing this block, Travis seems to merge all of the lines into one big line before passing it on to the
-  # shell. Thus, to separate commands, we must end each with a semicolon. In a normal script semicolons are optional.
-  # TODO: Move all of this to a separate script in the travis/ directory and simply call it from here.
+  - travis/script.sh
 
-  # If we need to do an IDV build, run the script
-  - if [[ $TASK == "build_idv" ]]; then
-      travis/build_idv.sh;
-    elif [[ $TASK == "docs" ]]; then
-      echo Building docs;
-      cd docs/website;
-      ./adoc2html.sh 2> build.log;
-      if [ -s build.log ]; then
-        echo Doc build produced errors:;
-        cat build.log;
-        false;
-      fi;
-    else
-      echo If available, test report at;
-      echo http://unidata-tds-tests.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
-
-      CONTENT_ROOT="-Dtds.content.root.path=$TRAVIS_BUILD_DIR/tds/src/test/content";
-      DOWNLOAD_DIR="-Dtds.download.dir=/tmp/download";
-      SYSTEM_PROPS="$CONTENT_ROOT $DOWNLOAD_DIR";
-
-      ./gradlew $SYSTEM_PROPS --info --stacktrace testAll;
-    fi
+after_script:
+  - travis/after_script.sh
 
 # See https://docs.travis-ci.com/user/languages/java/#Caching
 before_cache:

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+    </Appenders>
+    
+    <Loggers>
+        <!-- By default, only log errors at level WARN and above. -->
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
+        </Root>
+        
+        <!-- Change the level of individual loggers, e.g.
+        <Logger name="thredds.TestWithLocalServer" level="debug">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        -->
+    </Loggers>
+</Configuration>
