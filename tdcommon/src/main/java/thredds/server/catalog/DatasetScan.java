@@ -32,7 +32,6 @@
 
 package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
@@ -41,13 +40,17 @@ import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.filesystem.MFileOS7;
 import thredds.inventory.MFile;
 import thredds.inventory.MFileFilter;
-import thredds.inventory.filter.*;
+import thredds.inventory.filter.CompositeMFileFilter;
+import thredds.inventory.filter.LastModifiedLimit;
+import thredds.inventory.filter.RegExpMatchOnName;
+import thredds.inventory.filter.WildcardMatchOnName;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.util.CloseableIterator;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;

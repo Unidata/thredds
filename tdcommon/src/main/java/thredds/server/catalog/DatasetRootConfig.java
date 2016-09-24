@@ -32,7 +32,7 @@
  */
 package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Encapsolates the datasetRoot element

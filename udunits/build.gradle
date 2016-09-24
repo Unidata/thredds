@@ -14,7 +14,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 
 dependencies {
     compile libraries["joda-time"]
-    compile libraries["jcip-annotations"]
+    compile libraries["jsr305"]
 
     // udunits doesn't do any logging.
 }

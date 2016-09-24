@@ -33,10 +33,10 @@
 
 package ucar.nc2.ft.fmrc;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**

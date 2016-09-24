@@ -33,12 +33,12 @@
 
 package ucar.nc2.grib.grib2;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Formatter;
 import java.util.zip.CRC32;
 

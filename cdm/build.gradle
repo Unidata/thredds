@@ -17,7 +17,7 @@ dependencies {
 
     compile libraries["joda-time"]
     compile libraries["jdom2"]
-    compile libraries["jcip-annotations"]
+    compile libraries["jsr305"]
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]

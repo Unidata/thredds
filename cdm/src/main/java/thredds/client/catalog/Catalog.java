@@ -32,7 +32,6 @@
  */
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
 import org.jdom2.Namespace;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
@@ -41,6 +40,7 @@ import thredds.client.catalog.builder.DatasetBuilder;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.URLnaming;
 
+import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;

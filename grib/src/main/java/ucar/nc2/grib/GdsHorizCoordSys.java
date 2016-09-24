@@ -33,13 +33,14 @@
 
 package ucar.nc2.grib;
 
-import net.jcip.annotations.Immutable;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.GaussianLatitudes;
 import ucar.unidata.util.StringUtil2;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A Horizontal coordinate system generated from a GRIB-1 or GRIB-2 GDS.

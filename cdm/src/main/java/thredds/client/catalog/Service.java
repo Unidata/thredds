@@ -32,9 +32,9 @@
  */
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Formatter;

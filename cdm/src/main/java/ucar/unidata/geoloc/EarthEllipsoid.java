@@ -32,7 +32,7 @@
  */
 package ucar.unidata.geoloc;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 import java.util.Collection;
 import java.util.Map;
 

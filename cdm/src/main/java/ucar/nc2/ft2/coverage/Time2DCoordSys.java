@@ -33,7 +33,6 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
@@ -43,6 +42,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.Optional;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;

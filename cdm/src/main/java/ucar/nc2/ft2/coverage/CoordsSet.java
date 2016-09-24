@@ -33,13 +33,15 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
 import ucar.ma2.Index;
 import ucar.ma2.RangeIterator;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
 
-import java.util.*;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * An iterator over the coordinates in a set of CoverageCoordAxis.

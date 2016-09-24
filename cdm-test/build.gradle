@@ -32,13 +32,6 @@ dependencies {
 task testIndexCreation(type: Test, dependsOn: [classes, testClasses], group: 'Verification',
              description: 'Tests creation of Grib and collection indexes, which will be used by subsequent tests.') {
     include 'ucar/nc2/grib/TestGribIndexCreation.class'
-    
-    // We don't care about the HTML report for this individual test, especially since its results will eventually get
-    // rolled into the allTests aggregate HTML report.
-    // More importantly, leaving this 'true' causes this task and :cdm-test:test to never be UP-TO-DATE because:
-    //   Output file thredds/cdm-test/build/reports/tests/index.html has changed.
-    // That's because – by default – both tasks write their HTML results to the same location.
-    reports.html.enabled = false
 }
 
 test {

@@ -33,8 +33,9 @@
 
 package ucar.nc2.grib.collection;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GdsHorizCoordSys;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Encapsolates the GdsHorizCoordSys; shared by the GroupHcs

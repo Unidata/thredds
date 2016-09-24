@@ -33,17 +33,16 @@
 
 package thredds.inventory;
 
-import net.jcip.annotations.GuardedBy;
-import net.jcip.annotations.ThreadSafe;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.inventory.filter.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
 
-import java.util.*;
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
-
-import thredds.inventory.filter.*;
 
 /**
  * Manage Collections of MFiles.

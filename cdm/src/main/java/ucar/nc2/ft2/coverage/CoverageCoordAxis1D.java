@@ -33,7 +33,6 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
 import ucar.ma2.*;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.time.CalendarDate;
@@ -44,6 +43,7 @@ import ucar.nc2.util.NamedObject;
 import ucar.nc2.util.Optional;
 import ucar.unidata.util.Format;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.Iterator;

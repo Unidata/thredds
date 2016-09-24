@@ -33,7 +33,7 @@
 
 package ucar.nc2.grib;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import java.util.*;
 

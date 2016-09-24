@@ -1,10 +1,10 @@
 package ucar.ma2;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.util.Misc;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import javax.annotation.concurrent.Immutable;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * A Range of indices describes by a list, rather than start:stop:stride.

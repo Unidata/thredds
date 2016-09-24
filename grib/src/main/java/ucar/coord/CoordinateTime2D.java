@@ -33,7 +33,6 @@
 
 package ucar.coord;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -46,6 +45,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**

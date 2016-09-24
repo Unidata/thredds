@@ -33,9 +33,9 @@
 
 package ucar.nc2.ft.fmrc;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.dataset.CoordinateAxis1D;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**

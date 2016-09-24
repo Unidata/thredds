@@ -33,26 +33,9 @@
 
 package ucar.nc2.grib.collection;
 
-import java.io.Closeable;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import net.jcip.annotations.Immutable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.coord.Coordinate;
-import ucar.coord.CoordinateRuntime;
-import ucar.coord.CoordinateTime2D;
-import ucar.coord.CoordinateTimeAbstract;
-import ucar.coord.CoordinateTimeIntv;
+import ucar.coord.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib1.Grib1Gds;
@@ -60,11 +43,7 @@ import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib2.Grib2Gds;
-import ucar.nc2.grib.grib2.Grib2Pds;
-import ucar.nc2.grib.grib2.Grib2SectionProductDefinition;
-import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.grib.grib2.Grib2Variable;
+import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -73,6 +52,13 @@ import ucar.nc2.time.CalendarTimeZone;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.Parameter;
 import ucar.unidata.util.StringUtil2;
+
+import javax.annotation.concurrent.Immutable;
+import java.io.Closeable;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 /**
  * A mutable class for writing indices or building GribCollectionImmutable

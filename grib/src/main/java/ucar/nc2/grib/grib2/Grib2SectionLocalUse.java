@@ -33,10 +33,10 @@
 
 package ucar.nc2.grib.grib2;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
 /**

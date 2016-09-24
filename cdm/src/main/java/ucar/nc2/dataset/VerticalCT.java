@@ -37,7 +37,7 @@ import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.transform.VertTransformBuilderIF;
 import ucar.unidata.geoloc.vertical.*;
 import ucar.nc2.Dimension;
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 
 /**

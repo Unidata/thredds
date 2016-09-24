@@ -33,11 +33,12 @@
 
 package ucar.nc2.grib.grib1;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.unidata.util.StringUtil2;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A Grib-1 Parameter

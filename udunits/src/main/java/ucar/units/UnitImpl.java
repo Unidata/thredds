@@ -32,8 +32,7 @@
  */
 package ucar.units;
 
-import net.jcip.annotations.Immutable;
-
+import javax.annotation.concurrent.Immutable;
 import java.io.Serializable;
 import java.util.Date;
 

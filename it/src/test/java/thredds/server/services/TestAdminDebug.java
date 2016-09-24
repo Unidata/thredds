@@ -1,4 +1,3 @@
-/* Copyright */
 package thredds.server.services;
 
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -21,56 +20,44 @@ import java.util.List;
  * @since 7/6/2015
  */
 @RunWith(Parameterized.class)
-public class TestAdminDebug
-{
-    static final boolean show = false;
+public class TestAdminDebug {
+    static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestWithLocalServer.class);
 
-    static final String DFALTHOST = "localhost:8443";
+    static final String DEFAULT_HOST = "localhost:8443";
 
     // Defined in it/src/test/resources/auth/keystore
     static final String DEFAULT_USER = "tds";
     static final String DEFAULT_PASSWORD = "secret666";
-    static final String DFALTUSERPWD = DEFAULT_USER + ":" + DEFAULT_PASSWORD;
+    static final String DEFAULT_USERPWD = DEFAULT_USER + ":" + DEFAULT_PASSWORD;
 
-    @Parameterized.Parameters(name = "{0}")
-    public static List<Object[]> getTestParameters()
-    {
+    @Parameterized.Parameters(name = "{0}") public static List<Object[]> getTestParameters() {
         List<Object[]> result = new ArrayList<>(10);
-        result.add(new Object[]{"admin/debug?General/showTdsContext"});
-        result.add(new Object[]{"admin/dir/content/thredds/logs/"});
-        result.add(new Object[]{"admin/dir/logs/"});
-        result.add(new Object[]{"admin/dir/catalogs/"});
-        result.add(new Object[]{"admin/spring/showControllers"});
+        result.add(new Object[] { "admin/debug?General/showTdsContext" });
+        result.add(new Object[] { "admin/dir/content/thredds/logs/" });
+        result.add(new Object[] { "admin/dir/logs/" });
+        result.add(new Object[] { "admin/dir/catalogs/" });
+        result.add(new Object[] { "admin/spring/showControllers" });
         return result;
     }
 
     ///////////////////////////////
 
-    //List<Object[]> result = null;
-    String path = null;
     String url = null;
     UsernamePasswordCredentials cred = null;
 
-    public TestAdminDebug(String path)
-    {
-	this.path = path;
-        String userpwd = System.getProperty("userpwd");
-        String hostport = System.getProperty("host");
-        if(userpwd == null) userpwd = DFALTUSERPWD;
-        if(hostport == null) hostport = DFALTHOST;
-        String url = "https://" + userpwd + "@" + hostport + "/" + path;
+    public TestAdminDebug(String path) {
+        String url = "https://" + DEFAULT_USERPWD + "@" + DEFAULT_HOST + "/thredds/" + path;
         setup(url);
     }
 
-    void setup(String url)
-    {
+    void setup(String url) {
         //this.result = getTestParameters();
         this.url = url;
-        URL u = null;
         try {
-            u = new URL(url);
-            if(u.getUserInfo() == null)
+            URL u = new URL(url);
+            if (u.getUserInfo() == null) {
                 throw new Exception("No user:password specified");
+            }
             cred = new UsernamePasswordCredentials(u.getUserInfo());
             HTTPSession.setGlobalCredentials(cred);
         } catch (Exception e) {
@@ -78,21 +65,17 @@ public class TestAdminDebug
         }
     }
 
-    @Test
-    public void testOpenHtml()
-    {
-        String endpoint = TestWithLocalServer.withPath(this.path);
-        byte[] response = TestWithLocalServer.getContent(cred, endpoint, new int[]{200}, ContentType.html);
-        if(show && response != null)
-            System.out.printf("%s%n", new String(response, CDM.utf8Charset));
+    @Test public void testOpenHtml() {
+        byte[] response = TestWithLocalServer.getContent(cred, url, new int[] { 200 }, ContentType.html);
+        if (response != null) {
+            logger.debug(new String(response, CDM.utf8Charset));
+        }
     }
 
-    @Test
-    public void testOpenHtmlFail()
-    {
-        String endpoint = TestWithLocalServer.withPath(this.path);
-        byte[] response = TestWithLocalServer.getContent(cred, endpoint, new int[]{200}, ContentType.html);
-        if(show && response != null)
-            System.out.printf("%s%n", new String(response, CDM.utf8Charset));
+    @Test public void testOpenHtmlFail() {
+        byte[] response = TestWithLocalServer.getContent(cred, url, new int[] { 200 }, ContentType.html);
+        if (response != null) {
+            logger.debug(new String(response, CDM.utf8Charset));
+        }
     }
 }

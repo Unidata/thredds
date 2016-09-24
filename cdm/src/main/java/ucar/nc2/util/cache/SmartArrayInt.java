@@ -33,9 +33,9 @@
 
 package ucar.nc2.util.cache;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.util.Misc;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Arrays;
 import java.util.Formatter;
 

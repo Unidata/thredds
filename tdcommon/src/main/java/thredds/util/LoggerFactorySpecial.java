@@ -176,6 +176,8 @@ public class LoggerFactorySpecial implements LoggerFactory {
                       "1",                            // String min
                       "max",                          // String fileIndex
                       null,                           // String compressionLevelStr
+                      null,                           // Action[] customActions
+                      true,                           // boolean true
                       config                          // Configuration config
               ),
               layout,                                                           // Layout<? extends Serializable> layout

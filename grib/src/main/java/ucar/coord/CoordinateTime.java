@@ -32,7 +32,6 @@
  */
 package ucar.coord;
 
-import net.jcip.annotations.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribUtils;
@@ -41,18 +40,22 @@ import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
+import ucar.nc2.grib.grib2.Grib2Pds;
+import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.nc2.grib.grib2.Grib2Pds;
-import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 import ucar.nc2.util.Misc;
 
-import java.util.*;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Time coordinates that are offsets from the reference date (not intervals).

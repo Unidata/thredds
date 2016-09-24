@@ -32,20 +32,20 @@
  */
 package thredds.server.catalog;
 
-import net.jcip.annotations.Immutable;
-import thredds.client.catalog.*;
+import thredds.client.catalog.Access;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.CatalogRef;
+import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.server.catalog.builder.CatalogScanBuilder;
-import thredds.server.catalog.builder.ConfigCatalogBuilder;
 import thredds.server.catalog.builder.FeatureCollectionRefBuilder;
-import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

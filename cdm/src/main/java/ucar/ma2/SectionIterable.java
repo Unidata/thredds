@@ -32,7 +32,7 @@
  */
 package ucar.ma2;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import java.util.ArrayList;
 import java.util.Iterator;

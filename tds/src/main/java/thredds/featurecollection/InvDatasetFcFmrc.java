@@ -32,9 +32,11 @@
  */
 package thredds.featurecollection;
 
-import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
-import thredds.client.catalog.*;
+import thredds.client.catalog.Catalog;
+import thredds.client.catalog.Dataset;
+import thredds.client.catalog.Documentation;
+import thredds.client.catalog.ThreddsMetadata;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.CatalogRefBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
@@ -55,6 +57,7 @@ import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.units.DateRange;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;

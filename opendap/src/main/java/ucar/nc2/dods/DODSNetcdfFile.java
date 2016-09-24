@@ -32,25 +32,26 @@
  */
 package ucar.nc2.dods;
 
-import net.jcip.annotations.NotThreadSafe;
-import ucar.nc2.constants.CF;
-import ucar.nc2.util.EscapeStrings;
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.nc2.Attribute;
-import ucar.nc2.iosp.IospHelper;
-import ucar.nc2.constants._Coordinate;
-import ucar.nc2.util.*;
-
 import opendap.dap.*;
-import opendap.dap.parsers.*;
+import opendap.dap.parsers.ParseException;
+import ucar.ma2.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.*;
+import ucar.nc2.constants.CF;
+import ucar.nc2.constants._Coordinate;
+import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.util.StringUtil2;
 
-import java.io.*;
-import java.util.*;
-import java.util.Enumeration;
+import javax.annotation.concurrent.NotThreadSafe;
+import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
+import java.util.*;
 
 /**
  * Access to DODS datasets through the Netcdf API.

@@ -32,10 +32,10 @@
  */
 package ucar.nc2.time;
 
-import net.jcip.annotations.Immutable;
 import org.joda.time.DateTime;
 import ucar.nc2.units.DateRange;
 
+import javax.annotation.concurrent.Immutable;
 import java.util.Date;
 
 /**

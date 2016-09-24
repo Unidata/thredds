@@ -46,12 +46,7 @@ ext {
     systemPropertiesBlackList = [
         // Passing this causes "java.lang.ClassNotFoundException: org.jacoco.agent.rt.internal_932a715.PreMain"
         // See https://discuss.gradle.org/t/jacoco-related-failure-in-multiproject-build/6216
-        'user.dir',
-        // Gradle is also using JNA and it sets this property when it runs. However, it is an old, incompatible version
-        // (3.2.7). We'll fail to load NetCDF-C if we try to do it using JNA v3.
-        // What we want is for JNA to look in the JNA jar file for the lib, which it'll do if this prop is *undefined*.
-        // See http://twall.github.io/jna/4.1.0/overview-summary.html#loading
-        'jna.boot.library.path'
+        'user.dir'
     ]
 }
 
@@ -113,12 +108,12 @@ gradle.projectsEvaluated {
         subprojectTestTasks*.finalizedBy it
         
         // :buildSrc:test always runs and produces a binary results directory, no matter what.
-        assert file('buildSrc/build/test-results/binary/test').exists() : "Can't find :buildSrc test result dir."
+        assert file('buildSrc/build/test-results/test/binary').exists() : "Can't find :buildSrc test result dir."
         
         // Add test results of the :buildSrc project. Note that by this time in the 'thredds' config,
         // :buildSrc has already run as a *separate* build (see http://stackoverflow.com/questions/26597147),
         // so we cannot programmatically access its Project object to retrieve this paths.
-        reportOn file('buildSrc/build/test-results/binary/test')
+        reportOn file('buildSrc/build/test-results/test/binary')
         
         // We could also do "reportOn subprojectTestTasks" here, but that would cause this task to be dependent on
         // all subproject Tests. So, we couldn't do something like ":grib:test" and expect only GRIB tests to run

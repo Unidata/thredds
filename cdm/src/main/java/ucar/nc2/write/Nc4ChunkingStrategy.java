@@ -33,10 +33,11 @@
 
 package ucar.nc2.write;
 
-import net.jcip.annotations.Immutable;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Abstract superclass for netcdf-4 chunking strategy.

@@ -33,14 +33,17 @@
 
 package ucar.nc2.grib.grib2.table;
 
-import net.jcip.annotations.Immutable;
 import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.*;
+import ucar.nc2.grib.grib2.Grib2Pds;
+import ucar.nc2.grib.grib2.Grib2Record;
+import ucar.nc2.grib.grib2.Grib2SectionIdentification;
+import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.wmo.CommonCodeTable;
 
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.util.*;
 

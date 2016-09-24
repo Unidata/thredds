@@ -33,14 +33,16 @@
 
 package ucar.nc2.grib;
 
-import net.jcip.annotations.Immutable;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.time.CalendarPeriod;
 
-import java.util.*;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Generalized Time Coordinate.

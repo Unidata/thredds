@@ -1,7 +1,7 @@
 /* Copyright */
 package thredds.inventory;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Events when a fc should be updated.

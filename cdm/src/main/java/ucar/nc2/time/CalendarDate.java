@@ -32,13 +32,13 @@
  */
 package ucar.nc2.time;
 
-import net.jcip.annotations.Immutable;
 import org.joda.time.Chronology;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.DateTimeZone;
 
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A Calendar Date. Replaces java.util.Date.

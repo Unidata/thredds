@@ -35,15 +35,15 @@
 
 package thredds.filesystem;
 
-import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.CollectionConfig;
 import thredds.inventory.MController;
 import thredds.inventory.MFile;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.util.Iterator;
 
 /**
  * Use Java 7 NIO for scanning the file system

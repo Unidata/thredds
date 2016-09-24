@@ -32,7 +32,8 @@
  */
 package ucar.units;
 
-import net.jcip.annotations.Immutable;
+
+import javax.annotation.concurrent.Immutable;
 
 /*
  * Provides support for the concept of the dimension of a unit.  The

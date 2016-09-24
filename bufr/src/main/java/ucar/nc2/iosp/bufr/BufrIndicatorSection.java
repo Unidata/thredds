@@ -32,8 +32,9 @@
  */
 package ucar.nc2.iosp.bufr;
 
-import net.jcip.annotations.Immutable;
 import ucar.unidata.io.RandomAccessFile;
+
+import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 
 /**

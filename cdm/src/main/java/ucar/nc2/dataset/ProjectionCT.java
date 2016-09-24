@@ -33,9 +33,10 @@
 
 package ucar.nc2.dataset;
 
-import net.jcip.annotations.Immutable;
-import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.Parameter;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * A Projection CoordinateTransform is a function from (GeoX, GeoY) -> (Lat, Lon).

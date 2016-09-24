@@ -32,10 +32,13 @@
  */
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.DatasetBuilder;
 
-import java.util.*;
+import javax.annotation.concurrent.Immutable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * node in a tree of datasets, superclass of Catalog and Dataset

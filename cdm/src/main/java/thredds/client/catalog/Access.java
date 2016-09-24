@@ -32,12 +32,12 @@
  */
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.ft.remote.CdmrFeatureDataset;
 import ucar.nc2.stream.CdmRemote;
 
+import javax.annotation.concurrent.Immutable;
 import java.net.URI;
 
 /**

@@ -32,15 +32,15 @@
  */
 package thredds.inventory;
 
+import ucar.unidata.util.StringUtil2;
+
+import javax.annotation.concurrent.ThreadSafe;
+import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
-import java.util.*;
+import java.util.Formatter;
 import java.util.regex.Pattern;
-import java.io.File;
-
-import net.jcip.annotations.ThreadSafe;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * Parses the collection specification string.

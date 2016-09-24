@@ -32,14 +32,14 @@
  */
 package thredds.client.catalog;
 
-import net.jcip.annotations.Immutable;
 import thredds.client.catalog.builder.AccessBuilder;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.builder.DatasetBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A Client CatalogRef

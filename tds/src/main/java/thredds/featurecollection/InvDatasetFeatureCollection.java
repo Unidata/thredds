@@ -34,8 +34,6 @@
 package thredds.featurecollection;
 
 import com.google.common.eventbus.Subscribe;
-import net.jcip.annotations.GuardedBy;
-import net.jcip.annotations.ThreadSafe;
 import org.slf4j.Logger;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
@@ -43,7 +41,6 @@ import thredds.client.catalog.builder.DatasetBuilder;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
 import thredds.inventory.*;
-import thredds.inventory.MCollection;
 import thredds.server.catalog.FeatureCollectionRef;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -55,10 +52,15 @@ import ucar.nc2.util.URLnaming;
 import ucar.nc2.util.log.LoggerFactory;
 import ucar.nc2.util.log.LoggerFactoryImpl;
 
+import javax.annotation.concurrent.GuardedBy;
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Abstract superclass for Feature Collection Datasets.

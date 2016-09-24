@@ -29,8 +29,8 @@ dependencies {
 
     // Server stuff
     provided libraries["javax.servlet-api"]
-    runtime libraries["jstl-api"]
-    runtime libraries["jstl-impl"]
+    runtime libraries["taglibs-standard-spec"]
+    runtime libraries["taglibs-standard-impl"]
 
     // Apache httpclient libraries
     compile libraries["httpclient"]
@@ -39,7 +39,7 @@ dependencies {
     compile libraries["coverity-escapers"]
     compile libraries["jdom2"]
     compile libraries["quartz"]
-    compile libraries["jcip-annotations"]
+    compile libraries["jsr305"]
     compile libraries["guava"]
     compile libraries["joda-time"]
     compile libraries["52n-xml-waterML-v20"]
@@ -71,7 +71,7 @@ dependencies {
     // threddsIso related libs
     runtime libraries["threddsIso"]
 
-    runtime libraries["saxon-he"]
+    runtime libraries["Saxon-HE"]
     runtime libraries["jaxen"]
 
     // JSR 303 with Hibernate Validator, which is dragging in jboss logging

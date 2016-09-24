@@ -32,10 +32,10 @@
 
 package thredds.filesystem;
 
-import net.jcip.annotations.ThreadSafe;
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
 
+import javax.annotation.concurrent.ThreadSafe;
 import java.io.File;
 
 /**

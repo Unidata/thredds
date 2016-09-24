@@ -33,7 +33,7 @@
  */
 package ucar.nc2.ft2.coverage;
 
-import net.jcip.annotations.Immutable;
+import javax.annotation.concurrent.Immutable;
 
 import java.util.ArrayList;
 import java.util.List;
