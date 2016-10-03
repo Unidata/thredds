@@ -5,22 +5,50 @@ jacoco {
     toolVersion = "0.7.7.201606060606"  // The latest version as of 2016-09-16.
 }
 
-Collection<Task> testTasks = tasks.withType(Test)
-Collection<Task> jacocoReportTasks = tasks.withType(JacocoReport)
+Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
+Collection<Task> tasksExtendedByJacoco = tasks.matching(isExtendedByJacoco)
 
-// Will apply to ":<subproject>:test" and ":it:integrationTest".
-testTasks.all {
+tasksExtendedByJacoco.all {  // Will apply to ":<subproject>:test" and ":it:appBeforeIntegrationTest".
     // Add the execution data that Jacoco generates as a task output.
+    // The data is a record of all the classes visited during test execution. It is self-contained; we don't need to
+    // provide any source or class directories for it to "work". Those are only necessary for the report.
     outputs.file jacoco.destinationFile
+    
+    // Whether or not data should be appended if the execution data already exists.
+    jacoco.append = false
 }
 
-// Will apply to ":<subproject>:jacocoTestReport", ":it:integrationTestReport" and ":rootJacocoReport".
-jacocoReportTasks.all {
+/*
+ * By default, when the 'jacoco' plugin is applied to a project, a 'jacocoTestReport' task will be added that reports
+ * on the 'main' SourceSet of that project only. For example, ':cdm:jacocoTestReport' reports on the coverage of code
+ * in cdm/src/main only.
+ *
+ * That's fine for :cdm, but we have subprojects that contain no code in their 'main' source set, namely :it,
+ * :cdm-test, and :dap4:d4tests. They only have code in their 'test' SourceSets. As a result, the default
+ * 'jacocoTestReport' task added to those tasks will generate an empty report, because there's nothing to report on.
+ *
+ * We could remedy this by adding main SourceSets from other projects to report on. This would be particularly
+ * appropriate for :cdm-test, which touches code in damn near every subproject. However, I don't really like that idea
+ * because we're already producing an aggregate report in :rootJacocoReport. And frankly, that's the only report
+ * that we REALLY care about; it gets published to Jenkins and Coveralls.
+ *
+ * Therefore, I'd like to maintain the default behavior: a subproject only reports on how well its own tests cover its
+ * own 'main' code. That partitioning of reports promotes TRUE unit tests in our project, which--by definition--
+ * have scopes constrained to a single subproject (and often a single class). The addition of more true unit tests
+ * would be a huge benefit to THREDDS: they execute quickly and are the easiest way to improve our lacking code
+ * coverage. Right now, most of our tests are of the integration variety, straddling several subprojects.
+ *
+ * Furthermore, I don't think that subprojects with no 'main' SourceSet like ':cdm-test' and ':it' are long for this
+ * world. They are a relic of the old Maven build. The NeedsCdmUnitTest category obviates the need for a separate
+ * ':cdm-test' module and the separation of tests that need a running TDS could be better done by adding an
+ * 'integTest' SourceSet to :tds. So in the future, we won't be generating empty Jacoco reports.
+ */
+tasks.withType(JacocoReport).all {  // Will apply to ":<subproject>:jacocoTestReport" and ":rootJacocoReport".
     group = 'Reports'
-    dependsOn testTasks
+    dependsOn tasksExtendedByJacoco
     
     reports {
-        xml.enabled = true
+        xml.enabled = false
         html.enabled = true
         csv.enabled = false
     }

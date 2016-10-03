@@ -2,22 +2,30 @@ if (name != "thredds") {
     throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
 }
 
-gradle.projectsEvaluated {
-    // This statement relies upon all subprojects having been evaluated.
+apply plugin: "jacoco"
+apply plugin: "base" // Gives us the "clean" task for removing rootJacocoReport's output.
+
+gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
+    // Add the source directories for each Java subproject to one big FileCollection.
+    // Ditto for the class directories.
     Collection<Project> javaProjects = subprojects*.findAll { it.plugins.withType(JavaPlugin) }
+    FileCollection allSubprojectSourceDirs = files(javaProjects*.sourceSets*.main*.allSource*.srcDirs)
+    FileCollection allSubprojectClassDirs = files(javaProjects*.sourceSets*.main*.output)
     
     task rootJacocoReport(type: JacocoReport, group: 'Reports') {
         description = 'Generates an aggregate coverage report from all subprojects'
         dependsOn tasks.testAll  // Added in root/testing.gradle.
     
+        reports.xml.enabled = true  // Needed by the coveralls task.
+    
         // Add the source directories for the :buildSrc project. Note that by this time in the 'thredds' config,
         // :buildSrc has already run as a SEPARATE build (see http://stackoverflow.com/questions/26597147),
         // so we cannot programmatically access its Project object to retrieve these paths.
         // Also add the source directories of all Java subprojects.
-        sourceDirectories = files('buildSrc/src/main/groovy', javaProjects*.sourceSets*.main*.allSource*.srcDirs)
+        sourceDirectories = files('buildSrc/src/main/groovy', allSubprojectSourceDirs)
         
         // Ditto for class directories.
-        classDirectories = files('buildSrc/build/classes/main', javaProjects*.sourceSets*.main*.output)
+        classDirectories = files('buildSrc/build/classes/main', allSubprojectClassDirs)
         
         // :buildSrc:test always runs and produces execution data, no matter what.
         assert file('buildSrc/build/jacoco/test.exec').exists(): "Can't find :buildSrc Jacoco execution data."
@@ -35,8 +43,8 @@ gradle.projectsEvaluated {
         // changes manually below.
         outputs.upToDateWhen { false } // Evaluated at configuration time (onlyIf{} is evaluated at execution time)
         
-        // This closure will be run during the execution phase. Therefore, we can trust that subprojects will have
-        // been configured.
+        // This closure will be run during the execution phase, after the subproject test tasks.
+        // Therefore, we can trust that execution data for those tasks will have been generated.
         doFirst {
             Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
             Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
@@ -58,8 +66,6 @@ gradle.projectsEvaluated {
             }
         }
     }
-    
-    apply plugin: "base" // Gives us the "clean" task for removing rootJacocoReport's output.
     
     apply plugin: "com.github.kt3k.coveralls"
     
@@ -97,13 +103,13 @@ gradle.projectsEvaluated {
         // So, create a copy of env, add our entry, then replace the old map with it.
         // FIXME: In production, COVERALLS_REPO_TOKEN should be an environment variable.
         Map<String, String> envCopy = new HashMap<>(env)
-        envCopy["COVERALLS_REPO_TOKEN"] = "viswgi0kF5EOgHJXEb58OrOZzToIbi0oJ"
+        envCopy["COVERALLS_REPO_TOKEN"] = System.properties['coveralls.repo.token'] // TODO: Fail if not present.
         env = envCopy
         
         // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
         coveralls {
             jacocoReportPath = tasks.rootJacocoReport.reports.xml.destination
-            sourceDirs = tasks.rootJacocoReport.sourceDirectories.files.collect { task.path }
+            sourceDirs = tasks.rootJacocoReport.sourceDirectories.flatten()
     
             sendToCoveralls = true
             saveAsFile = true  // Save JSON payload to file, so we can use it for UP-TO-DATE checking.
