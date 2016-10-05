@@ -1,5 +1,13 @@
 language: java
-sudo: false
+
+# Previously, we were seeing a failure in :it:appBeforeIntegrationTest:
+#     Process 'command '/usr/lib/jvm/java-8-oracle/bin/java'' finished with non-zero exit value 137
+#     No output has been received in the last 10 minutes, this potentially indicates a stalled build or
+#     something wrong with the build itself. The build has been terminated.
+# This thread indicates that running the job on Travis's container-based infrastructure may be causing resource issues:
+#     https://github.com/travis-ci/travis-ci/issues/5582
+# Setting sudo to "true" forces the job to run on Travis's standard infrastructure, which seems to fix the problem.
+sudo: true
 
 env:
   global:
