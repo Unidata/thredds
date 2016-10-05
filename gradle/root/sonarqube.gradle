@@ -6,15 +6,18 @@ if (name != "thredds") {
 // Adds "sonarqube" task to only the root project. However, the task analyzes the root and all subprojects.
 apply plugin: "org.sonarqube"
 
+apply from: "$rootDir/gradle/any/properties.gradle"  // For SonarQube user token.
+
 gradle.projectsEvaluated {
     // Root project
     sonarqube {
         properties {
             // Global properties. See http://docs.sonarqube.org/display/SONAR/Analysis+Parameters
+            properties["sonar.verbose"] = "false"
             properties["sonar.projectKey"] = "thredds"
-            // properties["sonar.host.url"] = "https://sonarqube.com"
-            // property "sonar.login","62dddbe68f6cd0803ea7c76178bcee93be35bf22"
-            properties["sonar.verbose"] = "true"
+            properties["sonar.host.url"] = "https://sonarqube.com"
+            // Defer invocation of getPropertyOrFailBuild() until the execution phase, using lazy GStrings.
+            properties["sonar.login"] = "${-> getPropertyOrFailBuild SONARQUBE_USER_TOKEN_KEY}"
             
             /*
              * We want to analyze the code in :buildSrc. Unfortunately, that's doesn't happen by default with the

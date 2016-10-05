@@ -6,6 +6,7 @@ if (name != "thredds") {
 // That's a bit spammy, but at least the code is straightforward.
 // The alternative is to use "gradle.taskGraph.whenReady{}" and only do this config if a Test is in the task graph,
 // but it's not worth the extra complication.
+// LOOK: What about if we only logged warnings in "gradle.taskGraph.whenReady{}"?
 ext {
     // These appear to be the only environment variables that Jenkins defines: http://goo.gl/iCh08k
     // Is there a better way to detect Jenkins?

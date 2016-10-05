@@ -4,6 +4,7 @@ if (name != "thredds") {
 
 apply plugin: "jacoco"
 apply plugin: "base" // Gives us the "clean" task for removing rootJacocoReport's output.
+apply from: "$rootDir/gradle/any/properties.gradle"  // For Coveralls repo token property.
 
 gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
     // Add the source directories for each Java subproject to one big FileCollection.
@@ -101,9 +102,9 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
         
         // We want to add the COVERALLS_REPO_TOKEN entry, but coveralls.env is an UnmodifiableMap.
         // So, create a copy of env, add our entry, then replace the old map with it.
-        // FIXME: In production, COVERALLS_REPO_TOKEN should be an environment variable.
         Map<String, String> envCopy = new HashMap<>(env)
-        envCopy["COVERALLS_REPO_TOKEN"] = System.properties['coveralls.repo.token'] // TODO: Fail if not present.
+        // Defer invocation of getPropertyOrFailBuild() until the execution phase, using lazy GStrings.
+        envCopy["COVERALLS_REPO_TOKEN"] = "${-> getPropertyOrFailBuild COVERALLS_REPO_TOKEN_KEY}"
         env = envCopy
         
         // Configure the "coveralls" extension. These properties only appear on the extension, not the task.
@@ -119,7 +120,7 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
         }
         
         doLast {
-            // TODO: Print the URL of where the Coveralls report can be found.
+            println "The latest Coveralls report can be found at https://coveralls.io/github/Unidata/thredds"
         }
     }
 }
