@@ -1,0 +1,176 @@
+if (name != "thredds") {
+    throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
+}
+
+// Adds "sonarqube" extension to all projects.
+// Adds "sonarqube" task to only the root project. However, the task analyzes the root and all subprojects.
+apply plugin: "org.sonarqube"
+
+apply from: "$rootDir/gradle/any/properties.gradle"  // For SonarQube user token.
+
+gradle.projectsEvaluated {
+    // Root project
+    sonarqube {
+        properties {
+            // Global properties. See http://docs.sonarqube.org/display/SONAR/Analysis+Parameters
+            properties["sonar.verbose"] = "false"
+            properties["sonar.projectKey"] = "thredds"
+            properties["sonar.host.url"] = "https://sonarqube.com"
+            // Defer invocation of getPropertyOrFailBuild() until the execution phase, using lazy GStrings.
+            properties["sonar.login"] = "${-> getPropertyOrFailBuild SONARQUBE_USER_TOKEN_KEY}"
+            
+            /*
+             * We want to analyze the code in :buildSrc. Unfortunately, that's doesn't happen by default with the
+             * application of the Sonar plugin because :buildSrc isn't technically part of thredds (Gradle considers
+             * it a completely separate build). Therefore, sonar isn't including it in the "sonar.modules" property.
+             *
+             * Why not just manually edit "sonar.modules" to include :buildSrc? Because the plugin overwrites anything
+             * that the user has set with a computed value: https://goo.gl/n2EIaI. As a result, "sonar.modules" is
+             * effectively read-only.
+             *
+             * So, given that we can't easily influence the value of the "sonar.modules" property (we'd need to
+             * physically create another subproject in the Gradle build), the other option is to assign buildSrc's code
+             * to an existing (Sonar) module. "thredds" (the root project) seems the natural choice, and that's what
+             * we're trying to do here. Unfortunately, this fails with an error:
+             *     A multi-module project can't have source folders, so
+             *     '/Users/cwardgar/dev/projects/thredds/buildSrc/src' won't be used for the analysis.
+             *
+             * See http://stackoverflow.com/questions/39297889. Essentially, only "leaf" modules are allowed to have
+             * source code. However, as stated in the thread, SonarSource is aware of the problem (SONARGRADL-5) and
+             * may fix it. I'll leave this here in the event that they do.
+             */
+            properties["sonar.sources"] = file("buildSrc/src")
+            properties["sonar.java.binaries"] = file("buildSrc/build/classes")
+        }
+    }
+    
+    allprojects {
+        sonarqube {
+            properties {
+                properties["sonar.inclusions"] = "**/*.java, **/*.groovy"  // Only scan Java and Groovy files.
+                properties["sonar.exclusions"] = "**/*Proto.java"          // Don't analyze protobuf-generated code.
+    
+                // We're already reporting test failures and code coverage in Jenkins; we don't need to do it in Sonar
+                // too. Setting these properties to the empty string effectively disables the associated functionality.
+                properties["sonar.junit.reportsPath"] = ""
+                properties["sonar.surefire.reportsPath"] = ""
+                properties["sonar.jacoco.reportPath"] = ""
+                properties["sonar.groovy.jacoco.reportPath"] = ""
+    
+                // These properties are deprecated, so go ahead and empty them as well.
+                properties["sonar.binaries"] = ""
+                properties["sonar.libraries"] = ""
+            }
+        }
+    }
+    
+    Collection<Project> javaProjects = subprojects.findAll { it.plugins.withType(JavaPlugin) }
+    
+    configure (javaProjects) {  // The 'sourceSets' property will only be found on Java projects.
+        sonarqube {
+            properties {
+                /*
+                 * The only code Sonar actually analyzes is in "sonar.sources". It uses "sonar.java.binaries" and
+                 * "sonar.java.libraries" for inspections that require bytecode. The values of these properties are
+                 * all taken from a Java project's "main" SourceSet.
+                 *
+                 * There are analogous properties for the "test" SourceSet: "sonar.tests", "sonar.java.test.binaries",
+                 * and "sonar.java.test.libraries". If we want our test code to be analyzed along with our main code,
+                 * we need to add the values of the "test" properties to their "main" counterparts.
+                 *
+                 * After that, we set the values of those "test" properties to the empty string, which instructs Sonar
+                 * to not do its normal reporting of test successes and failures. As mentioned before, we don't want
+                 * Sonar doing that; we already have Jenkins.
+                 */
+                def sources = files(properties["sonar.sources"] ?: [],
+                                    properties["sonar.tests"]   ?: []).flatten()
+                properties["sonar.sources"] = nukeDupesAndNonExistent(sources)
+                properties["sonar.tests"] = ""
+    
+                def binaries = files(properties["sonar.java.binaries"]      ?: [],
+                                     properties["sonar.java.test.binaries"] ?: []).flatten()
+                properties["sonar.java.binaries"] = nukeDupesAndNonExistent(binaries)
+                properties["sonar.java.test.binaries"] = ""
+    
+                def libraries = files(properties["sonar.java.libraries"]      ?: [],
+                                      properties["sonar.java.test.libraries"] ?: []).flatten()
+                properties["sonar.java.libraries"] = nukeDupesAndNonExistent(libraries)
+                properties["sonar.java.test.libraries"] = ""
+            }
+        }
+    }
+    
+    /*
+     * :opendap is a module with both source code and a child module. Due to SONARGRADL-5, it will not be analyzed by
+     * Sonar. Again, only "leaf" modules are allowed to have source code. So, if we want both :opendap and
+     * :opendap:dtswar to be analyzed, we must merge them together into one leaf module.
+     *
+     * We do this by assigning all of dtswar's sources, binaries, and libraries to opendap, and then setting dtswar's
+     * "skipProject" property to "true". This effectively deletes dtswar from the the module structure, leaving
+     * opendap as a leaf.
+     */
+    project(":opendap") {
+        sonarqube {
+            properties {
+                // Due to the deferred evaluation of this SonarQubeProperties Action (see https://goo.gl/skuBHE),
+                // many of dtswar's Sonar properties (such as ":opendap:dtswar.sonar.sources") aren't available here.
+                // So, we have to come up with those values ourselves. See https://goo.gl/sAKb3j
+                SourceSetContainer dtswarSourceSets = rootProject.project(":opendap:dtswar").sourceSets
+    
+                // Merge dtswar's source code into opendap's source code.
+                def sources = files(properties["sonar.sources"] ?: [],
+                        dtswarSourceSets.main.allSource.srcDirs ?: [], // :opendap:dtswar.sonar.sources
+                        dtswarSourceSets.test.allSource.srcDirs ?: []  // :opendap:dtswar.sonar.tests
+                ).flatten()
+                properties["sonar.sources"] = nukeDupesAndNonExistent(sources)
+    
+                // Merge dtswar's binaries into opendap's binaries.
+                def binaries = files(properties["sonar.java.binaries"] ?: [],
+                        dtswarSourceSets.main.output.classesDir ?: [], // :opendap:dtswar.sonar.java.binaries
+                        dtswarSourceSets.test.output.classesDir ?: []  // :opendap:dtswar.sonar.java.test.binaries
+                ).flatten()
+                properties["sonar.java.binaries"] = nukeDupesAndNonExistent(binaries)
+    
+                // Merge dtswar's libraries into opendap's libraries.
+                def libraries = files(properties["sonar.java.libraries"] ?: [],
+                        dtswarSourceSets.main.compileClasspath ?: [], // :opendap:dtswar.sonar.java.libraries
+                        dtswarSourceSets.test.compileClasspath ?: []  // :opendap:dtswar.sonar.java.test.libraries
+                ).flatten()
+                properties["sonar.java.libraries"] = nukeDupesAndNonExistent(libraries)
+            }
+        }
+    }
+    
+    // Causes :opendap to become a leaf module.
+    project(":opendap:dtswar").sonarqube.skipProject = true
+    
+    boolean debug = false
+    
+    tasks.sonarqube {
+        // Some inspections require bytecode. 'testClasses' depends on 'classes'.
+        dependsOn = javaProjects*.tasks*.testClasses
+        
+        if (debug) {
+            doFirst {
+                // 'properties' is a dynamic property, recomputed every time it is accessed by
+                // computeSonarProperties(). See https://goo.gl/DkbXfe. This essentially makes it read-only.
+                properties.each{
+                    k, v -> println "$k:$v"
+                }
+                throw new StopExecutionException("Okay, STOP. We just wanted to see the properties.")
+            }
+        }
+    }
+
+}
+
+// Returns the provided files, minus any duplicates or files that don't exist.
+Set<File> nukeDupesAndNonExistent(Iterable<File> files) {
+    Set<File> ret = new LinkedHashSet<File>()
+    files.each {
+        if (it.exists()) {
+            ret << it
+        }
+    }
+    ret
+}

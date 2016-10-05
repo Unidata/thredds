@@ -3,6 +3,7 @@ if (name != "thredds") {
 }
 
 apply plugin: 'maven-publish'
+apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
 
 import edu.ucar.build.PublishingUtil
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
@@ -38,6 +39,9 @@ publishing {
     }
 }
 
+// Use taskGraph.whenReady() to delay the evaluation of the Nexus credentials for as long as possible.
+// It appears that it can't be deferred until the evaluation phase using Groovy GStrings: it's always done in the
+// execution phase.
 gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
     Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll { it instanceof PublishToMavenRepository }
@@ -47,19 +51,11 @@ gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     }
     
     Closure nexusCredentials = {
-        username = getPropertyOrFailBuild 'nexus.username'
-        password = getPropertyOrFailBuild 'nexus.password'
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
     }
     
     mavenPublishTasks.each {
         it.repository.credentials nexusCredentials
-    }
-}
-
-String getPropertyOrFailBuild(String key) {
-    if (!rootProject.hasProperty(key)) {
-        throw new GradleException("You must define the '$key' property in order to publish to Nexus.")
-    } else {
-        rootProject.property(key) as String
     }
 }

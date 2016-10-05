@@ -34,8 +34,6 @@ dependencies {
     // we're overlaying tds (see below), so we're already getting the binding that it declares.
 }
 
-test.enabled = false  // We're doing integrationTest instead.
-
 apply plugin: 'org.akhikhl.gretty'
 
 gretty {
@@ -48,7 +46,9 @@ gretty {
     // See http://akhikhl.github.io/gretty-doc/Web-app-overlays.html
     overlay ':tds'
 
-    integrationTestTask = 'integrationTest' // The name of an existing gradle task.
+    // The normal 'test' task added by the Java plugin has nothing to do in this subproject, because every single
+    // test requires a running TDS. Therefore, we're repurposing the 'test' task for integration testing.
+    integrationTestTask = 'test'
 
     // By default, this field is 'false', which causes Gretty to start the embedded Tomcat process with a non-blocking
     // entropy source. It is intended to make startup faster.
@@ -72,14 +72,14 @@ gretty {
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
-task integrationTest(type: Test, group: 'Verification') {
+test {
     // isContentRootAvailable, isJenkins, and contentRootKey are defined on the root project in testing.gradle.
     if (!isContentRootAvailable && !isJenkins) {  // Don't skip tests on Jenkins, except NotJenkins ones.
         logger.warn "Skipping all integration tests (task \'$path\'): " +
                 "\'$contentRootKey\' property not defined."
 
         // We can't stand up a functioning TDS test instance without a valid content root,
-        // so disable the integration test task altogether.
+        // so disable the task altogether.
         enabled = false
     }
 
@@ -98,22 +98,10 @@ task integrationTest(type: Test, group: 'Verification') {
     }
 }
 
-// Propagate all of integrationTest's system properties (which were set in testing.gradle) to the embedded Tomcat
-// instance. org.akhikhl.gretty.ServerConfig.systemProperties is null by default.
+// Propagate all of test's system properties (which were set in testing.gradle) to the embedded Tomcat instance.
+// org.akhikhl.gretty.ServerConfig.systemProperties is null by default.
 // So, we can be sure that we're not trampling over any existing properties by doing this.
-gretty.systemProperties integrationTest.systemProperties
-
-task integrationTestReport(type: JacocoReport, dependsOn: "integrationTest") {
-    // executionData must be closure, because appBeforeIntegrationTest is not defined yet.
-    // We must pass jacoco.destinationFile, not appBeforeIntegrationTest itself,
-    // because otherwise JacocoReport would translate task argument to closure and Project.files(...)
-    // (which is used internally by executionData) is not able to resolve recursive closures.
-    executionData { tasks.appBeforeIntegrationTest.jacoco.destinationFile }
-
-    reports {
-        html.destination = reporting.file("jacoco/integrationTest/html")
-    }
-}
+gretty.systemProperties test.systemProperties
 
 import org.gradle.api.internal.changedetection.TaskArtifactStateRepository
 import org.gradle.api.internal.changedetection.TaskArtifactState
@@ -124,14 +112,14 @@ import org.gradle.api.internal.changedetection.TaskArtifactState
 afterEvaluate {
     // This task starts the embedded Tomcat server. It's expensive to do.
     appBeforeIntegrationTest {
-        // We're trying hard to only execute appBeforeIntegrationTest if integrationTest will execute.
-        // We won't execute if integrationTest is disabled--that's simple.
-        // We also won't execute if integrationTest is considered UP-TO-DATE. That's much harder to determine, and we
+        // We're trying hard to only execute appBeforeIntegrationTest if test will execute.
+        // We won't execute if test is disabled--that's simple.
+        // We also won't execute if test is considered UP-TO-DATE. That's much harder to determine, and we
         // had to dig into internal Gradle APIs to find that info. Expect this to break in the future.
-        // There are still other cases where integrationTest execution could be skipped that we don't or can't check
+        // There are still other cases where test execution could be skipped that we don't or can't check
         // (e.g. one of its onlyIf()s returns false), but those situations are rare.
         onlyIf {
-            Task task = tasks.integrationTest
+            Task task = tasks.test
             if (!task.enabled) {    // May have been disabled above.
                 return false;
             }
@@ -143,13 +131,8 @@ afterEvaluate {
         // "jacoco" extension is created automatically for all AppBeforeIntegrationTest tasks
         // and has type org.gradle.testing.jacoco.plugins.JacocoTaskExtension
         jacoco {
-            // appBeforeIntegrationTest.exec gets larger every run if we don't do this. That breaks UP-TO-DATE
-            // checking. LOOK: The Test tasks have "true" here, yet I don't notice the undesirable behavior. Why?
-            append = false
-
-            // Don't use the same name as our integration test task's execution data.
-            // That data may be useless (is it?), but overwriting it during execution foils UP-TO-DATE checking.
-            // destinationFile = new File(buildDir, 'jacoco/integrationTest.exec')
+            // Don't use the same name as our test task's execution data.
+            destinationFile = file("$buildDir/jacoco/embedded-tds.exec")
         }
 
         doFirst {
@@ -163,5 +146,10 @@ afterEvaluate {
     appAfterIntegrationTest {
         // Only run if appBeforeIntegrationTest did work.
         onlyIf { tasks.appBeforeIntegrationTest.getDidWork() }
+    }
+    
+    jacocoTestReport {
+        executionData = files(tasks.appBeforeIntegrationTest.jacoco.destinationFile,
+                              tasks.test.jacoco.destinationFile)
     }
 }

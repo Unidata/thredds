@@ -1,0 +1,27 @@
+ext {
+    // Used to publish Maven artifacts to Unidata's Nexus repository, https://artifacts.unidata.ucar.edu
+    NEXUS_USERNAME_KEY = 'nexus.username'
+    NEXUS_PASSWORD_KEY = 'nexus.password'
+    
+    // Used to publish code coverage report to https://coveralls.io/github/Unidata/thredds
+    COVERALLS_REPO_TOKEN_KEY = 'coveralls.repo.token'
+    
+    // Used to publish static analysis report to https://sonarqube.com/dashboard/index/thredds
+    SONARQUBE_USER_TOKEN_KEY = 'sonarqube.user.token'
+}
+
+String getPropertyOrFailBuild(String key) {
+    if (!hasProperty(key)) {
+        throw new GradleException("You must define the '$key' property.")
+    } else {
+        property(key) as String
+    }
+}
+
+// It isn't possible to share methods, but we can share extra properties containing a closure, which boils down to
+// the same thing. We're going to do that by converting our methods to closures.
+// See http://stackoverflow.com/questions/18715137/extract-common-methods-from-gradle-build-script
+ext {
+    // Export methods by turning them into closures
+    getPropertyOrFailBuild = this.&getPropertyOrFailBuild
+}
