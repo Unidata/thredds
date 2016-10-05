@@ -8,7 +8,7 @@ apply plugin: "base" // Gives us the "clean" task for removing rootJacocoReport'
 gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
     // Add the source directories for each Java subproject to one big FileCollection.
     // Ditto for the class directories.
-    Collection<Project> javaProjects = subprojects*.findAll { it.plugins.withType(JavaPlugin) }
+    Collection<Project> javaProjects = subprojects.findAll { it.plugins.withType(JavaPlugin) }
     FileCollection allSubprojectSourceDirs = files(javaProjects*.sourceSets*.main*.allSource*.srcDirs)
     FileCollection allSubprojectClassDirs = files(javaProjects*.sourceSets*.main*.output)
     
@@ -116,6 +116,10 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
     
             inputs.file jacocoReportPath
             outputs.file saveFilePath
+        }
+        
+        doLast {
+            // TODO: Print the URL of where the Coveralls report can be found.
         }
     }
 }
