@@ -321,7 +321,6 @@ public class HtmlWriter {
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
     sb.append( "</h3>\n" );
-    sb.append( this.getGoogleTrackingContent() );
   }
 
   private void appendWebappFooter( StringBuilder sb )
@@ -396,6 +395,7 @@ public class HtmlWriter {
     sb.append("Directory listing for ").append(path);
     sb.append("</title>\r\n");
     sb.append(this.getTdsCatalogCssLink()).append("\n");
+    sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     sb.append("<h1>");
@@ -562,6 +562,7 @@ public class HtmlWriter {
       sb.append("Catalog ").append(catname);
     sb.append("</title>\r\n");
     sb.append(this.getTdsCatalogCssLink()).append("\n");
+    sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");
@@ -798,7 +799,8 @@ public class HtmlWriter {
     sb.append("<head>\r\n");
     sb.append("<title> Catalog Services</title>\r\n");
     sb.append("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\r\n");
-    sb.append(this.getTdsPageCssLink());
+    sb.append(this.getTdsPageCssLink()).append("\n");
+    sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     this.appendOldStyleHeader(sb);
@@ -810,9 +812,7 @@ public class HtmlWriter {
 
     // optional access through Viewers
     if (isLocalCatalog)
-      viewerService.showViewers(sb, dataset, request);	
-    
-    sb.append( this.getGoogleTrackingContent() );
+      viewerService.showViewers(sb, dataset, request);
     
     sb.append( "</body>\r\n" );
     sb.append( "</html>\r\n" );
@@ -868,6 +868,7 @@ public class HtmlWriter {
     sb.append("Common Data Model");
     sb.append("</title>\r\n");
     sb.append(this.getTdsPageCssLink()).append("\n");
+    sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");
