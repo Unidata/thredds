@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2016 University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
@@ -36,6 +36,8 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
+import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 
 /**
@@ -52,8 +54,16 @@ public class LambertCylindricalEqualArea extends AbstractTransformBuilder implem
 
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     double par = readAttributeDouble(ctv, CF.STANDARD_PARALLEL, Double.NaN);
+
     readStandardParams(ctv, geoCoordinateUnits);
-    ucar.unidata.geoloc.ProjectionImpl proj = new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
+
+    // create spherical Earth obj if not created by readStandardParams w/ radii, flattening
+    if (earth == null) {
+        earth = new Earth();
+    }
+
+    ProjectionImpl proj = new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
+
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

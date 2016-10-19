@@ -50,6 +50,8 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public class GdsHorizCoordSys {
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GdsHorizCoordSys.class);
+
   private final String name;
   public final int template, gdsNumberPoints, scanMode;
   public final ucar.unidata.geoloc.ProjectionImpl proj;
@@ -155,17 +157,18 @@ public class GdsHorizCoordSys {
 
   ////////////////////////////////////////////////
 
-  // set gaussian weights based on nparellels
-  // some wierd adjustment for la1 and la2.
-  public void setGaussianLats(int nparellels, float la1, float la2) {
+  // set gaussian weights based on nparallels
+  // some weird adjustment for la1 and la2.
+  public void setGaussianLats(int nparallels, float la1, float la2) {
+    log.debug ("la1 {}, la2 {}", la1, la2);
     if (this.gaussLats != null) throw new RuntimeException("Cant modify GdsHorizCoordSys");
 
-    int nlats = (2 * nparellels);
+    int nlats = (2 * nparallels);
     GaussianLatitudes gaussLats = GaussianLatitudes.factory(nlats);
 
     int bestStartIndex = 0, bestEndIndex = 0;
     double bestStartDiff = Double.MAX_VALUE;
-    double bestEndDiff = Double.MAX_VALUE;
+    double bestEndDiff   = Double.MAX_VALUE;
     for (int i = 0; i < nlats; i++) {
       double diff = Math.abs(gaussLats.latd[i] - la1);
       if (diff < bestStartDiff) {
@@ -178,14 +181,19 @@ public class GdsHorizCoordSys {
         bestEndIndex = i;
       }
     }
-    if (Math.abs(bestEndIndex - bestStartIndex + 1) != nyRaw) {
-      //log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
+
+    log.debug ("first pass: bestStartIndex {}, bestEndIndex {}", bestStartIndex, bestEndIndex);
+
+    if (Math.abs(bestEndIndex - bestStartIndex) + 1 != nyRaw) {
+      log.warn("GRIB gaussian lats: NP != NY, use NY");  // see email from Toussaint@dkrz.de datafil:
       nlats = nyRaw;
       gaussLats = GaussianLatitudes.factory(nlats);
       bestStartIndex = 0;
       bestEndIndex = nyRaw - 1;
     }
     boolean goesUp = bestEndIndex > bestStartIndex;
+
+    log.debug ("bestStartIndex {}, bestEndIndex {}, goesUp {}", bestStartIndex, bestEndIndex, goesUp);
 
     // create the data
     int useIndex = bestStartIndex;
@@ -194,6 +202,8 @@ public class GdsHorizCoordSys {
     for (int i = 0; i < nyRaw; i++) {
       data[i] = (float) gaussLats.latd[useIndex];
       gaussw[i] = (float) gaussLats.gaussw[useIndex];
+
+        log.trace ("i {}, useIndex {}, data {}, gaussw {}", i, useIndex, data[i], gaussw[i]);
       if (goesUp) {
         useIndex++;
       } else {
@@ -202,7 +212,7 @@ public class GdsHorizCoordSys {
     }
 
     this.gaussLats = Array.factory(DataType.FLOAT, new int[]{nyRaw}, data);
-    this.gaussw = Array.factory(DataType.FLOAT, new int[]{nyRaw}, gaussw);
+    this.gaussw    = Array.factory(DataType.FLOAT, new int[]{nyRaw}, gaussw);
   }
 
   public Array getGaussianLats() {
@@ -232,5 +242,3 @@ public class GdsHorizCoordSys {
             '\n';
   }
 }
-
-
