@@ -33,6 +33,8 @@
 
 package thredds.server.cdmremote;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,35 +43,32 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
+import thredds.server.config.TdsContext;
 import thredds.server.exception.ServiceNotAllowed;
+import thredds.servlet.ServletUtil;
 import thredds.util.ContentType;
 import thredds.util.TdsPathUtils;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.ParsedSectionSpec;
+import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.util.EscapeStrings;
-
-import org.jdom2.Document;
-import org.jdom2.Element;
-import org.springframework.web.servlet.mvc.LastModified;
-import thredds.server.config.TdsContext;
-import thredds.servlet.ServletUtil;
+import ucar.nc2.stream.NcStreamWriter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.StringTokenizer;
-
-import ucar.ma2.InvalidRangeException;
-import ucar.nc2.stream.NcStreamWriter;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.ParsedSectionSpec;
 
 /**
  * Spring controller for CdmRemote service.
@@ -79,7 +78,7 @@ import ucar.nc2.ParsedSectionSpec;
  */
 @Controller
 @RequestMapping("/cdmremote")
-public class CdmRemoteController implements LastModified {
+public class CdmRemoteController {
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmRemoteController.class);
   private static final boolean debug = false, showReq = false;
 
@@ -88,12 +87,6 @@ public class CdmRemoteController implements LastModified {
 
   @Autowired
   private AllowedServices allowedServices;
-
-  @Override
-  public long getLastModified(HttpServletRequest req) {
-    String path = TdsPathUtils.extractPath(req, "cdmremote/");
-    return TdsRequestedDataset.getLastModified(path);
-  }
 
   @InitBinder("CdmRemoteQueryBean")
   protected void initBinder(WebDataBinder binder) {
@@ -119,7 +112,9 @@ public class CdmRemoteController implements LastModified {
     // LOOK heres where we want the Dataset, not the netcdfFile (!)
     try (NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(request, response, datasetPath)) {
       if (ncfile == null) return null;  // failed resource control
+
       responseHeaders = new HttpHeaders();
+      responseHeaders.setDate("Last-Modified", TdsRequestedDataset.getLastModified(datasetPath));
 
       // a request without a parameter is a test to see if this is a valid cdremote endpoint.
       // just setHeader("Content-Description", "ncstream"), no body
@@ -140,7 +135,6 @@ public class CdmRemoteController implements LastModified {
 
         case "ncml":
           String ncml = ncfile.toNcML(absPath);
-          responseHeaders = new HttpHeaders();
           responseHeaders.set(ContentType.HEADER, ContentType.xml.getContentHeader());
           return new ResponseEntity<>(ncml, responseHeaders, HttpStatus.OK);
 
@@ -197,6 +191,8 @@ public class CdmRemoteController implements LastModified {
 
       response.setContentType(ContentType.binary.getContentHeader());
       response.setHeader("Content-Description", "ncstream");
+      response.addDateHeader("Last-Modified", TdsRequestedDataset.getLastModified(datasetPath));
+
       NcStreamWriter ncWriter = new NcStreamWriter(ncfile, ServletUtil.getRequestBase(request));
       long size = ncWriter.sendHeader(out);
       out.flush();

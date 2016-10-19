@@ -35,16 +35,15 @@ package thredds.server.fileserver;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.LastModified;
 import thredds.core.TdsRequestedDataset;
 import thredds.servlet.ServletUtil;
 import thredds.util.TdsPathUtils;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * HTTP File Serving
@@ -53,19 +52,8 @@ import java.io.File;
  */
 @Controller
 @RequestMapping("/fileServer")
-public class FileServerController implements LastModified {
+public class FileServerController {
   protected static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FileServerController.class);
-
-  public long getLastModified(HttpServletRequest req) {
-    String reqPath = TdsPathUtils.extractPath(req, "fileServer/");
-    if (reqPath == null) return -1;
-
-    File file = getFile( reqPath);
-    if (file == null)
-      return -1;
-
-    return file.lastModified();
-  }
 
   @RequestMapping("**")
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {

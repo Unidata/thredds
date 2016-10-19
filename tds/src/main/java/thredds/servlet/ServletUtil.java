@@ -33,20 +33,24 @@
 
 package thredds.servlet;
 
-import java.io.*;
-import java.util.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
 import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.util.ContentType;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.util.IO;
 import thredds.util.RequestForwardUtils;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.EscapeStrings;
+import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
 
 public class ServletUtil {
   public static final org.slf4j.Logger logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
@@ -179,6 +183,7 @@ public class ServletUtil {
    */
   public static void returnFile(HttpServletRequest req, HttpServletResponse res, File file, String contentType) throws IOException {
     res.setContentType(contentType);
+    res.addDateHeader("Last-Modified", file.lastModified());
     // res.setHeader("Content-Disposition", "attachment; filename=\"" + file.getName() + "\"");
 
     // see if its a Range Request
