@@ -37,7 +37,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.LastModified;
 import thredds.server.config.TdsContext;
 import thredds.util.RequestForwardUtils;
 import thredds.util.TdsPathUtils;
@@ -55,17 +54,9 @@ import java.io.IOException;
  * @since 4.0
  */
 @Controller
-public class RootController implements LastModified {
-
+public class RootController {
   @Autowired
   private TdsContext tdsContext;
-
-  // this is to catch old style catalog requests that dont start with catalog LOOK this breaks jsps
-  /* @RequestMapping({"**"})
-  public String wtf(HttpServletRequest req) throws FileNotFoundException {
-    System.out.printf("%s%n", req.getRequestURI());
-    throw new FileNotFoundException(req.getRequestURI());
-  }  */
 
   @RequestMapping(value = {"/", "/catalog.html"}, method = {RequestMethod.GET, RequestMethod.HEAD})
   public String redirectRootCatalog() {
@@ -77,7 +68,7 @@ public class RootController implements LastModified {
     return "redirect:/catalog/catalog.xml";
   }
 
-  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png, *.jsp"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png", "*.jsp"}, method = RequestMethod.GET)
   public ModelAndView serveFromPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
     String path = TdsPathUtils.extractPath(req, null);
     File file = tdsContext.getPublicContentDirSource().getFile(path);
@@ -86,16 +77,5 @@ public class RootController implements LastModified {
       return null;
     }
     return new ModelAndView("threddsFileView", "file", file);
-  }
-
-  public long getLastModified(HttpServletRequest req) {
-    String path = TdsPathUtils.extractPath(req, null);
-    File file = tdsContext.getPublicContentDirSource().getFile(path);
-    if (file == null)
-      return -1;
-    long lastModTime = file.lastModified();
-    if (lastModTime == 0L)
-      return -1;
-    return lastModTime;
   }
 }

@@ -43,7 +43,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.LastModified;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
 import thredds.core.TdsRequestedDataset;
@@ -57,13 +56,11 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.ma2.Section;
-import ucar.nc2.Variable;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.remote.CdmrFeatureProto;
 import ucar.nc2.ft2.coverage.remote.CdmrfWriter;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.stream.NcStream;
-import ucar.nc2.stream.NcStreamCompression;
 import ucar.nc2.stream.NcStreamDataCol;
 import ucar.nc2.stream.NcStreamProto;
 
@@ -87,7 +84,7 @@ import java.util.zip.DeflaterOutputStream;
  */
 @Controller
 @RequestMapping("/cdmrfeature/grid")
-public class CdmrGridController implements LastModified {
+public class CdmrGridController {
   // private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CdmrGridController.class);
   private static final boolean showReq = false;
   private static final boolean showRes = false;
@@ -97,12 +94,6 @@ public class CdmrGridController implements LastModified {
 
   @Autowired
   private AllowedServices allowedServices;
-
-  @Override
-  public long getLastModified(HttpServletRequest req) {
-    String path = TdsPathUtils.extractPath(req, "cdmrfeature/");
-    return TdsRequestedDataset.getLastModified(path);
-  }
 
   ////////////////////////////////////////////////////////////////////
 
@@ -139,6 +130,8 @@ public class CdmrGridController implements LastModified {
 
       response.setContentType(ContentType.binary.getContentHeader());
       response.setHeader("Content-Description", "ncstream");
+      response.addDateHeader("Last-Modified", TdsRequestedDataset.getLastModified(datasetPath));
+
       CdmrfWriter writer = new CdmrfWriter();
       long size = writer.sendHeader(out, gridCoverageDataset, ServletUtil.getRequestBase(request));
       out.flush();
@@ -169,6 +162,7 @@ public class CdmrGridController implements LastModified {
 
       responseHeaders = new HttpHeaders();
       responseHeaders.set(ContentType.HEADER, ContentType.text.getContentHeader());
+      responseHeaders.setDate("Last-Modified", TdsRequestedDataset.getLastModified(datasetPath));
       return new ResponseEntity<>(text, responseHeaders, HttpStatus.OK);
 
     }

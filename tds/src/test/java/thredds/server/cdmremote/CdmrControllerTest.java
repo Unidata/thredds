@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -38,14 +40,15 @@ import java.util.Collection;
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class CdmrControllerTest {
+    private static final Logger logger = LoggerFactory.getLogger(CdmrControllerTest.class);
 
   @Autowired
- 	private WebApplicationContext wac;
+  private WebApplicationContext wac;
 
- 	private MockMvc mockMvc;
+  private MockMvc mockMvc;
 
- 	@Before
- 	public void setup(){
+   @Before
+   public void setup(){
  		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
  	}
 
@@ -57,7 +60,7 @@ public class CdmrControllerTest {
             {"/cdmremote/testBuoyFeatureCollection/files/Surface_Buoy_20130804_0000.nc", 5, 2, 58, "meanWind(0:1)"},  // point
             {"/cdmremote/testSurfaceSynopticFeatureCollection/files/Surface_Synoptic_20130804_0000.nc", 5, 2, 46, "humidity(0:1)"},  // point
     });
- 	}
+  }
 
   String path, dataReq;
   int ndims, natts, nvars;
@@ -74,14 +77,12 @@ public class CdmrControllerTest {
      RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
    				.param("req", "capabilities");
 
-    System.out.printf("%s?req=capabilities%n", path);
+      logger.debug("{}?req=capabilities", path);
 
      MvcResult result = this.mockMvc.perform( rb )
                .andExpect(MockMvcResultMatchers.status().is(200))
                .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
                .andReturn();
-
-    //System.out.printf("content = %s%n", result.getResponse().getContentAsString());
 
     /* String content =
             "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+
@@ -102,8 +103,10 @@ public class CdmrControllerTest {
               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.text.getContentHeader()))
               .andReturn();
 
-
-    //System.out.printf("content = %s%n", result.getResponse().getContentAsString());
+      // We want this statement to succeed without exception.
+      // Throws NullPointerException if header doesn't exist
+      // Throws IllegalArgumentException if header value is not a valid date.
+      result.getResponse().getDateHeader("Last-Modified");
   }
 
   @Test
@@ -116,18 +119,16 @@ public class CdmrControllerTest {
                .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
                .andReturn();
 
-
-    //System.out.printf("content = %s%n", result.getResponse().getContentAsString());
+      // We want this statement to succeed without exception.
+      // Throws NullPointerException if header doesn't exist
+      // Throws IllegalArgumentException if header value is not a valid date.
+      result.getResponse().getDateHeader("Last-Modified");
 
     Document doc = XmlUtil.getStringResponseAsDoc(result.getResponse());
 
     int hasDims = NcmlParserUtil.getNcMLElements("netcdf/dimension", doc).size();
     int hasAtts = NcmlParserUtil.getNcMLElements("netcdf/attribute", doc).size();
     int hasVars = NcmlParserUtil.getNcMLElements("//variable", doc).size();
-
-    System.out.printf("ndims = %s%n", hasDims);
-    System.out.printf("natts = %s%n", hasAtts);
-    System.out.printf("nvars = %s%n", hasVars);
 
     //Not really checking the content just the number of elements
     assertEquals(this.ndims, hasDims);
@@ -145,10 +146,14 @@ public class CdmrControllerTest {
                .andExpect(MockMvcResultMatchers.content().contentType(ContentType.binary.getContentHeader()))
                .andReturn();
 
+      // We want this statement to succeed without exception.
+      // Throws NullPointerException if header doesn't exist
+      // Throws IllegalArgumentException if header value is not a valid date.
+      result.getResponse().getDateHeader("Last-Modified");
+
         //response is a ncstream
     ByteArrayInputStream bais = new ByteArrayInputStream(result.getResponse().getContentAsByteArray());
     CdmRemote cdmr = new CdmRemote(bais, "test");
-    System.out.printf("%s%n", cdmr);
     cdmr.close();
    }
 
