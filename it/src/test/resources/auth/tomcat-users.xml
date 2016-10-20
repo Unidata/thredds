@@ -11,5 +11,5 @@
 
   <user username="tds" 
         password="secret666" 
-        roles="tdsConfig,manager-gui,tdsMonitor"/>
+        roles="restrictedDatasetUser,tdsConfig,tdsMonitor,tdsTrigger,manager-gui,"/>
 </tomcat-users>
