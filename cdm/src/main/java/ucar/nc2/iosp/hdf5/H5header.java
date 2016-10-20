@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2016 University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
@@ -73,12 +73,12 @@ public class H5header {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // special attribute names in HDF5
-  static public final String HDF5_CLASS = "CLASS";
-  static public final String HDF5_DIMENSION_LIST = "DIMENSION_LIST";
-  static public final String HDF5_DIMENSION_SCALE = "DIMENSION_SCALE";
+  static public final String HDF5_CLASS            = "CLASS";
+  static public final String HDF5_DIMENSION_LIST   = "DIMENSION_LIST";
+  static public final String HDF5_DIMENSION_SCALE  = "DIMENSION_SCALE";
   static public final String HDF5_DIMENSION_LABELS = "DIMENSION_LABELS";
-  static public final String HDF5_DIMENSION_NAME = "NAME";
-  static public final String HDF5_REFERENCE_LIST = "REFERENCE_LIST";
+  static public final String HDF5_DIMENSION_NAME   = "NAME";
+  static public final String HDF5_REFERENCE_LIST   = "REFERENCE_LIST";
 
   // debugging
   static private boolean debugEnum = false, debugVlen = false;
@@ -93,21 +93,21 @@ public class H5header {
   }
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
-    debug1 = debugFlag.isSet("H5header/header");
-    debugBtree2 = debugFlag.isSet("H5header/btree2");
+    debug1           = debugFlag.isSet("H5header/header");
+    debugBtree2      = debugFlag.isSet("H5header/btree2");
     debugContinueMessage = debugFlag.isSet("H5header/continueMessage");
-    debugDetail = debugFlag.isSet("H5header/headerDetails");
-    debugDataBtree = debugFlag.isSet("H5header/dataBtree");
-    debugGroupBtree = debugFlag.isSet("H5header/groupBtree");
-    debugHeap = debugFlag.isSet("H5header/Heap");
-    debugPos = debugFlag.isSet("H5header/filePos");
-    debugReference = debugFlag.isSet("H5header/reference");
-    debugSoftLink = debugFlag.isSet("H5header/softLink");
-    debugHardLink = debugFlag.isSet("H5header/hardLink");
+    debugDetail      = debugFlag.isSet("H5header/headerDetails");
+    debugDataBtree   = debugFlag.isSet("H5header/dataBtree");
+    debugGroupBtree  = debugFlag.isSet("H5header/groupBtree");
+    debugHeap        = debugFlag.isSet("H5header/Heap");
+    debugPos         = debugFlag.isSet("H5header/filePos");
+    debugReference   = debugFlag.isSet("H5header/reference");
+    debugSoftLink    = debugFlag.isSet("H5header/softLink");
+    debugHardLink    = debugFlag.isSet("H5header/hardLink");
     debugSymbolTable = debugFlag.isSet("H5header/symbolTable");
-    debugTracker = debugFlag.isSet("H5header/memTracker");
-    debugV = debugFlag.isSet("H5header/Variable");
-    debugStructure = debugFlag.isSet("H5header/structure");
+    debugTracker     = debugFlag.isSet("H5header/memTracker");
+    debugV           = debugFlag.isSet("H5header/Variable");
+    debugStructure   = debugFlag.isSet("H5header/structure");
   }
 
   static private final byte[] head = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', 0x1a, '\n'};
@@ -194,8 +194,12 @@ public class H5header {
       }
       filePos = (filePos == 0) ? 512 : 2 * filePos;
     }
-    if (!ok) throw new IOException("Not a netCDF4/HDF5 file ");
-    if (debug1 && (debugOut != null)) debugOut.println("H5header opened file to read:'" + raf.getLocation() + "' size= " + actualSize);
+    if (!ok) {
+        throw new IOException("Not a netCDF4/HDF5 file ");
+    }
+    if (debug1) {
+        log.debug("H5header opened file to read:'{}' size= {}", raf.getLocation(), actualSize);
+    }
     // now we are positioned right after the header
 
     // header information is in le byte order
@@ -223,14 +227,14 @@ public class H5header {
     if (allSharedDimensions) isNetcdf4 = true;
 
     /*if (debugReference) {
-     System.out.println("DataObjects");
+     log.debug("DataObjects");
      for (DataObject ob : addressMap.values())
-       System.out.println("  " + ob.name + " address= " + ob.address + " filePos= " + getFileOffset(ob.address));
+       log.debug("  " + ob.name + " address= " + ob.address + " filePos= " + getFileOffset(ob.address));
    } */
     if (debugTracker ) {
       Formatter f= new Formatter();
       memTracker.report(f);
-      if (debugOut != null) debugOut.println(f.toString());
+      log.debug(f.toString());
     }
     debugOut = null;
   }
@@ -248,27 +252,35 @@ public class H5header {
     versionGroup = raf.readByte();
     raf.readByte(); // skip 1 byte
     versionSHMF = raf.readByte();
-    if (debugDetail && (debugOut != null)) debugOut.println(" versionSB= " + versionSB + " versionFSS= " + versionFSS + " versionGroup= " + versionGroup + " versionSHMF= " + versionSHMF);
+    if (debugDetail) {
+      log.debug(" versionSB= " + versionSB + " versionFSS= " + versionFSS + " versionGroup= " + versionGroup +
+              " versionSHMF= " + versionSHMF);
+    }
 
     sizeOffsets = raf.readByte();
     isOffsetLong = (sizeOffsets == 8);
 
     sizeLengths = raf.readByte();
     isLengthLong = (sizeLengths == 8);
-    if (debugDetail && (debugOut != null)) debugOut.println(" sizeOffsets= " + sizeOffsets + " sizeLengths= " + sizeLengths);
-    if (debugDetail && (debugOut != null)) debugOut.println(" isLengthLong= " + isLengthLong + " isOffsetLong= " + isOffsetLong);
+    if (debugDetail) {
+        log.debug(" sizeOffsets= {} sizeLengths= {}", sizeOffsets, sizeLengths);
+        log.debug(" isLengthLong= {} isOffsetLong= {}", isLengthLong, isOffsetLong);
+    }
 
     raf.read(); // skip 1 byte
-    //debugOut.println(" position="+mapBuffer.position());
+    //log.debug(" position="+mapBuffer.position());
 
     btreeLeafNodeSize = raf.readShort();
     btreeInternalNodeSize = raf.readShort();
-    if (debugDetail && (debugOut != null)) debugOut.println(" btreeLeafNodeSize= " + btreeLeafNodeSize + " btreeInternalNodeSize= " + btreeInternalNodeSize);
-
-    //debugOut.println(" position="+mapBuffer.position());
+    if (debugDetail) {
+        log.debug(" btreeLeafNodeSize= {} btreeInternalNodeSize= {}", btreeLeafNodeSize, btreeInternalNodeSize);
+    }
+    //log.debug(" position="+mapBuffer.position());
 
     fileFlags = raf.readInt();
-    if (debugDetail && (debugOut != null)) debugOut.println(" fileFlags= 0x" + Integer.toHexString(fileFlags));
+    if (debugDetail) {
+        log.debug(" fileFlags= 0x{}", Integer.toHexString(fileFlags));
+    }
 
     if (versionSB == 1) {
       short storageInternalNodeSize = raf.readShort();
@@ -281,18 +293,20 @@ public class H5header {
     driverBlockAddress = readOffset();
 
     if (baseAddress != superblockStart) {
-      baseAddress = superblockStart;
-      eofAddress += superblockStart;
-      if (debugDetail && (debugOut != null)) debugOut.println(" baseAddress set to superblockStart");
+        baseAddress = superblockStart;
+        eofAddress += superblockStart;
+        if (debugDetail) {
+            log.debug(" baseAddress set to superblockStart");
+        }
     }
 
-    if (debugDetail && (debugOut != null)) {
-      debugOut.println(" baseAddress= 0x" + Long.toHexString(baseAddress));
-      debugOut.println(" global free space heap Address= 0x" + Long.toHexString(heapAddress));
-      debugOut.println(" eof Address=" + eofAddress);
-      debugOut.println(" raf length= " + raf.length());
-      debugOut.println(" driver BlockAddress= 0x" + Long.toHexString(driverBlockAddress));
-      debugOut.println();
+    if (debugDetail) {
+      log.debug(" baseAddress= 0x{}", Long.toHexString(baseAddress));
+      log.debug(" global free space heap Address= 0x{}", Long.toHexString(heapAddress));
+      log.debug(" eof Address={}", eofAddress);
+      log.debug(" raf length= {}", raf.length());
+      log.debug(" driver BlockAddress= 0x{}", Long.toHexString(driverBlockAddress));
+      log.debug("");
     }
     if (debugTracker) memTracker.add("superblock", superblockStart, raf.getFilePointer());
 
@@ -326,11 +340,15 @@ public class H5header {
 
     sizeLengths = raf.readByte();
     isLengthLong = (sizeLengths == 8);
-    if (debugDetail && (debugOut != null)) debugOut.println(" sizeOffsets= " + sizeOffsets + " sizeLengths= " + sizeLengths);
-    if (debugDetail && (debugOut != null)) debugOut.println(" isLengthLong= " + isLengthLong + " isOffsetLong= " + isOffsetLong);
+    if (debugDetail) {
+        log.debug(" sizeOffsets= {} sizeLengths= {}", sizeOffsets, sizeLengths);
+        log.debug(" isLengthLong= {} isOffsetLong= {}", isLengthLong, isOffsetLong);
+    }
 
     byte fileFlags = raf.readByte();
-    if (debugDetail && (debugOut != null)) debugOut.println(" fileFlags= 0x" + Integer.toHexString(fileFlags));
+    if (debugDetail) {
+        log.debug(" fileFlags= 0x{}", Integer.toHexString(fileFlags));
+    }
 
     baseAddress = readOffset();
     long extensionAddress = readOffset();
@@ -338,26 +356,29 @@ public class H5header {
     long rootObjectAddress = readOffset();
     int checksum = raf.readInt();
 
-    if (debugDetail && (debugOut != null)) {
-      debugOut.println(" baseAddress= 0x" + Long.toHexString(baseAddress));
-      debugOut.println(" extensionAddress= 0x" + Long.toHexString(extensionAddress));
-      debugOut.println(" eof Address=" + eofAddress);
-      debugOut.println(" rootObjectAddress= 0x" + Long.toHexString(rootObjectAddress));
-      debugOut.println();
+    if (debugDetail) {
+      log.debug(" baseAddress= 0x{}", Long.toHexString(baseAddress));
+      log.debug(" extensionAddress= 0x{}", Long.toHexString(extensionAddress));
+      log.debug(" eof Address={}", eofAddress);
+      log.debug(" rootObjectAddress= 0x{}", Long.toHexString(rootObjectAddress));
+      log.debug("");
     }
 
     if (debugTracker) memTracker.add("superblock", superblockStart, raf.getFilePointer());
 
     if (baseAddress != superblockStart) {
-      baseAddress = superblockStart;
-      eofAddress += superblockStart;
-      if (debugDetail && (debugOut != null)) debugOut.println(" baseAddress set to superblockStart");
+        baseAddress = superblockStart;
+        eofAddress += superblockStart;
+        if (debugDetail) {
+            log.debug(" baseAddress set to superblockStart");
+        }
     }
 
     // look for file truncation
     long fileSize = raf.length();
-    if (fileSize < eofAddress)
+    if (fileSize < eofAddress) {
       throw new IOException("File is truncated should be= " + eofAddress + " actual = " + fileSize);
+    }
 
     DataObjectFacade f = new DataObjectFacade(null, "", rootObjectAddress);
     rootGroup = new H5Group(f);
@@ -377,7 +398,7 @@ public class H5header {
       } else if (dof.linkName != null) { // symbolic links
         DataObjectFacade link = symlinkMap.get(dof.linkName);
         if (link == null) {
-          log.warn(" WARNING Didnt find symbolic link=" + dof.linkName + " from " + dof.name);
+          log.warn(" WARNING Didnt find symbolic link={} from {}", dof.linkName, dof.name);
           objList.remove(count);
           continue;
         }
@@ -385,7 +406,7 @@ public class H5header {
         // dont allow loops
         if (link.group != null) {
           if (group.isChildOf(link.group)) {
-            log.warn(" ERROR Symbolic Link loop found =" + dof.linkName);
+            log.warn(" ERROR Symbolic Link loop found ={}", dof.linkName);
             objList.remove(count);
             continue;
           }
@@ -398,7 +419,9 @@ public class H5header {
         } else  // replace
           objList.set(count, link);
 
-        if (debugSoftLink) debugOut.println("  Found symbolic link=" + dof.linkName);
+        if (debugSoftLink) {
+            log.debug("  Found symbolic link={}", dof.linkName);
+        }
       }
 
       count++;
@@ -482,10 +505,14 @@ public class H5header {
         ucar.nc2.Group nestedGroup = new ucar.nc2.Group(ncfile, ncGroup, facadeNested.name);
         ncGroup.addGroup(nestedGroup);
         allHaveSharedDimensions &= makeNetcdfGroup(nestedGroup, h5groupNested);
-        if (debug1 && (debugOut != null)) debugOut.println("--made Group " + nestedGroup.getFullName() + " add to " + ncGroup.getFullName());
+        if (debug1) {
+            log.debug("--made Group " + nestedGroup.getFullName() + " add to " + ncGroup.getFullName());
+        }
 
       } else if (facadeNested.isVariable) {
-        if (debugReference && facadeNested.dobj.mdt.type == 7 && (debugOut != null)) debugOut.println(facadeNested);
+        if (debugReference && facadeNested.dobj.mdt.type == 7) {
+            log.debug("{}", facadeNested);
+        }
 
         Variable v = makeVariable(ncGroup, facadeNested);
         if ((v != null) && (v.getDataType() != null)) {
@@ -495,7 +522,7 @@ public class H5header {
           if (v.getDataType().isEnum()) {
             EnumTypedef enumTypedef = v.getEnumTypedef();
             if (enumTypedef == null) {
-              log.warn("EnumTypedef is missing for variable: " + v.getFullName());
+              log.warn("EnumTypedef is missing for variable: {}", v.getFullName());
               throw new IllegalStateException("EnumTypedef is missing for variable: " + v.getFullName());
             }
             // This code apparently addresses the possibility of an anonymous enum LOOK ??
@@ -511,11 +538,15 @@ public class H5header {
           }
 
           Vinfo vinfo = (Vinfo) v.getSPobject();
-          if (debugV && (debugOut != null)) debugOut.println("  made Variable " + v.getFullName() + "  vinfo= " + vinfo + "\n" + v);
+            if (debugV) {
+                log.debug("  made Variable " + v.getFullName() + "  vinfo= " + vinfo + "\n" + v);
+            }
         }
 
       } else if (facadeNested.isTypedef) {
-        if (debugReference && facadeNested.dobj.mdt.type == 7 && (debugOut != null)) debugOut.println(facadeNested);
+        if (debugReference && facadeNested.dobj.mdt.type == 7) {
+            log.debug("{}", facadeNested);
+        }
 
         if (facadeNested.dobj.mdt.map != null) {
           EnumTypedef enumTypedef = ncGroup.findEnumeration(facadeNested.name);
@@ -539,8 +570,9 @@ public class H5header {
             ncGroup.addEnumeration(enumTypedef);
           }
         }
-        if (debugV && (debugOut != null)) debugOut.println("  made enumeration " + facadeNested.name);
-
+        if (debugV) {
+            log.debug("  made enumeration {}", facadeNested.name);
+        }
       }
 
     } // loop over nested objects
@@ -776,8 +808,9 @@ public class H5header {
           }
           facade.dimList = sbuff.toString();
           facade.hasNetcdfDimensions = true;
-          if (debugDimensionScales)
-            System.out.printf("Found dimList '%s' for group '%s' matt=%s %n", facade.dimList, g.getFullName(), matt);
+          if (debugDimensionScales) {
+            log.debug("Found dimList '{}' for group '{}' matt={}", facade.dimList, g.getFullName(), matt);
+          }
           if (!h5iosp.includeOriginalAttributes) iter.remove();
         }
 
@@ -790,7 +823,9 @@ public class H5header {
           isNetcdf4 = true;
         }
         if (!h5iosp.includeOriginalAttributes) iter.remove();
-        if (debugDimensionScales) System.out.printf("Found %s %n", val);
+        if (debugDimensionScales) {
+            log.debug("Found {}", val);
+        }
 
       } else if (matt.name.equals(HDF5_REFERENCE_LIST))
         if (!h5iosp.includeOriginalAttributes) iter.remove();
@@ -813,7 +848,9 @@ public class H5header {
       d.setGroup(g);
       h5group.dimMap.put(dimName, d);
       h5group.dimList.add(d);
-      if (debugDimensionScales && (debugOut != null)) debugOut.println("addDimension name=" + name + " dim= " + d + " to group " + g);
+        if (debugDimensionScales) {
+            log.debug("addDimension name=" + name + " dim= " + d + " to group " + g);
+        }
 
     } else { // check has correct length
       if (d.getLength() != length)
@@ -1023,8 +1060,10 @@ public class H5header {
       while (layout.hasNext()) {
         Layout.Chunk chunk = layout.next();
         if (chunk == null) continue;
-        if (debugStructure)
-          System.out.println(" readStructure " + matt.name + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
+        if (debugStructure) {
+          log.debug(" readStructure " + matt.name + " chunk= " + chunk + " index.getElemSize= " + layout.getElemSize());
+        }
+
         // copy bytes directly into the underlying byte[]
         raf.seek(chunk.getSrcPos());
         raf.readFully(byteArray, (int) chunk.getDestElem() * recsize, chunk.getNelems() * recsize);
@@ -1225,20 +1264,22 @@ public class H5header {
     // make its Vinfo object
     Vinfo vinfo = new Vinfo(mdt, mds, dataPos);
     if (!makeVariableShapeAndType(v, mdt, mds, vinfo, null)) {
-      debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.typeInfo.hdfType);
+      log.debug("SKIPPING attribute " + attName + " for " + forWho + " with dataType= " + vinfo.typeInfo.hdfType);
       return null;
     }
     v.setSPobject(vinfo);
     vinfo.setOwner(v);
     v.setCaching(false);
-    if (debug1) debugOut.println("makeAttribute " + attName + " for " + forWho + "; vinfo= " + vinfo);
+    if (debug1) {
+        log.debug("makeAttribute " + attName + " for " + forWho + "; vinfo= " + vinfo);
+    }
 
     // read the data
     if ((mdt.type == 7) && attName.equals("DIMENSION_LIST")) { // convert to dimension names (LOOK is this netcdf4 specific?)
       if (mdt.referenceType == 0)
         data = readReferenceObjectNames(v);
       else {  // not doing reference regions here
-        debugOut.println("SKIPPING attribute " + attName + " for " + forWho + " with referenceType= " + mdt.referenceType);
+        log.debug("SKIPPING attribute " + attName + " for " + forWho + " with referenceType= " + mdt.referenceType);
         return null;
       }
 
@@ -1247,7 +1288,7 @@ public class H5header {
         data = h5iosp.readData(v, v.getShapeAsSection());
       } catch (InvalidRangeException e) {
         log.error("H5header.makeAttribute", e);
-        if (debug1) debugOut.println("ERROR attribute " + e.getMessage());
+        if (debug1) { log.debug("ERROR attribute " + e.getMessage()); }
         return null;
       }
 
@@ -1286,7 +1327,7 @@ public class H5header {
      // datapos points to a position of the refrenced object, i think
      raf.seek(dataPos);
      long referencedObjectPos = readOffset();
-     //debugOut.println("WARNING   Reference at "+dataPos+" referencedObjectPos = "+referencedObjectPos);
+     //log.debug("WARNING   Reference at "+dataPos+" referencedObjectPos = "+referencedObjectPos);
 
      // LOOK, should only read this once
      DataObject referencedObject = new DataObject(null, "att", referencedObjectPos);
@@ -1322,7 +1363,7 @@ public class H5header {
 
     Vinfo vinfo = new Vinfo(facade);
     if (vinfo.getNCDataType() == null) {
-      if (debugOut != null) debugOut.println("SKIPPING DataType= " + vinfo.typeInfo.hdfType + " for variable " + facade.name);
+      log.debug("SKIPPING DataType= " + vinfo.typeInfo.hdfType + " for variable " + facade.name);
       return null;
     }
 
@@ -1330,7 +1371,7 @@ public class H5header {
     if (facade.dobj.mfp != null) {
       for (Filter f : facade.dobj.mfp.filters) {
         if (f.id == 4) {
-          if (debugOut != null) debugOut.println("SKIPPING variable with SZIP Filter= " + facade.dobj.mfp + " for variable " + facade.name);
+          log.debug("SKIPPING variable with SZIP Filter= " + facade.dobj.mfp + " for variable " + facade.name);
           return null;
         }
       }
@@ -1426,7 +1467,7 @@ public class H5header {
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 0)) { // object reference
-      // System.out.println("transform object Reference: facade=" + facade.name +" variable name=" + v.getName());
+      // log.debug("transform object Reference: facade=" + facade.name +" variable name=" + v.getName());
       Array newData = findReferenceObjectNames(v.read());
       v.setDataType(DataType.STRING);
       v.setCachedData(newData, true); // so H5iosp.read() is never called
@@ -1451,11 +1492,15 @@ public class H5header {
 
     // debugging
     vinfo.setOwner(v);
-    if ((vinfo.typeInfo.hdfType == 7) && warnings)
-      if (debugOut != null) debugOut.println("WARN:  Variable " + facade.name + " is a Reference type");
-    //if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1) && warnings)
-    //  if (debugOut != null) debugOut.println("WARN:  Variable " + facade.name + " has a Filter = " + vinfo.mfp);
-    if (debug1 && debugOut != null) debugOut.printf("makeVariable %s ; vinfo= %s%n", v.getFullName(), vinfo);
+    if ((vinfo.typeInfo.hdfType == 7) && warnings) {
+      log.warn("  Variable " + facade.name + " is a Reference type");
+    }
+    if ((vinfo.mfp != null) && (vinfo.mfp.filters[0].id != 1) && warnings) {
+      log.warn("  Variable " + facade.name + " has a Filter = " + vinfo.mfp);
+    }
+    if (debug1) {
+      log.debug("makeVariable " + v.getFullName() + "; vinfo= " + vinfo);
+    }
 
     return v;
   }
@@ -1471,10 +1516,13 @@ public class H5header {
     while (ii.hasNext()) {
       long objId = ii.getLongNext();
       DataObject dobj = getDataObject(objId, null);
-      if (dobj == null)
-        log.warn("readReferenceObjectNames cant find obj= " + objId);
+      if (dobj == null) {
+        log.warn("readReferenceObjectNames cant find obj= {}", objId);
+      }
       else {
-        if (debugReference) System.out.println(" Referenced object= " + dobj.who);
+        if (debugReference) {
+            log.debug(" Referenced object= {}", dobj.who);
+        }
         ii2.setObjectNext(dobj.who);
       }
     }
@@ -1486,7 +1534,9 @@ public class H5header {
       Variable v = makeVariableMember(g, s, m.name, m.offset, m.mdt);
       if (v != null) {
         s.addMemberVariable(v);
-        if (debug1&& (debugOut != null)) debugOut.println("  made Member Variable " + v.getFullName() + "\n" + v);
+        if (debug1) {
+            log.debug("  made Member Variable " + v.getFullName() + "\n" + v);
+        }
       }
     }
   }
@@ -1498,7 +1548,7 @@ public class H5header {
     Variable v;
     Vinfo vinfo = new Vinfo(mdt, null, dataPos); // LOOK need mds
     if (vinfo.getNCDataType() == null) {
-      if (debugOut != null) debugOut.println("SKIPPING DataType= " + vinfo.typeInfo.hdfType + " for variable " + name);
+      log.debug("SKIPPING DataType= " + vinfo.typeInfo.hdfType + " for variable " + name);
       return null;
     }
 
@@ -1543,7 +1593,7 @@ public class H5header {
           attributes.add(new Attribute("_lastModified", cd.toString()));
         }
         catch (ParseException ex) {
-          debugOut.println("ERROR parsing date from MessageLastModifiedOld = " + m.datemod);
+          log.debug("ERROR parsing date from MessageLastModifiedOld = " + m.datemod);
         }
 
       } else */
@@ -1623,7 +1673,7 @@ public class H5header {
 
     } catch (InvalidRangeException ee) {
       log.error(ee.getMessage());
-      if (debugOut != null) debugOut.println("ERROR: makeVariableShapeAndType " + ee.getMessage());
+      log.debug("ERROR: makeVariableShapeAndType {}", ee.getMessage());
       return false;
     }
 
@@ -1736,7 +1786,7 @@ public class H5header {
 
       isvlen = this.mdt.isVlen();
       if (!facade.dobj.mdt.isOK && warnings) {
-        if (debugOut != null) debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + facade.dobj.mdt);
+        log.debug("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + facade.dobj.mdt);
         return; // not a supported datatype
       }
 
@@ -1765,7 +1815,7 @@ public class H5header {
       this.dataPos = dataPos;
 
       if (!mdt.isOK && warnings) {
-        if (debugOut != null) debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + mdt);
+        log.debug("WARNING HDF5 file " + ncfile.getLocation() + " not handling " + mdt);
         return; // not a supported datatype
       }
 
@@ -1836,7 +1886,7 @@ public class H5header {
         else if (tinfo.byteSize == 4)
           tinfo.dataType = DataType.ENUM4;
         else {
-          log.warn("Illegal byte suze for enum type = " + tinfo.byteSize);
+          log.warn("Illegal byte suze for enum type = {}", tinfo.byteSize);
           throw new IllegalStateException("Illegal byte suze for enum type = " + tinfo.byteSize);
         }
 
@@ -1862,11 +1912,12 @@ public class H5header {
           tinfo.dataType = getNCtype(basetype, mdt.getBaseSize(), mdt.unsigned);
         }
       } else if (warnings) {
-        if (debugOut != null) debugOut.println("WARNING not handling hdf dataType = " + hdfType + " size= " + byteSize);
+        log.debug("WARNING not handling hdf dataType = " + hdfType + " size= " + byteSize);
       }
 
-      if (mdt.base != null)
+      if (mdt.base != null) {
         tinfo.base = calcNCtype(mdt.base);
+      }
       return tinfo;
     }
 
@@ -1881,7 +1932,7 @@ public class H5header {
         else if (size == 8)
           return DataType.LONG;
         else if (warnings) {
-          debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
+          log.debug("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
           log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
           return null;
         }
@@ -1892,7 +1943,7 @@ public class H5header {
         else if (size == 8)
           return DataType.DOUBLE;
         else if (warnings) {
-          debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
+          log.debug("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
           log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
           return null;
         }
@@ -1904,7 +1955,7 @@ public class H5header {
         return DataType.LONG;
 
       } else if (warnings) {
-        debugOut.println("WARNING not handling hdf type = " + hdfType + " size= " + size);
+        log.debug("WARNING not handling hdf type = " + hdfType + " size= " + size);
         log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
       }
       return null;
@@ -1997,7 +2048,7 @@ public class H5header {
       else if (size == 8)
         return DataType.LONG.withSign(unsigned);
       else if (warnings) {
-        if (debugOut != null) debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
+        log.debug("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
         log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
         return null;
       }
@@ -2008,7 +2059,7 @@ public class H5header {
       else if (size == 8)
         return DataType.DOUBLE;
       else if (warnings) {
-        if (debugOut != null) debugOut.println("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
+        log.debug("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
         log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf float type with size= " + size);
         return null;
       }
@@ -2026,7 +2077,7 @@ public class H5header {
       return null; // dunno
 
     } else if (warnings) {
-      if (debugOut != null) debugOut.println("WARNING not handling hdf type = " + hdfType + " size= " + size);
+      log.debug("WARNING not handling hdf type = " + hdfType + " size= " + size);
       log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf type = " + hdfType + " size= " + size);
     }
     return null;
@@ -2143,7 +2194,7 @@ public class H5header {
         isTypedef = true;
 
       } else if (warnings) { // we dont know what it is
-        if (debugOut != null) debugOut.println("WARNING Unknown DataObjectFacade = " + this);
+        log.debug("WARNING Unknown DataObjectFacade = {}", this);
         // return;
       }
 
@@ -2190,12 +2241,18 @@ public class H5header {
       // if has a "group message", then its an "old group"
       if (facade.dobj.groupMessage != null) {
         // check for hard links
-        if (debugHardLink && (debugOut != null)) debugOut.println("HO look for group address = "+facade.dobj.groupMessage.btreeAddress);
+        if (debugHardLink) {
+            log.debug("HO look for group address = {}", facade.dobj.groupMessage.btreeAddress);
+        }
         if (null != (facade.group = hashGroups.get(facade.dobj.groupMessage.btreeAddress))) {
-          if (debugHardLink && (debugOut != null)) debugOut.println("WARNING hard link to group = " + facade.group.getName());
+          if (debugHardLink) {
+            log.debug("WARNING hard link to group = {}", facade.group.getName());
+          }
           if (parent.isChildOf(facade.group)) {
-            if (debugHardLink && (debugOut != null)) debugOut.println("ERROR hard link to group create a loop = " + facade.group.getName());
-            log.debug("Remove hard link to group that creates a loop = " + facade.group.getName());
+            if (debugHardLink) {
+                log.debug("ERROR hard link to group create a loop = {}", facade.group.getName());
+            }
+            log.debug("Remove hard link to group that creates a loop = {}", facade.group.getName());
             facade.group = null;
             return;
           }
@@ -2310,8 +2367,12 @@ public class H5header {
       this.address = address;
       this.who = who;
 
-      if (debug1 && (debugOut != null)) debugOut.println("\n--> DataObject.read parsing <" + who + "> object ID/address=" + address);
-      if (debugPos && (debugOut != null)) debugOut.println("      DataObject.read now at position=" + raf.getFilePointer() + " for <" + who + "> reposition to " + getFileOffset(address));
+      if (debug1) {
+        log.debug("\n--> DataObject.read parsing <" + who + "> object ID/address=" + address);
+      }
+      if (debugPos) {
+        log.debug("      DataObject.read now at position=" + raf.getFilePointer() + " for <" + who + "> reposition to " + getFileOffset(address));
+      }
       //if (offset < 0) return null;
       raf.seek(getFileOffset(address));
 
@@ -2319,20 +2380,28 @@ public class H5header {
       if (version == 1) { // Level 2A1 (first part, before the messages)
         raf.readByte(); // skip byte
         short nmess = raf.readShort();
-        if (debugDetail && (debugOut != null)) debugOut.println(" version=" + version + " nmess=" + nmess);
+        if (debugDetail) {
+            log.debug(" version=" + version + " nmess=" + nmess);
+        }
 
         int referenceCount = raf.readInt();
         int headerSize = raf.readInt();
-        if (debugDetail && (debugOut != null)) debugOut.println(" referenceCount=" + referenceCount + " headerSize=" + headerSize);
+        if (debugDetail) {
+            log.debug(" referenceCount=" + referenceCount + " headerSize=" + headerSize);
+        }
 
         //if (referenceCount > 1)
-        //  debugOut.println("WARNING referenceCount="+referenceCount);
+        //  log.debug("WARNING referenceCount="+referenceCount);
         raf.skipBytes(4); // header messages multiples of 8
 
         long posMess = raf.getFilePointer();
         int count = readMessagesVersion1(posMess, nmess, Integer.MAX_VALUE, this.who);
-        if (debugContinueMessage && (debugOut != null)) debugOut.println(" nmessages read = " + count);
-        if (debugPos && (debugOut != null)) debugOut.println("<--done reading messages for <" + who + ">; position=" + raf.getFilePointer());
+        if (debugContinueMessage) {
+            log.debug(" nmessages read = {}", count);
+        }
+        if (debugPos) {
+            log.debug("<--done reading messages for <" + who + ">; position=" + raf.getFilePointer());
+        }
         if (debugTracker) memTracker.addByLen("Object " + who, getFileOffset(address), headerSize + 16);
 
       } else { // level 2A2 (first part, before the messages)
@@ -2343,7 +2412,9 @@ public class H5header {
 
         version = raf.readByte();
         byte flags = raf.readByte(); // data object header flags (version 2)
-        if (debugDetail && (debugOut != null)) debugOut.println(" version=" + version + " flags=" + Integer.toBinaryString(flags));
+        if (debugDetail) {
+            log.debug(" version=" + version + " flags=" + Integer.toBinaryString(flags));
+        }
 
         //raf.skipBytes(2);
         if (((flags >> 5) & 1) == 1) {
@@ -2358,12 +2429,18 @@ public class H5header {
         }
 
         long sizeOfChunk = readVariableSizeFactor(flags & 3);
-        if (debugDetail && (debugOut != null)) debugOut.println(" sizeOfChunk=" + sizeOfChunk);
+        if (debugDetail) {
+            log.debug(" sizeOfChunk=" + sizeOfChunk);
+        }
 
         long posMess = raf.getFilePointer();
         int count = readMessagesVersion2(posMess, sizeOfChunk, (flags & 4) != 0, this.who);
-        if (debugContinueMessage) debugOut.println(" nmessages read = " + count);
-        if (debugPos) debugOut.println("<--done reading messages for <" + who + ">; position=" + raf.getFilePointer());
+        if (debugContinueMessage) {
+            log.debug(" nmessages read = {}", count);
+        }
+        if (debugPos) {
+            log.debug("<--done reading messages for <" + who + ">; position=" + raf.getFilePointer());
+        }
       }
 
       // look for group or a datatype/dataspace/layout message
@@ -2390,7 +2467,9 @@ public class H5header {
           processAttributeInfoMessage((MessageAttributeInfo) mess.messData, attributes);
       }
 
-      if (debug1 && (debugOut != null)) debugOut.println("<-- end DataObject " + who);
+      if (debug1) {
+        log.debug("<-- end DataObject {}", who);
+      }
     }
 
     private void processAttributeInfoMessage(MessageAttributeInfo attInfo, List<MessageAttribute> list) throws IOException {
@@ -2421,7 +2500,9 @@ public class H5header {
           MessageAttribute attMessage = new MessageAttribute();
           if (attMessage.read(pos))
             list.add(attMessage);
-          if (debugBtree2) System.out.println("    attMessage=" + attMessage);
+          if (debugBtree2) {
+            log.debug("    attMessage={}", attMessage);
+          }
         }
       }
     }
@@ -2430,7 +2511,9 @@ public class H5header {
     // if you hit a continuation message, call recursively
     // return number of messaages read
     private int readMessagesVersion1(long pos, int maxMess, int maxBytes, String objectName) throws IOException {
-      if (debugContinueMessage) debugOut.println(" readMessages start at =" + pos + " maxMess= " + maxMess + " maxBytes= " + maxBytes);
+      if (debugContinueMessage) {
+        log.debug(" readMessages start at =" + pos + " maxMess= " + maxMess + " maxBytes= " + maxBytes);
+      }
 
       int count = 0;
       int bytesRead = 0;
@@ -2445,14 +2528,20 @@ public class H5header {
         pos += n;
         bytesRead += n;
         count++;
-        if (debugContinueMessage) debugOut.println("   count=" + count + " bytesRead=" + bytesRead);
+        if (debugContinueMessage) {
+            log.debug("   count=" + count + " bytesRead=" + bytesRead);
+        }
 
         // if we hit a continuation, then we go into nested reading
         if (mess.mtype == MessageType.ObjectHeaderContinuation) {
           MessageContinue c = (MessageContinue) mess.messData;
-          if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation--- ");
+          if (debugContinueMessage) {
+            log.debug(" ---ObjectHeaderContinuation--- ");
+          }
           count += readMessagesVersion1(getFileOffset(c.offset), maxMess - count, (int) c.length, objectName);
-          if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation return --- ");
+          if (debugContinueMessage) {
+            log.debug(" ---ObjectHeaderContinuation return --- ");
+          }
         } else if (mess.mtype != MessageType.NIL) {
           messages.add(mess);
         }
@@ -2461,7 +2550,8 @@ public class H5header {
     }
 
     private int readMessagesVersion2(long filePos, long maxBytes, boolean creationOrderPresent, String objectName) throws IOException {
-      if (debugContinueMessage) debugOut.println(" readMessages2 starts at =" + filePos + " maxBytes= " + maxBytes);
+      if (debugContinueMessage)
+        debugOut.println(" readMessages2 starts at =" + filePos + " maxBytes= " + maxBytes);
 
       // maxBytes is number of bytes of messages to be read. however, a message is at least 4 bytes long, so
       // we are done if we have read > maxBytes - 4. There appears to be an "off by one" possibility
@@ -2477,13 +2567,15 @@ public class H5header {
         filePos += n;
         bytesRead += n;
         count++;
-        if (debugContinueMessage) debugOut.println("   mess size=" + n + " bytesRead=" + bytesRead + " maxBytes=" + maxBytes);
+        if (debugContinueMessage)
+          debugOut.println("   mess size=" + n + " bytesRead=" + bytesRead + " maxBytes=" + maxBytes);
 
         // if we hit a continuation, then we go into nested reading
         if (mess.mtype == MessageType.ObjectHeaderContinuation) {
           MessageContinue c = (MessageContinue) mess.messData;
           long continuationBlockFilePos = getFileOffset(c.offset);
-          if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation filePos= " + continuationBlockFilePos);
+          if (debugContinueMessage)
+            debugOut.println(" ---ObjectHeaderContinuation filePos= " + continuationBlockFilePos);
 
           raf.seek(continuationBlockFilePos);
           String sig = readStringFixedLength(4);
@@ -2492,7 +2584,8 @@ public class H5header {
 
           count += readMessagesVersion2(continuationBlockFilePos + 4, (int) c.length - 8, creationOrderPresent, objectName);
           if (debugContinueMessage) debugOut.println(" ---ObjectHeaderContinuation return --- ");
-          if (debugContinueMessage) debugOut.println("   continuationMessages =" + count + " bytesRead=" + bytesRead + " maxBytes=" + maxBytes);
+          if (debugContinueMessage)
+            debugOut.println("   continuationMessages =" + count + " bytesRead=" + bytesRead + " maxBytes=" + maxBytes);
 
         } else if (mess.mtype != MessageType.NIL) {
           messages.add(mess);
@@ -2512,7 +2605,7 @@ public class H5header {
         length = readLength();
       }
 
-      if (debug1) debugOut.println("   Continue offset=" + offset + " length=" + length);
+      if (debug1) { log.debug("   Continue offset=" + offset + " length=" + length); }
     } */
 
   } // DataObject
@@ -2640,7 +2733,9 @@ public class H5header {
     int read(long filePos, int version, boolean creationOrderPresent, String objectName) throws IOException {
       this.start = filePos;
       raf.seek(filePos);
-      if (debugPos && (debugOut != null)) debugOut.println("  --> Message Header starts at =" + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("  --> Message Header starts at =" + raf.getFilePointer());
+      }
 
       if (version == 1) {
         type = raf.readShort();
@@ -2653,7 +2748,7 @@ public class H5header {
         type = (short) raf.readByte();
         size = DataType.unsignedShortToInt(raf.readShort());
         //if (size > Short.MAX_VALUE)
-        //  System.out.println("HEY");
+        //  log.debug("HEY");
 
         headerMessageFlags = raf.readByte();
         header_length = 4;
@@ -2663,11 +2758,15 @@ public class H5header {
         }
       }
       mtype = MessageType.getType(type);
-      if (debug1 && (debugOut != null)) {
-        debugOut.println("  -->" + mtype + " messageSize=" + size + " flags = " + Integer.toBinaryString(headerMessageFlags));
-        if (creationOrderPresent && debugCreationOrder) debugOut.println("     creationOrder = " + creationOrder);
+      if (debug1) {
+        log.debug("  -->" + mtype + " messageSize=" + size + " flags = " + Integer.toBinaryString(headerMessageFlags));
+        if (creationOrderPresent && debugCreationOrder) {
+            log.debug("     creationOrder = " + creationOrder);
+        }
       }
-      if (debugPos && (debugOut != null)) debugOut.println("  --> Message Data starts at=" + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("  --> Message Data starts at=" + raf.getFilePointer());
+      }
 
       if ((headerMessageFlags & 2) != 0) { // shared
         messData = getSharedDataObject(mtype).mdt; // eg a shared datatype, eg enums
@@ -2763,7 +2862,7 @@ public class H5header {
         messData = data;
 
       } else {
-        if (warnings && debugOut != null) debugOut.println("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
+        log.debug("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
         log.warn("SKIP UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
         //throw new UnsupportedOperationException("****UNPROCESSED MESSAGE type = " + mtype + " raw = " + type);
       }
@@ -2809,14 +2908,20 @@ public class H5header {
     if (sharedVersion == 1) raf.skipBytes(6);
     if ((sharedVersion == 3) && (sharedType == 1)) {
       long heapId = raf.readLong();
-      if (debug1 && (debugOut != null)) debugOut.println("     Shared Message " + sharedVersion + " type=" + sharedType + " heapId = " + heapId);
-      if (debugPos && (debugOut != null)) debugOut.println("  --> Shared Message reposition to =" + raf.getFilePointer());
+      if (debug1) {
+        log.debug("     Shared Message " + sharedVersion + " type=" + sharedType + " heapId = " + heapId);
+      }
+      if (debugPos) {
+        log.debug("  --> Shared Message reposition to =" + raf.getFilePointer());
+      }
       // dunno where is the file's shared object header heap ??
       throw new UnsupportedOperationException("****SHARED MESSAGE type = " + mtype + " heapId = " + heapId);
 
     } else {
       long address = readOffset();
-      if (debug1 && (debugOut != null)) debugOut.println("     Shared Message " + sharedVersion + " type=" + sharedType + " address = " + address);
+      if (debug1) {
+        log.debug("     Shared Message " + sharedVersion + " type=" + sharedType + " address = " + address);
+      }
       DataObject dobj = getDataObject(address, null);
       if (null == dobj)
         throw new IllegalStateException("cant find data object at" + address);
@@ -2865,7 +2970,9 @@ public class H5header {
     }
 
     void read() throws IOException {
-      if (debugPos && (debugOut != null)) debugOut.println("   *MessageSimpleDataspace start pos= " + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("   *MessageSimpleDataspace start pos= " + raf.getFilePointer());
+      }
 
       byte version = raf.readByte();
       if (version == 1) {
@@ -2883,8 +2990,10 @@ public class H5header {
         throw new IllegalStateException("MessageDataspace: unknown version= " + version);
       }
 
-      if (debug1 && (debugOut != null)) debugOut.println("   SimpleDataspace version= " + version + " flags=" +
+      if (debug1) {
+        log.debug("   SimpleDataspace version= " + version + " flags=" +
               Integer.toBinaryString(flags) + " ndims=" + ndims + " type=" + type);
+      }
 
       /* if (ndims == 0 && !alreadyWarnNdimZero) {
         log.warn("ndims == 0 in HDF5 file= " + raf.getLocation());
@@ -2904,7 +3013,11 @@ public class H5header {
         System.arraycopy(dimLength, 0, maxLength, 0, ndims);
       }
 
-      if (debug1 && (debugOut != null)) debugOut.printf(" dim length =%s max=%s%n", Misc.showInts(dimLength), Misc.showInts(maxLength));
+      if (debug1) {
+        for (int i = 0; i < ndims; i++) {
+          log.debug("    dim length = " + dimLength[i] + " max = " + maxLength[i]);
+        }
+      }
     }
   }
 
@@ -2915,7 +3028,9 @@ public class H5header {
     void read() throws IOException {
       btreeAddress = readOffset();
       nameHeapAddress = readOffset();
-      if (debug1 && (debugOut != null)) debugOut.println("   Group btreeAddress=" + btreeAddress + " nameHeapAddress=" + nameHeapAddress);
+      if (debug1) {
+        log.debug("   Group btreeAddress=" + btreeAddress + " nameHeapAddress=" + nameHeapAddress);
+      }
     }
 
     public String toString() {
@@ -2958,7 +3073,9 @@ public class H5header {
     }
 
     void read() throws IOException {
-      if (debugPos) debugOut.println("   *MessageGroupNew start pos= " + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("   *MessageGroupNew start pos= " + raf.getFilePointer());
+      }
       byte version = raf.readByte();
       byte flags = raf.readByte();
       if ((flags & 1) != 0) {
@@ -2972,7 +3089,9 @@ public class H5header {
         v2BtreeAddressCreationOrder = readOffset();
       }
 
-      if (debug1 && (debugOut != null)) debugOut.println("   MessageGroupNew version= " + version + " flags = " + flags + this);
+      if (debug1) {
+        log.debug("   MessageGroupNew version= " + version + " flags = " + flags + this);
+      }
     }
 
     public String getName() {
@@ -2997,7 +3116,9 @@ public class H5header {
     }
 
     void read() throws IOException {
-      if (debugPos) debugOut.println("   *MessageGroupInfo start pos= " + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("   *MessageGroupInfo start pos= " + raf.getFilePointer());
+      }
       byte version = raf.readByte();
       flags = raf.readByte();
 
@@ -3011,7 +3132,9 @@ public class H5header {
         estLengthEntryName = raf.readShort();
       }
 
-      if (debug1 && (debugOut != null)) debugOut.println("   MessageGroupInfo version= " + version + " flags = " + flags + this);
+      if (debug1) {
+        log.debug("   MessageGroupInfo version= " + version + " flags = " + flags + this);
+      }
     }
 
     public String getName() {
@@ -3044,7 +3167,9 @@ public class H5header {
     }
 
     void read() throws IOException {
-      if (debugPos) debugOut.println("   *MessageLink start pos= " + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("   *MessageLink start pos= {}", raf.getFilePointer());
+      }
       version = raf.readByte();
       flags = raf.readByte();
 
@@ -3072,7 +3197,9 @@ public class H5header {
         link = readStringFixedLength(len); // actually 2 strings - see docs
       }
 
-      if (debug1 && (debugOut != null)) debugOut.println("   MessageLink version= " + version + " flags = " + Integer.toBinaryString(flags) + this);
+      if (debug1) {
+        log.debug("   MessageLink version= " + version + " flags = " + Integer.toBinaryString(flags) + this);
+      }
     }
 
     public String getName() {
@@ -3157,7 +3284,9 @@ public class H5header {
     }
 
     void read(String objectName) throws IOException {
-      if (debugPos && (debugOut != null)) debugOut.println("   *MessageDatatype start pos= " + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("   *MessageDatatype start pos= {}", raf.getFilePointer());
+      }
 
       byte tandv = raf.readByte();
       type = (tandv & 0xf);
@@ -3167,15 +3296,19 @@ public class H5header {
       byteSize = raf.readInt();
       endian = ((flags[0] & 1) == 0) ? RandomAccessFile.LITTLE_ENDIAN : RandomAccessFile.BIG_ENDIAN;
 
-      if (debug1 && (debugOut != null)) debugOut.println("   Datatype type=" + type + " version= " + version + " flags = " +
+      if (debug1) {
+        log.debug("   Datatype type=" + type + " version= " + version + " flags = " +
               flags[0] + " " + flags[1] + " " + flags[2] + " byteSize=" + byteSize
               + " byteOrder=" + (endian == RandomAccessFile.BIG_ENDIAN ? "BIG" : "LITTLE"));
+      }
 
       if (type == 0) {  // fixed point
         unsigned = ((flags[0] & 8) == 0);
         short bitOffset = raf.readShort();
         short bitPrecision = raf.readShort();
-        if (debug1 && (debugOut != null)) debugOut.println("   type 0 (fixed point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision + " unsigned= " + unsigned);
+        if (debug1) {
+          log.debug("   type 0 (fixed point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision + " unsigned= " + unsigned);
+        }
         isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);
 
       } else if (type == 1) {  // floating point
@@ -3186,10 +3319,11 @@ public class H5header {
         byte manLocation = raf.readByte();
         byte manSize = raf.readByte();
         int expBias = raf.readInt();
-        if (debug1 && (debugOut != null)) debugOut.println("   type 1 (floating point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision +
+        if (debug1) {
+          log.debug("   type 1 (floating point): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision +
                   " expLocation= " + expLocation + " expSize= " + expSize + " manLocation= " + manLocation +
                   " manSize= " + manSize + " expBias= " + expBias);
-
+        }
       } else if (type == 2) {  // time
         short bitPrecision = raf.readShort();
         if (bitPrecision == 16)
@@ -3199,41 +3333,55 @@ public class H5header {
         else if (bitPrecision == 64)
           timeType = DataType.LONG;
 
-        if (debug1 && (debugOut != null)) debugOut.println("   type 2 (time): bitPrecision= " + bitPrecision + " timeType = " + timeType);
+        if (debug1) {
+          log.debug("   type 2 (time): bitPrecision= " + bitPrecision + " timeType = " + timeType);
+        }
 
       } else if (type == 3) {         // string  (I think a fixed length seq of chars)
         int ptype = flags[0] & 0xf;
-        if (debug1 && (debugOut != null)) debugOut.println("   type 3 (String): pad type= " + ptype);
+        if (debug1) {
+          log.debug("   type 3 (String): pad type= " + ptype);
+        }
 
       } else if (type == 4) { // bit field
         short bitOffset = raf.readShort();
         short bitPrecision = raf.readShort();
-        if (debug1 && (debugOut != null)) debugOut.println("   type 4 (bit field): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision);
+        if (debug1) {
+          log.debug("   type 4 (bit field): bitOffset= " + bitOffset + " bitPrecision= " + bitPrecision);
+        }
         //isOK = (bitOffset == 0) && (bitPrecision % 8 == 0);  LOOK
 
       } else if (type == 5) { // opaque
         byte len = flags[0];
         opaque_desc = (len > 0) ? readString(raf).trim() : null;
-        if (debug1 && (debugOut != null)) debugOut.println("   type 5 (opaque): len= " + len + " desc= " + opaque_desc);
+        if (debug1) {
+            log.debug("   type 5 (opaque): len= " + len + " desc= " + opaque_desc);
+        }
 
       } else if (type == 6) { // compound
         int nmembers = makeUnsignedIntFromBytes(flags[1], flags[0]);
-        if (debug1 && (debugOut != null)) debugOut.println("   --type 6(compound): nmembers=" + nmembers);
+        if (debug1) {
+            log.debug("   --type 6(compound): nmembers={}", nmembers);
+        }
         members = new ArrayList<>();
         for (int i = 0; i < nmembers; i++) {
           members.add(new StructureMember(version, byteSize));
         }
-        if (debugDetail && (debugOut != null)) debugOut.println("   --done with compound type");
+        if (debugDetail) {
+            log.debug("   --done with compound type");
+        }
 
       } else if (type == 7) { // reference
         referenceType = flags[0] & 0xf;
-        if (debug1 && (debugOut != null) || debugReference) debugOut.println("   --type 7(reference): type= " + referenceType);
+        if (debug1 || debugReference) {
+            log.debug("   --type 7(reference): type= {}", referenceType);
+        }
 
       } else if (type == 8) { // enums
         int nmembers = makeUnsignedIntFromBytes(flags[1], flags[0]);
         boolean saveDebugDetail = debugDetail;
-        if ((debug1 || debugEnum) && (debugOut != null)) {
-          debugOut.println("   --type 8(enums): nmembers=" + nmembers);
+        if (debug1 || debugEnum) {
+          log.debug("   --type 8(enums): nmembers={}", nmembers);
           debugDetail = true;
         }
         base = new MessageDatatype(); // base type
@@ -3245,16 +3393,17 @@ public class H5header {
         String[] enumName = new String[nmembers];
         for (int i = 0; i < nmembers; i++) {
           if (version < 3)
-            enumName[i] = readString8(raf); //padding
+            enumName[i] = readString8(raf); // padding
           else
-            enumName[i] = readString(raf); // no padding
+            enumName[i] = readString(raf);  // no padding
         }
 
         // read the values; must switch to base byte order (!)
-        if (base.endian >= 0) raf.order(base.endian);
+        if (base.endian >= 0) { raf.order(base.endian); }
         int[] enumValue = new int[nmembers];
-        for (int i = 0; i < nmembers; i++)
+        for (int i = 0; i < nmembers; i++) {
           enumValue[i] = (int) readVariableSizeUnsigned(base.byteSize); // assume size is 1, 2, or 4
+        }
         raf.order(RandomAccessFile.LITTLE_ENDIAN);
 
         enumTypeName = objectName;
@@ -3263,26 +3412,34 @@ public class H5header {
           map.put(enumValue[i], enumName[i]);
 
         if (debugEnum) {
-          for (int i = 0; i < nmembers; i++)
-            debugOut.println("   " + enumValue[i] + "=" + enumName[i]);
+          for (int i = 0; i < nmembers; i++) {
+            log.debug("   " + enumValue[i] + "=" + enumName[i]);
+          }
         }
 
       } else if (type == 9) { // String (A variable-length sequence of characters) or Sequence (A variable-length sequence of any datatype)
         isVString = (flags[0] & 0xf) == 1;
-        if (!isVString) isVlen = true;
-        if (debug1 && (debugOut != null)) debugOut.println("   type 9(variable length): type= " + (isVString ? "string" : "sequence of type:"));
+        if (!isVString) { isVlen = true; }
+        if (debug1) {
+          log.debug("   type 9(variable length): type= {}",
+                        ((isVString ? "string" : "sequence of type:")) );
+        }
         base = new MessageDatatype(); // base type
         base.read(objectName);
 
       } else if (type == 10) { // array
-        if (debug1 && (debugOut != null)) debugOut.print("   type 10(array) lengths= ");
+        if (debug1) {
+            debugOut.print("   type 10(array) lengths= ");
+        }
         int ndims = (int) raf.readByte();
-        if (version < 3) raf.skipBytes(3);
+        if (version < 3) { raf.skipBytes(3); }
 
         dim = new int[ndims];
         for (int i = 0; i < ndims; i++) {
           dim[i] = raf.readInt();
-          if (debug1 && (debugOut != null)) debugOut.print(" " + dim[i]);
+          if (debug1) {
+            debugOut.print(" " + dim[i]);
+          }
         }
 
         if (version < 3) {  // not present in version 3, never used anyway
@@ -3290,13 +3447,15 @@ public class H5header {
           for (int i = 0; i < ndims; i++)
             pdim[i] = raf.readInt();
         }
-        if (debug1 && (debugOut != null)) debugOut.println();
+        if (debug1) {
+            log.debug("");
+        }
 
         base = new MessageDatatype(); // base type
         base.read(objectName);
 
-      } else if (warnings && (debugOut != null)) {
-        debugOut.println(" WARNING not dealing with type= " + type);
+      } else if (warnings) {
+        log.debug(" WARNING not dealing with type= {}", type);
       }
     }
 
@@ -3328,7 +3487,9 @@ public class H5header {
     MessageDatatype mdt;
 
     StructureMember(int version, int byteSize) throws IOException {
-      if (debugPos && (debugOut != null)) debugOut.println("   *StructureMember now at position=" + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("   *StructureMember now at position={}", raf.getFilePointer());
+      }
 
       name = readString(raf);
       if (version < 3) {
@@ -3338,7 +3499,10 @@ public class H5header {
         offset = (int) readVariableSizeMax(byteSize);
       }
 
-      if (debug1 && (debugOut != null)) debugOut.println("   Member name=" + name + " offset= " + offset);
+      if (debug1) {
+        log.debug("   Member name=" + name + " offset= " + offset);
+      }
+
       if (version == 1) {
         dims = raf.readByte();
         raf.skipBytes(3);
@@ -3348,13 +3512,15 @@ public class H5header {
       //HDFdumpWithCount(buffer, raf.getFilePointer(), 16);
       mdt = new MessageDatatype();
       mdt.read(name);
-      if (debugDetail && (debugOut != null)) debugOut.println("   ***End Member name=" + name);
+      if (debugDetail) {
+        log.debug("   ***End Member name={}", name);
+      }
 
       // ??
       //HDFdump(ncfile.out, "Member end", buffer, 16);
-      //if (HDFdebug)  ncfile.debugOut.println("   Member pos="+raf.getFilePointer());
+      //if (HDFdebug)  ncfile.log.debug("   Member pos="+raf.getFilePointer());
       //HDFpadToMultiple( buffer, 8);
-      //if (HDFdebug)  ncfile.debugOut.println("   Member padToMultiple="+raf.getFilePointer());
+      //if (HDFdebug)  ncfile.log.debug("   Member padToMultiple="+raf.getFilePointer());
       //raf.skipBytes( 4); // huh ??
     }
 
@@ -3381,7 +3547,9 @@ public class H5header {
       value = new byte[size];
       raf.readFully(value);
 
-      if (debug1 && (debugOut != null)) debugOut.println(this);
+      if (debug1) {
+        log.debug("{}", this);
+      }
     }
 
     public String toString() {
@@ -3435,7 +3603,9 @@ public class H5header {
         }
       }
 
-      if (debug1 && (debugOut != null)) debugOut.println(this);
+      if (debug1) {
+        log.debug("{}", this);
+      }
     }
 
     public String toString() {
@@ -3562,7 +3732,9 @@ public class H5header {
         }
       }
 
-      if (debug1 && (debugOut != null)) debugOut.println("   StorageLayout version= " + version + this);
+      if (debug1) {
+        log.debug("   StorageLayout version= " + version + this);
+      }
     }
   }
 
@@ -3579,7 +3751,9 @@ public class H5header {
       for (int i = 0; i < nfilters; i++)
         filters[i] = new Filter(version);
 
-      if (debug1 && (debugOut != null)) debugOut.println("   MessageFilter version=" + version + this);
+      if (debug1) {
+        log.debug("   MessageFilter version=" + version + this);
+      }
     }
 
     public Filter[] getFilters() {
@@ -3627,7 +3801,9 @@ public class H5header {
       if ((version == 1) && (nValues & 1) != 0)   // check if odd
         raf.skipBytes(4);
 
-      if (debug1 && (debugOut != null)) debugOut.println(this);
+      if (debug1) {
+        log.debug("{}", this);
+      }
     }
 
     String getFilterName(int id) {
@@ -3694,7 +3870,9 @@ public class H5header {
 
     boolean read(long pos) throws IOException {
       raf.seek(pos);
-      if (debugPos && (debugOut != null)) debugOut.println("   *MessageAttribute start pos= " + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("   *MessageAttribute start pos= {}", raf.getFilePointer());
+      }
       short nameSize, typeSize, spaceSize;
       byte flags = 0;
       byte encoding = 0; // 0 = ascii, 1 = UTF-8
@@ -3734,16 +3912,22 @@ public class H5header {
       if (version == 1) nameSize += padding(nameSize, 8);
       raf.seek(filePos + nameSize); // make it more robust for errors
 
-      if (debug1 && (debugOut != null)) debugOut.println("   MessageAttribute version= " + version + " flags = " + Integer.toBinaryString(flags) +
+      if (debug1) {
+        log.debug("   MessageAttribute version= " + version + " flags = " + Integer.toBinaryString(flags) +
                 " nameSize = " + nameSize + " typeSize=" + typeSize + " spaceSize= " + spaceSize + " name= " + name);
+      }
 
       // read the datatype
       filePos = raf.getFilePointer();
-      if (debugPos && (debugOut != null)) debugOut.println("   *MessageAttribute before mdt pos= " + filePos);
+      if (debugPos) {
+        log.debug("   *MessageAttribute before mdt pos= {}", filePos);
+      }
       boolean isShared = (flags & 1) != 0;
       if (isShared) {
         mdt = getSharedDataObject(MessageType.Datatype).mdt;
-        if (debug1 && (debugOut != null)) debugOut.println("    MessageDatatype: " + mdt);
+        if (debug1) {
+            log.debug("    MessageDatatype: {}", mdt);
+        }
       } else {
         mdt.read(name);
         if (version == 1) typeSize += padding(typeSize, 8);
@@ -3752,14 +3936,18 @@ public class H5header {
 
       // read the dataspace
       filePos = raf.getFilePointer();
-      if (debugPos && (debugOut != null)) debugOut.println("   *MessageAttribute before mds = " + filePos);
+      if (debugPos) {
+        log.debug("   *MessageAttribute before mds = {}", filePos);
+      }
       mds.read();
       if (version == 1) spaceSize += padding(spaceSize, 8);
       raf.seek(filePos + spaceSize); // make it more robust for errors
 
       // the data starts immediately afterward - ie in the message
       dataPos = raf.getFilePointer();   // note this is absolute position (no offset needed)
-      if (debug1 && (debugOut != null)) debugOut.println("   *MessageAttribute dataPos= " + dataPos);
+      if (debug1) {
+        log.debug("   *MessageAttribute dataPos= {}", dataPos);
+      }
       return true;
     }
   }  // MessageAttribute
@@ -3840,7 +4028,9 @@ public class H5header {
     }
 
     void read() throws IOException {
-      if (debugPos && (debugOut != null)) debugOut.println("   *MessageAttributeInfo start pos= " + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("   *MessageAttributeInfo start pos= {}", raf.getFilePointer());
+      }
       byte version = raf.readByte();
       byte flags = raf.readByte();
       if ((flags & 1) != 0)
@@ -3852,7 +4042,9 @@ public class H5header {
       if ((flags & 2) != 0)
         v2BtreeAddressCreationOrder = readOffset();
 
-      if (debug1 && (debugOut != null)) debugOut.println("   MessageAttributeInfo version= " + version + " flags = " + flags + this);
+      if (debug1) {
+        log.debug("   MessageAttributeInfo version= " + version + " flags = " + flags + this);
+      }
     }
   }
 
@@ -3900,7 +4092,9 @@ public class H5header {
 
     void read() throws IOException {
       datemod = raf.readString(14);
-      if (debug1 && (debugOut != null)) debugOut.println("   MessageLastModifiedOld=" + datemod);
+      if (debug1) {
+        log.debug("   MessageLastModifiedOld={}", datemod);
+      }
     }
 
     public String toString() {
@@ -3919,7 +4113,9 @@ public class H5header {
     void read() throws IOException {
       offset = readOffset();
       length = readLength();
-      if (debug1 && (debugOut != null)) debugOut.println("   Continue offset=" + offset + " length=" + length);
+      if (debug1) {
+        log.debug("   Continue offset=" + offset + " length=" + length);
+      }
     }
 
     public String getName() {
@@ -3934,7 +4130,9 @@ public class H5header {
     void read() throws IOException {
       int version = raf.readByte();
       refCount = raf.readInt();
-      if (debug1 && (debugOut != null)) debugOut.println("   ObjectReferenceCount=" + refCount);
+      if (debug1) {
+        log.debug("   ObjectReferenceCount={}", refCount);
+      }
     }
 
     public String getName() {
@@ -3946,7 +4144,9 @@ public class H5header {
   // Groups
 
   private void readGroupNew(H5Group group, MessageGroupNew groupNewMessage, DataObject dobj) throws IOException {
-    if (debug1 && (debugOut != null)) debugOut.println("\n--> GroupNew read <" + group.displayName + ">");
+    if (debug1) {
+        log.debug("\n--> GroupNew read <{}>", group.displayName);
+    }
 
     if (groupNewMessage.fractalHeapAddress >= 0) {
       FractalHeap fractalHeap = new FractalHeap(H5header.this, group.displayName, groupNewMessage.fractalHeapAddress, memTracker);
@@ -3977,7 +4177,9 @@ public class H5header {
         raf.seek(pos);
         MessageLink linkMessage = new MessageLink();
         linkMessage.read();
-        if (debugBtree2) System.out.println("    linkMessage=" + linkMessage);
+        if (debugBtree2) {
+            log.debug("    linkMessage={}", linkMessage);
+        }
 
         group.nestedObjects.add(new DataObjectFacade(group, linkMessage.linkName, linkMessage.linkAddress));
       }
@@ -3997,12 +4199,12 @@ public class H5header {
     /* now read all the entries in the btree
    for (SymbolTableEntry s : btree.getSymbolTableEntries()) {
      String sname = nameHeap.getString((int) s.getNameOffset());
-     if (debugSymbolTable) debugOut.println("\n   Symbol name=" + sname);
+     if (debugSymbolTable) log.debug("\n   Symbol name=" + sname);
 
      DataObject o;
      if (s.cacheType == 2) {
        String linkName = nameHeap.getString(s.linkOffset);
-       if (debugSymbolTable) debugOut.println("   Symbolic link name=" + linkName);
+       if (debugSymbolTable) log.debug("   Symbolic link name=" + linkName);
        o = new DataObject(this, sname, linkName);
 
      } else {
@@ -4012,7 +4214,9 @@ public class H5header {
      nestedObjects.add(o);
      hashDataObjects.put(o.getName(), o); // to look up symbolic links
    } */
-    if (debug1 && (debugOut != null)) debugOut.println("<-- end GroupNew read <" + group.displayName + ">");
+    if (debug1) {
+        log.debug("<-- end GroupNew read <" + group.displayName + ">");
+    }
   }
 
   private Map<Long, H5Group> hashGroups = new HashMap<>();
@@ -4020,24 +4224,31 @@ public class H5header {
     // track by address for hard links
     hashGroups.put(btreeAddress, group);
 
-    if (debug1 && (debugOut != null)) debugOut.println("\n--> GroupOld read <" + group.displayName + ">");
+    if (debug1) {
+        log.debug("\n--> GroupOld read <" + group.displayName + ">");
+    }
     LocalHeap nameHeap = new LocalHeap(group, nameHeapAddress);
     GroupBTree btree = new GroupBTree(group.displayName, btreeAddress);
 
     // now read all the entries in the btree : Level 1C
     for (SymbolTableEntry s : btree.getSymbolTableEntries()) {
       String sname = nameHeap.getString((int) s.getNameOffset());
-      if (debugSoftLink && (debugOut != null)) debugOut.println("\n   Symbol name=" + sname);
-
+      if (debugSoftLink) {
+        log.debug("\n   Symbol name={}", sname);
+      }
       if (s.cacheType == 2) {
         String linkName = nameHeap.getString(s.linkOffset);
-        if (debugSoftLink && (debugOut != null)) debugOut.println("   Symbolic link name=" + linkName + " symbolName=" + sname);
+        if (debugSoftLink) {
+            log.debug("   Symbolic link name=" + linkName + " symbolName=" + sname);
+        }
         group.nestedObjects.add(new DataObjectFacade(group, sname, linkName));
       } else {
         group.nestedObjects.add(new DataObjectFacade(group, sname, s.getObjectAddress()));
       }
     }
-    if (debug1 && (debugOut != null)) debugOut.println("<-- end GroupOld read <" + group.displayName + ">");
+    if (debug1) {
+        log.debug("<-- end GroupOld read <" + group.displayName + ">");
+    }
   }
 
   // Level 1A
@@ -4072,7 +4283,9 @@ public class H5header {
     // recursively read all entries, place them in order in list
     protected void readAllEntries(long address, List<Entry> entryList) throws IOException {
       raf.seek(getFileOffset(address));
-      if (debugGroupBtree) debugOut.println("\n--> GroupBTree read tree at position=" + raf.getFilePointer());
+      if (debugGroupBtree) {
+        log.debug("\n--> GroupBTree read tree at position={}", raf.getFilePointer());
+      }
 
       String magic = raf.readString(4);
       if (!magic.equals("TREE"))
@@ -4081,17 +4294,22 @@ public class H5header {
       int type = raf.readByte();
       int level = raf.readByte();
       int nentries = raf.readShort();
-      if (debugGroupBtree) debugOut.println("    type=" + type + " level=" + level + " nentries=" + nentries);
-      if (type != wantType)
+      if (debugGroupBtree) {
+        log.debug("    type=" + type + " level=" + level + " nentries=" + nentries);
+      }
+      if (type != wantType) {
         throw new IllegalStateException("BtreeGroup must be type " + wantType);
+      }
 
       long size = 8 + 2 * sizeOffsets + nentries * (sizeOffsets + sizeLengths);
       if (debugTracker) memTracker.addByLen("Group BTree (" + owner + ")", address, size);
 
       long leftAddress = readOffset();
       long rightAddress = readOffset();
-      if (debugGroupBtree) debugOut.println("    leftAddress=" + leftAddress + " " + Long.toHexString(leftAddress) +
+      if (debugGroupBtree) {
+        log.debug("    leftAddress=" + leftAddress + " " + Long.toHexString(leftAddress) +
                 " rightAddress=" + rightAddress + " " + Long.toHexString(rightAddress));
+      }
 
       // read all entries in this Btree "Node"
       List<Entry> myEntries = new ArrayList<>();
@@ -4103,7 +4321,9 @@ public class H5header {
         entryList.addAll(myEntries);
       else {
         for (Entry entry : myEntries) {
-          if (debugDataBtree) debugOut.println("  nonzero node entry at =" + entry.address);
+          if (debugDataBtree) {
+            log.debug("  nonzero node entry at =" + entry.address);
+          }
           readAllEntries(entry.address, entryList);
         }
       }
@@ -4117,7 +4337,9 @@ public class H5header {
       Entry() throws IOException {
         this.key = readLength();
         this.address = readOffset();
-        if (debugGroupBtree && (debugOut != null)) debugOut.println("     GroupEntry key=" + key + " address=" + address);
+        if (debugGroupBtree) {
+            log.debug("     GroupEntry key={} address={}", key, address);
+        }
       }
     }
 
@@ -4132,30 +4354,41 @@ public class H5header {
         this.address = address;
 
         raf.seek(getFileOffset(address));
-        if (debugDetail && (debugOut != null)) debugOut.println("--Group Node position=" + raf.getFilePointer());
+        if (debugDetail) {
+            log.debug("--Group Node position={}", raf.getFilePointer());
+        }
 
         // header
         String magic = raf.readString(4);
-        if (!magic.equals("SNOD"))
+        if (!magic.equals("SNOD")) {
           throw new IllegalStateException(magic + " should equal SNOD");
+        }
 
         version = raf.readByte();
         raf.readByte(); // skip byte
         nentries = raf.readShort();
-        if (debugDetail && (debugOut != null)) debugOut.println("   version=" + version + " nentries=" + nentries);
+        if (debugDetail) {
+            log.debug("   version={} nentries={}", version, nentries);
+        }
 
         long posEntry = raf.getFilePointer();
         for (int i = 0; i < nentries; i++) {
           SymbolTableEntry entry = new SymbolTableEntry(posEntry);
           posEntry += entry.getSize();
           if (entry.objectHeaderAddress != 0) { // LOOK: Probably a bug in HDF5 file format ?? jc July 16 2010
-            if (debug1 && (debugOut != null)) debugOut.printf("   add %s%n", entry);
+            if (debug1) {
+                log.debug("   add {}", entry);
+            }
             symbols.add(entry);
           } else {
-            if (debug1 && (debugOut != null)) debugOut.printf("   BAD objectHeaderAddress==0 !! %s%n", entry);
+            if (debug1) {
+                log.debug("   BAD objectHeaderAddress==0 !! {}", entry);
+            }
           }
         }
-        if (debugDetail && (debugOut != null)) debugOut.println("-- Group Node end position=" + raf.getFilePointer());
+        if (debugDetail) {
+            log.debug("-- Group Node end position={}", raf.getFilePointer());
+        }
         long size = 8 + nentries * 40;
         if (debugTracker) memTracker.addByLen("Group BtreeNode (" + owner + ")", address, size);
       }
@@ -4179,7 +4412,9 @@ public class H5header {
 
     SymbolTableEntry(long filePos) throws IOException {
       raf.seek(filePos);
-      if (debugSymbolTable) debugOut.println("--> readSymbolTableEntry position=" + raf.getFilePointer());
+      if (debugSymbolTable) {
+        log.debug("--> readSymbolTableEntry position={}", raf.getFilePointer());
+      }
 
       nameOffset = readOffset();
       objectHeaderAddress = readOffset();
@@ -4187,9 +4422,8 @@ public class H5header {
       raf.skipBytes(4);
 
       if (debugSymbolTable) {
-        debugOut.print(" nameOffset=" + nameOffset);
-        debugOut.print(" objectHeaderAddress=" + objectHeaderAddress);
-        debugOut.println(" cacheType=" + cacheType);
+        log.debug(" nameOffset={} objectHeaderAddress={} cacheType={}",
+                nameOffset, objectHeaderAddress, cacheType);
       }
 
       // "scratch pad"
@@ -4199,21 +4433,25 @@ public class H5header {
       if (cacheType == 1) {
         btreeAddress = readOffset();
         nameHeapAddress = readOffset();
-        if (debugSymbolTable) debugOut.println("btreeAddress=" + btreeAddress + " nameHeadAddress=" + nameHeapAddress);
+        if (debugSymbolTable) {
+            log.debug("btreeAddress={} nameHeadAddress={}", btreeAddress, nameHeapAddress);
+        }
       }
 
       // check for symbolic link
       if (cacheType == 2) {
         linkOffset = raf.readInt(); // offset in local heap
-        if (debugSymbolTable) debugOut.println("WARNING Symbolic Link linkOffset=" + linkOffset);
+        if (debugSymbolTable) {
+            log.debug("WARNING Symbolic Link linkOffset={}", linkOffset);
+        }
         isSymbolicLink = true;
       }
 
       /* if (cacheType == 1) {
        btreeAddress = mapBuffer.getLong();
        nameHeapAddress = mapBuffer.getLong();
-       debugOut.println(" btreeAddress="+btreeAddress);
-       debugOut.println(" nameHeapAddress="+nameHeapAddress);
+       log.debug(" btreeAddress="+btreeAddress);
+       log.debug(" nameHeapAddress="+nameHeapAddress);
        nameHeap = new LocalHeap();
        nameHeap.read(nameHeapAddress);
 
@@ -4222,13 +4460,16 @@ public class H5header {
 
      } else if (cacheType == 2) {
        linkOffset = mapBuffer.getLong();
-       debugOut.println(" linkOffset="+linkOffset);
+       log.debug(" linkOffset="+linkOffset);
      } else {
        for (int k=0; k<2; k++)
-         debugOut.println( " "+k+" "+mapBuffer.getLong());
+         log.debug( " "+k+" "+mapBuffer.getLong());
      } */
 
-      if (debugSymbolTable) debugOut.println("<-- end readSymbolTableEntry position=" + raf.getFilePointer());
+      if (debugSymbolTable) {
+        log.debug("<-- end readSymbolTableEntry position={}", raf.getFilePointer());
+      }
+
       if (debugTracker) memTracker.add("SymbolTableEntry", filePos, posData + 16);
     }
 
@@ -4273,7 +4514,9 @@ public class H5header {
    */
   Array getHeapDataArray(long globalHeapIdAddress, DataType dataType, int endian) throws IOException, InvalidRangeException {
     HeapIdentifier heapId = new HeapIdentifier(globalHeapIdAddress);
-    if (debugHeap && (debugOut != null)) debugOut.println(" heapId= " + heapId);
+    if (debugHeap) {
+        log.debug(" heapId= {}", heapId);
+    }
     return getHeapDataArray(heapId, dataType, endian);
     // Object pa = getHeapDataArray(heapId, dataType, endian);
     // return Array.factory(dataType.getPrimitiveClassType(), new int[]{heapId.nelems}, pa);
@@ -4284,8 +4527,10 @@ public class H5header {
     if (ho == null) {
       throw new InvalidRangeException("Illegal Heap address, HeapObject = " + heapId);
     }
-    if (debugHeap && (debugOut != null)) debugOut.println(" HeapObject= " + ho);
-    if (endian >= 0) raf.order(endian);
+    if (debugHeap) {
+        log.debug(" HeapObject= {}", ho);
+    }
+    if (endian >= 0) { raf.order(endian); }
 
     if (DataType.FLOAT == dataType) {
       float[] pa = new float[heapId.nelems];
@@ -4387,10 +4632,12 @@ public class H5header {
   String getDataObjectName(long objId) throws IOException {
     H5header.DataObject dobj = getDataObject(objId, null);
     if (dobj == null) {
-      log.error("H5iosp.readVlenData cant find dataObject id= " + objId);
+      log.error("H5iosp.readVlenData cant find dataObject id= {}", objId);
       return null;
     } else {
-      if (debugVlen) System.out.println(" Referenced object= " + dobj.who);
+      if (debugVlen) {
+        log.debug(" Referenced object= {}", dobj.who);
+      }
       return dobj.who;
     }
   }
@@ -4409,7 +4656,9 @@ public class H5header {
       nelems = raf.readInt();
       heapAddress = readOffset();
       index = raf.readInt();
-      if (debugDetail && (debugOut != null)) debugOut.println("   read HeapIdentifier address=" + address + this);
+      if (debugDetail) {
+        log.debug("   read HeapIdentifier address=" + address + this);
+      }
       if (debugHeap) dump("heapIdentifier", getFileOffset(address), 16, true);
     }
 
@@ -4420,7 +4669,9 @@ public class H5header {
       nelems = bb.getInt();
       heapAddress = isOffsetLong ? bb.getLong() : (long) bb.getInt();
       index = bb.getInt();
-      if (debugDetail && (debugOut != null)) debugOut.println("   read HeapIdentifier from ByteBuffer=" + this);
+      if (debugDetail) {
+        log.debug("   read HeapIdentifier from ByteBuffer={}", this);
+      }
     }
 
     public String toString() {
@@ -4465,7 +4716,9 @@ public class H5header {
       }
 
       GlobalHeap.HeapObject want = gheap.getHeapObject( (short) index);
-      if (debugRegionReference) System.out.println(" found ho=" + want);
+      if (debugRegionReference) {
+        log.debug(" found ho={}", want);
+      }
       /* - The offset of the object header of the object (ie. dataset) pointed to (yes, an object ID)
           - A serialized form of a dataspace _selection_ of elements (in the dataset pointed to).
           I don't have a formal description of this information now, but it's encoded in the H5S_<foo>_serialize() routines in
@@ -4475,7 +4728,9 @@ public class H5header {
       long objId = raf.readLong();
       DataObject ndo = getDataObject(objId, null);
       // String what = (ndo == null) ? "none" : ndo.getName();
-      if (debugRegionReference) System.out.println(" objId=" + objId + " DataObject= " + ndo);
+      if (debugRegionReference) {
+        log.debug(" objId=" + objId + " DataObject= " + ndo);
+      }
       if (null == ndo)
         throw new IllegalStateException("cant find data object at" + objId);
     }
@@ -4501,8 +4756,10 @@ public class H5header {
       version = raf.readByte();
       raf.skipBytes(3);
       sizeBytes = raf.readInt();
-      if (debugDetail && (debugOut != null)) debugOut.println("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
-      //System.out.println("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
+      if (debugDetail) {
+        log.debug("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
+      //log.debug("-- readGlobalHeap address=" + address + " version= " + version + " size = " + sizeBytes);
+      }
       raf.skipBytes(4); // pad to 8
 
       int count = 0;
@@ -4525,8 +4782,10 @@ public class H5header {
         if (countBytes < 0) break; // ran off the end, must be done
         if (countBytes > sizeBytes) break; // ran off the end
 
-        if (debugDetail && (debugOut != null)) debugOut.println("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
+        if (debugDetail) {
+          log.debug("   HeapObject  position=" + startPos + " id=" + o.id + " refCount= " + o.refCount +
                   " dataSize = " + o.dataSize + " dataPos = " + o.dataPos + " count= " + count + " countBytes= " + countBytes);
+        }
 
         raf.skipBytes(dsize);
         hos.put(o.id, o);
@@ -4535,7 +4794,9 @@ public class H5header {
         if (countBytes + 16 >= sizeBytes) break; // ran off the end, must be done
       }
 
-      if (debugDetail && (debugOut != null)) debugOut.println("-- endGlobalHeap position=" + raf.getFilePointer());
+      if (debugDetail) {
+        log.debug("-- endGlobalHeap position=" + raf.getFilePointer());
+      }
       if (debugTracker) memTracker.addByLen("GlobalHeap", address, sizeBytes);
     }
 
@@ -4574,20 +4835,27 @@ public class H5header {
       raf.order(RandomAccessFile.LITTLE_ENDIAN);
       raf.seek(getFileOffset(address));
 
-      if (debugDetail && (debugOut != null)) debugOut.println("-- readLocalHeap position=" + raf.getFilePointer());
+      if (debugDetail) {
+        log.debug("-- readLocalHeap position={}", raf.getFilePointer());
+      }
 
       // header
       String magic = raf.readString(4);
-      if (!magic.equals("HEAP"))
+      if (!magic.equals("HEAP")) {
         throw new IllegalStateException(magic + " should equal HEAP");
+      }
 
       version = raf.readByte();
       raf.skipBytes(3);
       size = (int) readLength();
       freelistOffset = readLength();
       dataAddress = readOffset();
-      if (debugDetail && (debugOut != null)) debugOut.println(" version=" + version + " size=" + size + " freelistOffset=" + freelistOffset + " heap starts at dataAddress=" + dataAddress);
-      if (debugPos && (debugOut != null)) debugOut.println("    *now at position=" + raf.getFilePointer());
+      if (debugDetail) {
+        log.debug(" version=" + version + " size=" + size + " freelistOffset=" + freelistOffset + " heap starts at dataAddress=" + dataAddress);
+      }
+      if (debugPos) {
+        log.debug("    *now at position={}", raf.getFilePointer());
+      }
 
       // data
       raf.seek(getFileOffset(dataAddress));
@@ -4595,7 +4863,9 @@ public class H5header {
       raf.readFully(heap);
       //if (debugHeap) printBytes( out, "heap", heap, size, true);
 
-      if (debugDetail && (debugOut != null)) debugOut.println("-- endLocalHeap position=" + raf.getFilePointer());
+      if (debugDetail) {
+        log.debug("-- endLocalHeap position={}", raf.getFilePointer());
+      }
       int hsize = 8 + 2 * sizeLengths + sizeOffsets;
       if (debugTracker) memTracker.addByLen("Group LocalHeap (" + group.displayName + ")", address, hsize);
       if (debugTracker) memTracker.addByLen("Group LocalHeapData (" + group.displayName + ")", dataAddress, size);
@@ -4715,7 +4985,9 @@ public class H5header {
     if (size == 1) {
       vv = DataType.unsignedByteToShort(raf.readByte());
     } else if (size == 2) {
-      if (debugPos && (debugOut != null)) debugOut.println("position=" + raf.getFilePointer());
+      if (debugPos) {
+        log.debug("position={}", raf.getFilePointer());
+      }
       short s = raf.readShort();
       vv = DataType.unsignedShortToInt(s);
     } else if (size == 4) {
@@ -4801,7 +5073,7 @@ public class H5header {
     if (debugTracker) {
       Formatter f= new Formatter();
       memTracker.report(f);
-      if (debugOut != null) debugOut.println(f.toString());
+      log.debug("{}", f.toString());
     }
   }
 

@@ -60,7 +60,7 @@ public class CoordSysEvaluator {
   static public void findCoords(TableConfig nt, NetcdfDataset ds, Predicate p) {
     nt.lat =  findCoordShortNameByType(ds, AxisType.Lat, p);
     nt.lon =  findCoordShortNameByType(ds, AxisType.Lon, p);
-    nt.time =  findCoordShortNameByType(ds, AxisType.Lat, p);
+    nt.time =  findCoordShortNameByType(ds, AxisType.Time, p);
     nt.elev =  findCoordShortNameByType(ds, AxisType.Height, p);
     if (nt.elev == null)
       nt.elev =  findCoordShortNameByType(ds, AxisType.Pressure, p);

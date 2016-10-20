@@ -384,7 +384,9 @@ public class ConfigCatalogHtmlWriter {
     out.format("%s<head>%n", getHtmlDoctypeAndOpenTag());
     out.format("<title> Catalog Services</title>%n");
     out.format("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>%n");
-    out.format("%s</head>%n", getTdsPageCssLink());
+    out.format("%s%n", getTdsPageCssLink());
+    out.format(getGoogleTrackingContent());  // String already has EOL.
+    out.format("</head>%n");
     out.format("<body>%n");
 
     StringBuilder sb = new StringBuilder();
@@ -400,8 +402,6 @@ public class ConfigCatalogHtmlWriter {
     // optional access through Viewers
     if (isLocalCatalog)
       viewerService.showViewers(out, dataset, request);
-
-    out.format("%s%n", getGoogleTrackingContent());
 
     out.format("</body>%n");
     out.format("</html>%n");
