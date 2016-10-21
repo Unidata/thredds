@@ -40,20 +40,6 @@
 
 package opendap.dap;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.InflaterInputStream;
-
 import opendap.dap.parsers.ParseException;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
@@ -62,6 +48,13 @@ import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.InflaterInputStream;
 
 /**
  * Rewritten 1/15/07 jcaron to use HttpCLient library instead of jdk UrlConnection class.
@@ -157,11 +150,11 @@ public class DConnect2 implements Closeable
             throws HTTPException
     {
         int ceIndex = urlString.indexOf('?');
-        if(ceIndex != -1) {
+        if(ceIndex >= 0) {
             this.urlString = urlString.substring(0, ceIndex);
-            String expr = urlString.substring(ceIndex);
+            String expr = urlString.substring(ceIndex + 1);
             int selIndex = expr.indexOf('&');
-            if(selIndex != -1) {
+            if(selIndex >= 0) {
                 this.projString = expr.substring(0, selIndex);
                 this.selString = expr.substring(selIndex);
             } else {
@@ -281,7 +274,7 @@ public class DConnect2 implements Closeable
                 if(allowSessions)
                     method.setUseSessions(true);
                 int statusCode;
-                for(;;) {
+                for(; ; ) {
                     statusCode = method.execute();
                     if(statusCode != HttpStatus.SC_SERVICE_UNAVAILABLE)
                         break;
@@ -329,20 +322,20 @@ public class DConnect2 implements Closeable
 
                 if(encoding != null && encoding.equals("deflate")) {
                     is = new BufferedInputStream(new InflaterInputStream(is), 1000);
-                    if (showCompress) System.out.printf("deflate %s%n", urlString);
+                    if(showCompress) System.out.printf("deflate %s%n", urlString);
 
                 } else if(encoding != null && encoding.equals("gzip")) {
                     is = new BufferedInputStream(new GZIPInputStream(is), 1000);
-                    if (showCompress) System.out.printf("gzip %s%n", urlString);
+                    if(showCompress) System.out.printf("gzip %s%n", urlString);
                 } else {
-                    if (showCompress) System.out.printf("none %s%n", urlString);
+                    if(showCompress) System.out.printf("none %s%n", urlString);
                 }
 
                 command.process(is);
             }
 
         } catch (IOException | DAP2Exception e) {
-          throw e;
+            throw e;
 
         } catch (Exception e) {
             Util.check(e);
@@ -543,7 +536,7 @@ public class DConnect2 implements Closeable
             command.process(stream);
         } else { // assume url is remote
             try {
-                openConnection(urlString + ".das" + projString + selString, command);
+                openConnection(urlString + ".das" + getCompleteCE(projString,selString), command);
             } catch (DAP2Exception de) {
                 //if(de.getErrorCode() != DAP2Exception.NO_SUCH_FILE)
                 //throw de;  // rethrow
@@ -688,6 +681,34 @@ public class DConnect2 implements Closeable
             DAPNode.log.debug("Complete CE: " + ce);
         }
         return ce;   // escaping will happen elsewhere
+    }
+
+    /**
+     * ALternate interface to getCompleteCE(String ce)
+     *
+     * @param proj the projection
+     * @param sel  the selection
+     * @return the combined constraint
+     */
+    private String
+    getCompleteCE(String proj, String sel)
+    {
+        if(proj != null && proj.length() == 0) proj = "";  // canonical
+        if(sel != null && sel.length() == 0) sel = null;  // canonical
+        StringBuilder buf = new StringBuilder();
+        if(proj.startsWith("?"))
+            buf.append(proj.substring(1));
+        else
+            buf.append(proj);
+        if(sel != null) {
+            if(sel.startsWith("&"))
+                buf.append(sel);
+            else {
+                buf.append("&");
+                buf.append(sel);
+            }
+        }
+        return getCompleteCE(buf.toString());
     }
 
     /**
