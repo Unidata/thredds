@@ -52,7 +52,7 @@ public class CatalogScan extends CatalogRef {
 
   // when we have a real catalog  (filename != CATSCAN)
   public ConfigCatalog getCatalog(File baseDir, String matchRemaining, String filename, CatalogReader reader) throws IOException {
-    String relLocation = (matchRemaining.length() > 1) ? location + "/" + matchRemaining : location;
+    String relLocation = (matchRemaining.length() >= 1) ? location + "/" + matchRemaining : location;
     File absLocation = new File(baseDir, relLocation);
     ConfigCatalog cc = reader.getFromAbsolutePath(absLocation + "/" + filename);
     if (cc == null)
@@ -62,8 +62,8 @@ public class CatalogScan extends CatalogRef {
 
   // when we have a catalog built from a directory (filename == CATSCAN)
   public CatalogBuilder makeCatalogFromDirectory(File baseDir, String matchRemaining, URI baseURI) throws IOException {
-    String relLocation = (matchRemaining.length() > 1) ? location + "/" + matchRemaining : location;
-    String name = (matchRemaining.length() > 1) ? getName() + "/" + matchRemaining : getName();
+    String relLocation = (matchRemaining.length() >= 1) ? location + "/" + matchRemaining : location;
+    String name = (matchRemaining.length() >= 1) ? getName() + "/" + matchRemaining : getName();
     File absLocation = new File( baseDir, relLocation);
 
     // it must be a directory
@@ -103,7 +103,7 @@ public class CatalogScan extends CatalogRef {
       for (Path dir : ds) {
         if (Files.isDirectory(dir)) {
           String dfilename = dir.getFileName().toString();
-          String urlPath = (matchRemaining.length() > 1) ? dfilename + "/" + matchRemaining : dfilename;
+          String urlPath = (matchRemaining.length() >= 1) ? dfilename + "/" + matchRemaining : dfilename;
 
           CatalogRefBuilder catref = new CatalogRefBuilder(top);
           catref.setTitle(urlPath);

@@ -487,8 +487,8 @@ abstract public class HTTPUtil
             s.replace(index, index + 1, "/");
         }
         boolean isabs = (s.charAt(0) == '/'); // remember
-        for(; ; ) { // kill any leading '/'s
-            if(s.charAt(0) != '/') break;
+        for(;;) { // kill any leading '/'s
+            if(s.length() == 0 || s.charAt(0) != '/') break;
             s.deleteCharAt(0);
         }
         // Do we have drive letter?
@@ -516,10 +516,12 @@ abstract public class HTTPUtil
         if(path == null) return null;
         StringBuilder b = new StringBuilder(path);
         canonicalpath(b);
-        if(b.charAt(0) == '/')
-            b.deleteCharAt(0);
-        if(hasDriveLetter(b))
-            b.delete(0,2);
+        if(b.length() > 0) {
+            if(b.charAt(0) == '/')
+                b.deleteCharAt(0);
+            if(hasDriveLetter(b))
+                b.delete(0, 2);
+        }
         return b.toString();
     }
 
