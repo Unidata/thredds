@@ -116,7 +116,7 @@ public class TomcatAuthorizer implements Authorizer {
       }
     }
 
-    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to access this dataset.");
+    res.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to access this dataset.");
   }
 
 }
