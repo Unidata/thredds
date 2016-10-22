@@ -32,20 +32,21 @@
  */
 package thredds.server.admin;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.*;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.TdsContext;
 import thredds.util.ContentType;
 import ucar.nc2.time.CalendarDate;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Provide methods to write HTML representations of a catalog, directory, or CDM dataset to an HTTP response.
@@ -70,24 +71,23 @@ public class HtmlWriting {
   }
 
   public String getGoogleTrackingContent() {
-      if (this.htmlConfig.getGoogleTrackingCode().isEmpty()){
-          return "";
-      } else {
-          return new StringBuilder()            
-	        .append("<script type='text/javascript'>")
-	        .append("var _gaq = _gaq || [];")
-	        .append("_gaq.push(['_setAccount', '")
-	        .append( this.htmlConfig.getGoogleTrackingCode() )
-	        .append("']);")
-	        .append("_gaq.push(['_trackPageview']);")
-
-	        .append("(function() {")
-	        .append("var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;")
-	        .append("ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';")
-	        .append("    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);")
-	        .append("})();")
-	        .append("</script>").toString();
-      }
+    if (this.htmlConfig.getGoogleTrackingCode().isEmpty()) {
+      return "";
+    } else {
+      // See https://developers.google.com/analytics/devguides/collection/analyticsjs/
+      return new StringBuilder()
+              .append("<!-- Google Analytics -->\n")
+              .append("<script>\n")
+              .append("(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){\n")
+              .append("(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\n")
+              .append("m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\n")
+              .append("})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');\n")
+              .append('\n')
+              .append("ga('create', '").append(this.htmlConfig.getGoogleTrackingCode()).append("', 'auto');\n")
+              .append("ga('send', 'pageview');\n")
+              .append("</script>\n")
+              .append("<!-- End Google Analytics -->\n").toString();
+    }
   }
 
   
@@ -194,7 +194,6 @@ public class HtmlWriting {
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
     sb.append( "</h3>\n" );
-    sb.append(this.getGoogleTrackingContent());
   }
 
   /**
@@ -241,6 +240,7 @@ public class HtmlWriting {
     sb.append("Directory listing for ").append(dir.getPath()); // debug mode - show the actual file path
     sb.append("</title>\r\n");
     sb.append(this.getTdsCatalogCssLink()).append("\n");
+    sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>\r\n");
     sb.append("<h1>");
@@ -557,6 +557,7 @@ public class HtmlWriting {
     sb.append("Common Data Model");
     sb.append("</title>\r\n");
     sb.append(this.getTdsPageCssLink()).append("\n");
+    sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");

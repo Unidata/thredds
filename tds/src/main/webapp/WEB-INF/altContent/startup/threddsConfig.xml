@@ -54,7 +54,7 @@
      * -->
 
     <!--
-     * The Google Analytics Tracking code you would like to use for the
+     * The Google Analytics Tracking ID you would like to use for the
      * webpages associated with THREDDS. This will not track WMS or DAP
      * requests for data, only browsing the catalog.
 

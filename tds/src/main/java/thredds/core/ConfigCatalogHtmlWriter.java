@@ -142,6 +142,7 @@ public class ConfigCatalogHtmlWriter {
     sb.append("Catalog ").append(catname);
     sb.append("</title>\r\n");
     sb.append(getTdsCatalogCssLink()).append("\n");
+    sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>");
     sb.append("<h1>");
@@ -382,7 +383,7 @@ public class ConfigCatalogHtmlWriter {
     Formatter out = new Formatter();
 
     out.format("%s<head>%n", getHtmlDoctypeAndOpenTag());
-    out.format("<title> Catalog Services</title>%n");
+    out.format("<title>Catalog Services</title>%n");
     out.format("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>%n");
     out.format("%s%n", getTdsPageCssLink());
     out.format(getGoogleTrackingContent());  // String already has EOL.
@@ -533,27 +534,25 @@ public class ConfigCatalogHtmlWriter {
             .append( this.htmlConfig.prepareUrlStringForHtml( this.htmlConfig.getWebappDocsUrl() ) )
             .append( "'> Documentation</a>" );
     sb.append( "</h3>\n" );
-    sb.append( this.getGoogleTrackingContent() );
   }
 
   public String getGoogleTrackingContent() {
-      if (this.htmlConfig.getGoogleTrackingCode().isEmpty()){
-          return "";
-      } else {
-          return new StringBuilder()
-	        .append("<script type='text/javascript'>")
-	        .append("var _gaq = _gaq || [];")
-	        .append("_gaq.push(['_setAccount', '")
-	        .append( this.htmlConfig.getGoogleTrackingCode() )
-	        .append("']);")
-	        .append("_gaq.push(['_trackPageview']);")
-
-	        .append("(function() {")
-	        .append("var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;")
-	        .append("ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';")
-	        .append("    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);")
-	        .append("})();")
-	        .append("</script>").toString();
-      }
+    if (this.htmlConfig.getGoogleTrackingCode().isEmpty()){
+      return "";
+    } else {
+      // See https://developers.google.com/analytics/devguides/collection/analyticsjs/
+      return new StringBuilder()
+              .append("<!-- Google Analytics -->\n")
+              .append("<script>\n")
+              .append("(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){\n")
+              .append("(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\n")
+              .append("m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\n")
+              .append("})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');\n")
+              .append('\n')
+              .append("ga('create', '").append(this.htmlConfig.getGoogleTrackingCode()).append("', 'auto');\n")
+              .append("ga('send', 'pageview');\n")
+              .append("</script>\n")
+              .append("<!-- End Google Analytics -->\n").toString();
+    }
   }
 }

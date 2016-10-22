@@ -32,19 +32,20 @@
  */
 package thredds.server.admin;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 
-import java.io.*;
-import java.util.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.StringTokenizer;
 
 /**
  * Handle the /admin/debug interface
@@ -73,9 +74,10 @@ public class AdminDebugController {
     PrintStream pw = new PrintStream(bos, false, CDM.UTF8);
     pw.println(htmlu.getHtmlDoctypeAndOpenTag());
     pw.println("<head>");
-    pw.println("<title> THREDDS Debug</title>");
+    pw.println("<title>THREDDS Debug</title>");
     pw.println("<meta http-equiv=\"Content-Type\" content=\"text/html\">");
     pw.println(htmlu.getTdsPageCssLink());
+    pw.println(htmlu.getGoogleTrackingContent());
     pw.println("</head>");
     pw.println("<body>");
     pw.println(htmlu.getOldStyleHeader());

@@ -148,7 +148,7 @@ here:
   <standardCssUrl>tds.css</standardCssUrl>  <!--1-->
   <catalogCssUrl>tdsCat.css</catalogCssUrl>  <!--2-->
   <openDapCssUrl>tdsDap.css</openDapCssUrl>  <!--3-->
-  <googleTrackingCode>239487348739933</googleTrackingCode>  <!--4-->
+  <googleTrackingCode>UA-54516992-1</googleTrackingCode>  <!--4-->
 </htmlSetup>
 ------------------------------------------------------------
 <1> The CSS used in TDS dataset pages.
