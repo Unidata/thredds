@@ -1,6 +1,5 @@
 package thredds.crawlabledataset.s3;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
@@ -40,7 +39,52 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
     }
 
     @Override
-    public ObjectMetadata getObjectMetadata(S3URI s3uri) {
+    public ThreddsS3Metadata getMetadata(S3URI s3uri) {
+        ObjectMetadata metadata = getObjectMetadata(s3uri);
+
+        if (metadata != null) {
+            return new ThreddsS3Object(s3uri, metadata.getLastModified(), metadata.getContentLength());
+        } else if (isDirectory(s3uri)) {
+            return new ThreddsS3Directory(s3uri);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ThreddsS3Listing listContents(S3URI s3uri) {
+        ThreddsS3Listing listing = new ThreddsS3Listing(s3uri);
+        ObjectListing page = listObjects(s3uri);
+
+        if (page == null) {
+            return null;
+        }
+
+        listing.add(page);
+        int pageNo = 2;
+
+        while (page.isTruncated() && pageNo <= maxListingPages) {
+            page = s3Client.listNextBatchOfObjects(page);
+            logger.info(String.format("Downloaded page %d of S3 listing '%s'", pageNo, s3uri));
+            listing.add(page);
+            pageNo++;
+        }
+
+        if (page.isTruncated()) {
+            logger.warn(
+                    String.format("Maximum number of S3 listing pages (%d) exceeded. " +
+                            "Not all content for %s retrieved", maxListingPages, s3uri));
+        }
+
+        return listing;
+    }
+
+    @Override
+    public File getLocalCopy(S3URI s3uri) throws IOException {
+        return saveObjectToFile(s3uri, s3uri.getTempFile());
+    }
+
+    private ObjectMetadata getObjectMetadata(S3URI s3uri) {
         try {
             ObjectMetadata metadata = s3Client.getObjectMetadata(s3uri.getBucket(), s3uri.getKey());
             logger.info(String.format("Downloaded S3 metadata '%s'", s3uri));
@@ -59,8 +103,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         }
     }
 
-    @Override
-    public ObjectListing listObjects(S3URI s3uri) {
+    private ObjectListing listObjects(S3URI s3uri) {
         ListObjectsRequest listObjectsRequest =
                 new ListObjectsRequest().withBucketName(s3uri.getBucket()).withDelimiter(S3URI.S3_DELIMITER);
 
@@ -103,8 +146,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         }
     }
 
-    @Override
-    public File saveObjectToFile(S3URI s3uri, File file) throws IOException {
+    private File saveObjectToFile(S3URI s3uri, File file) throws IOException {
         try {
             s3Client.getObject(new GetObjectRequest(s3uri.getBucket(), s3uri.getKey()), file);
             logger.info(String.format("Downloaded S3 object '%s' to '%s'", s3uri, file));
@@ -122,47 +164,6 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
                 throw e;
             }
         }
-    }
-
-    @Override
-    public ThreddsS3Metadata getMetadata(S3URI s3uri) {
-        ObjectMetadata metadata = getObjectMetadata(s3uri);
-
-        if (metadata != null) {
-            return new ThreddsS3Object(s3uri, metadata.getLastModified(), metadata.getContentLength());
-        } else if (isDirectory(s3uri)) {
-            return new ThreddsS3Directory(s3uri);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public ThreddsS3Listing listContents(S3URI s3uri) {
-        ThreddsS3Listing listing = new ThreddsS3Listing(s3uri);
-        ObjectListing page = listObjects(s3uri);
-
-        if (page == null) {
-            return null;
-        }
-
-        listing.add(page);
-        int pageNo = 2;
-
-        while (page.isTruncated() && pageNo <= maxListingPages) {
-            page = s3Client.listNextBatchOfObjects(page);
-            logger.info(String.format("Downloaded page %d of S3 listing '%s'", pageNo, s3uri));
-            listing.add(page);
-            pageNo++;
-        }
-
-        if (page.isTruncated()) {
-            logger.warn(
-                    String.format("Maximum number of S3 listing pages (%d) exceeded. " +
-                            "Not all content for %s retrieved", maxListingPages, s3uri));
-        }
-
-        return listing;
     }
 
     private boolean isDirectory(S3URI s3uri) {

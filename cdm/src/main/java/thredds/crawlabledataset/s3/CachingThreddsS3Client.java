@@ -2,15 +2,15 @@ package thredds.crawlabledataset.s3;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
+
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
-import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,44 +27,48 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
     private static final long MAX_METADATA_ENTRIES = 10000;
     private static final long MAX_FILE_ENTRIES = 100;
 
-    private final ThreddsS3Client threddsS3Client;
-
-    private final Cache<S3URI, Optional<ObjectMetadata>> objectMetadataCache;
-    private final Cache<S3URI, Optional<ObjectListing>> objectListingCache;
-    private final Cache<S3URI, Optional<File>> objectFileCache;
-    private final Cache<S3URI, Optional<ThreddsS3Metadata>> metadataCache;
-    private final Cache<S3URI, Optional<ThreddsS3Listing>> listingCache;
+    private final LoadingCache<S3URI, Optional<ThreddsS3Metadata>> metadataCache;
+    private final LoadingCache<S3URI, Optional<ThreddsS3Listing>> listingCache;
+    private final LoadingCache<S3URI, Optional<File>> objectFileCache;
 
     public CachingThreddsS3Client(ThreddsS3Client threddsS3Client) {
         this(threddsS3Client, new ObjectFileCacheRemovalListener());
     }
 
     public CachingThreddsS3Client(
-            ThreddsS3Client threddsS3Client, RemovalListener<S3URI, Optional<File>> removalListener) {
-        this.threddsS3Client = threddsS3Client;
-
+            final ThreddsS3Client threddsS3Client, RemovalListener<S3URI, Optional<File>> removalListener) {
         // We can't reuse the builder because each of the caches we're creating has different type parameters.
-        this.objectMetadataCache = CacheBuilder.newBuilder()
+        this.metadataCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_METADATA_ENTRIES)
-                .build();
-        this.objectListingCache = CacheBuilder.newBuilder()
+                .build(
+                    new CacheLoader<S3URI, Optional<ThreddsS3Metadata>>() {
+                        public Optional<ThreddsS3Metadata> load(S3URI s3uri) { // no checked exception
+                            return Optional.fromNullable(threddsS3Client.getMetadata(s3uri));
+                        }
+                    }
+                 );
+        this.listingCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_METADATA_ENTRIES)
-                .build();
+                .build(
+                    new CacheLoader<S3URI, Optional<ThreddsS3Listing>>() {
+                        public Optional<ThreddsS3Listing> load(S3URI s3uri) { // no checked exception
+                            return Optional.fromNullable(threddsS3Client.listContents(s3uri));
+                        }
+                    }
+                );
         this.objectFileCache = CacheBuilder.newBuilder()
                 .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_FILE_ENTRIES)
                 .removalListener(removalListener)
-                .build();
-        this.metadataCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
-                .maximumSize(MAX_METADATA_ENTRIES)
-                .build();
-        this.listingCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
-                .maximumSize(MAX_METADATA_ENTRIES)
-                .build();
+                .build(
+                    new CacheLoader<S3URI, Optional<File>>() {
+                        public Optional<File> load(S3URI s3uri) throws IOException { // no checked exception
+                            return Optional.fromNullable(threddsS3Client.getLocalCopy(s3uri));
+                        }
+                    }
+                );
     }
 
     private static class ObjectFileCacheRemovalListener implements RemovalListener<S3URI, Optional<File>> {
@@ -79,116 +83,55 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
         }
     }
 
-
-    @Override
-    public ObjectMetadata getObjectMetadata(S3URI s3uri) {
-        Optional<ObjectMetadata> metadata = objectMetadataCache.getIfPresent(s3uri);
-        if (metadata == null) {
-            logger.debug(String.format("ObjectMetadata cache MISS: '%s'", s3uri));
-            metadata = Optional.fromNullable(threddsS3Client.getObjectMetadata(s3uri));
-            objectMetadataCache.put(s3uri, metadata);
-        } else {
-            logger.debug(String.format("ObjectMetadata cache hit: '%s'", s3uri));
-        }
-
-        return metadata.orNull();
-    }
-
-    @Override
-    public ObjectListing listObjects(S3URI s3uri) {
-        Optional<ObjectListing> objectListing = objectListingCache.getIfPresent(s3uri);
-        if (objectListing == null) {
-            logger.debug(String.format("ObjectListing cache MISS: '%s'", s3uri));
-            objectListing = Optional.fromNullable(threddsS3Client.listObjects(s3uri));
-            objectListingCache.put(s3uri, objectListing);
-        } else {
-            logger.debug(String.format("ObjectListing cache hit: '%s'", s3uri));
-        }
-
-        return objectListing.orNull();
-    }
-
     @Override
     public ThreddsS3Metadata getMetadata(S3URI s3uri) {
-        Optional<ThreddsS3Metadata> metadata = metadataCache.getIfPresent(s3uri);
-        if (metadata == null) {
-            logger.debug(String.format("ThreddsS3Metadata cache MISS: '%s'", s3uri));
-            metadata = Optional.fromNullable(threddsS3Client.getMetadata(s3uri));
-            metadataCache.put(s3uri, metadata);
-        } else {
-            logger.debug(String.format("ThreddsS3Metadata cache hit: '%s'", s3uri));
+        try {
+            return metadataCache.get(s3uri).orNull();
+        } catch (ExecutionException e) {
+            logger.error("Could not get metadata for %s", s3uri, e.getCause());
+            return null;
         }
-
-        return metadata.orNull();
     }
 
     @Override
     public ThreddsS3Listing listContents(S3URI s3uri) {
-        Optional<ThreddsS3Listing> listing = listingCache.getIfPresent(s3uri);
-        if (listing == null) {
-            logger.debug(String.format("ThreddsS3Listing cache MISS: '%s'", s3uri));
-            listing = Optional.fromNullable(threddsS3Client.listContents(s3uri));
-            listingCache.put(s3uri, listing);
+        try {
+            Optional<ThreddsS3Listing> listing = listingCache.get(s3uri);
             if (listing.isPresent()) {
-                // add contents of listing to metadata cache as well so additional requests
-                // do not need to be made to get them later
+                // add listing contents to metadataCache so we don't need to fetch them individually
                 for (ThreddsS3Metadata metadata : listing.get().getContents()) {
                     metadataCache.put(metadata.getS3uri(), Optional.fromNullable(metadata));
                 }
             }
-        } else {
-            logger.debug(String.format("ThreddsS3Listing cache hit: '%s'", s3uri));
+            return listing.orNull();
+        } catch (ExecutionException e) {
+            logger.error("Could not get listing for %s", s3uri, e.getCause());
+            return null;
         }
-
-        return listing.orNull();
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * WARNING: If the content at {@code s3uri} was previously saved using this method, and the old file to which it was
-     * saved is <b>not</b> the same as {@code file}, the object content will be copied to the new file and the old file
-     * will be deleted.
-     */
     @Override
-    public File saveObjectToFile(S3URI s3uri, File file) throws IOException {
-        Optional<File> cachedFile = objectFileCache.getIfPresent(s3uri);
-
-        if (cachedFile == null) {
-            logger.debug("Object cache MISS: '%s'", s3uri);
-            // Do download below.
-        } else {
-            logger.debug("Object cache hit: '%s'", s3uri);
-
-            if (!cachedFile.isPresent()) {
-                return null;
-            } else if (!cachedFile.get().exists()) {
-                logger.info(String.format("Found cache entry {'%s'-->'%s'}, but local file doesn't exist. " +
-                        "Was it deleted? Re-downloading.", s3uri, cachedFile.get()));
-                objectFileCache.invalidate(s3uri);  // Evict old entry. Re-download below.
-            } else if (!cachedFile.get().equals(file)) {
-                // Copy content of cachedFile to file. Evict cachedFile from the cache.
-                Files.copy(cachedFile.get(), file);
-                objectFileCache.put(s3uri, Optional.of(file));
-                return file;
-            } else {
-                return file;  // File already contains the content of the object at s3uri.
+    public File getLocalCopy(S3URI s3uri) {
+        try {
+            File file = objectFileCache.get(s3uri).orNull();
+            // check for deleted file
+            if (file != null && !file.exists()) {
+                objectFileCache.invalidate(s3uri);
+                file = objectFileCache.get(s3uri).orNull();
             }
+            return file;
+        } catch (ExecutionException e) {
+            logger.error("Could not get getLocalCopy for %s", s3uri, e.getCause());
+            return null;
         }
-
-        cachedFile = Optional.fromNullable(threddsS3Client.saveObjectToFile(s3uri, file));
-        objectFileCache.put(s3uri, cachedFile);
-        return cachedFile.orNull();
     }
 
     /**
-     * Discards all entries from all caches. Any files created by {@link #saveObjectToFile} will be deleted.
+     * Discards all entries from all caches. Any files created by {@link #getLocalCopy} will be deleted.
      */
     public void clear() {
-        objectMetadataCache.invalidateAll();
-        objectListingCache.invalidateAll();
-        objectFileCache.invalidateAll();
         metadataCache.invalidateAll();
         listingCache.invalidateAll();
+        objectFileCache.invalidateAll();
     }
 }
