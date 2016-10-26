@@ -63,16 +63,6 @@
     <welcome-file>/</welcome-file>
   </welcome-file-list>
 
-  <error-page>
-    <error-code>404</error-code>
-    <location>/WEB-INF/jsp/errorpages/404.jsp</location>
-  </error-page>
-
-  <error-page>
-    <error-code>500</error-code>
-    <location>/WEB-INF/jsp/errorpages/500.jsp</location>
-  </error-page>
-
   <!-- edal-wms servlet -->
 
   <servlet>

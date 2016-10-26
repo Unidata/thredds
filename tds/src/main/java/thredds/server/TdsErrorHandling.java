@@ -48,6 +48,8 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
   @ExceptionHandler(ServiceNotAllowed.class)
   public ResponseEntity<String> handle(ServiceNotAllowed ex) {
+    logger.warn("TDS Error", ex);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("Service Not Allowed: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
@@ -55,6 +57,8 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
   @ExceptionHandler(RequestTooLargeException.class)
   public ResponseEntity<String> handle(RequestTooLargeException ex) {
+    logger.warn("TDS Error", ex);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("Request Too Large: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
@@ -62,6 +66,8 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
   @ExceptionHandler(FileNotFoundException.class)
   public ResponseEntity<String> handle(FileNotFoundException ex) {
+    logger.warn("TDS Error", ex);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("FileNotFound: " + ex.getMessage(), responseHeaders, HttpStatus.NOT_FOUND);
@@ -71,21 +77,26 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
   public ResponseEntity<String> handle(IOException ex) {
     String eName = ex.getClass().getName(); // dont want compile time dependency on ClientAbortException
     if (eName.equals("org.apache.catalina.connector.ClientAbortException")) {
-      logger.debug("ClientAbortException while sending file: {}", ex.getMessage());
+      logger.debug("ClientAbortException while sending file: ", ex);
       return null;
     }
 
-    logger.error("IOException sending file ", ex);
+    logger.warn("TDS Error", ex);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("IOException sending File " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+    return new ResponseEntity<>(
+            "IOException sending File " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<String> handle(IllegalArgumentException ex) {
+    logger.warn("TDS Error", ex);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     String mess = ex.getMessage();
+
     if (mess != null && mess.startsWith("RequestTooLarge")) // RequestTooLargeException only avail in tds module
       return new ResponseEntity<>("Request Too Large: " + ex.getMessage(), responseHeaders, HttpStatus.FORBIDDEN);
     else
@@ -94,6 +105,8 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
   @ExceptionHandler(NcssException.class)
   public ResponseEntity<String> handle(NcssException ex) {
+    logger.warn("TDS Error", ex);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("Invalid Request: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
@@ -101,6 +114,8 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
   @ExceptionHandler(org.springframework.web.bind.ServletRequestBindingException.class)
   public ResponseEntity<String> handle(org.springframework.web.bind.ServletRequestBindingException ex) {
+    logger.warn("TDS Error", ex);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>("Invalid Request: " + ex.getMessage(), responseHeaders, HttpStatus.BAD_REQUEST);
@@ -115,6 +130,9 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
     for (ObjectError err : errors) {
       f.format(" %s%n", err.getDefaultMessage());
     }
+
+    logger.warn(f.toString(), ex);
+
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
     return new ResponseEntity<>(f.toString(), responseHeaders, HttpStatus.BAD_REQUEST);
