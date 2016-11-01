@@ -13,6 +13,9 @@ tds/content/
 .idea/
 atlassian-ide-plugin.xml
 
+# Ignore artifacts created when running TDS in IntelliJ
+out/
+
 # Ignore Dreamweaver balogna
 _notes
 _compareTemp

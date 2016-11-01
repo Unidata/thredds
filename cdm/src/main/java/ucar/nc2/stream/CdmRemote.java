@@ -60,7 +60,7 @@ public class CdmRemote extends ucar.nc2.NetcdfFile {
   static public final String SCHEME = PROTOCOL+":";
 
   // static private org.slf4SCHEMEj.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmRemote.class);
-  static private boolean showRequest = true;
+  static private boolean showRequest = false;
   static private boolean compress = false;
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
