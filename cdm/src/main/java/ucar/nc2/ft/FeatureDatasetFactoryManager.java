@@ -272,19 +272,21 @@ public class FeatureDatasetFactoryManager {
       return CompositeDatasetFactory.factory(location, wantFeatureType, dcm, errlog);
     }
 
-    // check if its GRIB, may not have to go through NetcdfDataset
-    Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openGrib(location);
-    if (opt.isPresent()) { // its a GRIB file
-      return opt.get();
+    DatasetUrl durl = DatasetUrl.findDatasetUrl(location); // Cache ServiceType so we don't have to keep figuring it out
+    if (durl.serviceType == null) { // skip GRIB check for anything not a plain ole file
+      // check if its GRIB, may not have to go through NetcdfDataset
+      Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openGrib(location);
+      if (opt.isPresent()) { // its a GRIB file
+        return opt.get();
 
-    } else if (!opt.getErrorMessage().startsWith(CoverageDatasetFactory.NOT_GRIB_FILE) &&
+      } else if (!opt.getErrorMessage().startsWith(CoverageDatasetFactory.NOT_GRIB_FILE) &&
               !opt.getErrorMessage().startsWith(CoverageDatasetFactory.NO_GRIB_CLASS)) {
-      errlog.format("%s%n", opt.getErrorMessage()); // its a GRIB file with an error
-      return null;
+        errlog.format("%s%n", opt.getErrorMessage()); // its a GRIB file with an error
+        return null;
+      }
     }
 
     // otherwise open as NetcdfDataset and run it through the FeatureDatasetFactories
-    DatasetUrl durl = DatasetUrl.findDatasetUrl(location); // cache the ServiceType so we dont have to keep figuring it out
     NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, task);
     FeatureDataset fd = wrap(wantFeatureType, ncd, task, errlog);
     if (fd == null)
