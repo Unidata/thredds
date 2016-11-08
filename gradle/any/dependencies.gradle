@@ -38,6 +38,8 @@ libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-ext
 
 libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.1"
 
+libraries["license-gradle-plugin"] = "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
+
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
 versions["spring"] = "4.3.2.RELEASE"
