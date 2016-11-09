@@ -95,10 +95,6 @@
       <appender-ref ref="catalogInit"/>
     </logger>
 
-    <logger name="thredds.featurecollection.InvDatasetFeatureCollection.catalogInit" level="info" additivity="false">
-      <appender-ref ref="catalogInit"/>
-    </logger>
-
     <logger name="catalogInit" level="info" additivity="false">
       <appender-ref ref="catalogInit"/>
     </logger>
@@ -120,7 +116,7 @@
       <appender-ref ref="fmrc"/>
     </logger>
 
-    <logger name="thredds.featurecollection.InvDatasetFcFmrc" level="info" additivity="false">
+    <logger name="thredds.featurecollection" level="info" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
 
@@ -128,7 +124,7 @@
       <appender-ref ref="fmrc"/>
     </logger>
 
-    <logger name="thredds.inventory.bdb.MetadataManager" level="warn" additivity="false">
+    <logger name="thredds.inventory.bdb.MetadataManager" level="info" additivity="false">
       <appender-ref ref="fmrc"/>
     </logger>
 

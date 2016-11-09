@@ -246,17 +246,6 @@
    -->
 
   <!--
-   set FeatureCollection logging
-  <FeatureCollection>
-     <RollingFileAppender>
-       <MaxFileSize>1 MB</MaxFileSize>
-       <MaxBackups>5</MaxBackups>
-       <Level>INFO</Level>
-     </RollingFileAppender>
-  </FeatureCollection>
-  -->
-
-  <!--
     Configure how the NetCDF-4 C library is discovered and used.
     libraryPath: The directory in which the native library is installed.
     libraryName: The name of the native library. This will be used to locate the proper .DLL, .SO, or .DYLIB file

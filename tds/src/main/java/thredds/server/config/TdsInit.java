@@ -54,7 +54,6 @@ import thredds.server.catalog.DatasetScan;
 import thredds.server.ncss.controller.NcssDiskCache;
 import thredds.server.ncss.format.FormatsAvailabilityService;
 import thredds.server.ncss.format.SupportedFormat;
-import thredds.util.LoggerFactorySpecial;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribIndexCache;
@@ -64,7 +63,6 @@ import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
-import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -235,24 +233,6 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
 
 
     // CDM configuration
-
-    // 4.3.17
-    // feature collection logging
-    /*
-     <FeatureCollection>
-        <RollingFileAppender>
-          <MaxFileSize>1 MB</MaxFileSize>
-          <MaxBackups>5</MaxBackups>
-          <Level>INFO</Level>
-        </RollingFileAppender>
-      </FeatureCollection>
-     */
-    startupLog.info("TdsInit: set LoggerFactorySpecial with logging directory " + System.getProperty("tds.log.dir"));
-    long maxFileSize = ThreddsConfig.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
-    int maxBackupIndex = ThreddsConfig.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 10);
-    String level = ThreddsConfig.get("FeatureCollection.RollingFileAppender.Level", "INFO");
-    LoggerFactory fac = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
-    InvDatasetFeatureCollection.setLoggerFactory(fac);
 
     allowedServices.finish(); // finish when we know everything is wired
     InvDatasetFeatureCollection.setAllowedServices(allowedServices);

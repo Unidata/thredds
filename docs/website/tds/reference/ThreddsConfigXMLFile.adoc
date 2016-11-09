@@ -48,7 +48,6 @@ is an annotated example of `threddsConfig.xml`.
 
 .<<CDM Configuration>>
 
-* <<Feature Collections>>
 * <<NetCDF-4 C library loading>>
 * <<NetCDF-Java runtime Loading>>
 * <<Aggregation>>
@@ -421,27 +420,6 @@ service (NCML, UDDC, and ISO). The ncISO services are described in more
 detail on the <<ncISO#,ncISO page>>.
 
 == CDM Configuration
-
-=== Feature Collections
-
-[source,xml]
------------------------------------
-<FeatureCollection>
-  <RollingFileAppender>
-    <MaxFileSize>1 MB</MaxFileSize>
-    <MaxBackups>10</MaxBackups>
-    <Level>INFO</Level>
-  </RollingFileAppender>
-</FeatureCollection>
------------------------------------
-
-Feature Collection logs are placed in
-**$\{tomcat_home}/content/thredds/logs/fc.<collectionName>.log**. These
-are programatically added and therefore cannot be configured in
-log4j2.xml. By default, each Feature Collection will rollover at 1 MB,
-and 5 files will be kept. Messages at the level of INFO and above will
-be enabled. You can change those settings here (note that your changes
-will apply to all Feature Collections).
 
 === NetCDF-4 C library loading
 

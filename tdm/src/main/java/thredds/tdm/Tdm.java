@@ -40,24 +40,26 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.apache.http.auth.*;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-
 import thredds.featurecollection.CollectionUpdater;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
-import thredds.inventory.*;
-import thredds.util.*;
-import ucar.httpservices.*;
+import thredds.inventory.CollectionUpdateEvent;
+import thredds.inventory.CollectionUpdateType;
+import thredds.util.ThreddsConfigReader;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.DiskCache2;
-import ucar.nc2.util.log.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.File;
@@ -104,10 +106,8 @@ public class Tdm {
   private Resource catalog;
   private boolean showOnly = false; // if true, just show dirs and exit
 
-  private String loglevel;
   private boolean forceOnStartup = false; // if true, just show dirs and exit
 
-  LoggerFactory loggerFactory;
   List<Resource> catalogRoots = new ArrayList<>();
 
   private static class Server {
@@ -143,10 +143,6 @@ public class Tdm {
 
   public void setForceOnStartup(boolean forceOnStartup) {
     this.forceOnStartup = forceOnStartup;
-  }
-
-  public void setLoglevel(String loglevel) {
-    this.loglevel = loglevel;
   }
 
   // spring beaned
@@ -200,14 +196,6 @@ public class Tdm {
       Resource r = new FileSystemResource(contentThreddsDir.toString() + "/" + location);
       catalogRoots.add(r);
     }
-
-    // LOOK following has been duplicated from tds cdmInit
-    // 4.3.17
-    long maxFileSize = reader.getBytes("FeatureCollection.RollingFileAppender.MaxFileSize", 1000 * 1000);
-    int maxBackupIndex = reader.getInt("FeatureCollection.RollingFileAppender.MaxBackups", 10);
-    String level = reader.get("FeatureCollection.RollingFileAppender.Level", "INFO");
-    if (this.loglevel != null) level = this.loglevel;
-    loggerFactory = new LoggerFactorySpecial(maxFileSize, maxBackupIndex, level);
 
     /* 4.3.15: grib index file placement, using DiskCache2  */
     String gribIndexDir = reader.get("GribIndex.dir", new File(contentThreddsDir.toString(), "cache/grib/").getPath());
@@ -266,7 +254,6 @@ public class Tdm {
       if (forceOnStartup) // on startup, force rewrite of indexes
         config.tdmConfig.startupType = CollectionUpdateType.always;
 
-      // Logger logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection (!!)
       detailLogger.info("FeatureCollection config=" + config);
 
       // now wire for events
@@ -465,9 +452,6 @@ public class Tdm {
     @Parameter(names = {"-forceOnStartup"}, description = "force read all collections on startup (override config)", required = false)
     public boolean forceOnStartup;
 
-    @Parameter(names = {"-log"}, description = "log level (debug | info)", required = false)
-    public String log;
-
     @Parameter(names = {"-nthreads"}, description = "number of threads", required = false)
     public int nthreads = 1;
 
@@ -514,7 +498,6 @@ public class Tdm {
       // RandomAccessFile.setDebugLeaks(true);
       HTTPSession.setGlobalUserAgent("TDM v5.0");
       // GribCollection.getDiskCache2().setNeverUseCache(true);
-      String logLevel;
 
       String progName = Tdm.class.getName();
 
@@ -538,10 +521,6 @@ public class Tdm {
 
         if (cmdLine.forceOnStartup)
           app.setForceOnStartup(true);
-
-        if (cmdLine.log != null) {
-          app.setLoglevel(cmdLine.log);
-        }
 
         if (cmdLine.nthreads != 0)
           app.setNThreads(cmdLine.nthreads);

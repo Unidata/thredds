@@ -49,14 +49,6 @@
     <maxFileDownloadSize>52428800</maxFileDownloadSize>
   </NetcdfSubsetService>
 
-  <FeatureCollection>
-     <RollingFileAppender>
-       <MaxFileSize>10 MB</MaxFileSize>
-       <MaxBackups>50</MaxBackups>
-       <Level>DEBUG</Level>
-     </RollingFileAppender>
-  </FeatureCollection>
-
   <WCS>
     <allowRemote>false</allowRemote>
     <scour>15 min</scour>
