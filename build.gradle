@@ -24,6 +24,7 @@ buildscript {
         classpath libraries["coveralls-gradle-plugin"]
         classpath libraries["gradle-extra-configurations-plugin"]
         classpath libraries["sonarqube-gradle-plugin"]
+        classpath libraries["license-gradle-plugin"]
     }
 }
 
@@ -66,6 +67,7 @@ apply from: "$rootDir/gradle/root/coverage.gradle"
 apply from: "$rootDir/gradle/root/fatJars.gradle"
 apply from: "$rootDir/gradle/root/publishing.gradle" // Creates pubs for artifacts created in fatJars.gradle
 apply from: "$rootDir/gradle/root/sonarqube.gradle"
+apply from: "$rootDir/gradle/root/license.gradle"
 
 apply from: "$rootDir/gradle/any/coverage.gradle"    // Modifies Test task from root/testing.gradle and
                                                      // JacocoReport task from root/coverage.gradle

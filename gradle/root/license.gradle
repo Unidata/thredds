@@ -1,0 +1,5 @@
+if (name != "thredds") {
+    throw new GradleException("This script plugin should only be applied to the root project, not '$name'.")
+}
+
+apply plugin: "com.github.hierynomus.license"
