@@ -49,8 +49,6 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.URLnaming;
-import ucar.nc2.util.log.LoggerFactory;
-import ucar.nc2.util.log.LoggerFactoryImpl;
 
 import javax.annotation.concurrent.GuardedBy;
 import javax.annotation.concurrent.ThreadSafe;
@@ -75,8 +73,7 @@ import java.util.List;
  */
 @ThreadSafe
 public abstract class InvDatasetFeatureCollection implements Closeable {
-  private static org.slf4j.Logger oneLogger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
-  static private LoggerFactory loggerFactory = new LoggerFactoryImpl();
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFeatureCollection.class);
 
   static protected final String LATEST_DATASET_CATALOG = "latest.xml";
   static protected final String VARIABLES = "?metadata=variableMap";
@@ -85,10 +82,6 @@ public abstract class InvDatasetFeatureCollection implements Closeable {
   // can be changed
   static protected AllowedServices allowedServices;
   static protected String contextName = "/thredds";  // set by TdsInit
-
-  static public void setLoggerFactory(LoggerFactory fac) {
-    loggerFactory = fac;
-  }
 
   // cant use spring wiring because InvDatasetFeatureCollection not a spring component because depends on catalog config
   static public void setContextName(String c) {
@@ -152,7 +145,6 @@ public abstract class InvDatasetFeatureCollection implements Closeable {
   // not changed after first call
   protected FeatureCollectionRef parent;
   protected Service orgService, virtualService, latestService, downloadService;
-  protected org.slf4j.Logger logger;
 
   // from the config catalog
   protected final String name;
@@ -178,9 +170,7 @@ public abstract class InvDatasetFeatureCollection implements Closeable {
     makeDefaultServices();
 
     // this.getLocalMetadataInheritable().setDataType(fcType.getFeatureType());
-    // this.logger = loggerFactory.getLogger("fc." + config.collectionName); // seperate log file for each feature collection
-    this.logger = oneLogger;
-    this.logger.info("FeatureCollection added = {}", getConfig());
+    logger.info("FeatureCollection added = {}", getConfig());
   }
 
   protected void makeDefaultServices() {
@@ -223,7 +213,7 @@ public abstract class InvDatasetFeatureCollection implements Closeable {
 
   protected void makeCollection() {
     Formatter errlog = new Formatter();
-    datasetCollection = new MFileCollectionManager(config, errlog, this.logger);
+    datasetCollection = new MFileCollectionManager(config, errlog, logger);
     topDirectory = datasetCollection.getRoot();
     String errs = errlog.toString();
     if (errs.length() > 0) logger.warn("MFileCollectionManager parse error = {} ", errs);

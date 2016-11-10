@@ -35,7 +35,7 @@ Create a shell script to run the TDM, for example **runTdm.sh**:
 
 [source,bash]
 ----
-<JAVA> <JVM options> -Dtds.content.root.path=<content directory> -jar <TDM jar> [-tds <tdsServers>] [-cred <user:passwd>] [-showOnly] [-log level]
+<JAVA> <JVM options> -Dtds.content.root.path=<content directory> -jar <TDM jar> [-tds <tdsServers>] [-cred <user:passwd>] [-showOnly]
 ----
 
 for example:
@@ -66,8 +66,6 @@ include this option, you will be prompted for the password on startup,
 and the user name will be ``tdm''.
 . **-showOnly**: ** (optional) if this is present, just show the
 featureCollections that will be indexed and exit.
-. **-log level**: ** (optional) set the log4j logging level = _DEBUG,
-INFO_ (default)__, WARN, ERROR__
 
 Troubleshooting:
 

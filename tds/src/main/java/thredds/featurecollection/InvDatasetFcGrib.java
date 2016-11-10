@@ -89,6 +89,8 @@ import java.util.*;
  */
 @ThreadSafe
 public class InvDatasetFcGrib extends InvDatasetFeatureCollection {
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(InvDatasetFcGrib.class);
+
   static private final String COLLECTION = "collection";
 
   static private final String BEST_DATASET = GribCollectionImmutable.Type.Best.toString();
