@@ -20,7 +20,13 @@ import java.util.Objects;
 public class ThreddsS3ClientImpl implements ThreddsS3Client {
     private static final Logger logger = LoggerFactory.getLogger(ThreddsS3ClientImpl.class);
 
+    private static int maxListingPages = Integer.MAX_VALUE;
+
     private final AmazonS3Client s3Client;
+
+    public static void setMaxListingPages(int i) {
+        maxListingPages = i;
+    };
 
     public ThreddsS3ClientImpl() {
         // Use HTTP; it's much faster.
@@ -33,7 +39,52 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
     }
 
     @Override
-    public ObjectMetadata getObjectMetadata(S3URI s3uri) {
+    public ThreddsS3Metadata getMetadata(S3URI s3uri) {
+        ObjectMetadata metadata = getObjectMetadata(s3uri);
+
+        if (metadata != null) {
+            return new ThreddsS3Object(s3uri, metadata.getLastModified(), metadata.getContentLength());
+        } else if (isDirectory(s3uri)) {
+            return new ThreddsS3Directory(s3uri);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public ThreddsS3Listing listContents(S3URI s3uri) {
+        ThreddsS3Listing listing = new ThreddsS3Listing(s3uri);
+        ObjectListing page = listObjects(s3uri);
+
+        if (page == null) {
+            return null;
+        }
+
+        listing.add(page);
+        int pageNo = 2;
+
+        while (page.isTruncated() && pageNo <= maxListingPages) {
+            page = s3Client.listNextBatchOfObjects(page);
+            logger.info(String.format("Downloaded page %d of S3 listing '%s'", pageNo, s3uri));
+            listing.add(page);
+            pageNo++;
+        }
+
+        if (page.isTruncated()) {
+            logger.warn(
+                    String.format("Maximum number of S3 listing pages (%d) exceeded. " +
+                            "Not all content for %s retrieved", maxListingPages, s3uri));
+        }
+
+        return listing;
+    }
+
+    @Override
+    public File getLocalCopy(S3URI s3uri) throws IOException {
+        return saveObjectToFile(s3uri, s3uri.getTempFile());
+    }
+
+    private ObjectMetadata getObjectMetadata(S3URI s3uri) {
         try {
             ObjectMetadata metadata = s3Client.getObjectMetadata(s3uri.getBucket(), s3uri.getKey());
             logger.info(String.format("Downloaded S3 metadata '%s'", s3uri));
@@ -52,8 +103,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         }
     }
 
-    @Override
-    public ObjectListing listObjects(S3URI s3uri) {
+    private ObjectListing listObjects(S3URI s3uri) {
         ListObjectsRequest listObjectsRequest =
                 new ListObjectsRequest().withBucketName(s3uri.getBucket()).withDelimiter(S3URI.S3_DELIMITER);
 
@@ -96,8 +146,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
         }
     }
 
-    @Override
-    public File saveObjectToFile(S3URI s3uri, File file) throws IOException {
+    private File saveObjectToFile(S3URI s3uri, File file) throws IOException {
         try {
             s3Client.getObject(new GetObjectRequest(s3uri.getBucket(), s3uri.getKey()), file);
             logger.info(String.format("Downloaded S3 object '%s' to '%s'", s3uri, file));
@@ -116,4 +165,26 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             }
         }
     }
+
+    private boolean isDirectory(S3URI s3uri) {
+        try {
+            ListObjectsRequest listObjectsRequest =
+                    new ListObjectsRequest().withBucketName(s3uri.getBucket()).withDelimiter(S3URI.S3_DELIMITER);
+
+            listObjectsRequest.setPrefix(s3uri.getKeyWithTrailingDelimiter());
+            listObjectsRequest.setMaxKeys(1);
+
+            ObjectListing objectListing = s3Client.listObjects(listObjectsRequest);
+
+            return !objectListing.getCommonPrefixes().isEmpty() || !objectListing.getObjectSummaries().isEmpty();
+        } catch (AmazonServiceException e) {
+            if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+                logger.debug(String.format("There is no S3 bucket '%s'.", s3uri.getBucket()));
+                return false;
+            } else {
+                throw e;
+            }
+        }
+    }
+
 }
