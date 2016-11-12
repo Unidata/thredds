@@ -21,6 +21,7 @@ dependencies {
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]
+    compile libraries["httpcore"]
 
     compile libraries["jsr305"]  // Nonnull
 

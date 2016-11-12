@@ -9,6 +9,7 @@ repositories {
     // Prefer JCenter to Maven Central. See
     // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
     jcenter()
+    mavenCentral()  // JCenter isn't quite a superset of Maven Central.
     maven {
         url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
     }
@@ -118,8 +119,6 @@ libraries["junit"] = "junit:junit:4.12"
 libraries["spring-test"] = "org.springframework:spring-test:${versions["spring"]}"
 
 libraries["hamcrest-core"] = "org.hamcrest:hamcrest-core:1.3"
-
-libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfuse:1.2.0"
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 

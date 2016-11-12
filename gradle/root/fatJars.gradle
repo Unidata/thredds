@@ -34,6 +34,7 @@ dependencies {
     ncIdv project(':opendap')
     ncIdv project(':visadCdm')
     ncIdv project(':httpservices')
+    ncIdv project(':legacy')
     
     tdmFat project(':tdm')
     

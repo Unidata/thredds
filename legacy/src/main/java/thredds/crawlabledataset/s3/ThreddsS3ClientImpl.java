@@ -3,7 +3,6 @@ package thredds.crawlabledataset.s3;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             logger.debug(e.getMessage());
             return null;
         } catch (AmazonServiceException e) {
-            if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (e.getStatusCode() == 404) {
                 logger.debug(String.format(
                         "There is no S3 bucket '%s' that has key '%s'.", s3uri.getBucket(), s3uri.getKey()));
                 return null;
@@ -87,7 +86,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
                 return objectListing;
             }
         } catch (AmazonServiceException e) {
-            if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (e.getStatusCode() == 404) {
                 logger.debug(String.format("No S3 bucket named '%s' exists.", s3uri.getBucket()));
                 return null;
             } else {
@@ -107,7 +106,7 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
             logger.debug(e.getMessage());
             return null;
         } catch (AmazonServiceException e) {
-            if (e.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (e.getStatusCode() == 404) {
                 logger.debug(String.format(
                         "There is no S3 bucket '%s' that has key '%s'.", s3uri.getBucket(), s3uri.getKey()));
                 return null;

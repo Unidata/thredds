@@ -17,6 +17,7 @@ dependencies {
     compile project(":cdm")
     compile project(":clcommon")
     compile project(":grib")
+    compile project(":httpservices")
     compile project(":netcdf4")
     compile project(":opendap")
     compile project(":tdcommon")
@@ -26,6 +27,8 @@ dependencies {
     // DAP4 Dependencies (technically forward)
     compile project(":dap4:d4cdm")
     compile project(":dap4:d4servlet")
+    compile project(':dap4:d4core')
+    compile project(':dap4:d4lib')
 
     // Server stuff
     provided libraries["javax.servlet-api"]
@@ -42,7 +45,11 @@ dependencies {
     compile libraries["jsr305"]
     compile libraries["guava"]
     compile libraries["joda-time"]
+    
+    // WaterML
     compile libraries["52n-xml-waterML-v20"]
+    compile libraries["52n-xml-om-v20"]
+    compile libraries["xmlbeans"]
 
     // Spring
     compile libraries["spring-core"]
@@ -84,6 +91,8 @@ dependencies {
     testCompile libraries["spring-test"]
     testCompile libraries["hamcrest-core"]
     testCompile libraries["httpunit"]
+    
+    testCompile libraries["commons-io"]
 
     // Logging
     compile libraries["slf4j-api"]
@@ -142,10 +151,14 @@ war {
 // None of those are necessary at runtime: http://stackoverflow.com/a/5135151/3874643.
 // Even worse, the JARs are *huge*, and inflated the size of tds.war by ~59 MB.
 
+configurations {
+    gwt
+}
+
 dependencies {
-    // These are needed at compile-time by the GWT Compiler, but aren't necessary at runtime.
-    provided libraries["gwt-user"]
-    provided libraries["gwt-dev"]
+    // These are needed by the compileGwt task but nowhere else, which is why we place them in their own config.
+    gwt libraries["gwt-user"]
+    gwt libraries["gwt-dev"]
 }
 
 ext {
@@ -166,10 +179,9 @@ task compileGwt (dependsOn: classes, type: JavaExec) {
 
     classpath {
         [
-            // For com.google.gwt.dev.Compiler in "gwt-dev" and 'uk/ac/rdg/resc/godiva/Godiva.gwt.xml' in "edal-java".
-            sourceSets.main.compileClasspath,
-            // For Godiva3.gwt.xml in 'tds/src/main/resources'.
-            sourceSets.main.resources.srcDirs
+            configurations.gwt,                // For com.google.gwt.dev.Compiler in "gwt-dev".
+            sourceSets.main.compileClasspath,  // For 'uk/ac/rdg/resc/godiva/Godiva.gwt.xml' in "edal-java".
+            sourceSets.main.resources.srcDirs  // For Godiva3.gwt.xml in 'tds/src/main/resources'.
         ]
     }
 

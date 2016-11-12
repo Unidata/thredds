@@ -1,7 +1,7 @@
 /* Copyright Unidata */
 package ucar.nc2.ft.coverage;
 
-import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -17,8 +17,8 @@ import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.File;
 import java.io.IOException;
