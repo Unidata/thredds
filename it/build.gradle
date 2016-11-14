@@ -12,24 +12,26 @@ apply from: "$rootDir/gradle/any/coverage.gradle"
 
 dependencies {
     testCompile project(":cdm")
+    testCompile project(":httpservices")
+    testCompile project(":tdcommon")
+    
     testRuntime project(":clcommon")
     testRuntime project(":grib")
-    testCompile project(":httpservices")
     testRuntime project(":opendap")
     testRuntime project(":visadCdm")
-
     testRuntime project(':dap4:d4cdm')
-
-    testRuntime libraries["jaxen"]
+    
     testCompile libraries["jdom2"]
     testCompile libraries["commons-io"]
     testCompile libraries["joda-time"]
     testCompile libraries["httpcore"]
     testCompile libraries["httpclient"]
     testCompile libraries["commons-lang3"]
-
-    testCompile libraries["com.eclipsesource.restfuse"]
-
+    testCompile libraries["spring-context"]
+    testCompile libraries["slf4j-api"]
+    
+    testRuntime libraries["jaxen"]
+    
     // Unlike the other subprojects, we do not need to add an SLF4J binding to testRuntime;
     // we're overlaying tds (see below), so we're already getting the binding that it declares.
 }

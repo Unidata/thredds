@@ -15,7 +15,9 @@ dependencies {
     compile libraries["spring-core"]
     compile libraries["quartz"]
     compile libraries["chronicle-map"]
-    // compile libraries["openhft-lang"]
+    compile libraries["jsr305"]
+    compile libraries["guava"]
+    compile libraries["protobuf-java"]
 
     compile libraries["slf4j-api"]
     compile libraries["log4j-api"]

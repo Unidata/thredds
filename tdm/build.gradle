@@ -16,6 +16,9 @@ dependencies {
     compile libraries["jdom2"]
     compile libraries["spring-core"]
     compile libraries["spring-context"]
+    compile libraries["protobuf-java"]
+    compile libraries["jcommander"]
+    compile libraries["guava"]
 
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]

@@ -15,6 +15,7 @@ dependencies {
     compile libraries["jsr305"]
     compile libraries["jj2000"]
     compile libraries["guava"]
+    compile libraries["jcommander"]
     compile libraries["slf4j-api"]
     testCompile libraries["jsoup"]
 }

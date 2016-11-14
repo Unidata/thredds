@@ -8,5 +8,8 @@ apply from: "$rootDir/gradle/any/java.gradle"
 
 dependencies {
     compile project(":cdm")
+    compile project(":httpservices")
+    
     compile libraries["junit"]
+    compile libraries["slf4j-api"]
 }

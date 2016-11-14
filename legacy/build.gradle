@@ -14,6 +14,10 @@ apply plugin: 'groovy'  // For Spock tests.
 dependencies {
     compile project(":cdm")
     compile project(":opendap")
+    
+    compile libraries["guava"]
+    compile libraries["jdom2"]
+    compile libraries["jsr305"]
     compile libraries["aws-java-sdk-s3"]  // For CrawlableDatasetAmazonS3.
     compile libraries["slf4j-api"]
 
