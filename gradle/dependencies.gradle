@@ -22,6 +22,9 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
         maven {
             url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
         }
+        maven {
+            url "http://content.aodn.org.au/repo/maven/"
+        }
     }
 }
 
@@ -191,7 +194,7 @@ libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
 
 libraries["oro"] = "oro:oro:2.0.8"
 
-libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.6") {
+libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.7-imos-SNAPSHOT") {
     // This is an external dependency on an old artifact of ours.
     // The "cdm" artifact that we build in this project will take its place.
     // This needs to be a local exclusion; globally excluding "edu.ucar:cdm" would be very bad.
