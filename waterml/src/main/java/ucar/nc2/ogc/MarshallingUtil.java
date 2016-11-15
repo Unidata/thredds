@@ -3,9 +3,6 @@ package ucar.nc2.ogc;
 import net.opengis.waterml.x20.CollectionDocument;
 import org.apache.xmlbeans.*;
 import org.joda.time.DateTime;
-import org.n52.oxf.xmlbeans.parser.LaxValidationCase;
-import org.n52.oxf.xmlbeans.parser.XMLBeansParser;
-import org.n52.oxf.xmlbeans.parser.XMLHandlingException;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ogc.waterml.NcCollectionType;
@@ -13,10 +10,8 @@ import ucar.nc2.ogc.waterml.NcCollectionType;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Created by cwardgar on 2014/04/29.
@@ -49,12 +44,12 @@ public class MarshallingUtil {
     /////////////////////////////////////////////// Marshalling ///////////////////////////////////////////////
 
     public static void marshalPointDataset(FeatureDatasetPoint fdPoint, OutputStream outputStream)
-            throws IOException, XMLHandlingException {
+            throws IOException, XmlException {
         marshalPointDataset(fdPoint, fdPoint.getDataVariables(), outputStream);
     }
 
     public static void marshalPointDataset(FeatureDatasetPoint fdPoint, List<VariableSimpleIF> dataVars,
-            OutputStream outputStream) throws IOException, XMLHandlingException {
+            OutputStream outputStream) throws IOException, XmlException {
         resetIds();
 
         CollectionDocument collectionDoc = CollectionDocument.Factory.newInstance();
@@ -62,8 +57,7 @@ public class MarshallingUtil {
         writeObject(collectionDoc, outputStream, true);
     }
 
-    public static void writeObject(XmlObject doc, OutputStream out, boolean validate)
-            throws IOException, XMLHandlingException {
+    public static void writeObject(XmlObject doc, OutputStream out, boolean validate) throws IOException, XmlException {
         // Add xsi:schemaLocation
         XmlCursor cursor = doc.newCursor();
         if (cursor.toFirstChild()) {
@@ -108,22 +102,46 @@ public class MarshallingUtil {
     }
 
     /////////////////////////////////////////////// Validation ///////////////////////////////////////////////
-    // The validation methods in org.n52.oxf.xmlbeans.parser.XMLBeansParser are not quite what we want, but we'll
-    // borrow lots of code from there.
 
-    // Adapted from XMLBeansParser.validateOnParse().
-    public static void validate(XmlObject doc, boolean strict) throws XMLHandlingException {
-        XMLBeansParser.getRegisteredLaxValidationCases().clear();
-        if (!strict) {
-            // The xmlbeans validator has issues with substitution groups, particularly gml:AbstractFeature subtypes.
-            XMLBeansParser.registerLaxValidationCase(new GML32AbstractFeatureCase());
+    /**
+     * Validates an xml doc. If the validation fails, the exception contains a detailed list of errors.
+     *
+     * @param doc the document to validate
+     * @throws XmlException thrown if the XML is incorrect
+     */
+    public static void validate(XmlObject doc, boolean strict) throws XmlException {
+        // Create an XmlOptions instance and set the error listener.
+        Set<XmlError> validationErrors = new HashSet<>();
+        XmlOptions validationOptions = new XmlOptions();
+        validationOptions.setErrorListener(validationErrors);
+
+        // Validate the XML document
+        final boolean isValid = doc.validate(validationOptions);
+
+        // Create Exception with error message if the xml document is invalid
+        if (!isValid && !strict) {
+            // check if we have special validation cases which could let the message pass anyhow
+            validationErrors = filterToOnlySerious(validationErrors);
         }
 
-        String errorString = createErrorMessage(XMLBeansParser.validate(doc));
-        if (errorString.length() > 0) throw new XMLHandlingException(errorString);
+        if (!validationErrors.isEmpty()) {
+            throw new XmlException(createErrorMessage(validationErrors));
+        }
     }
 
-    // Direct copy of XMLBeansParser.createErrorMessage().
+    private static Set<XmlError> filterToOnlySerious(Iterable<XmlError> allValidationErrors) {
+        Set<XmlError> filteredErrors = new HashSet<>();
+        GML32AbstractFeatureLaxCase pred = new GML32AbstractFeatureLaxCase();
+
+        for (final XmlError validationError : allValidationErrors) {
+            if (!pred.test(validationError)) {
+                filteredErrors.add(validationError);
+            }
+        }
+
+        return filteredErrors;
+    }
+
     private static String createErrorMessage(Collection<XmlError> errors) {
         StringBuilder errorBuilder = new StringBuilder();
         for (XmlError xmlError : errors) {
@@ -142,20 +160,15 @@ public class MarshallingUtil {
      * </p>
      * This is similar to org.n52.oxf.xmlbeans.parser.GMLAbstractFeatureCase, updated for GML 3.2.
      */
-    private static class GML32AbstractFeatureCase implements LaxValidationCase {
+    private static class GML32AbstractFeatureLaxCase implements Predicate<XmlError> {
         private static final Object FEATURE_QN = new QName("http://www.opengis.net/gml/3.2", "AbstractFeature");
 
-        @Override
-        public boolean shouldPass(XmlValidationError xve) {
-            return xve.getExpectedQNames() != null && xve.getExpectedQNames().contains(FEATURE_QN);
-        }
-
-        @Override
-        public boolean shouldPass(XmlError validationError) {
+        // Returns 'true' if the error should be ignored because we're doing lax validation.
+        @Override public boolean test(XmlError validationError) {
             if (!(validationError instanceof XmlValidationError)) return false;
 
             XmlValidationError xve = (XmlValidationError) validationError;
-            return shouldPass(xve);
+            return xve.getExpectedQNames() != null && xve.getExpectedQNames().contains(FEATURE_QN);
         }
     }
 

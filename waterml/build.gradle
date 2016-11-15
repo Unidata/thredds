@@ -19,7 +19,6 @@ dependencies {
     compile project(':cdm')
 
     compile libraries["xmlbeans"]
-    compile libraries["52n-oxf-xmlbeans"]
     compile libraries["52n-xml-waterML-v20"]
     compile libraries["52n-xml-gml-v321"]
     compile libraries["52n-xml-sweCommon-v20"]
