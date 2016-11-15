@@ -78,9 +78,7 @@ libraries["spring-security-taglibs"] = "org.springframework.security:spring-secu
 
 libraries["xmlbeans"] = "org.apache.xmlbeans:xmlbeans:2.6.0"
 
-libraries["52n-oxf-xmlbeans"] = "org.n52.sensorweb:52n-oxf-xmlbeans:2.0.0-alpha.4"
-
-versions["52n-common-xml"] = "2.1.0"
+versions["52n-common-xml"] = "2.2.0"
 
 libraries["52n-xml-waterML-v20"] = "org.n52.sensorweb:52n-xml-waterML-v20:${versions["52n-common-xml"]}"
 
@@ -282,11 +280,6 @@ configurations.all {
     // STAX comes with Java 1.6+
     // Dragged in by xmlbeans
     exclude group: 'stax', module: 'stax-api'
-    
-    // Xerces comes with Java 1.6+
-    // This SHOULD be okay, but see http://stackoverflow.com/questions/1167757
-    // Dragged in by 52n-oxf-xmlbeans
-    exclude group: 'xerces', module: 'xercesImpl'
     
     // This is an old version of the servlet API: v2. We're using v3.
     // Dragged in by httpunit.
