@@ -72,6 +72,11 @@
     <description>TALK</description>
     <units>Mol/kg</units>
   </parameter>
+  <parameter code="144">
+    <shortName>CH</shortName>
+    <description>Heat Exchange Coefficient</description>
+    <units />
+  </parameter>
   <parameter code="146">
     <shortName>S11</shortName>
     <description>S11 - 1,1 component of ice stress tensor</description>
