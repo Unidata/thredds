@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.242</table>
+  <title>Tile Classification</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-242.shtml</source>
+  <parameter code="1">
+    <description>Land use classes according to ESA-GLOBCOVER GCV2009</description>
+  </parameter>
+  <parameter code="2">
+    <description>Land use classes according to European Commission-Global Land Cover Project GLC2000</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

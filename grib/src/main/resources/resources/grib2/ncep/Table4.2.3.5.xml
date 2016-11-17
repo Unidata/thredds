@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.3.5</table>
+  <title>Sea-surface Temperatur</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-5.shtml</source>
+  <parameter code="0">
+    <shortName>ISSTMP</shortName>
+    <description>Interface Sea-Surface Temperature (See Note 1)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>SKSSTMP</shortName>
+    <description>Skin Sea-Surface Temperature (See Note 2)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>SSKSSTMP</shortName>
+    <description>Sub-Skin Sea-Surface Temperature (See Note 3)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>FDNSSTMP</shortName>
+    <description>Foundation Sea-Surface Temperature (See Note 4)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>EBSSTSTD</shortName>
+    <description>Estimated bias between Sea-Surface Temperature and Standard</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>EBSDSSTS</shortName>
+    <description>Estimated bias Standard Deviation between Sea-Surface Temperature and Standard</description>
+    <units>K</units>
+  </parameter>
+</parameterMap>

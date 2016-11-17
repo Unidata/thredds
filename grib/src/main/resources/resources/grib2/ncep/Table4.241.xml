@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.241</table>
+  <title>Coverage Attributes</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-241.shtml</source>
+  <parameter code="0">
+    <description>Undefined</description>
+  </parameter>
+  <parameter code="1">
+    <description>Unmodified</description>
+  </parameter>
+  <parameter code="2">
+    <description>Snow-covered</description>
+  </parameter>
+  <parameter code="3">
+    <description>Flooded</description>
+  </parameter>
+  <parameter code="4">
+    <description>Ice Covered</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -183,6 +183,51 @@
     <description>Tangential Wind Component **</description>
     <units>m s-1</units>
   </parameter>
+  <parameter code="36">
+    <shortName>AFRWE</shortName>
+    <description>Amplitude Function for Rossby Wave Envelope for Meridional Wind ***</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>NTSS</shortName>
+    <description>Northward Turbulent Surface Stress ****</description>
+    <units>N m-2 s</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>ETSS</shortName>
+    <description>Eastward Turbulent Surface Stress ****</description>
+    <units>N m-2 s</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>EWTPARM</shortName>
+    <description>Eastward Wind Tendency Due to Parameterizations</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="40">
+    <shortName>NWTPARM</shortName>
+    <description>Northward Wind Tendency Due to Parameterizations</description>
+    <units>m s-2</units>
+  </parameter>
+  <parameter code="41">
+    <shortName>UGWIND</shortName>
+    <description>U-Component of Geostrophic Wind</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="42">
+    <shortName>VGWIND</shortName>
+    <description>V-Component of Geostrophic Wind</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="43">
+    <shortName>GEOWD</shortName>
+    <description>Geostrophic Wind Direction</description>
+    <units>degree true</units>
+  </parameter>
+  <parameter code="44">
+    <shortName>GEOWS</shortName>
+    <description>Geostrophic Wind Speed</description>
+    <units>m s-1</units>
+  </parameter>
   <parameter code="192">
     <shortName>VWSH</shortName>
     <description>Vertical Speed Shear</description>

@@ -45,6 +45,15 @@
   <parameter code="195">
     <description>Percentile value (90%) of All Members</description>
   </parameter>
+  <parameter code="196">
+    <description>Statistically decided weights for each ensemble member</description>
+  </parameter>
+  <parameter code="197">
+    <description>Climate Percentile (percentile values from climate distribution)</description>
+  </parameter>
+  <parameter code="198">
+    <description>Deviation of Ensemble Mean from Daily Climatology</description>
+  </parameter>
   <parameter code="255">
     <description>Missing</description>
   </parameter>
