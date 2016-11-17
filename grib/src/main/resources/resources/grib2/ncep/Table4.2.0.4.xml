@@ -68,6 +68,16 @@
     <description>Downward UV Radiation</description>
     <units>W m-2</units>
   </parameter>
+  <parameter code="13">
+    <shortName>DSWRFLX</shortName>
+    <description>Direct Short Wave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>DIFSWRF</shortName>
+    <description>Diffuse Short Wave Radiation Flux</description>
+    <units>W m-2</units>
+  </parameter>
   <parameter code="50">
     <shortName>UVIUCS</shortName>
     <description>UV Index (Under Clear Sky)**</description>
@@ -76,6 +86,16 @@
   <parameter code="51">
     <shortName>UVI</shortName>
     <description>UV Index**</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="52">
+    <shortName>DSWRFCS</shortName>
+    <description>Downward Short-Wave Radiation Flux, Clear Sky</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="53">
+    <shortName>USWRFCS</shortName>
+    <description>Upward Short-Wave Radiation Flux, Clear Sky</description>
     <units>W m-2</units>
   </parameter>
   <parameter code="192">

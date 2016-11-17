@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.3.3</table>
+  <title>Flight Rules Conditions</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-3.shtml</source>
+  <parameter code="0">
+    <shortName>PBMVFRC</shortName>
+    <description>Probability of Encountering Marginal Visual Flight Rules Conditions</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>PBLIFRC</shortName>
+    <description>Probability of Encountering Low Instrument Flight Rules Conditions</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>PBINFRC</shortName>
+    <description>Probability of Encountering Instrument Flight Rules Conditions</description>
+    <units>%</units>
+  </parameter>
+</parameterMap>

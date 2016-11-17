@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parameterMap>
   <table>Table4.2.3.1</table>
-  <title>Quantitative</title>
+  <title>Quantitative Products</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-1.shtml</source>
   <parameter code="0">
     <shortName>ESTP</shortName>
@@ -118,6 +118,21 @@
     <description>Angstrom Coefficient</description>
     <units />
   </parameter>
+  <parameter code="27">
+    <shortName>BRFLF</shortName>
+    <description>Bidirectional Reflecance Factor (See Note 1)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>SPBRT</shortName>
+    <description>Brightness Temperture</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>SRAD</shortName>
+    <description>Scaled Radiance (See Note 2)</description>
+    <units>Numeric</units>
+  </parameter>
   <parameter code="192">
     <shortName>USCT</shortName>
     <description>Scatterometer Estimated U Wind Component</description>
@@ -127,5 +142,10 @@
     <shortName>VSCT</shortName>
     <description>Scatterometer Estimated V Wind Component</description>
     <units>m s-1</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>SWQI</shortName>
+    <description>Scatterometer Wind Quality</description>
+    <units />
   </parameter>
 </parameterMap>

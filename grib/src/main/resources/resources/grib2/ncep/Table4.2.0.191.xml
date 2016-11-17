@@ -18,6 +18,11 @@
     <description>Geographical Longitude</description>
     <units>E</units>
   </parameter>
+  <parameter code="3">
+    <shortName>DSLOBS</shortName>
+    <description>Days Since Last Observation</description>
+    <units>d</units>
+  </parameter>
   <parameter code="192">
     <shortName>NLAT</shortName>
     <description>Latitude (-90 to 90)</description>

@@ -38,6 +38,16 @@
     <description>Net Long-Wave Radiation Flux, Clear Sky</description>
     <units>W m-2</units>
   </parameter>
+  <parameter code="7">
+    <shortName>BRTEMP</shortName>
+    <description>Brightness Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>DLWRFCS</shortName>
+    <description>Downward Long-Wave Radiation Flux, Clear Sky</description>
+    <units>W m-2</units>
+  </parameter>
   <parameter code="192">
     <shortName>DLWRF</shortName>
     <description>Downward Long-Wave Rad. Flux</description>

@@ -78,4 +78,14 @@
     <description>Reflectivity of Hail</description>
     <units>dB</units>
   </parameter>
+  <parameter code="15">
+    <shortName>HSR</shortName>
+    <description>Hybrid Scan Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>HSRHT</shortName>
+    <description>Hybrid Scan Reflectivity Height</description>
+    <units>m</units>
+  </parameter>
 </parameterMap>

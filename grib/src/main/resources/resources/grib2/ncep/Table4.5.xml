@@ -39,6 +39,18 @@
   <parameter code="12">
     <description>Cumulonimbus Top (CT)</description>
   </parameter>
+  <parameter code="13">
+    <description>Lowest level where vertically integrated cloud cover exceeds the specified percentage (cloud base for a given percentage cloud cover)</description>
+  </parameter>
+  <parameter code="14">
+    <description>Level of free convection (LFC)</description>
+  </parameter>
+  <parameter code="15">
+    <description>Convection condensation level (CCL)</description>
+  </parameter>
+  <parameter code="16">
+    <description>Level of neutral buoyancy or equilibrium (LNB)</description>
+  </parameter>
   <parameter code="20">
     <description>Isothermal Level</description>
   </parameter>
@@ -91,7 +103,10 @@
     <description>Hybrid Pressure Level</description>
   </parameter>
   <parameter code="150">
-    <description>Generalized Vertical Height Coordinate (see Note 5)</description>
+    <description>Generalized Vertical Height Coordinate (see Note 4)</description>
+  </parameter>
+  <parameter code="151">
+    <description>Soil level (See Note 5)</description>
   </parameter>
   <parameter code="160">
     <description>Depth Below Sea Level</description>
@@ -113,6 +128,39 @@
   </parameter>
   <parameter code="166">
     <description>Maxing Layer</description>
+  </parameter>
+  <parameter code="167">
+    <description>Bottom of Root Zone</description>
+  </parameter>
+  <parameter code="174">
+    <description>Top Surface of Ice on Sea, Lake or River</description>
+  </parameter>
+  <parameter code="175">
+    <description>Top Surface of Ice, under Snow, on Sea, Lake or River</description>
+  </parameter>
+  <parameter code="176">
+    <description>Bottom Surface (underside) Ice on Sea, Lake or River</description>
+  </parameter>
+  <parameter code="177">
+    <description>Deep Soil (of indefinite depth)</description>
+  </parameter>
+  <parameter code="179">
+    <description>Top Surface of Glacier Ice and Inland Ice</description>
+  </parameter>
+  <parameter code="180">
+    <description>Deep Inland or Glacier Ice (of indefinite depth)</description>
+  </parameter>
+  <parameter code="181">
+    <description>Grid Tile Land Fraction as a Model Surface</description>
+  </parameter>
+  <parameter code="182">
+    <description>Grid Tile Water Fraction as a Model Surface</description>
+  </parameter>
+  <parameter code="183">
+    <description>Grid Tile Ice Fraction on Sea, Lake or River as a Model Surface</description>
+  </parameter>
+  <parameter code="184">
+    <description>Grid Tile Glacier Ice and Inland Ice Fraction as a Model Surface</description>
   </parameter>
   <parameter code="200">
     <description>Entire atmosphere (considered as a single layer)</description>

@@ -39,6 +39,12 @@
   <parameter code="11">
     <description>Summation</description>
   </parameter>
+  <parameter code="12">
+    <description>Confidence Index (see Note 4)  Validation</description>
+  </parameter>
+  <parameter code="13">
+    <description>Quality Indicator (see Note 5)  Validation</description>
+  </parameter>
   <parameter code="192">
     <description>Climatological Mean Value: multiple year averages of quantities which are themselves means over some period of time (P2) less than a year. The reference time (R) indicates the date and time of the start of a period of time, given by R to R + P2, over which a mean is formed; N indicates the number of such period-means that are averaged together to form the climatological value, assuming that the N period-mean fields are separated by one year. The reference time indicates the start of the N-year climatology. N is given in octets 22-23 of the PDS. If P1 = 0 then the data averaged in the basic interval P2 are assumed to be continuous, i.e., all available data are simply averaged together. If P1 = 1 (the units of time - octet 18, code table 4 - are not relevant here) then the data averaged together in the basic interval P2 are valid only at the time (hour, minute) given in the reference time, for all the days included in the P2 period. The units of P2 are given by the contents of octet 18 and Table 4.</description>
   </parameter>

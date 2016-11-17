@@ -219,8 +219,13 @@
     <units>m-2 s rad-1</units>
   </parameter>
   <parameter code="43">
-    <shortName>BENINX</shortName>
+    <shortName>KSSEW</shortName>
     <description>Kurtosis of The Sea Surface Elevation Due to Waves</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="44">
+    <shortName>BENINX</shortName>
+    <description>Benjamin-Feir Index</description>
     <units>-</units>
   </parameter>
   <parameter code="45">
@@ -232,5 +237,10 @@
     <shortName>WSTP</shortName>
     <description>Wave Steepness</description>
     <units>proportion</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>WLENG</shortName>
+    <description>Wave Length</description>
+    <units />
   </parameter>
 </parameterMap>

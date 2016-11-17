@@ -35,22 +35,22 @@
   </parameter>
   <parameter code="6">
     <shortName>TIACCP</shortName>
-    <description>Time Integrated Air Concentration of Cesium Pollutant See Note 1</description>
+    <description>Time Integrated Air Concentration of Cesium Pollutant (See Note 1)</description>
     <units>Bq s m-3</units>
   </parameter>
   <parameter code="7">
     <shortName>TIACIP</shortName>
-    <description>Time Integrated Air Concentration of Iodine Pollutant See Note 1</description>
+    <description>Time Integrated Air Concentration of Iodine Pollutant (See Note 1)</description>
     <units>Bq s m-3</units>
   </parameter>
   <parameter code="8">
     <shortName>TIACRP</shortName>
-    <description>Time Integrated Air Concentration of Radioactive Pollutant See Note 1</description>
+    <description>Time Integrated Air Concentration of Radioactive Pollutant (See Note 1)</description>
     <units>Bq s m-3</units>
   </parameter>
   <parameter code="10">
     <shortName>AIRCON</shortName>
-    <description>Air Concentration</description>
+    <description>Air Concentration (See Note 3)</description>
     <units>Bq m-3</units>
   </parameter>
   <parameter code="11">
@@ -67,5 +67,20 @@
     <shortName>TOTLWD</shortName>
     <description>Total Deposition (Wet + Dry)</description>
     <units>Bq m-2</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>SACON</shortName>
+    <description>Specific Activity Concentration (See Note 3)</description>
+    <units>Bq kg-1</units>
+  </parameter>
+  <parameter code="15">
+    <shortName>MAXACON</shortName>
+    <description>Maximum of Air Concentration in Layer</description>
+    <units>Bq m-3</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>HMXACON</shortName>
+    <description>Height of Maximum of Air Concentration</description>
+    <units>m</units>
   </parameter>
 </parameterMap>

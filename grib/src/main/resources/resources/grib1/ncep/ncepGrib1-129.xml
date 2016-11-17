@@ -28,7 +28,7 @@
     <units>non-dim</units>
   </parameter>
   <parameter code="133">
-    <shortName>FRIME</shortName>
+    <shortName>RIME</shortName>
     <description>Rime Factor</description>
     <units>non-dim</units>
   </parameter>
@@ -335,7 +335,7 @@
   <parameter code="194">
     <shortName>TCHP</shortName>
     <description>Tropical Cyclone Heat Potential</description>
-    <units>J/m2</units>
+    <units>J/m2K</units>
   </parameter>
   <parameter code="195">
     <shortName>DBSS</shortName>
