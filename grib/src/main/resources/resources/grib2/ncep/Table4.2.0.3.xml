@@ -138,6 +138,26 @@
     <description>Exner Pressure</description>
     <units>Numeric</units>
   </parameter>
+  <parameter code="27">
+    <shortName>UMFLX</shortName>
+    <description>Updraught Mass Flux</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="28">
+    <shortName>DMFLX</shortName>
+    <description>Downdraught Mass Flux</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>UDRATE</shortName>
+    <description>Updraught Detrainment Rate</description>
+    <units>kg m-3 s-1</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>DDRATE</shortName>
+    <description>Downdraught Detrainment Rate</description>
+    <units>kg m-3 s-1</units>
+  </parameter>
   <parameter code="192">
     <shortName>MSLET</shortName>
     <description>MSLP (Eta model reduction)</description>
@@ -242,5 +262,50 @@
     <shortName>PRESN</shortName>
     <description>Pressure (nearest grid point)</description>
     <units>Pa</units>
+  </parameter>
+  <parameter code="213">
+    <shortName>ORCONV</shortName>
+    <description>Orographic Convexity</description>
+    <units />
+  </parameter>
+  <parameter code="214">
+    <shortName>ORASW</shortName>
+    <description>Orographic Asymmetry, W Component</description>
+    <units />
+  </parameter>
+  <parameter code="215">
+    <shortName>ORASS</shortName>
+    <description>Orographic Asymmetry, S Component</description>
+    <units />
+  </parameter>
+  <parameter code="216">
+    <shortName>ORASSW</shortName>
+    <description>Orographic Asymmetry, SW Component</description>
+    <units />
+  </parameter>
+  <parameter code="217">
+    <shortName>ORASNW</shortName>
+    <description>Orographic Asymmetry, NW Component</description>
+    <units />
+  </parameter>
+  <parameter code="218">
+    <shortName>ORLSW</shortName>
+    <description>Orographic Length Scale, W Component</description>
+    <units />
+  </parameter>
+  <parameter code="219">
+    <shortName>ORLSS</shortName>
+    <description>Orographic Length Scale, S Component</description>
+    <units />
+  </parameter>
+  <parameter code="220">
+    <shortName>ORLSSW</shortName>
+    <description>Orographic Length Scale, SW Component</description>
+    <units />
+  </parameter>
+  <parameter code="221">
+    <shortName>ORLSNW</shortName>
+    <description>Orographic Length Scale, NW Component</description>
+    <units />
   </parameter>
 </parameterMap>

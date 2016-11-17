@@ -117,6 +117,9 @@
   <parameter code="37">
     <description>Bromine Nitrate</description>
   </parameter>
+  <parameter code="38">
+    <description>Oxygen</description>
+  </parameter>
   <parameter code="10000">
     <description>Hydroxyl Radical</description>
   </parameter>
@@ -344,6 +347,39 @@
   </parameter>
   <parameter code="62012">
     <description>Secondary Particulate Organic Matter Dry</description>
+  </parameter>
+  <parameter code="62013">
+    <description>Black carbon hydrophilic dry</description>
+  </parameter>
+  <parameter code="62014">
+    <description>Black carbon hydrophobic dry</description>
+  </parameter>
+  <parameter code="62015">
+    <description>Particulate organic matter hydrophilic dry</description>
+  </parameter>
+  <parameter code="62016">
+    <description>Particulate organic matter hydrophobic dry</description>
+  </parameter>
+  <parameter code="62017">
+    <description>Nitrate hydrophilic dry</description>
+  </parameter>
+  <parameter code="62018">
+    <description>Nitrate hydrophobic dry</description>
+  </parameter>
+  <parameter code="62020">
+    <description>Smoke - high absorption</description>
+  </parameter>
+  <parameter code="62021">
+    <description>Smoke - low absorption</description>
+  </parameter>
+  <parameter code="62022">
+    <description>Aerosol - high absorption</description>
+  </parameter>
+  <parameter code="62023">
+    <description>Aerosol - low absorption</description>
+  </parameter>
+  <parameter code="62025">
+    <description>Volcanic ash</description>
   </parameter>
   <parameter code="65535">
     <description>Missing</description>

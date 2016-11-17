@@ -194,7 +194,7 @@
     <units>kg m-2 s-1</units>
   </parameter>
   <parameter code="38">
-    <shortName>MCONV</shortName>
+    <shortName>MDIVER</shortName>
     <description>Horizontal Moisture Divergence</description>
     <units>kg kg-1 s-1</units>
   </parameter>
@@ -400,7 +400,7 @@
   </parameter>
   <parameter code="80">
     <shortName>TOTCON</shortName>
-    <description>Total Condensatea</description>
+    <description>Total Condensate</description>
     <units>kg kg-1</units>
   </parameter>
   <parameter code="81">
@@ -447,6 +447,131 @@
     <shortName>VKMFLX</shortName>
     <description>V-component (meridional) Kinematic Moisture Flux</description>
     <units>kg kg-1 m s-1</units>
+  </parameter>
+  <parameter code="93">
+    <shortName>RHWATER</shortName>
+    <description>Relative Humidity With Respect to Water</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="94">
+    <shortName>RHICE</shortName>
+    <description>Relative Humidity With Respect to Ice</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="95">
+    <shortName>FZPRATE</shortName>
+    <description>Freezing or Frozen Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="96">
+    <shortName>MASSDR</shortName>
+    <description>Mass Density of Rain</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="97">
+    <shortName>MASSDS</shortName>
+    <description>Mass Density of Snow</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="98">
+    <shortName>MASSDG</shortName>
+    <description>Mass Density of Graupel</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="99">
+    <shortName>MASSDH</shortName>
+    <description>Mass Density of Hail</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="100">
+    <shortName>SPNCR</shortName>
+    <description>Specific Number Concentration of Rain</description>
+    <units>kg-1</units>
+  </parameter>
+  <parameter code="101">
+    <shortName>SPNCS</shortName>
+    <description>Specific Number Concentration of Snow</description>
+    <units>kg-1</units>
+  </parameter>
+  <parameter code="102">
+    <shortName>SPNCG</shortName>
+    <description>Specific Number Concentration of Graupel</description>
+    <units>kg-1</units>
+  </parameter>
+  <parameter code="103">
+    <shortName>SPNCH</shortName>
+    <description>Specific Number Concentration of Hail</description>
+    <units>kg-1</units>
+  </parameter>
+  <parameter code="104">
+    <shortName>NUMDR</shortName>
+    <description>Number Density of Rain</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="105">
+    <shortName>NUMDS</shortName>
+    <description>Number Density of Snow</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="106">
+    <shortName>NUMDG</shortName>
+    <description>Number Density of Graupel</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="107">
+    <shortName>NUMDH</shortName>
+    <description>Number Density of Hail</description>
+    <units>m-3</units>
+  </parameter>
+  <parameter code="108">
+    <shortName>SHTPRM</shortName>
+    <description>Specific Humidity Tendency due to Parameterizations</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="109">
+    <shortName>MDLWHVA</shortName>
+    <description>Mass Density of Liquid Water Coating on Hail Expressed as Mass of Liquid Water per Unit Volume of Air</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="110">
+    <shortName>SMLWHMA</shortName>
+    <description>Specific Mass of Liquid Water Coating on Hail Expressed as Mass of Liquid Water per Unit Mass of Moist Air</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="111">
+    <shortName>MMLWHDA</shortName>
+    <description>Mass Mixing Ratio of Liquid Water Coating on Hail Expressed as Mass of Liquid Water per Unit Mass of Dry Air</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="112">
+    <shortName>MDLWGVA</shortName>
+    <description>Mass Density of Liquid Water Coating on Graupel Expressed as Mass of Liquid Water per Unit Volume of Air</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="113">
+    <shortName>SMLWGMA</shortName>
+    <description>Specific Mass of Liquid Water Coating on Graupel Expressed as Mass of Liquid Water per Unit Mass of Moist Air</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="114">
+    <shortName>MMLWGDA</shortName>
+    <description>Mass Mixing Ratio of Liquid Water Coating on Graupel Expressed as Mass of Liquid Water per Unit Mass of Dry Air</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="115">
+    <shortName>MDLWSVA</shortName>
+    <description>Mass Density of Liquid Water Coating on Snow Expressed as Mass of Liquid Water per Unit Volume of Air</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="116">
+    <shortName>SMLWSMA</shortName>
+    <description>Specific Mass of Liquid Water Coating on Snow Expressed as Mass of Liquid Water per Unit Mass of Moist Air</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="117">
+    <shortName>MMLWSDA</shortName>
+    <description>Mass Mixing Ratio of Liquid Water Coating on Snow Expressed as Mass of Liquid Water per Unit Mass of Dry Air</description>
+    <units>kg kg-1</units>
   </parameter>
   <parameter code="192">
     <shortName>CRAIN</shortName>
@@ -620,8 +745,8 @@
   </parameter>
   <parameter code="226">
     <shortName>PWTHER</shortName>
-    <description>Predominant Weather</description>
-    <units>Numeric (See note 1)</units>
+    <description>Pblackominant Weather (see Note 1)</description>
+    <units>Numeric</units>
   </parameter>
   <parameter code="227">
     <shortName>FROZR</shortName>

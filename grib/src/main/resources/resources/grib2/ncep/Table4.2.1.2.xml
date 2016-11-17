@@ -60,12 +60,17 @@
   </parameter>
   <parameter code="11">
     <shortName>ACWSR</shortName>
-    <description>Attenuation Coefficient of Water with Respect to Solar Attenuation Coefficient of Water with Respect to Solar Radiation</description>
+    <description>Attenuation Coefficient of Water with Respect to Solar Radiation</description>
     <units>m-1</units>
   </parameter>
   <parameter code="12">
     <shortName>SALTIL</shortName>
     <description>Salinity</description>
     <units>kg kg-1</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>CSAFC</shortName>
+    <description>Cross Sectional Area of Flow in Channel</description>
+    <units>m2</units>
   </parameter>
 </parameterMap>

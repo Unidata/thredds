@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parameterMap>
   <table>Table4.2.2.3</table>
-  <title>Soil</title>
+  <title>Soil Products</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-3.shtml</source>
   <parameter code="0">
     <shortName>SOTYP</shortName>
@@ -10,22 +10,22 @@
   </parameter>
   <parameter code="1">
     <shortName>UPLST</shortName>
-    <description>Upper Layer Soil Temperature*</description>
+    <description>Upper Layer Soil Temperature *</description>
     <units>K</units>
   </parameter>
   <parameter code="2">
     <shortName>UPLSM</shortName>
-    <description>Upper Layer Soil Moisture*</description>
+    <description>Upper Layer Soil Moisture *</description>
     <units>kg m-3</units>
   </parameter>
   <parameter code="3">
     <shortName>LOWLSM</shortName>
-    <description>Lower Layer Soil Moisture*</description>
+    <description>Lower Layer Soil Moisture *</description>
     <units>kg m-3</units>
   </parameter>
   <parameter code="4">
     <shortName>BOTLST</shortName>
-    <description>Bottom Layer Soil Temperature*</description>
+    <description>Bottom Layer Soil Temperature *</description>
     <units>K</units>
   </parameter>
   <parameter code="5">
@@ -117,6 +117,31 @@
     <shortName>CISICE</shortName>
     <description>Column-Integrated Soil Ice</description>
     <units>kg m-2</units>
+  </parameter>
+  <parameter code="23">
+    <shortName>LWSNWP</shortName>
+    <description>Liquid Water in Snow Pack</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="24">
+    <shortName>FRSTINX</shortName>
+    <description>Frost Index</description>
+    <units>kg day-1</units>
+  </parameter>
+  <parameter code="25">
+    <shortName>SNWDEB</shortName>
+    <description>Snow Depth at Elevation Bands</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="26">
+    <shortName>SHFLX</shortName>
+    <description>Soil Heat Flux</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="27">
+    <shortName>SOILDEP</shortName>
+    <description>Soil Depth</description>
+    <units>m</units>
   </parameter>
   <parameter code="192">
     <shortName>SOILL</shortName>
