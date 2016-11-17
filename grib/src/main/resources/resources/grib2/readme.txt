@@ -414,3 +414,8 @@ download
     - downloaded and added WMO tables 14.0.0
     - modify ucar.nc2.grib.grib2.table.WmoCodeTable, ucar.nc2.grib.grib2.table.WmoTemplateTable
 
+11/17/2016 sarms - download from http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
+    The latest versions 18(.0.0) (GRIB edition 2) and 23(.0.0) (BUFR and CREX) are effective as from 2 November 2016.
+    - downloaded and added WMO tables 18.0.0
+    - modify ucar.nc2.grib.grib2.table.WmoCodeTable, ucar.nc2.grib.grib2.table.WmoTemplateTable to use new 18.0.0 tables
+
