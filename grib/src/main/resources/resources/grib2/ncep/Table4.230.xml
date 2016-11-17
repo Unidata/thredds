@@ -117,6 +117,9 @@
   <parameter code="37">
     <description>Bromine Nitrate</description>
   </parameter>
+  <parameter code="38">
+    <description>Oxygen</description>
+  </parameter>
   <parameter code="10000">
     <description>Hydroxyl Radical</description>
   </parameter>
@@ -251,6 +254,9 @@
   </parameter>
   <parameter code="20021">
     <description>Hexachlorobiphenyl (PCB-153)</description>
+  </parameter>
+  <parameter code="30000">
+    <description>Radioactive Pollutant (Tracer, defined by originating centre)</description>
   </parameter>
   <parameter code="60000">
     <description>HOx Radical (OH+HO2)</description>
