@@ -13,6 +13,11 @@
     <description>Deviation of Sea Level from Mean</description>
     <units>m</units>
   </parameter>
+  <parameter code="2">
+    <shortName>CH</shortName>
+    <description>Heat Exchange Coefficient</description>
+    <units />
+  </parameter>
   <parameter code="192">
     <shortName>SURGE</shortName>
     <description>Hurricane Storm Surge</description>
@@ -67,6 +72,11 @@
     <shortName>SLTFL</shortName>
     <description>Salt Flux</description>
     <units>kg m-2s-1</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>LCH</shortName>
+    <description>Heat Exchange Coefficient</description>
+    <units />
   </parameter>
   <parameter code="242">
     <shortName>TCSRG20</shortName>

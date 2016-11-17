@@ -20,7 +20,7 @@
   </parameter>
   <parameter code="3">
     <shortName>AEMFLX</shortName>
-    <description>&gt;Atmosphere Emission Mass Flux</description>
+    <description>Atmosphere Emission Mass Flux</description>
     <units>kg m-2s-1</units>
   </parameter>
   <parameter code="4">
@@ -30,7 +30,7 @@
   </parameter>
   <parameter code="5">
     <shortName>ANPEMFLX</shortName>
-    <description>&gt;Atmosphere Net Production And Emision Mass Flux</description>
+    <description>Atmosphere Net Production And Emision Mass Flux</description>
     <units>kg m-2s-1</units>
   </parameter>
   <parameter code="6">
@@ -125,8 +125,23 @@
   </parameter>
   <parameter code="59">
     <shortName>ANCON</shortName>
-    <description>Aerosol Number Concentration</description>
+    <description>Aerosol Number Concentration (See Note 2)</description>
     <units>m-3</units>
+  </parameter>
+  <parameter code="60">
+    <shortName>ASNCON</shortName>
+    <description>Aerosol Specific Number Concentration (See Note 2)</description>
+    <units>kg-1</units>
+  </parameter>
+  <parameter code="61">
+    <shortName>MXMASSD</shortName>
+    <description>Maximum of Mass Density (See Note 1)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="62">
+    <shortName>HGTMD</shortName>
+    <description>Height of Mass Density</description>
+    <units>m</units>
   </parameter>
   <parameter code="100">
     <shortName>SADEN</shortName>
@@ -182,5 +197,15 @@
     <shortName>ALEGRD</shortName>
     <description>Aerosol Lidar Extinction from the Ground</description>
     <units>m-1</units>
+  </parameter>
+  <parameter code="111">
+    <shortName>ANGSTEXP</shortName>
+    <description>Angstrom Exponent</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="112">
+    <shortName>SCTAOTK</shortName>
+    <description>Scattering Aerosol Optical Thickness</description>
+    <units>Numeric</units>
   </parameter>
 </parameterMap>

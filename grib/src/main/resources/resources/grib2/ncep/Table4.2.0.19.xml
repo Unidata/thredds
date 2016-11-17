@@ -143,6 +143,26 @@
     <description>Icing Scenario</description>
     <units>See Table 4.227</units>
   </parameter>
+  <parameter code="28">
+    <shortName>MWTURB</shortName>
+    <description>Mountain Wave Turbulence (Eddy Dissipation Rate)</description>
+    <units>m2/3 s-1</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>CAT</shortName>
+    <description>Clear Air Turbulence (CAT)</description>
+    <units>m2/3 s-1</units>
+  </parameter>
+  <parameter code="30">
+    <shortName>EDPARM</shortName>
+    <description>Eddy Dissipation Parameter (See Note 3)</description>
+    <units>m2/3 s-1</units>
+  </parameter>
+  <parameter code="31">
+    <shortName>MXEDPRM</shortName>
+    <description>Maximum of Eddy Dissipation Parameter in Layer</description>
+    <units>m2/3 s-1</units>
+  </parameter>
   <parameter code="192">
     <shortName>MXSALB</shortName>
     <description>Maximum Snow Albedo</description>

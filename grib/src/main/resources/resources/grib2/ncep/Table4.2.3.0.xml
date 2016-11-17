@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <parameterMap>
   <table>Table4.2.3.0</table>
-  <title>Image format</title>
+  <title>Image format Products</title>
   <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-0.shtml</source>
   <parameter code="0">
     <shortName>SRAD</shortName>

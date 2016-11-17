@@ -50,7 +50,22 @@
   </parameter>
   <parameter code="9">
     <shortName>ICEPRS</shortName>
-    <description>Ice Internal Pressure</description>
+    <description>Module of Ice Internal Pressure</description>
     <units>Pa m</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>ZVCICEP</shortName>
+    <description>Zonal Vector Component of Vertically Integrated Ice Internal Pressure</description>
+    <units>Pa m</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>MVCICEP</shortName>
+    <description>Meridional Vector Component of Vertically Integrated Ice Internal Pressure</description>
+    <units>Pa m</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>CICES</shortName>
+    <description>Compressive Ice Strength</description>
+    <units>N m-1</units>
   </parameter>
 </parameterMap>

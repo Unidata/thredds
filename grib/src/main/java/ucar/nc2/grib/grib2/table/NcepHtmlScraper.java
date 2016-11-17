@@ -58,13 +58,16 @@ import java.util.List;
  * @since 1/7/12
  */
 public class NcepHtmlScraper  {
-  //String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\temp\\";
-  private static final String dirOut = "C:/tmp/ncep/";
+
+  String dirOut;
 
   static private final boolean debugParam = false;
   static private final boolean debug = false;
   static private final boolean show = false;
 
+  public void setDirOut(String dirOut) {
+    this.dirOut = dirOut;
+  }
 
   //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
@@ -325,10 +328,13 @@ public class NcepHtmlScraper  {
   // C:\dev\github\thredds\grib\src\main\resources\resources\grib2\ncep
 
   public static void main(String[] args) throws IOException {
+    //String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\temp\\";
+    NcepHtmlScraper scraper = new NcepHtmlScraper();
+    // set temp dir for new grib2 table info
+    String dirOut = "/Users/sarms/Desktop/ncep/grib2/";
+    scraper.setDirOut(dirOut);
     File dir = new File(dirOut);
     if (!dir.mkdirs()) System.out.printf("mkdir %s failed %n", dir.getPath());
-    NcepHtmlScraper scraper = new NcepHtmlScraper();
     scraper.parseTopDoc();
   }
 }
-

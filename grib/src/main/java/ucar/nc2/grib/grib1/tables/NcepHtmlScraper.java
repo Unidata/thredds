@@ -59,6 +59,12 @@ public class NcepHtmlScraper {
   static private final boolean debug = false;
   static private final boolean show = false;
 
+  String dirOut;
+
+  public void setDirOut(String dirOut) {
+    this.dirOut = dirOut;
+  }
+
  //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
   // LOOK the table is hand edited to add the units (!)
@@ -327,10 +333,6 @@ public class NcepHtmlScraper {
     }
   }
 
-  /////////////////////////////////////////////////////////
-  // String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
-  String dirOut = "C:/tmp/ncep/grib1/";
-
   private void writeTable2Xml(String name, String source, String filename, List<Param> params) throws IOException {
     org.jdom2.Element rootElem = new org.jdom2.Element("parameterMap");
     org.jdom2.Document doc = new org.jdom2.Document(rootElem);
@@ -372,8 +374,12 @@ public class NcepHtmlScraper {
 
   public static void main(String[] args) throws IOException {
     NcepHtmlScraper scraper = new NcepHtmlScraper();
-    //scraper.parseTable2();
-    //scraper.parseTableA();
+    /////////////////////////////////////////////////////////
+    // dirOut - temp directory to hold new grib1 resources
+    // String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib1\\ncep\\";
+    scraper.setDirOut("/Users/sarms/Desktop/ncep/grib1/");
+    scraper.parseTable2();
+    scraper.parseTableA();
     scraper.parseTable3();
   }
 }

@@ -19,13 +19,13 @@
     <description>Year</description>
   </parameter>
   <parameter code="5">
-    <description>Decade</description>
+    <description>Decade (10 Years)</description>
   </parameter>
   <parameter code="6">
     <description>Normal (30 Years)</description>
   </parameter>
   <parameter code="7">
-    <description>Century</description>
+    <description>Century (100 Years)</description>
   </parameter>
   <parameter code="10">
     <description>3 Hours</description>

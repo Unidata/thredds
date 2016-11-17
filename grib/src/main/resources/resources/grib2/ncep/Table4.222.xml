@@ -9,15 +9,6 @@
   <parameter code="1">
     <description>Yes</description>
   </parameter>
-  <parameter code="4">
-    <description>Low</description>
-  </parameter>
-  <parameter code="6">
-    <description>Medium</description>
-  </parameter>
-  <parameter code="8">
-    <description>High</description>
-  </parameter>
   <parameter code="255">
     <description>Missing</description>
   </parameter>

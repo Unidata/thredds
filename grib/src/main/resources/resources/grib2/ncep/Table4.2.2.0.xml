@@ -20,7 +20,7 @@
   </parameter>
   <parameter code="3">
     <shortName>SOILM</shortName>
-    <description>Soil Moisture Content*</description>
+    <description>Soil Moisture Content *</description>
     <units>kg m-2</units>
   </parameter>
   <parameter code="4">
@@ -50,12 +50,12 @@
   </parameter>
   <parameter code="9">
     <shortName>SOILW</shortName>
-    <description>Volumetric Soil Moisture Content**</description>
+    <description>Volumetric Soil Moisture Content **</description>
     <units>Proportion</units>
   </parameter>
   <parameter code="10">
     <shortName>GFLUX</shortName>
-    <description>Ground Heat Flux*</description>
+    <description>Ground Heat Flux *</description>
     <units>W m-2</units>
   </parameter>
   <parameter code="11">
@@ -90,7 +90,7 @@
   </parameter>
   <parameter code="17">
     <shortName>WILT</shortName>
-    <description>Wilting Point*</description>
+    <description>Wilting Point *</description>
     <units>Proportion</units>
   </parameter>
   <parameter code="18">
@@ -149,14 +149,14 @@
     <units>Numeric</units>
   </parameter>
   <parameter code="29">
-    <shortName>EVERF</shortName>
-    <description>Evergreen Forest</description>
-    <units>Numeric</units>
+    <shortName>EVGFC</shortName>
+    <description>Evergreen Forest Cover</description>
+    <units>Proportion</units>
   </parameter>
   <parameter code="30">
-    <shortName>DECF</shortName>
-    <description>Deciduous Forest</description>
-    <units>Numeric</units>
+    <shortName>DECFC</shortName>
+    <description>Deciduous Forest Cover</description>
+    <units>Proportion</units>
   </parameter>
   <parameter code="31">
     <shortName>NDVINX</shortName>
@@ -167,6 +167,36 @@
     <shortName>RDVEG</shortName>
     <description>Root Depth of Vegetation</description>
     <units>m</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>WROD</shortName>
+    <description>Water Runoff and Drainage ****</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>SFCWRO</shortName>
+    <description>Surface Water Runoff ****</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>TCLASS</shortName>
+    <description>Tile Class</description>
+    <units>See Table 4.243</units>
+  </parameter>
+  <parameter code="36">
+    <shortName>TFRCT</shortName>
+    <description>Tile Fraction</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>TPERCT</shortName>
+    <description>Tile Percentage</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>SOILVIC</shortName>
+    <description>Soil Volumetric Ice Content (Water Equivalent) *****</description>
+    <units>m3 m-3</units>
   </parameter>
   <parameter code="192">
     <shortName>SOILW</shortName>

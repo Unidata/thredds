@@ -64,7 +64,7 @@
     <units>m</units>
   </parameter>
   <parameter code="12">
-    <shortName>CDCT</shortName>
+    <shortName>CDCTOP</shortName>
     <description>Cloud Top</description>
     <units>m</units>
   </parameter>
@@ -181,6 +181,46 @@
   <parameter code="35">
     <shortName>SSWTC</shortName>
     <description>Surface Short Wave Effective Total Cloudiness</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="36">
+    <shortName>FSTRPC</shortName>
+    <description>Fraction of Stratiform Precipitation Cover</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>FCONPC</shortName>
+    <description>Fraction of Convective Precipitation Cover</description>
+    <units>Proportion</units>
+  </parameter>
+  <parameter code="38">
+    <shortName>MASSDCD</shortName>
+    <description>Mass Density of Cloud Droplets</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>MASSDCI</shortName>
+    <description>Mass Density of Cloud Ice</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="40">
+    <shortName>MDCCWD</shortName>
+    <description>Mass Density of Convective Cloud Water Droplets</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="47">
+    <shortName>VFRCWD</shortName>
+    <description>Volume Fraction of Cloud Water Droplets **</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="48">
+    <shortName>VFRCICE</shortName>
+    <description>Volume Fraction of Cloud Ice Particles **</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="49">
+    <shortName>VFRCIW</shortName>
+    <description>Volume Fraction of Cloud (Ice and/or Water) **</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="192">

@@ -60,6 +60,24 @@
   <parameter code="18">
     <description>Tundra</description>
   </parameter>
+  <parameter code="19">
+    <description>Warm Liquid Water Cloud</description>
+  </parameter>
+  <parameter code="20">
+    <description>Supercooled Liquid Water Cloud</description>
+  </parameter>
+  <parameter code="21">
+    <description>Mixed Phase Cloud</description>
+  </parameter>
+  <parameter code="22">
+    <description>Optically Thin Ice Cloud</description>
+  </parameter>
+  <parameter code="23">
+    <description>Optically Thick Ice Cloud</description>
+  </parameter>
+  <parameter code="24">
+    <description>Multi-Layered Cloud</description>
+  </parameter>
   <parameter code="97">
     <description>Snow / Ice on Land</description>
   </parameter>
