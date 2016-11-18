@@ -64,19 +64,19 @@ class CSVPointDataWriter implements PointDataWriter  {
  		return new CSVPointDataWriter(os);
  	}
 
-	private PrintStream printWriter;
+	PrintStream printWriter;
 	private Map<String,List<String>> allVars;
 	private Map<String, GridAsPointDataset> gridAsPointDatasets = new HashMap<>(); // LOOK WTF ??
 	private boolean headersSet = false;
 	private HttpHeaders httpHeaders;
 
-	private CSVPointDataWriter(OutputStream os) {
-    try {
-      printWriter= new PrintStream(os, false, CDM.UTF8);
-    } catch (UnsupportedEncodingException e) {
-      log.error("CSVPointDataWriter", e);
+	CSVPointDataWriter(OutputStream os) {
+      try {
+        printWriter= new PrintStream(os, false, CDM.UTF8);
+      } catch (UnsupportedEncodingException e) {
+        log.error("CSVPointDataWriter", e);
+      }
     }
-  }
 
 	public boolean header(Map<String,List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates, List<Attribute> timeDimAtts, LatLonPoint point, Double vertCoord) {
 		allVars = groupedVars; 
@@ -215,7 +215,7 @@ class CSVPointDataWriter implements PointDataWriter  {
 		return allDone;
 	}	
 
-	private void writeGroupHeader(List<String> varGroup, GridDataset gridDataset, boolean hasEnsAxis, boolean hasTimeAxis){
+	void writeGroupHeader(List<String> varGroup, GridDataset gridDataset, boolean hasEnsAxis, boolean hasTimeAxis){
 
 		StringBuilder sb = new StringBuilder();
 
