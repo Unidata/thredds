@@ -100,6 +100,9 @@ public class DsgSubsetWriterTest {
                 { FeatureType.POINT,   SupportedFormat.CSV_FILE, ncssParamsAll,      "outputAll.csv"      },
                 { FeatureType.POINT,   SupportedFormat.CSV_FILE, ncssParamsPoint,    "outputSubset.csv"   },
 
+                { FeatureType.POINT,   SupportedFormat.GEOCSV_FILE, ncssParamsAll,      "outputAll.csv"      },
+                { FeatureType.POINT,   SupportedFormat.GEOCSV_FILE, ncssParamsPoint,    "outputSubset.csv"   },
+
                 { FeatureType.POINT,   SupportedFormat.XML_FILE, ncssParamsAll,      "outputAll.xml"      },
                 { FeatureType.POINT,   SupportedFormat.XML_FILE, ncssParamsPoint,    "outputSubset.xml"   },
 
@@ -113,6 +116,10 @@ public class DsgSubsetWriterTest {
                 { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsAll,      "outputAll.csv"      },
                 { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsStation1, "outputSubset1.csv"  },
                 { FeatureType.STATION, SupportedFormat.CSV_FILE, ncssParamsStation2, "outputSubset2.csv"  },
+
+                { FeatureType.STATION, SupportedFormat.GEOCSV_FILE, ncssParamsAll,      "outputAll.csv"      },
+                { FeatureType.STATION, SupportedFormat.GEOCSV_FILE, ncssParamsStation1, "outputSubset1.csv"  },
+                { FeatureType.STATION, SupportedFormat.GEOCSV_FILE, ncssParamsStation2, "outputSubset2.csv"  },
 
                 { FeatureType.STATION, SupportedFormat.XML_FILE, ncssParamsAll,      "outputAll.xml"      },
                 { FeatureType.STATION, SupportedFormat.XML_FILE, ncssParamsStation1, "outputSubset1.xml"  },
@@ -161,6 +168,7 @@ public class DsgSubsetWriterTest {
         switch (format) {
             case CSV_FILE: extension = "csv"; break;
             case XML_FILE: // fall through
+            case GEOCSV_FILE: extension = "geocsv"; break;
             case WATERML2: extension = "xml"; break;
             case NETCDF3:  extension = "nc";  break;
             case NETCDF4:  extension = "nc4"; break;
