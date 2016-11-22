@@ -23,7 +23,7 @@ import java.io.PrintWriter;
  * Created by cwardgar on 2014-05-24.
  */
 public class StationSubsetWriterCSV extends AbstractStationSubsetWriter {
-    private final PrintWriter writer;
+    final PrintWriter writer;
 
     public StationSubsetWriterCSV(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
             throws NcssException, IOException {
