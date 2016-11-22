@@ -15,7 +15,7 @@ public enum SupportedFormat {
 	CSV_STREAM("csv", true, ContentType.csv.toString(), "csv", "text/csv"),
 	CSV_FILE("csv_file", false,  ContentType.csv.toString(), "csv_file"  ),
 
-	GEOCSV_STREAM("geocsv", true, ContentType.csv.toString(), "geocsv", "text/csv"),
+	GEOCSV_STREAM("geocsv", true, ContentType.csv.toString(), "geocsv", "text/geocsv"),
 	GEOCSV_FILE("geocsv_file", false,  ContentType.csv.toString(), "geocsv_file"  ),
 
 	XML_STREAM("xml", true, ContentType.xml.toString(), "xml"),
