@@ -1,6 +1,11 @@
+/*
+ * (c) 1998-2016 University Corporation for Atmospheric Research/Unidata
+ */
+
 package thredds.server.ncss.view.dsg.point;
 
 import org.springframework.http.HttpHeaders;
+
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.util.NcssRequestUtils;
@@ -23,12 +28,12 @@ import java.io.PrintWriter;
  * Created by cwardgar on 2014/06/02.
  */
 public class PointSubsetWriterCSV extends AbstractPointSubsetWriter {
-    final PrintWriter writer;
+    final protected PrintWriter writer;
 
     public PointSubsetWriterCSV(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
             throws NcssException, IOException {
         super(fdPoint, ncssParams);
-      this.writer = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));
+        this.writer = new PrintWriter(new OutputStreamWriter(out, CDM.utf8Charset));
     }
 
     @Override

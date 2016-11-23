@@ -5,52 +5,31 @@
 package thredds.server.ncss.view.dsg.station;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import thredds.server.ncss.exception.NcssException;
 import thredds.server.ncss.params.NcssParamsBean;
-import thredds.server.ncss.util.NcssRequestUtils;
-import thredds.server.ncss.view.gridaspoint.GeoCsvWriter;
-import thredds.util.ContentType;
-import ucar.ma2.Array;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.StationPointFeature;
-import ucar.nc2.time.CalendarDateFormatter;
-import ucar.unidata.geoloc.Station;
-import ucar.unidata.geoloc.vertical.VerticalTransform;
-import ucar.unidata.util.Format;
 
 
 public class StationSubsetWriterGeoCsv extends StationSubsetWriterCSV {
-
-    static private Logger log = LoggerFactory.getLogger(StationSubsetWriterGeoCsv.class);
 
     static private final String GEOCSV_CONTAINER_TYPE = "GeoCSV 2.0";
     static private final String DELIMITER = ",";
     static private final String DEFAULT_MISSING_VALUE = "";
     static private final String UNKNOWN_UNIT = "unknown";
 
-    List<String> fieldNames = new ArrayList<>(); //
-    List<String> fieldUnits = new ArrayList<>(); // UTF­8, UTF­8, degrees_north, degrees_east, meters, UTC, UTC
-    List<String> fieldTypes = new ArrayList<>();  // string, string, float, float, float, datetime, datetime
-    List<String> fieldMissing = new ArrayList<>();
+    private List<String> fieldNames = new ArrayList<>();
+    private List<String> fieldUnits = new ArrayList<>();
+    private List<String> fieldTypes = new ArrayList<>();
+    private List<String> fieldMissing = new ArrayList<>();
 
     public StationSubsetWriterGeoCsv(FeatureDatasetPoint fdPoint, NcssParamsBean ncssParams, OutputStream out)
             throws NcssException, IOException {
