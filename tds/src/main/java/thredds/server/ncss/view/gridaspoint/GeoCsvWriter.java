@@ -5,8 +5,12 @@
 package thredds.server.ncss.view.gridaspoint;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -15,31 +19,23 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 public class GeoCsvWriter extends CSVPointDataWriter {
-
-    static private Logger log = LoggerFactory.getLogger(GeoCsvWriter.class);
 
     static private final String GEOCSV_CONTAINER_TYPE = "GeoCSV 2.0";
     static private final String DELIMITER = ",";
     static private final String DEFAULT_MISSING_VALUE = "";
     static private final String UNKNOWN_UNIT = "unknown";
 
-    List<String> fieldNames = new ArrayList<>(); //
-    List<String> fieldUnits = new ArrayList<>(); // UTF­8, UTF­8, degrees_north, degrees_east, meters, UTC, UTC
-    List<String> fieldTypes = new ArrayList<>();  // string, string, float, float, float, datetime, datetime
-    List<String> fieldMissing = new ArrayList<>();
+    private List<String> fieldNames = new ArrayList<>();
+    private List<String> fieldUnits = new ArrayList<>();
+    private List<String> fieldTypes = new ArrayList<>();
+    private List<String> fieldMissing = new ArrayList<>();
 
-    GeoCsvWriter(OutputStream os) {
+    protected GeoCsvWriter(OutputStream os) {
         super(os);
     }
 
-    public static GeoCsvWriter factory(OutputStream os){
+    public static GeoCsvWriter factory(OutputStream os) {
         return new GeoCsvWriter(os);
     }
 
@@ -79,7 +75,7 @@ public class GeoCsvWriter extends CSVPointDataWriter {
      * @param hasTimeAxis Has a time axis?
      */
     @Override
-    void writeGroupHeader(List<String> varGroup, GridDataset gridDataset, boolean hasEnsAxis, boolean hasTimeAxis) {
+    protected void writeGroupHeader(List<String> varGroup, GridDataset gridDataset, boolean hasEnsAxis, boolean hasTimeAxis) {
 
         if (hasTimeAxis) {
             appendMetadata("time", "ISO_8601", "datetime");
