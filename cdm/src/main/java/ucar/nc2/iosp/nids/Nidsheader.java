@@ -2519,7 +2519,7 @@ class Nidsheader{
             ctilt = pname_lookup(99, pLevel);
 
             ctitle = "HighResolution: Base Velocity";
-            cunit = "KT";
+            cunit = "m/s";
             cname = "BaseVelocityDV";
             summary = ctilt + " is a radial image of base velocity field and its range 124 nm";
 
