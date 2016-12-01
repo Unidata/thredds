@@ -39,7 +39,7 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
             final ThreddsS3Client threddsS3Client, RemovalListener<S3URI, Optional<File>> removalListener) {
         // We can't reuse the builder because each of the caches we're creating has different type parameters.
         this.metadataCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
+                .expireAfterWrite(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_METADATA_ENTRIES)
                 .build(
                     new CacheLoader<S3URI, Optional<ThreddsS3Metadata>>() {
@@ -49,7 +49,7 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
                     }
                  );
         this.listingCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
+                .expireAfterWrite(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_METADATA_ENTRIES)
                 .build(
                     new CacheLoader<S3URI, Optional<ThreddsS3Listing>>() {
@@ -59,7 +59,7 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
                     }
                 );
         this.objectFileCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
+                .expireAfterWrite(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
                 .maximumSize(MAX_FILE_ENTRIES)
                 .removalListener(removalListener)
                 .build(
