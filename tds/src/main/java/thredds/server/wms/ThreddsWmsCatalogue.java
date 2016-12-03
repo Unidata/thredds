@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Copyright (c) 2015 The University of Reading
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -13,7 +13,7 @@
  * 3. Neither the name of the University of Reading, nor the names of the
  *    authors or contributors may be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -28,24 +28,22 @@
 
 package thredds.server.wms;
 
-import java.awt.Color;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.joda.time.DateTime;
 
 import uk.ac.rdg.resc.edal.dataset.DataSource;
 import uk.ac.rdg.resc.edal.dataset.Dataset;
 import uk.ac.rdg.resc.edal.dataset.DiscreteLayeredDataset;
-import uk.ac.rdg.resc.edal.dataset.cdm.CdmGridDatasetFactory;
 import uk.ac.rdg.resc.edal.domain.Extent;
 import uk.ac.rdg.resc.edal.domain.MapDomain;
 import uk.ac.rdg.resc.edal.exceptions.EdalException;
 import uk.ac.rdg.resc.edal.feature.DiscreteFeature;
 import uk.ac.rdg.resc.edal.graphics.exceptions.EdalLayerNotFoundException;
-import uk.ac.rdg.resc.edal.graphics.utils.*;
+import uk.ac.rdg.resc.edal.graphics.utils.EnhancedVariableMetadata;
+import uk.ac.rdg.resc.edal.graphics.utils.LayerNameMapper;
+import uk.ac.rdg.resc.edal.graphics.utils.PlottingDomainParams;
+import uk.ac.rdg.resc.edal.graphics.utils.PlottingStyleParameters;
+import uk.ac.rdg.resc.edal.graphics.utils.SldTemplateStyleCatalogue;
+import uk.ac.rdg.resc.edal.graphics.utils.StyleCatalogue;
 import uk.ac.rdg.resc.edal.metadata.DiscreteLayeredVariableMetadata;
 import uk.ac.rdg.resc.edal.metadata.VariableMetadata;
 import uk.ac.rdg.resc.edal.util.CollectionUtils;
@@ -53,16 +51,25 @@ import uk.ac.rdg.resc.edal.wms.WmsCatalogue;
 import uk.ac.rdg.resc.edal.wms.util.ContactInfo;
 import uk.ac.rdg.resc.edal.wms.util.ServerInfo;
 
+import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import ucar.nc2.Attribute;
+import ucar.nc2.dataset.NetcdfDataset;
+
 /**
  * Example of an implementation of a {@link WmsCatalogue} to work with the TDS.
- * 
+ *
  * This is a working example, but many of the specifics will need to be
  * implemented differently based on how the THREDDS team decide to configure WMS
  * layers.
- * 
+ *
  * This {@link WmsCatalogue} provides access to a SINGLE dataset. As such, each
  * different dataset requested will have a new instance of this class.
- * 
+ *
  * NB - No caching is implemented in this {@link WmsCatalogue}. I would
  * recommend a cache which is shared amongst all {@link WmsCatalogue}s, passed
  * in on object construction, and which performs the caching/retrieval in the
@@ -93,7 +100,7 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
      * DatasetFactory types, it may be better off being passed into this
      * catalogue.
      */
-    static CdmGridDatasetFactory datasetFactory = new CdmGridDatasetFactory();
+    static TdsWmsDatasetFactory datasetFactory = new TdsWmsDatasetFactory();
 
     /*
      * The Dataset associated with this catalogue
@@ -106,9 +113,29 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
      * 
      * Currently EDAL/ncWMS only have one supported type of StyleCatalogue
      */
-    private static final StyleCatalogue styleCatalogue =  SldTemplateStyleCatalogue.getStyleCatalogue();
+    private static final StyleCatalogue styleCatalogue = SldTemplateStyleCatalogue.getStyleCatalogue();
 
-    public ThreddsWmsCatalogue(String id, String location) throws IOException, EdalException {
+    private String datasetTitle;
+
+    public ThreddsWmsCatalogue(NetcdfDataset ncd, String id) throws IOException, EdalException {
+        // in the TDS, we already have a NetcdfFile object, so let's use it to create
+        // the edal-java related dataset. To do so, we use our own TdsWmsDatasetFactory, which
+        // overrides the getNetcdfDatasetFromLocation method from CdmGridDatasetFactory to take
+        // the NetcdfDataset directly. However, createDataset's signature does not take a NetcdfDataset,
+        // so we need to make it available to TdsWmsDatasetFactory to use.
+        datasetFactory.setNetcdfDataset(ncd);
+
+        // set dataset title
+        Attribute datasetTitleAttr;
+        datasetTitle = ncd.getTitle();
+        if (datasetTitle == null) {
+            datasetTitleAttr = ncd.findGlobalAttributeIgnoreCase("title");
+            if (datasetTitleAttr != null) {
+                datasetTitle = datasetTitleAttr.getStringValue();
+            }
+        }
+
+        String location = ncd.getLocation();
         dataset = datasetFactory.createDataset(id, location);
     }
 
@@ -171,13 +198,21 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
         return dataset;
     }
 
+    /**
+     *
+     * Get the title of the dataset. If the title is null (i.e. not found), return
+     * the string value "Untitled Dataset"
+     *
+     * The title is found by the getTitle() method in NetcdfDataset, or by a global
+     * attribute "title" (not case-sensitive)
+     *
+     * @param layerName name of the layer
+     * @return
+     */
     @Override
     public String getDatasetTitle(String layerName) {
-        /*
-         * Returns the title of the dataset. This is dependent on TDS-specific
-         * configuration
-         */
-        return "Dataset title";
+
+        return (this.datasetTitle != null) ? this.datasetTitle : "Untitled Dataset";
     }
 
     @Override
