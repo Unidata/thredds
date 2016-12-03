@@ -28,6 +28,11 @@
 
 package thredds.server.wms;
 
+import uk.ac.rdg.resc.edal.graphics.exceptions.EdalLayerNotFoundException;
+import uk.ac.rdg.resc.edal.wms.RequestParams;
+import uk.ac.rdg.resc.edal.wms.WmsCatalogue;
+import uk.ac.rdg.resc.edal.wms.WmsServlet;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,11 +40,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import thredds.core.TdsRequestedDataset;
-
-import uk.ac.rdg.resc.edal.graphics.exceptions.EdalLayerNotFoundException;
-import uk.ac.rdg.resc.edal.wms.RequestParams;
-import uk.ac.rdg.resc.edal.wms.WmsCatalogue;
-import uk.ac.rdg.resc.edal.wms.WmsServlet;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
 
 /**
  * An example {@link WmsServlet} which uses the THREDDS catalogue to supply
@@ -78,8 +80,10 @@ public class ThreddsWmsServlet extends WmsServlet {
         if(catalogueCache.containsKey(tdsDataset.getPath())) {
             catalogue = catalogueCache.get(tdsDataset.getPath());
         } else {
-            String netcdfFilePath = tdsDataset.getNetcdfFile(httpServletRequest, httpServletResponse,
-                    tdsDataset.getPath()).getLocation();
+            NetcdfFile ncf = tdsDataset.getNetcdfFile(httpServletRequest, httpServletResponse,
+                    tdsDataset.getPath());
+
+            String netcdfFilePath = ncf.getLocation();
     
             /*
              * Generate a new catalogue for the given dataset
@@ -97,7 +101,7 @@ public class ThreddsWmsServlet extends WmsServlet {
                 throw new EdalLayerNotFoundException(
                         "The requested dataset is not available on this server");
             }
-            catalogue = new ThreddsWmsCatalogue(tdsDataset.getPath(), netcdfFilePath);
+            catalogue = new ThreddsWmsCatalogue((NetcdfDataset) ncf, tdsDataset.getPath());
             catalogueCache.put(tdsDataset.getPath(), catalogue);
         }
 
