@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ucar.nc2.Attribute;
 import ucar.nc2.dataset.NetcdfDataset;
 
 /**
@@ -114,6 +115,8 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
      */
     private static final StyleCatalogue styleCatalogue = SldTemplateStyleCatalogue.getStyleCatalogue();
 
+    private String datasetTitle;
+
     public ThreddsWmsCatalogue(NetcdfDataset ncd, String id) throws IOException, EdalException {
         // in the TDS, we already have a NetcdfFile object, so let's use it to create
         // the edal-java related dataset. To do so, we use our own TdsWmsDatasetFactory, which
@@ -121,6 +124,16 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
         // the NetcdfDataset directly. However, createDataset's signature does not take a NetcdfDataset,
         // so we need to make it available to TdsWmsDatasetFactory to use.
         datasetFactory.setNetcdfDataset(ncd);
+
+        // set dataset title
+        Attribute datasetTitleAttr;
+        datasetTitle = ncd.getTitle();
+        if (datasetTitle == null) {
+            datasetTitleAttr = ncd.findGlobalAttributeIgnoreCase("title");
+            if (datasetTitleAttr != null) {
+                datasetTitle = datasetTitleAttr.getStringValue();
+            }
+        }
 
         String location = ncd.getLocation();
         dataset = datasetFactory.createDataset(id, location);
@@ -185,13 +198,21 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
         return dataset;
     }
 
+    /**
+     *
+     * Get the title of the dataset. If the title is null (i.e. not found), return
+     * the string value "Untitled Dataset"
+     *
+     * The title is found by the getTitle() method in NetcdfDataset, or by a global
+     * attribute "title" (not case-sensitive)
+     *
+     * @param layerName name of the layer
+     * @return
+     */
     @Override
     public String getDatasetTitle(String layerName) {
-        /*
-         * Returns the title of the dataset. This is dependent on TDS-specific
-         * configuration
-         */
-        return "Dataset title";
+
+        return (this.datasetTitle != null) ? this.datasetTitle : "Untitled Dataset";
     }
 
     @Override
