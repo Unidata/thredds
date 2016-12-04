@@ -16,6 +16,9 @@ repositories {
     maven {
         url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
     }
+    maven {
+        url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty:gretty-fork'.
+    }
 }
 
 //================================================ Dependencies ================================================//
@@ -29,7 +32,7 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-libraries["gretty"] = "org.akhikhl.gretty:gretty:1.4.0"
+libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.0"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
