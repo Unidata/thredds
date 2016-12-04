@@ -5,7 +5,7 @@ apply from: "$rootDir/gradle/any/coverage.gradle"
 // d4tests is not published
 
 dependencies {
-    // A lot of these depedencies should be in the testRuntime config, not testCompile.
+    // A lot of these dependencies should be in the testRuntime config, not testCompile.
 
     testCompile project(':dap4:d4core')
     testCompile project(':dap4:d4lib')
