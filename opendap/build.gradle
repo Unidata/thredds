@@ -24,4 +24,6 @@ dependencies {
     compile libraries["coverity-escapers"]
 
     compile libraries["slf4j-api"]
+    
+    testCompile libraries["JUnitParams"]
 }
