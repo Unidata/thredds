@@ -74,18 +74,16 @@ Making a release for CDM/TDS using Gradle
     this will vary based on your OS.
     - On OS X do: Finder->Go->Connect to Server...  Then connect to "smb://www/web".
 
-15. Set the "webdir" and "ftpdir" Gradle properties
+15. Set the "webdir" Gradle property
     - Open ~/.gradle/gradle.properties
     - Set "webdir" to "{web.mount.dir}/content/software/thredds/v{release.major}/netcdf-java"
-    - Set "ftpdir" to "{web.mount.dir}/ftp/pub/netcdf-java/v{release.major}"
     - The value of {web.mount.dir} will likely differ, but mine is "/Volumes/web".
-    - So for example, on OS X, my (Christian's) Gradle properties for "webdir" and "ftpdir" are:
+    - So for example, on OS X, my (Christian's) Gradle properties for "webdir" is:
         webdir=/Volumes/web/content/software/thredds/v4.6/netcdf-java
-        ftpdir=/Volumes/web/ftp/pub/netcdf-java/v4.6
 
 16. Release Web Start to www:/content/software/thredds/v{release.major}/netcdf-java/webstart
     - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
-      'keystore', 'keystoreAlias', 'keystorePassword', 'webdir', and 'ftpdir' properties defined.
+      'keystore', 'keystoreAlias', 'keystorePassword', and 'webdir' properties defined.
     - Rename old directories
       * cd /content/software/thredds/v{release.major}/netcdf-java/
       * mv webstart webstartOld

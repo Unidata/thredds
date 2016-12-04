@@ -94,7 +94,6 @@ ext {
    keystoreAlias=idv
    keystorePassword=password of keystore file
    webdir:parent of conan content directory
-   ftpdir:ftp directory
  */
 task releaseWebstart(dependsOn: jar, group: 'Release') << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
