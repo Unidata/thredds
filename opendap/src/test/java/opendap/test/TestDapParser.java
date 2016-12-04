@@ -33,12 +33,8 @@
 
 package opendap.test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 import opendap.dap.DAP2Exception;
 import opendap.dap.DAS;
 import opendap.dap.DDS;
@@ -46,12 +42,18 @@ import opendap.dap.parsers.ParseException;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.runner.RunWith;
 import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
-// Test that the dap2.y parsing is correct
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
 
-abstract public class TestDapParser extends TestFiles
+@RunWith(JUnitParamsRunner.class)
+public class TestDapParser extends TestFiles
 {
     static protected boolean VISUAL = false;
 
@@ -61,40 +63,26 @@ abstract public class TestDapParser extends TestFiles
     static protected final int ISDDX = 3;
     static protected final int ISERR = 4;
 
-    protected String extension = null;
-    protected String baseextension = null;
-
     protected boolean isddx = false;
 
     protected String[] xfailtests = null;
-
-    public void setExtensions(String extension, String baseextension)
-    {
-        this.extension = extension;
-        this.baseextension = baseextension;
-    }
 
     public TestDapParser()
     {
         setTitle("DAP Parser Tests");
     }
 
-    @Test
-    public void
-    testDapParser() throws Exception
-    {
-        runDapParser();
+    private Object[] extensionValues() {
+        return new Object[] {
+                new Object[] { ".das", ".das" },  // Test that the DAS parsing is correct
+                new Object[] { ".dds", ".dds" },  // Test that the DDS parsing is correct
+                new Object[] { ".err", ".err" }   // Test that the error body parsing is correct
+        };
     }
 
     @Test
-    @Category(NeedsExternalResource.class)
-    public void
-    testDapParserSpecial() throws Exception {
-        runDapParserSpecial();
-    }
-
-    protected void
-    runDapParser() throws Exception
+    @Parameters(method = "extensionValues")
+    public void testDapParser(String extension, String baseextension) throws Exception
     {
         // Check that resultsdir exists and is writeable
         File resultsfile = new File(resultsdir);
@@ -145,8 +133,10 @@ abstract public class TestDapParser extends TestFiles
         }
     }
 
-    protected void
-    runDapParserSpecial() throws Exception {
+    @Test
+    @Parameters(method = "extensionValues")
+    @Category(NeedsExternalResource.class)
+    public void testDapParserSpecial(String extension, String baseextension) throws Exception {
         // Test special cases
         for (int i = 0; i < specialtests.length; i++) {
             String thisext = specialtests[i][0];
@@ -232,7 +222,4 @@ abstract public class TestDapParser extends TestFiles
         System.out.flush();
         System.err.flush();
     }
-
-
 }
-
