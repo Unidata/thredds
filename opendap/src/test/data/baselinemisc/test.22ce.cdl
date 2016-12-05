@@ -1,4 +1,4 @@
-netcdf dods://remotetest.unidata.ucar.edu/dts/test.22?exp.ThreeD[5:1:7][5:8][1:3] {
+netcdf dods://localhost:8082/dts/test.22?exp.ThreeD[5:1:7][5:8][1:3] {
   dimensions:
     x = 3;
     y = 4;

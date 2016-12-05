@@ -2,7 +2,8 @@ ext.title = "HttpClient Wrappers"
 
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
-// httpservices has no tests
+apply from: "$rootDir/gradle/any/testing.gradle"
+apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
 
@@ -13,4 +14,18 @@ dependencies {
     compile libraries["httpmime"]
 
     compile libraries["slf4j-api"]
+}
+
+// We're going to simply use dtswar as an endpoint for our HTTP tests.
+apply plugin: 'org.akhikhl.gretty'
+
+gretty {
+    // Same config for these 3 items as in ':opendap:dtswar'.
+    servletContainer = 'tomcat8'
+    httpPort = 8082
+    contextPath = '/dts'
+    
+    integrationTestTask = 'test'
+    
+    overlay ':opendap:dtswar'
 }

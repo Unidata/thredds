@@ -32,8 +32,6 @@
  */
 package ucar.nc2.dods;
 
-import org.junit.experimental.categories.Category;
-
 import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.InvalidRangeException;
@@ -42,7 +40,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.DebugFlagsImpl;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.util.List;
@@ -58,8 +55,6 @@ import java.util.List;
  * } OneD;
  * } Simple;
  */
-
-@Category(NeedsExternalResource.class)
 public class TestUserProblems {
 
   @org.junit.Test

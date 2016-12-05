@@ -22,3 +22,10 @@ dependencies {
     runtime libraries["log4j-web"]
 }
 
+apply plugin: 'org.akhikhl.gretty'
+
+gretty {
+    servletContainer = 'tomcat8'
+    httpPort = 8082
+    contextPath = '/dts'
+}

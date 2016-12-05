@@ -32,16 +32,13 @@
  */
 package ucar.nc2.dods;
 
-import java.io.IOException;
-
 import opendap.test.TestSources;
-import org.junit.experimental.categories.Category;
-import ucar.unidata.util.test.category.NeedsExternalResource;
+
+import java.io.IOException;
 
 /** Test nc2 dods in the JUnit framework.
  *  Open and read various test datasets from the dts server.
  */
-@Category(NeedsExternalResource.class)
 public class TestDODSRead {
 
   public static boolean showFile = false, showFileDebug= false;

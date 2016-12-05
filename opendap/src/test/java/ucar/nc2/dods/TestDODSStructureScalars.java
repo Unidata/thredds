@@ -32,23 +32,13 @@
  */
 package ucar.nc2.dods;
 
-import java.io.IOException;
-
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayByte;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayShort;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
+import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.util.test.category.NeedsExternalResource;
+
+import java.io.IOException;
 
 /** Test nc2 dods in the JUnit framework.
  * Dataset {
@@ -64,7 +54,6 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
         Url u;
     } types;
 } SimpleStructure;*/
-@Category(NeedsExternalResource.class)
 public class TestDODSStructureScalars {
 
   @org.junit.Test

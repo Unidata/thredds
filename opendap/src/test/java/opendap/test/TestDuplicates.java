@@ -32,21 +32,19 @@
 
 package opendap.test;
 
+import org.junit.Assert;
+import org.junit.Test;
+import ucar.nc2.dods.DODSNetcdfFile;
+import ucar.unidata.util.test.Diff;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.TestDir;
 
 public class TestDuplicates extends UnitTestCommon
 {
@@ -68,7 +66,6 @@ public class TestDuplicates extends UnitTestCommon
   }
 
   @Test
-  @Category(NeedsExternalResource.class)
   public void testDuplicates() throws Exception {
     // Check if we are running against remote or localhost, or what.
     String testserver = TestDir.dap2TestServer;

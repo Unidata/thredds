@@ -27,3 +27,16 @@ dependencies {
     
     testCompile libraries["JUnitParams"]
 }
+
+apply plugin: 'org.akhikhl.gretty'
+
+gretty {
+    // Same config for these 3 items as in ':opendap:dtswar'.
+    servletContainer = 'tomcat8'
+    httpPort = 8082
+    contextPath = '/dts'
+
+    integrationTestTask = 'test'
+    
+    overlay ':opendap:dtswar'
+}

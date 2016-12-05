@@ -50,6 +50,7 @@ import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class TestHang
 
     //  static private String server = "https://rdavm.ucar.edu:8443";
 //  static private String url = server + "/thredds/admin/collection/trigger?trigger=never&collection=";
-    static protected final String server = "http://remotetest.unidata.ucar.edu";
+    static protected final String server = "http://" + TestDir.dap2TestServer;
 
     static protected final String url = server + "/dts/test.%02d";
 

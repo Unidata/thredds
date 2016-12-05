@@ -1,4 +1,4 @@
-netcdf dods://remotetest.unidata.ucar.edu/dts/test.02 {
+netcdf dods://localhost:8082/dts/test.02 {
   variables:
     ubyte b(25);
 

@@ -38,17 +38,14 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
 
 import java.util.List;
 
-@Category(NeedsExternalResource.class)
 public class TestHTTPSession extends UnitTestCommon
 {
     //////////////////////////////////////////////////

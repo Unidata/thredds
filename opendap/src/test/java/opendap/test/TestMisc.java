@@ -32,26 +32,16 @@
 
 package opendap.test;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestMisc extends UnitTestCommon
 {
@@ -111,7 +101,6 @@ public class TestMisc extends UnitTestCommon
 
 
     @Test
-    @Category(NeedsExternalResource.class)
     public void
     testMisc() throws Exception
     {

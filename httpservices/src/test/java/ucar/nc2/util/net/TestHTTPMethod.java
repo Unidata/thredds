@@ -32,19 +32,16 @@
 
 package ucar.nc2.util.net;
 
-import java.io.InputStream;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
 
-@Category(NeedsExternalResource.class)
+import java.io.InputStream;
+
 public class TestHTTPMethod extends UnitTestCommon
 {
 

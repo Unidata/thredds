@@ -32,15 +32,13 @@
  */
 package ucar.nc2.dods;
 
-import java.io.IOException;
-
-import org.junit.experimental.categories.Category;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
-import ucar.unidata.util.test.category.NeedsExternalResource;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -53,7 +51,6 @@ import static org.junit.Assert.assertEquals;
         Float64 x[10];
     } OneD;
 } Simple;*/
-@Category(NeedsExternalResource.class)
 public class TestDODSGrid {
 
   @org.junit.Test
