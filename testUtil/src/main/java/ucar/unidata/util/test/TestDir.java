@@ -120,7 +120,7 @@ public class TestDir {
 
   static public String dap2TestServerPropName = "dts";
 
-  static public String dap2TestServer = "remotetest.unidata.ucar.edu";
+  static public String dap2TestServer = "localhost:8082";
 
   // DAP4 Test server (for testing)
 

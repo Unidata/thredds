@@ -32,23 +32,12 @@
  */
 package ucar.nc2.dods;
 
-import java.io.IOException;
-
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayByte;
-import ucar.ma2.ArrayDouble;
-import ucar.ma2.ArrayFloat;
-import ucar.ma2.ArrayInt;
-import ucar.ma2.ArrayLong;
-import ucar.ma2.ArrayShort;
-import ucar.ma2.DataType;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
+import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.unidata.util.test.category.NeedsExternalResource;
+
+import java.io.IOException;
 
 /** Test nc2 dods in the JUnit framework.
  *
@@ -72,7 +61,6 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
     } types;
 } NestedStructure;
  */
-@Category(NeedsExternalResource.class)
 public class TestDODSStructureScalarsNested {
 
   private DODSNetcdfFile dodsfile;

@@ -1,9 +1,5 @@
 package opendap.test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
-import java.io.PrintStream;
-
 import opendap.dap.DAS;
 import opendap.dap.DConnect2;
 import opendap.dap.DDS;
@@ -13,11 +9,12 @@ import opendap.util.InvalidSwitch;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 
-@Category(NeedsExternalResource.class)
+import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
+import java.io.PrintStream;
+
 public class TestDConnect2 extends TestSources {
 
   static boolean debug = false;

@@ -32,18 +32,16 @@
 
 package ucar.nc2.util.net;
 
-import java.nio.charset.Charset;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPMethodStream;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+
+import java.nio.charset.Charset;
 
 /**
  * Test the proper state transitions of HTTPSession
@@ -60,7 +58,7 @@ public class TestState extends UnitTestCommon
 {
     //////////////////////////////////////////////////
     // Constants
-    protected final String SESSIONURL = "http://"+ TestDir.dap2TestServer+"/dts";
+    protected final String SESSIONURL = "http://"+ TestDir.dap2TestServer + "/dts";
     protected final String TESTSOURCE1 = SESSIONURL + "/test.01.dds";
     protected final String TESTSOURCE2 = SESSIONURL + "/test.02.dds";
 
@@ -77,7 +75,6 @@ public class TestState extends UnitTestCommon
 
 
     @Test
-    @Category(NeedsExternalResource.class)
     public void testState() throws Exception
     {
         int status = 0;

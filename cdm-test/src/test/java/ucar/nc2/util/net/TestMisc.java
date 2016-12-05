@@ -33,18 +33,18 @@
 package ucar.nc2.util.net;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.EscapeStrings;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.TestDir;
 
 import java.util.List;
 
@@ -73,15 +73,17 @@ public class TestMisc extends UnitTestCommon
         setTitle("HTTP Session tests");
     }
 
+    static protected final String server = "http://" + TestDir.dap2TestServer;
+
     static final String[] esinputs = {
-            "http://localhost:8081/dts/test.01",
-            "http://localhost:8081///xx/",
-            "http://localhost:8081/<>^/`/",
+            server + "/dts/test.01",
+            server + "///xx/",
+            server + "/<>^/`/",
     };
     static final String[] esoutputs = {
-            "http://localhost:8081/dts/test.01",
-            "http://localhost:8081///xx/",
-            "http://localhost:8081/%3c%3e%5e/%60/",
+            server + "/dts/test.01",
+            server + "///xx/",
+            server + "/%3c%3e%5e/%60/",
     };
 
     @Test
@@ -193,22 +195,14 @@ public class TestMisc extends UnitTestCommon
 
     @Test
     public void
-    testClosing1()
-    {
-        int i = -1;
-        try {
-            HTTPSession s = HTTPFactory.newSession(CLOSEFILE);
-            for(i = 0; i < 500; i++) {
+    testClosing1() throws HTTPException {
+        try (HTTPSession s = HTTPFactory.newSession(CLOSEFILE)){
+            for(int i = 0; i < 500; i++) {
                 HTTPMethod m = HTTPFactory.Head(s);
                 int statusCode = m.execute();
                 Assert.assertTrue("Unexpected return code: " + statusCode, statusCode == 200);
                 m.close();
             }
-            s.close();
-        } catch (Throwable e) {
-            System.err.println("failure at index=" + i);
-            System.err.flush();
-            e.printStackTrace();
         }
     }
 
@@ -220,20 +214,12 @@ public class TestMisc extends UnitTestCommon
 
     @Test
     public void
-    testClosing2()
-    {
-        int i = -1;
-        try {
-            for(i = 0; i < 500; i++) {
-                HTTPMethod m = HTTPFactory.Get(CLOSEFILE);
-                HttpResponse res = m.executeRaw();
-                Assert.assertFalse("Null response", res == null);
-                m.close();
-            }
-        } catch (Throwable e) {
-            System.err.println("failure at index=" + i);
-            System.err.flush();
-            e.printStackTrace();
+    testClosing2() throws HTTPException {
+        for(int i = 0; i < 500; i++) {
+            HTTPMethod m = HTTPFactory.Get(CLOSEFILE);
+            HttpResponse res = m.executeRaw();
+            Assert.assertFalse("Null response", res == null);
+            m.close();
         }
     }
 }

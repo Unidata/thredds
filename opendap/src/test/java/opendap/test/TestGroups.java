@@ -32,26 +32,17 @@
 
 package opendap.test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.nc2.dods.DODSNetcdfFile;
-import ucar.unidata.util.test.UnitTestCommon;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.util.test.Diff;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestGroups extends UnitTestCommon
 {
@@ -124,7 +115,6 @@ public class TestGroups extends UnitTestCommon
     }
 
     @Test
-    @Category(NeedsExternalResource.class)
     public void testGroup() throws Exception
     {
         // Run  with usegroups == true

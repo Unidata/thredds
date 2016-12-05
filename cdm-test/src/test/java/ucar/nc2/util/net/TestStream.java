@@ -35,14 +35,8 @@
 
 package ucar.nc2.util.net;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
@@ -50,8 +44,13 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.constants.CDM;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Describe
@@ -62,7 +61,7 @@ import ucar.unidata.util.test.TestDir;
 @Category(NeedsExternalResource.class)
 public class TestStream {
   @Test
-  public void testStream1() throws URISyntaxException {
+  public void testStream1() throws URISyntaxException, IOException {
     String catalogName = "http://"+ TestDir.threddsTestServer+"/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
@@ -77,14 +76,11 @@ public class TestStream {
       Catalog cat = builder.buildFromStream(stream, catalogURI);
       CatalogXmlWriter writer = new CatalogXmlWriter();
       writer.writeXML(cat, System.out, false);
-
-    } catch (IOException e) {
-      e.printStackTrace();
     }
   }
 
   @Test
-  public void testString() throws URISyntaxException {
+  public void testString() throws URISyntaxException, IOException {
     String catalogName = "http://"+TestDir.threddsTestServer+"/thredds/catalog.xml";
     URI catalogURI = new URI(catalogName);
 
@@ -102,13 +98,6 @@ public class TestStream {
       CatalogXmlWriter writer = new CatalogXmlWriter();
       writer.writeXML(cat, System.out, false);
 
-    } catch (IOException e) {
-      e.printStackTrace();
-
     }
-
   }
-
-
-
 }

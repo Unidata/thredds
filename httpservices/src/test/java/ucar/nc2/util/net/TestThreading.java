@@ -34,9 +34,11 @@ package ucar.nc2.util.net;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
+import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
 /**
@@ -55,7 +57,7 @@ public class TestThreading extends UnitTestCommon
     static protected final int DFALTTHREADS = 100;
     static protected final int DFALTMAXCONNS = (DFALTTHREADS/2);
 
-    static protected final String DFALTSERVER = "http://remotetest.unidata.ucar.edu";
+    static protected final String DFALTSERVER = "http://" + TestDir.dap2TestServer;
 
     static protected final String DFALTURLFMT = DFALTSERVER + "/dts/test.%02d";
 
@@ -101,88 +103,78 @@ public class TestThreading extends UnitTestCommon
 
     @Test
     public void
-    testThreadingN()
-    {
+    testThreadingN() throws HTTPException, InterruptedException {
         HTTPSession.setGlobalMaxConnections(DFALTMAXCONNS);
-        try {
-            Thread[] runners = new Thread[this.nthreads];
-            try (HTTPSession session = HTTPFactory.newSession(DFALTSERVER)) {
-                // Set some timeouts
-                //session.setConnectionTimeout(10000);
-                //session.setSOTimeout(10000);
+        Thread[] runners = new Thread[this.nthreads];
+        try (HTTPSession session = HTTPFactory.newSession(DFALTSERVER)) {
+            // Set some timeouts
+            //session.setConnectionTimeout(10000);
+            //session.setSOTimeout(10000);
+            for(int i = 0; i < this.nthreads; i++) {
+                if(DEBUG)
+                    System.err.printf("[%d]: %s%n", i, testurls[i]);
+                runners[i] = new Thread(new Runner(session, testurls[i], i));
+                runners[i].start();
+            }
+            if(AWAIT) {
+                Thread.sleep(nthreads * 100);
+                boolean[] state = new boolean[this.nthreads];
                 for(int i = 0; i < this.nthreads; i++) {
-                    if(DEBUG)
-                        System.err.printf("[%d]: %s%n", i, testurls[i]);
-                    runners[i] = new Thread(new Runner(session, testurls[i], i));
-                    runners[i].start();
+                    Thread t = runners[i];
+                    state[i] = t.isAlive();
                 }
-                if(AWAIT) {
-                    Thread.sleep(nthreads * 100);
-                    boolean[] state = new boolean[this.nthreads];
+                if(DEBUG)
+                    for(int i = 0; i < this.nthreads; i++) {
+                        System.err.printf("[%d]: %s%n", i, (state[i] ? "up" : "down"));
+                    }
+                for(int i = 0; i < this.nthreads; i++) {
+                    Thread t = runners[i];
+                    if(t.isAlive()) {
+                        System.err.printf("[%d] forced %n");
+                        t.interrupt();
+                    }
+                    t.join();
+                }
+            } else {
+                for(; ; ) {
+                    int upcount = 0;
                     for(int i = 0; i < this.nthreads; i++) {
                         Thread t = runners[i];
-                        state[i] = t.isAlive();
+                        if(t.isAlive())
+                            upcount++;
+                        else t.join();
                     }
-                    if(DEBUG)
-                        for(int i = 0; i < this.nthreads; i++) {
-                            System.err.printf("[%d]: %s%n", i, (state[i] ? "up" : "down"));
-                        }
-                    for(int i = 0; i < this.nthreads; i++) {
-                        Thread t = runners[i];
-                        if(t.isAlive()) {
-                            System.err.printf("[%d] forced %n");
-                            t.interrupt();
-                        }
-                        t.join();
-                    }
-                } else {
-                    for(; ; ) {
-                        int upcount = 0;
-                        for(int i = 0; i < this.nthreads; i++) {
-                            Thread t = runners[i];
-                            if(t.isAlive())
-                                upcount++;
-                            else t.join();
-                        }
-                        if(upcount == 0) break;
-                        System.err.println("upcount=" + upcount);
-                        System.err.flush();
-                        Thread.sleep(1 * 1000);
-                    }
+                    if(upcount == 0) break;
+                    System.err.println("upcount=" + upcount);
+                    System.err.flush();
+                    Thread.sleep(1 * 1000);
                 }
             }
-            System.err.println("All threads terminated");
-            HTTPSession.validatestate();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        System.err.println("All threads terminated");
+        HTTPSession.validatestate();
     }
 
     @Test
     public void
-    testThreading1()
-    {
-        try {
-            Runner[] runners = new Runner[this.nthreads];
-            try (HTTPSession session = HTTPFactory.newSession(DFALTSERVER)) {
-                // Set some timeouts
-                //session.setConnectionTimeout(10000);
-                //session.setSOTimeout(10000);
-                for(int i = 0; i < this.nthreads; i++) {
-                    if(DEBUG)
-                        System.err.printf("[%d]: %s%n", i, testurls[i]);
-                    runners[i] = new Runner(session, testurls[i], i);
-                }
-                for(int i = 0; i < this.nthreads; i++) {
-                    Runner runner = runners[i];
-                    runner.run();
-                }
+    testThreading1() throws HTTPException {
+        Runner[] runners = new Runner[this.nthreads];
+        try (HTTPSession session = HTTPFactory.newSession(DFALTSERVER)) {
+            // Set some timeouts
+            //session.setConnectionTimeout(10000);
+            //session.setSOTimeout(10000);
+            for(int i = 0; i < this.nthreads; i++) {
+                if(DEBUG)
+                    System.err.printf("[%d]: %s%n", i, testurls[i]);
+                runners[i] = new Runner(session, testurls[i], i);
             }
-            System.err.println("All threads terminated");
-            HTTPSession.validatestate();
-        } catch (Exception e) {
-            e.printStackTrace();
+            for(int i = 0; i < this.nthreads; i++) {
+                Runner runner = runners[i];
+                runner.run();
+            }
         }
+        System.err.println("All threads terminated");
+        HTTPSession.validatestate();
     }
 
     static class Runner implements Runnable
