@@ -23,13 +23,25 @@ import org.slf4j.LoggerFactory;
 public class CachingThreddsS3Client implements ThreddsS3Client {
     private static final Logger logger = LoggerFactory.getLogger(CachingThreddsS3Client.class);
 
-    private static final long ENTRY_EXPIRATION_TIME = 1;  // In hours.
-    private static final long MAX_METADATA_ENTRIES = 10000;
-    private static final long MAX_FILE_ENTRIES = 100;
+    private static int entryExpirationTime = 5*60;  // In seconds.
+    private static int maxMetadataEntries = 10000;
+    private static int maxFileEntries = 100;
 
     private final LoadingCache<S3URI, Optional<ThreddsS3Metadata>> metadataCache;
     private final LoadingCache<S3URI, Optional<ThreddsS3Listing>> listingCache;
     private final LoadingCache<S3URI, Optional<File>> objectFileCache;
+
+    public static void setEntryExpirationTime(int i) {
+        entryExpirationTime = i;
+    };
+
+    public static void setMaxMetadataEntries(int i) {
+        maxMetadataEntries = i;
+    }
+
+    public static void setMaxFileEntries(int i) {
+        maxFileEntries = i;
+    }
 
     public CachingThreddsS3Client(ThreddsS3Client threddsS3Client) {
         this(threddsS3Client, new ObjectFileCacheRemovalListener());
@@ -39,8 +51,8 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
             final ThreddsS3Client threddsS3Client, RemovalListener<S3URI, Optional<File>> removalListener) {
         // We can't reuse the builder because each of the caches we're creating has different type parameters.
         this.metadataCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
-                .maximumSize(MAX_METADATA_ENTRIES)
+                .expireAfterWrite(entryExpirationTime, TimeUnit.SECONDS)
+                .maximumSize(maxMetadataEntries)
                 .build(
                     new CacheLoader<S3URI, Optional<ThreddsS3Metadata>>() {
                         public Optional<ThreddsS3Metadata> load(S3URI s3uri) { // no checked exception
@@ -49,8 +61,8 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
                     }
                  );
         this.listingCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
-                .maximumSize(MAX_METADATA_ENTRIES)
+                .expireAfterWrite(entryExpirationTime, TimeUnit.SECONDS)
+                .maximumSize(maxMetadataEntries)
                 .build(
                     new CacheLoader<S3URI, Optional<ThreddsS3Listing>>() {
                         public Optional<ThreddsS3Listing> load(S3URI s3uri) { // no checked exception
@@ -59,8 +71,8 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
                     }
                 );
         this.objectFileCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(ENTRY_EXPIRATION_TIME, TimeUnit.HOURS)
-                .maximumSize(MAX_FILE_ENTRIES)
+                .expireAfterWrite(entryExpirationTime, TimeUnit.SECONDS)
+                .maximumSize(maxFileEntries)
                 .removalListener(removalListener)
                 .build(
                     new CacheLoader<S3URI, Optional<File>>() {
