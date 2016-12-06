@@ -41,6 +41,7 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import thredds.catalog.InvDatasetFeatureCollection;
 import thredds.catalog.parser.jdom.InvCatalogFactory10;
+import thredds.crawlabledataset.s3.CachingThreddsS3Client;
 import thredds.crawlabledataset.s3.ThreddsS3ClientImpl;
 import thredds.inventory.CollectionUpdater;
 import thredds.server.ncss.format.SupportedFormat;
@@ -297,7 +298,14 @@ public class CdmInit implements InitializingBean,  DisposableBean{
     // AmazonS3Client configuration
 
     int maxListingPages = ThreddsConfig.getInt("ThreddsS3ClientImpl.maxListingPages", Integer.MAX_VALUE);
+    int maxMetadataEntries = ThreddsConfig.getInt("CachingThreddsS3Client.maxMetadataEntries", 10000);
+    int maxFileEntries = ThreddsConfig.getInt("CachingThreddsS3Client.maxFileEntries", 100);
+    int entryExpirationTime = ThreddsConfig.getSeconds("CachingThreddsS3Client.entryExpirationTime", 13*60);
+
     ThreddsS3ClientImpl.setMaxListingPages(maxListingPages);
+    CachingThreddsS3Client.setMaxMetadataEntries(maxMetadataEntries);
+    CachingThreddsS3Client.setMaxFileEntries(maxFileEntries);
+    CachingThreddsS3Client.setEntryExpirationTime(entryExpirationTime);
 
     startupLog.info("CdmInit complete");
   }
