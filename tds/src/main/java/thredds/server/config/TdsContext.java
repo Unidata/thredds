@@ -251,6 +251,11 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
                 File defaultDataDir = new File(new File(startupContentDirectory, "public"), "testdata");
                 logServerStartup.info("TdsContext.init(): Copying default testdata directory from {}.", defaultDataDir);
                 IO.copyDirTree(defaultDataDir.getCanonicalPath(), dataDir.getCanonicalPath());
+
+                File catalogDir = new File(threddsDirectory, "catalogs");
+                File defaultCatalogDir = new File(startupContentDirectory, "catalogs");
+                logServerStartup.info("TdsContext.init(): Copying default catalogs directory from {}.", defaultDataDir);
+                IO.copyDirTree(defaultCatalogDir.getCanonicalPath(), catalogDir.getCanonicalPath());
             }
 
             File threddsConfigFile = new File(threddsDirectory, "threddsConfig.xml");

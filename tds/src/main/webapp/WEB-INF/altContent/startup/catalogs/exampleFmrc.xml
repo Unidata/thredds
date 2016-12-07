@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="THREDDS Server Default Catalog : You must change this to fit your server!"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0
+           http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.8.xsd">
+
+    <dataset name="Example FMRC">
+    <featureCollection name="GFS 0.25 degree" featureType="FMRC" harvest="true" path="GFS/0p25">
+    <metadata inherited="true">
+        <dataType>Grid</dataType>
+        <dataFormat>netCDF</dataFormat>
+        <documentation type="summary">Example GFS 0.25 degree output from the NetCDF Subset Service</documentation>
+    </metadata>
+        <collection spec="${tds.content.root.path}/thredds/public/testdata/GFS_Global_0p25deg_#yyyyMMdd_HHmm#\.grib2\.nc4$" />
+    </featureCollection>
+    </dataset>
+</catalog>

@@ -12,7 +12,7 @@
     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <!--service name="wcs" serviceType="WCS" base="/thredds/wcs/" /-->
     <!--service name="wms" serviceType="WMS" base="/thredds/wms/" /-->
-    <!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/" /-->
+    <!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /-->
   </service>
 
   <service name="dap" base="" serviceType="compound">
@@ -25,13 +25,12 @@
   <dataset name="Test Single Dataset" ID="testDataset"
            serviceName="dap"  urlPath="test/testData.nc" dataType="Grid"/>
 
-  <dataset name="Test Single Dataset 2" ID="testDataset2"
-           serviceName="odap" urlPath="test/testData2.grib2" dataType="Grid"/>
+  <dataset name="Test Single Dataset (default services)" ID="testDatasetDefaultServices"
+           urlPath="test/testData.nc" dataType="Grid"/>
 
-  <datasetScan name="Test all files in a directory" ID="testDatasetScan"
+  <datasetScan name="Test all files in a directory (datasetScan, default services)" ID="testDatasetScan"
                path="testAll" location="content/testdata">
     <metadata inherited="true">
-      <serviceName>all</serviceName>
       <dataType>Grid</dataType>
     </metadata>
 
@@ -42,4 +41,9 @@
   </datasetScan>
 
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
+
+  <!-- make sure to edit the spec attribute of the collection element in catalogs/exampleFmrc.xml
+       to reflect the content root directory on your local machine. -->
+  <catalogScan name="Scan for catalogs in a directory" path="catalogs" location="catalogs" watch="true" />
+
 </catalog>

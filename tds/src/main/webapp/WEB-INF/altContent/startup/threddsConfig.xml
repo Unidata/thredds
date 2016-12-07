@@ -171,9 +171,9 @@
   -->
 
   <!--
-  The Netcdf Subset Service is off by default.
+  The Netcdf Subset Service is on by default.
   <NetcdfSubsetService>
-    <allow>false</allow>
+    <allow>true</allow>
     <scour>10 min</scour>
     <maxAge>-1 min</maxAge>
   </NetcdfSubsetService>
@@ -188,10 +188,10 @@
     -->
   
   <!--
-  The WCS Service is off by default.
+  The WCS Service is on by default.
   Also, off by default (and encouraged) is operating on a remote dataset.
   <WCS>
-    <allow>false</allow>
+    <allow>true</allow>
     <allowRemote>false</allowRemote>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
