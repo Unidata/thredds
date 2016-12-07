@@ -83,6 +83,8 @@ public class ThreddsWmsServlet extends WmsServlet {
             NetcdfFile ncf = tdsDataset.getNetcdfFile(httpServletRequest, httpServletResponse,
                     tdsDataset.getPath());
 
+            NetcdfDataset ncd = new NetcdfDataset(ncf, true);
+
             String netcdfFilePath = ncf.getLocation();
     
             /*
@@ -101,7 +103,7 @@ public class ThreddsWmsServlet extends WmsServlet {
                 throw new EdalLayerNotFoundException(
                         "The requested dataset is not available on this server");
             }
-            catalogue = new ThreddsWmsCatalogue((NetcdfDataset) ncf, tdsDataset.getPath());
+            catalogue = new ThreddsWmsCatalogue(ncd, tdsDataset.getPath());
             catalogueCache.put(tdsDataset.getPath(), catalogue);
         }
 
