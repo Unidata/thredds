@@ -53,4 +53,10 @@ public interface DebugFlags {
    */
   void set(String flagName, boolean value);
 
+  /**
+   *  Return the string representing the current debug flag(s) set. Flags can be either
+   *  or false - they just need to be set.
+   */
+  String getSetFlags();
+
 }

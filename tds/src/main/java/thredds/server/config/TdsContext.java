@@ -36,6 +36,7 @@ import java.util.Formatter;
  * - creates, if don't exist, log and public dirs in content directory
  * - Get default and jsp dispatchers from servletContext
  * - Creates and initializes the TdsConfigMapper
+ * - check for debug flags to enable
  * <p>
  * LOOK would be nice to make Immutable
  *
@@ -76,6 +77,9 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
     @Value("${tds.download.dir}")
     private String downloadDirProperty;
+
+    @Value("${tds.debug.flags:}") // :} indicates an empty string if tds.debugflags prop is not set
+    private String tdsDebugFlagsProperty; // space sep debug flags to enable
 
     private ServletContext servletContext;
 
@@ -441,6 +445,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     {
         return downloadDir;
     }
+
+    public String getTdsDebugFlags() { return tdsDebugFlagsProperty; }
 
     /////////////////////////////////////////////////////
 

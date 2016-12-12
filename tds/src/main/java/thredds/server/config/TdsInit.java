@@ -60,6 +60,9 @@ import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
+import ucar.nc2.stream.CdmRemote;
+import ucar.nc2.util.DebugFlags;
+import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.DiskCache;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.cache.FileCache;
@@ -134,6 +137,13 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
           startupLog.info("TdsInit: {}", event);
           startupLog.info("TdsInit: getContentRootPathAbsolute= " + tdsContext.getContentRootPathProperty());
 
+          // set debug flags passed into the JVM, as long as flags are actually passed in
+          String tdsDebugFlags = tdsContext.getTdsDebugFlags();
+          if (!tdsDebugFlags.isEmpty()) {
+            startupLog.info(String.format("Setting the following debug flags: %s", tdsDebugFlags));
+            setDebugFlags(new DebugFlagsImpl(tdsDebugFlags));
+          }
+
           readState();
           initThreddsConfig();
           readThreddsConfig();
@@ -148,6 +158,20 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
         }
       }
     }
+  }
+
+  private void setDebugFlags(DebugFlags debugFlags) {
+    NetcdfFile.setDebugFlags(debugFlags);
+    ucar.nc2.iosp.hdf5.H5iosp.setDebugFlags(debugFlags);
+    ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
+    ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
+    CdmRemote.setDebugFlags(debugFlags);
+    Nc4Iosp.setDebugFlags(debugFlags);
+    DataFactory.setDebugFlags(debugFlags);
+
+    ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
+    ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
+    ucar.nc2.grib.collection.Grib.setDebugFlags(debugFlags);
   }
 
   private void readState() {

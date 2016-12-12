@@ -71,4 +71,8 @@ public class DebugFlagsImpl implements DebugFlags {
     map.put(flagName, value);
   }
 
+  public String getSetFlags() {
+    return map.keySet().toString();
+  }
+
 }
