@@ -43,7 +43,6 @@ package ucar.nc2.util.net;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.httpservices.HTTPException;
@@ -51,13 +50,11 @@ import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(Parameterized.class)
-@Category(NeedsCdmUnitTest.class)
 public class TestHang
 {
 
