@@ -21,7 +21,7 @@
         <property name="location" value="/WEB-INF/view.xml"/>
     </bean>
 
-    <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
+    <bean id="templateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
         <property name="prefix" value="/WEB-INF/"/>
         <property name="suffix" value=".html"/>
         <property name="templateMode" value="HTML5"/>
