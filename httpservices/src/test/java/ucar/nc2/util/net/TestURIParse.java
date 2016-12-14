@@ -33,6 +33,7 @@
 package ucar.nc2.util.net;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -49,7 +50,6 @@ import java.net.URISyntaxException;
 public class TestURIParse extends UnitTestCommon
 {
     static public boolean DEBUG = false;
-    static public boolean DOCARON = false;
 
     static final String CARON = "http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/hdf5/grid_1_3d_xyz_aug.h5?req=data&var=HDFEOS_INFORMATION/StructMetadata\\.0";
 
@@ -127,12 +127,11 @@ public class TestURIParse extends UnitTestCommon
         Assert.assertTrue("TestMisc.testURX", pass);
     }
 
-    // Temporary to test Caron's case specifically
     @Test
+    @Ignore("Temporary to test Caron's case specifically")
     public void
     testCaron()
     {
-        if(!DOCARON) return;
         try {
             try (HTTPMethod m = HTTPFactory.Get(CARON)) {
                 int code = m.execute();
