@@ -203,7 +203,7 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.6"
 libraries["oro"] = "oro:oro:2.0.8"
 
 // The latest version is 3.0.1.RELEASE. Can we update?
-libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:2.1.5.RELEASE"
+libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
 
 versions["edal"] = "1.2.5-SNAPSHOT"
 
@@ -281,7 +281,15 @@ configurations.all {
             dep.useTarget libraries["jcl-over-slf4j"]
         }
     }
-    
+
+    resolutionStrategy {
+        // commons-collections 3.2.2 over 3.2.1 (pulled in as trans dep
+        //     of uk.ac.rdg.resc:edal-graphics:1.2.6-SNAPSHOT)
+        // xstream 1.4.9 over 1.4.8 (pulled in as dep
+        //     of net.openhft:chronicle-map:2.4.15)
+        force 'commons-collections:commons-collections:3.2.2', 'com.thoughtworks.xstream:xstream:1.4.9'
+    }
+
     // STAX comes with Java 1.6+
     // Dragged in by xmlbeans
     exclude group: 'stax', module: 'stax-api'
