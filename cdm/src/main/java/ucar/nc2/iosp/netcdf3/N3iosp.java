@@ -32,37 +32,19 @@
  */
 package ucar.nc2.iosp.netcdf3;
 
+import ucar.ma2.*;
+import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.constants.DataFormatType;
+import ucar.nc2.iosp.*;
+import ucar.unidata.io.RandomAccessFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.ArrayObject;
-import ucar.ma2.ArrayStructure;
-import ucar.ma2.ArrayStructureBB;
-import ucar.ma2.DataType;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
-import ucar.ma2.StructureData;
-import ucar.ma2.StructureMembers;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.Structure;
-import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
-import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.iosp.AbstractIOServiceProvider;
-import ucar.nc2.iosp.IOServiceProviderWriter;
-import ucar.nc2.iosp.Layout;
-import ucar.nc2.iosp.LayoutRegular;
-import ucar.nc2.iosp.LayoutRegularSegmented;
-import ucar.unidata.io.RandomAccessFile;
 
 /**
  * IOServiceProvider implementation abstract base class to read/write "version 3" netcdf files.
@@ -80,15 +62,19 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
   static public final char NC_FILL_CHAR = (char) 0;
   static public final short NC_FILL_SHORT = (short) -32767;
   static public final int NC_FILL_INT = -2147483647;
-  static public final long NC_FILL_LONG = -9223372036854775806L;
   static public final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119 */
   static public final double NC_FILL_DOUBLE = 9.9692099683868690e+36;
 
   static public final byte NC_FILL_UBYTE = (byte) 255;
   static public final short NC_FILL_USHORT = (short) 65535;
   static public final int NC_FILL_UINT = (int) 4294967295L;
-  static public final long NC_FILL_INT64 = (long) -9223372036854775806L;
-  static public final long NC_FILL_UINT64 = -2; // (long) 18446744073709551614L;  // LOOK what is this as neg ?
+  static public final long NC_FILL_INT64 = -9223372036854775806L;  // 0x8000000000000002. Only bits 63 and 1 set.
+
+  // We want to use 18446744073709551614ULL here (see https://goo.gl/buBal9), but that's too big to fit into a
+  // signed long (Java doesn't have unsigned types). So, assign the hex string that WOULD correspond to that value
+  // *if it were treated as unsigned*. Java will treat it as signed and see "-2", but we don't much care.
+  static public final long NC_FILL_UINT64 = 0xfffffffffffffffeL;
+
   static public final String NC_FILL_STRING  = "";
 
   static public Number getFillValueDefault(DataType dtype) {
@@ -99,7 +85,7 @@ public abstract class N3iosp extends AbstractIOServiceProvider implements IOServ
     if (dtype == DataType.USHORT) return N3iosp.NC_FILL_USHORT;
     if ((dtype == DataType.INT) || (dtype == DataType.ENUM4)) return N3iosp.NC_FILL_INT;
     if (dtype == DataType.UINT) return N3iosp.NC_FILL_UINT;
-    if (dtype == DataType.LONG) return N3iosp.NC_FILL_LONG;
+    if (dtype == DataType.LONG) return N3iosp.NC_FILL_INT64;
     if (dtype == DataType.ULONG) return N3iosp.NC_FILL_UINT64;
     if (dtype == DataType.FLOAT) return N3iosp.NC_FILL_FLOAT;
     if (dtype == DataType.DOUBLE) return N3iosp.NC_FILL_DOUBLE;

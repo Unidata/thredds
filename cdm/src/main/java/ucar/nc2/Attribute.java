@@ -353,7 +353,7 @@ public class Attribute extends CDMNode {
     DataType dt = DataType.getType(val.getClass(), isUnsigned);
     Array vala = Array.factory(dt, shape);
     Index ima = vala.getIndex();
-    vala.setDouble(ima.set0(0), val.doubleValue());
+    vala.setObject(ima.set0(0), val);
     setValues(vala);
     setImmutable();
   }
