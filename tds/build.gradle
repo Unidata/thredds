@@ -90,8 +90,6 @@ dependencies {
     // Testing
     testCompile libraries["spring-test"]
     testCompile libraries["hamcrest-core"]
-    testCompile libraries["httpunit"]
-    
     testCompile libraries["commons-io"]
 
     // Logging
