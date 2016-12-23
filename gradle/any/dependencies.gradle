@@ -203,7 +203,7 @@ libraries["oro"] = "oro:oro:2.0.8"
 // The latest version is 3.0.1.RELEASE. Can we update?
 libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
 
-versions["edal"] = "1.2.5-SNAPSHOT"
+versions["edal"] = "1.2.5"
 
 libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
 
