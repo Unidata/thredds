@@ -3298,9 +3298,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public boolean rewriteHeader(boolean largeFile) throws IOException {
-    return true;
+    // Rewriting just the header is not possible in NetCDF-4, so always return false.
+    // This will cause NetcdfFileWriter.setRedefineMode(false) to rewrite the entire file instead.
+    return false;
   }
-
 
   @Override
   public void updateAttribute(Variable v2, Attribute att) throws IOException {
