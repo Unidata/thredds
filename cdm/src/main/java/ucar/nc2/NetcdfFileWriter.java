@@ -924,6 +924,10 @@ public class NetcdfFileWriter implements Closeable {
     spiw.close();
 
     File prevFile = new File(location);
+    if (!prevFile.exists()) {
+      return;
+    }
+
     File tmpFile = new File(location + ".tmp");
     if (tmpFile.exists()) {
       boolean ok = tmpFile.delete();
