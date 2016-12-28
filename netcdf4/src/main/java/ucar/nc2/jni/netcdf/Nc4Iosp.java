@@ -3267,6 +3267,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public void flush() throws IOException {
+    if (nc4 == null || ncid < 0) return;  // not open yet
+
     int ret = nc4.nc_sync(ncid);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -3296,12 +3298,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public boolean rewriteHeader(boolean largeFile) throws IOException {
-    return false;
+    return true;
   }
 
 
   @Override
   public void updateAttribute(Variable v2, Attribute att) throws IOException {
+    if (nc4 == null || ncid < 0) return;  // not open yet
+
     if (v2 == null)
       writeAttribute(ncid, Nc4prototypes.NC_GLOBAL, att, null);
     else {
