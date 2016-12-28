@@ -354,10 +354,7 @@ public class TestNc4Misc {
   // Demonstrates GitHub issue #718: https://github.com/Unidata/thredds/issues/718
   @Test
   public void testCloseNc4inDefineMode() throws IOException {
-    File tempFile = tempFolder.newFile("delete_me.nc4");
-    String location = tempFile.getAbsolutePath();
-    tempFile.delete();
-
+    String location = "/some/non/existent/file.nc4";  // We won't actually be creating this, so path doesn't matter.
     Nc4Chunking chunking = Nc4ChunkingDefault.factory(Nc4Chunking.Strategy.standard, 5, true);
 
     // Should be able to open and close file without an exception. Would fail before the bug fix in this commit.
