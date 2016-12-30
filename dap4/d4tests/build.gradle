@@ -53,3 +53,17 @@ test {
     include 'dap4/test/TestServlet.class'
     include 'dap4/test/TestServletConstraints.class'
 }
+
+apply plugin: 'org.akhikhl.gretty'
+
+gretty {
+    // Same config for these 3 items as in ':dap4:d4ts'.
+    servletContainer = 'tomcat8'
+    httpPort = 8083
+    contextPath = '/d4ts'
+    systemProperties test.systemProperties
+    
+    integrationTestTask = 'test'
+    
+    overlay ':dap4:d4ts'
+}

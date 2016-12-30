@@ -4,10 +4,8 @@ import dap4.dap4lib.XURI;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -168,7 +166,6 @@ public class TestConstraints extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Junit test method
-    @Category(NeedsExternalResource.class)
     @Test
     public void testConstraints()
             throws Exception
