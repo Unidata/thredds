@@ -126,7 +126,7 @@ public class TestDir {
 
   static public String dap4TestServerPropName = "d4ts";
 
-  static public String dap4TestServer = "remotetest.unidata.ucar.edu";
+  static public String dap4TestServer = "localhost:8083";
 
   static public final String testingDap4TestServer = "localhost:8081";
 

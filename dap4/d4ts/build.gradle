@@ -16,9 +16,10 @@ dependencies {
     runtime libraries["log4j-web"]
 }
 
-war {
+// This specifies the resources from ":dap4:d4tests" that we need to include in the d4ts war and inplaceWebapp.
+def d4testsResourcesCopySpec = copySpec {
     File d4testsResourcesDir = project(":dap4:d4tests").file('src/test/data/resources')
-
+    
     from (new File(d4testsResourcesDir, 'favicon.ico')) {
         into('WEB-INF/')
     }
@@ -34,4 +35,19 @@ war {
         include('*.dmr')
     }
     */
+}
+
+war.with d4testsResourcesCopySpec
+
+apply plugin: 'org.akhikhl.gretty'
+
+gretty {
+    servletContainer = 'tomcat8'
+    httpPort = 8083
+    contextPath = '/d4ts'
+    systemProperties System.properties
+    
+    afterEvaluate {
+        prepareInplaceWebAppFolder.with d4testsResourcesCopySpec
+    }
 }
