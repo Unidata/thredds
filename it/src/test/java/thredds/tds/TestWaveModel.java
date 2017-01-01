@@ -2,6 +2,7 @@ package thredds.tds;
 
 import junit.framework.TestCase;
 import org.junit.Assert;
+import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
@@ -9,21 +10,15 @@ import thredds.server.catalog.TdsLocalCatalog;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 import ucar.nc2.Attribute;
 import ucar.nc2.VariableSimpleIF;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.nc2.dt.GridDataset;
-import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -35,6 +30,7 @@ import java.text.ParseException;
  * @author caron
  * @since Sep 24, 2010
  */
+@Category(NeedsCdmUnitTest.class)
 public class TestWaveModel extends TestCase {
 
   public TestWaveModel( String name) {

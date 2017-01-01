@@ -39,6 +39,8 @@ dependencies {
 
 apply plugin: 'org.akhikhl.gretty'
 
+import com.google.common.collect.Iterables
+
 gretty {
     servletContainer = 'tomcat8'
     httpPort = 8081
@@ -52,26 +54,14 @@ gretty {
     // The normal 'test' task added by the Java plugin has nothing to do in this subproject, because every single
     // test requires a running TDS. Therefore, we're repurposing the 'test' task for integration testing.
     integrationTestTask = 'test'
-
-    // By default, this field is 'false', which causes Gretty to start the embedded Tomcat process with a non-blocking
-    // entropy source. It is intended to make startup faster.
-    // See http://wiki.apache.org/tomcat/HowTo/FasterStartUp#Entropy_Source and http://goo.gl/NnJtpZ
-    //
-    // However, setting the "java.security.egd" system property as described in the Tomcat doc causes an error
-    // message when running tests on Windows: https://bz.apache.org/bugzilla/show_bug.cgi?id=56139
-    //
-    // Making this field 'true' prevents Gretty from setting that property, and thus avoids the error message.
-    // It turns out to have negligible effect on startup time, at least in this integration testing context.
-    //
-    // Also, a comment in the bug report mentions that this issue has been fixed as of Tomcat 7.0.53.
-    // However, it is actually still present as of 7.0.55
-    secureRandom = true
+    
+    File testResourcesDir = Iterables.getOnlyElement(sourceSets.test.resources.srcDirs)
     
     // These enable HTTPS authentication, which is needed to access the TDS admin interface.
     httpsEnabled = true
-    sslKeyStorePath = "${sourceSets.test.output.resourcesDir}/auth/keystore"
+    sslKeyStorePath = "$testResourcesDir/auth/keystore"
     sslKeyStorePassword = 'secret666'
-    realmConfigFile = "${sourceSets.test.output.resourcesDir}/auth/tomcat-users.xml"
+    realmConfigFile = "$testResourcesDir/auth/tomcat-users.xml"
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.
@@ -85,9 +75,6 @@ test {
         // so disable the task altogether.
         enabled = false
     }
-
-    // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
-    exclude 'thredds/tds/**'
 
     doLast {
         // Remove the system properties that Gretty added in AppBeforeIntegrationTestTask.integrationTestTask().
@@ -106,8 +93,8 @@ test {
 // So, we can be sure that we're not trampling over any existing properties by doing this.
 gretty.systemProperties test.systemProperties
 
-import org.gradle.api.internal.changedetection.TaskArtifactStateRepository
 import org.gradle.api.internal.changedetection.TaskArtifactState
+import org.gradle.api.internal.changedetection.TaskArtifactStateRepository
 
 // We want to modify the "appBeforeIntegrationTest" and "appAfterIntegrationTest" tasks, but like all Gretty tasks,
 // they won't be added to the project until after evaluation: http://goo.gl/qlFXTD

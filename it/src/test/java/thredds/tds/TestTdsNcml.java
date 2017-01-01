@@ -34,24 +34,29 @@ package thredds.tds;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
 import thredds.server.catalog.TdsLocalCatalog;
-import ucar.ma2.DataType;
-import ucar.nc2.*;
-import ucar.nc2.dataset.*;
-import ucar.nc2.constants.FeatureType;
 import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
+import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Attribute;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
+import ucar.nc2.constants.FeatureType;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Formatter;
 
+@Category(NeedsCdmUnitTest.class)
 public class TestTdsNcml {
 
   @Test

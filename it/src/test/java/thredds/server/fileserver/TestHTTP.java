@@ -32,29 +32,26 @@
  */
 package thredds.server.fileserver;
 
-import java.io.IOException;
-import java.util.Formatter;
-
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import thredds.TestWithLocalServer;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.Index;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
 
+import java.io.IOException;
+import java.util.Formatter;
+
 /** Test remote netcdf over HTTP in the JUnit framework. */
-@Category(NeedsExternalResource.class)
 public class TestHTTP  {
-  String url = "http://" + TestDir.remoteTestServer + "/thredds/fileServer/testdata/mydata1.nc";
+  String url = "http://" + TestDir.remoteTestServer + "/thredds/fileServer/scanLocal/mydata1.nc";
 
   @Test
   public void testOpenNetcdfFile() throws IOException {

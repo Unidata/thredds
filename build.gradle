@@ -28,6 +28,8 @@ buildscript {
         classpath libraries["gradle-extra-configurations-plugin"]
         classpath libraries["sonarqube-gradle-plugin"]
         classpath libraries["license-gradle-plugin"]
+        
+        classpath libraries["guava"]  // For various utility methods used in the build scripts.
     }
 }
 

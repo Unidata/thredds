@@ -102,11 +102,6 @@ dependencies {
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:test' depends on.
 apply plugin: 'org.akhikhl.gretty'
 
-//test {
-    // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
-//    exclude 'thredds/tds/**'
-//}
-
 // Tests expect for test resources to be copied to the same directory as the test classes.
 processTestResources.destinationDir = compileTestJava.destinationDir
 

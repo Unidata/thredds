@@ -8,8 +8,9 @@
   <role rolename="tdsMonitor" description="can monitor log files with tdsMonitor program"/>
   <role rolename="tdsTrigger" description="can trigger feature collections, eg from tdm"/>
   <role rolename="manager-gui"/>
+  <role rolename="containerauth"/>
 
   <user username="tds" 
         password="secret666" 
-        roles="restrictedDatasetUser,tdsConfig,tdsMonitor,tdsTrigger,manager-gui,"/>
+        roles="restrictedDatasetUser,tdsConfig,tdsMonitor,tdsTrigger,manager-gui,containerauth"/>
 </tomcat-users>

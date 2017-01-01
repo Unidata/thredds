@@ -33,12 +33,7 @@
 
 package thredds.server.fileserver;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
@@ -47,7 +42,10 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
-import ucar.unidata.util.test.category.NeedsExternalResource;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * Describe
@@ -56,7 +54,6 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
  * @since 6/19/2014
  */
 @RunWith(Parameterized.class)
-@Category(NeedsExternalResource.class)
 public class TestHttpOpen {
 
   @Parameterized.Parameters(name="{0}")

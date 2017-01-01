@@ -25,7 +25,7 @@ import ucar.unidata.util.test.TestDir;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml" }, loader = MockTdsContextLoader.class)
-@Category(NeedsContentRoot.class)
+@Category({NeedsContentRoot.class, NeedsExternalResource.class})
 public class RemoteCatalogControllerTest {
 
 	@Autowired
@@ -47,7 +47,6 @@ public class RemoteCatalogControllerTest {
 	String htmlContent = "text/html;charset=UTF-8";
 
 	@Test
-	@Category(NeedsExternalResource.class)
 	public void showCommandTest() throws Exception{
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
 						.param("command", "SHOW")
@@ -63,7 +62,6 @@ public class RemoteCatalogControllerTest {
 	}
 
 	@Test
-	@Category(NeedsExternalResource.class)
 	public void subsetCommandTest() throws Exception{
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
 						.param("command", "SUBSET")
@@ -80,7 +78,6 @@ public class RemoteCatalogControllerTest {
 	}
 
 	@Test
-	@Category(NeedsExternalResource.class)
 	public void validateCommandTest() throws Exception{
 		RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
 						.param("command", "VALIDATE")
