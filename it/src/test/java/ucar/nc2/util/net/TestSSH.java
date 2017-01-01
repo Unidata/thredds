@@ -40,14 +40,10 @@ import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NotJenkins;
-import ucar.unidata.util.test.category.NotTravis;
-import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -56,17 +52,12 @@ import java.io.Serializable;
  * This test is to check ssh authorization.
  * As a rule, this needs to run against localhost:8443
  * using a pure tomcat server.
- * It currently cannot be run except manually under
- * Intellij.
  */
-
-@Category({NotJenkins.class, NotTravis.class})
 public class TestSSH extends UnitTestCommon
 {
     static protected final boolean IGNORE = true;
 
-    //static protected String SERVER = "localhost:8443";
-    static protected String SERVER = TestDir.remoteTestServer;
+    static protected String SERVER = "localhost:8443";
 
     static protected String Dkeystore = null;
     static protected String Dkeystorepassword = null;
@@ -97,18 +88,18 @@ public class TestSSH extends UnitTestCommon
     }
 
     static public void
-        report(Result result)
-        {
-            report(result, null);
-        }
+    report(Result result)
+    {
+        report(result, null);
+    }
 
-        static public void
-        report(Result result, Integer counter)
-        {
-            System.err.printf("Result: code=%d content?=%b provider-calls=%d%n",
-                    result.status, result.contents.length, counter);
-            System.err.flush();
-        }
+    static public void
+    report(Result result, Integer counter)
+    {
+        System.err.printf("Result: code=%d content?=%b provider-calls=%d%n",
+                result.status, result.contents.length, counter);
+        System.err.flush();
+    }
 
     // Provide a non-interactive CredentialsProvider to hold
     // the user+pwd; used in several places
@@ -276,24 +267,24 @@ javax.net.debug=ssl:<option>:<option>...
 where <option> is taken from the following:
 
 The following can be used with ssl:
-	record       enable per-record tracing
-	handshake    print each handshake message
-	keygen       print key generation data
-	session      print session activity
-	defaultctx   print default SSL initialization
-	sslctx       print SSLContext tracing
-	sessioncache print session cache tracing
-	keymanager   print key manager tracing
-	trustmanager print trust manager tracing
-	pluggability print pluggability tracing
+    record       enable per-record tracing
+    handshake    print each handshake message
+    keygen       print key generation data
+    session      print session activity
+    defaultctx   print default SSL initialization
+    sslctx       print SSLContext tracing
+    sessioncache print session cache tracing
+    keymanager   print key manager tracing
+    trustmanager print trust manager tracing
+    pluggability print pluggability tracing
 
-	handshake debugging can be widened with:
-	data         hex dump of each handshake message
-	verbose      verbose handshake message printing
+    handshake debugging can be widened with:
+    data         hex dump of each handshake message
+    verbose      verbose handshake message printing
 
-	record debugging can be widened with:
-	plaintext    hex dump of record plaintext
-	packet       print raw SSL/TLS packets
+    record debugging can be widened with:
+    plaintext    hex dump of record plaintext
+    packet       print raw SSL/TLS packets
 
 
 Process finished with exit code 0

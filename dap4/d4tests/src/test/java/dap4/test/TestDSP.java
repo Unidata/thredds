@@ -14,9 +14,7 @@ import dap4.servlet.SynDSP;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -275,7 +273,6 @@ public class TestDSP extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Junit test method
-    @Category(NeedsExternalResource.class)
     @Test
     public void testDSP()
             throws Exception

@@ -35,7 +35,6 @@ package ucar.nc2.util.net;
 import org.apache.http.HttpResponse;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -44,7 +43,6 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.util.List;
 
@@ -73,7 +71,7 @@ public class TestMisc extends UnitTestCommon
         setTitle("HTTP Session tests");
     }
 
-    static protected final String server = "http://" + TestDir.dap2TestServer;
+    static protected final String server = "http://" + TestDir.remoteTestServer;
 
     static final String[] esinputs = {
             server + "/dts/test.01",
@@ -104,7 +102,6 @@ public class TestMisc extends UnitTestCommon
     }
 
     @Test
-    @Category(NeedsExternalResource.class)
     public void testUTF8Stream() throws Exception
     {
         pass = true;
@@ -170,7 +167,7 @@ public class TestMisc extends UnitTestCommon
     public void
     testByteRange()
     {
-        String file = "http://" + TestDir.remoteTestServer + "/thredds/fileServer/testdata/testData.nc";
+        String file = "http://" + TestDir.remoteTestServer + "/thredds/fileServer/scanLocal/testData.nc";
         try {
             try (HTTPMethod m = HTTPFactory.Get(file)) {
                 m.setRange(0, 9);
@@ -190,7 +187,7 @@ public class TestMisc extends UnitTestCommon
      */
 
     static String CLOSEFILE =
-            "http://" + TestDir.remoteTestServer + "/thredds/fileServer/testdata/testData.nc";
+            "http://" + TestDir.remoteTestServer + "/thredds/fileServer/scanLocal/testData.nc";
     //"http://rdavm.ucar.edu:8443/thredds/admin/collection/trigger?trigger=never&collection=ds083.2_Grib1";
 
     @Test

@@ -36,11 +36,9 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.httpservices.*;
-import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.*;
 import java.util.HashMap;
@@ -52,7 +50,6 @@ import java.util.regex.Pattern;
 /**
  * Test HttpFormBuilder
  */
-@Category(NeedsExternalResource.class)
 public class TestFormBuilder extends UnitTestCommon
 {
 
@@ -321,14 +318,14 @@ public class TestFormBuilder extends UnitTestCommon
             String value = "";
             String key = pair[0];
             switch (pair.length) {
-            case 1:
-                break;
-            case 2:
-            default:
-                value = pair[1].trim();
-                if(value.charAt(0) == '"')
-                    value = value.substring(1, value.length() - 1);
-                break;
+                case 1:
+                    break;
+                case 2:
+                default:
+                    value = pair[1].trim();
+                    if(value.charAt(0) == '"')
+                        value = value.substring(1, value.length() - 1);
+                    break;
             }
             map.put(key, value);
         }

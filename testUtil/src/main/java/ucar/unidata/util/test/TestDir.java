@@ -114,7 +114,7 @@ public class TestDir {
 
   private static String remoteTestServerPropName = "remotetestserver";
 
-  static public String remoteTestServer = "remotetest.unidata.ucar.edu";
+  static public String remoteTestServer = "localhost:8081";
 
   // DAP 2 Test server (for testing)
 
@@ -128,21 +128,11 @@ public class TestDir {
 
   static public String dap4TestServer = "localhost:8083";
 
-  // Are we running under travis or jenkins? (from testing.gradle)
-  static final public boolean isTravis;
-  static final public boolean isJenkins;
-  static final public boolean isTravisOrJenkins;
-
   //////////////////////////////////////////////////
 
   // Determine how Unidata "/upc/share" directory is mounted
   // on local machine by reading system or THREDDS property.
   static {
-
-    isTravis = (System.getenv("TRAVIS") != null);
-    isJenkins = (System.getenv("JENKINS_URL") != null);
-    isTravisOrJenkins = isTravis || isJenkins;
-
     // Check for system property
     testdataDir = System.getProperty( testdataDirPropName );
 
@@ -196,11 +186,11 @@ public class TestDir {
 
     String rts = System.getProperty(remoteTestServerPropName);
     if(rts != null && rts.length() > 0)
-	remoteTestServer = rts;
+	    remoteTestServer = rts;
 
     String dts = System.getProperty(dap2TestServerPropName);
     if(dts != null && dts.length() > 0)
-	dap2TestServer = dts;
+	    dap2TestServer = dts;
 
     String d4ts = System.getProperty(dap4TestServerPropName);
     if(d4ts != null && d4ts.length() > 0)

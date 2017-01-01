@@ -39,14 +39,11 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
-import ucar.unidata.util.test.category.NotJenkins;
-import ucar.unidata.util.test.category.NotTravis;
-import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -93,12 +90,9 @@ import java.util.List;
  *                ID="testcontainerauth"
  *                serviceName="all"
  *                urlPath="containerauth/testData2.nc"
-
-*                restrictAccess="containerauth"/>
+ *                restrictAccess="containerauth"/>
  *
  */
-
-@Category({NotJenkins.class, NotTravis.class})
 public class TestTomcatAuth extends UnitTestCommon
 {
     static final String BADPASSWORD = "bad";
@@ -268,7 +262,7 @@ public class TestTomcatAuth extends UnitTestCommon
         basictests.add(new AuthDataBasic("http://"
                 + this.server
                 + "/thredds/dodsC/containerauth/testData2.nc.dds",
-                "tiggeUser", "tigge"));
+                "tds", "secret666"));
     }
 
     @Test
@@ -407,7 +401,7 @@ public class TestTomcatAuth extends UnitTestCommon
         if(!this.prop_display) {
             System.err.println("Test aborted: requires display");
             return;
-                }
+        }
         for(AuthDataBasic data : basictests) {
             Result result = null;
             System.out.println("*** URL: " + data.url);
@@ -509,24 +503,24 @@ javax.net.debug=ssl:<option>:<option>...
 where <option> is taken from the following:
 
 The following can be used with ssl:
-	record       enable per-record tracing
-	handshake    print each handshake message
-	keygen       print key generation data
-	session      print session activity
-	defaultctx   print default SSL initialization
-	sslctx       print SSLContext tracing
-	sessioncache print session cache tracing
-	keymanager   print key manager tracing
-	trustmanager print trust manager tracing
-	pluggability print pluggability tracing
+    record       enable per-record tracing
+    handshake    print each handshake message
+    keygen       print key generation data
+    session      print session activity
+    defaultctx   print default SSL initialization
+    sslctx       print SSLContext tracing
+    sessioncache print session cache tracing
+    keymanager   print key manager tracing
+    trustmanager print trust manager tracing
+    pluggability print pluggability tracing
 
-	handshake debugging can be widened with:
-	data         hex dump of each handshake message
-	verbose      verbose handshake message printing
+    handshake debugging can be widened with:
+    data         hex dump of each handshake message
+    verbose      verbose handshake message printing
 
-	record debugging can be widened with:
-	plaintext    hex dump of record plaintext
-	packet       print raw SSL/TLS packets
+    record debugging can be widened with:
+    plaintext    hex dump of record plaintext
+    packet       print raw SSL/TLS packets
 
 
 Process finished with exit code 0
