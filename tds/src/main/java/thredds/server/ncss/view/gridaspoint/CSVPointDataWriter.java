@@ -195,9 +195,8 @@ class CSVPointDataWriter implements PointDataWriter {
         StringBuilder sb = new StringBuilder();
 
         if (hasTimeAxis)
-
-
             sb.append("time,");
+
         sb.append("latitude[unit=\"degrees_north\"],");
         sb.append("longitude[unit=\"degrees_east\"],");
 
@@ -206,14 +205,12 @@ class CSVPointDataWriter implements PointDataWriter {
 
         GridCoordSystem coordSystem = gridDataset.findGridDatatype(varGroup.get(0)).getCoordinateSystem();
         CoordinateAxis1D zAxis = coordSystem.getVerticalAxis();
-
         if (zAxis != null)
             sb.append("vertCoord[unit=\"").append(zAxis.getUnitsString()).append("\"],");
 
         VerticalTransform vt = coordSystem.getVerticalTransform();
-        if (vt != null) {
+        if (vt != null) 
             sb.append("vertCoord[unit=\"").append(vt.getUnitString()).append("\"],");
-        }
 
         Iterator<String> it = varGroup.iterator();
         while (it.hasNext()) {

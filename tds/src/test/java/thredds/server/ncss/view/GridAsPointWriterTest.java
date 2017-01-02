@@ -105,13 +105,13 @@ public class GridAsPointWriterTest {
 
     String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
 		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
-    assert gridDataset != null;
+		assert gridDataset != null;
 
 		List<String> keys = new ArrayList<String>( vars.keySet());		
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
 		
 		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
-    pointDataWriter = PointDataWriterFactory.factory(supportedFormat, new ByteArrayOutputStream(), diskCache);
+		pointDataWriter = PointDataWriterFactory.factory(supportedFormat, new ByteArrayOutputStream(), diskCache);
 
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
 		Random rand = new Random();
