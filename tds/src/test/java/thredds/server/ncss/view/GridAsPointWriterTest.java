@@ -67,7 +67,11 @@ public class GridAsPointWriterTest {
 				{SupportedFormat.CSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0) },
 				{SupportedFormat.CSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1) },
 				{SupportedFormat.CSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2) },
-				
+
+				{SupportedFormat.GEOCSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0) },
+				{SupportedFormat.GEOCSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1) },
+				{SupportedFormat.GEOCSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2) },
+
 				{SupportedFormat.XML_STREAM, GridAsPointDataParameters.getGroupedVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0) },
 				{SupportedFormat.XML_STREAM, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1) },
 				{SupportedFormat.XML_STREAM, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2) },
