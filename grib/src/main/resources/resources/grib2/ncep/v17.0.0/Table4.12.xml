@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.12</table>
+  <title>Operating Mode</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-12.shtml</source>
+  <parameter code="0">
+    <description>Maintenance Mode</description>
+  </parameter>
+  <parameter code="1">
+    <description>Clear Air</description>
+  </parameter>
+  <parameter code="2">
+    <description>Precipitation</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.4</table>
+  <title>Indicator of Unit of Time Range</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-4.shtml</source>
+  <parameter code="0">
+    <description>Minute</description>
+  </parameter>
+  <parameter code="1">
+    <description>Hour</description>
+  </parameter>
+  <parameter code="2">
+    <description>Day</description>
+  </parameter>
+  <parameter code="3">
+    <description>Month</description>
+  </parameter>
+  <parameter code="4">
+    <description>Year</description>
+  </parameter>
+  <parameter code="5">
+    <description>Decade (10 Years)</description>
+  </parameter>
+  <parameter code="6">
+    <description>Normal (30 Years)</description>
+  </parameter>
+  <parameter code="7">
+    <description>Century (100 Years)</description>
+  </parameter>
+  <parameter code="10">
+    <description>3 Hours</description>
+  </parameter>
+  <parameter code="11">
+    <description>6 Hours</description>
+  </parameter>
+  <parameter code="12">
+    <description>12 Hours</description>
+  </parameter>
+  <parameter code="13">
+    <description>Second</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

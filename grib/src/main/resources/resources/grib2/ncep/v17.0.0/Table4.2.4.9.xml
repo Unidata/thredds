@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.9</table>
+  <title>Ion-Neutral Coupling</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-9.shtml</source>
+  <parameter code="0">
+    <shortName>SIGPED</shortName>
+    <description>Pedersen Conductivity</description>
+    <units>S m-1</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>SIGHAL</shortName>
+    <description>Hall Conductivity</description>
+    <units>S m-1</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>SIGPAR</shortName>
+    <description>Parallel Conductivity</description>
+    <units>S m-1</units>
+  </parameter>
+</parameterMap>
