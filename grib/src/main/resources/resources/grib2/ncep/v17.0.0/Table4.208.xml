@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.208</table>
+  <title>Turbulence</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-208.shtml</source>
+  <parameter code="0">
+    <description>None</description>
+  </parameter>
+  <parameter code="1">
+    <description>Light</description>
+  </parameter>
+  <parameter code="2">
+    <description>Moderate</description>
+  </parameter>
+  <parameter code="3">
+    <description>Severe</description>
+  </parameter>
+  <parameter code="4">
+    <description>Extreme</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

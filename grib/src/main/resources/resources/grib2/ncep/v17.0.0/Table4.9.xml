@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.9</table>
+  <title>Probability Type</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-9.shtml</source>
+  <parameter code="0">
+    <description>Probability of event below lower limit</description>
+  </parameter>
+  <parameter code="1">
+    <description>Probability of event above upper limit</description>
+  </parameter>
+  <parameter code="2">
+    <description>Probability of event between upper and lower limits (the range includes lower limit but no the upper limit)</description>
+  </parameter>
+  <parameter code="3">
+    <description>Probability of event above lower limit</description>
+  </parameter>
+  <parameter code="4">
+    <description>Probability of event below upper limit</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.6</table>
+  <title>Type of Ensemble Forecast</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-6.shtml</source>
+  <parameter code="0">
+    <description>Unperturbed High-Resolution Control Forecast</description>
+  </parameter>
+  <parameter code="1">
+    <description>Unperturbed Low-Resolution Control Forecast</description>
+  </parameter>
+  <parameter code="2">
+    <description>Negatively Perturbed Forecast</description>
+  </parameter>
+  <parameter code="3">
+    <description>Positively Perturbed Forecast</description>
+  </parameter>
+  <parameter code="4">
+    <description>Multi-Model Forecast</description>
+  </parameter>
+  <parameter code="192">
+    <description>Perturbed Ensemble Member</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>
