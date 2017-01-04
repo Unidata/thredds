@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.203</table>
+  <title>Cloud Type</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-203.shtml</source>
+  <parameter code="0">
+    <description>Clear</description>
+  </parameter>
+  <parameter code="1">
+    <description>Cumulonimbus</description>
+  </parameter>
+  <parameter code="2">
+    <description>Stratus</description>
+  </parameter>
+  <parameter code="3">
+    <description>Stratocumulus</description>
+  </parameter>
+  <parameter code="4">
+    <description>Cumulus</description>
+  </parameter>
+  <parameter code="5">
+    <description>Altostratus</description>
+  </parameter>
+  <parameter code="6">
+    <description>Nimbostratus</description>
+  </parameter>
+  <parameter code="7">
+    <description>Altocumulus</description>
+  </parameter>
+  <parameter code="8">
+    <description>Cirrostratus</description>
+  </parameter>
+  <parameter code="9">
+    <description>Cirrorcumulus</description>
+  </parameter>
+  <parameter code="10">
+    <description>Cirrus</description>
+  </parameter>
+  <parameter code="11">
+    <description>Cumulonimbus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="12">
+    <description>Stratus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="13">
+    <description>Stratocumulus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="14">
+    <description>Cumulus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="15">
+    <description>Altostratus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="16">
+    <description>Nimbostratus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="17">
+    <description>Altocumulus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="18">
+    <description>Cirrostratus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="19">
+    <description>Cirrorcumulus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="20">
+    <description>Cirrus - ground-based fog beneath the lowest layer</description>
+  </parameter>
+  <parameter code="191">
+    <description>Unknown</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

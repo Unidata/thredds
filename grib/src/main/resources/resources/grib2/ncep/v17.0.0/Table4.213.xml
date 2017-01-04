@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.213</table>
+  <title>Soil Type</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-213.shtml</source>
+  <parameter code="1">
+    <description>Sand</description>
+  </parameter>
+  <parameter code="2">
+    <description>Loamy Sand</description>
+  </parameter>
+  <parameter code="3">
+    <description>Sandy Loam</description>
+  </parameter>
+  <parameter code="4">
+    <description>Silt Loam</description>
+  </parameter>
+  <parameter code="5">
+    <description>Organic</description>
+  </parameter>
+  <parameter code="6">
+    <description>Sandy Clay Loam</description>
+  </parameter>
+  <parameter code="7">
+    <description>Silt Clay Loam</description>
+  </parameter>
+  <parameter code="8">
+    <description>Clay Loam</description>
+  </parameter>
+  <parameter code="9">
+    <description>Sandy Clay</description>
+  </parameter>
+  <parameter code="10">
+    <description>Silty Clay</description>
+  </parameter>
+  <parameter code="11">
+    <description>Clay</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

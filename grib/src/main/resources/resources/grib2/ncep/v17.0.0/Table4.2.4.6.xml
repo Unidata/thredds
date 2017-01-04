@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.6</table>
+  <title>Solar Electromagnetic Emissions</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-6.shtml</source>
+  <parameter code="0">
+    <shortName>TSI</shortName>
+    <description>Integrated Solar Irradiance</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>XLONG</shortName>
+    <description>Solar X-ray Flux (XRS Long)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>XSHRT</shortName>
+    <description>Solar X-ray Flux (XRS Short)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>EUVIRR</shortName>
+    <description>Solar EUV Irradiance</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>SPECIRR</shortName>
+    <description>Solar Spectral Irradiance</description>
+    <units>W m-2 nm-1</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>F107</shortName>
+    <description>F10.7</description>
+    <units>W m-2 Hz-1</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>SOLRF</shortName>
+    <description>Solar Radio Emissions</description>
+    <units>W m-2 Hz-1</units>
+  </parameter>
+</parameterMap>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.221</table>
+  <title>Treatment of Missing Data</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-221.shtml</source>
+  <parameter code="0">
+    <description>Not included</description>
+  </parameter>
+  <parameter code="1">
+    <description>Extrapolated</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

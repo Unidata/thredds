@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.8</table>
+  <title>Imagery</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-8.shtml</source>
+  <parameter code="0">
+    <shortName>XRAYRAD</shortName>
+    <description>X-Ray Radiance</description>
+    <units>W sr-1 m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>EUVRAD</shortName>
+    <description>EUV Radiance</description>
+    <units>W sr-1 m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>HARAD</shortName>
+    <description>H-Alpha Radiance</description>
+    <units>W sr-1 m-2</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>WHTRAD</shortName>
+    <description>White Light Radiance</description>
+    <units>W sr-1 m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>CAIIRAD</shortName>
+    <description>CaII-K Radiance</description>
+    <units>W sr-1 m-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>WHTCOR</shortName>
+    <description>White Light Coronagraph Radiance</description>
+    <units>W sr-1 m-2</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>HELCOR</shortName>
+    <description>Heliospheric Radiance</description>
+    <units>W sr-1 m-2</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>MASK</shortName>
+    <description>Thematic Mask</description>
+    <units>Numeric</units>
+  </parameter>
+</parameterMap>

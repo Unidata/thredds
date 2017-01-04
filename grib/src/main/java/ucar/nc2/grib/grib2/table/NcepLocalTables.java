@@ -57,8 +57,7 @@ import java.util.jar.JarFile;
  */
 public class NcepLocalTables extends LocalTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  //static private final String oldResourcePath = "resources/grib2/ncep/";       // not sure what version this is, assume 13 overrides all
-  static private final String defaultResourcePath = "resources/grib2/ncep/v13.0.0/";
+  static private final String defaultResourcePath = "resources/grib2/ncep/v17.0.0/";
   private static NcepLocalTables single;
 
   public static Grib2Customizer getCust(Grib2Table table) {

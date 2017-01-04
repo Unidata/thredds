@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.11</table>
+  <title>Type of Time Intervals</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-11.shtml</source>
+  <parameter code="1">
+    <description>Successive times processed have same forecast time, start time of forecast is incremented.</description>
+  </parameter>
+  <parameter code="2">
+    <description>Successive times processed have same start time of forecast, forecast time is incremented.</description>
+  </parameter>
+  <parameter code="3">
+    <description>Successive times processed have start time of forecast incremented and forecast time decremented so that valid time remains constant.</description>
+  </parameter>
+  <parameter code="4">
+    <description>Successive times processed have start time of forecast decremented and forecast time incremented so that valid time remains constant.</description>
+  </parameter>
+  <parameter code="5">
+    <description>Floating subinterval of time between forecast time and end of overall time interval.(see Note 1)</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

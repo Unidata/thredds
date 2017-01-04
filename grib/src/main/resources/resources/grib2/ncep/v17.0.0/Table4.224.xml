@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.224</table>
+  <title>Categorical Outlook</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-224.shtml</source>
+  <parameter code="0">
+    <description>No Risk Area</description>
+  </parameter>
+  <parameter code="2">
+    <description>General Thunderstorm Risk Area</description>
+  </parameter>
+  <parameter code="4">
+    <description>Slight Risk Area</description>
+  </parameter>
+  <parameter code="6">
+    <description>Moderate Risk Area</description>
+  </parameter>
+  <parameter code="8">
+    <description>High Risk Area</description>
+  </parameter>
+  <parameter code="11">
+    <description>Dry Thunderstorm (Dry Lightning) Risk Area</description>
+  </parameter>
+  <parameter code="14">
+    <description>Critical Risk Area</description>
+  </parameter>
+  <parameter code="18">
+    <description>Extreamly Critical Risk Area</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>
