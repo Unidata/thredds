@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.14</table>
+  <title>Clutter Filter Indicator</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-14.shtml</source>
+  <parameter code="0">
+    <description>No Clutter Filter Used</description>
+  </parameter>
+  <parameter code="1">
+    <description>Clutter Filter Used</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

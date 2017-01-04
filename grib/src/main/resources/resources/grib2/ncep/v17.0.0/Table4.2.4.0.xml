@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.4.0</table>
+  <title>Temperature</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-4-0.shtml</source>
+  <parameter code="0">
+    <shortName>TMPSWP</shortName>
+    <description>Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>ELECTMP</shortName>
+    <description>Electron Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>PROTTMP</shortName>
+    <description>Proton Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>IONTMP</shortName>
+    <description>Ion Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>PRATMP</shortName>
+    <description>Parallel Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>PRPTMP</shortName>
+    <description>Perpendicular Temperature</description>
+    <units>K</units>
+  </parameter>
+</parameterMap>

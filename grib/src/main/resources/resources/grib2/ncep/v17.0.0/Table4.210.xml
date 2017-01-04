@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.210</table>
+  <title>Contrail Intensity</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-210.shtml</source>
+  <parameter code="0">
+    <description>Contrail Not Present</description>
+  </parameter>
+  <parameter code="1">
+    <description>Contrail Present</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

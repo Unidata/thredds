@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.192</table>
+  <title>Covariance</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-192.shtml</source>
+  <parameter code="1">
+    <shortName>COVMZ</shortName>
+    <description>Covariance between zonal and meridional components of the wind. Defined as [uv]-[u][v], where "[]" indicates the mean over the indicated time span.</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>COVTZ</shortName>
+    <description>Covariance between zonal component of the wind and temperature. Defined as [uT]-[u][T], where "[]" indicates the mean over the indicated time span.</description>
+    <units>K*m/s</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>COVTM</shortName>
+    <description>Covariance between meridional component of the wind and temperature. Defined as [vT]-[v][T], where "[]" indicates the mean over the indicated time span.</description>
+    <units>K*m/s</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>COVTW</shortName>
+    <description>Covariance between temperature and vertical component of the wind. Defined as [wT]-[w][T], where "[]" indicates the mean over the indicated time span.</description>
+    <units>K*m/s</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>COVZZ</shortName>
+    <description>Covariance between zonal and zonal components of the wind. Defined as [uu]-[u][u], where "[]" indicates the mean over the indicated time span.</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>COVMM</shortName>
+    <description>Covariance between meridional and meridional components of the wind. Defined as [vv]-[v][v], where "[]" indicates the mean over the indicated time span.</description>
+    <units>m2/s2</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>COVQZ</shortName>
+    <description>Covariance between specific humidity and zonal components of the wind. Defined as [uq]-[u][q], where "[]" indicates the mean over the indicated time span.</description>
+    <units>kg/kg*m/s</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>COVQM</shortName>
+    <description>Covariance between specific humidity and meridional components of the wind. Defined as [vq]-[v][q], where "[]" indicates the mean over the indicated time span.</description>
+    <units>kg/kg*m/s</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>COVTVV</shortName>
+    <description>Covariance between temperature and vertical components of the wind. Defined as [T]-[][T], where "[]" indicates the mean over the indicated time span.</description>
+    <units>K*Pa/s</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>COVQVV</shortName>
+    <description>Covariance between specific humidity and vertical components of the wind. Defined as [q]-[][q], where "[]" indicates the mean over the indicated time span.</description>
+    <units>kg/kg*Pa/s</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>COVPSPS</shortName>
+    <description>Covariance between surface pressure and surface pressure. Defined as [Psfc]-[Psfc][Psfc], where "[]" indicates the mean over the indicated time span.</description>
+    <units>Pa*Pa</units>
+  </parameter>
+  <parameter code="12">
+    <shortName>COVQQ</shortName>
+    <description>Covariance between specific humidity and specific humidy. Defined as [qq]-[q][q], where "[]" indicates the mean over the indicated time span.</description>
+    <units>kg/kg*kg/kg</units>
+  </parameter>
+  <parameter code="13">
+    <shortName>COVVVVV</shortName>
+    <description>Covariance between vertical and vertical components of the wind. Defined as []-[][], where "[]" indicates the mean over the indicated time span.</description>
+    <units>Pa2/s2</units>
+  </parameter>
+  <parameter code="14">
+    <shortName>COVTT</shortName>
+    <description>Covariance between temperature and temperature. Defined as [TT]-[T][T], where "[]" indicates the mean over the indicated time span.</description>
+    <units>K*K</units>
+  </parameter>
+</parameterMap>

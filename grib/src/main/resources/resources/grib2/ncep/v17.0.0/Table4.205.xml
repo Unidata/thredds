@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.205</table>
+  <title>Presence of Aerosol</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-205.shtml</source>
+  <parameter code="0">
+    <description>Aerosol not present</description>
+  </parameter>
+  <parameter code="1">
+    <description>Aerosol present</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

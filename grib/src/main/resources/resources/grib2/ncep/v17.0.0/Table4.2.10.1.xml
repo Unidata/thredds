@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.10.1</table>
+  <title>Currents</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-10-1.shtml</source>
+  <parameter code="0">
+    <shortName>DIRC</shortName>
+    <description>Current Direction</description>
+    <units>degree True</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>SPC</shortName>
+    <description>Current Speed</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>UOGRD</shortName>
+    <description>U-Component of Current</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>VOGRD</shortName>
+    <description>V-Component of Current</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>OMLU</shortName>
+    <description>Ocean Mixed Layer U Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>OMLV</shortName>
+    <description>Ocean Mixed Layer V Velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>UBARO</shortName>
+    <description>Barotropic U velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>VBARO</shortName>
+    <description>Barotropic V velocity</description>
+    <units>m s-1</units>
+  </parameter>
+</parameterMap>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.0.16</table>
+  <title>Forecast Radar Imagery</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-16.shtml</source>
+  <parameter code="0">
+    <shortName>REFZR</shortName>
+    <description>Equivalent radar reflectivity factor for rain</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>REFZI</shortName>
+    <description>Equivalent radar reflectivity factor for snow</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>REFZC</shortName>
+    <description>Equivalent radar reflectivity factor for parameterized convection</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>RETOP</shortName>
+    <description>Echo Top (See Note 1)</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>REFD</shortName>
+    <description>Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>REFC</shortName>
+    <description>Composite reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="192">
+    <shortName>REFZR</shortName>
+    <description>Equivalent radar reflectivity factor for rain</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>REFZI</shortName>
+    <description>Equivalent radar reflectivity factor for snow</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="194">
+    <shortName>REFZC</shortName>
+    <description>Equivalent radar reflectivity factor for parameterized convection</description>
+    <units>m m6 m-3</units>
+  </parameter>
+  <parameter code="195">
+    <shortName>REFD</shortName>
+    <description>Reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="196">
+    <shortName>REFC</shortName>
+    <description>Composite reflectivity</description>
+    <units>dB</units>
+  </parameter>
+  <parameter code="197">
+    <shortName>RETOP</shortName>
+    <description>Echo Top (See Note 1)</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="198">
+    <shortName>MAXREF</shortName>
+    <description>Hourly Maximum of Simulated Reflectivity at 1 km AGL</description>
+    <units>dB</units>
+  </parameter>
+</parameterMap>
