@@ -304,6 +304,11 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
       destPos += varData.getSize();
     }
 
+    // check if variable is unsigned. If so, make sure the data is marked as unsigned as well
+    if (mainv.isUnsigned()) {
+      sectionData.setUnsigned(true);
+    }
+
     return sectionData;
   }
 
@@ -382,6 +387,11 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
         Array.arraycopy(varData, 0, allData, destPos, (int) varData.getSize());
         destPos += varData.getSize();
       }
+    }
+
+    // check if variable is unsigned. If so, make sure the data is marked as unsigned as well
+    if (mainv.isUnsigned()) {
+      allData.setUnsigned(true);
     }
 
     return allData;
