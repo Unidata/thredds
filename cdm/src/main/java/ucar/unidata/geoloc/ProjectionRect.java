@@ -318,6 +318,27 @@ public class ProjectionRect implements java.io.Serializable {
            DoubleMath.fuzzyCompare(point.getY(), getMaxY(), 1e-6) <= 0;
   }
 
+  /**
+   *
+   * Returns {@code true} if this bounding box contains {@code rect}.
+   *
+   * @param rect a bounding box in projection coordinates
+   * @return {@code true} if this bounding box contains {@code rect}.
+   */
+  public boolean contains(ProjectionRect rect) {
+    boolean contained = false;
+    // The old ProjectionRect class was based off of java.awt.Rectangle.
+    // If the rectangles were the same, .contains(rect) returned true.
+    // This check makes sure the old behavior is preserved.
+    if (this.equals(rect)) {
+      contained = true;
+    } else {
+      // Just check to see if corners of rect contained within this
+      contained = (this.contains(rect.getMinPoint()) && this.contains(rect.getMaxPoint()));
+    }
+    return contained;
+  }
+
   /////////////////////////////////////////////////////
 
   /**
