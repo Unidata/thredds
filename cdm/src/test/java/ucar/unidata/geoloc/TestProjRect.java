@@ -209,4 +209,50 @@ public class TestProjRect {
         assertNotEquals(height, height2);
     }
 
+    @Test
+    public void testContainsPoint() {
+        // contains the center point? -> YES
+        assert(projectionRect.contains(new ProjectionPointImpl(projectionRect.getCenterX(),
+                projectionRect.getCenterY())));
+        // contains a point outside the rectangle? -> NO
+        assert(!projectionRect.contains(new ProjectionPointImpl((projectionRect.getMinX() - projectionRect.getWidth()),
+                (projectionRect.getMinY() - projectionRect.getHeight()))));
+        assert(!projectionRect.contains(new ProjectionPointImpl((projectionRect.getMaxX() + projectionRect.getWidth()),
+                (projectionRect.getMaxY() + projectionRect.getHeight()))));
+        // contains a point on the rectangle border -> YES
+        assert(projectionRect.contains(new ProjectionPointImpl(projectionRect.getMinPoint())));
+    }
+
+    private ProjectionRect scaleShiftRect(double scaleFactor, double deltaX, double deltaY) {
+        // quick and dirty method to scale and shift a rectangle, based on projectionRect
+        double centerX = projectionRect.getCenterX();
+        double centerY = projectionRect.getCenterY();
+        double width = projectionRect.getWidth();
+        double height = projectionRect.getHeight();
+
+        double testMinX = (centerX + deltaX) - scaleFactor * (width/2);
+        double testMinY = (centerY + deltaY) - scaleFactor * (height/2);
+
+        return new ProjectionRect(new ProjectionPointImpl(testMinX, testMinY),
+                scaleFactor * width,
+                scaleFactor * height);
+    }
+
+    @Test
+    public void testContainsRect() {
+        // contains a bigger rect? -> NO
+        assert(!projectionRect.contains(scaleShiftRect(2.0, 0, 0)));
+        // contains a smaller rect? -> YES
+        assert(projectionRect.contains(scaleShiftRect(0.5, 0, 0)));
+        // contains the same rect? -> YES
+        assert(projectionRect.contains(scaleShiftRect(1.0, 0, 0)));
+
+        // contains a bigger rect, offset by 0.1? -> NO
+        assert(!projectionRect.contains(scaleShiftRect(2.0, 0.1, 0.1)));
+        // contains a smaller rect, offset by 0.1? -> YES
+        assert(projectionRect.contains(scaleShiftRect(0.5, 0.1, 0.1)));
+        // contain the same rect, offset by 0.1? -> NO
+        assert(!projectionRect.contains(scaleShiftRect(1.0, 0.1, 0.1)));
+
+    }
 }
