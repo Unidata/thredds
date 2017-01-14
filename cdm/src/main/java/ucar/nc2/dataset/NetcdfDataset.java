@@ -463,6 +463,21 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
+   * Same as openDataset, but file is acquired through the File Cache, with defaultEnhanceMode,
+   * without the need of settinging the enhanceMode via the signature.
+   * You still close with NetcdfDataset.close(), the release is handled automatically.
+   * You must first call initNetcdfFileCache() for caching to actually take place.
+   *
+   * @param location   location of file, passed to FileFactory
+   * @param cancelTask allow task to be cancelled; may be null.
+   * @return NetcdfDataset object
+   * @throws java.io.IOException on read error
+   */
+  static public NetcdfDataset acquireDataset(DatasetUrl location, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    return acquireDataset(null, location, defaultEnhanceMode, -1, cancelTask, null);
+  }
+
+  /**
    * Same as openDataset, but file is acquired through the File Cache, with defaultEnhanceMode.
    * You still close with NetcdfDataset.close(), the release is handled automatically.
    * You must first call initNetcdfFileCache() for caching to actually take place.
