@@ -464,7 +464,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   /**
    * Same as openDataset, but file is acquired through the File Cache, with defaultEnhanceMode,
-   * without the need of settinging the enhanceMode via the signature.
+   * without the need of setting the enhanceMode via the signature.
    * You still close with NetcdfDataset.close(), the release is handled automatically.
    * You must first call initNetcdfFileCache() for caching to actually take place.
    *
