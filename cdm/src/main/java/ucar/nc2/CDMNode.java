@@ -36,6 +36,9 @@ import ucar.nc2.dataset.StructureDS;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Indent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Define a superclass for all the CDM node classes: Group, Dimension, etc.
  * Define the sort of the node {@link CDMSort} so that we can
@@ -57,7 +60,7 @@ public abstract class CDMNode
     protected boolean immutable = false;
     protected String shortName = null;
 
-    protected Object annotation = null;
+    protected Map<Object,Object> annotations = null;
 
     //String fullName = null; // uses backslash escaping
 
@@ -336,15 +339,17 @@ public abstract class CDMNode
         return inner;
     }
 
-    public Object annotation()
+    public Object annotation(Object id)
     {
-        return annotation;
+        return (this.annotations == null ? null : this.annotations.get(id));
     }
 
-    public Object annotate(Object value)
+    public Object annotate(Object id, Object value)
     {
-        Object old = annotation;
-        annotation = value;
+        if(annotations ==  null)
+            annotations = new HashMap<>();
+        Object old = annotations.get(id);
+        annotations.put(id,value);
         return old;
     }
 

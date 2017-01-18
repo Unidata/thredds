@@ -4,7 +4,6 @@
 
 package ucar.unidata.util.test;
 
-import org.junit.Assert;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.NetcdfFile;
@@ -12,11 +11,15 @@ import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 abstract public class UnitTestCommon
 {
@@ -43,7 +46,7 @@ abstract public class UnitTestCommon
     static {
         // Compute the root path
         threddsroot = locateThreddsRoot();
-        assert threddsroot != null: "Cannot locate /thredds parent dir";
+        assert threddsroot != null : "Cannot locate /thredds parent dir";
         threddsServer = TestDir.remoteTestServer;
         if(DEBUG)
             System.err.println("UnitTestCommon: threddsServer=" + threddsServer);
@@ -118,6 +121,86 @@ abstract public class UnitTestCommon
                 }
             } else
                 f.delete();
+        }
+    }
+
+    //////////////////////////////////////////////////
+    // Static classes
+
+    /**
+     * Provide an interface that allows for arbitrary modification
+     * of text before is is passed to compare().
+     */
+    static public interface Modifier
+    {
+        public String modify(String text);
+    }
+
+    /**
+     * Instance of Modifier specialized to delete lines matching
+     * a given Java regular expression
+     * of text before is is passed to compare().
+     * A Line is defined by text.split("[\n]").
+     */
+    static public class ModDelete implements Modifier
+    {
+        protected Pattern pattern = null;
+
+        public ModDelete(String regexp)
+        {
+            this.pattern = Pattern.compile(regexp);
+
+        }
+
+        public String modify(String text)
+        {
+            String[] lines = text.split("[\n]");
+            StringBuilder result = new StringBuilder();
+            for(int i = 0; i < lines.length; i++) {
+                String line = lines[i];
+                Matcher m = this.pattern.matcher(line);
+                if(m.matches()) {
+                    result.append(line);
+                    result.append("\n");
+                }
+            }
+            return result.toString();
+        }
+    }
+
+    /**
+     * Instance of Modifier specialized to delete named attributes.
+     */
+    static public class ModSuppress implements Modifier
+    {
+        protected List<Pattern> patterns = new ArrayList<>();
+
+        public ModSuppress()
+        {
+        }
+
+        public void
+        suppress(String attributename)
+        {
+            String re = String.format("<Attribute[ ]+name=\"%s\".*</Attribute>[^\n]\n",
+                    attributename);
+            Pattern pattern = Pattern.compile(re);
+            patterns.add(pattern);
+        }
+
+        public String modify(String text)
+        {
+            StringBuilder result = new StringBuilder(text);
+            for(Pattern p : patterns) {
+                for(; ; ) {
+                    Matcher m = p.matcher(result.toString());
+                    if(!m.matches()) break;
+                    int pos0 = m.start();
+                    int pos1 = m.end();
+                    result.delete(pos0, pos1);
+                }
+            }
+            return result.toString();
         }
     }
 
@@ -262,6 +345,21 @@ abstract public class UnitTestCommon
         }
     }
 
+    static public boolean
+    similar(String tag, String baseline, String testresult, Modifier mbaseline, Modifier mtest)
+    {
+        String baselinemod = mbaseline.modify(baseline);
+        String testresultmod = mtest.modify(testresult);
+        String result = compare(tag, baselinemod, testresultmod);
+        if(result == null) {
+            System.err.println("Files are Similar");
+            return true;
+        } else {
+            System.err.println(result);
+            return false;
+        }
+    }
+
     protected boolean
     checkServer(String candidate)
     {
@@ -382,7 +480,7 @@ abstract public class UnitTestCommon
         System.err.flush();
     }
 
-    static public String canonjoin(String prefix, String suffix)
+    static public String canonjoin2(String prefix, String suffix)
     {
         if(prefix == null) prefix = "";
         if(suffix == null) suffix = "";
@@ -391,6 +489,25 @@ abstract public class UnitTestCommon
             result.append("/");
         result.append(suffix.startsWith("/") ? suffix.substring(1) : suffix);
         return result.toString();
+    }
+
+    static public String canonjoin(String... pieces)
+    {
+        StringBuilder buf = new StringBuilder();
+        for(int i = 0; i < pieces.length; i++) {
+            // invariant buf does not end with ('/')
+            String piece = pieces[i];
+            if(piece == null) continue;
+            piece = canonicalpath(piece);
+            if(i == 0)
+                buf.append(piece);
+            else {//i>=0
+                if(!piece.startsWith("/"))
+                    buf.append("/");
+                buf.append(piece);
+            }
+        }
+        return buf.toString();
     }
 
     /**
@@ -431,18 +548,47 @@ abstract public class UnitTestCommon
         }
         return false;
     }
-    static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                    + "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase();
 
+    static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            + "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase();
+
+
+    static public String
+    extractDatasetname(String urlorpath, String suffix)
+    {
+        try {
+            URI x = new URI(urlorpath);
+            StringBuilder path = new StringBuilder(x.getPath());
+            int index = path.lastIndexOf("/");
+            if(index < 0) index = 0;
+            if(index > 0) path.delete(0, index + 1);
+            index = path.lastIndexOf(".");
+            if(index >= 0)
+                path.delete(index, path.length());
+            if(suffix != null) {
+                path.append('.');
+                path.append(suffix);
+            }
+            return path.toString();
+        } catch (URISyntaxException e) {
+            assert (false);
+        }
+        return null;
+    }
 
     static protected String
-    ncdumpmetadata(NetcdfFile ncfile)
+    ncdumpmetadata(NetcdfFile ncfile, String datasetname)
             throws Exception
     {
         StringWriter sw = new StringWriter();
+        StringBuilder args = new StringBuilder("-strict -unsigned");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
         // Print the meta-databuffer using these args to NcdumpW
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-strict -unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
                 throw new Exception("NcdumpW failed");
         } catch (IOException ioe) {
             throw new Exception("NcdumpW failed", ioe);
@@ -452,14 +598,19 @@ abstract public class UnitTestCommon
     }
 
     static protected String
-    ncdumpdata(NetcdfFile ncfile)
+    ncdumpdata(NetcdfFile ncfile, String datasetname)
             throws Exception
     {
         StringWriter sw = new StringWriter();
+        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
         // Dump the databuffer
         sw = new StringWriter();
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-strict -vall -unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
                 throw new Exception("NCdumpW failed");
         } catch (IOException ioe) {
             ioe.printStackTrace();

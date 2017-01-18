@@ -57,6 +57,7 @@ import java.util.*;
 public class DatasetUrl {
   static final protected String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   static final protected String slashalpha = "\\/" + alpha;
+  static final String[] FRAGPROTOCOLS = {"dap4", "dap2"};
 
   /**
    * Return the set of leading protocols for a url; may be more than one.
@@ -205,6 +206,11 @@ public class DatasetUrl {
     Map<String, String> map = parseFragment(fragment);
     if (map == null) return null;
     String protocol = map.get("protocol");
+    if(protocol == null) {
+      for(String p: FRAGPROTOCOLS) {
+        if(map.get(p) != null) {protocol = p; break;}
+      }
+    }
     if (protocol != null) {
       if (protocol.equalsIgnoreCase("dap") || protocol.equalsIgnoreCase("dods"))
         return ServiceType.OPENDAP;

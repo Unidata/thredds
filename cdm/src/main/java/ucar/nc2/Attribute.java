@@ -54,7 +54,14 @@ import java.util.Map;
  * @author caron
  */
 
-public class Attribute extends CDMNode {
+public class Attribute extends CDMNode
+{
+
+  static final String SPECIALPREFIX = "_";
+  static final String[] SUPPRESS = new String[]{
+          "_NCProperties", "_DAP4_Little_Endian", "_edu.ucar"
+  };
+
 
   /**
    * Turn a list into a map
@@ -62,14 +69,28 @@ public class Attribute extends CDMNode {
    * @param atts list of attributes
    * @return map of attributes by name
    */
-  static public Map<String, Attribute> makeMap(List<Attribute> atts) {
+  static public Map<String, Attribute> makeMap(List<Attribute> atts)
+  {
     int size = (atts == null) ? 1 : atts.size();
     Map<String, Attribute> result = new HashMap<>(size);
-    if (atts == null) return result;
-    for (Attribute att : atts) result.put(att.getShortName(), att);
+    if(atts == null) return result;
+    for(Attribute att : atts) result.put(att.getShortName(), att);
     return result;
   }
 
+  static public boolean
+  suppress(Attribute a, boolean strict)
+  {
+    String nm = a.getShortName();
+    if(strict && nm.startsWith(SPECIALPREFIX)) {
+      /* Suppress  selected special attributes */
+      for(String s : SUPPRESS) {
+        if(nm.startsWith(s))
+          return true; /* Suppress it */
+      }
+    }
+    return false;
+  }
   ///////////////////////////////////////////////////////////////////////////////////
 
   /**

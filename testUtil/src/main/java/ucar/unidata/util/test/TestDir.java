@@ -128,8 +128,6 @@ public class TestDir {
 
   static public String dap4TestServer = "localhost:8083";
 
-  static public final String testingDap4TestServer = "localhost:8081";
-
   // Are we running under travis or jenkins? (from testing.gradle)
   static final public boolean isTravis;
   static final public boolean isJenkins;
@@ -207,8 +205,6 @@ public class TestDir {
     String d4ts = System.getProperty(dap4TestServerPropName);
     if(d4ts != null && d4ts.length() > 0)
       	dap4TestServer = d4ts;
-    else if(isTravisOrJenkins)
-	dap4TestServer = testingDap4TestServer; // from testing.gradle
 
     AliasTranslator.addAlias("${cdmUnitTest}", cdmUnitTestDir);
   }
