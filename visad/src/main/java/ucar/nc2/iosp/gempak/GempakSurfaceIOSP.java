@@ -480,7 +480,7 @@ public class GempakSurfaceIOSP extends GempakStationFileIOSP {
 
     // time
     Variable timeVar = new Variable(ncfile, null, null, TIME_VAR,
-            DataType.DOUBLE, null);
+            DataType.DOUBLE, (String)null);
     timeVar.addAttribute(
             new Attribute(CDM.UNITS, "seconds since 1970-01-01 00:00:00"));
     timeVar.addAttribute(new Attribute("long_name", TIME_VAR));

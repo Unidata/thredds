@@ -48,6 +48,7 @@ import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
+import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
@@ -79,6 +80,17 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private Nc4prototypes nc4;
   static public final String JNA_PATH = "jna.library.path";
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
+
+  static public final String UCARTAG = "ucar";
+  static public final String TRANSLATECONTROL = UCARTAG + ".translate";
+  static public final String TRANSLATE_NONE = "none";
+  static public final String TRANSLATE_NC4 = "nc4";
+
+  // Define reserved attributes   (see Nc4DSP)
+  static public final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
+  // Not yet implemented
+  static public final String UCARTAGVLEN = "_edu.ucar.isvlen";
+  static public final String UCARTAGORIGTYPE = "_edu.ucar.orig.type";
 
   static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
 
@@ -130,10 +142,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       if (jnaPath == null) {
         setLibraryAndPath(null, null);
       }
-
       try {
-        // jna_path may still be null (the user didn't specify a "jna.library.path"), but try to load anyway;
-        // the necessary libs may be on the system PATH.
+        // jna_path may still be null, but try to load anyway;
+        // the necessary libs may be on the system PATH or on LD_LIBRARY_PATH
         nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
         // Make the library synchronized
         nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
@@ -198,6 +209,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private Map<Group, Integer> groupHash = new HashMap<>();     // group -> nc4 grpid
   private Nc4Chunking chunker = new Nc4ChunkingDefault();
   private boolean isEos = false;
+
+  private boolean markreserved = false;
 
   //////////////////////////////////////////////////
   // Constructor(s)
@@ -1024,6 +1037,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (dtype.isEnum()) {
       EnumTypedef enumTypedef = g.findEnumeration(utype.name);
       v.setEnumTypedef(enumTypedef);
+    } else if(dtype == DataType.OPAQUE) {
+      if(this.markreserved) {
+        v.annotate(UCARTAGOPAQUE,utype.size);
+      }
     }
 
     return v;
@@ -1069,7 +1086,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return true;
   }
 
+  private String nc_inq_var_name(int grpid, int varno) throws IOException
+  {
+    byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
+    IntByReference xtypep = new IntByReference();
+    IntByReference ndimsp = new IntByReference();
+    IntByReference nattsp = new IntByReference();
 
+    int ret = nc4.nc_inq_var(grpid, varno, name, xtypep, ndimsp, Pointer.NULL, nattsp);
+    if(ret != 0)
+      throw new IOException("nc_inq_var faild: code="+ret);
+    String vname = makeString(name);
+    return vname;
+  }
   //////////////////////////////////////////////////////////////////////////
 
   static private class Vinfo {
@@ -1124,6 +1153,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       if (typeClass == Nc4prototypes.NC_COMPOUND)
         readFields();
+    }
+
+    // Allow size override for e.g. opaque
+    public UserType
+    setSize(int size)
+    {
+      this.size = size;
+      return this;
     }
 
     DataType getEnumBaseType() {
@@ -1387,7 +1424,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_inq_opaque(grpid, typeid, nameo, sizep2);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-
+        ut.setSize(sizep2.getValue().intValue());
         // doesnt seem to be any new info
         // String nameos = makeString(nameo);
         //System.out.printf("   opaque type=%d name=%s size=%d %n ",
@@ -1658,7 +1695,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         ret = nc4.nc_get_var_uint(grpid, varid, valiu);
         if (ret != 0)
           throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-        return Array.factory(DataType.INT, shape, valiu);
+        return Array.factory(DataType.UINT, shape, valiu);
 
       case Nc4prototypes.NC_STRING:
         String[] valss = new String[len];
@@ -1725,8 +1762,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     /*
     This does not seem right since the user type does not
     normally appear in the CDM representation.
+    dmh: observation is correct, var name should be used instead of
+         usertype.name, at least for now and to be consistent with H5Iosp.
+         This is not easy, however, because we have to re-read the variable's name.
+         and ideally this would be in the Vinfo, but we have no easy way to get that either.
     */
-    StructureMembers sm = createStructureMembers(userType);
+    String vname = nc_inq_var_name(grpid, varid);
+    StructureMembers sm = createStructureMembers(userType,vname);
     ArrayStructureBB asbb = new ArrayStructureBB(sm, section.getShape(), bb, 0);
 
     // find and convert String and vlen fields, put on asbb heap
@@ -1738,8 +1780,9 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return asbb;
   }
 
-  private StructureMembers createStructureMembers(UserType userType) {
-    StructureMembers sm = new StructureMembers(userType.name);
+  private StructureMembers createStructureMembers(UserType userType, String varname) {
+    // Incorrect: StructureMembers sm = new StructureMembers(userType.name);
+    StructureMembers sm = new StructureMembers(varname);
     for (Field fld : userType.flds) {
       StructureMembers.Member m = sm.addMember(fld.name, null, null, fld.ctype.dt, fld.dims);
       m.setDataParam(fld.offset);
@@ -1748,7 +1791,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
       if (fld.ctype.dt == DataType.STRUCTURE) {
         UserType nested_utype = userTypes.get(fld.fldtypeid);
-        StructureMembers nested_sm = createStructureMembers(nested_utype);
+        StringBuilder partfqn = new StringBuilder();
+        partfqn.append(EscapeStrings.backslashEscapeCDMString(varname,"."));
+        partfqn.append(".");
+        partfqn.append(EscapeStrings.backslashEscapeCDMString(fld.name,"."));
+        StructureMembers nested_sm = createStructureMembers(nested_utype,partfqn.toString());
         m.setStructureMembers(nested_sm);
       }
     }
@@ -2399,10 +2446,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     } else if(v.getDataType().isEnum()) {
         EnumTypedef en = v.getEnumTypedef();
-        UserType ut = (UserType) en.annotation();
+        UserType ut = (UserType) en.annotation(UserType.class);
         typid = ut.typeid;
         vinfo = new Vinfo(g4, -1, typid);
-
+    } else if(v.getDataType() == DataType.OPAQUE) {
+      typid = convertDataType(v.getDataType());
+      if (typid < 0) return; // not implemented yet
+      vinfo = new Vinfo(g4, -1, typid);
     } else {
       typid = convertDataType(v.getDataType());
       if (typid < 0) return; // not implemented yet
@@ -2500,7 +2550,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         UserType ut = new UserType(
                 g4.grpid, typeid, name, en.getBaseType().getSize(), basetype, (long) emap.size(), NC_ENUM);
         userTypes.put(typeid, ut);
-        en.annotate(ut);  // dont know the varid yet
+        en.annotate(UserType.class,ut);  // dont know the varid yet
     }
 
   /////////////////////////////////////
@@ -3289,6 +3339,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     updateDimensions(ncfile.getRootGroup());
   }
 
+  public Nc4Iosp
+  setAddReserved(boolean tf)
+  {
+     this.markreserved = tf;
+     return this;
+  }
+
   @Override
   public void setFill(boolean fill) {
     this.fill = fill;
@@ -3330,6 +3387,26 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public long
   getNativeAddr(int pos, ByteBuffer buf) {
     return (NativeLong.SIZE == (Integer.SIZE / 8) ? buf.getInt(pos) : buf.getLong(pos));
+  }
+
+  @Override
+  public Object sendIospMessage(Object message) {
+     if(message != null && message instanceof Map) {
+       Map map = (Map)message;
+          // See if we can extract some controls
+       for(Object okey: map.keySet()) {
+          String key = okey.toString();
+          if(key.equalsIgnoreCase(TRANSLATECONTROL)) {
+            String value = map.get(okey).toString();
+            if(value.equalsIgnoreCase(TRANSLATE_NONE)) {
+              this.markreserved = false;
+            } else if(value.equalsIgnoreCase(TRANSLATE_NC4)) {
+              this.markreserved = true;
+            }// else ignore
+          }// else ignore
+       }
+     }
+     return null;
   }
 
 }

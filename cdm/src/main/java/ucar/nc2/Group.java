@@ -429,11 +429,13 @@ public class Group extends CDMNode implements AttributeContainer {
       //indent.incr();
       for (Attribute att : attributes.getAttributes()) {
         //String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
-        out.format("%s:", indent);
-        att.writeCDL(out, strict);
-        out.format(";");
-        if (!strict && (att.getDataType() != DataType.STRING)) out.format(" // %s", att.getDataType());
-        out.format("%n");
+        if(!Attribute.suppress(att,strict)) {
+          out.format("%s:", indent);
+          att.writeCDL(out, strict);
+          out.format(";");
+          if(!strict && (att.getDataType() != DataType.STRING)) out.format(" // %s", att.getDataType());
+          out.format("%n");
+        }
       }
       //indent.decr();
     }

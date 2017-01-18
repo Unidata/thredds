@@ -190,6 +190,7 @@ public interface Nc4prototypes extends Library {
   int nc_inq_nvars(int ncid, IntByReference nvarsp);
   int nc_inq_varids(int ncid, IntByReference nvars, int[] varids);  
   int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep, IntByReference ndimsp, int[] dimidsp, IntByReference nattsp);
+  int nc_inq_var(int ncid, int varid, byte[] name, IntByReference xtypep, IntByReference ndimsp, Pointer dimids, IntByReference nattsp);
 
   // user types
   int nc_inq_typeids(int ncid, IntByReference ntypes, Pointer np); // allow to pass NULL

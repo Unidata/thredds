@@ -38,6 +38,7 @@ import org.junit.experimental.categories.Category;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 /**
@@ -102,12 +103,12 @@ public class TestGrid1 extends TestSources
         String metadata = null;
         String data = null;
 
-        metadata = ncdumpmetadata(ncfile);
+        metadata = ncdumpmetadata(ncfile,null);
 
         if(prop_visual)
             visual(getTitle() + ".dds", metadata);
         if(true) {
-            data = ncdumpdata(ncfile);
+            data = ncdumpdata(ncfile,null);
             if(prop_visual)
                 visual(getTitle() + ".dods", data);
 

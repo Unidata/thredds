@@ -153,7 +153,7 @@ loop:        for(int i = 0; i < ntestsets && pass; i++) {
                     ncfile = NetcdfDataset.openFile(file.getPath(), null);
                     if(ncfile == null) throw new FileNotFoundException(path);
                     if(DEBUG)
-                        visual("cdm file",ncdumpmetadata(ncfile));
+                        visual("cdm file",ncdumpmetadata(ncfile,null));
 
                     ds = new GuardedDatasetCacheAndClone(path, ncfile, false);
                     dds = ds.getDDS();

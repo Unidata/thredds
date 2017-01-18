@@ -104,18 +104,23 @@ public class Dimension extends CDMNode implements Comparable {
    * @return list of dimensions
    * @throws IllegalArgumentException if cant find dimension or parse error.
    */
-  static public List<Dimension> makeDimensionsList(Group parentGroup, String dimString) throws IllegalArgumentException {
-
+  static public List<Dimension> makeDimensionsList(Group parentGroup, String dimString)
+          throws IllegalArgumentException {
     List<Dimension> newDimensions = new ArrayList<>();
-
-    if ((dimString == null) || (dimString.length() == 0)) { // scalar
-      return newDimensions; // empty list
-    }
+    if (dimString == null) // scalar
+         return newDimensions; // empty list
+    dimString = dimString.trim();
+    if (dimString.length() == 0) // scalar
+         return newDimensions; // empty list
 
     StringTokenizer stoke = new StringTokenizer(dimString);
     while (stoke.hasMoreTokens()) {
       String dimName = stoke.nextToken();
-      Dimension d = dimName.equals("*") ? Dimension.VLEN : parentGroup.findDimension(dimName);
+      Dimension d;
+      if(dimName.equals("*"))
+        d = Dimension.VLEN;
+      else
+        d = parentGroup.findDimension(dimName);
       if (d == null) {
         // if numeric - then its anonymous dimension
         try {
