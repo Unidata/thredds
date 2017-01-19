@@ -32,39 +32,21 @@
  */
 package ucar.nc2.ncml;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-
 import thredds.inventory.MFile;
-import ucar.ma2.Array;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
-import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
-import ucar.ma2.Range;
-import ucar.ma2.Section;
-import ucar.nc2.Attribute;
-import ucar.nc2.Dimension;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.ProxyReader;
-import ucar.nc2.Variable;
+import ucar.ma2.*;
+import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.units.DateFromString;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
 
 /**
  * Superclass for Aggregations on the outer dimension: joinNew, joinExisting, Fmrc, FmrcSingle
