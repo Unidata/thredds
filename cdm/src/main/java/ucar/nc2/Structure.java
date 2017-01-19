@@ -90,21 +90,17 @@ public class Structure extends Variable {
   }
 
   /**
-   * Create a Structure "from scratch". Also must call setDimensions().
-   * @param ncfile
-   * @param group
-   * @param parent
-   * @param shortName
-   * @param dimset
+   * Create a Structure "from scratch".
+   * @param ncfile    the containing NetcdfFile.
+   * @param group     the containing group; if null, use rootGroup
+   * @param parent    parent Structure, may be null
+   * @param shortName variable shortName, must be unique within the Group
+   * @param dimList   list of Dimensions
      */
     public Structure(NetcdfFile ncfile, Group group, Structure parent,
-                     String shortName, List<Dimension> dimset) {
-     super(ncfile, group, parent, shortName);
-     setDataType(DataType.STRUCTURE);
-      setDimensions(dimset);
-     this.elementSize = -1; // gotta wait before calculating
-     members = new ArrayList<>();
-     memberHash = new HashMap<>();
+                     String shortName, List<Dimension> dimList) {
+      this(ncfile, group, parent, shortName);
+      setDimensions(dimList);
    }
 
   /** Copy constructor.
