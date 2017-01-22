@@ -63,7 +63,7 @@ public class TestAggUnsignedByte {
     // this worked as of 4.6.7, so no bug here...
     //assert v.isUnsigned();
 
-    int[] shape = new int[] {2, 10, 20};
+    int[] shape = new int[] {1, 10, 20};
     Section section = new Section(shape);
     Array data = v.read(section);
     // this is the failure for https://github.com/Unidata/thredds/issues/695
