@@ -9,8 +9,9 @@
   <role rolename="tdsTrigger" description="can trigger feature collections, eg from tdm"/>
   <role rolename="manager-gui"/>
   <role rolename="containerauth"/>
+  <role rolename="tiggeData"/>
 
   <user username="tds" 
         password="secret666" 
-        roles="restrictedDatasetUser,tdsConfig,tdsMonitor,tdsTrigger,manager-gui,containerauth"/>
+        roles="restrictedDatasetUser,tdsConfig,tdsMonitor,tdsTrigger,manager-gui,containerauth,tiggeData"/>
 </tomcat-users>

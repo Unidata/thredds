@@ -799,6 +799,14 @@ public class HTTPSession implements Closeable
         setGlobalCredentialsProvider(provider, scope);
     }
 
+    /**
+     * Remove any global credentials that have been previosly set with the {@link #setGlobalCredentials(Credentials)}
+     * or {@link #setCredentialsProviderFactory} methods.
+     */
+    public static void clearGlobalCredentials() {
+        globalcredfactories.clear();
+    }
+
     static synchronized public void setGlobalRetryCount(int n)
     {
         if(n < 0) //validate
@@ -1173,7 +1181,7 @@ public class HTTPSession implements Closeable
 
         // Second, Construct a CredentialsProvider that is
         // the union of the Proxy credentials plus
-        // either the global local credentials; local overrides global
+        // either the global or local credentials; local overrides global
         // Unfortunately, we cannot either clone or extract the contents
         // of the client supplied provider, so we are forced (for now)
         // to modify the client supplied provider.

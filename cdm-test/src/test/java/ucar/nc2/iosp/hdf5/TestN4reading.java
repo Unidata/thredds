@@ -56,7 +56,7 @@ public class TestN4reading {
 
   @Test
   public void testGodivaFindsDataHole() throws IOException, InvalidRangeException {
-    // this pattern of reads from godiva is finding a data hole - missing data where therre shouldnt be any
+    // this pattern of reads from godiva is finding a data hole - missing data where there shouldn't be any
     Section[] sections = {
       new Section("14:14,0:0,13:170,0:20"),
       new Section("14:14,0:0,170:194,21:167"),

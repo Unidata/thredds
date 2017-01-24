@@ -39,6 +39,8 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -95,6 +97,8 @@ import java.util.List;
  */
 public class TestTomcatAuth extends UnitTestCommon
 {
+    private static Logger logger = LoggerFactory.getLogger(TestTomcatAuth.class);
+
     static final String BADPASSWORD = "bad";
 
     static protected final String MODULE = "httpclient";
@@ -126,7 +130,7 @@ public class TestTomcatAuth extends UnitTestCommon
         getCredentials(AuthScope scope) //AuthScheme authscheme, String host, int port, boolean isproxy)
         {
             UsernamePasswordCredentials creds = new UsernamePasswordCredentials(username, password);
-            System.err.printf("TestCredentials.getCredentials called: creds=|%s| host=%s port=%d%n",
+            logger.info("TestCredentials.getCredentials called: creds=|{}| host={} port={}}",
                     creds.toString(), scope.getHost(), scope.getPort());
             this.counter++;
             return creds;
@@ -204,9 +208,8 @@ public class TestTomcatAuth extends UnitTestCommon
     static public void
     report(Result result, Integer counter)
     {
-        System.err.printf("Result: code=%d content?=%b provider-calls=%d%n",
+        logger.info("Result: code={} content?={} provider-calls={}",
                 result.status, result.contents.length, counter);
-        System.err.flush();
     }
 
     static class AuthDataBasic
@@ -269,31 +272,36 @@ public class TestTomcatAuth extends UnitTestCommon
     public void
     testBasic() throws Exception
     {
-        System.out.println("*** Testing: Http Basic Password Authorization");
+        Result result = null;
+        TestProvider provider = null;
+
+        logger.info("*** Testing: Http Basic Password Authorization");
         for(AuthDataBasic data : basictests) {
-            Result result = null;
-            TestProvider provider = null;
-            System.out.println("Test global credentials provider");
-            System.out.println("*** URL: " + data.url);
+            logger.info("Test global credentials provider");
+            logger.info("*** URL: " + data.url);
 
             provider = new TestProvider(data.user, data.password);
 
-            // Test global credentials provider
-            HTTPSession.setGlobalCredentialsProvider(provider);
-            try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                result = invoke(session, data.url);
-                report(result,provider.counter);
+            try {
+                // Test global credentials provider
+                HTTPSession.setGlobalCredentialsProvider(provider);
+
+                try (HTTPSession session = HTTPFactory.newSession(data.url)) {
+                    result = invoke(session, data.url);
+                    report(result,provider.counter);
+                }
+            } finally {
+                HTTPSession.clearGlobalCredentials();
             }
+
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status));
             Assert.assertTrue("no content", result.contents.length > 0);
             Assert.assertTrue("Cre  dentials provider called: " + provider.counter, provider.counter == 1);
         }
 
         for(AuthDataBasic data : basictests) {
-            Result result = null;
-            TestProvider provider = null;
-            System.out.println("Test local credentials provider");
-            System.out.println("*** URL: " + data.url);
+            logger.info("Test local credentials provider");
+            logger.info("*** URL: " + data.url);
 
             provider = new TestProvider(data.user, data.password);
 
@@ -312,10 +320,10 @@ public class TestTomcatAuth extends UnitTestCommon
     public void
     testInline() throws Exception
     {
-        System.out.println("*** Testing: Http Basic Password Authorization inline in URL");
+        logger.info("*** Testing: Http Basic Password Authorization inline in URL");
         for(AuthDataBasic data : basictests) {
             Result result = null;
-            System.out.println("*** URL: " + data.inline());
+            logger.info("*** URL: " + data.inline());
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 result = invoke(session, data.inline());
                 report(result);
@@ -329,19 +337,24 @@ public class TestTomcatAuth extends UnitTestCommon
     public void
     testBasicDirect() throws Exception
     {
-        System.out.println("*** Testing: Http Basic Password Authorization Using Constant Credentials");
+        logger.info("*** Testing: Http Basic Password Authorization Using Constant Credentials");
         for(AuthDataBasic data : basictests) {
             Result result = null;
             Credentials creds = new UsernamePasswordCredentials(data.user, data.password);
-            System.out.println("Test global credentials");
-            System.out.println("*** URL: " + data.url);
+            logger.info("Test global credentials");
+            logger.info("*** URL: " + data.url);
 
-            // Test global credentials provider
-            HTTPSession.setGlobalCredentials(creds);
-            try (HTTPSession session = HTTPFactory.newSession(data.url)) {
-                result = invoke(session, data.url);
-                report(result);
+            try {
+                // Test global credentials provider
+                HTTPSession.setGlobalCredentials(creds);
+                try (HTTPSession session = HTTPFactory.newSession(data.url)) {
+                    result = invoke(session, data.url);
+                    report(result);
+                }
+            } finally {
+                HTTPSession.clearGlobalCredentials();
             }
+
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status)); // non-existence is ok
             Assert.assertTrue("no content", result.contents.length > 0);
         }
@@ -349,8 +362,8 @@ public class TestTomcatAuth extends UnitTestCommon
         for(AuthDataBasic data : basictests) {
             Result result = null;
             Credentials creds = new UsernamePasswordCredentials(data.user, data.password);
-            System.out.println("Test local credentials");
-            System.out.println("*** URL: " + data.url);
+            logger.info("Test local credentials");
+            logger.info("*** URL: " + data.url);
 
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 session.setCredentials(creds);
@@ -366,11 +379,11 @@ public class TestTomcatAuth extends UnitTestCommon
     public void
     testCache() throws Exception
     {
-        System.err.println("*** Testing: Cache Invalidation");
+        logger.info("*** Testing: Cache Invalidation");
         for(AuthDataBasic data : basictests) {
             Result result = null;
             TestProvider provider = null;
-            System.out.println("*** URL: " + data.url);
+            logger.info("*** URL: " + data.url);
 
             // Do each test with a bad password to cause cache invalidation
             provider = new TestProvider(data.user, BADPASSWORD);
@@ -397,14 +410,14 @@ public class TestTomcatAuth extends UnitTestCommon
     public void
     testCache2() throws Exception
     {
-        System.err.println("*** Testing: Cache Invalidation visually");
+        logger.info("*** Testing: Cache Invalidation visually");
         if(!this.prop_display) {
-            System.err.println("Test aborted: requires display");
+            logger.error("Test aborted: requires display");
             return;
         }
         for(AuthDataBasic data : basictests) {
             Result result = null;
-            System.out.println("*** URL: " + data.url);
+            logger.info("*** URL: " + data.url);
             try (HTTPSession session = HTTPFactory.newSession(data.url)) {
                 Login cp = new Login(data.user, BADPASSWORD);
                 session.setCredentialsProvider(cp);
@@ -427,7 +440,7 @@ public class TestTomcatAuth extends UnitTestCommon
 
 /*
     // This test actually is does nothing because I have no way to test it
-    // since it requires a firwall proxy that requires username+pwd
+    // since it requires a firewall proxy that requires username+pwd
     @Test
     public void
     testFirewall() throws Exception
@@ -440,17 +453,16 @@ public class TestTomcatAuth extends UnitTestCommon
         String url = null;
 
         Counter counter = new Counter();
-        System.err.println("*** Testing: Http Firewall Proxy (with authentication)");
+        logger.info("*** Testing: Http Firewall Proxy (with authentication)");
         provider.setPWD(user, pwd);
-        System.err.println("*** URL: " + url);
+        logger.info("*** URL: " + url);
         // Test local credentials provider
         try (HTTPSession session = HTTPFactory.newSession(url);
              HTTPMethod method = HTTPFactory.Get(session, url)) {
             session.setProxy(host, port);
             session.setCredentialsProvider(url, provider);
             int status = method.execute();
-            System.err.printf("\tlocal provider: status code = %d\n", status);
-            System.err.flush();
+            logger.info("local provider: status code = {}}", status);
             Assert.assertTrue("Incorrect return code: " + result.status, check(result.status));
             // Test global credentials provider
             HTTPSession.setGlobalProxy(host, port);
@@ -474,8 +486,8 @@ public class TestTomcatAuth extends UnitTestCommon
         try {
             try (HTTPMethod method = HTTPFactory.Get(session, url)) {
                 result.status = method.execute();
-                System.err.printf("\tglobal provider: status code = %d\n", result.status);
-                //System.err.printf("\t|cache| = %d\n", HTTPCachingProvider.getCache().size());
+                logger.info("global provider: status code = {}", result.status);
+                //logger.info("|cache| = {}", HTTPCachingProvider.getCache().size());
                 // try to read in the content
                 result.contents = readbinaryfile(method.getResponseAsStream());
             }

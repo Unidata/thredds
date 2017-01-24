@@ -1,7 +1,8 @@
 package thredds.tds;
 
-import junit.framework.TestCase;
 import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
@@ -31,12 +32,9 @@ import java.text.ParseException;
  * @since Sep 24, 2010
  */
 @Category(NeedsCdmUnitTest.class)
-public class TestWaveModel extends TestCase {
-
-  public TestWaveModel( String name) {
-    super(name);
-  }
-
+@Ignore("FeatureCollection is empty because cdmUnitTest/tds/hioos is empty.")
+public class TestWaveModel {
+  @Test
   public void testNcml() throws IOException, InvalidRangeException {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);
@@ -74,6 +72,7 @@ public class TestWaveModel extends TestCase {
     }
   }
 
+  @Test
   public void testOffset() throws IOException, InvalidRangeException, ParseException {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/offset/catalog.xml";
     Catalog cat = TdsLocalCatalog.open(catalog);

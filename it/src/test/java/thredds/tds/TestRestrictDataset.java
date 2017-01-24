@@ -57,6 +57,8 @@ public class TestRestrictDataset {
   @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
+            // These first 3 actually don't require cdmUnitTest/. Could be broken out into separate class that can
+            // run on Travis.
             {"/dodsC/testRestrictedDataset/testData2.nc.dds"},
             {"/cdmremote/testRestrictedDataset/testData2.nc?req=header"},
             {"/fileServer/testRestrictedDataset/testData2.nc"},
@@ -159,7 +161,7 @@ public class TestRestrictDataset {
     System.out.printf("testRestriction req = '%s'%n", endpoint);
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
-      session.setCredentials(new UsernamePasswordCredentials("tiggeUser", "tigge"));
+      session.setCredentials(new UsernamePasswordCredentials("tds", "secret666"));
 
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
