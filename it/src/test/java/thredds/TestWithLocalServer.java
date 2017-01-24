@@ -45,6 +45,7 @@ import ucar.nc2.util.IO;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * Describe
@@ -87,7 +88,8 @@ public class TestWithLocalServer {
         boolean ok = false;
         for (int expectCode : expectCodes)
           if (expectCode == statusCode) ok = true;
-        Assert.assertTrue(ok);
+        Assert.assertTrue(String.format(
+                "Expected one of %s, but got %s.", Arrays.toString(expectCodes), statusCode), ok);
       }
 
       if (statusCode != 200) {
