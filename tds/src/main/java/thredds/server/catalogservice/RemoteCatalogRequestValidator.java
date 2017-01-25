@@ -51,8 +51,11 @@ public class RemoteCatalogRequestValidator implements Validator {
       URI catUri = new URI(rcr.getCatalog());
       if (!catUri.isAbsolute())
         errs.rejectValue("catalogUri", "catalogUri.notAbsolute", "The catalog parameter must be an absolute URI.");
-      if (catUri.getScheme() == null || !catUri.getScheme().equalsIgnoreCase("HTTP"))
-        errs.rejectValue("catalogUri", "catalogUri.notHttpUri", "The catalog parameter must be an HTTP URI.");
+      if ( catUri.getScheme() != null
+            && ! catUri.getScheme().equalsIgnoreCase( "HTTP" )
+            && ! catUri.getScheme().equalsIgnoreCase( "HTTPS" ))
+        errs.rejectValue( "catalogUri", "catalogUri.notHttpUri",
+                "The \"catalogUri\" field must be an HTTP|HTTPS URI.");
       rcr.setCatalogUri(catUri);
 
     } catch (URISyntaxException e) {

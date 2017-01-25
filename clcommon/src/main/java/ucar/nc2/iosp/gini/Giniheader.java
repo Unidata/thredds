@@ -1,34 +1,5 @@
 /*
- * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
- *
- *   Portions of this software were developed by the Unidata Program at the
- *   University Corporation for Atmospheric Research.
- *
- *   Access and use of this software shall impose the following obligations
- *   and understandings on the user. The user is granted the right, without
- *   any fee or cost, to use, copy, modify, alter, enhance and distribute
- *   this software, and any derivative works thereof, and its supporting
- *   documentation for any purpose whatsoever, provided that this entire
- *   notice appears in all copies of the software, derivative works and
- *   supporting documentation.  Further, UCAR requests that the user credit
- *   UCAR/Unidata in any publications that result from the use of this
- *   software or in any product that includes this software. The names UCAR
- *   and/or Unidata, however, may not be used in any advertising or publicity
- *   to endorse or promote any products or commercial entity unless specific
- *   written permission is obtained from UCAR/Unidata. The user also
- *   understands that UCAR/Unidata is not obligated to provide the user with
- *   any support, consulting, training or assistance of any kind with regard
- *   to the use, operation and performance of this software nor to provide
- *   the user with any updates, revisions, new versions or "bug fixes."
- *
- *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * (c) 1998-2016 University Corporation for Atmospheric Research/Unidata
  */
 package ucar.nc2.iosp.gini;
 
@@ -418,7 +389,7 @@ class Giniheader {
     ncfile.addAttribute(null, new Attribute("standard_name_vocabulary", getPhysElemLongName(phys_elem, ent_id)));
     ncfile.addAttribute(null, new Attribute("creator_name", "UNIDATA"));
     ncfile.addAttribute(null, new Attribute("creator_url", "http://www.unidata.ucar.edu/"));
-    ncfile.addAttribute(null, new Attribute("naming_authority", "UCAR/UOP"));
+    ncfile.addAttribute(null, new Attribute("naming_authority", "UCAR/UCP"));
     ncfile.addAttribute(null, new Attribute("geospatial_lat_min", lat1));
     ncfile.addAttribute(null, new Attribute("geospatial_lat_max", lat2));
     ncfile.addAttribute(null, new Attribute("geospatial_lon_min", lon1));
@@ -426,9 +397,9 @@ class Giniheader {
     //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_min", new Float(0.0)));
     //this.ncfile.addAttribute(null, new Attribute("geospatial_vertical_max", new Float(0.0)));
 
-    /** Get the image resolution.
+    /*
+     * Get the image resolution.
      */
-
     bos.position(41);  /* jump to 42 bytes of PDB */
     nv = bos.get();      /* Res [km] */
     att = new Attribute("imageResolution", nv);
@@ -603,7 +574,6 @@ class Giniheader {
       int jscale = 100000000;
       byte[] unsb = new byte[8];
       bos.get(unsb);
-//      String unitStr = new String(unsb, CDM.utf8Charset).toUpperCase();
       bos.position(55);
       nv = bos.get();
       int calcod = DataType.unsignedByteToShort(nv);
@@ -658,12 +628,10 @@ class Giniheader {
     return calcods;
   }
 
-  // Return the string of entity ID for the GINI image file
+  // Return the string of Sector for the GINI image file
 
   String gini_GetSectorID(int ent_id) {
     String name;
-     /* GINI channel ID          */
-
     switch (ent_id) {
       case 0:
         name = "Northern Hemisphere Composite";
@@ -698,6 +666,21 @@ class Giniheader {
       case 10:
         name = "NH Composite - Meteosat/GOES E/ GOES W/GMS";
         break;
+      case 11:
+        name = "Central CONUS";
+        break;
+      case 12:
+        name = "East Floater";
+        break;
+      case 13:
+        name = "West Floater";
+        break;
+      case 14:
+        name = "Central Floater";
+        break;
+      case 15:
+        name = "Polar Floater";
+        break;
       default:
         name = "Unknown-ID";
     }
@@ -709,8 +692,17 @@ class Giniheader {
   String gini_GetEntityID(int ent_id) {
     String name;
     switch (ent_id) {
-      case 99:
-        name = "RADAR-MOSIAC Composite Image";
+      case 2:
+        name = "Miscellaneous";
+        break;
+      case 3:
+        name = "JERS";
+        break;
+      case 4:
+        name ="ERS/QuikSCAT/Scatterometer";
+        break;
+      case 5:
+        name = "POES/NPOESS";
         break;
       case 6:
         name = "Composite";
@@ -721,29 +713,41 @@ class Giniheader {
       case 8:
         name = "GMS satellite Image";
         break;
-      case 9:                                    /* METEOSAT (using 6)       */
+      case 9:
         name = "METEOSAT satellite Image";
         break;
-      case 10:                                   /* GOES-7                   */
+      case 10:
         name = "GOES-7 satellite Image";
         break;
-      case 11:                                   /* GOES-8                   */
+      case 11:
         name = "GOES-8 satellite Image";
         break;
-      case 12:                                   /* GOES-9                   */
+      case 12:
         name = "GOES-9 satellite Image";
         break;
-      case 13:                                   /* GOES-10                  */
+      case 13:
         name = "GOES-10 satellite Image";
         break;
-      case 14:                                   /* GOES-11                  */
+      case 14:
         name = "GOES-11 satellite Image";
         break;
-      case 15:                                   /* GOES-12                  */
+      case 15:
         name = "GOES-12 satellite Image";
         break;
-      case 16:                                   /* GOES-13                  */
+      case 16:
         name = "GOES-13 satellite Image";
+        break;
+      case 17:
+        name = "GOES-14 satellite Image";
+        break;
+      case 18:
+        name = "GOES-15 satellite Image";
+        break;
+      case 19: // GOES-R
+        name = "GOES-16 satellite Image";
+        break;
+      case 99: // special snowflake GEMPAK Composite Images generated by Unidata
+        name = "RADAR-MOSIAC Composite Image";
         break;
       default:
         name = "Unknown";
@@ -755,7 +759,6 @@ class Giniheader {
   // Return the channel ID for the GINI image file
   String gini_GetPhysElemID(int phys_elem, int ent_id) {
     String name;
-
     switch (phys_elem) {
       case 1:
         name = "VIS";
@@ -805,9 +808,12 @@ class Giniheader {
         break;
       case 25:
         if (ent_id == 99)
-          name = "Reflectivity";
+          name = "HHC";
         else
           name = "Volcano_imagery";
+        break;
+      case 26:
+        name = "EchoTops";
         break;
       case 27:
         if (ent_id == 99)
@@ -820,9 +826,6 @@ class Giniheader {
           name = "Reflectivity";
         else
           name = "Cloud_Amount";
-        break;
-      case 26:
-        name = "EchoTops";
         break;
       case 29:
         name = "VIL";
@@ -884,7 +887,7 @@ class Giniheader {
       case 21:
       case 22:
       case 23:
-      case 29:
+      case 25:
       case 43:
       case 48:
       case 50:
@@ -895,12 +898,7 @@ class Giniheader {
       case 59:
         return "N/A";
       case 26:
-        return "K FT";
-      case 25:
-        if (ent_id == 99)
-          return "dBz";
-        else
-          return "N/A";
+        return "kft";
       case 27:
         if (ent_id == 99)
           return "dBz";
@@ -911,6 +909,8 @@ class Giniheader {
           return "dBz";
         else
           return "N/A";
+      case 29:
+        return "kg m-2";
       case 30:
         return "IN";
       case 31:
@@ -960,13 +960,18 @@ class Giniheader {
         return "Dry Microburst Potential Index";
       case 23:
         return "Microburst Potential Index";
+      case 24:
+        return "Derived Convective Inhibition";
       case 25:
         if (ent_id == 99)
-          return "2 km National 248 nm Base Composite Reflectivity";
+          return "1km National Hybrid Hydrometeor Classification Composite (Unidata)";
         else
           return "Volcano_imagery";
       case 26:
-        return "4 km National Echo Tops";
+        if (ent_id == 99)
+          return "1 km National Echo Tops Composite (Unidata)";
+        else
+          return "4 km National Echo Tops";
       case 27:
         if (ent_id == 99)
           return "1 km National Base Reflectivity Composite (Unidata)";
@@ -974,30 +979,76 @@ class Giniheader {
           return "Cloud Top Pressure or Height";
       case 28:
         if (ent_id == 99)
-          return "1 km National Composite Reflectivity (Unidata)";
+          return "1 km National Reflectivity Composite (Unidata)";
         else
           return "Cloud Amount";
-
       case 29:
-        return "4 km National Vertically Integrated Liquid Water";
+        if (ent_id == 99)
+          return "1 km National Vertically Integrated Liquid Water (Unidata)";
+        else
+          return "4 km National Vertically Integrated Liquid Water";
       case 30:
-        return "2 km National 1-hour Precipitation (Unidata)";
+        if (ent_id == 99)
+          return "1 km National 1-hour Precipitation (Unidata)";
+        else
+          return "Surface wind speeds over oceans and Great Lakes";
       case 31:
-        return "4 km National Storm Total Precipitation (Unidata)";
+        if (ent_id == 99)
+          return "4 km National Storm Total Precipitation (Unidata)";
+        else
+          return "Surface Wetness";
+      case 32:
+        return "Ice concentrations";
+      case 33:
+        return "Ice type";
+      case 34:
+        return "Ice edge";
+      case 35:
+        return "Cloud water content";
+      case 36:
+        return "Surface type";
+      case 37:
+        return "Snow indicator";
+      case 38:
+        return "Snow/water content";
+      case 39:
+        return "Derived volcano imagery";
+      case 41:
+        return "Sounder 14.71 micron imagery";
+      case 42:
+        return "Sounder 14.37 micron imagery";
       case 43:
-        return "14.06 micron sounder image";
+        return "Sounder 14.06 micron imagery";
+      case 44:
+        return "Sounder 13.64 micron imagery";
+      case 45:
+        return "Sounder 13.37 micron imagery";
+      case 46:
+        return "Sounder 12.66 micron imagery";
+      case 47:
+        return "Sounder 12.02 micron imagery";
       case 48:
         return "11.03 micron sounder image";
+      case 49:
+        return "Sounder 11.03 micron imagery";
       case 50:
         return "7.43 micron sounder image";
       case 51:
         return "7.02 micron sounder image";
       case 52:
         return "6.51 micron sounder image";
+      case 53:
+        return "Sounder 4.57 micron imagery";
+      case 54:
+        return "Sounder 4.52 micron imagery";
       case 55:
         return "4.45 micron sounder image";
+      case 56:
+        return "Sounder 4.13 micron imagery";
       case 57:
         return "3.98 micron sounder image";
+      case 58:
+        return "Sounder 3.74 micron imagery";
       case 59:
         return "VIS sounder image ";
       default:
@@ -1061,29 +1112,33 @@ class Giniheader {
         return "Satellite Product VIS sounder visible image ";
       case 25:
         if (ent_id == 99)
-          return "Nexrad Level 3 National 248 nm Base Composite Reflectivity at Resolution 2 km";
+          return "National Hybrid Hydrometeor Classification Composite at Resolution 1 km";
         else
           return "Satellite Derived Volcano_imagery";
-
       case 26:
-        return "Nexrad Level 3 National Echo Tops at Resolution 4 km";
-      case 29:
-        return "Nexrad Level 3 National Vertically Integrated Liquid Water at Resolution 4 km";
-      case 28:
         if (ent_id == 99)
-          return "Nexrad Level 3 National 248 nm Base Composite Reflectivity at Resolution 2 km";
+          return "Nexrad Level 3 National Echo Tops at Resolution 1 km";
         else
-          return "Gridded Cloud Amount";
+          return "Nexrad Level 3 National Echo Tops at Resolution 4 km";
       case 27:
         if (ent_id == 99)
           return "Nexrad Level 3 Base Reflectivity National Composition at Resolution 1 km";
         else
           return "Gridded Cloud Top Pressure or Height";
-
+      case 28:
+        if (ent_id == 99)
+          return "Nexrad Level 3 National 248 nm Base Composite Reflectivity at Resolution 2 km";
+        else
+          return "Gridded Cloud Amount";
+      case 29:
+        if (ent_id == 99)
+          return "Nexrad Level 3 National Vertically Integrated Liquid Water at Resolution 1 km";
+        else
+          return "Nexrad Level 3 National Vertically Integrated Liquid Water at Resolution 4 km";
       case 30:
-        return "Nexrad Level 3 1 hour precipitation National Composition at Resolution 2 km";
+        return "Nexrad Level 3 1 Hour Precipitation National Composition at Resolution 2 km";
       case 31:
-        return "Nexrad Level 3 total precipitation National Composition at Resolution 4 km";
+        return "Nexrad Level 3 Storm Total Precipitation National Composition at Resolution 4 km";
       default:
         return "unknown";
     }
