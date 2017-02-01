@@ -29,7 +29,7 @@ env:
 addons:
   # See the note in travis/after_script.sh about the environment variables that Travis artifact uploading requires.
   artifacts:
-    bucket: unidata-tds-tests
+    bucket: unidata-tds
     paths:
       - $TEST_REPORT_DIR
       - $TDS_LOGS_DIR
