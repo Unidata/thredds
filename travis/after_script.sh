@@ -19,7 +19,7 @@
 # variables are not made available to untrusted builds such as pull requests coming from another repository.
 # See https://docs.travis-ci.com/user/environment-variables/#Encrypted-Variables
 if [ $TASK == "build" ] && [ -n "$ARTIFACTS_KEY" ]; then
-    S3_URL="https://s3.amazonaws.com/unidata-tds-tests/Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER"
+    S3_URL="https://s3.amazonaws.com/unidata-tds/Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER"
 
     echo "The test report is available at:"
     echo "    $S3_URL/index.html"
