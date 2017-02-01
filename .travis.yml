@@ -3,7 +3,7 @@ sudo: false
 
 addons:
   artifacts:
-    bucket: unidata-tds-tests
+    bucket: unidata-tds
     paths:
       - $TRAVIS_UPLOAD_PATH
     target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
@@ -28,7 +28,7 @@ script:
 
   - if [[ $BUILD_IDV == false ]]; then
       echo If available, test report at;
-      echo http://unidata-tds-tests.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
+      echo http://unidata-tds.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
       ./gradlew --info testAll;
     fi
 
