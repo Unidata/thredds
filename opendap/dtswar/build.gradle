@@ -5,6 +5,7 @@ apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
 // dtswar has no tests
 // dtswar is not published
+apply from: "$rootDir/gradle/any/gretty.gradle"
 
 apply plugin: 'war'
 
@@ -22,10 +23,10 @@ dependencies {
     runtime libraries["log4j-web"]
 }
 
-apply plugin: 'org.akhikhl.gretty'
-
-gretty {
-    servletContainer = 'tomcat8'
+// This will be used by :dtswar, :opendap, and :httpservices.
+ext.grettyConfig = {
     httpPort = 8082
     contextPath = '/dts'
 }
+
+gretty grettyConfig

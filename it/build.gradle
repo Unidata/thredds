@@ -9,6 +9,7 @@ apply from: "$rootDir/gradle/any/java.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/coverage.gradle"
 // 'it' is not published
+apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
     testCompile project(":cdm")
@@ -37,33 +38,6 @@ dependencies {
     // we're overlaying tds (see below), so we're already getting the binding that it declares.
 }
 
-apply plugin: 'org.akhikhl.gretty'
-
-import com.google.common.collect.Iterables
-
-gretty {
-    servletContainer = 'tomcat8'
-    httpPort = 8081
-    contextPath = '/thredds'
-
-    // Overlay the "tds" webapp onto this project's webapp.
-    // This is how we're able to have tds integration tests outside of the tds project.
-    // See http://akhikhl.github.io/gretty-doc/Web-app-overlays.html
-    overlay ':tds'
-
-    // The normal 'test' task added by the Java plugin has nothing to do in this subproject, because every single
-    // test requires a running TDS. Therefore, we're repurposing the 'test' task for integration testing.
-    integrationTestTask = 'test'
-    
-    File testResourcesDir = Iterables.getOnlyElement(sourceSets.test.resources.srcDirs)
-    
-    // These enable HTTPS authentication, which is needed to access the TDS admin interface.
-    httpsEnabled = true
-    sslKeyStorePath = "$testResourcesDir/auth/keystore"
-    sslKeyStorePassword = 'secret666'
-    realmConfigFile = "$testResourcesDir/auth/tomcat-users.xml"
-}
-
 // Gretty will start the webapp before this task and shut it down afterward.
 test {
     // isContentRootAvailable, isJenkins, and contentRootKey are defined on the root project in testing.gradle.
@@ -75,71 +49,13 @@ test {
         // so disable the task altogether.
         enabled = false
     }
-
-    doLast {
-        // Remove the system properties that Gretty added in AppBeforeIntegrationTestTask.integrationTestTask().
-        // org.gradle.api.internal.changedetection.changes.DefaultTaskArtifactStateRepository.TaskArtifactStateImpl
-        // .afterTask() seems to indicate that input/output snapshots are taken AFTER a task is executed, whereas
-        // snapshot checking occurs BEFORE. So, in order for the UP-TO-DATE machinery to work properly, we must undo
-        // the changes to input that Gretty made during the execution phase.
-        // TODO: Can I find anything more authoritive vis-a-vis snapshot time? Ask at the Gradle forums?
-        // TODO: Open an issue--or even a pull request--for this problem on the Gretty Github.
-        systemProperties.keySet().removeAll { it.startsWith("gretty.") }
-    }
 }
 
-// Propagate all of test's system properties (which were set in testing.gradle) to the embedded Tomcat instance.
-// org.akhikhl.gretty.ServerConfig.systemProperties is null by default.
-// So, we can be sure that we're not trampling over any existing properties by doing this.
-gretty.systemProperties test.systemProperties
-
-import org.gradle.api.internal.changedetection.TaskArtifactState
-import org.gradle.api.internal.changedetection.TaskArtifactStateRepository
-
-// We want to modify the "appBeforeIntegrationTest" and "appAfterIntegrationTest" tasks, but like all Gretty tasks,
-// they won't be added to the project until after evaluation: http://goo.gl/qlFXTD
-// So, our modifications must also occur after evaluation.
-afterEvaluate {
-    // This task starts the embedded Tomcat server. It's expensive to do.
-    appBeforeIntegrationTest {
-        // We're trying hard to only execute appBeforeIntegrationTest if test will execute.
-        // We won't execute if test is disabled--that's simple.
-        // We also won't execute if test is considered UP-TO-DATE. That's much harder to determine, and we
-        // had to dig into internal Gradle APIs to find that info. Expect this to break in the future.
-        // There are still other cases where test execution could be skipped that we don't or can't check
-        // (e.g. one of its onlyIf()s returns false), but those situations are rare.
-        onlyIf {
-            Task task = tasks.test
-            if (!task.enabled) {    // May have been disabled above.
-                return false;
-            }
-
-            TaskArtifactState state = task.services.get(TaskArtifactStateRepository).getStateFor(task)
-            return !state.isUpToDate([])
-        }
-
-        // "jacoco" extension is created automatically for all AppBeforeIntegrationTest tasks
-        // and has type org.gradle.testing.jacoco.plugins.JacocoTaskExtension
-        jacoco {
-            // Don't use the same name as our test task's execution data.
-            destinationFile = file("$buildDir/jacoco/embedded-tds.exec")
-        }
-
-        doFirst {
-            // tomcatBaseDir is the working directory for embedded tomcat. We want to write our logs there as well.
-            File tomcatBaseDir = launcherConfig.baseDir
-            gretty.logDir = new File(tomcatBaseDir, "logs").absolutePath
-        }
-    }
-
-    // This task stops the embedded Tomcat server.
-    appAfterIntegrationTest {
-        // Only run if appBeforeIntegrationTest did work.
-        onlyIf { tasks.appBeforeIntegrationTest.getDidWork() }
-    }
+// Additional Gretty config specific to integration testing.
+gretty {
+    overlayAndApplyConfigOf ':tds'
     
-    jacocoTestReport {
-        executionData = files(tasks.appBeforeIntegrationTest.jacoco.destinationFile,
-                              tasks.test.jacoco.destinationFile)
-    }
+    // The normal 'test' task added by the Java plugin has nothing to do in this subproject, because every single
+    // test requires a running TDS. Therefore, we're repurposing the 'test' task for integration testing.
+    integrationTestTask = 'test'
 }

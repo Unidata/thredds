@@ -8,6 +8,13 @@ ext {
     
     // Used to publish static analysis report to https://sonarqube.com/dashboard/index/thredds
     SONARQUBE_USER_TOKEN_KEY = 'sonarqube.user.token'
+    
+    // Do not propagate these system properties to the Gradle test executors.
+    systemPropertiesBlackList = [
+            // Passing this causes "java.lang.ClassNotFoundException: org.jacoco.agent.rt.internal_932a715.PreMain"
+            // See https://discuss.gradle.org/t/jacoco-related-failure-in-multiproject-build/6216
+            'user.dir'
+    ]
 }
 
 String getPropertyOrFailBuild(String key) {
@@ -18,10 +25,32 @@ String getPropertyOrFailBuild(String key) {
     }
 }
 
+/**
+ * Add the system properties set on the Gradle process to the specified map, except for the properties in
+ * {@code systemPropertiesBlackList}. Existing entries in {@code targetProps} are NOT overwritten by system
+ * properties that have the same key.
+ *
+ * @param targetProps   the map to add properties to.
+ * @return  {@code targetProps}, now containing system properties.
+ */
+Map<String, String> addFilteredSysProps(Map<String, String> targetProps) {
+    assert targetProps != null
+    
+    System.properties.each { key, value ->
+        if (!systemPropertiesBlackList.contains(key) &&
+                !targetProps.containsKey(key)) {  // Don't overrwrite any existing entries.
+            targetProps[key] = value
+        }
+    }
+    
+    targetProps
+}
+
 // It isn't possible to share methods, but we can share extra properties containing a closure, which boils down to
 // the same thing. We're going to do that by converting our methods to closures.
 // See http://stackoverflow.com/questions/18715137/extract-common-methods-from-gradle-build-script
 ext {
     // Export methods by turning them into closures
     getPropertyOrFailBuild = this.&getPropertyOrFailBuild
+    addFilteredSysProps = this.&addFilteredSysProps
 }

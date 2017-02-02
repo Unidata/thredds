@@ -11,6 +11,7 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
     compile project(':cdm')
@@ -28,15 +29,8 @@ dependencies {
     testCompile libraries["JUnitParams"]
 }
 
-apply plugin: 'org.akhikhl.gretty'
-
 gretty {
-    // Same config for these 3 items as in ':opendap:dtswar'.
-    servletContainer = 'tomcat8'
-    httpPort = 8082
-    contextPath = '/dts'
-
-    integrationTestTask = 'test'
+    overlayAndApplyConfigOf ':opendap:dtswar'
     
-    overlay ':opendap:dtswar'
+    integrationTestTask = 'test'
 }

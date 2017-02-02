@@ -11,8 +11,6 @@ import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"/WEB-INF/applicationContext.xml"},loader=MockTdsContextLoader.class)
 @Category(NeedsContentRoot.class)

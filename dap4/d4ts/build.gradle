@@ -2,6 +2,7 @@ apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
 // d4ts has no tests
 // d4ts is not published
+apply from: "$rootDir/gradle/any/gretty.gradle"
 
 apply plugin: 'war'
 
@@ -39,15 +40,14 @@ def d4testsResourcesCopySpec = copySpec {
 
 war.with d4testsResourcesCopySpec
 
-apply plugin: 'org.akhikhl.gretty'
-
-gretty {
-    servletContainer = 'tomcat8'
+// This will be used by both :d4ts and :d4tests.
+ext.grettyConfig = {
     httpPort = 8083
     contextPath = '/d4ts'
-    systemProperties System.properties
     
     afterEvaluate {
         prepareInplaceWebAppFolder.with d4testsResourcesCopySpec
     }
 }
+
+gretty grettyConfig
