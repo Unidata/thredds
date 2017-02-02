@@ -1,5 +1,7 @@
+import com.google.common.collect.Iterables
+
 description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
-        "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
+              "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
 ext.title = "THREDDS Data Server (TDS)"
 ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 
@@ -9,6 +11,7 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/gretty.gradle"
 
 apply plugin: 'war'
 
@@ -99,15 +102,12 @@ dependencies {
     runtime libraries["log4j-web"]
 }
 
-// Adds ':tds:prepareInplaceWebAppClasses', which ':it:test' depends on.
-apply plugin: 'org.akhikhl.gretty'
-
-// Tests expect for test resources to be copied to the same directory as the test classes.
-processTestResources.destinationDir = compileTestJava.destinationDir
-
 processTestResources {
     from "src/main/webapp"
     from "src/main/webapp/WEB-INF/classes"
+    
+    // Tests expect for test resources to be copied to the same directory as the test classes.
+    destinationDir = compileTestJava.destinationDir
 }
 
 war {
@@ -131,7 +131,23 @@ war {
     }
 }
 
-///////////////////////////////// Godiva 3 /////////////////////////////////
+// This will be used by both :tds and :it.
+ext.grettyConfig = {
+    httpPort = 8081
+    contextPath = '/thredds'
+    
+    File testResourcesDir = Iterables.getOnlyElement(sourceSets.test.resources.srcDirs)
+    
+    // These enable HTTPS authentication, which is needed to access the TDS admin interface.
+    httpsEnabled = true
+    sslKeyStorePath = "$testResourcesDir/auth/keystore"
+    sslKeyStorePassword = 'secret666'
+    realmConfigFile = "$testResourcesDir/auth/tomcat-users.xml"
+}
+
+gretty grettyConfig
+
+////////////////////////////////////// Godiva 3 //////////////////////////////////////
 
 // Adapted from https://blog.eveoh.nl/2012/01/using-google-web-toolkit-with-gradle/
 // 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6' is also available, but it has problems.
@@ -160,7 +176,7 @@ ext {
 }
 
 task compileGwt (dependsOn: classes, type: JavaExec) {
-    inputs.source sourceSets.main.java.srcDirs
+    inputs.file(sourceSets.main.java.srcDirs).skipWhenEmpty()
     inputs.dir sourceSets.main.output.resourcesDir
     outputs.dir gwtDir
 

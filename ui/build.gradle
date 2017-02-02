@@ -38,9 +38,11 @@ dependencies {
 
 //////////////////////////////////////////////////////////
 
-task showDependencies << {
-    for (file in configurations.runtime.resolve()) {
-        println " " + file
+task showDependencies {
+    doLast {
+        for (file in configurations.runtime.resolve()) {
+            println " " + file
+        }
     }
 }
 
@@ -95,53 +97,55 @@ ext {
    keystorePassword=password of keystore file
    webdir:parent of conan content directory
  */
-task releaseWebstart(dependsOn: jar, group: 'Release') << {
-    if (project.hasProperty("webdir") && project.hasProperty("keystore")
-            && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
-        ant.delete(dir: webstartWorkingDir)
-        ant.mkdir(dir: webstartWorkingDir)
-
-        copy {
-            println "copyJnlp"
-            from 'netCDFtools.jnlp'
-            from 'netCDFtoolsExtraJars.jnlp'
-            into webstartWorkingDir
-        }
-
-        println "signjar:"
-        println "\twebdir = $webdir"
-        println "\tkeystore = $keystore"
-        println "\tkeystoreAlias = $keystoreAlias"
-        println "\tkeystorePassword = $keystorePassword"
-
-        ant.signjar(jar: "build/libs/ui-" + version + ".jar", destDir: webstartWorkingDir, alias: keystoreAlias,
-                keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
-
-        for (file in configurations.runtime.resolve()) {
-            if (depsToRejar.contains(file.name)) {
-                println "$file contains duplicate entries or old signature files. Rejarring."
-
-                File rejarredFile = new File(temporaryDir, file.name)
-                rejar file, rejarredFile
-                file = rejarredFile
+task releaseWebstart(dependsOn: jar, group: 'Release') {
+    doLast {
+        if (project.hasProperty("webdir") && project.hasProperty("keystore")
+                && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
+            ant.delete(dir: webstartWorkingDir)
+            ant.mkdir(dir: webstartWorkingDir)
+        
+            copy {
+                println "copyJnlp"
+                from 'netCDFtools.jnlp'
+                from 'netCDFtoolsExtraJars.jnlp'
+                into webstartWorkingDir
             }
-
-            println "Signing $file"
-            ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
-                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
+        
+            println "signjar:"
+            println "\twebdir = $webdir"
+            println "\tkeystore = $keystore"
+            println "\tkeystoreAlias = $keystoreAlias"
+            println "\tkeystorePassword = $keystorePassword"
+        
+            ant.signjar(jar: "build/libs/ui-" + version + ".jar", destDir: webstartWorkingDir, alias: keystoreAlias,
+                        keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
+        
+            for (file in configurations.runtime.resolve()) {
+                if (depsToRejar.contains(file.name)) {
+                    println "$file contains duplicate entries or old signature files. Rejarring."
+                
+                    File rejarredFile = new File(temporaryDir, file.name)
+                    rejar file, rejarredFile
+                    file = rejarredFile
+                }
+            
+                println "Signing $file"
+                ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
+                            keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
+            }
+        
+            ant.delete(dir: webstartDir)
+            ant.mkdir(dir: webstartDir)
+        
+            copy {
+                println "copy2web"
+                from(webstartWorkingDir)
+                into webstartDir
+            }
+        } else {
+            println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
+            +"must be defined to run \"releaseWebstart\" task."
         }
-
-        ant.delete(dir: webstartDir)
-        ant.mkdir(dir: webstartDir)
-
-        copy {
-            println "copy2web"
-            from(webstartWorkingDir)
-            into webstartDir
-        }
-    } else {
-        println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
-        +"must be defined to run \"releaseWebstart\" task."
     }
 }
 
@@ -166,20 +170,22 @@ javadoc {
     source = source.plus(fileTree(dir: '../dap4/d4cdm/src/main/java', include: '**/*.java'))
 }
 
-task releaseDocs(dependsOn: javadoc, group: 'Release') << {
-    if (project.hasProperty("webdir")) {
-        String releaseDir = new File(webdir, "javadocAll").absolutePath
-
-        ant.delete(dir: releaseDir)
-        ant.mkdir(dir: releaseDir)
-
-        copy {
-            println "copyDocs to " + releaseDir
-            from("build/docs/javadoc")
-            into releaseDir
+task releaseDocs(dependsOn: javadoc, group: 'Release') {
+    doLast {
+        if (project.hasProperty("webdir")) {
+            String releaseDir = new File(webdir, "javadocAll").absolutePath
+        
+            ant.delete(dir: releaseDir)
+            ant.mkdir(dir: releaseDir)
+        
+            copy {
+                println "copyDocs to " + releaseDir
+                from("build/docs/javadoc")
+                into releaseDir
+            }
+        } else {
+            println "Property \"webdir\" must be defined to run \"releaseDocs\" task."
         }
-    } else {
-        println "Property \"webdir\" must be defined to run \"releaseDocs\" task."
     }
 }
 

@@ -1,10 +1,6 @@
 // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
 apply plugin: "jacoco"
 
-jacoco {
-    toolVersion = "0.7.7.201606060606"  // The latest version as of 2016-09-16.
-}
-
 Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
 Collection<Task> tasksExtendedByJacoco = tasks.matching(isExtendedByJacoco)
 

@@ -6,6 +6,7 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
     compile libraries["jsr305"]
@@ -16,16 +17,9 @@ dependencies {
     compile libraries["slf4j-api"]
 }
 
-// We're going to simply use dtswar as an endpoint for our HTTP tests.
-apply plugin: 'org.akhikhl.gretty'
-
 gretty {
-    // Same config for these 3 items as in ':opendap:dtswar'.
-    servletContainer = 'tomcat8'
-    httpPort = 8082
-    contextPath = '/dts'
+    // We're going to simply use dtswar as an endpoint for our HTTP tests.
+    overlayAndApplyConfigOf ':opendap:dtswar'
     
     integrationTestTask = 'test'
-    
-    overlay ':opendap:dtswar'
 }

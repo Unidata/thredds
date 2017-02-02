@@ -3,6 +3,7 @@ apply from: "$rootDir/gradle/any/java.gradle"
 apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/coverage.gradle"
 // d4tests is not published
+apply from: "$rootDir/gradle/any/gretty.gradle"
 
 dependencies {
     // A lot of these dependencies should be in the testRuntime config, not testCompile.
@@ -55,16 +56,8 @@ test {
     include 'dap4/test/TestServletConstraints.class'
 }
 
-apply plugin: 'org.akhikhl.gretty'
-
 gretty {
-    // Same config for these 3 items as in ':dap4:d4ts'.
-    servletContainer = 'tomcat8'
-    httpPort = 8083
-    contextPath = '/d4ts'
-    systemProperties test.systemProperties
+    overlayAndApplyConfigOf ':dap4:d4ts'
     
     integrationTestTask = 'test'
-    
-    overlay ':dap4:d4ts'
 }

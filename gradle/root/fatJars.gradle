@@ -8,7 +8,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath libraries["shadow"]
+        classpath libraries["shadow"]  // We want to import the ShadowJar class.
     }
 }
 

@@ -32,7 +32,7 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.2"
+libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.3"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 

@@ -1,0 +1,89 @@
+// In Gradle, dependencies specified in a parent's buildscript {} block are visible to all children.
+// However, that behavior doesn't seem to hold for script plugins (this file) applied from the parent script.
+// So we have to repeat ourselves. See the root project's build script for more notes on buildscript {} block weirdness.
+buildscript {
+    apply from: "$rootDir/gradle/any/dependencies.gradle"
+    
+    repositories {
+        jcenter()
+        maven {
+            url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty:gretty-fork'.
+        }
+    }
+    dependencies {
+        classpath libraries["gretty"]  // We want to import GradleUtils and StartBaseTask.
+    }
+}
+
+apply from: "$rootDir/gradle/any/properties.gradle"
+apply plugin: 'org.akhikhl.gretty'
+
+import org.akhikhl.gretty.GradleUtils
+import org.akhikhl.gretty.AppStartTask
+
+gretty {
+    servletContainer = 'tomcat8'  // All webapps run on Tomcat 8.
+    
+    // Pass filtered system properties to the embedded Tomcat that Gretty will launch.
+    systemProperties addFilteredSysProps([:])
+    
+    // We want to modify Gretty tasks but they won't be added to the project until after evaluation:
+    // http://goo.gl/qlFXTD. So, our modifications must also occur after evaluation.
+    afterEvaluate {
+        // Change the log directory of all tasks that start a server.
+        // Due to a bug, the normal instanceof operator won't work here. Nor will tasks.withType().
+        tasks.matching { GradleUtils.instanceOf(it, AppStartTask.name) }.each {
+            // LauncherConfig is only meant to be retrieved during the execution phase, hence the doFirst{}.
+            // If we try to grab it during evaluation, we get:
+            //   Error opening zip file or JAR manifest missing :
+            //   build/tmp/expandedArchives/org.jacoco.agent-0.7.7.201606060606.jar_aj7uwwfluzmrbfb6clshgf6du/jacocoagent.jar
+            it.doFirst {
+                // tomcatBaseDir is the working directory for embedded tomcat. We want to write our logs there as well.
+                File tomcatBaseDir = it.launcherConfig.baseDir
+    
+                // Will be something like: "$projectDir/build/serverBaseDir_tomcat8/logs".
+                it.logDir = file("$tomcatBaseDir/logs").absolutePath
+            }
+        }
+        
+        // Write separate Jacoco exeuction data for the client and server components of the integration test.
+        if (project.extensions.findByName('jacoco')) {  // Is the Jacoco plugin applied to the project?
+            Task integTestTask = tasks.findByName(integrationTestTask)
+            if (integTestTask) {  // Integration task exists.
+                // "jacoco" extension will be applied to these tasks if the Jacoco plugin is applied to the project.
+                integTestTask.jacoco.destinationFile =
+                        file("$buildDir/jacoco/${integrationTestTask}_client.exec")
+                appBeforeIntegrationTest.jacoco.destinationFile =
+                        file("$buildDir/jacoco/${integrationTestTask}_server.exec")
+            }
+        }
+    }
+}
+
+/**
+ * Overlay the named project onto this project and apply its Gretty config to this project as well. The named project
+ * is expected to have a property named 'grettyConfig' that modifies a org.akhikhl.gretty.GrettyExtension object.
+ *
+ * @param projectPath  the path of the project that is being overlaid.
+ * @throws UnknownProjectException  if no project with the given path exists.
+ * @throws MissingPropertyException if no property named 'grettyConfig' was found on the named project.
+ */
+void overlayAndApplyConfigOf(String projectPath) {
+    Project proj = rootProject.project(projectPath)
+    
+    // Need to evaluate proj first so that the 'grettyConfig' property is available.
+    evaluationDependsOn proj.path
+    
+    gretty proj.grettyConfig
+    
+    // See http://akhikhl.github.io/gretty-doc/Web-app-overlays.html
+    gretty.overlay projectPath
+}
+
+// It isn't possible to share methods, but we can share extra properties containing a closure, which boils down to
+// the same thing. We're going to do that by converting our methods to closures.
+// See http://stackoverflow.com/questions/18715137/extract-common-methods-from-gradle-build-script
+ext {
+    // Export method by turning it into a closure.
+    overlayAndApplyConfigOf = this.&overlayAndApplyConfigOf
+}

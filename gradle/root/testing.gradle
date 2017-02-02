@@ -42,13 +42,6 @@ ext {
     }
     
     isRdaDataAvailable = false  // figure out how to set later
-    
-    // Do not propagate these system properties to the Gradle test executors.
-    systemPropertiesBlackList = [
-        // Passing this causes "java.lang.ClassNotFoundException: org.jacoco.agent.rt.internal_932a715.PreMain"
-        // See https://discuss.gradle.org/t/jacoco-related-failure-in-multiproject-build/6216
-        'user.dir'
-    ]
 }
 
 import java.nio.file.*

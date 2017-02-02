@@ -1,4 +1,5 @@
 apply plugin: 'java'
+apply from: "$rootDir/gradle/any/properties.gradle"
 
 dependencies {
     testCompile project(":testUtil")  // Contains stuff like the JUnit @Category classes.
@@ -7,12 +8,7 @@ dependencies {
 
 tasks.withType(Test).all {
     // Propagates system properties set on the Gradle process to the test executors.
-    System.properties.each { key, value ->
-        if (!systemPropertiesBlackList.contains(key) &&
-            !systemProperties.containsKey(key)) {  // Don't overrwrite any existing entries.
-            systemProperties[key] = value
-        }
-    }
+    addFilteredSysProps(systemProperties)
     
     if (isTravis) {
         ignoreFailures = false  // On Travis, abort the build if any tests fail.
