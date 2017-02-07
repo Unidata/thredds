@@ -289,7 +289,7 @@ public class DConnect2 implements Closeable
                     throw new DAP2Exception(DAP2Exception.NO_SUCH_FILE, method.getStatusText() + ": " + urlString);
                 }
 
-                if(statusCode == HttpStatus.SC_UNAUTHORIZED) {
+                if(statusCode == HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN) {
                     throw new InvalidCredentialsException(method.getStatusText());
                 }
 

@@ -86,7 +86,7 @@ public class CAMSAuthorizer extends TomcatAuthorizer {
       }
     }
 
-    res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Not authorized to access this dataset.");
+    res.sendError(HttpServletResponse.SC_FORBIDDEN, "Not authorized to access this dataset.");
   }
 
   private boolean hasCAMSrole(HttpServletRequest req, String role) {

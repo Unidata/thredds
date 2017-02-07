@@ -1,6 +1,7 @@
 /* Copyright */
 package thredds.tds;
 
+import org.apache.http.HttpStatus;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.TestWithLocalServer;
@@ -25,11 +26,11 @@ public class TestRestrictNoAuth {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      Assert.assertEquals(401, statusCode);
+      Assert.assertTrue(statusCode== HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN);
 
     } catch (ucar.httpservices.HTTPException e) {
 
-      System.out.printf("Should return 401 err=%s%n", e.getMessage());
+      System.out.printf("Should return HttpStatus.SC_UNAUTHORIZED|HttpStatus.SC_FORBIDDEN err=%s%n", e.getMessage());
       assert false;
 
     } catch (Exception e) {

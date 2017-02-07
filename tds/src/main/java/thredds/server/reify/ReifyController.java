@@ -500,7 +500,7 @@ public class ReifyController
         } else {
             relpath = HTTPUtil.relpath(HTTPUtil.canonicalpath(relpath));
             if(!TdsRequestedDataset.resourceControlOk(this.req, this.res, relpath)) {
-                codep[0] = res.SC_UNAUTHORIZED;
+                codep[0] = res.SC_FORBIDDEN;
                 return null;
             }
             file = TdsRequestedDataset.getFile(relpath);
