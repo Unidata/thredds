@@ -1,6 +1,7 @@
 /* Copyright */
 package thredds.server.services;
 
+import org.apache.http.HttpStatus;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -29,7 +30,7 @@ public class TestMetadataService {
     List<Object[]> result = new ArrayList<>(10);
     result.add(new Object[]{"metadata/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1?metadata=variableMap", null});
     result.add(new Object[]{"metadata/gribCollection/GFS_CONUS_80km/Best?metadata=variableMap", null});
-    result.add(new Object[]{"metadata/restrictCollection/GFS_CONUS_80km/TwoD?metadata=variableMap", new int[] {401, 403}});
+    result.add(new Object[]{"metadata/restrictCollection/GFS_CONUS_80km/TwoD?metadata=variableMap", new int[] {HttpStatus.SC_UNAUTHORIZED, HttpStatus.SC_FORBIDDEN}});
 
     return result;
   }
