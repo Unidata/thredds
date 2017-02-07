@@ -42,6 +42,8 @@ import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
 import ucar.httpservices.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -55,6 +57,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestRestrictDataset {
+    private static Logger logger = LoggerFactory.getLogger(TestRestrictDataset.class);
+
   @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
@@ -87,7 +91,7 @@ public class TestRestrictDataset {
   @Test
   public void testFailNoAuth() {
     String endpoint = TestWithLocalServer.withPath(path);
-    System.out.printf("testRestriction req = '%s'%n", endpoint);
+    logger.info("testRestriction req = '%s'", endpoint);
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
@@ -96,21 +100,17 @@ public class TestRestrictDataset {
       Assert.assertTrue(statusCode == HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN);
 
     } catch (ucar.httpservices.HTTPException e) {
-
-      System.out.printf("Should return HttpStatus.SC_UNAUTHORIZED|HttpStatus.SC_FORBIDDEN err=%s%n", e.getMessage());
-      assert false;
-
+      Assert.fail(e.getMessage());
     } catch (Exception e) {
-
       e.printStackTrace();
-      assert false;
+      Assert.fail(e.getMessage());
     }
   }
 
   @Test
   public void testFailBadUser() {
     String endpoint = TestWithLocalServer.withPath(path);
-    System.out.printf("testRestriction req = '%s'%n", endpoint);
+    logger.info("testRestriction req = '%s'", endpoint);
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       session.setCredentials(new UsernamePasswordCredentials("baadss", "changeme"));
@@ -120,19 +120,17 @@ public class TestRestrictDataset {
       Assert.assertTrue(statusCode == HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN);
 
     } catch (ucar.httpservices.HTTPException e) {
-      System.out.printf("Should return HttpStatus.SC_UNAUTHORIZED|HttpStatus.SC_FORBIDDEN err=%s%n", e.getMessage());
-      assert false;
-
+      Assert.fail(e.getMessage());
     } catch (Exception e) {
       e.printStackTrace();
-      assert false;
+      Assert.fail(e.getMessage());
     }
   }
 
   @Test
   public void testFailBadPassword() {
     String endpoint = TestWithLocalServer.withPath(path);
-    System.out.printf("testRestriction req = '%s'%n", endpoint);
+    logger.info("testRestriction req = '%s'", endpoint);
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       session.setCredentials(new UsernamePasswordCredentials("tiggeUser", "changeme"));
@@ -145,21 +143,17 @@ public class TestRestrictDataset {
       Assert.assertTrue(statusCode == HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN);
 
     } catch (ucar.httpservices.HTTPException e) {
-
-      System.out.printf("Should return HttpStatus.SC_UNAUTHORIZED|HttpStatus.SC_FORBIDDEN err=%s%n", e.getMessage());
-      assert false;
-
+      Assert.fail(e.getMessage());
     } catch (Exception e) {
-
       e.printStackTrace();
-      assert false;
+      Assert.fail(e.getMessage());
     }
   }
 
   @Test
   public void testSuccess() {
     String endpoint = TestWithLocalServer.withPath(path);
-    System.out.printf("testRestriction req = '%s'%n", endpoint);
+    logger.info("testRestriction req = '%s'", endpoint);
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       session.setCredentials(new UsernamePasswordCredentials("tds", "secret666"));
@@ -170,12 +164,8 @@ public class TestRestrictDataset {
       Assert.assertEquals(200, statusCode);
 
     } catch (ucar.httpservices.HTTPException e) {
-
-      System.out.printf("Should return 200 err=%s%n", e.getMessage());
-      assert false;
-
+      Assert.fail(e.getMessage());
     } catch (Exception e) {
-
       e.printStackTrace();
       Assert.fail(e.getMessage());
     }
@@ -185,12 +175,12 @@ public class TestRestrictDataset {
   @Test
   public void testRestriction() {
     String endpoint = TestWithLocalServer.withPath(path);
-    System.out.printf("testRestriction req = '%s'%n", endpoint);
+    logger.info("testRestriction req = '%s'", endpoint);
     try {
       try (HTTPMethod method = HTTPFactory.Get(endpoint)) {
         int statusCode = method.execute();
         if (statusCode != HttpStatus.SC_UNAUTHORIZED && statusCode != HttpStatus.SC_FORBIDDEN) {
-          System.out.printf("statuscode=%d expected HttpStatus.SC_UNAUTHORIZED or HttpStatus.SC_FORBIDDEN%n", statusCode);
+          logger.error("statuscode=%d expected HttpStatus.SC_UNAUTHORIZED or HttpStatus.SC_FORBIDDEN; actual=%d", statusCode);
           assert false;
         }
       }

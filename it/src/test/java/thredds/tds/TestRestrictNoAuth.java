@@ -2,6 +2,8 @@
 package thredds.tds;
 
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import thredds.TestWithLocalServer;
@@ -17,26 +19,25 @@ import ucar.httpservices.HTTPSession;
  */
 public class TestRestrictNoAuth {
 
+  private static Logger logger = LoggerFactory.getLogger(TestRestrictNoAuth.class);
+
   @Test
   public void testFailNoAuth() {
     String endpoint = TestWithLocalServer.withPath("/dodsC/testRestrictedDataset/testData2.nc.dds");
-    System.out.printf("testRestriction req = '%s'%n", endpoint);
+    logger.info("testRestriction req = '%s'", endpoint);
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
 
-      Assert.assertTrue(statusCode== HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN);
+      Assert.assertTrue("Expected HttpStatus.SC_UNAUTHORIZED|HttpStatus.SC_FORBIDDEN",
+			statusCode== HttpStatus.SC_UNAUTHORIZED || statusCode == HttpStatus.SC_FORBIDDEN);
 
     } catch (ucar.httpservices.HTTPException e) {
-
-      System.out.printf("Should return HttpStatus.SC_UNAUTHORIZED|HttpStatus.SC_FORBIDDEN err=%s%n", e.getMessage());
-      assert false;
-
+      Assert.fail(e.getMessage());
     } catch (Exception e) {
-
       e.printStackTrace();
-      assert false;
+      Assert.fail(e.getMessage());
     }
   }
 }
