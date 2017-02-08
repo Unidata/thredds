@@ -91,7 +91,7 @@ public class TestRestrictDataset {
   @Test
   public void testFailNoAuth() {
     String endpoint = TestWithLocalServer.withPath(path);
-    logger.info("testRestriction req = '%s'", endpoint);
+    logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
@@ -110,7 +110,7 @@ public class TestRestrictDataset {
   @Test
   public void testFailBadUser() {
     String endpoint = TestWithLocalServer.withPath(path);
-    logger.info("testRestriction req = '%s'", endpoint);
+    logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       session.setCredentials(new UsernamePasswordCredentials("baadss", "changeme"));
@@ -130,7 +130,7 @@ public class TestRestrictDataset {
   @Test
   public void testFailBadPassword() {
     String endpoint = TestWithLocalServer.withPath(path);
-    logger.info("testRestriction req = '%s'", endpoint);
+    logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       session.setCredentials(new UsernamePasswordCredentials("tiggeUser", "changeme"));
@@ -153,7 +153,7 @@ public class TestRestrictDataset {
   @Test
   public void testSuccess() {
     String endpoint = TestWithLocalServer.withPath(path);
-    logger.info("testRestriction req = '%s'", endpoint);
+    logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       session.setCredentials(new UsernamePasswordCredentials("tds", "secret666"));
@@ -175,12 +175,12 @@ public class TestRestrictDataset {
   @Test
   public void testRestriction() {
     String endpoint = TestWithLocalServer.withPath(path);
-    logger.info("testRestriction req = '%s'", endpoint);
+    logger.info(String.format("testRestriction req = '%s'", endpoint));
     try {
       try (HTTPMethod method = HTTPFactory.Get(endpoint)) {
         int statusCode = method.execute();
         if (statusCode != HttpStatus.SC_UNAUTHORIZED && statusCode != HttpStatus.SC_FORBIDDEN) {
-          logger.error("statuscode=%d expected HttpStatus.SC_UNAUTHORIZED or HttpStatus.SC_FORBIDDEN; actual=%d", statusCode);
+          logger.error(String.format("statuscode=%d expected HttpStatus.SC_UNAUTHORIZED or HttpStatus.SC_FORBIDDEN", statusCode));
           assert false;
         }
       }

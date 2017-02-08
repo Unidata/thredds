@@ -24,7 +24,7 @@ public class TestRestrictNoAuth {
   @Test
   public void testFailNoAuth() {
     String endpoint = TestWithLocalServer.withPath("/dodsC/testRestrictedDataset/testData2.nc.dds");
-    logger.info("testRestriction req = '%s'", endpoint);
+    logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
