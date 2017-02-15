@@ -10,6 +10,8 @@ dependencies {
     compile project(":opendap")
     compile project(":waterml")
     compile project(":httpservices")
+    
+    runtime project(":visadCdm")  // For Gempak IOSPs.
 
     compile libraries["ehcache-core"]
     compile libraries["jdom2"]
