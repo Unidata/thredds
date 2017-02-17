@@ -156,7 +156,7 @@ public class M3IOConvention extends CoordSysBuilder {
 
     double start = .001 * findAttributeDouble(ds, startName); // km
     double incr = .001 * findAttributeDouble(ds, incrName); // km
-
+    start = start + incr / 2.; // shifting x and y to central
     CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, dimName, unitName,
             "synthesized coordinate from " + startName + " " + incrName + " global attributes");
     v.setValues(n, start, incr);
