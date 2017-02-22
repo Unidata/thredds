@@ -167,12 +167,12 @@ public class Grib1Record {
   }
 
   // dont convertQuasiGrid
-  public float[] readDataRaw(RandomAccessFile raf, GribData.InterpolationMethod method) throws IOException {
-    return readData(raf, method);
+  public float[] readDataRaw(RandomAccessFile raf) throws IOException {
+    return readData(raf, GribData.InterpolationMethod.none);
   }
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available
-  private float[] readData(RandomAccessFile raf, GribData.InterpolationMethod method) throws IOException {
+  public float[] readData(RandomAccessFile raf, GribData.InterpolationMethod method) throws IOException {
     Grib1Gds gds = getGDS();
     Grib1DataReader reader = new Grib1DataReader(pdss.getDecimalScale(), gds.getScanMode(), gds.getNxRaw(), gds.getNyRaw(), gds.getNpts(), dataSection.getStartingPosition());
     byte[] bm = (bitmap == null) ? null : bitmap.getBitmap(raf);

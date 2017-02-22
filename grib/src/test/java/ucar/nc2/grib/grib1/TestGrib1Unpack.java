@@ -97,7 +97,7 @@ public class TestGrib1Unpack {
 
   private float[] getData(ucar.unidata.io.RandomAccessFile raf, Grib1Record gr, GribData.InterpolationMethod method, int lineno) throws IOException {
     float[] data;
-    data = gr.readDataRaw(raf, method);
+    data = gr.readData(raf, method);
 
     System.out.printf("%s%n", method);
     Grib1Gds gds = gr.getGDS();
