@@ -9,7 +9,7 @@ ext {
     // Used to publish static analysis report to https://sonarqube.com/dashboard/index/thredds
     SONARQUBE_USER_TOKEN_KEY = 'sonarqube.user.token'
     
-    // Do not propagate these system properties to the Gradle test executors.
+    // Do not propagate these system properties to the Gretty web-apps or Gradle test executors.
     systemPropertiesBlackList = [
             // Passing this causes "java.lang.ClassNotFoundException: org.jacoco.agent.rt.internal_932a715.PreMain"
             // See https://discuss.gradle.org/t/jacoco-related-failure-in-multiproject-build/6216
