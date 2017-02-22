@@ -11,7 +11,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath libraries["gretty"]  // We want to import GradleUtils and StartBaseTask.
+        classpath libraries["gretty"]  // We want to import GradleUtils and AppStartTask.
     }
 }
 

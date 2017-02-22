@@ -160,7 +160,7 @@ configure(fatJarTasks - buildTdmFat) {
     exclude '*.xml'
 }
 
-// See: http://gradle.org/docs/current/userguide/standard_plugins.html#N11EE8
+// See: https://docs.gradle.org/current/userguide/standard_plugins.html#sec:base_plugins
 apply plugin: 'base'
 
 // The base-plugin's "assemble" task automatically creates all artifacts added to the "archives" configuration.
