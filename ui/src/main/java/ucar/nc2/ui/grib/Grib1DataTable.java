@@ -911,7 +911,7 @@ public class Grib1DataTable extends JPanel {
       MFile mfile = fileList.get(fileno);
       try (ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(mfile.getPath(), "r")) {
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
-        return gr.readDataRaw(raf, method);              // use interpolation passed in
+        return gr.readData(raf, method);              // use interpolation passed in
       }
     }
 
