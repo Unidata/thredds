@@ -272,7 +272,7 @@ public class Catalog extends DatasetNode {
     }
 
     result.setName( dataset.getName() );
-    result.transferMetadata( dataset, false );  // make a copy of all local metadata
+    result.transferMetadata(dataset, copyInherited);  // make a copy of all local metadata
     return result;
   }
 
