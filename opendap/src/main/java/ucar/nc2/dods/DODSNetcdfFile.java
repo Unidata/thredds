@@ -1,47 +1,18 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
  */
 package ucar.nc2.dods;
 
 import opendap.dap.*;
 import opendap.dap.parsers.ParseException;
+import ucar.nc2.constants.CF;
+import ucar.nc2.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.*;
-import ucar.nc2.constants.CF;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
-import ucar.nc2.util.EscapeStrings;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.util.StringUtil2;
 
@@ -1075,8 +1046,34 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
     Attribute axes = v.findAttribute(CF.COORDINATES);
     Attribute _axes = v.findAttribute(_Coordinate.Axes);
     if ((null != axes) && (null != _axes)) {
-      v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue() + " " + _axes.getStringValue()));
+      v.addAttribute(combineAxesAttrs(axes, _axes));
     }
+  }
+
+  /**
+   *
+   * Safely combine the multiple axis attributes without duplication
+   *
+   * @param axis1 axis attribute 1
+   * @param axis2 axis attribute 2
+   * @return the combined axis attribute
+   */
+  protected static Attribute combineAxesAttrs(Attribute axis1, Attribute axis2) {
+
+    List axesCombinedValues = new ArrayList<String>();
+    // each axis attribute is a whitespace delimited string, so just join the strings to make
+    // an uber string of all values
+    String axisValuesStr = axis1.getStringValue() + " " + axis2.getStringValue();
+    // axis attributes are whitespace delimited, so split on whitespace to get each axis name
+    String[] axisValues = axisValuesStr.split("\\s");
+    for (String ax : axisValues) {
+      // only add if axis name is unique - no dupes
+      if (!axesCombinedValues.contains(ax) && !ax.equals("")) {
+        axesCombinedValues.add(ax);
+      }
+    }
+
+    return new Attribute(_Coordinate.Axes, String.join(" ", axesCombinedValues));
   }
 
   private void addAttributes(Group g, DodsV dodsV) {
@@ -1667,7 +1664,7 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
     return dataArray;
   }  */
 
-  public Array readWithCE(ucar.nc2.Variable v, String CE) throws IOException 
+  public Array readWithCE(ucar.nc2.Variable v, String CE) throws IOException
   {
 
     Array dataArray;
