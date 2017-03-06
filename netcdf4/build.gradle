@@ -2,8 +2,14 @@ description = "An IOSP for NetCDF-4 that loads the C library to read and write f
 ext.title = "NetCDF-4 IOSP"
 ext.url = "https://www.unidata.ucar.edu/software/netcdf/"
 
+apply plugin: 'groovy'  // For Spock tests.
+
 dependencies {
     compile project(':cdm')
     compile libraries["jna"]
     compile libraries["slf4j-api"]
+    
+    // These are for Spock.
+    testCompile libraries["groovy-all"]
+    testCompile libraries["spock-core"]
 }
