@@ -1488,7 +1488,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return readDataSection(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section);
   }
 
-  private Array readDataSection(int grpid, int varid, int typeid, Section section)
+  Array readDataSection(int grpid, int varid, int typeid, Section section)
           throws IOException, InvalidRangeException {
     // general sectioning with strides
     SizeT[] origin = convertSizeT(section.getOrigin());
@@ -1538,6 +1538,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_INT:
+      case Nc4prototypes.NC_UINT:
         int[] vali = new int[len];
 
         ret = isUnsigned ? nc4.nc_get_vars_uint(grpid, varid, origin, shape, stride, vali)
@@ -1548,6 +1549,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_INT64:
+      case Nc4prototypes.NC_UINT64:
         long[] vall = new long[len];
         ret = isUnsigned ? nc4.nc_get_vars_ulonglong(grpid, varid, origin, shape, stride, vall)
                 : nc4.nc_get_vars_longlong(grpid, varid, origin, shape, stride, vall);
@@ -1557,6 +1559,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_SHORT:
+      case Nc4prototypes.NC_USHORT:
         short[] vals = new short[len];
         ret = isUnsigned ? nc4.nc_get_vars_ushort(grpid, varid, origin, shape, stride, vals)
                 : nc4.nc_get_vars_short(grpid, varid, origin, shape, stride, vals);
