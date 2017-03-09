@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.Date;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test CalendarDateFormatter
@@ -13,6 +15,8 @@ import org.junit.Test;
  * @since 5/3/12
  */
 public class TestCalendarDateFormatter {
+
+  private static final Logger logger = LoggerFactory.getLogger(TestCalendarDateFormatter.class);
 
   @Test
   public void testBad() {
@@ -27,6 +31,28 @@ public class TestCalendarDateFormatter {
     claimGood("1997-07-16T19:20+01:00");
     claimGood("1997-07-16T19:20:30+01:00");
 
+  }
+
+  @Test
+  public void testBasicFormatIso() {
+    claimGood("19500101T000000Z"); // from https://github.com/Unidata/thredds/issues/772
+    claimGood("199707");
+    claimGood("19970716");
+    claimGood("19970716T1920");
+    claimGood("19970716T192030");
+    claimGood("19970716T192030.1");
+    claimGood("19970716T1920+01:00");
+    claimGood("19970716T192030+0100");
+    claimGood("19970716T192030+01");
+    claimGood("19970716T192030.1+0100");
+    claimGood("19970716T192030Z");
+    claimGood("19970716T192030.1Z");
+    // these should fail
+    claimBad("19970716T192030.1UTC");
+    claimBad("19501"); // fail because ambiguous
+    claimBad("1950112"); // fail because ambiguous
+    claimBad("19501120T121"); // fail because ambiguous
+    claimBad("19501120T12151"); // fail because ambiguous
   }
 
   @Test
@@ -97,9 +123,9 @@ public class TestCalendarDateFormatter {
   private void claimGood(String s) {
     try {
       CalendarDate result = CalendarDateFormatter.isoStringToCalendarDate(null, s);
-      System.out.printf("%s == %s%n", s, result);
+      logger.debug("%s == %s%n", s, result);
     } catch (Exception e) {
-      System.out.printf("FAIL %s%n", s);
+      logger.error("FAIL %s%n", s);
       e.printStackTrace();
       CalendarDateFormatter.isoStringToCalendarDate(null, s);
       assert false;
@@ -109,9 +135,10 @@ public class TestCalendarDateFormatter {
   private void claimBad(String s) {
     try {
       CalendarDate result = CalendarDateFormatter.isoStringToCalendarDate(null, s);
-      System.out.printf("%s == %s%n", s, result);
+      logger.error("FAIL %s%n", s);
       assert false;
     } catch (Exception e) {
+      logger.debug("Expected fail = %s%n", s);
       return;
     }
   }
