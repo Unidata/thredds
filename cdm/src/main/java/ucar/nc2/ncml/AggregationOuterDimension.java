@@ -867,7 +867,7 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
           List<Range> nestedSection = new ArrayList<>(ranges); // make copy
           nestedSection.set(0, nestedJoinRange);
           varData = varData.section(nestedSection);
-     }
+        }
 
         // may not know the data type until now
         if (dtype == null)
