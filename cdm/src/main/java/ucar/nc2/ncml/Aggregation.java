@@ -786,7 +786,7 @@ public abstract class Aggregation {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /*
+  /**
    * All non-agg variables use a proxy to acquire the file before reading.
    * If the variable is caching, read data into cache now.
    * If not caching, VariableEnhanced.setProxyReader() is called.

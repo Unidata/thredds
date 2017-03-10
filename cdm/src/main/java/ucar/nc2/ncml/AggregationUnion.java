@@ -50,8 +50,6 @@ import java.util.List;
  * @author caron
  */
 public class AggregationUnion extends Aggregation {
-  private List<NetcdfFile> openDatasets = new ArrayList<NetcdfFile>();
-
   public AggregationUnion(NetcdfDataset ncd, String dimName, String recheckS) {
     super(ncd, dimName, Aggregation.Type.union, recheckS);
   }
