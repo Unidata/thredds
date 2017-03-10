@@ -207,9 +207,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       conventionList.add(0, new Convention(conventionName, c, match));
     else
       conventionList.add(new Convention(conventionName, c, match));
-
-    // user stuff will override here
-    // conventionHash.put(conventionName, c);
   }
 
   static private Class matchConvention(String convName) {
@@ -805,10 +802,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * it will be asssigned to the data variable.
    */
   protected void makeCoordinateSystemsImplicit(NetcdfDataset ncDataset) {
-    // do largest rank first
-    //List<VarProcess> varsSorted = new ArrayList<VarProcess>(varList);
-    //Collections.sort(varsSorted, new VarProcessSorter());
-
     for (VarProcess vp : varList) {
       if (!vp.hasCoordinateSystem() && vp.maybeData()) {
         List<CoordinateAxis> dataAxesList = vp.findCoordinateAxes(true);
@@ -872,7 +865,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
           parseInfo.format(" created maximal CoordSystem '%s' for var= %s%n", csnew.getName(), ve.getFullName());
         }
       }
-
     }
   }
 
@@ -886,14 +878,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * @return true if all of the dimensions in the axis also appear in the variable.
    */
   protected boolean isCoordinateAxisForVariable(Variable axis, VariableEnhanced v) {
-    /* sequence members can only have coords in same structure
-    if (v.getDataType() == DataType.SEQUENCE) return false;
-    Structure p = v.getParentStructure();
-    if (p != null && ) {
-
-    } */
-
-
     List<Dimension> varDims = v.getDimensionsAll();
     List<Dimension> axisDims = axis.getDimensionsAll();
 
@@ -909,18 +893,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       }
     }
     return true;
-  }
-
-  protected boolean hasXY(List<CoordinateAxis> coordAxes) {
-    boolean hasX = false, hasY = false, hasLat = false, hasLon = false;
-    for (CoordinateAxis axis : coordAxes) {
-      AxisType axisType = axis.getAxisType();
-      if (axisType == AxisType.GeoX) hasX = true;
-      if (axisType == AxisType.GeoY) hasY = true;
-      if (axisType == AxisType.Lat) hasLat = true;
-      if (axisType == AxisType.Lon) hasLon = true;
-    }
-    return (hasLat && hasLon) || (hasX && hasY);
   }
 
   /**
@@ -1169,11 +1141,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       coordAxisTypes = ds.findAttValueIgnoreCase(v, _Coordinate.AxisTypes, null);
       coordTransformType = ds.findAttValueIgnoreCase(v, _Coordinate.TransformType, null);
       isCoordinateTransform = (coordTransformType != null) || (coordAxisTypes != null);
-    }
-
-    // fakeroo
-    public VarProcess(NetcdfDataset ds) {
-      this.ds = ds;
     }
 
     public boolean isData() {
