@@ -155,7 +155,7 @@ libraries["jdom2"] = "org.jdom:jdom2:2.0.4"
 
 libraries["je"] = "com.sleepycat:je:4.0.92"
 
-libraries["jna"] = "net.java.dev.jna:jna:4.1.0"
+libraries["jna"] = "net.java.dev.jna:jna:4.2.2"
 
 libraries["joda-time"] = "joda-time:joda-time:2.8.1"
 

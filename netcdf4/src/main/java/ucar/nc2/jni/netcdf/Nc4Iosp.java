@@ -170,6 +170,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         // jna_path may still be null (the user didn't specify a "jna.library.path"), but try to load anyway;
         // the necessary libs may be on the system PATH.
         nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+        // Make the library synchronized
+        nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
 
         startupLog.info("Nc4Iosp: NetCDF-4 C library loaded (jna_path='{}', libname='{}').", jnaPath, libName);
         log.debug("Netcdf nc_inq_libvers='{}' isProtected={}", nc4.nc_inq_libvers(), Native.isProtected());
