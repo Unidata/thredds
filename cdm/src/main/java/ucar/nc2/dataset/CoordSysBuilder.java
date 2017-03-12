@@ -1217,32 +1217,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
       coordAxisTypes = ds.findAttValueIgnoreCase(v, _Coordinate.AxisTypes, null);
       coordTransformType = ds.findAttValueIgnoreCase(v, _Coordinate.TransformType, null);
       isCoordinateTransform = (coordTransformType != null) || (coordAxisTypes != null);
-
-      /* WTF? JC 7/15/2010
-      /* Old GRIB code basically has a bug in it for lat/lon coordinates
-         String latLonCoordSys;
-            :_CoordinateAxes = "time lat lon";
-         this is a Coordinate System Variable getting misidentified as a data variable, because its doesnt qualify as a CoordinateSystem
-           see http://www.unidata.ucar.edu/software/netcdf-java/reference/CoordinateAttributes.html
-         but it must be a CoordinateSystem because the  _CoordinateAxes dont fit the variable.
-
-         Problem:
-         For some data, some axes are being constructed with anon dimensions, so that isCoordinateAxisForVariable is failing and
-         so the data value is being tagged as a CoordinateSystem. Could insist that all variable fail ??
-         */
-
-      // this is the case of a Coordinate System with no references or coordinate transforms
-      // see /testdata2/grid/grib/grib1/data/NOGAPS-Temp-Regional.grib
-      if (!isCoordinateSystem && !isCoordinateTransform && !isCoordinateAxis && coordAxes != null) {
-        // figure out if data or coordSys Variable
-        StringTokenizer stoker = new StringTokenizer(coordAxes);
-        while (stoker.hasMoreTokens()) {
-          String vname = stoker.nextToken();
-          Variable axis = ds.findVariable(vname);
-          if ((axis != null) && !isCoordinateAxisForVariable(axis, ve))
-            isCoordinateSystem = true;
-        }
-      } // */
     }
 
     // fakeroo

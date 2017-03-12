@@ -205,7 +205,7 @@ public class CalendarDateFormatter {
   }
 
   //                                                   1                  2            3
-  static public final String isodatePatternString = "([\\+\\-\\d]+)([ t]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
+  static public final String isodatePatternString = "([\\+\\-?\\d]+)([ t]([\\.\\:?\\d]*)([ \\+\\-]\\S*)?z?)?$"; // public for testing
   // private static final String isodatePatternString = "([\\+\\-\\d]+)[ Tt]([\\.\\:\\d]*)([ \\+\\-]\\S*)?z?)?$";
   private static final Pattern isodatePattern = Pattern.compile(isodatePatternString);
 
@@ -240,17 +240,64 @@ public class CalendarDateFormatter {
          dateString = dateString.substring(1);
        }
 
-      StringTokenizer dateTokenizer = new StringTokenizer(dateString, "-");
-      if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
-      if (dateTokenizer.hasMoreTokens()) month = Integer.parseInt(dateTokenizer.nextToken());
-      if (dateTokenizer.hasMoreTokens()) day = Integer.parseInt(dateTokenizer.nextToken());
+      if (dateString.contains("-")) {
+        StringTokenizer dateTokenizer = new StringTokenizer(dateString, "-");
+        if (dateTokenizer.hasMoreTokens()) year = Integer.parseInt(dateTokenizer.nextToken());
+        if (dateTokenizer.hasMoreTokens()) month = Integer.parseInt(dateTokenizer.nextToken());
+        if (dateTokenizer.hasMoreTokens()) day = Integer.parseInt(dateTokenizer.nextToken());
+      } else {
+        int dateLength = dateString.length();
+        if (dateLength % 2 != 0) {
+          throw new IllegalArgumentException(dateString + " is ambiguous. Cannot parse uneven " +
+                  "length date strings when no date delimiter is used.");
+        } else {
+          // dateString length must be even - only four digit year, two digit month, and
+          // two digit day values are allowed when there is no date delimiter.
+          if (dateLength > 3) year = Integer.parseInt(dateString.substring(0, 4));
+          if (dateLength > 5) month = Integer.parseInt(dateString.substring(4, 6));
+          if (dateLength > 7) day = Integer.parseInt(dateString.substring(6, 8));
+        }
+      }
 
       // Parse the time if present
       if (timeString != null && timeString.length() > 0) {
-        StringTokenizer timeTokenizer = new StringTokenizer(timeString, ":");
-        if (timeTokenizer.hasMoreTokens()) hour = Integer.parseInt(timeTokenizer.nextToken());
-        if (timeTokenizer.hasMoreTokens()) minute = Integer.parseInt(timeTokenizer.nextToken());
-        if (timeTokenizer.hasMoreTokens()) second = Double.parseDouble(timeTokenizer.nextToken());
+        if (timeString.contains(":")) {
+          StringTokenizer timeTokenizer = new StringTokenizer(timeString, ":");
+          if (timeTokenizer.hasMoreTokens()) hour = Integer.parseInt(timeTokenizer.nextToken());
+          if (timeTokenizer.hasMoreTokens()) minute = Integer.parseInt(timeTokenizer.nextToken());
+          if (timeTokenizer.hasMoreTokens()) second = Double.parseDouble(timeTokenizer.nextToken());
+        } else {
+          int timeLengthNoSubseconds = timeString.length();
+          // possible this contains a seconds value with subseconds (i.e. 25.125 seconds)
+          // since the seconds value can be a Double, let's check check the length of the
+          // time, without the subseconds (if they exist)
+          if (timeString.contains(".")) {
+            timeLengthNoSubseconds = timeString.split("\\.")[0].length();
+          }
+          // Ok, so this is a little tricky.
+          // First: A udunit date of 1992-10-8t7 is valid. We want to make sure this still work, so
+          // there is a special case of timeString.length() == 1;
+          //
+          // Second: We have the length of the timeString, without
+          // any subseconds. Given that the values for hour, minute, and second must be two
+          // digit numbers, the length of the timeString, without subseconds, should be even.
+          // However, if someone has encoded time as hhms, there is no way we will be able to tell.
+          // So, this is the best we can do to ensure we are parsing the time properly.
+          // Known failure here: hhms will be interpreted as hhmm, but hhms is not following iso, and
+          // a bad idea to use anyway.
+          if (timeLengthNoSubseconds == 1) {
+            hour = Integer.parseInt(timeString);
+          } else if (timeLengthNoSubseconds % 2 != 0) {
+            throw new IllegalArgumentException(timeString + " is ambiguous. Cannot parse uneven " +
+                    "length time strings (ignoring subseconds) when no time delimiter is used.");
+          } else {
+            // dateString length must be even - only four digit year, two digit month, and
+            // two digit day values are allowed when there is no date delimiter.
+            if (timeString.length() > 1) hour = Integer.parseInt(timeString.substring(0, 2));
+            if (timeString.length() > 3) minute = Integer.parseInt(timeString.substring(2, 4));
+            if (timeString.length() > 5) second = Double.parseDouble(timeString.substring(4));
+          }
+        }
       }
 
       if (isMinus) year = -year;
