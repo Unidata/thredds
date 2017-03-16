@@ -1,3 +1,6 @@
+import groovy.util.slurpersupport.GPathResult
+import groovy.xml.XmlUtil
+
 description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
         "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
 ext.title = "THREDDS Data Server (TDS)"
@@ -65,12 +68,53 @@ test {
     exclude 'thredds/tds/**'
 }
 
+// Modify "netCDFtools.jnlp" and save the file as "ToolsUI.jnlp". "netCDFtools.jnlp" will live at:
+// http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp.
+// "ToolsUI.jnlp" will be packed with TDS and served at "$hostName/thredds/view/ToolsUI.jnlp".
+// In terms of content, this modification is the only difference between the two files.
+task filterWebStartFile {
+    File inputFile = rootProject.findProject(':ui').file("src/main/resources/netCDFtools.jnlp")
+    inputs.file inputFile
+    
+    File outputFile = file("$buildDir/tmp/ToolsUI.jnlp")
+    outputs.file outputFile
+    
+    doLast {
+        GPathResult jnlp = new XmlSlurper().parse(inputFile)
+        
+        // Add "<argument>{catalog}#{dataset}</argument>" to the "application-desc" node
+        jnlp.'application-desc'.appendNode {
+            argument('{catalog}#{dataset}')
+        }
+        
+        outputFile.parentFile.mkdirs()
+        outputFile.newWriter().withCloseable {
+            // XmlUtil.serialize() will print warnings to STDERR. See https://goo.gl/LG3vlV
+            // Those warnings appear to be spurious – see https://goo.gl/cN4mOQ – and in an event, they do not
+            // affect the XML that we're generating. So, we're going to temporarily route STDERR output to DEBUG.
+            logging.captureStandardError LogLevel.DEBUG
+            
+            XmlUtil.serialize(jnlp, it)
+            
+            // Restore the routing of STDERR messages back to ERROR.
+            logging.captureStandardError LogLevel.ERROR
+        }
+    }
+}
+
 // Tests expect for test resources to be copied to the same directory as the test classes.
 processTestResources.destinationDir = compileTestJava.destinationDir
 
 processTestResources {
     from "src/main/webapp"
     from "src/main/webapp/WEB-INF/classes"
+    
+    // Creates an inferred task dependency on filterWebStartFile.
+    // See https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:task_input_output_side_effects
+    // This file is needed by ViewControllerTest.testLaunchViewerToolsUIVRequest().
+    from (tasks.filterWebStartFile.outputs) {
+        into 'WEB-INF/views'
+    }
 }
 
 war {
@@ -91,5 +135,10 @@ war {
     from('README.txt') {
         into 'docs'
         filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+    }
+    
+    // This file is needed by ViewerServiceImpl.ToolsUI.getViewerLinkHtml().
+    from (tasks.filterWebStartFile.outputs) {
+        into 'WEB-INF/views'
     }
 }

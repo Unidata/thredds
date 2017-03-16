@@ -99,8 +99,8 @@ task releaseWebstart(dependsOn: jar, group: 'Release') << {
 
         copy {
             println "copyJnlp"
-            from 'netCDFtools.jnlp'
-            from 'netCDFtoolsExtraJars.jnlp'
+            from 'src/main/resources/netCDFtools.jnlp'
+            from 'src/main/resources/netCDFtoolsExtraJars.jnlp'
             into webstartWorkingDir
         }
 
