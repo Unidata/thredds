@@ -1,5 +1,5 @@
-THREDDS Data Server Version: ${project.version}
-Build Date: ${build.timestamp}
+THREDDS Data Server Version: $projectVersion
+Build Date: $buildTimestamp
 
 See http://www.unidata.ucar.edu/projects/THREDDS/tech/
 

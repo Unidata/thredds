@@ -118,23 +118,21 @@ processTestResources {
 }
 
 war {
-    // Exclude tds.properties from the War CopySpec. We'll re-add it below, with filtering.
-    // TODO: Is there a less-awkward way to filter a single file when it's already part of a CopySpec?
-    exclude 'WEB-INF/classes/thredds/server/tds.properties'  // Relative to src/main/webapp/
-
-    // This is a hack to handle Maven-style placeholders in a file to be filtered: http://goo.gl/9sQebt
-    // Once Maven is out of the picture, the easiest way to refactor this is to remove the dots from the property
-    // keys, so that expand(Map) works as expected.
-    ant.properties['project.version'] = project.version
-    ant.properties['build.timestamp'] = project.buildTimestamp  // Defined in root project.
-
-    from ('src/main/webapp/WEB-INF/classes/thredds/server/tds.properties') {
-        into 'WEB-INF/classes/thredds/server'
-        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+    // Replace '$projectVersion' and '$buildTimestamp' placeholders with the correct values.
+    // Currently, we only use those placeholders in tds.properties and README.txt.
+    def properties = [:]
+    properties['projectVersion'] = project.version
+    properties['buildTimestamp'] = project.buildTimestamp  // Defined in root project.
+    
+    // War CopySpec already includes everything in 'src/main/webapp', which tds.properties lives within.
+    // So, the from() and into() methods aren't needed.
+    filesMatching('**/tds.properties') {
+        expand properties
     }
+    
     from('README.txt') {
         into 'docs'
-        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+        expand properties
     }
     
     // This file is needed by ViewerServiceImpl.ToolsUI.getViewerLinkHtml().
