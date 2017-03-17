@@ -84,17 +84,18 @@ task filterWebStartFile {
         
         // Add "<argument>{catalog}#{dataset}</argument>" to the "application-desc" node
         jnlp.'application-desc'.appendNode {
-            argument('{catalog}#{dataset}')
+            argument '{catalog}#{dataset}'
         }
         
         outputFile.parentFile.mkdirs()
+        
         outputFile.newWriter().withCloseable {
             // XmlUtil.serialize() will print warnings to STDERR. See https://goo.gl/LG3vlV
-            // Those warnings appear to be spurious – see https://goo.gl/cN4mOQ – and in an event, they do not
+            // Those warnings appear to be spurious – see https://goo.gl/cN4mOQ – and in any event, they do not
             // affect the XML that we're generating. So, we're going to temporarily route STDERR output to DEBUG.
             logging.captureStandardError LogLevel.DEBUG
             
-            XmlUtil.serialize(jnlp, it)
+            XmlUtil.serialize jnlp, it
             
             // Restore the routing of STDERR messages back to ERROR.
             logging.captureStandardError LogLevel.ERROR
