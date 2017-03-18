@@ -56,7 +56,7 @@ public class SliceIterator implements Iterator<Long>
     {
         StringBuilder buf = new StringBuilder();
         buf.append(slice.toString());
-        buf.append(String.format("(%d/%d)", this.slice.getCount(),this.slice.getMaxSize()));
+        buf.append(String.format("(%d/%d)", this.slice.getCount(),this.slice.getMax()));
         buf.append(String.format("@%d", this.index));
         return buf.toString();
     }
@@ -69,7 +69,7 @@ public class SliceIterator implements Iterator<Long>
     {
         switch (state) {
         case INITIAL:
-            return (slice.getFirst() <= slice.getLast());
+            return (slice.getFirst() < slice.getStop());
         case STARTED:
             return (this.index < slice.getLast());
         case DONE:

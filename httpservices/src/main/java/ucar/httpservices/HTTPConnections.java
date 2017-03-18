@@ -41,8 +41,10 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.util.EntityUtils;
 
 import javax.annotation.concurrent.ThreadSafe;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,10 +57,21 @@ import java.util.Map;
 @ThreadSafe
 abstract class HTTPConnections
 {
+    static public boolean TRACE = false;
+
     //////////////////////////////////////////////////
     // Constants
 
-    static final int DFALTMAXCONNS = 10;
+    static int DFALTMAXCONNS = 20;
+
+
+    static public int setDefaultMaxConections(int n)
+    {
+        int old = DFALTMAXCONNS;
+        if(n > 0) DFALTMAXCONNS = n;
+        return old;
+    }
+
 
     //////////////////////////////////////////////////
     // Shared Instance variables
@@ -172,7 +185,10 @@ class HTTPConnectionSimple extends HTTPConnections
                     mgrmap.put(mgr, method);
                     this.actualconnections++;
                     await = false;
-                }
+                    if(TRACE)
+                        System.err.println("HTTPConnections: open connection: "+method.hashCode());
+                } else if(TRACE)
+                    throw new IllegalStateException("HTTPConnections: too many connections");
             }
             if(!await)
                 break;
@@ -198,6 +214,8 @@ class HTTPConnectionSimple extends HTTPConnections
             methodmap.remove(method);
             ((BasicHttpClientConnectionManager) mgr).close();
             actualconnections--;
+            if(TRACE)
+                System.err.println("HTTPConnections: close connection: "+method.hashCode());
         }
     }
 
@@ -207,6 +225,8 @@ class HTTPConnectionSimple extends HTTPConnections
         synchronized (this) {
             if(this.closed) return;
             this.closed = true;
+            if(TRACE)
+                System.err.println("HTTPConnections: close with open connections: "+methodmap.size());
             for(HTTPMethod m : methodmap.keySet()) {
                 freeManager(m);
             }
@@ -255,9 +275,11 @@ class HTTPConnectionPool extends HTTPConnections
     }
 
     @Override
-    public HttpClientConnectionManager newManager(HTTPMethod session)
+    public HttpClientConnectionManager newManager(HTTPMethod m)
     {
         synchronized (this) {
+            if(TRACE)
+                System.err.println("HTTPConnections: open connection: "+m.hashCode());
             this.actualconnections++;
             return getPool();
         }
@@ -265,7 +287,10 @@ class HTTPConnectionPool extends HTTPConnections
 
     public void freeManager(HTTPMethod m)
     {
+        if(TRACE)
+            System.err.println("HTTPConnections: close connection: "+m.hashCode());
         this.actualconnections--;
+        // Do notneed to reclaim anything for pooling manager
     }
 
     @Override

@@ -5,16 +5,13 @@
 
 package dap4.dap4lib.serial;
 
+import dap4.core.data.ChecksumMode;
 import dap4.core.dmr.*;
-import dap4.core.util.DapDump;
-import dap4.core.util.DapException;
-import dap4.core.util.DapSort;
-import dap4.core.util.DapUtil;
-import dap4.dap4lib.ChecksumMode;
+import dap4.core.util.*;
 import dap4.dap4lib.LibTypeFcns;
-import dap4.dap4lib.RequestMode;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 import static dap4.core.data.DataCursor.Scheme;
@@ -41,6 +38,7 @@ public class D4DataCompiler
     protected ByteBuffer databuffer;
 
     protected ChecksumMode checksummode = null;
+    protected ByteOrder order = null;
 
     protected D4DSP dsp;
 
@@ -55,7 +53,7 @@ public class D4DataCompiler
      * @param databuffer   the source of serialized databuffer
      */
 
-    public D4DataCompiler(D4DSP dsp, ChecksumMode checksummode,
+    public D4DataCompiler(D4DSP dsp, ChecksumMode checksummode, ByteOrder order,
                           ByteBuffer databuffer)
             throws DapException
     {
@@ -63,6 +61,7 @@ public class D4DataCompiler
         this.dataset = this.dsp.getDMR();
         this.databuffer = databuffer;
         this.checksummode = checksummode;
+        this.order = order;
     }
 
     //////////////////////////////////////////////////
@@ -82,9 +81,6 @@ public class D4DataCompiler
             throws DapException
     {
         assert (this.dataset != null && this.databuffer != null);
-        if(DEBUG) {
-            DapDump.dumpbytes(this.databuffer, false);
-        }
         // iterate over the variables represented in the databuffer
         for(DapVariable vv : this.dataset.getTopVariables()) {
             D4Cursor data = compileVar(vv, null);
@@ -98,43 +94,39 @@ public class D4DataCompiler
     {
         boolean isscalar = dapvar.getRank() == 0;
         D4Cursor array = null;
-        if(dapvar.getSort() == DapSort.ATOMICVARIABLE) {
-            array = compileAtomicVar((DapAtomicVariable) dapvar, container);
-        } else if(dapvar.getSort() == DapSort.STRUCTURE) {
-            if(isscalar)
-                array = compileStructure((DapStructure) dapvar, container);
-            else
-                array = compileStructureArray(dapvar, container);
-        } else if(dapvar.getSort() == DapSort.SEQUENCE) {
-            if(isscalar)
-                array = compileSequence((DapSequence) dapvar, container);
-            else
-                array = compileSequenceArray(dapvar, container);
+        DapType type = dapvar.getBaseType();
+        if(type.isAtomic())
+            array = compileAtomicVar(dapvar, container);
+        else if(type.isStructType()) {
+            array = compileStructureArray(dapvar, container);
+        } else if(type.isSeqType()) {
+            array = compileSequenceArray(dapvar, container);
         }
-        if(dapvar.isTopLevel()) {
+        if(dapvar.isTopLevel() && this.checksummode.enabled(ChecksumMode.DAP)) {
             // extract the checksum from databuffer src,
             // attach to the array, and make into an attribute
-            byte[] checksum = getChecksum(databuffer);
+            int checksum = extractChecksum(databuffer);
             dapvar.setChecksum(checksum);
         }
         return array;
     }
 
     /**
-     * @param atomvar
+     * @param var
      * @param container
      * @return
      * @throws DapException
      */
+
     protected D4Cursor
-    compileAtomicVar(DapAtomicVariable atomvar, D4Cursor container)
+    compileAtomicVar(DapVariable var, D4Cursor container)
             throws DapException
     {
-        DapType daptype = atomvar.getBaseType();
-        D4Cursor data = new D4Cursor(Scheme.ATOMIC, this.dsp, atomvar);
+        DapType daptype = var.getBaseType();
+        D4Cursor data = new D4Cursor(Scheme.ATOMIC, (D4DSP) this.dsp, var, container);
         data.setOffset(getPos(this.databuffer));
         long total = 0;
-        long dimproduct = atomvar.getCount();
+        long dimproduct = var.getCount();
         if(!daptype.isEnumType() && !daptype.isFixedSize()) {
             // this is a string, url, or opaque
             long[] positions = new long[(int) dimproduct];
@@ -153,23 +145,29 @@ public class D4DataCompiler
     /**
      * Compile a structure array.
      *
-     * @param dapvar    the template
+     * @param var    the template
      * @param container if inside a compound object
      * @return A DataCompoundArray for the databuffer for this struct.
      * @throws DapException
      */
     protected D4Cursor
-    compileStructureArray(DapVariable dapvar, D4Cursor container)
+    compileStructureArray(DapVariable var, D4Cursor container)
             throws DapException
     {
-        DapStructure struct = (DapStructure) dapvar;
-        D4Cursor structarray = new D4Cursor(Scheme.STRUCTARRAY, this.dsp, struct)
+        DapStructure dapstruct = (DapStructure) var.getBaseType();
+        D4Cursor structarray = new D4Cursor(Scheme.STRUCTARRAY, this.dsp, var, container)
                 .setOffset(getPos(this.databuffer));
-        long dimproduct = struct.getCount();
-        for(int i = 0; i < dimproduct; i++) {
-            D4Cursor instance = compileStructure(struct, structarray);
-            structarray.addElement(i, instance);
+        List<DapDimension> dimset = var.getDimensions();
+        long dimproduct = DapUtil.dimProduct(dimset);
+        D4Cursor[] instances = new D4Cursor[(int) dimproduct];
+        Odometer odom = Odometer.factory(DapUtil.dimsetToSlices(dimset), dimset);
+        while(odom.hasNext()) {
+            Index index = odom.next();
+            D4Cursor instance = compileStructure(var, dapstruct, structarray);
+            instance.setIndex(index);
+            instances[(int) index.index()] = instance;
         }
+        structarray.setElements(instances);
         return structarray;
     }
 
@@ -182,17 +180,18 @@ public class D4DataCompiler
      * @throws DapException
      */
     protected D4Cursor
-    compileStructure(DapStructure dapstruct, D4Cursor container)
+    compileStructure(DapVariable var, DapStructure dapstruct, D4Cursor container)
             throws DapException
     {
         int pos = getPos(this.databuffer);
-        D4Cursor d4ds = new D4Cursor(Scheme.STRUCTURE, this.dsp, dapstruct)
+        D4Cursor d4ds = new D4Cursor(Scheme.STRUCTURE, (D4DSP) this.dsp, var, container)
                 .setOffset(pos);
         List<DapVariable> dfields = dapstruct.getFields();
         for(int m = 0; m < dfields.size(); m++) {
             DapVariable dfield = dfields.get(m);
             D4Cursor dvfield = compileVar(dfield, d4ds);
             d4ds.addField(m, dvfield);
+            assert dfield.getParent() != null;
         }
         return d4ds;
     }
@@ -200,22 +199,28 @@ public class D4DataCompiler
     /**
      * Compile a sequence array.
      *
-     * @param dapvar the template
+     * @param var the template
      * @return A DataCompoundArray for the databuffer for this sequence.
      * @throws DapException
      */
     protected D4Cursor
-    compileSequenceArray(DapVariable dapvar, D4Cursor container)
+    compileSequenceArray(DapVariable var, D4Cursor container)
             throws DapException
     {
-        DapSequence dapseq = (DapSequence) dapvar;
-        D4Cursor seqarray = new D4Cursor(Scheme.SEQARRAY, this.dsp, dapseq)
+        DapSequence dapseq = (DapSequence) var.getBaseType();
+        D4Cursor seqarray = new D4Cursor(Scheme.SEQARRAY, this.dsp, var, container)
                 .setOffset(getPos(this.databuffer));
-        long dimproduct = dapseq.getCount();
-        for(int i = 0; i < dimproduct; i++) {
-            D4Cursor instance = compileSequence(dapseq, seqarray);
-            seqarray.addElement(i, instance);
+        List<DapDimension> dimset = var.getDimensions();
+        long dimproduct = DapUtil.dimProduct(dimset);
+        D4Cursor[] instances = new D4Cursor[(int) dimproduct];
+        Odometer odom = Odometer.factory(DapUtil.dimsetToSlices(dimset), dimset);
+        while(odom.hasNext()) {
+            Index index = odom.next();
+            D4Cursor instance = compileSequence(var, dapseq, seqarray);
+            instance.setIndex(index);
+            instances[(int) index.index()] = instance;
         }
+        seqarray.setElements(instances);
         return seqarray;
     }
 
@@ -228,23 +233,24 @@ public class D4DataCompiler
      * @throws DapException
      */
     public D4Cursor
-    compileSequence(DapSequence dapseq, D4Cursor container)
+    compileSequence(DapVariable var, DapSequence dapseq, D4Cursor container)
             throws DapException
     {
         int pos = getPos(this.databuffer);
-        D4Cursor seq = new D4Cursor(Scheme.SEQUENCE, this.dsp, dapseq)
+        D4Cursor seq = new D4Cursor(Scheme.SEQUENCE, this.dsp, var, container)
                 .setOffset(pos);
         List<DapVariable> dfields = dapseq.getFields();
         // Get the count of the number of records
         long nrecs = getCount(this.databuffer);
         for(int r = 0; r < nrecs; r++) {
             pos = getPos(this.databuffer);
-            D4Cursor rec = new D4Cursor(D4Cursor.Scheme.RECORD, this.dsp, dapseq)
-                    .setOffset(pos);
+            D4Cursor rec = (D4Cursor) new D4Cursor(D4Cursor.Scheme.RECORD, this.dsp, var, container)
+                    .setOffset(pos).setRecordIndex(r);
             for(int m = 0; m < dfields.size(); m++) {
                 DapVariable dfield = dfields.get(m);
                 D4Cursor dvfield = compileVar(dfield, rec);
                 rec.addField(m, dvfield);
+                assert dfield.getParent() != null;
             }
             seq.addRecord(rec);
         }
@@ -254,16 +260,14 @@ public class D4DataCompiler
     //////////////////////////////////////////////////
     // Utilities
 
-    protected byte[]
-    getChecksum(ByteBuffer data)
+    protected int
+    extractChecksum(ByteBuffer data)
             throws DapException
     {
-        if(!ChecksumMode.enabled(RequestMode.DAP, checksummode)) return null;
+        assert ChecksumMode.DAP.enabled(this.checksummode);
         if(data.remaining() < DapUtil.CHECKSUMSIZE)
             throw new DapException("Short serialization: missing checksum");
-        byte[] checksum = new byte[DapUtil.CHECKSUMSIZE];
-        data.get(checksum);
-        return checksum;
+        return data.getInt();
     }
 
     static protected void

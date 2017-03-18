@@ -1,6 +1,6 @@
-netcdf test_atomic_array.nc {
+netcdf test_atomic_array {
   types:
-    byte enum cloud_class_t { 'Clear' = 0, 'Cumulonimbus' = 1, 'Stratus' = 2, 'Stratocumulus' = 3, 'Cumulus' = 4, 'Altostratus' = 5, 'Nimbostratus' = 6, 'Altocumulus' = 7, 'Cirrostratus' = 8, 'Cirrocumulus' = 9, 'Cirrus' = 10, 'Missing' = 127};
+    byte enum cloud_class_t { Clear = 0, Cumulonimbus = 1, Stratus = 2, Stratocumulus = 3, Cumulus = 4, Altostratus = 5, Nimbostratus = 6, Altocumulus = 7, Cirrostratus = 8, Cirrocumulus = 9, Cirrus = 10, Missing = 127};
 
   dimensions:
     d1 = 1;
@@ -9,25 +9,25 @@ netcdf test_atomic_array.nc {
     d4 = 4;
     d5 = 5;
   variables:
-    ubyte vu8(d2=2, d3=3);
+    ubyte vu8(d2, d3);
 
-    short v16(d4=4);
+    short v16(d4);
 
-    uint vu32(d2=2, d3=3);
+    uint vu32(d2, d3);
 
-    double vd(d2=2);
+    double vd(d2);
 
-    char vc(d2=2);
+    char vc(d2);
 
-    String vs(d2=2, d2=2);
+    String vs(d2, d2);
 
-    opaque vo(d1=1, d2=2);
+    opaque vo(d1, d2);
 
-    enum primary_cloud primary_cloud(d5=5);
-      :_FillValue = "Missing";
+    enum cloud_class_t primary_cloud(d5);
+      string primary_cloud:_FillValue = "Missing";
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 vu8 =
   {
@@ -45,8 +45,8 @@ vd =
   {17.9, 1024.8}
 vc =  "@&"
 vs =
-  {  "hello	world", "
-", "Καλημέα", "abc"
+  {  "hello	world",   "
+",  "Καλημέα",   "abc"
   }
 vo =  0x0123456789abcdef,
   0xabcdef0000000000;

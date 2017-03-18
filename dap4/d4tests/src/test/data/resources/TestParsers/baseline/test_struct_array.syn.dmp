@@ -1,5 +1,5 @@
 <Dataset
-         name="test_struct_array_2.nc"
+         name="test_struct_array.nc"
          dapVersion="4.0"
          dmrVersion="1.0"
          xmlns="http://xml.opendap.org/ns/DAP/4.0#"
@@ -17,7 +17,5 @@
         <Int32 name="y"/>
         <Dim name="/dx"/>
         <Dim name="/dy"/>
-        <Map name="/z"/>
-        <Map name="/t"/>
     </Structure>
 </Dataset>

@@ -84,7 +84,9 @@ public class TestParserDMR extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_atomic_types");
+            chosentests = locate("test_atomic_array.nc");
+            prop_visual = true;
+            assert chosentests.size() > 0 : "Not tests chosen";
         } else {
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
@@ -228,8 +230,8 @@ public class TestParserDMR extends DapTestCommon
         // Dump the parsed DMR for comparison purposes
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
-        DMRPrinter dapprinter = new DMRPrinter(dmr,pw);
-        dapprinter.print();
+        DMRPrinter dapprinter = new DMRPrinter(dmr, pw);
+        dapprinter.testprint();
         pw.close();
         sw.close();
         String testresult = sw.toString();

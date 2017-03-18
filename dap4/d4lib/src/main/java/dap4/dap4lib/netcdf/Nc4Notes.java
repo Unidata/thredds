@@ -4,11 +4,8 @@
 package dap4.dap4lib.netcdf;
 
 import dap4.core.dmr.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static dap4.dap4lib.netcdf.DapNetcdf.*;
+import dap4.core.util.DapSort;
+import dap4.core.util.DapUtil;
 
 /**
  * Note that ideally, this info should be part of the
@@ -28,35 +25,98 @@ abstract public class Nc4Notes
     static public final int NOFIELDID = -1;
 
     //////////////////////////////////////////////////
+    // Use a factory so we can debug constructor calls
+
+    static Notes
+    factory(NoteSort ns, int g, int id, Nc4DSP dsp)
+    {
+        Notes note = null;
+        switch (ns) {
+        case TYPE:
+            note = new TypeNotes(g, id, dsp);
+            break;
+        case VAR:
+            note = new VarNotes(g, id, dsp);
+            break;
+        case DIM:
+            note = new DimNotes(g, id, dsp);
+            break;
+        case GROUP:
+            note = new GroupNotes(g, id, dsp);
+            break;
+        }
+        return note;
+    }
+
+    //////////////////////////////////////////////////
+    //Manage the compound id for variables
+
+    static public long
+    getVarId(VarNotes note)
+    {
+        return getVarId(note.gid, note.id, note.getFieldIndex());
+    }
+
+    static public long
+    getVarId(int gid, int varid, int ifid)
+    {
+        long gv = ((long) gid) << 32;
+        assert varid < 0x100000;
+        gv = gv | ((long) varid) << 20;
+        long fid = (long) ifid;
+        if(fid >= 0)
+            gv |= fid;
+        return gv;
+    }
+
+    //////////////////////////////////////////////////
     // Type Decls
+
+    static public enum NoteSort
+    {
+        TYPE, VAR, GROUP, DIM;
+    }
 
     static public class Notes implements Cloneable
     {
+        Nc4DSP dsp; // Need a place to store global state
+        NoteSort sort;
         int gid;
         int id;
         DapNode node = null;
+        protected String name = null;
+        protected Notes parent = null;
+        protected TypeNotes basetype = null;
+        protected long offset = 0;
+        // For most types, there is only one size,
+        // but for vlen/sequence, there are two sizes:
+        //  (1) the record size and (2) the instance size (= |vlen_t|);
+        protected long size = 0;
+        protected long recordsize = 0;
 
-        public Notes(int gid, int id)
+        protected Notes(NoteSort sort, int gid, int id, Nc4DSP dsp)
         {
+            this.sort = sort;
+            this.dsp = dsp;
             this.gid = gid;
             this.id = id;
         }
 
-        public Object clone()
-        //throws CloneNotSupportedException
+        public NoteSort getSort()
         {
-            try {
-                return super.clone();
-            } catch (CloneNotSupportedException e) {
-                return null;
-            }
+            return this.sort;
         }
 
+        public Notes setName(String name)
+        {
+            this.name = name;
+            return this;
+        }
 
         public Notes set(DapNode node)
         {
             this.node = node;
-            node.annotate(this);
+            if(this.name == null) setName(node.getShortName());
             return this;
         }
 
@@ -65,36 +125,97 @@ abstract public class Nc4Notes
             return this.node;
         }
 
-        public DapDecl getDecl()
+        public Notes setContainer(Notes parent)
         {
-            return (DapDecl) this.node;
+            this.parent = parent;
+            return this;
+        }
+
+        public Notes getContainer()
+        {
+            return this.parent;
+        }
+
+        public long getOffset()
+        {
+            return this.offset;
+        }
+
+        public Notes setOffset(long offset)
+        {
+            this.offset = offset;
+            return this;
+        }
+
+        public long getSize()
+        {
+            return this.size;
+        }
+
+        public Notes setSize(long size)
+        {
+            this.size = size;
+            return this;
+        }
+
+        public long getRecordSize()
+        {
+            return this.recordsize;
+        }
+
+        public Notes setRecordSize(long size)
+        {
+            this.recordsize = size;
+            return this;
+        }
+
+        public Notes setBaseType(TypeNotes t)
+        {
+            this.basetype = t;
+            return this;
+        }
+
+        public TypeNotes getBaseType()
+        {
+            return this.basetype;
         }
 
         DapGroup group()
         {
-            GroupNotes g = GroupNotes.find(gid);
-            return (g == null ? null : g.getGroup());
+            GroupNotes g = (GroupNotes) dsp.find(gid, NoteSort.GROUP);
+            return (g == null ? null : g.get());
+        }
+
+        public String toString()
+        {
+            StringBuilder buf = new StringBuilder();
+            buf.append(this.getClass().getName());
+            buf.append("{");
+            if(name != null) {
+                buf.append("name=");
+                buf.append(name);
+            }
+            buf.append(" node=");
+            buf.append(this.node != null ? this.node.getShortName() : "null");
+            if(this.basetype != null)      {
+                buf.append(" type=");
+                buf.append(this.node.getShortName());
+            }
+            buf.append("}");
+            return buf.toString();
         }
     }
 
     static public class GroupNotes extends Notes
     {
-        static Map<Integer, GroupNotes> allgroups = new HashMap<>();
-
-        static public GroupNotes find(int gid)
+        protected GroupNotes(int p, int g, Nc4DSP dsp)
         {
-            return allgroups.get(gid);
+            super(NoteSort.GROUP, p, g, dsp);
         }
 
-        public GroupNotes(int p, int g)
+        public DapGroup get()
         {
-            super(p, g);
-            allgroups.put(g, this);
-        }
-
-        public DapGroup getGroup()
-        {
-            return (DapGroup) this.node;
+            return (DapGroup) super.get();
         }
 
         public GroupNotes set(DapNode node)
@@ -106,22 +227,14 @@ abstract public class Nc4Notes
 
     static public class DimNotes extends Notes
     {
-        static Map<Integer, DimNotes> alldims = new HashMap<>();
-
-        static public DimNotes find(int id)
+        protected DimNotes(int g, int id, Nc4DSP dsp)
         {
-            return alldims.get(id);
+            super(NoteSort.DIM, g, id, dsp);
         }
 
-        public DimNotes(int g, int id)
+        public DapDimension get()
         {
-            super(g, id);
-            alldims.put(id, this);
-        }
-
-        public DapDimension getDim()
-        {
-            return (DapDimension) this.node;
+            return (DapDimension) super.get();
         }
 
         public DimNotes set(DapNode node)
@@ -133,75 +246,69 @@ abstract public class Nc4Notes
 
     static public class TypeNotes extends Notes
     {
-        static Map<Integer, TypeNotes> alltypes = new HashMap<>();
-
-        static public TypeNotes find(int id)
-        {
-            return alltypes.get(id);
-        }
-
-        static public TypeNotes find(DapType dt)
-        {
-            for(Map.Entry<Integer, TypeNotes> entry : alltypes.entrySet()) {
-                if(entry.getValue().getType() == dt) {
-                    return entry.getValue();
-                }
-            }
-            return null;
-        }
-
-        public int opaquelen = -1;
         public int enumbase = -1;
-        public int compoundsize = -1;
         public boolean isvlen = false;
 
-        public TypeNotes(int g, int id)
+        protected TypeNotes(int g, int id, Nc4DSP dsp)
         {
-            super(g, id);
-            alltypes.put(id, this);
+            super(NoteSort.TYPE, g, id, dsp);
         }
 
         public DapType getType()
         {
-            return (DapType) this.node;
+            DapSort sort = this.node.getSort();
+            switch (sort) {
+            case ATOMICTYPE:
+            case STRUCTURE:
+            case SEQUENCE:
+                return (DapType) super.get();
+            case ENUMERATION:
+                return (DapEnumeration) super.get();
+            case VARIABLE:
+                return ((DapVariable) super.get()).getBaseType();
+            default:
+                break;
+            }
+            return null;
         }
 
-        public TypeNotes setOpaque(int len)
+        public TypeNotes setOpaque(long len)
         {
-            opaquelen = len;
+            super.setSize(len);
             return this;
         }
 
         public TypeNotes setEnumBaseType(int bt)
         {
             this.enumbase = bt;
+            TypeNotes btt = (TypeNotes)this.dsp.find(bt,NoteSort.TYPE);
+            setSize(btt.getSize());
             return this;
         }
 
         public boolean isOpaque()
         {
-            return this.opaquelen >= 0;
+            return getType().getTypeSort().isOpaqueType();
         }
 
         public boolean isEnum()
         {
-            return this.enumbase >= 0;
+            return getType().getTypeSort().isEnumType();
+        }
+
+        public boolean isSeq()
+        {
+            return getType().getTypeSort().isSeqType();
         }
 
         public boolean isCompound()
         {
-            return this.compoundsize >= 0;
+            return getType().getTypeSort().isCompoundType();
         }
 
         public boolean isVlen()
         {
             return this.isvlen;
-        }
-
-        public TypeNotes setCompoundSize(int size)
-        {
-            this.compoundsize = size;
-            return this;
         }
 
         public TypeNotes markVlen()
@@ -210,57 +317,33 @@ abstract public class Nc4Notes
             return this;
         }
 
+        public DapType get()
+        {
+            return (DapType) super.get();
+        }
+
         public TypeNotes set(DapNode node)
         {
             return (TypeNotes) super.set(node);
-        }
-
-        static {
-            new TypeNotes(0, NC_BYTE).set(DapType.INT8);
-            new TypeNotes(0, NC_CHAR).set(DapType.CHAR);
-            new TypeNotes(0, NC_SHORT).set(DapType.INT16);
-            new TypeNotes(0, NC_INT).set(DapType.INT32);
-            new TypeNotes(0, NC_FLOAT).set(DapType.FLOAT32);
-            new TypeNotes(0, NC_DOUBLE).set(DapType.FLOAT64);
-            new TypeNotes(0, NC_UBYTE).set(DapType.UINT8);
-            new TypeNotes(0, NC_USHORT).set(DapType.UINT16);
-            new TypeNotes(0, NC_UINT).set(DapType.UINT32);
-            new TypeNotes(0, NC_INT64).set(DapType.INT64);
-            new TypeNotes(0, NC_UINT64).set(DapType.UINT64);
-            new TypeNotes(0, NC_STRING).set(DapType.STRING);
         }
 
     }
 
     static public class VarNotes extends Notes
     {
-        static Map<Long, VarNotes> allvars = new HashMap<>();
-
-        static public VarNotes find(int gid, int vid)
+        protected VarNotes(int g, int v, Nc4DSP dsp)
         {
-            long gv = (((long) gid) << 32) | vid;
-            return allvars.get(gv);
-        }
-
-        protected TypeNotes basetype = null;
-
-        public VarNotes(int g, int v)
-        {
-            super(g, v);
-            long gv = (((long) g) << 32) | v;
-            allvars.put(gv, this);
-
+            super(NoteSort.VAR, g, v, dsp);
         }
 
         public VarNotes setBaseType(TypeNotes ti)
         {
-            this.basetype = ti;
-            return this;
+            return (VarNotes) super.setBaseType(ti);
         }
 
-        public DapVariable getVar()
+        public DapVariable get()
         {
-            return (DapVariable) this.node;
+            return (DapVariable) super.get();
         }
 
         public VarNotes set(DapNode node)
@@ -268,53 +351,17 @@ abstract public class Nc4Notes
             return (VarNotes) super.set(node);
         }
 
+        public int getFieldIndex()
+        {
+            assert this.get() != null;
+            return this.get().getFieldIndex();
+        }
+
+        @Override
+        public long getSize()
+        {
+            return this.getBaseType().getSize() * DapUtil.dimProduct(get().getDimensions());
+        }
+
     }
-
-    static public class FieldNotes extends Notes
-    {
-        protected TypeNotes parent = null;
-        protected TypeNotes basetype = null;
-        protected int fieldid = NOFIELDID;
-        protected long offset = -1;
-
-        public FieldNotes(TypeNotes parent, int fid, long offset)
-        {
-            super(NOGROUP, NOID);
-            this.parent = parent;
-            this.fieldid = fid;
-            this.offset = offset;
-        }
-
-        public FieldNotes setBaseType(TypeNotes ti)
-        {
-            this.basetype = ti;
-            return this;
-        }
-
-        public VarNotes set(DapNode node)
-        {
-            return (VarNotes) super.set(node);
-        }
-
-        public int getFieldID()
-        {
-            return this.fieldid;
-        }
-
-        public long getOffset()
-        {
-            return this.offset;
-        }
-
-        public TypeNotes getParent()
-        {
-            return this.parent;
-        }
-
-        public DapVariable getVar()
-        {
-            return (DapVariable) get();
-        }
-    }
-
 }

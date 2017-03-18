@@ -1,5 +1,6 @@
 package dap4.test;
 
+import dap4.core.ce.parser.CEParserImpl;
 import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapDump;
 import dap4.core.util.Escape;
@@ -22,21 +23,29 @@ import thredds.server.dap4.Dap4Controller;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
 
 /**
- * TestServlet test server side
- * constraint processing.
+ * TestServletConstraints has multiple purposes.
+  * 1. It tests the d4tsservlet ability to serve up constrained data.
+  * 2. It (optionally) stores the serialized raw databuffer
+  * for datasets into files., These files are then used to
+  * test client side deserialization (see TestCDMClient).
  */
 
 
 public class TestServletConstraints extends DapTestCommon
 {
-    static protected final boolean DEBUG = false;
+    static public boolean DEBUG = false;
+    static public boolean DEBUGDATA = false;
+    static public boolean PARSEDEBUG = false;
+    static public boolean CEPARSEDEBUG = false;
+
+    static public boolean USEBIG = false;
+    static public boolean NOCSUM = false;
 
     //////////////////////////////////////////////////
     // Constants
@@ -102,7 +111,7 @@ public class TestServletConstraints extends DapTestCommon
             this.checksumming = checksumming;
             this.testinputpath = canonjoin(this.inputroot, dataset);
             this.baselinepath = canonjoin(this.baselineroot, dataset) + "." + id;
-            this.generatepath = canonjoin(this.generateroot, dataset);
+            this.generatepath = canonjoin(this.generateroot, dataset) + "." + id;
         }
 
         String makeurl(RequestMode ext)
@@ -165,9 +174,6 @@ public class TestServletConstraints extends DapTestCommon
         mvcbuilder.setValidator(new TestServlet.NullValidator());
         this.mockMvc = mvcbuilder.build();
         testSetup();
-        DapCache.dspregistry.register(FileDSP.class, DSPRegistry.FIRST);
-        DapCache.dspregistry.register(SynDSP.class, DSPRegistry.FIRST);
-        //NetcdfFile.registerIOProvider("ucar.nc2.jni.netcdf.Nc4Iosp");
         if(prop_ascii)
             Generator.setASCII(true);
         TestCase.setRoots(canonjoin(getResourceRoot(), TESTINPUTDIR),
@@ -184,11 +190,20 @@ public class TestServletConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate(1);
+            if(false) {
+                chosentests = locate(8);
+            } else {
+                List<TestCase> choose1 = locate(8);
+                chosentests = locate(5);
+                chosentests.addAll(choose1);
+            }
             prop_visual = true;
-            prop_debug = true;
+            prop_debug = false;
             prop_generate = false;
+            prop_baseline = true;
         } else {
+            prop_baseline = false;
+            prop_generate = false;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }
@@ -217,6 +232,7 @@ public class TestServletConstraints extends DapTestCommon
     {
         System.err.println("Testcase: " + testcase.toString());
         System.err.println("Baseline: " + testcase.baselinepath);
+        if(CEPARSEDEBUG) CEParserImpl.setGlobalDebugLevel(1);
 
         for(String extension : testcase.extensions) {
             RequestMode ext = RequestMode.modeFor(extension);
@@ -241,7 +257,13 @@ public class TestServletConstraints extends DapTestCommon
         String query = testcase.makequery();
         String basepath = testcase.makeBasepath(RequestMode.DMR);
 
-        MvcResult result = perform(url, RESOURCEPATH, query, this.mockMvc);
+        String little = (USEBIG ? "0" : "1");
+        String nocsum = (NOCSUM ? "1" : "0");
+        MvcResult result = perform(url, this.mockMvc,
+                RESOURCEPATH,
+                DapTestCommon.CONSTRAINTTAG, query,
+                DapTestCommon.ORDERTAG, little,
+                DapTestCommon.NOCSUMTAG, nocsum);
 
         // Collect the output
         MockHttpServletResponse res = result.getResponse();
@@ -268,9 +290,14 @@ public class TestServletConstraints extends DapTestCommon
     {
         String url = testcase.makeurl(RequestMode.DAP);
         String query = testcase.makequery();
-        String basepath = testcase.makeBasepath(RequestMode.DMR);
-
-        MvcResult result = perform(url, RESOURCEPATH, query, this.mockMvc);
+        String basepath = testcase.makeBasepath(RequestMode.DAP);
+        String little = (USEBIG ? "0" : "1");
+        String nocsum = (NOCSUM ? "1" : "0");
+        MvcResult result = perform(url, this.mockMvc,
+                RESOURCEPATH,
+                DapTestCommon.CONSTRAINTTAG, query,
+                DapTestCommon.ORDERTAG, little,
+                DapTestCommon.NOCSUMTAG, nocsum);
 
         // Collect the output
         MockHttpServletResponse res = result.getResponse();
@@ -286,10 +313,6 @@ public class TestServletConstraints extends DapTestCommon
             writefile(target, byteresult);
         }
 
-        if(DEBUG) {
-            DapDump.dumpbytes(ByteBuffer.wrap(byteresult).order(ByteOrder.nativeOrder()), true);
-        }
-
         // Setup a ChunkInputStream
         ByteArrayInputStream bytestream = new ByteArrayInputStream(byteresult);
 
@@ -300,7 +323,7 @@ public class TestServletConstraints extends DapTestCommon
             visual(testcase.title + ".dmr.dap", sdmr);
 
         Dump printer = new Dump();
-        String sdata = printer.dumpdata(reader, testcase.checksumming, reader.getByteOrder(), testcase.template);
+        String sdata = printer.dumpdata(reader, testcase.checksumming, reader.getRemoteByteOrder(), testcase.template);
 
         if(prop_visual)
             visual(testcase.title + ".dap", sdata);
@@ -329,8 +352,9 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 printer.printvalue('S', 4);
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -340,11 +364,12 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 printer.printvalue('U', 4);
                                 printer.printvalue('U', 4);
                                 printer.printvalue('U', 4);
                                 printer.printvalue('U', 4);
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -354,9 +379,10 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 printer.printvalue('S', 4);
                                 printer.printvalue('S', 4);
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -366,10 +392,11 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 for(int i = 0; i < 2; i++) {
                                     printer.printvalue('U', 1, i);
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -378,22 +405,26 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 for(int i = 0; i < 2; i++) {
                                     printer.printvalue('U', 1, i);
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
+                                printer.startchecksum();
                                 for(int i = 0; i < 1; i++) {
                                     printer.printvalue('F', 8, i);
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
+                                printer.startchecksum();
                                 for(int i = 0; i < 1; i++) {
                                     printer.printvalue('T', 0, i);
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
+                                printer.startchecksum();
                                 for(int i = 0; i < 1; i++) {
                                     printer.printvalue('O', 0, i);
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -402,12 +433,13 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 for(int i = 0; i < 4; i++) {
                                     for(int j = 0; j < 2; j++) {
                                         printer.printvalue('S', 4);
                                     }
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -416,10 +448,11 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 for(int i = 0; i < 2; i++) {
                                     printer.printvalue('O', 0, i);
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -428,10 +461,11 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 for(int i = 0; i < 3; i++) {
                                     printer.printvalue('S', 2, i);
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -440,10 +474,11 @@ public class TestServletConstraints extends DapTestCommon
                         {
                             public void run(Dump printer) throws IOException
                             {
+                                printer.startchecksum();
                                 for(int i = 0; i < 3; i++) {
                                     printer.printvalue('S', 2, i);
                                 }
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
     }

@@ -741,23 +741,39 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
     ByteBuffer bb = ByteBuffer.wrap(bbuff);
-    Array data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
-    IndexIterator ii = data.getIndexIterator();
-
-    if (len == 1) {
-      String val = userType.e.lookupEnumString(ii.getIntNext());
-      return new Attribute(attname, val);
+    Array data = null;
+    if(false) {
+      /* This is incorrect; CDM technically does not support
+      enum valued attributes (see Attribute.java).*/
+      data = convertByteBuffer(bb, userType.baseTypeid, new int[]{len});
     } else {
-      ArrayObject.D1 attArray = (ArrayObject.D1) Array.factory(DataType.STRING, new int[]{len});
-      for (int i = 0; i < len; i++) {
-        int val = ii.getIntNext();
-        String vals = userType.e.lookupEnumString(val);
-        if (vals == null)
-          throw new IOException("Illegal enum val " + val + " for attribute " + attname);
-        attArray.set(i, vals);
+      /*So, instead use the EnumTypedef to convert to econsts
+       and store as strings.*/
+      String[] econsts = new String[len];
+      EnumTypedef en = userType.e;
+      for(int i = 0; i < len; i++) {
+        long lval = 0;
+        switch (en.getBaseType()) {
+        case ENUM1:
+          lval = bb.get(i);
+          break;
+        case ENUM2:
+          lval = bb.getShort(i);
+          break;
+        case ENUM4:
+          lval = bb.getInt(i);
+          break;
+        }
+        String name = en.lookupEnumString((int) lval);
+        if(name == null)
+          throw new ForbiddenConversionException("Illegal enum const: " + lval);
+        econsts[i] = name;
       }
-      return new Attribute(attname, attArray);
+      data = Array.factory(DataType.STRING, new int[]{len}, (Object) econsts);
     }
+    Attribute a = new Attribute(attname,data,false);
+    a.setEnumType(userType.e);
+    return a;
   }
 
   private Array convertByteBuffer(ByteBuffer bb, int baseType, int shape[]) throws IOException {

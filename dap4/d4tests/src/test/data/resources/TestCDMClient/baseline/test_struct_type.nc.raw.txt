@@ -1,32 +1,17 @@
-netcdf test_struct_type.nc.raw {
+netcdf test_struct_type {
   variables:
 
     Structure {
       int x;
-        x:_CoordinateAxisType = "GeoX";
+        string x:_CoordinateAxisType = "GeoX";
       int y;
-        y:_CoordinateAxisType = "GeoY";
+        string y:_CoordinateAxisType = "GeoY";
     } s;
-      s:_DAP4_Checksum_CRC32 = "0x709182c3";
+      string s:_DAP4_Checksum_CRC32 = "0xcf8f9871";
 
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}
-netcdf test_struct_type.nc.raw {
-  variables:
-
-    Structure {
-      int x;
-        x:_CoordinateAxisType = "GeoX";
-      int y;
-        y:_CoordinateAxisType = "GeoY";
-    } s;
-      s:_DAP4_Checksum_CRC32 = "0x709182c3";
-
-
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 s =    x =1
     y =-2

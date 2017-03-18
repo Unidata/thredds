@@ -1,34 +1,6 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
+ *  See the LICENSE file for more information.
  */
 
 package ucar.httpservices;
@@ -41,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.client.utils.HttpClientUtils;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
@@ -153,15 +126,28 @@ import static ucar.httpservices.HTTPSession.Prop;
  * however, this will occur in the same scope as the method and so method.close()
  * is accessible.
  * </ul>
+ * <p>
+ * For testing purposes, and to allow use of Spring Servlet Mocking,
+ * it is possible to set a special execution action (see executeRaw).
  */
 
 @NotThreadSafe
 public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 {
+    //////////////////////////////////////////////////
+    // Type Decl
+
+    static public interface Executor
+    {
+        public HttpResponse execute(HttpRequestBase rq) throws IOException;
+    }
 
     //////////////////////////////////////////////////
 
     public static boolean TESTING = false;
+
+    /* External tests can Set this to true if they are using Spring Servlet Mocking */
+    public static Executor MOCKEXECUTOR = null;
 
     //////////////////////////////////////////////////
     // Instance fields
@@ -251,35 +237,6 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         return (this.hashCode() - o.hashCode());
     }
 
-    protected RequestBuilder
-    buildrequest()
-            throws HTTPException
-    {
-        if(this.methodurl == null)
-            throw new HTTPException("Null url");
-        RequestBuilder rb = null;
-        switch (this.methodkind) {
-        case Put:
-            rb = RequestBuilder.put();
-            break;
-        case Post:
-            rb = RequestBuilder.post();
-            break;
-        case Head:
-            rb = RequestBuilder.head();
-            break;
-        case Options:
-            rb = RequestBuilder.options();
-            break;
-        case Get:
-        default:
-            rb = RequestBuilder.get();
-            break;
-        }
-        rb.setUri(this.methodurl);
-        return rb;
-    }
-
     protected void
     setcontent(RequestBuilder rb)
     {
@@ -313,16 +270,29 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     close()
     {
         if(closed)
-            return; // multiple calls ok
+            return; // recursive calls ok
         closed = true; // mark as closed to prevent recursive calls
         if(methodstream != null) {
             try {
-                methodstream.close();
+                this.methodstream.close(); // May recursr
             } catch (IOException ioe) {/*failure is ok*/}
-            ;
-            methodstream = null;
+            this.methodstream = null;
         }
-        //this.request = null;
+        // Force release underlying connection back to the connection manager
+        if(this.lastresponse != null) {
+            if(false) {
+                try {
+                    try {
+                        // Attempt to keep connection alive by consuming its remaining content
+                        EntityUtils.consume(this.lastresponse.getEntity());
+                    } finally {
+                        HttpClientUtils.closeQuietly(this.lastresponse); // Paranoia
+                    }
+                } catch (IOException ignore) {/*ignore*/}
+            } else
+                HttpClientUtils.closeQuietly(this.lastresponse);
+            this.lastresponse = null;
+        }
         if(session != null) {
             session.removeMethod(this);
             if(localsession) {
@@ -330,8 +300,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
                 session = null;
             }
         }
-        // finally, make this reusable
-        if(this.lastrequest != null) this.lastrequest.reset();
+        this.lastrequest = null;
     }
 
     //////////////////////////////////////////////////
@@ -384,18 +353,26 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
                 this.headers.put("Range", "bytes=" + range[0] + "-" + range[1]);
                 range = null;
             }
-            RequestBuilder rb = buildrequest();
+            RequestBuilder rb = getRequestBuilder();
             setcontent(rb);
             setheaders(rb, this.headers);
             this.lastrequest = buildRequest(rb, this.settings);
             AuthScope methodscope = HTTPAuthUtil.uriToAuthScope(this.methodurl);
             AuthScope target = HTTPAuthUtil.authscopeUpgrade(session.getSessionScope(), methodscope);
+            // AFAIK, targethost, httpclient, rb, and session
+            // contain non-overlapping info => we cannot derive one
+            // from any of the others.
             HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
             HttpClientBuilder cb = HttpClients.custom();
-            configClient(cb, settings);
+            configClient(cb, this.settings);
             session.setAuthenticationAndProxy(cb);
             HttpClient httpclient = cb.build();
-            this.lastresponse = httpclient.execute(targethost, this.lastrequest, session.getContext());
+            if(MOCKEXECUTOR != null) {
+                URI uri = this.lastrequest.getURI();
+                this.lastresponse = MOCKEXECUTOR.execute(this.lastrequest);
+            } else {
+                this.lastresponse = httpclient.execute(targethost, this.lastrequest, session.getContext());
+            }
             if(this.lastresponse == null)
                 throw new HTTPException("HTTPMethod.execute: Response was null");
             return this.lastresponse;
@@ -459,6 +436,35 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
                 rb.addHeader(entry.getKey(), entry.getValue());
             }
         }
+    }
+
+    protected RequestBuilder
+    getRequestBuilder()
+            throws HTTPException
+    {
+        if(this.methodurl == null)
+            throw new HTTPException("Null url");
+        RequestBuilder rb = null;
+        switch (this.methodkind) {
+        case Put:
+            rb = RequestBuilder.put();
+            break;
+        case Post:
+            rb = RequestBuilder.post();
+            break;
+        case Head:
+            rb = RequestBuilder.head();
+            break;
+        case Options:
+            rb = RequestBuilder.options();
+            break;
+        case Get:
+        default:
+            rb = RequestBuilder.get();
+            break;
+        }
+        rb.setUri(this.methodurl);
+        return rb;
     }
 
     protected HttpRequestBase
@@ -582,10 +588,11 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     public Header getRequestHeader(String name)
     {
         Header[] hdrs = getRequestHeaders();
-        for(Header h : hdrs) {
-            if(h.getName().equals(name))
-                return h;
-        }
+        if(hdrs != null)
+            for(Header h : hdrs) {
+                if(h.getName().equals(name))
+                    return h;
+            }
         return null;
     }
 
@@ -704,10 +711,10 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
     }
 
     public HTTPMethod setSOTimeout(int n)
-        {
-            this.session.setSoTimeout(n);
-            return this;
-        }
+    {
+        this.session.setSoTimeout(n);
+        return this;
+    }
 
     public HTTPMethod setUserAgent(String agent)
     {

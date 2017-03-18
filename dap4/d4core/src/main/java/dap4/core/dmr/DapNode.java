@@ -65,7 +65,13 @@ abstract public class DapNode
     /**
      * DAP Attributes attached to this node (as opposed to the xml attributes)
      */
-    protected Map<String, DapAttribute> attributes = null;
+    protected Map<String, DapAttribute> attributes = new HashMap<>();
+
+    /**
+     * XML Attributes attached to this node. Used to pass reserved extra
+     * info to the client.
+     */
+    protected Map<String, String> xmlattributes = new HashMap<>();
 
     //////////////////////////////////////////////////
     // Constructors
@@ -74,8 +80,8 @@ abstract public class DapNode
     {
         // Use Instanceof to figure out the sort
         // Because of subclass relationships, order is important
-        if(this instanceof DapAtomicVariable)
-            this.sort = DapSort.ATOMICVARIABLE;
+        if(this instanceof DapVariable)
+            this.sort = DapSort.VARIABLE;
         else if(this instanceof DapSequence)
             this.sort = DapSort.SEQUENCE;
         else if(this instanceof DapStructure)
@@ -113,24 +119,27 @@ abstract public class DapNode
     }
 
     //////////////////////////////////////////////////
-    // Annotatation
+    // Annotatations
 
     /* Purpose of annotation is to (sort of) get around
        single inheritance by allowing a node to store
        a single arbitrary piece of state.
     */
 
-    protected Object annotation = null;
+    protected Map<Object, Object> annotations = null;
 
-    public DapNode annotate(Object value)
+    public DapNode annotate(Object id, Object value)
     {
-        annotation = value;
+        if(this.annotations == null)
+            this.annotations = new HashMap<>();
+        assert this.annotations.get(id) == null;
+        this.annotations.put(id, value);
         return this;
     }
 
-    public Object annotation()
+    public Object annotation(Object id)
     {
-        return annotation;
+        return this.annotations.get(id);
     }
 
     //////////////////////////////////////////////////
@@ -193,6 +202,35 @@ abstract public class DapNode
         return this.attributes.get(name);
     }
 
+    //////////////////////////////////////////////////
+    // XML attributes
+
+    public synchronized Map<String, String>
+    getXMLAttributes()
+    {
+        return this.xmlattributes;
+    }
+
+    public synchronized void
+    addXMLAttribute(String name, String value)
+            throws DapException
+    {
+        if(this.xmlattributes == null)
+            this.xmlattributes = new HashMap<String, String>();
+        if(this.xmlattributes.containsKey(name))
+            throw new DapException("Attempt to add duplicate XML attribute: " + name);
+        this.xmlattributes.put(name, value);
+    }
+
+    public synchronized void
+    removeXMLAttribute(String name)
+            throws DapException
+    {
+        if(this.xmlattributes == null)
+            return;
+        if(this.xmlattributes.containsKey(name))
+            this.xmlattributes.remove(name);
+    }
 
     //////////////////////////////////////////////////
     // Get/set
@@ -283,7 +321,7 @@ abstract public class DapNode
         case ATTRIBUTE:
         case ATTRIBUTESET:
         case OTHERXML:
-            parent = ((DapAttribute) this).getContainer();
+            parent = ((DapAttribute) this).getParent();
             if(parent instanceof DapVariable)
                 parent = parent.getContainer();
             break;
@@ -302,12 +340,23 @@ abstract public class DapNode
     /**
      * Set the parent DapNode; may sometimes be same as container,
      * but not always (think attributes or maps).
+     * Invariant: parent must be either a group or a variable.
      * We can infer the container, so set that also.
      *
      * @param parent the proposed parent node
      */
     public void setParent(DapNode parent)
     {
+        assert this.parent == null;
+        assert (
+                (this.getSort() == DapSort.ENUMCONST && parent.getSort() == DapSort.ENUMERATION)
+                        || parent.getSort().isa(DapSort.GROUP)
+                        || parent.getSort() == DapSort.VARIABLE
+                        || parent.getSort() == DapSort.STRUCTURE
+                        || parent.getSort() == DapSort.SEQUENCE
+                        || this.getSort() == DapSort.ATTRIBUTE
+                        || this.getSort() == DapSort.ATTRIBUTESET
+        );
         this.parent = parent;
     }
 
@@ -324,8 +373,11 @@ abstract public class DapNode
         this.fqn = null;
     }
 
-    // Here, escaped means backslash escaped short name
-    // create on demand
+    /**
+     * Here, escaped means backslash escaped short name
+     *
+     * @return escaped name
+     */
     public String getEscapedShortName()
     {
         if(this.escapedname == null)
@@ -336,37 +388,15 @@ abstract public class DapNode
     public String getFQN()
     {
         if(this.fqn == null)
-            this.fqn = computefqn(null);
+            this.fqn = computefqn();
         assert (fqn.length() > 0 || this.getSort() == DapSort.DATASET);
         return this.fqn;
     }
 
     /**
-     * Compute the path upto some specified containing node (null=>root)
-     * The containing node is included as is this node
-     *
-     * @return ordered list of parent nodes
-     */
-
-    public List<DapNode>
-    getPath(DapNode wrt)
-    {
-        List<DapNode> path = new ArrayList<DapNode>();
-        DapNode current = this;
-        for(; ; ) {
-            path.add(0, current);
-            if(wrt != null && current == wrt)
-                break;
-            DapNode up = current.getParent();
-            if(up == null)
-                break;
-            current = up;
-        }
-        return path;
-    }
-
-    /**
-     * Compute the path upto and including the root
+     * Compute the path upto, and including
+     * some specified containing node (null=>root)
+     * The containing node is included as is this node.
      *
      * @return ordered list of parent nodes
      */
@@ -374,7 +404,15 @@ abstract public class DapNode
     public List<DapNode>
     getPath()
     {
-        return getPath(null);
+        List<DapNode> path = new ArrayList<DapNode>();
+        DapNode current = this;
+        for(; ; ) {
+            path.add(0, current);
+            current = current.getParent();
+            if(current == null)
+                break;
+        }
+        return path;
     }
 
     /**
@@ -425,14 +463,12 @@ abstract public class DapNode
      * Compute the FQN of this node
      */
     public String
-    computefqn(DapNode wrt)
+    computefqn()
     {
-        List<DapNode> path = getPath(wrt);
+        List<DapNode> path = getPath(); // excludes root/wrt
         StringBuilder fqn = new StringBuilder();
         DapNode parent = path.get(0);
-        if(wrt != null)
-            fqn.append(wrt.getFQN());
-        for(int i = 1; i < path.size(); i++) {// start past the root dataset
+        for(int i = 1; i < path.size(); i++) {   // start at 1 to skip root
             DapNode current = path.get(i);
             // Depending on what parent is, use different delimiters
             switch (parent.getSort()) {
@@ -440,13 +476,13 @@ abstract public class DapNode
             case GROUP:
             case ENUMERATION:
                 fqn.append('/');
-                fqn.append(current.getEscapedShortName());
+                fqn.append(Escape.backslashEscape(current.getShortName(),"/."));
                 break;
             // These use '.'
             case STRUCTURE:
             case SEQUENCE:
             case ENUMCONST:
-            case ATOMICVARIABLE:
+            case VARIABLE:
                 fqn.append('.');
                 fqn.append(current.getEscapedShortName());
                 break;

@@ -7,7 +7,9 @@ package dap4.dap4lib;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -58,6 +60,7 @@ public class ChunkInputStream extends InputStream
 
     protected ByteOrder localorder = null;
     protected ByteOrder remoteorder = null;
+    protected boolean nochecksum = false;
 
     // State info for current chunk
     protected int flags = 0;
@@ -70,7 +73,7 @@ public class ChunkInputStream extends InputStream
 
     public ChunkInputStream(InputStream input, RequestMode requestmode)
     {
-       this(input,requestmode, ByteOrder.nativeOrder());
+        this(input, requestmode, ByteOrder.nativeOrder());
     }
 
     public ChunkInputStream(InputStream input, RequestMode requestmode, ByteOrder order)
@@ -83,10 +86,20 @@ public class ChunkInputStream extends InputStream
     //////////////////////////////////////////////////
     // Accessors
 
-    public ByteOrder getByteOrder()
+    public ByteOrder getHostByteOrder()
     {
-        return localorder;
+        return this.localorder;
     }
+
+    public ByteOrder getRemoteByteOrder()
+    {
+        return this.remoteorder;
+    }
+
+    public boolean getNoChecksum()
+        {
+            return this.nochecksum;
+        }
 
     //////////////////////////////////////////////////
 
@@ -98,7 +111,7 @@ public class ChunkInputStream extends InputStream
 
     public String
     readDMR()
-        throws DapException
+            throws DapException
     {
         try {
             if(state != State.INITIAL)
@@ -132,10 +145,18 @@ public class ChunkInputStream extends InputStream
             String dmr = new String(dmr8, DapUtil.UTF8);
             // Clean it up
             dmr = dmr.trim();
+            // Make sure it has trailing \r\n"
+            if(dmr.endsWith("\r\n")) {
+                // do nothing
+            } else if(dmr.endsWith("\n"))
+                dmr = dmr.substring(0,dmr.length()-2) + "\r\n";
+            else
+                dmr = dmr + "\r\n";
 
             // Figure out the endian-ness of the response
             this.remoteorder = (flags & DapUtil.CHUNK_LITTLE_ENDIAN) == 0 ? ByteOrder.BIG_ENDIAN
-                                                                          : ByteOrder.LITTLE_ENDIAN;
+                    : ByteOrder.LITTLE_ENDIAN;
+            this.nochecksum = (flags & DapUtil.CHUNK_NOCHECKSUM) != 0;
 
             // Set the state
             if((flags & DapUtil.CHUNK_ERROR) != 0)
@@ -159,10 +180,10 @@ public class ChunkInputStream extends InputStream
      */
     public void
     throwError(String document)
-        throws ErrorException
+            throws ErrorException
     {
         throw new ErrorException("Error chunk encountered")
-            .setDocument(document);
+                .setDocument(document);
     }
 
     /**
@@ -172,7 +193,7 @@ public class ChunkInputStream extends InputStream
      */
     public String
     readError()
-        throws IOException
+            throws IOException
     {
         state = State.ERROR;
         // Read the error body databuffer
@@ -197,17 +218,17 @@ public class ChunkInputStream extends InputStream
      * has been reached, the value <code>-1</code> is returned. This method
      * blocks until input databuffer is available, the end of the stream is detected,
      * or an exception is thrown.
-     * <p/>
+     * <p>
      * Operates by loading chunk by chunk. If an error chunk is detected,
      * then return ErrorException (which is a subclass of IOException).
      *
      * @return the next byte of databuffer, or <code>-1</code> if the end of the
-     *         stream is reached.
+     * stream is reached.
      * @throws IOException if an I/O error occurs.
      */
     public int
     read()
-        throws IOException
+            throws IOException
     {
         if(requestmode == RequestMode.DMR)
             throw new UnsupportedOperationException("Attempt to read databuffer when DMR only"); // Runtime
@@ -245,7 +266,7 @@ public class ChunkInputStream extends InputStream
 
     public int
     read(byte[] buf, int off, int len)
-        throws IOException
+            throws IOException
     {
         // Sanity check
         if(off < 0 || len < 0)
@@ -261,7 +282,7 @@ public class ChunkInputStream extends InputStream
         while(count > 0) {
             if(avail <= 0) {
                 if((flags & DapUtil.CHUNK_END) != 0
-                    || !readHeader(input))
+                        || !readHeader(input))
                     return (len - count); // return # databuffer read
                 // See if we have an error chunk,
                 // and if so, turn it into an exception
@@ -287,7 +308,7 @@ public class ChunkInputStream extends InputStream
      * (or skipped over) from this input stream without
      * blocking by the next invocation of a method for this
      * input stream.
-     * <p/>
+     * <p>
      * Repurposed here to do equivalent of peek().
      *
      * @return 0 if at eof, some number > 0 otherwise.
@@ -309,7 +330,7 @@ public class ChunkInputStream extends InputStream
      */
 
     public void close()
-        throws IOException
+            throws IOException
     {
         state = State.END;
     }
@@ -318,45 +339,28 @@ public class ChunkInputStream extends InputStream
     // Utilities
 
     /**
-     * Initialize the chunk state
+     * Read the size+flags header from the input stream and use it to
+     * initialize the chunk state
      *
-     * @param header header for the current chunk
-     */
-    void reset(int header)
-    {
-        this.chunksize = (int) (header & 0xFFFFFF);
-        this.flags = (int) (header >>> 24);
-        this.avail = this.chunksize;
-    }
-
-    /**
-     * Read the size+flags header from the input stream.
-     *
-     * @param input The input stream from which to read
+     * @param input The input streamfrom which to read
      * @return true if header read false if immediate eof encountered
      */
 
     boolean
-    readHeader(InputStream   input)
-        throws IOException
+    readHeader(InputStream input)
+            throws IOException
     {
-        int hdr = 0;
-        int c;
-        // Get one char to test for immediate EOF
-        c = input.read();
-        if(c < 0) return false; // EOF
-        // Get the count
-        int b0 = c;
-        int b1 = input.read();
-        int b2 = input.read();
-        int b3 = input.read();
-        if(b0 < 0 || b1 < 0 || b2 < 0 || b3 < 0)
+        byte[] bytehdr = new byte[4];
+        int red = input.read(bytehdr);
+        if(red == -1) return false;
+        if(red < 4)
             throw new IOException("Short binary chunk count");
-        if(this.localorder == ByteOrder.BIG_ENDIAN)
-            hdr = ((b0 << 24) | (b1 << 16) | (b2 << 8) | b3);
-        else
-            hdr = ((b3 << 24) | (b2 << 16) | (b1 << 8) | b0);
-        reset(hdr);
+        this.flags = ((int) bytehdr[0]) & 0xFF; // Keep unsigned
+        bytehdr[0] = 0;
+        ByteBuffer buf = ByteBuffer.wrap(bytehdr).order(ByteOrder.BIG_ENDIAN);
+        this.chunksize = buf.getInt();
+        this.avail = this.chunksize;
         return true;
     }
+
 }

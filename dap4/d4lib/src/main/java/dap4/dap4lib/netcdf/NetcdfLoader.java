@@ -5,11 +5,13 @@
 package dap4.dap4lib.netcdf;
 
 import com.sun.jna.Native;
+import dap4.dap4lib.DapLog;
 
 import java.io.IOException;
 
 /**
  * Load the netcdf library via JNA; Singleton class
+ * This code should closely match that in ucar.nc2.jni.netcdf.Nc4Iosp.java.
  */
 abstract public class NetcdfLoader
 {
@@ -19,6 +21,8 @@ abstract public class NetcdfLoader
     static public final boolean DEBUG = false;
 
     static public final String DFLAG_JNAPATH = "jna.library.path";
+    static public final String ENV_JNAPATH = "JNA_PATH"; // environment var
+    // Note that e.g. LD_LIBRARY_PATH may also be relevant.
     static String DFALT_NETCDF4LIBNAME = "netcdf";
 
     //////////////////////////////////////////////////
@@ -45,8 +49,19 @@ abstract public class NetcdfLoader
         jna_path = nullify(jna_path);
         if(jna_path == null)
             jna_path = nullify(System.getProperty(DFLAG_JNAPATH)); //get system property (-D flag).
+        if(jna_path == null) {
+            jna_path = nullify(System.getenv(ENV_JNAPATH));   // Next, try environment variable.
+            if(jna_path != null)
+                System.setProperty(DFLAG_JNAPATH, jna_path);
+        }
+
+        // If jna_path is null, the library might still be found
+        // automatically from LD_LIBRARY_PATH or somewhere else
+        // So complain but do not fail
         if(jna_path == null)
-            throw new IllegalArgumentException("-D" + DFLAG_JNAPATH + " not set");
+            DapLog.warn(String.format("Neither -D%s nor getenv(%s) is defined",
+                    DFLAG_JNAPATH, ENV_JNAPATH));
+
         libName = lib_name;
         jnaPath = jna_path;
     }
@@ -64,9 +79,13 @@ abstract public class NetcdfLoader
                 nc4 = (DapNetcdf) Native.loadLibrary(libName, DapNetcdf.class);
                 nc4 = (DapNetcdf) Native.synchronizedLibrary(nc4);
                 String message = String.format("NetCDF-4 C library loaded (jna_path='%s', libname='%s').", jnaPath, libName);
+                String vermsg = String.format("Netcdf nc_inq_libvers='%s' isProtected=%s%n", nc4.nc_inq_libvers(), Native.isProtected());
                 if(DEBUG) {
                     System.out.println(message);
-                    System.out.printf("Netcdf nc_inq_libvers='%s' isProtected=%s%n", nc4.nc_inq_libvers(), Native.isProtected());
+                    System.out.printf(vermsg);
+                } else {
+                    DapLog.info(message);
+                    DapLog.info(vermsg);
                 }
             } catch (Throwable t) {
                 String message = String.format("NetCDF-4 C library not present (jna_path='%s', libname='%s'); %s.",
@@ -74,6 +93,9 @@ abstract public class NetcdfLoader
                 if(DEBUG) {
                     System.err.println(message);
                     System.err.println(t.getMessage());
+                } else {
+                    DapLog.info(message);
+                    DapLog.info(t.getMessage());
                 }
                 nc4 = null;
                 throw new IOException(message);

@@ -6,9 +6,9 @@ package dap4.core.dmr;
 
 public interface AnnotatedNode
 {
-    public void annotate(Integer key, Object value);
+    public void annotate(Object key, Object value);
 
-    public Object annotation(Integer key);
+    public Object annotation(Object key);
 
     public void clearAnnotations();
 }

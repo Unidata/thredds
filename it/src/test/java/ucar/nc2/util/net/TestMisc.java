@@ -32,7 +32,9 @@
 
 package ucar.nc2.util.net;
 
+import HTTPClient.HTTPResponse;
 import org.apache.http.HttpResponse;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.junit.Assert;
 import org.junit.Test;
 import ucar.httpservices.HTTPException;
@@ -92,11 +94,11 @@ public class TestMisc extends UnitTestCommon
         assert (esinputs.length == esoutputs.length);
         for(int i = 0; i < esinputs.length && pass; i++) {
             String result = EscapeStrings.escapeURL(esinputs[i]);
-            System.err.printf("input= |%s|\n", esinputs[i]);
-            System.err.printf("result=|%s|\n", result);
-            System.err.printf("output=|%s|\n", esoutputs[i]);
+            stderr.printf("input= |%s|\n", esinputs[i]);
+            stderr.printf("result=|%s|\n", result);
+            stderr.printf("output=|%s|\n", esoutputs[i]);
             if(!result.equals(esoutputs[i])) pass = false;
-            System.out.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
+            stdout.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
         }
         Assert.assertTrue("TestMisc.testEscapeStrings", pass);
     }
@@ -110,10 +112,10 @@ public class TestMisc extends UnitTestCommon
 
         try (HTTPMethod m = HTTPFactory.Get(catalogName)) {
             int statusCode = m.execute();
-            System.out.printf("status = %d%n", statusCode);
+            stdout.printf("status = %d%n", statusCode);
             try {
                 String content = m.getResponseAsString("ASCII");
-                System.out.printf("cat = %s%n", content);
+                stdout.printf("cat = %s%n", content);
             } catch (Throwable t) {
                 t.printStackTrace();
                 assert false;
@@ -134,9 +136,9 @@ public class TestMisc extends UnitTestCommon
         }
         String result = buf.toString();
         boolean ok = expected.equals(result);
-        System.err.printf("path=|%s| result=|%s| pass=%s\n",
+        stderr.printf("path=|%s| result=|%s| pass=%s\n",
                 path, result, (ok ? "true" : "false"));
-        System.err.flush();
+        stderr.flush();
         return ok;
     }
 
@@ -172,7 +174,7 @@ public class TestMisc extends UnitTestCommon
             try (HTTPMethod m = HTTPFactory.Get(file)) {
                 m.setRange(0, 9);
                 int statusCode = m.execute();
-                System.out.printf("status = %d%n", statusCode);
+                stdout.printf("status = %d%n", statusCode);
                 Assert.assertTrue("Unexpected return code: " + statusCode, statusCode == 206);
                 byte[] result = m.getResponseAsBytes();
                 Assert.assertTrue("Wrong size result", result.length == 10);
@@ -192,8 +194,9 @@ public class TestMisc extends UnitTestCommon
 
     @Test
     public void
-    testClosing1() throws HTTPException {
-        try (HTTPSession s = HTTPFactory.newSession(CLOSEFILE)){
+    testClosing1() throws HTTPException
+    {
+        try (HTTPSession s = HTTPFactory.newSession(CLOSEFILE)) {
             for(int i = 0; i < 500; i++) {
                 HTTPMethod m = HTTPFactory.Head(s);
                 int statusCode = m.execute();
@@ -211,10 +214,21 @@ public class TestMisc extends UnitTestCommon
 
     @Test
     public void
-    testClosing2() throws HTTPException {
-        for(int i = 0; i < 500; i++) {
+    testClosing2() throws HTTPException
+    {
+        // Set max # of connections
+        HTTPSession.setGlobalMaxConnections(201);
+        for(int i = 0; i < 200; i++) {
             HTTPMethod m = HTTPFactory.Get(CLOSEFILE);
-            HttpResponse res = m.executeRaw();
+            HttpResponse res = null;
+            try {
+                res = m.executeRaw();
+            } catch (HTTPException e) {
+                if(e.getCause() instanceof ConnectionPoolTimeoutException) {
+                    stderr.println("TestMisc: timeout: " + i);
+                } else
+                    throw e;
+            }
             Assert.assertFalse("Null response", res == null);
             m.close();
         }

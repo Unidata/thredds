@@ -15,10 +15,10 @@
         <EnumConst name="Cirrus" value="10"/>
     </Enumeration>
     <Byte name="primary_cloud">
-        <Attribute name="_FillValue" type="String" value="Missing"/>
+        <Attribute name="_FillValue" type="/cloud_class_t" value="Missing"/>
         <Dim name="d5"/>
     </Byte>
-    <Attribute name="_CoordSysBuilder" type="String" value="ucar.nc2.dataset.conv.DefaultConvention"/>
+    <Attribute name="_CoordSysBuilder" type="/cloud_class_t" value="ucar.nc2.dataset.conv.DefaultConvention"/>
 </Dataset>
 primary_cloud(0) = Clear ;
 primary_cloud(1) = Stratus ;

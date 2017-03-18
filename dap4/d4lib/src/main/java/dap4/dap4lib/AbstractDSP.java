@@ -4,16 +4,23 @@
 
 package dap4.dap4lib;
 
+import dap4.core.data.ChecksumMode;
 import dap4.core.data.DSP;
-import dap4.core.util.DapException;
 import dap4.core.data.DataCursor;
-import dap4.core.dmr.*;
+import dap4.core.dmr.DapAttribute;
+import dap4.core.dmr.DapDataset;
+import dap4.core.dmr.DapNode;
+import dap4.core.dmr.DapVariable;
 import dap4.core.dmr.parser.Dap4Parser;
 import dap4.core.dmr.parser.Dap4ParserImpl;
 import dap4.core.util.DapContext;
+import dap4.core.util.DapException;
+import dap4.core.util.DapUtil;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,15 +43,25 @@ abstract public class AbstractDSP implements DSP
 
     static public final boolean USEDOM = false;
 
-    //////////////////////////////////////////////////
-    // Instance variables
+    static protected final String DAPVERSION = "4.0";
+    static protected final String DMRVERSION = "1.0";
+    static protected final String DMRNS = "http://xml.opendap.org/ns/DAP/4.0#";
+
+    // Define reserved attributes
+    static public final String UCARTAGVLEN = "_edu.ucar.isvlen";
+    static public final String UCARTAGOPAQUE = "_edu.ucar.opaque.size";
+    static public final String UCARTAGORIGTYPE = "_edu.ucar.orig.type";
+    static public final String UCARTAGUNLIMITED = "_edu.ucar.isunlimited";
+
 
     protected DapContext context = null;
     protected DapDataset dmr = null;
     protected String location = null;
-    protected ByteOrder order = null;
-    protected ChecksumMode checksummode = ChecksumMode.DAP;
-    protected Map<DapVariable,DataCursor> variables = new HashMap<>();
+    private ByteOrder order = null;
+    private ChecksumMode checksummode = ChecksumMode.DAP;
+
+    protected Map<DapVariable, DataCursor> variables = new HashMap<>();
+    protected DataCursor rootcursor = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -61,14 +78,14 @@ abstract public class AbstractDSP implements DSP
     /**
      * "open" a reference to a data source and return the DSP wrapper.
      *
-     * @param location - path to the data source; must be abolute file path or url.
+     * @param location - Object that defines the data source
      * @return = wrapping dsp
-     * @throws dap4.core.util.DapException
+     * @throws DapException
      */
-    abstract public DSP open(String location) throws dap4.core.util.DapException;
+    @Override
+    abstract public AbstractDSP open(String location) throws DapException;
 
     /**
-     *
      * @throws IOException
      */
     abstract public void close() throws IOException;
@@ -97,10 +114,11 @@ abstract public class AbstractDSP implements DSP
     }
 
     @Override
-    public void
+    public AbstractDSP
     setLocation(String loc)
     {
         this.location = loc;
+        return this;
     }
 
     @Override
@@ -115,22 +133,31 @@ abstract public class AbstractDSP implements DSP
     public void setContext(DapContext context)
     {
         this.context = context;
-    }
-
-    protected void
-    setRequestResponse()
-    {
+        // Extract some things from the context
+        Object o = this.context.get(Dap4Util.DAP4ENDIANTAG);
+        if(o != null)
+            setOrder((ByteOrder) o);
+        o = this.context.get(Dap4Util.DAP4CSUMTAG);
+        if(o != null)
+            setChecksumMode(ChecksumMode.modeFor(o.toString()));
     }
 
     public void
     setDMR(DapDataset dmr)
     {
         this.dmr = dmr;
+        if(getDMR() != null) {
+            // Add some canonical attributes to the  <Dataset>
+            getDMR().setDataset(getDMR());
+            getDMR().setDapVersion(DAPVERSION);
+            getDMR().setDMRVersion(DMRVERSION);
+            getDMR().setNS(DMRNS);
+        }
     }
 
     protected void
     setDataset(DapDataset dataset)
-            throws dap4.core.util.DapException
+            throws DapException
     {
         this.dmr = dataset;
     }
@@ -141,26 +168,31 @@ abstract public class AbstractDSP implements DSP
         return this.order;
     }
 
-    public void
+    public AbstractDSP
     setOrder(ByteOrder order)
     {
         this.order = order;
+        return this;
     }
 
-    public ChecksumMode getChecksumMode()
+    public ChecksumMode
+    getChecksumMode()
     {
         return this.checksummode;
     }
 
-    public void setChecksumMode(ChecksumMode mode)
+    public AbstractDSP
+    setChecksumMode(ChecksumMode mode)
     {
-        this.checksummode = mode;
+        if(mode != null)
+            this.checksummode = mode;
+        return this;
     }
 
     public void
     addVariableData(DapVariable var, DataCursor cursor)
     {
-        this.variables.put(var,cursor);
+        this.variables.put(var, cursor);
     }
 
     //////////////////////////////////////////////////
@@ -172,12 +204,12 @@ abstract public class AbstractDSP implements DSP
      *
      * @param document the dmr to parse
      * @return the parsed dmr
-     * @throws dap4.core.util.DapException on parse errors
+     * @throws DapException on parse errors
      */
 
     protected DapDataset
     parseDMR(String document)
-            throws dap4.core.util.DapException
+            throws DapException
     {
         // Parse the dmr
         Dap4Parser parser;
@@ -189,12 +221,12 @@ abstract public class AbstractDSP implements DSP
             parser.setDebugLevel(1);
         try {
             if(!parser.parse(document))
-                throw new dap4.core.util.DapException("DMR Parse failed");
+                throw new DapException("DMR Parse failed");
         } catch (SAXException se) {
-            throw new dap4.core.util.DapException(se);
+            throw new DapException(se);
         }
         if(parser.getErrorResponse() != null)
-            throw new dap4.core.util.DapException("Error Response Document not supported");
+            throw new DapException("Error Response Document not supported");
         DapDataset result = parser.getDMR();
         processAttributes(result);
         return result;
@@ -208,16 +240,14 @@ abstract public class AbstractDSP implements DSP
      */
     protected void
     processAttributes(DapDataset dataset)
-            throws dap4.core.util.DapException
+            throws DapException
     {
         List<DapNode> nodes = dataset.getNodeList();
         for(DapNode node : nodes) {
             switch (node.getSort()) {
-            case SEQUENCE:
-            case STRUCTURE:
             case GROUP:
             case DATASET:
-            case ATOMICVARIABLE:
+            case VARIABLE:
                 Map<String, DapAttribute> attrs = node.getAttributes();
                 if(attrs.size() > 0) {
                     List<DapAttribute> suppressed = new ArrayList<>();
@@ -234,6 +264,8 @@ abstract public class AbstractDSP implements DSP
                 break; /*ignore*/
             }
         }
+        // Try to extract the byte order
+        getEndianAttribute(dataset);
     }
 
     /**
@@ -244,6 +276,7 @@ abstract public class AbstractDSP implements DSP
      * @param attrname A non-escaped attribute name to be tested for suppression
      * @return true if the attribute should be suppressed, false otherwise.
      */
+
     protected boolean suppress(String attrname)
     {
         if(attrname.startsWith("_Coord")) return true;
@@ -251,4 +284,47 @@ abstract public class AbstractDSP implements DSP
             return true;
         return false;
     }
+
+    void
+    getEndianAttribute(DapDataset dataset)
+    {
+        DapAttribute a = dataset.findAttribute(DapUtil.LITTLEENDIANATTRNAME);
+        if(a == null)
+            this.order = (ByteOrder.LITTLE_ENDIAN);
+        else {
+            Object v = a.getValues();
+            int len = java.lang.reflect.Array.getLength(v);
+            if(len == 0)
+                this.order = (ByteOrder.nativeOrder());
+            else {
+                String onezero = java.lang.reflect.Array.get(v,0).toString();
+                int islittle = 1;
+                try {
+                    islittle = Integer.parseInt(onezero);
+                } catch (NumberFormatException e) {
+                    islittle = 1;
+                }
+                if(islittle == 0)
+                    this.order = (ByteOrder.BIG_ENDIAN);
+                else
+                    this.order = (ByteOrder.LITTLE_ENDIAN);
+            }
+        }
+    }
+
+    static public String
+    printDMR(DapDataset dmr)
+    {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        DMRPrinter printer = new DMRPrinter(dmr, pw);
+        try {
+            printer.print();
+            pw.close();
+            sw.close();
+        } catch (IOException e) {
+        }
+        return sw.toString();
+    }
+
 }

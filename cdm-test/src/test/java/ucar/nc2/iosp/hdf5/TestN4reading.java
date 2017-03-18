@@ -194,7 +194,6 @@ public class TestN4reading {
       System.out.println("Class: " + data.getClass().getName());
       // loop over outer dimension
 
-      int x = 0;
       while (data.hasNext()) {
         Array as = (Array) data.next(); // inner variable length array of short
         System.out.println("Shape: " + new Section(as.getShape()));

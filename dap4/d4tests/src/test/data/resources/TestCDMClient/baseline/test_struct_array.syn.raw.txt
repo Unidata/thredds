@@ -1,50 +1,26 @@
-netcdf test_struct_array.syn.raw {
+netcdf test_struct_array.syn {
   dimensions:
     dx = 4;
     dy = 3;
   variables:
     float z(dx);
-      z:_DAP4_Checksum_CRC32 = "0x0061f2b3";
+      string z:_DAP4_Checksum_CRC32 = "0xbef06d05";
 
     float t(dy);
-      t:_DAP4_Checksum_CRC32 = "0xf0315213";
+      string t:_DAP4_Checksum_CRC32 = "0x165934f0";
 
 
     Structure {
       int x;
-        x:_CoordinateAxisType = "GeoX";
+        string x:_CoordinateAxisType = "GeoX";
       int y;
-        y:_CoordinateAxisType = "GeoY";
+        string y:_CoordinateAxisType = "GeoY";
     } s(dx, dy);
-      s:_DAP4_Checksum_CRC32 = "0x002112d3";
+      string s:_DAP4_Checksum_CRC32 = "0xd91a250e";
 
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}
-netcdf test_struct_array.syn.raw {
-  dimensions:
-    dx = 4;
-    dy = 3;
-  variables:
-    float z(dx);
-      z:_DAP4_Checksum_CRC32 = "0x0061f2b3";
-
-    float t(dy);
-      t:_DAP4_Checksum_CRC32 = "0xf0315213";
-
-
-    Structure {
-      int x;
-        x:_CoordinateAxisType = "GeoX";
-      int y;
-        y:_CoordinateAxisType = "GeoY";
-    } s(dx, dy);
-      s:_DAP4_Checksum_CRC32 = "0x002112d3";
-
-
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 z =
   {0.72765326, 0.785633, 0.513679, 0.24684471}

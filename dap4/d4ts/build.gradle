@@ -29,6 +29,7 @@ def d4testsResourcesCopySpec = copySpec {
         include('*.syn')
         include('*.nc')
         include('*.hdf5')
+        include('*.raw')
     }
     /* ignore for now
     from(new File(d4testsResourcesDir, "testfiles/dmr/")) {

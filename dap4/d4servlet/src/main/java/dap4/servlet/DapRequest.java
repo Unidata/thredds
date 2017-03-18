@@ -3,9 +3,11 @@
 
 package dap4.servlet;
 
+import dap4.core.data.ChecksumMode;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.core.util.ResponseFormat;
+import dap4.dap4lib.Dap4Util;
 import dap4.dap4lib.DapLog;
 import dap4.dap4lib.RequestMode;
 import dap4.dap4lib.XURI;
@@ -16,7 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,11 +47,14 @@ public class DapRequest
 
     static public final String CONSTRAINTTAG = "dap4.ce";
 
+    static public final ChecksumMode DEFAULTCSUM = ChecksumMode.DAP;
+
     //////////////////////////////////////////////////
     // Instance variables
 
     protected HttpServletRequest request = null;
     protected HttpServletResponse response = null;
+
     protected String url = null;  // without any query  and as with any modified dataset path
     protected String querystring = null;
     protected String server = null; // scheme + host + port
@@ -58,6 +66,11 @@ public class DapRequest
 
     protected Map<String, String> queries = new HashMap<String, String>();
     protected DapController controller = null;
+
+    protected ByteOrder order = ByteOrder.nativeOrder();
+    protected ChecksumMode checksummode = null;
+    protected String resourceroot = null;
+
     protected ServletContext servletcontext = null;
 
     //////////////////////////////////////////////////
@@ -72,6 +85,25 @@ public class DapRequest
         this.request = request;
         this.response = response;
         this.servletcontext = request.getServletContext();
+
+        // Figure out the absolute path to our resources directory
+        this.resourceroot = (String) this.request.getAttribute("RESOURCEDIR");
+        if(this.resourceroot == null && this.servletcontext != null) {
+            try {
+                URL url = this.servletcontext.getResource(WEBINFPATH);
+                if(url == null)
+                    this.resourceroot = null;
+                else {
+                    if(!url.getProtocol().equals("file"))
+                        throw new DapException("Cannot locate resource root");
+                    this.resourceroot = DapUtil.canonicalpath(url.getFile());
+                }
+            } catch (MalformedURLException e) {
+                this.resourceroot = null;
+            }
+            if(this.resourceroot == null)
+                throw new DapException("Cannot locate resource root");
+        }
         try {
             parse();
         } catch (IOException ioe) {
@@ -112,18 +144,14 @@ public class DapRequest
             throws IOException
     {
         this.url = request.getRequestURL().toString(); // does not include query
-        this.querystring = request.getQueryString();    // raw (undecoded)
-        // When using Spring Mock, the query is part of the parameters
-        if(this.controller.TESTING && this.querystring == null) {
-            String param = request.getParameter(CONSTRAINTTAG); // raw?
-            if(param != null) {
-                StringBuilder buf = new StringBuilder();
-                buf.append(CONSTRAINTTAG);
-                buf.append('=');
-                buf.append(param);
-                this.querystring = buf.toString();
-            }
+        // The mock servlet code does not construct a query string,
+        // so if we are doing testing, construct from parametermap.
+        if(DapController.TESTING) {
+            this.querystring = makeQueryString(this.request);
+        } else {
+            this.querystring = request.getQueryString();    // raw (undecoded)
         }
+
         XURI xuri;
         try {
             xuri = new XURI(this.url).parseQuery(this.querystring);
@@ -168,7 +196,7 @@ public class DapRequest
         } else {
             // Decompose path by '.'
             String[] pieces = this.datasetpath.split("[.]");
-            // Search backward looking for the mode (dmr or databuffer)
+            // Search backward looking for the mode (dmr or dap)
             // meanwhile capturing the format extension
             int modepos = 0;
             for(int i = pieces.length - 1; i >= 1; i--) {//ignore first piece
@@ -202,6 +230,24 @@ public class DapRequest
         if(querystring != null && querystring.length() > 0)
             this.queries = xuri.getQueryFields();
 
+        // For testing purposes, get the desired endianness to use with replies
+        String p = queryLookup(Dap4Util.DAP4ENDIANTAG);
+        if(p != null) {
+            Integer oz = DapUtil.stringToInteger(p);
+            if(oz == null)
+                this.order = ByteOrder.LITTLE_ENDIAN;
+            else
+                this.order = (oz != 0 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+        }
+
+        // Ditto for no checksum
+        p = queryLookup(Dap4Util.DAP4CSUMTAG);
+        if(p != null) {
+            this.checksummode = ChecksumMode.modeFor(p);
+        }
+        if(this.checksummode == null)
+            this.checksummode = DEFAULTCSUM;
+
         if(DEBUG) {
             DapLog.debug("DapRequest: controllerpath =" + this.controllerpath);
             DapLog.debug("DapRequest: extension=" + (this.mode == null ? "null" : this.mode.extension()));
@@ -212,9 +258,20 @@ public class DapRequest
     //////////////////////////////////////////////////
     // Accessor(s)
 
-    public ServletContext getContext()
+    public ByteOrder getOrder()
     {
-        return this.servletcontext;
+        return this.order;
+    }
+
+    public String getResourceRoot()
+    {
+        return this.resourceroot;
+    }
+
+    public ChecksumMode
+    getChecksumMode()
+    {
+        return this.checksummode;
     }
 
     public HttpServletRequest getRequest()
@@ -254,6 +311,11 @@ public class DapRequest
         return this.server;
     }
 
+    public ServletContext getServletContext()
+    {
+        return this.servletcontext;
+    }
+
     public String getControllerPath()
     {
         return this.controllerpath;
@@ -290,10 +352,10 @@ public class DapRequest
         return queries.get(name.toLowerCase());
     }
 
-    public String getResourcePath()
-            throws IOException
+    public Map<String, String>
+    getQueries()
     {
-        return getResourcePath(getDatasetPath());
+        return this.queries;
     }
 
     public String getResourcePath(String relpath)
@@ -305,6 +367,28 @@ public class DapRequest
     public String getDatasetPath()
     {
         return this.datasetpath;
+    }
+
+    static String
+    makeQueryString(HttpServletRequest req)
+    {
+        Map<String, String[]> map = req.getParameterMap();
+        if(map == null || map.size() == 0) return null;
+        StringBuilder q = new StringBuilder();
+        for(Map.Entry<String, String[]> entry : map.entrySet()) {
+            String[] values = entry.getValue();
+            if(values == null || values.length == 0) {
+                q.append("&");
+                q.append(entry.getKey());
+            } else for(int i = 0; i < values.length; i++) {
+                q.append("&");
+                q.append(entry.getKey());
+                q.append("=");
+                q.append(values[i]);
+            }
+        }
+        if(q.length() > 0) q.deleteCharAt(0);// leading &
+        return q.toString();
     }
 }
 

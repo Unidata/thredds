@@ -40,6 +40,9 @@ public class Universal extends CEConstraint
     //////////////////////////////////////////////////
     // API
 
+    @Override
+    public boolean isUniversal() {return true;}
+
     /**
      * Finish creating this Constraint; for Universal,
      * this does nothing; the important stuff is in build().
@@ -62,9 +65,9 @@ public class Universal extends CEConstraint
             throws DapException
     {
         List<DapVariable> top = dmr.getTopVariables();
-        for (int i = 0; i < top.size(); i++) {
+        for(int i = 0; i < top.size(); i++) {
             DapVariable var = top.get(i);
-            List<Slice> slices = DapUtil.dimsetSlices(var.getDimensions());
+            List<Slice> slices = DapUtil.dimsetToSlices(var.getDimensions());
             super.addVariable(var, slices);
         }
         super.enums = new ArrayList<DapEnumeration>();
@@ -84,9 +87,7 @@ public class Universal extends CEConstraint
         switch (node.getSort()) {
         case DIMENSION:
         case ENUMERATION:
-        case ATOMICVARIABLE:
-        case SEQUENCE:
-        case STRUCTURE:
+        case VARIABLE:
         case GROUP:
         case DATASET:
             return true;
@@ -94,6 +95,25 @@ public class Universal extends CEConstraint
             break;
         }
         return false;
+    }
+
+    @Override
+    public List<Slice>
+    getConstrainedSlices(DapVariable var)
+            throws DapException
+    {
+        List<Slice> slices = super.getConstrainedSlices(var);
+        if(slices != null)
+            return slices;
+        // Create a universal slice
+        return universalSlices(var);
+    }
+
+    static public List<Slice>
+    universalSlices(DapVariable var)
+            throws DapException
+    {
+        return DapUtil.dimsetToSlices(var.getDimensions());
     }
 
 }

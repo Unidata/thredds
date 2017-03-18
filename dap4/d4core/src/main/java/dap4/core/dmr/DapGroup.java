@@ -26,6 +26,7 @@ public class DapGroup extends DapNode implements DapDecl
     protected List<DapEnumeration> enums = new ArrayList<DapEnumeration>();
     protected List<DapDimension> dimensions = new ArrayList<DapDimension>();
     protected List<DapVariable> variables = new ArrayList<DapVariable>();
+    protected List<DapStructure> compounds = new ArrayList<DapStructure>();
 
     //////////////////////////////////////////////////
     // Constructors
@@ -57,6 +58,7 @@ public class DapGroup extends DapNode implements DapDecl
         enums.clear();
         dimensions.clear();
         variables.clear();
+        compounds.clear();
         for(DapNode node : decls) {
             addDecl(node);
         }
@@ -112,9 +114,13 @@ public class DapGroup extends DapNode implements DapDecl
         case ENUMERATION:
             enums.add((DapEnumeration) newdecl);
             break;
-        case ATOMICVARIABLE:
+        case ATOMICTYPE:
+            break; // do nothing
         case STRUCTURE:
         case SEQUENCE:
+            compounds.add((DapStructure)newdecl);
+            break;
+        case VARIABLE:
             variables.add((DapVariable) newdecl);
             break;
         case GROUP:
@@ -152,6 +158,11 @@ public class DapGroup extends DapNode implements DapDecl
     {
         return enums;
     }
+
+    public List<DapStructure> getCompounds()
+        {
+            return compounds;
+        }
 
     public List<DapDimension> getDimensions()
     {
@@ -194,28 +205,26 @@ public class DapGroup extends DapNode implements DapDecl
                         return x;
                 }
                 break;
-            case ATOMICVARIABLE:
-                for(DapVariable x : variables) {
-                    if(x.getSort() != sort)
-                        continue;
-                    if(x.getShortName().equals(name))
-                        return x;
-                }
-                break;
             case STRUCTURE:
-                for(DapVariable x : variables) {
-                    if(x.getSort() != sort)
-                        continue;
-                    if(x.getShortName().equals(name))
-                        return x;
+                for(DapStructure d : compounds) {
+                    if(d.getSort() == DapSort.STRUCTURE) {
+                        if(d.getShortName().equals(name))
+                            return d;
+                    }
                 }
                 break;
             case SEQUENCE:
+                for(DapStructure d : compounds) {
+                    if(d.getSort() == DapSort.SEQUENCE) {
+                        if(d.getShortName().equals(name))
+                            return d;
+                    }
+                }
+                break;
+            case VARIABLE:
                 for(DapVariable x : variables) {
-                    if(x.getSort() != sort)
-                        continue;
                     if(x.getShortName().equals(name))
-                        return (x);
+                        return x;
                 }
                 break;
             case GROUP:
@@ -241,6 +250,7 @@ public class DapGroup extends DapNode implements DapDecl
      * @param sortset the kinds of object we are looking for
      * @return the matching Dap Node or null if not found
      */
+
     public DapNode
     findByFQN(String fqn, DapSort... sortset)
             throws DapException
@@ -264,9 +274,7 @@ public class DapGroup extends DapNode implements DapDecl
     public DapVariable
     findVariable(String name)
     {
-        DapNode var = findInGroup(name, DapSort.ATOMICVARIABLE);
-        if(var == null)
-            var = findInGroup(name, DapSort.STRUCTURE);
+        DapNode var = findInGroup(name, DapSort.VARIABLE);
         return (DapVariable) var;
     }
 

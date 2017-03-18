@@ -8,8 +8,12 @@ import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.DapVariable;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
+import dap4.core.util.Slice;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.List;
+import java.util.Map;
 
 public interface DSP
 {
@@ -28,16 +32,19 @@ public interface DSP
     public boolean dspMatch(String path, DapContext context);
 
     /**
-     * @param path It is assumed that the path is appropriate to the dsp
-     *             E.g. an absolute path or a url.
+     * @param path It is assumed that the path
+     *             is appropriate to the dsp
+     *             E.g. an absolute path or a url
      * @return DSP wrapping the path source
      * @throws dap4.core.util.DapException
      */
-    public DSP open(String path) throws dap4.core.util.DapException;
+    public DSP open(String path) throws DapException;
+
+    public void close() throws IOException;
 
     public String getLocation();
 
-    public void setLocation(String location);
+    public DSP setLocation(String location);
 
     public Object getContext();
 
@@ -45,8 +52,10 @@ public interface DSP
 
     public DapDataset getDMR() throws dap4.core.util.DapException;
 
-    public DataCursor getVariableData(DapVariable var) throws DapException; // get top level cursor
+    public DataCursor getVariableData(DapVariable var) throws DapException;
 
-    public void close() throws IOException;
+    public ByteOrder getOrder();
+
+    public ChecksumMode getChecksumMode();
 
 }

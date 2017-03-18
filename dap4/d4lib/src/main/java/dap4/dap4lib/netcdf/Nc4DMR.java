@@ -48,19 +48,11 @@ abstract public class Nc4DMR
         }
     }
 
-    static public class Nc4AtomicVariable extends DapAtomicVariable
+    static public class Nc4Variable extends DapVariable
     {
-        public Nc4AtomicVariable(String name, DapType t)
+        public Nc4Variable(String name, DapType t)
         {
             super(name, t);
-        }
-    }
-
-    abstract static public class Nc4Variable extends DapVariable
-    {
-        public Nc4Variable(String name)
-        {
-            super(name);
         }
     }
 

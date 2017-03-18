@@ -34,6 +34,10 @@ abstract public class Dap4Actions extends Dap4EventHandler
     static final int RULEVAR = 3;
     static final int RULEMETADATA = 4;
 
+    static final String[] RESERVEDTAGS =  new String[] {
+	"_edu.ucar"
+    };
+
     static final BigInteger BIG_INT64_MAX = BigInteger.valueOf(Long.MAX_VALUE);
 
     static final DapSort[] METADATASCOPES = new DapSort[]{
@@ -41,7 +45,7 @@ abstract public class Dap4Actions extends Dap4EventHandler
             DapSort.GROUP,
             DapSort.DIMENSION,
             DapSort.MAP,
-            DapSort.ATOMICVARIABLE,
+            DapSort.VARIABLE,
             DapSort.STRUCTURE,
             DapSort.SEQUENCE,
             DapSort.ATTRIBUTESET
@@ -137,7 +141,7 @@ abstract public class Dap4Actions extends Dap4EventHandler
 
     abstract void leavedataset() throws ParseException;
 
-    abstract void entergroup(SaxEvent name) throws ParseException;
+    abstract void entergroup(XMLAttributeMap attrs) throws ParseException;
 
     abstract void leavegroup() throws ParseException;
 
@@ -153,7 +157,7 @@ abstract public class Dap4Actions extends Dap4EventHandler
 
     abstract void dimref(SaxEvent nameorsize) throws ParseException;
 
-    abstract void enteratomicvariable(SaxEvent open, SaxEvent nameattr) throws ParseException;
+    abstract void enteratomicvariable(SaxEvent open, XMLAttributeMap attrs) throws ParseException;
 
     abstract void leaveatomicvariable(SaxEvent close) throws ParseException;
 
@@ -165,11 +169,11 @@ abstract public class Dap4Actions extends Dap4EventHandler
 
     abstract void leavemap() throws ParseException;
 
-    abstract void enterstructurevariable(SaxEvent name) throws ParseException;
+    abstract void enterstructurevariable(XMLAttributeMap attrs) throws ParseException;
 
     abstract void leavestructurevariable(SaxEvent close) throws ParseException;
 
-    abstract void entersequencevariable(SaxEvent name) throws ParseException;
+    abstract void entersequencevariable(XMLAttributeMap attrs) throws ParseException;
 
     abstract void leavesequencevariable(SaxEvent close) throws ParseException;
 

@@ -5,12 +5,12 @@
 package dap4.servlet;
 
 import dap4.core.dmr.ErrorResponse;
-import dap4.core.util.DapDump;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.dap4lib.DapCodes;
 import dap4.dap4lib.RequestMode;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.BufferUnderflowException;
@@ -22,7 +22,9 @@ public class ChunkWriter extends OutputStream
     //////////////////////////////////////////////////
     // Constants
 
-    static final protected boolean DEBUG = false;
+    static public boolean DEBUG = false;
+    static public boolean DUMPDATA = false;
+    static public boolean DEBUGHEADER = false;
 
     static final int MAXCHUNKSIZE = 0xFFFF;
 
@@ -31,6 +33,9 @@ public class ChunkWriter extends OutputStream
     static final int SIZEOF_INTEGER = 4;
 
     static public final byte[] CRLF8 = DapUtil.extract(DapUtil.UTF8.encode(DapUtil.CRLF));
+
+    static public final String XMLDOCUMENTHEADER
+              = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
     //////////////////////////////////////////////////
     // Type declarations
@@ -47,6 +52,7 @@ public class ChunkWriter extends OutputStream
     //////////////////////////////////////////////////
     // Instance variable
 
+    protected OutputStream saveoutput = null; // save the target stream if we are debugging
     protected OutputStream output = null;
     protected State state = State.INITIAL;
 
@@ -55,20 +61,26 @@ public class ChunkWriter extends OutputStream
     protected long writecount = 0; // actual amount written so far
     protected ByteBuffer chunk = null; // give caller a chance to set the max buffersize
     protected ByteBuffer header = null;
-    protected ByteOrder order = null;
+    protected ByteOrder writeorder = null;
     protected RequestMode mode = null;
     protected byte[] dmr8 = null; // dmr in utf-8 form
+    protected boolean closed = false;
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public ChunkWriter(OutputStream output, RequestMode mode, ByteOrder order)
+    public ChunkWriter(OutputStream output, RequestMode mode, ByteOrder writeorder)
             throws IOException
     {
-        this.output = output;
-        setOrder(order);
+        if(DUMPDATA || DEBUG) {
+            this.saveoutput = output;
+            this.output = new ByteArrayOutputStream();
+        } else
+            this.output = output;
+        setWriteOrder(writeorder);
         setMode(mode);
-        header = ByteBuffer.allocate(SIZEOF_INTEGER).order(getOrder());
+        // Header must always go out in network order (aka big-endian)
+        header = ByteBuffer.allocate(SIZEOF_INTEGER).order(ByteOrder.BIG_ENDIAN);
     }
 
     //////////////////////////////////////////////////
@@ -91,14 +103,14 @@ public class ChunkWriter extends OutputStream
         maxbuffersize = maxsize;
     }
 
-    public ByteOrder getOrder()
+    public ByteOrder getWriteOrder()
     {
-        return this.order;
+        return this.writeorder;
     }
 
-    public void setOrder(ByteOrder order)
+    public void setWriteOrder(ByteOrder writeorder)
     {
-        this.order = order;
+        this.writeorder = writeorder;
     }
 
     public void setWriteLimit(long limit)
@@ -138,6 +150,9 @@ public class ChunkWriter extends OutputStream
 
         dsr = dsr.substring(0, len) + DapUtil.CRLF;
 
+        // Add <?xml...?> prefix
+        dsr = XMLDOCUMENTHEADER + "\n" + dsr;
+
         // Convert the dsr to UTF-8 and then to byte[]
         byte[] dsr8 = DapUtil.extract(DapUtil.UTF8.encode(dsr));
         sendDXR(dsr8);
@@ -145,7 +160,7 @@ public class ChunkWriter extends OutputStream
     }
 
     /**
-     * Write the DMR. What it really does is
+     * Cache the DMR. What it really does is
      * cache the DMR and write it at the point
      * where it is needed; either in close(), if writing
      * the DMR only, or in writeChunk() if writing data as well.
@@ -155,7 +170,7 @@ public class ChunkWriter extends OutputStream
      */
 
     public void
-    writeDMR(String dmr)
+    cacheDMR(String dmr)
             throws IOException
     {
         if(state != State.INITIAL)
@@ -175,6 +190,9 @@ public class ChunkWriter extends OutputStream
             throw new DapException("Attempt to write empty DMR");
 
         dmr = dmr.substring(0, len) + DapUtil.CRLF;
+
+        // Prepend the <?xml...?> prefix
+        dmr = XMLDOCUMENTHEADER + "\n" + dmr;
 
         // Convert the dmr to UTF-8 and then to byte[]
         this.dmr8 = DapUtil.extract(DapUtil.UTF8.encode(dmr));
@@ -200,11 +218,11 @@ public class ChunkWriter extends OutputStream
         } else {//mode == DATA
             // Prefix with chunk header
             int flags = DapUtil.CHUNK_DATA;
-            if(order == ByteOrder.LITTLE_ENDIAN)
+            if(this.writeorder == ByteOrder.LITTLE_ENDIAN)
                 flags |= DapUtil.CHUNK_LITTLE_ENDIAN;
-            chunkheader(dxr8.length, flags, header);
+            chunkheader(dxr8.length, flags, this.header);
             // write the header
-            output.write(DapUtil.extract(header));
+            output.write(DapUtil.extract(this.header));
             state = State.DATA;
         }
         // write the DXR
@@ -274,8 +292,6 @@ public class ChunkWriter extends OutputStream
         output.write(DapUtil.extract(header));
         if(buffersize > 0)
             output.write(chunk.array(), 0, buffersize);
-        if(DEBUG)
-            DapDump.dumpbytestream(chunk, getOrder(), "ChunkWriter.writechunk");
         chunk.clear();// reset
     }
 
@@ -289,6 +305,9 @@ public class ChunkWriter extends OutputStream
         int hdr = ((flags << 24) | length);
         hdrbuf.clear();
         hdrbuf.putInt(hdr);
+        if(DEBUGHEADER)
+            System.err.printf("header: flags=%x length=%d header=%08x%n",
+                    flags, length, hdr);
     }
 
     void verifystate()
@@ -322,6 +341,10 @@ public class ChunkWriter extends OutputStream
     public void close()
             throws IOException
     {
+        if(closed)
+            return;
+        closed = true;
+
         if(dmr8 != null) {
             sendDXR(dmr8);
             dmr8 = null;
@@ -346,12 +369,24 @@ public class ChunkWriter extends OutputStream
         int flags = DapUtil.CHUNK_END;
         writeChunk(flags);
         state = State.END;
-        output.flush(); // Do not close
+        this.output.flush(); // Do not close
+        if(this.saveoutput != null) {
+            // write to true output target
+            this.saveoutput.write(((ByteArrayOutputStream) this.output).toByteArray());
+        }
+    }
 
+    public byte[]
+    getDump()
+    {
+        if((DUMPDATA || DEBUG) && this.output != null)
+            return ((ByteArrayOutputStream) this.output).toByteArray();
+        else
+            return null;
     }
 
     /**
-     *  Overload flush to also write out the DMR
+     * Overload flush to also write out the DMR
      *
      * @throws IOException
      */
@@ -421,7 +456,7 @@ public class ChunkWriter extends OutputStream
             throw new DapException("Attempt to write too much data: limit=" + writecount + len)
                     .setCode(DapCodes.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
         if(chunk == null)
-            chunk = ByteBuffer.allocate(maxbuffersize).order(getOrder());
+            chunk = ByteBuffer.allocate(maxbuffersize).order(getWriteOrder());
         if(state == State.DMR) {
             chunk.clear(); // reset
             state = State.DATA;

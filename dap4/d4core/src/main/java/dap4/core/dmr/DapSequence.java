@@ -12,16 +12,10 @@ public class DapSequence extends DapStructure
 //////////////////////////////////////////////////
 // Constructors
 
-    public DapSequence()
-    {
-        super();
-        this.basetype = DapType.SEQUENCE;
-    }
-
     public DapSequence(String name)
     {
         super(name);
-        this.basetype = DapType.SEQUENCE;
+        setTypeSort(TypeSort.Sequence);
     }
 
 } // class DapSequence

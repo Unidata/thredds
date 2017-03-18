@@ -289,15 +289,17 @@ abstract public class HTTPUtil
         StringBuilder buf = new StringBuilder();
         int i = 0;
         while(i < u.length()) {
-            char c = u.charAt(i++);
+            char c = u.charAt(i);
             if(c == '\\') {
                 if(i + 1 == u.length())
                     throw new URISyntaxException(u, "Trailing '\' at end of url");
                 buf.append("%5c");
-                c = u.charAt(i++);
+                i++;
+                c = u.charAt(i);
                 buf.append(String.format("%%%02x", (int) c));
             } else
                 buf.append(c);
+            i++;
         }
         return new URI(buf.toString());
     }
@@ -378,9 +380,6 @@ abstract public class HTTPUtil
                 Header ceheader = entity.getContentEncoding();
                 if(ceheader != null) {
                     String value = ceheader.getValue();
-                    if(value.trim().toLowerCase().endsWith("-endian")) {
-                        int x = 0;//entity.setContentEncoding(new BasicHeader("Content-Encoding","Identity"));
-                    }
                 }
             }
         }
@@ -497,7 +496,7 @@ abstract public class HTTPUtil
         if(hasdrive)
             s.setCharAt(0, Character.toLowerCase(s.charAt(0)));
 
-        while(s.charAt(s.length() - 1) == '/')
+        while(s.length() > 0 && s.charAt(s.length() - 1) == '/')
             s.deleteCharAt(s.length() - 1); // kill any trailing '/'s
 
         // Add back leading '/', if any

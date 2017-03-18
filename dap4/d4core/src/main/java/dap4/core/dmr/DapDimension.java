@@ -5,8 +5,8 @@
 package dap4.core.dmr;
 
 /**
- * This class defines a non-Dimensiond Dimension:
- * i.e. one with an atomic type.
+ * This class defines a Dimension:
+ * Modified 10/15/2016 to support zero-sized dimensions.
  */
 
 public class DapDimension extends DapNode implements DapDecl, Cloneable
@@ -15,16 +15,16 @@ public class DapDimension extends DapNode implements DapDecl, Cloneable
     //////////////////////////////////////////////////
     // Constants
 
-    static final public long VARIABLELENGTH = -1;
     static final public long UNDEFINED = -2;
 
     //////////////////////////////////////////////////
     // Instance variables
 
-    protected long size = 0;
+    protected long size = UNDEFINED;
 
     protected boolean isshared = false;
 
+    protected boolean isunlimited = false;
 
     //////////////////////////////////////////////////
     // Constructors
@@ -38,7 +38,7 @@ public class DapDimension extends DapNode implements DapDecl, Cloneable
     {
         this();
         setShortName(name);
-        this.isshared  = true;
+        this.isshared = (name != null);
     }
 
     public DapDimension(String name, long size)
@@ -58,6 +58,8 @@ public class DapDimension extends DapNode implements DapDecl, Cloneable
 
     public long getSize()
     {
+        if(size == UNDEFINED)
+            throw new IllegalStateException("Undefined dimension size");
         return size;
     }
 
@@ -76,9 +78,14 @@ public class DapDimension extends DapNode implements DapDecl, Cloneable
         this.isshared = tf;
     }
 
-    public boolean isVariableLength()
+    public boolean isUnlimited()
     {
-        return size == VARIABLELENGTH;
+        return this.isunlimited;
+    }
+
+    public void setUnlimited(boolean tf)
+    {
+        this.isunlimited = tf;
     }
 
     //////////////////////////////////////////////////
@@ -99,7 +106,6 @@ public class DapDimension extends DapNode implements DapDecl, Cloneable
     public String toString()
     {
         String sortname = (sort == null ? "" : sort.name());
-        //String name = getFQN();
         String name = null;
         if(name == null) name = getShortName();
         if(name == null) name = "";

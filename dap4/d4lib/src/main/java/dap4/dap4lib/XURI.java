@@ -243,17 +243,15 @@ public class XURI
     {
         if(q == null || q.length() == 0) return this;
         String[] params = q.split(QUERYSEP);
-        if(params != null && params.length > 0) {
-            this.query = q;
-            for(String param : params) {
-                String[] pair = param.split("[=]");
-                String name = Escape.urlDecode(pair[0]);
-                name = name.toLowerCase(); // for consistent lookup
-                String value = "";
-                if(pair.length > 1) {
-                    value = Escape.urlDecode(pair[1]);
-                    this.queryfields.put(name, value);
-                }
+        this.query = q;
+        for(String param : params) {
+            String[] pair = param.split("[=]");
+            String name = Escape.urlDecode(pair[0]);
+            name = name.toLowerCase(); // for consistent lookup
+            String value = "";
+            if(pair.length > 1) {
+                value = Escape.urlDecode(pair[1]);
+                this.queryfields.put(name, value);
             }
         }
         return this;

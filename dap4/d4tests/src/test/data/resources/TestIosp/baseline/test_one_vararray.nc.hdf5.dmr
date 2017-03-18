@@ -1,9 +1,0 @@
-netcdf test_one_vararray.nc {
-  dimensions:
-    d2 = 2;
-  variables:
-    int t(d2=2);
-
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}

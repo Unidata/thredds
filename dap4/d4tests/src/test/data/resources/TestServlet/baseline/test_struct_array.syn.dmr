@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Dataset
-         name="test_struct_array_2.nc"
+         name="test_struct_array.nc"
          dapVersion="4.0"
          dmrVersion="1.0"
          xmlns="http://xml.opendap.org/ns/DAP/4.0#"
@@ -20,4 +21,7 @@
         <Map name="/z"/>
         <Map name="/t"/>
     </Structure>
+    <Attribute name="_DAP4_Little_Endian" type="UInt8">
+        <Value value="1"/>
+    </Attribute>
 </Dataset>

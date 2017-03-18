@@ -180,8 +180,43 @@ public enum DataType {
     return this;
   }
 
+  public boolean
+  isEnumCompatible(DataType inferred)
+  {
+    if(inferred == null) return false;
+    if(this == inferred) return true;
+    switch (this) {
+    case ENUM1:
+      return inferred == DataType.BYTE || inferred == DataType.STRING;
+    case ENUM2:
+      return inferred == DataType.SHORT || inferred == DataType.STRING;
+    case ENUM4:
+      return inferred == DataType.INT || inferred == DataType.STRING;
+    default:
+      break;
+    }
+    return false;
+  }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
+
+  static public DataType
+  enumTypeize(DataType dt)
+  {
+    switch (dt) {
+    case BYTE:
+    case UBYTE:
+      return ENUM1;
+    case SHORT:
+    case USHORT:
+      return ENUM2;
+    case INT:
+    case UINT:
+      return ENUM4;
+    default: break;
+    }
+    return dt;
+  }
 
   /**
    * Find the DataType that matches this name.
@@ -274,7 +309,6 @@ public enum DataType {
     return (short) (b & 0xff);
   }
   //      return (short)((b<0)? (short)b + 256 : (short)b);
-
 
   public static void main(String[] args) {
     for (int i = 0; i < 260; i++) {

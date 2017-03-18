@@ -44,7 +44,7 @@
         <Dim name="d2"/>
     </Opaque>
     <Byte name="primary_cloud">
-        <Attribute name="_FillValue" type="String" value="Missing"/>
+        <Attribute name="_FillValue" type="/cloud_class_t" value="Missing"/>
         <Dim name="d5"/>
     </Byte>
     <Attribute name="_CoordSysBuilder" type="String" value="ucar.nc2.dataset.conv.DefaultConvention"/>

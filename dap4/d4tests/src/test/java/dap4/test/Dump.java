@@ -21,6 +21,8 @@ public class Dump
     //////////////////////////////////////////////////
     // Constants
 
+    static public boolean DUMPCSUM = false;
+
     static final String LBRACE = "{";
     static final String RBRACE = "}";
 
@@ -40,8 +42,10 @@ public class Dump
 
     protected ByteBuffer reader = null;
     protected boolean checksumming = true;
-    protected ByteOrder order = null;
+    protected ByteOrder remoteorder = null;
     protected StringBuilder buf = null;
+    protected java.util.zip.Checksum localchecksum;
+    protected int lastchecksum = 0;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -54,13 +58,13 @@ public class Dump
     // Command processing
 
     public String
-    dumpdata(InputStream stream, boolean checksumming, ByteOrder order, Commands commands)
+    dumpdata(InputStream stream, boolean checksumming, ByteOrder remoteorder, Commands commands)
             throws IOException
     {
         // Hack for debugging; use a bytebuffer internally
         this.reader = ByteBuffer.wrap(DapUtil.readbinaryfile(stream));
         this.checksumming = checksumming;
-        this.order = order;
+        this.remoteorder = remoteorder;
         this.buf = new StringBuilder();
         commands.run(this);
         return this.buf.toString();
@@ -70,16 +74,7 @@ public class Dump
     printcount()
             throws IOException
     {
-        ByteBuffer bytes = ByteBuffer.allocate(8).order(order);
-        for(int i = 0; i < 8; i++) {
-            try {
-                int c = this.reader.get();
-                bytes.put((byte) (c & 0xFF));
-            } catch (BufferUnderflowException e) {
-                throw new IOException("Short DATADMR");
-            }
-        }
-        bytes.flip();
+        ByteBuffer bytes = checksum(8);
         long l = bytes.getLong();
         buf.append(String.format("count=%d%n", l));
         return (int) l;
@@ -93,11 +88,11 @@ public class Dump
         ByteBuffer bytes = null;
         // for strings and opaque, the typesize is zero
         if(typesize == 0) {
-            bytes = readn(8);
+            bytes = checksum(8);
             l = bytes.getLong();
-            bytes = readn((int) l);
+            bytes = checksum((int) l);
         } else
-            bytes = readn(typesize);
+            bytes = checksum(typesize);
         if(indices != null && indices.length > 0) {
             for(int index : indices) {
                 buf.append(" [" + Integer.toString(index) + "]");
@@ -181,17 +176,17 @@ public class Dump
     }
 
     public void
-    printchecksum()
+    verifychecksum()
             throws IOException
     {
         if(!checksumming)
             return;
-        buf.append("\tchecksum = ");
+        int localcrc32 = endchecksum();
+        // Get the checksum from the input stream
         ByteBuffer bbuf = readn(DapUtil.CHECKSUMSIZE);
-        for(int i = 0; i < bbuf.limit(); i++) {
-            buf.append(String.format("%02x", (bbuf.get() & 0xFF)));
-        }
-        buf.append("\n");
+        int remotecrc32 = bbuf.getInt();
+        assert localcrc32 == remotecrc32;
+        newline();
     }
 
     public void
@@ -200,18 +195,59 @@ public class Dump
         buf.append("\n");
     }
 
-    ByteBuffer
-    readn(int n)
+    public void
+    startchecksum()
+    {
+        if(this.localchecksum == null)
+            this.localchecksum = new java.util.zip.CRC32();
+        this.localchecksum.reset();
+    }
+
+    protected int
+    endchecksum()
+    {
+        long crc = this.localchecksum.getValue(); // get the digest value
+        crc = (crc & 0x00000000FFFFFFFFL); /* crc is 32 bits */
+        this.lastchecksum = (int) crc;
+        return this.lastchecksum;
+    }
+
+    protected byte[]
+    readnbytes(int n)
             throws IOException
     {
-        ByteBuffer result;
         byte[] bytes = new byte[n];
         try {
             this.reader.get(bytes);
         } catch (BufferUnderflowException e) {
             throw new IOException("Short DATADMR");
         }
-        result = ByteBuffer.wrap(bytes).order(order);
+        return bytes;
+    }
+
+    protected ByteBuffer
+    readn(int n)
+            throws IOException
+    {
+        byte[] bytes = readnbytes(n);
+        ByteBuffer result = ByteBuffer.wrap(bytes).order(this.remoteorder);
+        return result;
+    }
+
+    protected ByteBuffer
+    checksum(int n)
+            throws IOException
+    {
+        byte[] bytes = readnbytes(n);
+        localchecksum.update(bytes, 0, n);
+        if(DUMPCSUM) {
+            System.err.print("CCC ");
+            for(int i = 0; i < n; i++) {
+                System.err.printf("%02x", bytes[i]);
+            }
+            System.err.println();
+        }
+        ByteBuffer result = ByteBuffer.wrap(bytes).order(this.remoteorder);
         return result;
     }
 

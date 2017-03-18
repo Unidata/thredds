@@ -8,8 +8,10 @@ package dap4.cdm.nc2;
 import dap4.cdm.NodeMap;
 import dap4.core.data.DSP;
 import dap4.core.dmr.DapDataset;
+import dap4.core.dmr.DapNode;
 import dap4.core.util.DapException;
 import ucar.ma2.Array;
+import ucar.nc2.CDMNode;
 import ucar.nc2.Group;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -44,7 +46,7 @@ public class CDMCompiler
     protected DSP dsp = null;
     protected DapDataset dmr = null;
     protected Group cdmroot = null;
-    protected NodeMap nodemap = null;
+    protected NodeMap<CDMNode,DapNode> nodemap = null;
     protected Map<Variable, Array> arraymap = null;
 
     //////////////////////////////////////////////////
@@ -68,7 +70,7 @@ public class CDMCompiler
     //////////////////////////////////////////////////
     // Accessors
 
-    public NodeMap getNodeMap()
+    public NodeMap<CDMNode,DapNode> getNodeMap()
     {
         return this.nodemap;
     }

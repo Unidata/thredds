@@ -18,7 +18,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import static dap4.d4ts.FrontPage.Root;
+
 
 public class D4TSServlet extends DapController
 {
@@ -30,7 +38,7 @@ public class D4TSServlet extends DapController
 
     static final boolean PARSEDEBUG = false;
 
-    static protected final String RESOURCEPATH = "WEB-INF/resources/testfiles";
+    static protected final String RESOURCEPATH = "WEB-INF/resources";
 
     //////////////////////////////////////////////////
     // Type Decls
@@ -60,6 +68,8 @@ public class D4TSServlet extends DapController
     //////////////////////////////////////////////////
     // Instance variables
 
+    protected List<Root> defaultroots = null;
+
     //////////////////////////////////////////////////
     // Constructor(s)
 
@@ -71,12 +81,8 @@ public class D4TSServlet extends DapController
     @Override
     public void initialize()
     {
+        super.initialize();
         DapLog.info("Initializing d4ts servlet");
-        ServletContext svccxt = getServletContext();
-        // Construct the resource dir path
-        String svcroot = svccxt.getRealPath("");
-        String resourcedir = DapUtil.canonjoin(svcroot, RESOURCEPATH);
-        this.dapcxt.put("RESOURCEDIR",resourcedir);
     }
 
     //////////////////////////////////////////////////
@@ -95,9 +101,10 @@ public class D4TSServlet extends DapController
 
     @Override
     protected void
-    doFavicon(DapRequest drq, String icopath, DapContext cxt)
+    doFavicon(String icopath, DapContext cxt)
             throws IOException
     {
+        DapRequest drq = (DapRequest)cxt.get(DapRequest.class);
         String favfile = getResourcePath(drq, icopath);
         if(favfile != null) {
             try (FileInputStream fav = new FileInputStream(favfile);) {
@@ -115,14 +122,8 @@ public class D4TSServlet extends DapController
     {
         addCommonHeaders(drq);
 
-        // Figure out the directory containing
-        // the files to display.
-        String dir = getResourcePath(drq, "");
-        if(dir == null)
-            throw new DapException("Cannot locate resources directory");
-
         // Generate the front page
-        FrontPage front = new FrontPage(dir, drq);
+        FrontPage front = getFrontPage(drq, cxt);
         String frontpage = front.buildPage();
 
         if(frontpage == null)
@@ -139,9 +140,9 @@ public class D4TSServlet extends DapController
     @Override
     public String
     getResourcePath(DapRequest drq, String location)
-            throws IOException
+            throws DapException
     {
-        String prefix = (String) this.dapcxt.get("RESOURCEDIR");
+        String prefix = drq.getResourceRoot();
         if(prefix == null)
             throw new DapException("Cannot find location resource: " + location)
                     .setCode(DapCodes.SC_NOT_FOUND);
@@ -151,7 +152,7 @@ public class D4TSServlet extends DapController
         File dataset = new File(datasetfilepath);
         if(!dataset.exists()) {
             String msg = String.format("Requested file does not exist: prefix=%s location=%s datasetfilepath=%s",
-                    prefix,location,datasetfilepath);
+                    prefix, location, datasetfilepath);
             throw new DapException(msg)
                     .setCode(HttpServletResponse.SC_NOT_FOUND);
         }
@@ -174,13 +175,29 @@ public class D4TSServlet extends DapController
         return "d4ts";
     }
 
-    @Override
-    public ServletContext
-    getServletContext()
+    /**
+     * Isolate front page builder so we can override if desired for testing.
+     *
+     * @param drq
+     * @param cxt
+     * @return  FrontPage object
+     */
+    protected FrontPage
+    getFrontPage(DapRequest drq, DapContext cxt)
+            throws DapException
     {
-        if(this.servletcontext == null)
-            this.servletcontext = super.getServletContext();
-        assert (this.servletcontext != null);
-        return this.servletcontext;
+        if(this.defaultroots == null) {
+            // Figure out the directory containing
+            // the files to display.
+            String pageroot;
+            pageroot = getResourcePath(drq, "");
+            if(pageroot == null)
+                throw new DapException("Cannot locate resources directory");
+            this.defaultroots = new ArrayList<>();
+            this.defaultroots.add(
+                    new Root("testfiles",pageroot));
+        }
+        return new FrontPage(this.defaultroots, drq);
     }
+
 }

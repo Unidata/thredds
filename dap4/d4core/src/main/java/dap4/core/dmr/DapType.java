@@ -17,12 +17,16 @@ import java.util.Map;
  * and specifically all enumeration declarations
  * as specific objects denoting a type.
  * Structures and Sequence are specifically excluded
+ * WARNING: these DapType instances have a fake parent Dataset group
  */
 
 public class DapType extends DapNode implements DapDecl
 {
     /**
      * Define instances of DapType for every TypeSort.
+     * Watch out: the static lists must be immutable
+     * because they might be shared by the server and client
+     * during testing
      */
 
     static public final DapType CHAR;
@@ -44,6 +48,8 @@ public class DapType extends DapNode implements DapDecl
     static public final DapType STRUCTURE;
     static public final DapType SEQUENCE;
 
+    static final protected DapDataset pseudoroot = new DapDataset("");
+
     /**
      * Define a map from the Atomic Type Sort to the
      * corresponding DapType primitive.
@@ -51,14 +57,7 @@ public class DapType extends DapNode implements DapDecl
 
     static final Map<TypeSort, DapType> typemap;
 
-    /**
-     * Define a list of defined DapEnums
-     */
-    static List<DapEnumeration> enumlist;
-
     static {
-
-        enumlist = new ArrayList<DapEnumeration>();
         typemap = new HashMap<TypeSort, DapType>();
 
         CHAR = new DapType(TypeSort.Char);
@@ -95,6 +94,12 @@ public class DapType extends DapNode implements DapDecl
 
         typemap.put(TypeSort.Structure, DapType.STRUCTURE);
         typemap.put(TypeSort.Sequence, DapType.SEQUENCE);
+
+	for(Map.Entry<TypeSort,DapType> entry: typemap.entrySet()) {
+        entry.getValue().setDataset(pseudoroot);
+        entry.getValue().setParent(pseudoroot);
+	}
+
     }
 
     //////////////////////////////////////////////////
@@ -105,33 +110,6 @@ public class DapType extends DapNode implements DapDecl
         if(atomic == TypeSort.Enum)
             return null;// we need more info
         return typemap.get(atomic);
-    }
-
-    static public DapType reify(String typename)
-    {
-        // See if this is an enum type
-        for(DapEnumeration de : enumlist) {
-            if(typename.equals(de.getFQN()))
-                return de;
-        }
-        // Assume it is a non-enum atomic type
-        return typemap.get(TypeSort.getTypeSort(typename));
-    }
-
-    static public Map<TypeSort, DapType> getTypeMap()
-    {
-        return typemap;
-    }
-
-    static public List<DapEnumeration> getEnumList()
-    {
-        return enumlist;
-    }
-
-    static void addEnum(DapEnumeration dapenum)
-    {
-        if(!enumlist.contains(dapenum))
-            enumlist.add(dapenum);
     }
 
     //////////////////////////////////////////////////
@@ -145,19 +123,17 @@ public class DapType extends DapNode implements DapDecl
     // Only used in static block
     protected DapType(TypeSort typesort)
     {
-        this(typesort.name());
-        setAtomicType(typesort);
+        this(typesort.name(),typesort);
     }
 
-    public DapType(String name)
+    public DapType(String name, TypeSort typesort)
     {
         super(name);
         if(sort == DapSort.ENUMERATION) {
-            setAtomicType(TypeSort.Enum); // enum is (currently)
-            // the only user-extendible
-            // atomic type
-            addEnum((DapEnumeration) this);
-        }
+            setTypeSort(TypeSort.Enum); // enum is (currently)
+            // the only user-extendible atomic type
+        } else
+            setTypeSort(typesort);
     }
 
     //////////////////////////////////////////////////
@@ -189,7 +165,7 @@ public class DapType extends DapNode implements DapDecl
         return (typesort == TypeSort.Enum ? this.getFQN() : this.getShortName());
     }
 
-    protected void setAtomicType(TypeSort typesort)
+    protected void setTypeSort(TypeSort typesort)
     {
         this.typesort = typesort;
     }
@@ -202,7 +178,7 @@ public class DapType extends DapNode implements DapDecl
             return typesort.isUnsigned();
     }
 
-    public boolean isAtomicType()
+    public boolean isAtomic()
     {
         return getTypeSort().isAtomic();
     }
@@ -248,9 +224,21 @@ public class DapType extends DapNode implements DapDecl
         return typesort.isFixedSize();
     }
 
-    public boolean isStructType() {return typesort.isStructType();}
-    public boolean isSeqType() {return typesort.isSeqType();}
-    public boolean isCompoundType() {return typesort.isCompoundType();}
+    public boolean isStructType()
+    {
+        return typesort.isStructType();
+    }
+
+    public boolean isSeqType()
+    {
+        return typesort.isSeqType();
+    }
+
+    public boolean isCompoundType()
+    {
+        return typesort.isCompoundType();
+    }
+
 
     public boolean isLegalAttrType()
     {

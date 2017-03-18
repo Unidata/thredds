@@ -25,13 +25,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Test some of the DSP classes: FileDSP, SynDSP, and HttpDSP.
- * CDMDSP is tested separately in TestServlet.
+ * Test some of the DSP classes:
+ * AbstractDSP: tested by all the other DSPs
+ * CDMDSP: tested elsewhere (TestServlet)
+ * HttpDSP: tested elsewhere (TestCDMClient)
+ * FileDSP: tested here
+ * Nc4DSP: tested here
+ * SynDSP: tested here
+ * D4DSP: tested because superclass of FileDSP, HttpDSP, and SynDSP
+ * ThreddsDSP: not directly tested anywhere yet
  */
-
 public class TestDSP extends DapTestCommon
 {
     static final boolean DEBUG = false;
+    static final boolean SHOWTESTCASES = false;
 
     static final String BASEEXTENSION = "txt";
 
@@ -146,23 +153,28 @@ public class TestDSP extends DapTestCommon
         int dot = path.lastIndexOf('.');
         if(dot < 0) dot = path.length();
         String ext = path.substring(dot, path.length());
+        DSP dsp = null;
         try {
             if("file".equals(proto)) {
                 // discriminate on the extensions
-                if(".raw".equals(ext))
-                    return new FileDSP();
-                if(".syn".equals(ext))
-                    return new SynDSP();
-                if(".nc".equals(ext))
-                    return new Nc4DSP();
+                if(".raw".equals(ext)) {
+                    dsp = new FileDSP();
+                } else if(".syn".equals(ext)) {
+                    dsp = new SynDSP();
+                } if(".nc".equals(ext)) {
+                    dsp = new Nc4DSP();
+                }
             } else if("http".equals(proto)
                     || "https".equals(url.getProtocol())) {
-                return new HttpDSP();
-            }
-            throw new IllegalArgumentException("Cannot determine DSP class for: " + surl);
+                dsp = new HttpDSP();
+            }  else
+                throw new IllegalArgumentException("Cannot determine DSP class for: " + surl);
         } catch (DapException de) {
             throw new IllegalArgumentException("Cannot create DSP  for: " + surl);
         }
+        if(DEBUG)
+            System.err.printf("DSP: %s%n",dsp.getClass().getName());
+        return dsp;
     }
     //////////////////////////////////////////////////
     // Instance variables
@@ -223,11 +235,14 @@ public class TestDSP extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("file:", "test_atomic_array.nc.raw");
+            chosentests = locate("file:", "test_atomic_array.nc");
             prop_visual = true;
             prop_baseline = false;
         } else {
+            prop_baseline = false;
             for(TestCase tc : alltestcases) {
+                if(DEBUG)
+                    System.err.printf("Test case: %s%n", tc.dataset);
                 chosentests.add(tc);
             }
         }
@@ -239,15 +254,23 @@ public class TestDSP extends DapTestCommon
         List<String> matches = new ArrayList<>();
         String dir = TestCase.root + "/" + TESTCDMINPUT;
         TestFilter.filterfiles(dir, matches, "raw");
-        dir = TestCase.root + "/" + TESTFILESINPUT;
-        TestFilter.filterfiles(dir, matches, "nc");
+        if(false) {
+            dir = TestCase.root + "/" + TESTFILESINPUT;
+            TestFilter.filterfiles(dir, matches, "nc", "syn");
+        }
         for(String f : matches) {
             boolean excluded = false;
             for(String x: EXCLUDEDFILETESTS) {
-                if(f.endsWith(x)) {excluded = true; break;}
+                if(f.indexOf(x) >= 0) {excluded = true; break;}
             }
             if(!excluded)
                 add("file:/" + f);
+        }
+        if(SHOWTESTCASES) {
+            for(int i=0;i<this.alltestcases.size();i++) {
+                TestCase tc = this.alltestcases.get(i);
+                System.err.printf("ALLTESTS: %s%n",tc.getURL());
+            }
         }
     }
 
@@ -289,8 +312,8 @@ public class TestDSP extends DapTestCommon
     doOneTest(TestCase testcase)
             throws Exception
     {
-        System.out.println("Testcase: " + testcase.getURL());
-        System.out.println("Baseline: " + testcase.getBaseline());
+        System.err.println("Testcase: " + testcase.getURL());
+        System.err.println("Baseline: " + testcase.getBaseline());
 
         DSP dsp = dspFor(testcase.getURL());
 
@@ -298,20 +321,22 @@ public class TestDSP extends DapTestCommon
         dsp.open(testcase.getURL());
 
         String metadata = dumpmetadata(dsp);
-        String data = dumpdata(dsp);
-        String testoutput = metadata + data;
-
         if(prop_visual)
-            visual(testcase.getTitle() + ".dap", testoutput);
+            visual(testcase.getURL() + ".dmr", metadata);
+        String data = dumpdata(dsp);
+        if(prop_visual)
+            visual(testcase.getURL() + ".dap", data);
 
         String baselinefile = testcase.getBaseline();
+
+        String testoutput = metadata + data;
 
         if(prop_baseline)
             writefile(baselinefile, testoutput);
         else if(prop_diff) { //compare with baseline
             // Read the baseline file(s)
             String baselinecontent = readfile(baselinefile);
-            System.out.println("Comparison: vs " + baselinefile);
+            System.err.println("Comparison: vs " + baselinefile);
             Assert.assertTrue("*** FAIL", same(getTitle(), baselinecontent, testoutput));
         }
     }
@@ -323,7 +348,7 @@ public class TestDSP extends DapTestCommon
         PrintWriter pw = new PrintWriter(sw);
         // Print the meta-databuffer using these args to NcdumpW
         DMRPrinter p = new DMRPrinter(dsp.getDMR(), pw);
-        p.print();
+        p.testprint();
         pw.close();
         sw.close();
         return sw.toString();
