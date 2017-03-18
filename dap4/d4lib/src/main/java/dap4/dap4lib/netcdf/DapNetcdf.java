@@ -138,6 +138,8 @@ public interface DapNetcdf extends Library
 
     static public class Vlen_t extends Structure
     {
+        static public int VLENSIZE = new Vlen_t().size();
+
         public static class ByValue extends Vlen_t implements Structure.ByValue
         {
         }
@@ -146,6 +148,16 @@ public interface DapNetcdf extends Library
         //public int p; /* Length of VL data (in base type units) */
         //public NativeLong len; /* Length of VL data (in base type units) */
         public Pointer p;    /* Pointer to VL data */
+
+        public Vlen_t()
+        {
+            super();
+        }
+
+        public Vlen_t(Pointer p)
+        {
+            super(p);
+        }
 
         protected List getFieldOrder()
         {
@@ -532,11 +544,11 @@ public interface DapNetcdf extends Library
     int nc_put_att_float(int ncid, int varid, String attName, int xtype, SizeT len, float[] value);
 
     int nc_put_att_double(int ncid, int varid, String attName, int xtype, SizeT len, double[] value);
-  
+
     /* Vlen-specialized Read/write */
     int nc_get_var(int ncid, int varid, Vlen_t[] vlen);
 
-    int nc_get_var1(int ncid, int varid, SizeTByReference indexp, Vlen_t[] vlen);
+    int nc_get_var1(int ncid, int varid, SizeT[] indexp, Vlen_t[] vlen);
 
   /* Extra netcdf-4 stuff. */
 

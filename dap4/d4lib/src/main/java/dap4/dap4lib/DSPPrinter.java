@@ -122,9 +122,10 @@ public class DSPPrinter
         List<DapVariable> topvars = dmr.getTopVariables();
         for(int i = 0; i < topvars.size(); i++) {
             DapVariable top = topvars.get(i);
+            List<Slice> slices = this.ce.getConstrainedSlices(top);
             if(this.ce.references(top)) {
                 DataCursor data = dsp.getVariableData(top);
-                printVariable(data);
+                printVariable(data,slices);
             }
         }
         printer.eol();
@@ -134,7 +135,7 @@ public class DSPPrinter
     //////////////////////////////////////////////////
 
     /**
-     * Print an arbitrary DataVariable  using constraint.
+     * Print an arbitrary DataVariable using a constraint.
      * <p>
      * Handling newlines is a bit tricky
      * so the rule is that the
@@ -147,12 +148,12 @@ public class DSPPrinter
      */
 
     protected void
-    printVariable(DataCursor data)
+    printVariable(DataCursor data, List<Slice> slices)
             throws DapException
     {
         DapVariable dapv = (DapVariable) data.getTemplate();
-        List<Slice> slices = this.ce.getConstrainedSlices(dapv);
-        if(dapv.getRank() == 0) {//scalar
+        if(data.isScalar()) {
+            assert slices == Slice.SCALARSLICES;
             printScalar(data);
         } else {// not scalar
             printArray(data, slices);
@@ -169,13 +170,18 @@ public class DSPPrinter
         case ATOMIC:
             printAtomicInstance(data, Index.SCALAR);
             break;
+        case STRUCTARRAY:
+        case SEQARRAY:  // remember that scalars are treated as 1-element arrays
+            DataCursor[] scalar = (DataCursor[]) data.read(Index.SCALAR);
+            assert scalar.length == 1;
+            data = scalar[0]; // fall thru
         case STRUCTURE:
         case SEQUENCE:
         case RECORD:
             printer.marginPrint("{");
             printer.eol();
             printer.indent();
-            printNonAtomic(data);
+            printCompoundInstance(data);
             printer.outdent();
             printer.marginPrint("}");
             printer.eol();
@@ -206,15 +212,15 @@ public class DSPPrinter
             break;
         case STRUCTARRAY:
         case SEQARRAY:
-            DapStructure ds = (DapStructure) data.getTemplate();
+            DapStructure ds = (DapStructure) ((DapVariable) data.getTemplate()).getBaseType();
+            DataCursor[] instances = (DataCursor[]) data.read(slices);
             while(odom.hasNext()) {
                 Index pos = odom.next();
                 String s = indicesToString(pos);
                 printer.marginPrint(ds.getFQN() + s + " = {");
                 printer.eol();
                 printer.indent();
-                DataCursor instance = (DataCursor)data.read(pos);
-                printNonAtomic(instance);
+                printCompoundInstance(instances[(int)pos.index()]);
                 printer.outdent();
                 printer.marginPrint("}");
                 printer.eol();
@@ -231,9 +237,12 @@ public class DSPPrinter
     {
         assert data.getScheme() == DataCursor.Scheme.ATOMIC;
         Object values = data.read(slices);
-        DapAtomicVariable atom = (DapAtomicVariable) data.getTemplate();
+        DapVariable atom = (DapVariable) data.getTemplate();
         String name = atom.getFQN();
-        for(int i = 0; odom.hasNext(); i++) {
+        if(Array.getLength(values) == 0) {// zero length case
+            printer.marginPrint(name + " = <empty>");
+            printer.eol();
+        } else for(int i = 0; odom.hasNext(); i++) {
             Index index = odom.next();
             String prefix = (odom.rank() == 0 ? name : name + indicesToString(index));
             printer.marginPrint(prefix + " = ");
@@ -248,36 +257,44 @@ public class DSPPrinter
     {
         assert datav.getScheme() == DataCursor.Scheme.ATOMIC;
         Object value = datav.read(pos);
-        DapAtomicVariable av = (DapAtomicVariable) datav.getTemplate();
+        DapVariable av = (DapVariable) datav.getTemplate();
         printer.print(valueString(value, 0, av.getBaseType()));
         printer.eol();
     }
 
+    /**
+     * Print a single structure or sequence or record instance
+     *
+     * @param datav
+     * @throws DapException
+     */
     protected void
-    printNonAtomic(DataCursor datav)
+    printCompoundInstance(DataCursor datav)
             throws DapException
     {
+        //Index index = datav.getIndex();
+        DapStructure dstruct = (DapStructure) ((DapVariable) datav.getTemplate()).getBaseType();
         switch (datav.getScheme()) {
         case STRUCTURE:
         case RECORD:
-            DapStructure dstruct = (DapStructure) datav.getTemplate();
             List<DapVariable> dfields = dstruct.getFields();
             for(int f = 0; f < dfields.size(); f++) {
-                DataCursor df = datav.getField(f);
-                printVariable(df);
+                DapVariable field = dfields.get(f);
+                List<Slice> fieldslices = this.ce.getConstrainedSlices(field);
+                DataCursor fdata = datav.readField(f);
+                printVariable(fdata,fieldslices);
             }
             break;
 
         case SEQUENCE:
-            DapSequence dseq = (DapSequence) datav.getTemplate();
-            dfields = dseq.getFields();
+            DapSequence dseq = (DapSequence)dstruct;
             long count = datav.getRecordCount();
             for(long r = 0; r < count; r++) {
-                DataCursor dr = datav.getRecord(r);
+                DataCursor dr = datav.readRecord(r);
                 printer.marginPrint("[");
                 printer.eol();
                 printer.indent();
-                printVariable(dr);
+                printCompoundInstance(dr);
                 printer.outdent();
                 printer.marginPrint("]");
             }
@@ -364,9 +381,11 @@ public class DSPPrinter
             return buf.toString();
         case Enum:
             DapEnumeration de = (DapEnumeration) basetype;
-            Object v = Array.get(vector, ipos);
-            long l = Convert.longValue(de, v);
-            DapEnumConst dec = de.lookup(l);
+            Object newvec = CoreTypeFcns.createVector(de.getBaseType().getTypeSort(),1);
+            Object v = java.lang.reflect.Array.get(vector, ipos);
+            java.lang.reflect.Array.set(newvec,0,v);
+            long[] lv  = (long[]) Convert.convert(DapType.INT64, de, newvec);
+            DapEnumConst dec = de.lookup(lv[0]);
             return dec.getShortName();
         default:
             break;
@@ -389,7 +408,7 @@ public class DSPPrinter
     getPrintValue(Object value)
     {
         if(value instanceof String) {
-            return Escape.entityEscape((String) value);
+            return Escape.entityEscape((String) value,null);
         } else
             return value.toString();
     }

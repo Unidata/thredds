@@ -1,8 +1,19 @@
 package dap4.test;
 
+import dap4.core.data.DSPRegistry;
+import dap4.core.util.DapUtil;
+import dap4.dap4lib.FileDSP;
+import dap4.servlet.DapCache;
+import dap4.servlet.Generator;
+import dap4.servlet.SynDSP;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 
 /**
  * TestFrontPage verifies the front page
@@ -16,29 +27,41 @@ public class TestFrontPage extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
+    static protected final String RESOURCEPATH = "/src/test/data/resources"; // wrt getTestInputFilesDir
+    static protected final String TESTINPUTDIR = "/testfiles";
+    static protected final String BASELINEDIR = "/TestFrontPage/baseline";
+/*
     static protected String DATADIR = "src/test/data"; // relative to dap4 root
     static protected String TESTDATADIR = DATADIR + "/resources/";
-    static protected String BASELINEDIR = DATADIR + "/resources/TestServlet/baseline";
+    static protected String BASELINEDIR = "/TestServlet/baseline";
     static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
+*/
 
     static protected String TESTFILE = "test_frontpage.html";
 
     // constants for Fake Request
-    static protected String FAKEURLPREFIX = "http://localhost:8080/thredds/d4ts";
+    static protected String FAKEURLPREFIX = "/d4ts";
 
     //////////////////////////////////////////////////
     // Instance variables
-
-    protected String datasetpath = null;
-
+    MockMvc mockMvc = null;
     protected String resourceroot = null;
 
     //////////////////////////////////////////////////
 
     @Before
-    public void setup() throws Exception {
+    public void setup() throws Exception
+    {
+        StandaloneMockMvcBuilder mvcbuilder =
+                MockMvcBuilders.standaloneSetup(new D4TSController());
+        mvcbuilder.setValidator(new TestServlet.NullValidator());
+        this.mockMvc = mvcbuilder.build();
+        testSetup();
+        DapCache.dspregistry.register(FileDSP.class, DSPRegistry.FIRST);
+        DapCache.dspregistry.register(SynDSP.class, DSPRegistry.FIRST);
+        if(prop_ascii)
+            Generator.setASCII(true);
         this.resourceroot = getResourceRoot();
-        this.datasetpath = this.resourceroot + "/" + DATADIR;
     }
 
     //////////////////////////////////////////////////
@@ -46,61 +69,33 @@ public class TestFrontPage extends DapTestCommon
 
     @Test
     public void testFrontPage()
-        throws Exception
+            throws Exception
     {
-        boolean pass = true;
         String url = FAKEURLPREFIX; // no file specified
 
-        // Create request and response objects
-	    Mocker mocker = new Mocker("d4ts",url,this);
-        byte[] byteresult = null;
+        // Figure out the baseline
+        String baselinepath = canonjoin(this.resourceroot, BASELINEDIR, TESTFILE);
 
-        try {
-            byteresult = mocker.execute();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            Assert.assertTrue(false);
-        }
+        MvcResult result = perform(url, this.mockMvc, RESOURCEPATH);
+
+        // Collect the output
+        MockHttpServletResponse res = result.getResponse();
+        byte[] byteresult = res.getContentAsByteArray();
 
         // Convert the raw output to a string
-        String html = new String(byteresult,UTF8);
+        String html = new String(byteresult, UTF8);
 
-        if(prop_visual)
+        if(DEBUG || prop_visual)
             visual("Front Page", html);
 
-	    // Figure out the baseline
-        String baselinepath = this.resourceroot + "/" + BASELINEDIR + "/" + TESTFILE;
-	
         if(prop_baseline) {
             writefile(baselinepath, html);
         } else if(prop_diff) { //compare with baseline
             // Read the baseline file
             String baselinecontent = readfile(baselinepath);
             System.out.println("HTML Comparison:");
-            pass = same(getTitle(),baselinecontent, html);
-            System.out.println(pass ? "Pass" : "Fail");
+            Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, html));
         }
-        Assert.assertTrue(pass);
     }
-
-    //////////////////////////////////////////////////
-    // Utility methods
-
-    //////////////////////////////////////////////////
-    // Stand alone
-
-    static public void
-    main(String[] argv)
-    {
-        try {
-            new TestFrontPage().testFrontPage();
-        } catch (Exception e) {
-            System.err.println("*** FAIL");
-            e.printStackTrace();
-            System.exit(1);
-        }
-        System.err.println("*** PASS");
-        System.exit(0);
-    }// main
 
 } // class TestFrontPage

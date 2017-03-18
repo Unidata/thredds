@@ -1,15 +1,15 @@
- -128	checksum = ad6cba3f
- 255	checksum = 000000ff
- -32768	checksum = df9161ac
- 65535	checksum = 0000ffff
- 2147483647	checksum = df7c4712
- 4294967295	checksum = ffffffff
- 9223372036854775807	checksum = 3c5cfccc
- 18446744073709551615	checksum = 1cdf4421
- 3.14159	checksum = 65132a8c
- 3.14159	checksum = 72cbbaf2
- '@'	checksum = 1daedea4
- "hello\tworld"	checksum = d4a69136
- 0x0123456789ABCDEF	checksum = ddda4dd2
- 2	checksum = a18e0c3c
- 127	checksum = 2083b812
+ -128
+ 255
+ -32768
+ 65535
+ 2147483647
+ 4294967295
+ 9223372036854775807
+ 18446744073709551615
+ 3.14159
+ 3.14159
+ '@'
+ "hello\tworld"
+ 0x0123456789ABCDEF
+ 2
+ 127

@@ -11,87 +11,97 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Provide a bi-directional 1-1 map between DapNode
+ * instances and CDMNode instances.
+ * <p>
+ * There is a complication.  Currently, the hashCode() in
+ * ucar.nc2.Variable (and other classes) is unstable when
+ * objects are being incrementally constructed. So until and
+ * unless that is changed, it is necessary to provide a way to
+ * map CDMNode <-> DapNode that is independent of e.g
+ * Variable.hashCode(); We do this by overriding hashCode() to
+ * use Object.hashCode() explicitly.
+ */
 
-Provide a bi-directional 1-1 map between DapNode
-instances and CDMNode instances.
-
-There is a complication.  Currently, the hashCode() in
-ucar.nc2.Variable (and other classes) is unstable when
-objects are being incrementally constructed. So until and
-unless that is changed, it is necessary to provide a way to
-map CDMNode <-> DapNode that is independent of e.g
-Variable.hashCode(); We do this by overriding hashCode() to
-use Object.hashCode() explicitly.
-
-*/
-
-public class NodeMap
+public class NodeMap<CDM_T extends CDMNode, DAP_T extends DapNode>
 {
-    //////////////////////////////////////////////////
+    ////b//////////////////////////////////////////////
     // Instance Variables
 
     /**
-     * Map from DapNode -> CDMNode
+     * Map from DAP_T -> CDM_T
      */
-    Map<DapNode, CDMNode> cdmmap = new HashMap<DapNode, CDMNode>();
+    Map<DAP_T, CDM_T> cdmmap = new HashMap<>();
 
     /**
-     * Map from CDMNode -> DapNode via a specific hashCode integer
+     * Map from CDM_T -> DAP_T via a specific hashCode integer
      */
-    Map<Integer, DapNode> dapmap = new HashMap<Integer, DapNode>();
+    Map<Integer, DAP_T> dapmap = new HashMap<>();
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public NodeMap() {};
+    public NodeMap()
+    {
+    }
 
     //////////////////////////////////////////////////
     // Accessors
 
-    public DapNode get(CDMNode cdmnode)
+    public DAP_T get(CDM_T cdm)
     {
-        cdmnode = CDMNode.unwrap(cdmnode);
-        int lh = cdmnode.localhash();
+        cdm = (CDM_T)CDMNode.unwrap(cdm);
+        int lh = cdm.localhash();
         return dapmap.get(lh);
     }
 
-    public CDMNode get(DapNode node) {return cdmmap.get(node);}
+    public CDM_T get(DAP_T dap)
+    {
+        return cdmmap.get(dap);
+    }
 
-    public boolean containsKey(CDMNode node) {return dapmap.containsKey(node.localhash());}
+    public boolean containsKey(CDM_T node)
+    {
+        return dapmap.containsKey(node.localhash());
+    }
 
-    public boolean containsKey(DapNode node) {return cdmmap.containsKey(node);}
+    public boolean containsKey(DAP_T node)
+    {
+        return cdmmap.containsKey(node);
+    }
 
     /**
-     * Given a dapnode <-> cdmnode pair, insert
+     * Given a CDM_T <-> DAP_T pair, insert
      * into the maps
-     * @param dapnode
-     * @param cdmnode
+     *
+     * @param cdm
+     * @param dap
      */
-    public void put(DapNode dapnode, CDMNode cdmnode)
+    public void put(CDM_T cdm, DAP_T dap)
     {
-        assert(dapnode != null && cdmnode != null);
-        cdmnode = CDMNode.unwrap(cdmnode);
-        int lh = cdmnode.localhash();
-        dapmap.put(lh,dapnode);
-        cdmmap.put(dapnode,cdmnode);
+        assert (dap != null && cdm != null);
+        cdm = (CDM_T)CDMNode.unwrap(cdm);
+        int lh = cdm.localhash();
+        dapmap.put(lh, dap);
+        cdmmap.put(dap, cdm);
     }
 
     /**
-     * Given a dapnode <-> cdmnode pair, remove
+     * Given a DAP_T <-> CDM_T pair, remove
      * from the maps
-     * @param dapnode
-     * @param cdmnode
+     * @param cdm
+     * @param dap
      */
-    public void remove(DapNode dapnode, CDMNode cdmnode)
+    public void remove(CDM_T cdm, DAP_T dap)
     {
-        assert(dapnode != null && cdmnode != null);
-        cdmnode = CDMNode.unwrap(cdmnode);
-        dapmap.remove(cdmnode.localhash());
-        cdmmap.remove(dapnode);
+        assert (dap != null && cdm != null);
+        cdm = (CDM_T)CDMNode.unwrap(cdm);
+        dapmap.remove(cdm.localhash());
+        cdmmap.remove(dap);
     }
 
-    // Access one of the underlying maps
-    public Map<DapNode,CDMNode> getCDMMap() {return cdmmap;}
-//    public Map<CDMNode,DapNode> getDapMap() {return dapmap;}
+    // Access one of the underlying maps Needed when trying to do enumeration matching
+    public Map<DAP_T,CDM_T> getCDMMap() {return cdmmap;}
+//    public Map<CDM_T,DAP_T> getDapMap() {return dapmap;}
 
 }

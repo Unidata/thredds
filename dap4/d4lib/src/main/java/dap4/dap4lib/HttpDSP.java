@@ -4,7 +4,6 @@
 
 package dap4.dap4lib;
 
-import dap4.core.data.DSP;
 import dap4.core.dmr.DapDataset;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapDump;
@@ -12,6 +11,7 @@ import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.dap4lib.serial.D4DSP;
 import org.apache.http.HttpStatus;
+import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
@@ -47,7 +47,6 @@ public class HttpDSP extends D4DSP
 
     static protected final String QUERYSTART = "?";
     static protected final String CONSTRAINTTAG = "dap4.ce";
-    static protected final String CHECKSUMTAG = "checksum";
     static protected final String PROTOTAG = "protocol";
 
     static protected final int DFALTPRELOADSIZE = 50000; // databuffer
@@ -128,7 +127,7 @@ public class HttpDSP extends D4DSP
                         return true;
                 }
                 for(String[] pair : DAP4FRAGMARKERS) {
-                    String tag = xuri.getQueryFields().get(pair[0]);
+                    String tag = xuri.getFragFields().get(pair[0]);
                     if(tag != null
                             && (pair[1] == null
                             || pair[1].equalsIgnoreCase(tag)))
@@ -143,12 +142,27 @@ public class HttpDSP extends D4DSP
     }
 
     @Override
-    public DSP open(String url)
+    public HttpDSP open(String url)
             throws DapException
     {
         setLocation(url);
-        // See if this is a local vs remote request
         parseURL(url);
+
+        /* Take from the incoming data
+        String s = xuri.getFragFields().get(Dap4Util.DAP4CSUMTAG);
+        ChecksumMode mode = ChecksumMode.modeFor(s);
+        if(mode == null)
+            throw new DapException(String.format("Illegal %s: %s",Dap4Util.DAP4CSUMTAG,s));
+        setChecksumMode(mode);
+        s = xuri.getFragFields().get(Dap4Util.DAP4ENDIANTAG);
+        Integer oz = DapUtil.stringToInteger(s);
+        if(oz == null)
+            throw new DapException(String.format("Illegal %s: %s",Dap4Util.DAP4ENDIANTAG,s));
+        ByteOrder order = (oz != 0 ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+        setOrder(order);
+        */
+
+        // See if this is a local vs remote request
         this.basece = this.xuri.getQueryFields().get(CONSTRAINTTAG);
         build();
         return this;
@@ -182,10 +196,6 @@ public class HttpDSP extends D4DSP
             throws DapException
     {
         String methodurl = buildURL(this.xuri.assemble(XURI.URLONLY), DATASUFFIX, this.dmr, this.basece);
-        this.checksummode = ChecksumMode.modeFor(xuri.getFragFields().get(CHECKSUMTAG));
-        if(this.checksummode == null) {
-            this.checksummode = ChecksumMode.DAP;
-        }
 
         InputStream stream;
         // Make the request and return an input stream for accessing the databuffer
@@ -197,7 +207,7 @@ public class HttpDSP extends D4DSP
             if(DEBUG) {
                 byte[] raw = DapUtil.readbinaryfile(stream);
                 ByteArrayInputStream bis = new ByteArrayInputStream(raw);
-                DapDump.dumpbytestream(raw, order, "httpdsp.build");
+                DapDump.dumpbytestream(raw, getOrder(), "httpdsp.build");
                 reader = new ChunkInputStream(bis, RequestMode.DAP, getOrder());
             } else {
                 // Wrap the input stream as a ChunkInputStream
@@ -235,35 +245,43 @@ public class HttpDSP extends D4DSP
         long start = System.currentTimeMillis();
         long stop = 0;
         this.status = 0;
-        HTTPMethod method = null;
-        try {   // Note that we cannot use try with resources because we export the method stream, so method
-            // must not be closed.
-            method = HTTPFactory.Get(methodurl);
-            if(allowCompression)
-                method.setCompression("deflate,gzip");
-
-            this.status = method.execute();
-
-            if(this.status != HttpStatus.SC_OK) {
-                String msg = method.getResponseAsString();
-                throw new DapException("Request failure: " + method.getStatusText() + ": " + methodurl)
-                        .setCode(status);
+        if(false) {
+            HTTPMethod method = null; // Implicitly passed out to caller via stream
+            try {   // Note that we cannot use try with resources because we export the method stream, so method
+                // must not be closed.
+                method = HTTPFactory.Get(methodurl);
+                if(allowCompression)
+                    method.setCompression("deflate,gzip");
+                this.status = method.execute();
+                if(this.status != HttpStatus.SC_OK) {
+                    String msg = method.getResponseAsString();
+                    throw new DapException("Request failure: " + status + ": " + methodurl)
+                            .setCode(status);
+                }
+                // Get the response body stream => do not close the method
+                return method.getResponseAsStream();
+            } catch (HTTPException e) {
+                if(method != null)
+                    method.close();
+                throw new DapException(e);
             }
-            // Pull headers of interest
-            /*not legal
-            Header encodingheader = method.getResponseHeader("Content-Encoding");
-            String byteorder = (encodingheader != null ? encodingheader.getValue() : null);
-            setOrder(byteorder.equalsIgnoreCase("Big-Endian") ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-            if(getOrder() == null)
-                throw new DapException("Missing or ill-formed Content-Encoding header");
-            */
-            // Get the response body stream => do not close the method
-            return method.getResponseAsStream();
-
-        } catch (Exception e) {
-            if(method != null)
-                method.close();
-            throw new DapException(e);
+        } else {// read whole input
+            try {
+                try (HTTPMethod method = HTTPFactory.Get(methodurl)) {
+                    if(allowCompression)
+                        method.setCompression("deflate,gzip");
+                    this.status = method.execute();
+                    if(this.status != HttpStatus.SC_OK) {
+                        String msg = method.getResponseAsString();
+                        throw new DapException("Request failure: " + status + ": " + methodurl)
+                                .setCode(status);
+                    }
+                    byte[] body = method.getResponseAsBytes();
+                    return new ByteArrayInputStream(body);
+                }
+            } catch (HTTPException e) {
+                throw new DapException(e);
+            }
         }
     }
 

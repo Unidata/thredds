@@ -52,6 +52,12 @@ public class PowerSet
         if(DEBUG) System.err.println(this.toString());
     }
 
+    public long
+    getTotalSize()
+    {
+        return this.totalsize;
+    }
+
     public long[][]
     getPowerSet()
     {

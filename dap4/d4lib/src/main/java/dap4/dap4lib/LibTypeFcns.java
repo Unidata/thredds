@@ -31,7 +31,7 @@ abstract public class LibTypeFcns
      * of the daptype wrt to a serialization;
      * 0 if undefined.
      *
-     * @param atomtype The type of interest
+     * @param type The type of interest
      * @return the size, in databuffer
      */
     static public int

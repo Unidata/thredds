@@ -4,9 +4,20 @@
 
 package dap4.test;
 
+import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
+import dap4.dap4lib.DapLog;
+import dap4.dap4lib.FileDSP;
+import dap4.servlet.DapCache;
 import dap4.servlet.DapController;
+import dap4.servlet.SynDSP;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.Header;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.message.BasicHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -16,10 +27,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import thredds.core.DatasetManager;
 import thredds.core.TdsRequestedDataset;
 import thredds.server.dap4.Dap4Controller;
+import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
+import ucar.nc2.NetcdfFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
@@ -28,6 +43,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 
 @ContextConfiguration
@@ -42,6 +58,9 @@ abstract public class DapTestCommon extends UnitTestCommon
     static public final String FILESERVER = "file://localhost:8080";
 
     static public final String CONSTRAINTTAG = "dap4.ce";
+    static public final String ORDERTAG = "ucar.littleendian";
+    static public final String NOCSUMTAG = "ucar.nochecksum";
+    static public final String TRANSLATETAG = "ucar.translate";
 
     static final String D4TESTDIRNAME = "d4tests";
 
@@ -156,6 +175,97 @@ abstract public class DapTestCommon extends UnitTestCommon
         }
     }
 
+    // Mocking Support Class for HTTPMethod
+
+    static public class MockExecutor implements HTTPMethod.Executor
+    {
+        protected String resourcepath = null;
+
+        public MockExecutor(String resourcepath)
+        {
+            this.resourcepath = resourcepath;
+        }
+
+        //HttpHost targethost,HttpClient httpclient,HTTPSession session
+        public HttpResponse
+        execute(HttpRequestBase rq)
+                throws IOException
+        {
+            URI uri = rq.getURI();
+            DapController controller = getController(uri);
+            StandaloneMockMvcBuilder mvcbuilder =
+                    MockMvcBuilders.standaloneSetup(controller);
+            mvcbuilder.setValidator(new TestServlet.NullValidator());
+            MockMvc mockMvc = mvcbuilder.build();
+            MockHttpServletRequestBuilder mockrb = MockMvcRequestBuilders.get(uri);
+            // We need to use only the path part
+            mockrb.servletPath(uri.getPath());
+            // Move any headers from rq to mockrb
+            Header[] headers = rq.getAllHeaders();
+            for(int i = 0; i < headers.length; i++) {
+                Header h = headers[i];
+                mockrb.header(h.getName(), h.getValue());
+            }
+            // Since the url has the query parameters,
+            // they will automatically be parsed and added
+            // to the rb parameters.
+
+            // Finally set the resource dir
+            mockrb.requestAttr("RESOURCEDIR", this.resourcepath);
+
+            // Now invoke the servlet
+            MvcResult result;
+            try {
+                result = mockMvc.perform(mockrb).andReturn();
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+
+            // Collect the output
+            MockHttpServletResponse res = result.getResponse();
+            byte[] byteresult = res.getContentAsByteArray();
+
+            // Convert to HttpResponse
+            HttpResponse response = new BasicHttpResponse(HttpVersion.HTTP_1_1, res.getStatus(), "");
+            if(response == null)
+                throw new IOException("HTTPMethod.executeMock: Response was null");
+            Collection<String> keys = res.getHeaderNames();
+            // Move headers to the response
+            for(String key : keys) {
+                List<String> values = res.getHeaders(key);
+                for(String v : values) {
+                    response.addHeader(key, v);
+                }
+            }
+            ByteArrayEntity entity = new ByteArrayEntity(byteresult);
+            String sct = res.getContentType();
+            entity.setContentType(sct);
+            response.setEntity(entity);
+            return response;
+        }
+
+        protected DapController
+        getController(URI uri)
+                throws IOException
+        {
+            String path = uri.getPath();
+            path = HTTPUtil.canonicalpath(path);
+            assert path.startsWith("/");
+            String[] pieces = path.split("[/]");
+            assert pieces.length >= 2;
+            // Path is absolute, so pieces[0] will be empty
+            // so pieces[1] should determine the controller
+            DapController controller;
+            if("d4ts".equals(pieces[1])) {
+                controller = new D4TSController();
+            } else if("thredds".equals(pieces[1])) {
+                controller = new Dap4Controller();
+            } else
+                throw new IOException("Unknown controller type " + pieces[1]);
+            return controller;
+        }
+    }
+
     static class TestFilter implements FileFilter
     {
         boolean debug;
@@ -188,7 +298,7 @@ abstract public class DapTestCommon extends UnitTestCommon
         }
 
         static void
-        filterfiles(String path,List<String> matches, String... extensions)
+        filterfiles(String path, List<String> matches, String... extensions)
         {
             File testdirf = new File(path);
             assert (testdirf.canRead());
@@ -330,6 +440,7 @@ abstract public class DapTestCommon extends UnitTestCommon
         System.err.println("---------------");
         System.err.print(captured);
         System.err.println("---------------");
+        System.err.flush();
     }
 
     protected void
@@ -338,7 +449,7 @@ abstract public class DapTestCommon extends UnitTestCommon
     {
         String svc = "http://" + this.d4tsserver + "/d4ts";
         if(!checkServer(svc))
-            log.warn("D4TS Server not reachable: " + svc);
+            stderr.println("D4TS Server not reachable: " + svc);
         // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
         d4tsserver = "dap4://" + d4tsserver + "/d4ts";
     }
@@ -371,22 +482,64 @@ abstract public class DapTestCommon extends UnitTestCommon
     testSetup()
     {
         DapController.TESTING = true;
+        DapCache.dspregistry.register(FileDSP.class, DSPRegistry.FIRST);
+        DapCache.dspregistry.register(SynDSP.class, DSPRegistry.FIRST);
+        try {
+            // Always prefer Nc4Iosp over HDF5
+            NetcdfFile.iospDeRegister(ucar.nc2.jni.netcdf.Nc4Iosp.class);
+            NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class,
+                    ucar.nc2.iosp.hdf5.H5iosp.class
+            );
+        } catch (Exception e) {
+            DapLog.warn("Cannot load ucar.nc2.jni.netcdf.Nc4Iosp");
+        }
     }
 
     static protected MvcResult
-    perform(String url, String respath, String query,
-            MockMvc mockMvc)
+    perform(String url,
+            MockMvc mockMvc,
+            String respath,
+            String... params)
             throws Exception
     {
         MockHttpServletRequestBuilder rb = MockMvcRequestBuilders
                 .get(url)
                 .servletPath(url);
-        if(query != null)
-            rb.param(CONSTRAINTTAG, query);
+        if(params.length > 0) {
+            if(params.length % 2 == 1)
+                throw new Exception("Illegal query params");
+            for(int i = 0; i < params.length; i += 2) {
+                if(params[i] != null) {
+                    rb.param(params[i], params[i + 1]);
+                }
+            }
+        }
+        assert respath != null;
         String realdir = canonjoin(dap4testroot, respath);
         rb.requestAttr("RESOURCEDIR", realdir);
         MvcResult result = mockMvc.perform(rb).andReturn();
         return result;
     }
+
+
+    static void
+    printDir(String path)
+    {
+        File testdirf = new File(path);
+        assert (testdirf.canRead());
+        File[] filelist = testdirf.listFiles();
+        System.err.println("\n*******************");
+        System.err.printf("Contents of %s:%n", path);
+        for(int i = 0; i < filelist.length; i++) {
+            File file = filelist[i];
+            String fname = file.getName();
+            System.err.printf("\t%s%s%n",
+                    fname,
+                    (file.isDirectory() ? "/" : ""));
+        }
+        System.err.println("*******************");
+        System.err.flush();
+    }
+
 }
 

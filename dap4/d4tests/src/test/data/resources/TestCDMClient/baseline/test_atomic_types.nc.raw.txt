@@ -1,112 +1,57 @@
-netcdf test_atomic_types.nc.raw {
+netcdf test_atomic_types {
   types:
     byte enum cloud_class_t { Clear = 0, Cumulonimbus = 1, Stratus = 2, Stratocumulus = 3, Cumulus = 4, Altostratus = 5, Nimbostratus = 6, Altocumulus = 7, Cirrostratus = 8, Cirrocumulus = 9, Cirrus = 10, Missing = 127};
 
   variables:
     byte v8;
-      v8:_DAP4_Checksum_CRC32 = "0xa061b233";
+      string v8:_DAP4_Checksum_CRC32 = "0x3fba6cad";
 
     ubyte vu8;
-      vu8:_DAP4_Checksum_CRC32 = "0x000102f3";
+      string vu8:_DAP4_Checksum_CRC32 = "0xff000000";
 
     short v16;
-      v16:_DAP4_Checksum_CRC32 = "0xd09162a3";
+      string v16:_DAP4_Checksum_CRC32 = "0xac6191df";
 
     ushort vu16;
-      vu16:_DAP4_Checksum_CRC32 = "0x0001f2f3";
+      string vu16:_DAP4_Checksum_CRC32 = "0xffff0000";
 
     int v32;
-      v32:_DAP4_Checksum_CRC32 = "0xd0714213";
+      string v32:_DAP4_Checksum_CRC32 = "0x12477cdf";
 
     uint vu32;
-      vu32:_DAP4_Checksum_CRC32 = "0xf0f1f2f3";
+      string vu32:_DAP4_Checksum_CRC32 = "0xffffffff";
 
     long v64;
-      v64:_DAP4_Checksum_CRC32 = "0x3051f2c3";
+      string v64:_DAP4_Checksum_CRC32 = "0xccfc5c3c";
 
     ulong vu64;
-      vu64:_DAP4_Checksum_CRC32 = "0x10d14223";
+      string vu64:_DAP4_Checksum_CRC32 = "0x2144df1c";
 
     float vf;
-      vf:_DAP4_Checksum_CRC32 = "0x60112283";
+      string vf:_DAP4_Checksum_CRC32 = "0x8c2a1365";
 
     double vd;
-      vd:_DAP4_Checksum_CRC32 = "0x70c1b2f3";
+      string vd:_DAP4_Checksum_CRC32 = "0xf2bacb72";
 
     char vc;
-      vc:_DAP4_Checksum_CRC32 = "0x10a1d2a3";
+      string vc:_DAP4_Checksum_CRC32 = "0xa4deae1d";
 
-    String vs;
-      vs:_DAP4_Checksum_CRC32 = "0xd0a19233";
-
-    opaque vo;
-      vo:_DAP4_Checksum_CRC32 = "0xd0d142d3";
-
-    enum cloud_class_t primary_cloud;
-      primary_cloud:_FillValue = "Missing";
-      primary_cloud:_DAP4_Checksum_CRC32 = "0xa0810233";
-
-    enum cloud_class_t secondary_cloud;
-      secondary_cloud:_FillValue = "Missing";
-      secondary_cloud:_DAP4_Checksum_CRC32 = "0x2081b213";
-
-  // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-}
-netcdf test_atomic_types.nc.raw {
-  types:
-    byte enum cloud_class_t { Clear = 0, Cumulonimbus = 1, Stratus = 2, Stratocumulus = 3, Cumulus = 4, Altostratus = 5, Nimbostratus = 6, Altocumulus = 7, Cirrostratus = 8, Cirrocumulus = 9, Cirrus = 10, Missing = 127};
-
-  variables:
-    byte v8;
-      v8:_DAP4_Checksum_CRC32 = "0xa061b233";
-
-    ubyte vu8;
-      vu8:_DAP4_Checksum_CRC32 = "0x000102f3";
-
-    short v16;
-      v16:_DAP4_Checksum_CRC32 = "0xd09162a3";
-
-    ushort vu16;
-      vu16:_DAP4_Checksum_CRC32 = "0x0001f2f3";
-
-    int v32;
-      v32:_DAP4_Checksum_CRC32 = "0xd0714213";
-
-    uint vu32;
-      vu32:_DAP4_Checksum_CRC32 = "0xf0f1f2f3";
-
-    long v64;
-      v64:_DAP4_Checksum_CRC32 = "0x3051f2c3";
-
-    ulong vu64;
-      vu64:_DAP4_Checksum_CRC32 = "0x10d14223";
-
-    float vf;
-      vf:_DAP4_Checksum_CRC32 = "0x60112283";
-
-    double vd;
-      vd:_DAP4_Checksum_CRC32 = "0x70c1b2f3";
-
-    char vc;
-      vc:_DAP4_Checksum_CRC32 = "0x10a1d2a3";
-
-    String vs;
-      vs:_DAP4_Checksum_CRC32 = "0xd0a19233";
+    string vs;
+      string vs:_DAP4_Checksum_CRC32 = "0x3691a6d4";
 
     opaque vo;
-      vo:_DAP4_Checksum_CRC32 = "0xd0d142d3";
+      string vo:_DAP4_Checksum_CRC32 = "0xd24ddadd";
 
     enum cloud_class_t primary_cloud;
-      primary_cloud:_FillValue = "Missing";
-      primary_cloud:_DAP4_Checksum_CRC32 = "0xa0810233";
+      string primary_cloud:_FillValue = "Missing";
+      string primary_cloud:_DAP4_Checksum_CRC32 = "0x3c0c8ea1";
 
     enum cloud_class_t secondary_cloud;
-      secondary_cloud:_FillValue = "Missing";
-      secondary_cloud:_DAP4_Checksum_CRC32 = "0x2081b213";
+      string secondary_cloud:_FillValue = "Missing";
+      string secondary_cloud:_DAP4_Checksum_CRC32 = "0x12b88320";
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
  data:
 v8 =-128
 vu8 =255

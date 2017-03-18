@@ -1,8 +1,8 @@
-netcdf test_vlen1.nc {
+netcdf test_vlen1 {
   variables:
     int x(*);
-      :_CoordinateAxisType = "GeoX";
+      string x:_CoordinateAxisType = "GeoX";
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }

@@ -1,4 +1,4 @@
-netcdf test_vlen3.nc {
+netcdf test_vlen3 {
   variables:
 
     Structure {
@@ -7,5 +7,5 @@ netcdf test_vlen3.nc {
 
 
   // global attributes:
-  :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
+  string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
 }

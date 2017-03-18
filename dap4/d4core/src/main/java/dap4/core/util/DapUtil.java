@@ -37,6 +37,8 @@ abstract public class DapUtil // Should only contain static methods
     static final public int CHUNK_END = 1;   // bit 0 : value 1
     static public final int CHUNK_ERROR = 2; // bit 1 : value 1
     static public final int CHUNK_LITTLE_ENDIAN = 4; // bit 2: value 1
+    static public final int CHUNK_NOCHECKSUM = 8; // bit 2: value 1
+
     // Construct the union of all flags
     static final public int CHUNK_ALL
             = CHUNK_DATA | CHUNK_ERROR | CHUNK_END | CHUNK_LITTLE_ENDIAN;
@@ -51,6 +53,8 @@ abstract public class DapUtil // Should only contain static methods
     static final public int CHECKSUMSIZE = 4; // bytes if CRC32
     static final public String DIGESTER = "CRC32";
     static final public String CHECKSUMATTRNAME = "_DAP4_Checksum_CRC32";
+    static final public String LITTLEENDIANATTRNAME = "_DAP4_Little_Endian";
+    static final public String CEATTRNAME = "_dap4.ce";
 
     static final public String DRIVELETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
@@ -107,6 +111,16 @@ abstract public class DapUtil // Should only contain static methods
         }
         path.add(piece.toString());
         return path;
+    }
+
+    static public Integer
+    stringToInteger(String s)
+    {
+        try {
+            return Integer.parseInt(s);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     static public boolean hasSequence(DapNode node)
@@ -229,9 +243,13 @@ abstract public class DapUtil // Should only contain static methods
         path = path.replace('\\', '/');
         if(path.endsWith("/"))
             path = path.substring(0, path.length() - 1);
-        // As a last step, lowercase the drive letter, if any
-        if(hasDriveLetter(path))
+        boolean abs = (path.length() > 0 && path.charAt(0) == '/');
+        if(abs) path = path.substring(1); // temporary
+        if(DapUtil.hasDriveLetter(path)) {
+            // As a last step, lowercase the drive letter, if any
             path = path.substring(0, 1).toLowerCase() + path.substring(1);
+        } else if(abs)
+            path = "/" + path;
         return path;
     }
 
@@ -241,7 +259,7 @@ abstract public class DapUtil // Should only contain static methods
         if(path != null) {
             if(path.startsWith("/"))
                 path = path.substring(1);
-            else if(hasDriveLetter(path))
+            if(hasDriveLetter(path))
                 path = path.substring(2);
         }
         return path;
@@ -258,20 +276,17 @@ abstract public class DapUtil // Should only contain static methods
     static public boolean
     checkFixedSize(DapVariable var)
     {
-        switch (var.getSort()) {
-        case ATOMICVARIABLE:
-            DapType dt = var.getBaseType();
-            return dt.isFixedSize();
-
-        case STRUCTURE:
-        case SEQUENCE:
-            for(DapVariable field : ((DapStructure) var).getFields()) {
+        DapType dt = var.getBaseType();
+        switch (dt.getTypeSort()) {
+        case Structure:
+        case Sequence:
+            for(DapVariable field : ((DapStructure) dt).getFields()) {
                 if(!checkFixedSize(field)) return false;
             }
             break;
 
         default:
-            break;
+            return dt.isFixedSize();
         }
         return true;
     }
@@ -342,8 +357,7 @@ abstract public class DapUtil // Should only contain static methods
             case DATASET:
             case GROUP:
                 break;
-            case ATOMICVARIABLE:
-            case STRUCTURE:
+            case VARIABLE:
                 structpath.add((DapVariable) node);
                 break;
             default:
@@ -409,9 +423,7 @@ abstract public class DapUtil // Should only contain static methods
         List<DapNode> nodes = dataset.getNodeList();
         for(DapNode node : nodes) {
             switch (node.getSort()) {
-            case ATOMICVARIABLE:
-            case STRUCTURE:
-            case SEQUENCE:
+            case VARIABLE:
                 u.put((DapVariable) node);
                 break;
             default:
@@ -422,18 +434,6 @@ abstract public class DapUtil // Should only contain static methods
         return u;
     }
 */
-    static public List<Slice>
-    dimsetSlices(List<DapDimension> dimset)
-            throws dap4.core.util.DapException
-    {
-        List<Slice> slices = new ArrayList<Slice>(dimset.size());
-        for(int i = 0; i < dimset.size(); i++) {
-            DapDimension dim = dimset.get(i);
-            Slice s = new Slice(dim);
-            slices.add(s);
-        }
-        return slices;
-    }
 
     /**
      * Test a List<Slice> against set of DapDimensions
@@ -456,7 +456,6 @@ abstract public class DapUtil // Should only contain static methods
         }
         return true;
     }
-
 
     static public long
     sliceProduct(List<Slice> slices) // another crossproduct
@@ -494,8 +493,10 @@ abstract public class DapUtil // Should only contain static methods
     join(String[] array, String sep, int from, int upto)
     {
         if(sep == null) sep = "";
-        if(from < 0 || upto <= from || upto > array.length)
+        if(from < 0 || upto > array.length)
             throw new IndexOutOfBoundsException();
+        if(upto <= from)
+            return "";
         StringBuilder result = new StringBuilder();
         boolean first = true;
         for(int i = from; i < upto; i++, first = false) {
@@ -526,10 +527,11 @@ abstract public class DapUtil // Should only contain static methods
     static public boolean
     hasDriveLetter(String path)
     {
+        boolean hasdr = false;
         if(path != null && path.length() >= 2) {
-            return (DRIVELETTERS.indexOf(path.charAt(0)) >= 0 && path.charAt(1) == ':');
+            hasdr = (DRIVELETTERS.indexOf(path.charAt(0)) >= 0 && path.charAt(1) == ':');
         }
-        return false;
+        return hasdr;
     }
 
     /**
@@ -698,7 +700,25 @@ abstract public class DapUtil // Should only contain static methods
     {
         List<DapDimension> dims = template.getDimensions();
         long[] dimsizes = DapUtil.getDimSizes(dims);
-        return indexToSlices(Index.offsetToIndex(offset, dimsizes), template);
+        return indexToSlices(offsetToIndex(offset, dimsizes), template);
+    }
+
+    /**
+     * Given an offset (single index) and a set of dimensions
+     * compute the set of dimension indices that correspond
+     * to the offset.
+     */
+
+    static public Index
+    offsetToIndex(long offset, long[] dimsizes)
+    {
+        // offset = d3*(d2*(d1*(x1))+x2)+x3
+        long[] indices = new long[dimsizes.length];
+        for(int i = dimsizes.length - 1; i >= 0; i--) {
+            indices[i] = offset % dimsizes[i];
+            offset = (offset - indices[i]) / dimsizes[i];
+        }
+        return new Index(indices, dimsizes);
     }
 
     /**
@@ -711,11 +731,14 @@ abstract public class DapUtil // Should only contain static methods
     indexToSlices(Index indices)
             throws DapException
     {
+        // short circuit the scalar case
+        if(indices.getRank() == 0)
+            return Slice.SCALARSLICES;
         // offset = d3*(d2*(d1*(x1))+x2)+x3
         List<Slice> slices = new ArrayList<>(indices.rank);
         for(int i = 0; i < indices.rank; i++) {
             long isize = indices.indices[i];
-            slices.add(new Slice(isize, isize, 1, indices.dimsizes[i]));
+            slices.add(new Slice(isize, isize + 1, 1, indices.dimsizes[i]));
         }
         return slices;
     }
@@ -734,6 +757,69 @@ abstract public class DapUtil // Should only contain static methods
             if(sl.getStride() != 1) return false;
         }
         return true;
+    }
+
+    /**
+     * Test if a set of slices represent a single position
+     *
+     * @param slices
+     * @return
+     */
+    static public boolean
+    isSinglePoint(List<Slice> slices)
+    {
+        for(Slice sl : slices) {
+            if(sl.getCount() != 1) return false;
+        }
+        return true;
+    }
+
+    /**
+     * If a set of slices refers to a single position,
+     * then return the corresponding Index. Otherwise,
+     * throw Exception.
+     *
+     * @param slices
+     * @return Index corresponding to slices
+     * @throws DapException
+     */
+    static public Index
+    slicesToIndex(List<Slice> slices)
+            throws DapException
+    {
+        long[] positions = new long[slices.size()];
+        long[] dimsizes = new long[slices.size()];
+        for(int i = 0; i < positions.length; i++) {
+            Slice s = slices.get(i);
+            if(s.getCount() != 1)
+                throw new DapException("Attempt to convert non-singleton sliceset to index");
+            positions[i] = s.getFirst();
+            dimsizes[i] = s.getMax();
+        }
+        return new Index(positions, dimsizes);
+    }
+
+    static public List<Slice>
+    dimsetToSlices(List<DapDimension> dimset)
+            throws dap4.core.util.DapException
+    {
+        if(dimset == null || dimset.size() == 0)
+            return Slice.SCALARSLICES;
+        List<Slice> slices = new ArrayList<Slice>(dimset.size());
+        for(int i = 0; i < dimset.size(); i++) {
+            DapDimension dim = dimset.get(i);
+            Slice s = new Slice(dim);
+            slices.add(s);
+        }
+        return slices;
+    }
+
+    static public boolean
+    isScalarSlices(List<Slice> slices)
+    {
+        if(slices == null || slices.size() != 1) return false;
+        Slice s = slices.get(0);
+        return (s.getFirst() == 0 && s.getStop() == 1);
     }
 
 }

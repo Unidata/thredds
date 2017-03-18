@@ -180,7 +180,7 @@ public class TestFilters extends DapTestCommon
                                     printer.printvalue('S', 2);
                                 }
                                 printer.newline();
-                                printer.printchecksum();
+                                printer.verifychecksum();
                             }
                         }));
         this.alltestcases.add(
@@ -195,7 +195,7 @@ public class TestFilters extends DapTestCommon
                             printer.printvalue('S', 2);
                         }
                         printer.newline();
-                        printer.printchecksum();
+                        printer.verifychecksum();
                     }
                 }));
 
@@ -262,7 +262,7 @@ public class TestFilters extends DapTestCommon
             visual(methodurl, sdmr);
 
         Dump printer = new Dump();
-        String sdata = printer.dumpdata(reader, true, reader.getByteOrder(), testcase.template);
+        String sdata = printer.dumpdata(reader, true, reader.getRemoteByteOrder(), testcase.template);
 
         if(prop_visual)
             visual(testcase.title + ".dap", sdata);

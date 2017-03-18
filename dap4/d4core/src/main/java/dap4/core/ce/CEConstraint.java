@@ -9,10 +9,7 @@ import dap4.core.data.Constraint;
 import dap4.core.data.DataCursor;
 import dap4.core.dmr.*;
 import dap4.core.dmr.parser.ParseException;
-import dap4.core.util.DapException;
-import dap4.core.util.DapSort;
-import dap4.core.util.Index;
-import dap4.core.util.Slice;
+import dap4.core.util.*;
 
 import java.util.*;
 
@@ -144,7 +141,8 @@ public class CEConstraint implements Constraint
         {
             StringBuilder buf = new StringBuilder();
             buf.append(var.getFQN());
-            buf.append(slices.toString());
+            if(slices != null)
+                buf.append(slices.toString());
             if(this.filter != null) {
                 buf.append("|");
                 buf.append(filter.toString());
@@ -281,22 +279,22 @@ public class CEConstraint implements Constraint
         universals.remove(dmr);
     }
 
-    static protected Object
-    fieldValue(DapSequence seq, DataCursor record, String field)
+    static protected DataCursor
+    fieldValue(DapVariable sqvar, DapSequence seq, DataCursor record, String field)
             throws DapException
     {
         DapVariable dapv = seq.findByName(field);
         if(dapv == null)
             throw new DapException("Unknown variable in filter: " + field);
-        if(dapv.getSort() != DapSort.ATOMICVARIABLE)
+        if(!dapv.isAtomic())
             throw new DapException("Non-atomic variable in filter: " + field);
         if(dapv.getRank() > 0)
             throw new DapException("Non-scalar variable in filter: " + field);
         int fieldindex = seq.indexByName(field);
-        DataCursor da = (DataCursor) (record.getField(fieldindex));
+        DataCursor da = (DataCursor) (record.readField(fieldindex));
         if(da == null)
             throw new DapException("No such field: " + field);
-        return da.read(Index.SCALAR);
+        return da;
     }
 
     static protected int
@@ -332,7 +330,7 @@ public class CEConstraint implements Constraint
      * @returns the value of the expression (usually a Boolean)
      */
     protected Object
-    eval(DapSequence seq, DataCursor record, CEAST expr)
+    eval(DapVariable var, DapSequence seq, DataCursor record, CEAST expr)
             throws DapException
     {
         switch (expr.sort) {
@@ -341,11 +339,11 @@ public class CEConstraint implements Constraint
             return expr.value;
 
         case SEGMENT:
-            return fieldValue(seq, record, expr.name);
+            return fieldValue(var, seq, record, expr.name);
 
         case EXPR:
-            Object lhs = eval(seq, record, expr.lhs);
-            Object rhs = (expr.rhs == null ? null : eval(seq, record, expr.rhs));
+            Object lhs = eval(var, seq, record, expr.lhs);
+            Object rhs = (expr.rhs == null ? null : eval(var, seq, record, expr.rhs));
             if(rhs != null)
                 switch (expr.op) {
                 case LT:
@@ -434,6 +432,8 @@ public class CEConstraint implements Constraint
     //////////////////////////////////////////////////
     // Accessors
 
+    public boolean isUniversal() {return false;}
+
     public DapDataset
     getDMR()
     {
@@ -480,11 +480,15 @@ public class CEConstraint implements Constraint
 
     public List<Slice>
     getConstrainedSlices(DapVariable var)
+            throws DapException
     {
+        List<Slice> slices = null;
         Segment seg = findSegment(var);
-        if(seg == null)
-            return null;
-        return seg.slices;
+        if(seg != null)
+            slices = seg.slices;
+        if(slices == null)
+            slices = Universal.universalSlices(var);
+        return slices;
     }
 
     public List<DapDimension>
@@ -579,7 +583,8 @@ public class CEConstraint implements Constraint
         if(slices == null)
             dimset = new ArrayList<DapDimension>();
         else
-            assert dimset.size() == slices.size();
+            assert (dimset.size() == 0 && DapUtil.isScalarSlices(slices))
+                    || (dimset.size() == slices.size());
         for(int i = 0; i < dimset.size(); i++) {
             Slice slice = slices.get(i);
             DapDimension dim = dimset.get(i);
@@ -588,16 +593,17 @@ public class CEConstraint implements Constraint
             } catch (DapException de) {
             }
         }
+        DapType basetype = seg.var.getBaseType();
+
         // if the var is atomic, then we are done
-        if(seg.var.getSort() == DapSort.ATOMICVARIABLE)
+        if(basetype.isAtomic())
             return;
         // If structure and all fields are in the view, then done
-        if(seg.var.getSort() == DapSort.STRUCTURE
-                || seg.var.getSort() == DapSort.SEQUENCE) {
-            if(!isWholeCompound((DapStructure) seg.var)) {
+        if(basetype.getTypeSort().isCompound()) {
+            DapStructure struct = (DapStructure)basetype;
+            if(!isWholeCompound(struct)) {
                 // Need to insert {...} and recurse
                 buf.append(LBRACE);
-                DapStructure struct = (DapStructure) seg.var;
                 boolean first = true;
                 for(DapVariable field : struct.getFields()) {
                     if(!first) buf.append(";");
@@ -607,8 +613,7 @@ public class CEConstraint implements Constraint
                 }
                 buf.append(RBRACE);
             }
-            if(seg.var.getSort() == DapSort.SEQUENCE
-                    && seg.filter != null) {
+            if(basetype.getTypeSort().isSeqType() && seg.filter != null) {
                 buf.append("|");
                 buf.append(seg.filter.toString());
             }
@@ -639,9 +644,7 @@ public class CEConstraint implements Constraint
         case ENUMERATION:
             isref = (this.enums.contains((DapEnumeration) node));
             break;
-        case ATOMICVARIABLE:
-        case SEQUENCE:
-        case STRUCTURE:
+        case VARIABLE:
             isref = (findVariableIndex((DapVariable) node) >= 0);
             break;
         case GROUP:
@@ -718,16 +721,16 @@ public class CEConstraint implements Constraint
      * @throws DapException
      * @returns true if the filter matches the record
      */
-    public boolean match(DapSequence seq, DataCursor rec)
+    public boolean match(DapVariable sqvar, DapSequence seq, DataCursor rec)
             throws DapException
     {
-        Segment sseq = findSegment(seq);
+        Segment sseq = findSegment(sqvar);
         if(sseq == null)
             return false;
         CEAST filter = sseq.filter;
         if(filter == null)
             return true;
-        return matches(seq, rec, filter);
+        return matches(sqvar, seq, rec, filter);
 
     }
 
@@ -741,10 +744,10 @@ public class CEConstraint implements Constraint
      * @returns true if a match
      */
     protected boolean
-    matches(DapSequence seq, DataCursor rec, CEAST filter)
+    matches(DapVariable var, DapSequence seq, DataCursor rec, CEAST filter)
             throws DapException
     {
-        Object value = eval(seq, rec, filter);
+        Object value = eval(var, seq, rec, filter);
         return ((Boolean) value);
     }
 
@@ -787,8 +790,9 @@ public class CEConstraint implements Constraint
             if(!var.isTopLevel())
                 continue;
             // prime the queue
-            if(var.getSort() == DapSort.STRUCTURE || var.getSort() == DapSort.SEQUENCE) {
-                DapStructure struct = (DapStructure) var; // remember Sequence subclass Structure
+            DapType base = var.getBaseType();
+            if(base.getTypeSort().isCompound()) {
+                DapStructure struct = (DapStructure) base; // remember Sequence subclass Structure
                 if(expansionCount(struct) == 0)
                     queue.add(var);
             }
@@ -796,15 +800,16 @@ public class CEConstraint implements Constraint
         // Process the queue in prefix order
         while(queue.size() > 0) {
             DapVariable vvstruct = queue.remove();
-            DapStructure dstruct = (DapStructure) vvstruct;
+            DapStructure dstruct = (DapStructure) vvstruct.getBaseType();
             for(DapVariable field : dstruct.getFields()) {
                 if(findVariableIndex(field) < 0) {
                     // Add field as leaf
                     this.segments.add(new Segment(field));
                     this.variables.add(field);
                 }
-                if(field.getSort() == DapSort.STRUCTURE || field.getSort() == DapSort.SEQUENCE) {
-                    if(expansionCount((DapStructure) field) == 0)
+                DapType fbase = field.getBaseType();
+                if(fbase.getTypeSort().isCompound()) {
+                    if(expansionCount((DapStructure) fbase) == 0)
                         queue.add(field);
                 }
             }
@@ -827,8 +832,9 @@ public class CEConstraint implements Constraint
         for(int i = 0; i < variables.size(); i++) {
             DapVariable var = variables.get(i);
             if(var.isTopLevel()) {
-                if(var.getSort() == DapSort.STRUCTURE || var.getSort() == DapSort.SEQUENCE) {
-                    contractR((DapStructure) var, contracted);
+                DapType base = var.getBaseType();
+                if(base.getTypeSort().isCompound()) {
+                    contractR((DapStructure) base, contracted);
                 }
             }
         }
@@ -853,9 +859,10 @@ public class CEConstraint implements Constraint
         for(DapVariable field : fields) {
             if(findVariableIndex(field) < 0)
                 break; // this compound cannot be contracted
-            if((field.getSort() == DapSort.STRUCTURE || field.getSort() == DapSort.SEQUENCE)
-                    && !contracted.contains((DapStructure) field)) {
-                if(!contractR((DapStructure) field, contracted))
+            DapType base = field.getBaseType();
+            if(base.getTypeSort().isCompound()
+                    && !contracted.contains((field))) {
+                if(!contractR((DapStructure)base, contracted))
                     break; // this compound cannot be contracted
             }
             processed++;
@@ -913,8 +920,9 @@ public class CEConstraint implements Constraint
                         break;
                 }
             }
-            if(field.getSort() == DapSort.STRUCTURE || field.getSort() == DapSort.SEQUENCE) {
-                if(!isWholeCompound((DapStructure) field))
+            DapType base = field.getBaseType();
+            if(base.getTypeSort().isCompound()) {
+                if(!isWholeCompound((DapStructure) base))
                     break; // this compound is not whole
 
             }
@@ -1026,7 +1034,7 @@ public class CEConstraint implements Constraint
     {
         for(int i = 0; i < variables.size(); i++) {
             DapVariable var = variables.get(i);
-            if(var.getSort() != DapSort.ATOMICVARIABLE)
+            if(var.getSort() != DapSort.VARIABLE)
                 continue;
             DapType daptype = var.getBaseType();
             if(!daptype.isEnumType())

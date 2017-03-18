@@ -31,7 +31,7 @@
       <Value>10</Value>
     </Attribute>  
     <Attribute name="a3" type="String">
-      <Value>abcd \"hello\" "quoted"</Value>
+      <Value>abcd &quot;hello&quot; &quot;quoted&quot;</Value>
     </Attribute>
     <Dim size="17"/>
   </Structure>
@@ -56,13 +56,14 @@
 
 <!-- Test FQN name processing -->
 <Group name="g.@/\$">
-<!-- Provide a dimension with a name that needs escaping "lon/2.\" -->
-<Dimension name="lon/2.\" size="20"/>
+<!-- Provide a dimension with a name that needs escaping 'lon/2.' -->
+<Dimension name="lon/2.&quot;" size="20"/>
 </Group>
 
-<!-- reference the dimension and group with funny names -->
+<!-- reference the dimension and group with funny names
+     remember to escape dots and forward slashes -->
 <Int32 name="funny">
-  <Dim name="/g\.@\/\\$/lon\/2\.\\"/>
+  <Dim name="/g\.@\/\\$/lon\/2\.&quot;"/>
 </Int32>
 
 <!-- embedded xml example; dap4.rng needs work

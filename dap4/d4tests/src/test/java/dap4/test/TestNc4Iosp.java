@@ -19,8 +19,6 @@ public class TestNc4Iosp extends DapTestCommon
 
     static protected final boolean NCDUMP = true;
 
-    static protected final boolean HDF5 = true; // false => NC4Iosp
-
     static protected final Mode mode = Mode.BOTH;
 
     //////////////////////////////////////////////////
@@ -57,7 +55,7 @@ public class TestNc4Iosp extends DapTestCommon
             this.title = dataset;
             this.dataset = dataset;
             this.testinputpath = canonjoin(this.inputroot, dataset);
-            this.baselinepath = canonjoin(this.baselineroot, dataset)+".nc4";
+            this.baselinepath = canonjoin(this.baselineroot, dataset) + ".nc4";
         }
 
         public String toString()
@@ -91,10 +89,8 @@ public class TestNc4Iosp extends DapTestCommon
     @Before
     public void setup() throws Exception
     {
-        if(!HDF5) {
-            CDMDSP.loadNc4Iosp();  // Load Nc4Iosp
-        }
         this.root = getResourceRoot();
+        testSetup();
         Nc4IospTest.setRoots(canonjoin(getResourceRoot(), TESTINPUTDIR),
                 canonjoin(getResourceRoot(), BASELINEDIR));
         defineAllTestcases();
@@ -114,11 +110,12 @@ public class TestNc4Iosp extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_atomic_types.nc");
+            chosentests = locate("test_struct_array.nc");
             prop_visual = true;
             prop_debug = true;
             //chosentests.add(new Nc4IospTest("test_test.nc"));
         } else {
+            prop_baseline = false;
             for(Nc4IospTest tc : alltestcases) {
                 chosentests.add(tc);
             }
@@ -169,19 +166,19 @@ public class TestNc4Iosp extends DapTestCommon
         String metadata = null;
         String data = null;
         if(mode == Mode.DMR || mode == Mode.BOTH) {
-            metadata = (NCDUMP ? ncdumpmetadata(ncfile) : null);
+            metadata = (NCDUMP ? ncdumpmetadata(ncfile,testcase.dataset) : null);
             if(prop_visual)
                 visual("Meta Data: ", metadata);
         }
         if(mode == Mode.DATA || mode == Mode.BOTH) {
-            data = (NCDUMP ? ncdumpdata(ncfile) : null);
+            data = (NCDUMP ? ncdumpdata(ncfile,testcase.dataset) : null);
             if(prop_visual)
                 visual("Data: ", data);
         }
 
         String baselinefile = String.format("%s", testcase.baselinepath);
-        System.err.println("Testpath: "+testcase.testinputpath);
-        System.err.println("Baseline: "+baselinefile);
+        System.err.println("Testpath: " + testcase.testinputpath);
+        System.err.println("Baseline: " + baselinefile);
         if(prop_baseline) {
             if(mode == Mode.DMR || mode == Mode.BOTH)
                 writefile(baselinefile + ".dmr", metadata);
@@ -194,9 +191,10 @@ public class TestNc4Iosp extends DapTestCommon
                 System.err.println("DMR Comparison:");
                 try {
                     baselinecontent = readfile(baselinefile + ".dmr");
-                    Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, metadata));
+                    boolean pass = same(getTitle(), baselinecontent, metadata);
+                    Assert.assertTrue("***Fail", pass);
                 } catch (IOException ioe) {
-                    Assert.assertTrue("baselinefile" + ".dmr: " + ioe.getMessage(),false);
+                    Assert.assertTrue("baselinefile" + ".dmr: " + ioe.getMessage(), false);
                 }
             }
             if(mode == Mode.DATA || mode == Mode.BOTH) {
@@ -206,7 +204,7 @@ public class TestNc4Iosp extends DapTestCommon
                     Assert.assertTrue("***Data Fail", same(getTitle(), baselinecontent, data));
 
                 } catch (IOException ioe) {
-                    Assert.assertTrue("baselinefile" + ".dap: " + ioe.getMessage(),false);
+                    Assert.assertTrue("baselinefile" + ".dap: " + ioe.getMessage(), false);
                 }
             }
         }
@@ -239,16 +237,22 @@ public class TestNc4Iosp extends DapTestCommon
     //////////////////////////////////////////////////
     // Dump methods
 
-    String ncdumpmetadata(NetcdfDataset ncfile)
+    String ncdumpmetadata(NetcdfDataset ncfile, String datasetname)
     {
         boolean ok = false;
         String metadata = null;
         StringWriter sw = new StringWriter();
 
+        StringBuilder args = new StringBuilder("-strict -unsigned");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
+
         // Print the meta-databuffer using these args to NcdumpW
         ok = false;
         try {
-            ok = ucar.nc2.NCdumpW.print(ncfile, "-unsigned", sw, null);
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             ok = false;
@@ -257,24 +261,31 @@ public class TestNc4Iosp extends DapTestCommon
             sw.close();
         } catch (IOException e) {
         }
-        ;
+
         if(!ok) {
             System.err.println("NcdumpW failed");
             System.exit(1);
         }
-        return shortenFileName(sw.toString(), ncfile.getLocation());
+        //return shortenFileName(sw.toString(), ncfile.getLocation());
+        return sw.toString();
     }
 
-    String ncdumpdata(NetcdfDataset ncfile)
+    String ncdumpdata(NetcdfDataset ncfile, String datasetname)
     {
         boolean ok = false;
         StringWriter sw = new StringWriter();
+
+        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
 
         // Dump the databuffer
         sw = new StringWriter();
         ok = false;
         try {
-            ok = ucar.nc2.NCdumpW.print(ncfile, "-vall -unsigned", sw, null);
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             ok = false;
@@ -288,7 +299,8 @@ public class TestNc4Iosp extends DapTestCommon
             System.err.println("NcdumpW failed");
             System.exit(1);
         }
-        return shortenFileName(sw.toString(), ncfile.getLocation());
+        //return shortenFileName(sw.toString(), ncfile.getLocation());
+        return sw.toString();
     }
 
 

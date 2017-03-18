@@ -4,9 +4,11 @@
 
 package dap4.dap4lib.serial;
 
+import dap4.core.dmr.DapAttribute;
 import dap4.core.dmr.DapDataset;
-import dap4.core.dmr.DapVariable;
+import dap4.core.util.DapDump;
 import dap4.core.util.DapException;
+import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
 import dap4.dap4lib.DMRPrinter;
 
@@ -15,8 +17,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * DAP4 Serial to DSP interface
@@ -32,6 +32,8 @@ abstract public class D4DSP extends AbstractDSP
     // Constants
 
     static public boolean DEBUG = false;
+    static public boolean DUMPDMR = false;
+    static public boolean DUMPDAP = false;
 
     static protected final String DAPVERSION = "4.0";
     static protected final String DMRVERSION = "1.0";
@@ -59,7 +61,7 @@ abstract public class D4DSP extends AbstractDSP
     /*packge*/ ByteBuffer
     getBuffer()
     {
-          return databuffer;
+        return databuffer;
     }
 
     //////////////////////////////////////////////////
@@ -70,14 +72,18 @@ abstract public class D4DSP extends AbstractDSP
             throws DapException
     {
         DapDataset dmr = parseDMR(document);
-        if(DEBUG)  {
-            StringWriter sw = new StringWriter();
-            PrintWriter pw = new PrintWriter(sw);
-            DMRPrinter printer = new DMRPrinter(dmr,pw);
-            try {printer.print(); pw.close(); sw.close();} catch (IOException e) {};
+
+        if(DEBUG || DUMPDMR) {
+            System.err.println("\n+++++++++++++++++++++");
+            System.err.println(dmr);
+            System.err.println("+++++++++++++++++++++\n");
+        }
+        if(DEBUG || DUMPDAP) {
+            ByteBuffer data = ByteBuffer.wrap(serialdata);
             System.err.println("+++++++++++++++++++++");
-            System.err.println(sw.toString());
-            System.err.println("+++++++++++++++++++++");
+            System.err.println("\n---------------------");
+            DapDump.dumpbytes(data, false);
+            System.err.println("\n---------------------\n");
         }
         build(dmr, serialdata, order);
     }
@@ -98,7 +104,7 @@ abstract public class D4DSP extends AbstractDSP
         setDMR(dmr);
         // "Compile" the databuffer section of the server response
         this.databuffer = ByteBuffer.wrap(serialdata).order(order);
-        D4DataCompiler compiler = new D4DataCompiler(this, checksummode, this.databuffer);
+        D4DataCompiler compiler = new D4DataCompiler(this, getChecksumMode(), getOrder(), this.databuffer);
         compiler.compile();
     }
 

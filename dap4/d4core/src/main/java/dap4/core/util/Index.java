@@ -91,22 +91,18 @@ public class Index
         return this.indices[i];
     }
 
-    /**
-     * Given an offset (single index) and a set of dimensions
-     * compute the set of dimension indices that correspond
-     * to the offset.
-     */
-
-    static public Index
-    offsetToIndex(long offset, long[] dimsizes)
-    {
-        // offset = d3*(d2*(d1*(x1))+x2)+x3
-        long[] indices = new long[dimsizes.length];
-        for(int i = dimsizes.length - 1; i >= 0; i--) {
-            indices[i] = offset % dimsizes[i];
-            offset = (offset - indices[i]) / dimsizes[i];
+    public long
+        getSize(int i)
+        {
+            if(i < 0 || i >= this.rank)
+                throw new IllegalArgumentException();
+            return this.dimsizes[i];
         }
-        return new Index(indices, dimsizes);
+
+    public boolean isScalar()
+    {
+        return (rank == 0 && indices.length == 1 && index() == 1);
     }
+
 
 }

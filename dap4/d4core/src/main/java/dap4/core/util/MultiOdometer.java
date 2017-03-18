@@ -6,7 +6,6 @@ package dap4.core.util;
 import dap4.core.dmr.DapDimension;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,10 +21,11 @@ public class MultiOdometer extends Odometer
     //////////////////////////////////////////////////
     // Instance variables
 
-    protected Slice[] cache;
     protected int current; // pointers into multslice list
-    protected long[][] setindices; // enumeration of the possible slice sets
-    protected long[] sizes;
+    protected long[] sizes; // # of subslices in each slice
+    protected List<List<Slice>> slicesets; // Set of all combinations of slices
+    protected List<Odometer> odomset;  // Odometers created from slicesets
+
     //////////////////////////////////////////////////
     // Constructor(s)
 
@@ -36,38 +36,56 @@ public class MultiOdometer extends Odometer
     public MultiOdometer(List<Slice> set)
             throws DapException
     {
-	this(set,null);
+        this(set, null);
     }
 
     public MultiOdometer(List<Slice> set, List<DapDimension> dimset)
             throws DapException
     {
         super(set, dimset);
-        this.cache = set.toArray(new Slice[set.size()]);
+        super.ismulti = true;
         this.sizes = new long[this.rank];
+        this.odomset = new ArrayList<>();
         for(int i = 0; i < this.rank; i++) {
             Slice sl = set.get(i);
-            switch (sl.getSort()) {
-            case Single:
-                this.sizes[i] = 1;
-                break;
-            case Multi:
-                this.sizes[i] = ((MultiSlice) sl).getSlices().size();
-            }
+            List<Slice> subslices = sl.getSubSlices();
+            this.sizes[i] = subslices.size();
         }
         int truerank = this.rank;
-        if(truerank == 0)
-            this.setindices = null;
-        else {
+        if(truerank == 0) {
+            this.slicesets = null;
+            this.odomset = null;
+        } else {
             PowerSet ps = new PowerSet(this.sizes);
-            this.setindices = ps.getPowerSet();
+            long pssize = ps.getTotalSize();
+            long[][] setindices = ps.getPowerSet();
+            assert setindices.length == pssize;
+            this.slicesets = new ArrayList<>();
             if(DEBUG) {
                 System.err.printf("Multi: |slicesets| = %d%n", setindices.length);
                 System.err.println(ps.toString());
             }
+            // Create set of slicsets comprising this MultiOdometer
+            for(int i = 0; i < pssize; i++) {
+                long[] indexset = setindices[i];
+                assert indexset.length == truerank;
+                // Pick out the desired set of slices
+                List<Slice> subset = new ArrayList<>();
+                for(int j=0;j<this.rank;j++) {
+                    Slice s0 = set.get(j);
+                    Slice ss = s0.getSubSlice((int) indexset[j]);
+                    subset.add(ss);
+                }
+                this.slicesets.add(subset);
+            }
+            assert this.slicesets.size() == pssize;
+            // Create set of odometers comprising this MultiOdometer
+            for(int i = 0; i < pssize; i++) {
+                Odometer sslodom = Odometer.factory(this.slicesets.get(i),dimset);
+                this.odomset.add(sslodom);
+            }
         }
         this.current = 0;
-        moveToNextSet(); // prime the iteration
     }
 
     //////////////////////////////////////////////////
@@ -77,7 +95,7 @@ public class MultiOdometer extends Odometer
     {
         StringBuilder buf = new StringBuilder();
         for(int i = 0; i < rank; i++) {
-            Slice s = this.cache[i];
+            Slice s = slice(i);
             if(i == current)
                 buf.append("*");
             buf.append(s.toString());
@@ -86,87 +104,32 @@ public class MultiOdometer extends Odometer
         return buf.toString();
     }
 
-    /*
-    protected List<List<Slice>>
-    generate(int pos)
-    {
-        List<List<Slice>> listlist = null;
-        List<Slice> list = null;
-        if(pos == this.slices.length) // terminate recursion
-            listlist = new ArrayList<List<Slice>>();
-        else {
-            Slice slice = this.slices[pos];
-            switch (slice.getSort()) {
-            case Single:
-                listlist = generate(pos + 1);
-                for(List<Slice> l : listlist) // prefix with this slice
-                {
-                    l.add(0, slice);
-                }
-                break;
-            case Multi:
-                MultiSlice ms = (MultiSlice) slice;
-                for(int i = 0; i < ms.getSlices().size(); i++) {
-                    slice = ms.getSlices().get(i);
-                    list = new ArrayList();
-                    list.add(slice);
-                    listlist = generate(pos + 1);
-                    listlist.add(0, list);
-                }
-                break;
-            }
-        }
-        return listlist;
-    }
-    */
-//////////////////////////////////////////////////
-// Iterator API Overrides
+    //////////////////////////////////////////////////
+    // Iterator API Overrides
 
     @Override
     public boolean
     hasNext()
     {
-        if(super.hasNext())
+        if(this.current >= odomset.size())
+            return false;
+        Odometer ocurrent = odomset.get(this.current);
+        if(ocurrent.hasNext())
             return true;
-        if(this.setindices != null && current + 1 < this.setindices.length)
-            return true;
-        return false;
+        // Try to move to next odometer
+        this.current++;
+        return hasNext();
     }
 
     @Override
     public Index
     next()
     {
-        if(super.hasNext())
-            return super.next();
-        // move to the next set of slices
-        current++;
-        if(this.setindices == null || current >= this.setindices.length)
+        if(this.current >= odomset.size())
             throw new NoSuchElementException();
-        moveToNextSet();
-        this.state = STATE.INITIAL;
-        return super.next();
-    }
-
-    protected void
-    moveToNextSet()
-    {
-        if(this.setindices == null)
-            return;
-        long[] indices = this.setindices[current];
-        this.slices = new Slice[this.rank];
-        for(int i = 0; i < this.rank; i++) {
-            Slice sl = this.cache[i];
-            if(sl.getSort() == Slice.Sort.Multi) {
-                int ii = (int) indices[i];
-                MultiSlice msl = (MultiSlice) sl;
-                Slice s = msl.getSlices().get(ii);
-                this.slices[i] = s;
-            }
-        }
-        if(DEBUG)
-            System.err.println("Multislice: " + this.toString());
-        super.reset();
+        Odometer ocurrent = odomset.get(this.current);
+        assert ocurrent.hasNext();
+        return ocurrent.next();
     }
 
     @Override
@@ -184,9 +147,16 @@ public class MultiOdometer extends Odometer
     {
         long size = 1;
         for(int i = 0; i < this.rank; i++) {
-            size *= cache[i].getCount();
+            size *= slice(i).getCount();
         }
         return size;
+    }
+
+    @Override
+    public List<Odometer>
+    getSubOdometers()
+    {
+        return this.odomset;
     }
 
 }

@@ -32,7 +32,10 @@ abstract public class DapDump
         if(limit0 > MAXLIMIT) limit0 = MAXLIMIT;
         if(limit0 >= buf0.limit()) limit0 = buf0.limit();
         if(skipdmr) {
+            ByteOrder saveorder = buf0.order();
+            buf0.order(ByteOrder.BIG_ENDIAN); // must read in network order
             skipcount = buf0.getInt(); //dmr count
+            buf0.order(saveorder);
             skipcount &= 0xFFFFFF; // mask off the flags to get true count
             skipcount += 4; // skip the count also
         }
@@ -58,15 +61,19 @@ abstract public class DapDump
     {
         int stop = buf0.limit();
         int size = stop + 8;
-        ByteBuffer buf = ByteBuffer.allocate(size).order(buf0.order());
-        Arrays.fill(buf.array(), (byte) 0);
-        buf.put(buf0.array());
+        int savepos = buf0.position();
+        assert savepos == 0;
+        byte[] bytes = new byte[size];
+        Arrays.fill(bytes, (byte) 0);
+        buf0.get(bytes,0,stop);
+        buf0.position(savepos);
+        ByteBuffer buf = ByteBuffer.wrap(bytes).order(buf0.order());
         buf.position(0);
         buf.limit(size);
         int i = 0;
         try {
             for(i = 0; buf.position() < stop; i++) {
-                int savepos = buf.position();
+                savepos = buf.position();
                 int iv = buf.getInt();
                 buf.position(savepos);
                 long lv = buf.getLong();
@@ -74,10 +81,10 @@ abstract public class DapDump
                 short sv = buf.getShort();
                 buf.position(savepos);
                 byte b = buf.get();
+                int ub = ((int)b) & 0x000000FF;
                 long uiv = ((long) iv) & 0xFFFFFFFFL;
                 int usv = ((int) sv) & 0xFFFF;
                 int ib = (int) b;
-                int ub = (iv & 0xFF);
                 char c = (char) ub;
                 String s = Character.toString(c);
                 if(c == '\r') s = "\\r";

@@ -29,10 +29,10 @@
     <String name="vs"/>
     <Opaque name="vo"/>
     <Byte name="primary_cloud">
-        <Attribute name="_FillValue" type="String" value="Missing"/>
+        <Attribute name="_FillValue" type="/cloud_class_t" value="Missing"/>
     </Byte>
     <Byte name="secondary_cloud">
-        <Attribute name="_FillValue" type="String" value="Missing"/>
+        <Attribute name="_FillValue" type="/cloud_class_t" value="Missing"/>
     </Byte>
     <Attribute name="_CoordSysBuilder" type="String" value="ucar.nc2.dataset.conv.DefaultConvention"/>
 </Dataset>

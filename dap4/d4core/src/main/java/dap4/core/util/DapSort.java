@@ -26,13 +26,14 @@ public enum DapSort
     ATTRIBUTE("Attribute", DapAttribute.class, ATTRIBUTESET, OTHERXML),
     DIMENSION("Dimension", DapDimension.class),
     MAP("Map", DapMap.class),
-    ATOMICVARIABLE("Variable", DapVariable.class),
+    VARIABLE("Variable", DapVariable.class),
     DATASET("Dataset", DapDataset.class),
     GROUP("Group", DapGroup.class, DATASET),
     ENUMERATION("Enumeration", DapEnumeration.class),
     ENUMCONST("EnumConst", DapEnumConst.class),
-    SEQUENCE("Sequence", DapSequence.class),
-    STRUCTURE("Structure", DapStructure.class,SEQUENCE),;
+    SEQUENCE("Sequence", DapSequence.class),    // sequence type, not variable
+    STRUCTURE("Structure", DapStructure.class, SEQUENCE),  // structure type, not variable
+    ;
 
     private final String name;
     private final Class classfor;
@@ -72,5 +73,26 @@ public enum DapSort
         }
         return false;
     }
-};
+
+    public boolean isVar()
+    {
+        return this == VARIABLE;
+    }
+
+    public boolean isGroup()
+       {
+           return this == DATASET || this == GROUP;
+       }
+
+    public boolean isType()
+    {
+        return this == ATOMICTYPE || this == SEQUENCE || this == STRUCTURE || this == ENUMERATION;
+    }
+
+    public boolean isCompound()
+    {
+        return this == SEQUENCE || this == STRUCTURE;
+    }
+}
+
 

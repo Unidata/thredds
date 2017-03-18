@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Dataset
          name="test_atomic_types.nc"
          dapVersion="4.0"
@@ -32,13 +33,16 @@
     <String name="vs"/>
     <Opaque name="vo"/>
     <Enum name="primary_cloud" enum="/cloud_class_t">
-        <Attribute name="_FillValue" type="String">
+        <Attribute name="_FillValue" type="/cloud_class_t">
             <Value value="Missing"/>
         </Attribute>
     </Enum>
     <Enum name="secondary_cloud" enum="/cloud_class_t">
-        <Attribute name="_FillValue" type="String">
+        <Attribute name="_FillValue" type="/cloud_class_t">
             <Value value="Missing"/>
         </Attribute>
     </Enum>
+    <Attribute name="_DAP4_Little_Endian" type="UInt8">
+        <Value value="1"/>
+    </Attribute>
 </Dataset>

@@ -20,7 +20,6 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,7 +142,7 @@ abstract public class CDMUtil
 
     static public List<ucar.ma2.Range>
     createCDMRanges(List<Slice> slices)
-            throws IOException
+            throws DapException
     {
         List<ucar.ma2.Range> cdmranges = new ArrayList<Range>();
         for(int i = 0; i < slices.size(); i++) {
@@ -155,7 +154,7 @@ abstract public class CDMUtil
                         (int) r.getStride());
                 cdmranges.add(cmdr);
             } catch (InvalidRangeException ire) {
-                throw new IOException(ire);
+                throw new DapException(ire);
             }
         }
         return cdmranges;
@@ -228,7 +227,17 @@ abstract public class CDMUtil
     static public boolean
     hasVLEN(Variable v)
     {
-        for(Dimension dim : v.getDimensions()) {
+        return containsVLEN(v.getDimensions());
+    }
+
+    /**
+     * Test if any dimension is variable length
+     */
+    static public boolean
+    containsVLEN(List<Dimension> dimset)
+    {
+        if(dimset == null) return false;
+        for(Dimension dim : dimset) {
             if(dim.isVariableLength())
                 return true;
         }
@@ -260,19 +269,18 @@ abstract public class CDMUtil
     static public int
     computeVariableSize(View view, DapVariable var, boolean scalar)
     {
+	DapType dt = var.getBaseType();
         ViewVariable annotation = view.getAnnotation(var);
         int dimproduct = (scalar ? 1 : computeDimProduct(annotation.getSlices()));
         int elementsize = 0;
-        switch (var.getSort()) {
-        case ATOMICVARIABLE:
-	        // This does not work for String or Opaque.
-            DapType dt = ((DapAtomicVariable) var).getBaseType();
+        switch (dt.getTypeSort()) {
+	default: // atomic variable
+            // This does not work for String or Opaque.
             elementsize =  CDMUtil.daptypeSize(dt.getTypeSort());
             break;
         case STRUCTURE:
         case SEQUENCE:
-        case GRID:
-            for(DapVariable field : ((DapStructure) var).getFields()) {
+            for(DapVariable field : ((DapStructure) dt).getFields()) {
                 elementsize += computeVariableSize(dataset, field, false);
             }
             break;
@@ -568,11 +576,13 @@ abstract public class CDMUtil
     {
         int rank = d4.getRank();
         int[] shape = new int[rank];
+        int[] indices = new int[rank];
         for(int i = 0; i < rank; i++) {
-            shape[i] = (int)d4.get(i);
+            indices[i] = (int) d4.get(i);
+            shape[i] = (int) d4.getSize(i);
         }
-        ucar.ma2.Index cdm =  ucar.ma2.Index.factory(shape);
+        ucar.ma2.Index cdm = ucar.ma2.Index.factory(shape);
+        cdm.set(indices);
         return cdm;
     }
-
 }

@@ -11,8 +11,7 @@ import dap4.core.dmr.DapSequence;
 import dap4.core.dmr.DapStructure;
 import dap4.core.dmr.DapType;
 import dap4.core.dmr.DapVariable;
-import dap4.core.util.DapException;
-import dap4.core.util.DapUtil;
+import dap4.core.util.*;
 import ucar.ma2.*;
 import ucar.nc2.Group;
 
@@ -135,19 +134,20 @@ import java.util.List;
     CDMArraySequence(Group group, DataCursor data)
             throws DapException
     {
-        super(CDMArrayStructure.computemembers((DapStructure) data.getTemplate()),
+        super(CDMArrayStructure.computemembers((DapVariable) data.getTemplate()),
                 new SDI(), 0);
         this.template = (DapVariable) data.getTemplate();
+        this.basetype =  this.template.getBaseType();
         // Currently do not allow non-scalar sequences
         if(this.template.getRank() != 0)
             throw new DapException("Non-scalar sequences unsupported through CDM interface");
-        assert data.getScheme() == DataCursor.Scheme.SEQUENCE;
+        assert data.getScheme() == DataCursor.Scheme.SEQARRAY;
         this.cdmroot = group;
         this.dsp = dsp;
-        this.basetype = this.template.getBaseType();
-        this.seqdata = data;
+        // Since this is a scalar, pull out the single instance
+        this.seqdata = ((DataCursor[])data.read(dap4.core.util.Index.SCALAR))[0];
         this.recordcount = this.seqdata.getRecordCount();
-        this.nmembers = ((DapStructure) template).getFields().size();
+        this.nmembers = ((DapStructure)this.basetype).getFields().size();
 
         // Fill in the structdata (in parent) and record vectors
         super.sdata = new StructureDataA[(int) this.recordcount];
@@ -206,8 +206,9 @@ import java.util.List;
     public String toString()
     {
         StringBuilder buf = new StringBuilder();
-        DapSequence seq = (DapSequence) this.template;
-        long dimsize = DapUtil.dimProduct(seq.getDimensions());
+        DapVariable var = this.template;
+        DapSequence seq = (DapSequence)this.basetype;
+        long dimsize = DapUtil.dimProduct(var.getDimensions());
         for(int i = 0; i < dimsize; i++) {
             List<DapVariable> fields = seq.getFields();
             if(i < (dimsize - 1))
@@ -302,8 +303,7 @@ import java.util.List;
             FieldSet fs = records[i];
             values[i] = fs.fields[memberindex];
         }
-        DapSequence template = (DapSequence)this.getTemplate();
-                DapVariable field = template.getField(memberindex);
+        DapVariable field = ((DapStructure)this.basetype).getField(memberindex);
         DapType base = field.getBaseType();
         if(base == null)
             throw new IllegalStateException("Unknown field type: "+field);

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,11 +20,13 @@ public class TestSerial extends DapTestCommon
 {
     static protected final boolean DEBUG = false;
 
+    static protected final String TESTINPUTDIR = "/testfiles";
+
     static protected final boolean NCDUMP = true; // Use NcDumpW instead of D4Print
 
     static protected final String EXTENSION = (NCDUMP ? "ncdump" : "dmp");
 
-    static protected final String SERIALEXTENSION = "ser";
+    static protected final String DAP4TAG = "#dap4";
 
     static protected final String[] EMPTY = new String[]{""};
 
@@ -35,7 +38,7 @@ public class TestSerial extends DapTestCommon
     static protected final String BASELINEDIR = TESTDATADIR + "/baseline";
 
     static protected final String alpha = "abcdefghijklmnopqrstuvwxyz"
-        + "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+            + "abcdefghijklmnopqrstuvwxyz".toUpperCase();
 
     //////////////////////////////////////////////////
     // Type Declarations
@@ -60,16 +63,31 @@ public class TestSerial extends DapTestCommon
             this.title = dataset;
             this.dataset = dataset;
             this.baselinepath
-                = root + "/" + BASELINEDIR + "/" + dataset;
+                    = root + "/" + BASELINEDIR + "/" + dataset;
             assert constraints != null && constraints.length > 0;
             this.constraints = constraints;
         }
 
         String makeurl(String ce)
         {
-            String url = server + "/" + dataset + "." + SERIALEXTENSION;
-            if(ce != null && ce.length() > 0) url += "?"+ DapTestCommon.CONSTRAINTTAG+"=" + ce;
-            return url;
+            StringBuilder url = new StringBuilder();
+            url.append("http://");
+            url.append(this.server);
+            url.append("/d4ts");
+            url.append("/");
+            url.append(TESTINPUTDIR);
+            url.append("/");
+            url.append(this.dataset);
+            url.append(".");
+            url.append("nc");
+            url.append(DAP4TAG);
+            if(ce != null && ce.length() > 0) {
+                url.append("?");
+                url.append(DapTestCommon.CONSTRAINTTAG);
+                url.append("=");
+                url.append(ce);
+            }
+            return url.toString();
         }
 
         public String toString()
@@ -78,7 +96,7 @@ public class TestSerial extends DapTestCommon
             buf.append(dataset);
             buf.append("{");
             if(constraints != null)
-                for(int i = 0;i < constraints.length;i++) {
+                for(int i = 0; i < constraints.length; i++) {
                     if(i > 0) buf.append(",");
                     String ce = constraints[i];
                     buf.append(ce == null ? "all" : ce);
@@ -104,11 +122,10 @@ public class TestSerial extends DapTestCommon
     //////////////////////////////////////////////////
 
     @Before
-    public void setup() throws Exception {
+    public void setup() throws Exception
+    {
         this.resourceroot = getResourceRoot();
-        // Check for windows path
-        if(!DapUtil.hasDriveLetter(this.resourceroot))
-            this.resourceroot = DapUtil.absolutize(this.resourceroot);
+        this.resourceroot = DapUtil.absolutize(this.resourceroot);
         this.datasetpath = this.resourceroot + "/" + BASELINEDIR;
         //findServer(this.datasetpath);
         //this.sourceurl = this.d4tsserver;
@@ -127,8 +144,9 @@ public class TestSerial extends DapTestCommon
         if(false) {
             chosentests = locate("test_atomic_array");
         } else {
-            for(ClientTest tc : alltestcases)
+            for(ClientTest tc : alltestcases) {
                 chosentests.add(tc);
+            }
         }
     }
 
@@ -148,7 +166,7 @@ public class TestSerial extends DapTestCommon
 
     @Test
     public void testSerial()
-        throws Exception
+            throws Exception
     {
         for(ClientTest testcase : chosentests) {
             if(!doOneTest(testcase)) {
@@ -161,7 +179,7 @@ public class TestSerial extends DapTestCommon
     // Primary test method
     boolean
     doOneTest(ClientTest testcase)
-        throws Exception
+            throws Exception
     {
         boolean pass = true;
         int testcounter = 0;
@@ -169,17 +187,18 @@ public class TestSerial extends DapTestCommon
         System.out.println("Testcase: " + testcase.dataset);
 
         String[] constraints = testcase.constraints;
-        for(int i = 0;i < constraints.length;i++) {
+        for(int i = 0; i < constraints.length; i++) {
             String url = testcase.makeurl(constraints[i]);
             NetcdfDataset ncfile = null;
             try {
-	        ncfile = openDataset(url);
+                ncfile = openDataset(url);
             } catch (Exception e) {
                 throw e;
             }
 
-            String metadata = (NCDUMP ? ncdumpmetadata(ncfile) : null);
-            String data = (NCDUMP ? ncdumpdata(ncfile) : null);
+            String usethisname = UnitTestCommon.extractDatasetname(url,null);
+            String metadata = (NCDUMP ? ncdumpmetadata(ncfile,usethisname) : null);
+            String data = (NCDUMP ? ncdumpdata(ncfile,usethisname) : null);
 
             if(prop_visual) {
                 visual("DMR: " + url, metadata);
@@ -188,9 +207,9 @@ public class TestSerial extends DapTestCommon
 
             String testoutput = (NCDUMP ? data : metadata + data);
 
-            String baselinefile = String.format("%s.ser.%s",
-                testcase.baselinepath,
-                EXTENSION);
+            String baselinefile = String.format("%s.nc.%s",
+                    testcase.baselinepath,
+                    EXTENSION);
             if(prop_baseline)
                 writefile(baselinefile, testoutput);
 
@@ -198,7 +217,7 @@ public class TestSerial extends DapTestCommon
                 // Read the baseline file(s)
                 String baselinecontent = readfile(baselinefile);
                 System.out.println("Comparison:");
-                pass = pass && same(getTitle(),baselinecontent, testoutput);
+                pass = pass && same(getTitle(), baselinecontent, testoutput);
                 System.out.println(pass ? "Pass" : "Fail");
             }
         }
@@ -208,16 +227,22 @@ public class TestSerial extends DapTestCommon
     //////////////////////////////////////////////////
     // Dump methods
 
-    String ncdumpmetadata(NetcdfDataset ncfile)
+    String ncdumpmetadata(NetcdfDataset ncfile, String datasetname)
     {
         boolean ok = false;
         String metadata = null;
         StringWriter sw = new StringWriter();
 
+        StringBuilder args = new StringBuilder("-strict -unsigned");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
+
         // Print the meta-databuffer using these args to NcdumpW
         ok = false;
         try {
-            ok = ucar.nc2.NCdumpW.print(ncfile, "-unsigned", sw, null);
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             ok = false;
@@ -234,16 +259,22 @@ public class TestSerial extends DapTestCommon
         return sw.toString();
     }
 
-    String ncdumpdata(NetcdfDataset ncfile)
+    String ncdumpdata(NetcdfDataset ncfile, String datasetname)
     {
         boolean ok = false;
         StringWriter sw = new StringWriter();
+
+        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
 
         // Dump the databuffer
         sw = new StringWriter();
         ok = false;
         try {
-            ok = ucar.nc2.NCdumpW.print(ncfile, "-vall -unsigned", sw, null);
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             ok = false;

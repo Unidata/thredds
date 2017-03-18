@@ -1,41 +1,11 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
- *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
- *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
- *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
+ *  See the LICENSE file for more information.
  */
+
 package ucar.nc2;
 
-import ucar.ma2.Array;
-import ucar.ma2.ArrayChar;
-import ucar.ma2.DataType;
-import ucar.ma2.Index;
+import ucar.ma2.*;
 import ucar.nc2.util.Indent;
 import ucar.unidata.util.StringUtil2;
 
@@ -100,6 +70,24 @@ public class Attribute extends CDMNode
    */
   public DataType getDataType() {
     return dataType;
+  }
+
+  public void setDataType(DataType dt)
+  {
+    if(dt == DataType.ENUM4) {
+      int x = 0;
+    }
+    this.dataType = dt;
+  }
+
+  public EnumTypedef getEnumType()
+  {
+      return this.enumtype;
+  }
+
+  public void setEnumType(EnumTypedef en)
+  {
+        this.enumtype = en;
   }
 
   /**
@@ -262,7 +250,7 @@ public class Attribute extends CDMNode
 
   public String toString(boolean strict) {
     Formatter f = new Formatter();
-    writeCDL(f, strict);
+    writeCDL(f, strict, null);
     return f.toString();
   }
 
@@ -272,15 +260,31 @@ public class Attribute extends CDMNode
    * @param f      write into this
    * @param strict if true, create strict CDL, escaping names
    */
-  protected void writeCDL(Formatter f, boolean strict) {
+  protected void writeCDL(Formatter f, boolean strict, String parentname) {
+    if(strict && (isString() || this.getEnumType() != null))
+      // Force type explicitly for string.
+      f.format("string "); //note lower case and trailing blank
+    if(strict && parentname != null) f.format(NetcdfFile.makeValidCDLName(parentname));
+    f.format(":");
     f.format("%s", strict ? NetcdfFile.makeValidCDLName(getShortName()) : getShortName());
     if (isString()) {
       f.format(" = ");
-      for (int i = 0; i < getLength(); i++) {
-        if (i != 0) f.format(", ");
+      for(int i = 0; i < getLength(); i++) {
+        if(i != 0) f.format(", ");
         String val = getStringValue(i);
-        if (val != null)
+        if(val != null)
           f.format("\"%s\"", encodeString(val));
+      }
+    } else if(getEnumType() != null) {
+      f.format(" = ");
+      for (int i = 0; i < getLength(); i++) {
+        if(i != 0) f.format(", ");
+        EnumTypedef en = getEnumType();
+        String econst = getStringValue(i);
+        Integer ecint = en.lookupEnumInt(econst);
+        if(ecint == null)
+           throw new ForbiddenConversionException("Illegal enum constant: "+econst);
+        f.format("\"%s\"", encodeString(econst));
       }
     } else {
       f.format(" = ");
@@ -322,6 +326,7 @@ public class Attribute extends CDMNode
 
   private String svalue; // optimization for common case of single String valued attribute
   private DataType dataType;
+  private EnumTypedef enumtype = null;
   private int nelems; // can be 0 or greater
   private Array values;
   // private boolean isUnsigned;
@@ -335,7 +340,8 @@ public class Attribute extends CDMNode
   public Attribute(String name, Attribute from) {
     super(name);
     if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
-    this.dataType = from.dataType;
+    setDataType(from.dataType);
+    setEnumType(from.enumtype);
     this.nelems = from.nelems;
     this.svalue = from.svalue;
     this.values = from.values;
@@ -350,6 +356,7 @@ public class Attribute extends CDMNode
    */
   public Attribute(String name, String val) {
     super(name);
+    setDataType(DataType.STRING);
     if (name == null) throw new IllegalArgumentException("Trying to set name to null on " + this);
     setStringValue(val);
     setImmutable();
@@ -372,6 +379,7 @@ public class Attribute extends CDMNode
     int[] shape = new int[1];
     shape[0] = 1;
     DataType dt = DataType.getType(val.getClass(), isUnsigned);
+    setDataType(dt);
     Array vala = Array.factory(dt, shape);
     Index ima = vala.getIndex();
     vala.setObject(ima.set0(0), val);
@@ -386,7 +394,7 @@ public class Attribute extends CDMNode
    * @param values array of values.
    */
   public Attribute(String name, Array values) {
-    this(name);
+    this(name,values.getDataType());
     setValues(values);
     setImmutable();
   }
@@ -394,14 +402,13 @@ public class Attribute extends CDMNode
   /**
    * Construct an empty attribute with no values
    *
-   * @param name     name of attribute
-   * @param dataType type of Attribute.
-   */
-  public Attribute(String name, DataType dataType) {
-    this(name);
-    this.dataType = dataType == DataType.CHAR ? DataType.STRING : dataType;
-    this.nelems = 0;
-    setImmutable();
+   * @param name
+   * @param dataType
+     */
+  public Attribute(String name, DataType dataType)
+  {
+      this(name);
+      setDataType(dataType);
   }
 
   public Attribute(String name, List values) {
@@ -410,60 +417,34 @@ public class Attribute extends CDMNode
 
   /**
    * Construct attribute with list of String or Number values.
-   *
+   * The list determines the attribute type
    * @param name   name of attribute
    * @param values list of values. must be String or Number, must all be the same type, and have at least 1 member
+   * @param isUnsigned
    */
   public Attribute(String name, List values, boolean isUnsigned) {
     this(name);
+    if(values == null || values.size() == 0)
+	throw new IllegalArgumentException("Cannot determine attribute's type");
     int n = values.size();
-    Object pa;
-
     Class c = values.get(0).getClass();
-    dataType = DataType.getType(c, isUnsigned);
-    if (c == String.class) {
-      String[] va = new String[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (String) values.get(i);
-
-    } else if (c == Integer.class) {
-      int[] va = new int[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
-
-    } else if (c == Double.class) {
-      double[] va = new double[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Double) values.get(i);
-
-    } else if (c == Float.class) {
-      float[] va = new float[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Float) values.get(i);
-
-    } else if (c == Short.class) {
-      short[] va = new short[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Short) values.get(i);
-
-    } else if (c == Byte.class) {
-      byte[] va = new byte[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
-
-    } else if (c == Long.class) {
-      long[] va = new long[n];
-      pa = va;
-      for (int i = 0; i < n; i++) va[i] = (Long) values.get(i);
-
-    } else {
-      throw new IllegalArgumentException("unknown type for Attribute = " + c.getName());
-    }
-
-    setValues(Array.factory(dataType, new int[]{n}, pa));
+    setDataType(DataType.getType(c, isUnsigned));
+    setValues(values,isUnsigned);
     setImmutable();
   }
 
+  /**
+     * Construct attribute with Array of values.
+     *
+     * @param name   name of attribute
+     * @param values Array of values; at least 1 member
+     * @param isUnsigned
+     */
+    public Attribute(String name, Array values, boolean isUnsigned) {
+     this(name,values.getDataType());
+     setValues(values);
+     setImmutable();
+   }
 
   /**
    * A copy constructor using a ucar.unidata.util.Parameter.
@@ -527,11 +508,59 @@ public class Attribute extends CDMNode
   }
 
   /**
+   * set the values from a list
+   *
+   * @param values
+   */
+  public void setValues(List values, boolean isUnsigned)
+  {
+    if(values == null || values.size() == 0)
+	throw new IllegalArgumentException("Cannot determine attribute's type");
+    int n = values.size();
+    Class c = values.get(0).getClass();
+    Object pa;
+
+    if (c == String.class) {
+      String[] va = new String[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (String) values.get(i);
+    } else if (c == Integer.class) {
+      int[] va = new int[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Integer) values.get(i);
+    } else if (c == Double.class) {
+      double[] va = new double[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Double) values.get(i);
+    } else if (c == Float.class) {
+      float[] va = new float[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Float) values.get(i);
+    } else if (c == Short.class) {
+      short[] va = new short[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Short) values.get(i);
+    } else if (c == Byte.class) {
+      byte[] va = new byte[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Byte) values.get(i);
+    } else if (c == Long.class) {
+      long[] va = new long[n];
+      pa = va;
+      for (int i = 0; i < n; i++) va[i] = (Long) values.get(i);
+    } else {
+      throw new IllegalArgumentException("Unknown type for Attribute = " + c.getName());
+    }
+    setValues(Array.factory(this.dataType, new int[]{n}, pa));
+  }
+
+
+  /**
    * set the values from an Array
    *
    * @param arr value of Attribute
    */
-  protected void setValues(Array arr) {
+  public void setValues(Array arr) {
     if (immutable) throw new IllegalStateException("Cant modify");
 
     if (arr == null) {

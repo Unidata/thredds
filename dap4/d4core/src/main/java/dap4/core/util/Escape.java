@@ -24,18 +24,22 @@ public class Escape
     static final String ENTITY_APOS = "apos";
 
     static public final String[][] DEFAULTTRANSTABLE = {
-        {ENTITY_AMP, "&"},
-        {ENTITY_LT, "<"},
-        {ENTITY_GT, ">"},
-        {ENTITY_QUOT, "\""},
-        {ENTITY_APOS, "'"},
+            {ENTITY_AMP, "&"},
+            {ENTITY_LT, "<"},
+            {ENTITY_GT, ">"},
+            {ENTITY_QUOT, "\""},
+            {ENTITY_APOS, "'"},
     };
 
     // For reference: set of all ascii printable non-alphanumeric characters
     static private final String nonAlphaNumeric = " !\"#$%&'()*+,-./:;<=>?@[]\\^_`|{}~";
 
     // define the printable backslash characters to escape (control chars not included)
-    static public final String BACKSLASHESCAPE = "/\\\"'";
+    // Note that '\\' is always included
+    static public final String BACKSLASHESCAPE = "/.";
+
+    // define the default entity characters to escape
+    static public final String ENTITYESCAPES = "\\<>&\"'";
 
     // Define the alphan characters
 
@@ -47,14 +51,23 @@ public class Escape
 
     /**
      * Escape selected characters in a string using XML entities
+     *
+     * @param s   string to escape
+     * @param wrt which chars to escape
+     * @return escaped string
      */
     static public String
-    entityEscape(String s)
+    entityEscape(String s, String wrt)
     {
+        if(wrt == null)
+            wrt = ENTITYESCAPES;
         StringBuilder escaped = new StringBuilder();
-        for(int i = 0;i < s.length();i++) {
+        for(int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            switch (c) {
+            int index = wrt.indexOf(c);
+            if(index < 0)
+                escaped.append(c);
+            else switch (c) {
             case '&':
                 escaped.append('&' + ENTITY_AMP + ';');
                 break;
@@ -70,8 +83,18 @@ public class Escape
             case '\'':
                 escaped.append('&' + ENTITY_APOS + ';');
                 break;
+            case '\r':
+            case '\t':
+            case '\n':
+                escaped.append(c);  // These are the only legal control chars
+                break;
+            case '\0':
+                // What to do about nul? currrently we suppress it
+                break;
             default:
-                escaped.append(c);
+                if(c >= ' ')
+                    escaped.append(c);
+                break;
             }
         }
         return escaped.toString();
@@ -111,7 +134,7 @@ public class Escape
             case '&': // see if this is a legitimate entity
                 entity.setLength(0);
                 // move forward looking for a semicolon;
-                for(found = true, count = 0;;count++) {
+                for(found = true, count = 0; ; count++) {
                     if(q + count >= len) break;
                     c = s.charAt(q + count);
                     if(c == ';')
@@ -154,6 +177,11 @@ public class Escape
      * Escape control chars plus
      * selected other characters in a string using backslash
      * The definitive list is in netcdf-c/ncgen/ncgen.l.
+     *
+     * @param s   the string to escape
+     * @param wrt what printable characters to escape;
+     *            control characters and '\\' are always escaped.
+     * @return
      */
     static public String
     backslashEscape(String s, String wrt)
@@ -161,7 +189,7 @@ public class Escape
         if(wrt == null)
             wrt = BACKSLASHESCAPE;
         StringBuilder escaped = new StringBuilder();
-        for(int i = 0;i < s.length();i++) {
+        for(int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if(c < ' ' || c == 127) {
                 escaped.append('\\');
@@ -183,7 +211,7 @@ public class Escape
                     escaped.append(Escape.toHex((int) c));
                     continue; /* since this is a string */
                 }
-            } else if(wrt.indexOf(c) >= 0)
+            } else if(c == '\\' || wrt.indexOf(c) >= 0)
                 escaped.append('\\');
             escaped.append(c);
         }
@@ -197,7 +225,7 @@ public class Escape
     backslashUnescape(String s)
     {
         StringBuilder clear = new StringBuilder();
-        for(int i = 0;i < s.length();) {
+        for(int i = 0; i < s.length(); ) {
             char c = s.charAt(i++);
             if(c == '\\') {
                 c = s.charAt(i++);
@@ -299,7 +327,7 @@ public class Escape
         int len = bytes.length;
         StringBuilder buf = new StringBuilder(2 + (len * 2));
         buf.append("0x");
-        for(int i = 0;i < len;i++) {
+        for(int i = 0; i < len; i++) {
             byte b = bytes[i];
             buf.append(hexchars.charAt((b >>> 4) & 0xF));
             buf.append(hexchars.charAt((i & 0xF)));
@@ -330,7 +358,7 @@ public class Escape
         }
         else {
             StringBuilder buf = new StringBuilder();
-            for(int i = 0;i < s.length();i++) {
+            for(int i = 0; i < s.length(); i++) {
                 char c = s.charAt(i);
                 if(URLESCAPECHARS.indexOf(c) >= 0) {
                     buf.append("%");
@@ -341,6 +369,22 @@ public class Escape
                     buf.append(c);
             }
         }
+        return s;
+    }
+
+    /**
+     * Clean up a string: currently means:
+     * 1. strip off everything after the first nul character
+     *
+     * @param s string to clean
+     * @return cleaned string
+     */
+    static public String
+    cleanString(String s)
+    {
+        int index = s.indexOf((char) 0);
+        if(index >= 0)
+            s = s.substring(0, index);
         return s;
     }
 

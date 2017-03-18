@@ -129,6 +129,16 @@ public class EnumTypedef extends CDMNode {
     return (result == null) ? "Unknown enum value=" + e : result;
   }
 
+  public Integer
+  lookupEnumInt(String name)
+  {
+     for(Map.Entry<Integer,String> entry: map.entrySet()) {
+       if(entry.getValue().equalsIgnoreCase(name))
+         return entry.getKey();
+     }
+    return null;
+  }
+
   /**
    * String representation.
    *

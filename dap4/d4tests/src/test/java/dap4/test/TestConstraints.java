@@ -4,8 +4,12 @@ import dap4.dap4lib.XURI;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -20,19 +24,22 @@ public class TestConstraints extends DapTestCommon
 {
     static final boolean DEBUG = false;
 
+    static final public boolean DEBUGSERVER = true;
+
     //////////////////////////////////////////////////
     // Constants
 
     static final boolean NCDUMP = true; // Use NcDumpW instead of D4Print
 
-    static final String BASEEXTENSION = "txt";
-    static final String TESTEXTENSION = "dap";
+    static final String BASEEXTENSION = "raw.txt";
+    static final String TESTEXTENSION = ".raw";
 
     static final String DAP4TAG = "protocol=dap4";
 
     static protected final String SERVLETPATH = "d4ts";
     static protected final String RESOURCEPATH = "/src/test/data/resources";
-    static protected final String BASELINEDIR = "/TestCDMClient/baseline";
+    static protected final String TESTINPUTPATH = "/testfiles";
+    static protected final String BASELINEDIR = "/TestConstraints/baseline";
 
     //////////////////////////////////////////////////
     // Type Declarations
@@ -86,6 +93,7 @@ public class TestConstraints extends DapTestCommon
             url.append(server);
             url.append("/");
             url.append(servletpath);
+            url.append(TESTINPUTPATH);
             url.append("/");
             url.append(dataset);
             if(constraint != null) {
@@ -126,6 +134,9 @@ public class TestConstraints extends DapTestCommon
         String root = getDAP4Root();
         if(root == null)
             throw new Exception("dap4 root cannot be located");
+        testSetup();
+        if(DEBUGSERVER)
+            HTTPMethod.MOCKEXECUTOR = new MockExecutor(getResourceRoot());
         TestCase.setRoots(
                 SERVLETPATH,
                 canonjoin(getResourceRoot(), BASELINEDIR),
@@ -141,9 +152,11 @@ public class TestConstraints extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests.add(locate1(8));
+            chosentests.add(locate1(4));
             prop_visual = true;
         } else {
+            prop_baseline = false;
+            prop_visual = false;
             for(TestCase tc : alltestcases) {
                 chosentests.add(tc);
             }
@@ -153,15 +166,15 @@ public class TestConstraints extends DapTestCommon
     void
     defineAllTestcases()
     {
-        //alltestcases.add(new TestCase("test_one_vararray.nc", null));
-        alltestcases.add(new TestCase(1, "test_one_vararray.nc", "t"));
-        alltestcases.add(new TestCase(2, "test_one_vararray.nc", "t[1]"));
-        // alltestcases.add(new TestCase(3,"test_enum_array.nc", null));
+        alltestcases.add(new TestCase(1, "test_one_vararray.nc", "t[1]"));
+        alltestcases.add(new TestCase(2, "test_anon_dim.syn", "vu32[0:3]"));
+        alltestcases.add(new TestCase(3, "test_one_vararray.nc", "t"));
         alltestcases.add(new TestCase(4, "test_enum_array.nc", "primary_cloud[1:2:4]"));
-        //alltestcases.add(new TestCase(5,"test_atomic_array.nc", null));
-        alltestcases.add(new TestCase(6, "test_atomic_array.nc", "vu8[1][0:2:2];vd[1];vs[1][0];vo[0][1]"));
-        //alltestcases.add(new TestCase(7,"test_struct_array.nc", null));
-        alltestcases.add(new TestCase(8, "test_struct_array.nc", "s[0:2:3][0:1]"));
+        alltestcases.add(new TestCase(5, "test_atomic_array.nc", "vu8[1][0:2:2];vd[1];vs[1][0];vo[0][1]"));
+        alltestcases.add(new TestCase(6, "test_struct_array.nc", "s[0:2:3][0:1]"));
+        alltestcases.add(new TestCase(7, "test_opaque_array.nc", "vo2[1:1][0,0]"));
+        alltestcases.add(new TestCase(8, "test_atomic_array.nc", "v16[1:2,2]"));
+        alltestcases.add(new TestCase(9, "test_atomic_array.nc", "v16[2,1:2]"));
     }
 
     //////////////////////////////////////////////////
@@ -193,26 +206,10 @@ public class TestConstraints extends DapTestCommon
         }
 
         // Patch the ncfile to change dataset name
-        {
-            try {
-                XURI x = new XURI(url);
-                StringBuilder path = new StringBuilder(x.getPath());
-                int index = path.lastIndexOf("/");
-                if(index < 0) index = 0;
-                if(index > 0) path.delete(0, index + 1);
-                index = path.lastIndexOf(".");
-                if(index >= 0)
-                    path.delete(index, path.length());
-                path.append('.');
-                path.append(testcase.id);
-                ncfile.setLocation(path.toString());
-            } catch (URISyntaxException e) {
-                assert (false);
-            }
-        }
+        String datasetname = extractDatasetname(url,Integer.toString(testcase.id));
 
-        String metadata = (NCDUMP ? ncdumpmetadata(ncfile) : null);
-        String data = (NCDUMP ? ncdumpdata(ncfile) : null);
+        String metadata = (NCDUMP ? ncdumpmetadata(ncfile,datasetname) : null);
+        String data = (NCDUMP ? ncdumpdata(ncfile,datasetname) : null);
 
         if(prop_visual) {
             visual("DMR: " + url, metadata);
@@ -235,16 +232,20 @@ public class TestConstraints extends DapTestCommon
     //////////////////////////////////////////////////
     // Dump methods
 
-    String ncdumpmetadata(NetcdfDataset ncfile)
+    String ncdumpmetadata(NetcdfDataset ncfile, String datasetname)
     {
         boolean ok = false;
         String metadata = null;
         StringWriter sw = new StringWriter();
-
+        StringBuilder args = new StringBuilder("-strict -unsigned");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
         // Print the meta-databuffer using these args to NcdumpW
         ok = false;
         try {
-            ok = ucar.nc2.NCdumpW.print(ncfile, "-strict -unsigned", sw, null);
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             ok = false;
@@ -260,16 +261,22 @@ public class TestConstraints extends DapTestCommon
         return sw.toString();
     }
 
-    String ncdumpdata(NetcdfDataset ncfile)
+    String ncdumpdata(NetcdfDataset ncfile, String datasetname)
     {
         boolean ok = false;
         StringWriter sw = new StringWriter();
+
+        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
 
         // Dump the databuffer
         sw = new StringWriter();
         ok = false;
         try {
-            ok = ucar.nc2.NCdumpW.print(ncfile, "-strict -vall -unsigned", sw, null);
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             ok = false;

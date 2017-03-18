@@ -164,6 +164,7 @@ public class CEParserImpl extends CEBisonParser
     {
         long first = 0;
         long last = UNDEFINED;
+        long stop = UNDEFINED;
         long stride = 1;
         try {
             if(sfirst != null) first = Long.parseLong(sfirst);
@@ -173,10 +174,11 @@ public class CEParserImpl extends CEBisonParser
             throw new ParseException(String.format("Illegal slice: [%s:%s:%s]",
                     sfirst, send, sstride));
         }
+        stop = (last == UNDEFINED ? UNDEFINED : (last+1));
 
         Slice x;
         try {
-            x = new Slice(first, last, stride);
+            x = new Slice(first, stop, stride);
         } catch (DapException de) {
             throw new ParseException(de);
         }
@@ -188,10 +190,10 @@ public class CEParserImpl extends CEBisonParser
                 x.setConstrained(false);
                 break;
             case 1: // [i]
-                x.setIndices(x.getFirst(), x.getFirst(), 1);
+                x.setIndices(x.getFirst(), x.getFirst()+1, 1);
                 break;
             case 2: // [f:l]
-                x.setIndices(x.getFirst(), x.getLast(), 1);
+                x.setIndices(x.getFirst(), x.getStop(), 1);
                 break;
             case 3: // [f:s:l]
             case 4: // [f:]

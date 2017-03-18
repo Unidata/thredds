@@ -74,6 +74,7 @@ abstract public class DapCache
                 // move to the front of the queue to maintain LRU property
                 lru.remove(i);
                 lru.add(dsp);
+                CEConstraint.release(lru.get(0).getDMR());
                 return dsp;
             }
         }

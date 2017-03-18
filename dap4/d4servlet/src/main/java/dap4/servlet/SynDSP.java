@@ -46,7 +46,6 @@ public class SynDSP extends D4DSP
     public SynDSP()
     {
         super();
-        setOrder(ByteOrder.nativeOrder());
     }
 
     //////////////////////////////////////////////////
@@ -75,7 +74,7 @@ public class SynDSP extends D4DSP
     }
 
     @Override
-    public DSP
+    public SynDSP
     open(String filepath)
             throws DapException
     {
@@ -106,12 +105,12 @@ public class SynDSP extends D4DSP
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ChunkWriter cw = new ChunkWriter(bos, RequestMode.DAP, ByteOrder.nativeOrder());
             Generator generator = new Generator(dmr, Value.ValueSource.RANDOM);
-            generator.generate(null, cw);
+            generator.generate(null, cw, true, getChecksumMode());
             cw.close();
             bos.close();
             byte[] raw = bos.toByteArray();
             if(DEBUG)
-                DapDump.dumpbytes(ByteBuffer.wrap(raw).order(order), true);
+                DapDump.dumpbytes(ByteBuffer.wrap(raw).order(getOrder()), true);
             ByteArrayInputStream bis = new ByteArrayInputStream(raw);
             ChunkInputStream crdr = new ChunkInputStream(bis, RequestMode.DAP, getOrder());
             // Skip the dmr

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Dataset
          name="test_struct_nested.hdf5"
          dapVersion="4.0"
@@ -16,4 +17,7 @@
         <Map name="/x.field1.x"/>
         <Map name="/x.field1.y"/>
     </Structure>
+    <Attribute name="_DAP4_Little_Endian" type="UInt8">
+        <Value value="1"/>
+    </Attribute>
 </Dataset>

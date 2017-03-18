@@ -5,6 +5,7 @@ package dap4.core.util;
 
 import dap4.core.dmr.DapDimension;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -48,14 +49,21 @@ public class Odometer implements Iterator<Index>
     factory(List<Slice> slices, List<DapDimension> dimset)
             throws DapException
     {
+        // check for scalar case
+        if(dimset != null && dimset.size() == 0) {
+            if(!DapUtil.isScalarSlices(slices))
+                throw new DapException("Cannot build scalar odometer with non-scalar slices");
+            return factoryScalar();
+        }
         boolean multi = false;
-        if(slices != null)
+        if(slices != null) {
             for(int i = 0; i < slices.size(); i++) {
                 if(slices.get(i).getSort() == Slice.Sort.Multi) {
                     multi = true;
                     break;
                 }
             }
+        }
         if(slices == null || slices.size() == 0)
             return factoryScalar();
         else if(multi)
@@ -69,9 +77,11 @@ public class Odometer implements Iterator<Index>
 
     protected STATE state = STATE.INITIAL;
 
+    protected boolean ismulti = false;
+
     protected int rank = 0;
-    protected Slice[] slices = null;
-    protected DapDimension[] dimset = null;
+    protected List<Slice> slices = null;
+    protected List<DapDimension> dimset = null;
 
     // The current odometer indices
     protected Index index;
@@ -102,18 +112,16 @@ public class Odometer implements Iterator<Index>
         this.rank = set.size();
         if(this.rank == 0)
             throw new DapException("Rank == 0; use Scalar Odometer");
-        this.slices = set.toArray(new Slice[this.rank]);
-        if(dimset != null)
-            this.dimset = dimset.toArray(new DapDimension[dimset.size()]);
+        this.slices = new ArrayList<>();
+        this.slices.addAll(set);
+        if(dimset != null) {
+            this.dimset = new ArrayList<>();
+            this.dimset.addAll(dimset);
+        }
         this.endpoint = new long[this.rank];
         this.index = new Index(rank);
-        if(dimset != null)
-            for(int i = 0; i < this.rank; i++) {
-                DapDimension dim = dimset.get(i);
-                this.dimset[i] = dim;
-            }
         for(int i = 0; i < this.rank; i++) {
-            this.index.dimsizes[i] = slices[i].getMaxSize();
+            this.index.dimsizes[i] = slices.get(i).getMax();
         }
         reset();
     }
@@ -123,9 +131,9 @@ public class Odometer implements Iterator<Index>
     {
         for(int i = 0; i < this.rank; i++) {
             try {
-                slices[i].finish();
-                this.index.indices[i] = this.slices[i].getFirst();
-                this.endpoint[i] = this.slices[i].getLast() - this.slices[i].getStride();
+                slices.get(i).finish();
+                this.index.indices[i] = this.slices.get(i).getFirst();
+                this.endpoint[i] = this.slices.get(i).getLast() - this.slices.get(i).getStride();
             } catch (DapException de) {
                 throw new IllegalArgumentException(de);
             }
@@ -139,9 +147,9 @@ public class Odometer implements Iterator<Index>
             if(i > 0)
                 buf.append(",");
             if(dimset != null)
-                buf.append(dimset[i] != null ? dimset[i].getShortName() : "null");
-            buf.append(slices[i].toString());
-            buf.append(String.format("(%d)", this.slices[i].getCount()));
+                buf.append(dimset.get(i) != null ? dimset.get(i).getShortName() : "null");
+            buf.append(this.slices.get(i).toString());
+            buf.append(String.format("(%d)", this.slices.get(i).getCount()));
             if(this.index != null)
                 buf.append(String.format("@%d", this.index.indices[i]));
         }
@@ -168,7 +176,14 @@ public class Odometer implements Iterator<Index>
     {
         if(i < 0 || i >= this.rank)
             throw new IllegalArgumentException();
-        return this.slices[i];
+        return this.slices.get(i);
+    }
+
+
+    public List<Slice>
+    getSlices()
+    {
+        return this.slices;
     }
 
     /**
@@ -198,7 +213,7 @@ public class Odometer implements Iterator<Index>
     {
         long size = 1;
         for(int i = 0; i < this.rank; i++) {
-            size *= slices[i].getCount();
+            size *= this.slices.get(i).getCount();
         }
         return size;
     }
@@ -268,13 +283,27 @@ public class Odometer implements Iterator<Index>
     {
         for(int i = lastpos - 1; i >= firstpos; i--) { // walk backwards
             if(this.index.indices[i] > this.endpoint[i])
-                this.index.indices[i] = this.slices[i].getFirst(); // reset this position
+                this.index.indices[i] = this.slices.get(i).getFirst(); // reset this position
             else {
-                this.index.indices[i] += this.slices[i].getStride();  // move to next indices
+                this.index.indices[i] += this.slices.get(i).getStride();  // move to next indices
                 return i;
             }
         }
         return -1;
+    }
+
+    public List<Odometer>
+    getSubOdometers()
+    {
+        List<Odometer> list = new ArrayList<>();
+        list.add(this);
+        return list;
+    }
+
+    public boolean
+    isMulti()
+    {
+        return this.ismulti;
     }
 
 

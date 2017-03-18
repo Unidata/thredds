@@ -54,26 +54,39 @@ import ucar.unidata.util.test.TestDir;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Test accessing a number of urls
+ * with at least one being non-existent
+ */
+
 @RunWith(Parameterized.class)
 public class TestHang
 {
 
-    static final int NCONN = 25;
+    static final int NCONN = 3;
+
+    static final Integer[] XFAIL = new Integer[]{0};
 
     static private HTTPSession session;
 
-    //  static private String server = "https://rdavm.ucar.edu:8443";
-//  static private String url = server + "/thredds/admin/collection/trigger?trigger=never&collection=";
     static protected final String server = "http://" + TestDir.dap2TestServer;
 
-    static protected final String url = server + "/dts/test.%02d";
+    static protected final String url = server + "/dts/test.%02d.dds";
+
+    static boolean isxfail(int x)
+    {
+        for(Integer i : XFAIL) {
+            if(i == x) return true;
+        }
+        return false;
+    }
 
     @Parameterized.Parameters(name = "{0}")
     public static List<Object[]> getTestParameters()
     {
         List<Object[]> result = new ArrayList<>();
         for(int i = 0; i < NCONN; i++) {
-            result.add(new Object[]{String.format(url, i)});
+            result.add(new Object[]{(Integer) i});
         }
         return result;
     }
@@ -87,22 +100,31 @@ public class TestHang
 
     ///////////
 
-    String fullUrl;
+    Integer datasetno;
 
-    public TestHang(String ds)
+    public TestHang(Integer i)
     {
-        this.fullUrl = url + ds;
+        this.datasetno = i;
     }
 
     @Test
     public void testSession() throws Exception
     {
-
+        String fullUrl = String.format(url, this.datasetno);
         try (HTTPMethod m = HTTPFactory.Get(session, fullUrl)) {
             System.out.printf("Connecting to %s%n", fullUrl);
-            int status = m.execute();
+            int status = 0;
+            try {
+                status = m.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+                status = 500;
+            }
             System.out.printf("    return from %s status= %d%n", fullUrl, status);
-            Assert.assertTrue("Bad return status: " + status, status == 200 || status == 404);
+            if(isxfail(this.datasetno))
+                Assert.assertTrue("Expected 404: return status: " + status, status == 404);
+            else
+                Assert.assertTrue("Expected 200: return status: " + status, status == 200);
         }
     }
 }

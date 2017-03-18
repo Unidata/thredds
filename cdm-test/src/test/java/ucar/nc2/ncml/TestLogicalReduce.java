@@ -17,6 +17,9 @@ import java.util.Formatter;
  *
  * @author caron
  * @since 12/18/13
+ * Note: the referenced geoport urls in
+ * e.g. 4151-a1h.ncml
+ * are currently broken
  */
 public class TestLogicalReduce {
 

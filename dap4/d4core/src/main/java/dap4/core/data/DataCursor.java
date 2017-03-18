@@ -1,4 +1,4 @@
- /* Copyright 2012, UCAR/Unidata.
+/* Copyright 2012, UCAR/Unidata.
    See the LICENSE file for more information.
 */
 
@@ -14,12 +14,13 @@ import java.util.List;
 /**
  * For data access, we adopt a cursor model.
  * This comes from database technology where a
- * cursor object is used to walk over the results
- * of a database query.
- * Here the cursor walks the underlying data
- * and stores enough state to extract data depending
- * on its sort. The cursor may (or may not)
- * contain internal subclasses to track various kinds of state.
+ * cursor object is used to walk over the
+ * results of a database query.  Here the cursor
+ * walks the underlying data and stores enough
+ * state to extract data depending on its
+ * sort. The cursor may (or may not) contain
+ * internal subclasses to track various kinds of
+ * state.
  */
 
 public interface DataCursor
@@ -29,12 +30,17 @@ public interface DataCursor
 
     static public enum Scheme
     {
+        ATOMIC,
         STRUCTARRAY,
-        SEQARRAY,
         STRUCTURE,
+        SEQARRAY,
         SEQUENCE,
-        RECORD,
-        ATOMIC;
+        RECORD;
+
+        public boolean isCompoundArray()
+        {
+            return this == STRUCTARRAY || this == SEQARRAY;
+        }
     }
 
     //////////////////////////////////////////////////
@@ -46,6 +52,15 @@ public interface DataCursor
 
     public DapNode getTemplate();
 
+    public Index getIndex() throws DapException;
+
+    public boolean isScalar();
+
+    public boolean isField();
+
+    // Return null if top-level, else return the struct/seq from which this is derived
+    public DataCursor getContainer();
+
     //////////////////////////////////////////////////
     // Atomic Data Management
 
@@ -54,6 +69,8 @@ public interface DataCursor
     // Returns:
     // atomic - array of data values
     // structure/sequence - DataCursor[]
+    // Even if the result is a scalar,
+    // a 1-element array will be returned.
 
     public Object read(List<Slice> slices) throws DapException;
 
@@ -63,24 +80,17 @@ public interface DataCursor
     // Sequence record management
     // assert scheme == SEQUENCE
 
-    default
-    public long getRecordCount()
-            throws DapException
-    {
-        throw new UnsupportedOperationException("Not a Sequence");
-    }
+    public long getRecordCount() throws DapException;
 
-    default
-    public DataCursor getRecord(long i)
-            throws DapException
-    {
-        throw new UnsupportedOperationException("Not a Sequence");
-    }
+    public DataCursor readRecord(long i) throws DapException;
+
+    public long getRecordIndex() throws DapException; // assert scheme == RECORD
 
     //////////////////////////////////////////////////
     // field management
     // assert scheme == STRUCTURE | scheme == RECORD
 
-    public DataCursor getField(int i) throws DapException;
+    public int fieldIndex(String name) throws DapException; // Convert a name to an index
 
+    public DataCursor readField(int fieldindex) throws DapException;
 }

@@ -6,16 +6,15 @@
 package dap4.servlet;
 
 import dap4.core.ce.CEConstraint;
+import dap4.core.data.ChecksumMode;
 import dap4.core.data.DSP;
+import dap4.core.dmr.DapAttribute;
 import dap4.core.dmr.DapDataset;
+import dap4.core.dmr.DapType;
 import dap4.core.dmr.ErrorResponse;
-import dap4.core.util.DapContext;
-import dap4.core.util.DapException;
-import dap4.core.util.DapUtil;
-import dap4.core.util.ResponseFormat;
+import dap4.core.util.*;
 import dap4.dap4lib.*;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +24,7 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.util.Map;
 
 abstract public class DapController extends HttpServlet
 {
@@ -34,9 +34,11 @@ abstract public class DapController extends HttpServlet
     //////////////////////////////////////////////////
     // Constants
 
-    static public final boolean DEBUG = false;
+    static public boolean DEBUG = false;
+    static public boolean DUMPDMR = false;
+    static public boolean DUMPDATA = false;
 
-    static public final boolean PARSEDEBUG = false;
+    static public boolean PARSEDEBUG = false;
 
     static protected final String BIG_ENDIAN = "Big-Endian";
     static protected final String LITTLE_ENDIAN = "Little-Endian";
@@ -82,30 +84,14 @@ abstract public class DapController extends HttpServlet
     //////////////////////////////////////////////////
     // Instance variables
 
-    transient protected DapContext dapcxt = new DapContext();
-
-    protected boolean compress = true;
-
-    transient protected ByteOrder byteorder = ByteOrder.nativeOrder();
-
-    transient protected DapDSR dsrbuilder = new DapDSR();
-
-
-    //////////////////////////////////////////////////
-    // ServletContextAware
-
-    transient protected ServletContext servletcontext = null;
-
-    public void setServletContext(ServletContext servletContext)
-    {
-        this.servletcontext = servletcontext;
-    }
+    protected boolean initialized = false; // Was initialize() called?
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
     public DapController()
     {
+        ChunkWriter.DUMPDATA = DUMPDATA; // pass it on
     }
 
     //////////////////////////////////////////////////////////
@@ -114,16 +100,17 @@ abstract public class DapController extends HttpServlet
     /**
      * Process a favicon request.
      *
-     * @param drq The merged dap state
+     * @param icopath The path to the icon
+     * @param cxt     The dap context
      */
 
-    abstract protected void doFavicon(DapRequest drq, String icopath, DapContext cxt) throws IOException;
+    abstract protected void doFavicon(String icopath, DapContext cxt) throws IOException;
 
     /**
      * Process a capabilities request.
      * Currently, does nothing (but see D4TSServlet.doCapabilities).
      *
-     * @param drq The merged dap state
+     * @param cxt The dapontext
      */
 
     abstract protected void doCapabilities(DapRequest drq, DapContext cxt) throws IOException;
@@ -132,13 +119,13 @@ abstract public class DapController extends HttpServlet
      * Convert a URL path into an absolute file path
      * Note that it is assumed than any leading servlet prefix has been removed.
      *
-     * @param drq      for context
+     * @param drq      dap request
      * @param location suffix of url path
      * @return
      * @throws IOException
      */
 
-    abstract public String getResourcePath(DapRequest drq, String location) throws IOException;
+    abstract public String getResourcePath(DapRequest drq, String location) throws DapException;
 
     /**
      * Get the maximum # of bytes per request
@@ -153,11 +140,6 @@ abstract public class DapController extends HttpServlet
      * @return name
      */
     abstract public String getServletID();
-
-    /**
-     * Initialize servlet
-     */
-    abstract public void initialize();
 
     //////////////////////////////////////////////////////////
 
@@ -177,19 +159,18 @@ abstract public class DapController extends HttpServlet
         }
     }
 
+    /**
+     * Initialize servlet/controller
+     */
+    public void
+    initialize()
+    {
+        this.initialized = true;
+    }
+
+
     //////////////////////////////////////////////////////////
     // Accessors
-
-    public DapController setControllerPath(String controllerpath)
-    {
-        this.dapcxt.put("controllerpath", DapUtil.canonjoin("", controllerpath));
-        return this;
-    }
-
-    public DapContext getContext()
-    {
-        return this.dapcxt;
-    }
 
     //////////////////////////////////////////////////////////
     // Primary Controller Entry Point
@@ -199,48 +180,60 @@ abstract public class DapController extends HttpServlet
             throws IOException
     {
         DapLog.debug("doGet(): User-Agent = " + req.getHeader("User-Agent"));
-        if(TESTING) {
-            String resourcedir = (String) req.getAttribute("RESOURCEDIR");
-            this.dapcxt.put("RESOURCEDIR", resourcedir);
-        }
-        DapRequest drq = getRequestState(req, res);
-        String url = drq.getOriginalURL();
+        if(!this.initialized) initialize();
+        DapRequest daprequest = getRequestState(req, res);
+        String url = daprequest.getOriginalURL();
         StringBuilder info = new StringBuilder("doGet():");
         info.append(" dataset = ");
         info.append(" url = ");
         info.append(url);
         if(DEBUG) {
-            System.err.println("DAP4 Servlet: processing url: " + drq.getOriginalURL());
+            System.err.println("DAP4 Servlet: processing url: " + daprequest.getOriginalURL());
         }
-        assert (this.dapcxt != null);
-        this.dapcxt.put(HttpServletRequest.class, req);
-        this.dapcxt.put(HttpServletResponse.class, res);
+        DapContext dapcxt = new DapContext();
+        // Add entries to the context
+        dapcxt.put(HttpServletRequest.class, req);
+        dapcxt.put(HttpServletResponse.class, res);
+        dapcxt.put(DapRequest.class, daprequest);
+
+        ByteOrder order = daprequest.getOrder();
+        ChecksumMode checksummode = daprequest.getChecksumMode();
+        dapcxt.put(Dap4Util.DAP4ENDIANTAG, order);
+        dapcxt.put(Dap4Util.DAP4CSUMTAG, checksummode);
+        // Transfer all other queries
+        Map<String, String> queries = daprequest.getQueries();
+        for(Map.Entry<String, String> entry : queries.entrySet()) {
+            if(dapcxt.get(entry.getKey()) == null) {
+                dapcxt.put(entry.getKey(), entry.getValue());
+            }
+        }
+
         if(url.endsWith(FAVICON)) {
-            doFavicon(drq, FAVICON, this.dapcxt);
+            doFavicon(FAVICON, dapcxt);
             return;
         }
 
-        String datasetpath = DapUtil.nullify(drq.getDataset());
+        String datasetpath = DapUtil.nullify(DapUtil.canonicalpath(daprequest.getDataset()));
         try {
             if(datasetpath == null) {
                 // This is the case where a request was made without a dataset;
                 // According to the spec, I think we should return the
                 // services/capabilities document
-                doCapabilities(drq, this.dapcxt);
+                doCapabilities(daprequest, dapcxt);
             } else {
-                RequestMode mode = drq.getMode();
+                RequestMode mode = daprequest.getMode();
                 if(mode == null)
                     throw new DapException("Unrecognized request extension")
                             .setCode(HttpServletResponse.SC_BAD_REQUEST);
                 switch (mode) {
                 case DMR:
-                    doDMR(drq, this.dapcxt);
+                    doDMR(daprequest, dapcxt);
                     break;
                 case DAP:
-                    doData(drq, this.dapcxt);
+                    doData(daprequest, dapcxt);
                     break;
                 case DSR:
-                    doDSR(drq, this.dapcxt);
+                    doDSR(daprequest, dapcxt);
                     break;
                 default:
                     throw new DapException("Unrecognized request extension")
@@ -266,7 +259,7 @@ abstract public class DapController extends HttpServlet
                 code = DapCodes.SC_BAD_REQUEST;
             else
                 code = DapCodes.SC_INTERNAL_SERVER_ERROR;
-            senderror(drq, code, t);
+            senderror(daprequest, code, t);
         }//catch
     }
 
@@ -275,6 +268,7 @@ abstract public class DapController extends HttpServlet
 
     /**
      * Process a DSR request.
+     * * @param cxt     The dap context
      */
 
     protected void
@@ -282,11 +276,13 @@ abstract public class DapController extends HttpServlet
             throws IOException
     {
         try {
+            DapDSR dsrbuilder = new DapDSR();
             String dsr = dsrbuilder.generate(drq.getURL());
             OutputStream out = drq.getOutputStream();
             addCommonHeaders(drq);// Add relevant headers
             // Wrap the outputstream with a Chunk writer
-            ChunkWriter cw = new ChunkWriter(out, RequestMode.DSR, this.byteorder);
+            ByteOrder order = (ByteOrder) cxt.get(Dap4Util.DAP4ENDIANTAG);
+            ChunkWriter cw = new ChunkWriter(out, RequestMode.DSR, order);
             cw.writeDSR(dsr);
             cw.close();
         } catch (IOException ioe) {
@@ -298,7 +294,7 @@ abstract public class DapController extends HttpServlet
     /**
      * Process a DMR request.
      *
-     * @param drq The merged dap state
+     * @param cxt The dap context
      */
 
     protected void
@@ -311,17 +307,22 @@ abstract public class DapController extends HttpServlet
         DSP dsp = DapCache.open(realpath, cxt);
         DapDataset dmr = dsp.getDMR();
 
+        /* Annotate with our endianness */
+        ByteOrder order = (ByteOrder) cxt.get(Dap4Util.DAP4ENDIANTAG);
+        setEndianness(dmr, order);
+
         // Process any constraint view
         CEConstraint ce = null;
         String sce = drq.queryLookup(DapProtocol.CONSTRAINTTAG);
         ce = CEConstraint.compile(sce, dmr);
+        setConstraint(dmr, ce);
 
         // Provide a PrintWriter for capturing the DMR.
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
         // Get the DMR as a string
-        DMRPrinter dapprinter = new DMRPrinter(dmr,ce,pw);
+        DMRPrinter dapprinter = new DMRPrinter(dmr, ce, pw, drq.getFormat());
         dapprinter.print();
         pw.close();
         sw.close();
@@ -334,8 +335,8 @@ abstract public class DapController extends HttpServlet
 
         // Wrap the outputstream with a Chunk writer
         OutputStream out = drq.getOutputStream();
-        ChunkWriter cw = new ChunkWriter(out, RequestMode.DMR, this.byteorder);
-        cw.writeDMR(sdmr);
+        ChunkWriter cw = new ChunkWriter(out, RequestMode.DMR, order);
+        cw.cacheDMR(sdmr);
         cw.close();
     }
 
@@ -345,8 +346,8 @@ abstract public class DapController extends HttpServlet
      * then it has not yet started to output
      * a response. It a response had been initiated,
      * then the exception would produce an error chunk.
-     *
-     * @param drq The merged dap state
+     * <p>
+     * * @param cxt     The dap context
      */
 
     protected void
@@ -358,32 +359,42 @@ abstract public class DapController extends HttpServlet
 
         DSP dsp = DapCache.open(realpath, cxt);
         if(dsp == null)
-            throw new IOException("No such file: " + drq.getResourcePath());
+            throw new DapException("No such file: " + drq.getResourceRoot());
         DapDataset dmr = dsp.getDMR();
+        if(DUMPDMR) {
+            printDMR(dmr);
+            System.err.println(printDMR(dmr));
+            System.err.flush();
+        }
+
+        /* Annotate with our endianness */
+        ByteOrder order = (ByteOrder) cxt.get(Dap4Util.DAP4ENDIANTAG);
+        setEndianness(dmr, order);
 
         // Process any constraint
         CEConstraint ce = null;
         String sce = drq.queryLookup(DapProtocol.CONSTRAINTTAG);
         ce = CEConstraint.compile(sce, dmr);
+        setConstraint(dmr, ce);
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
 
         // Get the DMR as a string
-        DMRPrinter dapprinter = new DMRPrinter(dmr,ce,pw);
+        DMRPrinter dapprinter = new DMRPrinter(dmr, ce, pw, drq.getFormat());
         dapprinter.print();
         pw.close();
         sw.close();
 
         String sdmr = sw.toString();
-        if(DEBUG)
+        if(DEBUG || DUMPDMR)
             System.err.println("Sending: Data DMR:\n" + sdmr);
 
         // Wrap the outputstream with a Chunk writer
         OutputStream out = drq.getOutputStream();
-        ChunkWriter cw = new ChunkWriter(out, RequestMode.DAP, this.byteorder);
+        ChunkWriter cw = new ChunkWriter(out, RequestMode.DAP, order);
         cw.setWriteLimit(getBinaryWriteLimit());
-        cw.writeDMR(sdmr);
+        cw.cacheDMR(sdmr);
         cw.flush();
 
         addCommonHeaders(drq);
@@ -402,11 +413,17 @@ abstract public class DapController extends HttpServlet
                 */
         case NONE:
         default:
-            DapSerializer writer = new DapSerializer(dsp, ce, cw, byteorder);
+            DapSerializer writer = new DapSerializer(dsp, ce, cw, order, drq.getChecksumMode());
             writer.write(dsp.getDMR());
             cw.flush();
             cw.close();
             break;
+        }
+        // Should we dump data?
+        if(DUMPDATA) {
+            byte[] data = cw.getDump();
+            if(data != null)
+                DapDump.dumpbytestream(data, cw.getWriteOrder(), "ChunkWriter.write");
         }
     }
 
@@ -493,6 +510,64 @@ abstract public class DapController extends HttpServlet
         err.setContext(drq.getURL());
         String errormsg = err.buildXML();
         drq.getResponse().sendError(httpcode, errormsg);
+    }
+
+    /**
+     * Set special attribute: endianness : overwrite exiting value
+     *
+     * @param dmr
+     * @param order
+     * @throws DapException
+     */
+    void
+    setEndianness(DapDataset dmr, ByteOrder order)
+            throws DapException
+    {
+        DapAttribute a = dmr.findAttribute(DapUtil.LITTLEENDIANATTRNAME);
+        if(a == null) {
+            a = new DapAttribute(DapUtil.LITTLEENDIANATTRNAME, DapType.UINT8);
+            dmr.addAttribute(a);
+        }
+        //ByteOrder order = (ByteOrder) cxt.get(Dap4Util.DAP4ENDIANTAG);
+        String oz = (order == ByteOrder.BIG_ENDIAN ? "0" : "1");
+        a.setValues(new String[]{oz});
+    }
+
+    /**
+     * Set special attribute: constraint : overwrite exiting value
+     *
+     * @param dmr dmr to annotate
+     * @param ce  the new constraint
+     * @throws DapException
+     */
+    void
+    setConstraint(DapDataset dmr, CEConstraint ce)
+            throws DapException
+    {
+        if(ce == null) return;
+        if(ce.isUniversal()) return;
+        DapAttribute a = dmr.findAttribute(DapUtil.CEATTRNAME);
+        if(a == null) {
+            a = new DapAttribute(DapUtil.CEATTRNAME, DapType.STRING);
+            dmr.addAttribute(a);
+        }
+        String sce = ce.toConstraintString();
+        a.setValues(new String[]{sce});
+    }
+
+    static public String
+    printDMR(DapDataset dmr)
+    {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        DMRPrinter printer = new DMRPrinter(dmr, pw);
+        try {
+            printer.print();
+            pw.close();
+            sw.close();
+        } catch (IOException e) {
+        }
+        return sw.toString();
     }
 
 }

@@ -17,7 +17,7 @@ import java.util.Map;
  * DMR Printer.
  * Given a constraint and a Dataset,
  * print the constrained subset of the dataset.
- * <p/>
+ * <p>
  * WARNING: the printDMR code in some cases duplicates code in dap4.dap4.Dap4Print;
  * so changes here should be propagated.
  */
@@ -34,6 +34,19 @@ public class DMRPrinter
     static protected final int PERLINE = 1; // print xml attributes 1 per line
     static protected final int NONAME = 2; // do not print name xml attribute
     static protected final int NONNIL = 4; // print empty xml attributes
+    static protected final int XMLESCAPED = 8; // String is already xml escaped
+
+    static protected final String[] GROUPSPECIAL = {
+            "_NCProperties",
+            "_DAP4_Little_Endian"
+    };
+
+    static protected final String[] VARSPECIAL = {
+    };
+
+    static protected final String[] RESERVEDTAGS = {
+            "_edu.ucar"
+    };
 
     //////////////////////////////////////////////////
     // Instance Variables
@@ -42,6 +55,8 @@ public class DMRPrinter
     protected IndentWriter printer = null;
     protected DapDataset dmr = null;
     protected CEConstraint ce = null;
+    protected ResponseFormat format = null;
+    protected boolean testing = false;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -52,16 +67,17 @@ public class DMRPrinter
 
     public DMRPrinter(DapDataset dmr, PrintWriter writer)
     {
-       this(dmr,null,writer); 
+        this(dmr, null, writer, null);
     }
-    
-    public DMRPrinter(DapDataset dmr, CEConstraint ce, PrintWriter writer)
+
+    public DMRPrinter(DapDataset dmr, CEConstraint ce, PrintWriter writer, ResponseFormat format)
     {
         this();
         this.dmr = dmr;
         this.ce = ce;
         this.writer = writer;
         this.printer = new IndentWriter(writer);
+        this.format = (format == null ? ResponseFormat.XML : format);
     }
 
     //////////////////////////////////////////////////
@@ -94,10 +110,26 @@ public class DMRPrinter
     {
         if(this.ce == null)
             this.ce = CEConstraint.getUniversal(dmr);
-        assert(this.ce != null);
+        assert (this.ce != null);
         this.printer.setIndent(0);
         printNode(dmr); // start printing at the root
         printer.eol();
+    }
+
+
+    /**
+     * Same as print() except certain items of
+     * information are suppressed.
+     *
+     * @throws IOException
+     */
+
+    public void
+    testprint()
+            throws IOException
+    {
+        this.testing = true;
+        print();
     }
 
     //////////////////////////////////////////////////
@@ -108,7 +140,7 @@ public class DMRPrinter
      * as if it is being sent to a client with
      * optional constraint; inclusions are determined
      * by the view.
-     * <p/>
+     * <p>
      * Handling newlines is a bit tricky because they may be
      * embedded for e.g. groups, enums,
      * etc.  So the rule is that the
@@ -118,16 +150,14 @@ public class DMRPrinter
      * printDimrefs, printMaps
      *
      * @param node - the node to print
-     * @throws IOException
-     *
-     * Note that the PrintWriter is global.
+     * @throws IOException Note that the PrintWriter is global.
      */
 
     public void
     printNode(DapNode node)
             throws IOException
     {
-        if (node == null)
+        if(node == null)
             return;
 
         DapSort sort = node.getSort();
@@ -136,7 +166,7 @@ public class DMRPrinter
         switch (sort) {
         case DATASET:// treat like group
         case GROUP:
-            if (!this.ce.references(node)) break;
+            if(!this.ce.references(node)) break;
             DapGroup group = (DapGroup) node;
             printer.marginPrint("<" + dmrname);
             int flags = (sort == DapSort.DATASET ? PERLINE : NILFLAGS);
@@ -144,30 +174,30 @@ public class DMRPrinter
             printer.println(">");
             printer.indent();
             // Make the output order conform to the spec
-            if (group.getDimensions().size() > 0) {
-                for (DapNode subnode : group.getDimensions()) {
-                    if (!this.ce.references(subnode)) continue;
+            if(group.getDimensions().size() > 0) {
+                for(DapNode subnode : group.getDimensions()) {
+                    if(!this.ce.references(subnode)) continue;
                     printNode(subnode);
                     printer.eol();
                 }
             }
-            if (group.getEnums().size() > 0) {
-                for (DapNode subnode : group.getEnums()) {
-                    if (!this.ce.references(subnode)) continue;
+            if(group.getEnums().size() > 0) {
+                for(DapNode subnode : group.getEnums()) {
+                    if(!this.ce.references(subnode)) continue;
                     printNode(subnode);
                     printer.eol();
                 }
             }
-            if (group.getVariables().size() > 0)
-                for (DapNode subnode : group.getVariables()) {
-                    if (!this.ce.references(subnode)) continue;
+            if(group.getVariables().size() > 0)
+                for(DapNode subnode : group.getVariables()) {
+                    if(!this.ce.references(subnode)) continue;
                     printNode(subnode);
                     printer.eol();
                 }
             printMetadata(node);
-            if (group.getGroups().size() > 0)
-                for (DapNode subnode : group.getGroups()) {
-                    if (!this.ce.references(subnode)) continue;
+            if(group.getGroups().size() > 0)
+                for(DapNode subnode : group.getGroups()) {
+                    if(!this.ce.references(subnode)) continue;
                     printNode(subnode);
                     printer.eol();
                 }
@@ -176,12 +206,14 @@ public class DMRPrinter
             break;
 
         case DIMENSION:
-            if (!this.ce.references(node)) break;
+            if(!this.ce.references(node)) break;
             DapDimension dim = (DapDimension) node;
-            if (!dim.isShared()) break; // ignore, here, anonymous dimensions
+            if(!dim.isShared()) break; // ignore, here, anonymous dimensions
             printer.marginPrint("<" + dmrname);
             printXMLAttributes(node, ce, NILFLAGS);
-            if (hasMetadata(node)) {
+            if(dim.isUnlimited())
+                printXMLAttribute(AbstractDSP.UCARTAGUNLIMITED, "1", NILFLAGS);
+            if(hasMetadata(node)) {
                 printer.println(">");
                 printMetadata(node);
                 printer.marginPrint("</" + dmrname + ">");
@@ -191,66 +223,61 @@ public class DMRPrinter
             break;
 
         case ENUMERATION:
-            if (!this.ce.references(node)) break;
+            if(!this.ce.references(node)) break;
             DapEnumeration en = (DapEnumeration) node;
             printer.marginPrint("<" + dmrname);
             printXMLAttributes(en, ce, NILFLAGS);
             printer.println(">");
             printer.indent();
             List<String> econstnames = en.getNames();
-            for (String econst : econstnames) {
+            for(String econst : econstnames) {
                 DapEnumConst value = en.lookup(econst);
                 assert (value != null);
                 printer.marginPrintln(
                         String.format("<EnumConst name=\"%s\" value=\"%d\"/>",
-                                Escape.entityEscape(econst), value.getValue()));
+                                Escape.entityEscape(econst, null), value.getValue()));
             }
             printMetadata(node);
             printer.outdent();
             printer.marginPrint("</" + dmrname + ">");
             break;
 
-        case STRUCTURE:
-        case SEQUENCE:
-            if (!this.ce.references(node)) break;
-            DapStructure struct = (DapStructure) node;
-            if(struct.isTemplate()) break; // ignore
-            printer.marginPrint("<" + dmrname);
+        case VARIABLE:
+            if(!this.ce.references(node)) break;
+            DapVariable var = (DapVariable) node;
+            DapType type = var.getBaseType();
+            printer.marginPrint("<" + type.getTypeSort().name());
             printXMLAttributes(node, ce, NILFLAGS);
-            printer.println(">");
-            printer.indent();
-            for (DapVariable field : struct.getFields()) {
-                if (!this.ce.references(field)) continue;
-                printNode(field);
-                printer.eol();
-            }
-            printDimrefs(struct);
-            printMetadata(node);
-            printMaps(struct);
-            printer.outdent();
-            printer.marginPrint("</" + dmrname + ">");
-            break;
-
-        case ATOMICVARIABLE:
-            if (!this.ce.references(node)) break;
-            DapAtomicVariable var = (DapAtomicVariable) node;
-            // Get the type sort of the variable
-            DapType basetype = var.getBaseType();
-            printer.marginPrint("<" + basetype.getTypeSort().name());
-            printXMLAttributes(node, ce, NILFLAGS);
-            if (hasMetadata(node) || hasDimensions(var) || hasMaps(var)) {
+            if(type.isAtomic()) {
+                if((hasMetadata(node) || hasDimensions(var) || hasMaps(var))) {
+                    printer.println(">");
+                    printer.indent();
+                    if(hasDimensions(var))
+                        printDimrefs(var);
+                    if(hasMetadata(var))
+                        printMetadata(var);
+                    if(hasMaps(var))
+                        printMaps(var);
+                    printer.outdent();
+                    printer.marginPrint("</" + type.getTypeSort().name() + ">");
+                } else
+                    printer.print("/>");
+            } else if(type.getTypeSort().isCompound()) {
+                DapStructure struct = (DapStructure) type;
                 printer.println(">");
                 printer.indent();
-                if (hasDimensions(var))
-                    printDimrefs(var);
-                if (hasMetadata(var))
-                    printMetadata(var);
-                if (hasMaps(var))
-                    printMaps(var);
+                for(DapVariable field : struct.getFields()) {
+                    if(!this.ce.references(field)) continue;
+                    printNode(field);
+                    printer.eol();
+                }
+                printDimrefs(var);
+                printMetadata(var);
+                printMaps(var);
                 printer.outdent();
-                printer.marginPrint("</" + basetype.getTypeSort().name() + ">");
+                printer.marginPrint("</" + type.getTypeSort().name() + ">");
             } else
-                printer.print("/>");
+                assert false : "Illegal variable base type";
             break;
 
         default:
@@ -260,11 +287,14 @@ public class DMRPrinter
 
     }
 
+    /**
+     * Print info from the node that needs to be in the form of xml attributes
+     */
     void
     printXMLAttributes(DapNode node, CEConstraint ce, int flags)
             throws IOException
     {
-        if ((flags & PERLINE) != 0)
+        if((flags & PERLINE) != 0)
             printer.indent(2);
 
         // Print name first, if non-null and !NONAME
@@ -272,7 +302,7 @@ public class DMRPrinter
         // entity escaping (which is done by printXMLattribute),
         // but backslash escaping is not required.
         String name = node.getShortName();
-        if (name != null && (flags & NONAME) == 0) {
+        if(name != null && (flags & NONAME) == 0) {
             name = node.getShortName();
             printXMLAttribute("name", name, flags);
         }
@@ -289,17 +319,14 @@ public class DMRPrinter
 
         case DIMENSION:
             DapDimension orig = (DapDimension) node;
-            if (orig.isShared()) {//not Anonymous
+            if(orig.isShared()) {//not Anonymous
                 // name will have already been printed
                 // Now, we need to get the size as defined by the constraint
                 DapDimension actual = this.ce.getRedefDim(orig);
-                if (actual == null)
+                if(actual == null)
                     actual = orig;
                 long size = actual.getSize();
-                if (size == DapDimension.VARIABLELENGTH)
-                    printXMLAttribute("size", "*", flags);
-                else
-                    printXMLAttribute("size", Long.toString(size), flags);
+                printXMLAttribute("size", Long.toString(size), flags);
             }
             break;
 
@@ -307,10 +334,10 @@ public class DMRPrinter
             printXMLAttribute("basetype", ((DapEnumeration) node).getBaseType().getTypeName(), flags);
             break;
 
-        case ATOMICVARIABLE:
-            DapAtomicVariable atom = (DapAtomicVariable) node;
-            DapType basetype = atom.getBaseType();
-            if (basetype.isEnumType()) {
+        case VARIABLE:
+            DapVariable var = (DapVariable) node;
+            DapType basetype = var.getBaseType();
+            if(basetype.isEnumType()) {
                 printXMLAttribute("enum", basetype.getTypeName(), flags);
             }
             break;
@@ -319,7 +346,7 @@ public class DMRPrinter
             DapAttribute attr = (DapAttribute) node;
             basetype = attr.getBaseType();
             printXMLAttribute("type", basetype.getTypeName(), flags);
-            if (attr.getBaseType().isEnumType()) {
+            if(attr.getBaseType().isEnumType()) {
                 printXMLAttribute("enum", basetype.getTypeName(), flags);
             }
             break;
@@ -327,48 +354,67 @@ public class DMRPrinter
         default:
             break; // node either has no attributes or name only
         } //switch
-
-        if ((flags & PERLINE) != 0) {
+        if(!this.testing)
+            printReserved(node);
+        if((flags & PERLINE) != 0) {
             printer.outdent(2);
         }
     }
 
     /**
      * PrintXMLAttributes helper function
+     *
+     * @param name
+     * @param value
+     * @param flags
+     * @throws DapException
      */
-    void
+    protected void
     printXMLAttribute(String name, String value, int flags)
             throws DapException
     {
-        if (name == null) return;
-        if ((flags & NONNIL) == 0
+        if(name == null) return;
+        if((flags & NONNIL) == 0
                 && (value == null || value.length() == 0))
             return;
-        if ((flags & PERLINE) != 0) {
+        if((flags & PERLINE) != 0) {
             printer.eol();
             printer.margin();
         }
         printer.print(" " + name + "=");
         printer.print("\"");
 
-        if (value != null) {
+        if(value != null) {
             // add xml entity escaping
-            value = Escape.entityEscape(value);
+            if((flags & XMLESCAPED) == 0)
+                value = Escape.entityEscape(value, "\"");
             printer.print(value);
         }
         printer.print("\"");
     }
 
-    void
+    protected void
+    printReserved(DapNode node)
+            throws DapException
+    {
+        Map<String, String> xattrs = node.getXMLAttributes();
+        if(xattrs == null) return; // ignore
+        for(Map.Entry<String, String> entry : xattrs.entrySet()) {
+            if(isReserved(entry.getKey()))
+                printXMLAttribute(entry.getKey(), entry.getValue(), NILFLAGS);
+        }
+    }
+
+    protected void
     printMetadata(DapNode node)
             throws IOException
     {
 
         Map<String, DapAttribute> attributes = node.getAttributes();
-        if (attributes.size() == 0) {
+        if(attributes.size() == 0) {
             return;
         }
-        for (Map.Entry<String,DapAttribute> entry : attributes.entrySet()) {
+        for(Map.Entry<String, DapAttribute> entry : attributes.entrySet()) {
             DapAttribute attr = entry.getValue();
             assert (attr != null);
             switch (attr.getSort()) {
@@ -385,38 +431,91 @@ public class DMRPrinter
         }
     }
 
-    void
+    protected void
     printContainerAttribute(DapAttribute attr)
     {
     }
 
-    void
+    protected void
     printOtherXML(DapAttribute attr)
     {
+    }
+
+    static boolean isSuppressed(String name)
+    {
+        return isReserved(name);
+    }
+
+    static boolean isReserved(String key)
+    {
+        for(String s : RESERVEDTAGS) {
+            if(key.startsWith(s)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Special here is not the same as reserved
+     *
+     * @param attr
+     * @return
+     */
+    static boolean isSpecial(DapAttribute attr)
+    {
+        if(attr.getParent().getSort() == DapSort.DATASET) {
+            for(String s : GROUPSPECIAL) {
+                if(s.equals(attr.getShortName()))
+                    return true;
+            }
+        } else if(attr.getParent().getSort() == DapSort.VARIABLE) {
+            for(String s : VARSPECIAL) {
+                if(s.equals(attr.getShortName()))
+                    return true;
+            }
+        }
+        return false;
     }
 
     void
     printAttribute(DapAttribute attr)
             throws IOException
     {
+        if(this.testing && isSpecial(attr))
+            return;
         printer.marginPrint("<Attribute");
-        printXMLAttributes(attr, ce, NILFLAGS);
-        Object[] values = attr.getValues();
+        printXMLAttribute("name", attr.getShortName(), NILFLAGS);
+        DapType type = attr.getBaseType();
+        printXMLAttribute("type", type.getTypeName(), NILFLAGS);
         printer.println(">");
-        if (values == null)
+        Object values = attr.getValues();
+        if(values == null)
             throw new DapException("Attribute with no values:" + attr.getFQN());
         printer.indent();
-        if (values.length == 1) {
-            printer.marginPrintln(String.format("<Value value=\"%s\"/>", getPrintValue(values[0])));
-        } else {
-            printer.marginPrintln("<Value>");
-            printer.indent();
-            for (Object value : values) {
-                printer.marginPrint(getPrintValue(value));
-                printer.eol();
+        // The values for a DapAttribute are always strings,
+        // but for enums might be either the econst name or the associated integer.
+        String[] svec = (String[]) values;
+        // Special case for char
+        if(type == DapType.CHAR) {
+            // Print the value as a string of all the characters
+            StringBuilder buf = new StringBuilder();
+            for(int i = 0; i < svec.length; i++) {
+                buf.append(svec[i]);
             }
-            printer.outdent();
-            printer.marginPrintln("</Value>");
+            String cs = String.format("<Value value=\"%s\"/>", buf.toString());
+            printer.marginPrintln(cs);
+        } else if(type.isEnumType()) {
+            String[] names = (String[])((DapEnumeration)type).convert(svec);
+            for(int i = 0; i < svec.length; i++) {
+                String s = Escape.entityEscape(names[i], null);
+                String cs = String.format("<Value value=\"%s\"/>", s);
+                printer.marginPrintln(cs);
+            }
+        } else {
+            for(int i = 0; i < svec.length; i++) {
+                String s = Escape.entityEscape(svec[i], null);
+                String cs = String.format("<Value value=\"%s\"/>", s);
+                printer.marginPrintln(cs);
+            }
         }
         printer.outdent();
         printer.marginPrintln("</Attribute>");
@@ -434,18 +533,19 @@ public class DMRPrinter
     printDimrefs(DapVariable var)
             throws DapException
     {
-        if (var.getRank() == 0) return;
+        if(var.getRank() == 0) return;
         List<DapDimension> dimset = this.ce.getConstrainedDimensions(var);
-        if (dimset == null)
+        if(dimset == null)
             throw new DapException("Unknown variable: " + var);
         assert var.getRank() == dimset.size();
-        for (int i = 0; i < var.getRank(); i++) {
+        for(int i = 0; i < var.getRank(); i++) {
             DapDimension dim = dimset.get(i);
             printer.marginPrint("<Dim");
-            if (dim.isShared()) {
+            if(dim.isShared()) {
                 String fqn = dim.getFQN();
                 assert (fqn != null) : "Illegal Dimension reference";
-                printXMLAttribute("name", fqn, NILFLAGS);
+                fqn = fqnXMLEscape(fqn);
+                printXMLAttribute("name", fqn, XMLESCAPED);
             } else {
                 long size = dim.getSize();// the size for printing purposes
                 printXMLAttribute("size", Long.toString(size), NILFLAGS);
@@ -458,16 +558,19 @@ public class DMRPrinter
     printMaps(DapVariable parent)
             throws IOException
     {
+        if(this.testing)
+            return;
         List<DapMap> maps = parent.getMaps();
-        if (maps.size() == 0) return;
-        for (DapMap map : maps) {
+        if(maps.size() == 0) return;
+        for(DapMap map : maps) {
             printer.marginPrint("<Map");
             // Separate out name attribute so we can use FQN.
             String name = map.getFQN();
             assert (name != null) : "Illegal <Map> reference";
-            printXMLAttribute("name", name, NILFLAGS);
+            name = fqnXMLEscape(name);
+            printXMLAttribute("name", name, XMLESCAPED);
             printXMLAttributes(map, ce, NONAME);
-            if (hasMetadata(map)) {
+            if(hasMetadata(map)) {
                 printer.println(">");
                 printer.indent();
                 printMetadata(map);
@@ -481,16 +584,59 @@ public class DMRPrinter
     //////////////////////////////////////////////////
     // Misc. Static Utilities
 
+    /**
+     * XML escape a dap fqn
+     * and converting '"' to &quot;
+     * Assumes backslash escapes are in effect for '/' and '.'
+     *
+     * @param fqn the backslash escaped fqn
+     * @return escaped string
+     */
+    static public String
+    fqnXMLEscape(String fqn)
+    {
+        // Split the fqn into pieces
+        StringBuilder xml = new StringBuilder();
+        String segment = null;
+        List<String> segments = Escape.backslashsplit(fqn, '/');
+        for(int i = 1; i < segments.size() - 1; i++) {  // skip leading /
+            segment = segments.get(i);
+            segment = Escape.backslashUnescape(segment); // get to raw name
+            segment = Escape.entityEscape(segment, "\"");// '"' -> &quot;
+            segment = Escape.backslashEscape(segment, "/."); // re-escape
+            xml.append("/");
+            xml.append(segment);
+        }
+        // Last segment might be structure path, so similar processing,
+        // but worry about '.'
+        segment = segments.get(segments.size() - 1);
+        segments = Escape.backslashsplit(segment, '.');
+        xml.append("/");
+        for(int i = 0; i < segments.size(); i++) {
+            segment = segments.get(i);
+            segment = Escape.backslashUnescape(segment); // get to raw name
+            segment = Escape.entityEscape(segment, "\"");// '"' -> &quot;
+            segment = Escape.backslashEscape(segment, "/."); // re-escape
+            if(i > 0) xml.append(".");
+            xml.append(segment);
+        }
+        return xml.toString();
+    }
+
+
     static protected String
     getPrintValue(Object value)
     {
-        if (value instanceof String) {
-            return Escape.entityEscape((String) value);
+        if(value instanceof String) {
+            String sclean = Escape.cleanString((String) value);
+            return Escape.entityEscape((String) value, null);
+        } else if(value instanceof Character) {
+            return Escape.entityEscape(((Character) value).toString(), null);
         } else
             return value.toString();
     }
 
-    static protected boolean hasMetadata(DapNode node)
+    protected boolean hasMetadata(DapNode node)
     {
         return node.getAttributes().size() > 0;
     }
@@ -504,7 +650,6 @@ public class DMRPrinter
     {
         return var.getDimensions().size() > 0;
     }
-
 
 } // class DapPrint
     

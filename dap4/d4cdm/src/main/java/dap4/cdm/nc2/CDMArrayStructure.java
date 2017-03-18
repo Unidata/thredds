@@ -12,7 +12,6 @@ import dap4.core.dmr.DapStructure;
 import dap4.core.dmr.DapType;
 import dap4.core.dmr.DapVariable;
 import dap4.core.util.DapException;
-import dap4.core.util.DapSort;
 import dap4.core.util.DapUtil;
 import dap4.core.util.Slice;
 import dap4.dap4lib.LibTypeFcns;
@@ -101,16 +100,15 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
      */
     CDMArrayStructure(Group cdmroot, DataCursor data)
     {
-        super(computemembers((DapStructure) data.getTemplate()),
+        super(computemembers((DapVariable) data.getTemplate()),
                 CDMUtil.computeEffectiveShape(((DapVariable) data.getTemplate()).getDimensions()));
         this.template = (DapVariable) data.getTemplate();
-        assert (this.template.getRank() == 0 && data.getScheme() == Scheme.STRUCTURE)
-                || data.getScheme() == Scheme.STRUCTARRAY;
+        assert data.getScheme() == Scheme.STRUCTARRAY;
         this.dsp = data.getDSP();
         this.cdmroot = cdmroot;
         this.basetype = this.template.getBaseType();
         this.dimsize = DapUtil.dimProduct(template.getDimensions());
-        this.nmembers = ((DapStructure) template).getFields().size();
+        this.nmembers = ((DapStructure) template.getBaseType()).getFields().size();
 
         this.data = data;
 
@@ -173,7 +171,8 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
     public String toString()
     {
         StringBuilder buf = new StringBuilder();
-        DapStructure struct = (DapStructure) this.template;
+        DapVariable var = (DapVariable) this.template;
+        DapStructure struct = (DapStructure) var.getBaseType();
         for(int i = 0; i < this.dimsize; i++) {
             List<DapVariable> fields = struct.getFields();
             if(i < (this.dimsize - 1))
@@ -489,13 +488,14 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
      * from a DapStructure. May need to recurse
      * if a field is itself a Structure
      *
-     * @param ds The DapStructure to use to construct
+     * @param var The DapVariable to use to construct
      *           a StructureMembers object.
      * @return The StructureMembers object for the given DapStructure
      */
     static StructureMembers
-    computemembers(DapStructure ds)
+    computemembers(DapVariable var)
     {
+        DapStructure ds = (DapStructure)var.getBaseType();
         StructureMembers sm
                 = new StructureMembers(ds.getShortName());
         List<DapVariable> fields = ds.getFields();
@@ -507,11 +507,11 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
                     sm.addMember(
                             field.getShortName(), "", null,
                             cdmtype,
-                            CDMUtil.computeEffectiveShape(ds.getDimensions()));
+                            CDMUtil.computeEffectiveShape(field.getDimensions()));
             m.setDataParam(i); // So we can index into various lists
             // recurse if this field is itself a structure
-            if(field.getSort() == DapSort.STRUCTURE) {
-                StructureMembers subsm = computemembers((DapStructure) field);
+            if(dt.getTypeSort().isStructType()) {
+                StructureMembers subsm = computemembers(field);
                 m.setStructureMembers(subsm);
             }
         }
@@ -526,8 +526,9 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
     protected Array
     memberArray(int recno, int memberindex)
     {
-        DapStructure template = (DapStructure) this.getTemplate();
-        DapVariable field = template.getField(memberindex);
+        DapVariable var = (DapVariable) this.getTemplate();
+        DapStructure struct = (DapStructure)var.getBaseType();
+        DapVariable field = struct.getField(memberindex);
         DapType base = field.getBaseType();
         if(base == null)
             throw new IllegalStateException("Unknown field type: " + field);

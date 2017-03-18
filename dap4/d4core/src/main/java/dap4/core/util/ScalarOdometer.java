@@ -23,6 +23,7 @@ public class ScalarOdometer extends Odometer
     {
         this.state = STATE.INITIAL;
         this.index = new Index(0);
+        this.slices = Slice.SCALARSLICES;
     }
 
     public long index()

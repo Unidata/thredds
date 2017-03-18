@@ -41,7 +41,6 @@ public class DapDSR
     {
         StringWriter sw = new StringWriter();
         IndentWriter printer = new IndentWriter(sw);
-        printer.marginPrintln("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
         printer.marginPrintln("<DatasetServices");
         printer.indent(2);
         printer.marginPrintln("xmlns=\"http://xml.opendap.org/ns/DAP/4.0/dataset-services#\">");

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Dataset
          name="test_enum_array.nc"
          dapVersion="4.0"
@@ -21,8 +22,11 @@
     </Enumeration>
     <Enum name="primary_cloud" enum="/cloud_class_t">
         <Dim name="/d5"/>
-        <Attribute name="_FillValue" type="String">
+        <Attribute name="_FillValue" type="/cloud_class_t">
             <Value value="Missing"/>
         </Attribute>
     </Enum>
+    <Attribute name="_DAP4_Little_Endian" type="UInt8">
+        <Value value="1"/>
+    </Attribute>
 </Dataset>

@@ -52,21 +52,21 @@ public class ErrorResponse
 
     public String getMessage() // Return XML escaped version
     {
-	return (message == null ? null : Escape.entityEscape(message));
+	return (message == null ? null : Escape.entityEscape(message,null));
     }
 
     public String getRawContext() {return context;}
 
     public String getContext() // Return XML escaped version
     {
-	return (context == null ? null : Escape.entityEscape(context));
+	return (context == null ? null : Escape.entityEscape(context,null));
     }
 
     public String getRawOtherInfo() {return otherinfo;}
 
     public String getOtherInfo() // Return XML escaped version
     {
-	return (otherinfo == null ? null : Escape.entityEscape(otherinfo));
+	return (otherinfo == null ? null : Escape.entityEscape(otherinfo,null));
     }
 
     public void setCode(int code) {this.code = code;}

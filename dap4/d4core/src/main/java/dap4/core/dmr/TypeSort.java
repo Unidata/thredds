@@ -18,7 +18,7 @@ import static dap4.core.dmr.TypeConstants.*;
    will not allow anything to be defined
    before the enum constants.
 */
-class TypeConstants
+abstract class TypeConstants
 {
     // define classification flag mnemonics
     static public final int ISINTEGER = (1<<0);
@@ -38,36 +38,43 @@ class TypeConstants
 
 public enum TypeSort
 {
-    Char("Char", ISFIXEDSIZE | ISCHAR | ISLEGALATTRTYPE | ISATOMIC),
-    Int8("Int8", ISINTEGER | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    UInt8("UInt8", ISINTEGER | ISUNSIGNED | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    Int16("Int16", ISINTEGER | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    UInt16("UInt16", ISINTEGER | ISUNSIGNED | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    Int32("Int32", ISINTEGER | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    UInt32("UInt32", ISINTEGER | ISUNSIGNED | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    Int64("Int64", ISINTEGER | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    UInt64("UInt64", ISINTEGER | ISUNSIGNED | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    Float32("Float32", ISFLOAT | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    Float64("Float64", ISFLOAT | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
-    String("String", ISSTRING | ISLEGALATTRTYPE | ISATOMIC),
-    URL("URL", ISSTRING | ISLEGALATTRTYPE | ISATOMIC),
-    Opaque("Opaque", ISOPAQUE | ISLEGALATTRTYPE | ISATOMIC),
-    Enum("Enum", ISENUM | ISFIXEDSIZE | ISLEGALATTRTYPE),
-    Structure("Struct", ISSTRUCT|ISCOMPOUND), // Add this to avoid having to check the DapSort
-    Sequence("Seq", ISSEQ|ISCOMPOUND); // Add this to avoid having to check the DapSort
+    Char("Char", char.class, ISFIXEDSIZE | ISCHAR | ISLEGALATTRTYPE | ISATOMIC),
+    Int8("Int8", byte.class, ISINTEGER | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    UInt8("UInt8", byte.class, ISINTEGER | ISUNSIGNED | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    Int16("Int16", short.class, ISINTEGER | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    UInt16("UInt16", short.class, ISINTEGER | ISUNSIGNED | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    Int32("Int32", int.class, ISINTEGER | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    UInt32("UInt32", int.class, ISINTEGER | ISUNSIGNED | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    Int64("Int64", long.class, ISINTEGER | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    UInt64("UInt64", long.class, ISINTEGER | ISUNSIGNED | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    Float32("Float32", float.class, ISFLOAT | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    Float64("Float64", double.class, ISFLOAT | ISFIXEDSIZE | ISLEGALATTRTYPE | ISATOMIC),
+    String("String", String.class, ISSTRING | ISLEGALATTRTYPE | ISATOMIC),
+    URL("URL", String.class, ISSTRING | ISLEGALATTRTYPE | ISATOMIC),
+    Opaque("Opaque", ByteBuffer.class, ISOPAQUE | ISLEGALATTRTYPE | ISATOMIC),
+    Enum("Enum", null, ISENUM | ISATOMIC | ISFIXEDSIZE | ISLEGALATTRTYPE),
+    Structure("Structure", null, ISSTRUCT|ISCOMPOUND), // Add this to avoid having to check the DapSort
+    Sequence("Sequence", null, ISSEQ|ISCOMPOUND); // Add this to avoid having to check the DapSort
 
     private final String typename;
     private final int classification;
+    private final Class javaclass;
 
-    TypeSort(String typename, int classification)
+    TypeSort(String typename, Class javaclass, int classification)
     {
-        this.typename = typename;
+        this.typename = typename; //Must match xml variable open name
         this.classification = classification;
+        this.javaclass = javaclass;
     }
 
     public final String getTypeName()
     {
         return typename;
+    }
+
+    public final Class getJavaClass()
+    {
+        return javaclass;
     }
 
     static public final TypeSort getSignedVersion(TypeSort uat)
@@ -202,12 +209,13 @@ public enum TypeSort
     }
 
 
+/*
     // Map an object instance class to a corresponding TypeSort
     // Try to cover as many Java classes as possible.
-    // Note that signedness is ignored
+    // Notes:
+    // 1. signedness is ignored
 
     static Map<Class, TypeSort> classmap;
-
     static {
         classmap = new HashMap<Class, TypeSort>();
         classmap.put(Character.class, TypeSort.Char);
@@ -225,13 +233,13 @@ public enum TypeSort
         classmap.put(BigInteger.class, TypeSort.UInt64);
         classmap.put(DapEnumeration.class, TypeSort.Enum);
     }
-
     // Convert the class of an object to a matching TypeSort
     static public TypeSort classToType(Object o)
     {
         if(o == null) return null;
         return classmap.get(o.getClass());
     }
+*/
 
 }
 

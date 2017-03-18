@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NotJenkins;
 import ucar.unidata.util.test.category.NotTravis;
 
@@ -268,7 +269,7 @@ public class TestHyrax extends DapTestCommon
     // Junit test method
 
     @Test
-    @Category({NotJenkins.class,NotTravis.class})
+    @Category({NotJenkins.class, NotTravis.class})
     public void testHyrax()
             throws Exception
     {
@@ -296,15 +297,15 @@ public class TestHyrax extends DapTestCommon
             e.printStackTrace();
             return testcase.xfail;
         }
-
-        String metadata = (NCDUMP ? ncdumpmetadata(ncfile) : null);
+        String usethisname = UnitTestCommon.extractDatasetname(url,null);
+        String metadata = (NCDUMP ? ncdumpmetadata(ncfile,usethisname) : null);
         if(prop_visual) {
             visual(testcase.title + ".dmr", metadata);
         }
 
         String data = null;
         if(!testcase.headeronly) {
-            data = (NCDUMP ? ncdumpdata(ncfile) : null);
+            data = (NCDUMP ? ncdumpdata(ncfile,usethisname) : null);
             if(prop_visual) {
                 visual(testcase.title + ".dap", data);
             }
@@ -321,20 +322,26 @@ public class TestHyrax extends DapTestCommon
             // Read the baseline file(s)
             String baselinecontent = readfile(baselinefile);
             System.out.println("Comparison: vs " + baselinefile);
-            pass = pass && same(getTitle(),baselinecontent, testoutput);
+            pass = pass && same(getTitle(), baselinecontent, testoutput);
             System.out.println(pass ? "Pass" : "Fail");
         }
         return pass;
     }
 
 
-    String ncdumpmetadata(NetcdfDataset ncfile)
+    String ncdumpmetadata(NetcdfDataset ncfile, String datasetname)
             throws Exception
     {
         StringWriter sw = new StringWriter();
+
+        StringBuilder args = new StringBuilder("-strict -unsigned");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
         // Print the meta-databuffer using these args to NcdumpW
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
                 throw new Exception("NcdumpW failed");
         } catch (IOException ioe) {
             throw new Exception("NcdumpW failed", ioe);
@@ -343,14 +350,21 @@ public class TestHyrax extends DapTestCommon
         return sw.toString();
     }
 
-    String ncdumpdata(NetcdfDataset ncfile)
+    String ncdumpdata(NetcdfDataset ncfile, String datasetname)
             throws Exception
     {
         StringWriter sw = new StringWriter();
+
+        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
+
         // Dump the databuffer
         sw = new StringWriter();
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-vall -unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
                 throw new Exception("NCdumpW failed");
         } catch (IOException ioe) {
             ioe.printStackTrace();

@@ -18,6 +18,8 @@ public class Dap4EventHandler extends SaxEventHandler
     //////////////////////////////////////////////////
     // Constants
 
+    static public String SPECIALATTRPREFIX = "_";
+
     //////////////////////////////////////////////////
     // static types
 
@@ -198,10 +200,14 @@ public class Dap4EventHandler extends SaxEventHandler
             break;
 
         case ATTRIBUTE:
-            attr = attributemap.get(name.toLowerCase());
-            if(attr == null)
-                yytoken = UNKNOWN_ATTR;
-            else
+	    String lcname = name.toLowerCase();
+            attr = attributemap.get(lcname);
+            if(attr == null) {
+	        if(lcname.startsWith(SPECIALATTRPREFIX)) 
+		    yytoken = ATTR_SPECIAL;
+		else
+                    yytoken = UNKNOWN_ATTR;
+            } else
                 yytoken = attr.atoken;
             break;
 

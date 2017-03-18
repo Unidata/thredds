@@ -173,62 +173,71 @@ import static dap4.core.data.DataCursor.Scheme;
 
     public double getDouble(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getDouble(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getDouble(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public float getFloat(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getFloat(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getFloat(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public long getLong(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getLong(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getLong(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public int getInt(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getInt(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getInt(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public short getShort(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getShort(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getShort(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public byte getByte(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getByte(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getByte(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public char getChar(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getChar(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getChar(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public boolean getBoolean(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getBoolean(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getBoolean(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public Object getObject(int offset)
     {
-        long[] dimsizes = DapUtil.getDimSizes(((DapVariable) getTemplate()).getDimensions());
-        return getObject(dap4.core.util.Index.offsetToIndex(offset, dimsizes));
+        DapVariable d4var = (DapVariable) getTemplate();
+        long[] dimsizes = DapUtil.getDimSizes(d4var.getDimensions());
+        return getObject(DapUtil.offsetToIndex(offset, dimsizes));
     }
 
     public Object getStorage()
     {
         try {
-            List<Slice> slices = DapUtil.dimsetSlices(this.template.getDimensions());
+            List<Slice> slices = DapUtil.dimsetToSlices(this.template.getDimensions());
             Object result = this.data.read(slices);
             return result;
         } catch (DapException e) {
@@ -358,8 +367,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return Convert.doubleValue(this.basetype, value);
+            value = Convert.convert(DapType.FLOAT64, this.basetype, value);
+            return (Double) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -377,8 +386,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (float) Convert.doubleValue(this.basetype, value);
+            value = Convert.convert(DapType.FLOAT32, this.basetype, value);
+            return (Float) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -395,8 +404,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return Convert.longValue(this.basetype, value);
+            value = Convert.convert(DapType.INT64, this.basetype, value);
+            return (Long) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -413,8 +422,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (int) Convert.longValue(this.basetype, value);
+            value = Convert.convert(DapType.INT32, this.basetype, value);
+            return (Integer) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -431,8 +440,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (short) Convert.longValue(this.basetype, value);
+            value = Convert.convert(DapType.INT16, this.basetype, value);
+            return (Short) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -449,8 +458,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (byte) (Convert.longValue(basetype, value) & 0xFFL);
+            value = Convert.convert(DapType.INT8, this.basetype, value);
+            return (Byte) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -467,8 +476,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (char) (Convert.longValue(basetype, value) & 0xFFL);
+            value = Convert.convert(DapType.CHAR, this.basetype, value);
+            return (Character) java.lang.reflect.Array.get(value, 0);
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -485,8 +494,8 @@ import static dap4.core.data.DataCursor.Scheme;
         assert data.getScheme() == Scheme.ATOMIC;
         try {
             Object value = data.read(idx);
-            value = java.lang.reflect.Array.get(value, 0);
-            return (Convert.longValue(basetype, value) != 0);
+            value = Convert.convert(DapType.INT64, this.basetype, value);
+            return ((Long) java.lang.reflect.Array.get(value, 0)) != 0;
         } catch (IOException ioe) {
             throw new IndexOutOfBoundsException(ioe.getMessage());
         }
@@ -598,37 +607,5 @@ import static dap4.core.data.DataCursor.Scheme;
 
     //////////////////////////////////////////////////
     // Utilities
-   /*
-    protected DapSort
-    computesort(Array array)
-            throws DapException
-    {
-        DapSort sort = null;
-        Array content = (Array) this.data;
-        switch (content.getDataType()) {
-        case BOOLEAN:
-        case BYTE:
-        case CHAR:
-        case SHORT:
-        case INT:
-        case LONG:
-        case UBYTE:
-        case USHORT:
-        case UINT:
-        case ULONG:
-        case FLOAT:
-        case DOUBLE:
-        case STRING:
-        case OBJECT:
-            return DapSort.ATOMICVARIABLE;
-        case STRUCTURE:
-            return DapSort.STRUCTURE;
-        case SEQUENCE:
-            return DapSort.SEQUENCE;
-        default:
-            break; // sequence is not supported
-        }
-        throw new DapException("Unsupported datatype: " + content.getDataType());
-    } */
 }
 

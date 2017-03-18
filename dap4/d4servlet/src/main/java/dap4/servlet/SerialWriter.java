@@ -4,8 +4,13 @@
 
 package dap4.servlet;
 
-import dap4.core.dmr.*;
-import dap4.core.util.*;
+import dap4.core.data.ChecksumMode;
+import dap4.core.data.DataCursor;
+import dap4.core.dmr.DapType;
+import dap4.core.dmr.DapVariable;
+import dap4.core.dmr.TypeSort;
+import dap4.core.util.DapException;
+import dap4.core.util.DapUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -18,7 +23,7 @@ import java.nio.ByteOrder;
  * is intended to provide the API
  * through which various kinds of
  * data are written into the ChunkWriter.
- * <p/>
+ * <p>
  * Ideally, this class should be completely
  * independent of CDM code so that
  * Non-NetcdfDataset writers can be accomodated.
@@ -27,6 +32,8 @@ import java.nio.ByteOrder;
 public class SerialWriter
 {
     static public boolean DEBUG = false; // make it mutable
+    static public boolean DUMPDATA = false; // make it mutable
+    static public boolean DUMPCSUM = false; // make it mutable
 
     //////////////////////////////////////////////////
     // Constants
@@ -51,24 +58,28 @@ public class SerialWriter
     protected int depth = 0;
 
     protected java.util.zip.Checksum checksum;
-    protected boolean checksumming = true;
+    protected ChecksumMode checksummode = null;
     protected boolean serialize = true; // false=>we do not need to actually serialize
-    protected StringBuilder lastchecksum = new StringBuilder(); // checksum from last variable
+    protected String lastchecksum = null; // checksum from last variable
 
-    protected ByteBuffer longbuffer = null;
+    protected ByteBuffer crcbuffer = null;
+    protected ByteBuffer countbuffer = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public SerialWriter(OutputStream output, ByteOrder order)
+    public SerialWriter(OutputStream output, ByteOrder order, ChecksumMode mode)
     {
         this.output = output;
         this.order = order;
-        this.longbuffer = ByteBuffer.allocate(8) //8==sizeof(long)
+        this.checksummode = mode;
+        this.countbuffer = ByteBuffer.allocate(8) //8==sizeof(long)
+                .order(order);
+        this.crcbuffer = ByteBuffer.allocate(4) //4==sizeof(crc32 digest)
                 .order(order);
         if("CRC32".equalsIgnoreCase(DapUtil.DIGESTER)) {
             // use the one from java.util.zip.CRC32
-            checksum = new java.util.zip.CRC32();
+            this.checksum = new java.util.zip.CRC32();
         } else
             assert (false) : "No such checksum algorithm: " + DapUtil.DIGESTER;
 
@@ -76,11 +87,6 @@ public class SerialWriter
 
     //////////////////////////////////////////////////
     // Accessors
-
-    public void computeChecksums(boolean tf)
-    {
-        this.checksumming = tf;
-    }
 
     public void noSerialize(boolean tf)
     {
@@ -101,7 +107,7 @@ public class SerialWriter
      * @param vtype  The type of the object
      * @param values The value array
      * @return bytebuffer encoding of the array using the
-     *         platform's native encoding.
+     * platform's native encoding.
      */
 
     static public ByteBuffer
@@ -109,6 +115,7 @@ public class SerialWriter
             throws IOException
     {
         TypeSort atomtype = vtype.getAtomicType();
+        assert values != null && values.getClass().isArray();
         int count = Array.getLength(values);
         int total = (int) TypeSort.getSize(atomtype) * count;
         ByteBuffer buf = ByteBuffer.allocate(total).order(order);
@@ -182,7 +189,7 @@ public class SerialWriter
             total = 0;
             int size = 0;
             for(int i = 0; i < datao.length; i++) {
-                ByteBuffer opaquedata = (ByteBuffer)datao[i];
+                ByteBuffer opaquedata = (ByteBuffer) datao[i];
                 // the data may be at an offset in the buffer
                 size = opaquedata.remaining(); // should be limit - pos
                 total += (size + COUNTSIZE);
@@ -190,11 +197,11 @@ public class SerialWriter
             buf = ByteBuffer.allocate(total).order(order);
             // Pass 2: write the opaque elements
             for(int i = 0; i < datao.length; i++) {
-                ByteBuffer opaquedata = (ByteBuffer)datao[i];
+                ByteBuffer opaquedata = (ByteBuffer) datao[i];
                 size = opaquedata.remaining(); // should be limit - pos
                 buf.putLong(size);
                 int savepos = opaquedata.position();
-                 buf.put(opaquedata);
+                buf.put(opaquedata);
                 opaquedata.position(savepos);
             }
             break;
@@ -227,7 +234,7 @@ public class SerialWriter
     startVariable()
     {
         if(depth == 0)
-            checksum.reset();
+            this.checksum.reset();
         depth++;
     }
 
@@ -236,23 +243,22 @@ public class SerialWriter
             throws IOException
     {
         depth--;
-        if(depth == 0 && checksumming) {
-            long digest = checksum.getValue(); // get the digest value
-            longbuffer.clear();
-            longbuffer.putLong(digest);
-            byte[] csum = longbuffer.array();
-            // convert to a string
-            this.lastchecksum.setLength(0);
-            // by experiment; checksum leads in buffer
-            for(int i = 0; i < DapUtil.CHECKSUMSIZE; i++) {
-                this.lastchecksum.append(Escape.toHex((int) (csum[i] & 0xff)));
-            }
+        if(depth == 0 && this.checksummode.enabled(ChecksumMode.DAP)) {
+            long crc = this.checksum.getValue(); // get the digest value
+            crc = (crc & 0x00000000FFFFFFFFL); /* crc is 32 bits */
+            crcbuffer.clear();
+            crcbuffer.putInt((int) crc);
+            byte[] csum = crcbuffer.array();
+            assert csum.length == 4;
+            // convert to a string; write as a signed integer
+            this.lastchecksum = String.format("%08x", crc);
             if(DEBUG) {
-                System.err.print("checksum = " + this.lastchecksum.toString());
+                System.err.print("checksum = " + this.lastchecksum);
                 System.err.println();
             }
             // Write out the digest in binary form
-            output.write(csum, 0, DapUtil.CHECKSUMSIZE);
+            // Do not use writeBytes because checksum is not itself checksummed
+            outputBytes(csum, 0, DapUtil.CHECKSUMSIZE);
         }
     }
 
@@ -269,11 +275,11 @@ public class SerialWriter
     writeCount(long count)
             throws IOException
     {
-        longbuffer.clear();
-        longbuffer.putLong(count);
-        byte[] countbuf = longbuffer.array();
-        int len = longbuffer.position();
-        output.write(countbuf, 0, len);
+        countbuffer.clear();
+        countbuffer.putLong(count);
+        byte[] countbuf = countbuffer.array();
+        int len = countbuffer.position();
+        writeBytes(countbuf, len);
         if(DEBUG) {
             System.err.printf("count: %d%n", count);
         }
@@ -282,7 +288,7 @@ public class SerialWriter
     /**
      * Write out an array of atomic values
      *
-     * @param daptype the type of the object
+     * @param daptype type of the values
      * @param values the array of values
      * @throws IOException
      */
@@ -290,12 +296,11 @@ public class SerialWriter
     writeAtomicArray(DapType daptype, Object values)
             throws IOException
     {
-        ByteBuffer buf = SerialWriter.encodeArray(daptype, values,this.order);
+        assert values != null && values.getClass().isArray();
+        ByteBuffer buf = SerialWriter.encodeArray(daptype, values, this.order);
         byte[] bytes = buf.array();
         int len = buf.position();
-        if(checksumming)
-            checksum.update(bytes, 0, len);
-        output.write(bytes, 0, len);
+        writeBytes(bytes, len);
         if(DEBUG) {
             System.err.printf("%s: ", daptype.getShortName());
             for(int i = 0; i < len; i++) {
@@ -307,23 +312,55 @@ public class SerialWriter
     }
 
     /**
-     * Write out a single object
+     * Write out a set of bytes
      *
-     * @param bytes to write
+     * @param bytes
+     * @param len
      * @throws IOException
      */
     public void
-    writeBytes(byte[] bytes)
+    writeBytes(byte[] bytes, int len)
             throws IOException
     {
-        output.write(bytes);
-        if(checksumming)
-            checksum.update(bytes, 0, bytes.length);
+        outputBytes(bytes, 0, len);
+        if(this.checksummode.enabled(ChecksumMode.DAP)) {
+            this.checksum.update(bytes, 0, len);
+            if(DUMPCSUM) {
+                System.err.print("SSS ");
+                for(int i = 0; i < len; i++) {
+                    System.err.printf("%02x", bytes[i]);
+                }
+                System.err.println();
+            }
+        }
+    }
+
+    /**
+     * Deliberate choke point for debugging
+     *
+     * @param bytes
+     * @param start
+     * @param count
+     * @throws IOException
+     */
+    public void
+    outputBytes(byte[] bytes, int start, int count)
+            throws IOException
+    {
+        if(DUMPDATA) {
+            System.err.printf("output %d/%d:", start, count);
+            for(int i = 0; i < count; i++) {
+                System.err.printf(" %02x", bytes[i]);
+            }
+            System.err.println("");
+            System.err.flush();
+        }
+        output.write(bytes, start, count);
     }
 
     public void
     flush()
-        throws IOException
+            throws IOException
     {
         output.flush();
     }

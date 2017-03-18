@@ -47,19 +47,11 @@ public class CDMDMR
         }
     }
 
-    static public class CDMAtomicVariable extends DapAtomicVariable
-    {
-        public CDMAtomicVariable(String name, DapType t)
-        {
-            super(name, t);
-        }
-    }
-
     abstract static public class CDMVariable extends DapVariable
     {
-        public CDMVariable(String name)
+        public CDMVariable(String name, DapType t)
         {
-            super(name);
+            super(name, t);
         }
     }
 

@@ -85,11 +85,11 @@ public class CECompiler
             throws DapException
     {
         DapVariable var = compilesegment(ast.projection);
-        if(var.getSort() != DapSort.SEQUENCE)
+        if(!var.isSequence())
             throw new DapException("Attempt to apply a filter to a non-sequence variable: " + var.getFQN());
         // Convert field references in the filter
         // and canonicalize the comparisons
-        compilefilter((DapSequence) var, ast.filter);
+        compilefilter(var, (DapSequence)var.getBaseType(),ast.filter);
         // add filter
         ce.setFilter(var, ast.filter);
     }
@@ -102,10 +102,9 @@ public class CECompiler
         // Does this look like an fqn?
         if(isFQN(ast.name)) {
             DapDataset root = this.dataset;
-            DapNode match = root.findByFQN(ast.name,
-                    DapSort.ATOMICVARIABLE, DapSort.SEQUENCE, DapSort.STRUCTURE);
+            DapNode match = root.findByFQN(ast.name, DapSort.VARIABLE);
             if(match == null)
-                throw new DapException("Multiply defined variable name: " + ast.name);
+                throw new DapException("Undefined variable name: " + ast.name);
             node = match;
         } else { // interpret relative to parent or root
             DapNode parent = getParent();
@@ -117,17 +116,23 @@ public class CECompiler
             switch (parent.getSort()) {
             case DATASET:
                 DapDataset dataset = (DapDataset) parent;
-                node = dataset.findByName(ast.name,
-                            DapSort.ATOMICVARIABLE, DapSort.STRUCTURE, DapSort.SEQUENCE);
+                node = dataset.findByName(ast.name, DapSort.VARIABLE);
                 break;
-            case STRUCTURE:
-                DapStructure struct = (DapStructure) parent;
-                node = struct.findByName(ast.name);
-                break;
-            case SEQUENCE:
-                DapSequence seq = (DapSequence) parent;
-                node = seq.findByName(ast.name);
-                break;
+            case VARIABLE:
+                DapVariable v = (DapVariable)parent;
+                DapType t = v.getBaseType();
+                switch (t.getTypeSort()) {
+                case Structure:
+                    DapStructure struct = (DapStructure) t;
+                    node = struct.findByName(ast.name);
+                    break;
+                case Sequence:
+                    DapSequence seq = (DapSequence) t;
+                    node = seq.findByName(ast.name);
+                    break;
+                default:
+                    assert false : "Container cannot be atomic variable";
+                }
             default:
                 throw new DapException("relative names must be WRT to structure|dataset object: " + parent.getFQN());
             }
@@ -147,7 +152,7 @@ public class CECompiler
      * Convert field references in a filter
      */
     public void
-    compilefilter(DapSequence seq, CEAST expr)
+    compilefilter(DapVariable var, DapSequence seq, CEAST expr)
             throws DapException
     {
         if(expr == null)
@@ -163,9 +168,9 @@ public class CECompiler
             expr.field = field;
         } else if(expr.sort == CEAST.Sort.EXPR) {
             if(expr.lhs != null)
-                compilefilter(seq, expr.lhs);
+                compilefilter(var, seq, expr.lhs);
             if(expr.rhs != null)
-                compilefilter(seq, expr.rhs);
+                compilefilter(var, seq, expr.rhs);
             // If both lhs and rhs are non-null,
             // canonicalize any comparison so that it is var op const
             if(expr.lhs != null && expr.rhs != null) {
