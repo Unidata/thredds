@@ -79,6 +79,8 @@ public class CompareNetcdf2 {
       if (name.equals(Nc4.NETCDF4_COORDINATES)) return false;  // ??
       if (name.equals(Nc4.NETCDF4_STRICT)) return false;
 
+      if(name.startsWith("_")) return false;
+
       // not implemented yet
       //if (att.getDataType().isEnum()) return false;
 
