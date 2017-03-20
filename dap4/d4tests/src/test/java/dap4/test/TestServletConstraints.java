@@ -230,8 +230,8 @@ public class TestServletConstraints extends DapTestCommon
     doOneTest(TestCase testcase)
             throws Exception
     {
-        System.err.println("Testcase: " + testcase.toString());
-        System.err.println("Baseline: " + testcase.baselinepath);
+        stderr.println("Testcase: " + testcase.toString());
+        stderr.println("Baseline: " + testcase.baselinepath);
         if(CEPARSEDEBUG) CEParserImpl.setGlobalDebugLevel(1);
 
         for(String extension : testcase.extensions) {
@@ -279,7 +279,7 @@ public class TestServletConstraints extends DapTestCommon
         } else if(prop_diff) { //compare with baseline
             // Read the baseline file
             String baselinecontent = readfile(basepath);
-            System.err.println("DMR Comparison");
+            stderr.println("DMR Comparison");
             Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, sdmr));
         }
     }
@@ -334,7 +334,7 @@ public class TestServletConstraints extends DapTestCommon
         if(prop_diff) {
             //compare with baseline
             // Read the baseline file
-            System.err.println("Data Comparison:");
+            stderr.println("Data Comparison:");
             String baselinecontent = readfile(testcase.baselinepath + ".dap");
             Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, sdata));
         }

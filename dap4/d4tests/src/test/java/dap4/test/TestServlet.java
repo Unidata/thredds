@@ -198,7 +198,7 @@ public class TestServlet extends DapTestCommon
     {
         stderr.println("Testcase: " + testcase.testinputpath);
         stderr.println("Baseline: " + testcase.baselinepath);
-        System.err.flush();
+        stderr.flush();
         if(PARSEDEBUG) Dap4ParserImpl.setGlobalDebugLevel(1);
         for(String extension : testcase.extensions) {
             RequestMode ext = RequestMode.modeFor(extension);
