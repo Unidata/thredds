@@ -77,7 +77,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
-  static private Nc4prototypes nc4;
+  static private Nc4prototypes nc4 = null;
   static public final String JNA_PATH = "jna.library.path";
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
 
@@ -169,12 +169,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    *
    * @return true if present
    */
-  public static synchronized boolean isClibraryPresent() {
+  static public synchronized boolean isClibraryPresent() {
     if (isClibraryPresent == null) {
       isClibraryPresent = load() != null;
     }
-
     return isClibraryPresent;
+  }
+
+  static public synchronized Nc4prototypes getCLibrary()
+  {
+      return isClibraryPresent() ? nc4 : null;
   }
 
   /**

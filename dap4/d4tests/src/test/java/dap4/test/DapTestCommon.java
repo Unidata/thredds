@@ -12,10 +12,10 @@ import dap4.dap4lib.FileDSP;
 import dap4.servlet.DapCache;
 import dap4.servlet.DapController;
 import dap4.servlet.SynDSP;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.Header;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -35,6 +35,7 @@ import thredds.server.dap4.Dap4Controller;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
@@ -42,6 +43,8 @@ import javax.servlet.ServletException;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
@@ -66,6 +69,8 @@ abstract public class DapTestCommon extends UnitTestCommon
 
     // Equivalent to the path to the webapp/d4ts for testing purposes
     static protected final String DFALTRESOURCEPATH = "/src/test/data/resources";
+    static protected Class NC4IOSP = ucar.nc2.jni.netcdf.Nc4Iosp.class;
+
     //////////////////////////////////////////////////
     // Type decls
 
@@ -292,7 +297,7 @@ abstract public class DapTestCommon extends UnitTestCommon
                     }
                 }
                 if(!ok && debug)
-                    System.err.println("Ignoring: " + file.toString());
+                    stderr.println("Ignoring: " + file.toString());
             }
             return ok;
         }
@@ -323,7 +328,7 @@ abstract public class DapTestCommon extends UnitTestCommon
     static {
         dap4root = locateDAP4Root(threddsroot);
         if(dap4root == null)
-            System.err.println("Cannot locate /dap4 parent dir");
+            stderr.println("Cannot locate /dap4 parent dir");
         dap4testroot = canonjoin(dap4root, D4TESTDIRNAME);
         dap4resourcedir = canonjoin(dap4testroot, DFALTRESOURCEPATH);
     }
@@ -374,7 +379,7 @@ abstract public class DapTestCommon extends UnitTestCommon
 
         this.d4tsserver = TestDir.dap4TestServer;
         if(DEBUG)
-            System.err.println("DapTestCommon: d4tsServer=" + d4tsserver);
+            stderr.println("DapTestCommon: d4tsServer=" + d4tsserver);
     }
 
     /**
@@ -436,11 +441,11 @@ abstract public class DapTestCommon extends UnitTestCommon
         if(!captured.endsWith("\n"))
             captured = captured + "\n";
         // Dump the output for visual comparison
-        System.err.println("Testing " + title + ": " + header + ":");
-        System.err.println("---------------");
-        System.err.print(captured);
-        System.err.println("---------------");
-        System.err.flush();
+        stderr.println("Testing " + title + ": " + header + ":");
+        stderr.println("---------------");
+        stderr.print(captured);
+        stderr.println("---------------");
+        stderr.flush();
     }
 
     protected void
@@ -486,10 +491,13 @@ abstract public class DapTestCommon extends UnitTestCommon
         DapCache.dspregistry.register(SynDSP.class, DSPRegistry.FIRST);
         try {
             // Always prefer Nc4Iosp over HDF5
-            NetcdfFile.iospDeRegister(ucar.nc2.jni.netcdf.Nc4Iosp.class);
-            NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class,
+            NetcdfFile.iospDeRegister(NC4IOSP);
+            NetcdfFile.registerIOProviderPreferred(NC4IOSP,
                     ucar.nc2.iosp.hdf5.H5iosp.class
             );
+            // Print out the library version
+            System.err.printf("Netcdf-c library version: %s%n", getCLibraryVersion());
+            System.err.flush();
         } catch (Exception e) {
             DapLog.warn("Cannot load ucar.nc2.jni.netcdf.Nc4Iosp");
         }
@@ -528,18 +536,38 @@ abstract public class DapTestCommon extends UnitTestCommon
         File testdirf = new File(path);
         assert (testdirf.canRead());
         File[] filelist = testdirf.listFiles();
-        System.err.println("\n*******************");
-        System.err.printf("Contents of %s:%n", path);
+        stderr.println("\n*******************");
+        stderr.printf("Contents of %s:%n", path);
         for(int i = 0; i < filelist.length; i++) {
             File file = filelist[i];
             String fname = file.getName();
-            System.err.printf("\t%s%s%n",
+            stderr.printf("\t%s%s%n",
                     fname,
                     (file.isDirectory() ? "/" : ""));
         }
-        System.err.println("*******************");
-        System.err.flush();
+        stderr.println("*******************");
+        stderr.flush();
     }
 
+    static public String
+    getCLibraryVersion()
+    {
+        Nc4prototypes nc4 = getCLibrary();
+        return (nc4 == null ? "Unknown" : nc4.nc_inq_libvers());
+    }
+
+    static public Nc4prototypes
+    getCLibrary()
+    {
+        try {
+            Method getclib = NC4IOSP.getMethod("getCLibrary");
+            return (Nc4prototypes) getclib.invoke(null);
+        } catch (NoSuchMethodException
+                | IllegalAccessException
+                | IllegalArgumentException
+                | InvocationTargetException e) {
+            return null;
+        }
+    }
 }
 
