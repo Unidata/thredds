@@ -11,24 +11,28 @@ Note that this functionality is not strictly necessary since it could all be don
 1. It is lightweight WRT the client
 2. It is language independent
 
-== Assumptions
+== Download Service
 
-The essential assumption for this service is that any external code using this service is running on the same machine as the Thredds server,or at least has a common file system so that file system operations by thredds are visible to the external code.
+=== Download Assumptions
+
+The essential assumption for the download service is that any external code using this service is running on the same machine as the Thredds server, or at least has a common file system so that file system operations by thredds are visible to the external code.
 
 An additional assumption is that "nested" calls to the Thredds server will not cause a deadlock. This is how access to non-file datasets (e.g. via DAP2 or DAP4 or GRIB or NCML) is accomplished.  That is, the download code on the server will do a nested call to the server to obtain the output of the request.  Experimentation shows this is not currently a problem.
 
-== Supported File Formats
+It is assumed that any client using the download service has the appropriate credentials authorizing access to the download service.
+
+=== Supported File Formats
 
 Currently the dowload service supports the creation of files in two formats:
 
 1. Netcdf classic (aka netcdf-3)
 2. Netcdf enhanced (aka netcdf-4)
 
-== Download Service Protocol
+=== Download Service Protocol
 
 A set of query parameters control the operation of this service. Note that all of the query parameter values (but not keys) are assumed to be url-encoded (%xx), so beware. Also, all return values are url-encoded.
 
-=== Request and Reply
+==== Request and Reply
 
 Invoking this service is accomplished using a URL pattern like this.
 ```
@@ -40,7 +44,7 @@ In all cases, the reply value for the invocation will be of this form.
 ```
 The specific keys depend on the invocation.
 
-=== Defined Requests
+==== Defined Requests
 
 The primary key is __request__. It indicates what action
 is requested of the server.
@@ -76,9 +80,24 @@ Currently, two keys are defined:
 * __downloaddir__ -- The absolute path of the directory under which all downloaded files are placed.
 * __username__ -- The user name under which the download servlet is running; this is primarily for testing.
 
-== Upload Service Protocol
+== Upload Service 
 
-File upload is not handled directly by calling the Thredds server. Rather, it is handled by creating a directory that is to be scanned by the Thredds server to be made available at a specific point in the standard catalog.
+=== Upload Service Protocol
+
+The File upload service has two components.
+
+1. A file upload controller is built into the Thredds server that supports uploading files to the defined upload directory. This controller has two "entry points". One just returns the forms web page for the client to upload a file. As a rule, this page is accessed through a web browser. The second entry point does the actual upload and a reference to this entry point is embedded in the forms web page.
+
+2. Visibility of the upload directory is handled by creating a directory that is to be scanned by the Thredds server to be made available at a specific point in the standard catalog.
+
+Accessing the upload forms web page is accomplished by using the following URL.
+```
+https://host:port/thredds/upload
+```
+
+=== Upload Assumptions
+
+It is assumed that any client using the download service has the appropriate credentials authorizing access to the download service.
 
 == Thredds Server Configuration
 
@@ -130,7 +149,7 @@ In order to provide additional sandboxing, the url provided by the client is mod
 
 Finally, it is desirable that some additional access controls be applied. Specifically, Tomcat should be configured to require client-side certificates so that all clients using this service must have access to that certificate.
 
-== Examples
+== Download Examples
 
 === Example 1: Download a file (via fileServer protocol)
 
