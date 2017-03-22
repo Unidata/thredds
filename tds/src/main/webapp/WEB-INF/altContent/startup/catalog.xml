@@ -42,4 +42,12 @@
   </datasetScan>
 
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
+
+  <datasetScan name="Uploaded Files" ID="upload"
+                     location="${tds.upload.dir}" path="upload/">
+	    <metadata inherited="true">
+	      <serviceName>all</serviceName>
+	    </metadata>
+  </datasetScan>
+
 </catalog>
