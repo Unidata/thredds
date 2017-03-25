@@ -214,6 +214,7 @@ abstract public class DapController extends HttpServlet
         }
 
         String datasetpath = DapUtil.nullify(DapUtil.canonicalpath(daprequest.getDataset()));
+        System.err.printf("xxx: context=%s%n",dapcxt.toString());
         try {
             if(datasetpath == null) {
                 // This is the case where a request was made without a dataset;
