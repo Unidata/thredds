@@ -11,7 +11,4 @@
         <Int16 name="sh1"/>
         <Dim size="2"/>
     </Sequence>
-    <Attribute name="_DAP4_Little_Endian" type="UInt8">
-        <Value value="1"/>
-    </Attribute>
 </Dataset>

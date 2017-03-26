@@ -323,7 +323,10 @@ abstract public class DapController extends HttpServlet
 
         // Get the DMR as a string
         DMRPrinter dapprinter = new DMRPrinter(dmr, ce, pw, drq.getFormat());
-        dapprinter.print();
+        if(cxt.get(Dap4Util.DAP4TESTTAG) != null)
+            dapprinter.testprint();
+        else
+            dapprinter.print();
         pw.close();
         sw.close();
 

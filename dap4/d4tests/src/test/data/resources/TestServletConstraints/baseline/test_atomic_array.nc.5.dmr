@@ -16,14 +16,11 @@
         <Dim size="1"/>
         <Dim size="1"/>
     </String>
-    <Opaque name="vo" _edu.ucar.opaque.size="8">
+    <Opaque name="vo">
         <Dim size="1"/>
         <Dim size="1"/>
     </Opaque>
     <Attribute name="_dap4.ce" type="String">
         <Value value="/vu8[1][0:2:2];/vd[1];/vs[1][0];/vo[0][1]"/>
-    </Attribute>
-    <Attribute name="_DAP4_Little_Endian" type="UInt8">
-        <Value value="1"/>
     </Attribute>
 </Dataset>

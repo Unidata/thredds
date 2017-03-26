@@ -6,9 +6,6 @@
          xmlns="http://xml.opendap.org/ns/DAP/4.0#"
          xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
     <Dimension name="dim1" size="5"/>
-    <Attribute name="_DAP4_Little_Endian" type="UInt8">
-        <Value value="1"/>
-    </Attribute>
     <Group name="g">
         <Dimension name="dim2" size="3"/>
         <Group name="h">
