@@ -81,8 +81,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public final String JNA_PATH = "jna.library.path";
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
 
-  static public final String UCARTAG = "ucar";
-  static public final String TRANSLATECONTROL = UCARTAG + ".translate";
+  static public final String TRANSLATECONTROL = "ucar.translate";
   static public final String TRANSLATE_NONE = "none";
   static public final String TRANSLATE_NC4 = "nc4";
 

@@ -162,7 +162,7 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_enum.nc");
+            chosentests = locate("test_struct_type.nc");
             prop_visual = true;
             prop_generate = false;
             prop_baseline = false;
@@ -226,8 +226,7 @@ public class TestServlet extends DapTestCommon
                 RESOURCEPATH,
                 DapTestCommon.ORDERTAG, little,
                 DapTestCommon.NOCSUMTAG, nocsum,
-                DapTestCommon.TRANSLATETAG, "nc4"
-
+                DapTestCommon.TESTTAG, "true"
         );
 
         // Collect the output
@@ -259,7 +258,8 @@ public class TestServlet extends DapTestCommon
         MvcResult result = perform(url, this.mockMvc,
                 RESOURCEPATH,
                 DapTestCommon.ORDERTAG, little,
-                DapTestCommon.NOCSUMTAG, nocsum
+                DapTestCommon.NOCSUMTAG, nocsum,
+                DapTestCommon.TESTTAG, "true"
         );
         // Collect the output
         MockHttpServletResponse res = result.getResponse();

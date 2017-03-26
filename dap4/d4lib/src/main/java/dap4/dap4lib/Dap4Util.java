@@ -16,6 +16,7 @@ abstract public class Dap4Util
 
     static public final String DAP4ENDIANTAG = "ucar.littleendian"; // value = 1 | 0
     static public final String DAP4CSUMTAG = "ucar.checksummode"; // value = NONE|DAP|DMR|ALL
+    static public final String DAP4TESTTAG = "ucar.testing"; // value = NONE|DAP|DMR|ALL
 
     //////////////////////////////////////////////////
     // Static utility methods

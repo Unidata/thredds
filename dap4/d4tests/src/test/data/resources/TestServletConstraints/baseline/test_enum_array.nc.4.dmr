@@ -28,7 +28,4 @@
     <Attribute name="_dap4.ce" type="String">
         <Value value="/primary_cloud[1:2:4]"/>
     </Attribute>
-    <Attribute name="_DAP4_Little_Endian" type="UInt8">
-        <Value value="1"/>
-    </Attribute>
 </Dataset>

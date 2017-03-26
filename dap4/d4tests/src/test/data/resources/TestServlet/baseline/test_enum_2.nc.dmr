@@ -19,9 +19,6 @@
         <EnumConst name="Cirrus" value="10"/>
         <EnumConst name="Missing" value="127"/>
     </Enumeration>
-    <Attribute name="_DAP4_Little_Endian" type="UInt8">
-        <Value value="1"/>
-    </Attribute>
     <Group name="h">
         <Enum name="primary_cloud" enum="/cloud_class_t">
             <Attribute name="_FillValue" type="/cloud_class_t">
