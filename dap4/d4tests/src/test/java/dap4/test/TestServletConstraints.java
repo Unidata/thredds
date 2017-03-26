@@ -263,7 +263,9 @@ public class TestServletConstraints extends DapTestCommon
                 RESOURCEPATH,
                 DapTestCommon.CONSTRAINTTAG, query,
                 DapTestCommon.ORDERTAG, little,
-                DapTestCommon.NOCSUMTAG, nocsum);
+                DapTestCommon.NOCSUMTAG, nocsum,
+                DapTestCommon.TRANSLATETAG, "nc4"
+                );
 
         // Collect the output
         MockHttpServletResponse res = result.getResponse();

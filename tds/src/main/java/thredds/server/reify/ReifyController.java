@@ -285,8 +285,6 @@ public class ReifyController
     protected void
     sendError(int code, String msg)
     {
-        if(DEBUG)
-            System.err.println(String.format("xxx: error: code=%d msg=%s%n", code, msg));
         try {
             //this.res.sendError(code, msg);
             this.res.setIntHeader(STATUSCODEHEADER, code);
