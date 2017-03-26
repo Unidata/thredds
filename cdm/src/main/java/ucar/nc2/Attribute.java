@@ -74,9 +74,6 @@ public class Attribute extends CDMNode
 
   public void setDataType(DataType dt)
   {
-    if(dt == DataType.ENUM4) {
-      int x = 0;
-    }
     this.dataType = dt;
   }
 

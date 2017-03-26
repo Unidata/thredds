@@ -31,7 +31,7 @@
     <Float64 name="vd"/>
     <Char name="vc"/>
     <String name="vs"/>
-    <Opaque name="vo"/>
+    <Opaque name="vo" _edu.ucar.opaque.size="8"/>
     <Enum name="primary_cloud" enum="/cloud_class_t">
         <Attribute name="_FillValue" type="/cloud_class_t">
             <Value value="Missing"/>

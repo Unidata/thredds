@@ -225,7 +225,9 @@ public class TestServlet extends DapTestCommon
         MvcResult result = perform(url, this.mockMvc,
                 RESOURCEPATH,
                 DapTestCommon.ORDERTAG, little,
-                DapTestCommon.NOCSUMTAG, nocsum
+                DapTestCommon.NOCSUMTAG, nocsum,
+                DapTestCommon.TRANSLATETAG, "nc4"
+
         );
 
         // Collect the output

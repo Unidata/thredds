@@ -16,7 +16,7 @@
         <Dim size="1"/>
         <Dim size="1"/>
     </String>
-    <Opaque name="vo">
+    <Opaque name="vo" _edu.ucar.opaque.size="8">
         <Dim size="1"/>
         <Dim size="1"/>
     </Opaque>
