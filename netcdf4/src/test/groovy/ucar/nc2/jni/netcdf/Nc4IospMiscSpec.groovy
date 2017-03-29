@@ -3,19 +3,18 @@ package ucar.nc2.jni.netcdf
 import spock.lang.Specification
 import spock.lang.Unroll
 import ucar.ma2.Array
-import ucar.ma2.Section
-import ucar.nc2.Attribute
+import ucar.nc2.Dimension
 import ucar.nc2.NetcdfFile
 import ucar.nc2.Variable
 
 /**
- * Tests that Nc4Iosp can read unsigned data.
+ * Tests miscellaneous aspects of Nc4Iosp.
  *
  * @author cwardgar
  * @since 2017-03-27
  */
-class UnsignedSpec extends Specification {
-    /**
+class Nc4IospMiscSpec extends Specification {
+    /*
      * Demonstrates bug from http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00012.html
      * Prior to fix, this test would fail for 'u_short', 'u_int', and 'u_long' variables with
      * "Unknown userType == 8", "Unknown userType == 9", and "Unknown userType == 11" errors respectively.
@@ -51,5 +50,32 @@ class UnsignedSpec extends Specification {
                 [(1  << 31), (1  << 31) + 1, (1  << 31) + 2] as int[],
                 [(1L << 63), (1L << 63) + 1, (1L << 63) + 2] as long[]
         ];
+    }
+    
+    /*
+     * Demonstrates bug from
+     * https://andy.unidata.ucar.edu/esupport/staff/index.php?_m=tickets&_a=viewticket&ticketid=28098
+     * Prior to fix, primary2Dim and primary3Dim were not being identified as unlimited.
+     */
+    def "Nc4Iosp supports multiple groups, each containing an unlimited dimension"() {
+        setup: "locate test file"
+        File file = new File(this.class.getResource("DBP-690959.nc4").toURI())
+        assert file.exists()
+    
+        and: "open it as a NetcdfFile using Nc4Iosp"
+        NetcdfFile ncFile = NetcdfFile.open(file.absolutePath, Nc4Iosp.class.canonicalName, -1, null, null)
+    
+        and: "find unlimited dimensions"
+        Dimension primary1Dim = ncFile.findDimension("/group1/primary")
+        Dimension primary2Dim = ncFile.findDimension("/group2/primary")
+        Dimension primary3Dim = ncFile.findDimension("/group3/primary")
+        
+        expect: "all dimensions are unlimited"
+        primary1Dim.isUnlimited()
+        primary2Dim.isUnlimited()
+        primary3Dim.isUnlimited()
+    
+        cleanup: "close NetcdfFile"
+        ncFile?.close()
     }
 }
