@@ -2346,8 +2346,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // dimensions
     for (Dimension dim : g4.g.getDimensions()) {
-      int dimid = addDimension(g4.grpid, dim.getShortName(), dim.getLength());
+      int dimLength = dim.isUnlimited() ? Nc4prototypes.NC_UNLIMITED : dim.getLength();
+      int dimid = addDimension(g4.grpid, dim.getShortName(), dimLength);
       g4.dimHash.put(dim, dimid);
+
       if (debugWrite)
         System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
     }
