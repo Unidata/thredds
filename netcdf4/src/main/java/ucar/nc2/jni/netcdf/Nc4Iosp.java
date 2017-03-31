@@ -225,7 +225,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private boolean fill = true;
   private int ncid = -1;        // file id
   private int format = 0;       // from nc_inq_format
-  private boolean isClosed = false;
+  private boolean isClosed;
 
   private Map<Integer, UserType> userTypes = new HashMap<>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<>();     // group -> nc4 grpid
@@ -319,6 +319,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     IntByReference ncidp = new IntByReference();
     int ret = nc4.nc_open(location, readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+
+    isClosed = false;
     ncid = ncidp.getValue();
 
     // format
@@ -2279,6 +2281,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ret = nc4.nc_create(filename, createMode(), ncidp);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+
+    isClosed = false;
     ncid = ncidp.getValue();
 
     _setFill();
