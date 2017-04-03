@@ -44,8 +44,8 @@ dependencies {
     compile libraries["geoapi-pending"]
     compile libraries["oro"]
 
-    provided libraries["javax.servlet-api"]
-    runtime libraries["jstl"]
+    providedCompile libraries["javax.servlet-api"]
+    runtime libraries["taglibs-standard-impl"]
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]
     runtime libraries["jaxen"]
