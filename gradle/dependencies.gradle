@@ -48,7 +48,7 @@ libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-ext
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.1.6.RELEASE"
+versions["spring"] = "4.1.9.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -183,7 +183,7 @@ libraries["jfreechart"] = "org.jfree:jfreechart:1.0.19"
 
 libraries["jgoodies-forms"] = "com.jgoodies:jgoodies-forms:1.6.0"
 
-libraries["commons-fileupload"] = "commons-fileupload:commons-fileupload:1.2.2"
+libraries["commons-fileupload"] = "commons-fileupload:commons-fileupload:1.3.2"
 
 libraries["commons-io"] = "commons-io:commons-io:2.4"
 
@@ -202,17 +202,17 @@ libraries["geoapi-pending"] = "org.opengis:geoapi-pending:3.1-M04"
 
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
-libraries["jstl"] = "javax.servlet:jstl:1.2"
+libraries["taglibs-standard-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
 
 libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
 
-libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.1.Final"
+libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.8"
 
-libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.10.11"
+libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
