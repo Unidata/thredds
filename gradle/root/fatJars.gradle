@@ -35,7 +35,7 @@ dependencies {
     ncIdv project(':visadCdm')
     ncIdv project(':httpservices')
     ncIdv project(':legacy')
-    
+
     tdmFat project(':tdm')
     
     netcdfAll project(":cdm")
@@ -45,7 +45,8 @@ dependencies {
     netcdfAll project(":netcdf4")
     netcdfAll project(":opendap")
     netcdfAll project(":httpservices")
-    
+    netcdfAll project(':visadCdm')  // For Gempak IOSPs.
+
     toolsUI project(':ui')
     
     dap4lib project(':dap4:d4core')

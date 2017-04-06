@@ -286,5 +286,15 @@ public class TestNcMLRead extends TestCase {
       location = "file:"+TestNcML.topDir + "readMetadata.xml";
     }
   }
-  
+
+  static public class TestReadHttps extends TestNcMLRead {
+
+    // equivalent dataset using "readMetadata"
+    public TestReadHttps( String name) {
+      super(name);
+      ncfile = null;
+      location = "file:"+TestNcML.topDir + "testReadHttps.xml";
+    }
+  }
+
 }

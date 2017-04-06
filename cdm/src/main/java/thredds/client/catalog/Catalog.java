@@ -59,7 +59,9 @@ public class Catalog extends DatasetNode {
   static public final String CATALOG_NAMESPACE_10 = "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0";
   static public final Namespace defNS = Namespace.getNamespace(CATALOG_NAMESPACE_10);
   static public final String NJ22_NAMESPACE = "http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
+  static public final String NJ22_NAMESPACE_HTTPS = "https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2";
   static public final Namespace ncmlNS = Namespace.getNamespace("ncml", NJ22_NAMESPACE);
+  static public final Namespace ncmlNSHttps = Namespace.getNamespace("ncml", NJ22_NAMESPACE_HTTPS);
   static public final String XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
   static public final Namespace xlinkNS = Namespace.getNamespace("xlink", XLINK_NAMESPACE);
   static public final Namespace xsiNS = Namespace.getNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
