@@ -92,7 +92,7 @@ class Nc4IospMiscSpec extends Specification {
         NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, tempFile.absolutePath)
         
         and: "add an unlimited dimension and create the file on disk"
-        Dimension dimBefore = ncWriter.addDimension(null, "dim", 3, true, true, false)
+        Dimension dimBefore = ncWriter.addDimension(null, "dim", 3, true, false)
         ncWriter.create()
         
         and: "close the file for writing and reopen it for reading"
