@@ -95,7 +95,7 @@ libraries["52n-xml-sampling-v20"] = "org.n52.sensorweb:52n-xml-sampling-v20:${ve
 
 ////////////////////////////////////////// Logging //////////////////////////////////////////
 
-versions["slf4j"] = "1.7.21"
+versions["slf4j"] = "1.7.22"
 
 libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
@@ -183,7 +183,7 @@ libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 
 ////////////////////////////// TDS ///////////////////////////////////////////
 
-libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.35"
+libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"
 
 // Latest version is 3.10.1. Can we upgrade?
 libraries["chronicle-map"] = "net.openhft:chronicle-map:2.4.15"

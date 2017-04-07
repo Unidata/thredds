@@ -1,4 +1,6 @@
 import com.google.common.collect.Iterables
+import groovy.util.slurpersupport.GPathResult
+import groovy.xml.XmlUtil
 
 description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
               "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
@@ -34,7 +36,7 @@ dependencies {
     compile project(':dap4:d4lib')
 
     // Server stuff
-    provided libraries["javax.servlet-api"]
+    providedCompile libraries["javax.servlet-api"]
     runtime libraries["taglibs-standard-spec"]
     runtime libraries["taglibs-standard-impl"]
 
@@ -48,7 +50,7 @@ dependencies {
     compile libraries["jsr305"]
     compile libraries["guava"]
     compile libraries["joda-time"]
-    
+
     // WaterML
     compile libraries["52n-xml-waterML-v20"]
     compile libraries["52n-xml-om-v20"]
@@ -102,32 +104,85 @@ dependencies {
     runtime libraries["log4j-web"]
 }
 
+// Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
+apply plugin: 'org.akhikhl.gretty'
+
+test {
+    // From TDS's pom.xml. I guess these are excluded because they're pretty crufty?
+    exclude 'thredds/tds/**'
+}
+
+// Modify "netCDFtools.jnlp" and save the file as "ToolsUI.jnlp". "netCDFtools.jnlp" will live at:
+// http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/netCDFtools.jnlp.
+// "ToolsUI.jnlp" will be packed with TDS and served at "$hostName/thredds/view/ToolsUI.jnlp".
+// In terms of content, this modification is the only difference between the two files.
+task filterWebStartFile {
+    File inputFile = rootProject.findProject(':ui').file("src/main/resources/netCDFtools.jnlp")
+    inputs.file inputFile
+
+    File outputFile = file("$buildDir/tmp/ToolsUI.jnlp")
+    outputs.file outputFile
+
+    doLast {
+        GPathResult jnlp = new XmlSlurper().parse(inputFile)
+
+        // Add "<argument>{catalog}#{dataset}</argument>" to the "application-desc" node
+        jnlp.'application-desc'.appendNode {
+            argument '{catalog}#{dataset}'
+        }
+
+        outputFile.parentFile.mkdirs()
+
+        outputFile.newWriter().withCloseable {
+            // XmlUtil.serialize() will print warnings to STDERR. See https://goo.gl/LG3vlV
+            // Those warnings appear to be spurious – see https://goo.gl/cN4mOQ – and in any event, they do not
+            // affect the XML that we're generating. So, we're going to temporarily route STDERR output to DEBUG.
+            logging.captureStandardError LogLevel.DEBUG
+
+            XmlUtil.serialize jnlp, it
+
+            // Restore the routing of STDERR messages back to ERROR.
+            logging.captureStandardError LogLevel.ERROR
+        }
+    }
+}
+
 processTestResources {
     from "src/main/webapp"
     from "src/main/webapp/WEB-INF/classes"
-    
+
     // Tests expect for test resources to be copied to the same directory as the test classes.
     destinationDir = compileTestJava.destinationDir
+
+    // Creates an inferred task dependency on filterWebStartFile.
+    // See https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:task_input_output_side_effects
+    // This file is needed by ViewControllerTest.testLaunchViewerToolsUIVRequest().
+    from (tasks.filterWebStartFile.outputs) {
+        into 'WEB-INF/views'
+    }
 }
 
 war {
-    // Exclude tds.properties from the War CopySpec. We'll re-add it below, with filtering.
-    // TODO: Is there a less-awkward way to filter a single file when it's already part of a CopySpec?
-    exclude 'WEB-INF/classes/thredds/server/tds.properties'  // Relative to src/main/webapp/
+    // Replace '$projectVersion' and '$buildTimestamp' placeholders with the correct values.
+    // Currently, we only use those placeholders in tds.properties and README.txt.
+    def properties = [:]
+    properties['projectVersion'] = project.version
+    properties['buildTimestamp'] = project.buildTimestamp  // Defined in root project.
 
-    // This is a hack to handle Maven-style placeholders in a file to be filtered: http://goo.gl/9sQebt
-    // Once Maven is out of the picture, the easiest way to refactor this is to remove the dots from the property
-    // keys, so that expand(Map) works as expected.
-    ant.properties['project.version'] = project.version
-    ant.properties['build.timestamp'] = project.buildTimestamp  // Defined in root project.
-
-    from ('src/main/webapp/WEB-INF/classes/thredds/server/tds.properties') {
-        into 'WEB-INF/classes/thredds/server'
-        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+    // War CopySpec already includes everything in 'src/main/webapp', which tds.properties lives within.
+    // So, the from() and into() methods aren't needed.
+    filesMatching('**/tds.properties') {
+        expand properties
     }
+
     from('README.txt') {
         into 'docs'
-        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+        expand properties
+    }
+
+    // This file is needed by ViewerServiceImpl.ToolsUI.getViewerLinkHtml().
+    from (tasks.filterWebStartFile.outputs) {
+        into 'WEB-INF/views'
     }
 }
 
@@ -135,9 +190,9 @@ war {
 ext.grettyConfig = {
     httpPort = 8081
     contextPath = '/thredds'
-    
+
     File testResourcesDir = Iterables.getOnlyElement(sourceSets.test.resources.srcDirs)
-    
+
     // These enable HTTPS authentication, which is needed to access the TDS admin interface.
     httpsEnabled = true
     sslKeyStorePath = "$testResourcesDir/auth/keystore"

@@ -19,6 +19,8 @@ dependencies {
     compile project(":waterml")
     compile project(":httpservices")
 
+    runtime project(":visadCdm")  // For Gempak IOSPs.
+
     // compile libraries["ehcache-core"]  // used in TdsMonitor to cache IP lookups
     compile libraries["jdom2"]
     compile libraries["spring-context"]
@@ -103,40 +105,40 @@ task releaseWebstart(dependsOn: jar, group: 'Release') {
                 && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
             ant.delete(dir: webstartWorkingDir)
             ant.mkdir(dir: webstartWorkingDir)
-        
+
             copy {
                 println "copyJnlp"
-                from 'netCDFtools.jnlp'
-                from 'netCDFtoolsExtraJars.jnlp'
+                from 'src/main/resources/netCDFtools.jnlp'
+                from 'src/main/resources/netCDFtoolsExtraJars.jnlp'
                 into webstartWorkingDir
             }
-        
+
             println "signjar:"
             println "\twebdir = $webdir"
             println "\tkeystore = $keystore"
             println "\tkeystoreAlias = $keystoreAlias"
             println "\tkeystorePassword = $keystorePassword"
-        
+
             ant.signjar(jar: "build/libs/ui-" + version + ".jar", destDir: webstartWorkingDir, alias: keystoreAlias,
                         keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
-        
+
             for (file in configurations.runtime.resolve()) {
                 if (depsToRejar.contains(file.name)) {
                     println "$file contains duplicate entries or old signature files. Rejarring."
-                
+
                     File rejarredFile = new File(temporaryDir, file.name)
                     rejar file, rejarredFile
                     file = rejarredFile
                 }
-            
+
                 println "Signing $file"
                 ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
                             keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
             }
-        
+
             ant.delete(dir: webstartDir)
             ant.mkdir(dir: webstartDir)
-        
+
             copy {
                 println "copy2web"
                 from(webstartWorkingDir)
@@ -174,10 +176,10 @@ task releaseDocs(dependsOn: javadoc, group: 'Release') {
     doLast {
         if (project.hasProperty("webdir")) {
             String releaseDir = new File(webdir, "javadocAll").absolutePath
-        
+
             ant.delete(dir: releaseDir)
             ant.mkdir(dir: releaseDir)
-        
+
             copy {
                 println "copyDocs to " + releaseDir
                 from("build/docs/javadoc")

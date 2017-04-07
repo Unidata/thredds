@@ -48,7 +48,9 @@ import java.util.StringTokenizer;
  * The Dimension length must be > 0, except for an unlimited dimension which may have length = 0, and a vlen
  * Dimension which has length = -1.
  * <p/>
- * <p> Immutable once setImmutable() is called, except for an Unlimited Dimension, whose size can change.
+ * <p> Immutable if setImmutable() was called, except for an Unlimited Dimension, whose size can change.
+ * <p>
+ * Note: this class has a natural ordering that is inconsistent with equals.
  *
  * @author caron
  */
@@ -285,7 +287,7 @@ public class Dimension extends CDMNode implements Comparable {
   }
 
   /**
-   * Dimensions with the same name are equal.
+   * Dimensions with the same name are equal. This method is inconsistent with equals()!
    *
    * @param o compare to this Dimension
    * @return 0, 1, or -1
