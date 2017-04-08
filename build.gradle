@@ -47,9 +47,15 @@ ext {
 // Thus, as long as we declare all plugins here, no child needs its own buildscript block. See http://goo.gl/2y3KhZ.
 buildscript {
     apply from: "$rootDir/gradle/dependencies.gradle"
-
+    
     repositories {
         jcenter()
+        maven {
+            url "https://plugins.gradle.org/m2/"  // For Gradle plugins.
+        }
+        maven {
+            url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty-fork:gretty'.
+        }
     }
     dependencies {
         classpath libraries["gretty"]

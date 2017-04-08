@@ -179,7 +179,7 @@ gradle.projectsEvaluated {
             subprojectTestTasks*.finalizedBy it
 
             // :buildSrc:test always runs and produces a binary results directory, no matter what.
-            assert file('buildSrc/build/test-results/binary/test').exists() : "Can't find :buildSrc test result dir."
+            assert file('buildSrc/build/test-results/test/binary').exists() : "Can't find :buildSrc test result dir."
 
             // Add test results of the :buildSrc project. Note that by this time in the 'thredds' config,
             // :buildSrc has already run as a *separate* build (see http://stackoverflow.com/questions/26597147),
