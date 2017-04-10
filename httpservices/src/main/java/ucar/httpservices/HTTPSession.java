@@ -1356,7 +1356,8 @@ public class HTTPSession implements Closeable
         sessionList.add(session);
     }
 
-    static synchronized public void debugHeaders(boolean print)
+    static synchronized public void
+    setInterceptors(boolean print)
     {
         if(!TESTING) throw new UnsupportedOperationException();
         HTTPUtil.InterceptRequest rq = new HTTPUtil.InterceptRequest();
@@ -1379,7 +1380,7 @@ public class HTTPSession implements Closeable
     }
 
     public static void
-    debugReset()
+    resetInterceptors()
     {
         if(!TESTING) throw new UnsupportedOperationException();
         for(HttpRequestInterceptor hri : reqintercepts) {

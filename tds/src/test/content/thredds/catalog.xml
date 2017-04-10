@@ -228,4 +228,11 @@
   <!-- urls intended to test container auth without spring -->
   <datasetRoot path="containerauth" location="content/testdata"/>
 
+  <datasetScan name="Uploaded Files" ID="upload"
+                     location="${tds.upload.dir}" path="upload/">
+	    <metadata inherited="true">
+	      <serviceName>all</serviceName>
+	    </metadata>
+  </datasetScan>
+
 </catalog>
