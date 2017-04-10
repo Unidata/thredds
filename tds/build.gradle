@@ -80,6 +80,11 @@ dependencies {
     compile libraries["edal-wms"]
     compile libraries["edal-godiva"]
 
+    // Need to talk to Jupyter
+    compile libraries["zmq"]
+    compile libraries["jsonp"]
+    compile libraries["json"]
+
     // threddsIso related libs
     runtime libraries["threddsIso"]
 

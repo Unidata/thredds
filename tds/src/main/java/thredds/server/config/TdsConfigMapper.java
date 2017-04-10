@@ -59,6 +59,8 @@ class TdsConfigMapper {
   private CorsConfigBean corsConfig;
   @Autowired
   private TdsUpdateConfigBean tdsUpdateConfig;
+  @Autowired
+  private JupyterConfigBean jupyterConfig;
 
   // static so can be called from static enum classes
   private static String getValueFromThreddsConfig(String key, String alternateKey, String defaultValue) {
@@ -265,6 +267,42 @@ class TdsConfigMapper {
      }
   }
 
+  enum JupyterConfigMappings {
+    JUPYTER_TIMEOUT("Jupyter.timeout", null, "30000"),
+    JUPYTER_PYTHON_PATH("Jupyter.pythonPath", null, "python");
+
+    private String key;
+    private String alternateKey;
+    private String defaultValue;
+
+    JupyterConfigMappings(String key, String alternateKey,
+                       String defaultValue) {
+      if (key == null)
+        throw new IllegalArgumentException("The key may not be null.");
+
+      this.key = key;
+      this.alternateKey = alternateKey;
+      this.defaultValue = defaultValue;
+    }
+
+    String getDefaultValue() {
+      return this.defaultValue;
+    }
+
+    String getValueFromThreddsConfig() {
+      return TdsConfigMapper.getValueFromThreddsConfig(this.key, this.alternateKey, this.defaultValue);
+    }
+
+    static void load(JupyterConfigBean config) {
+      try {
+        config.setTimeout(Integer.parseInt(JUPYTER_TIMEOUT.getValueFromThreddsConfig()));
+      } catch (NumberFormatException e) {
+        config.setTimeout(Integer.parseInt(JUPYTER_TIMEOUT.getDefaultValue()));
+      }
+      config.setPythonPath(JUPYTER_PYTHON_PATH.getValueFromThreddsConfig());
+    }
+  }
+
   enum TdsUpdateConfigMappings {
     TDSUPDAATE_LOGVERSIONINFO("TdsUpdateConfig.logVersionInfo", null, "true");
 
@@ -305,6 +343,7 @@ class TdsConfigMapper {
     HtmlConfigMappings.load(htmlConfig, tdsContext, tdsServerInfo);
     WmsConfigMappings.load(wmsConfig);
     CorsConfigMappings.load(corsConfig);
+    JupyterConfigMappings.load(jupyterConfig);
     TdsUpdateConfigMappings.load(tdsUpdateConfig);
   }
 
