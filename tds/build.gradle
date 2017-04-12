@@ -39,6 +39,7 @@ dependencies {
     compile libraries["spring-webmvc"]
 
     runtime libraries["threddsIso"]
+    runtime libraries["ncsos"]
     compile libraries["ncwms"]
     compile libraries["geoapi-pending"]
     compile libraries["oro"]
