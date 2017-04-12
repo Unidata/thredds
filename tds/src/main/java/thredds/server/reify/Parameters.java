@@ -8,14 +8,12 @@ package thredds.server.reify;
 import ucar.httpservices.HTTPUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.DatatypeConverter;
-import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static thredds.server.reify.ReifyUtils.*;
+import static thredds.server.reify.LoadCommon.Command;
 
 /**
  * Process an HttpRequest to extract common reification parameters
@@ -34,16 +32,10 @@ class Parameters
 
     Map<String, String[]> params;
 
-    //////////////////////////////////////////////////
-    // Known parameters (allow direct access)
+    public Map<String, String> testinfo = new HashMap<>();
 
+    // Public
     public Command command = null;
-    public FileFormat format = null;
-    public String url = null;
-    public String target = null;
-    public String inquire = null;
-
-    public Map<String,String> testinfo = new HashMap<>();
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -55,29 +47,23 @@ class Parameters
 
         this.req = req;
         this.params = new HashMap<String, String[]>();
-        if(req.getParameterMap() != null)
-	    this.params.putAll(req.getParameterMap());
-
-	String s = getparam("testinfo");
-	this.testinfo = ReifyUtils.parseMap(s,';',true);
-
-        // Command
-        s = getparam("request");
-        this.command = Command.parse(s);
-        if(this.command == null)
-            throw new IOException("Unknown request: " + s);
-
-        // File Format
-        this.format = FileFormat.getformat(getparam("format"));
-
-        // url
-        this.url = getparam("url");
-
-        // target
-        this.target = getparam("target");
-
-        // inquiry key
-        this.inquire = getparam("inquire");
+        if(req.getParameterMap() == null) {
+            this.command = Command.NONE;
+        } else {
+            this.params.putAll(req.getParameterMap());
+            String s = getparam("testinfo");
+            if(s != null)
+                this.testinfo = LoadCommon.parseMap(s, ';', true);
+            // Command
+            s = getparam("request");
+            if(s == null)
+                this.command = Command.NONE;
+            else {
+                this.command = Command.parse(s);
+                if(this.command == null)
+                    throw new IOException("Unknown request: " + s);
+            }
+        }
     }
 
     //////////////////////////////////////////////////
@@ -97,7 +83,9 @@ class Parameters
     {
         String[] values = getparamset(key);
         if(values.length == 0) return null;
-        return URLDecoder.decode(values[0],"UTF-8");
+        String value = URLDecoder.decode(values[0], "UTF-8");
+        value = HTTPUtil.nullify(value);
+        return value;
     }
 
 }

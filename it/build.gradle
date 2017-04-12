@@ -28,6 +28,7 @@ dependencies {
     testCompile libraries["joda-time"]
     testCompile libraries["httpcore"]
     testCompile libraries["httpclient"]
+    testCompile libraries["httpmime"]
     testCompile libraries["commons-lang3"]
     testCompile libraries["spring-context"]
     testCompile libraries["slf4j-api"]

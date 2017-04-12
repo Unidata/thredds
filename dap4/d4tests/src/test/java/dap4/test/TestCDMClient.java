@@ -1,3 +1,7 @@
+/* Copyright 2016, University Corporation for Atmospheric Research
+   See the LICENSE.txt file for more information.
+*/
+
 package dap4.test;
 
 import com.sun.org.apache.xpath.internal.axes.ReverseAxesWalker;
