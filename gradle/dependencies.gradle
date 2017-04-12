@@ -20,6 +20,9 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
         maven {
             url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty:gretty-fork'.
         }
+        maven {
+            url "http://maven.asascience.com/maven/ncsos-releases"
+        }
     }
 }
 
@@ -209,6 +212,14 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 libraries["threddsIso"] = "EDS:threddsIso:2.2.9"
 
 libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"
+
+libraries["ncsos"] = dependencies.create("com.asascience:ncsos:1.4.3") {
+    // This is an external TDS plugin that depends on an old
+    // thredds-parent artifact of ours (version 4.5.3).
+    // Need to exclude old artifacts used in the build
+    exclude group: 'edu.ucar', module: 'netcdf4'
+    exclude group: 'edu.ucar', module: 'tds'
+}
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
