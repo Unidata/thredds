@@ -23,6 +23,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
@@ -134,6 +135,8 @@ import static ucar.httpservices.HTTPSession.Prop;
 @NotThreadSafe
 public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 {
+    static final boolean DEBUG = false;
+
     //////////////////////////////////////////////////
     // Type Decl
 
@@ -221,7 +224,8 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         this.session = session;
         this.userinfo = HTTPUtil.nullify(this.methodurl.getUserInfo());
         if(this.userinfo != null) {
-            this.methodurl = HTTPUtil.uriExclude(this.methodurl, HTTPUtil.URIPart.USERINFO);
+            if(!TESTING)
+                this.methodurl = HTTPUtil.uriExclude(this.methodurl, HTTPUtil.URIPart.USERINFO);
             // convert userinfo to credentials
             this.session.setCredentials(
                     new UsernamePasswordCredentials(this.userinfo));
@@ -619,6 +623,14 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
 
     public HTTPMethod setRequestContent(HttpEntity content)
     {
+        if(DEBUG) try {
+            InputStream stream = content.getContent();
+            String report = HTTPUtil.readtextfile(stream);
+            System.err.println("DEBUG: request content: "+report);
+        } catch (IOException | UnsupportedOperationException e) {
+             System.err.println("Cannot print content");
+        }
+
         this.content = content;
         return this;
     }
@@ -786,7 +798,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         return this.debugconfig;
     }
 
-    public HttpMessage debugRequest()
+    public HttpRequestBase debugRequest()
     {
         if(!TESTING) throw new UnsupportedOperationException();
         return (this.lastrequest);

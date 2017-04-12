@@ -7,11 +7,11 @@ package thredds.server.reify;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.attribute.UserPrincipal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class TestDownload extends TestReify
     // Constants
 
     static protected final String DEFAULTSERVER = "localhost:8081";
-    static protected final String DEFAULTREIFYURL = "http://" + DEFAULTSERVER + THREDDSPREFIX + SERVLETPREFIX;
+    static protected final String DEFAULTDOWNURL = "http://" + DEFAULTSERVER + THREDDSPREFIX + DOWNPREFIX;
 
     //////////////////////////////////////////////////
     // Type Decls
@@ -31,28 +31,68 @@ public class TestDownload extends TestReify
     static class TestCase extends AbstractTestCase
     {
         static public String server = DEFAULTSERVER;
-        static String svcdir = null;
+        static String downloaddir = null;
 
-        static public void setServerDir(String dir)
+        static public void setDownloadDir(String dir)
         {
-            svcdir = dir;
+            downloaddir = dir;
         }
+
+        //////////////////////////////////////////////////
+
+        protected String target;
+        protected Command cmd;
+        protected Map<String, String> params = new HashMap<>();
 
         //////////////////////////////////////////////////
 
         protected TestCase(String cmd, String url, String target, String... params)
         {
-            super(cmd, url, target, params);
+            super(url);
+            this.target = HTTPUtil.canonicalpath(target);
+            this.cmd = Command.parse(cmd);
+            this.params.put("request", this.cmd.name().toLowerCase());
+            if(this.url != null) this.params.put("url", this.url);
+            if(this.target != null) this.params.put("target", this.target);
+
+            for(int i = 0; i < params.length; i++) {
+                String[] pieces = params[i].trim().split("[=]");
+                if(pieces.length == 1)
+                    this.params.put(pieces[0].trim().toLowerCase(), "");
+                else
+                    this.params.put(pieces[0].trim().toLowerCase(), pieces[1].trim());
+            }
         }
 
-
         @Override
+        public String toString()
+        {
+            StringBuilder buf = new StringBuilder();
+            buf.append(this.getURL());
+            boolean first = true;
+            for(Map.Entry<String, String> entry : this.params.entrySet()) {
+                buf.append(String.format("%s%s=%s", first ? "?" : "&",
+                        entry.getKey(), entry.getValue()));
+            }
+            return buf.toString();
+        }
+
+        public Command getCommand()
+        {
+            return this.cmd;
+        }
+
+        public Map<String, String> getParams()
+        {
+            return this.params;
+        }
+
         public Map<String, String>
         getReply()
         {
             // Compute expected reply
             String replytarget = this.target;
-            replytarget = HTTPUtil.canonjoin(svcdir, replytarget);
+            replytarget = HTTPUtil.canonjoin(downloaddir, replytarget);
             if(replytarget == null) replytarget = "";
             Map<String, String> map = new HashMap<String, String>();
             map.put("download", replytarget);
@@ -65,10 +105,10 @@ public class TestDownload extends TestReify
             StringBuilder b = new StringBuilder();
             b.append("http://");
             b.append(server);
-            b.append("/thredds");
-            b.append(SERVLETPREFIX);
+            b.append(THREDDSPREFIX);
+            b.append(DOWNPREFIX);
             b.append("/?");
-            String params = ReifyUtils.toString(this.params, true,
+            String params = mapToString(this.params, true,
                     "request", "format", "target", "url", "testinfo");
             b.append(params);
             return b.toString();
@@ -78,35 +118,43 @@ public class TestDownload extends TestReify
     //////////////////////////////////////////////////
     // Instance variables
 
-    protected Map<String,String> serverprops = null;
-    protected String serverdir = null;
-    protected String serveruser = null;
+    protected boolean once = false;
+
+    protected String downloaddir = null;
 
     //////////////////////////////////////////////////
-    // Junit test methods
+
+    void doonce()
+            throws Exception
+    {
+        if(once)
+            return;
+        once = true;
+
+        getServerProperties(DEFAULTDOWNURL);
+        if(notimplemented)
+            return; // apparently not implemented
+
+        HTTPMethod.TESTING = true;
+        this.downloaddir = this.serverprops.get("downloaddir");
+        if(this.downloaddir == null)
+            throw new Exception("Cannot get download directory");
+
+        File dir = makedir(this.downloaddir, true);
+        TestCase.setDownloadDir(this.downloaddir);
+    }
 
     @Before
     public void setup()
             throws Exception
     {
-        this.serverprops = getServerProperties(DEFAULTREIFYURL);
-        this.serverdir = this.serverprops.get("downloaddir");
-        this.serveruser = this.serverprops.get("username");
-        if(this.serverdir != null) {
-            File dir = new File(this.serverdir);
-            UserPrincipal owner = Files.getOwner(dir.toPath());
-            // Change permissions to allow read/write by anyone
-            dir.setExecutable(true, false);
-            dir.setReadable(true, false);
-            dir.setWritable(true, false);
-            // clear out the download dir
-            deleteTree(this.serverdir, false);
-        }
-        TestCase.setServerDir(this.serverdir);
-        //NetcdfFile.registerIOProvider(Nc4Iosp.class);
+        if(!once)
+            doonce();
         defineAllTestCases();
-        prop_visual = true;
     }
+
+    //////////////////////////////////////////////////
+    // Junit test methods
 
     @Test
     public void
@@ -124,18 +172,18 @@ public class TestDownload extends TestReify
             throws Exception
     {
         TestCase test = (TestCase) tc;
-        System.out.println("Testcase: " + test.toString());
+        stdout.println("Testcase: " + test.toString());
         String url = test.makeURL();
-
-        int[] codep = new int[1];
-        String s = callserver(url, codep);
-        if(codep[0] != 200)
-            Assert.assertTrue(String.format("httpcode=%d msg=%s", codep[0], s), false);
-        Map<String, String> result = ReifyUtils.parseMap(s, ';', true);
-
+        String s = null;
+        try (HTTPMethod m = HTTPFactory.Get(url)) {
+            int code = callserver(m);
+            s = m.getResponseAsString();
+            Assert.assertTrue(String.format("httpcode=%d msg=%s", code, s), code == 200);
+        }
+        Map<String, String> result = parseMap(s, ';', true);
         if(prop_visual) {
-            String decoded = ReifyUtils.urlDecode(url);
-            String recvd = ReifyUtils.toString(result, false);
+            String decoded = urlDecode(url);
+            String recvd = mapToString(result, false);
             visual("TestReify.url:", decoded);
             visual("TestReify.sent:", url);
             visual("TestReify.received:", recvd);
@@ -145,16 +193,13 @@ public class TestDownload extends TestReify
             boolean pass = true;
             Map<String, String> testreply = test.getReply();
             String comparison = replyCompare(result, testreply);
-            if(comparison != null) {
-                System.err.println(comparison);
-                Assert.fail("***Fail: return value mismatc");
-            }
+            Assert.assertTrue("***Fail: return value mismatch: "+comparison,comparison == null);
             // Verify that the file exists
             String filename = testreply.get("download");
             Assert.assertTrue("***Fail: No download file returned", filename != null);
             File f = new File(filename);
             Assert.assertTrue("***Fail: Download file does not exist: " + filename, f.exists());
-            System.err.println("***Pass: Reply is identical and download file exists");
+            stdout.println("***Pass: Reply is identical and download file exists");
         }
     }
 

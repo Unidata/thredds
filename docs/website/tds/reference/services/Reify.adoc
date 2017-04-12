@@ -4,14 +4,16 @@
 
 = Upload/Download Service
 
-For version 5.0.0, it is possible to configure TDS to support the uploading and downloading of files into the local file system using the "/thredds/download" url path. This is primarily intended to support local File materialization for server-side computing. The idea is that a component such as http://jupyter.org[Jupyter] can materialize files from TDS to make them available to code being run in Jupyter. Additionally, any final output from the code execution can be uploaded to a specific location in the TDS catalog to make it available externally.
+For version 5.0.0, it is possible to configure TDS to support the uploading and downloading of files into the local file system using the "/thredds/upload" and "/thredds/download" url paths.
 
-Note that this functionality is not strictly necessary since it could all be done on the client side independent of TDS.  It is, however, useful because the client does not need to duplicate code already available on the TDS server. This means that this service provides the following benefits to the client.
+These services are primarily intended to support local File materialization for server-side computing. The idea is that a component such as http://jupyter.org[Jupyter] can materialize files from TDS to make them available to code being run in Jupyter. Additionally, any final output from the code execution can be uploaded to a specific location in the TDS catalog to make it available externally.
+
+== Download Service
+
+Note that the download functionality is not strictly necessary since it could all be done on the client side independent of TDS.  It is, however, useful because the client does not need to duplicate code already available on the TDS server. This means that this service provides the following benefits to the client.
 
 1. It is lightweight WRT the client
 2. It is language independent
-
-== Download Service
 
 === Download Assumptions
 
@@ -19,7 +21,7 @@ The essential assumption for the download service is that any external code usin
 
 An additional assumption is that "nested" calls to the Thredds server will not cause a deadlock. This is how access to non-file datasets (e.g. via DAP2 or DAP4 or GRIB or NCML) is accomplished.  That is, the download code on the server will do a nested call to the server to obtain the output of the request.  Experimentation shows this is not currently a problem.
 
-It is assumed that any client using the download service has the appropriate credentials authorizing access to the download service.
+It is assumed that any client using the download service has the appropriate credentials authorizing access to the download service (see "Security Issues" below).
 
 === Supported File Formats
 
@@ -34,7 +36,7 @@ A set of query parameters control the operation of this service. Note that all o
 
 ==== Request and Reply
 
-Invoking this service is accomplished using a URL pattern like this.
+This service can be invoked programmatically using a URL pattern like this.
 ```
 http://host:port/thredds/download/?key=value&key=value&...
 ```
@@ -49,7 +51,7 @@ The specific keys depend on the invocation.
 The primary key is __request__. It indicates what action
 is requested of the server.
 
-The set of defined values for the __request__ key are as follows.
+The set of defined values for the __request__ key are currently as follows.
 
 * __download__
 * __inquire__
@@ -62,42 +64,66 @@ The set of defined values for the __request__ key are as follows.
 
 * __target__ -- This specifies the relative path for the downloaded file. If the file already exists, it will be overwritten. Any leading directories will be created underneath __downloaddir__ (see below).
 
+* __overwrite__ -- If defined with the value __true__, the target will be overwritten if it already exists.
+
 ==== Reply Keys Specific to "request=download"
 
 * __download__ -- The absolute path of the downloaded file. In all cases, it will be under the __downloaddir__ directory.
 
 ==== Request Keys Specific to "request=inquire"
 
-* __inquire__ -- This specifies a semi-colon separated list of keys whose value is desired. The set of keys will increase over time. See the class __Inquiry__
-in the file __ReifyUtils.java__ to see the definitive set. 
-Currently, two keys are defined:
-
-* __downloaddir__
-* __username__ 
+* __inquire__ -- This asks the server to return a pre-defined set of
+values in key=value form.
 
 ==== Reply Keys Specific to "request=inquire"
 
 * __downloaddir__ -- The absolute path of the directory under which all downloaded files are placed.
-* __username__ -- The user name under which the download servlet is running; this is primarily for testing.
+* __uploaddir__ -- The absolute path of the directory into which all upload requests (see below) are placed.
+
+As a rule, if the returned key is missing or has an empty value, it means the corresponding service (upload or download) is not implemented for this server.
+
+=== Download Service Web Page
+
+It is also possible to access the download service via an Http Form web page
+using this url pattern.
+```
+http://host:port/thredds/download
+```
+Notice that this is same as the other pattern, but with no key=value pairs.
+
+As a rule, one inserts the server specific url of this pattern into a web-browser. The result is a web form containing the following fields; they largely correspond to the request keys described previously.
+
+1. Status field -- Indicates the success or failure of the last download attempt.
+2. URL field -- Specifies the url of the actual dataset to compute and materialize in the download directory.
+3. Format buttons -- Allows one to choose the format for the returned dataset.
+4. Target field -- Specifies a relative path indicating the name and location of where the downloaded file will be stored. This path is relative to the pre-defined download directory known to the server. This field is NOT optional.
+5. Overwrite checkbox -- If checked, then any previous target with the same target name will be overwritten. Default is to not overwrite.
+
+The user fills in these fields as desired and then clicks the __Send__ button to cause the download to be attempted. On return, the same form is displayed but with the success or failure of the download attempt shown in the __Status__ field.
 
 == Upload Service 
 
-=== Upload Service Protocol
+Uploading of files to a Thredds server is normally carried out using an Http Form web page that roughly mimics the upload capabilities of RAMADDA. It is possible to programmatically invoke the upload service, but that is not the normal mechanism.
 
-The File upload service has two components.
+=== Upload Service Access
 
-1. A file upload controller is built into the Thredds server that supports uploading files to the defined upload directory. This controller has two "entry points". One just returns the forms web page for the client to upload a file. As a rule, this page is accessed through a web browser. The second entry point does the actual upload and a reference to this entry point is embedded in the forms web page.
-
-2. Visibility of the upload directory is handled by creating a directory that is to be scanned by the Thredds server to be made available at a specific point in the standard catalog.
-
-Accessing the upload forms web page is accomplished by using the following URL.
+The upload service web page can be accessed using this url pattern.
 ```
-https://host:port/thredds/upload
+http://host:port/thredds/upload
 ```
+
+As a rule, one inserts the server specific url of this pattern into a web-browser. The result is a web form containing the following four fields.
+
+1. Status field -- Indicates the success or failure of the last upload attempt.
+2. File field -- Specifies the absolute path of a file to upload. This is actually a __Browse__ button that can be used to select the file.
+3. Target field -- Specified a relative path indicating the name and location of where the uploaded file will be stored on the server. This path is relative to the pre-defined upload directory known to the server. This is optional, and if left blank the target will be given the name of the uploaded file.
+4. Overwrite checkbox -- If checked, then any previous target with the same target name will be overwritten. Default is to overwrite.
+
+The user fills in these fields as desired and then clicks the __Send__ button to cause the upload to be attempted. On return, the same form is displayed but with the success or failure of the upload attempt shown in the __Status__ field.
 
 === Upload Assumptions
 
-It is assumed that any client using the download service has the appropriate credentials authorizing access to the download service.
+It is assumed that any client using the upload service has the appropriate credentials authorizing access to the download service (See "Security Issues" below).
 
 == Thredds Server Configuration
 
@@ -118,8 +144,7 @@ In order to complete the establishment of an upload directory, the following ent
 	    </metadata>
 	</datasetScan>
 ```
-Optionally, if one wants to make the download directory visible, the following
-can be added to the same file.
+Optionally, if one wants to make the download directory visible through the catalog, the following can be added to the same file.
 ```
 	<datasetScan name="Downloaded Files" ID="download"
                      location="${tds.download.dir}" path="download/">
@@ -134,20 +159,20 @@ can be added to the same file.
 
 It should be clear that providing upload and download capabilties can introduce security concerns.
 
-The primary issue is that this service will cause the Thredds server to write  into user-specified locations in the file system. In order to prevent malicious writing of files, the download directory (specified by tds.download.dir) should be created in a safe place. Typically, this means it should be placed under a directory such as "/tmp" on Linux or an equivalent location for other operating systems.
+The primary download issue is that the service will cause the Thredds server to write  into user-specified locations in the file system. In order to prevent malicious writing of files, the download directory (specified by tds.download.dir) should be created in a safe place. Typically, this means it should be placed under a directory such as "/tmp" on Linux or an equivalent location for other operating systems.
 
 This directory will be read and written by the user running the Thredds server, typically "tomcat". The best practice for this is to create a specific user and group and set the download directories user and group to those values.  Then the appropriate Posix permissions for that directory should be "rwxrwx---". Finally, the user "tomcat" should be added the created group.
 
-Corresponding concerns apply to the upload directory and so its owner, group, and permissions should be set similarly to the download directory.
+Corresponding concerns apply to the upload directory. However it is probable that only the server will directly access this directory (all else is via the catalog), so its permissions can be set to "rwx------" assuming the owner is the same as the user under which Thredd is executing.
 
-The url used to specify the dataset to be downloaded also raise security concerns. The url is tested for two specific url patterns to ensure proper behavior.
+The url used to specify the dataset to be downloaded also raises security concerns. The url is tested for two specific url patterns to ensure proper behavior.
 
 1. The pattern".." is disallowed in order to avoid attempts to escape the thredds sandbox.
 2. The pattern"/download/" is disallowed in order to prevent an access loop in which a download call attempts to call download again.
 
 In order to provide additional sandboxing, the url provided by the client is modified to ignore the host, port and servlet prefix. They are replaced with the "&lt;host&gt;:&lt;port&gt;/thredds" of the thredds server. This is to prevent attempts to use the thredds server to access external data sources, which would otherwise provide a security leak.
 
-Finally, it is desirable that some additional access controls be applied. Specifically, Tomcat should be configured to require client-side certificates so that all clients using this service must have access to that certificate.
+Finally, it is desirable that some additional access controls be applied. Specifically, Tomcat may be configured to require client-side certificates so that all clients using this service must have access to that certificate.
 
 == Download Examples
 

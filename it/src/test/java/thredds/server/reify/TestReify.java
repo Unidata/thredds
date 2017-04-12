@@ -4,9 +4,16 @@
 
 package thredds.server.reify;
 
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
 import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
@@ -14,100 +21,115 @@ import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.*;
 
 abstract public class TestReify extends UnitTestCommon
 {
     static protected final boolean DEBUG = false;
+    static protected final boolean DEBUGPARTS = false;
 
     //////////////////////////////////////////////////
     // Constants
 
     static protected final String THREDDSPREFIX = "/thredds";
-    static protected final String SERVLETPREFIX = "/download";
-    static protected final String DOWNLOADDIR = "C:/Temp/download";
+    static protected final String DOWNPREFIX = "/download";
+    static protected final String UPPREFIX = "/upload";
+    static protected String DOWNLOADDIR;
+    static protected String UPLOADDIR;
 
     static final protected String STATUSCODEHEADER = "x-download-status";
+
+    static {
+        // Try to locate a temporary directory
+        File tmp = new File("C:/Temp");
+        if(!tmp.exists() || !tmp.isDirectory() || !tmp.canRead() || !tmp.canWrite())
+            tmp = null;
+        if(tmp != null) {
+            tmp = new File("/tmp");
+            if(!tmp.exists() || !tmp.isDirectory() || !tmp.canRead() || !tmp.canWrite())
+                tmp = null;
+        }
+        if(tmp == null)
+            tmp = new File(System.getProperty("user.dir"));
+        File dload = new File(tmp, "download");
+        dload.mkdirs();
+        DOWNLOADDIR = HTTPUtil.canonicalpath(dload.getAbsolutePath());
+        File uload = new File(tmp, "upload");
+        uload.mkdirs();
+        UPLOADDIR = HTTPUtil.canonicalpath(uload.getAbsolutePath());
+    }
 
     //////////////////////////////////////////////////
     // Type Decls
 
+    static enum Command
+    {
+        NONE, UPLOAD, DOWNLOAD, INQUIRE;
+
+        static public Command parse(String cmd)
+        {
+            if(cmd == null) return null;
+            for(Command x : Command.values()) {
+                if(cmd.equalsIgnoreCase(x.toString())) return x;
+            }
+            return null;
+        }
+    }
+
+    static public class NullValidator implements org.springframework.validation.Validator
+    {
+        public boolean supports(Class<?> clazz)
+        {
+            return true;
+        }
+
+        public void validate(Object target, Errors errors)
+        {
+            return;
+        }
+    }
+
     static abstract class AbstractTestCase
     {
-        static public String downloadroot = DOWNLOADDIR;
+        public String downloadroot = DOWNLOADDIR;
+        public String uploadroot = UPLOADDIR;
 
         //////////////////////////////////////////////////
 
-        protected ReifyUtils.Command cmd;
         protected String url;
         protected String target;
-        protected Map<String, String> params = new HashMap<>();
 
-        AbstractTestCase(String cmd, String url, String target, String[] params)
+        AbstractTestCase(String url)
         {
-
-            this.cmd = ReifyUtils.Command.parse(cmd);
-            this.params.put("request", this.cmd.name().toLowerCase());
-
             this.url = url;
-            if(this.url != null) this.params.put("url", this.url);
-
-            this.target = HTTPUtil.canonicalpath(target);
-            if(this.target != null) this.params.put("target", this.target);
-
-            for(int i = 0; i < params.length; i++) {
-                String[] pieces = params[i].trim().split("[=]");
-                if(pieces.length == 1)
-                    this.params.put(pieces[0].trim().toLowerCase(), "");
-                else
-                    this.params.put(pieces[0].trim().toLowerCase(), pieces[1].trim());
-            }
         }
 
         //////////////////////////////////////////////////
         // Subclass defined
 
-        abstract public Map<String, String> getReply();
+        abstract public String toString();
 
         //////////////////////////////////////////////////
         // Accessors
-
-        public ReifyUtils.Command getCommand()
-        {
-            return this.cmd;
-        }
 
         public String getURL()
         {
             return this.url;
         }
 
-        public Map<String, String> getParams()
-        {
-            return this.params;
-        }
-
-
-        public String toString()
-        {
-            StringBuilder buf = new StringBuilder();
-            buf.append(this.getURL());
-            boolean first = true;
-            for(Map.Entry<String, String> entry : this.params.entrySet()) {
-                buf.append(String.format("%s%s=%s", first ? "?" : "&",
-                        entry.getKey(), entry.getValue()));
-            }
-            return buf.toString();
-        }
     }
 
     //////////////////////////////////////////////////
     // Instance variables
 
     protected List<AbstractTestCase> alltestcases = new ArrayList<>();
+
+    protected Map<String, String> serverprops = null;
+
+    protected boolean notimplemented = true;
 
     //////////////////////////////////////////////////
 
@@ -121,6 +143,10 @@ abstract public class TestReify extends UnitTestCommon
     doAllTests()
             throws Exception
     {
+        if(notimplemented) {
+            stderr.println("Server up/download not implemented: tests aborted");
+            return;
+        }
         Assert.assertTrue("No defined testcases", this.alltestcases.size() > 0);
         for(int i = 0; i < this.alltestcases.size(); i++) {
             doOneTest(this.alltestcases.get(i));
@@ -130,61 +156,68 @@ abstract public class TestReify extends UnitTestCommon
     //////////////////////////////////////////////////
     // Utilities
 
-    public Map<String,String>
+    public void
     getServerProperties(String server)
+            throws Exception
     {
         StringBuilder b = new StringBuilder();
         b.append(server);
-        b.append("/");
-        b.append("?request=inquire&inquire=downloaddir;username");
-        int[] codep = new int[1];
+        b.append("?request=inquire");
+        int code = 0;
         String sresult = null;
         try {
-            sresult = callserver(b.toString(), codep);
+            try (HTTPMethod method = HTTPFactory.Get(b.toString())) {
+                code = callserver(method);
+                byte[] bytes = method.getResponseAsBytes();
+                if(code != 200) {
+                    sresult = new String(bytes, "utf8");
+                    notimplemented = true;
+                    stderr.printf("Server properties call failed: status=%d msg=%s", code, sresult);
+                    return;
+                }
+                // Convert to string
+                sresult = "";
+                if(bytes != null && bytes.length > 0)
+                    sresult = new String(bytes, "utf8");
+                sresult = urlDecode(sresult);
+                stderr.printf("Getproperties: result=|%s|", sresult);
+            }
         } catch (IOException e) {
-            System.err.println("Server call failure: " + e.getMessage());
-            return null;
+            stderr.println("Server call failure: " + e.getMessage());
+            notimplemented = true;
+            return;
         }
-        if(codep[0] != 200) {
-            System.err.println("Server call failed: status=" + codep[0]);
-            return null;
-        }
-        Map<String, String> result = ReifyUtils.parseMap(sresult, ';', true);
-        return result;
+        Map<String, String> result = parseMap(sresult, ';', true);
+        this.serverprops = result;
+        notimplemented = false;
     }
 
-    public String
-    callserver(String url, int[] codep)
+    public int
+    callserver(HTTPMethod method)
             throws IOException
     {
+        int code = 0;
         // Make method call
-        byte[] bytes = null;
-        codep[0] = 0;
-        try (HTTPMethod method = HTTPFactory.Get(url)) {
-            method.execute();
-            codep[0] = method.getStatusCode();
-            org.apache.http.Header h = method.getResponseHeader(STATUSCODEHEADER);
-            if(h != null) {
-                String scode = h.getValue();
-                int code;
-                try {
-                    code = Integer.parseInt(scode);
-                    if(code > 0)
-                        codep[0] = code;
-                } catch (NumberFormatException e) {
-                    code = 0;
-                }
-            }
-            bytes = method.getResponseAsBytes();
+        method.execute();
+        if(DEBUGPARTS) {
+            RequestConfig rc = method.getDebugConfig();
+            HttpRequestBase hrb = method.debugRequest();
+            Assert.assertTrue("Could not get request config", rc != null);
+            reportRequest(rc, hrb);
         }
-        // Convert to string
-        String sbytes = "";
-        if(bytes != null && bytes.length > 0)
-            sbytes = new String(bytes, "utf8");
-        if(codep[0] != 200)
-            return sbytes;
-        String result = ReifyUtils.urlDecode(sbytes);
-        return result;
+        code = method.getStatusCode();
+        org.apache.http.Header h = method.getResponseHeader(STATUSCODEHEADER);
+        if(h != null) {
+            String scode = h.getValue();
+            try {
+                int tmpcode = Integer.parseInt(scode);
+                if(tmpcode > 0)
+                    code = tmpcode;
+            } catch (NumberFormatException e) {
+                code = code; // ignore
+            }
+        }
+        return code;
     }
 
     static public String
@@ -216,10 +249,9 @@ abstract public class TestReify extends UnitTestCommon
     }
 
     /**
-     *
-     * @param root delete all files under this root
+     * @param root       delete all files under this root
      * @param deleteroot true => delete root also
-     * @return   true if delete suceeded
+     * @return true if delete suceeded
      */
     static public boolean
     deleteTree(String root, boolean deleteroot)
@@ -244,20 +276,166 @@ abstract public class TestReify extends UnitTestCommon
         return true;
     }
 
-    //////////////////////////////////////////////////
-    // Support classes
-
-    static /*package*/ class NullValidator implements Validator
+    static File
+    makedir(String name, boolean clear)
+            throws IOException
     {
-        public boolean supports(Class<?> clazz)
-        {
-            return true;
-        }
-
-        public void validate(Object target, Errors errors)
-        {
-            return;
-        }
+        File dir = new File(name);
+        dir.mkdirs(); // ensure existence
+        // Change permissions to allow read/write by anyone
+        dir.setExecutable(true, false);
+        dir.setReadable(true, false);
+        dir.setWritable(true, false);
+        if(!dir.canRead())
+            throw new IOException(name + ": cannot read");
+        if(!dir.canWrite())
+            throw new IOException(name + ": cannot write");
+        // optionally clear out the dir
+        if(clear)
+            deleteTree(name, false);
+        return dir;
     }
+
+    static void
+    filereport(String path)
+    {
+        File tmp = new File(path);
+        if(!tmp.exists())
+            System.err.println(path + " does not exist");
+        if(tmp.isFile())
+            System.err.println(path + " is file");
+        if(tmp.isDirectory())
+            System.err.println(path + " is a directory");
+        if(!tmp.canRead())
+            System.err.println(path + " not readable");
+        if(!tmp.canWrite())
+            System.err.println(path + " not writeable");
+        if(!tmp.canExecute())
+            System.err.println(path + " not executable");
+    }
+
+    static public String
+    urlDecode(String s)
+    {
+        try {
+            s = URLDecoder.decode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            assert false : e.getMessage();
+        }
+        return s;
+    }
+
+    static public String
+    urlEncode(String s)
+    {
+        try {
+            s = URLEncoder.encode(s, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            assert false : e.getMessage();
+        }
+        return s;
+    }
+
+    static public Map<String, String>
+    parseMap(String params, char sep, boolean decode)
+    {
+        Map<String, String> map = new HashMap<>();
+        if(params == null || params.length() == 0)
+            return map;
+        String[] pieces = params.split("[&]");
+        for(int i = 0; i < pieces.length; i++) {
+            String piece = pieces[i].trim();
+            String[] pair = piece.split("[=]");
+            String key = pair[0].trim();
+            if(pair.length >= 2) {
+                String v = pair[1].trim();
+                if(decode) v = urlDecode(v);
+                map.put(key, v);
+            } else if(pair.length == 1) {
+                map.put(key, "");
+            } else
+                assert false : "split() failed";
+        }
+        return map;
+    }
+
+    static public String
+    mapToString(Map<String, String> map, boolean encode, String... order)
+    {
+        List<String> orderlist;
+        if(order == null)
+            orderlist = new ArrayList<String>(map.keySet());
+        else
+            orderlist = Arrays.asList(order);
+        StringBuilder b = new StringBuilder();
+        // Make two passes: one from order, and one from remainder
+        boolean first = true;
+        for(int i = 0; i < orderlist.size(); i++) {
+            String key = orderlist.get(i);
+            String value = map.get(key);
+            if(value == null) continue; // ignore
+            if(!first) b.append("&");
+            b.append(key);
+            b.append("=");
+            b.append(encode ? urlEncode(value) : value);
+            first = false;
+        }
+        for(Map.Entry<String, String> entry : map.entrySet()) {
+            if(orderlist.contains(entry.getKey())) continue;
+            if(!first) b.append("&");
+            b.append(entry.getKey());
+            b.append("=");
+            b.append(encode ? urlEncode(entry.getValue()) : entry.getValue());
+            first = false;
+        }
+        return b.toString();
+    }
+
+
+    static protected void
+    reportRequest(RequestConfig cfg, HttpRequestBase req)
+    {
+        System.err.println("========= TestSide =========\n");
+        System.err.println("Headers:\n");
+        for(Header h : req.getAllHeaders()) {
+            System.err.printf("\t%s = %s%n", h.getName(), h.getValue());
+        }
+        if("post".equalsIgnoreCase(req.getMethod())) {
+            HttpEntityEnclosingRequestBase b = (HttpEntityEnclosingRequestBase) req;
+            HttpEntity he = b.getEntity();
+            List<NameValuePair> content = null;
+            try {
+                String s = EntityUtils.toString(he);
+                System.err.println(s);
+            } catch (IOException e) {
+                return;
+            }
+        }
+        System.err.println("=========\n");
+        System.err.flush();
+    }
+
+    static List<org.apache.http.Header>
+    iter2list(Iterator<Object> e)
+    {
+        List<org.apache.http.Header> result = new ArrayList<>();
+        while(e.hasNext()) {
+            Header h = (Header) e.next();
+            result.add(h);
+        }
+        return result;
+    }
+
+    static List<String>
+    enum2list(Enumeration<String> e)
+    {
+        List<String> names = new ArrayList<>();
+        while(e.hasMoreElements()) {
+            String name = e.nextElement();
+            names.add(name);
+        }
+        return names;
+    }
+
 
 }

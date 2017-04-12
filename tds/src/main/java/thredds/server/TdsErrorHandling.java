@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Formatter;
 import java.util.List;
 
@@ -154,7 +156,14 @@ public class TdsErrorHandling implements HandlerExceptionResolver {
 
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.TEXT_PLAIN);
-    return new ResponseEntity<>("Throwable exception handled : " + ex.getMessage(), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
+    String msg = ex.getMessage();
+      StringWriter sw = new StringWriter();
+      PrintWriter p = new PrintWriter(sw);
+      ex.printStackTrace(p);
+      p.close();
+      sw.close();
+      msg = sw.toString();
+    return new ResponseEntity<>("Throwable exception handled : " + msg, responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   /////////////////////////////////////////////

@@ -98,7 +98,7 @@ public class TestFormBuilder extends UnitTestCommon
         setSystemProperties();
         // Turn on Session debugging
         HTTPSession.TESTING = true;
-        HTTPSession.debugHeaders(false);
+        HTTPSession.setInterceptors(false);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class TestFormBuilder extends UnitTestCommon
     testSimple()
             throws Exception
     {
-        HTTPSession.debugReset();
+        HTTPSession.resetInterceptors();
         try {
             HTTPFormBuilder builder = buildForm(false);
             HttpEntity content = builder.build();
@@ -154,7 +154,7 @@ public class TestFormBuilder extends UnitTestCommon
         attach3file = HTTPUtil.fillTempFile("attach3.txt", ATTACHTEXT);
         attach3file.deleteOnExit();
 
-        HTTPSession.debugReset();
+        HTTPSession.resetInterceptors();
         try {
             HTTPFormBuilder builder = buildForm(true);
             HttpEntity content = builder.build();

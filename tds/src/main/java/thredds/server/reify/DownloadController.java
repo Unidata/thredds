@@ -4,12 +4,11 @@
 
 package thredds.server.reify;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import thredds.core.TdsRequestedDataset;
-import thredds.server.config.TdsContext;
-import thredds.util.ContentType;
 import ucar.httpservices.HTTPUtil;
 import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
@@ -23,32 +22,24 @@ import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.lang.reflect.Field;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.Charset;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static thredds.server.reify.ReifyUtils.SendError;
-
-
 /**
- * Local File Materialization (aka reification)
+ * Local File Materialization
  * for server-side computing.
- * The tag for this controller is .../download/*
+ * The tag for this controller is .../download/* or .../restrictedAccess/download
  * <p>
  * The goal for this controller is to allow external code to have the
- * thredds server materialize a dataset into the file system.
+ * thredds server materialize a dataset into the file system .
  * <p>
  * Note that this functionality is not strictly necessary
  * since it could all be done on the client side.
@@ -61,13 +52,14 @@ import static thredds.server.reify.ReifyUtils.SendError;
  * Assumptions:
  * 1. The external code has authenticated to the thredds server
  * using some authentication mechanism such as
- * client-side certificates or tomcat roles.
+ * client-side certificates or tomcat roles. This code performs
+ * no authentication.
  * <p>
  * 2. The external code is running on the same machine as the thredds
  * server, or at least has a common file system so that file system
  * writes by thredds are visible to the external code.
  * <p>
- * Note that in order to support downloading of non-file datasets
+ * WARNING: In order to support downloading of non-file datasets
  * (e.g. via DAP2 or DAP4) this controller will
  * re-call the server to obtain the output of the request. Experimentation
  * shows this is not a problem. Circularity is tested to ensure
@@ -81,11 +73,13 @@ import static thredds.server.reify.ReifyUtils.SendError;
  * Note that all of the query parameter values (but not keys) are
  * assumed to be url-encoded (%xx), so beware.
  * Also, all return values are url-encoded.
+ * Using query parameters means that it is possible to use an Http Form
+ * to send them; see TestDownload.
  * <p>
  * Download Request
  * ----------------
  * Download parameters:
- * - request=download -- specify the action
+ * - request=download -- materialize a file into the download directory
  * - format=netcdf3|netcdfd4 -- specify the download format
  * - url={a thredds server dataset access url} -- specify the actual dataset.
  * - target={path of the downloaded file} -- if it already exists, then it
@@ -114,229 +108,169 @@ import static thredds.server.reify.ReifyUtils.SendError;
  * - request=inquire -- Inquire about various parameters
  * - inquire={semicolon separated arguments} -- Inquire about the default download dir
  * <p>
- * Return value: <key>={value of the requested key}
+ * Return value: <key>={value of the requested key}; one key-value pair per line.
  */
 
 @Controller
-@RequestMapping("/download")
-public class ReifyController
+@RequestMapping(value = {"/download", "/restrictedAccess/download"})
+public class DownloadController extends LoadCommon
 {
     //////////////////////////////////////////////////
     // Constants
 
     static final protected boolean DEBUG = true;
 
-    static final protected String DEFAULTSERVLETNAME = "thredds";
     static final protected String DEFAULTREQUESTNAME = "download";
 
     static final protected String DEFAULTDOWNLOADDIR = "download";
 
-    static final protected String STATUSCODEHEADER = "x-download-code";
-
     static final protected String FILESERVERSERVLET = "/fileServer/";
-
-    //////////////////////////////////////////////////
-    // Static variables
-
-    static org.slf4j.Logger logServerStartup;
-    static org.slf4j.Logger log;
-
-    static {
-        logServerStartup = org.slf4j.LoggerFactory.getLogger("serverStartup");
-        log = org.slf4j.LoggerFactory.getLogger(ReifyController.class);
-    }
-
-    static public TdsContext testTdsContext = null;
 
     //////////////////////////////////////////////////
     // Instance variables
 
-    @Autowired
-    protected TdsContext tdsContext = null;
-
-    protected HttpServletRequest req = null;
-    protected HttpServletResponse res = null;
-    protected Parameters params = null;
-    protected String downloaddir = null;
-
-    protected boolean initialized = false;
-    protected boolean getInitialized = false;
-
-    protected String server = null; // Our host + port
-    protected String requestname = null;
-    protected String threddsname = null;
-
     protected Nc4Chunking.Strategy strategy = Nc4Chunking.Strategy.standard;
     protected Nc4Chunking chunking = new Nc4ChunkingDefault();
+    protected DownloadParameters params = null;
+    protected String downloadform = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
 
-    public ReifyController()
+    public DownloadController()
             throws ServletException
     {
-        // Do not know how to get spring to invoke init when mocking.
-        if(!initialized) init();
+        super();
     }
 
     //////////////////////////////////////////////////
-    // Servlet API (Selected)
-
-    public void init()
-            throws ServletException
-    {
-        try {
-            if(initialized)
-                return;
-            initialized = true;
-            logServerStartup.info(getClass().getName() + " initialization");
-            System.setProperty("file.encoding", "UTF-8");
-            Field charset = Charset.class.getDeclaredField("defaultCharset");
-            charset.setAccessible(true);
-            charset.set(null, null);
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
-    }
 
     /**
-     * Invoked on first get so that everything is available,
+     * Invoked once on first request so that everything is available,
      * especially Spring stuff.
      */
-    public void initGet(HttpServletRequest req)
+    public void doonce(HttpServletRequest req)
             throws SendError
     {
-        if(getInitialized)
+        if(once)
             return;
-        getInitialized = true;
-        log.info(getClass().getName() + " GET initialization");
+        super.initOnce(req);
+        if(this.downloaddir == null)
+            throw new SendError(HttpStatus.SC_PRECONDITION_FAILED, "Download disabled");
+        this.downloaddirname = new File(this.downloaddir).getName();
 
-        // Obtain servlet path info
-        String tmp = HTTPUtil.canonicalpath(req.getContextPath());
-        this.threddsname = HTTPUtil.relpath(tmp);
-        tmp = HTTPUtil.canonicalpath(req.getServletPath());
-        this.requestname = HTTPUtil.relpath(tmp);
-
-        if(this.threddsname == null || this.threddsname.length() == 0)
-            this.threddsname = DEFAULTSERVLETNAME;
-        if(this.requestname == null || this.requestname.length() == 0)
-            this.requestname = DEFAULTREQUESTNAME;
-
-        // Get server host + port name
-        StringBuilder buf = new StringBuilder();
-        buf.append(req.getServerName());
-        int port = req.getServerPort();
-        if(port > 0) {
-            buf.append(":");
-            buf.append(port);
+        // Get the download form
+        File downform = null;
+        downform = tdsContext.getDownloadForm();
+        if(downform == null) {   // Look in WEB-INF directory
+            File root = tdsContext.getServletRootDirectory();
+            downform = new File(root, DEFAULTDOWNLOADFORM);
         }
-        this.server = buf.toString();
+        try {
+            this.downloadform = loadForm(downform);
+        } catch (IOException ioe) {
+            throw new SendError(HttpStatus.SC_PRECONDITION_FAILED, ioe);
+        }
+    }
 
-        // Get the download dir
-        File downdir = null;
-        if(tdsContext == null) tdsContext = testTdsContext;
-        if(tdsContext != null)
-            downdir = tdsContext.getDownloadDir();
-        if(downdir == null)
-            throw new SendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "No tds.download.dir specified");
-        else
-            this.downloaddir = HTTPUtil.canonicalpath(downdir.getAbsolutePath());
+    // Setup for each request
+    public void setup(HttpServletRequest req, HttpServletResponse resp)
+            throws SendError
+    {
+        this.req = req;
+        this.res = resp;
+        if(!once)
+            doonce(req);
+
+        // Parse any query parameters
+        try {
+            this.params = new DownloadParameters(req);
+        } catch (IOException ioe) {
+            throw new SendError(res.SC_BAD_REQUEST, ioe);
+        }
     }
 
     //////////////////////////////////////////////////
-    // Controller entry point
+    // Controller entry point(s)
 
-    @RequestMapping("**")
+    @RequestMapping(value = "**", method = RequestMethod.GET)
     public void
     doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException
     {
         try {
-
-            this.req = req;
-            this.res = res;
-
-            if(!getInitialized) initGet(req);
-
-            try {
-                this.params = new Parameters(req);
-            } catch (IOException ioe) {
-                throw new SendError(res.SC_BAD_REQUEST, ioe);
-            }
-
-            Map<String, String> result = new HashMap<>();
+            setup(req, res);
+            String sresult = null;
             switch (this.params.command) {
             case DOWNLOAD:
-                download(result);
+                try {
+                    String fulltargetpath = download();
+                    if(this.params.fromform) {
+                        sendForm("Download succeeded: result file: " + fulltargetpath);
+                    } else {
+                        Map<String, String> result = new HashMap<>();
+                        result.put("download", fulltargetpath);
+                        sresult = mapToString(result, true, "download");
+                        sendOK(sresult);
+                    }
+                } catch (SendError se) {
+                    if(this.params.fromform) {
+                        // Send back the download form with error msg
+                        sendForm("Download failed: " + se.getMessage());
+                    } else
+                        throw se;
+                }
                 break;
             case INQUIRE:
-                inquire(result);
+                sresult = inquire();
+                // Send back the inquiry answers
+                sendOK(sresult);
+                break;
+            case NONE: // Use form-based download
+                // Send back the download form
+                sendForm("No files downloaded");
                 break;
             }
-            reply(result);
         } catch (SendError se) {
-            sendError(se.httpcode, se.msg);
+            sendError(se);
         } catch (Exception e) {
-            String msg = ReifyUtils.getStackTrace(e);
-            sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
+            String msg = getStackTrace(e);
+            sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg, e);
         }
     }
 
-    protected void
-    sendError(int code, String msg)
-    {
-        try {
-            //this.res.sendError(code, msg);
-            this.res.setIntHeader(STATUSCODEHEADER, code);
-            reply(msg);
-        } catch (Exception e) {
-            assert false : "Unexpected failure";
-        }
-    }
+    //////////////////////////////////////////////////
 
-    protected void
-    reply(Map<String, String> result)
+    /**
+     * @return absolute path to the downloaded file
+     * @throws SendError if bad request
+     */
+    protected String
+    download()
     {
-        String sresult = ReifyUtils.toString(result, true, "download");
-        reply(sresult);
-    }
+        String target = this.params.target;
 
-    protected void
-    reply(String sresult)
-    {
-        this.res.setContentType(ContentType.text.getContentHeader());
-        try {
-            ServletOutputStream out = this.res.getOutputStream();
-            PrintStream pw = new PrintStream(out, false, "US-ASCII");
-            pw.print(sresult);
-            pw.close();
-            out.flush();
-        } catch (IOException ioe) {
-            log.error(ioe.getMessage());
-        }
-    }
-
-    protected void
-    download(Map<String, String> result)
-    {
-        if(this.params.target == null)
+        if(target == null)
             throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "No target specified");
+
         // Make sure target path does not contain '..'
-        if(this.params.target.indexOf("..") >= 0)
-            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "Target parameter contains '..': " + this.params.target);
+        if(target.indexOf("..") >= 0)
+            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "Target parameter contains '..': " + target);
+
         // See if the target is relative or absolute
-        File ftarget = new File(this.params.target);
+        File ftarget = new File(target);
         if(ftarget.isAbsolute())
-            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "Target parameter must be a relative path: " + this.params.target);
-        // Make relative to download dir, if any
+            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "Target parameter must be a relative path: " + target);
+
         // See if we have a download dir
         if(this.downloaddir == null)
-            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "No download directory specified for relative target: " + this.params.target);
-        // Convert to absolute path
+            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "No download directory specified for relative target: " + target);
+
+        // Make target relative to download dir and convert to absolute path
         StringBuilder b = new StringBuilder();
         b.append(this.downloaddir);
         b.append('/');
-        b.append(this.params.target);
+        b.append(target);
         ftarget = new File(b.toString());
         String fulltarget = HTTPUtil.canonicalpath(ftarget.getAbsolutePath());
 
@@ -345,22 +279,24 @@ public class ReifyController
         if(!parent.exists() && !ftarget.getParentFile().mkdirs())
             throw new SendError(HttpServletResponse.SC_FORBIDDEN, "Target file parent directory cannot be created: " + fulltarget);
 
-        // If file exists, delete it
-        if(ftarget.exists() && !ftarget.delete())
-            throw new SendError(HttpServletResponse.SC_FORBIDDEN, "Target file exists and cannot be deleted: " + fulltarget);
+        // If file exists, delete it if requested
+        if(!this.params.overwrite && ftarget.exists())
+            throw new SendError(HttpServletResponse.SC_FORBIDDEN, "Target file exists and overwrite is not set");
+        else if(this.params.overwrite && ftarget.exists()) {
+            if(!ftarget.delete())
+                throw new SendError(HttpServletResponse.SC_FORBIDDEN, "Target file exists and cannot be deleted");
+        }
 
-        String url = this.params.url;
-        if(url == null)
-            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "no source url specified");
-        URI uri;
+        String surl = this.params.url;
+        URL url;
         try {
-            uri = new URI(url);
-        } catch (URISyntaxException e) {
-            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "Malformed source url:" + url);
+            url = new URL(surl);
+        } catch (MalformedURLException mue) {
+            throw new SendError(HttpServletResponse.SC_BAD_REQUEST, "Malformed URL: " + surl);
         }
 
         // Make sure we are not recursing
-        String path = uri.getPath();
+        String path = url.getPath();
         if(path.toLowerCase().indexOf(this.requestname) >= 0)
             throw new SendError(HttpServletResponse.SC_FORBIDDEN,
                     String.format("URL is recursive on /%s: %s", this.requestname, path));
@@ -373,7 +309,7 @@ public class ReifyController
 
         // Rebuild the url to keep it under our control
         b.setLength(0); // reuse
-        b.append(uri.getScheme());
+        b.append(url.getProtocol());
         b.append("://");
         b.append(this.server);
         b.append(path);
@@ -416,28 +352,7 @@ public class ReifyController
             }
         }
         // Return the absolute path of the target as the content
-        result.put("download", fulltarget);
-    }
-
-    protected void
-    inquire(Map<String, String> result)
-    {
-        String s = this.params.inquire;
-        List<String> keys = ReifyUtils.parseList(s, ';', true);
-        for(String key : keys) {
-            ReifyUtils.Inquiry inq = ReifyUtils.Inquiry.parse(key);
-            if(inq == null) continue; // ignore unknown keys
-            switch (inq) {
-            case DOWNLOADDIR:
-                result.put(inq.getKey(), downloaddir == null ? "null" : downloaddir);
-                break;
-            case USERNAME:
-                String uname = System.getProperty("user.name");
-                result.put(inq.getKey(), uname == null ? "null" : uname);
-            default: //ignore
-                break;
-            }
-        }
+        return (fulltarget);
     }
 
     //////////////////////////////////////////////////
@@ -480,35 +395,6 @@ public class ReifyController
     }
 
     //////////////////////////////////////////////////
-    // Utilities
-    /*
-    protected File
-    resolve(String relpath, int[] codep)
-    {
-        File file = null;
-        if(this.testinfo != null) {
-            for(String s : this.testdirs) {
-                String path = HTTPUtil.canonjoin(s, relpath);
-                File f = new File(path);
-                if(f.exists()) {
-                    file = f;
-                    break;
-                }
-            }
-        } else {
-            relpath = HTTPUtil.relpath(HTTPUtil.canonicalpath(relpath));
-            if(!TdsRequestedDataset.resourceControlOk(this.req, this.res, relpath)) {
-                codep[0] = res.SC_FORBIDDEN;
-                return null;
-            }
-            file = TdsRequestedDataset.getFile(relpath);
-            if(file == null || !file.exists()) {
-                codep[0] = res.SC_NOT_FOUND;
-                return null;
-            }
-        }
-        return file;
-    } */
 
     /**
      * Given a typical string, insert backslashes
@@ -568,21 +454,38 @@ public class ReifyController
 
 
     protected boolean
-    canCopy(String truepath, ReifyUtils.FileFormat targetformat)
+    canCopy(String truepath, FileFormat targetformat)
     {
         try {
             RandomAccessFile raf = new RandomAccessFile(truepath, "r");
             // See if thhis is a netcdf-3 or netcdf-4 file already
             if(N3header.isValidFile(raf)
-                    && targetformat == ReifyUtils.FileFormat.NETCDF3)
+                    && targetformat == FileFormat.NETCDF3)
                 return true;
             if(H5header.isValidFile(raf)
-                    && targetformat == ReifyUtils.FileFormat.NETCDF4)
+                    && targetformat == FileFormat.NETCDF4)
                 return true;
         } catch (IOException e) {
             return false;
         }
         return false;
+    }
+
+    //////////////////////////////////////////////////
+
+    @Override
+    protected String
+    buildForm(String msg)
+    {
+        StringBuilder svc = new StringBuilder();
+        svc.append(this.server);
+        svc.append("/");
+        svc.append(this.threddsname);
+        String form = String.format(this.downloadform,
+                svc.toString(),
+                msg
+        );
+        return form;
     }
 
 }
