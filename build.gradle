@@ -62,6 +62,8 @@ buildscript {
         classpath libraries["shadow"]
         classpath libraries["coveralls-gradle-plugin"]
         classpath libraries["gradle-extra-configurations-plugin"]
+    
+        classpath libraries["guava"]  // For various utility methods used in the build scripts.
     }
 }
 

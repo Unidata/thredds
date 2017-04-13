@@ -114,6 +114,8 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
+libraries["xmlunit-core"] = "org.xmlunit:xmlunit-core:2.3.0"
+
 // These four are all for Spock.
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
 
