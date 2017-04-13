@@ -137,11 +137,9 @@
     - Rename old directories
       * `cd /content/software/thredds/v${releaseMajor}/netcdf-java/`
       * `mv webstart webstartOld`
-    - Update `/thredds/ui/netCDFtoolsExtraJars.jnlp` as needed.
-    - Test webstart locally. There are notes above `ui/build.gradle/releaseWebstart()` about how to do that.
     - Perform release
       * `./gradlew :ui:clean :ui:releaseWebstart`
-    - If there were no errors and the new Web Start looks good, delete the old stuff.
+    - Test the new Web Start. If there were no errors, delete the old stuff.
       * `rm -r webstartOld`
 
 19. Release Javadoc to `www:/content/software/thredds/v${releaseMajor}/netcdf-java/javadoc` and `javadocAll`
