@@ -1742,7 +1742,9 @@ public class DTSServlet extends AbstractServlet
      * @param request
      * @return the request state
      */
-    protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response)
+    protected ReqState
+    getRequestState(HttpServletRequest request, HttpServletResponse response)
+        throws DAP2Exception
     {
         ReqState rs = null;
         // The url and query strings will come to us in encoded form
