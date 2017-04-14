@@ -135,47 +135,47 @@ public class ReqState {
     public ReqState(HttpServletRequest myRequest, HttpServletResponse response,
                     AbstractServlet sv,
                     String serverClassName, String encodedurl, String encodedquery)
+            throws DAP2Exception
     {
-        this.myServletConfig = sv.getServletConfig();
-        this.myServletContext = sv.getServletContext();
-        this.rootpath = HTTPUtil.canonicalpath(this.myServletContext.getRealPath("/"));
-        if(this.rootpath == null) {
-            this.rootpath = "";
+        try {
+            this.myServletConfig = sv.getServletConfig();
+            this.myServletContext = sv.getServletContext();
+            this.rootpath = HTTPUtil.canonicalpath(this.myServletContext.getRealPath("/"));
+            AbstractServlet.log.debug("RootPath: " + this.rootpath);
+
+            this.myHttpRequest = myRequest;
+            this.response = response;
+            this.serverClassName = serverClassName;
+            this.CE = encodedquery;
+
+            // If there was simply no constraint then getQuery() should have returned null
+            if(this.CE == null) this.CE = "";
+
+            processDodsURL();
+            AbstractServlet.log.debug("datasetname=|" + this.dataSetName + "|");
+
+            defaultDDXcache = rootpath + testdatasetspath + "/ddx";
+            defaultDDScache = rootpath + testdatasetspath + "/dds";
+            defaultDAScache = rootpath + testdatasetspath + "/das";
+            defaultINFOcache = rootpath + testdatasetspath + "/info";
+
+            StringBuffer url = myHttpRequest.getRequestURL();
+            if(url == null || url.length() == 0)
+                AbstractServlet.log.error("ReqState: no url specified");
+            else {
+                int index = url.lastIndexOf(myHttpRequest.getServletPath());
+                if(index < 0) index = url.length(); //Use whole thing
+                defaultSchemaLocation = url.substring(0, index) +
+                        "/schema/" +
+                        defaultSchemaName;
+
+                //System.out.println("Default Schema Location: "+defaultSchemaLocation);
+                //System.out.println("Schema Location: "+getSchemaLocation());
+            }
+            requestURL = (encodedurl);
+        } catch (Exception e) {
+           throw new DAP2Exception(e);
         }
-        AbstractServlet.log.debug("RootPath: "+this.rootpath);
-
-        this.myHttpRequest = myRequest;
-        this.response = response;
-        this.serverClassName = serverClassName;
-        this.CE = encodedquery;
-
-        // If there was simply no constraint then getQuery() should have returned null
-        if (this.CE == null) this.CE = "";
-
-        processDodsURL();
-        AbstractServlet.log.debug("datasetname=|"+this.dataSetName+"|");
-
-        defaultDDXcache  = rootpath + testdatasetspath + "/ddx";
-        defaultDDScache  = rootpath + testdatasetspath + "/dds";
-        defaultDAScache  = rootpath + testdatasetspath + "/das";
-        defaultINFOcache = rootpath + testdatasetspath + "/info";
-
-        StringBuffer url = myHttpRequest.getRequestURL();
-        if(url == null || url.length() == 0)
-            AbstractServlet.log.error("ReqState: no url specified");
-	else {
-	    int index = url.lastIndexOf(myHttpRequest.getServletPath());
-            if(index < 0) index = url.length(); //Use whole thing
-            defaultSchemaLocation = url.substring(0, index) +
-                "/schema/" +
-                defaultSchemaName;
-
-            //System.out.println("Default Schema Location: "+defaultSchemaLocation);
-            //System.out.println("Schema Location: "+getSchemaLocation());
-	}
-
-        requestURL = (encodedurl);
-
     }
 
     public String getDataSet() {
