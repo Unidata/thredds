@@ -151,8 +151,14 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
     static public void printThrowable(Throwable t)
     {
-        AbstractServlet.log.error(t.getMessage());
-        t.printStackTrace();
+      AbstractServlet.log.error(t.getMessage());
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      t.printStackTrace(pw);
+      pw.close();
+      String trace = null;
+      try {sw.close(); trace = sw.toString(); } catch (IOException ioe) {trace = "unknown";}
+      log.error(trace);
     }
 
   /**
@@ -288,8 +294,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     log.error("DODSServlet.parseExceptionHandler", pe);
 
     if (Debug.isSet("showException")) {
-     log.debug(pe.toString());
-      pe.printStackTrace();
+      log.debug(pe.toString());
       printThrowable(pe);
     }
 
@@ -394,7 +399,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           RequestDebug reqD = (RequestDebug) rs.getUserObject();
           log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
         }
-        e.printStackTrace();
         printThrowable(e);
       }
 
@@ -415,10 +419,8 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    */
   public void anyExceptionHandler(Throwable e, ReqState rs)
   {
-    log.error("DODServlet ERROR (anyExceptionHandler): " + e);
-    e.printStackTrace();
+    log.error("DODServlet ERROR (anyExceptionHandler): ",e);
     printThrowable(e);
-
     try {
       if(rs == null) {
         throw new DAP2Exception("anyExceptionHandler: no request state provided");
