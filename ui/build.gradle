@@ -1,3 +1,12 @@
+import com.google.common.collect.Iterables
+import edu.ucar.build.ui.ToolsUiJnlpBaseTask
+import edu.ucar.build.ui.ToolsUiJnlpExtensionTask
+
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
+import org.codehaus.groovy.runtime.NioGroovyMethods
+
 description = "Provides a graphical interface to much of the functionality in the CDM library."
 ext.title = "ToolsUI"
 
@@ -33,12 +42,6 @@ dependencies {
 
 //////////////////////////////////////////////////////////
 
-task showDependencies << {
-    for (file in configurations.runtime.resolve()) {
-        println " " + file
-    }
-}
-
 jar {
     manifest {
         attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
@@ -72,18 +75,27 @@ ext {
     depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']
 }
 
-// It's possible to test web start files locally before deploying them.
-// 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,
-// such as /thredds/ui/build.
-// 2. Comment-out the 'Codebase' manifest attribute above.
-// 3. Run this task.
-// 4. Open the 2 JNLP files that were copied to webdir. Remove the "codebase" and "href" attributes from the top-level
-// "jnlp" element.
-// 5. You may also need to white-list web starts from the local file system. Go to Java Control Panel->Security->
-// Edit Site List... and add the entry "file:/".
-// 6. cd to "webdir" and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
-// but I couldn't get that working (and there was no error feedback).
-// TODO: Use the Sync task for this.
+task toolsUiJnlpExtension(type: ToolsUiJnlpExtensionTask) {
+    outputFile = file("$buildDir/webstart/netCDFtoolsExtraJars.jnlp")
+}
+
+task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask) {
+    // Creates an inferred task dependency on toolsUiJnlpExtension.
+    // See https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:task_input_output_side_effects
+    File toolsUiJnlpExtensionFile = Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
+    
+    extensionJnlpFileName = toolsUiJnlpExtensionFile.name
+    outputFile = file("$buildDir/webstart/netCDFtools.jnlp")
+}
+
+/*
+ * 2017-04-12 note: As of java version "1.8.0_121", I cannot FOR THE LIFE OF ME figure out how to run webstart locally.
+ * It used to work with earlier versions of JRE 8, but now I always get an "Application Blocked by Java Security"
+ * error dialog. A lot of solutions on the web recommend adding entries to the Java Security Exception Site List
+ * (e.g. http://mindprod.com/jgloss/exceptionsitelist.html#LOCALHOST), but nothing works. I even tried hosting the
+ * files on a local HTTP server, so that I could reference them with http://localhost URLs. No dice. So, for each
+ * release, we just have to make sure that Web Start works once the files are uploaded to the Unidata server.
+ */
 /* following properties should be in gradle.properties:
    keystore=name of keystore file
    keystoreAlias=idv
@@ -91,7 +103,8 @@ ext {
    webdir:parent of conan content directory
    ftpdir:ftp directory
  */
-task releaseWebstart(dependsOn: jar, group: 'Release') << {
+// TODO: Use the Sync task for this.
+task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension', 'toolsUiJnlpBase']) << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
         ant.delete(dir: webstartWorkingDir)
@@ -99,8 +112,8 @@ task releaseWebstart(dependsOn: jar, group: 'Release') << {
 
         copy {
             println "copyJnlp"
-            from 'src/main/resources/netCDFtools.jnlp'
-            from 'src/main/resources/netCDFtoolsExtraJars.jnlp'
+            from Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
+            from Iterables.getOnlyElement(tasks.toolsUiJnlpBase.outputs.files.files)
             into webstartWorkingDir
         }
 
@@ -110,8 +123,8 @@ task releaseWebstart(dependsOn: jar, group: 'Release') << {
         println "\tkeystoreAlias = $keystoreAlias"
         println "\tkeystorePassword = $keystorePassword"
 
-        ant.signjar(jar: "build/libs/ui-" + version + ".jar", destDir: webstartWorkingDir, alias: keystoreAlias,
-                keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
+        ant.signjar(jar: tasks.jar.archivePath, destDir: webstartWorkingDir, alias: keystoreAlias,
+                keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
 
         for (file in configurations.runtime.resolve()) {
             if (depsToRejar.contains(file.name)) {
@@ -121,10 +134,10 @@ task releaseWebstart(dependsOn: jar, group: 'Release') << {
                 rejar file, rejarredFile
                 file = rejarredFile
             }
-
+            
             println "Signing $file"
             ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
-                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
+                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
         }
 
         ant.delete(dir: webstartDir)
@@ -181,11 +194,6 @@ task releaseDocs(dependsOn: javadoc, group: 'Release') << {
 }
 
 ///////////////////////////////////////////////////////
-
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import java.util.jar.JarOutputStream
-import org.codehaus.groovy.runtime.NioGroovyMethods
 
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate
