@@ -151,8 +151,14 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
     static public void printThrowable(Throwable t)
     {
-        AbstractServlet.log.error(t.getMessage());
-        t.printStackTrace();
+      AbstractServlet.log.error(t.getMessage());
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
+      t.printStackTrace(pw);
+      pw.close();
+      String trace = null;
+      try {sw.close(); trace = sw.toString(); } catch (IOException ioe) {trace = "unknown";}
+      log.error(trace);
     }
 
   /**
@@ -288,8 +294,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     log.error("DODSServlet.parseExceptionHandler", pe);
 
     if (Debug.isSet("showException")) {
-     log.debug(pe.toString());
-      pe.printStackTrace();
+      log.debug(pe.toString());
       printThrowable(pe);
     }
 
@@ -394,7 +399,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           RequestDebug reqD = (RequestDebug) rs.getUserObject();
           log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
         }
-        e.printStackTrace();
         printThrowable(e);
       }
 
@@ -413,19 +417,20 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param e        The exception that caused the problem.
    * @param rs The <code>ReqState</code> for the client.
    */
-  public void anyExceptionHandler(Throwable e, ReqState rs) {
-    HttpServletResponse response = rs.getResponse();
+  public void anyExceptionHandler(Throwable e, ReqState rs)
+  {
+    log.error("DODServlet ERROR (anyExceptionHandler): ",e);
+    printThrowable(e);
     try {
-      log.error("DODServlet ERROR (anyExceptionHandler): " + e);
+      if(rs == null) {
+        throw new DAP2Exception("anyExceptionHandler: no request state provided");
+      }
+      HttpServletResponse response = rs.getResponse();
       log.error(rs.toString());
       if (track) {
         RequestDebug reqD = (RequestDebug) rs.getUserObject();
         log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
       }
-      e.printStackTrace();
-      printThrowable(e);
-
-      BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
       response.setHeader("Content-Description", "dods-error");
 
       // This should probably be set to "plain" but this works, the
@@ -439,14 +444,12 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
       String msg = e.getMessage();
       if (msg != null)
         msg = msg.replace('\"', '\'');
-
       DAP2Exception de2 = new DAP2Exception(opendap.dap.DAP2Exception.UNDEFINED_ERROR, msg);
+      BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
       de2.print(eOut);
-
-    } catch (IOException ioe) {
+    } catch (Exception ioe) {
       log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
-
 
   }
   /***************************************************************************/
@@ -1662,7 +1665,9 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param request
    * @return the request state
    */
-  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response)
+  protected ReqState
+  getRequestState(HttpServletRequest request, HttpServletResponse response)
+    throws DAP2Exception
   {
       ReqState rs = null;
       // The url and query strings will come to us in encoded form
@@ -1672,13 +1677,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
       String query = request.getQueryString();
       query = EscapeStrings.unescapeURLQuery(query);
-
-      try {
-        rs = new ReqState(request, response, this, getServerName(), baseurl, query);
-      } catch (Exception bue) {
-        rs = null;
-      }
-
+      rs = new ReqState(request, response, this, getServerName(), baseurl, query);
       return rs;
   }
   //**************************************************************************
