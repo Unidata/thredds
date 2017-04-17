@@ -38,8 +38,9 @@ import java.util.Map;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
-import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPath;
+
+import thredds.catalog.XMLEntityResolver;
 import thredds.server.wms.ThreddsLayer;
 import ucar.nc2.units.SimpleUnit;
 import uk.ac.rdg.resc.edal.util.Range;
@@ -84,7 +85,10 @@ public class WmsDetailedConfig
         try
         {
             // Parse the document, with validation
-            Document doc = new SAXBuilder(true).build(in);
+            XMLEntityResolver.initEntity("http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd",
+                    "/resources/thredds/schemas/wmsConfig.dtd",
+                    "http://www.unidata.ucar.edu/schemas/thredds/dtd/ncwms/wmsConfig.dtd");
+            Document doc = new XMLEntityResolver(true).getSAXBuilder().build(in);
             in.close();
 
             // Load the global default settings
