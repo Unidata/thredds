@@ -206,7 +206,7 @@ libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Fina
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
-libraries["threddsIso"] = "EDS:threddsIso:2.2.8"
+libraries["threddsIso"] = "EDS:threddsIso:2.2.9"
 
 libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"
 
