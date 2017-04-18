@@ -2,8 +2,10 @@ package edu.ucar.build.ui
 
 import groovy.xml.MarkupBuilder
 import org.gradle.api.DefaultTask
+import org.gradle.api.Nullable
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
@@ -15,6 +17,13 @@ import org.gradle.api.tasks.TaskAction
  * @since 2017-04-05
  */
 class ToolsUiJnlpExtensionTask extends DefaultTask {
+    /**
+     * The value for {@code /jnlp/@codebase}.
+     * This property is optional; if no value is specified, the attribute won't be written to the JNLP file.
+     */
+    @Input @Optional @Nullable
+    String codebase
+    
     /**
      * The value for {@code /jnlp/@version}.
      * Will be assigned a default of {@code 'project.version'}.
@@ -51,6 +60,7 @@ class ToolsUiJnlpExtensionTask extends DefaultTask {
     @TaskAction
     def write() {
         ToolsUiJnlpExtensionTask.Writer writer = new ToolsUiJnlpExtensionTask.Writer(
+                codebase: codebase,
                 applicationVersion: applicationVersion,
                 applicationJarName: applicationJarName,
                 dependenciesConfig: dependenciesConfig,
@@ -61,24 +71,28 @@ class ToolsUiJnlpExtensionTask extends DefaultTask {
     
     // Separate implementation to enable easier unit testing.
     static class Writer {
-        String codebase = 'http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart'
-        
+        @Nullable String codebase
         String applicationVersion
         String applicationJarName
         Configuration dependenciesConfig
-    
         File outputFile
     
         def write() {
             outputFile.parentFile.mkdirs()
             
             new BufferedWriter(new FileWriter(outputFile)).withCloseable {
-                def xml = new MarkupBuilder(it)
+                MarkupBuilder xml = new MarkupBuilder(it)
+                // codebase variable may be null, in which case we want the corresponding attribute to be omitted.
+                xml.omitNullAttributes = true
             
                 xml.mkp.xmlDeclaration(version: "1.0", encoding: "utf-8")
             
-                xml.jnlp(spec: '7.0', codebase: codebase, href: outputFile.name, version: applicationVersion) {
+                xml.jnlp(spec: '7.0', codebase: codebase, version: applicationVersion) {
                     'component-desc'()
+    
+                    security() {
+                        'all-permissions'()
+                    }
                 
                     resources() {
                         jar(href: applicationJarName, main: 'true', download: 'eager')

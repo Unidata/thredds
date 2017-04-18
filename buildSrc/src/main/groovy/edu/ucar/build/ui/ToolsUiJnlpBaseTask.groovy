@@ -22,6 +22,13 @@ import org.gradle.api.tasks.TaskAction
  */
 class ToolsUiJnlpBaseTask extends DefaultTask {
     /**
+     * The value for {@code /jnlp/@codebase}.
+     * This property is optional; if no value is specified, the attribute won't be written to the JNLP file.
+     */
+    @Input @Optional @Nullable
+    String codebase
+    
+    /**
      * The value for {@code /jnlp/@version}.
      * Will be assigned a default of {@code 'project.version'}.
      */
@@ -63,6 +70,7 @@ class ToolsUiJnlpBaseTask extends DefaultTask {
     @TaskAction
     def write() {
         ToolsUiJnlpBaseTask.Writer writer = new ToolsUiJnlpBaseTask.Writer(
+                codebase: codebase,
                 applicationVersion: applicationVersion,
                 targetCompatibility: targetCompatibility,
                 extensionJnlpFileName: extensionJnlpFileName,
@@ -74,28 +82,28 @@ class ToolsUiJnlpBaseTask extends DefaultTask {
     
     // Separate implementation to enable easier unit testing.
     static class Writer {
-        String codebase = 'http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart'
-    
+        @Nullable String codebase
         String applicationVersion
         JavaVersion targetCompatibility
         String extensionJnlpFileName
-        String applicationArgument
-    
+        @Nullable String applicationArgument
         File outputFile
     
         def write() {
             outputFile.parentFile.mkdirs()
             
             new BufferedWriter(new FileWriter(outputFile)).withCloseable {
-                def xml = new MarkupBuilder(it)
+                MarkupBuilder xml = new MarkupBuilder(it)
+                // codebase variable may be null, in which case we want the corresponding attribute to be omitted.
+                xml.omitNullAttributes = true
         
                 xml.mkp.xmlDeclaration(version: "1.0", encoding: "utf-8")
         
-                xml.jnlp(spec: '7.0', codebase: codebase, href: outputFile.name, version: applicationVersion) {
+                xml.jnlp(spec: '7.0', codebase: codebase, version: applicationVersion) {
                     information() {
                         title('NetCDF ToolsUI')
                         vendor('Unidata')
-                        homepage(href: 'http://www.unidata.ucar.edu/' +
+                        homepage(href: 'https://www.unidata.ucar.edu/' +
                                        'software/thredds/current/netcdf-java/documentation.htm')
                         description(kind: 'short', 'Graphical interface to netCDF-Java / Common Data Model')
                         icon(href: 'nc.gif')
