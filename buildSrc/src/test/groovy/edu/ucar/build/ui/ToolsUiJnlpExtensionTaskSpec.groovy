@@ -44,30 +44,34 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
     
     @Rule TemporaryFolder tempFolder
     
-    def "test writeNetCDFtoolsExtraJars"() {
-        setup: 'create a temporary file that will be deleted at the end of the test'
-        File tempFile = tempFolder.newFile('netCDFtoolsExtraJars.jnlp')
+    def "just the writer"() {
+        setup: "Identify control file for this test. It's located in src/test/resources/edu/ucar/build/ui/"
+        String controlFileName = 'toolsUiJnlpExtension.jnlp'
     
-        and: 'create a writer with the specified properties'
+        and: "Create a temp file that'll be deleted at the end. It has same name as control file, but different path."
+        File tempFile = tempFolder.newFile(controlFileName)
+    
+        and: "create a writer with the specified properties"
         ToolsUiJnlpExtensionTask.Writer writer = new ToolsUiJnlpExtensionTask.Writer()
         writer.with {
+            codebase = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart"
             applicationVersion = rootProject.version
             applicationJarName = rootProject.jar.archiveName
             dependenciesConfig = rootProject.configurations.runtime
             outputFile = tempFile
         }
     
-        and: 'write JNLP to disk'
+        and: "write JNLP to disk"
         writer.write()
     
-        when: 'compare expected XML (read from test resource) with just-written file, ignoring comments and whitespace'
-        Diff diff = DiffBuilder.compare(Input.fromStream(getClass().getResourceAsStream('netCDFtoolsExtraJars.jnlp')))
+        when: "compare expected XML (read from test resource) with just-written file, ignoring comments and whitespace"
+        Diff diff = DiffBuilder.compare(Input.fromStream(getClass().getResourceAsStream(controlFileName)))
                                .withTest(Input.fromFile(tempFile))
                                .ignoreComments()
                                .normalizeWhitespace()
                                .build()
 
-        then: 'there will be no difference between the two'
+        then: "there will be no difference between the two"
         !diff.hasDifferences()
     }
     
@@ -77,7 +81,7 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
     // into the test build's buildscript classpath.
     List<File> buildSrcClasspath = PluginUnderTestMetadataReading.readImplementationClasspath()
     
-    def "test ToolsUiJnlpExtensionTask in Gradle build"() {
+    def "full Gradle build"() {
         setup: "variables"
         String taskName = 'toolsUiJnlpExtension'
         File outputFile = tempFolder.newFile('testNetCDFtoolsExtraJars.jnlp')
@@ -106,6 +110,7 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
             }
             
             task $taskName(type: edu.ucar.build.ui.ToolsUiJnlpExtensionTask) {
+                codebase = 'https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart'
                 outputFile = file('${outputFile.name}')
             }
         """

@@ -3,7 +3,7 @@ import edu.ucar.build.ui.ToolsUiJnlpBaseTask
 description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
         "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
 ext.title = "THREDDS Data Server (TDS)"
-ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
+ext.url = "https://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 
 apply plugin: 'war'
 
@@ -67,7 +67,12 @@ test {
     exclude 'thredds/tds/**'
 }
 
+// Need to evaluate :ui first so that the 'webstartCodebase' property is available.
+Project uiProject = rootProject.project(':ui')
+evaluationDependsOn uiProject.path
+
 task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask) {
+    codebase = uiProject.webstartCodebase
     applicationArgument = '{catalog}#{dataset}'
     outputFile = file("$buildDir/webstart/ToolsUI.jnlp")
 }

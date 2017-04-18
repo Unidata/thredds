@@ -1,7 +1,5 @@
 package edu.ucar.build.ui
 
-import groovy.util.slurpersupport.GPathResult
-import groovy.xml.XmlUtil
 import org.gradle.api.JavaVersion
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
@@ -22,72 +20,62 @@ import spock.lang.Specification
 class ToolsUiJnlpBaseTaskSpec extends Specification {
     @Rule TemporaryFolder tempFolder
     
-    // The name of the test resource we'll be working with. It's located in src/test/resources/edu/ucar/ui/
-    String resourceName = 'netCDFtools.jnlp'
-    
-    def "test writeNetCDFtools without application argument"() {
-        setup: 'create a temporary file that will be deleted at the end of the test'
-        File tempFile = tempFolder.newFile('netCDFtools.jnlp')
+    def "writer with optional properties"() {
+        setup: "Identify control file for this test. It's located in src/test/resources/edu/ucar/build/ui/"
+        String controlFileName = 'toolsUiJnlpBaseWithOptionals.jnlp'
         
-        and: 'create a writer without application argument'
+        and: "Create a temp file that'll be deleted at the end. It has same name as control file, but different path."
+        File tempFile = tempFolder.newFile(controlFileName)
+        
+        and: "create a writer without application argument"
         ToolsUiJnlpBaseTask.Writer writer = new ToolsUiJnlpBaseTask.Writer()
         writer.with {
-            applicationVersion = '1.5'
-            targetCompatibility = JavaVersion.VERSION_1_7
-            extensionJnlpFileName = "netCDFtoolsExtraJars.jnlp"
-            outputFile = tempFile
-        }
-        
-        and: 'write JNLP to disk'
-        writer.write()
-        
-        // This statement causes STDERR warnings.
-        when: 'compare expected XML (modified test resource) with just-written file, ignoring comments and whitespace'
-        Diff diff = DiffBuilder.compare(Input.fromStream(getClass().getResourceAsStream(resourceName)))
-                               .withTest(Input.fromFile(tempFile))
-                               .ignoreComments().normalizeWhitespace().build()
-
-        then: 'there will be no difference between the two'
-        !diff.hasDifferences()
-        
-        cleanup: "delete the output file; we'll be reusing the path in another test"
-        tempFile.delete()
-    }
-    
-    def "test writeNetCDFtools with application argument"() {
-        setup: 'create a temporary file that will be deleted at the end of the test'
-        File tempFile = tempFolder.newFile('netCDFtools.jnlp')
-    
-        and: 'create a writer with application argument'
-        ToolsUiJnlpBaseTask.Writer writer = new ToolsUiJnlpBaseTask.Writer()
-        writer.with {
+            codebase = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart"
             applicationVersion = '1.5'
             targetCompatibility = JavaVersion.VERSION_1_7
             extensionJnlpFileName = "netCDFtoolsExtraJars.jnlp"
             applicationArgument = '{catalog}#{dataset}'
             outputFile = tempFile
         }
-    
-        and: 'write JNLP to disk'
+        
+        and: "write JNLP to disk"
         writer.write()
         
-        and: 'open test resource and modify it to add application argument'
-        GPathResult jnlp = new XmlSlurper().parse(getClass().getResourceAsStream(resourceName))
-        // Add "<argument>{catalog}#{dataset}</argument>" to the "application-desc" node
-        jnlp.'application-desc'.appendNode {
-            argument '{catalog}#{dataset}'
-        }
-        
-        when: 'compare expected XML (modified test resource) with just-written file, ignoring comments and whitespace'
-        Diff diff = DiffBuilder.compare(Input.fromString(XmlUtil.serialize(jnlp)))
+        when: "compare expected XML (read from test resource) with just-written file, ignoring comments and whitespace"
+        Diff diff = DiffBuilder.compare(Input.fromStream(getClass().getResourceAsStream(controlFileName)))
                                .withTest(Input.fromFile(tempFile))
                                .ignoreComments().normalizeWhitespace().build()
 
-        then: 'there will be no difference between the two'
+        then: "there will be no difference between the two"
         !diff.hasDifferences()
+    }
     
-        cleanup: "delete the output file; we'll be reusing the path in another test"
-        tempFile.delete()
+    def "writer without optional properties"() {
+        setup: "Identify control file for this test. It's located in src/test/resources/edu/ucar/build/ui/"
+        String controlFileName = 'toolsUiJnlpBaseWithoutOptionals.jnlp'
+    
+        and: "Create a temp file that'll be deleted at the end. It has same name as control file, but different path."
+        File tempFile = tempFolder.newFile(controlFileName)
+    
+        and: "create a writer with application argument"
+        ToolsUiJnlpBaseTask.Writer writer = new ToolsUiJnlpBaseTask.Writer()
+        writer.with {
+            applicationVersion = '1.5'
+            targetCompatibility = JavaVersion.VERSION_1_7
+            extensionJnlpFileName = "netCDFtoolsExtraJars.jnlp"
+            outputFile = tempFile
+        }
+    
+        and: "write JNLP to disk"
+        writer.write()
+    
+        when: "compare expected XML (read from test resource) with just-written file, ignoring comments and whitespace"
+        Diff diff = DiffBuilder.compare(Input.fromStream(getClass().getResourceAsStream(controlFileName)))
+                               .withTest(Input.fromFile(tempFile))
+                               .ignoreComments().normalizeWhitespace().build()
+
+        then: "there will be no difference between the two"
+        !diff.hasDifferences()
     }
     
     // This reads from a file generated by the java-gradle-plugin.
@@ -96,10 +84,10 @@ class ToolsUiJnlpBaseTaskSpec extends Specification {
     // into the test build's buildscript classpath.
     List<File> buildSrcClasspath = PluginUnderTestMetadataReading.readImplementationClasspath()
     
-    def "test ToolsUiJnlpBaseTask in Gradle build"() {
+    def "full Gradle build"() {
         setup: "variables"
         String taskName = 'toolsUiJnlpBase'
-        File outputFile = tempFolder.newFile('testNetCDFtoolsWithArg.jnlp')
+        File outputFile = tempFolder.newFile('toolsUiJnlpBaseGradle.jnlp')
         
         and: "declare initial content of build file"
         String buildFileContent = """

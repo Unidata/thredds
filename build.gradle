@@ -26,7 +26,7 @@ ext {
     vendor = "UCAR/Unidata"
 
     // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
-    url = "http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"
+    url = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"
 
     SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
     buildTimestamp = iso_8601_format.format(new Date())
