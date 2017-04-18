@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="7.0" codebase="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart"
-        href="netCDFtoolsExtraJars.jnlp" version="1.5">
+<jnlp spec="7.0" codebase="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart" version="1.5">
     <component-desc/>
+    
+    <security>
+        <all-permissions/>
+    </security>
     
     <resources>
         <jar href='root-1.5.jar' main='true' download='eager' />
