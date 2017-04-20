@@ -21,7 +21,7 @@
 5. In `/build.gradle`, update the project's version for the release.
    Likely, this means removing the `-SNAPSHOT` prefix, e.g. `4.6.6-SNAPSHOT` to `4.6.6`.
 
-6. In `/gradle/dependencies.gradle`, update the `uk.ac.rdg.resc:ncwms` and `EDS:threddsIso` dependencies to the
+6. In `/gradle/any/dependencies.gradle`, update the `uk.ac.rdg.resc:ncwms` and `EDS:threddsIso` dependencies to the
    versions deployed in step 1. Also, remove any dependencies on SNAPSHOT versions of libraries.
 
 7. Publish the artifacts to Nexus.
@@ -132,6 +132,7 @@
       ```
 
 18. Release Web Start to `www:/content/software/thredds/v${releaseMajor}/netcdf-java/webstart`
+    - Test Web Start locally. There are notes above `:ui:releaseWebstart` about how to do that.
     - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
       `keystore`, `keystoreAlias`, `keystorePassword`, `webdir`, and `ftpdir` properties defined.
     - Rename old directories
