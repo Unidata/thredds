@@ -565,7 +565,7 @@ public class HtmlWriter {
     sb.append(this.getGoogleTrackingContent());
     sb.append("</head>\r\n");
     sb.append("<body>");
-    sb.append("<h1>");
+    sb.append("<h1 style=\"overflow:hidden;\">");
 
     // Logo
     //String logoUrl = this.htmlConfig.getInstallLogoUrl();
