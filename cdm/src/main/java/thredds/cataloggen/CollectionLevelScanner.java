@@ -701,6 +701,9 @@ public class CollectionLevelScanner
   {
     InvCatalogImpl catalog = new InvCatalogImpl( null, null, null );
 
+    // Record directory path on filesystem include /path/collection/./catalogLevel
+    catalog.setCreateFrom(collectionLevel.getPath().concat("/.").concat(catalogLevel.getPath().substring(collectionLevel.getPath().length())));
+
 //    // Copy service to add to catalog.
 //    InvService service = new InvService( this.service.getName(), this.service.getServiceType().toString(), this.service.getBase(), this.service.getSuffix(), this.service.getDescription() );
 //    for ( Iterator it = this.service.getProperties().iterator(); it.hasNext(); )

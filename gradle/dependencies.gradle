@@ -210,6 +210,8 @@ libraries["threddsIso"] = "EDS:threddsIso:2.2.9"
 
 libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"
 
+libraries["commonmark"] = "com.atlassian.commonmark:commonmark:0.9.0"
+
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 
 allprojects {  // Doesn't apply any plugins: safe to run closure on all projects.

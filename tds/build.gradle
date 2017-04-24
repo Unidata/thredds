@@ -57,6 +57,8 @@ dependencies {
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-core"]
     runtime libraries["log4j-web"]
+
+    compile libraries["commonmark"]
 }
 
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
