@@ -32,7 +32,7 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.3"
+libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.5"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
@@ -291,7 +291,7 @@ configurations.all {
                 dep.useTarget libraries["jcl-over-slf4j"]
             }
         }
-
+        
         // Use commons-collections 3.2.2 instead of 3.2.1. Pulled in by the following first-level dependencies:
         //     uk.ac.rdg.resc:edal-graphics:1.2.5-SNAPSHOT
         //     +--- net.sf.json-lib:json-lib:2.4
@@ -299,13 +299,13 @@ configurations.all {
         //     \--- org.apache.velocity:velocity:1.7
         //          +--- commons-collections:commons-collections:3.2.1
         force 'commons-collections:commons-collections:3.2.2'
-    
+        
         // Use xstream 1.4.9 instead of 1.4.8. Pulled in by the following first-level dependency:
         //     net.openhft:chronicle-map:2.4.15
         //     +--- com.thoughtworks.xstream:xstream:1.4.8
         force 'com.thoughtworks.xstream:xstream:1.4.9'
     }
-
+    
     // STAX comes with Java 1.6+. Pulled in by the following first-level dependencies:
     //     net.openhft:chronicle-map:2.4.15
     //     +--- org.codehaus.jettison:jettison:1.3.7
@@ -314,7 +314,7 @@ configurations.all {
     //     org.apache.xmlbeans:xmlbeans:2.6.0
     //     \--- stax:stax-api:1.0.1
     exclude group: 'stax', module: 'stax-api'
-
+    
     // Another SLF4J binding that we don't want. Pulled in by the following first-level dependencies:
     //     uk.ac.rdg.resc:edal-common:1.2.5-SNAPSHOT
     //     +--- org.slf4j:slf4j-log4j12:1.7.2
