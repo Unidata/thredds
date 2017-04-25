@@ -10,5 +10,5 @@ dependencies {
     compile project(':cdm')
     compile project(':netcdf4')
     
-    provided libraries["javax.servlet-api"]
+    compileOnly libraries["javax.servlet-api"]
 }

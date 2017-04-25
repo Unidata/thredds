@@ -1,4 +1,4 @@
-// Gradle dependency managment.
+// Gradle dependency management.
 // This technique was inspired by: http://stackoverflow.com/questions/9547170
 
 //================================================ Repositories ================================================//
@@ -37,8 +37,6 @@ libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.3"
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3"
-
-libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:3.1.0"
 
 libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.1"
 
