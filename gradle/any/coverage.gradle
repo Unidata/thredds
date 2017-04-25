@@ -1,10 +1,12 @@
 // The jacoco plugin adds the jacocoTestReport task, but only if the java plugin is already applied.
 apply plugin: "jacoco"
 
+// Will apply to any task of type Test or type org.akhikhl.gretty.StartBaseTask,
+// including org.akhikhl.gretty.AppBeforeIntegrationTestTask.
 Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
 Collection<Task> tasksExtendedByJacoco = tasks.matching(isExtendedByJacoco)
 
-tasksExtendedByJacoco.all {  // Will apply to ":<subproject>:test" and ":it:appBeforeIntegrationTest".
+tasksExtendedByJacoco.all {
     // Add the execution data that Jacoco generates as a task output.
     // The data is a record of all the classes visited during test execution. It is self-contained; we don't need to
     // provide any source or class directories for it to "work". Those are only necessary for the report.
@@ -40,12 +42,26 @@ tasksExtendedByJacoco.all {  // Will apply to ":<subproject>:test" and ":it:appB
  * 'integTest' SourceSet to :tds. So in the future, we won't be generating empty Jacoco reports.
  */
 tasks.withType(JacocoReport).all {  // Will apply to ":<subproject>:jacocoTestReport" and ":rootJacocoReport".
-    group = 'Reports'
-    dependsOn tasksExtendedByJacoco
+    group = "Reports"
+    dependsOn tasks.withType(Test)
     
     reports {
         xml.enabled = false
         html.enabled = true
         csv.enabled = false
+    }
+    
+    // By default, JacocoReport runs onlyIf ALL of the executionData exist. We want it to run if ANY exists.
+    setOnlyIf {
+        executionData.any { it.exists() }
+    }
+    
+    // JacocoReport's @TaskAction expects everything in executionData to exist. However, by modifying onlyIf{} above,
+    // we've allowed some potentially non-existent files to creep in. We must filter them out before the task runs.
+    // Unlike most changes to an @Input property during execution, this does not break the task's UP-TO-DATE checking.
+    // Apparently, a snapshot of a FileCollection containing non-existent files is equal to a snapshot of that same
+    // FileCollection with those elements removed.
+    doFirst {
+        executionData = executionData.filter { it.exists() }
     }
 }
