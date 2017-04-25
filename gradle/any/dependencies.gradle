@@ -127,6 +127,8 @@ libraries["commons-io"] = "commons-io:commons-io:2.5"
 
 libraries["commons-compress"] = "org.apache.commons:commons-compress:1.12"
 
+libraries["xmlunit-core"] = "org.xmlunit:xmlunit-core:2.3.0"
+
 // These four are all for Spock.
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
 
