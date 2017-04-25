@@ -15,11 +15,9 @@ dependencies {
     testCompile project(':dap4:d4cdm')
     testCompile project(':cdm')
     testCompile project(':httpservices')
-
-    def tdsDep = testCompile project(':tds')
-    configure(tdsDep) {
-        // We don't want tds's logger. We'll provide our own (in testing.gradle).
-        exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j-impl'
+    
+    testCompile(project(":tds")) {
+        exclude module: "log4j-slf4j-impl"  // We don't want TDS's logger binding.
     }
 
     testCompile libraries["javax.servlet-api"]

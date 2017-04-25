@@ -35,7 +35,7 @@ dependencies {
     compile project(':dap4:d4lib')
 
     // Server stuff
-    providedCompile libraries["javax.servlet-api"]
+    compileOnly libraries["javax.servlet-api"]
     runtime libraries["taglibs-standard-spec"]
     runtime libraries["taglibs-standard-impl"]
 

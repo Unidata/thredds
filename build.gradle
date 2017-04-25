@@ -25,7 +25,6 @@ buildscript {
         classpath libraries["gretty"]
         classpath libraries["shadow"]
         classpath libraries["coveralls-gradle-plugin"]
-        classpath libraries["gradle-extra-configurations-plugin"]
         classpath libraries["sonarqube-gradle-plugin"]
         classpath libraries["license-gradle-plugin"]
         

@@ -29,7 +29,7 @@ dependencies {
         //
         // Our solution is to explicitly exclude any other Groovy dependencies whenever localGroovy() is already part
         // of the configuration.
-        exclude group: 'org.codehaus.groovy', module: 'groovy-all'
+        exclude module: "groovy-all"
     }
     
     testCompile libraries["xmlunit-core"]  // For comparing JNLP XML.
