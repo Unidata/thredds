@@ -40,6 +40,7 @@
 
 package opendap.servlet;
 
+import opendap.dap.DAP2Exception;
 import ucar.httpservices.HTTPSession;
 import ucar.httpservices.HTTPUtil;
 import ucar.unidata.util.StringUtil2;
@@ -151,7 +152,10 @@ public class ReqState {
 
   // this is used by DTS
   public ReqState(AbstractServlet sv, HttpServletRequest myRequest, HttpServletResponse response, String rootPath2,
-                  String encodedurl, String encodedquery) {
+                  String encodedurl, String encodedquery)
+    throws DAP2Exception
+  {
+    try {
     this.myServletConfig = sv.getServletConfig();
     this.myServletContext = sv.getServletContext();
     //this.rootpath = HTTPSession.canonicalpath(this.myServletContext.getRealPath("/"));
@@ -183,6 +187,9 @@ public class ReqState {
 
     requestURL = (encodedurl);
 
+    } catch (Exception e) {
+        throw new DAP2Exception(e);
+    }
   }
 
   public String getDataSet() {

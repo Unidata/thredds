@@ -264,10 +264,10 @@ public class Main
 
         HTTPSession session = new HTTPSession(url);
         session.setCredentialsProvider(new UserPasswordProvider());
-    session.setAuthenticationPreemptive(true);
-    session.setUserAgent("agent");
-    session.setConnectionManagerTimeout(475);
-    session.setSoTimeout(475);
+        session.setAuthenticationPreemptive(true);
+        session.setUserAgent("agent");
+        session.setConnectionManagerTimeout(475);
+        session.setSoTimeout(475);
 
         HTTPMethod method = HTTPMethod.Get(session);
         int status = method.execute();
@@ -450,6 +450,20 @@ http://username@pwd:server.com/...
 This will only work if the proxy is authenticating using BASIC
 authentication. If it uses, for example, NTLM, then you will need to set
 the authentication programmatically.
+
+== Miscellaneous -D flags
+
+It is possible to control the value of certain other session
+parameters using the following -D flags as arguments to the
+JVM. These can be set for a client and/or a server.
+
+[cols=2,options="header"]
+|===
+| -D Flag              | Description
+| tds.http.conntimeout | Connection timeout in seconds
+| tds.http.sotimeout   | Socket timeout in seconds
+| tds.http.maxconns    | Maximum number of allowed connections
+|=== 
 
 == Miscellaneous Changes
 

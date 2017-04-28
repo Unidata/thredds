@@ -168,6 +168,11 @@ public class HTTPSession implements Closeable
 
     static final String[] KNOWNCOMPRESSORS = {"gzip", "deflate"};
 
+    // Define -Dflags for various properties
+    static final String DCONNTIMEOUT = "tds.http.conntimeout";
+    static final String DSOTIMEOUT = "tds.http.sotimeout";
+    static final String DMAXCONNS = "tds.http.maxconns";
+
     //////////////////////////////////////////////////////////////////////////
 
     static final boolean IGNORECERTS = false;
@@ -404,11 +409,21 @@ public class HTTPSession implements Closeable
         buildkeystores(authcontrols);
         buildsslfactory(authcontrols);
         authcontrols.setReadOnly(true);
+	processDFlags(); // Other than the auth flags
         connmgr.addProtocol("https", (ConnectionSocketFactory) authcontrols.get(AuthProp.SSLFACTORY));
-        setGlobalUserAgent(DFALTUSERAGENT);
-        setGlobalMaxConnections(DFALTMAXCONNS);
-        setGlobalConnectionTimeout(DFALTCONNTIMEOUT);
-        setGlobalSoTimeout(DFALTSOTIMEOUT);
+    }
+
+    static protected int
+    getDPropInt(String key)
+    {
+	String p = System.getProperty(key);
+	if(p == null) return -1;
+	try {
+	    int i = Integer.parseInt(p);
+	    return i;
+	} catch (NumberFormatException nfe) {
+	    return -1;
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -589,6 +604,18 @@ public class HTTPSession implements Closeable
         }
         if(globalsslfactory != null)
             authcontrols.put(AuthProp.SSLFACTORY, globalsslfactory);
+    }
+
+    static synchronized void
+    processDFlags()
+    {
+        // Pull overrides from command line
+	int seconds = getDPropInt(DCONNTIMEOUT);
+        if(seconds > 0) setGlobalConnectionTimeout(seconds*1000);
+	seconds = getDPropInt(DSOTIMEOUT);
+        if(seconds > 0) setGlobalSoTimeout(seconds*1000);
+	int conns = getDPropInt(DMAXCONNS);
+	if(conns > 0) setGlobalMaxConnections(conns);
     }
 
     //////////////////////////////////////////////////////////////////////////
