@@ -91,7 +91,7 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
             buildscript {
                 dependencies {
                     // Need this in order to resolve ToolsUiJnlpExtensionTask.
-                    String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',').replace('\\\\', '/')}'
+                    String buildSrcClasspathAsCsvString = '${buildSrcClasspath.join(',').replace('\\', '/')}'
                     classpath files(buildSrcClasspathAsCsvString.split(','))
                 }
             }
