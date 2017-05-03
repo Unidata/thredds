@@ -213,6 +213,12 @@
   </NCISO>
   -->
 
+  <!--
+  <NCSOS>
+    <allow>false</allow>
+  </NCSOS>
+  -->
+
   <!-- CatalogGen service is off by default.
   <CatalogGen>
     <allow>false</allow>

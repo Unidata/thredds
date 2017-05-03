@@ -47,6 +47,8 @@
     <li><a href="#WMS">WMS</a></li>
     <li><a href="#ncss">NetCDF Subset Service</a><br>
     <li><a href="#ncISO">ncISO</a><br>
+    <li><a href="#ncSOS">SOS</a><br>
+
     </li>
   </ul>
   <li>CDM Configuration
@@ -377,6 +379,26 @@ where:
 <p>Each of the <strong>allow</strong> elements above enables the corresponding ncISO service (NCML, UDDC, and ISO).
   The ncISO services are described in more detail on the <a href="ncISO.html">ncISO page</a>.
 </p>
+
+<h3><a name="SOS" id="ncSOS">SOS Service</a></h3>
+
+<p>By default the ncSOS service is disabled in the TDS. It can be enabled by including the following in the <code>threddsConfig.xml</code> file:</p>
+
+<pre>
+&lt;NCSOS&gt;
+  &lt;allow&gt;true&lt;/allow&gt;
+&lt;/NCSOS&gt;
+</pre>
+
+<p>The <strong>allow</strong> element enables the SOS service.
+  For more information,
+  see the <a href="http://www.opengeospatial.org/standards/sos">OGC</a>
+  SOS page, or the ncSOS
+  <a href="https://github.com/asascience-open/ncSOS/wiki">wiki</a>,
+  maintained by the developers of the ncSOS plugin, Applied Science
+  Associates.
+</p>
+
 <hr>
 <h2>CDM configuration</h2>
 <h3><a name="FeatureCollections">Feature Collections</a></h3>
