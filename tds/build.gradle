@@ -1,5 +1,5 @@
-import com.google.common.collect.Iterables
 import edu.ucar.build.ui.ToolsUiJnlpBaseTask
+import com.google.common.collect.Iterables
 
 description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
               "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
@@ -62,11 +62,6 @@ dependencies {
     compile libraries["spring-web"]
     compile libraries["spring-webmvc"]
 
-    // Spring security
-    runtime libraries["spring-security-core"]
-    runtime libraries["spring-security-config"]
-    runtime libraries["spring-security-web"]
-
     compile libraries["oro"]
 
     // Needed for XPath operations in mock tests
@@ -118,17 +113,13 @@ evaluationDependsOn uiProject.path
 task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask) {
     codebase = uiProject.webstartCodebase
     applicationArgument = '{catalog}#{dataset}'
-     outputFile = file("$buildDir/webstart/ToolsUI.jnlp")
-    
+    outputFile = file("$buildDir/webstart/ToolsUI.jnlp")
 }
 
 processTestResources {
     from "src/main/webapp"
     from "src/main/webapp/WEB-INF/classes"
-
-    // Tests expect for test resources to be copied to the same directory as the test classes.
-    destinationDir = compileTestJava.destinationDir
-
+    
     // Creates an inferred task dependency on toolsUiJnlpBase.
     // See https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:task_input_output_side_effects
     // This file is needed by ViewControllerTest.testLaunchViewerToolsUIVRequest().

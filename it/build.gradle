@@ -25,13 +25,13 @@ dependencies {
     testCompile(project(":tds")) {
         exclude module: "log4j-slf4j-impl"  // We don't want TDS's logger binding.
     }
-    
+
     testRuntime project(":clcommon")
     testRuntime project(":grib")
     testRuntime project(":opendap")
     testRuntime project(":visadCdm")
     testRuntime project(':dap4:d4cdm')
-    
+
     testCompile libraries["jdom2"]
     testCompile libraries["commons-io"]
     testCompile libraries["joda-time"]
@@ -42,13 +42,13 @@ dependencies {
     testCompile libraries["spring-context"]
     testCompile libraries["slf4j-api"]
     testCompile libraries["xmlunit-core"]  // For comparing catalog XML.
-    
+
     testRuntime libraries["jaxen"]
-    
+
     // These are for Spock.
     testCompile libraries["groovy-all"]
     testCompile libraries["spock-core"]
-    
+
     // Unlike the other subprojects, we do not need to add an SLF4J binding to testRuntime;
     // we're overlaying tds (see below), so we're already getting the binding that it declares.
 }
@@ -69,7 +69,7 @@ test {
 // Additional Gretty config specific to integration testing.
 gretty {
     overlayAndApplyConfigOf ':tds'
-    
+
     // The normal 'test' task added by the Java plugin has nothing to do in this subproject, because every single
     // test requires a running TDS. Therefore, we're repurposing the 'test' task for integration testing.
     integrationTestTask = 'test'
@@ -87,7 +87,7 @@ sourceSets {
     "$taskName" {
         groovy.srcDir file("src/$taskName/groovy")
         resources.srcDir file("src/$taskName/resources")
-    
+
         // Need 'sourceSets.test.output' because we use TestWithLocalServer in our test.
         compileClasspath += sourceSets.test.output + configurations.testCompile
         runtimeClasspath += output + sourceSets.test.output + configurations.testRuntime
@@ -97,14 +97,14 @@ sourceSets {
 task "before${taskName.capitalize()}"(type: org.akhikhl.gretty.AppBeforeIntegrationTestTask, group: "gretty") {
     description = "Starts server before $taskName."
     integrationTestTask taskName
-    
+
     gretty.afterEvaluate {
         mustRunAfter tasks.appAfterIntegrationTest  // Make sure the server is shut down before we start it back up!
     }
-    
+
     debug = false  // Start the embedded sever in debug mode.
     ext.nonExistentContentDir = new File(temporaryDir, "content")
-    
+
     // AppBeforeIntegrationTestTask also has a 'systemProperties' field, but the content of 'gretty.systemProperties'
     // will take precedence. 'gretty.systemProperties' has a 'tds.content.root.path' value that is appropriate for
     // :it:test, but not for taskName. The only way to override it is with this closure.
@@ -113,7 +113,7 @@ task "before${taskName.capitalize()}"(type: org.akhikhl.gretty.AppBeforeIntegrat
         // The embedded TDS that this task launches will have a non-existent content root directory.
         systemProperty "tds.content.root.path", nonExistentContentDir.absolutePath
     }
-    
+
     doFirst {
         // Before starting the server, delete the content directory if it exists, as it may have been created by a
         // previous task run. This is safe to use on non-existent files; see GroovyDoc at https://goo.gl/dbxTVZ.
@@ -127,7 +127,7 @@ task "$taskName"(type: Test, group: "verification") {
     testClassesDir = sourceSets."$taskName".output.classesDir
     classpath = sourceSets."$taskName".runtimeClasspath
     mustRunAfter tasks.test
-    
+
     // Use built-in Xalan XSLT instead of Saxon-HE, which our 'project(":tds")' dependency drags in.
     // This works around an error we were seeing in org.xmlunit.builder.DiffBuilder.build():
     //    java.lang.ClassCastException: net.sf.saxon.value.ObjectValue cannot be cast to net.sf.saxon.om.NodeInfo

@@ -8,7 +8,7 @@ buildscript {
     // Add the "libraries" ExtraProperty. It should be usable from the rest of this script as well.
     // See http://goo.gl/9bixNV
     apply from: "$rootDir/gradle/any/dependencies.gradle"
-    
+
     // The buildscript {} block is odd: even though we applied dependencies.gradle above, the repositories therein
     // do not get included here. Instead, we must explicitly define the repos again. Yay for duplication.
     repositories {
@@ -20,14 +20,14 @@ buildscript {
             url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty-fork:gretty'.
         }
     }
-    
+
     dependencies {
         classpath libraries["gretty"]
         classpath libraries["shadow"]
         classpath libraries["coveralls-gradle-plugin"]
         classpath libraries["sonarqube-gradle-plugin"]
         classpath libraries["license-gradle-plugin"]
-        
+
         classpath libraries["guava"]  // For various utility methods used in the build scripts.
     }
 }
