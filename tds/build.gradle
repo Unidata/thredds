@@ -123,6 +123,9 @@ processTestResources {
     from "src/main/webapp"
     from "src/main/webapp/WEB-INF/classes"
     
+    // Tests expect for test resources to be copied to the same directory as the test classes.
+    destinationDir = compileTestJava.destinationDir
+    
     // Creates an inferred task dependency on toolsUiJnlpBase.
     // See https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:task_input_output_side_effects
     // This file is needed by ViewControllerTest.testLaunchViewerToolsUIVRequest().
