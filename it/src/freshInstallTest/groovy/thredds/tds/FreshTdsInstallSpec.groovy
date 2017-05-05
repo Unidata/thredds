@@ -40,7 +40,6 @@ class FreshTdsInstallSpec extends Specification {
         new File(new File(threddsDirectory, "public"), "testdata").exists()
         new File(threddsDirectory, "threddsConfig.xml").exists()
         new File(threddsDirectory, "wmsConfig.xml").exists()
-        new File(threddsDirectory, "wmsConfig.dtd").exists()
         
         and: "it created the 'logs' directory"
         new File(threddsDirectory, "logs").exists()
