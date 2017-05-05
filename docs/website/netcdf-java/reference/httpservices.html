@@ -225,6 +225,17 @@ command line using the following JVM parameters.
 This flag is a URL that specifies the proxy.
 <p>
 
+<h4>Miscellaneous -D Flags</h4>
+It is possible to control the value of certain other session
+parameters using the following -D flags as arguments to the
+JVM. These can be set for a client and/or a server.
+
+<table>
+<tr><th>-D Flag<th>Description
+<tr><td>tds.http.conntimeout<td>Connection timeout in seconds
+<tr><td>tds.http.sotimeout<td>Socket timeout in seconds
+</table>
+
 <h3><a name="HTTPMethod">HTTPMethod</a></h3>
 This class encapsulates the information
 about a given method request and response.

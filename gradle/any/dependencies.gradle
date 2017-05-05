@@ -64,8 +64,6 @@ libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spri
 //   Offending resource: ServletContext resource [/WEB-INF/applicationContext.xml]
 versions["spring-security"] = "4.0.4.RELEASE"
 
-libraries["spring-security-core"] = "org.springframework.security:spring-security-core:${versions["spring-security"]}"
-
 libraries["spring-security-config"] = "org.springframework.security:spring-security-config:${versions["spring-security"]}"
 
 libraries["spring-security-web"] = "org.springframework.security:spring-security-web:${versions["spring-security"]}"

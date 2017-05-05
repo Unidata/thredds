@@ -1,11 +1,11 @@
 import com.google.common.collect.Iterables
 import edu.ucar.build.ui.ToolsUiJnlpBaseTask
 import edu.ucar.build.ui.ToolsUiJnlpExtensionTask
+import org.codehaus.groovy.runtime.NioGroovyMethods
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
-import org.codehaus.groovy.runtime.NioGroovyMethods
 
 description = "Provides a graphical interface to much of the functionality in the CDM library."
 ext.title = "ToolsUI"
@@ -55,17 +55,17 @@ ext {
     // The Codebase attributes in the JAR manifest and JNLP must match, or else javaws fails to start with the error:
     // "Application Blocked by Java Security".
     webstartCodebase = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/"
-    
+
     // Webstart can also work if both Codebase attributes are unspecified.
     // Setting this property to null will produce a manifest and JNLP files with no Codebase attributes.
     // LOOK: Use this for local Webstart testing; use the other for deployment to production.
 //     webstartCodebase = null
-    
+
     webstartWorkingDir = "build/signed"
     if (project.hasProperty("webdir")) {
         webstartDir = new File(webdir, "webstart")
     }
-    
+
     depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']
 }
 
@@ -73,13 +73,13 @@ jar {
     manifest {
         Map<String,?> attribs = [:]
         attribs['Main-Class'] = 'ucar.nc2.ui.ToolsUI'
-    
+
         // MANIFEST.MF is an @Input to the Jar task, so when it changes, Jar will be considered out-of-date.
         // Here, we're writing an attribute to MANIFEST.MF. When its value changes, MANIFEST.MF will change,
         // and Jar will be considered out-of-date.
         // So, indirectly, we've made the "runtime" configuration an @Input to the Jar task.
         attribs['Class-Path'] = configurations.runtime.collect { it.name }.join(' ')
-        
+
         // The attributes below are necessary for Web Start; see http://goo.gl/Ob6Wid.
         // ui-<version>.jar is the main jar in the ToolsUI extension JNLP file, so only its manifest needs these.
         attribs['Application-Name'] = project.title
@@ -88,7 +88,7 @@ jar {
         if (webstartCodebase) {
             attribs['Codebase'] = webstartCodebase
         }
-        
+
         attributes attribs
     }
 
@@ -105,7 +105,7 @@ task toolsUiJnlpExtension(type: ToolsUiJnlpExtensionTask) {
 
 task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask, dependsOn: toolsUiJnlpExtension) {
     File toolsUiJnlpExtensionFile = Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
-    
+
     codebase = webstartCodebase
     extensionJnlpFileName = toolsUiJnlpExtensionFile.name
     outputFile = file("$buildDir/webstart/netCDFtools.jnlp")
@@ -130,19 +130,21 @@ task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask, dependsOn: toolsUiJnlpExtension)
  * webdir:parent of conan content directory
  */
 // TODO: Use the Sync task for this.
-task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension', 'toolsUiJnlpBase']) {
+task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension', 'toolsUiJnlpBase'])  {
     doLast {
         if (project.hasProperty("webdir") && project.hasProperty("keystore")
                 && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
             ant.delete(dir: webstartWorkingDir)
             ant.mkdir(dir: webstartWorkingDir)
 
-        copy {
-            println "copyJnlp"
-            from Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
-            from Iterables.getOnlyElement(tasks.toolsUiJnlpBase.outputs.files.files)
-            from rootProject.file('docs/website/netcdf-java/nc.gif')  // Referenced in the ToolsUI base JNLP file.into webstartWorkingDir
-        }
+            copy {
+                println "copyJnlp"
+                from Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
+                from Iterables.getOnlyElement(tasks.toolsUiJnlpBase.outputs.files.files)
+                from rootProject.file('docs/website/netcdf-java/nc.gif')
+                // Referenced in the ToolsUI base JNLP file.
+                into webstartWorkingDir
+            }
 
             println "signjar:"
             println "\twebdir = $webdir"
@@ -151,7 +153,7 @@ task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension'
             println "\tkeystorePassword = $keystorePassword"
 
             ant.signjar(jar: tasks.jar.archivePath, destDir: webstartWorkingDir, alias: keystoreAlias,
-                        keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
+                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
 
             for (file in configurations.runtime.resolve()) {
                 if (depsToRejar.contains(file.name)) {
@@ -161,10 +163,10 @@ task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension'
                     rejar file, rejarredFile
                     file = rejarredFile
                 }
-            
+
                 println "Signing $file"
                 ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
-                            keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
+                        keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
             }
 
             ant.delete(dir: webstartDir)
@@ -180,6 +182,7 @@ task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension'
             +"must be defined to run \"releaseWebstart\" task."
         }
     }
+
 }
 
 ///////////////////////////////////////////////////////

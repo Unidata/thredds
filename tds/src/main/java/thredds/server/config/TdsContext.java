@@ -274,22 +274,17 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
                 IO.copyFile(defaultThreddsConfigFile, threddsConfigFile);
             }
 
-            File wmsConfigXmlFile = new File(threddsDirectory, "wmsConfig.xml");
-            if(!wmsConfigXmlFile.exists()) {
-                File defaultWmsConfigXmlFile = new File(startupContentDirectory, "wmsConfig.xml");
-                logServerStartup.info("TdsContext.init(): Copying default WMS config file from {}.", defaultWmsConfigXmlFile);
-                IO.copyFile(defaultWmsConfigXmlFile, wmsConfigXmlFile);
-
-                File wmsConfigDtdFile = new File(threddsDirectory, "wmsConfig.dtd");
-                File defaultWmsConfigDtdFile = new File(startupContentDirectory, "wmsConfig.dtd");
-                logServerStartup.info("TdsContext.init(): Copying default WMS config DTD from {}.", defaultWmsConfigDtdFile);
-                IO.copyFile(defaultWmsConfigDtdFile, wmsConfigDtdFile);
-            }
-        } catch (IOException e) {
-            String message = String.format("Could not copy default startup files to %s.", threddsDirectory);
-            logServerStartup.error("TdsContext.init(): " + message);
-            throw new IllegalStateException(message, e);
-        }
+      File wmsConfigXmlFile = new File(threddsDirectory, "wmsConfig.xml");
+      if (!wmsConfigXmlFile.exists()) {
+        File defaultWmsConfigXmlFile = new File(startupContentDirectory, "wmsConfig.xml");
+        logServerStartup.info("TdsContext.init(): Copying default WMS config file from {}.", defaultWmsConfigXmlFile);
+        IO.copyFile(defaultWmsConfigXmlFile, wmsConfigXmlFile);
+      }
+    } catch (IOException e) {
+      String message = String.format("Could not copy default startup files to %s.", threddsDirectory);
+      logServerStartup.error("TdsContext.init(): " + message);
+      throw new IllegalStateException(message, e);
+    }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // logging
