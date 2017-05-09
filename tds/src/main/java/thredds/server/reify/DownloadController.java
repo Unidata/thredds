@@ -458,13 +458,17 @@ public class DownloadController extends LoadCommon
     {
         try {
             RandomAccessFile raf = new RandomAccessFile(truepath, "r");
-            // See if thhis is a netcdf-3 or netcdf-4 file already
-            if(N3header.isValidFile(raf)
-                    && targetformat == FileFormat.NETCDF3)
-                return true;
-            if(H5header.isValidFile(raf)
-                    && targetformat == FileFormat.NETCDF4)
-                return true;
+            int format = NetcdfFile.checkFileType(raf);
+            switch (format) {
+            case NetcdfFile.NC_FORMAT_CLASSIC:
+            case NetcdfFile.NC_FORMAT_64BIT_OFFSET:
+                return targetformat == FileFormat.NETCDF3;
+            case NetcdfFile.NC_FORMAT_NETCDF4:
+            case NetcdfFile.NC_FORMAT_64BIT_DATA:
+            case NetcdfFile.NC_FORMAT_HDF4:
+                return targetformat == FileFormat.NETCDF4;
+            default: break;
+            }
         } catch (IOException e) {
             return false;
         }

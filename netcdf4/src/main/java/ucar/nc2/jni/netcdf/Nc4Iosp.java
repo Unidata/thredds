@@ -241,9 +241,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @return  {@code true} if {@code raf} is a valid HDF-5 file and the NetCDF C library is available.
    * @throws IOException  if an I/O error occurs.
    */
-  public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    if (H5header.isValidFile(raf)) {
-      if (isClibraryPresent()) {
+  public boolean isValidFile(RandomAccessFile raf) throws IOException
+  {
+    int format = NetcdfFile.checkFileType(raf);
+    boolean valid = false;
+    switch (format) {
+    case NetcdfFile.NC_FORMAT_NETCDF4:
+    case NetcdfFile.NC_FORMAT_64BIT_DATA:
+      valid = true;
+      break;
+    default: break;// everything else is invalid
+    }
+    if(valid) {
+      if(isClibraryPresent()) {
         return true;
       } else {
         log.debug("File is valid but the NetCDF-4 native library isn't installed: {}", raf.getLocation());

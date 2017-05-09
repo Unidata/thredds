@@ -665,7 +665,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
    *         more data due to the end of the file being reached.
    * @throws IOException if an I/O error occurrs.
    */
-  protected int readBytes(byte b[], int off, int len) throws IOException {
+  public int readBytes(byte b[], int off, int len) throws IOException {
 
     // Check for end of file.
     if (endOfFile) {
