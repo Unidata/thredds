@@ -100,7 +100,7 @@ public class MMapRandomAccessFile extends RandomAccessFile {
     }
   }
 
-   protected int readBytes( byte dst[], int offset, int length ) throws IOException {
+   public int readBytes( byte dst[], int offset, int length ) throws IOException {
      if( endOfFile ) return -1;
 
      length = (int) Math.min( length, dataEnd - filePosition);

@@ -104,9 +104,12 @@ public interface Nc4prototypes extends Library {
  *  by nc_inq_format. 
  */
   int NC_FORMAT_CLASSIC = (1);
-  int NC_FORMAT_64BIT = (2);
+  int NC_FORMAT_64BIT_OFFSET = (2);
+  int NC_FORMAT_64BIT = (NC_FORMAT_64BIT_OFFSET); // Alias
   int NC_FORMAT_NETCDF4 = (3);
   int NC_FORMAT_NETCDF4_CLASSIC = (4);
+  int NC_FORMAT_64BIT_DATA = (5);
+  int NC_FORMAT_CDF5 = (NC_FORMAT_64BIT_DATA); // alias
 
 /** Extended format specifier returned by  nc_inq_format_extended() 
  *  Added in version 4.3.1. This returns the true format of the
