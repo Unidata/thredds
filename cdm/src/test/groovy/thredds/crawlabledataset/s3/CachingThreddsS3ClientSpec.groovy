@@ -14,7 +14,7 @@ import java.nio.file.Files
 class CachingThreddsS3ClientSpec extends Specification {
     // create a CachingThreddsS3Client that wraps our mock ThreddsS3Client
     ThreddsS3Client mockThreddsS3Client = Mock(ThreddsS3Client)
-    RemovalListener<S3URI, Optional<File>> mockRemovalListener = Mock(RemovalListener)
+    RemovalListener<S3URI, File> mockRemovalListener = Mock(RemovalListener)
     ThreddsS3Client cachingThreddsS3Client = new CachingThreddsS3Client(mockThreddsS3Client, mockRemovalListener)
 
     def "download - missing key"() {
@@ -25,8 +25,8 @@ class CachingThreddsS3ClientSpec extends Specification {
         cachingThreddsS3Client.getLocalCopy(s3uri)
         cachingThreddsS3Client.getLocalCopy(s3uri)
 
-        then: "mocking client's getLocalCopy() is called exactly once. It is stubbed to return null"
-        1 * mockThreddsS3Client.getLocalCopy(s3uri) >> null
+        then: "mocking client's getLocalCopy() is called exactly twice (null is not cached). It is stubbed to return null"
+        2 * mockThreddsS3Client.getLocalCopy(s3uri) >> null
 
         and: "caching client is returning null"
         cachingThreddsS3Client.getLocalCopy(s3uri) == null
@@ -57,7 +57,7 @@ class CachingThreddsS3ClientSpec extends Specification {
         }
 
         and: "entry for non-existent file was evicted"
-        1 * mockRemovalListener.onRemoval({ it.getValue().get() == file })
+        1 * mockRemovalListener.onRemoval({ it.getValue() == file })
 
         and: "caching client is returning file"
         cachingThreddsS3Client.getLocalCopy(s3uri) is file
@@ -125,6 +125,21 @@ class CachingThreddsS3ClientSpec extends Specification {
         cachingThreddsS3Client.getMetadata(s3uri) is mockMetadata
     }
 
+    def "getMetadata - missing key"() {
+        setup: "create URI"
+        S3URI s3uri = new S3URI("s3://bucket/missing-key")
+
+        when: "caching client's getMetadata() is called twice"
+        cachingThreddsS3Client.getMetadata(s3uri)
+        cachingThreddsS3Client.getMetadata(s3uri)
+
+        then: "mocking client's getMetadata() is called exactly twice (null is not cached). It is stubbed to return null"
+        2 * mockThreddsS3Client.getMetadata(s3uri) >> null
+
+        and: "caching client is returning null"
+        cachingThreddsS3Client.getMetadata(s3uri) == null
+    }
+
     def "listContents"() {
         setup: "create URIs and mock return values"
         S3URI s3uri = new S3URI("s3://bucket/parent_dir")
@@ -159,6 +174,21 @@ class CachingThreddsS3ClientSpec extends Specification {
         cachingThreddsS3Client.listContents(s3uri) is mockListing
         cachingThreddsS3Client.getMetadata(objectUri) is mockObject
         cachingThreddsS3Client.getMetadata(childDirUri) is mockDirectory
+    }
+
+    def "listContents - missing key"() {
+        setup: "create URI"
+        S3URI s3uri = new S3URI("s3://bucket/missing-key")
+
+        when: "caching client's listContents() is called twice"
+        cachingThreddsS3Client.listContents(s3uri)
+        cachingThreddsS3Client.listContents(s3uri)
+
+        then: "mocking client's listContents() is called exactly twice (null is not cached). It is stubbed to return null"
+        2 * mockThreddsS3Client.listContents(s3uri) >> null
+
+        and: "caching client is returning null"
+        cachingThreddsS3Client.listContents(s3uri) == null
     }
 
 }

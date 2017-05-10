@@ -27,9 +27,9 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
     private static int maxMetadataEntries = 10000;
     private static int maxFileEntries = 100;
 
-    private final LoadingCache<S3URI, Optional<ThreddsS3Metadata>> metadataCache;
-    private final LoadingCache<S3URI, Optional<ThreddsS3Listing>> listingCache;
-    private final LoadingCache<S3URI, Optional<File>> objectFileCache;
+    private final LoadingCache<S3URI, ThreddsS3Metadata> metadataCache;
+    private final LoadingCache<S3URI, ThreddsS3Listing> listingCache;
+    private final LoadingCache<S3URI, File> objectFileCache;
 
     public static void setEntryExpirationTime(int i) {
         entryExpirationTime = i;
@@ -48,15 +48,19 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
     }
 
     public CachingThreddsS3Client(
-            final ThreddsS3Client threddsS3Client, RemovalListener<S3URI, Optional<File>> removalListener) {
+            final ThreddsS3Client threddsS3Client, RemovalListener<S3URI, File> removalListener) {
         // We can't reuse the builder because each of the caches we're creating has different type parameters.
         this.metadataCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(entryExpirationTime, TimeUnit.SECONDS)
                 .maximumSize(maxMetadataEntries)
                 .build(
-                    new CacheLoader<S3URI, Optional<ThreddsS3Metadata>>() {
-                        public Optional<ThreddsS3Metadata> load(S3URI s3uri) { // no checked exception
-                            return Optional.fromNullable(threddsS3Client.getMetadata(s3uri));
+                    new CacheLoader<S3URI, ThreddsS3Metadata>() {
+                        public ThreddsS3Metadata load(S3URI s3uri) throws UriNotFoundException {
+                            ThreddsS3Metadata metadata = threddsS3Client.getMetadata(s3uri);
+                            if (metadata == null) {
+                                throw new UriNotFoundException(s3uri);
+                            }
+                            return metadata;
                         }
                     }
                  );
@@ -64,9 +68,13 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
                 .expireAfterWrite(entryExpirationTime, TimeUnit.SECONDS)
                 .maximumSize(maxMetadataEntries)
                 .build(
-                    new CacheLoader<S3URI, Optional<ThreddsS3Listing>>() {
-                        public Optional<ThreddsS3Listing> load(S3URI s3uri) { // no checked exception
-                            return Optional.fromNullable(threddsS3Client.listContents(s3uri));
+                    new CacheLoader<S3URI, ThreddsS3Listing>() {
+                        public ThreddsS3Listing load(S3URI s3uri) throws UriNotFoundException {
+                            ThreddsS3Listing listing = threddsS3Client.listContents(s3uri);
+                            if (listing == null) {
+                                throw new UriNotFoundException(s3uri);
+                            }
+                            return listing;
                         }
                     }
                 );
@@ -75,22 +83,25 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
                 .maximumSize(maxFileEntries)
                 .removalListener(removalListener)
                 .build(
-                    new CacheLoader<S3URI, Optional<File>>() {
-                        public Optional<File> load(S3URI s3uri) throws IOException { // no checked exception
-                            return Optional.fromNullable(threddsS3Client.getLocalCopy(s3uri));
+                    new CacheLoader<S3URI, File>() {
+                        public File load(S3URI s3uri) throws IOException, UriNotFoundException {
+                            File localCopy = threddsS3Client.getLocalCopy(s3uri);
+                            if (localCopy == null) {
+                                throw new UriNotFoundException(s3uri);
+                            }
+                            return localCopy;
                         }
                     }
                 );
     }
 
-    private static class ObjectFileCacheRemovalListener implements RemovalListener<S3URI, Optional<File>> {
+    private static class ObjectFileCacheRemovalListener implements RemovalListener<S3URI, File> {
         @Override
-        public void onRemoval(RemovalNotification<S3URI, Optional<File>> notification) {
-            Optional<File> file = notification.getValue();
-            assert file != null : "Silence a silly IntelliJ warning. Of course the Optional isn't null.";
+        public void onRemoval(RemovalNotification<S3URI, File> notification) {
+            File file = notification.getValue();
 
-            if (file.isPresent()) {
-                file.get().delete();
+            if (file.exists()) {
+                file.delete();
             }
         }
     }
@@ -98,9 +109,9 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
     @Override
     public ThreddsS3Metadata getMetadata(S3URI s3uri) {
         try {
-            return metadataCache.get(s3uri).orNull();
+            return metadataCache.get(s3uri);
         } catch (ExecutionException e) {
-            logger.error("Could not get metadata for %s", s3uri, e.getCause());
+            logger.error("Could not get metadata for {}", s3uri, e.getCause());
             return null;
         }
     }
@@ -108,16 +119,14 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
     @Override
     public ThreddsS3Listing listContents(S3URI s3uri) {
         try {
-            Optional<ThreddsS3Listing> listing = listingCache.get(s3uri);
-            if (listing.isPresent()) {
-                // add listing contents to metadataCache so we don't need to fetch them individually
-                for (ThreddsS3Metadata metadata : listing.get().getContents()) {
-                    metadataCache.put(metadata.getS3uri(), Optional.fromNullable(metadata));
-                }
+            ThreddsS3Listing listing = listingCache.get(s3uri);
+            // add listing contents to metadataCache so we don't need to fetch them individually
+            for (ThreddsS3Metadata metadata : listing.getContents()) {
+                metadataCache.put(metadata.getS3uri(), metadata);
             }
-            return listing.orNull();
+            return listing;
         } catch (ExecutionException e) {
-            logger.error("Could not get listing for %s", s3uri, e.getCause());
+            logger.error("Could not get listing for {}", s3uri, e.getCause());
             return null;
         }
     }
@@ -125,15 +134,15 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
     @Override
     public File getLocalCopy(S3URI s3uri) {
         try {
-            File file = objectFileCache.get(s3uri).orNull();
+            File file = objectFileCache.get(s3uri);
             // check for deleted file
-            if (file != null && !file.exists()) {
+            if (!file.exists()) {
                 objectFileCache.invalidate(s3uri);
-                file = objectFileCache.get(s3uri).orNull();
+                file = objectFileCache.get(s3uri);
             }
             return file;
         } catch (ExecutionException e) {
-            logger.error("Could not get getLocalCopy for %s", s3uri, e.getCause());
+            logger.error("Could not get getLocalCopy for {}", s3uri, e.getCause());
             return null;
         }
     }
