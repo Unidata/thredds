@@ -35,9 +35,8 @@ sourceSets {
     }
 }
 
-task unloadedTest(type: Test) {
+task unloadedTest(type: Test, group: "verification") {
     description = 'Runs tests without the native C library loaded.'
-    group = 'verification'
     testClassesDir = sourceSets.unloadedTest.output.classesDir
     classpath = sourceSets.unloadedTest.runtimeClasspath
     mustRunAfter tasks.test

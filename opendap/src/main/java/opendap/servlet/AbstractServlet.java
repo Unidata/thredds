@@ -147,7 +147,13 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
   static public void printThrowable(Throwable t) {
     AbstractServlet.log.error(t.getMessage());
-    t.printStackTrace();
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    t.printStackTrace(pw);
+    pw.close();
+    String trace = null;
+    try {sw.close(); trace = sw.toString(); } catch (IOException ioe) {trace = "unknown";}
+    log.error(trace);
   }
 
   /**
@@ -289,7 +295,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
 
     if (Debug.isSet("showException")) {
       log.debug(pe.toString());
-      pe.printStackTrace();
       printThrowable(pe);
     }
 
@@ -394,7 +399,6 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
           RequestDebug reqD = (RequestDebug) rs.getUserObject();
           log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
         }
-        e.printStackTrace();
         printThrowable(e);
       }
 
@@ -414,43 +418,40 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param rs The <code>ReqState</code> for the client.
    */
   public void anyExceptionHandler(Throwable e, ReqState rs) {
-    HttpServletResponse response = rs.getResponse();
+    log.error("DODServlet ERROR (anyExceptionHandler): " + e);
+    printThrowable(e);
     try {
-      log.error("DODServlet ERROR (anyExceptionHandler): " + e);
-      log.error(rs.toString());
-      if (track) {
-        RequestDebug reqD = (RequestDebug) rs.getUserObject();
-        log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
-      }
-      e.printStackTrace();
-      printThrowable(e);
+        if(rs == null)
+          throw new DAP2Exception("anyExceptionHandler: no request state provided");
+        log.error(rs.toString());
+        HttpServletResponse response = rs.getResponse();
+        log.error(rs.toString());
+        if (track) {
+          RequestDebug reqD = (RequestDebug) rs.getUserObject();
+          log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
+        }
+        response.setHeader("Content-Description", "dods-error");
 
-      BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
-      response.setHeader("Content-Description", "dods-error");
+        // This should probably be set to "plain" but this works, the
+        // C++ slients don't barf as they would if I sent "plain" AND
+        // the C++ don't expect compressed data if I do this...
+        response.setHeader("Content-Encoding", "");
 
-      // This should probably be set to "plain" but this works, the
-      // C++ slients don't barf as they would if I sent "plain" AND
-      // the C++ don't expect compressed data if I do this...
-      response.setHeader("Content-Encoding", "");
-
-      // Strip any double quotes out of the parser error message.
-      // These get stuck in auto-magically by the javacc generated parser
-      // code and they break our error parser (bummer!)
-      String msg = e.getMessage();
-      if (msg != null)
-        msg = msg.replace('\"', '\'');
-
-      DAP2Exception de2 = new DAP2Exception(opendap.dap.DAP2Exception.UNDEFINED_ERROR, msg);
-      de2.print(eOut);
-
-    } catch (IOException ioe) {
+        // Strip any double quotes out of the parser error message.
+        // These get stuck in auto-magically by the javacc generated parser
+        // code and they break our error parser (bummer!)
+        String msg = e.getMessage();
+        if (msg != null)
+          msg = msg.replace('\"', '\'');
+        DAP2Exception de2 = new DAP2Exception(opendap.dap.DAP2Exception.UNDEFINED_ERROR, msg);
+        BufferedOutputStream eOut = new BufferedOutputStream(response.getOutputStream());
+        de2.print(eOut);
+    } catch (Exception ioe) {
       log.error("Cannot respond to client! IO Error: " + ioe.getMessage());
     }
-
-
   }
-  /***************************************************************************/
 
+  /***************************************************************************/
 
   /**
    * ************************************************************************
@@ -1659,7 +1660,10 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
    * @param request
    * @return the request state
    */
-  protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response) {
+  protected ReqState
+  getRequestState(HttpServletRequest request, HttpServletResponse response)
+    throws DAP2Exception
+  {
     ReqState rs = null;
     // The url and query strings will come to us in encoded form
     // (see HTTPmethod.newMethod())
@@ -1669,12 +1673,7 @@ public abstract class AbstractServlet extends javax.servlet.http.HttpServlet {
     String query = request.getQueryString();
     query = EscapeStrings.unescapeURLQuery(query);
 
-    try {
-      rs = new ReqState(this, request, response, rootpath, baseurl, query);
-    } catch (Exception bue) {
-      rs = null;
-    }
-
+    rs = new ReqState(this, request, response, rootpath, baseurl, query);
     return rs;
   }
   //**************************************************************************

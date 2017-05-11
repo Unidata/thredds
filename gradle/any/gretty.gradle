@@ -20,6 +20,7 @@ apply plugin: 'org.akhikhl.gretty'
 
 import org.akhikhl.gretty.GradleUtils
 import org.akhikhl.gretty.AppStartTask
+import org.akhikhl.gretty.AppBeforeIntegrationTestTask
 
 gretty {
     servletContainer = 'tomcat8'  // All webapps run on Tomcat 8.
@@ -46,15 +47,20 @@ gretty {
             }
         }
         
-        // Write separate Jacoco exeuction data for the client and server components of the integration test.
+        // Write separate Jacoco execution data for the client and server components of the integration test.
         if (project.extensions.findByName('jacoco')) {  // Is the Jacoco plugin applied to the project?
-            Task integTestTask = tasks.findByName(integrationTestTask)
-            if (integTestTask) {  // Integration task exists.
-                // "jacoco" extension will be applied to these tasks if the Jacoco plugin is applied to the project.
-                integTestTask.jacoco.destinationFile =
-                        file("$buildDir/jacoco/${integrationTestTask}_client.exec")
-                appBeforeIntegrationTest.jacoco.destinationFile =
-                        file("$buildDir/jacoco/${integrationTestTask}_server.exec")
+            tasks.matching { GradleUtils.instanceOf(it, AppBeforeIntegrationTestTask.name) }.each {
+                def integTestTaskName = it.integrationTestTask
+                Task integTestTask = tasks.findByName(integTestTaskName)
+                
+                if (integTestTask) {  // Integration task exists.
+                    // Report on the AppBeforeIntegrationTestTask and integTestTask.
+                    tasks.jacocoTestReport.executionData it, integTestTask
+                    
+                    // "jacoco" extension will be applied to these tasks if the Jacoco plugin is applied to the project.
+                    it.jacoco.destinationFile = file("$buildDir/jacoco/${integTestTaskName}_server.exec")
+                    integTestTask.jacoco.destinationFile = file("$buildDir/jacoco/${integTestTaskName}_client.exec")
+                }
             }
         }
     }
