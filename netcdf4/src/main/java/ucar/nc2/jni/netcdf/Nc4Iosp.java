@@ -44,6 +44,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.NCheader;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
@@ -243,11 +244,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    */
   public boolean isValidFile(RandomAccessFile raf) throws IOException
   {
-    int format = NetcdfFile.checkFileType(raf);
+    int format = NCheader.checkFileType(raf);
     boolean valid = false;
     switch (format) {
-    case NetcdfFile.NC_FORMAT_NETCDF4:
-    case NetcdfFile.NC_FORMAT_64BIT_DATA:
+    case NCheader.NC_FORMAT_NETCDF4:
+    case NCheader.NC_FORMAT_64BIT_DATA:
       valid = true;
       break;
     default: break;// everything else is invalid
