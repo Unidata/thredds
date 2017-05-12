@@ -1,8 +1,35 @@
 /*
- * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
- *  See the LICENSE file for more information.
+ * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ *
+ *  Portions of this software were developed by the Unidata Program at the
+ *  University Corporation for Atmospheric Research.
+ *
+ *  Access and use of this software shall impose the following obligations
+ *  and understandings on the user. The user is granted the right, without
+ *  any fee or cost, to use, copy, modify, alter, enhance and distribute
+ *  this software, and any derivative works thereof, and its supporting
+ *  documentation for any purpose whatsoever, provided that this entire
+ *  notice appears in all copies of the software, derivative works and
+ *  supporting documentation.  Further, UCAR requests that the user credit
+ *  UCAR/Unidata in any publications that result from the use of this
+ *  software or in any product that includes this software. The names UCAR
+ *  and/or Unidata, however, may not be used in any advertising or publicity
+ *  to endorse or promote any products or commercial entity unless specific
+ *  written permission is obtained from UCAR/Unidata. The user also
+ *  understands that UCAR/Unidata is not obligated to provide the user with
+ *  any support, consulting, training or assistance of any kind with regard
+ *  to the use, operation and performance of this software nor to provide
+ *  the user with any updates, revisions, new versions or "bug fixes."
+ *
+ *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+ *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+ *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+ *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+ *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-
 package ucar.nc2;
 
 import java.io.BufferedInputStream;
@@ -101,26 +128,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   static public final String IOSP_MESSAGE_CONVERT_RECORD_STRUCTURE = "ConvertRecordStructure"; // not implemented yet
   static public final String IOSP_MESSAGE_REMOVE_RECORD_STRUCTURE = "RemoveRecordStructure";
   static public final String IOSP_MESSAGE_RANDOM_ACCESS_FILE = "RandomAccessFile";
-
-  // Constants for check_file_type
-  static private final int MAGIC_NUMBER_LEN = 4;
-  static private final long MAXHEADERPOS = 50000; // header's gotta be within this
-
-  static private final byte[] H5HEAD = {(byte)0x89, 'H', 'D', 'F'};
-
-  static public final int  NC_FORMAT_CLASSIC = (1);
-  static public final int  NC_FORMAT_64BIT_OFFSET = (2);
-  static public final int  NC_FORMAT_NETCDF4 = (3);
-  static public final int  NC_FORMAT_NETCDF4_CLASSIC = (4);
-  static public final int  NC_FORMAT_64BIT_DATA = (5);
-
-  // Extensions
-  static public final int  NC_FORMAT_HDF4 = (0x7005);
-
-  /* Aliases */
-  static public final int  NC_FORMAT_64BIT = (NC_FORMAT_64BIT_OFFSET);
-  static public final int  NC_FORMAT_CDF5 = (NC_FORMAT_64BIT_DATA);
-  static public final int  NC_FORMAT_HDF5 = (NC_FORMAT_NETCDF4);
 
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NetcdfFile.class);
 
@@ -2539,59 +2546,24 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return synthetic name
    */
   protected String makeFullNameWithString(Group parent, String name) {
-    name = makeValidPathName(name); // escape for use in full name
+    name = makeValidPathName(name); // escape for use in full name  
     StringBuilder sbuff = new StringBuilder();
     appendGroupName(sbuff, parent, null);
     sbuff.append(name);
     return sbuff.toString();
   }
 
-  static public int
-  checkFileType(ucar.unidata.io.RandomAccessFile raf)
-      throws IOException
-  {
-    byte[] magic = new byte[MAGIC_NUMBER_LEN];
-
-    // If this is not an HDF5 file, then the magic number
-    // is as position 0; If it is an HDF5 file, then we need to search
-    // forward for it.
-
-    // Look for the relevant leading tag
-    raf.seek(0);
-    if(raf.readBytes(magic, 0, MAGIC_NUMBER_LEN) < MAGIC_NUMBER_LEN)
-	return 0; // unknown
-    // Some version of CDF
-    if(magic[0] == (byte)'C'
-       && magic[1] == (byte)'D'
-       && magic[2] == (byte)'F') {
-        if(magic[3] == 0x01) return NC_FORMAT_CLASSIC;
-        if(magic[3] == 0x02) return NC_FORMAT_64BIT_OFFSET;
-        if(magic[3] == 0x05) return NC_FORMAT_CDF5;
-        return 0; // unknown
-    }
-    // HDF4
-    if(magic[0] == (byte)0x0e
-       && magic[1] == (byte)0x03
-       && magic[2] == (byte)0x13
-       && magic[3] == (byte)0x01) {
-	    return NC_FORMAT_HDF4;
-    }
-    // For HDF5, we need to search forward
-    long filePos = 0;
-    long size = raf.length();
-    while ((filePos < size - 8) && (filePos < MAXHEADERPOS)) {
-      raf.seek(filePos);
-      if(raf.readBytes(magic, 0, MAGIC_NUMBER_LEN) < MAGIC_NUMBER_LEN)
-	    return 0; // unknown
-      if(magic[0] == (byte)0x89
-       && magic[1] == (byte)'H'
-       && magic[2] == (byte)'D'
-       && magic[3] == (byte)'F') {
-	    return NC_FORMAT_HDF5;
-      }
-      filePos = (filePos == 0) ? 512 : 2 * filePos;
-    }
-    return 0;
+  /**
+   * Escape standard special characters in a netcdf object name.
+   *
+   * @param vname the name
+   * @return escaped version of it
+   */
+/* Who uses this?
+  public static String escapeName(String vname) {
+    return EscapeStrings.backslashEscape(vname, NetcdfFile.reserved);
   }
+*/
+
 
 }
