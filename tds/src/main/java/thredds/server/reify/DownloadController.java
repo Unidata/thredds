@@ -14,6 +14,7 @@ import ucar.nc2.FileWriter2;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.iosp.NCheader;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.netcdf3.N3header;
 import ucar.nc2.util.CancelTaskImpl;
@@ -32,6 +33,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+
+import static  ucar.nc2.iosp.NCheader.*;
 
 /**
  * Local File Materialization
@@ -458,14 +461,14 @@ public class DownloadController extends LoadCommon
     {
         try {
             RandomAccessFile raf = new RandomAccessFile(truepath, "r");
-            int format = NetcdfFile.checkFileType(raf);
+            int format = NCheader.checkFileType(raf);
             switch (format) {
-            case NetcdfFile.NC_FORMAT_CLASSIC:
-            case NetcdfFile.NC_FORMAT_64BIT_OFFSET:
+            case NC_FORMAT_CLASSIC:
+            case NC_FORMAT_64BIT_OFFSET:
                 return targetformat == FileFormat.NETCDF3;
-            case NetcdfFile.NC_FORMAT_NETCDF4:
-            case NetcdfFile.NC_FORMAT_64BIT_DATA:
-            case NetcdfFile.NC_FORMAT_HDF4:
+            case NC_FORMAT_NETCDF4:
+            case NC_FORMAT_64BIT_DATA:
+            case NC_FORMAT_HDF4:
                 return targetformat == FileFormat.NETCDF4;
             default: break;
             }

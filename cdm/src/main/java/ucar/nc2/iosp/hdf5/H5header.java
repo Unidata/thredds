@@ -34,6 +34,7 @@
 package ucar.nc2.iosp.hdf5;
 
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.NCheader;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
@@ -69,7 +70,8 @@ import java.nio.*;
    *     2) they all have the same length as the dimension
    *     3) all variables' dimensions have a dimension scale
    */
-public class H5header {
+public class H5header extends NCheader
+{
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5header.class);
 
   // special attribute names in HDF5
@@ -116,18 +118,12 @@ public class H5header {
   static private final boolean transformReference = true;
 
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    long filePos = 0;
-    long size = raf.length();
-
-    // search forward for the header
-    while ((filePos < size - 8) && (filePos < maxHeaderPos)) {
-      raf.seek(filePos);
-      String magic = raf.readString(8);
-      if (magic.equals(hdf5magic))
-        return true;
-      filePos = (filePos == 0) ? 512 : 2 * filePos;
+    switch (checkFileType(raf)) {
+    case NC_FORMAT_NETCDF4:
+    case NC_FORMAT_NETCDF4_CLASSIC:
+	return true;
+    default: break;
     }
-
     return false;
   }
 
