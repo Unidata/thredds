@@ -197,7 +197,7 @@ libraries["oro"] = "oro:oro:2.0.8"
 // The latest version is 3.0.1.RELEASE. Can we update?
 libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
 
-versions["edal"] = "1.2.5"
+versions["edal"] = "1.2.7"
 
 libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
 
@@ -275,24 +275,11 @@ configurations.all {
         //     org.springframework:spring-core:4.3.8.RELEASE
         //     \--- commons-logging:commons-logging:1.2
         //
-        //     +--- uk.ac.rdg.resc:edal-graphics:1.2.5-SNAPSHOT
-        //     |    +--- net.sf.json-lib:json-lib:2.4
-        //     |    |    +--- commons-beanutils:commons-beanutils:1.8.0
-        //     |    |    |    \--- commons-logging:commons-logging:1.1.1 -> 1.2
-        //     |    |    +--- commons-logging:commons-logging:1.1.1 -> 1.2
         eachDependency { DependencyResolveDetails dep ->
             if (dep.requested.name == 'commons-logging') {
                 dep.useTarget libraries["jcl-over-slf4j"]
             }
         }
-        
-        // Use commons-collections 3.2.2 instead of 3.2.1. Pulled in by the following first-level dependencies:
-        //     uk.ac.rdg.resc:edal-graphics:1.2.5-SNAPSHOT
-        //     +--- net.sf.json-lib:json-lib:2.4
-        //     |    +--- commons-collections:commons-collections:3.2.1
-        //     \--- org.apache.velocity:velocity:1.7
-        //          +--- commons-collections:commons-collections:3.2.1
-        force 'commons-collections:commons-collections:3.2.2'
         
         // Use xstream 1.4.9 instead of 1.4.8. Pulled in by the following first-level dependency:
         //     net.openhft:chronicle-map:2.4.15
@@ -310,10 +297,10 @@ configurations.all {
     exclude group: 'stax', module: 'stax-api'
     
     // Another SLF4J binding that we don't want. Pulled in by the following first-level dependencies:
-    //     uk.ac.rdg.resc:edal-common:1.2.5-SNAPSHOT
+    //     uk.ac.rdg.resc:edal-common:1.2.7
     //     +--- org.slf4j:slf4j-log4j12:1.7.2
     //
-    //     uk.ac.rdg.resc:edal-godiva:1.2.5-SNAPSHOT
+    //     uk.ac.rdg.resc:edal-godiva:1.2.7
     //     \--- org.slf4j:slf4j-log4j12:1.7.2 (*)
     exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
