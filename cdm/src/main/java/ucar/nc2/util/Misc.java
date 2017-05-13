@@ -84,7 +84,7 @@ public class Misc {
   public static boolean closeEnough(double v1, double v2, double maxRelDiff) {
     if (Double.isNaN(v1) && Double.isNaN(v2)) return true;
     if (Double.isNaN(v1) || Double.isNaN(v2)) return false;   // prob not needed
-
+    if(v1 == v2) return true; // handle infinities
     double diff = Math.abs(v1 - v2);
     double largest = Math.max(Math.abs(v1), Math.abs(v2));
     return diff <= largest * maxRelDiff;

@@ -44,6 +44,7 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.iosp.IOServiceProviderWriter;
 import ucar.nc2.iosp.IospHelper;
+import ucar.nc2.iosp.NCheader;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.util.CancelTask;
@@ -241,9 +242,19 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * @return  {@code true} if {@code raf} is a valid HDF-5 file and the NetCDF C library is available.
    * @throws IOException  if an I/O error occurs.
    */
-  public boolean isValidFile(RandomAccessFile raf) throws IOException {
-    if (H5header.isValidFile(raf)) {
-      if (isClibraryPresent()) {
+  public boolean isValidFile(RandomAccessFile raf) throws IOException
+  {
+    int format = NCheader.checkFileType(raf);
+    boolean valid = false;
+    switch (format) {
+    case NCheader.NC_FORMAT_NETCDF4:
+    case NCheader.NC_FORMAT_64BIT_DATA:
+      valid = true;
+      break;
+    default: break;// everything else is invalid
+    }
+    if(valid) {
+      if(isClibraryPresent()) {
         return true;
       } else {
         log.debug("File is valid but the NetCDF-4 native library isn't installed: {}", raf.getLocation());
