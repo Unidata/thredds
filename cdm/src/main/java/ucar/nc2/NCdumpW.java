@@ -834,12 +834,13 @@ public class NCdumpW {
   }
 
   static private void writeNcMLStructure(Structure s, Formatter out, Indent indent, WantValues showValues) throws IOException {
-    out.format("%s<structure name='%s", indent, StringUtil2.quoteXmlAttribute(s.getShortName()));
+    out.format("%s<structure name='%s'", indent, StringUtil2.quoteXmlAttribute(s.getShortName()));
 
     // any dimensions?
     if (s.getRank() > 0) {
       writeNcMLDimension(s, out);
     }
+    
     out.format(">%n");
 
     indent.incr();
