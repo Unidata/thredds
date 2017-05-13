@@ -835,10 +835,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     try (HTTPMethod method = HTTPFactory.Head(location)) {
       int statusCode = method.execute();
       if (statusCode >= 300) {
-        if (statusCode == 401)
-          throw new IOException("Unauthorized to open dataset " + location);
-        else
-          throw new IOException(location + " is not a valid URL, return status=" + statusCode);
+	    if (statusCode == 401){
+  	      throw new IOException(location + " dataset unauthorized to open, return status=" + statusCode);
+	    }
+	    else if (statusCode == 403){
+		  throw new IOException(location + " dataset forbidden to open, return status=" + statusCode);
+	    }
+	    else
+		  throw new IOException(location + " is not a valid URL, return status=" + statusCode);
       }
 
       Header h = method.getResponseHeader("Content-Description");
@@ -909,8 +913,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       // method = session.newMethodHead(location + ".dds");
       HTTPMethod method = HTTPFactory.Get(location + ".dds")) {
 
-      int status = method.execute();
-      if (status == 200) {
+      int statusCode = method.execute();
+      if (statusCode == 200) {
         Header h = method.getResponseHeader("Content-Description");
         if ((h != null) && (h.getValue() != null)) {
           String v = h.getValue();
@@ -920,9 +924,12 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
             throw new IOException("OPeNDAP Server Error= " + method.getResponseAsString());
         }
       }
-      if (status == 401)
-        throw new IOException("Unauthorized to open dataset " + location);
-
+      if (statusCode == 401){
+        throw new IOException(location + " dataset unauthorized to open, return status=" + statusCode);
+      }
+      else if (statusCode == 403){
+        throw new IOException(location + " dataset forbidden to open, return status=" + statusCode);
+      }
       // not dods
       return null;
     }
@@ -938,8 +945,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     else if (location.endsWith(".dsr"))
       location = location.substring(0, location.length() - ".dsr".length());
     try (HTTPMethod method = HTTPFactory.Get(location + ".dmr")) {
-      int status = method.execute();
-      if (status == 200) {
+      int statusCode = method.execute();
+      if (statusCode == 200) {
         Header h = method.getResponseHeader("Content-Type");
         if ((h != null) && (h.getValue() != null)) {
           String v = h.getValue();
@@ -947,9 +954,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
             return ServiceType.DAP4;
         }
       }
-      if (status == 401)
-        throw new IOException("Unauthorized to open dataset " + location);
-
+      if (statusCode == 401){
+        throw new IOException(location + " dataset unauthorized to open, return status=" + statusCode);
+      }else if (statusCode == 403){
+        throw new IOException(location + " dataset forbidden to open, return status=" + statusCode);
+      }
       // not dods
       return null;
     }
