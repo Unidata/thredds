@@ -271,14 +271,16 @@ libraries["jgoodies-forms"] = "com.jgoodies:jgoodies-forms:1.6.0"
 configurations.all {
     resolutionStrategy {
         // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j". This effectively
-        // converts every JCL call to an slf4j call. Pulled in by the following first-level dependencies:
-        //     org.apache.httpcomponents:httpclient:4.5.2
-        //     +--- org.apache.httpcomponents:httpcore:4.4.4 -> 4.4.5
-        //     +--- commons-logging:commons-logging:1.2
-        //
-        //     org.springframework:spring-core:4.3.8.RELEASE
-        //     \--- commons-logging:commons-logging:1.2
-        //
+        // converts every JCL call to an slf4j call. We can see the first-level dependencies that drag in
+        // "commons-logging" by commenting-out the rule below and running:
+        /*
+            ./gradlew -q tds:dependencyInsight --configuration runtime --dependency commons-logging
+            commons-logging:commons-logging:1.2
+            +--- org.apache.httpcomponents:httpclient:4.5.2
+            |    ...
+            \--- org.springframework:spring-core:4.3.8.RELEASE
+                 ...
+         */
         eachDependency { DependencyResolveDetails dep ->
             if (dep.requested.name == 'commons-logging') {
                 dep.useTarget libraries["jcl-over-slf4j"]
@@ -286,20 +288,26 @@ configurations.all {
         }
     }
     
-    // STAX comes with Java 1.6+. Pulled in by the following first-level dependencies:
-    //     net.openhft:chronicle-map:2.4.15
-    //     +--- org.codehaus.jettison:jettison:1.3.7
-    //     |    \--- stax:stax-api:1.0.1
-    //
-    //     org.apache.xmlbeans:xmlbeans:2.6.0
-    //     \--- stax:stax-api:1.0.1
+    // STAX is already included in Java 1.6+; no need for a third-party depenency.
+    /*
+        ./gradlew -q tds:dependencyInsight --configuration runtime --dependency stax-api
+        stax:stax-api:1.0.1
+        +--- org.apache.xmlbeans:xmlbeans:2.6.0
+        |    ...
+        \--- org.codehaus.jettison:jettison:1.3.7
+             \--- net.openhft:chronicle-map:2.4.15
+                  ...
+     */
     exclude group: 'stax', module: 'stax-api'
     
-    // Another SLF4J binding that we don't want. Pulled in by the following first-level dependencies:
-    //     uk.ac.rdg.resc:edal-common:1.2.7
-    //     +--- org.slf4j:slf4j-log4j12:1.7.2
-    //
-    //     uk.ac.rdg.resc:edal-godiva:1.2.7
-    //     \--- org.slf4j:slf4j-log4j12:1.7.2 (*)
+    // Another SLF4J binding that we don't want.
+    /*
+        ./gradlew -q tds:dependencyInsight --configuration runtime --dependency slf4j-log4j12
+        org.slf4j:slf4j-log4j12:1.7.2
+        +--- uk.ac.rdg.resc:edal-common:1.2.7
+        |    ...
+        \--- uk.ac.rdg.resc:edal-godiva:1.2.7
+             ...
+     */
     exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
