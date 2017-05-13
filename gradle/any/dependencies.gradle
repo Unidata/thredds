@@ -180,7 +180,11 @@ libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"
 
 // Latest version is 3.10.1. Can we upgrade?
-libraries["chronicle-map"] = "net.openhft:chronicle-map:2.4.15"
+libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:2.4.15") {
+    // We do not need XStream for our use of chronicle-map.
+    // Nuke it.
+    exclude group: 'com.thoughtworks.xstream', module: 'xstream'
+}
 
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
@@ -280,11 +284,6 @@ configurations.all {
                 dep.useTarget libraries["jcl-over-slf4j"]
             }
         }
-        
-        // Use xstream 1.4.9 instead of 1.4.8. Pulled in by the following first-level dependency:
-        //     net.openhft:chronicle-map:2.4.15
-        //     +--- com.thoughtworks.xstream:xstream:1.4.8
-        force 'com.thoughtworks.xstream:xstream:1.4.9'
     }
     
     // STAX comes with Java 1.6+. Pulled in by the following first-level dependencies:
