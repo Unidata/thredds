@@ -668,17 +668,27 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return raf;
   }
 
-  static private String makeUncompressed(String filename) throws Exception {
-    // see if its a compressed file
+  static private boolean isCompressed(String filename) {
     int pos = filename.lastIndexOf('.');
-    if (pos < 0) return null;
+    if (pos < 0) return false;
 
     String suffix = filename.substring(pos + 1);
-    String uncompressedFilename = filename.substring(0, pos);
 
     if (!suffix.equalsIgnoreCase("Z") && !suffix.equalsIgnoreCase("zip") && !suffix.equalsIgnoreCase("gzip")
             && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
+      return false;
+    else
+      return true;
+  }
+
+  static private String makeUncompressed(String filename) throws Exception {
+    // see if its a compressed file
+    if (!isCompressed(filename))
       return null;
+
+    int pos = filename.lastIndexOf('.');
+    String suffix = filename.substring(pos + 1);
+    String uncompressedFilename = filename.substring(0, pos);
 
     // coverity claims resource leak, but attempts to fix break. so beware
     // see if already decompressed, check in cache as needed
