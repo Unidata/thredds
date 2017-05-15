@@ -606,6 +606,27 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return StringUtil2.replace(uriString, '\\', "/");
   }
 
+  static private ucar.unidata.io.RandomAccessFile downloadAndDecompress(ucar.unidata.io.RandomAccessFile raf, String uriString, int buffer_size) throws IOException {
+    int pos = uriString.lastIndexOf('/');
+
+    if (pos < 0)
+      pos = uriString.lastIndexOf(':');
+
+    String tmp = System.getProperty("java.io.tmpdir");
+    String filename = uriString.substring(pos + 1);
+    String sep = File.separator;
+
+    uriString = DiskCache.getFileStandardPolicy(tmp + sep + filename).getPath();
+    copy(raf, new FileOutputStream(uriString), 1<<20);
+    try {
+      String uncompressedFileName = makeUncompressed(uriString);
+      return ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
+    }
+    catch (Exception e) {
+      throw new IOException();
+    }
+  }
+
   static private ucar.unidata.io.RandomAccessFile getRaf(String location, int buffer_size) throws IOException {
 
     String uriString = location.trim();
@@ -619,9 +640,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
     } else if (uriString.startsWith("s3:")) {
       raf = new ucar.unidata.io.s3.S3RandomAccessFile(uriString);
+      if (isCompressed(uriString))
+        raf = downloadAndDecompress(raf, uriString, buffer_size);
 
     } else if (uriString.startsWith("hdfs:")) {
       raf = new ucar.unidata.io.hdfs.HDFSRandomAccessFile(uriString);
+      if (isCompressed(uriString))
+        raf = downloadAndDecompress(raf, uriString, buffer_size);
 
     } else if (uriString.startsWith("nodods:")) { // deprecated use httpserver
       uriString = "http" + uriString.substring(6);
@@ -804,6 +829,26 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     while (true) {
       int bytesRead = in.read(buffer);
       if (bytesRead == -1) break;
+      out.write(buffer, 0, bytesRead);
+    }
+  }
+
+  static private void copy(ucar.unidata.io.RandomAccessFile in, OutputStream out, int bufferSize) throws IOException {
+    long length = in.length();
+    byte[] buffer = new byte[bufferSize];
+    int bytesRead = 0;
+    while (length > 0) {
+      if (length > bufferSize)
+        {
+          in.readFully(buffer, 0, bufferSize);
+          bytesRead = bufferSize;
+        }
+      else if (length <= bufferSize)
+        {
+          in.readFully(buffer, 0, (int)length);
+          bytesRead = (int)length;
+        }
+      length -= bufferSize;
       out.write(buffer, 0, bytesRead);
     }
   }
