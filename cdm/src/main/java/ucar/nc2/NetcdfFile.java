@@ -617,6 +617,12 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     if (uriString.startsWith("http:") || uriString.startsWith("https:")) { // open through URL
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
 
+    } else if (uriString.startsWith("s3:")) {
+      raf = new ucar.unidata.io.s3.S3RandomAccessFile(uriString);
+
+    } else if (uriString.startsWith("hdfs:")) {
+      raf = new ucar.unidata.io.hdfs.HDFSRandomAccessFile(uriString);
+
     } else if (uriString.startsWith("nodods:")) { // deprecated use httpserver
       uriString = "http" + uriString.substring(6);
       raf = new ucar.unidata.io.http.HTTPRandomAccessFile(uriString);
