@@ -27,11 +27,17 @@ dependencies {
 
     compile libraries["slf4j-api"]
 
+    compileOnly libraries["hadoop-client"]
+    compileOnly libraries["s3-sdk"]
+
     // These are for Spock.
     testCompile libraries["groovy-all"]
     testCompile libraries["spock-core"]
 
     testCompile libraries["commons-io"]
+
+    testRuntime libraries["hadoop-client"]
+    testRuntime libraries["s3-sdk"]
 }
 
 javadoc {

@@ -139,6 +139,10 @@ libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 
 libraries["guava"] = "com.google.guava:guava:19.0"
 
+libraries["hadoop-client"] = "org.apache.hadoop:hadoop-client:2.7.3"
+
+libraries["s3-sdk"] = "com.amazonaws:aws-java-sdk-s3:1.11.92"
+
 libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.2"
 
 libraries["httpcore"] = "org.apache.httpcomponents:httpcore:4.4.5"
