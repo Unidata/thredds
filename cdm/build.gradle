@@ -28,10 +28,16 @@ dependencies {
     compile libraries["slf4j-api"]
     testRuntime libraries["logback-classic"]
 
+    compileOnly libraries["hadoop-client"]
+    compileOnly libraries["s3-sdk"]
+
+    testRuntime libraries["hadoop-client"]
+    testRuntime libraries["s3-sdk"]
+    
     // These are for Spock.
     testCompile libraries["groovy-all"]
     testCompile libraries["spock-core"]
-
+    
     testCompile libraries["commons-io"]
     testCompile libraries["mockito"]
 }
