@@ -140,6 +140,10 @@ libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 libraries["guava"] = "com.google.guava:guava:19.0"
 
 libraries["hadoop-client"] = "org.apache.hadoop:hadoop-client:2.7.3"
+libraries["hadoop-common"] = "org.apache.hadoop:hadoop-common:2.7.3"
+libraries["hadoop-common-tests"] = "org.apache.hadoop:hadoop-common:2.7.3:tests"
+libraries["hadoop-hdfs"] = "org.apache.hadoop:hadoop-hdfs:2.7.3"
+libraries["hadoop-hdfs-tests"] = "org.apache.hadoop:hadoop-hdfs:2.7.3:tests"
 
 libraries["s3-sdk"] = "com.amazonaws:aws-java-sdk-s3:1.11.92"
 

@@ -36,6 +36,10 @@ dependencies {
 
     testCompile libraries["commons-io"]
 
+    testCompile libraries["hadoop-common"]
+    testCompile libraries["hadoop-common-tests"]
+    testCompile libraries["hadoop-hdfs"]
+    testCompile libraries["hadoop-hdfs-tests"]
     testRuntime libraries["hadoop-client"]
     testRuntime libraries["s3-sdk"]
 }
