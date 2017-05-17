@@ -11,7 +11,5 @@
         <Int32 name="y"/>
         <Dim name="/dx"/>
         <Dim name="/dy"/>
-        <Map name="/s.x"/>
-        <Map name="/s.y"/>
     </Structure>
 </Dataset>

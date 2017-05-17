@@ -246,9 +246,10 @@ public class GenerateRaw extends DapTestCommon
     choosetests()
     {
         if(false) {
-            chosentests = locate("test_vlen1.nc");
+            chosentests = locate("test_atomic_array.nc");
             //chosentests = locate(5);
             prop_visual = true;
+            prop_generate = false;
             DapController.DUMPDMR = true;
         } else {
             prop_generate = true;

@@ -48,6 +48,8 @@ public class DMRPrinter
             "_edu.ucar"
     };
 
+    static final public boolean ALLOWFIELDMAPS = false;
+
     //////////////////////////////////////////////////
     // Instance Variables
 
@@ -563,10 +565,17 @@ public class DMRPrinter
         List<DapMap> maps = parent.getMaps();
         if(maps.size() == 0) return;
         for(DapMap map : maps) {
-            printer.marginPrint("<Map");
+            // Optionally suppress field maps
+            if(!ALLOWFIELDMAPS) {
+                DapVariable mapvar = map.getVariable();
+                if(mapvar.getParent() != null
+                    && !mapvar.getParent().getSort().isGroup())
+                    continue; // Supress maps with non-top-level vars
+            }
             // Separate out name attribute so we can use FQN.
             String name = map.getFQN();
             assert (name != null) : "Illegal <Map> reference";
+            printer.marginPrint("<Map");
             name = fqnXMLEscape(name);
             printXMLAttribute("name", name, XMLESCAPED);
             printXMLAttributes(map, ce, NONAME);
