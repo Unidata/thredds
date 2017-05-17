@@ -13,7 +13,5 @@
             <Int32 name="x"/>
             <Int32 name="y"/>
         </Structure>
-        <Map name="/x.field1.x"/>
-        <Map name="/x.field1.y"/>
     </Structure>
 </Dataset>
