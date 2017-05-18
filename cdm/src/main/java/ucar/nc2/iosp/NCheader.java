@@ -6,6 +6,7 @@
 package ucar.nc2.iosp;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Common header for netcdf3, netcdf4, hdf5, hdf4.
@@ -22,7 +23,11 @@ public class NCheader
     static private final int MAGIC_NUMBER_LEN = 8;
     static private final long MAXHEADERPOS = 50000; // header's gotta be within this range
 
-    static private final byte[] H5HEAD = {(byte) 0x89, 'H', 'D', 'F', '\r', '\n', (byte) 0x1a, '\n'};
+    static public final byte[] H5HEAD = {(byte)0x89, 'H', 'D', 'F', '\r', '\n', (byte) 0x1a, '\n'};
+    static public final byte[] H4HEAD = {(byte)0x0e, (byte)0x03, (byte)0x13, (byte)0x01};
+    static public final byte[] CDF1HEAD = {(byte)'C', (byte)'D', (byte)'F', (byte)0x01};
+    static public final byte[] CDF2HEAD = {(byte)'C', (byte)'D', (byte)'F', (byte)0x02};
+    static public final byte[] CDF5HEAD = {(byte)'C', (byte)'D', (byte)'F', (byte)0x05};
 
     // These should match the constants in netcdf-c/include/netcdf.h
     static public final int NC_FORMAT_NETCDF3 = (1);
@@ -43,10 +48,21 @@ public class NCheader
     //////////////////////////////////////////////////
     // Static Methods
 
+    /**
+     * Figure out what kind of netcdf-related file we have.
+     * Constraint: leave raf read pointer to point just after
+     * the magic number.
+     *
+     * @param raf to test type
+     * @return
+     * @throws IOException
+     */
     static public int
     checkFileType(ucar.unidata.io.RandomAccessFile raf)
             throws IOException
     {
+        int format = 0;
+
         byte[] magic = new byte[MAGIC_NUMBER_LEN];
 
         // If this is not an HDF5 file, then the magic number is at
@@ -58,15 +74,23 @@ public class NCheader
         if(raf.readBytes(magic, 0, MAGIC_NUMBER_LEN) < MAGIC_NUMBER_LEN)
             return 0; // unknown
         // Some version of CDF
-        if(magic[0] == (byte) 'C'
-                && magic[1] == (byte) 'D'
-                && magic[2] == (byte) 'F') {
-            if(magic[3] == 0x01) return NC_FORMAT_CLASSIC;
-            if(magic[3] == 0x02) return NC_FORMAT_64BIT_OFFSET;
-            if(magic[3] == 0x05) return NC_FORMAT_CDF5;
-            return 0; // unknown
+        int hdrlen = 0;
+        byte[] byte4 = Arrays.copyOfRange(magic,0,CDF1HEAD.length);
+        hdrlen = CDF1HEAD.length;
+        format = 0;
+        if(Arrays.equals(CDF1HEAD,byte4))
+            format = NC_FORMAT_CLASSIC;
+        else if(Arrays.equals(CDF2HEAD,byte4))
+            format = NC_FORMAT_64BIT_OFFSET;
+        else if(Arrays.equals(CDF1HEAD,byte4))
+            format = NC_FORMAT_CDF5;
+        if(format != 0) {
+            raf.seek(hdrlen);
+            return format;
         }
         // For HDF5/4, we need to search forward
+        hdrlen = 0;
+        format = 0;
         long filePos = 0;
         long size = raf.length();
         while((filePos < size - 8) && (filePos < MAXHEADERPOS)) {
@@ -74,25 +98,23 @@ public class NCheader
             raf.seek(filePos);
             if(raf.readBytes(magic, 0, MAGIC_NUMBER_LEN) < MAGIC_NUMBER_LEN)
                 return 0; // unknown
-            // Test for HDF5; Need to use full set of Header bytes
-            match = true;
-            for(int i = 0; i < H5HEAD.length; i++) {
-                if(magic[i] != H5HEAD[i]) {
-                    match = false;
-                    break;
-                }
+            // Test for HDF4
+            byte4 = Arrays.copyOfRange(magic,0,H4HEAD.length);
+            if(Arrays.equals(H4HEAD,byte4)) {
+                format = NC_FORMAT_HDF4;
+                hdrlen = H4HEAD.length;
+                break;
             }
-            if(match)
-                return NC_FORMAT_HDF5;
-            // Try HDF4
-            if(magic[0] == (byte) 0x0e
-                    && magic[1] == (byte) 0x03
-                    && magic[2] == (byte) 0x13
-                    && magic[3] == (byte) 0x01) {
-                return NC_FORMAT_HDF4;
+            // Test for HDF5
+            if(Arrays.equals(H5HEAD,magic)) {
+                format = NC_FORMAT_HDF5;
+                hdrlen = H5HEAD.length;
+                break;
             }
             filePos = (filePos == 0) ? 512 : 2 * filePos;
         }
-        return 0;
+        if(format != 0)
+            raf.seek(filePos+hdrlen);
+        return format;
     }
 }
