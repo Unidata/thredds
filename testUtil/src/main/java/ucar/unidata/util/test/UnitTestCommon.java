@@ -327,6 +327,9 @@ abstract public class UnitTestCommon
     static public String
     compare(String tag, String baseline, String testresult)
     {
+	// Check for empty testresult
+        if(testresult.trim().length() == 0)
+	    return ">>>> EMPTY TEST RESULT";
         try {
             // Diff the two print results
             Diff diff = new Diff(tag);
