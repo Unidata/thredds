@@ -11,6 +11,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.NCheader;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
@@ -55,6 +56,11 @@ public class TestCDF5Reading extends UnitTestCommon
             throws IOException, InvalidRangeException
     {
         String location = canonjoin(tdsContentRootPath,"thredds/public/testdata/nc_test_cdf5.nc");
+        try (RandomAccessFile raf  = RandomAccessFile.acquire(location)) {
+            // Verify that this is a netcdf-5 file
+            int format = NCheader.checkFileType(raf);
+            Assert.assertTrue("Fail: file format is not CDF-5",format == NCheader.NC_FORMAT_64BIT_DATA);
+        }
         try (NetcdfFile jni = openJni(location)) {
             jni.setLocation(location + " (jni)");
             Array data = read(jni, "f4", "0:2");

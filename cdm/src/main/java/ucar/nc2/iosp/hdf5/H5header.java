@@ -120,7 +120,6 @@ public class H5header extends NCheader
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
     switch (checkFileType(raf)) {
     case NC_FORMAT_NETCDF4:
-    case NC_FORMAT_NETCDF4_CLASSIC:
 	return true;
     default: break;
     }
