@@ -64,7 +64,7 @@ public class NCheader
         byte[] magic = new byte[MAGIC_NUMBER_LEN];
 
         // If this is not an HDF5 file, then the magic number is at
-        // position 0; If it is an HDF5/4 file, then we need to search
+        // position 0; If it is an HDF5 file, then we need to search
         // forward for it.
 
         // Look for the relevant leading tag
@@ -81,12 +81,13 @@ public class NCheader
             format = NC_FORMAT_64BIT_OFFSET;
         else if(memequal(CDF5HEAD, magic, CDF5HEAD.length))
             format = NC_FORMAT_CDF5;
+        else if(memequal(H4HEAD, magic, H4HEAD.length))
+            format = NC_FORMAT_HDF4;
         if(format != 0) {
             raf.seek(hdrlen);
             return format;
         }
-        // For HDF5/4, we need to search forward
-        hdrlen = 0;
+        // For HDF5, we need to search forward
         format = 0;
         long filePos = 0;
         long size = raf.length();
@@ -95,22 +96,15 @@ public class NCheader
             raf.seek(filePos);
             if(raf.readBytes(magic, 0, MAGIC_NUMBER_LEN) < MAGIC_NUMBER_LEN)
                 return 0; // unknown
-            // Test for HDF4
-            if(memequal(H4HEAD, magic, H4HEAD.length)) {
-                format = NC_FORMAT_HDF4;
-                hdrlen = H4HEAD.length;
-                break;
-            }
             // Test for HDF5
             if(memequal(H5HEAD, magic, H5HEAD.length)) {
                 format = NC_FORMAT_HDF5;
-                hdrlen = H5HEAD.length;
                 break;
             }
             filePos = (filePos == 0) ? 512 : 2 * filePos;
         }
         if(format != 0)
-            raf.seek(filePos + hdrlen);
+            raf.seek(filePos + H5HEAD.length);
         return format;
     }
 
