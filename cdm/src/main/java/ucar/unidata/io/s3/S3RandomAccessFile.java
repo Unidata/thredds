@@ -54,7 +54,8 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
  */
 
 public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
-  static public final int defaultS3BufferSize = 1<<20;
+  static public final int defaultS3BufferSize = 1<<19;
+  static private final int cacheBlockSize = 1<<20;
 
   private AmazonS3URI uri = null;
   private ClientConfiguration config = null;
@@ -63,6 +64,8 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   private String key = null;
   private ObjectMetadata metadata = null;
 
+  private java.util.Map<Long, byte[]> cache = new java.util.HashMap<Long, byte[]>();
+  private java.util.Queue<Long> index = new java.util.LinkedList<Long>();
 
   public S3RandomAccessFile(String url) throws IOException {
     this(url, defaultS3BufferSize);
@@ -104,6 +107,23 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
     metadata = null;
   }
 
+ /**
+  * After execution of this function, the given block is guranteed to
+  * be in the cache.
+  */
+  private void ensure(Long key) throws IOException {
+    if (!cache.containsKey(key)) {
+      long position = key.longValue() * cacheBlockSize;
+      int toEOF = (int)(length() - position);
+      int bytes = toEOF < cacheBlockSize ? toEOF : cacheBlockSize;
+      byte[] buffer = new byte[bytes];
+
+      read__(position, buffer, 0, cacheBlockSize);
+      cache.put(key, buffer);
+      return;
+    }
+  }
+
   /**
    * Read directly from S3 [1], without going through the buffer.
    * All reading goes through here or readToByteChannel;
@@ -119,6 +139,35 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    */
   @Override
   protected int read_(long pos, byte[] buff, int offset, int len) throws IOException {
+    long start = pos / cacheBlockSize;
+    long end = (pos+len-1) / cacheBlockSize;
+
+    if (pos >= length()) { // Do not read past end of the file
+      return 0;
+    }
+    else if (end - start > 1) { // If the request touches more than two cache blocks, punt (should never happen)
+      return read__(pos, buff, offset, len);
+    }
+    else if (end - start == 1) { // If the request touches two cache blocks, split it
+      int length1 = (int)((end*cacheBlockSize) - pos);
+      int length2 = (int)((pos+len) - (end*cacheBlockSize));
+      return read_(pos, buff, offset, length1) + read_(pos+length1, buff, offset+length1, length2);
+    }
+
+    // Service a request that touches only one cache block
+    Long key = new Long(start);
+    ensure(key);
+
+    byte[] src = (byte[])cache.get(key);
+    int srcPos = (int)(pos - (key.longValue() * cacheBlockSize));
+    int toEOB = src.length - srcPos;
+    int length = toEOB < len ? toEOB : len;
+    System.arraycopy(src, srcPos, buff, offset, length);
+
+    return len;
+  }
+
+  private int read__(long pos, byte[] buff, int offset, int len) throws IOException {
     GetObjectRequest rangeObjectRequest = new GetObjectRequest(bucket, key);
     rangeObjectRequest.setRange(pos, pos+len);
 
