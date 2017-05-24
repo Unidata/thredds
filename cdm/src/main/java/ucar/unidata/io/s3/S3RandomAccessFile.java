@@ -56,6 +56,7 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public final int defaultS3BufferSize = 1<<19;
   static private final int cacheBlockSize = 1<<20;
+  static private final int maxCacheBlocks = 1<<5;
 
   private AmazonS3URI uri = null;
   private ClientConfiguration config = null;
@@ -65,7 +66,7 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   private ObjectMetadata metadata = null;
 
   private java.util.Map<Long, byte[]> cache = new java.util.HashMap<Long, byte[]>();
-  private java.util.Queue<Long> index = new java.util.LinkedList<Long>();
+  private java.util.LinkedList<Long> index = new java.util.LinkedList<Long>();
 
   public S3RandomAccessFile(String url) throws IOException {
     this(url, defaultS3BufferSize);
@@ -120,6 +121,12 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
 
       read__(position, buffer, 0, cacheBlockSize);
       cache.put(key, buffer);
+      index.add(key);
+      assert(cache.size() == index.size());
+      while(cache.size() > maxCacheBlocks) {
+	cache.remove(index.pop());
+      }
+
       return;
     }
   }
