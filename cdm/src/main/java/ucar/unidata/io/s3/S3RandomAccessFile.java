@@ -55,8 +55,9 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 
 public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   static public final int defaultS3BufferSize = 1<<19;
-  static private final int cacheBlockSize = 1<<20;
-  static private final int maxCacheBlocks = 1<<5;
+
+  private int cacheBlockSize = -1;
+  private int maxCacheBlocks = -1;
 
   private AmazonS3URI uri = null;
   private ClientConfiguration config = null;
@@ -73,9 +74,22 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
   }
 
   public S3RandomAccessFile(String url, int bufferSize) throws IOException {
+    this(url, bufferSize, 1<<25);
+  }
+
+  public S3RandomAccessFile(String url, int bufferSize, int maxCacheSize) throws IOException {
     super(bufferSize);
     file = null;
     location = url;
+
+    // Only enable cache if given size is at least twice the buffer size
+    if (maxCacheSize >= 2*bufferSize) {
+      this.cacheBlockSize = 2*bufferSize;
+      this.maxCacheBlocks = maxCacheSize / this.cacheBlockSize;
+    }
+    else {
+      this.cacheBlockSize = this.maxCacheBlocks = -1;
+    }
 
     uri = new AmazonS3URI(url);
     bucket = uri.getBucket();
@@ -146,6 +160,10 @@ public class S3RandomAccessFile extends ucar.unidata.io.RandomAccessFile {
    */
   @Override
   protected int read_(long pos, byte[] buff, int offset, int len) throws IOException {
+    if (!(cacheBlockSize > 0) || !(maxCacheBlocks > 0)) {
+      return read__(pos, buff, offset, len);
+    }
+
     long start = pos / cacheBlockSize;
     long end = (pos+len-1) / cacheBlockSize;
 
