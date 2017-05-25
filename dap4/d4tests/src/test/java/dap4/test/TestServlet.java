@@ -5,7 +5,7 @@
 package dap4.test;
 
 import dap4.core.data.DSPRegistry;
-import dap4.core.dmr.parser.Dap4ParserImpl;
+import dap4.core.dmr.parser.DOM4Parser;
 import dap4.core.util.DapDump;
 import dap4.dap4lib.ChunkInputStream;
 import dap4.dap4lib.FileDSP;
@@ -199,7 +199,7 @@ public class TestServlet extends DapTestCommon
         stderr.println("Testcase: " + testcase.testinputpath);
         stderr.println("Baseline: " + testcase.baselinepath);
         stderr.flush();
-        if(PARSEDEBUG) Dap4ParserImpl.setGlobalDebugLevel(1);
+        if(PARSEDEBUG) DOM4Parser.setGlobalDebugLevel(1);
         for(String extension : testcase.extensions) {
             RequestMode ext = RequestMode.modeFor(extension);
             switch (ext) {

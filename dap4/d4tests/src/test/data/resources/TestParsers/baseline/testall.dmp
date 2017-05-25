@@ -28,6 +28,7 @@
                 <Value value="5"/>
             </Attribute>
             <Attribute name="a2" type="Float64">
+                <Value value="7.5"/>
                 <Value value="10"/>
             </Attribute>
             <Attribute name="a3" type="String">

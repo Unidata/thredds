@@ -11,8 +11,8 @@ import dap4.core.dmr.DapAttribute;
 import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.DapNode;
 import dap4.core.dmr.DapVariable;
+import dap4.core.dmr.parser.DOM4Parser;
 import dap4.core.dmr.parser.Dap4Parser;
-import dap4.core.dmr.parser.Dap4ParserImpl;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
@@ -214,7 +214,7 @@ abstract public class AbstractDSP implements DSP
         // Parse the dmr
         Dap4Parser parser;
         //if(USEDOM)
-        parser = new Dap4ParserImpl(null);
+        parser = new DOM4Parser(null);
         //else
         //    parser = new DOM4Parser(new DefaultDMRFactory());
         if(PARSEDEBUG)

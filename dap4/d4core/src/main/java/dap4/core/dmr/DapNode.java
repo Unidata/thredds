@@ -360,6 +360,18 @@ abstract public class DapNode
         this.parent = parent;
     }
 
+    /**
+      * Same as setparent except existing parent can be non-null
+      *
+      * @param parent the proposed parent node
+      */
+     public void overrideParent(DapNode parent)
+     {
+         this.parent = null;
+         setParent(parent);
+     }
+
+
     public String getShortName()
     {
         return shortname;
