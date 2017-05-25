@@ -5,7 +5,7 @@
  Define Bison specific decls.
  */
 
-package dap4.core.dmr.parser;
+package dap4.core.dmr.parser.bison;
 
 import org.xml.sax.Locator;
 

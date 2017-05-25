@@ -1,9 +1,10 @@
 /* Copyright 2012, UCAR/Unidata.
    See the LICENSE file for more information. */
 
-package dap4.core.dmr.parser;
+package dap4.core.dmr.parser.bison;
 
 import dap4.core.dmr.DapXML;
+import dap4.core.dmr.parser.ParseException;
 import dap4.core.util.DapException;
 import dap4.core.util.DapSort;
 

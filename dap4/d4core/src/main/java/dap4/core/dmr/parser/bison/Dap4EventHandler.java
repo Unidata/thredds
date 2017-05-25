@@ -1,7 +1,7 @@
 /* Copyright 2012, UCAR/Unidata.
    See the LICENSE file for more information. */
 
-package dap4.core.dmr.parser;
+package dap4.core.dmr.parser.bison;
 
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
@@ -9,9 +9,9 @@ import org.xml.sax.SAXException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static dap4.core.dmr.parser.Dap4BisonParser.Lexer.*;
-import static dap4.core.dmr.parser.Dap4BisonParser.YYABORT;
-import static dap4.core.dmr.parser.Dap4BisonParser.YYACCEPT;
+import static dap4.core.dmr.parser.bison.Dap4BisonParser.Lexer.*;
+import static dap4.core.dmr.parser.bison.Dap4BisonParser.YYABORT;
+import static dap4.core.dmr.parser.bison.Dap4BisonParser.YYACCEPT;
 
 public class Dap4EventHandler extends SaxEventHandler
 {

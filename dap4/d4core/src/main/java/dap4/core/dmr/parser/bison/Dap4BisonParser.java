@@ -30,7 +30,7 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-package dap4.core.dmr.parser;
+package dap4.core.dmr.parser.bison;
 /* First part of user declarations.  */
 
 /* "Dap4BisonParser.java":37  */ /* lalr1.java:91  */

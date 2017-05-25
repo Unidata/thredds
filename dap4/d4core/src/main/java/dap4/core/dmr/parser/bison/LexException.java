@@ -32,7 +32,7 @@
 
 //////////////////////////////////////////////////
 
-package dap4.core.dmr.parser;
+package dap4.core.dmr.parser.bison;
 
 public class LexException extends java.lang.Exception
 {

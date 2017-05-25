@@ -14,6 +14,11 @@ import java.util.List;
  * type for a variable, but for consistency,
  * we track it as a type rather than a variable
  * and create a separate variable whose basetype points
+ * to it.
+ * This complicates thigs because in effect a structure type
+ * has two parents: 1) the group i which it is declared as a type
+ * and 2) the group or structure in which the structure var
+ * is declared.
  */
 
 public class DapStructure extends DapType

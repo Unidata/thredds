@@ -1,14 +1,12 @@
 /* Copyright 2012, UCAR/Unidata.
    See the LICENSE file for more information. */
 
-package dap4.core.dmr.parser;
+package dap4.core.dmr.parser.bison;
 
+import dap4.core.dmr.parser.ParseUtil;
 import dap4.core.util.Escape;
 
 import java.util.Map;
-
-import static dap4.core.dmr.parser.ParseUtil.DEFAULTFLAGS;
-import static dap4.core.dmr.parser.ParseUtil.MAXTEXT;
 
 public abstract class Debug
 {
@@ -28,8 +26,8 @@ public abstract class Debug
             txt = txt.trim();
         }
         len = txt.length();
-        if((flags & ParseUtil.FLAG_ELIDETEXT) != 0 && len > MAXTEXT) {
-            len = MAXTEXT;
+        if((flags & ParseUtil.FLAG_ELIDETEXT) != 0 && len > ParseUtil.MAXTEXT) {
+            len = ParseUtil.MAXTEXT;
             shortened = true;
         }
         dst.append('|');
@@ -79,7 +77,7 @@ public abstract class Debug
     static public String
     trace(SaxEvent token)
     {
-        return trace(token, DEFAULTFLAGS);
+        return trace(token, ParseUtil.DEFAULTFLAGS);
     }
 
     static public String

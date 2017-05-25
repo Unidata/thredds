@@ -442,7 +442,7 @@ abstract public class DapTestCommon extends UnitTestCommon
         if(!captured.endsWith("\n"))
             captured = captured + "\n";
         // Dump the output for visual comparison
-        stderr.println("Testing " + title + ": " + header + ":");
+        stderr.println("\n"+header + ":");
         stderr.println("---------------");
         stderr.print(captured);
         stderr.println("---------------");

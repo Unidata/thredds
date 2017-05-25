@@ -18,6 +18,12 @@ public class DapDataset extends DapGroup
 {
 
     //////////////////////////////////////////////////
+    // Constants
+
+    // Do not, for now, allow maps to specify fields
+    static private final boolean ALLOWFIELDMAPS = false;
+
+    //////////////////////////////////////////////////
     // Instance variables
 
     protected CEConstraint ce = null;
@@ -227,14 +233,18 @@ public class DapDataset extends DapGroup
     /**
      * Parse an FQN and use it to trace to a specific
      * object in a dataset. Note that this is quite
-     * tricky in the face of backslash escapes and the traversal
-     * into structs. Because of backslash escapes, we cannot
+     * tricky in the face of backslash escapes.
+     * Because of backslash escapes, we cannot
      * use the String.split function because it does appear to be
      * possible to write a regexp that handles preceding backslashes
      * correctly. Instead, we must parse character by character left to right.
-     * In addition, we need to handle the last segment of the group path
-     * to deal with struct walking using '.'. We need to obtain the last segment
-     * with escapes intact so we can spot '.' separators.
+     * Traversal into structs:
+     * In theory, a map variable could point to a field of a structure.
+     * However, in practice, this will not work because we would need a
+     * specific instance of that field, which means including dimension
+     * indices must be included starting from some top-level variable.
+     * We choose, for now, to make that illegal until such time as there
+     * is a well-defined meaning for this.
      * Note: this assumes the fqn is absolute (i.e. starts with '/').
      *
      * @param fqn     the fully qualified name
@@ -270,42 +280,50 @@ public class DapDataset extends DapGroup
         // Walk all but the last element to walk group path
         for(int i = 0; i < path.size() - 1; i++) {
             String groupname = Escape.backslashUnescape(path.get(i));
-            DapNode g = current.findInGroup(groupname, DapSort.GROUP);
+            DapGroup g = (DapGroup)current.findInGroup(groupname, DapSort.GROUP);
             if(g == null)
                 return null;
             assert (g.getSort() == DapSort.GROUP);
             current = (DapGroup) g;
         }
-        // Locate the last element in the last group
-        // Start by looking for any containing structure
-        String varpart = path.get(path.size() - 1); // Note that this still has escapes
-        // So that '.' parsing will be correct.
-        List<String> structpath = DapUtil.backslashSplit(varpart, '.');
-        String outer = Escape.backslashUnescape(structpath.get(0));
-        if(structpath.size() == 1) {
-            return current.findInGroup(outer, sortset);
-        } else {// It is apparently a structure field
-            // locate the outermost structure to start with
-            DapStructure currentstruct = (DapStructure) current.findInGroup(outer, DapSort.STRUCTURE,DapSort.SEQUENCE);
-            if(currentstruct == null)
-                return null; // does not exist
-            // search for the innermost structure
-            String fieldname;
-            for(int i = 1; i < structpath.size() - 1; i++) {
-                fieldname = Escape.backslashUnescape(structpath.get(i));
-                DapVariable field = (DapVariable)currentstruct.findByName(fieldname);
+        if(!ALLOWFIELDMAPS) {
+            String targetname = Escape.backslashUnescape(path.get(path.size()-1));
+            return current.findInGroup(targetname, sortset);
+        } else { // ALLOWFIELDMAPS)
+            // We need to handle the last segment of the group path
+            // to deal with struct walking using '.'. We need to obtain the last segment
+            // with escapes intact so we can spot '.' separators.
+            // Locate the last element in the last group
+            // Start by looking for any containing structure
+            String varpart = path.get(path.size() - 1); // Note that this still has escapes
+            // So that '.' parsing will be correct.
+            List<String> structpath = DapUtil.backslashSplit(varpart, '.');
+            String outer = Escape.backslashUnescape(structpath.get(0));
+            if(structpath.size() == 1) {
+                return current.findInGroup(outer, sortset);
+            } else {// It is apparently a structure field
+                // locate the outermost structure to start with
+                DapStructure currentstruct = (DapStructure) current.findInGroup(outer, DapSort.STRUCTURE, DapSort.SEQUENCE);
+                if(currentstruct == null)
+                    return null; // does not exist
+                // search for the innermost structure
+                String fieldname;
+                for(int i = 1; i < structpath.size() - 1; i++) {
+                    fieldname = Escape.backslashUnescape(structpath.get(i));
+                    DapVariable field = (DapVariable) currentstruct.findByName(fieldname);
+                    if(field == null)
+                        throw new DapException("No such field: " + fieldname);
+                    if(!field.isCompound())
+                        break;
+                    currentstruct = (DapStructure) field.getBaseType();
+                }
+                fieldname = Escape.backslashUnescape(structpath.get(structpath.size() - 1));
+                DapVariable field = currentstruct.findByName(fieldname);
                 if(field == null)
                     throw new DapException("No such field: " + fieldname);
-                if(!field.isCompound())
-                    break;
-                currentstruct = (DapStructure) field.getBaseType();
+                if(field.getSort().oneof(sortset))
+                    return (field);
             }
-            fieldname = Escape.backslashUnescape(structpath.get(structpath.size() - 1));
-            DapVariable field = currentstruct.findByName(fieldname);
-            if(field == null)
-                throw new DapException("No such field: " + fieldname);
-            if(field.getSort().oneof(sortset))
-                return (field);
         }
         return null;
     }

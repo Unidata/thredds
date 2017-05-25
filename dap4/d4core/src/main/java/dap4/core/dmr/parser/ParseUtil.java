@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ParseUtil
 {
-    static final int MAXTEXT = 12;
+    static public final int MAXTEXT = 12;
 
     /* Common Flag Set */
     static public final int FLAG_NONE = 0;
@@ -46,7 +46,7 @@ public class ParseUtil
      * Generally, type checking is not performed. String quotes
      * are obeyed and backslash escapes are removed.
      */
-    static List<String>
+    static public List<String>
     collectValues(String text)
         throws ParseException
     {
@@ -100,7 +100,7 @@ public class ParseUtil
         return values;
     }
 
-    static boolean
+    static public boolean
     isLegalEnumConstName(String name)
     {
         // Name must consist of non-blank non-control characters

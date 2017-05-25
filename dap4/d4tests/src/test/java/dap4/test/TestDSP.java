@@ -38,7 +38,7 @@ import java.util.List;
 public class TestDSP extends DapTestCommon
 {
     static final boolean DEBUG = false;
-    static final boolean SHOWTESTCASES = false;
+    static final boolean SHOWTESTCASES = true;
 
     static final String BASEEXTENSION = "txt";
 
@@ -235,7 +235,7 @@ public class TestDSP extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("file:", "test_atomic_array.nc");
+            chosentests = locate("file:", "test_struct_nested3.hdf5.raw");
             prop_visual = true;
             prop_baseline = false;
         } else {
