@@ -27,45 +27,13 @@ gradle.projectsEvaluated {  // Several statements below rely upon all subproject
         
         // Ditto for class directories.
         classDirectories = files('buildSrc/build/classes/main', allSubprojectClassDirs)
+    
+        Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
+        Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
+        Collection<File> subprojectExeData = tasksExtendedByJacoco*.jacoco*.destinationFile
         
-        // :buildSrc:test always runs and produces execution data, no matter what.
-        assert file('buildSrc/build/jacoco/test.exec').exists(): "Can't find :buildSrc Jacoco execution data."
-        
-        // By default, JacocoReport will be skipped if ANY of its executionData are non-existent: http://goo.gl/pHuwyg
-        // So, we're going to start off with the only executionData we KNOW exists. As for the subprojects'
-        // executionData, we won't know what's available until after they run their 'test' tasks (if they run at all).
-        // So, delay that config until doFirst{}, which will run during Gradle's execution phase.
-        executionData = files('buildSrc/build/jacoco/test.exec')
-        
-        // Causes rootJacocoReport to always be executed. This is necessary because JacocoReport uses executionData as
-        // one of its Inputs, and by assigning an incomplete set above, the normal UP-TO-DATE machinery has been
-        // subverted. As a result, rootJacocoReport can't properly determine when subprojects have generated new
-        // coverage data (it thinks its executionData Inputs are always UP-TO-DATE). We'll try to detect those
-        // changes manually below.
-        outputs.upToDateWhen { false } // Evaluated at configuration time (onlyIf{} is evaluated at execution time)
-        
-        // This closure will be run during the execution phase, after the subproject test tasks.
-        // Therefore, we can trust that execution data for those tasks will have been generated.
-        doFirst {
-            Closure isExtendedByJacoco = { Task task -> task.extensions.findByType(JacocoTaskExtension) }
-            Collection<Task> tasksExtendedByJacoco = subprojects*.tasks*.matching(isExtendedByJacoco).flatten()
-            Collection<File> exeData = tasksExtendedByJacoco*.jacoco*.destinationFile
-            
-            // Add all subproject executionData that actually exist.
-            executionData = executionData + files(exeData.findAll { it.exists() })
-            
-            boolean allOutputsExist = outputs.files.every { it.exists() }
-            boolean anyJacocoTaskDidWork = tasksExtendedByJacoco.any { it.didWork }
-            
-            // Skip task if all outputs exist (previously generated) and no Jacoco tasks did any work (meaning that
-            // the Inputs didn't change). This manual UP-TO-DATE checking is certainly inferior to Gradle's built-in
-            // machinery (this doesn't detect modifications to outputs, for example), but it's good enough given the
-            // circumstances. The long-term solution may be to reimplement JacocoReport with the troublesome elements
-            // removed.
-            if (allOutputsExist && !anyJacocoTaskDidWork) {
-                throw new StopExecutionException("SKIPPING $name: outputs already exist and no Jacoco tasks did work.")
-            }
-        }
+        // Some of subprojectExeData may not exist. That's okay! Only existing executionData are passed to Ant task.
+        executionData = files('buildSrc/build/jacoco/test.exec', subprojectExeData)
     }
     
     apply plugin: "com.github.kt3k.coveralls"

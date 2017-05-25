@@ -10,10 +10,10 @@ tasks.withType(Test).all {
     // Propagates system properties set on the Gradle process to the test executors.
     addFilteredSysProps(systemProperties)
     
-    if (isTravis) {
-        ignoreFailures = false  // On Travis, abort the build if any tests fail.
+    if (isJenkins) {
+        ignoreFailures = true   // On Jenkins, don't let test failures abort the build; we want the full test report.
     } else {
-        ignoreFailures = true   // In every other environment, don't let test failures abort the build.
+        ignoreFailures = false  // Otherwise, abort at the first sign of failure.
     }
     
     useJUnit {

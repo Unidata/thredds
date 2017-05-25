@@ -1,3 +1,15 @@
+/*
+Thredds no longer uses bison for parsing the
+dap4 metadata.  Rather, it uses a standard DOM
+parser which then traverses to create the
+intermediate representation (the same as the
+action of the Bison parser).  This grammar and
+the code in ../d4core/src/main/java/dap4/core/dmr/parser/bison
+are left in place for now.
+
+Note that the constraint parser (CE) still uses Bison.
+*/
+
 %language "Java"
 %debug
 %error-verbose

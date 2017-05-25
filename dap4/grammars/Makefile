@@ -1,5 +1,10 @@
+/*
+Note: The bison parser has been replaced by a DOM parser+walker.
+The bison code is left in the build tree in case it is useful
+elsewhere.
+*.
 
-DAP4TARGET=../d4core/src/main/java/dap4/core/dmr/parser/Dap4BisonParser.java
+DAP4TARGET=../d4core/src/main/java/dap4/core/dmr/parser/bison/Dap4BisonParser.java
 CETARGET=../d4core/src/main/java/dap4/core/ce/parser/CEBisonParser.java
 
 .PHONEY: bison

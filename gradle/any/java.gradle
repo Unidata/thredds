@@ -2,7 +2,6 @@ import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
 import org.gradle.api.internal.java.JavaLibrary
 
 apply plugin: 'java'
-apply plugin: 'nebula.provided-base'  // Gives us the "provided" configuration.
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8

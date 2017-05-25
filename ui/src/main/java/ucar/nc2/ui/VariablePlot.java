@@ -39,6 +39,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import javax.swing.*;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -85,6 +86,7 @@ public class VariablePlot extends JPanel {
     // this.prefs = prefs;
 
     setLayout(new BorderLayout());
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
     chart = createChart();
 

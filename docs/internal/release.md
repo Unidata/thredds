@@ -21,7 +21,7 @@
 5. In `/build.gradle`, update the project's version for the release.
    Likely, this means removing the `-SNAPSHOT` prefix, e.g. `4.6.6-SNAPSHOT` to `4.6.6`.
 
-6. In `/gradle/dependencies.gradle`, update the `uk.ac.rdg.resc:ncwms` and `EDS:threddsIso` dependencies to the
+6. In `/gradle/any/dependencies.gradle`, update the `uk.ac.rdg.resc:ncwms` and `EDS:threddsIso` dependencies to the
    versions deployed in step 1. Also, remove any dependencies on SNAPSHOT versions of libraries.
 
 7. Publish the artifacts to Nexus.
@@ -40,8 +40,6 @@
 
 9. Prepare the FTP directory for the new version of TDS and TDM (best to do from SSH)
     ```bash
-    #!/usr/bin/env bash
-
     cd /web/ftp/pub/thredds/${releaseMajor}
     mkdir ${releaseMinor}
 
@@ -53,8 +51,6 @@
 
 10. Copy over the TDS war and its security hashes from Nexus, renaming them in the process.
     ```bash
-    #!/usr/bin/env bash
-
     wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war -O ${releaseMinor}/thredds.war
     wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war.md5 -O ${releaseMinor}/thredds.war.md5
     wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war.sha1 -O ${releaseMinor}/thredds.war.sha1
@@ -63,8 +59,6 @@
 11. Copy over the TDM fat jar and its security hashes from Nexus, renaming them in the process.
    When renaming, "tdmFat" should become "tdm".
     ```bash
-    #!/usr/bin/env bash
-
     wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar -O ${releaseMinor}/tdm-${releaseMajor}.jar
     wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar.sha1 -O ${releaseMinor}/tdm-${releaseMajor}.jar.sha1
     wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar.md5 -O ${releaseMinor}/tdm-${releaseMajor}.jar.md5
@@ -72,8 +66,6 @@
 
 12. Change permissions of the files you just copied.
     ```bash
-    #!/usr/bin/env bash
-
     cd /web/ftp/pub/thredds/${releaseMajor}/${releaseMinor}
     chmod 775 .
     chmod 664 *
@@ -82,8 +74,6 @@
 
 13. Copy over ncIdv, netcdfAll, toolsUI and their security hashes from Nexus
     ```bash
-    #!/usr/bin/env bash
-
     cd /web/ftp/pub/netcdf-java/v${releaseMajor}
     wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/${releaseMinor}/ncIdv-${releaseMinor}.jar
     wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/${releaseMinor}/ncIdv-${releaseMinor}.jar.md5
@@ -98,8 +88,6 @@
 
 14. Remove symlinks to old versions and create ones to new versions
     ```bash
-    #!/usr/bin/env bash
-
     cd /web/ftp/pub/netcdf-java/v${releaseMajor}
     rm toolsUI-${releaseMajor}.jar netcdfAll-${releaseMajor}.jar ncIdv-${releaseMajor}.jar
     ln -s toolsUI-${releaseMinor}.jar toolsUI-${releaseMajor}.jar
@@ -109,10 +97,7 @@
 
 15. Change permissions of the files you just copied.
     ```bash
-    #!/usr/bin/env bash
-
     cd /web/ftp/pub/netcdf-java/v${releaseMajor}
-    chmod 775 .
     chmod 664 *
     ```
 
@@ -132,16 +117,15 @@
       ```
 
 18. Release Web Start to `www:/content/software/thredds/v${releaseMajor}/netcdf-java/webstart`
+    - Test Web Start locally. There are notes above `:ui:releaseWebstart` about how to do that.
     - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
       `keystore`, `keystoreAlias`, `keystorePassword`, `webdir`, and `ftpdir` properties defined.
     - Rename old directories
       * `cd /content/software/thredds/v${releaseMajor}/netcdf-java/`
       * `mv webstart webstartOld`
-    - Update `/thredds/ui/netCDFtoolsExtraJars.jnlp` as needed.
-    - Test webstart locally. There are notes above `ui/build.gradle/releaseWebstart()` about how to do that.
     - Perform release
       * `./gradlew :ui:clean :ui:releaseWebstart`
-    - If there were no errors and the new Web Start looks good, delete the old stuff.
+    - Test the new Web Start. If there were no errors, delete the old stuff.
       * `rm -r webstartOld`
 
 19. Release Javadoc to `www:/content/software/thredds/v${releaseMajor}/netcdf-java/javadoc` and `javadocAll`
@@ -158,8 +142,6 @@
 
 20. Change permissions of the files you just copied.
     ```bash
-    #!/usr/bin/env bash
-
     cd /content/software/thredds/v${releaseMajor}/netcdf-java/
     find webstart -type d -exec chmod 775 {} \;
     find webstart -type f -exec chmod 664 {} \;

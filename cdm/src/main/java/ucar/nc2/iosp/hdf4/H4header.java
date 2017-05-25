@@ -33,6 +33,7 @@
 package ucar.nc2.iosp.hdf4;
 
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.NCheader;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.nc2.*;
 import ucar.ma2.*;
@@ -49,7 +50,8 @@ import java.nio.ByteBuffer;
  * @author caron
  * @since Jul 18, 2007
  */
-public class H4header {
+public class H4header extends NCheader
+{
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H4header.class);
 
   static private final byte[] head = {0x0e, 0x03, 0x13, 0x01};
@@ -57,18 +59,11 @@ public class H4header {
   static private final long maxHeaderPos = 500000; // header's gotta be within this
 
   static boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    long pos = 0;
-    long size = raf.length();
-
-    // search forward for the header
-    while ((pos < (size - head.length)) && (pos < maxHeaderPos)) {
-      raf.seek(pos);
-      String magic = raf.readString(head.length);
-      if (magic.equals(shead))
-        return true;
-      pos = (pos == 0) ? 512 : 2 * pos;
+    switch (checkFileType(raf)) {
+    case NC_FORMAT_HDF4:
+	return true;
+    default: break;
     }
-
     return false;
   }
 

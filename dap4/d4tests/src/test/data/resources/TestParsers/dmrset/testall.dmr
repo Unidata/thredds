@@ -46,7 +46,7 @@
   <Float32 name="tempb">
     <Dim name="/lat"/>
     <Dim name="/lon"/>
-    <Dim name="d2"/>
+    <Dim name="/g1/d2"/>
     <Map name="/lat"/>
     <Map name="/lon"/>
   </Float32>

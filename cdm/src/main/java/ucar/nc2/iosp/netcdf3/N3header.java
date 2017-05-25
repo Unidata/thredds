@@ -35,6 +35,7 @@ package ucar.nc2.iosp.netcdf3;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.NCheader;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.util.*;
@@ -47,25 +48,26 @@ import java.io.IOException;
  * @author caron
  */
 
-public class N3header {
+public class N3header extends NCheader
+{
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(N3header.class);
-  static private final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
 
   static final byte[] MAGIC = new byte[]{0x43, 0x44, 0x46, 0x01};
+  static private final long MAX_UNSIGNED_INT = 0x00000000ffffffffL;
+
   static final byte[] MAGIC_LONG = new byte[]{0x43, 0x44, 0x46, 0x02}; // 64-bit offset format : only affects the variable offset value
   static final int MAGIC_DIM = 10;
   static final int MAGIC_VAR = 11;
   static final int MAGIC_ATT = 12;
 
   static public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {
-    // this is the first time we try to read the file - if there's a problem we get a IOException
-    raf.seek(0);
-    byte[] b = new byte[4];
-    raf.readFully(b);
-    for (int i = 0; i < 3; i++)
-      if (b[i] != MAGIC[i])
-        return false;
-    return ((b[3] == 1) || (b[3] == 2));
+    switch (checkFileType(raf)) {
+    case NC_FORMAT_NETCDF3:
+    case NC_FORMAT_64BIT_OFFSET:
+	return true;
+    default: break;
+    }
+    return false;
   }
 
   static public boolean disallowFileTruncation = false;  // see NetcdfFile.setDebugFlags

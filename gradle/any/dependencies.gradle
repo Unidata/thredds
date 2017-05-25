@@ -1,4 +1,4 @@
-// Gradle dependency managment.
+// Gradle dependency management.
 // This technique was inspired by: http://stackoverflow.com/questions/9547170
 
 //================================================ Repositories ================================================//
@@ -32,13 +32,11 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.3"
+libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.5"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3"
-
-libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:3.1.0"
 
 libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.1"
 
@@ -46,7 +44,7 @@ libraries["license-gradle-plugin"] = "gradle.plugin.nl.javadude.gradle.plugins:l
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.3.2.RELEASE"
+versions["spring"] = "4.3.8.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -60,13 +58,7 @@ libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spri
 
 ////////////////////////////////////////// Spring security //////////////////////////////////////////
 
-// Latest update is 4.1.3.RELEASE. However, we cannot upgrade due to an error:
-//   Configuration problem: You cannot use a spring-security-4.0.xsd schema with Spring Security 4.1.
-//   Please update your schema declarations to the 4.1 schema.
-//   Offending resource: ServletContext resource [/WEB-INF/applicationContext.xml]
-versions["spring-security"] = "4.0.4.RELEASE"
-
-libraries["spring-security-core"] = "org.springframework.security:spring-security-core:${versions["spring-security"]}"
+versions["spring-security"] = "4.2.2.RELEASE"
 
 libraries["spring-security-config"] = "org.springframework.security:spring-security-config:${versions["spring-security"]}"
 
@@ -127,6 +119,8 @@ libraries["commons-io"] = "commons-io:commons-io:2.5"
 
 libraries["commons-compress"] = "org.apache.commons:commons-compress:1.12"
 
+libraries["xmlunit-core"] = "org.xmlunit:xmlunit-core:2.3.0"
+
 // These four are all for Spock.
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
 
@@ -186,7 +180,11 @@ libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"
 
 // Latest version is 3.10.1. Can we upgrade?
-libraries["chronicle-map"] = "net.openhft:chronicle-map:2.4.15"
+libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:2.4.15") {
+    // We do not need XStream for our use of chronicle-map.
+    // Nuke it.
+    exclude group: 'com.thoughtworks.xstream', module: 'xstream'
+}
 
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
@@ -203,7 +201,7 @@ libraries["oro"] = "oro:oro:2.0.8"
 // The latest version is 3.0.1.RELEASE. Can we update?
 libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
 
-versions["edal"] = "1.2.5"
+versions["edal"] = "1.2.7"
 
 libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
 
@@ -278,53 +276,43 @@ libraries["json"] = "org.glassfish:javax.json:1.0.4"
 configurations.all {
     resolutionStrategy {
         // Replace every instance of "commons-logging" in the dependency tree with "jcl-over-slf4j". This effectively
-        // converts every JCL call to an slf4j call. Pulled in by the following first-level dependencies:
-        //     org.apache.httpcomponents:httpclient:4.5.2
-        //     +--- org.apache.httpcomponents:httpcore:4.4.4 -> 4.4.5
-        //     +--- commons-logging:commons-logging:1.2
-        //
-        //     org.springframework:spring-core:4.3.2.RELEASE
-        //     \--- commons-logging:commons-logging:1.2
-        //
-        //     +--- uk.ac.rdg.resc:edal-graphics:1.2.5-SNAPSHOT
-        //     |    +--- net.sf.json-lib:json-lib:2.4
-        //     |    |    +--- commons-beanutils:commons-beanutils:1.8.0
-        //     |    |    |    \--- commons-logging:commons-logging:1.1.1 -> 1.2
-        //     |    |    +--- commons-logging:commons-logging:1.1.1 -> 1.2
+        // converts every JCL call to an slf4j call. We can see the first-level dependencies that drag in
+        // "commons-logging" by commenting-out the rule below and running:
+        /*
+            ./gradlew -q tds:dependencyInsight --configuration runtime --dependency commons-logging
+            commons-logging:commons-logging:1.2
+            +--- org.apache.httpcomponents:httpclient:4.5.2
+            |    ...
+            \--- org.springframework:spring-core:4.3.8.RELEASE
+                 ...
+         */
         eachDependency { DependencyResolveDetails dep ->
             if (dep.requested.name == 'commons-logging') {
                 dep.useTarget libraries["jcl-over-slf4j"]
             }
         }
-
-        // Use commons-collections 3.2.2 instead of 3.2.1. Pulled in by the following first-level dependencies:
-        //     uk.ac.rdg.resc:edal-graphics:1.2.5-SNAPSHOT
-        //     +--- net.sf.json-lib:json-lib:2.4
-        //     |    +--- commons-collections:commons-collections:3.2.1
-        //     \--- org.apache.velocity:velocity:1.7
-        //          +--- commons-collections:commons-collections:3.2.1
-        force 'commons-collections:commons-collections:3.2.2'
-    
-        // Use xstream 1.4.9 instead of 1.4.8. Pulled in by the following first-level dependency:
-        //     net.openhft:chronicle-map:2.4.15
-        //     +--- com.thoughtworks.xstream:xstream:1.4.8
-        force 'com.thoughtworks.xstream:xstream:1.4.9'
     }
-
-    // STAX comes with Java 1.6+. Pulled in by the following first-level dependencies:
-    //     net.openhft:chronicle-map:2.4.15
-    //     +--- org.codehaus.jettison:jettison:1.3.7
-    //     |    \--- stax:stax-api:1.0.1
-    //
-    //     org.apache.xmlbeans:xmlbeans:2.6.0
-    //     \--- stax:stax-api:1.0.1
+    
+    // STAX is already included in Java 1.6+; no need for a third-party depenency.
+    /*
+        ./gradlew -q tds:dependencyInsight --configuration runtime --dependency stax-api
+        stax:stax-api:1.0.1
+        +--- org.apache.xmlbeans:xmlbeans:2.6.0
+        |    ...
+        \--- org.codehaus.jettison:jettison:1.3.7
+             \--- net.openhft:chronicle-map:2.4.15
+                  ...
+     */
     exclude group: 'stax', module: 'stax-api'
-
-    // Another SLF4J binding that we don't want. Pulled in by the following first-level dependencies:
-    //     uk.ac.rdg.resc:edal-common:1.2.5-SNAPSHOT
-    //     +--- org.slf4j:slf4j-log4j12:1.7.2
-    //
-    //     uk.ac.rdg.resc:edal-godiva:1.2.5-SNAPSHOT
-    //     \--- org.slf4j:slf4j-log4j12:1.7.2 (*)
+    
+    // Another SLF4J binding that we don't want.
+    /*
+        ./gradlew -q tds:dependencyInsight --configuration runtime --dependency slf4j-log4j12
+        org.slf4j:slf4j-log4j12:1.7.2
+        +--- uk.ac.rdg.resc:edal-common:1.2.7
+        |    ...
+        \--- uk.ac.rdg.resc:edal-godiva:1.2.7
+             ...
+     */
     exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }

@@ -13,7 +13,7 @@ dependencies {
     compile project(':cdm')
     compile project(':opendap')
 
-    provided libraries["javax.servlet-api"]
+    compileOnly libraries["javax.servlet-api"]
     runtime libraries["taglibs-standard-spec"]
     runtime libraries["taglibs-standard-impl"]
 

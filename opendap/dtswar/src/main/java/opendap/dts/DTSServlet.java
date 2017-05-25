@@ -393,7 +393,6 @@ public class DTSServlet extends AbstractServlet
 
         if(Debug.isSet("showException")) {
             log.error(pe.toString());
-            pe.printStackTrace();
             printThrowable(pe);
         }
 
@@ -507,7 +506,6 @@ public class DTSServlet extends AbstractServlet
                     RequestDebug reqD = (RequestDebug) rs.getUserObject();
                     log.error("  request number: " + reqD.reqno + " thread: " + reqD.threadDesc);
                 }
-                e.printStackTrace();
                 printThrowable(e);
             }
 
@@ -528,7 +526,6 @@ public class DTSServlet extends AbstractServlet
     {
         try {
             log.error("DODServlet ERROR (anyExceptionHandler): " + e);
-            e.printStackTrace();
             printThrowable(e);
             // Strip any double quotes out of the parser error message.
             // These get stuck in auto-magically by the javacc generated parser
@@ -1768,7 +1765,9 @@ public class DTSServlet extends AbstractServlet
      * @param request
      * @return the request state
      */
-    protected ReqState getRequestState(HttpServletRequest request, HttpServletResponse response)
+    protected ReqState
+    getRequestState(HttpServletRequest request, HttpServletResponse response)
+	throws DAP2Exception
     {
         ReqState rs = null;
         // The url and query strings will come to us in encoded form

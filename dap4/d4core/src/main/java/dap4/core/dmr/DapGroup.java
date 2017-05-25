@@ -195,7 +195,7 @@ public class DapGroup extends DapNode implements DapDecl
                 return attr;
             case DIMENSION:
                 for(DapDimension x : dimensions) {
-                    if(x.getShortName().equals(name))
+                    if(x.getShortName() != null && x.getShortName().equals(name))
                         return x;
                 }
                 break;
