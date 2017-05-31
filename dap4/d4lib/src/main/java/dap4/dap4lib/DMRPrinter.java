@@ -72,14 +72,15 @@ public class DMRPrinter
         this(dmr, null, writer, null);
     }
 
-    public DMRPrinter(DapDataset dmr, CEConstraint ce, PrintWriter writer, ResponseFormat format)
+    public DMRPrinter(DapDataset dmr, CEConstraint ce, PrintWriter writer, ContentType ct)
     {
         this();
         this.dmr = dmr;
         this.ce = ce;
         this.writer = writer;
         this.printer = new IndentWriter(writer);
-        this.format = (format == null ? ResponseFormat.XML : format);
+        this.format = (ct == null ? ResponseFormat.XML
+                                  : ct.getResponseFormat());
     }
 
     //////////////////////////////////////////////////

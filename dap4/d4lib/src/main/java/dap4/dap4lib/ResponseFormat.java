@@ -3,21 +3,31 @@
 */
 
 
-package dap4.core.util;
+package dap4.dap4lib;
 
 /**
-Define the enum for the possible Response/Response modes
+Define the enum for the possible Response formats
 */
+
 public enum ResponseFormat {
-    TEXT("txt"),
-    XML("xml"),
-    HTML("html"),
-    NONE(null);
+    TEXT("txt","text/plain"),
+    XML("xml","text/xml"),
+    HTML("html","text/html"),
+    PROTOBUF("proto3","application/protobuf3");
 
     private String format;
-    ResponseFormat(String format) {this.format = format;}
+    private String mimetype;
+
+    ResponseFormat(String format, String mimetype)
+    {
+	this.format = format;
+	this.mimetype = mimetype;
+    }
 
     public String format() {return format;}
+    public String mimetype() {return mimetype;}
+    // Currently always utf-8
+    public String charset() {return "utf-8";} 
 
     static public ResponseFormat formatFor(String s)
     {

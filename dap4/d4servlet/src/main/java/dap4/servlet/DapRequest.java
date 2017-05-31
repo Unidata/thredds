@@ -6,7 +6,6 @@ package dap4.servlet;
 import dap4.core.data.ChecksumMode;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.core.util.ResponseFormat;
 import dap4.dap4lib.Dap4Util;
 import dap4.dap4lib.DapLog;
 import dap4.dap4lib.RequestMode;
@@ -60,9 +59,6 @@ public class DapRequest
     protected String server = null; // scheme + host + port
     protected String controllerpath = null; // scheme + host + port + prefix of path thru servlet Notes
     protected String datasetpath = null; // past controller path; char(0) != '/'
-
-    protected RequestMode mode = null; // .dmr, .dap, or .dsr
-    protected ResponseFormat format = null; // e.g. .xml when given .dmr.xml
 
     protected Map<String, String> queries = new HashMap<String, String>();
     protected DapController controller = null;
@@ -188,44 +184,6 @@ public class DapRequest
         this.datasetpath = HTTPUtil.relpath(sp);
         this.datasetpath = DapUtil.nullify(this.datasetpath);
 
-        this.mode = null;
-        if(this.datasetpath == null) {
-            // Presume mode is a capabilities request
-            this.mode = RequestMode.CAPABILITIES;
-            this.format = ResponseFormat.HTML;
-        } else {
-            // Decompose path by '.'
-            String[] pieces = this.datasetpath.split("[.]");
-            // Search backward looking for the mode (dmr or dap)
-            // meanwhile capturing the format extension
-            int modepos = 0;
-            for(int i = pieces.length - 1; i >= 1; i--) {//ignore first piece
-                String ext = pieces[i];
-                // We assume that the set of response formats does not interset the set of request modes
-                RequestMode mode = RequestMode.modeFor(ext);
-                ResponseFormat format = ResponseFormat.formatFor(ext);
-                if(mode != null) {
-                    // Stop here
-                    this.mode = mode;
-                    modepos = i;
-                    break;
-                } else if(format != null) {
-                    if(this.format != null)
-                        throw new DapException("Multiple response formats specified: " + ext)
-                                .setCode(HttpServletResponse.SC_BAD_REQUEST);
-                    this.format = format;
-                }
-            }
-            // Set the datasetpath to the entire path before the mode defining extension.
-            if(modepos > 0)
-                this.datasetpath = DapUtil.join(pieces, ".", 0, modepos);
-        }
-
-        if(this.mode == null)
-            this.mode = RequestMode.DSR;
-        if(this.format == null)
-            this.format = ResponseFormat.NONE;
-
         // Parse the query string into a Map
         if(querystring != null && querystring.length() > 0)
             this.queries = xuri.getQueryFields();
@@ -250,7 +208,6 @@ public class DapRequest
 
         if(DEBUG) {
             DapLog.debug("DapRequest: controllerpath =" + this.controllerpath);
-            DapLog.debug("DapRequest: extension=" + (this.mode == null ? "null" : this.mode.extension()));
             DapLog.debug("DapRequest: datasetpath=" + this.datasetpath);
         }
     }
@@ -326,14 +283,9 @@ public class DapRequest
         return this.controllerpath + (this.datasetpath == null ? "" : this.datasetpath);
     }
 
-    public RequestMode getMode()
+    public String getRequestHeader(String name)
     {
-        return this.mode;
-    }
-
-    public ResponseFormat getFormat()
-    {
-        return this.format;
+	return this.request.getHeader(name);
     }
 
     /**

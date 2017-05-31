@@ -2,7 +2,7 @@
 <DatasetServices
         xmlns="http://xml.opendap.org/ns/DAP/4.0/dataset-services#">
     <DapVersion>4.0</DapVersion>
-    <ServerSoftwareVersion>TDS-4</ServerSoftwareVersion>
+    <ServerSoftwareVersion>TDS-5</ServerSoftwareVersion>
     <Service title="DAP4 Dataset Services"
                 role="http://services.opendap.org/dap4/dataset-services">
         <link type="application/vnd.opendap.dap4.dataset-services+xml"

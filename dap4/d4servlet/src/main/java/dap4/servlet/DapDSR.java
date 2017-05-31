@@ -37,7 +37,7 @@ public class DapDSR
     // API
 
     public String generate(String dataseturl)
-        throws IOException
+            throws IOException
     {
         StringWriter sw = new StringWriter();
         IndentWriter printer = new IndentWriter(sw);
@@ -58,7 +58,7 @@ public class DapDSR
         printer.outdent(3);
         printer.indent();
         printer.marginPrint("<link type=\"");
-        printer.print(DapProtocol.contenttypes.get(RequestMode.DSR).contenttype);
+        printer.print(DapProtocol.defaultmimetype(RequestMode.DSR));
         printer.println("\"");
         printer.indent(2);
         printer.marginPrint("href=\"");
@@ -84,7 +84,7 @@ public class DapDSR
         printer.outdent(3);
         printer.indent();
         printer.marginPrint("<link type=\"");
-        printer.print(DapProtocol.contenttypes.get(RequestMode.DMR).contenttype);
+        printer.print(DapProtocol.defaultmimetype(RequestMode.DMR));
         printer.println("\"");
         printer.indent(2);
         printer.marginPrint("href=\"");
@@ -110,7 +110,7 @@ public class DapDSR
         printer.outdent(2);
         printer.indent();
         printer.marginPrint("<link type=\"");
-        printer.print(DapProtocol.contenttypes.get(RequestMode.DAP).contenttype);
+        printer.print(DapProtocol.defaultmimetype(RequestMode.DAP));
         printer.println("\"");
         printer.indent(2);
         printer.marginPrint("href=\"");

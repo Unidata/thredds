@@ -8,9 +8,7 @@ import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.dap4lib.DapCodes;
-import dap4.dap4lib.DapLog;
-import dap4.dap4lib.FileDSP;
+import dap4.dap4lib.*;
 import dap4.dap4lib.netcdf.Nc4DSP;
 import dap4.servlet.*;
 
@@ -39,6 +37,9 @@ public class D4TSServlet extends DapController
     static final boolean PARSEDEBUG = false;
 
     static protected final String RESOURCEPATH = "WEB-INF/resources";
+
+    static protected final ContentType CAPTYPE = new ContentType(RequestMode.CAPABILITIES,ResponseFormat.XML, "text/xml");
+
 
     //////////////////////////////////////////////////
     // Type Decls
@@ -120,7 +121,8 @@ public class D4TSServlet extends DapController
     doCapabilities(DapRequest drq, DapContext cxt)
             throws IOException
     {
-        addCommonHeaders(drq);
+
+        addCommonHeaders(drq,CAPTYPE);
 
         // Generate the front page
         FrontPage front = getFrontPage(drq, cxt);

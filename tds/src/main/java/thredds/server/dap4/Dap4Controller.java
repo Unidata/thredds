@@ -8,8 +8,8 @@ import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.dap4lib.DapCodes;
-import dap4.dap4lib.DapLog;
+import dap4.core.util.IndentWriter;
+import dap4.dap4lib.*;
 import dap4.servlet.DSPFactory;
 import dap4.servlet.DapCache;
 import dap4.servlet.DapController;
@@ -36,6 +36,9 @@ public class Dap4Controller extends DapController
     static final boolean DEBUG = false;
 
     static final boolean PARSEDEBUG = false;
+
+    static protected final ContentType CAPTYPE = new ContentType(RequestMode.CAPABILITIES, ResponseFormat.XML, "text/xml");
+
 
     // NetcdfDataset enhancement to use: need only coord systems
     //static Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
@@ -115,10 +118,10 @@ public class Dap4Controller extends DapController
     doCapabilities(DapRequest drq, DapContext cxt)
             throws IOException
     {
-        addCommonHeaders(drq);
+        addCommonHeaders(drq,CAPTYPE);
         OutputStream out = drq.getOutputStream();
         PrintWriter pw = new PrintWriter(new OutputStreamWriter(out, DapUtil.UTF8));
-        pw.println("Capabilities page not supported");
+        pw.println(generate());
         pw.flush();
     }
 
@@ -160,6 +163,79 @@ public class Dap4Controller extends DapController
         //ncfile = TdsRequestedDataset.getNetcdfFile(this.request, this.response, path);
         return realpath;
     }
+
+    /**
+     * generate the capabilities document (currently subset of DSR).
+     * @return the capabilities page
+     * @throws IOException
+     */
+    protected String generate()
+               throws IOException
+       {
+           StringWriter sw = new StringWriter();
+           IndentWriter printer = new IndentWriter(sw);
+           printer.marginPrintln("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+           printer.marginPrintln("<Capabilities");
+           printer.indent(2);
+           printer.marginPrintln("xmlns=\"http://xml.opendap.org/ns/DAP/4.0/dataset-capabilities#\">");
+           printer.outdent();
+           printer.marginPrint("<DapVersion>");
+           printer.print(DapProtocol.X_DAP_VERSION);
+           printer.println("</DapVersion>");
+           printer.marginPrint("<ServerSoftwareVersion>");
+           printer.print(DapProtocol.X_DAP_SERVER);
+           printer.println("</ServerSoftwareVersion>");
+
+           printer.marginPrintln("<Service title=\"DAP4 Dataset Services\"");
+           printer.indent(3);
+           printer.marginPrintln("role=\"http://services.opendap.org/dap4/dataset-services\">");
+           printer.outdent(3);
+           printer.indent();
+           printer.marginPrint("<link type=\"");
+           printer.print(DapProtocol.defaultmimetype(RequestMode.DSR));
+           printer.println("\">");
+           printer.indent();
+           printer.marginPrintln("<alt type=\"text/xml\"/>");
+           printer.outdent();
+           printer.marginPrintln("</link>");
+           printer.marginPrintln("<link type=\"text/xml\">");
+           printer.outdent();
+           printer.marginPrintln("</Service>");
+
+           printer.marginPrintln("<Service title=\"DAP4 Dataset Metadata\"");
+           printer.indent(3);
+           printer.marginPrintln("role=\"http://services.opendap.org/dap4/dataset-metadata\">");
+           printer.outdent(3);
+           printer.indent();
+           printer.marginPrint("<link type=\"");
+           printer.print(DapProtocol.defaultmimetype(RequestMode.DMR));
+           printer.println("\">");
+           printer.indent();
+           printer.marginPrintln("<alt type=\"text/xml\"/>");
+           printer.outdent();
+           printer.marginPrintln("</link>");
+           printer.marginPrintln("<link type=\"text/xml\">");
+           printer.outdent();
+           printer.marginPrintln("</Service>");
+
+           printer.marginPrintln("<Service title=\"DAP4 Dataset Data\"");
+           printer.indent(2);
+           printer.marginPrintln("role=\"http://services.opendap.org/dap4/data\">");
+           printer.outdent(2);
+           printer.indent();
+           printer.marginPrint("<link type=\"");
+           printer.print(DapProtocol.defaultmimetype(RequestMode.DAP));
+           printer.println("\"/>");
+           printer.outdent();
+           printer.marginPrintln("</Service>");
+           printer.outdent();
+           printer.marginPrintln("</Capabilities>");
+
+           printer.flush();
+           printer.close();
+           sw.close();
+           return sw.toString();
+       }
 
 }
 

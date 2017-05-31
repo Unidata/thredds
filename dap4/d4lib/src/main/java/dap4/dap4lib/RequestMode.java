@@ -9,15 +9,27 @@ package dap4.dap4lib;
 Define the enum for the possible Request/Response modes
 */
 public enum RequestMode {
-    DMR("dmr"),
-    DAP("dap"),
-    DSR("dsr"),
-    CAPABILITIES(null),
-    ERROR(null);
+    DMR("dmr", "application/vnd.opendap.dap4.dataset-metadata",ResponseFormat.XML),
+    DAP("dap", "application/vnd.opendap.dap4.data",null),
+    DSR("dsr","application/vnd.opendap.dap4.dataset-services",ResponseFormat.XML),
+    CAPABILITIES(null,null,ResponseFormat.XML),
+    ERROR(null,null,ResponseFormat.XML);
 
     private String extension;
-    RequestMode(String extension) {this.extension = extension;}
-    public String extension() {return extension;}
+    private String normative;
+    private ResponseFormat defaultformat;
+
+    RequestMode(String extension, String norm, ResponseFormat fmt)
+    {
+	this.extension = extension;
+	this.normative = norm;
+	this.defaultformat = fmt;
+    }
+
+    public String extension() {return this.extension;}
+    public String normative() {return this.normative;}
+    public ResponseFormat defaultFormat() {return this.defaultformat;}
+
     static public RequestMode modeFor(String s)
     {
         for(RequestMode mode: RequestMode.values())  {

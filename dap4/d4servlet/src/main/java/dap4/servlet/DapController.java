@@ -12,7 +12,10 @@ import dap4.core.dmr.DapAttribute;
 import dap4.core.dmr.DapDataset;
 import dap4.core.dmr.DapType;
 import dap4.core.dmr.ErrorResponse;
-import dap4.core.util.*;
+import dap4.core.util.DapContext;
+import dap4.core.util.DapDump;
+import dap4.core.util.DapException;
+import dap4.core.util.DapUtil;
 import dap4.dap4lib.*;
 
 import javax.servlet.ServletException;
@@ -218,22 +221,21 @@ abstract public class DapController extends HttpServlet
             if(datasetpath == null) {
                 // This is the case where a request was made without a dataset;
                 // According to the spec, I think we should return the
-                // services/capabilities document
+                // capabilities document
                 doCapabilities(daprequest, dapcxt);
             } else {
-                RequestMode mode = daprequest.getMode();
-                if(mode == null)
-                    throw new DapException("Unrecognized request extension")
-                            .setCode(HttpServletResponse.SC_BAD_REQUEST);
-                switch (mode) {
+                // Ok, Figure out the Request/Response/Content info
+                ContentType content = ContentFactory.contentTypeFor(datasetpath,
+                        daprequest.getRequestHeader("Accept"));
+                switch (content.getRequestMode()) {
                 case DMR:
-                    doDMR(daprequest, dapcxt);
+                    doDMR(daprequest, dapcxt, content);
                     break;
                 case DAP:
-                    doData(daprequest, dapcxt);
+                    doData(daprequest, dapcxt, content);
                     break;
                 case DSR:
-                    doDSR(daprequest, dapcxt);
+                    doDSR(daprequest, dapcxt, content);
                     break;
                 default:
                     throw new DapException("Unrecognized request extension")
@@ -267,19 +269,19 @@ abstract public class DapController extends HttpServlet
     // Extension processors
 
     /**
-     * Process a DSR request.
+     * Default implementation for a DSR request.
      * * @param cxt     The dap context
      */
 
     protected void
-    doDSR(DapRequest drq, DapContext cxt)
+    doDSR(DapRequest drq, DapContext cxt, ContentType ct)
             throws IOException
     {
         try {
             DapDSR dsrbuilder = new DapDSR();
             String dsr = dsrbuilder.generate(drq.getURL());
             OutputStream out = drq.getOutputStream();
-            addCommonHeaders(drq);// Add relevant headers
+            addCommonHeaders(drq, ct);// Add relevant headers
             // Wrap the outputstream with a Chunk writer
             ByteOrder order = (ByteOrder) cxt.get(Dap4Util.DAP4ENDIANTAG);
             ChunkWriter cw = new ChunkWriter(out, RequestMode.DSR, order);
@@ -298,7 +300,7 @@ abstract public class DapController extends HttpServlet
      */
 
     protected void
-    doDMR(DapRequest drq, DapContext cxt)
+    doDMR(DapRequest drq, DapContext cxt, ContentType ct)
             throws IOException
     {
         // Convert the url to an absolute path
@@ -322,7 +324,7 @@ abstract public class DapController extends HttpServlet
         PrintWriter pw = new PrintWriter(sw);
 
         // Get the DMR as a string
-        DMRPrinter dapprinter = new DMRPrinter(dmr, ce, pw, drq.getFormat());
+        DMRPrinter dapprinter = new DMRPrinter(dmr, ce, pw, ct);
         if(cxt.get(Dap4Util.DAP4TESTTAG) != null)
             dapprinter.testprint();
         else
@@ -334,7 +336,7 @@ abstract public class DapController extends HttpServlet
         if(DEBUG)
             System.err.println("Sending: DMR:\n" + sdmr);
 
-        addCommonHeaders(drq);// Add relevant headers
+        addCommonHeaders(drq, ct);// Add relevant headers
 
         // Wrap the outputstream with a Chunk writer
         OutputStream out = drq.getOutputStream();
@@ -354,7 +356,7 @@ abstract public class DapController extends HttpServlet
      */
 
     protected void
-    doData(DapRequest drq, DapContext cxt)
+    doData(DapRequest drq, DapContext cxt, ContentType ct)
             throws IOException
     {
         // Convert the url to an absolute path
@@ -384,7 +386,7 @@ abstract public class DapController extends HttpServlet
         PrintWriter pw = new PrintWriter(sw);
 
         // Get the DMR as a string
-        DMRPrinter dapprinter = new DMRPrinter(dmr, ce, pw, drq.getFormat());
+        DMRPrinter dapprinter = new DMRPrinter(dmr, ce, pw, ct);
         dapprinter.print();
         pw.close();
         sw.close();
@@ -400,21 +402,23 @@ abstract public class DapController extends HttpServlet
         cw.cacheDMR(sdmr);
         cw.flush();
 
-        addCommonHeaders(drq);
+        addCommonHeaders(drq, ct);
 
         // Dump the databuffer part
-        switch (drq.getFormat()) {
+        ResponseFormat format = ct.getResponseFormat();
+        if(format == null)
+            format = ct.getRequestMode().defaultFormat();
+        switch(format) {
         case TEXT:
         case XML:
         case HTML:
-            throw new IOException("Unsupported return format: " + drq.getFormat());
+            throw new IOException("Unsupported return format: " + format);
             /*
             sw = new StringWriter();
             DAPPrint dp = new DAPPrint(sw);
             dp.print(dsp.getDataset(), ce);
             break;
                 */
-        case NONE:
         default:
             DapSerializer writer = new DapSerializer(dsp, ce, cw, order, drq.getChecksumMode());
             writer.write(dsp.getDMR());
@@ -434,20 +438,14 @@ abstract public class DapController extends HttpServlet
     // Utility Methods
 
     protected void
-    addCommonHeaders(DapRequest drq)
+    addCommonHeaders(DapRequest drq, ContentType ct)
             throws IOException
     {
-        // Add relevant headers
-        ResponseFormat format = drq.getFormat();
-        if(format == null)
-            format = ResponseFormat.NONE;
-        DapProtocol.ContentType contentheaders = DapProtocol.contenttypes.get(drq.getMode());
-        String header = contentheaders.getFormat(format);
-        if(header != null) {
-            header = header + "; charset=utf-8";
-            drq.setResponseHeader("Content-Type", header);
-        } else
-            DapLog.error("Cannot determine response Content-Type");
+        // Add Content-Type header
+        drq.setResponseHeader("Content-Type", ct.getMimeType());
+
+        drq.setResponseHeader("X-DAP-Server", DapProtocol.X_DAP_SERVER);
+        drq.setResponseHeader("X-DAP", DapProtocol.X_DAP_VERSION);
 
         // Not sure what this should be yet
         //setHeader("Content-Description","?");

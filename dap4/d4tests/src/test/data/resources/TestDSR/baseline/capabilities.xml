@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Capabilities
+        xmlns="http://xml.opendap.org/ns/DAP/4.0/dataset-capabilities#">
+    <DapVersion>4.0</DapVersion>
+    <ServerSoftwareVersion>TDS-5</ServerSoftwareVersion>
+    <Service title="DAP4 Dataset Services"
+                role="http://services.opendap.org/dap4/dataset-services">
+        <link type="application/vnd.opendap.dap4.dataset-services+xml">
+            <alt type="text/xml"/>
+        </link>
+        <link type="text/xml">
+    </Service>
+    <Service title="DAP4 Dataset Metadata"
+                role="http://services.opendap.org/dap4/dataset-metadata">
+        <link type="application/vnd.opendap.dap4.dataset-metadata+xml">
+            <alt type="text/xml"/>
+        </link>
+        <link type="text/xml">
+    </Service>
+    <Service title="DAP4 Dataset Data"
+            role="http://services.opendap.org/dap4/data">
+        <link type="application/vnd.opendap.dap4.data"/>
+    </Service>
+</Capabilities>
