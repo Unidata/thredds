@@ -38,7 +38,7 @@ public class D4TSServlet extends DapController
 
     static protected final String RESOURCEPATH = "WEB-INF/resources";
 
-    static protected final ContentType CAPTYPE = new ContentType(RequestMode.CAPABILITIES,ResponseFormat.XML, "text/xml");
+    static protected final ContentType CAPTYPE = new ContentType(RequestMode.CAPABILITIES,ResponseFormat.XML);
 
 
     //////////////////////////////////////////////////

@@ -162,7 +162,7 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_struct_type.nc");
+            chosentests = locate("test_fill.nc");
             prop_visual = true;
             prop_generate = false;
             prop_baseline = false;

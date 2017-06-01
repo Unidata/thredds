@@ -37,7 +37,7 @@ public class Dap4Controller extends DapController
 
     static final boolean PARSEDEBUG = false;
 
-    static protected final ContentType CAPTYPE = new ContentType(RequestMode.CAPABILITIES, ResponseFormat.XML, "text/xml");
+    static protected final ContentType CAPTYPE = new ContentType(RequestMode.CAPABILITIES, ResponseFormat.XML);
 
 
     // NetcdfDataset enhancement to use: need only coord systems

@@ -224,18 +224,16 @@ abstract public class DapController extends HttpServlet
                 // capabilities document
                 doCapabilities(daprequest, dapcxt);
             } else {
-                // Ok, Figure out the Request/Response/Content info
-                ContentType content = ContentFactory.contentTypeFor(datasetpath,
-                        daprequest.getRequestHeader("Accept"));
+                ContentType content = daprequest.getContentType();
                 switch (content.getRequestMode()) {
                 case DMR:
-                    doDMR(daprequest, dapcxt, content);
+                    doDMR(daprequest, dapcxt);
                     break;
                 case DAP:
-                    doData(daprequest, dapcxt, content);
+                    doData(daprequest, dapcxt);
                     break;
                 case DSR:
-                    doDSR(daprequest, dapcxt, content);
+                    doDSR(daprequest, dapcxt);
                     break;
                 default:
                     throw new DapException("Unrecognized request extension")
@@ -274,13 +272,14 @@ abstract public class DapController extends HttpServlet
      */
 
     protected void
-    doDSR(DapRequest drq, DapContext cxt, ContentType ct)
+    doDSR(DapRequest drq, DapContext cxt)
             throws IOException
     {
         try {
             DapDSR dsrbuilder = new DapDSR();
             String dsr = dsrbuilder.generate(drq.getURL());
             OutputStream out = drq.getOutputStream();
+            ContentType ct = drq.getContentType();
             addCommonHeaders(drq, ct);// Add relevant headers
             // Wrap the outputstream with a Chunk writer
             ByteOrder order = (ByteOrder) cxt.get(Dap4Util.DAP4ENDIANTAG);
@@ -300,11 +299,11 @@ abstract public class DapController extends HttpServlet
      */
 
     protected void
-    doDMR(DapRequest drq, DapContext cxt, ContentType ct)
+    doDMR(DapRequest drq, DapContext cxt)
             throws IOException
     {
         // Convert the url to an absolute path
-        String realpath = getResourcePath(drq, drq.getDatasetPath());
+        String realpath = getResourcePath(drq,drq.getDatasetPrefix());
 
         DSP dsp = DapCache.open(realpath, cxt);
         DapDataset dmr = dsp.getDMR();
@@ -318,6 +317,8 @@ abstract public class DapController extends HttpServlet
         String sce = drq.queryLookup(DapProtocol.CONSTRAINTTAG);
         ce = CEConstraint.compile(sce, dmr);
         setConstraint(dmr, ce);
+
+        ContentType ct = drq.getContentType();
 
         // Provide a PrintWriter for capturing the DMR.
         StringWriter sw = new StringWriter();
@@ -356,11 +357,11 @@ abstract public class DapController extends HttpServlet
      */
 
     protected void
-    doData(DapRequest drq, DapContext cxt, ContentType ct)
+    doData(DapRequest drq, DapContext cxt)
             throws IOException
     {
         // Convert the url to an absolute path
-        String realpath = getResourcePath(drq, drq.getDatasetPath());
+        String realpath = getResourcePath(drq,drq.getDatasetPrefix());
 
         DSP dsp = DapCache.open(realpath, cxt);
         if(dsp == null)
@@ -381,6 +382,8 @@ abstract public class DapController extends HttpServlet
         String sce = drq.queryLookup(DapProtocol.CONSTRAINTTAG);
         ce = CEConstraint.compile(sce, dmr);
         setConstraint(dmr, ce);
+
+        ContentType ct = drq.getContentType();
 
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

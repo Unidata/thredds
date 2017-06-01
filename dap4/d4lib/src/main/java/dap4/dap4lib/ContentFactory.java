@@ -43,35 +43,49 @@ import org.apache.http.HttpStatus;
 
 abstract public class ContentFactory
 {
+
+    static public class DatasetParse
+    {
+        public String prefix = null; // Prefix of the datasetpath with content type stripped
+        public RequestMode mode = null;
+        public ResponseFormat format = null;
+
+        public String toString()
+        {
+            StringBuilder buf = new StringBuilder();
+            buf.append("{");
+            if(this.prefix != null) buf.append(this.prefix);
+            buf.append(",");
+            if(this.mode != null) buf.append(this.mode);
+            buf.append(",");
+            if(this.format != null) buf.append(this.format);
+            buf.append("}");
+            return buf.toString();
+        }
+    }
+
+    /**
+     * Figure out the DAP4 ContentType defined by a datasetpath.
+     * It looks at the trailing sequence of extensions to figure
+     * out the mode (DMR, etc) and format (XML, etc).
+     *
+     * @param parse        The parse datasetpath
+     * @param acceptheader The value of any "Accept:" header for negotiation
+     * @return
+     * @throws DapException
+     */
     static public ContentType
-    contentTypeFor(String urlsuffix, String acceptheader)
+    contentTypeFor(DatasetParse parse, String acceptheader)
             throws DapException
     {
-        // Parse the url suffix to extract a complete list of extensions.
-        // The list is filtered to only include those defined in
-        // RequestMode and those defined in RequestFormat.
-        // For now. we expect to find at most two extensions:
-        // a mode possibly followed by a format. Note that
-        // extraneous extra extensions may be present -- like .nc
-
-        String[] pieces = urlsuffix.split("[.]");
-        RequestMode mode = null;
-        ResponseFormat format = null;
-
-        if(pieces.length >= 3) { // mode + format?
-            mode = RequestMode.modeFor(pieces[pieces.length - 2]);
-            format = ResponseFormat.formatFor(pieces[pieces.length - 1]);
-        } else if(pieces.length == 2) { // mode only?
-            mode = RequestMode.modeFor(pieces[pieces.length - 1]);
-        }
         // Decode
-        if(mode == null) // assume DSR
-            mode = RequestMode.DSR;
+        if(parse.mode == null) // assume DSR
+            parse.mode = RequestMode.DSR;
 
         // Now look at the Accept: header, if any
         ContentType acceptor = null;
         if(acceptheader != null) {
-            acceptor = Accept.parse(acceptheader,DapProtocol.legaltypes);
+            acceptor = Accept.parse(acceptheader, DapProtocol.legaltypes);
             if(acceptor == null)
                 throw new DapException("Malformed Accept: header")
                         .setCode(HttpStatus.SC_NOT_ACCEPTABLE);
@@ -91,24 +105,70 @@ abstract public class ContentFactory
          *    format and a specific alternate mimetype.
          */
 
-        StringBuilder mimetype = new StringBuilder();
-        if(format == null) { // case 1 or 2
+        boolean coerced = (parse.format != null); // specific format specified as extension
+        if(parse.format == null) { // case 1 or 2
             if(acceptor == null) // case 1
-                format = mode.defaultFormat();
+                parse.format = parse.mode.defaultFormat();
             else // case 2
-                format = acceptor.getResponseFormat();
-            mimetype.append(mode.normative());
+                parse.format = acceptor.getResponseFormat();
+        } // else case 3
+        if( parse.format == null)
+            assert parse.format != null;
+        StringBuilder mimetype = new StringBuilder();
+        if(coerced)
+            mimetype.append(parse.format.mimetype()); // Case 3
+        else
+            mimetype.append(parse.mode.normative());  // case 1 and 2
+        switch(parse.format) {
+        case SERIAL:
+            break;
+        default:
             mimetype.append("+");
-            mimetype.append(format.format());
-        } else // case 3 ; format != null
-            mimetype.append(format.mimetype());
-        if(format == null) // should not happen
-            throw new DapException("Cannot determine response format")
-                    .setCode(HttpStatus.SC_NOT_ACCEPTABLE);
+            mimetype.append(parse.format.format());
+        }
         // Add the charset
         mimetype.append("; charset=");
-        mimetype.append(format.charset());
-        ContentType ct = new ContentType(mode, format, mimetype.toString());
+        mimetype.append(parse.format.charset());
+        ContentType ct = new ContentType(parse.mode, parse.format).setMimeType(mimetype.toString());
         return ct;
+    }
+
+    /**
+     * Parse the url suffix to extract a complete list of extensions.
+     * The list is filtered to only include those defined in
+     * RequestMode and those defined in RequestFormat.
+     * For now. we expect to find at most two extensions:
+     * a mode possibly followed by a format. Note that
+     * extraneous extra extensions may be present -- like .nc
+     *
+     * @param datasetpath
+     * @return The parsed datasetpath
+     * @throws DapException
+     */
+    static public DatasetParse
+    datasetParse(String datasetpath)
+            throws DapException
+    {
+
+        String[] pieces = datasetpath.split("[.]");
+        DatasetParse parse = new DatasetParse();
+
+        int pos = pieces.length - 1;
+        // Start by trying to convert last element to a format
+        parse.format = ResponseFormat.formatFor(pieces[pos]);
+        if(parse.format == null) // Apparently no format, so see if last element is a mode
+            parse.mode = RequestMode.modeFor(pieces[pos]);
+        if(parse.mode == null && pos > 1) { // see if next to last is mode
+            pos--;
+            parse.mode = RequestMode.modeFor(pieces[pos]);
+        }
+        // Compute the prefix
+        StringBuilder prefix = new StringBuilder();
+        for(int i = 0; i < pos; i++) {
+            if(i > 0) prefix.append('.');
+            prefix.append(pieces[i]);
+        }
+        parse.prefix = prefix.toString();
+        return parse;
     }
 }

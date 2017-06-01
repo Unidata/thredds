@@ -23,13 +23,15 @@ abstract public class DapProtocol implements DapCodes
 
     static {
         legaltypes = new ArrayList<>();
-        legaltypes.add(new ContentType(RequestMode.DMR, ResponseFormat.XML, "text/xml"));
-        legaltypes.add(new ContentType(RequestMode.DMR, ResponseFormat.TEXT, "test/plain"));
-        legaltypes.add(new ContentType(RequestMode.DMR, ResponseFormat.HTML, "test/html"));
-        legaltypes.add(new ContentType(RequestMode.DAP, ResponseFormat.XML, "text/xml"));
-        legaltypes.add(new ContentType(RequestMode.DAP, ResponseFormat.TEXT, "test/plain"));
-        legaltypes.add(new ContentType(RequestMode.DAP, ResponseFormat.HTML, "test/html"));
-        legaltypes.add(new ContentType(RequestMode.DSR, ResponseFormat.XML, "text/xml"));
+        legaltypes.add(new ContentType(RequestMode.DMR, ResponseFormat.XML));
+        legaltypes.add(new ContentType(RequestMode.DMR, ResponseFormat.TEXT));
+        legaltypes.add(new ContentType(RequestMode.DMR, ResponseFormat.HTML));
+        legaltypes.add(new ContentType(RequestMode.DMR, ResponseFormat.PROTOBUF));
+        legaltypes.add(new ContentType(RequestMode.DAP, ResponseFormat.XML));
+        legaltypes.add(new ContentType(RequestMode.DAP, ResponseFormat.TEXT));
+        legaltypes.add(new ContentType(RequestMode.DAP, ResponseFormat.HTML));
+        legaltypes.add(new ContentType(RequestMode.DAP, ResponseFormat.PROTOBUF));
+        legaltypes.add(new ContentType(RequestMode.DSR, ResponseFormat.XML));
         //legaltypes.add(new ContentType(RequestMode.CAPABILITIES,ResponseFormat.XML, "text/xml"));
         //legaltypes.add(new ContentType(RequestMode.ERROR,ResponseFormat.XML, "text/xml"));
     }

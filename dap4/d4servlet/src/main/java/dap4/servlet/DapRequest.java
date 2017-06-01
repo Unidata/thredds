@@ -6,10 +6,7 @@ package dap4.servlet;
 import dap4.core.data.ChecksumMode;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.dap4lib.Dap4Util;
-import dap4.dap4lib.DapLog;
-import dap4.dap4lib.RequestMode;
-import dap4.dap4lib.XURI;
+import dap4.dap4lib.*;
 import ucar.httpservices.HTTPUtil;
 
 import javax.servlet.ServletContext;
@@ -68,6 +65,10 @@ public class DapRequest
     protected String resourceroot = null;
 
     protected ServletContext servletcontext = null;
+
+    // ContentType Related info
+    ContentType contenttype = null;
+    String datasetprefix = null; // datasetpath with content type info stripped
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -184,6 +185,11 @@ public class DapRequest
         this.datasetpath = HTTPUtil.relpath(sp);
         this.datasetpath = DapUtil.nullify(this.datasetpath);
 
+        String accepthdr = getRequestHeader("Accept");
+        ContentFactory.DatasetParse parse = ContentFactory.datasetParse(this.datasetpath);
+        this.contenttype = ContentFactory.contentTypeFor(parse,accepthdr);
+        this.datasetprefix = parse.prefix;
+
         // Parse the query string into a Map
         if(querystring != null && querystring.length() > 0)
             this.queries = xuri.getQueryFields();
@@ -257,6 +263,10 @@ public class DapRequest
         return (this.querystring == null ? this.url
                 : this.url + "?" + this.querystring);
     }
+
+    public ContentType getContentType() {return this.contenttype;}
+
+    public String getDatasetPrefix() {return this.datasetprefix;}
 
     public String getDataset()
     {
