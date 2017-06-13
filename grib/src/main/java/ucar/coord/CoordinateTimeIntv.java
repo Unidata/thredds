@@ -86,7 +86,6 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       else if (value != firstValue) return MIXED_INTERVALS;
     }
 
-    firstValue = (int) (firstValue * getTimeUnitScale());
     return firstValue + "_" + timeUnit.getField().toString();
   }
 
