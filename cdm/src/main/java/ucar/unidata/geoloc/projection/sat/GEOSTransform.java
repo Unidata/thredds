@@ -71,6 +71,7 @@ public class GEOSTransform {
 
   double sub_lon;
   double sub_lon_degrees;
+  double sat_height;
 
   public String scan_geom = GEOS;
 
@@ -148,6 +149,7 @@ public class GEOSTransform {
     } else if (scan_geom.equals(GOES)) {
       h = h_goesr;
     }
+    this.sat_height = h - r_eq;
 
     d = h * h - r_eq * r_eq;
   }
@@ -156,6 +158,7 @@ public class GEOSTransform {
     this.sub_lon_degrees = subLonDegrees;
     this.sub_lon = sub_lon_degrees * DEG_TO_RAD;
     this.scan_geom = scan_geom;
+    this.sat_height = perspective_point_height;
 
     r_pol = geoid.r_pol;
     r_eq = geoid.r_eq;
