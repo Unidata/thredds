@@ -147,7 +147,7 @@ public class Geostationary extends ProjectionImpl {
     addParameter(CF.GRID_MAPPING_NAME, NAME);
     addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, navigation.sub_lon_degrees);
     addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, 0.0);
-    // addParameter(CF.PERSPECTIVE_POINT_HEIGHT, navigation.sub_lon_degrees);   LOOK NOT USED ??
+    addParameter(CF.PERSPECTIVE_POINT_HEIGHT, navigation.sat_height * 1000.0);
     addParameter(CF.SWEEP_ANGLE_AXIS, navigation.scan_geom.equals(GEOSTransform.GOES) ? "x" : "y");
     addParameter(CF.SEMI_MAJOR_AXIS, navigation.r_eq * 1000.0);
     addParameter(CF.SEMI_MINOR_AXIS, navigation.r_pol * 1000.0);
