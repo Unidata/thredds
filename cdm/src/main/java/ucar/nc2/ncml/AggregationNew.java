@@ -144,6 +144,10 @@ public class AggregationNew extends AggregationOuterDimension {
     setDatasetAcquireProxy(typicalDataset, ncDataset);
     typicalDataset.close( typical); // close it because we use DatasetProxyReader to acquire
 
+    if (isDate && timeUnitsChange) {
+      readTimeCoordinates(ncDataset.findVariable(dimName), cancelTask);
+    }
+
     ncDataset.finish();
   }
 

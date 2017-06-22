@@ -6,8 +6,11 @@ package ucar.nc2.ncml;
 import thredds.inventory.MFile;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.DateFromString;
 import ucar.nc2.units.DateUnit;
 import ucar.nc2.util.CancelTask;
@@ -136,6 +139,71 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     }
   }
 
+  // time units change - must read in time coords and convert, cache the results
+  // must be able to be made into a CoordinateAxis1DTime
+  protected void readTimeCoordinates(Variable timeAxis, CancelTask cancelTask) throws IOException {
+    List<CalendarDate> dateList = new ArrayList<>();
+    String timeUnits = null;
+
+    // make concurrent
+    for (Dataset dataset : getDatasets()) {
+      NetcdfFile ncfile = null;
+      try {
+        ncfile = dataset.acquireFile(cancelTask);
+        Variable v = ncfile.findVariable(timeAxis.getFullNameEscaped());
+        if (v == null) {
+          logger.warn("readTimeCoordinates: variable = " + timeAxis.getFullName() + " not found in file " + dataset.getLocation());
+          return;
+        }
+        VariableDS vds = (v instanceof VariableDS) ? (VariableDS) v : new VariableDS(null, v, true);
+        CoordinateAxis1DTime timeCoordVar = CoordinateAxis1DTime.factory(ncDataset, vds, null);
+        dateList.addAll(timeCoordVar.getCalendarDates());
+
+        if (timeUnits == null)
+          timeUnits = v.getUnitsString();
+
+      } finally {
+        dataset.close(ncfile);
+      }
+      if (cancelTask != null && cancelTask.isCancel()) return;
+    }
+    assert timeUnits != null;
+
+    int[] shape = timeAxis.getShape();
+    int ntimes = shape[0];
+    assert (ntimes == dateList.size());
+
+    DataType coordType = (timeAxis.getDataType() == DataType.STRING) ? DataType.STRING : DataType.DOUBLE;
+    Array timeCoordVals = Array.factory(coordType, shape);
+    IndexIterator ii = timeCoordVals.getIndexIterator();
+
+    // check if its a String or a udunit
+    if (timeAxis.getDataType() == DataType.STRING) {
+
+      for (CalendarDate date : dateList) {
+        ii.setObjectNext(date.toString());
+      }
+
+    } else {
+      timeAxis.setDataType(DataType.DOUBLE); // otherwise fractional values get lost
+
+      DateUnit du;
+      try {
+        du = new DateUnit(timeUnits);
+      } catch (Exception e) {
+        throw new IOException(e.getMessage());
+      }
+      timeAxis.addAttribute(new Attribute(CDM.UNITS, timeUnits));
+
+      for (CalendarDate date : dateList) {
+        double val = du.makeValue(date.toDate());
+        ii.setDoubleNext(val);
+      }
+    }
+
+    timeAxis.setCachedData(timeCoordVals, false);
+  }
+
   protected int getTotalCoords() {
     return totalCoords;
   }
@@ -199,6 +267,10 @@ public abstract class AggregationOuterDimension extends Aggregation implements P
     // reset cacheVars
     for (CacheVar cv : cacheList) {
       cv.reset();
+    }
+
+    if (timeUnitsChange) {
+      readTimeCoordinates(joinAggCoord, null);
     }
   }
 
