@@ -122,6 +122,25 @@ public class TestAggSynthetic extends TestCase {
     ncfile.close();
   }
 
+  public void testJoinNewScalarCoord() throws IOException, InvalidRangeException {
+    String filename = "file:./" + TestNcML.topDir + "aggJoinNewScalarCoord.xml";
+    NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
+
+    Variable v = ncfile.findVariable("time");
+    assert v != null;
+    String testAtt = ncfile.findAttValueIgnoreCase(v, "units", null);
+    assert testAtt != null;
+    assert testAtt.equals("seconds since 2017-01-01");
+
+    testDimensions(ncfile);
+    testCoordVar(ncfile);
+    testAggCoordVarJoinedScalar(ncfile);
+    testReadData(ncfile, "T");
+    testReadSlice(ncfile, "T");
+
+    ncfile.close();
+  }
+
   public void testRename() throws IOException, InvalidRangeException {
     String xml = "<?xml version='1.0' encoding='UTF-8'?>\n" +
         "<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>\n" +
@@ -318,6 +337,33 @@ public class TestAggSynthetic extends TestCase {
       assert val == count * 10 : val + "!="+ count * 10;
       count++;
     }
+  }
+
+  public void testAggCoordVarJoinedScalar(NetcdfFile ncfile) {
+
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+    assert time.getShortName().equals("time");
+    assert time.getRank() == 1 : time.getRank();
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.INT;
+
+    assert time.getDimension(0) == ncfile.findDimension("time");
+
+    try {
+      Array data = time.read();
+
+      assert (data instanceof ArrayInt.D1) : data.getClass().getName();
+      ArrayInt.D1 dataI = (ArrayInt.D1) data;
+      assert dataI.get(0) == 82932;
+      assert dataI.get(1) == 83232;
+      assert dataI.get(2) == 83532;
+
+    } catch (IOException io) {
+      io.printStackTrace();
+      assert false;
+    }
+
   }
 
   public void testAggCoordVarNoCoord(NetcdfFile ncfile) throws IOException {

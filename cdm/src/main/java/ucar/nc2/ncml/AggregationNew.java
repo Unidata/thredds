@@ -72,24 +72,38 @@ public class AggregationNew extends AggregationOuterDimension {
 
     promoteGlobalAttributes( (DatasetOuterDimension) typicalDataset);
 
-    // create aggregation coordinate variable
-    DataType coordType = getCoordinateType();
-    VariableDS joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
-    ncDataset.addVariable(null, joinAggCoord);
-    joinAggCoord.setProxyReader( this);
-    if (isDate)
-      joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
-
-    // if speced externally, this variable will get replaced
-    CacheVar cv = new CoordValueVar(joinAggCoord.getFullName(), joinAggCoord.getDataType(), joinAggCoord.getUnitsString());
-    joinAggCoord.setSPobject( cv);
-    cacheList.add(cv);
-
     List<String> aggVarNames = getAggVariableNames();
 
+    // Look for a variable matching the new aggregation dimension
+    Variable joinAggCoord = ncDataset.findVariable(dimName);
+
+    // Not found, create the aggregation coordinate variable
+    if (joinAggCoord == null) {
+      DataType coordType = getCoordinateType();
+      joinAggCoord = new VariableDS(ncDataset, null, null, dimName, coordType, dimName, null, null);
+      ncDataset.addVariable(null, joinAggCoord);
+      joinAggCoord.setProxyReader(this);
+      if (isDate)
+        joinAggCoord.addAttribute(new ucar.nc2.Attribute(_Coordinate.AxisType, "Time"));
+
+      // if speced externally, this variable will get replaced
+      CacheVar cv = new CoordValueVar(joinAggCoord.getFullName(), joinAggCoord.getDataType(), joinAggCoord.getUnitsString());
+      joinAggCoord.setSPobject(cv);
+      cacheList.add(cv);
+    } else if (joinAggCoord.isScalar()) {
+      // For an existing variable matching the aggregated dim name, if it's a scalar
+      // variable, we can just use it and its values for the aggregation coordinate variable
+      // Need to ensure it's included in the list of variables to aggregate
+      if (!aggVarNames.contains(joinAggCoord.getShortName())) {
+        aggVarNames.add(joinAggCoord.getShortName());
+      }
+    } else {
+      throw new IllegalArgumentException("Variable " + dimName + " already exists, but is not a scalar (suitable for aggregating as a coordinate).");
+    }
+
     // if no names specified, add all "non-coordinate" variables.
-    // Note that we havent identified coordinate systems with CoordSysBuilder, so that info ius not available.
-    // So this isnt that general of a solution. But probably better than nothing
+    // Note that we haven't identified coordinate systems with CoordSysBuilder, so that info is not available.
+    // So this isn't that general of a solution. But probably better than nothing
     if (aggVarNames.size() == 0) {
       for (Variable v : typical.getVariables()) {
         if (!(v instanceof CoordinateAxis))
