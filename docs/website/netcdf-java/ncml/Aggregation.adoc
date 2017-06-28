@@ -441,21 +441,25 @@ netcdf file:C:/dev/tds/thredds/docs/web/netcdf-java/ncml/examples/aggNew.ncml {
 There are several ways that coordinate values are assigned to a JoinNew
 coordinate:
 
-1.  You may explicitly specify the coordinate variable, and assign
+1.  If the dataset has an existing **scalar** variable that matches the
+name of the new dimension, the values of this variable will be used as
+coordinate values.
+2.  You may explicitly specify the coordinate variable, and assign
 coordinate values to it, as in this example.
-2.  You may explicitly specify the coordinate variable, but specify the
+3.  You may explicitly specify the coordinate variable, but specify the
 coordinate values through the _coordValue_ attributes on the individual
 _netcdf_ elements, as in the first example.
-3.  If you do not specify a coordinate variable, but you add
+4.  If you do not specify a coordinate variable, but you add
 _coordValue_ attributes to the individual _netcdf_ elements, then a
 coordinate variable of type double or String will be added.
-4.  If you do not specify a coordinate variable, and you do not add
+5.  If you do not specify a coordinate variable, and you do not add
 _coordValue_ attributes, then a coordinate variable of type String will
 be added whose values are the names of the files.
 
 Note that you must explicitly specify the coordinate variable in order
 to assign attributes to it, which is something you are likely to need to
-do, for example defining a units attribute is usually necessary.
+do when creating a new coordinate variable; for example defining a unit
+attribute is usually necessary.
 Assigning the *_CoordinateAxisType* type is one way to make sure that the
 <<../reference/CoordinateAttributes#CoordinateAttributes,Coordinate
 layer>> correctly identifies the coordinate type. Using CF Conventions is strongly recommended.
@@ -720,4 +724,3 @@ See also: <<AnnotatedSchema4#,Annotated NcML Schema>>
 '''''
 
 image:../nc.gif[image] This document was last updated November 2015
-
