@@ -46,13 +46,15 @@ import java.nio.ByteOrder;
  * @since Feb 7, 2009
  */
 public class NcStreamWriter {
-  static private long maxChunk = 1000 * 1000; // 1 MByte
-  static private final int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
-  static private final int currentVersion = 1;
+  static protected long maxChunk = 1000 * 1000; // 1 MByte
+  static /*package*/ final int sizeToCache = 100; // when to store a variable's data in the header, ie "immediate" mode
+  static protected final int currentVersion = 1;
 
-  private NetcdfFile ncfile;
-  private NcStreamProto.Header header;
-  private boolean show = false;
+  protected NetcdfFile ncfile;
+  protected NcStreamProto.Header header;
+  protected boolean show = false;
+
+  protected NcStreamWriter() {/*for use by subclasses*/}
 
   public NcStreamWriter(NetcdfFile ncfile, String location) throws IOException {
     this.ncfile = ncfile;
@@ -166,7 +168,7 @@ public class NcStreamWriter {
     return size;
   }
 
-  private int writeBytes(OutputStream out, byte[] b) throws IOException {
+  protected int writeBytes(OutputStream out, byte[] b) throws IOException {
     out.write(b);
     return b.length;
   }
@@ -207,7 +209,7 @@ public class NcStreamWriter {
     return size;
   }
 
-  private long copyChunks(OutputStream out, Variable oldVar, long maxChunkSize, NcStreamCompression compress) throws IOException {
+  protected long copyChunks(OutputStream out, Variable oldVar, long maxChunkSize, NcStreamCompression compress) throws IOException {
     long maxChunkElems = maxChunkSize / oldVar.getElementSize();
     FileWriter2.ChunkingIndex index = new FileWriter2.ChunkingIndex(oldVar.getShape());
     long size = 0;
