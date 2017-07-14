@@ -24,7 +24,7 @@ netcdf4/** @DennisHeimbigner
 
 waterml/** @cwardgar
 gradle/** @cwardgar
-travis/** @cwardgar
+travis/* @cwardgar
 
 grib/** @lesserwhirls
 idv/** @lesserwhirls
