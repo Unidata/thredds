@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# no one owns this - CODEOWNERS test
 # basename is the simple name minus versioning and extension
 W="\
 ./dap4/d4tswar/build/libs/d4tswar \
