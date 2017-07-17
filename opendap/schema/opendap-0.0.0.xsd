@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XML Spy v4.4 U (http://www.xmlspy.com) by Nathan Potter (OSU-COAS) -->
+<!-- get dmh only edited with XML Spy v4.4 U (http://www.xmlspy.com) by Nathan Potter (OSU-COAS) -->
 <xs:schema targetNamespace="http://www.opendap.org/ns/OPeNDAP" xmlns:xs="http://www.w3.org/2001/XMLSchema"
            xmlns:opendap="http://www.opendap.org/ns/OPeNDAP" xmlns="http://www.opendap.org/ns/OPeNDAP"
            elementFormDefault="qualified" attributeFormDefault="unqualified">
