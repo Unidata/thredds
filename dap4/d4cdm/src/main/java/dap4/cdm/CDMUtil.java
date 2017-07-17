@@ -1,5 +1,8 @@
 /* Copyright 2012, UCAR/Unidata.
    See the LICENSE file for more information.
+
+   CODEOWNERS test
+
 */
 
 package dap4.cdm;
