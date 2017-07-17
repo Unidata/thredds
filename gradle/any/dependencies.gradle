@@ -1,6 +1,8 @@
 // Gradle dependency management.
 // This technique was inspired by: http://stackoverflow.com/questions/9547170
 
+// codeowners test for all three of us
+
 //================================================ Repositories ================================================//
 
 // TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
