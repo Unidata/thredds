@@ -54,6 +54,7 @@ import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.unidata.io.RandomAccessFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -311,6 +312,11 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     log.debug("open {}", location);
 
     IntByReference ncidp = new IntByReference();
+/* Debug */
+File f = new File(location);
+if(!f.exists()) System.err.printf("XXX: %s does not exist%n",location);
+if(!f.canRead()) System.err.printf("XXX: %s not readable",location);
+if(!readOnly && !f.canWrite()) System.err.printf("XXX: %s not writeable",location);
     int ret = nc4.nc_open(location, readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
