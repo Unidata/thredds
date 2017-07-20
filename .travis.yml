@@ -1,6 +1,10 @@
 language: java
 sudo: false
 
+# Need to run on Ubuntu Precise (v12.04.5) until we rebuild netCDF-C for 
+# Ubuntu Trusty (v14.04.5), the new Travis default
+dist: precise
+
 addons:
   artifacts:
     bucket: unidata-tds
