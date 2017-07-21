@@ -95,6 +95,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static protected String DEFAULTNETCDF4LIBNAME = "netcdf";
 
+  static public int NC_TURN_OFF_LOGGING = Nc4prototypes.NC_TURN_OFF_LOGGING;
+
   static private String jnaPath = null;
   static private String libName = DEFAULTNETCDF4LIBNAME;
 
@@ -106,6 +108,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private final boolean debugDim = false;
   static private final boolean debugUserTypes = false;
   static private final boolean debugWrite = false;
+
+  static protected class SettingsInfo
+  {
+      // Provide direct access
+      public String libnetcdfVersion = null;
+      public String libhdf5Version = null;
+  }
 
   /**
    * set the path and name of the netcdf c library.
@@ -158,8 +167,18 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         startupLog.warn(message, t);
       }
     }
-
     return nc4;
+  }
+
+  /**
+   * See if we can get libnetcdf.settings file and/or libhdf5.settings file.
+   */
+  static protected void
+  processSettingsFiles()
+  {
+	List<String> nc4settings = new ArrayList<>();
+	List<String> hdf5settings = new ArrayList<>();
+	
   }
 
   // Shared mutable state. Only read/written in isClibraryPresent().
@@ -198,7 +217,21 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     useHdfEos = val;
   }
 
-  static public void setDebugFlags(DebugFlags flags) {
+  static public void setDebugFlags(DebugFlags flags) {}
+
+  static private int nc4_log_level_state = 0;
+  static public void setLogLevel(int newlevel) {
+    if(nc4_log_level_state == 0) {
+      try {
+        nc4.nc_set_log_level(NC_TURN_OFF_LOGGING); // see if enabled
+        nc4_log_level_state = 1; // available
+      } catch (Throwable e) {// not enabled
+        nc4_log_level_state = -1;
+      }
+    }
+    if(nc4_log_level_state == 1) {
+      nc4.nc_set_log_level(newlevel);
+    }
   }
 
   //////////////////////////////////////////////////
@@ -312,11 +345,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     log.debug("open {}", location);
 
     IntByReference ncidp = new IntByReference();
-/* Debug */
-File f = new File(location);
-if(!f.exists()) System.err.printf("XXX: %s does not exist%n",location);
-if(!f.canRead()) System.err.printf("XXX: %s not readable",location);
-if(!readOnly && !f.canWrite()) System.err.printf("XXX: %s not writeable",location);
     int ret = nc4.nc_open(location, readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
