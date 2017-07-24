@@ -111,7 +111,11 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
         try {
             return metadataCache.get(s3uri);
         } catch (ExecutionException e) {
-            logger.error("Could not get metadata for {}", s3uri, e.getCause());
+            if (e.getCause() instanceof UriNotFoundException) {
+                logger.debug("{} not found", s3uri);
+            } else {
+                logger.error("Could not get metadata for {}", s3uri, e.getCause());
+            }
             return null;
         }
     }
@@ -126,7 +130,11 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
             }
             return listing;
         } catch (ExecutionException e) {
-            logger.error("Could not get listing for {}", s3uri, e.getCause());
+            if (e.getCause() instanceof UriNotFoundException) {
+                logger.debug("{} not found", s3uri);
+            } else {
+                logger.error("Could not get listing for {}", s3uri, e.getCause());
+            }
             return null;
         }
     }
@@ -142,7 +150,11 @@ public class CachingThreddsS3Client implements ThreddsS3Client {
             }
             return file;
         } catch (ExecutionException e) {
-            logger.error("Could not get getLocalCopy for {}", s3uri, e.getCause());
+            if (e.getCause() instanceof UriNotFoundException) {
+                logger.debug("{} not found", s3uri);
+            } else {
+                logger.error("Could not get getLocalCopy for {}", s3uri, e.getCause());
+            }
             return null;
         }
     }
