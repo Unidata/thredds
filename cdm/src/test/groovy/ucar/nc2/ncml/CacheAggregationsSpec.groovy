@@ -113,7 +113,7 @@ class CacheAggregationsSpec extends Specification {
 
     def "fmrc"() {
         setup:
-        String filename = "file:./"+TestNcML.topDir + "fmrc/testAggFmrc.ncml";
+        String filename = "file:./"+TestNcML.topDir + "fmrc/testAggFmrcScan.ncml";
         def expecteds = [232.0, 232.4, 232.5]
         def actuals
 
