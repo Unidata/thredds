@@ -1459,6 +1459,36 @@ public class NcMLReader {
         if (debugAggDetail) System.out.println(" debugAgg: nested dirLocation = " + dirLocation);
       }
 
+      // add explicit files to the agg (i.e. not from a scanned directory)
+      Map<String, String> realLocationRunTimeMap = new HashMap<>();
+      List<String> realLocationList = new ArrayList<>();
+      java.util.List<Element> ncList = aggElem.getChildren("netcdf", ncNS);
+      for (Element netcdfElemNested : ncList) {
+        String location = netcdfElemNested.getAttributeValue("location");
+        if (location == null)
+          location = netcdfElemNested.getAttributeValue("url");
+        if (location != null)
+          location = AliasTranslator.translateAlias(location);
+
+        String runTime = netcdfElemNested.getAttributeValue("coordValue");
+        if (runTime == null) {
+          Formatter f = new Formatter();
+          f.format("runtime must be explicitly defined for each netcdf element using the attribute coordValue");
+          log.error(f.toString());
+        }
+
+        String realLocation = URLnaming.resolveFile(ncmlLocation, location);
+        realLocationRunTimeMap.put(realLocation, runTime);
+        realLocationList.add(realLocation);
+
+        if ((cancelTask != null) && cancelTask.isCancel())
+          return aggc;
+        if (debugAggDetail) System.out.println(" debugAgg: nested dataset = " + location);
+      }
+
+      if (!realLocationRunTimeMap.isEmpty()) {
+        aggc.addExplicitFilesAndRunTimes(realLocationRunTimeMap);
+      }
     } else {
       throw new IllegalArgumentException("Unknown aggregation type=" + type);
     }
