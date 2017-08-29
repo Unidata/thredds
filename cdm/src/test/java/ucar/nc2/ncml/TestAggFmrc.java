@@ -18,6 +18,9 @@ import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.ft.fmrc.Fmrc;
+import ucar.nc2.time.CalendarDate;
 
 import static java.lang.Math.toIntExact;
 
@@ -37,7 +40,8 @@ public class TestAggFmrc {
 
   private NetcdfFile ncfileScan, ncfileExplicit, ncfileA, ncfileB, ncfileC;
   private Variable varScan, varExplicit, varA, varB, varC;
-  private Array valuesScan, valuesExplicit, valuesA, valuesB, valuesC;
+  private Array valuesScan, valuesExplicit, valuesA, valuesB, valuesC, valuesBestScanVar, valuesBestExplicitVar;
+  private Fmrc fmrcScan, fmrcExplicit;
 
   /**
    * Read aggregation of unsigned variable for test
@@ -50,6 +54,19 @@ public class TestAggFmrc {
     String filenameB = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_B;
     String filenameC = "file:./" + TestNcML.topDir + "fmrc/" + FILENAME_C;
     try {
+
+      fmrcScan = Fmrc.open(filenameScan, null);
+      Assert.assertNotNull(fmrcScan);
+      GridDataset bestScan = fmrcScan.getDatasetBest();
+      Variable bestScanVar = bestScan.findGridByName(AGG_VAR_NAME).getVariable();
+      valuesBestScanVar = bestScanVar.read();
+
+      fmrcExplicit = Fmrc.open(filenameExplicit, null);
+      Assert.assertNotNull(fmrcExplicit);
+      GridDataset bestExplicit = fmrcExplicit.getDatasetBest();
+      Variable bestExplicitVar = bestExplicit.findGridByName(AGG_VAR_NAME).getVariable();
+      valuesBestExplicitVar = bestExplicitVar.read();
+
       ncfileScan = NcMLReader.readNcML(filenameScan, null);
       varScan = ncfileScan.findVariable(AGG_VAR_NAME);
       valuesScan = varScan.read();
@@ -159,6 +176,95 @@ public class TestAggFmrc {
     Assert.assertEquals(b, orig, 0);
   }
 
+  @Test
+  public void FmrcRunDates() {
+
+    try {
+      List<CalendarDate> scanRunTimes = fmrcScan.getRunDates();
+      List<CalendarDate> explicitRunTimes = fmrcExplicit.getRunDates();
+
+      Assert.assertEquals(scanRunTimes.size(), 3);
+      Assert.assertEquals(explicitRunTimes.size(), scanRunTimes.size());
+
+      for (int i = 0; i < scanRunTimes.size(); i++) {
+        Assert.assertTrue(explicitRunTimes.get(i).equals(scanRunTimes.get(i)));
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  @Test
+  public void FmrcForecastDates() {
+
+    try {
+      List<CalendarDate> scanForecastTimes = fmrcScan.getForecastDates();
+      List<CalendarDate> explicitForecastTimes = fmrcExplicit.getForecastDates();
+
+      Assert.assertEquals(scanForecastTimes.size(), scanForecastTimes.size());
+      Assert.assertEquals(explicitForecastTimes.size(), 24);
+
+      for (int i = 0; i < scanForecastTimes.size(); i++) {
+        Assert.assertTrue(scanForecastTimes.get(i).equals(explicitForecastTimes.get(i)));
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+  }
+
+  @Test
+  public void FmrcForecastOffsets() {
+    try {
+      Assert.assertArrayEquals(fmrcExplicit.getForecastOffsets(), fmrcScan.getForecastOffsets(), 0);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Test
+  public void testBestDataset() {
+    // delta_t is 12 hours, first time in dataset is 2007-07-29T1200
+    // best ds shapes time, isobaric,  y,  x
+    //                  24,        6, 39, 45
+    //
+    // individual file shapes time, isobaric,  y,  x
+    //                 valuesA  20,        6, 39, 45
+    //                 valuesB  21,        6, 39, 45
+    //                 valuesC  20,        6, 39, 45
+    int[] startFmrc = new int[]{0, 0, 0, 0};
+    int[] endFmrc = new int[]{23, 5, 38, 44};
+    int[] startFileBInFmrc = new int[]{1, 0, 0, 0};
+
+
+    Index idxAgg = Index.factory(valuesBestScanVar.getShape());
+
+    // test first value in valA and agg vals
+    idxAgg.set(startFmrc);
+    float a = valuesBestScanVar.getFloat(idxAgg);
+    float b = valuesBestExplicitVar.getFloat(idxAgg);
+    float orig = valuesA.getFloat(0);
+    Assert.assertEquals(a, orig, 0);
+    Assert.assertEquals(b, orig, 0);
+
+    // test last value in valC and agg vales
+    idxAgg.set(endFmrc);
+    a = valuesBestScanVar.getFloat(idxAgg);
+    b = valuesBestExplicitVar.getFloat(idxAgg);
+    orig = valuesC.getFloat(toIntExact(valuesC.getSize()) - 1);
+    Assert.assertEquals(a, orig, 0);
+    Assert.assertEquals(b, orig, 0);
+
+    // test first value in valB against agg vals
+    idxAgg.set(startFileBInFmrc);
+    a = valuesBestScanVar.getFloat(idxAgg);
+    b = valuesBestExplicitVar.getFloat(idxAgg);
+    orig = valuesB.getFloat(0);
+    Assert.assertEquals(a, orig, 0);
+    Assert.assertEquals(b, orig, 0);
+
+  }
   /**
    * close out datasets when tests are finished
    */
@@ -170,6 +276,8 @@ public class TestAggFmrc {
       ncfileA.close();
       ncfileB.close();
       ncfileC.close();
+      fmrcExplicit.close();
+      fmrcScan.close();
     } catch (IOException e) {
       e.printStackTrace();
     }
