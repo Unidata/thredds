@@ -421,6 +421,12 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     // a simple mapping between file names and coordValue dates for
     // aggregations in which files are explicitly defined.
     this.filesRunDateMap = filesRunDateMap;
+    // update MFileCollection map of files
+    List<MFile> files = new ArrayList<>(filesRunDateMap.size());
+    for (String file : filesRunDateMap.keySet()) {
+      files.add(MFileOS.getExistingFile(file));
+    }
+    setFiles(files);
   }
 
   @Override
@@ -446,6 +452,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   @Override
   public boolean hasDateExtractor() {
     return (dateExtractor != null) && !(dateExtractor instanceof DateExtractorNone);
+  }
+
+  public synchronized Map<String, String> getFilesRunDateMap() {
+    return filesRunDateMap;
   }
 
   // only called from synch methods
