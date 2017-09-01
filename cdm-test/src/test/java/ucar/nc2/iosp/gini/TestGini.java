@@ -40,6 +40,7 @@ import org.junit.runners.Parameterized;
 
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
@@ -102,6 +103,14 @@ public class TestGini{
             Assert.assertNotNull(v);
             Assert.assertNotNull(v.getDimension(0));
             Assert.assertNotNull(v.getDimension(1));
+
+            // Make sure the variable has a grid mapping set and that it points
+            // to a valid variable
+            Attribute grid_mapping = v.findAttribute("grid_mapping");
+            Assert.assertNotNull(grid_mapping);
+            Variable proj_var = ncfile.findVariable(grid_mapping.getStringValue());
+            Assert.assertNotNull(proj_var);
+            Assert.assertNotNull(proj_var.findAttribute("grid_mapping_name"));
 
             // Check size
             Assert.assertEquals(ySize,
