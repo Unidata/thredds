@@ -38,6 +38,30 @@ public class NcmlCollectionReader {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
 
   private Namespace ncmlNS;
+  
+  /**
+   * Read an NcML file from a String, and construct a NcmlCollectionReader from its scan or scanFmrc element.
+   *
+   * @param ncmlString the NcML to construct the reader from
+   * @param errlog put error messages here
+   * @return the resulting NetcdfDataset
+   * @throws IOException on read error, or bad referencedDatasetUri URI
+   */
+  static public NcmlCollectionReader readNcML(String ncmlString, Formatter errlog) throws IOException {
+      StringReader reader = new StringReader(ncmlString);
+      
+      org.jdom2.Document doc;
+      try {
+        SAXBuilder builder = new SAXBuilder();
+        if (debugURL) System.out.println(" NetcdfDataset NcML String = <" + ncmlString + ">");
+        doc = builder.build(new StringReader(ncmlString));
+      } catch (JDOMException e) {
+        throw new IOException(e.getMessage());
+      }
+      if (debugXML) System.out.println(" SAXBuilder done");
+
+      return readXML(doc, errlog, null);
+  }
 
   /**
    * Read an NcML file from a URL location, and construct a NcmlCollectionReader from its scan or scanFmrc element.
@@ -63,6 +87,10 @@ public class NcmlCollectionReader {
     }
     if (debugXML) System.out.println(" SAXBuilder done");
 
+    return readXML(doc, errlog, ncmlLocation);
+  }
+  
+  static private NcmlCollectionReader readXML(org.jdom2.Document doc, Formatter errlog, String ncmlLocation) {
     if (showParsedXML) {
       XMLOutputter xmlOut = new XMLOutputter();
       System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
