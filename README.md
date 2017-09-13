@@ -1,7 +1,7 @@
 ![THREDDS icon](http://www.unidata.ucar.edu/images/logos/thredds_netcdf-75x75.png)
 [![Travis Build Status](https://secure.travis-ci.org/Unidata/thredds.svg?branch=master)](http://travis-ci.org/Unidata/thredds)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/388/badge.svg)](https://scan.coverity.com/projects/388)
-
+[![SonarCloud Gate](https://sonarcloud.io/api/badges/gate?key=thredds)](https://sonarcloud.io/dashboard?id=thredds)
+[![Coverage Status](https://coveralls.io/repos/github/Unidata/thredds/badge.svg?branch=origin%2F5.0.0)](https://coveralls.io/github/Unidata/thredds?branch=origin%2F5.0.0)
 # Unidata's THREDDS Project
 
 The THREDDS project is developing middleware to bridge the gap between data
