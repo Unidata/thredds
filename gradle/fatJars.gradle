@@ -27,6 +27,7 @@ dependencies {
     netcdfAll project(":netcdf4")
     netcdfAll project(":opendap")
     netcdfAll project(":httpservices")
+    netcdfAll project(':visadCdm')  // For Gempak IOSPs.
 
     toolsUI project(':ui')
 }

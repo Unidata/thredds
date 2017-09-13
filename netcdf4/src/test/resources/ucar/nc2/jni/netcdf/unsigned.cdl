@@ -1,0 +1,23 @@
+netcdf unsigned {
+    dimensions:
+        dim = 3;
+
+    variables:
+        ubyte u_byte(dim);
+        ushort u_short(dim);
+        uint u_int(dim);
+        uint64 u_long(dim);
+
+    data:
+        // These fit in a ubyte but not a byte.
+        u_byte = 128, 129, 130;
+
+        // These fit in a ushort but not a short.
+        u_short = 32768, 32769, 32770;
+
+        // These fit in a uint but not an int.
+        u_int = 2147483648, 2147483649, 2147483650;
+
+        // These fit in a unit64 but not an int64.
+        u_long = 9223372036854775808, 9223372036854775809, 9223372036854775810;
+}

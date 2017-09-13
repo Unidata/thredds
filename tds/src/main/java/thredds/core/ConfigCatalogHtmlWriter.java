@@ -38,7 +38,6 @@ import thredds.client.catalog.*;
 import thredds.client.catalog.writer.DatasetHtmlWriter;
 import thredds.server.config.HtmlConfig;
 import thredds.servlet.HtmlWriter;
-import static thredds.servlet.ServletUtil.setResponseContentLength;
 import thredds.util.ContentType;
 import ucar.nc2.units.DateType;
 import ucar.unidata.util.Format;
@@ -52,6 +51,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Formatter;
 import java.util.List;
+
+import static thredds.servlet.ServletUtil.setResponseContentLength;
 
 /**
  * Write HTML representations of a Catalog or Dataset
@@ -345,7 +346,9 @@ public class ConfigCatalogHtmlWriter {
     out.format("%s<head>\r\n", html.getHtmlDoctypeAndOpenTag());
     out.format("<title> Catalog Services</title>\r\n");
     out.format("<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>\r\n");
-    out.format("%s</head>\r\n", html.getTdsPageCssLink());
+    out.format("%s\r\n", html.getTdsPageCssLink());
+    out.format(html.getGoogleTrackingContent());  // String already has EOL.
+    out.format("</head>\r\n");
     out.format("<body>\r\n");
 
     StringBuilder sb = new StringBuilder();
@@ -361,8 +364,6 @@ public class ConfigCatalogHtmlWriter {
     // optional access through Viewers
     if (isLocalCatalog)
       viewerService.showViewers(out, dataset, request);
-
-    out.format("%s\r\n", html.getGoogleTrackingContent());
 
     out.format("</body>\r\n");
     out.format("</html>\r\n");

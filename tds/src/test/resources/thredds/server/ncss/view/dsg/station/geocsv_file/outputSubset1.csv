@@ -1,0 +1,12 @@
+# dataset: GeoCSV 2.0
+# delimiter: ,
+# field_unit: ISO_8601,,degrees_north,degrees_east,K
+# field_types: datetime,UTF-8,double,double,float
+# field_missing: ,,,,
+time,station_name,latitude,longitude,tas
+1970-01-11T00:00:00Z,AAA,40.000,-100.000,40.0
+1970-01-21T00:00:00Z,AAA,40.000,-100.000,70.0
+1970-01-31T00:00:00Z,AAA,40.000,-100.000,100.0
+1970-01-11T00:00:00Z,CCC,44.000,-94.000,340.0
+1970-01-21T00:00:00Z,CCC,44.000,-94.000,370.0
+1970-01-31T00:00:00Z,CCC,44.000,-94.000,400.0

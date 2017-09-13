@@ -46,6 +46,7 @@ import ucar.unidata.util.StringUtil2;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * A LoggerFactory that uses log4j to create and configure a special RollingFileAppender
@@ -149,14 +150,25 @@ public class LoggerFactorySpecial implements LoggerFactory {
       // TODO: There are Builders that make this logger creation less awkward.
       Configuration config = new NullConfiguration(); // LOOK: Why are we using this? Why not DefaultConfiguration?
       PatternLayout layout = PatternLayout.createLayout(
-              "%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n",  // String pattern
-              config,                                         // Configuration config
-              null,                                           // RegexReplacement replace
-              null,                                           // Charset charset
-              true,                                           // boolean alwaysWriteExceptions
-              false,                                          // boolean noConsoleNoAnsi
-              null,                                           // String header
-              null                                            // String footer
+              "%d{yyyy-MM-dd'T'HH:mm:ss.SSS Z} %-5p - %m%n",// final String pattern,
+              null,   // ?? PatternSelector patternSelector,
+              config, // Configuration config,
+              null,   // RegexReplacement replace,
+              null,   // Charset charset,
+              true,   // boolean alwaysWriteExceptions,
+              false,  // boolean noConsoleNoAnsi,
+              null,   // String headerPattern,
+              null    // String footerPattern
+      );
+
+      DefaultRolloverStrategy.createStrategy(
+              Integer.toString(maxBackups),// String max,
+              "1",  // String min,
+              "max", // String fileIndex,
+              null,  // String compressionLevelStr,
+              null,  // ?? Action[] customActions,
+              true,  // boolean stopCustomActionsOnError,
+              config //Configuration config
       );
 
       RollingFileAppender app = RollingFileAppender.createAppender(
@@ -169,11 +181,13 @@ public class LoggerFactorySpecial implements LoggerFactory {
               "true",                                                           // String immediateFlush
               SizeBasedTriggeringPolicy.createPolicy(Long.toString(maxSize)),   // TriggeringPolicy policy
               DefaultRolloverStrategy.createStrategy(                           // RolloverStrategy strategy
-                      Integer.toString(maxBackups),   // String max
-                      "1",                            // String min
-                      "max",                          // String fileIndex
-                      null,                           // String compressionLevelStr
-                      config                          // Configuration config
+                      Integer.toString(maxBackups),// String max,
+                      "1",  // String min,
+                      "max", // String fileIndex,
+                      null,  // String compressionLevelStr,
+                      null,  // ?? Action[] customActions,
+                      true,  // boolean stopCustomActionsOnError,
+                      config //Configuration config
               ),
               layout,                                                           // Layout<? extends Serializable> layout
               null,                                                             // Filter filter

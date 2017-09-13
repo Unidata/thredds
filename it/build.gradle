@@ -2,7 +2,7 @@ description = "TDS - NetCDF-Java library integration Test module. This module co
         "needed to test the NetCDF-Java library in a servlet container. Starts up a TDS server and then sends " +
         "requests to it. Relies on having access to cdmUnitTest directory, so can only be run at Unidata."
 ext.title = "Test Integration"
-ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
+ext.url = "https://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 
 dependencies {
     testCompile project(":cdm")

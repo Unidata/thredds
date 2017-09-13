@@ -32,16 +32,18 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.*;
+import net.jcip.annotations.Immutable;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.nc2.util.Indent;
 
+import java.nio.ByteBuffer;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
-import java.nio.ByteBuffer;
 import java.util.Map;
-
-import net.jcip.annotations.Immutable;
-import ucar.nc2.util.Indent;
 
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
@@ -337,7 +339,7 @@ public class Attribute extends CDMNode {
     DataType dt = DataType.getType(val.getClass());
     Array vala = Array.factory(dt.getPrimitiveClassType(), shape);
     Index ima = vala.getIndex();
-    vala.setDouble(ima.set0(0), val.doubleValue());
+    vala.setObject(ima.set0(0), val);
     setValues(vala);
     this.isUnsigned = isUnsigned;
     if (isUnsigned) vala.setUnsigned(true);

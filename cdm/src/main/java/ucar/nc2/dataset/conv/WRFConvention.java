@@ -244,7 +244,7 @@ map_proj =  1: Lambert Conformal
           // System.out.println(" using LC "+proj.paramsToString());
           break;
         case 1:
-          proj = new LambertConformal(standardLat, standardLon, lat1, lat2);
+          proj = new LambertConformal(standardLat, standardLon, lat1, lat2, 0.0, 0.0, 6370);
           projCT = new ProjectionCT("Lambert", "FGDC", proj);
           // System.out.println(" using LC "+proj.paramsToString());
           break;
@@ -254,11 +254,11 @@ map_proj =  1: Lambert Conformal
           double lat0 = (Double.isNaN(centralLat)) ? lat2 : centralLat;  // ?? 7/20/2010
           double scaleFactor = (1 + Math.abs( Math.sin(Math.toRadians(lat1)))) / 2.;  // R Schmunk 9/10/07
           // proj = new Stereographic(lat2, lon0, scaleFactor);
-          proj = new Stereographic(lat0, lon0, scaleFactor);
+          proj = new Stereographic(lat0, lon0, scaleFactor, 0.0, 0.0, 6370);
           projCT = new ProjectionCT("Stereographic", "FGDC", proj);
           break;
         case 3:
-          proj = new Mercator(standardLon, standardLat); // thanks to Robert Schmunk
+          proj = new Mercator(standardLon, lat1, 0.0, 0.0, 6370); // thanks to Robert Schmunk with edits for non-MOAD grids
           projCT = new ProjectionCT("Mercator", "FGDC", proj);
           // proj = new TransverseMercator(standardLat, standardLon, 1.0);
           //projCT = new ProjectionCT("TransverseMercator", "FGDC", proj);

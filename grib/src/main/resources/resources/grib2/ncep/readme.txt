@@ -818,3 +818,6 @@ Conflicts=0 extra=3 udunits=0
 09/10/2014 caron
 
  screen scraped NCEP again. Havent yet integerated, put into ncep/v13.0.0 to compare with old.
+
+11/17/2016 sarms
+  - updated ncep grib2 table using ucar/nc2/grib/grib2/table/NcepHtmlScraper.java

@@ -37,6 +37,11 @@
     <description>Vertical speed shear</description>
     <units>l/s</units>
   </parameter>
+  <parameter code="137">
+    <shortName>LTNGSD</shortName>
+    <description>Lightning Strike Density</description>
+    <units>m-2 s-1</units>
+  </parameter>
   <parameter code="139">
     <shortName>PVMWW</shortName>
     <description>Potential vorticity (mass-weighted)</description>
@@ -291,6 +296,11 @@
     <shortName>ELONN</shortName>
     <description>East longitude (nearest neighbor) (0-360)</description>
     <units>deg</units>
+  </parameter>
+  <parameter code="193">
+    <shortName>APTMP</shortName>
+    <description>Apparent Temperature</description>
+    <units>K</units>
   </parameter>
   <parameter code="194">
     <shortName>CPOFP</shortName>

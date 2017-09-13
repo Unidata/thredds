@@ -67,7 +67,7 @@ public class IospHelper {
    * @param raf       read from here.
    * @param index     handles skipping around in the file.
    * @param dataType  dataType of the variable
-   * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
+   * @param fillValue must be Number if dataType.isNumeric(), or String for STRING, byte[] for Structure, or null for none   
    * @param byteOrder if equal to RandomAccessFile.ORDER_XXXX, set the byte order just before reading
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
@@ -186,7 +186,7 @@ public class IospHelper {
    * @param is        read from here.
    * @param index     handles skipping around in the file.
    * @param dataType  dataType of the variable
-   * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
+   * @param fillValue must be Number if dataType.isNumeric(), or String for STRING, byte[] for Structure, or null for none 
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
@@ -280,7 +280,7 @@ public class IospHelper {
    *
    * @param layout    handles skipping around in the file, privide ByteBuffer to read from
    * @param dataType  dataType of the variable
-   * @param fillValue must Byte, Short, Integer, Long, Float, Double, or String, matching dataType, or null for none
+   * @param fillValue must be Number if dataType.isNumeric(), or String for STRING, byte[] for Structure, or null for none   
    * @return primitive array with data read in
    * @throws java.io.IOException on read error
    */
@@ -658,14 +658,14 @@ public class IospHelper {
    *
    * @param size      the size of the array to create
    * @param dataType  dataType of the variable
-   * @param fillValue must be Byte, Short, Integer, Long, Float, Double, or String, matching dataType
+   * @param fillValue must be Number if dataType.isNumeric(), or String for STRING, byte[] for Structure, or null for none
    * @return primitive array with data read in
    */
   static public Object makePrimitiveArray(int size, DataType dataType, Object fillValue) {
 
     if ((dataType == DataType.BYTE) || (dataType == DataType.CHAR) || (dataType == DataType.ENUM1)) {
       byte[] pa = new byte[size];
-      byte val = (Byte) fillValue;
+      byte val = ((Number) fillValue).byteValue();
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
@@ -675,35 +675,35 @@ public class IospHelper {
 
     } else if ((dataType == DataType.SHORT) || (dataType == DataType.ENUM2)) {
       short[] pa = new short[size];
-      short val = (Short) fillValue;
+      short val = ((Number) fillValue).shortValue();
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
     } else if ((dataType == DataType.INT) || (dataType == DataType.ENUM4)) {
       int[] pa = new int[size];
-      int val = (Integer) fillValue;
+      int val = ((Number) fillValue).intValue();
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
     } else if (dataType == DataType.LONG) {
       long[] pa = new long[size];
-      long val = (Long) fillValue;
+      long val = ((Number) fillValue).longValue();
       if (val != 0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
     } else if (dataType == DataType.FLOAT) {
       float[] pa = new float[size];
-      float val = (Float) fillValue;
+      float val = ((Number) fillValue).floatValue();
       if (val != 0.0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;
 
     } else if (dataType == DataType.DOUBLE) {
       double[] pa = new double[size];
-      double val = (Double) fillValue;
+      double val = ((Number) fillValue).doubleValue();
       if (val != 0.0)
         for (int i = 0; i < size; i++) pa[i] = val;
       return pa;

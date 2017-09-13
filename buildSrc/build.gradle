@@ -1,3 +1,7 @@
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.parsers.SAXParserFactory
+import javax.xml.transform.TransformerFactory
+
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'  // Adds gradleApi() compile dep and gradleTestKit() testCompile dep.
 
@@ -27,6 +31,73 @@ dependencies {
         // of the configuration.
         exclude group: 'org.codehaus.groovy', module: 'groovy-all'
     }
+    
+    testCompile libraries["xmlunit-core"]  // For comparing JNLP XML.
+}
+
+/*
+ * The problem: certain XML-processing methods used in our tests – notably groovy.xml.XmlUtil.serialize() and
+ * org.xmlunit.builder.DiffBuilder.build() – produce spurious warnings to STDERR when they are run. Example:
+ *     Warning: org.apache.xerces.parsers.SAXParser:
+ *         Feature 'http://javax.xml.XMLConstants/feature/secure-processing' is not recognized.
+ *     Warning: org.apache.xerces.parsers.SAXParser:
+ *         Property 'http://javax.xml.XMLConstants/property/accessExternalDTD' is not recognized.
+ *     Warning: org.apache.xerces.parsers.SAXParser:
+ *         Property 'http://www.oracle.com/xml/jaxp/properties/entityExpansionLimit' is not recognized.
+ *
+ * This Stack Overflow post (see http://stackoverflow.com/a/31255050/3874643) explains the cause quite well.
+ * In particular, "The issue happens only when you have xerces jar in your classpath." So apparently we have Xerces
+ * on our testRuntime classpath, but where is it coming from? And if it's being dragged in by something,
+ * why isn't it being removed by our "exclude group: 'xerces', module: 'xercesImpl'" rule in dependencies.gradle?
+ *
+ * As it turns out, that dependency (and many others) are being dragged in by our gradleApi() dependency, which
+ * the 'java-gradle-plugin' adds. This page (https://goo.gl/BUjGkR) describes the situation. In particular,
+ * "Gradle will use the jars that are part of the local Gradle installation to resolve dependencies", BUT
+ * "there is no way to override and/or exclude any of the transitive dependencies brought in by Gradle."
+ * A Gradle dev confirms that last bit here: https://goo.gl/h4L791.
+ *
+ * So, we're stuck with "xerces:xercesImpl:2.9.1" on the testRuntime classpath (see https://goo.gl/IjN29s) and
+ * there's nothing we can do to remove it. That's a pity, because removing Xerces is the "easy solution" described
+ * in the Stack Overflow post. So what do we do instead?
+ *
+ * There are 2 XML libraries in play here: Xerces (for XML parsing and document building) and Xalan (for XSLT).
+ * As of Java 1.5, the JDK provides built-in versions of both libraries, and they are used as the fallback
+ * JAXP implementations if no alternatives are found on the classpath. The built-in versions of Xerces and Xalan
+ * work well together and do not suffer from the issue we're describing.
+ *
+ * There are also external versions of Xerces and Xalan, distributed by Apache. If found on the classpath, they
+ * will be used in favor of the built-ins. If the latest versions of the external libraries are used, they also
+ * play well together and do not suffer from the issue we're describing.
+ *
+ * So, we need to either use ONLY the built-in XML libraries or ONLY the external XML libraries. Mixing built-in
+ * and external is bad, and is precisely the situation we see in gradleApi(): it includes an external Xerces, but
+ * NOT an external Xalan, so the fallback, built-in Xalan is selected.
+ *
+ * The external-only route is easiest: we already have "xerces:xercesImpl:2.9.1" on the classpath due to
+ * gradleApi(), so we merely need to add an external Xalan. Something like this works:
+ *     testRuntime "xalan:xalan:2.7.2"
+ *
+ * However, we're gonna go with the built-in-only option instead, so that we can avoid adding another
+ * dependency to the project. How do we do that, given that an external Xerces is stuck on the classpath?
+ * It turns out that there are system properties that we can set to specify which implementations of the key
+ * JAXP classes to use (see https://goo.gl/WgJ0EM). With those, we can force only the built-in libraries to be used.
+ */
+test {
+    // See javax.xml.parsers.DocumentBuilderFactory.newInstance().
+    systemProperty DocumentBuilderFactory.class.name,
+                   "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl"
+
+    // See javax.xml.parsers.SAXParserFactory.newInstance().
+    systemProperty SAXParserFactory.class.name,
+                   "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"
+
+    // See javax.xml.transform.TransformerFactory.newInstance().
+    systemProperty TransformerFactory.class.name,
+                   "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"
+
+    // See org.xml.sax.helpers.XMLReaderFactory.createXMLReader().
+    systemProperty "org.xml.sax.driver",
+                   "com.sun.org.apache.xerces.internal.parsers.SAXParser"
 }
 
 // Configure Jacoco

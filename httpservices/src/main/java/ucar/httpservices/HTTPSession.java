@@ -47,7 +47,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.ConnectionConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -189,6 +188,10 @@ public class HTTPSession implements Closeable
     static final String DFALTUSERAGENT = "/NetcdfJava/HttpClient4.4";
 
     static final String[] KNOWNCOMPRESSORS = {"gzip", "deflate"};
+
+    // Define -Dflags for various properties
+    static final String DCONNTIMEOUT = "tds.http.conntimeout";
+    static final String DSOTIMEOUT = "tds.http.sotimeout";
 
     //////////////////////////////////////////////////////////////////////////
 
@@ -407,10 +410,6 @@ public class HTTPSession implements Closeable
         setDefaults(globalsettings);
         processDFlags(); // Process all -D flags
         connmgr = new PoolingHttpClientConnectionManager(sslregistry);
-        setGlobalUserAgent(DFALTUSERAGENT);
-        // does not work setGlobalThreadCount(DFALTTHREADCOUNT);
-        setGlobalConnectionTimeout(DFALTCONNTIMEOUT);
-        setGlobalSoTimeout(DFALTSOTIMEOUT);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -458,6 +457,25 @@ public class HTTPSession implements Closeable
                 }
                 setGlobalProxy(buf.toString());
             }
+        }
+
+        // Misc.
+        int seconds = getDPropInt(DCONNTIMEOUT);
+        if(seconds > 0) setGlobalConnectionTimeout(seconds * 1000);
+        seconds = getDPropInt(DSOTIMEOUT);
+        if(seconds > 0) setGlobalSoTimeout(seconds * 1000);
+    }
+
+    static protected int
+    getDPropInt(String key)
+    {
+        String p = System.getProperty(key);
+        if(p == null) return -1;
+        try {
+            int i = Integer.parseInt(p);
+            return i;
+        } catch (NumberFormatException nfe) {
+            return -1;
         }
     }
 
@@ -1128,7 +1146,7 @@ public class HTTPSession implements Closeable
                 this.cachevalid = true;
             }
         }
-        this.execution.request = (HttpRequestBase)rb.build();
+        this.execution.request = (HttpRequestBase) rb.build();
         try {
             HttpHost targethost = HTTPAuthUtil.authscopeToHost(target);
             this.execution.response = cachedclient.execute(targethost, this.execution.request, this.sessioncontext);
@@ -1160,8 +1178,8 @@ public class HTTPSession implements Closeable
             } else if(key == Prop.CONN_REQ_TIMEOUT) {
                 rcb.setConnectionRequestTimeout((Integer) value);
             } else if(key == Prop.MAX_THREADS) {
-                connmgr.setMaxTotal((Integer)value);
-                connmgr.setDefaultMaxPerRoute((Integer)value);
+                connmgr.setMaxTotal((Integer) value);
+                connmgr.setDefaultMaxPerRoute((Integer) value);
             } /* else ignore */
         }
         RequestConfig cfg = rcb.build();

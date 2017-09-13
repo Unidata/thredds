@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="7.0" codebase="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart" version="1.5">
+    <component-desc/>
+    
+    <security>
+        <all-permissions/>
+    </security>
+    
+    <resources>
+        <jar href='root-1.5.jar' main='true' download='eager' />
+    
+        <jar href='slf4j-api-1.7.7.jar' download='lazy' />
+        <jar href='objenesis-2.2.jar' download='lazy' />
+        <jar href='hamcrest-core-1.3.jar' download='lazy' />
+    </resources>
+</jnlp>
