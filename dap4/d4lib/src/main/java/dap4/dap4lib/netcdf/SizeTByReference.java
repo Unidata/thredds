@@ -1,5 +1,6 @@
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information.
+/*
+Copyright (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
+See LICENSE.txt for license information.
 */
 
 package dap4.dap4lib.netcdf;
