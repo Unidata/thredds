@@ -84,6 +84,14 @@ void overlayAndApplyConfigOf(String projectPath) {
     
     // See http://akhikhl.github.io/gretty-doc/Web-app-overlays.html
     gretty.overlay projectPath
+    
+    gretty.afterEvaluate {
+        // Remove the 'assemble' task's dependency on 'overlayArchive', which was established in
+        // GrettyPlugin.addTasks() (see https://goo.gl/cJYmuU). Essentially, 'overlayArchive' modifies the archive
+        // produced by a project (i.e. its JAR or WAR) to include the artifacts of the overlaid projects.
+        // I can't imagine why we'd ever want that, because we only use overlays for testing.
+        project.tasks.assemble.dependsOn.remove project.tasks.overlayArchive
+    }
 }
 
 // It isn't possible to share methods, but we can share extra properties containing a closure, which boils down to
