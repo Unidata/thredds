@@ -3,7 +3,7 @@ Copyright (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
 See LICENSE.txt for license information.
 */
 
-package ucar.nc2.jni.netcdf;
+package ucar.nc2.iosp.netcdf4;
 
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
@@ -18,6 +18,10 @@ import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.iosp.hdf4.HdfEos;
 import ucar.nc2.iosp.hdf5.H5header;
+import ucar.nc2.jni.netcdf.Nc4Loader;
+import ucar.nc2.jni.netcdf.Nc4prototypes;
+import ucar.nc2.jni.netcdf.SizeT;
+import ucar.nc2.jni.netcdf.SizeTByReference;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.DebugFlags;
 import ucar.nc2.util.EscapeStrings;

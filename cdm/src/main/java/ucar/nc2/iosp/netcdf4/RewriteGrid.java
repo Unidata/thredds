@@ -31,7 +31,7 @@
  *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.rewrite;
+package ucar.nc2.iosp.netcdf4;
 
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.dt.grid.CFGridWriter2;

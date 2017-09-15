@@ -9,6 +9,7 @@ import ucar.nc2.Dimension
 import ucar.nc2.NetcdfFile
 import ucar.nc2.NetcdfFileWriter
 import ucar.nc2.Variable
+import ucar.nc2.iosp.netcdf4.Nc4Iosp
 
 /**
  * Tests miscellaneous aspects of Nc4Iosp.

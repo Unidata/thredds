@@ -19,7 +19,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class CDMDSP extends AbstractDSP
     static protected final boolean DEBUG = false;
     static protected final boolean DUMPCDL = false;
 
-    static protected final Class NC4CLASS = ucar.nc2.jni.netcdf.Nc4Iosp.class;
+    static protected final Class NC4CLASS = Nc4Iosp.class;
 
     // NetcdfDataset enhancement to use: need only coord systems
     static protected Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);

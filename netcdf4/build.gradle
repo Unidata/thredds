@@ -12,7 +12,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
-    compile project(':cdm')
+//    compile project(':cdm')
     compile libraries["jna"]
     compile libraries["slf4j-api"]
     

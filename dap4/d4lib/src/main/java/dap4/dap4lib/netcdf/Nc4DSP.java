@@ -25,6 +25,7 @@ import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
 import dap4.dap4lib.DapCodes;
 import dap4.dap4lib.XURI;
+import ucar.nc2.jni.netcdf.SizeTByReference;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

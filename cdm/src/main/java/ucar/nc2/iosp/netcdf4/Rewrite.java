@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.rewrite;
+package ucar.nc2.iosp.netcdf4;
 
 import ucar.ma2.*;
 import ucar.nc2.*;

@@ -10,6 +10,7 @@ import dap4.core.dmr.*;
 import dap4.core.util.*;
 import dap4.dap4lib.AbstractCursor;
 import dap4.dap4lib.LibTypeFcns;
+import ucar.nc2.jni.netcdf.SizeT;
 
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;

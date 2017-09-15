@@ -12,6 +12,7 @@ import dap4.core.util.Convert;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
+import ucar.nc2.jni.netcdf.SizeTByReference;
 
 import static dap4.dap4lib.netcdf.DapNetcdf.*;
 import static dap4.dap4lib.netcdf.Nc4DSP.*;

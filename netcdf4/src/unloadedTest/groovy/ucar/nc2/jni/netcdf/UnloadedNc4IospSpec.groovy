@@ -2,6 +2,7 @@ package ucar.nc2.jni.netcdf
 
 import spock.lang.Specification
 import ucar.nc2.Attribute
+import ucar.nc2.iosp.netcdf4.Nc4Iosp
 
 /**
  * Test various aspects of Nc4Iosp when the C lib is NOT loaded.

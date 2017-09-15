@@ -23,6 +23,10 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 
+import ucar.nc2.jni.netcdf.SizeT;
+import ucar.nc2.jni.netcdf.SizeTByReference;
+
+
 import java.util.ArrayList;
 import java.util.List;
 
