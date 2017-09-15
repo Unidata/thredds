@@ -67,7 +67,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.ui.dialog.CompareDialog;

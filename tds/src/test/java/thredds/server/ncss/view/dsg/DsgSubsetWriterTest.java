@@ -23,7 +23,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.iosp.netcdf4.Nc4;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.ogc.MarshallingUtil;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;

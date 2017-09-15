@@ -9,6 +9,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.*;
 import ucar.nc2.NCdumpW.WantValues;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.write.Nc4ChunkingStrategyNone;
 import ucar.unidata.util.test.TestDir;

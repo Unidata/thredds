@@ -7,7 +7,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.iosp.NCheader;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsContentRoot;

@@ -12,6 +12,7 @@ import ucar.ma2.MAMath;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NCheader;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;

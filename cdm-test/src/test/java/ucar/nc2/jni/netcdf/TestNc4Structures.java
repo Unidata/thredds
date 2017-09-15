@@ -40,6 +40,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.util.CancelTaskImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;

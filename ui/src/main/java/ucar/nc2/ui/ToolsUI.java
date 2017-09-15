@@ -65,7 +65,7 @@ import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.iosp.hdf5.H5iosp;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.time.CalendarDate;

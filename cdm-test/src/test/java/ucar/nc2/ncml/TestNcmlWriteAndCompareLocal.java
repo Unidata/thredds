@@ -17,7 +17,7 @@ import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;

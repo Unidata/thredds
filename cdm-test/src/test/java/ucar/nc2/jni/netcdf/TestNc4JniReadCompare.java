@@ -10,6 +10,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.*;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;

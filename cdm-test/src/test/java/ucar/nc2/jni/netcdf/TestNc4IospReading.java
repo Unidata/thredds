@@ -15,6 +15,7 @@ import ucar.nc2.NetcdfFileSubclass;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.iosp.hdf5.TestH5;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.CompareNetcdf;

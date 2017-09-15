@@ -35,6 +35,7 @@ import thredds.server.dap4.Dap4Controller;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPUtil;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
@@ -70,7 +71,7 @@ abstract public class DapTestCommon extends UnitTestCommon
 
     // Equivalent to the path to the webapp/d4ts for testing purposes
     static protected final String DFALTRESOURCEPATH = "/src/test/data/resources";
-    static protected Class NC4IOSP = ucar.nc2.jni.netcdf.Nc4Iosp.class;
+    static protected Class NC4IOSP = Nc4Iosp.class;
 
     //////////////////////////////////////////////////
     // Type decls

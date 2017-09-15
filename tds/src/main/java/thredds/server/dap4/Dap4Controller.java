@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.core.TdsRequestedDataset;
 import ucar.nc2.NetcdfFile;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -83,8 +84,8 @@ public class Dap4Controller extends DapController
         super.initialize();
         try {
             // Always prefer Nc4Iosp over HDF5
-            NetcdfFile.iospDeRegister(ucar.nc2.jni.netcdf.Nc4Iosp.class);
-            NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class,
+            NetcdfFile.iospDeRegister(Nc4Iosp.class);
+            NetcdfFile.registerIOProviderPreferred(Nc4Iosp.class,
                     ucar.nc2.iosp.hdf5.H5iosp.class
             );
         } catch (Exception e) {

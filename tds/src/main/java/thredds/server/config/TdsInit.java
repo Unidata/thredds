@@ -58,7 +58,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.stream.CdmRemote;
 import ucar.nc2.util.DebugFlags;

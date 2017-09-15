@@ -50,7 +50,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 

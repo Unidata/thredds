@@ -8,6 +8,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.iosp.netcdf4.Nc4Iosp;
 import ucar.nc2.util.Misc;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
