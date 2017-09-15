@@ -1,43 +1,20 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
- *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
- *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
- *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright (c) 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE.txt for license information.
  */
 
 package ucar.nc2.ft.fmrc;
 
 import org.jdom2.Element;
+import org.jdom2.Namespace;
+
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
+import ucar.nc2.Attribute;
+import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
+import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 
@@ -63,6 +40,8 @@ import java.util.*;
 @ThreadSafe
 public class Fmrc implements Closeable {
   static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Fmrc.class);
+  static private final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
+  static private NcMLWriter ncmlWriter = new NcMLWriter();
 
   /**
    * Factory method
@@ -94,6 +73,14 @@ public class Fmrc implements Closeable {
     }
 
     return new Fmrc(collection, errlog);
+  }
+  
+  public static Fmrc readNcML(String ncmlString, Formatter errlog) throws IOException {
+      NcmlCollectionReader ncmlCollection = NcmlCollectionReader.readNcML(ncmlString, errlog);
+      if (ncmlCollection == null) return null;
+      Fmrc fmrc = new Fmrc(ncmlCollection.getCollectionManager(), new FeatureCollectionConfig());
+      fmrc.setNcml(ncmlCollection.getNcmlOuter(), ncmlCollection.getNcmlInner());
+      return fmrc;
   }
 
   public static Fmrc open(FeatureCollectionConfig config, Formatter errlog) throws IOException {
@@ -276,6 +263,21 @@ public class Fmrc implements Closeable {
 
       // get the inventory, sorted by path
       for (MFile f : manager.getFilesSorted()) {
+        Map<String, String> filesRunDateMap = ((MFileCollectionManager) manager).getFilesRunDateMap();
+        CalendarDate runDate;
+
+        if (!filesRunDateMap.isEmpty()) {
+          // run time has been defined in NcML FMRC agg by the coord attribute,
+          // so explicitly set it in the dataset using the _Coordinate.ModelBaseDate
+          // global attribute, otherwise the run time offsets might be incorrectly
+          // computed if the incorrect run date is found in GridDatasetInv.java (line
+          // 177 with comment // Look: not really right )
+          runDate = CalendarDate.parseISOformat(null, filesRunDateMap.get(f.getPath()));
+          Element element = new Element("netcdf", ncNSHttps);
+          Element runDateAttr = ncmlWriter.makeAttributeElement(new Attribute(_Coordinate.ModelRunDate, runDate.toString()));
+          config.innerNcml = element.addContent(runDateAttr);
+        }
+
         GridDatasetInv inv;
         try {
           inv = GridDatasetInv.open(manager, f, config.innerNcml); // inventory is discovered for each GDS
@@ -284,7 +286,7 @@ public class Fmrc implements Closeable {
           continue; // skip
         }
 
-        CalendarDate runDate = inv.getRunDate();
+        runDate = inv.getRunDate();
         if (debug != null) debug.format("  opened %s rundate = %s%n", f.getPath(), inv.getRunDateString());
 
         // add to fmr for that rundate

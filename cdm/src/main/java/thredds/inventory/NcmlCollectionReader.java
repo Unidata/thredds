@@ -1,35 +1,8 @@
 /*
- * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
- *
- *   Portions of this software were developed by the Unidata Program at the
- *   University Corporation for Atmospheric Research.
- *
- *   Access and use of this software shall impose the following obligations
- *   and understandings on the user. The user is granted the right, without
- *   any fee or cost, to use, copy, modify, alter, enhance and distribute
- *   this software, and any derivative works thereof, and its supporting
- *   documentation for any purpose whatsoever, provided that this entire
- *   notice appears in all copies of the software, derivative works and
- *   supporting documentation.  Further, UCAR requests that the user credit
- *   UCAR/Unidata in any publications that result from the use of this
- *   software or in any product that includes this software. The names UCAR
- *   and/or Unidata, however, may not be used in any advertising or publicity
- *   to endorse or promote any products or commercial entity unless specific
- *   written permission is obtained from UCAR/Unidata. The user also
- *   understands that UCAR/Unidata is not obligated to provide the user with
- *   any support, consulting, training or assistance of any kind with regard
- *   to the use, operation and performance of this software nor to provide
- *   the user with any updates, revisions, new versions or "bug fixes."
- *
- *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE.txt for license information.
  */
+
 package thredds.inventory;
 
 import org.jdom2.Element;
@@ -39,6 +12,7 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 
 import thredds.client.catalog.Catalog;
+import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.URLnaming;
 
 import java.io.*;
@@ -58,6 +32,36 @@ public class NcmlCollectionReader {
 
   private static final boolean debugURL = false, debugXML = false, showParsedXML = false;
   //private static final boolean validate = false;
+
+  static private final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
+  static private final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcmlCollectionReader.class);
+
+  private Namespace ncmlNS;
+  
+  /**
+   * Read an NcML file from a String, and construct a NcmlCollectionReader from its scan or scanFmrc element.
+   *
+   * @param ncmlString the NcML to construct the reader from
+   * @param errlog put error messages here
+   * @return the resulting NetcdfDataset
+   * @throws IOException on read error, or bad referencedDatasetUri URI
+   */
+  static public NcmlCollectionReader readNcML(String ncmlString, Formatter errlog) throws IOException {
+      StringReader reader = new StringReader(ncmlString);
+      
+      org.jdom2.Document doc;
+      try {
+        SAXBuilder builder = new SAXBuilder();
+        if (debugURL) System.out.println(" NetcdfDataset NcML String = <" + ncmlString + ">");
+        doc = builder.build(new StringReader(ncmlString));
+      } catch (JDOMException e) {
+        throw new IOException(e.getMessage());
+      }
+      if (debugXML) System.out.println(" SAXBuilder done");
+
+      return readXML(doc, errlog, null);
+  }
 
   /**
    * Read an NcML file from a URL location, and construct a NcmlCollectionReader from its scan or scanFmrc element.
@@ -83,19 +87,25 @@ public class NcmlCollectionReader {
     }
     if (debugXML) System.out.println(" SAXBuilder done");
 
+    return readXML(doc, errlog, ncmlLocation);
+  }
+  
+  static private NcmlCollectionReader readXML(org.jdom2.Document doc, Formatter errlog, String ncmlLocation) {
     if (showParsedXML) {
       XMLOutputter xmlOut = new XMLOutputter();
       System.out.println("*** NetcdfDataset/showParsedXML = \n" + xmlOut.outputString(doc) + "\n*******");
     }
 
     Element netcdfElem = doc.getRootElement();
-    Namespace use = netcdfElem.getNamespace(); // detect incorrect namespace
-    if (!use.equals(Catalog.ncmlNS)) {
-      errlog.format("Incorrect namespace specified in NcML= %s must be %s%n", use.getURI(), Catalog.ncmlNS.getURI());
+    Namespace myNS = netcdfElem.getNamespace(); // detect incorrect namespace
+
+    if (!myNS.equals(Catalog.ncmlNS) && !myNS.equals(Catalog.ncmlNSHttps)) {
+      errlog.format("Incorrect namespace specified in NcML= %s must be %s%n or %s%n", myNS.getURI(),
+              Catalog.ncmlNS.getURI(), Catalog.ncmlNSHttps.getURI());
       return null;
     }
 
-    Element aggElem = netcdfElem.getChild("aggregation", Catalog.ncmlNS);
+    Element aggElem = netcdfElem.getChild("aggregation", myNS);
     if (aggElem == null) {
       errlog.format("NcML must have aggregation element");
       return null;
@@ -107,14 +117,7 @@ public class NcmlCollectionReader {
        errlog.format("NcML aggregation must be of type fmrc");
       return null;
     }
-
-    Element scanElem = aggElem.getChild("scan", Catalog.ncmlNS);
-    if (scanElem == null) scanElem = aggElem.getChild("scanFmrc", Catalog.ncmlNS);
-    if (scanElem == null) {
-      errlog.format("NcML must have aggregation scan or scanFmrc element");
-      return null;
-    }
-
+    
     return new NcmlCollectionReader(ncmlLocation, netcdfElem);
   }
 
@@ -125,34 +128,67 @@ public class NcmlCollectionReader {
 
   NcmlCollectionReader(String ncmlLocation, Element netcdfElem) {
 
-    Element aggElem = netcdfElem.getChild("aggregation", Catalog.ncmlNS);
+    if (netcdfElem.equals(Catalog.ncmlNSHttps)) {
+      this.ncmlNS = Catalog.ncmlNSHttps;
+    } else {
+      this.ncmlNS = Catalog.ncmlNS;
+    }
+    Element aggElem = netcdfElem.getChild("aggregation", ncmlNS);
     String recheck = aggElem.getAttributeValue("recheckEvery");
 
     // get the aggregation/scan element
-    Element scanElem = aggElem.getChild("scan", Catalog.ncmlNS);
-    if (scanElem == null) scanElem = aggElem.getChild("scanFmrc", Catalog.ncmlNS);
+    Element scanElem = aggElem.getChild("scan", ncmlNS);
+    if (scanElem == null) scanElem = aggElem.getChild("scanFmrc", ncmlNS);
 
-    String dirLocation = scanElem.getAttributeValue("location");
-    dirLocation = URLnaming.resolve(ncmlLocation, dirLocation); // possible relative location
+    if (scanElem == null) {
+      // no directory scan going on here - look for explicitly named datasets
+      Map<String, String> realLocationRunTimeMap = new HashMap<>();
+      List<String> realLocationList = new ArrayList<>();
+      java.util.List<Element> ncList = aggElem.getChildren("netcdf", ncmlNS);
+      for (Element netcdfElemNested : ncList) {
+        String location = netcdfElemNested.getAttributeValue("location");
+        if (location == null)
+          location = netcdfElemNested.getAttributeValue("url");
+        if (location != null)
+          location = AliasTranslator.translateAlias(location);
 
-    String regexpPatternString = scanElem.getAttributeValue("regExp");
-    String suffix = scanElem.getAttributeValue("suffix");
-    String subdirs = scanElem.getAttributeValue("subdirs");
-    String olderThan = scanElem.getAttributeValue("olderThan");
+        String runTime = netcdfElemNested.getAttributeValue("coordValue");
+        if (runTime == null) {
+          Formatter f = new Formatter();
+          f.format("runtime must be explicitly defined for each netcdf element using the attribute coordValue");
+          log.error(f.toString());
+        }
 
-    datasetManager = MFileCollectionManager.openWithRecheck(ncmlLocation, recheck);
-    datasetManager.addDirectoryScan(dirLocation, suffix, regexpPatternString, subdirs, olderThan, null);
+        String realLocation = URLnaming.resolveFile(ncmlLocation, location);
+        realLocationRunTimeMap.put(realLocation, runTime);
+      }
+      datasetManager = MFileCollectionManager.openWithRecheck(ncmlLocation, recheck);
+      datasetManager.setFilesAndRunDate(realLocationRunTimeMap);
 
-    String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
-    DateExtractor dateExtractor = null;
-    if (dateFormatMark != null)
-      dateExtractor = new DateExtractorFromName(dateFormatMark, true);
-    else {
-      String runDateMatcher = scanElem.getAttributeValue("runDateMatcher");
-      if (runDateMatcher != null)
-        dateExtractor = new DateExtractorFromName(runDateMatcher, false);
+    } else {
+      String dirLocation = scanElem.getAttributeValue("location");
+      dirLocation = URLnaming.resolve(ncmlLocation, dirLocation); // possible relative location
+
+      String regexpPatternString = scanElem.getAttributeValue("regExp");
+      String suffix = scanElem.getAttributeValue("suffix");
+      String subdirs = scanElem.getAttributeValue("subdirs");
+      String olderThan = scanElem.getAttributeValue("olderThan");
+
+      datasetManager = MFileCollectionManager.openWithRecheck(ncmlLocation, recheck);
+      datasetManager.addDirectoryScan(dirLocation, suffix, regexpPatternString, subdirs, olderThan, null);
+
+      String dateFormatMark = scanElem.getAttributeValue("dateFormatMark");
+      DateExtractor dateExtractor = null;
+      if (dateFormatMark != null)
+        dateExtractor = new DateExtractorFromName(dateFormatMark, true);
+      else {
+        String runDateMatcher = scanElem.getAttributeValue("runDateMatcher");
+        if (runDateMatcher != null)
+          dateExtractor = new DateExtractorFromName(runDateMatcher, false);
+      }
+      datasetManager.setDateExtractor(dateExtractor);
+
     }
-    datasetManager.setDateExtractor(dateExtractor);
 
     hasOuter = hasMods(netcdfElem);
     hasInner = hasMods(aggElem);
@@ -164,11 +200,11 @@ public class NcmlCollectionReader {
   }
 
   private boolean hasMods(Element elem) {
-    if (elem.getChildren("attribute", Catalog.ncmlNS).size() > 0) return true;
-    if (elem.getChildren("variable", Catalog.ncmlNS).size() > 0) return true;
-    if (elem.getChildren("dimension", Catalog.ncmlNS).size() > 0) return true;
-    if (elem.getChildren("group", Catalog.ncmlNS).size() > 0) return true;
-    if (elem.getChildren("remove", Catalog.ncmlNS).size() > 0) return true;
+    if (elem.getChildren("attribute", ncmlNS).size() > 0) return true;
+    if (elem.getChildren("variable", ncmlNS).size() > 0) return true;
+    if (elem.getChildren("dimension", ncmlNS).size() > 0) return true;
+    if (elem.getChildren("group", ncmlNS).size() > 0) return true;
+    if (elem.getChildren("remove",ncmlNS).size() > 0) return true;
     return false;
   }
 

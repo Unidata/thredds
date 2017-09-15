@@ -219,18 +219,7 @@ class Giniheader {
     bos.get();   /* skip a byte for hundreds of seconds */
 
     nv = bos.get();
-    att = new Attribute("ProjIndex", nv);
-    ncfile.addAttribute(null, att);
     proj = nv.intValue();
-    if (proj == 1) {
-      att = new Attribute("ProjName", "MERCATOR");
-    } else if (proj == 3) {
-      att = new Attribute("ProjName", "LAMBERT_CONFORNAL");
-    } else if (proj == 5) {
-      att = new Attribute("ProjName", "POLARSTEREOGRAPHIC");
-    }
-
-    ncfile.addAttribute(null, att);
 
     /*
     ** Get grid dimensions
@@ -558,6 +547,8 @@ class Giniheader {
 
     ncfile.addVariable(null, ct);
     ncfile.addAttribute(null, new Attribute(CDM.CONVENTIONS, _Coordinate.Convention));
+
+    var.addAttribute(new Attribute(CF.GRID_MAPPING, ct.getFullName()));
 
     // finish
     ncfile.finish();

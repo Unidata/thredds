@@ -1,0 +1,7 @@
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+    <aggregation dimName="run" type="forecastModelRunCollection">
+        <netcdf location="./GFS_Puerto_Rico_191km_20090729_0000.nc" coordValue="2009-07-29T00:00:00Z" enhance="true" />
+        <netcdf location="./GFS_Puerto_Rico_191km_20090730_0000.nc" coordValue="2009-07-30T00:00:00Z" enhance="true" />
+        <netcdf location="./GFS_Puerto_Rico_191km_20090731_0000.nc" coordValue="2009-07-31T00:00:00Z" enhance="true" />
+    </aggregation>
+</netcdf>

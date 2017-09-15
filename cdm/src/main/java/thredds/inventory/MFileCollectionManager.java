@@ -1,39 +1,12 @@
 /*
- * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
- *
- *   Portions of this software were developed by the Unidata Program at the
- *   University Corporation for Atmospheric Research.
- *
- *   Access and use of this software shall impose the following obligations
- *   and understandings on the user. The user is granted the right, without
- *   any fee or cost, to use, copy, modify, alter, enhance and distribute
- *   this software, and any derivative works thereof, and its supporting
- *   documentation for any purpose whatsoever, provided that this entire
- *   notice appears in all copies of the software, derivative works and
- *   supporting documentation.  Further, UCAR requests that the user credit
- *   UCAR/Unidata in any publications that result from the use of this
- *   software or in any product that includes this software. The names UCAR
- *   and/or Unidata, however, may not be used in any advertising or publicity
- *   to endorse or promote any products or commercial entity unless specific
- *   written permission is obtained from UCAR/Unidata. The user also
- *   understands that UCAR/Unidata is not obligated to provide the user with
- *   any support, consulting, training or assistance of any kind with regard
- *   to the use, operation and performance of this software nor to provide
- *   the user with any updates, revisions, new versions or "bug fixes."
- *
- *   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *   DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *   INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *   FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *   WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE.txt for license information.
  */
 
 package thredds.inventory;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.filesystem.MFileOS;
 import thredds.inventory.filter.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.TimeDuration;
@@ -100,6 +73,9 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   private long lastScanned;       // last time scanned
   @GuardedBy("this")
   private AtomicLong lastChanged = new AtomicLong(); // last time the set of files changed
+
+  @GuardedBy("this")
+  private Map<String, String> filesRunDateMap = new HashMap<>();
 
   private MFileCollectionManager(String collectionName, String collectionSpec, String olderThan, Formatter errlog) {
     super(collectionName, null);
@@ -358,7 +334,18 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     // rescan
     Map<String, MFile> oldMap = map;
     Map<String, MFile> newMap = new HashMap<>();
-    reallyScan(newMap);
+
+    if ((!hasScans())) {
+      // if no directory scans, the map of files should not change
+      // but we should still make a new map to see if the files
+      // have been updated since the last recheck
+      for (String file : oldMap.keySet()) {
+        newMap.put(file, MFileOS.getExistingFile(file));
+      }
+    } else {
+      // we have a directory scan, so scan it
+      reallyScan(newMap);
+    }
 
     // replace with previous datasets if they exist
     int nnew = 0;
@@ -430,6 +417,18 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
   }
 
+  public void setFilesAndRunDate(Map<String, String> filesRunDateMap) {
+    // a simple mapping between file names and coordValue dates for
+    // aggregations in which files are explicitly defined.
+    this.filesRunDateMap = filesRunDateMap;
+    // update MFileCollection map of files
+    List<MFile> files = new ArrayList<>(filesRunDateMap.size());
+    for (String file : filesRunDateMap.keySet()) {
+      files.add(MFileOS.getExistingFile(file));
+    }
+    setFiles(files);
+  }
+
   @Override
   public synchronized Iterable<MFile> getFilesSorted() {
     if (map == null)
@@ -453,6 +452,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
   @Override
   public boolean hasDateExtractor() {
     return (dateExtractor != null) && !(dateExtractor instanceof DateExtractorNone);
+  }
+
+  public synchronized Map<String, String> getFilesRunDateMap() {
+    return filesRunDateMap;
   }
 
   // only called from synch methods
@@ -485,6 +488,22 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     this.lastChanged.set(this.lastScanned);
     logger.debug("{} : initial scan found n datasets = {} ", collectionName, map.keySet().size());
     return map.keySet().size() > 0;
+  }
+
+  @Override
+  CalendarDate extractRunDateWithError(MFile mfile) {
+    CalendarDate result = super.extractRunDateWithError(mfile);
+    // if there isn't a DateExtractor, see if a mapping exists between
+    // filenames and runtimes as defied by the coordValue attribute
+    // in explicitly defined file aggregations (i.e. not a directory scan)
+    if (result == null)
+      if (!this.filesRunDateMap.isEmpty()) {
+        String dateString = filesRunDateMap.get(mfile.getPath());
+        result = CalendarDate.parseISOformat(null, dateString);
+      }
+    if (result == null)
+      logger.error("Failed to find a run date associated with file {}", mfile.getPath());
+    return result;
   }
 
   protected void reallyScan(java.util.Map<String, MFile> map) throws IOException {
@@ -520,7 +539,10 @@ public class MFileCollectionManager extends CollectionManagerAbstract {
     }
 
     if (map.size() == 0) {
-      logger.warn("MFileCollectionManager: No files found for {}", collectionName);
+      if (hasScans()) {
+        // only warn if a directory scan comes up with no files found
+        logger.warn("MFileCollectionManager: No files found for {}", collectionName);
+      }
     }
   }
 
