@@ -12,6 +12,13 @@ addons:
       - $TRAVIS_UPLOAD_PATH
     target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
 
+  # Workaround for Travis CI issue 7732 causing buffer overflow in OpenJDK7.
+  # See https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
+  # Maybe this won't be necessary once we switch dist (above) from precise to trusty?
+  hosts:
+    - thredds
+  hostname: thredds
+
 env:
   global:
     - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64
