@@ -252,13 +252,11 @@ public class Grib2Collection extends GribCollectionImmutable {
     Grib2Customizer.Parameter entry = cust2.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     if (entry != null) v.addAttribute(new Attribute("Grib2_Parameter_Name", entry.getName()));
 
-    if (vindex.getLevelType() != GribNumbers.MISSING) {
-      String levelTypeName = cust2.getLevelName(vindex.getLevelType());
-      if (levelTypeName != null)
-        v.addAttribute(new Attribute("Grib2_Level_Type", levelTypeName));
-      else
-        v.addAttribute(new Attribute("Grib2_Level_Type", vindex.getLevelType()));
-    }
+    if (vindex.getLevelType() != GribNumbers.MISSING)
+      v.addAttribute(new Attribute("Grib2_Level_Type", vindex.getLevelType()));
+    String ldesc = cust2.getLevelName(vindex.getLevelType());
+    if (ldesc != null)
+      v.addAttribute(new Attribute("Grib2_Level_Desc", ldesc));
 
     if (vindex.getEnsDerivedType() >= 0)
       v.addAttribute(new Attribute("Grib2_Ensemble_Derived_Type", vindex.getEnsDerivedType()));

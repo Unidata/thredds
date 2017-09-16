@@ -66,8 +66,8 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
    */
   static public boolean permitCaching = true;
 
-  static public final int defaultSizeToCache = 4000; // bytes  cache any variable whose size() < defaultSizeToCache
-  static public final int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() < defaultSizeToCache
+  static public int defaultSizeToCache = 4000; // bytes  cache any variable whose size() < defaultSizeToCache
+  static public int defaultCoordsSizeToCache = 40 * 1000; // bytes cache coordinate variable whose size() < defaultSizeToCache
 
   static protected boolean debugCaching = false;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Variable.class);
