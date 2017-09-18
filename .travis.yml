@@ -9,7 +9,7 @@ language: java
 # Setting sudo to "true" forces the job to run on Travis's standard infrastructure, which seems to fix the problem.
 sudo: true
 
-# Need to run on Ubuntu Precise (v12.04.5) until we rebuild netCDF-C for 
+# Need to run on Ubuntu Precise (v12.04.5) until we rebuild netCDF-C for
 # Ubuntu Trusty (v14.04.5), the new Travis default
 dist: precise
 
@@ -29,6 +29,10 @@ env:
   matrix:
     - TASK="build"
     - TASK="docs"
+
+# Need to run on Ubuntu Precise (v12.04.5) until we rebuild netCDF-C for
+# Ubuntu Trusty (v14.04.5), the new Travis default
+dist: precise
 
 addons:
   # See the note in travis/after_script.sh about the environment variables that Travis artifact uploading requires.

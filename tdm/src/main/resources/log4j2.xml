@@ -67,7 +67,7 @@
       <appender-ref ref="tdmDetailLogger"/>
     </Logger>
 
-    <Root level="info" additivity="false">
+<Root level="info" additivity="false">
       <appender-ref ref="tdmDetailLogger"/>
     </Root>
 
