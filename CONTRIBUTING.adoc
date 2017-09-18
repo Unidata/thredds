@@ -98,7 +98,7 @@ Once you are satisfied with your work, there is one last step to complete before
 [[gh-history-cleanup]]
 === Clean up your git commit history
 
-Commit history can often be full of temporarily commit messages, of commits with code changes that ultimately didn't make the final cut.
+Commit history can often be full of temporary commit messages, and/or commits with code changes that ultimately didn't make the final cut.
 
 To clean up your history, use the `git rebase -i` command, which will open an editor:
 
