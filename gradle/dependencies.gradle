@@ -11,17 +11,46 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
         // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
         jcenter()
         mavenCentral()  // JCenter isn't quite a superset of Maven Central.
+        
+        // All of the repositories below could be replaced with:
+        //     url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
+        // which is a group repository that contains all other repositories. However, I prefer to list all source
+        // repos explicitly so that we know where all artifacts ultimately come from.
+        
+        // Hosted repositories.
         maven {
-            url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
+            // For "threddsIso", "ncwms", "visad" and "jj2000".
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
         }
         maven {
-            url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+            // For "threddsIso" and "ncwms" snapshots.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/"
         }
         maven {
-            url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty:gretty-fork'.
+            // For "bounce" and several dependencies needed by "ncwms".
+            // Contains artifacts that are not available in any other Maven repository on the net.
+            // We should be concerned that we're relying on any such artifacts. TODO: Remove our dependence on these.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"
+        }
+    
+        // Proxied repositories. In the event that the remote repos go away, we still have copies of the artifacts.
+        maven {
+            // For "geotk-referencing", which is needed by "ncwms". Repositories are not inherited from a dependency,
+            // so we must duplicate ncwms's needed repos here. See https://stackoverflow.com/a/19908009/3874643.
+            // Proxies 'http://maven.geotoolkit.org/'.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-geotoolkit/"
         }
         maven {
-            url "http://maven.asascience.com/maven/ncsos-releases"
+            // For "gretty". Proxies 'https://dl.bintray.com/cwardgar/maven/'.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-cwardgar/"
+        }
+        maven {
+            // For "ncsos". Proxies 'http://maven.asascience.com/maven/ncsos-releases/'.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-ncsos/"
+        }
+        maven {
+            // For "52n-oxf-xmlbeans". Proxies 'http://52north.org/maven/repo/releases/'.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-52north/"
         }
     }
 }
@@ -196,8 +225,6 @@ libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.11-SN
     // This needs to be a local exclusion; globally excluding "edu.ucar:cdm" would be very bad.
     exclude group: 'edu.ucar', module: 'cdm'  // version "4.6.1"
 }
-
-libraries["geoapi-pending"] = "org.opengis:geoapi-pending:3.1-M04"
 
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
