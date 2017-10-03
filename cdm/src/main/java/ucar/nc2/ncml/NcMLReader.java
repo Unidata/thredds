@@ -562,6 +562,14 @@ public class NcMLReader {
       if (debugConstruct) System.out.println(" add new att = " + name);
       try {
         ucar.ma2.Array values = readAttributeValues(attElem);
+        // Check for unsigned
+        String signedness = attElem.getAttributeValue("isUnsigned");
+        boolean unsigned = false;
+        if(signedness != null && (
+                signedness.equalsIgnoreCase("true")
+                || signedness.equalsIgnoreCase("1")))
+          unsigned = true;
+        values.setUnsigned(unsigned);
         addAttribute(parent, new ucar.nc2.Attribute(name, values));
       } catch (RuntimeException e) {
         errlog.format("NcML new Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, parent);
