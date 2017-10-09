@@ -1,4 +1,4 @@
-package edu.ucar.build
+package edu.ucar.build.publishing
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
