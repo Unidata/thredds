@@ -10,17 +10,25 @@ task publish(type: PublishToRawRepoTask) {
 
     srcFile = file('website/')
     destPath = version
-    username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
-    password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    
+    // These statements can potentially fail the build. We only want that to happen if we're actually running the
+    // task, not merely configuring it.
+    doFirst {
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    }
 }
 
 // By default, this will perform a dry run, which simply prints the components that the query matched.
 // To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
 task deleteFromNexus(type: DeleteFromNexusTask) {
     host = "https://artifacts.unidata.ucar.edu/"
-    username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
-    password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
-    
     searchQueryParameters.repository = 'thredds-doc'
     searchQueryParameters.q = version
+    
+    // Ditto.
+    doFirst {
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    }
 }
