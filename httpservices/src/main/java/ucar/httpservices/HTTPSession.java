@@ -1182,6 +1182,11 @@ public class HTTPSession implements Closeable
                 connmgr.setDefaultMaxPerRoute((Integer) value);
             } /* else ignore */
         }
+        // Add proxy, if any
+        if(httpproxy != null)
+            rcb.setProxy(httpproxy);
+        else if(httpsproxy != null)
+            rcb.setProxy(httpsproxy);
         RequestConfig cfg = rcb.build();
         return cfg;
     }
