@@ -18,6 +18,7 @@ import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CancelTask;
@@ -1151,7 +1152,7 @@ public class CDMDSP extends AbstractDSP
     protected boolean suppress(String attrname)
     {
         if(attrname.startsWith("_Coord")) return true;
-        if(attrname.equals("_Unsigned"))
+        if(attrname.equals(CDM.UNSIGNED))
             return true;
         return false;
     }

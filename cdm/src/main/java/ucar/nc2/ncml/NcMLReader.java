@@ -602,7 +602,7 @@ public class NcMLReader {
       boolean hasValue = attElem.getAttribute("value") != null;
       if (hasValue) {  // has a new value
         try {
-          ucar.ma2.Array values = readAttributeValues(attElem);
+          ucar.ma2.Array values = readAttributeValues(attElem);  // Handles "isUnsigned".
           addAttribute(parent, new ucar.nc2.Attribute(name, values));
         } catch (RuntimeException e) {
           errlog.format("NcML existing Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, parent);

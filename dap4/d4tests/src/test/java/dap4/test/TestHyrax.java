@@ -334,7 +334,7 @@ public class TestHyrax extends DapTestCommon
     {
         StringWriter sw = new StringWriter();
 
-        StringBuilder args = new StringBuilder("-strict -unsigned");
+        StringBuilder args = new StringBuilder("-strict");
         if(datasetname != null) {
             args.append(" -datasetname ");
             args.append(datasetname);
@@ -355,7 +355,7 @@ public class TestHyrax extends DapTestCommon
     {
         StringWriter sw = new StringWriter();
 
-        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        StringBuilder args = new StringBuilder("-strict -vall");
         if(datasetname != null) {
             args.append(" -datasetname ");
             args.append(datasetname);

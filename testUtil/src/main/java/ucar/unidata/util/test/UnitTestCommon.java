@@ -585,7 +585,7 @@ abstract public class UnitTestCommon
             throws Exception
     {
         StringWriter sw = new StringWriter();
-        StringBuilder args = new StringBuilder("-strict -unsigned");
+        StringBuilder args = new StringBuilder("-strict");
         if(datasetname != null) {
             args.append(" -datasetname ");
             args.append(datasetname);
@@ -605,14 +605,13 @@ abstract public class UnitTestCommon
     ncdumpdata(NetcdfFile ncfile, String datasetname)
             throws Exception
     {
-        StringWriter sw = new StringWriter();
-        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        StringBuilder args = new StringBuilder("-strict -vall");
         if(datasetname != null) {
             args.append(" -datasetname ");
             args.append(datasetname);
         }
         // Dump the databuffer
-        sw = new StringWriter();
+        StringWriter sw = new StringWriter();
         try {
             if(!ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null))
                 throw new Exception("NCdumpW failed");

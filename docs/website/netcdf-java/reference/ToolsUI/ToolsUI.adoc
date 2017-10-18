@@ -74,7 +74,7 @@ The NCDump tab offers functionality similar to<97>albeit more limited than<97>th
 link:https://www.unidata.ucar.edu/software/netcdf/docs/ncdump-man-1.html[ncdump] utility. The string that you enter in
 the "Command" field should be of the form:
 ----
-<filename> [-unsigned] [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]
+<filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]
 ----
 image:ncdump1.png[NCDump tab]
 

@@ -243,7 +243,7 @@ public class TestNc4Iosp extends DapTestCommon
         String metadata = null;
         StringWriter sw = new StringWriter();
 
-        StringBuilder args = new StringBuilder("-strict -unsigned");
+        StringBuilder args = new StringBuilder("-strict");
         if(datasetname != null) {
             args.append(" -datasetname ");
             args.append(datasetname);
@@ -275,7 +275,7 @@ public class TestNc4Iosp extends DapTestCommon
         boolean ok = false;
         StringWriter sw = new StringWriter();
 
-        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        StringBuilder args = new StringBuilder("-strict -vall");
         if(datasetname != null) {
             args.append(" -datasetname ");
             args.append(datasetname);
