@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
@@ -371,6 +371,18 @@ public class Group extends CDMNode implements AttributeContainer {
     return sbuff.toString();
   }
 
+  /**
+   * CDL representation.
+   *
+   * @param strict if true, write in strict adherence to CDL definition.
+   * @return CDL representation.
+   */
+  public String writeCDL(boolean strict) {
+    Formatter buf = new Formatter();
+    writeCDL(buf, new Indent(2), strict);
+    return buf.toString();
+  }
+
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
     boolean hasE = (enumTypedefs.size() > 0);
     boolean hasD = (dimensions.size() > 0);
@@ -659,7 +671,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
   @Override
   public String toString() {
-    return getShortName();
+    return writeCDL(false);
   }
 
   /**
