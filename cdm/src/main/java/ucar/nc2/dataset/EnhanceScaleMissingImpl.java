@@ -36,7 +36,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 
@@ -137,7 +136,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     Attribute unsignedAttrib = forVar.findAttributeIgnoreCase(CDM.UNSIGNED);
     boolean isUnsignedSet = unsignedAttrib != null && unsignedAttrib.getStringValue().equalsIgnoreCase("true");
     if (isUnsignedSet) {
-      forVar.setDataType(forVar.getDataType().withSign(true));
+      forVar.setDataType(forVar.getDataType().withSignedness(DataType.Signedness.UNSIGNED));
     }
 
     this.isUnsigned = forVar.getDataType().isUnsigned();

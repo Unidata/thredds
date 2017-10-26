@@ -642,7 +642,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   protected Array convertUnsigned(Array org) {
-    return Array.factory(org.getDataType().withSign(true), org.getShape(), org.getStorage());
+    return Array.factory(
+            org.getDataType().withSignedness(DataType.Signedness.UNSIGNED), org.getShape(), org.getStorage());
   }
 }
 

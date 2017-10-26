@@ -335,7 +335,6 @@ public class Attribute extends CDMNode
   private EnumTypedef enumtype = null;
   private int nelems; // can be 0 or greater
   private Array values;
-  // private boolean isUnsigned;
 
   /**
    * Copy constructor
@@ -435,22 +434,9 @@ public class Attribute extends CDMNode
     int n = values.size();
     Class c = values.get(0).getClass();
     setDataType(DataType.getType(c, isUnsigned));
-    setValues(values,isUnsigned);
+    setValues(values);
     setImmutable();
   }
-
-  /**
-     * Construct attribute with Array of values.
-     *
-     * @param name   name of attribute
-     * @param values Array of values; at least 1 member
-     * @param isUnsigned
-     */
-    public Attribute(String name, Array values, boolean isUnsigned) {
-     this(name,values.getDataType());
-     setValues(values);
-     setImmutable();
-   }
 
   /**
    * A copy constructor using a ucar.unidata.util.Parameter.
@@ -518,7 +504,7 @@ public class Attribute extends CDMNode
    *
    * @param values
    */
-  public void setValues(List values, boolean isUnsigned)
+  public void setValues(List values)
   {
     if(values == null || values.size() == 0)
 	throw new IllegalArgumentException("Cannot determine attribute's type");
@@ -626,11 +612,6 @@ public class Attribute extends CDMNode
     if (immutable) throw new IllegalStateException("Cant modify");
     setShortName(name);
   }
-
-  /* public synchronized void setUnsigned(boolean isUnsigned) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    this.isUnsigned = isUnsigned;
-  } */
 
   /**
    * Instances which have same content are equal.

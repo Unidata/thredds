@@ -316,7 +316,7 @@ public class DMRToCDM
             EnumTypedef en = (EnumTypedef)(dapen  != null ? this.nodemap.get(basetype) : null);
             if(dapen != null) {
                 cdmattr = new Attribute(dapattr.getShortName(), DataType.STRING);
-                cdmattr.setValues(cdmvalues, false);
+                cdmattr.setValues(cdmvalues);
                 cdmattr.setEnumType(en);
             }
             cdmattr = new Attribute(dapattr.getShortName(),cdmvalues, false);
