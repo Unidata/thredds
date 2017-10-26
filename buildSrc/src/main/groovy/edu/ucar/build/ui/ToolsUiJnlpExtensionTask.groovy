@@ -59,7 +59,7 @@ class ToolsUiJnlpExtensionTask extends DefaultTask {
     
     @TaskAction
     def write() {
-        ToolsUiJnlpExtensionTask.Writer writer = new ToolsUiJnlpExtensionTask.Writer(
+        Writer writer = new Writer(
                 codebase: codebase,
                 applicationVersion: applicationVersion,
                 applicationJarName: applicationJarName,

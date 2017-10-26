@@ -5,7 +5,7 @@ if (name != "thredds") {
 apply plugin: 'maven-publish'
 apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
 
-import edu.ucar.build.PublishingUtil
+import edu.ucar.build.publishing.PublishingUtil
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact
 
 publishing {

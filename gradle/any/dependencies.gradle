@@ -175,6 +175,9 @@ libraries["commons-lang3"] = "org.apache.commons:commons-lang3:3.4"
 // GRIB
 libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 
+// The easy HTTP client for Groovy (and Java). Used in buildSrc.
+libraries["http-builder-ng-core"] = "io.github.http-builder-ng:http-builder-ng-core:1.0.0"
+
 ////////////////////////////// TDS ///////////////////////////////////////////
 
 libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"

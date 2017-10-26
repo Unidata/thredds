@@ -12,6 +12,8 @@ apply from: "../gradle/any/dependencies.gradle"
 apply from: "../gradle/any/coverage.gradle"
 
 dependencies {
+    compile libraries["http-builder-ng-core"]
+    
     testCompile (libraries["spock-core"]) {
         // The Gradle API drags in the bundled version of Groovy that Gradle ships with (localGroovy()) –
         // see https://discuss.gradle.org/t/unable-to-force-gradle-to-use-groovy-2-0-0-for-the-project/7021.
