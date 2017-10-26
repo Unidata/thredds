@@ -9,12 +9,16 @@ targetCompatibility = JavaVersion.VERSION_1_8
 
 // These will only run when we execute the "publish" task, NOT "assemble".
 // That'll save us from a lot of unnecessary build time in the common case.
-task sourcesJar(type: Jar, dependsOn: classes, group: 'Publishing') {
+task sourcesJar(type: Jar, dependsOn: classes, group: 'Documentation') {
+    description = "Creates a JAR containing the main source code."
+    
     classifier = 'sources'
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc, group: 'Publishing') {
+task javadocJar(type: Jar, dependsOn: javadoc, group: 'Documentation') {
+    description = "Creates a JAR containing the Javadoc that we've generated from the main source code."
+    
     classifier = 'javadoc'
     from javadoc.destinationDir
 }

@@ -1,0 +1,34 @@
+import edu.ucar.build.publishing.DeleteFromNexusTask
+import edu.ucar.build.publishing.PublishToRawRepoTask
+
+apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
+
+task publish(type: PublishToRawRepoTask) {
+    // TODO: Move these properties to any/publishing.gradle.
+    host = "https://artifacts.unidata.ucar.edu/"
+    repoName = "thredds-doc"
+
+    srcFile = file('website/')
+    destPath = version
+    
+    // These statements can potentially fail the build. We only want that to happen if we're actually running the
+    // task, not merely configuring it.
+    doFirst {
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    }
+}
+
+// By default, this will perform a dry run, which simply prints the components that the query matched.
+// To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
+task deleteFromNexus(type: DeleteFromNexusTask) {
+    host = "https://artifacts.unidata.ucar.edu/"
+    searchQueryParameters.repository = 'thredds-doc'
+    searchQueryParameters.q = version
+    
+    // Ditto.
+    doFirst {
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+    }
+}

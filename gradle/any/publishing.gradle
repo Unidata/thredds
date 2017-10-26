@@ -1,4 +1,4 @@
-import edu.ucar.build.PublishingUtil
+import edu.ucar.build.publishing.PublishingUtil
 
 apply plugin: 'maven-publish'
 

@@ -1,4 +1,4 @@
-package edu.ucar.build
+package edu.ucar.build.publishing
 
 import org.gradle.api.Project
 import org.gradle.api.publish.maven.MavenPublication
@@ -226,7 +226,7 @@ class PublishingUtilTest extends Specification {
                 }
             }
             
-            import edu.ucar.build.PublishingUtil
+            import edu.ucar.build.publishing.PublishingUtil
             PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
             PublishingUtil.adjustMavenPublicationPomScopes(project)   // Testing this.
             
@@ -292,7 +292,7 @@ class PublishingUtilTest extends Specification {
             
             apply plugin: 'war'
             
-            import edu.ucar.build.PublishingUtil
+            import edu.ucar.build.publishing.PublishingUtil
             PublishingUtil.addMavenPublicationsForSoftwareComponents(project)
             PublishingUtil.adjustMavenPublicationPomScopes(project)   // Testing this.
         """
@@ -350,7 +350,7 @@ class PublishingUtilTest extends Specification {
                 }
             }
             
-            import edu.ucar.build.PublishingUtil
+            import edu.ucar.build.publishing.PublishingUtil
             PublishingUtil.adjustMavenPublicationPomScopes(project)   // Testing this.
         """
         
