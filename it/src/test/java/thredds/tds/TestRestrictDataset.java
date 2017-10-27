@@ -62,11 +62,16 @@ public class TestRestrictDataset {
   @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
-            // These first 3 actually don't require cdmUnitTest/. Could be broken out into separate class that can
+            // These first 6 actually don't require cdmUnitTest/. Could be broken out into separate class that can
             // run on Travis.
+            // explicit services
             {"/dodsC/testRestrictedDataset/testData2.nc.dds"},
             {"/cdmremote/testRestrictedDataset/testData2.nc?req=header"},
             {"/fileServer/testRestrictedDataset/testData2.nc"},
+            // default services
+            {"/dodsC/testRestrictedDataset/testData.nc.dds"},
+            {"/cdmremote/testRestrictedDataset/testData.nc?req=header"},
+            {"/fileServer/testRestrictedDataset/testData.nc"},
          //   {"/wms/testRestrictedDataset/testData2.nc?service=WMS&version=1.3.0&request=GetCapabilities"},
 
             // restricted DatasetScan
