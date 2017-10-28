@@ -626,7 +626,7 @@ public class InvDatasetScan extends InvCatalogRef {
     String dsDirPath = translatePathToLocation( path );
     if ( dsDirPath == null )
     {
-      log.error( "makeProxyDsResolverCatalog(): requesting path <" + path + "> must start with \"" + rootPath + "\"." );
+      log.error( "makeProxyDsResolverCatalog(): Requesting path <" + path + "> must start with \"" + rootPath + "\"." );
       return null;
     }
 
@@ -634,7 +634,7 @@ public class InvDatasetScan extends InvCatalogRef {
     int pos = dsDirPath.lastIndexOf('/');
     if ( pos == -1 )
     {
-      log.error( "makeProxyDsResolverCatalog(): requesting path <" + path + "> must contain a slash (\"/\")." );
+      log.error( "makeProxyDsResolverCatalog(): Requesting path <" + path + "> must contain a slash (\"/\")." );
       return null;
     }
     String dsName = dsDirPath.substring( pos + 1 );
