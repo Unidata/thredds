@@ -602,7 +602,7 @@ public class NcMLReader {
       boolean hasValue = attElem.getAttribute("value") != null;
       if (hasValue) {  // has a new value
         try {
-          ucar.ma2.Array values = readAttributeValues(attElem);
+          ucar.ma2.Array values = readAttributeValues(attElem);  // Handles "isUnsigned".
           addAttribute(parent, new ucar.nc2.Attribute(name, values));
         } catch (RuntimeException e) {
           errlog.format("NcML existing Attribute Exception: %s att=%s in=%s%n", e.getMessage(), name, parent);
@@ -618,7 +618,7 @@ public class NcMLReader {
           boolean isUnsignedSet = unS != null && unS.equalsIgnoreCase("true");
           String typeS = attElem.getAttributeValue("type");
           DataType dtype = typeS == null ? DataType.STRING : DataType.getType(typeS);
-          if (isUnsignedSet) dtype = dtype.withSign(true);
+          if (isUnsignedSet) dtype = dtype.withSignedness(DataType.Signedness.UNSIGNED);
           addAttribute(parent, new ucar.nc2.Attribute(name, dtype));
         }
       }
@@ -659,7 +659,7 @@ public class NcMLReader {
     String unS = s.getAttributeValue("isUnsigned");
     boolean isUnsignedSet =  unS != null && unS.equalsIgnoreCase("true");
     if (isUnsignedSet && dtype.isIntegral() && !dtype.isUnsigned()) {
-      dtype = dtype.withSign(true);
+      dtype = dtype.withSignedness(DataType.Signedness.UNSIGNED);
     }
 
     String sep = s.getAttributeValue("separator");
@@ -1021,7 +1021,7 @@ public class NcMLReader {
     Attribute att = v.findAttribute(CDM.UNSIGNED);
     boolean isUnsignedSet = att != null && att.getStringValue().equalsIgnoreCase("true");
     if (isUnsignedSet) {
-      dtype = dtype.withSign(true);
+      dtype = dtype.withSignedness(DataType.Signedness.UNSIGNED);
       v.setDataType(dtype);
     }
 

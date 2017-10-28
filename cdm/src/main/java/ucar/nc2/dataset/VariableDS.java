@@ -274,10 +274,16 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     }
 
     // do we need to do unsigned conversion ?
-    Variable org = this;
-    while (org instanceof VariableDS)
-      org = ((VariableDS) org).getOriginalVariable();
-    needUnsignedConversion = (this.getDataType().isUnsigned() && !org.getDataType().isUnsigned());
+    Variable ultimateOrigVar = this;
+    while (ultimateOrigVar instanceof VariableDS && ((VariableDS) ultimateOrigVar).getOriginalVariable() != null) {
+      ultimateOrigVar = ((VariableDS) ultimateOrigVar).getOriginalVariable();
+    }
+
+    if (ultimateOrigVar == this) {
+      needUnsignedConversion = false;
+    } else {
+      needUnsignedConversion = this.getDataType().isUnsigned() && !ultimateOrigVar.getDataType().isUnsigned();
+    }
   }
 
   boolean needConvert() {
@@ -636,8 +642,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   }
 
   protected Array convertUnsigned(Array org) {
-    return Array.factory(org.getDataType().withSign(true), org.getShape(), org.getStorage());
+    return Array.factory(
+            org.getDataType().withSignedness(DataType.Signedness.UNSIGNED), org.getShape(), org.getStorage());
   }
-
 }
 

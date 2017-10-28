@@ -1562,17 +1562,6 @@ public class DODSNetcdfFile extends ucar.nc2.NetcdfFile implements Closeable
   public Array readSection(String variableSection) throws IOException, InvalidRangeException
   {
     ParsedSectionSpec cer = ParsedSectionSpec.parseVariableSection(this, variableSection);
-
-    //if (unlocked)
-    //    throw new IllegalStateException("File is unlocked - cannot use");
-
-        /* run it through the variableso to pick up caching
-       if (cer.child == null) {
-         Array result = cer.v.read(cer.section);
-         result.setUnsigned(cer.v.isUnsigned());
-         return result;
-       } */
-
     return readData(cer.v, cer.section);
   }
 

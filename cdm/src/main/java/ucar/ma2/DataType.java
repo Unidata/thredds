@@ -42,9 +42,7 @@ import java.nio.ByteBuffer;
  *
  * @author john caron
  */
-
 public enum DataType {
-
   BOOLEAN("boolean", 1, boolean.class, false),
   BYTE("byte", 1, byte.class, false),
   CHAR("char", 1, char.class, false),
@@ -72,16 +70,31 @@ public enum DataType {
   UINT("uint", 4, int.class, true),
   ULONG("ulong", 8, long.class, true);
 
+  /**
+   * A property of {@link #isIntegral() integral} data types that determines whether they can represent both
+   * positive and negative numbers (signed), or only non-negative numbers (unsigned).
+   */
+  public enum Signedness {
+    /** The data type can represent both positive and negative numbers. */
+    SIGNED,
+    /** The data type can represent only non-negative numbers. */
+    UNSIGNED
+  }
+
   private final String niceName;
   private final int size;
   private final Class primitiveClass;
-  private final boolean isUnsigned;
+  private final Signedness signedness;
 
   DataType(String s, int size, Class primitiveClass, boolean isUnsigned) {
+    this(s, size, primitiveClass, isUnsigned ? Signedness.UNSIGNED : Signedness.SIGNED);
+  }
+
+  DataType(String s, int size, Class primitiveClass, Signedness signedness) {
     this.niceName = s;
     this.size = size;
     this.primitiveClass = primitiveClass;
-    this.isUnsigned = isUnsigned;
+    this.signedness = signedness;
   }
 
   /**
@@ -103,8 +116,8 @@ public enum DataType {
   }
 
   /**
-   * The primitive class type: char, byte, float, double, short, int, long, boolean, String, StructureData, StructureDataIterator,
-   * ByteBuffer.
+   * The primitive class type: char, byte, float, double, short, int, long, boolean, String, StructureData,
+   * StructureDataIterator, ByteBuffer.
    *
    * @return the primitive class type
    */
@@ -112,8 +125,24 @@ public enum DataType {
     return primitiveClass;
   }
 
+  /**
+   * Returns the {@link Signedness signedness} of this data type.
+   * For non-{@link #isIntegral() integral} data types, it is guaranteed to be {@link Signedness#SIGNED}.
+   *
+   * @return  the signedness of this data type.
+   */
+  public Signedness getSignedness() {
+    return signedness;
+  }
+
+  /**
+   * Returns {@code true} if the data type is {@link Signedness#UNSIGNED unsigned}.
+   * For non-{@link #isIntegral() integral} data types, it is guaranteed to be {@code false}.
+   *
+   * @return  {@code true} if the data type is unsigned.
+   */
   public boolean isUnsigned() {
-    return isUnsigned;
+    return signedness == Signedness.UNSIGNED;
   }
 
   /**
@@ -141,7 +170,7 @@ public enum DataType {
    */
   public boolean isIntegral() {
     return (this == DataType.BYTE) || (this == DataType.INT) || (this == DataType.SHORT) || (this == DataType.LONG) ||
-            (this == DataType.UBYTE) || (this == DataType.UINT) || (this == DataType.USHORT) || (this == DataType.ULONG);
+           (this == DataType.UBYTE) || (this == DataType.UINT) || (this == DataType.USHORT) || (this == DataType.ULONG);
   }
 
   /**
@@ -162,20 +191,34 @@ public enum DataType {
     return (this == DataType.ENUM1) || (this == DataType.ENUM2) || (this == DataType.ENUM4);
   }
 
-  public DataType withSign(boolean isUnsigned) {
+  /**
+   * Returns a DataType that is related to {@code this}, but with the specified signedness.
+   * This method is only meaningful for {@link #isIntegral() integral} data types; if it is called on a non-integral
+   * type, then {@code this} is simply returned. Examples:
+   * <pre>
+   *   assert DataType.INT.withSignedness(DataType.Signedness.UNSIGNED) == DataType.UINT;       // INT to UINT
+   *   assert DataType.ULONG.withSignedness(DataType.Signedness.SIGNED) == DataType.LONG;       // ULONG to LONG
+   *   assert DataType.SHORT.withSignedness(DataType.Signedness.SIGNED) == DataType.SHORT;      // this: Same signs
+   *   assert DataType.STRING.withSignedness(DataType.Signedness.UNSIGNED) == DataType.STRING;  // this: Non-integral
+   * </pre>
+   *
+   * @param signedness  the desired signedness of the returned DataType.
+   * @return  a DataType that is related to {@code this}, but with the specified signedness.
+   */
+  public DataType withSignedness(Signedness signedness) {
     switch (this) {
       case BYTE:
       case UBYTE:
-        return isUnsigned ? UBYTE : BYTE;
+        return signedness == Signedness.UNSIGNED ? UBYTE : BYTE;
       case SHORT:
       case USHORT:
-        return isUnsigned ? USHORT : SHORT;
+        return signedness == Signedness.UNSIGNED ? USHORT : SHORT;
       case INT:
       case UINT:
-        return isUnsigned ? UINT : INT;
+        return signedness == Signedness.UNSIGNED ? UINT : INT;
       case LONG:
       case ULONG:
-        return isUnsigned ? ULONG : LONG;
+        return signedness == Signedness.UNSIGNED ? ULONG : LONG;
     }
     return this;
   }
@@ -280,41 +323,77 @@ public enum DataType {
   }
 
   /**
-   * widen an unsigned int to a long
+   * Return a number that is equivalent to the specified value, but represented by the next larger data type.
+   * For example, a short will be widened to an int and a long will be widened to a {@link BigInteger}.
    *
-   * @param i unsigned int
-   * @return equivilent long value
+   * @param number  a number.
+   * @return  a wider Number with the same value.
    */
-  static public long unsignedIntToLong(int i) {
-    return (i < 0) ? (long) i + 4294967296L : (long) i;
+  // Tested indirectly in TestMAMath.convertUnsigned()
+  public static Number widenNumber(Number number) {
+    if (number instanceof BigInteger) {
+      return number;  // No need to widen a BigInteger.
+    } else if (number instanceof Long) {
+      return unsignedLongToBigInt(number.longValue());
+    } else if (number instanceof Integer) {
+      return unsignedIntToLong(number.intValue());
+    } else if (number instanceof Short) {
+      return unsignedShortToInt(number.shortValue());
+    } else if (number instanceof Byte) {
+      return unsignedByteToShort(number.byteValue());
+    } else {
+      throw new IllegalArgumentException(String.format(
+              "%s is an unsupported Number subtype.", number.getClass().getSimpleName()));
+    }
+  }
+
+  static final private BigInteger BIG_UMASK64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+
+  /**
+   * Widen an unsigned long to a {@link BigInteger}.
+   *
+   * @param l  an unsigned long
+   * @return   the equivalent {@link BigInteger} value.
+   */
+  // Tested indirectly in TestMAMath.convertUnsigned()
+  static public BigInteger unsignedLongToBigInt(long l) {
+    BigInteger bi = BigInteger.valueOf(l);
+    return bi.and(BIG_UMASK64);
   }
 
   /**
-   * widen an unsigned short to an int
+   * Widen an unsigned int to a long.
    *
-   * @param s unsigned short
-   * @return equivilent int value
+   * @param i  an unsigned int.
+   * @return   the equivalent long value.
    */
+  // Tested indirectly in TestMAMath.convertUnsigned()
+  static public long unsignedIntToLong(int i) {
+    return (i & 0xffffffffL);
+  }
+
+  /**
+   * Widen an unsigned short to an int.
+   *
+   * @param s  an unsigned short.
+   * @return   the equivalent int value.
+   */
+  // Tested indirectly in TestMAMath.convertUnsigned()
   static public int unsignedShortToInt(short s) {
     return (s & 0xffff);
   }
 
   /**
-   * widen an unsigned byte to a short
+   * Widen an unsigned byte to a short.
    *
-   * @param b unsigned byte
-   * @return equivilent short value
+   * @param b  an unsigned byte.
+   * @return   the equivalent short value.
    */
+  // Tested indirectly in TestMAMath.convertUnsigned()
   static public short unsignedByteToShort(byte b) {
+    // b is a byte and 0xFF is an int. The Java spec says: "When operands are of different types,
+    // automatic binary numeric promotion occurs with the smaller operand type being converted to the larger."
+    // So, for the AND operation, both values will be ints.
     return (short) (b & 0xff);
   }
-  //      return (short)((b<0)? (short)b + 256 : (short)b);
-
-  public static void main(String[] args) {
-    for (int i = 0; i < 260; i++) {
-      byte b = (byte) i;
-      System.out.printf("%4d = %4d%n", b, unsignedByteToShort(b));
-    }
-  }
-
 }

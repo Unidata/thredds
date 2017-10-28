@@ -32,50 +32,51 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
-import ucar.nc2.constants.CDM;
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import org.junit.Assert;
+import org.junit.Test;
 import ucar.unidata.util.test.TestDir;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
 
 /**
- * Simple example to print contents of an existing netCDF file of
- * unknown structure, much like ncdump.  A difference is the nesting of
- * multidimensional array data is represented by nested brackets, so the
- * output is not legal CDL that can be used as input for ncgen.
- *
- * @author Russ Rew
- * */
+ * Test NcdumpW.
+ */
+public class TestNcDump {
+  // Asserts that the issue identified in PCM-232977 has been fixed.
+  // See https://andy.unidata.ucar.edu/esupport/staff/index.php?_m=tickets&_a=viewticket&ticketid=28658.
+  // Asserts that GitHub issue #929 has been fixed. See https://github.com/Unidata/thredds/issues/929
+  @Test
+  public void testUnsignedFillValue() throws IOException {
+    try (StringWriter writer = new StringWriter()) {
+      NCdumpW.print(TestDir.cdmLocalTestDataDir + "testUnsignedFillValue.ncml",
+              writer, true, true, false, false, null, null);
 
-public class TestDump extends TestCase  {
+      File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValue.dump");
+      String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
 
-  public TestDump( String name) {
-    super(name);
-  }
-
-  File tempFile;
-  FileOutputStream out;
-  protected void setUp() throws Exception {
-    tempFile = File.createTempFile("TestLongOffset", "out");
-    out = new FileOutputStream( tempFile);
-  }
-  protected void tearDown() throws Exception {
-    out.close();
-    if (!tempFile.delete())
-      System.out.printf("delete failed on %s%n",tempFile);
-  }
-
-  public void testNCdump() {
-    try {
-      PrintWriter pw = new PrintWriter( new OutputStreamWriter(out, CDM.utf8Charset));
-      NCdumpW.print( TestDir.cdmLocalTestDataDir +"testWrite.nc", pw, false, true, false, false, null, null);
-      NCdumpW.printNcML( TestDir.cdmLocalTestDataDir +"testWriteRecord.nc", pw);
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      assert (false);
+      Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(writer.toString()));
     }
-
-    System.out.println( "**** testNCdump done");
   }
 
+  // Make sure the indentation is correct with a complex, nested structure.
+  @Test
+  public void testNestedGroups() throws IOException {
+    try (StringWriter writer = new StringWriter()) {
+      NCdumpW.print(TestDir.cdmLocalTestDataDir + "testNestedGroups.ncml",
+              writer, true, true, false, false, null, null);
+
+      File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testNestedGroups.dump");
+      String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
+
+      Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(writer.toString()));
+    }
+  }
+
+  public static String toUnixEOLs(String input) {
+    return input.replaceAll("\\r\\n", "\n").replaceAll("\\r", "\n");
+  }
 }

@@ -236,31 +236,6 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     return isVariableLength;
   }
 
-  /*
-   * Is this Variable unsigned?. Only meaningful for byte, short, int, long types.
-   * Looks for attribute "_Unsigned", case insensitive
-   *
-   * @return true if Variable is unsigned
-   *
-  public boolean isUnsigned() {
-    Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
-    return (att != null) && att.getStringValue().equalsIgnoreCase("true");
-  }
-
-  /*
-   * Say if this Variable is unsigned.
-   *
-   * @param b unsigned iff b is true
-   *
-  public void setUnsigned(boolean b) {
-    Attribute att = findAttributeIgnoreCase(CDM.UNSIGNED);
-    if (att == null && !b)
-      return; // ok as is
-
-    att = new Attribute(CDM.UNSIGNED, b ? "true" : "false");
-    this.addAttribute(att);
-  }  */
-
   /**
    * Can this variable's size grow?.
    * This is equivalent to saying at least one of its dimensions is unlimited.
@@ -1040,7 +1015,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
     indent.incr();
     for (Attribute att : getAttributes()) {
       if(Attribute.suppress(att,strict)) continue;
-      buf.format("", indent);
+      buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
       if (!strict && (att.getDataType() != DataType.STRING))

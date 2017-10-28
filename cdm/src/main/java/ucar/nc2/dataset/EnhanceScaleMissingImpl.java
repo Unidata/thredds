@@ -36,7 +36,6 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
-import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 
@@ -133,10 +132,15 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
         return;
     }
 
-    // the other possibility is that you want to apply scale and offset to a signed value, then declare the result unsigned
-    // this.isUnsigned = (orgVar != null) ? orgVar.isUnsigned() : forVar.isUnsigned();
-    this.isUnsigned = isUnsigned(forVar);  // LOOK switch to unsigned var
-    this.convertedDataType = forVar.getDataType().withSign(this.isUnsigned);  // only for netcDF !!??
+    // deal with legacy use of attribute with Unsigned = true
+    Attribute unsignedAttrib = forVar.findAttributeIgnoreCase(CDM.UNSIGNED);
+    boolean isUnsignedSet = unsignedAttrib != null && unsignedAttrib.getStringValue().equalsIgnoreCase("true");
+    if (isUnsignedSet) {
+      forVar.setDataType(forVar.getDataType().withSignedness(DataType.Signedness.UNSIGNED));
+    }
+
+    this.isUnsigned = forVar.getDataType().isUnsigned();
+    this.convertedDataType = forVar.getDataType();  // only for netcDF !!??
 
     DataType scaleType = null, missType = null, validType = null;
     if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getFullName());
@@ -314,11 +318,6 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (hasMissing && ((convertedDataType == DataType.DOUBLE) || (convertedDataType == DataType.FLOAT)))
       this.useNaNs = useNaNs;
     if (debug) System.out.println("this.useNaNs = " + this.useNaNs);
-  }
-
-  public boolean isUnsigned(Variable var) {
-    Attribute att = var.findAttributeIgnoreCase(CDM.UNSIGNED);
-    return (att != null) && att.getStringValue().equalsIgnoreCase("true");
   }
 
   private double[] getValueAsDouble(Attribute att) {

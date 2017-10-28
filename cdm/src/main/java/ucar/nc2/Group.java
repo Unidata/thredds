@@ -423,11 +423,11 @@ public class Group extends CDMNode implements AttributeContainer {
 
     for (Group g : groups) {
       String gname = strict ? NetcdfFile.makeValidCDLName(g.getShortName()) : g.getShortName();
-      out.format("%n%sgroup: %s {%n", indent, gname);
+      out.format("%sgroup: %s {%n", indent, gname);
       indent.incr();
       g.writeCDL(out, indent, strict);
       indent.decr();
-      out.format("%s}%n", indent);
+      out.format("%s}%n%n", indent);
     }
 
     //if (hasA && (hasE || hasD || hasV || hasG))
@@ -438,20 +438,18 @@ public class Group extends CDMNode implements AttributeContainer {
         out.format("%s// global attributes:%n", indent);
       else
         out.format("%s// group attributes:%n", indent);
-      //indent.incr();
+
       for (Attribute att : attributes.getAttributes()) {
         //String name = strict ? NetcdfFile.escapeNameCDL(getShortName()) : getShortName();
         if(!Attribute.suppress(att,strict)) {
-          out.format("", indent);
+          out.format("%s", indent);
           att.writeCDL(out, strict, null);
           out.format(";");
           if(!strict && (att.getDataType() != DataType.STRING)) out.format(" // %s", att.getDataType());
           out.format("%n");
         }
       }
-      //indent.decr();
     }
-
   }
 
 

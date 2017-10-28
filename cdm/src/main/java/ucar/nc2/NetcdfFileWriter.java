@@ -579,7 +579,8 @@ public class NetcdfFileWriter implements Closeable {
     if (!defineMode)
       throw new UnsupportedOperationException("not in define mode");
 
-    DataType writeType =  version.isExtendedModel() ? dataType : dataType.withSign(false); // use signed type for netcdf3
+    DataType writeType =  version.isExtendedModel() ?
+            dataType : dataType.withSignedness(DataType.Signedness.SIGNED); // use signed type for netcdf3
     boolean usingSignForUnsign = writeType != dataType;
     if (!isValidDataType(writeType))
       throw new IllegalArgumentException("illegal dataType: " + dataType + " not supported in netcdf-3");

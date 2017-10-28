@@ -32,6 +32,8 @@
  */
 package ucar.ma2;
 
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
 import ucar.nc2.util.Misc;
@@ -138,16 +140,16 @@ public class MAMath {
   /**
    * Convert unsigned data to signed data of a wider type.
    *
-   * @param unsigned must be of type byte, short or int
-   * @return converted data of type short, int, or long
+   * @param unsigned must be of type byte, short, int, or long.
+   * @return converted data of type short, int, long, or {@link java.math.BigInteger}.
    */
-  public static Array convertUnsigned( Array unsigned) {
+  public static Array convertUnsigned(Array unsigned) {
     if (unsigned.getElementType().equals(byte.class)) {
       Array result = Array.factory(DataType.SHORT, unsigned.getShape());
       IndexIterator ii = result.getIndexIterator();
       unsigned.resetLocalIterator();
       while (unsigned.hasNext())
-        ii.setShortNext( DataType.unsignedByteToShort(unsigned.nextByte()));
+        ii.setShortNext( DataType.widenNumber(unsigned.nextByte()).shortValue());
       return result;
 
     } else if (unsigned.getElementType().equals(short.class)) {
@@ -155,7 +157,7 @@ public class MAMath {
       IndexIterator ii = result.getIndexIterator();
       unsigned.resetLocalIterator();
       while (unsigned.hasNext())
-        ii.setIntNext( DataType.unsignedShortToInt(unsigned.nextShort()));
+        ii.setIntNext( DataType.widenNumber(unsigned.nextShort()).intValue());
       return result;
 
     } else if (unsigned.getElementType().equals(int.class)) {
@@ -163,7 +165,14 @@ public class MAMath {
       IndexIterator ii = result.getIndexIterator();
       unsigned.resetLocalIterator();
       while (unsigned.hasNext())
-        ii.setLongNext( DataType.unsignedIntToLong(unsigned.nextInt()));
+        ii.setLongNext( DataType.widenNumber(unsigned.nextInt()).longValue());
+      return result;
+    } else if (unsigned.getElementType().equals(long.class)) {
+      Array result = ArrayObject.factory(DataType.OBJECT, BigInteger.class, false, Index.factory(unsigned.getShape()));
+      IndexIterator ii = result.getIndexIterator();
+      unsigned.resetLocalIterator();
+      while (unsigned.hasNext())
+        ii.setObjectNext( DataType.widenNumber(unsigned.nextLong()));
       return result;
     }
 

@@ -443,7 +443,7 @@ class Giniheader {
     if (navcal == 128) {
       var.setDataType(DataType.FLOAT);
       var.setSPobject(new Vinfo(begin, nx, ny, Z_type, calcods));
-     /*   var.addAttribute(new Attribute("_Unsigned", "true"));
+     /*   var.addAttribute(new Attribute(CDM.UNSIGNED, "true"));
         int numer = calcods[0] - calcods[1];
         int denom = calcods[2] - calcods[3];
         float a  = (numer*1.f) / (1.f*denom);

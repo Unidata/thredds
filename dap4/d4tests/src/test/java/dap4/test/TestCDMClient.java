@@ -290,7 +290,7 @@ public class TestCDMClient extends DapTestCommon
             throws Exception
     {
         StringWriter sw = new StringWriter();
-        StringBuilder args = new StringBuilder("-strict -unsigned");
+        StringBuilder args = new StringBuilder("-strict");
         if(datasetname != null) {
             args.append(" -datasetname ");
             args.append(datasetname);
@@ -309,7 +309,7 @@ public class TestCDMClient extends DapTestCommon
     String dumpdata(NetcdfDataset ncfile, String datasetname)
             throws Exception
     {
-        StringBuilder args = new StringBuilder("-strict -unsigned -vall");
+        StringBuilder args = new StringBuilder("-strict -vall");
         if(datasetname != null) {
             args.append(" -datasetname ");
             args.append(datasetname);

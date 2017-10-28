@@ -361,9 +361,7 @@ public abstract class Array {
       } else if (dtype == DataType.LONG) {
         if (dtype.isUnsigned()) {
           BigInteger biggy = new BigInteger(s);
-          long convert = biggy.longValue(); // > 63 bits will become "negetive".
-          // System.out.printf("%s == %d%n", biggy, convert);
-          dataI.setLongNext(biggy.longValue());
+          dataI.setLongNext(biggy.longValue());  // > 63 bits will become "negetive".
 
         } else {
           long val = Long.parseLong(s);
@@ -939,7 +937,7 @@ public abstract class Array {
 
   /**
    * Find whether the underlying data should be interpreted as unsigned.
-   * Only affects byte, short, and int.
+   * Only affects byte, short, int, and long.
    * When true, conversions to wider types are handled correctly.
    *
    * @return true if the data is an unsigned integer type.
@@ -1159,6 +1157,14 @@ public abstract class Array {
     IndexIterator ii = getIndexIterator();
     while (ii.hasNext()) {
       Object data = ii.getObjectNext();
+      if (data instanceof Number && isUnsigned()) {
+        // 'data' is unsigned, but will be treated as signed when we print it below, because Java only has signed
+        // types. If it is large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted as the
+        // sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're going
+        // to widen the number before printing it.
+        data = DataType.widenNumber((Number) data);
+      }
+
       sbuff.append(data);
       sbuff.append(" ");
     }

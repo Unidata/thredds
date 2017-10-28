@@ -117,7 +117,7 @@ public class TestGrid2 extends UnitTestCommon
         StringWriter sw = new StringWriter();
         // Print the meta-databuffer using these args to NcdumpW
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, null, sw, null))
                 throw new Exception("NcdumpW failed");
         } catch (IOException ioe) {
             throw new Exception("NcdumpW failed", ioe);
@@ -133,7 +133,7 @@ public class TestGrid2 extends UnitTestCommon
         // Dump the databuffer
         sw = new StringWriter();
         try {
-            if(!ucar.nc2.NCdumpW.print(ncfile, "-vall -unsigned", sw, null))
+            if(!ucar.nc2.NCdumpW.print(ncfile, "-vall", sw, null))
                 throw new Exception("NCdumpW failed");
         } catch (IOException ioe) {
             ioe.printStackTrace();

@@ -2034,14 +2034,16 @@ public class H5header extends NCheader
 
   private DataType getNCtype(int hdfType, int size, boolean unsigned) {
     if ((hdfType == 0) || (hdfType == 4)) { // integer, bit field
+      DataType.Signedness signedness = unsigned ? DataType.Signedness.UNSIGNED : DataType.Signedness.SIGNED;
+
       if (size == 1)
-        return DataType.BYTE.withSign(unsigned);
+        return DataType.BYTE.withSignedness(signedness);
       else if (size == 2)
-        return DataType.SHORT.withSign(unsigned);
+        return DataType.SHORT.withSignedness(signedness);
       else if (size == 4)
-        return DataType.INT.withSign(unsigned);
+        return DataType.INT.withSignedness(signedness);
       else if (size == 8)
-        return DataType.LONG.withSign(unsigned);
+        return DataType.LONG.withSignedness(signedness);
       else if (warnings) {
         log.debug("WARNING HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);
         log.warn("HDF5 file " + ncfile.getLocation() + " not handling hdf integer type (" + hdfType + ") with size= " + size);

@@ -287,20 +287,29 @@ public class Attribute extends CDMNode
       f.format(" = ");
       for (int i = 0; i < getLength(); i++) {
         if (i != 0) f.format(", ");
-        f.format("%s", getNumericValue(i));
+
+        Number number = getNumericValue(i);
+        if (isUnsigned()) {
+          // 'number' is unsigned, but will be treated as signed when we print it below, because Java only has signed
+          // types. If it is large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted as the
+          // sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're going
+          // to widen the number before printing it.
+          number = DataType.widenNumber(number);
+        }
+        f.format("%s", number);
+
+        if (isUnsigned()) {
+          f.format("U");
+        }
+
         if (dataType == DataType.FLOAT)
           f.format("f");
-        else if (dataType == DataType.SHORT) {
-          if (isUnsigned()) f.format("US");
-          else f.format("S");
-        } else if (dataType == DataType.BYTE) {
-          if (isUnsigned()) f.format("UB");
-          else f.format("B");
-        } else if (dataType == DataType.LONG) {
-          if (isUnsigned()) f.format("UL");
-          else f.format("L");
-        } else if (dataType == DataType.INT) {
-          if (isUnsigned()) f.format("U");
+        else if (dataType == DataType.SHORT || dataType == DataType.USHORT) {
+          f.format("S");
+        } else if (dataType == DataType.BYTE || dataType == DataType.UBYTE) {
+          f.format("B");
+        } else if (dataType == DataType.LONG || dataType == DataType.ULONG) {
+          f.format("L");
         }
       }
     }
@@ -326,7 +335,6 @@ public class Attribute extends CDMNode
   private EnumTypedef enumtype = null;
   private int nelems; // can be 0 or greater
   private Array values;
-  // private boolean isUnsigned;
 
   /**
    * Copy constructor
@@ -426,22 +434,9 @@ public class Attribute extends CDMNode
     int n = values.size();
     Class c = values.get(0).getClass();
     setDataType(DataType.getType(c, isUnsigned));
-    setValues(values,isUnsigned);
+    setValues(values);
     setImmutable();
   }
-
-  /**
-     * Construct attribute with Array of values.
-     *
-     * @param name   name of attribute
-     * @param values Array of values; at least 1 member
-     * @param isUnsigned
-     */
-    public Attribute(String name, Array values, boolean isUnsigned) {
-     this(name,values.getDataType());
-     setValues(values);
-     setImmutable();
-   }
 
   /**
    * A copy constructor using a ucar.unidata.util.Parameter.
@@ -509,7 +504,7 @@ public class Attribute extends CDMNode
    *
    * @param values
    */
-  public void setValues(List values, boolean isUnsigned)
+  public void setValues(List values)
   {
     if(values == null || values.size() == 0)
 	throw new IllegalArgumentException("Cannot determine attribute's type");
@@ -617,11 +612,6 @@ public class Attribute extends CDMNode
     if (immutable) throw new IllegalStateException("Cant modify");
     setShortName(name);
   }
-
-  /* public synchronized void setUnsigned(boolean isUnsigned) {
-    if (immutable) throw new IllegalStateException("Cant modify");
-    this.isUnsigned = isUnsigned;
-  } */
 
   /**
    * Instances which have same content are equal.

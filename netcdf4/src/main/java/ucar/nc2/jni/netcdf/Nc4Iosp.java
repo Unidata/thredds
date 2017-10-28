@@ -794,7 +794,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
       }
       data = Array.factory(DataType.STRING, new int[]{len}, (Object) econsts);
     }
-    Attribute a = new Attribute(attname,data,false);
+    Attribute a = new Attribute(attname,data);
     a.setEnumType(userType.e);
     return a;
   }
@@ -1222,7 +1222,6 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
             cdmtype = DataType.ENUM4;
             break;
         }
-        // not supported this.e.setUnsigned(isunsigned);  LOOK
         return cdmtype;
       }
       return null;
