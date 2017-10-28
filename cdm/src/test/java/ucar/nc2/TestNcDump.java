@@ -50,7 +50,7 @@ public class TestNcDump {
   // See https://andy.unidata.ucar.edu/esupport/staff/index.php?_m=tickets&_a=viewticket&ticketid=28658.
   // Asserts that GitHub issue #929 has been fixed. See https://github.com/Unidata/thredds/issues/929
   @Test
-  public void testNcDumpUnsigned() throws IOException {
+  public void testUnsignedFillValue() throws IOException {
     try (StringWriter writer = new StringWriter()) {
       NCdumpW.print(TestDir.cdmLocalTestDataDir + "testUnsignedFillValue.ncml",
               writer, true, true, false, false, null, null);
@@ -58,7 +58,25 @@ public class TestNcDump {
       File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testUnsignedFillValue.dump");
       String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
 
-      Assert.assertEquals(expectedOutput, writer.toString());
+      Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(writer.toString()));
     }
+  }
+
+  // Make sure the indentation is correct with a complex, nested structure.
+  @Test
+  public void testNestedGroups() throws IOException {
+    try (StringWriter writer = new StringWriter()) {
+      NCdumpW.print(TestDir.cdmLocalTestDataDir + "testNestedGroups.ncml",
+              writer, true, true, false, false, null, null);
+
+      File expectedOutputFile = new File(TestDir.cdmLocalTestDataDir, "testNestedGroups.dump");
+      String expectedOutput = Files.toString(expectedOutputFile, Charsets.UTF_8);
+
+      Assert.assertEquals(toUnixEOLs(expectedOutput), toUnixEOLs(writer.toString()));
+    }
+  }
+
+  public static String toUnixEOLs(String input) {
+    return input.replaceAll("\\r\\n", "\n").replaceAll("\\r", "\n");
   }
 }

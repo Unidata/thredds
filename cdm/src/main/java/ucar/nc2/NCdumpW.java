@@ -303,7 +303,7 @@ public class NCdumpW {
 
         Indent indent = new Indent(2);
         indent.incr();
-        ps.printf("%sdata:%n", indent);
+        ps.printf("%n%sdata:%n", indent);
         indent.incr();
 
         if (showValues == WantValues.all) { // dump all data
