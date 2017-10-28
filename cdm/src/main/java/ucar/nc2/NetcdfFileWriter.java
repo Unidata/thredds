@@ -975,7 +975,7 @@ public class NetcdfFileWriter implements Closeable {
         fileWriter2.copyAll(oldVar, v);
       } else if (varRenameMap.containsKey(oldVarName)) {
         // var name has changed in ncfile - use the varRenameMap to find
-        //  the correct variable name to requst from oldFile
+        //  the correct variable name to request from oldFile
         String realOldVarName = varRenameMap.get(oldVarName);
         oldVar = oldFile.findVariable(realOldVarName);
         if (oldVar != null) {
