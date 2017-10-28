@@ -150,7 +150,14 @@ public class DatasetTrackerChronicle implements DatasetTracker {
           catalogInitLog.warn(" paths differ: {} != {}", path, accessPath);
         }
       }
+      // if this is a regular dataset which uses default services, those services are not
+      // part of the configuration catalog, and thus the above check will fail due to
+      // a lack of access methods. Get path from the urlPath of the dataset.
+      if (path == null) {
+        path = dataset.getUrlPath();
+      }
     }
+
     if (path == null) {
       catalogInitLog.debug("trackDataset {} has null path", dataset);
       return false;

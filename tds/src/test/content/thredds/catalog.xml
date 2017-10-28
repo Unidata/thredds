@@ -30,6 +30,8 @@
   <dataset name="Test Dap4 Dataset" ID="testDap4Dataset" serviceName="dap4"
            urlPath="cdmUnitTest/ft/coverage/03061219_ruc.nc" dataType="Grid"/>
   <dataset name="Test Restricted Dataset" ID="testRestrictedDataset" serviceName="all" urlPath="testRestrictedDataset/testData2.nc" restrictAccess="tiggeData"/>
+  <dataset name="Test Restricted Dataset Default Services" ID="testRestrictedDatasetDS" urlPath="testRestrictedDataset/testData.nc" restrictAccess="tiggeData"/>
+
   <!-- Actual dataset intended to test container auth without spring -->
   <dataset name="Test Container Authorization" ID="testcontainerauth" serviceName="all" urlPath="containerauth/testData2.nc" restrictAccess="containerauth"/>
 
