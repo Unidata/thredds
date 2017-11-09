@@ -31,8 +31,9 @@ class ClientCatalogBasicSpec extends Specification {
 
         where:
         catFrag << ["http://"+ TestDir.threddsTestServer+"/thredds/catalog.xml",
-                    "http://"+ TestDir.threddsTestServer+"/thredds/catalog/nws/metar/ncdecoded/catalog.xml?" +
-                            "dataset=nws/metar/ncdecoded/Metar_Station_Data_fc.cdmr"]
+                    "http://"+ TestDir.threddsTestServer+"/thredds/catalog/nws/metar"
+                    + "/ncdecoded-test/catalog.xml?dataset=nws/metar/ncdecoded-test"
+                    + "/Metar_Station_Data_-_Test_fc.cdmr"]
     }
 
     public void testDatasets(Dataset d) {

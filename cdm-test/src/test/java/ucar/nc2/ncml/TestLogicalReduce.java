@@ -24,7 +24,7 @@ import java.util.Formatter;
 public class TestLogicalReduce {
 
   @Test
-  // NcML references "dods://geoport.whoi.edu/thredds/dodsC/ECOHAB_I/4151-a1h.cdf".
+  // NcML references "dods://stellwagen.er.usgs.gov/thredds/dodsC/TSdata/ECOHAB_I/4151-a1h.cdf".
   @Category(NeedsExternalResource.class)
   public void testStation() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "ncml/logicalReduce/4151-a1h.ncml";
@@ -42,7 +42,7 @@ public class TestLogicalReduce {
   }
 
   @Test
-  // NcML references "dods://geoport.whoi.edu/thredds/dodsC/WFAL/8602wh-a.nc"
+  // NcML references "dods://stellwagen.er.usgs.gov/thredds/dodsC/TSdata/WFAL/8602wh-a.nc"
   @Category(NeedsExternalResource.class)
   public void testStationProfile() throws IOException {
     String location = TestDir.cdmLocalTestDataDir + "ncml/logicalReduce/8602wh-a.ncml";
