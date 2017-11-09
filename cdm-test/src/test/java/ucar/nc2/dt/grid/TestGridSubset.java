@@ -198,30 +198,6 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NeedsExternalResource.class)
-  public void testDODS() throws Exception {
-    String ds = "http://"+TestDir.threddsTestServer+"/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
-
-    try (GridDataset dataset = GridDataset.open("thredds:resolve:" + ds, null)) {
-      GeoGrid grid = dataset.findGridByName("Temperature_isobaric");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 4;
-
-      GeoGrid grid_section = grid.subset(null, null, null, 3, 3, 3);
-      int[] shape = grid_section.getShape();
-      System.out.println("grid_section.getShape= " + new Section(shape));
-
-      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-      assert data.getShape()[0] == shape[0] : data.getShape()[0];
-      assert data.getShape()[1] == shape[1] : data.getShape()[1];
-      assert data.getShape()[2] == 101 : data.getShape()[2];
-      assert data.getShape()[3] == 164 : data.getShape()[3];
-    }
-  }
-
-  @Test
   @Ignore("Bad URL, as of 2015/03/11.")
   @Category(NeedsExternalResource.class)
   public void testDODS2() throws Exception {
