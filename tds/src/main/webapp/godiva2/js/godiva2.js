@@ -211,9 +211,18 @@ window.onload = function()
     seazone_wms.setVisibility(false);*/
 
     // 2016-05-20 - srtm_dem, ol_wms and human_wms not responding - disabling layers.
-    map.addLayers([demis_wms, bluemarble_demis_wms, bluemarble_wms, /*srtm_dem, ol_wms, human_wms,*/ northPoleBaseLayer, southPoleBaseLayer, drawinglayer/*, seazone_wms, essi_wms*/]);
 
-    map.setBaseLayer(demis_wms);
+    if (location.protocol === 'https:') {
+        map.addLayers(
+            [bluemarble_wms, northPoleBaseLayer, southPoleBaseLayer, drawinglayer]);
+        map.setBaseLayer(bluemarble_wms);
+    } else {
+        map.addLayers(
+            [demis_wms, bluemarble_demis_wms, bluemarble_wms, /*srtm_dem, ol_wms, human_wms,*/
+             northPoleBaseLayer, southPoleBaseLayer, drawinglayer/*, seazone_wms, essi_wms*/]);
+        map.setBaseLayer(demis_wms);
+    }
+
     projectionCode = map.baseLayer.projection.getCode();
 
     // Make sure the Google Earth and Permalink links are kept up to date when
