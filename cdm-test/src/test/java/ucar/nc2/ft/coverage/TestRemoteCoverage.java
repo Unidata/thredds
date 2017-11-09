@@ -36,6 +36,8 @@ package ucar.nc2.ft.coverage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+
 import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Section;
 import ucar.nc2.constants.FeatureType;
@@ -51,13 +53,15 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
  */
 public class TestRemoteCoverage {
 
+  private static Logger logger = org.slf4j.LoggerFactory.getLogger("testLogger");
+
   @Test
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteCoverage() throws Exception {
     String ds = "http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/latest.xml";
 
     try (DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null)) {
-      System.out.println("result errlog= " + result.errLog);
+      logger.debug("result errlog = {}", result.errLog);
       assert !result.fatalError;
       assert result.featureType == FeatureType.GRID;
       assert result.featureDataset != null;
@@ -82,7 +86,7 @@ public class TestRemoteCoverage {
       Assert.assertNotNull("geoCoordsys", geoCoordsys);
 
       int[] shape = geoCoordsys.getShape();
-      System.out.println("grid_section.getShape= " + new Section(shape));
+      logger.debug("grid_section.getShape = {}", new Section(shape));
       int[] expectShape = new int[] {1, 31, 241, 480};
       Assert.assertArrayEquals("subset shape", expectShape, shape);
     }

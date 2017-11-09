@@ -2,6 +2,7 @@ package ucar.nc2.ncml;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
@@ -22,6 +23,8 @@ import java.util.Formatter;
  * are currently broken
  */
 public class TestLogicalReduce {
+
+  private static Logger logger = org.slf4j.LoggerFactory.getLogger("testLogger");
 
   @Test
   // NcML references "dods://stellwagen.er.usgs.gov/thredds/dodsC/TSdata/ECOHAB_I/4151-a1h.cdf".
@@ -58,11 +61,11 @@ public class TestLogicalReduce {
       assert fc.getCollectionFeatureType() == FeatureType.STATION_PROFILE;
       assert (fc instanceof StationProfileFeatureCollection);
 
-      int count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc, false);
+      int count = checkStationProfileFeatureCollection((StationProfileFeatureCollection) fc);
     }
   }
 
-  int checkStationProfileFeatureCollection(StationProfileFeatureCollection stationProfileFeatureCollection, boolean show) throws IOException {
+  int checkStationProfileFeatureCollection(StationProfileFeatureCollection stationProfileFeatureCollection) throws IOException {
     long start = System.currentTimeMillis();
     int count = 0;
     stationProfileFeatureCollection.resetIteration();
@@ -76,16 +79,14 @@ public class TestLogicalReduce {
         assert pf.getName() != null;
         assert pf.getTime() != null;
 
-        if (show)
-          System.out.printf(" ProfileFeature=%s %n", pf.getName());
+        logger.debug("ProfileFeature = {}", pf.getName());
         if (last != null) assert !last.equals(pf.getTime());
         last = pf.getTime();
         count++;
       }
     }
     long took = System.currentTimeMillis() - start;
-    if (show)
-      System.out.println(" testStationProfileFeatureCollection complete count= " + count + " full iter took= " + took + " msec");
+    logger.debug("testStationProfileFeatureCollection complete count = {}  full iter took = {} msec", count , took);
     return count;
   }
 

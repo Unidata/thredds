@@ -1,6 +1,7 @@
 package thredds.client.catalog
 
 import org.junit.experimental.categories.Category
+import org.slf4j.Logger
 import spock.lang.Specification
 import spock.lang.Unroll
 import ucar.unidata.util.test.TestDir
@@ -11,6 +12,9 @@ import ucar.unidata.util.test.category.NeedsExternalResource
  * @since 2015-10-12
  */
 class ClientCatalogBasicSpec extends Specification {
+
+    private static Logger logger = org.slf4j.LoggerFactory.getLogger("testLogger");
+
     @Unroll
     def "test local catalog [#catFrag]"() {
         expect:
@@ -63,13 +67,13 @@ class ClientCatalogBasicSpec extends Specification {
 
     public static void testProperty(Dataset d) {
         for (Property p : d.getProperties()) {
-            System.out.printf("%s%n", p);
+            logger.debug("{}", p);
         }
     }
 
     public static void testDocs(Dataset d) {
         for (Documentation doc : d.getDocumentation()) {
-            System.out.printf("%s%n", doc);
+            logger.debug("{}", doc);
         }
     }
 
@@ -86,37 +90,37 @@ class ClientCatalogBasicSpec extends Specification {
 
     public static void testMetadata(Dataset d) {
         for (ThreddsMetadata.MetadataOther m : d.getMetadataOther()) {
-            println m.xlinkHref
+            logger.debug("{}", m.xlinkHref)
         }
     }
 
     public static void testContributors(Dataset d) {
         for (ThreddsMetadata.Contributor m : d.getContributors()) {
-            System.out.printf("%s%n", m.getName());
+            logger.debug("{}", m.getName());
         }
     }
 
     public static void testKeywords(Dataset d) {
         for (ThreddsMetadata.Vocab m : d.getKeywords()) {
-            System.out.printf("%s%n", m.getText());
+            logger.debug("{}", m.getText());
         }
     }
 
     public static void testProjects(Dataset d) {
         for (ThreddsMetadata.Vocab m : d.getProjects()) {
-            System.out.printf("%s%n", m.getText());
+            logger.debug("{}", m.getText());
         }
     }
 
     public static void testPublishers(Dataset d) {
         for (ThreddsMetadata.Source m : d.getPublishers()) {
-            System.out.printf("%s%n", m.getName());
+            logger.debug("{}", m.getName());
         }
     }
 
     public static void testVariables(Dataset d) {
         for (ThreddsMetadata.VariableGroup m : d.getVariables()) {
-            System.out.printf("%s%n", m.getVocabulary());
+            logger.debug("{}", m.getVocabulary());
         }
     }
 }
