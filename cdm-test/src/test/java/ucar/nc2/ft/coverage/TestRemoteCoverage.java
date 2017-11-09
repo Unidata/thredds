@@ -54,7 +54,7 @@ public class TestRemoteCoverage {
   @Test
   @Category(NeedsExternalResource.class)
   public void testCdmRemoteCoverage() throws Exception {
-    String ds = "http://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/DGEX/CONUS_12km/files/latest.xml";
+    String ds = "http://thredds-test.unidata.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p25deg_ana/latest.xml";
 
     try (DataFactory.Result result = new DataFactory().openFeatureDataset("thredds:resolve:" + ds, null)) {
       System.out.println("result errlog= " + result.errLog);
@@ -83,7 +83,7 @@ public class TestRemoteCoverage {
 
       int[] shape = geoCoordsys.getShape();
       System.out.println("grid_section.getShape= " + new Section(shape));
-      int[] expectShape = new int[] {1, 3, 101, 164};
+      int[] expectShape = new int[] {1, 31, 241, 480};
       Assert.assertArrayEquals("subset shape", expectShape, shape);
     }
   }
