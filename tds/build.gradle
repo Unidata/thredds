@@ -41,7 +41,6 @@ dependencies {
     runtime libraries["threddsIso"]
     runtime libraries["ncsos"]
     compile libraries["ncwms"]
-    compile libraries["geoapi-pending"]
     compile libraries["oro"]
 
     providedCompile libraries["javax.servlet-api"]

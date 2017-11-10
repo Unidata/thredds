@@ -85,7 +85,7 @@ Form] (Repeated submissions encouraged)
  * Source code on https://github.com/Unidata/thredds[GitHub]
  ** Exercise: link:../../netcdf-java/tutorial/SourceCodeBuild.html[Build THREDDS from source code]
  ** Exercise: link:../../netcdf-java/tutorial/Contributing.html[Submit a pull request]
- * Maven artifacts on https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
+ * Maven artifacts on https://artifacts.unidata.ucar.edu[Nexus]
  ** link:../../netcdf-java/reference/BuildDependencies.html[How to use them in your project]
  * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
  * Continuous Integration on https://travis-ci.org/Unidata/thredds[Travis]
