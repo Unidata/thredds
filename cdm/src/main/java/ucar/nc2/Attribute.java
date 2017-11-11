@@ -28,10 +28,10 @@ public class Attribute extends CDMNode
 {
 
   static final String SPECIALPREFIX = "_";
-  static final String[] SUPPRESS = new String[]{
-          "_NCProperties", "_DAP4_Little_Endian", "_edu.ucar"
+  static final String[] SPECIALS = new String[]{
+          "_NCProperties", "_IsNetcdf4", "_SuperblockVersion",
+          "_DAP4_Little_Endian", "_edu.ucar"
   };
-
 
   /**
    * Turn a list into a map
@@ -49,17 +49,17 @@ public class Attribute extends CDMNode
   }
 
   static public boolean
-  suppress(Attribute a, boolean strict)
+  isspecial(Attribute a)
   {
     String nm = a.getShortName();
-    if(strict && nm.startsWith(SPECIALPREFIX)) {
-      /* Suppress  selected special attributes */
-      for(String s : SUPPRESS) {
+    if(nm.startsWith(SPECIALPREFIX)) {
+      /* Check for selected special attributes */
+      for(String s : SPECIALS) {
         if(nm.startsWith(s))
-          return true; /* Suppress it */
+          return true; /* is special */
       }
     }
-    return false;
+    return false; /* is not special */
   }
   ///////////////////////////////////////////////////////////////////////////////////
 
