@@ -22,7 +22,7 @@ public class TestSpecialAttributes extends TestCase
     @Test
     public void testReadAll() throws IOException
     {
-        NetcdfFile ncfile = TestDir.openFileLocal("testSpecial.nc4");
+        NetcdfFile ncfile = TestDir.openFileLocal("testSpecialAttributes.nc4");
         // Iterate over all top-level attributes and see if it is special
         for(Attribute a : ncfile.getRootGroup().getAttributes()) {
             Assert.assertTrue("Attribute iteration found special attribute: " + a.getShortName(),
@@ -34,7 +34,7 @@ public class TestSpecialAttributes extends TestCase
     @Test
     public void testReadByName() throws IOException
     {
-        NetcdfFile ncfile = TestDir.openFileLocal("testSpecial.nc4");
+        NetcdfFile ncfile = TestDir.openFileLocal("testSpecialAttributes.nc4");
         // Attempt to read special attributes by name
         for(String name : new String[]{"_NCProperties"}) {
             Attribute special = ncfile.getRootGroup().findAttribute(name);
