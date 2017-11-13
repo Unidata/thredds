@@ -157,7 +157,7 @@ this, you need to add the following pom snippet to your pom.xml file:
     <repository>
         <id>unidata-releases</id>
         <name>UNIDATA Releases</name>
-        <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/</url>
+        <url>https://artifacts.unidata.ucar.edu/repository/unidata-all/</url>
     </repository>
 </repositories>
 --------------------------------------------------------------------------------------------

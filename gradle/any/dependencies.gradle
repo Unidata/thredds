@@ -3,21 +3,35 @@
 
 //================================================ Repositories ================================================//
 
-// TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
-// Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
 repositories {
     // Prefer JCenter to Maven Central. See
     // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
     jcenter()
     mavenCentral()  // JCenter isn't quite a superset of Maven Central.
+    
+    // All of the hosted repositories below could be replaced with:
+    //     url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
+    // which is a group repository that contains all other repositories. However, I prefer to list all source
+    // repos explicitly so that we know where all artifacts ultimately come from.
+    
+    // Hosted repositories.
     maven {
-        url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
+        // For "threddsIso", "visad" and "jj2000".
+        url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
     }
     maven {
-        url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+        // For snapshots of "threddsIso" and "edal-*".
+        url "https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/"
     }
     maven {
-        url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty:gretty-fork'.
+        // For "bounce", which is used in :ui. As of 5.0.0, it is the ONLY dependency from this repo that we
+        // still use. We should really try to eliminate our use of it.
+        url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"
+    }
+    
+    // Third-party repositories.
+    maven {
+        url "https://dl.bintray.com/cwardgar/maven/"  // For "gretty".
     }
 }
 

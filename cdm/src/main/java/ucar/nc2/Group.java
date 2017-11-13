@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
