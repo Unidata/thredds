@@ -241,7 +241,7 @@ public class HTTPSession implements Closeable
     }
 
 
-    // Support loose certificate acceptance 
+    // Support loose certificate acceptance
     static class LooseTrustStrategy extends TrustSelfSignedStrategy
     {
         @Override
