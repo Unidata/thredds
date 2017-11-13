@@ -88,8 +88,7 @@ Collections>>
 
 * Source on https://github.com/Unidata/thredds[GitHub]
 * Issue Tracking with http://www.unidata.ucar.edu/jira/[JIRA]
-* Maven artifacts on
-https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
+* Maven artifacts on https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases[Nexus]
 * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
 * Continuous Integration on
 https://travis-ci.org/Unidata/thredds[Travis]
@@ -203,8 +202,7 @@ Participant feedback (Sean)
 
 * Source on https://github.com/Unidata/thredds[GitHub]
 * Issue Tracking with http://www.unidata.ucar.edu/jira/[JIRA]
-* Maven artifacts on
-https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
+* Maven artifacts on https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases[Nexus]
 * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
 * Continuous Integration on
 https://travis-ci.org/Unidata/thredds[Travis]

@@ -41,13 +41,13 @@ CDM/TDS source is hosted on https://github.com/Unidata/thredds[GitHub].
 To build the latest stable version from source or contribute code to the
 THREDDS project, see <<tutorial/SourceCodeBuild#,here>>. Most
 projects use *netcdfAll.jar* or *toolsUI.jar* (see below for links), or
-include the desired http://artifacts.unidata.ucar.edu/[artifacts] in
+include the desired https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases[artifacts] in
 their maven or gradle builds. See
 <<reference/BuildDependencies#,Build Dependencies>> for details.
 
 === CDM/THREDDS Software Engineering tools:
 
-* http://artifacts.unidata.ucar.edu/[Maven repository] for maven artifacts
+* https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases[Maven repository] for maven artifacts
 * http://github.com/unidata[GitHub repository] for source code
 * https://travis-ci.org/Unidata/thredds[Travis] Continuous Integration / unit testing
 * https://bugtracking.unidata.ucar.edu/browse/TDS[JIRA] issue tracking
@@ -69,7 +69,7 @@ Future changes to the API will attempt to remain backwards compatible
 with this API.
 * <<javadocAll/index#,All javadoc>>. This is the javadoc for all packages and all methods except private. CAREFUL, much of this will change.
 * Try out the *4.6* version of ToolsUI application: link:webstart/netCDFtools.jnlp[launch from webstart].
-* Unidata public https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven repository] for maven artifacts
+* Unidata public https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases[Maven repository] for maven artifacts
 * All source is on https://github.com/Unidata/thredds[GitHub]
 
 [[v50]]
@@ -86,7 +86,7 @@ This is the public interface. Future changes to the API will attempt to remain b
 This is the javadoc for all packages and all methods except private. CAREFUL, much of this will change.
 * Try out the *5.0* version of ToolsUI application:
 http://www.unidata.ucar.edu/software/thredds/v5.0/netcdf-java/webstart/netCDFtools.jnlp[launch from webstart].
-* Unidata public https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/[Maven repository] for maven artifacts
+* Unidata public https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases[Maven repository] for maven artifacts
 * All source is on https://github.com/Unidata/thredds[GitHub]
 * Version 5 is a magor version upgrade with <<{tdsDocs}/../UpgradingTo5#,many improvements to the API>>.
 

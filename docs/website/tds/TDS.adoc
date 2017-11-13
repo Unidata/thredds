@@ -89,7 +89,7 @@ Java 8 is necessary for production use of the TDS in all cases.
 (ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.md5[MD5])
 (ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/thredds.war.sha1[SHA1])
 ** https://github.com/Unidata/thredds[source on GitHub]
-** https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/[artifacts in Unidata’s maven repository]
+** https://artifacts.unidata.ucar.edu/#browse/search=repository_name%3Dunidata-releases%20AND%20name.raw%3Dtds[artifacts in Unidata’s maven repository]
 ** The THREDDS Data Manager (TDM) ftp://ftp.unidata.ucar.edu/pub/thredds/5.0/current/tdm-5.0.jar[tdm.jar]
 * Documentation:
 ** <<reference/index#,Reference>>
@@ -105,7 +105,7 @@ Java 8 is necessary for production use of the TDS in all cases.
 (ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.md5[MD5])
 (ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.sha1[SHA1])
 ** https://github.com/Unidata/thredds[source on GitHub]
-** https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/[artifacts in Unitdata’s maven repository]
+** https://artifacts.unidata.ucar.edu/#browse/search=repository_name%3Dunidata-releases%20AND%20name.raw%3Dtds[artifacts in Unitdata’s maven repository]
 ** The THREDDS Data Manager (TDM) ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/tdm-4.6.jar[tdm.jar]
 * http://www.unidata.ucar.edu/software/thredds/v4.6/tds/TDS.html[Documentation]
 
