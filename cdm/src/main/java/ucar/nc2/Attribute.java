@@ -57,6 +57,12 @@ import java.util.Map;
 @Immutable
 public class Attribute extends CDMNode {
 
+  static final String SPECIALPREFIX = "_";
+  static final String[] SPECIALS = new String[]{
+          "_NCProperties", "_IsNetcdf4", "_SuperblockVersion",
+          "_DAP4_Little_Endian", "_edu.ucar"
+  };
+
   /**
    * Turn a list into a map
    * @param atts list of attributes
@@ -68,6 +74,20 @@ public class Attribute extends CDMNode {
     if (atts == null) return result;
     for (Attribute att : atts) result.put(att.getShortName(), att);
     return result;
+  }
+
+  static public boolean
+  isspecial(Attribute a)
+  {
+    String nm = a.getShortName();
+    if(nm.startsWith(SPECIALPREFIX)) {
+      /* Check for selected special attributes */
+      for(String s : SPECIALS) {
+        if(nm.startsWith(s))
+          return true; /* is special */
+      }
+    }
+    return false; /* is not special */
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
