@@ -140,7 +140,7 @@ dependencies {
 
 This is the appropriate option if you're not using a dependency management tool like Maven or Gradle and you don't
 care about jar size or compatibility with other libraries. Simply include
-https://artifacts.unidata.ucar.edu/repository/unidata-all/edu/ucar/netcdfAll/[netcdfAll-${netcdfJavaVersion}.jar]
+https://artifacts.unidata.ucar.edu/#browse/search=repository_name%3Dunidata-releases%20AND%20name.raw%3DnetcdfAll[netcdfAll-${netcdfJavaVersion}.jar]
 on the classpath when you run your program. You'll also need a <<Logging,logger>>.
 
 == Logging

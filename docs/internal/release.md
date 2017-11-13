@@ -28,7 +28,7 @@
    - You need the correct `nexus.username` and `nexus.password` properties defined in your
      `~/.gradle/gradle.properties` file. Ask Christian for those.
    - `./gradlew clean publish`
-   - Check artifacts at http://artifacts.unidata.ucar.edu/repository/unidata-releases/
+   - Check artifacts at https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases
 
 1. On `www`, prepare environment variables for scripts that follow:
     ```bash

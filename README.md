@@ -24,8 +24,8 @@ More details on each of these can be found below.
 The latest released and snapshot software artifacts (.jar and .war files e.g.)
 are available from Unidata's Maven repositories
 
-* https://artifacts.unidata.ucar.edu/repository/unidata-releases/
-* https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/
+* https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-releases
+* https://artifacts.unidata.ucar.edu/#browse/browse/components:unidata-snapshots
 
 To build the software yourself, follow [this tutorial](docs/website/netcdf-java/tutorial/SourceCodeBuild.adoc).
 
