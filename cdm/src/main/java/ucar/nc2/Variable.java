@@ -1014,7 +1014,7 @@ public class Variable extends CDMNode implements VariableIF, ProxyReader, Attrib
 
     indent.incr();
     for (Attribute att : getAttributes()) {
-      if(Attribute.suppress(att,strict)) continue;
+      if(Attribute.isspecial(att)) continue;
       buf.format("%s", indent);
       att.writeCDL(buf, strict, getShortName());
       buf.format(";");
