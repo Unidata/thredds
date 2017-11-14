@@ -60,7 +60,7 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
   public EquidistantAzimuthalProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth earth) {
     super("EquidistantAzimuthalProjection", false);
 
-    Objects.requireNonNull(earth, "CEA constructor requires non-null Earth");
+    Objects.requireNonNull(earth, "Azimuthal equidistant constructor requires non-null Earth");
 
     this.lat0 = lat0;
     this.lon0 = lon0;
