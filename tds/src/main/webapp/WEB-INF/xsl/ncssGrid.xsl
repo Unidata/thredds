@@ -24,7 +24,7 @@
     </xsl:variable>
 
     <xsl:variable name="olcssPath">
-        <xsl:value-of select="concat($tdsContext,'/js/lib/OpenLayers-2.12/theme/default/style.css')"></xsl:value-of>
+        <xsl:value-of select="concat($tdsContext,'/js/lib/OpenLayers-2.13.1/theme/default/style.css')"></xsl:value-of>
     </xsl:variable>
 
     <xsl:template match="/">
@@ -98,7 +98,7 @@
                         var olfile = document.createElement('script');
                         olfile.setAttribute("type", "text/javascript");
                         olfile.setAttribute("src",
-                        context+"/js/lib/OpenLayers-2.12/OpenLayers.js");
+                        context+"/js/lib/OpenLayers-2.13.1/OpenLayers.js");
                         headTag.appendChild(olfile);
 
                         //ncssApp.js
