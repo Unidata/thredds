@@ -69,7 +69,7 @@
                         var jQueryfile = document.createElement('script');
                         jQueryfile.setAttribute("type", "text/javascript");
                         jQueryfile.setAttribute("src",
-                        context+"/js/lib/jquery-1.7.2.min.js");
+                        context+"/js/lib/jquery-3.2.1.slim.js");
                         headTag.appendChild(jQueryfile);
 
                         //ncssApp.js
