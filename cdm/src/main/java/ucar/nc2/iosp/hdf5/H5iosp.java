@@ -63,7 +63,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugPos = false;
   static boolean debugHeap = false;
   static boolean debugHeapStrings = false;
-  static boolean debugFilter = true;
+  static boolean debugFilter = false;
   static boolean debugRead = false;
   static boolean debugFilterIndexer = false;
   static boolean debugChunkIndexer = false;
@@ -85,7 +85,8 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     H5header.setDebugFlags(debugFlag);
     H4header.setDebugFlags(debugFlag);
-    H5tiledLayoutBB.debugFilter = debugFilter;
+    if(debugFilter)
+      H5tiledLayoutBB.debugFilter = debugFilter;
 
   }
 
