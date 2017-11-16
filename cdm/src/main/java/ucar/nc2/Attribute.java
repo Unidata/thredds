@@ -37,6 +37,7 @@ import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
+import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Indent;
 
 import java.nio.ByteBuffer;
@@ -59,8 +60,8 @@ public class Attribute extends CDMNode {
 
   static final String SPECIALPREFIX = "_";
   static final String[] SPECIALS = new String[]{
-          "_NCProperties", "_IsNetcdf4", "_SuperblockVersion",
-          "_DAP4_Little_Endian", "_edu.ucar"
+          CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION,
+          CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX
   };
 
   /**

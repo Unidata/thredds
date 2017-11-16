@@ -58,6 +58,13 @@ import java.nio.ByteOrder;
  * @author caron
  */
 class H5tiledLayoutBB implements LayoutBB {
+
+  static final int DEFAULTZIPBUFFERSIZE = 512;
+  // System property name for -D flag
+  static final String INFLATEBUFFERSIZE = "unidata.h5iosp.inflate.buffersize";
+
+  static public boolean debugFilter = true;
+
   private LayoutBBTiled delegate;
 
   private RandomAccessFile raf;
@@ -71,6 +78,8 @@ class H5tiledLayoutBB implements LayoutBB {
 
   private boolean debug = false;
 
+  private int inflatebuffersize = DEFAULTZIPBUFFERSIZE;
+
   /**
    * Constructor.
    * This is for HDF5 chunked data storage. The data is read by chunk, for efficency.
@@ -82,7 +91,8 @@ class H5tiledLayoutBB implements LayoutBB {
    * @throws InvalidRangeException if section invalid for this variable
    * @throws java.io.IOException   on io error
    */
-  H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5header.Filter[] filters, ByteOrder byteOrder) throws InvalidRangeException, IOException {
+  H5tiledLayoutBB(Variable v2, Section wantSection, RandomAccessFile raf, H5header.Filter[] filters, ByteOrder byteOrder) throws InvalidRangeException, IOException
+  {
     wantSection = Section.fill(wantSection, v2.getShape());
 
     H5header.Vinfo vinfo = (H5header.Vinfo) v2.getSPobject();
@@ -97,7 +107,7 @@ class H5tiledLayoutBB implements LayoutBB {
     // Section.intersect(). It appears that storageSize (actually msl.chunkSize) may have an extra dimension, reletive
     // to the Variable.
     DataType dtype = v2.getDataType();
-    if ((dtype == DataType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length))
+    if((dtype == DataType.CHAR) && (wantSection.getRank() < vinfo.storageSize.length))
       this.want = new Section(wantSection).appendRange(1);
     else
       this.want = wantSection;
@@ -112,7 +122,21 @@ class H5tiledLayoutBB implements LayoutBB {
     DataBTree.DataChunkIterator iter = vinfo.btree.getDataChunkIteratorFilter(this.want);
     DataChunkIterator dcIter = new DataChunkIterator(iter);
     delegate = new LayoutBBTiled(dcIter, chunkSize, elemSize, this.want);
-    
+
+    if(System.getProperty(INFLATEBUFFERSIZE) != null)  {
+      try {
+        int size = Integer.parseInt(System.getProperty(INFLATEBUFFERSIZE));
+        if(size <= 0)
+          H5iosp.log.warn(String.format("-D%s must be > 0",INFLATEBUFFERSIZE));
+        else
+          this.inflatebuffersize = size;
+      } catch (NumberFormatException nfe) {
+        H5iosp.log.warn(String.format("-D%s is not an integer",INFLATEBUFFERSIZE));
+      }
+    }
+    if(debugFilter)
+      System.out.printf("inflate buffer size -D%s = %d%n",INFLATEBUFFERSIZE,this.inflatebuffersize);
+
     if (debug) System.out.println(" H5tiledLayout: " + this);
   }
 
@@ -245,13 +269,16 @@ class H5tiledLayoutBB implements LayoutBB {
     private byte[] inflate(byte[] compressed) throws IOException {
       // run it through the Inflator
       ByteArrayInputStream in = new ByteArrayInputStream(compressed);
-      java.util.zip.InflaterInputStream inflater = new java.util.zip.InflaterInputStream(in);
+      java.util.zip.Inflater inflater = new java.util.zip.Inflater();
+      java.util.zip.InflaterInputStream inflatestream
+        = new java.util.zip.InflaterInputStream(in, inflater, inflatebuffersize);
       ByteArrayOutputStream out = new ByteArrayOutputStream(
               Math.min(8 * compressed.length, MAX_ARRAY_LEN));  // Fixes KXL-349288
-      IO.copy(inflater, out);
+      IO.copy(inflatestream, out);
 
       byte[] uncomp = out.toByteArray();
-      if (debug) System.out.println(" inflate bytes in= " + compressed.length + " bytes out= " + uncomp.length);
+      if (debug || debugFilter)
+        System.out.println(" inflate bytes in= " + compressed.length + " bytes out= " + uncomp.length);
       return uncomp;
     }
 

@@ -18,9 +18,7 @@ public class Nc4 {
   static public final String NETCDF4_STRICT  = "_nc3_strict";  // global - when using classic model
   static public final String NETCDF4_NON_COORD  = "_nc4_non_coord_";  // appended to variable when it conflicts with dimension scale
 
-  // This is a persistent attribute added in netcdf-c-4.4.1-RC2. It'll look something like:
-  //     _NCProperties = "version=1|netcdflibversion=4.4.1|hdf5libversion=1.8.17"
-  static public final String NETCDF4_NC_PROPERTIES = "_NCProperties";
+
 }
 
 /*

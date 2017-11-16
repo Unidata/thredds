@@ -8,6 +8,7 @@ package ucar.nc2;
 import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
+import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class TestSpecialAttributes extends TestCase
     {
         NetcdfFile ncfile = TestDir.openFileLocal("testSpecialAttributes.nc4");
         // Attempt to read special attributes by name
-        for(String name : new String[]{"_NCProperties"}) {
+        for(String name : new String[]{CDM.NCPROPERTIES}) {
             Attribute special = ncfile.getRootGroup().findAttribute(name);
             Assert.assertTrue("Could not access special attribute: " + name,
                     special != null && Attribute.isspecial(special));

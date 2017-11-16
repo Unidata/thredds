@@ -515,7 +515,7 @@ public class Group extends CDMNode implements AttributeContainer {
     List<Attribute> container = this.attributes;
     if(Attribute.isspecial(att))
 	container = this.specials;
-    for (int i = 0; i < attributes.size(); i++) {
+    for (int i = 0; i < container.size(); i++) {
       Attribute a = container.get(i);
       if (att.getShortName().equals(a.getShortName())) {
         container.set(i, att); // replace
