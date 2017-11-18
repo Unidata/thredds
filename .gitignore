@@ -13,6 +13,12 @@ tds/content/
 .idea/
 atlassian-ide-plugin.xml
 
+# ignore intellij compile directories
+# `module`/out/ (i.e. tds/out)
+*/out/
+# `module`/`submodule`/out (i.e. dap4/d4core/out/)
+*/*/out/
+
 # Ignore Dreamweaver balogna
 _notes
 _compareTemp
