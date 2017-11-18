@@ -39,23 +39,19 @@ publishing {
     }
 }
 
-// Use taskGraph.whenReady() to delay the evaluation of the Nexus credentials for as long as possible.
-// It appears that it can't be deferred until the evaluation phase using Groovy GStrings: it's always done in the
-// execution phase.
+// The "publish" tasks require credentials for our Nexus server, which they look for in Gradle properties.
+// If those properties (i.e. NEXUS_USERNAME_KEY and NEXUS_PASSWORD_KEY) haven't been provided, the build will fail.
+// Therefore, we only want to configure credentials when a "publish" task is part of the execution plan. Otherwise,
+// unavailable credentials could cause a build to fail even if we aren't doing any publishing. The TaskExecutionGraph
+// allows us to do that.
 gradle.taskGraph.whenReady { TaskExecutionGraph taskGraph ->
     // This won't find any publishToMavenLocal tasks. Those are of type PublishToMavenLocal
     Collection<Task> mavenPublishTasks = taskGraph.allTasks.findAll { it instanceof PublishToMavenRepository }
     
-    if (!mavenPublishTasks) {
-        return  // We're not running any tasks that publish to a (remote) Maven repo.
-    }
-    
-    Closure nexusCredentials = {
-        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
-        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
-    }
-    
     mavenPublishTasks.each {
-        it.repository.credentials nexusCredentials
+        it.repository.credentials.with {
+            username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+            password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        }
     }
 }
