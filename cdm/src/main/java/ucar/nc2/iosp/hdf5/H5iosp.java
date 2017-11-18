@@ -71,7 +71,7 @@ public class H5iosp extends AbstractIOServiceProvider {
   static boolean debugStructure = false;
   static boolean skipEos = false;
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
+  static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(H5iosp.class);
 
   static public void setDebugFlags(ucar.nc2.util.DebugFlags debugFlag) {
     debug = debugFlag.isSet("H5iosp/read");
@@ -85,6 +85,9 @@ public class H5iosp extends AbstractIOServiceProvider {
 
     H5header.setDebugFlags(debugFlag);
     H4header.setDebugFlags(debugFlag);
+    if(debugFilter)
+      H5tiledLayoutBB.debugFilter = debugFilter;
+
   }
 
   public boolean isValidFile(ucar.unidata.io.RandomAccessFile raf) throws IOException {

@@ -219,7 +219,7 @@ public class DsgSubsetWriterTest {
         @Override
         public boolean attCheckOk(Variable v, Attribute att) {
             return !att.getShortName().equals(CDM.TITLE) &&  // Ignore the "title" attribute.
-                   !att.getShortName().equals(Nc4.NETCDF4_NC_PROPERTIES);
+                   !att.getShortName().equals(CDM.NCPROPERTIES);
         }
 
         @Override
