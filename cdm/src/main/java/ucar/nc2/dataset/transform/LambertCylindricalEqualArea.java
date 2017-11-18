@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2016 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -64,9 +64,15 @@ public class LambertCylindricalEqualArea extends AbstractCoordTransBuilder {
     
     readStandardParams(ds, ctv);
 
-    // create spherical Earth obj if notcreated by readStandardParams w radii, flattening
+    // create spherical Earth obj if not created by readStandardParams w radii, flattening
     if (earth == null) {
-        earth = new Earth();
+        if (earth_radius > 0.) {
+            // Earth radius obtained in readStandardParams is in km, but Earth object wants m
+            earth = new Earth(earth_radius * 1000.);
+        }
+        else {
+            earth = new Earth();
+        }
     }
 
     ProjectionImpl proj = new CylindricalEqualAreaProjection(lon0, par, false_easting, false_northing, earth);
