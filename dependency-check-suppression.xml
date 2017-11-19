@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+   <suppress>
+      <notes><![CDATA[
+      file name: tdmFat-5.0.0-SNAPSHOT.jar
+      file name: tdm-5.0.0-SNAPSHOT.jar
+      ]]></notes>
+      <filePath regex="true">.*\/tdm.*\.jar</filePath>
+      <cpe>cpe:/a:tdm_project:tdm</cpe>
+   </suppress>
+</suppressions>
