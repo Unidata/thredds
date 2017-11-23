@@ -6,7 +6,7 @@ ext {
     // Used to publish code coverage report to https://coveralls.io/github/Unidata/thredds
     COVERALLS_REPO_TOKEN_KEY = 'coveralls.repo.token'
     
-    // Used to publish static analysis report to https://sonarqube.com/dashboard/index/thredds
+    // Used to publish static analysis report to https://sonarcloud.io/dashboard?id=thredds
     SONARQUBE_USER_TOKEN_KEY = 'sonarqube.user.token'
     
     // Do not propagate these system properties to the Gretty web-apps or Gradle test executors.
