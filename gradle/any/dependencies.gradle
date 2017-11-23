@@ -52,7 +52,7 @@ libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3"
 
-libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.1"
+libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1"
 
 libraries["license-gradle-plugin"] = "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
 
