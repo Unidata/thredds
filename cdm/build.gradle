@@ -17,6 +17,9 @@ dependencies {
     compile libraries["guava"]
     compile libraries["jcommander"]
     compile libraries["aws-java-sdk-s3"]  // For CrawlableDatasetAmazonS3.
+    compile libraries["jackson-core"]  // Replace what was in aws-java-sdk-s3
+    compile libraries["jackson-annotations"]  // Replace what was in aws-java-sdk-s3
+    compile libraries["jackson-databind"]  // Replace what was in aws-java-sdk-s3
 
     compile libraries["slf4j-api"]
 

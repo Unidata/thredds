@@ -238,7 +238,23 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
 libraries["threddsIso"] = "EDS:threddsIso:2.2.9"
 
-libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.233"
+libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s3:1.11.236") {
+    // exclude jackson deps so that they can be overridden 
+    // with 2.7.x deps to address security issue. See
+    // https://github.com/aws/aws-sdk-java/issues/1159
+    // as of the time these were added, the versions of these were:
+    // jackson-core: 2.6.7
+    // jackson-annotations: 2.6.0
+    // jackson-databind: 2.6.7.1
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-annotations'
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
+}
+
+// replace the jackson.core libs that were excluded from aws-java-sdk-s3
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.7.9"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.7.9"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.7.9.1"
 
 libraries["ncsos"] = dependencies.create("com.asascience:ncsos:1.4.3") {
     // This is an external TDS plugin that depends on an old
