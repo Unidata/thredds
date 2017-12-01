@@ -158,6 +158,11 @@
     <description>Downdraught Detrainment Rate</description>
     <units>kg m-3 s-1</units>
   </parameter>
+  <parameter code="31">
+    <shortName>UCLSPRS</shortName>
+    <description>Unbalanced Component of Logarithm of Surface Pressure</description>
+    <units />
+  </parameter>
   <parameter code="192">
     <shortName>MSLET</shortName>
     <description>MSLP (Eta model reduction)</description>

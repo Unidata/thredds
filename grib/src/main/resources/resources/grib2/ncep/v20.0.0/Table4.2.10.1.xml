@@ -23,6 +23,11 @@
     <description>V-Component of Current</description>
     <units>m s-1</units>
   </parameter>
+  <parameter code="4">
+    <shortName>RIPCOP</shortName>
+    <description>Rip Current Occurrence Probability</description>
+    <units>%</units>
+  </parameter>
   <parameter code="192">
     <shortName>OMLU</shortName>
     <description>Ocean Mixed Layer U Velocity</description>

@@ -149,8 +149,8 @@
     <units>m2/3 s-1</units>
   </parameter>
   <parameter code="29">
-    <shortName>CAT</shortName>
-    <description>Clear Air Turbulence (CAT)</description>
+    <shortName>CATEDR</shortName>
+    <description>Clear Air Turbulence (CAT) (Eddy Dissipation Rate)</description>
     <units>m2/3 s-1</units>
   </parameter>
   <parameter code="30">
@@ -162,6 +162,26 @@
     <shortName>MXEDPRM</shortName>
     <description>Maximum of Eddy Dissipation Parameter in Layer</description>
     <units>m2/3 s-1</units>
+  </parameter>
+  <parameter code="32">
+    <shortName>HIFREL</shortName>
+    <description>Highest Freezing Level</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="33">
+    <shortName>VISLFOG</shortName>
+    <description>Visibility Through Liquid Fog</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="34">
+    <shortName>VISIFOG</shortName>
+    <description>Visibility Through Ice Fog</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="35">
+    <shortName>VISBSN</shortName>
+    <description>Visibility Through Blowing Snow</description>
+    <units>m</units>
   </parameter>
   <parameter code="192">
     <shortName>MXSALB</shortName>
@@ -332,5 +352,10 @@
     <shortName>ICSEV</shortName>
     <description>Icing severity</description>
     <units>non-dim</units>
+  </parameter>
+  <parameter code="235">
+    <shortName>JFWPRB</shortName>
+    <description>Joint Fire Weather Probability</description>
+    <units>%</units>
   </parameter>
 </parameterMap>

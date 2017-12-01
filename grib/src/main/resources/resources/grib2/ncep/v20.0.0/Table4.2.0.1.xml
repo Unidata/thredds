@@ -433,6 +433,16 @@
     <description>Specific Snow Water Content</description>
     <units>kg kg-1</units>
   </parameter>
+  <parameter code="87">
+    <shortName>SPRATE</shortName>
+    <description>Stratiform Precipitation Rate</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="88">
+    <shortName>CATCP</shortName>
+    <description>Categorical Convective Precipitation</description>
+    <units>Code table 4.222</units>
+  </parameter>
   <parameter code="90">
     <shortName>TKMFLX</shortName>
     <description>Total Kinematic Moisture Flux</description>
@@ -572,6 +582,26 @@
     <shortName>MMLWSDA</shortName>
     <description>Mass Mixing Ratio of Liquid Water Coating on Snow Expressed as Mass of Liquid Water per Unit Mass of Dry Air</description>
     <units>kg kg-1</units>
+  </parameter>
+  <parameter code="118">
+    <shortName>UNCSH</shortName>
+    <description>Unbalanced Component of Specific Humidity</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="119">
+    <shortName>UCSCLW</shortName>
+    <description>Unbalanced Component of Specific Cloud Liquid Water content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="120">
+    <shortName>UCSCIW</shortName>
+    <description>Unbalanced Component of Specific Cloud Ice Water content</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="121">
+    <shortName>FSNOWC</shortName>
+    <description>Fraction of Snow Cover</description>
+    <units>Proportion</units>
   </parameter>
   <parameter code="192">
     <shortName>CRAIN</shortName>

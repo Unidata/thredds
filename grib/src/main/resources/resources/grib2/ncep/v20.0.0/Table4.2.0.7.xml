@@ -93,6 +93,11 @@
     <description>Flux Richardson Number</description>
     <units>Numeric</units>
   </parameter>
+  <parameter code="19">
+    <shortName>CONAPES</shortName>
+    <description>Convective Available Potential Energy Shear</description>
+    <units>m2 s-2</units>
+  </parameter>
   <parameter code="192">
     <shortName>LFT X</shortName>
     <description>Surface Lifted Index</description>
