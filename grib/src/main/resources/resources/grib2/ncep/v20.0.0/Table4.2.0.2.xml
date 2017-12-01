@@ -228,6 +228,16 @@
     <description>Geostrophic Wind Speed</description>
     <units>m s-1</units>
   </parameter>
+  <parameter code="45">
+    <shortName>UNDIV</shortName>
+    <description>Unbalanced Component of Divergence</description>
+    <units>s-1</units>
+  </parameter>
+  <parameter code="46">
+    <shortName>VORTADV</shortName>
+    <description>Vorticity Advection</description>
+    <units>s-2</units>
+  </parameter>
   <parameter code="192">
     <shortName>VWSH</shortName>
     <description>Vertical Speed Shear</description>

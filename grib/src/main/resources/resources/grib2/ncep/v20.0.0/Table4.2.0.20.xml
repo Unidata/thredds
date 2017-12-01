@@ -143,6 +143,11 @@
     <description>Height of Mass Density</description>
     <units>m</units>
   </parameter>
+  <parameter code="63">
+    <shortName>CAVEMDL</shortName>
+    <description>Column-Averaged Mass Density in Layer</description>
+    <units>kg m-3</units>
+  </parameter>
   <parameter code="100">
     <shortName>SADEN</shortName>
     <description>Surface Area Density (Aerosol)</description>

@@ -54,6 +54,18 @@
   <parameter code="20">
     <description>Isothermal Level</description>
   </parameter>
+  <parameter code="21">
+    <description>Lowest level where mass density exceeds the specified value (base for a given threshold of mass density)</description>
+  </parameter>
+  <parameter code="22">
+    <description>Highest level where mass density exceeds the specified value (top for a given threshold of mass density)</description>
+  </parameter>
+  <parameter code="23">
+    <description>Lowest level where air concentration exceeds the specified value (base for a given threshold of air concentration</description>
+  </parameter>
+  <parameter code="24">
+    <description>Highest level where air concentration exceeds the specified value (top for a given threshold of air concentration)</description>
+  </parameter>
   <parameter code="100">
     <description>Isobaric Surface</description>
   </parameter>
@@ -92,6 +104,9 @@
   </parameter>
   <parameter code="114">
     <description>Snow Level</description>
+  </parameter>
+  <parameter code="115">
+    <description>Sigma height level (see Note 4)</description>
   </parameter>
   <parameter code="117">
     <description>Mixed Layer Depth</description>

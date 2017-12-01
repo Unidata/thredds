@@ -83,4 +83,14 @@
     <description>Height of Maximum of Air Concentration</description>
     <units>m</units>
   </parameter>
+  <parameter code="17">
+    <shortName>CIAIRC</shortName>
+    <description>Column-Integrated Air Concentration</description>
+    <units>Bq m-2</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>CAACL</shortName>
+    <description>Column-Averaged Air Concentration in Layer</description>
+    <units>Bq m-3</units>
+  </parameter>
 </parameterMap>

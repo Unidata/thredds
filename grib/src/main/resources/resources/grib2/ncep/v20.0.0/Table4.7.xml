@@ -54,6 +54,9 @@
   <parameter code="198">
     <description>Deviation of Ensemble Mean from Daily Climatology</description>
   </parameter>
+  <parameter code="199">
+    <description>Extreme Forecast Index</description>
+  </parameter>
   <parameter code="255">
     <description>Missing</description>
   </parameter>

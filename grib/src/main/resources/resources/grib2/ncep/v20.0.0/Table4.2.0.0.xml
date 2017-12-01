@@ -143,6 +143,16 @@
     <description>Wet Bulb Temperature</description>
     <units>K</units>
   </parameter>
+  <parameter code="28">
+    <shortName>UCTMP</shortName>
+    <description>Unbalanced Component of Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="29">
+    <shortName>TMPADV</shortName>
+    <description>Temperature Advection</description>
+    <units>K s-1</units>
+  </parameter>
   <parameter code="192">
     <shortName>SNOHF</shortName>
     <description>Snow Phase Change Heat Flux</description>

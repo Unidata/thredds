@@ -123,4 +123,19 @@
     <description>Extra Tropical Storm Surge Combined Surge and Tide</description>
     <units>m</units>
   </parameter>
+  <parameter code="251">
+    <shortName>TIDE</shortName>
+    <description>Tide</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="252">
+    <shortName>EROSNP</shortName>
+    <description>Erosion Occurrence Probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="253">
+    <shortName>OWASHP</shortName>
+    <description>Overwash Occurrence Probability</description>
+    <units>%</units>
+  </parameter>
 </parameterMap>

@@ -27,6 +27,9 @@
   <parameter code="7">
     <description>Log-normal distribution with spatially variable number density and mass density and fixed variance  and fixed particle density  (p2) (See Note 7)</description>
   </parameter>
+  <parameter code="8">
+    <description>No distribution function. The encoded variable is derived from variables characterized by type of distribution function of type No. 7 (see above) with fixed variance  (p1) and fixed particle density  (p2)</description>
+  </parameter>
   <parameter code="65535">
     <description>Missing</description>
   </parameter>
