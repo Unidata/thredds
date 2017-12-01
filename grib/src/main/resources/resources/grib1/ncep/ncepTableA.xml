@@ -24,7 +24,7 @@
     <description>Global Multi-Grid Wave Model (Static Grids)</description>
   </parameter>
   <parameter code="12">
-    <description>Probabilistic Storm Surge</description>
+    <description>Probabilistic Storm Surge (P-Surge)</description>
   </parameter>
   <parameter code="13">
     <description>Hurricane Multi-Grid Wave Model</description>
@@ -35,11 +35,20 @@
   <parameter code="15">
     <description>Nearshore Wave Prediction System (NWPS)</description>
   </parameter>
+  <parameter code="16">
+    <description>Extra-Tropical Storm Surge (ETSS)</description>
+  </parameter>
   <parameter code="17">
     <description>Extra-tropical Storm Surge Pacific Domain</description>
   </parameter>
+  <parameter code="18">
+    <description>Probabilistic Extra-Tropical Storm Surge (P-ETSS)</description>
+  </parameter>
   <parameter code="19">
     <description>Limited-area Fine Mesh (LFM) analysis</description>
+  </parameter>
+  <parameter code="20">
+    <description>Extra-tropical Storm Surge Micronesia Domain</description>
   </parameter>
   <parameter code="25">
     <description>Snow Cover Analysis</description>
@@ -136,6 +145,9 @@
   </parameter>
   <parameter code="85">
     <description>Real Time Ocean Forecast System (RTOFS)</description>
+  </parameter>
+  <parameter code="86">
+    <description>Early Hurricane Wind Speed Probability Model</description>
   </parameter>
   <parameter code="87">
     <description>CAC Ensemble Forecasts from Spectral (ENSMB)</description>
@@ -253,6 +265,12 @@
   </parameter>
   <parameter code="131">
     <description>Great Lakes Wave Model</description>
+  </parameter>
+  <parameter code="132">
+    <description>High Resolution Ensemble Forecast (HREF)</description>
+  </parameter>
+  <parameter code="133">
+    <description>Great Lakes Short Range Wave Model</description>
   </parameter>
   <parameter code="140">
     <description>North American Regional Reanalysis (NARR)</description>
