@@ -172,3 +172,7 @@ Notes for grib-1 tables (global)
  - Removed all ECMWF tables (2.98.*) from the ecmwf and ncl directories, as these are now coming from GRIB-API
 
  5/28/2014 moving AFWA tables from "local" to own "afwa" directory
+
+ 12/01/2017 sarms
+ - Start using grib1 tables for ecmwf from the package ecCodes
+ - src/main/sources/ecmwfGribApi/README.txt is now src/main/sources/ecmwfEcCodes/README.txt
