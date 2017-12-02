@@ -43,7 +43,7 @@ dependencies {
     compile libraries["ncwms"]
     compile libraries["oro"]
 
-    providedCompile libraries["javax.servlet-api"]
+    compileOnly libraries["javax.servlet-api"]
     runtime libraries["taglibs-standard-impl"]
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]
@@ -93,6 +93,15 @@ processTestResources {
 }
 
 war {
+    // Assert that no servlet-api JAR is slated for inclusion in the WAR.
+    doFirst {
+        File servletApiJar = classpath.find { it.name.contains("servlet-api") }
+        if (servletApiJar) {
+            // This will fail the build.
+            throw new GradleException("Found a servlet-api JAR in the WAR classpath: ${servletApiJar.name}")
+        }
+    }
+    
     // Replace '$projectVersion' and '$buildTimestamp' placeholders with the correct values.
     // Currently, we only use those placeholders in tds.properties and README.txt.
     def properties = [:]
