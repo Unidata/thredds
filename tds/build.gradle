@@ -48,7 +48,8 @@ dependencies {
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]
     runtime libraries["jaxen"]
-
+    
+    testCompile libraries["javax.servlet-api"]  // Needed during test runtime as well, so testCompileOnly is no good.
     testCompile libraries["spring-test"]
     testCompile libraries["hamcrest-core"]
     testCompile libraries["httpunit"]
