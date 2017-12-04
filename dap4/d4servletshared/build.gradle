@@ -5,7 +5,7 @@ dependencies {
     compile project(':netcdf4')
     compile project(':cdm')
 
-    provided libraries["javax.servlet-api"]
+    compileOnly libraries["javax.servlet-api"]
     compile libraries["slf4j-api"]
     compile libraries["spring-web"]
     compile libraries["spring-context"]

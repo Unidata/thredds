@@ -129,9 +129,7 @@ abstract class PublishingUtil {
                         }
                         
                         assert pomDependencyNodes*.name()*.localPart.toUnique() == ['dependency']
-
-                        // The compile-scoped dependencies of the project. The provided-scoped dependencies are
-                        // already being handled by gradle-extra-configurations-plugin: https://goo.gl/xzRuLu
+                        
                         DependencySet projCompileDeps = projCompileConfig.dependencies
 
                         List<Node> depNodesToFix = pomDependencyNodes.findAll { Node pomDependencyNode ->
