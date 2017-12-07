@@ -15,9 +15,7 @@ env:
 
 matrix:
   include:
-    - jdk: oraclejdk7
     - jdk: oraclejdk8
-    - jdk: openjdk7
 #      env: BUILD_IDV=true
 
 script:
