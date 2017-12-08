@@ -1,10 +1,6 @@
 language: java
 sudo: false
 
-# Need to run on Ubuntu Precise (v12.04.5) until we rebuild netCDF-C for 
-# Ubuntu Trusty (v14.04.5), the new Travis default
-dist: precise
-
 addons:
   artifacts:
     bucket: unidata-tds
@@ -21,14 +17,12 @@ addons:
 
 env:
   global:
-    - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-12.04.5-amd64
+    - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-14.04.5-amd64
     - BUILD_IDV=false
 
 matrix:
   include:
-    - jdk: oraclejdk7
     - jdk: oraclejdk8
-    - jdk: openjdk7
 #      env: BUILD_IDV=true
 
 script:
