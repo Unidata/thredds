@@ -273,6 +273,7 @@ public class TestNc4IospWriting {
     }
 
     @Test
+    @Ignore("Broken with libnetcdf 4.5.0; waiting on https://github.com/Unidata/netcdf-c/issues/718")
     public void expandUnlimitedDimensions() throws IOException, InvalidRangeException {
         File outFile = tempFolder.newFile("expandUnlimitedDimensions.nc4");
 
