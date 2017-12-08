@@ -554,7 +554,7 @@ public class DoradeSweep {
   // unidata added
   public static boolean isDoradeSweep(RandomAccessFile file) throws DoradeSweepException {
     try {
-      if (findName(file, "SSWB"))
+      if (findName(file, "SSWB") || findName(file, "COMM"))
         return true;
     } catch (Exception ex) {
       throw new DoradeSweepException(ex);

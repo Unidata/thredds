@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.240</table>
+  <title>Type of Distribution Function</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-240.shtml</source>
+  <parameter code="0">
+    <description>No specific distribution function given</description>
+  </parameter>
+  <parameter code="1">
+    <description>Delta functions with spatially variable concentration and fixed diameters Dl(p1) in meter (See Note 1)</description>
+  </parameter>
+  <parameter code="2">
+    <description>Delta functions with spatially variable concentration and fixed masses Ml(p1) in kg (See Note 2)</description>
+  </parameter>
+  <parameter code="3">
+    <description>Gaussian (Normal) distribution with spatially variable concentration and fixed mean diameter Dl(p1) and variance  (p2) (See Note 3)</description>
+  </parameter>
+  <parameter code="4">
+    <description>Gaussian (Normal) distribution with spatially variable concentration, mean diameter and variance (See Note 4)</description>
+  </parameter>
+  <parameter code="5">
+    <description>Log-normal distribution with spatially variable number density, mean diameter and variance (See Note 5)</description>
+  </parameter>
+  <parameter code="6">
+    <description>Log-normal distribution with spatially variable number density, mean diameter and fixed variance  (p1) (See Note 6)</description>
+  </parameter>
+  <parameter code="7">
+    <description>Log-normal distribution with spatially variable number density and mass density and fixed variance  and fixed particle density  (p2) (See Note 7)</description>
+  </parameter>
+  <parameter code="8">
+    <description>No distribution function. The encoded variable is derived from variables characterized by type of distribution function of type No. 7 (see above) with fixed variance  (p1) and fixed particle density  (p2)</description>
+  </parameter>
+  <parameter code="65535">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

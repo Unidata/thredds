@@ -20,7 +20,7 @@ dependencies {
 // This specifies the resources from ":dap4:d4tests" that we need to include in the d4ts war and inplaceWebapp.
 def d4testsResourcesCopySpec = copySpec {
     File d4testsResourcesDir = project(":dap4:d4tests").file('src/test/data/resources')
-    
+
     from (new File(d4testsResourcesDir, 'favicon.ico')) {
         into('WEB-INF/')
     }
@@ -45,7 +45,7 @@ war.with d4testsResourcesCopySpec
 ext.grettyConfig = {
     httpPort = 8083
     contextPath = '/d4ts'
-    
+
     afterEvaluate {
         prepareInplaceWebAppFolder.with d4testsResourcesCopySpec
     }

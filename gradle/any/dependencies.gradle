@@ -14,13 +14,13 @@ repositories {
     // which is a group repository that contains all other repositories. However, I prefer to list all source
     // repos explicitly so that we know where all artifacts ultimately come from.
     
-    // Hosted repositories.
+    // Hosted release repositories.
     maven {
         // For "threddsIso", "visad" and "jj2000".
         url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
     }
     maven {
-        // For snapshots of "threddsIso" and "edal-*".
+        // For snapshots of "threddsIso"
         url "https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/"
     }
     maven {
@@ -46,7 +46,7 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:1.0.5"
+libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:2.0.1"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
@@ -58,7 +58,7 @@ libraries["license-gradle-plugin"] = "gradle.plugin.nl.javadude.gradle.plugins:l
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.3.9.RELEASE"
+versions["spring"] = "4.3.13.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -174,12 +174,12 @@ libraries["jna"] = "net.java.dev.jna:jna:4.2.2"
 libraries["joda-time"] = "joda-time:joda-time:2.9.4"
 
 // HTML scraper used in GRIB
-libraries["jsoup"] = "org.jsoup:jsoup:1.9.2"
+libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
 
 // Annotations
 libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.1"
 
-libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.0.2"
+libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.5.0"
 
 libraries["visad"] = "edu.wisc.ssec:visad:2.0-20130124"
 
@@ -194,7 +194,23 @@ libraries["http-builder-ng-core"] = "io.github.http-builder-ng:http-builder-ng-c
 
 ////////////////////////////// TDS ///////////////////////////////////////////
 
-libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.11.113"
+libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s3:1.11.236") {
+    // exclude jackson deps so that they can be overridden
+    // with 2.7.x deps to address security issue. See
+    // https://github.com/aws/aws-sdk-java/issues/1159
+    // as of the time these were added, the versions of these were:
+    // jackson-core: 2.6.7
+    // jackson-annotations: 2.6.0
+    // jackson-databind: 2.6.7.1
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-annotations'
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
+}
+
+// replace the jackson.core libs that were excluded from aws-java-sdk-s3
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.7.9"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.7.9"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.7.9.1"
 
 // Latest version is 3.10.1. Can we upgrade?
 libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:2.4.15") {
