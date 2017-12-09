@@ -4,7 +4,6 @@
 
 package dap4.test;
 
-import com.sun.org.apache.xpath.internal.axes.ReverseAxesWalker;
 import dap4.core.util.DapUtil;
 import dap4.servlet.DapCache;
 import org.junit.Assert;

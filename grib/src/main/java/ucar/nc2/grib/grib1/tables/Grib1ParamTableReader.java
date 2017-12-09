@@ -216,7 +216,7 @@ public class Grib1ParamTableReader {
       else if (name.endsWith(".xml"))
         return readParameterTableXml(new DssParser(Namespace.NO_NAMESPACE));// NCAR DSS XML format
       else if (name.startsWith("2.98"))
-        return readParameterTableEcmwfGribApi(); // ecmwf from grib api package
+        return readParameterTableEcmwfEcCodes(); // ecmwf from ecCodes package
       else
         throw new RuntimeException("Grib1ParamTableReader: Dont know how to read " + name + " file=" + path);
 
@@ -400,9 +400,9 @@ TBLE2 cptec_254_params[] = {
    * ucar.nc2.grib.grib1.tables.EcmwfLocalConcepts
    * <p>
    * The original localConcepts files are located in:
-   * <p>
-   * grib/src/main/sources/ecmwfGribApi/
-   * <p>
+   * <p/>
+   * grib/src/main/sources/ecmwfEcCodes/
+   * <p/>
    * Since we write the table file that are ultimately read by CDM, the
    * format is controled and is the following:
    * <p>
@@ -412,7 +412,7 @@ TBLE2 cptec_254_params[] = {
    * <p>
    * 251 atte [Adiabatic tendency of temperature] (K)
    */
-  private Map<Integer, Grib1Parameter> readParameterTableEcmwfGribApi() throws IOException {
+  private Map<Integer, Grib1Parameter> readParameterTableEcmwfEcCodes() throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path)) {

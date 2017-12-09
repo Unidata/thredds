@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
  *
  *  Portions of this software were developed by the Unidata Program at the
  *  University Corporation for Atmospheric Research.
@@ -36,6 +36,9 @@ package ucar.nc2.dataset.transform;
 import ucar.nc2.AttributeContainer;
 import ucar.nc2.constants.CF;
 import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.dataset.TransformType;
+import ucar.unidata.geoloc.Earth;
+import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 
 /**
@@ -50,9 +53,26 @@ public class AzimuthalEquidistant extends AbstractTransformBuilder implements Ho
     return CF.AZIMUTHAL_EQUIDISTANT;
   }
 
+  public TransformType getTransformType() {
+    return TransformType.Projection;
+  }
+
   public ProjectionCT makeCoordinateTransform(AttributeContainer ctv, String geoCoordinateUnits) {
     readStandardParams(ctv, geoCoordinateUnits);
-    ucar.unidata.geoloc.ProjectionImpl proj = new EquidistantAzimuthalProjection(lat0, lon0, false_easting, false_northing, earth);
+
+    // create spherical Earth obj if not created by readStandardParams w radii, flattening
+    if (earth == null) {
+        if (earth_radius > 0.) {
+            // Earth radius obtained in readStandardParams is in km, but Earth object wants m
+            earth = new Earth(earth_radius * 1000.);
+        }
+        else {
+            earth = new Earth();
+        }
+    }
+
+    ProjectionImpl proj = new EquidistantAzimuthalProjection(lat0, lon0, false_easting, false_northing, earth);
+
     return new ProjectionCT(ctv.getName(), "FGDC", proj);
   }
 }

@@ -20,7 +20,7 @@ env:
     # That dependency is searched for by the *OS*, not by JNA, and it knows nothing about 'jna.library.path'.
     # Ordinarily, this wouldn't be a problem because libnetcdf would include an rpath reference to libhdf5, but the
     # binaries were built on a different system than the Travis VMs, so it doesn't work.
-    - LD_LIBRARY_PATH="$TRAVIS_BUILD_DIR/travis/lib/ubuntu-12.04.5-amd64"
+    - LD_LIBRARY_PATH="$TRAVIS_BUILD_DIR/travis/lib/ubuntu-14.04.5-amd64"
 
     # For artifact upload. It's important to use relative paths here; otherwise, the entire absolute path would
     # become part of the S3 URL.
@@ -29,10 +29,6 @@ env:
   matrix:
     - TASK="build"
     - TASK="docs"
-
-# Need to run on Ubuntu Precise (v12.04.5) until we rebuild netCDF-C for
-# Ubuntu Trusty (v14.04.5), the new Travis default
-dist: precise
 
 addons:
   # See the note in travis/after_script.sh about the environment variables that Travis artifact uploading requires.

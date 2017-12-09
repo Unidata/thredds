@@ -62,4 +62,7 @@
     "Downward Shortwave Radiation Flux from GOES-UMD Pinker".
 
 11/17/2016 sarms
-  - updated ncep grib1 tables using ucar/nc2/grib/grib1/tables/NcepHtmlScraper.java 
+  - updated ncep grib1 tables using ucar/nc2/grib/grib1/tables/NcepHtmlScraper.java
+
+12/01/2017 sarms
+  - updated ncep grib1 tables using ucar/nc2/grib/grib1/tables/NcepHtmlScraper.java

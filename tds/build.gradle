@@ -61,7 +61,7 @@ dependencies {
     compile libraries["spring-beans"]
     compile libraries["spring-web"]
     compile libraries["spring-webmvc"]
-    
+
     runtime libraries["spring-security-web"]     // Needed for FilterChainProxy in applicationContext.xml.
     runtime libraries["spring-security-config"]  // Needed for "xmlns:security" schema in applicationContext.xml.
 
@@ -90,6 +90,7 @@ dependencies {
     compile libraries["thymeleaf-spring4"]
 
     // Testing
+    testCompile libraries["javax.servlet-api"]
     testCompile libraries["spring-test"]
     testCompile libraries["hamcrest-core"]
     testCompile libraries["commons-io"]
@@ -125,7 +126,7 @@ processTestResources {
     
     // Tests expect for test resources to be copied to the same directory as the test classes.
     destinationDir = compileTestJava.destinationDir
-    
+
     // Creates an inferred task dependency on toolsUiJnlpBase.
     // See https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:task_input_output_side_effects
     // This file is needed by ViewControllerTest.testLaunchViewerToolsUIVRequest().
@@ -135,6 +136,15 @@ processTestResources {
 }
 
 war {
+    // Assert that no servlet-api JAR is slated for inclusion in the WAR.
+    doFirst {
+        File servletApiJar = classpath.find { it.name.contains("servlet-api") }
+        if (servletApiJar) {
+            // This will fail the build.
+            throw new GradleException("Found a servlet-api JAR in the WAR classpath: ${servletApiJar.name}")
+        }
+    }
+
     // Replace '$projectVersion' and '$buildTimestamp' placeholders with the correct values.
     // Currently, we only use those placeholders in tds.properties and README.txt.
     def properties = [:]
