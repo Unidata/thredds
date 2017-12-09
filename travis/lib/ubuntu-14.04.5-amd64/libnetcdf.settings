@@ -4,7 +4,7 @@
 # General
 -------
 NetCDF Version:		4.5.0
-Configured On:		Fri Dec  8 03:12:12 UTC 2017
+Configured On:		Sat Dec  9 03:15:22 UTC 2017
 Host System:		x86_64-pc-linux-gnu
 Build Directory: 	/tmp/netcdf-c-4.5.0
 Install Prefix:         /usr/local
@@ -34,4 +34,4 @@ DAP4 Support:		no
 Diskless Support:	yes
 MMap Support:		no
 JNA Support:		no
-CDF5 Support:		no
+CDF5 Support:		yes
