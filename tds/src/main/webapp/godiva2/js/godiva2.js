@@ -410,11 +410,11 @@ function treeNodeClicked(node)
     // We're only interested if this is a displayable layer, i.e. it has an id.
     if (typeof node.data.id != 'undefined') {
         // Update the breadcrumb trail
-        var s = node.data.label;
+        var s = node.label;
         var theNode = node;
         while(theNode.parent != tree.getRoot()) {
             theNode = theNode.parent;
-            s = theNode.data.label + ' &gt; ' + s;
+            s = theNode.label + ' &gt; ' + s;
         }
         $('layerPath').innerHTML = s;
 
