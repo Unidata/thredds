@@ -31,9 +31,9 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
     
         // Third-party repositories.
         maven {
-            // For "geotk-referencing", which is needed by "ncwms". Repositories are not inherited from a dependency,
+            // For geotoolkit JARs, which are needed by "ncwms". Repositories are not inherited from a dependency,
             // so we must duplicate ncwms's needed repos here. See https://stackoverflow.com/a/19908009/3874643.
-            url "http://maven.geotoolkit.org/"
+            url "https://nexus.geomatys.com/repository/geotoolkit/"
         }
         maven {
             url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty-fork:gretty'.
