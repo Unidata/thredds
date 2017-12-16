@@ -38,12 +38,15 @@ import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
@@ -65,11 +68,15 @@ import java.util.List;
  * Test FeatureDatasetCapabilitiesXML
  *
  * @author caron
- * @since 9/23/2015.
+ * @since 9/23/2015
  */
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestFeatureDatasetCapabilitiesXML {
+  private static final Logger logger = LoggerFactory.getLogger(TestFeatureDatasetCapabilitiesXML.class);
+
+  @Rule
+  public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -94,40 +101,47 @@ public class TestFeatureDatasetCapabilitiesXML {
 
   @Test
   public void doOne() throws IOException, JDOMException {
-    FeatureDataset fd = FeatureDatasetFactoryManager.open(FeatureType.ANY_POINT, location, null, new Formatter(System.out));
-    FeatureDatasetCapabilitiesWriter capWriter = new FeatureDatasetCapabilitiesWriter((FeatureDatasetPoint) fd, path);
-    String orgXml = capWriter.getCapabilities();
+    FeatureDatasetCapabilitiesWriter capWriter;
 
-    File f = TestDir.getTempFile();
-    FileOutputStream fos = new FileOutputStream(f);
-    capWriter.getCapabilities(fos);
-    fos.close();
-    System.out.printf("%s written%n", f.getPath());
+    try (Formatter formatter = new Formatter()) {
+      FeatureDatasetPoint fdp = (FeatureDatasetPoint) FeatureDatasetFactoryManager.open(
+              FeatureType.ANY_POINT, location, null, formatter);
+      // Calculates lat/lon bounding box and date range. If we skip this step, FeatureDatasetCapabilitiesWriter
+      // will not include "TimeSpan" and "LatLonBox" in the document.
+      fdp.calcBounds(formatter);
+
+      logger.debug(formatter.toString());
+      capWriter = new FeatureDatasetCapabilitiesWriter(fdp, path);
+    }
+
+    File f = tempFolder.newFile("TestFeatureDatasetCapabilitiesXML.xml");
+    try (FileOutputStream fos = new FileOutputStream(f)) {
+      capWriter.getCapabilities(fos);
+    }
+    logger.debug("{} written", f.getPath());
 
     // round trip
     Document doc = capWriter.readCapabilitiesDocument( new FileInputStream(f));
     XMLOutputter fmt = new XMLOutputter(Format.getPrettyFormat());
     String xml = fmt.outputString(doc);
-    System.out.printf("%s%n", xml);
-
-    Assert.assertEquals(orgXml, xml); // lame test
+    logger.debug(xml);
 
     String altUnits = FeatureDatasetCapabilitiesWriter.getAltUnits(doc);
     if (hasAlt)
-      System.out.printf("altUnits=%s%n", altUnits);
+      logger.debug("altUnits={}", altUnits);
     Assert.assertEquals(hasAlt, altUnits != null);
 
     CalendarDateUnit cdu = FeatureDatasetCapabilitiesWriter.getTimeUnit(doc);
     Assert.assertNotNull("cdu", cdu);
-    System.out.printf("CalendarDateUnit= %s%n", cdu);
-    System.out.printf("Calendar= %s%n", cdu.getCalendar());
+    logger.debug("CalendarDateUnit= {}", cdu);
+    logger.debug("Calendar= {}", cdu.getCalendar());
 
-    CalendarDateRange cd = FeatureDatasetCapabilitiesWriter.getTimeSpan(doc);
+    CalendarDateRange cd = FeatureDatasetCapabilitiesWriter.getTimeSpan(doc);  // Looks for "TimeSpan" in doc.
     Assert.assertNotNull("CalendarDateRange", cd);
-    System.out.printf("CalendarDateRange= %s%n", cd);
+    logger.debug("CalendarDateRange= {}", cd);
 
-    LatLonRect bbox = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc);
+    LatLonRect bbox = FeatureDatasetCapabilitiesWriter.getSpatialExtent(doc);  // Looks for "LatLonBox" in doc.
     Assert.assertNotNull("bbox", bbox);
-    System.out.printf("LatLonRect=%s%n", bbox);
+    logger.debug("LatLonRect= {}", bbox);
   }
 }
