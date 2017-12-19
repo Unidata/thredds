@@ -61,7 +61,7 @@ public class TestGridClose {
   @Test
   public void testClose() throws IOException {
     File org = new File(TestDir.cdmLocalTestDataDir + "rankTest.nc");
-    File copy = tempFolder.newFile("rankTest.nc");
+    File copy = tempFolder.newFile();
     IO.copyFile(org, copy);
 
     String url = copy.getPath();

@@ -33,6 +33,8 @@
  */
 package ucar.util.prefs.ui;
 
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import ucar.util.prefs.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
@@ -43,6 +45,8 @@ import java.util.*;
 import javax.swing.*;
 
 public class TestPanel2 {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+
   //private Field.Text ef;
   //private boolean enabled = true;
   static {
@@ -53,7 +57,7 @@ public class TestPanel2 {
 
   public void setUp() {
     try {
-      xstore = XMLStore.createFromFile(TestAllPrefs.dir+"panel.xml", null);
+      xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
     } catch (java.io.IOException e) {}
     store = xstore.getPreferences();
   }

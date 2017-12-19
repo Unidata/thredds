@@ -34,6 +34,7 @@ package thredds.server.catalog;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.junit.rules.TemporaryFolder;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
@@ -56,26 +58,17 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.TestFileDirUtils;
 
 public class TestDatasetScanFilter {
+  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
+
   private static File tmpTestDataDir;
   private static MFile tmpTestDataCrDs;
   private static List<String> dataFiles_FullPathNames;
   private static List<String> allFiles_FullPathNames;
 
   @BeforeClass
-  public static void setupTestDataDir() {
-    File tmpLocalRootDataDir = new File( TestDir.temporaryLocalDataDir);
-    assertTrue(tmpLocalRootDataDir.exists());
-    assertTrue( tmpLocalRootDataDir.canRead());
-    assertTrue( tmpLocalRootDataDir.canWrite() );
-
-    tmpTestDataDir = TestFileDirUtils.createTempDirectory( "TestMFileFilter", tmpLocalRootDataDir );
+  public static void setupTestDataDir() throws IOException {
+    tmpTestDataDir = tempFolder.newFolder("TestMFileFilter");
     System.out.printf("tmpLocalRootDataDir = %s%n", tmpTestDataDir);
-    tmpTestDataDir.mkdirs();
-
-    assertNotNull(tmpTestDataDir);
-    assertTrue(tmpTestDataDir.exists());
-    assertTrue( tmpTestDataDir.canRead());
-    assertTrue( tmpTestDataDir.canWrite());
 
     AliasTranslator.addAlias("${tmpDir}", tmpTestDataDir.getPath());
     AliasTranslator.addAlias("${cdmUnitTest}", TestDir.cdmUnitTestDir);

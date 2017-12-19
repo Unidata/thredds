@@ -59,7 +59,7 @@ public class TestWriteMiscProblems {
 
   @Test
   public void testWriteBigString() throws IOException {
-    String filename = tempFolder.newFile("testWriteMisc.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
     try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false)) {
       int len = 120000;
       ArrayChar.D1 arrayCharD1 = new ArrayChar.D1(len);
@@ -84,7 +84,7 @@ public class TestWriteMiscProblems {
     final int DateStrLen_len = 19;
 
     /* enter define mode */
-    String filename = tempFolder.newFile("testCharMultidim.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
     try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, true)) {
       /* define dimensions */
       Dimension Time_dim       = ncfile.addUnlimitedDimension("Time");
@@ -123,7 +123,7 @@ public class TestWriteMiscProblems {
   @Test
   public void testRemove() throws IOException, InvalidRangeException {
     String inName = TestDir.cdmLocalTestDataDir + "testWrite.nc";
-    String outName = tempFolder.newFile("testRemove.nc").getAbsolutePath();
+    String outName = tempFolder.newFile().getAbsolutePath();
 
     DatasetUrl durl = new DatasetUrl(null, inName);
     try (NetcdfDataset ncd = NetcdfDataset.acquireDataset(durl, true, null)) {
@@ -145,7 +145,7 @@ public class TestWriteMiscProblems {
   @Test
   public void testRedefine() throws IOException, InvalidRangeException {
     String org = TestDir.cdmLocalTestDataDir + "testWriteRecord.nc";
-    String path = tempFolder.newFile("testWriteRecordRedefine.nc").getAbsolutePath();
+    String path = tempFolder.newFile().getAbsolutePath();
     File orgFile = new File(org);
     File newFile = new File(path);
     if (newFile.exists()) newFile.delete();

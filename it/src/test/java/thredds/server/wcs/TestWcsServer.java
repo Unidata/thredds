@@ -41,8 +41,10 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
@@ -71,6 +73,7 @@ import static org.junit.Assert.assertNotNull;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestWcsServer {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
   static final boolean showContent = false;
 
   private final Namespace NS_WCS = Namespace.getNamespace("wcs", "http://www.opengis.net/wcs");
@@ -189,7 +192,7 @@ public class TestWcsServer {
   public void saveGetCoverageNetcdf() throws IOException {
     String endpoint = TestWithLocalServer.withPath(dataset2 + "&request=GetCoverage&COVERAGE=sst&BBOX=10,0.01,299.99,80&TIME=2002-12-01T00:00:00Z&FORMAT=NetCDF3");
 
-    File tempFile = File.createTempFile("tmp", ".nc", new File(TestDir.temporaryLocalDataDir));
+    File tempFile = tempFolder.newFile();
     System.out.printf("write to %s%n", tempFile.getAbsolutePath());
 
     TestWithLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
@@ -199,7 +202,7 @@ public class TestWcsServer {
   public void saveGetCoverageNetcdf2() throws IOException {
     String endpoint = TestWithLocalServer.withPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=NetCDF3");
 
-    File tempFile = File.createTempFile("tmp", ".nc", new File(TestDir.temporaryLocalDataDir));
+    File tempFile = tempFolder.newFile();
     System.out.printf("write to %s%n", tempFile.getAbsolutePath());
 
     TestWithLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
@@ -209,7 +212,7 @@ public class TestWcsServer {
   public void multipleVertGeotiffFail() throws IOException {
     String endpoint = TestWithLocalServer.withPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=Geotiff");
 
-    File tempFile = File.createTempFile("tmp", ".nc", new File(TestDir.temporaryLocalDataDir));
+    File tempFile = tempFolder.newFile();
     System.out.printf("write to %s%n", tempFile.getAbsolutePath());
 
     TestWithLocalServer.getContent(endpoint, 400, null);

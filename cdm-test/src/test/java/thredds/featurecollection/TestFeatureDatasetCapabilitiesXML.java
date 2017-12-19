@@ -113,7 +113,7 @@ public class TestFeatureDatasetCapabilitiesXML {
       capWriter = new FeatureDatasetCapabilitiesWriter(fdp, path);
     }
 
-    File f = tempFolder.newFile("TestFeatureDatasetCapabilitiesXML.xml");
+    File f = tempFolder.newFile();
     try (FileOutputStream fos = new FileOutputStream(f)) {
       capWriter.getCapabilities(fos);
     }

@@ -37,6 +37,8 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import org.springframework.util.StringUtils;
 
 import ucar.unidata.util.test.TestDir;
@@ -50,6 +52,7 @@ import ucar.unidata.util.test.TestFileDirUtils;
  */
 public class TestBasicDescendantFileSource extends TestCase
 {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
   private File tmpDir;
 
   public TestBasicDescendantFileSource( String name )
@@ -57,10 +60,9 @@ public class TestBasicDescendantFileSource extends TestCase
     super( name );
   }
 
-  protected void setUp()
-  {
+  protected void setUp() throws IOException {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.addDirectory( new File( TestDir.temporaryLocalDataDir ), "TestBasicDescendantFileSource" );
+    tmpDir = tempFolder.newFolder("TestBasicDescendantFileSource");
 
     File dir1 = TestFileDirUtils.addDirectory( tmpDir, "dir1" );
     TestFileDirUtils.addFile( dir1, "file1_1" );
@@ -72,12 +74,6 @@ public class TestBasicDescendantFileSource extends TestCase
     TestFileDirUtils.addFile( dir2_2, "file2_2_1" );
     TestFileDirUtils.addDirectory( dir1_2, "dir1_2_1" );
 
-  }
-
-  protected void tearDown()
-  {
-    // Delete temp directory.
-    TestFileDirUtils.deleteDirectoryAndContent( tmpDir );
   }
 
   /**

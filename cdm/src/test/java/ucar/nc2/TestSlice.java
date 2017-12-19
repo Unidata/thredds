@@ -57,7 +57,7 @@ public class TestSlice {
 
   @Before
   public void setUp() throws IOException {
-    filePath = tempFolder.newFile("testSlice.nc").getAbsolutePath();
+    filePath = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filePath)) {
       file.addDimension(null, "t", DIM_T);

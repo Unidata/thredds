@@ -49,7 +49,7 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
         String controlFileName = 'toolsUiJnlpExtension.jnlp'
     
         and: "Create a temp file that'll be deleted at the end. It has same name as control file, but different path."
-        File tempFile = tempFolder.newFile(controlFileName)
+        File tempFile = tempFolder.newFile()
     
         and: "create a writer with the specified properties"
         ToolsUiJnlpExtensionTask.Writer writer = new ToolsUiJnlpExtensionTask.Writer()

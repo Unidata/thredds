@@ -103,7 +103,7 @@ public class TestCFPointWriter {
     File fileIn = new File(location);
     long start = System.currentTimeMillis();
 
-    File fileOut = tempFolder.newFile("TestCFPointWriter.nc");
+    File fileOut = tempFolder.newFile();
     System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n",
             fileIn.getAbsoluteFile(), fileIn.length(), fileOut.getAbsoluteFile());
 

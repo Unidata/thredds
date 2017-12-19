@@ -2,7 +2,9 @@ package ucar.nc2.dt.grid;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Range;
 import ucar.nc2.NetcdfFileWriter;
@@ -20,7 +22,7 @@ import ucar.unidata.util.test.TestDir;
  * Created by lesserwhirls on 7/28/14.
  */
 public class TestCFGridWriter2 {
-
+    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
     GridDataset gds = null;
 
     @Before
@@ -34,8 +36,8 @@ public class TestCFGridWriter2 {
     }
 
   @Test
-   public void testNullLatLonRect() {
-       String location = TestDir.temporaryLocalDataDir + "nullLatLonBB.nc";
+   public void testNullLatLonRect() throws IOException {
+       String location = tempFolder.newFile().getAbsolutePath();
 
        List<String> gridList = new ArrayList<>();
        gridList.add("Temperature_surface");
@@ -53,8 +55,6 @@ public class TestCFGridWriter2 {
 
   @Test
   public void testNullHorizSubset2() throws IOException, InvalidRangeException {
-    String location = TestDir.temporaryLocalDataDir + "nullLatLonBB.nc";
-
     boolean addLatLon = false;
     LatLonRect llbb = null;
     Range zRange = null;
@@ -64,9 +64,7 @@ public class TestCFGridWriter2 {
     int stride_time = 1;
     int horizStride = 1;
 
-    File outFile = new File(TestDir.temporaryLocalDataDir, "testNullLatLonRect2.nc");
-    if (outFile.exists())
-      outFile.delete();
+    File outFile = tempFolder.newFile();
 
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
     CFGridWriter2.writeFile(gds, gridList,

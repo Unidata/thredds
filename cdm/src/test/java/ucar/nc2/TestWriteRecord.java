@@ -97,7 +97,7 @@ public class TestWriteRecord {
 
   @Test
   public void testNC3WriteWithRecordVariables() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile("testWriteRecord.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false)) {
       // define dimensions, including unlimited
@@ -324,7 +324,7 @@ public class TestWriteRecord {
   // make an example writing records
   @Test
   public void testNC3WriteWithRecord() throws IOException {
-    String filename = tempFolder.newFile("writeRecordExample.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false)) {
       // define dimensions, including unlimited

@@ -35,8 +35,10 @@ package ucar.nc2.ncml;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
@@ -57,6 +59,7 @@ import java.io.StringReader;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestAggExistingCache {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   String ncml =
           "<?xml version='1.0' encoding='UTF-8'?>\n" +
@@ -72,7 +75,7 @@ public class TestAggExistingCache {
     String filename = "file:TestAggExistingCache.xml";
     System.out.printf("%s%n", filename);
 
-    String cacheDirName = TestDir.temporaryLocalDataDir + "testAggExistingCache/";
+    String cacheDirName = tempFolder.newFolder("testAggExistingCache").getAbsolutePath();
     System.out.printf("cacheDir=%s%n", cacheDirName);
     File cacheDir = new File(cacheDirName);
     FileUtils.deleteDirectory(cacheDir); // from commons-io
@@ -115,7 +118,7 @@ public class TestAggExistingCache {
     String filename = "file:testCacheTiming.xml";
     System.out.printf("%s%n", filename);
 
-    String cacheDirName = TestDir.temporaryLocalDataDir + "testAggExistingCache/";
+    String cacheDirName = tempFolder.newFolder("testAggExistingCache").getAbsolutePath();
     System.out.printf("cacheDir=%s%n", cacheDirName);
     File cacheDir = new File(cacheDirName);
     FileUtils.deleteDirectory(cacheDir); // from commons-io

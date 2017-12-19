@@ -33,15 +33,22 @@
  */
 package ucar.util.prefs;
 
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import ucar.nc2.util.Misc;
 
 import java.io.*;
 import java.util.prefs.Preferences;
 
 public class TestXMLStoreChains {
-  private String storeFile = TestAllPrefs.dir+"chain1.xml";
-  private String chain2File = TestAllPrefs.dir+"chain2.xml";
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+
+  private String storeFile = tempFolder.newFile().getAbsolutePath();
+  private String chain2File = tempFolder.newFile().getAbsolutePath();
   private String jarFile = "/auxdata/chain3.xml";  // file lost, disable tests
+
+  public TestXMLStoreChains() throws IOException {
+  }
 
   public void testBasic() {
     System.out.println("***TestXMLStoreChains");

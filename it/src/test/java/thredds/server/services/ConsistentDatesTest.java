@@ -208,7 +208,7 @@ public class ConsistentDatesTest {
     byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
 
     ByteArrayInputStream is = new ByteArrayInputStream(result);
-    File tmpFile = tempFolder.newFile("ConsistentDatesTest.nc");
+    File tmpFile = tempFolder.newFile();
     System.out.printf("Write file to %s%n", tmpFile.getAbsolutePath());
     IO.appendToFile(is, tmpFile.getAbsolutePath());
 

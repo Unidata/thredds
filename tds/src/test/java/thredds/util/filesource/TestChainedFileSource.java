@@ -33,11 +33,14 @@
 package thredds.util.filesource;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import junit.framework.TestCase;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.TestFileDirUtils;
 
@@ -51,6 +54,8 @@ import ucar.unidata.util.test.TestFileDirUtils;
  */
 public class TestChainedFileSource extends TestCase
 {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+
   private File tmpDir;
   private File contentDir;
   private File publicDir;
@@ -62,10 +67,9 @@ public class TestChainedFileSource extends TestCase
     super( name );
   }
 
-  protected void setUp()
-  {
+  protected void setUp() throws IOException {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.addDirectory( new File( TestDir.temporaryLocalDataDir ), "TestChainedFileSource" );
+    tmpDir = tempFolder.newFolder("TestChainedFileSource");
 
     contentDir = TestFileDirUtils.addDirectory( tmpDir, "content" );
     TestFileDirUtils.addFile( contentDir, "myCat.xml" );
@@ -84,12 +88,6 @@ public class TestChainedFileSource extends TestCase
     TestFileDirUtils.addFile( mlodeDir, "iddCat.xml" );
     TestFileDirUtils.addFile( mlodeDir, "myCat.xml" );
 
-  }
-
-  protected void tearDown()
-  {
-    // Delete temp directory.
-    TestFileDirUtils.deleteDirectoryAndContent( tmpDir );
   }
 
   /**

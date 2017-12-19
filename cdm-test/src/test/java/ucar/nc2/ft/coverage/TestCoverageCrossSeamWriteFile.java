@@ -117,7 +117,7 @@ public class TestCoverageCrossSeamWriteFile {
 
   public void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws IOException, InvalidRangeException {
     String covName = coverage.getName();
-    File tempFile = tempFolder.newFile("TestCoverageCrossSeamWriteFile.nc");
+    File tempFile = tempFolder.newFile();
     System.out.printf(" write %s to %s%n", covName, tempFile.getAbsolutePath());
 
     SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);

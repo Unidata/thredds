@@ -34,20 +34,27 @@
 package ucar.util.prefs;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import ucar.nc2.util.Misc;
 
+import java.io.IOException;
 import java.util.prefs.Preferences;
 
 public class TestXMLStore {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   static {
       System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
 
   private boolean debug = false;
-  private String storeFile = TestAllPrefs.dir+"TestXMLStore.xml";
-  private String storeFile2 = TestAllPrefs.dir+"TestXMLStore2.xml";
+  private String storeFile = tempFolder.newFile().getAbsolutePath();
+  private String storeFile2 = tempFolder.newFile().getAbsolutePath();
+
+  public TestXMLStore() throws IOException {
+  }
 
   @Before
   @Test

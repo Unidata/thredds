@@ -32,8 +32,10 @@
  */
 package ucar.nc2;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -48,6 +50,7 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestCompareFileWriter {
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
@@ -76,7 +79,7 @@ public class TestCompareFileWriter {
   @Test
   public void doOne() throws IOException {
     File fin = new File(TestDir.cdmUnitTestDir+filename);
-    File fout = new File(TestDir.temporaryLocalDataDir+fin.getName()+".nc");
+    File fout = tempFolder.newFile();
     System.out.printf("Write %s %n   to %s (%s %s)%n", fin.getAbsolutePath(), fout.getAbsolutePath(), fout.exists(), fout.getParentFile().exists());
 
     try (NetcdfFile ncfileIn = ucar.nc2.dataset.NetcdfDataset.openFile(fin.getPath(), null)) {

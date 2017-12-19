@@ -246,7 +246,7 @@ public class TestCFPointWriterMisc {
     String name = location.substring(pos + 1);
     //String prefix = (config.version == NetcdfFileWriter.Version.netcdf3) ? ".nc" : (config.version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc4c";
     if (!name.endsWith(prefix)) name = name + prefix;
-    File fileOut = tempFolder.newFile("TestCFPointWriterMisc.nc");
+    File fileOut = tempFolder.newFile();
 
     //String absIn = fileIn.getAbsolutePath();
     //absIn = StringUtil2.replace(absIn, "\\", "/");

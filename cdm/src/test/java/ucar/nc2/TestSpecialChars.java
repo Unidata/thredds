@@ -62,7 +62,7 @@ public class TestSpecialChars {
 
   @Test
   public void testWriteAndRead() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile("testSpecialChars.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter ncfilew = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       ncfilew.addGlobalAttribute("omy", trouble);
@@ -80,7 +80,7 @@ public class TestSpecialChars {
       ncfilew.writeStringData(tvar, data);
     }
 
-    String ncmlFilePath = tempFolder.newFile("testSpecialChars.ncml").getAbsolutePath();
+    String ncmlFilePath = tempFolder.newFile().getAbsolutePath();
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       String val = ncfile.findAttValueIgnoreCase(null, "omy", null);
       assert val != null;

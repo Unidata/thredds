@@ -25,7 +25,7 @@ class ToolsUiJnlpBaseTaskSpec extends Specification {
         String controlFileName = 'toolsUiJnlpBaseWithOptionals.jnlp'
         
         and: "Create a temp file that'll be deleted at the end. It has same name as control file, but different path."
-        File tempFile = tempFolder.newFile(controlFileName)
+        File tempFile = tempFolder.newFile()
         
         and: "create a writer without application argument"
         ToolsUiJnlpBaseTask.Writer writer = new ToolsUiJnlpBaseTask.Writer()
@@ -87,7 +87,7 @@ class ToolsUiJnlpBaseTaskSpec extends Specification {
     def "full Gradle build"() {
         setup: "variables"
         String taskName = 'toolsUiJnlpBase'
-        File outputFile = tempFolder.newFile('toolsUiJnlpBaseGradle.jnlp')
+        File outputFile = tempFolder.newFile()
         
         and: "declare initial content of build file"
         String buildFileContent = """

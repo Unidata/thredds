@@ -34,8 +34,10 @@ package ucar.nc2.iosp.grib;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.util.DiskCache2;
@@ -52,15 +54,11 @@ import java.io.File;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribDiskCache {
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
   public void testDiskCache() throws Exception {
-    String cacheDirName = TestDir.temporaryLocalDataDir +"TestGribDiskCache/";
-    System.out.printf("cacheDir=%s%n", cacheDirName);
-    File cacheDir = new File("cacheDirName") ;
-    FileUtils.deleteDirectory(cacheDir); // from commons-io
-    assert !cacheDir.exists();
-
+    String cacheDirName = tempFolder.newFile().getAbsolutePath();
     DiskCache2 cache = new DiskCache2(cacheDirName, false, 0, 0);
     cache.setAlwaysUseCache(true);
     Assert.assertEquals(cache.getRootDirectory(), cacheDirName);
@@ -93,8 +91,5 @@ public class TestGribDiskCache {
         assert indexFile.exists() : indexFile.getPath() +" does not exist";
       }
     }
-
-
   }
-
 }

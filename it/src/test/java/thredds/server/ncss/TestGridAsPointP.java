@@ -156,7 +156,7 @@ public class TestGridAsPointP {
   @Test
   public void writeGridAsPointNetcdf() throws JDOMException, IOException {
     String endpoint = TestWithLocalServer.withPath(ds+"?var="+varName+query+"&accept=netcdf");
-    File tempFile = tempFolder.newFile("TestGridAsPointP.nc");
+    File tempFile = tempFolder.newFile();
     System.out.printf(" write %sto %n  %s%n", endpoint, tempFile.getAbsolutePath());
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {

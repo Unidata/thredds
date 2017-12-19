@@ -63,7 +63,7 @@ public class TestCoverageAsPointFileWriter {
     @Test
     public void writeTestFile() throws IOException, InvalidRangeException {
       System.out.printf("Test Dataset %s%n", endpoint);
-      File tempFile = tempFolder.newFile("TestCoverageAsPointFileWriter.nc");
+      File tempFile = tempFolder.newFile();
       System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
 
       try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {

@@ -32,18 +32,21 @@
  */
 package ucar.nc2;
 
+import java.io.File;
 import java.io.IOException;
 
 import junit.framework.TestCase;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
-import ucar.unidata.util.test.TestDir;
 
 public class TestRedefine3 extends TestCase {
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   public void testRedefine3() throws IOException, InvalidRangeException {
-    String filename = TestDir.temporaryLocalDataDir + "testRedefine3.nc";
+    String filename = tempFolder.newFile().getAbsolutePath();
     NetcdfFileWriter ncFile = NetcdfFileWriter.createNew (filename, false);
     ncFile.setExtraHeaderBytes (64*1000);
     Dimension dim = ncFile.addDimension ("time", 100);

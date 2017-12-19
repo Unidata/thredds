@@ -74,7 +74,7 @@ public class TestCoverageFileWriterP {
   @Test
   public void writeTestFile() throws IOException, InvalidRangeException {
     System.out.printf("Test Dataset %s type %s%n", endpoint, type);
-    File tempFile = tempFolder.newFile("TestCoverageFileWriterP.nc");
+    File tempFile = tempFolder.newFile();
     System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
 
     // write the file

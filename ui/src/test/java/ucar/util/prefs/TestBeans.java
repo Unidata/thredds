@@ -35,10 +35,15 @@
 package ucar.util.prefs;
 
 import junit.framework.*;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 
 import java.awt.Rectangle;
+import java.io.File;
 
 public class TestBeans extends TestCase {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+
   static {
     System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
@@ -49,7 +54,7 @@ public class TestBeans extends TestCase {
 
   public void testDefault() {
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean = new TesterBean();
@@ -65,7 +70,7 @@ public class TestBeans extends TestCase {
     }
 
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean =  (TesterBean) prefs.getBean( "default", null);
@@ -91,7 +96,7 @@ public class TestBeans extends TestCase {
 
   public void testNonDefault() {
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean = new TesterBean(false, 9999, (short) 666, 123456789, .99f, .00001099, "nondefault");
@@ -107,7 +112,7 @@ public class TestBeans extends TestCase {
     }
 
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean =  (TesterBean) prefs.getBean( "default", null);
@@ -131,7 +136,7 @@ public class TestBeans extends TestCase {
 
   public void testChangedBean() {
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean = new TesterBean(false, 9999, (short) 666, 123456789, .99f, .00001099, "orig");
@@ -147,7 +152,7 @@ public class TestBeans extends TestCase {
     }
 
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean =  (TesterBean) prefs.getBean( "changeableBean", null);
@@ -169,7 +174,7 @@ public class TestBeans extends TestCase {
     }
 
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean =  (TesterBean) prefs.getBean( "changeableBean", null);
@@ -189,7 +194,7 @@ public class TestBeans extends TestCase {
   public void testBadChars() {
     String baddies =   "q>w<'e;&t\rl\"\nv";
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean = new TesterBean();
@@ -206,7 +211,7 @@ public class TestBeans extends TestCase {
     }
 
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       TesterBean tbean =  (TesterBean) prefs.getBean( "bad", null);
@@ -226,7 +231,7 @@ public class TestBeans extends TestCase {
 
   public void testNonBean() {
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testNBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       Rectangle r = new Rectangle(1, 2);
@@ -242,7 +247,7 @@ public class TestBeans extends TestCase {
     }
 
     try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testNBeans.xml", null);
+      XMLStore store2 = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       PreferencesExt prefs = store2.getPreferences();
 
       // just looking for exceptions
@@ -255,23 +260,4 @@ public class TestBeans extends TestCase {
       e.printStackTrace();
     }
   }
-
-
-  boolean closeD( double d1, double d2) {
-    if (Math.abs(d1) > 1.0E-7)
-      return (Math.abs(d1-d2) / d1) < 1.0E-7;
-    else
-      return (Math.abs(d1-d2)) < 1.0E-7;
-  }
-  boolean closeF( float d1, float d2) { return (Math.abs(d1-d2) / d1) < 1.0E-7; }
-
 }
-/* Change History:
-   $Log: TestBeans.java,v $
-   Revision 1.2  2002/12/24 22:04:52  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:27  john
-   start new cvs root: prefs
-
-*/
