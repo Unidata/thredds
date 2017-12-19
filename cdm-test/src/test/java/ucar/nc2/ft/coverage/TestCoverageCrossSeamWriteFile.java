@@ -3,8 +3,10 @@ package ucar.nc2.ft.coverage;
 
 import com.google.common.collect.Lists;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
@@ -111,9 +113,11 @@ public class TestCoverageCrossSeamWriteFile {
     }
   }
 
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
+
   public void writeTestFile(CoverageCollection coverageDataset, Coverage coverage, LatLonRect bbox, int[] expectedShape) throws IOException, InvalidRangeException {
     String covName = coverage.getName();
-    File tempFile = TestDir.getTempFile();
+    File tempFile = tempFolder.newFile("TestCoverageCrossSeamWriteFile.nc");
     System.out.printf(" write %s to %s%n", covName, tempFile.getAbsolutePath());
 
     SubsetParams params = new SubsetParams().set(SubsetParams.latlonBB, bbox).set(SubsetParams.timePresent, true);

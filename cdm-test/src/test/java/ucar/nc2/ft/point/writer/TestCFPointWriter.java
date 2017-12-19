@@ -1,10 +1,8 @@
 package ucar.nc2.ft.point.writer;
 
 import com.google.common.collect.Lists;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFileWriter;
@@ -99,11 +97,13 @@ public class TestCFPointWriter {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
+
   static int writeDataset(String location, FeatureType ftype, CFPointWriterConfig config, boolean show) throws IOException {
     File fileIn = new File(location);
     long start = System.currentTimeMillis();
 
-    File fileOut = TestDir.getTempFile(); // new File(TestDir.temporaryLocalDataDir, name);
+    File fileOut = tempFolder.newFile("TestCFPointWriter.nc");
     System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n",
             fileIn.getAbsoluteFile(), fileIn.length(), fileOut.getAbsoluteFile());
 

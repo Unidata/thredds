@@ -13,8 +13,10 @@ import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
@@ -175,6 +177,7 @@ public class ConsistentDatesTest {
     //assertTrue(tAxis2.getCalendarDates().equals(expectedDatesAsDateTime));
   }
 
+  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
 
   /*  pr_HRM3_2038-2070.CO.nc:
 
@@ -205,7 +208,7 @@ public class ConsistentDatesTest {
     byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
 
     ByteArrayInputStream is = new ByteArrayInputStream(result);
-    File tmpFile = TestDir.getTempFile();
+    File tmpFile = tempFolder.newFile("ConsistentDatesTest.nc");
     System.out.printf("Write file to %s%n", tmpFile.getAbsolutePath());
     IO.appendToFile(is, tmpFile.getAbsolutePath());
 

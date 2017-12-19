@@ -40,8 +40,10 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
@@ -232,6 +234,7 @@ public class TestCFPointWriterMisc {
     }
   }
 
+  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
 
   FeatureDatasetPoint rewriteDataset(FeatureDatasetPoint fdpoint, String prefix, CFPointWriterConfig config) throws IOException {
     String location = fdpoint.getLocation();
@@ -243,7 +246,7 @@ public class TestCFPointWriterMisc {
     String name = location.substring(pos + 1);
     //String prefix = (config.version == NetcdfFileWriter.Version.netcdf3) ? ".nc" : (config.version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc4c";
     if (!name.endsWith(prefix)) name = name + prefix;
-    File fileOut = TestDir.getTempFile();
+    File fileOut = tempFolder.newFile("TestCFPointWriterMisc.nc");
 
     //String absIn = fileIn.getAbsolutePath();
     //absIn = StringUtil2.replace(absIn, "\\", "/");

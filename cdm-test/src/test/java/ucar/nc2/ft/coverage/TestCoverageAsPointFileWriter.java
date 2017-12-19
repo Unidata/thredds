@@ -3,8 +3,10 @@ package ucar.nc2.ft.coverage;
 
 import com.google.common.collect.Lists;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
@@ -55,10 +57,13 @@ public class TestCoverageAsPointFileWriter {
       this.version = version;
     }
 
+
+    @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
+
     @Test
     public void writeTestFile() throws IOException, InvalidRangeException {
       System.out.printf("Test Dataset %s%n", endpoint);
-      File tempFile = TestDir.getTempFile();
+      File tempFile = tempFolder.newFile("TestCoverageAsPointFileWriter.nc");
       System.out.printf(" write to %s%n", tempFile.getAbsolutePath());
 
       try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {

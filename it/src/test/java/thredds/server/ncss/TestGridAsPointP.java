@@ -41,8 +41,10 @@ import org.jdom2.input.SAXBuilder;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import thredds.TestWithLocalServer;
@@ -149,10 +151,12 @@ public class TestGridAsPointP {
     Assert.assertEquals(dataVal, val, Misc.maxReletiveError * dataVal);
   }
 
+  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
+
   @Test
   public void writeGridAsPointNetcdf() throws JDOMException, IOException {
     String endpoint = TestWithLocalServer.withPath(ds+"?var="+varName+query+"&accept=netcdf");
-    File tempFile = TestDir.getTempFile();
+    File tempFile = tempFolder.newFile("TestGridAsPointP.nc");
     System.out.printf(" write %sto %n  %s%n", endpoint, tempFile.getAbsolutePath());
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
