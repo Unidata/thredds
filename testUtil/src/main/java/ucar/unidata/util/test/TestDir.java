@@ -81,11 +81,6 @@ public class TestDir {
    */
   public static String cdmTestDataDir = "../cdm-test/src/test/data/";
 
-  /**
-   * Temporary data directory (for writing temporary data).
-   */
-  public static String temporaryLocalDataDir = "build/test/tmp/";
-
   //////////////////////////////////////////////////////////////////////
   /**
    * Property name for the path to the Unidata test data directory,
@@ -171,13 +166,6 @@ public class TestDir {
       System.err.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
     }
 
-    File tmpDataDir = new File(temporaryLocalDataDir);
-    if ( ! tmpDataDir.exists() ) {
-      if ( ! tmpDataDir.mkdirs() ) {
-        System.err.println( "**ERROR: Could not create temporary data dir <" + tmpDataDir.getAbsolutePath() + ">." );
-      }
-    }
-
     // Initialize various server values
 
     String tts = System.getProperty(threddsTestServerPropName);
@@ -197,10 +185,6 @@ public class TestDir {
       	dap4TestServer = d4ts;
 
     AliasTranslator.addAlias("${cdmUnitTest}", cdmUnitTestDir);
-  }
-
-  static public File getTempFile() throws IOException {
-    return File.createTempFile("temp", ".tmp", new File(temporaryLocalDataDir));
   }
 
   static public void showMem(String where) {

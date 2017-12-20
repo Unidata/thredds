@@ -13,8 +13,10 @@ import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
 import org.junit.Assert;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
@@ -28,7 +30,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IO;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.*;
@@ -45,6 +46,7 @@ import static org.junit.Assert.assertEquals;
 
 @Category(NeedsCdmUnitTest.class)
 public class ConsistentDatesTest {
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
   private static final boolean show = true;
 
   private final String[] expectedDateTime = {
@@ -175,7 +177,6 @@ public class ConsistentDatesTest {
     //assertTrue(tAxis2.getCalendarDates().equals(expectedDatesAsDateTime));
   }
 
-
   /*  pr_HRM3_2038-2070.CO.nc:
 
     double time(time=95040);
@@ -205,7 +206,7 @@ public class ConsistentDatesTest {
     byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
 
     ByteArrayInputStream is = new ByteArrayInputStream(result);
-    File tmpFile = TestDir.getTempFile();
+    File tmpFile = tempFolder.newFile();
     System.out.printf("Write file to %s%n", tmpFile.getAbsolutePath());
     IO.appendToFile(is, tmpFile.getAbsolutePath());
 
@@ -224,5 +225,4 @@ public class ConsistentDatesTest {
       Assert.assertEquals(ecd, cd);
     }
   }
-
 }

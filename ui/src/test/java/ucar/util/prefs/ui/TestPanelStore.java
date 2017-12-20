@@ -33,31 +33,35 @@
  */
 package ucar.util.prefs.ui;
 
-import junit.framework.*;
-import ucar.util.prefs.*;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
-import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 
-public class TestPanelStore extends TestCase {
-  static {
-      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
-  }
+public class TestPanelStore {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
-  static private XMLStore xstore;
-  static private PreferencesExt store;
+  private static PreferencesExt store;
+  private static XMLStore xstore;
 
-  public TestPanelStore( String name) {
-    super(name);
-    try {
-      xstore = XMLStore.createFromFile(TestAllPrefs.dir+"panelStore.xml", null);
-    } catch (java.io.IOException e) {}
+  @Before
+  public void setup() throws IOException {
+    System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+
+    xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
     store = xstore.getPreferences();
+    //store = new PreferencesExt(null,"");
+    Debug.setStore( store.node("Debug"));
   }
 
+  @Test
   public void testPanelStore() {
     makePP();
   }
@@ -100,8 +104,7 @@ public class TestPanelStore extends TestCase {
     return pp2;
   }
 
-
-   /** test */
+  /** test */
   public static void main(String args[]) {
     JFrame frame = new JFrame("Test PrefPanelStore");
     frame.addWindowListener(new WindowAdapter() {
@@ -114,7 +117,7 @@ public class TestPanelStore extends TestCase {
       }
     });
 
-    TestPanelStore tp = new TestPanelStore("fake");
+    TestPanelStore tp = new TestPanelStore();
     PrefPanel pp = tp.makePP();
 
     frame.getContentPane().add(pp);
@@ -122,15 +125,4 @@ public class TestPanelStore extends TestCase {
     frame.setLocation(300, 300);
     frame.setVisible(true);
   }
-
-
 }
-/* Change History:
-   $Log: TestPanel.java,v $
-   Revision 1.2  2003/05/29 23:33:28  john
-   latest release
-
-   Revision 1.1.1.1  2002/12/20 16:40:27  john
-   start new cvs root: prefs
-
-*/

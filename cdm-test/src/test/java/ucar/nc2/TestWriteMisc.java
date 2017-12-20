@@ -34,7 +34,7 @@ public class TestWriteMisc {
 
   @Test
   public void testUnsignedAttribute() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile("testUnsignedAttribute2.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       writer.addUnlimitedDimension("time");
@@ -109,7 +109,7 @@ public class TestWriteMisc {
     System.out.println("File size  (B)  = " + (long) timeSize * latSize * lonSize * 4);
     System.out.println("File size~ (MB) = " + Math.round((long) timeSize * latSize * lonSize * 4 / Math.pow(2, 20)));
 
-    String fileName = tempFolder.newFile("bigFile2.nc").getAbsolutePath();
+    String fileName = tempFolder.newFile().getAbsolutePath();
     try (NetcdfFileWriter fileWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, fileName)) {
       fileWriter.setFill(false);
       fileWriter.setLargeFile(true);
@@ -169,7 +169,7 @@ public class TestWriteMisc {
 
   @Test
   public void testRedefine() throws IOException {
-    String filename = tempFolder.newFile("testRedefine.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       writer.addUnlimitedDimension("time");
@@ -208,7 +208,7 @@ public class TestWriteMisc {
 
   @Test
   public void testOpenExisting() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile("testOpenExisting.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       writer.addUnlimitedDimension("time");

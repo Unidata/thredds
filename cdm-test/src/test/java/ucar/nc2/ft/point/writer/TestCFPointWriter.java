@@ -1,10 +1,8 @@
 package ucar.nc2.ft.point.writer;
 
 import com.google.common.collect.Lists;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFileWriter;
@@ -24,14 +22,15 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Test CFPointWriter, write into nc, nc4 and nc4c (classic) files        C:/dev/github/thredds/cdm/target/test/tmp/stationRaggedContig.ncml.nc4
+ * Test CFPointWriter, write into nc, nc4 and nc4c (classic) files
+ * C:/dev/github/thredds/cdm/target/test/tmp/stationRaggedContig.ncml.nc4
  *
  * @author caron
  * @since 4/11/12
  */
 @RunWith(Parameterized.class)
 public class TestCFPointWriter {
-  // static public String CFpointObs_topdir = TestDir.cdmLocalTestDataDir + "point/";
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
@@ -63,14 +62,15 @@ public class TestCFPointWriter {
     CFPointWriterConfig config = new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3);
     config.recDimensionLength = countExpected;
 
-    int count = writeDataset(location, ftype, config, show);   // column oriented
+    int count = writeDataset(location, ftype, config, show, tempFolder.newFile());   // column oriented
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
 
   @Test
   public void testWrite3() throws IOException {
-    int count = writeDataset(location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), show);
+    int count = writeDataset(
+            location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), show, tempFolder.newFile());
     System.out.printf("%s netcdf3 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
@@ -80,7 +80,8 @@ public class TestCFPointWriter {
     // Ignore this test if NetCDF-4 isn't present.
     Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
 
-    int count = writeDataset(location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4_classic), show);
+    int count = writeDataset(location, ftype,
+            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4_classic), show, tempFolder.newFile());
     System.out.printf("%s netcdf4_classic count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
@@ -91,7 +92,8 @@ public class TestCFPointWriter {
     // Ignore this test if NetCDF-4 isn't present.
     Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
 
-    int count = writeDataset(location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4), show);
+    int count = writeDataset(
+            location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4), show, tempFolder.newFile());
     System.out.printf("%s netcdf4 count=%d%n", location, count);
     assert count == countExpected : "count ="+count+" expected "+countExpected;
   }
@@ -99,11 +101,11 @@ public class TestCFPointWriter {
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  static int writeDataset(String location, FeatureType ftype, CFPointWriterConfig config, boolean show) throws IOException {
+  static int writeDataset(String location, FeatureType ftype, CFPointWriterConfig config, boolean show,
+          File fileOut) throws IOException {
     File fileIn = new File(location);
     long start = System.currentTimeMillis();
 
-    File fileOut = TestDir.getTempFile(); // new File(TestDir.temporaryLocalDataDir, name);
     System.out.printf("================ TestCFPointWriter%n read %s size=%d%n write to=%s%n",
             fileIn.getAbsoluteFile(), fileIn.length(), fileOut.getAbsoluteFile());
 
@@ -145,7 +147,6 @@ public class TestCFPointWriter {
       }
       return count;
     }
-
   }
 
   static final boolean failOnDataVarsDifferent = true;
@@ -164,7 +165,6 @@ public class TestCFPointWriter {
       System.out.printf("Data Vars NOT OK%n %s%n", f);
       if (failOnDataVarsDifferent) assert false;
     }
-
   }
 
   static List<String> getNames(List<VariableSimpleIF> vars, List<String> skip) {
@@ -178,5 +178,4 @@ public class TestCFPointWriter {
     System.out.printf("%n");
     return result;
   }
-
 }

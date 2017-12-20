@@ -8,10 +8,8 @@ import java.util.List;
 
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.jdom2.Element;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.nc2.NetcdfFile;
@@ -32,6 +30,7 @@ import ucar.unidata.util.StringUtil2;
  */
 @RunWith(Parameterized.class)
 public class TestNcmlWriteAndCompareLocal {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Before
   public void setLibrary() {
@@ -39,10 +38,6 @@ public class TestNcmlWriteAndCompareLocal {
     // We're using @Before because it shows these tests as being ignored.
     // @BeforeClass shows them as *non-existent*, which is not what we want.
     Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
-
-    // make sure writeDirs exists
-    File writeDir = new File(TestDir.temporaryLocalDataDir);
-    writeDir.mkdirs();
   }
 
   @Parameterized.Parameters(name="{0}")
@@ -104,9 +99,9 @@ public class TestNcmlWriteAndCompareLocal {
 
     // create a file and write it out
     int pos = location.lastIndexOf("/");
-    String filenameTmp = location.substring(pos + 1);
-    String ncmlOut = TestDir.temporaryLocalDataDir + filenameTmp + ".ncml";
+    String ncmlOut = tempFolder.newFile().getAbsolutePath();
     if (showFiles) System.out.println(" output filename= " + ncmlOut);
+
     try {
       NcMLWriter ncmlWriter = new NcMLWriter();
       Element netcdfElement;

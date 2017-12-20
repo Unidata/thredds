@@ -49,7 +49,7 @@ public class TestWriteFill {
 
   @Test
   public void testCreateWithFill() throws IOException {
-    String filename = tempFolder.newFile("testWriteFill.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       // define dimensions

@@ -34,12 +34,16 @@
 
 package ucar.util.prefs;
 
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+
 import java.beans.*;
 import java.io.*;
 
 
 /** test  XMLDecoder */
 public class TestDecoder {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   public static void main(String args[]) {
     //System.getProperty("ucar.util.prefs.PreferencesExtFactory");
@@ -64,7 +68,7 @@ public class TestDecoder {
   void writeDirect(int nbeans) {
     XMLEncoder en = null;
     try {
-      en = new XMLEncoder( new BufferedOutputStream( new FileOutputStream(TestAllPrefs.dir+"testDecoder.xml")));
+      en = new XMLEncoder( new BufferedOutputStream( new FileOutputStream(tempFolder.newFile())));
     } catch (IOException e) {
       System.out.println("XMLEncoder Creation failed "+e);
       System.exit(1);
@@ -85,7 +89,7 @@ public class TestDecoder {
   void readDirect(int nbeans) {
     XMLDecoder en = null;
     try {
-      en = new XMLDecoder( new BufferedInputStream( new FileInputStream(TestAllPrefs.dir+"testBeanObject2.xml")), null,
+      en = new XMLDecoder( new BufferedInputStream( new FileInputStream(tempFolder.newFile())), null,
         new ExceptionListener() {
           public void exceptionThrown(Exception e) {
             if (show) System.out.println("***XMLStore.read() got Exception= "+e.getClass().getName()+" "+e.getMessage());

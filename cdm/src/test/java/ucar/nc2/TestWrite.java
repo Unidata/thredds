@@ -54,7 +54,7 @@ public class TestWrite {
 
   @BeforeClass
   public static void setupClass() throws IOException {
-    writerLocation = tempFolder.newFile("testWrite2.nc").getAbsolutePath();
+    writerLocation = tempFolder.newFile().getAbsolutePath();
   }
 
   // This test must run before testNC3ReadExisting and testNC3WriteExisting, as those tests depend on the file that
@@ -633,7 +633,7 @@ public class TestWrite {
 
   @Test
   public void testWriteRecordOneAtaTime() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile("testWriteRecord2.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       // define dimensions, including unlimited
@@ -697,7 +697,7 @@ public class TestWrite {
 
   @Test
   public void testNC3WriteOld() throws IOException {
-    String filename = tempFolder.newFile("testWrite.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       // define dimensions
@@ -1041,7 +1041,7 @@ public class TestWrite {
   // fix for bug introduced 2/9/10, reported by Christian Ward-Garrison cwardgar@usgs.gov
   @Test
   public void testRecordSizeBug() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile("foo.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
     int size = 10;
     Array timeDataAll = Array.factory(DataType.INT, new int[]{size});
 

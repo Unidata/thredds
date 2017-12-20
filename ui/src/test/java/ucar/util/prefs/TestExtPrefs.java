@@ -34,10 +34,15 @@
 
 package ucar.util.prefs;
 
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+
 import java.util.prefs.*;
 import java.io.*;
 
 public class TestExtPrefs  {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+
   static {
       System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
@@ -56,7 +61,7 @@ public class TestExtPrefs  {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"extPrefs2.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);

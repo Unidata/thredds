@@ -43,8 +43,10 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -74,6 +76,7 @@ import ucar.unidata.util.test.TestDir;
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml"}, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class GridCoverageSubsettingTest {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Autowired
   private WebApplicationContext wac;
@@ -163,7 +166,7 @@ public class GridCoverageSubsettingTest {
     assertEquals(200, mvc.getResponse().getStatus());
 
     // Save the result
-    String fileOut = TestDir.temporaryLocalDataDir + "GridCoverageSubsettingTest" + count.incrementAndGet() + ".nc";
+    String fileOut = tempFolder.newFile().getAbsolutePath();
     System.out.printf("Write to %s%n", fileOut);
     try (FileOutputStream fout = new FileOutputStream(fileOut)) {
       ByteArrayInputStream bis = new ByteArrayInputStream(mvc.getResponse().getContentAsByteArray());

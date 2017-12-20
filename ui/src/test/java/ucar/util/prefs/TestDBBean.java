@@ -34,6 +34,9 @@
 
 package ucar.util.prefs;
 
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
+
 import java.beans.*;
 import java.io.*;
 import java.util.*;
@@ -41,6 +44,8 @@ import java.util.*;
 
 /** simulate a bean that might look like a DB row, say 20 fields */
 public class TestDBBean {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+
   static {
     System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
@@ -106,7 +111,7 @@ public class TestDBBean {
   void writeDirect(int nbeans) {
     XMLEncoder en = null;
     try {
-      en = new XMLEncoder( new BufferedOutputStream( new FileOutputStream(TestAllPrefs.dir+"dbBeanDirect.xml")));
+      en = new XMLEncoder( new BufferedOutputStream( new FileOutputStream(tempFolder.newFile())));
     } catch (IOException e) {
       System.out.println("XMLEncoder Creation failed "+e);
       System.exit(1);
@@ -127,7 +132,7 @@ public class TestDBBean {
   void readDirect(int nbeans) {
     XMLDecoder en = null;
     try {
-      en = new XMLDecoder( new BufferedInputStream( new FileInputStream(TestAllPrefs.dir+"dbBeanDirect.xml")));
+      en = new XMLDecoder(new BufferedInputStream(new FileInputStream(tempFolder.newFile())));
     } catch (IOException e) {
       System.out.println("XMLDecoder Creation failed "+e);
       System.exit(1);
@@ -148,7 +153,7 @@ public class TestDBBean {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"dbBean.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);
@@ -172,7 +177,7 @@ public class TestDBBean {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"dbBean.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);
@@ -190,7 +195,7 @@ public class TestDBBean {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"dbBeanCollection.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);
@@ -216,7 +221,7 @@ public class TestDBBean {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"dbBeanCollection.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);
@@ -235,7 +240,7 @@ public class TestDBBean {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"dbBeanObject.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);
@@ -259,7 +264,7 @@ public class TestDBBean {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"dbBeanObject.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);
@@ -277,7 +282,7 @@ public class TestDBBean {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"dbBeanNode.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);
@@ -311,7 +316,7 @@ public class TestDBBean {
     XMLStore store = null;
     PreferencesExt userRoot = null;
     try {
-      store = XMLStore.createFromFile(TestAllPrefs.dir+"dbBeanNode.xml", null);
+      store = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
       userRoot = store.getPreferences();
     } catch (IOException e) {
       System.out.println("XMLStore Creation failed "+e);

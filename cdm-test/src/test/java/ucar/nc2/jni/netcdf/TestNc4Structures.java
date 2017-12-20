@@ -70,14 +70,14 @@ public class TestNc4Structures {
   public void writeStructureFromNids() throws IOException, InvalidRangeException {
     //String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/KBMX_SDUS64_NTVBMX_201104272341";
     String datasetIn = TestDir.cdmUnitTestDir  + "formats/nexrad/level3/NVW_20041117_1657";
-    String datasetOut = tempFolder.newFile("TestNc4StructuresFromNids.nc4").getAbsolutePath();
+    String datasetOut = tempFolder.newFile().getAbsolutePath();
     writeStructure(datasetIn, datasetOut);
   }
 
   @Test
   public void writeStructure() throws IOException, InvalidRangeException {
     String datasetIn = TestDir.cdmUnitTestDir  + "formats/netcdf4/compound/tst_compounds.nc4";
-    String datasetOut = tempFolder.newFile("TestNc4Structures.nc4").getAbsolutePath();
+    String datasetOut = tempFolder.newFile().getAbsolutePath();
     writeStructure(datasetIn, datasetOut);
   }
 

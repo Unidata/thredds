@@ -51,7 +51,7 @@ public class TestWriteRecordStructure {
 
   @Test
   public void testWriteRecordStructure() throws IOException, InvalidRangeException {
-    String fileName = tempFolder.newFile("testWriteRecordStructure.nc").getAbsolutePath();
+    String fileName = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter writeableFile = NetcdfFileWriter.createNew(fileName, true)) {
       // define dimensions, including unlimited

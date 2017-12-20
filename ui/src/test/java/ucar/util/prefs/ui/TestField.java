@@ -33,13 +33,16 @@
  */
 package ucar.util.prefs.ui;
 
-import ucar.util.prefs.*;
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
 import java.beans.*;
 
 public class TestField {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+
   static {
       System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
@@ -50,7 +53,7 @@ public class TestField {
 
   public void setUp() {
     try {
-      xstore = XMLStore.createFromFile(TestAllPrefs.dir+"testField.xml", null);
+      xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
     } catch (java.io.IOException e) {}
     store = xstore.getPreferences();
   }

@@ -34,9 +34,12 @@
 
 package ucar.util.prefs;
 
-import junit.framework.*;
-import java.beans.*;
-import java.io.*;
+import java.beans.ExceptionListener;
+import java.beans.XMLEncoder;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class TesterBean {
     private boolean b = true;
@@ -105,12 +108,3 @@ public class TesterBean {
     }
 
 }
-/* Change History:
-   $Log: TesterBean.java,v $
-   Revision 1.2  2002/12/24 22:04:54  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:27  john
-   start new cvs root: prefs
-
-*/

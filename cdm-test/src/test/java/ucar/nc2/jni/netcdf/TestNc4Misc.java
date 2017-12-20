@@ -27,8 +27,7 @@ import java.util.List;
  * @since 7/30/13
  */
 public class TestNc4Misc {
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Before
   public void setLibrary() {
@@ -40,7 +39,7 @@ public class TestNc4Misc {
 
   @Test
   public void testUnlimitedDimension() throws IOException, InvalidRangeException {
-    String location = tempFolder.newFile("testNc4UnlimitedDim.nc").getAbsolutePath();
+    String location = tempFolder.newFile().getAbsolutePath();
     File f = new File(location);
     assert f.delete();
 
@@ -78,8 +77,7 @@ public class TestNc4Misc {
   @Test
   public void testChunkStandard() throws IOException, InvalidRangeException {
     // define the file
-    String location = tempFolder.newFile("testSizeWriting2.nc4").getAbsolutePath();
-    // String location = "C:/temp/testSizeWriting.nc4";
+    String location = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFileWriter dataFile = null;
 
@@ -150,8 +148,7 @@ public class TestNc4Misc {
   @Test
   public void testChunkFromAttribute() throws IOException, InvalidRangeException {
     // define the file
-    String location = tempFolder.newFile("testSizeWriting2.nc4").getAbsolutePath();
-    // String location = "C:/temp/testSizeWriting.nc4";
+    String location = tempFolder.newFile().getAbsolutePath();
 
     NetcdfFileWriter dataFile = null;
 
@@ -257,7 +254,7 @@ public class TestNc4Misc {
        * so that we can switch between define mode and write mode without
        * copying the file (this may work or may not).
        */
-      String fileName = TestDir.temporaryLocalDataDir + "test.nc";
+      String fileName = tempFolder.newFile().getAbsolutePath();
       NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, fileName);
       writer.setExtraHeaderBytes(64 * 1024);
 
@@ -294,7 +291,7 @@ public class TestNc4Misc {
   @Test
   public void testAttributeChangeNc4() throws IOException {
     Path source = Paths.get(TestDir.cdmLocalTestDataDir + "dataset/testRename.nc4");
-    Path target = Paths.get(TestDir.temporaryLocalDataDir + "testRename.nc4");
+    Path target = tempFolder.newFile().toPath();
     Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
     doRename(target.toString());
   }
@@ -302,7 +299,7 @@ public class TestNc4Misc {
   @Test
   public void testAttributeChangeNc3() throws IOException {
     Path source = Paths.get(TestDir.cdmLocalTestDataDir + "dataset/testRename.nc3");
-    Path target = Paths.get(TestDir.temporaryLocalDataDir + "testRename.nc3");
+    Path target = tempFolder.newFile().toPath();
     Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
     doRename(target.toString());
   }

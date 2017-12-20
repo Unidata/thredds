@@ -32,8 +32,10 @@
  */
 package ucar.nc2.stream;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import ucar.ma2.InvalidRangeException;
@@ -57,6 +59,7 @@ import java.util.List;
 @Category(NeedsCdmUnitTest.class)
 @RunWith(Parameterized.class)
 public class TestStreamWriter {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
@@ -80,7 +83,7 @@ public class TestStreamWriter {
     NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
-    String fileOut = TestDir.temporaryLocalDataDir + "/testStream.nc";
+    String fileOut = tempFolder.newFile().getAbsolutePath();
     N3outputStreamWriter.writeFromFile(fileIn, fileOut);
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
@@ -99,7 +102,7 @@ public class TestStreamWriter {
     NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
-    String fileOut = TestDir.temporaryLocalDataDir + "/testChannel.nc";
+    String fileOut = tempFolder.newFile().getAbsolutePath();
     N3channelWriter.writeFromFile(fileIn, fileOut);
     long took = System.currentTimeMillis() - start;
     System.out.println("N3streamWriter took " + took + " msecs");
@@ -118,7 +121,7 @@ public class TestStreamWriter {
     NetcdfFile fileIn = NetcdfFile.open(endpoint);
 
     long start = System.currentTimeMillis();
-    String fileOut = TestDir.temporaryLocalDataDir + "/testStream.nc";
+    String fileOut = tempFolder.newFile().getAbsolutePath();
     //   public FileWriter2(NetcdfFile fileIn, String fileOutName, NetcdfFileWriter.Version version, Nc4Chunking chunker) throws IOException {
     FileWriter2 writer = new FileWriter2(fileIn, fileOut, NetcdfFileWriter.Version.netcdf3, null);
     NetcdfFile ncout2 = writer.write();

@@ -33,7 +33,9 @@
 package thredds.client.catalog;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.unidata.util.test.TestDir;
 
@@ -41,6 +43,7 @@ import java.io.*;
 import java.util.*;
 
 public class TestWrite {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
   static boolean debugCompare = true, debugCompareList = true;
 
   @Test
@@ -49,14 +52,7 @@ public class TestWrite {
     Catalog cat = TestClientCatalog.open(filename);
     assert cat != null;
 
-    // create a file and write it out
-    File tmpDir = new File(TestDir.temporaryLocalDataDir);
-    if (!tmpDir.exists()) {
-        boolean ret = tmpDir.mkdirs();
-        if (!ret) System.out.println("Error creating directory");
-    }
-
-    File tmpFile = new File(tmpDir, filename + ".tmp");
+    File tmpFile = tempFolder.newFile();
     System.out.println(" output filename= "+tmpFile.getPath());
 
     try {

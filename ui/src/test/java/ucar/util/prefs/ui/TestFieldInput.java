@@ -33,11 +33,14 @@
  */
 package ucar.util.prefs.ui;
 
+import org.junit.Rule;
+import org.junit.rules.TemporaryFolder;
 import ucar.util.prefs.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
+import java.io.File;
 import javax.swing.*;
 
 import ucar.util.prefs.PreferencesExt;
@@ -45,6 +48,8 @@ import ucar.util.prefs.XMLStore;
 
 
 public class TestFieldInput {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+
   private static XMLStore xstore;
   private static PreferencesExt store;
 
@@ -52,7 +57,7 @@ public class TestFieldInput {
 
   public void setUp() {
     try {
-      xstore = XMLStore.createFromFile(TestAllPrefs.dir+"testField.xml", null);
+      xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
     } catch (java.io.IOException e) {}
     store = xstore.getPreferences();
   }
@@ -126,7 +131,7 @@ public class TestFieldInput {
 
   public static void main(String[] args) {
     try {
-      xstore = XMLStore.createFromFile(TestAllPrefs.dir+"TestFieldInput.xml", null);
+      xstore = XMLStore.createFromFile(File.createTempFile("foo", "bar").getAbsolutePath(), null);
     } catch (java.io.IOException e) {}
     store = xstore.getPreferences();
 

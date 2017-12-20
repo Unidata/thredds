@@ -47,7 +47,7 @@ public class TestScaleOffset {
 
   @Test
   public void testWrite() throws Exception {
-    String filename = tempFolder.newFile("scaleOffset.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
     ArrayDouble unpacked;
     MAMath.ScaleOffset so;
     Array packed;

@@ -34,244 +34,166 @@
 
 package ucar.util.prefs;
 
-import junit.framework.*;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import java.awt.Rectangle;
+import java.awt.*;
+import java.io.IOException;
 
-public class TestBeans extends TestCase {
+public class TestBeans {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  String prefsFilename;
+
   static {
     System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
 
-  public TestBeans( String name) {
-    super(name);
+  @Before
+  public void setup() throws IOException {
+    prefsFilename = tempFolder.newFile().getAbsolutePath();
   }
 
-  public void testDefault() {
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
+  @Test
+  public void testDefault() throws IOException {
+    XMLStore store1 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs1 = store1.getPreferences();
 
-      TesterBean tbean = new TesterBean();
-      prefs.putBean( "default", tbean);
-      prefs.putBeanObject( "defaultObject", tbean);
+    TesterBean tbean1 = new TesterBean();
+    prefs1.putBean( "default", tbean1);
+    prefs1.putBeanObject( "defaultObject", tbean1);
 
-      store2.save();
+    store1.save();
 
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
 
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
+    XMLStore store2 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs = store2.getPreferences();
 
-      TesterBean tbean =  (TesterBean) prefs.getBean( "default", null);
-      TesterBean tbeano =  (TesterBean) prefs.getBean( "defaultObject", null);
-      assert tbean != null;
-      assert tbeano != null;
+    TesterBean tbean =  (TesterBean) prefs.getBean( "default", null);
+    TesterBean tbeano =  (TesterBean) prefs.getBean( "defaultObject", null);
+    assert tbean != null;
+    assert tbeano != null;
 
-      assert tbean.getB() == tbeano.getB() : "boolean failed";
-      assert tbean.getByte() == tbeano.getByte() : "byte failed";
-      assert tbean.getShort() == tbeano.getShort() : "short failed";
-      assert tbean.getI() == tbeano.getI() : "int failed";
-      assert tbean.getL() == tbeano.getL() : "long failed";
-      assert tbean.getF() == tbeano.getF() : "float failed";
-      assert tbean.getD() == tbeano.getD() : "double failed";
-      assert tbean.getS().equals(tbeano.getS()) : "string failed";
-
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
+    assert tbean.getB() == tbeano.getB() : "boolean failed";
+    assert tbean.getByte() == tbeano.getByte() : "byte failed";
+    assert tbean.getShort() == tbeano.getShort() : "short failed";
+    assert tbean.getI() == tbeano.getI() : "int failed";
+    assert tbean.getL() == tbeano.getL() : "long failed";
+    assert tbean.getF() == tbeano.getF() : "float failed";
+    assert tbean.getD() == tbeano.getD() : "double failed";
+    assert tbean.getS().equals(tbeano.getS()) : "string failed";
   }
 
-  public void testNonDefault() {
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
+  @Test
+  public void testNonDefault() throws IOException {
+    XMLStore store1 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs1 = store1.getPreferences();
 
-      TesterBean tbean = new TesterBean(false, 9999, (short) 666, 123456789, .99f, .00001099, "nondefault");
-      prefs.putBean( "nondefault", tbean);
-      prefs.putBeanObject( "nondefaultObject", tbean);
+    TesterBean tbean1 = new TesterBean(false, 9999, (short) 666, 123456789, .99f, .00001099, "nondefault");
+    prefs1.putBean( "nondefault", tbean1);
+    prefs1.putBeanObject( "nondefaultObject", tbean1);
 
-      store2.save();
+    store1.save();
 
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
 
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
+    XMLStore store2 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs = store2.getPreferences();
 
-      TesterBean tbean =  (TesterBean) prefs.getBean( "default", null);
-      TesterBean tbeano =  (TesterBean) prefs.getBean( "defaultObject", null);
+    TesterBean tbean =  (TesterBean) prefs.getBean( "nondefault", null);
+    TesterBean tbeano =  (TesterBean) prefs.getBean( "nondefaultObject", null);
 
-      assert tbean.getB() == tbeano.getB() : "boolean failed";
-      assert tbean.getByte() == tbeano.getByte() : "byte failed";
-      assert tbean.getShort() == tbeano.getShort() : "short failed";
-      assert tbean.getI() == tbeano.getI() : "int failed";
-      assert tbean.getL() == tbeano.getL() : "long failed";
-      assert tbean.getF() == tbeano.getF() : "float failed";
-      assert tbean.getD() == tbeano.getD() : "double failed";
-      assert tbean.getS().equals(tbeano.getS()) : "string failed";
-
-    } catch (Exception e) {
-      System.out.println(e);
-      e.printStackTrace();
-      assert false;
-    }
+    assert tbean.getB() == tbeano.getB() : "boolean failed";
+    assert tbean.getByte() == tbeano.getByte() : "byte failed";
+    assert tbean.getShort() == tbeano.getShort() : "short failed";
+    assert tbean.getI() == tbeano.getI() : "int failed";
+    assert tbean.getL() == tbeano.getL() : "long failed";
+    assert tbean.getF() == tbeano.getF() : "float failed";
+    assert tbean.getD() == tbeano.getD() : "double failed";
+    assert tbean.getS().equals(tbeano.getS()) : "string failed";
   }
 
-  public void testChangedBean() {
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
+  @Test
+  public void testChangedBean() throws IOException {
+    XMLStore store1 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs1 = store1.getPreferences();
 
-      TesterBean tbean = new TesterBean(false, 9999, (short) 666, 123456789, .99f, .00001099, "orig");
-      prefs.putBean( "changeableBean", tbean);
-      prefs.putBeanObject( "changeableBeanObject", tbean);
+    TesterBean tbean1 = new TesterBean(false, 9999, (short) 666, 123456789, .99f, .00001099, "orig");
+    prefs1.putBean( "changeableBean", tbean1);
+    prefs1.putBeanObject( "changeableBeanObject", tbean1);
 
-      store2.save();
+    store1.save();
 
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
 
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
+    XMLStore store2 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs2 = store2.getPreferences();
 
-      TesterBean tbean =  (TesterBean) prefs.getBean( "changeableBean", null);
-      TesterBean tbeano =  (TesterBean) prefs.getBean( "changeableBeanObject", null);
+    TesterBean tbean2 =  (TesterBean) prefs2.getBean( "changeableBean", null);
+    TesterBean tbeano2 =  (TesterBean) prefs2.getBean( "changeableBeanObject", null);
 
-      assert tbean.getS().equals("orig");
-      assert tbeano.getS().equals("orig");
+    assert tbean2.getS().equals("orig");
+    assert tbeano2.getS().equals("orig");
 
-      // change the objects
-      tbean.setS("changed");
-      tbeano.setS("changedo");
+    // change the objects
+    tbean2.setS("changed");
+    tbeano2.setS("changedo");
 
-      // note putBean not called
-      store2.save();
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
+    // note putBean not called
+    store2.save();
 
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
 
-      TesterBean tbean =  (TesterBean) prefs.getBean( "changeableBean", null);
-      TesterBean tbeano =  (TesterBean) prefs.getBean( "changeableBeanObject", null);
+    XMLStore store3 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs = store3.getPreferences();
 
-      assert tbean.getS().equals("changed");
-      assert tbeano.getS().equals("changedo");
+    TesterBean tbean =  (TesterBean) prefs.getBean( "changeableBean", null);
+    TesterBean tbeano =  (TesterBean) prefs.getBean( "changeableBeanObject", null);
 
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
-
+    assert tbean.getS().equals("changed");
+    assert tbeano.getS().equals("changedo");
   }
 
-  public void testBadChars() {
+  @Test
+  public void testBadChars() throws IOException {
     String baddies =   "q>w<'e;&t\rl\"\nv";
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
 
-      TesterBean tbean = new TesterBean();
-      tbean.setS( baddies);
-      prefs.putBean( "bad", tbean);
-      prefs.putBeanObject( "bado", tbean);
+    XMLStore store1 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs1 = store1.getPreferences();
 
-      store2.save();
+    TesterBean tbean1 = new TesterBean();
+    tbean1.setS( baddies);
+    prefs1.putBean( "bad", tbean1);
+    prefs1.putBeanObject( "bado", tbean1);
 
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
+    store1.save();
 
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
 
-      TesterBean tbean =  (TesterBean) prefs.getBean( "bad", null);
-      TesterBean tbeano =  (TesterBean) prefs.getBean( "bado", null);
+    XMLStore store2 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs = store2.getPreferences();
 
-      assert tbean.getS().equals(baddies) : "bean encoding failed" + tbean.getS();
-      assert tbeano.getS().equals(baddies) : "beanObject encoding failed" + tbeano.getS();
+    TesterBean tbean =  (TesterBean) prefs.getBean( "bad", null);
+    TesterBean tbeano =  (TesterBean) prefs.getBean( "bado", null);
 
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
+    assert tbean.getS().equals(baddies) : "bean encoding failed" + tbean.getS();
+    assert tbeano.getS().equals(baddies) : "beanObject encoding failed" + tbeano.getS();
   }
 
+  @Test
+  public void testNonBean() throws IOException {
+    XMLStore store1 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs1 = store1.getPreferences();
+
+    Rectangle r1 = new Rectangle(1, 2);
+    prefs1.putBean( "rect", r1);
+    prefs1.putBeanObject( "recto", r1);
+
+    store1.save();
 
 
-  public void testNonBean() {
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testNBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
+    XMLStore store2 = XMLStore.createFromFile(prefsFilename, null);
+    PreferencesExt prefs = store2.getPreferences();
 
-      Rectangle r = new Rectangle(1, 2);
-      prefs.putBean( "rect", r);
-      prefs.putBeanObject( "recto", r);
-
-      store2.save();
-
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
-
-    try {
-      XMLStore store2 = XMLStore.createFromFile(TestAllPrefs.dir+"testNBeans.xml", null);
-      PreferencesExt prefs = store2.getPreferences();
-
-      // just looking for exceptions
-      Rectangle r =  (Rectangle) prefs.getBean( "rect", null);
-      Rectangle ro =  (Rectangle) prefs.getBean( "recto", null);
-
-    } catch (Exception e) {
-      assert false;
-      System.out.println(e);
-      e.printStackTrace();
-    }
+    // just looking for exceptions
+    Rectangle r =  (Rectangle) prefs.getBean( "rect", null);
+    Rectangle ro =  (Rectangle) prefs.getBean( "recto", null);
   }
-
-
-  boolean closeD( double d1, double d2) {
-    if (Math.abs(d1) > 1.0E-7)
-      return (Math.abs(d1-d2) / d1) < 1.0E-7;
-    else
-      return (Math.abs(d1-d2)) < 1.0E-7;
-  }
-  boolean closeF( float d1, float d2) { return (Math.abs(d1-d2) / d1) < 1.0E-7; }
-
 }
-/* Change History:
-   $Log: TestBeans.java,v $
-   Revision 1.2  2002/12/24 22:04:52  john
-   add bean, beanObject methods
-
-   Revision 1.1.1.1  2002/12/20 16:40:27  john
-   start new cvs root: prefs
-
-*/

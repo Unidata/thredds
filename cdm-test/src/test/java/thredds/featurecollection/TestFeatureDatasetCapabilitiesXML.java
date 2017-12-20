@@ -75,8 +75,7 @@ import java.util.List;
 public class TestFeatureDatasetCapabilitiesXML {
   private static final Logger logger = LoggerFactory.getLogger(TestFeatureDatasetCapabilitiesXML.class);
 
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -114,7 +113,7 @@ public class TestFeatureDatasetCapabilitiesXML {
       capWriter = new FeatureDatasetCapabilitiesWriter(fdp, path);
     }
 
-    File f = tempFolder.newFile("TestFeatureDatasetCapabilitiesXML.xml");
+    File f = tempFolder.newFile();
     try (FileOutputStream fos = new FileOutputStream(f)) {
       capWriter.getCapabilities(fos);
     }

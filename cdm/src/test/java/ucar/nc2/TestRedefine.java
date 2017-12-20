@@ -49,7 +49,7 @@ public class TestRedefine {
 
   @Test
   public void testRedefine() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile("testRedefine.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter ncWriter = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       ncWriter.addGlobalAttribute("Conventions", "globulate");
@@ -160,7 +160,7 @@ public class TestRedefine {
 
   @Test
   public void testRewriteHeader3() throws IOException, InvalidRangeException {
-    String filename = tempFolder.newFile("testRedefine2.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {
       file.addGlobalAttribute("att8", "1234567890");
@@ -180,7 +180,7 @@ public class TestRedefine {
 
   @Test
   public void testRedefineClose() throws IOException {
-    String filename = tempFolder.newFile("testRedefine.nc").getAbsolutePath();
+    String filename = tempFolder.newFile().getAbsolutePath();
 
     // Create a new file
     try (NetcdfFileWriter file = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, filename)) {

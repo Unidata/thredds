@@ -32,19 +32,19 @@
  */
 package thredds.util.filesource;
 
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.springframework.util.StringUtils;
+import ucar.unidata.util.test.TestFileDirUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.TestCase;
-
-import org.springframework.util.StringUtils;
-
-import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.TestFileDirUtils;
-
-
+import static org.junit.Assert.*;
 
 /**
  * _more_
@@ -52,19 +52,15 @@ import ucar.unidata.util.test.TestFileDirUtils;
  * @author edavis
  * @since 4.0
  */
-public class TestBasicWithExclusionsDescendantFileSource extends TestCase
+public class TestBasicWithExclusionsDescendantFileSource
 {
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
   private File tmpDir;
 
-  public TestBasicWithExclusionsDescendantFileSource( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp()
-  {
+  @Before
+  public void setUp() throws IOException {
     // Create a data directory and some data files.
-    tmpDir = TestFileDirUtils.addDirectory( new File( TestDir.temporaryLocalDataDir ), "TestBasicWithExclusionsDescendantFileSource" );
+    tmpDir = tempFolder.newFolder();
 
     File dir1 = TestFileDirUtils.addDirectory( tmpDir, "dir1" );
     TestFileDirUtils.addFile( dir1, "file1_1" );
@@ -78,15 +74,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
 
   }
 
-  protected void tearDown()
-  {
-    // Delete temp directory.
-    TestFileDirUtils.deleteDirectoryAndContent( tmpDir );
-  }
-
-  /**
-   * Test ...
-   */
+  @Test
   public void testNewWithNullPath()
   {
     List<String> exclusions = Collections.singletonList( "dir2" );
@@ -110,6 +98,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for null path.");
   }
 
+  @Test
   public void testNewGivenNonexistentDirectory()
   {
     File nonExistDir = new File( tmpDir, "nonExistDir" );
@@ -133,6 +122,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for non-existent directory." );
   }
 
+  @Test
   public void testNewGivenNondirectoryFile()
   {
     File notDirFile = null;
@@ -168,6 +158,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for non-directory root path." );
   }
 
+  @Test
   public void testNewWithNullExclusions()
   {
     try
@@ -188,6 +179,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for null exclusions.");
   }
 
+  @Test
   public void testNewWithEmptyExclusions()
   {
     List<String> exclusions = Collections.emptyList();
@@ -209,6 +201,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for empty exclusions.");
   }
 
+  @Test
   public void testNewWithNonexistentExclusionsDir()
   {
     List<String> exclusions = Collections.singletonList( "dir5" );
@@ -230,6 +223,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for non-existent exclusion directory.");
   }
 
+  @Test
   public void testNormalizedPath()
   {
     List<String> exclusions = Collections.singletonList( "dir2" );
@@ -247,6 +241,7 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
                   bfl.getRootDirectoryPath() );
   }
 
+  @Test
   public void testBasics()
   {
     List<String> exclusions = Collections.singletonList( "dir2" );
@@ -295,6 +290,5 @@ public class TestBasicWithExclusionsDescendantFileSource extends TestCase
     assertNull( bfl.getRelativePath( new File( tmpDir, "dir2/dir2_1") )); // excluded
     assertNull( bfl.getRelativePath( new File( tmpDir, "dir2/./dir2_1") )); // excluded
     assertNull( bfl.getRelativePath( new File( tmpDir, "dir2/./dir2_1").getPath() )); // excluded
-
   }
 }

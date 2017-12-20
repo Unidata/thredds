@@ -33,8 +33,10 @@
 
 package ucar.nc2.geotiff;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.junit.runners.Parameterized;
@@ -60,6 +62,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGeoTiffWriter2 {
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
   static public String topdir = TestDir.cdmUnitTestDir;
 
   @Parameterized.Parameters(name = "{0}")
@@ -85,8 +88,7 @@ public class TestGeoTiffWriter2 {
 
   @Test
   public void testWrite() throws IOException {
-    File f = new File(filename);
-    String fileOut = TestDir.temporaryLocalDataDir + f.getName();
+    String fileOut = tempFolder.newFile().getAbsolutePath();
 
     try (GeoTiffWriter2 writer = new GeoTiffWriter2(fileOut)) {
       writer.writeGrid(filename, field, 0, 0, true, llbb);
@@ -99,5 +101,4 @@ public class TestGeoTiffWriter2 {
       //geotiff.testReadData();
     }
   }
-
 }
