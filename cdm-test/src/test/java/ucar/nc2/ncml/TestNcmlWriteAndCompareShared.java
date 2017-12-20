@@ -1,12 +1,5 @@
 package ucar.nc2.ncml;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-
 import org.apache.commons.io.filefilter.NotFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.jdom2.Element;
@@ -15,15 +8,20 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import thredds.client.catalog.ServiceType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.StringUtil2;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * TestWrite NcML, read back and compare with original.
@@ -76,13 +74,15 @@ public class TestNcmlWriteAndCompareShared {
     result.add(new Object[]{datadir +  "formats/nexrad/level2/6500KHGX20000610_000110", false});
     result.add(new Object[]{datadir +  "formats/nexrad/level2/Level2_KYUX_20060527_2335.ar2v", true});
 
+    result.add(new Object[]{datadir +  "conventions/nuwg/ocean.nc", true});
+
     // try everything from these directories
-      try {
-        addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf4/",
-                new NotFileFilter( new SuffixFileFilter(new String[]{".cdl", ".nc5"})), false);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }   // */
+    try {
+      addFromScan(result, TestDir.cdmUnitTestDir + "formats/netcdf4/",
+              new NotFileFilter( new SuffixFileFilter(new String[]{".cdl", ".nc5"})), false);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     return result;
   }

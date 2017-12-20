@@ -66,7 +66,7 @@ public class TestChainedFileSource
   @Before
   public void setUp() throws IOException {
     // Create a data directory and some data files.
-    tmpDir = tempFolder.newFolder("TestChainedFileSource");
+    tmpDir = tempFolder.newFolder();
 
     contentDir = TestFileDirUtils.addDirectory( tmpDir, "content" );
     TestFileDirUtils.addFile( contentDir, "myCat.xml" );

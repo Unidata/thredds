@@ -58,7 +58,7 @@ public class TestBasicDescendantFileSource
   @Before
   public void setUp() throws IOException {
     // Create a data directory and some data files.
-    tmpDir = tempFolder.newFolder("TestBasicDescendantFileSource");
+    tmpDir = tempFolder.newFolder();
 
     File dir1 = TestFileDirUtils.addDirectory( tmpDir, "dir1" );
     TestFileDirUtils.addFile( dir1, "file1_1" );

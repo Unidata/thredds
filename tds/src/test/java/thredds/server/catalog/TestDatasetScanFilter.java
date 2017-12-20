@@ -66,7 +66,7 @@ public class TestDatasetScanFilter {
 
   @BeforeClass
   public static void setupTestDataDir() throws IOException {
-    tmpTestDataDir = tempFolder.newFolder("TestMFileFilter");
+    tmpTestDataDir = tempFolder.newFolder();
     System.out.printf("tmpLocalRootDataDir = %s%n", tmpTestDataDir);
 
     AliasTranslator.addAlias("${tmpDir}", tmpTestDataDir.getPath());

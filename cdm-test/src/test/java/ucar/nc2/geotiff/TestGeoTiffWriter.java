@@ -133,7 +133,7 @@ public class TestGeoTiffWriter {
       geotiff.read();
       if (show) System.out.printf("%s%n----------------------------------------------------%n", geotiff.showInfo());
 
-      String gridOut2 = tempFolder.newFile(f.getName() + ".coverage.tif").getAbsolutePath();
+      String gridOut2 = tempFolder.newFile().getAbsolutePath();
       System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
 
       GeoReferencedArray covArray;
@@ -175,5 +175,4 @@ public class TestGeoTiffWriter {
       assert FileUtils.contentEquals(file1, file2);
     }
   }
-
 }

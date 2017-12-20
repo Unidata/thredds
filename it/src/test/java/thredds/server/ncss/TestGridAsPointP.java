@@ -63,9 +63,11 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.TestDir;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -81,6 +83,8 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGridAsPointP {
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
+
   static String ds1 = "ncss/grid/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
   static String varName1 = "Vertical_velocity_pressure_isobaric";
   static String query1 = "&latitude=37.86&longitude=-122.2&vertCoord=850"; // this particular variable has only 500, 700, 850 after forecast 120
@@ -151,8 +155,6 @@ public class TestGridAsPointP {
     Assert.assertEquals(dataVal, val, Misc.maxReletiveError * dataVal);
   }
 
-  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
-
   @Test
   public void writeGridAsPointNetcdf() throws JDOMException, IOException {
     String endpoint = TestWithLocalServer.withPath(ds+"?var="+varName+query+"&accept=netcdf");
@@ -197,6 +199,4 @@ public class TestGridAsPointP {
       assertNotNull(varName, v);
     }
   }
-
-
 }

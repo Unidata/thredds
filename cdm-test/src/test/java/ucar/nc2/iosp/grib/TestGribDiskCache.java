@@ -58,7 +58,7 @@ public class TestGribDiskCache {
 
   @Test
   public void testDiskCache() throws Exception {
-    String cacheDirName = tempFolder.newFile().getAbsolutePath();
+    String cacheDirName = tempFolder.newFolder().getAbsolutePath() + "/";
     DiskCache2 cache = new DiskCache2(cacheDirName, false, 0, 0);
     cache.setAlwaysUseCache(true);
     Assert.assertEquals(cache.getRootDirectory(), cacheDirName);

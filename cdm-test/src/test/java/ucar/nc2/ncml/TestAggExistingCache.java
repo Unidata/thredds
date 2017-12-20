@@ -75,7 +75,7 @@ public class TestAggExistingCache {
     String filename = "file:TestAggExistingCache.xml";
     System.out.printf("%s%n", filename);
 
-    String cacheDirName = tempFolder.newFolder("testAggExistingCache").getAbsolutePath();
+    String cacheDirName = tempFolder.newFolder().getAbsolutePath() + "/";
     System.out.printf("cacheDir=%s%n", cacheDirName);
     File cacheDir = new File(cacheDirName);
     FileUtils.deleteDirectory(cacheDir); // from commons-io
@@ -118,7 +118,7 @@ public class TestAggExistingCache {
     String filename = "file:testCacheTiming.xml";
     System.out.printf("%s%n", filename);
 
-    String cacheDirName = tempFolder.newFolder("testAggExistingCache").getAbsolutePath();
+    String cacheDirName = tempFolder.newFolder().getAbsolutePath();
     System.out.printf("cacheDir=%s%n", cacheDirName);
     File cacheDir = new File(cacheDirName);
     FileUtils.deleteDirectory(cacheDir); // from commons-io

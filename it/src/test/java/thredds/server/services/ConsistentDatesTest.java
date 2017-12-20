@@ -30,7 +30,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.util.IO;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.*;
@@ -47,6 +46,7 @@ import static org.junit.Assert.assertEquals;
 
 @Category(NeedsCdmUnitTest.class)
 public class ConsistentDatesTest {
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
   private static final boolean show = true;
 
   private final String[] expectedDateTime = {
@@ -177,8 +177,6 @@ public class ConsistentDatesTest {
     //assertTrue(tAxis2.getCalendarDates().equals(expectedDatesAsDateTime));
   }
 
-  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
-
   /*  pr_HRM3_2038-2070.CO.nc:
 
     double time(time=95040);
@@ -227,5 +225,4 @@ public class ConsistentDatesTest {
       Assert.assertEquals(ecd, cd);
     }
   }
-
 }
