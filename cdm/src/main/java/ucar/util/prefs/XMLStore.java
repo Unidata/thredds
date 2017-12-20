@@ -110,7 +110,7 @@ public class XMLStore {
 
     // open file if it exists
     InputStream primIS = null, objIS = null;
-    if (prefsFile.exists()) {
+    if (prefsFile.exists() && prefsFile.length() > 0) {
       primIS = new BufferedInputStream(new FileInputStream( prefsFile));
       objIS = new BufferedInputStream(new FileInputStream( prefsFile));
     }
