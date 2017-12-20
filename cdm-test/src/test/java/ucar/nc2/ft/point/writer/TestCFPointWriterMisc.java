@@ -63,27 +63,28 @@ import ucar.unidata.util.test.TestDir;
  * @since 7/2/2014
  */
 public class TestCFPointWriterMisc {
+  @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testPointProblem() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ft/point/netcdf/Surface_Buoy_20090921_0000.nc";
     TestCFPointWriter.writeDataset(filename, FeatureType.POINT,
-            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false);
+            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false, tempFolder.newFile());
   }
 
   @Test
   public void testProfileProblem() throws IOException {
     String filename = TestDir.cdmLocalTestDataDir + "point/profileMultidimZJoin.ncml";
     TestCFPointWriter.writeDataset(filename, FeatureType.PROFILE,
-            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false);
+            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false, tempFolder.newFile());
   }
 
   @Test
   public void testStationProfileProblem() throws IOException {
     String filename = TestDir.cdmLocalTestDataDir + "point/stationProfileSingle.ncml";
     TestCFPointWriter.writeDataset(filename, FeatureType.STATION_PROFILE,
-            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false);
+            new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf3), false, tempFolder.newFile());
   }
 
   @Test
@@ -234,8 +235,6 @@ public class TestCFPointWriterMisc {
     }
   }
 
-  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
-
   FeatureDatasetPoint rewriteDataset(FeatureDatasetPoint fdpoint, String prefix, CFPointWriterConfig config) throws IOException {
     String location = fdpoint.getLocation();
     if (location.startsWith("file:")) location = location.substring(5);
@@ -272,5 +271,4 @@ public class TestCFPointWriterMisc {
 
     return (FeatureDatasetPoint) result;
   }
-
 }

@@ -34,17 +34,8 @@ package thredds.server.catalog;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-
-import java.io.File;
-import java.util.List;
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.junit.rules.TemporaryFolder;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
@@ -57,8 +48,16 @@ import ucar.nc2.util.AliasTranslator;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.TestFileDirUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.Assert.*;
+
 public class TestDatasetScanFilter {
-  @Rule public static final TemporaryFolder tempFolder = new TemporaryFolder();
+  @ClassRule public static final TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static File tmpTestDataDir;
   private static MFile tmpTestDataCrDs;

@@ -32,18 +32,19 @@
  */
 package thredds.util.filesource;
 
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import ucar.unidata.util.test.TestFileDirUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import junit.framework.TestCase;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
-import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.TestFileDirUtils;
-
+import static org.junit.Assert.*;
 
 
 /**
@@ -52,7 +53,7 @@ import ucar.unidata.util.test.TestFileDirUtils;
  * @author edavis
  * @since 4.0
  */
-public class TestChainedFileSource extends TestCase
+public class TestChainedFileSource
 {
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
@@ -62,12 +63,8 @@ public class TestChainedFileSource extends TestCase
   private File iddDir;
   private File mlodeDir;
 
-  public TestChainedFileSource( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp() throws IOException {
+  @Before
+  public void setUp() throws IOException {
     // Create a data directory and some data files.
     tmpDir = tempFolder.newFolder("TestChainedFileSource");
 
@@ -90,9 +87,7 @@ public class TestChainedFileSource extends TestCase
 
   }
 
-  /**
-   * Test ...
-   */
+  @Test
   public void testCtorGivenNullOrEmptyChain()
   {
     try
@@ -112,6 +107,7 @@ public class TestChainedFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for null chain, empty chain, or null item in chain.");
   }
 
+  @Test
   public void testNewGivenNonexistentDirectory()
   {
     List<DescendantFileSource> chain = new ArrayList<DescendantFileSource>();

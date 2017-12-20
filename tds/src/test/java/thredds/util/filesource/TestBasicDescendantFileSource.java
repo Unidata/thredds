@@ -32,17 +32,17 @@
  */
 package thredds.util.filesource;
 
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.springframework.util.StringUtils;
+import ucar.unidata.util.test.TestFileDirUtils;
+
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
-import org.springframework.util.StringUtils;
-
-import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.TestFileDirUtils;
+import static org.junit.Assert.*;
 
 /**
  * _more_
@@ -50,17 +50,13 @@ import ucar.unidata.util.test.TestFileDirUtils;
  * @author edavis
  * @since 4.0
  */
-public class TestBasicDescendantFileSource extends TestCase
+public class TestBasicDescendantFileSource
 {
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
   private File tmpDir;
 
-  public TestBasicDescendantFileSource( String name )
-  {
-    super( name );
-  }
-
-  protected void setUp() throws IOException {
+  @Before
+  public void setUp() throws IOException {
     // Create a data directory and some data files.
     tmpDir = tempFolder.newFolder("TestBasicDescendantFileSource");
 
@@ -73,12 +69,9 @@ public class TestBasicDescendantFileSource extends TestCase
     File dir2_2 = TestFileDirUtils.addDirectory( dir2, "dir2_2" );
     TestFileDirUtils.addFile( dir2_2, "file2_2_1" );
     TestFileDirUtils.addDirectory( dir1_2, "dir1_2_1" );
-
   }
 
-  /**
-   * Test ...
-   */
+  @Test
   public void testNewGivenNullPath()
   {
     String path = null;
@@ -101,6 +94,7 @@ public class TestBasicDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for null path.");
   }
 
+  @Test
   public void testNewGivenNonexistentDirectory()
   {
     File nonExistDir = new File( tmpDir, "nonExistDir");
@@ -122,6 +116,7 @@ public class TestBasicDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for non-existent directory." );
   }
 
+  @Test
   public void testNewGivenNondirectoryFile()
   {
     File notDirFile = null;
@@ -156,6 +151,7 @@ public class TestBasicDescendantFileSource extends TestCase
     fail( "Did not throw IllegalArgumentException for non-directory root path." );
   }
 
+  @Test
   public void testNormalizedPath()
   {
     DescendantFileSource bfl = new BasicDescendantFileSource( tmpDir );
@@ -176,6 +172,7 @@ public class TestBasicDescendantFileSource extends TestCase
                   bfl.getRootDirectoryPath() );
   }
 
+  @Test
   public void testBasics()
   {
     DescendantFileSource bfl = new BasicDescendantFileSource( tmpDir );
@@ -218,6 +215,5 @@ public class TestBasicDescendantFileSource extends TestCase
                   bfl.getRelativePath( new File( tmpDir, filePath1_1 ).getPath() ) );
     assertEquals( filePath1_1,
                   bfl.getRelativePath( new File( tmpDir, "dir1/./file1_1" ).getPath() ) );
-
   }
 }
