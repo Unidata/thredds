@@ -44,7 +44,7 @@ import ucar.nc2.util.EscapeStrings;
 import ucar.unidata.util.StringUtil2;
 import ucar.unidata.util.Urlencoded;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -167,6 +167,9 @@ public class DatasetUrl {
       //  - we have a simple url: e.g. http://... ; contact the server
       if (leadprotocol.equals("file")) {
         svctype = decodePathExtension(trueurl); // look at the path extension
+        if (svctype == null && checkIfNcml(new File(location))) {
+          svctype = ServiceType.NCML;
+        }
       } else {
         svctype = disambiguateHttp(trueurl);
         // special cases
@@ -228,7 +231,7 @@ public class DatasetUrl {
         return ServiceType.CdmRemote;
       if (protocol.equalsIgnoreCase("thredds"))
         return ServiceType.THREDDS;
-      if (protocol.equalsIgnoreCase("ncmdl"))
+      if (protocol.equalsIgnoreCase("ncml"))
         return ServiceType.NCML;
     }
     return null;
@@ -460,19 +463,19 @@ public class DatasetUrl {
     }
   }
 
-  static private boolean checkIfRemoteNcml(String location) throws IOException {
-    boolean isRemoteNcml = false;
+  // The first 128 bytes should contain enough info to tell if this looks like an actual ncml file or not.
+  // For example, here is an example 128 byte response:
+  // <?xml version="1.0" encoding="UTF-8"?>\n<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="dods://ma
+  private static int NUM_BYTES_TO_DETERMINE_NCML = 128;
 
+  static private boolean checkIfRemoteNcml(String location) throws IOException {
     if (decodePathExtension(location)==ServiceType.NCML) {
       // just because location ends with ncml does not mean it's ncml
       // if the ncml file is being served up via http by a remote server,
       // we should be able to read the first bit of it and see if it even
       // looks like an ncml file.
       try (HTTPMethod method = HTTPFactory.Get(location)) {
-        // the first 128 bytes should contain enough info to tell if this looks like
-        // an actual ncml file or not. For example, here is a 128 byte response
-        // <?xml version="1.0" encoding="UTF-8"?>\n<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="dods://ma
-        method.setRange(0, 128);
+        method.setRange(0, NUM_BYTES_TO_DETERMINE_NCML);
         method.setRequestHeader("accept-encoding", "identity");
         int statusCode = method.execute();
         if (statusCode >= 300) {
@@ -487,18 +490,33 @@ public class DatasetUrl {
           }
         }
 
-        String strResponse = method.getResponseAsString();
-        // look for the ncml element as well as a reference to the ncml namespace URI
-        // This may not be robust, but worst case, the user will need to download the NcML
-        // file to read it.
-        if (strResponse.contains("<netcdf ") &&
-                strResponse.contains("unidata.ucar.edu/namespaces/netcdf/ncml")) {
-          isRemoteNcml = true;
-        }
+        return checkIfNcml(method.getResponseAsString());
       }
     }
 
-    return isRemoteNcml;
+    return false;
+  }
+
+  static private boolean checkIfNcml(File file) throws IOException {
+    if (!file.exists()) {
+      return false;
+    }
+
+    try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file), NUM_BYTES_TO_DETERMINE_NCML)) {
+      byte[] bytes = new byte[NUM_BYTES_TO_DETERMINE_NCML];
+      int bytesRead = in.read(bytes);
+
+      if (bytesRead <= 0) {
+        return false;
+      } else {
+        return checkIfNcml(new String(bytes, 0, bytesRead));
+      }
+    }
+  }
+
+  static private boolean checkIfNcml(String string) {
+    // Look for the ncml element as well as a reference to the ncml namespace URI.
+    return string.contains("<netcdf ") && string.contains("unidata.ucar.edu/namespaces/netcdf/ncml");
   }
 
   /////////////////////////////////////////////////////////////////////
