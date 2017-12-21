@@ -39,9 +39,12 @@ import opendap.servers.*;
 import opendap.servers.parsers.CeParser;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.UnitTestCommon;
 //import opendap.dts.*;
 
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.io.*;
 
@@ -50,6 +53,8 @@ import java.io.*;
 
 public class TestCeParser extends UnitTestCommon
 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static final boolean DEBUGPARSER = false;
 
   static boolean generate = true;

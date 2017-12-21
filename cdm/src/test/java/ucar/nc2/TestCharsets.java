@@ -36,8 +36,11 @@
 package ucar.nc2;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.Charset;
 import java.util.Map;
 
@@ -48,6 +51,7 @@ import java.util.Map;
  * @since 6/13/13
  */
 public class TestCharsets {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testCharsets() {

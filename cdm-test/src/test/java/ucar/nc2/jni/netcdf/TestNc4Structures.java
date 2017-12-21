@@ -38,6 +38,8 @@ package ucar.nc2.jni.netcdf;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.util.CancelTaskImpl;
@@ -46,6 +48,7 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test writing structure data into netcdf4.
@@ -55,8 +58,9 @@ import java.io.IOException;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestNc4Structures {
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Before
   public void setLibrary() {

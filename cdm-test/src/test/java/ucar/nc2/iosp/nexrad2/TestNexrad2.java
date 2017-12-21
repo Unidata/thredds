@@ -34,6 +34,8 @@ package ucar.nc2.iosp.nexrad2;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
@@ -47,9 +49,12 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestNexrad2 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   // FIXME: This method sucks: it doesn't fail when dirName can't be read.
   @Test
   public void testRead() throws IOException {

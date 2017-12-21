@@ -2,8 +2,14 @@ package ucar.unidata.geoloc.projection.sat;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 public class MSGnavigationTest {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     // Copied from MSGnavigation. I don't really care about their value, I just want them to be "reasonable".
     private static final double SAT_HEIGHT = 42164.0;     // distance from Earth centre to satellite
     private static final double R_EQ = 6378.169;   // radius from Earth centre to equator

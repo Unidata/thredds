@@ -35,6 +35,8 @@ package ucar.nc2.ft.fmrc;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.NCdumpW;
@@ -48,6 +50,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
@@ -58,6 +61,8 @@ import java.util.Formatter;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestFmrcMisc {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Test
   public void testConventionsAttribute() throws Exception {
     String path = TestDir.cdmUnitTestDir + "ncml/AggForecastModel.ncml";

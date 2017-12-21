@@ -35,12 +35,15 @@ package ucar.util.prefs.ui;
 
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.util.prefs.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.*;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import javax.swing.*;
 
 import ucar.util.prefs.PreferencesExt;
@@ -48,6 +51,8 @@ import ucar.util.prefs.XMLStore;
 
 
 public class TestFieldInput {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static XMLStore xstore;

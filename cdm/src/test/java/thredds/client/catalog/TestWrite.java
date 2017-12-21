@@ -36,13 +36,18 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.tools.CatalogXmlWriter;
-import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
-import java.util.*;
+import java.lang.invoke.MethodHandles;
+import java.util.Iterator;
+import java.util.List;
 
 public class TestWrite {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
   static boolean debugCompare = true, debugCompareList = true;
 

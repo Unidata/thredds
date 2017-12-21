@@ -10,9 +10,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
@@ -28,6 +31,7 @@ import static java.lang.Math.toIntExact;
 /** Test FMRC NcML aggregations using a directory scan and explicitly listed datasets. */
 
 public class TestAggFmrc {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   String FILENAME_SCAN = "testAggFmrcScan.ncml";
   String FILENAME_EXPLICIT = "testAggFmrcExplicit.ncml";

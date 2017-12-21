@@ -34,6 +34,8 @@ package thredds.client.catalog;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.nc2.constants.FeatureType;
@@ -42,10 +44,11 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.TimeUnit;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -55,6 +58,7 @@ import java.util.List;
  * @since 1/16/2015
  */
 public class TestClientCatalog {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static public String makeUrlFromFragment(String catFrag) {
     return "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/" + catFrag;

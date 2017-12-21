@@ -50,6 +50,7 @@ import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,7 @@ import java.util.List;
  */
 public class TestTomcatAuth extends UnitTestCommon
 {
-    private static Logger logger = LoggerFactory.getLogger(TestTomcatAuth.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final String BADPASSWORD = "bad";
 

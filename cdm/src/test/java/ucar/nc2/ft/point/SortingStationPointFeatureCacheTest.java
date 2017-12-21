@@ -2,6 +2,7 @@ package ucar.nc2.ft.point;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,8 @@ import java.util.List;
 import com.google.common.collect.Ordering;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureDataScalar;
 import ucar.nc2.constants.FeatureType;
@@ -22,6 +25,8 @@ import ucar.nc2.ft.PointFeatureIterator;
 import ucar.nc2.time.CalendarDateUnit;
 
 public class SortingStationPointFeatureCacheTest {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     @Test
     public void test1() throws Exception {
         StructureDataScalar stationData = new StructureDataScalar("StationFeature");  // leave it empty.

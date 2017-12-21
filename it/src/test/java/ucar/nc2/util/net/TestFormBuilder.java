@@ -36,11 +36,14 @@ import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.httpservices.*;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -52,6 +55,7 @@ import java.util.regex.Pattern;
  */
 public class TestFormBuilder extends UnitTestCommon
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     //////////////////////////////////////////////////
     // Constants

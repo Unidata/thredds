@@ -36,16 +36,21 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test NcdumpW.
  */
 public class TestNcDump {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   // Asserts that the issue identified in PCM-232977 has been fixed.
   // See https://andy.unidata.ucar.edu/esupport/staff/index.php?_m=tickets&_a=viewticket&ticketid=28658.
   // Asserts that GitHub issue #929 has been fixed. See https://github.com/Unidata/thredds/issues/929

@@ -33,6 +33,8 @@
 package ucar.nc2.iosp;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import junit.framework.TestCase;
@@ -41,12 +43,14 @@ import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingStrategy;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * @author caron
  * @since Jan 2, 2008
  */
 public class TestIndexChunker {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testFull() throws InvalidRangeException {

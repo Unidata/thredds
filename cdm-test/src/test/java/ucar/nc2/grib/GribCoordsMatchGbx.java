@@ -34,6 +34,8 @@
 package ucar.nc2.grib;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import ucar.ma2.ArrayDouble;
@@ -62,6 +64,7 @@ import ucar.nc2.util.Misc;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 /**
@@ -70,6 +73,8 @@ import java.util.*;
  * Using just the gbx
  */
 public class GribCoordsMatchGbx {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private static FeatureCollectionConfig config = new FeatureCollectionConfig(); // default values
   private static final String KIND_GRID = "grid";
   private static final String KIND_COVERAGE = "coverage";

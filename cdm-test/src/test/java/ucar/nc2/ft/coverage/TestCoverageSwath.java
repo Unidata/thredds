@@ -36,6 +36,8 @@ package ucar.nc2.ft.coverage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
@@ -49,6 +51,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test swath data as coverage
@@ -57,6 +60,7 @@ import java.io.IOException;
  * @since 3/17/2016.
  */
 public class TestCoverageSwath {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Category(NeedsCdmUnitTest.class)
   @Test

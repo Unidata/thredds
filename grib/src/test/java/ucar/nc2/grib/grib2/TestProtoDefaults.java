@@ -48,6 +48,7 @@ import ucar.nc2.grib.grib1.Grib1Gds;
 import ucar.nc2.grib.grib1.Grib1SectionGridDefinition;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -57,7 +58,7 @@ import java.util.List;
  * @since 10/16/2015.
  */
 public class TestProtoDefaults {
-  static private final Logger logger = LoggerFactory.getLogger(TestProtoDefaults.class);
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Ignore("Needs updating to ncx4")
   @Test

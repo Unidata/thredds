@@ -33,10 +33,13 @@
 
 package thredds.server.opendap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.IO;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -48,6 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 public class OpendapThreads {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   //http://motherlode.ucar.edu:8081/thredds/ncstream/fmrc/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_20090303_0000.grib2?showForm
   static String urlStart = "http://motherlode.ucar.edu:8081/thredds/dodsC/fmrc/NCEP/GFS/Global_0p5deg/files/GFS_Global_0p5deg_";

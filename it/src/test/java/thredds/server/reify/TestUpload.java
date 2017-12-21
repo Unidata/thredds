@@ -8,6 +8,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.httpservices.*;
 import ucar.unidata.util.test.category.NotJenkins;
 import ucar.unidata.util.test.category.NotTravis;
@@ -15,11 +17,13 @@ import ucar.unidata.util.test.category.NotTravis;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Random;
 
 @Category({NotJenkins.class, NotTravis.class}) // must call explicitly in intellij
 public class TestUpload extends TestReify
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static protected final boolean DEBUG = false;
 

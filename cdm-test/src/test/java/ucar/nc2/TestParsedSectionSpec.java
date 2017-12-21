@@ -2,6 +2,8 @@ package ucar.nc2;
 
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -9,6 +11,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**                    `
  * Describe
@@ -17,6 +20,7 @@ import java.io.IOException;
  * @since 7/15/11
  */
 public class TestParsedSectionSpec extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testVariableSection() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmLocalTestDataDir + "testWrite.nc"); // TestLocalNC2.openFile("testWrite.nc")

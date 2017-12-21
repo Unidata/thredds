@@ -43,6 +43,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Diff;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
@@ -50,11 +52,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 
 @RunWith(JUnitParamsRunner.class)
 public class TestDapParser extends TestFiles
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     static protected boolean VISUAL = false;
 
     static protected final int ISUNKNOWN = 0;

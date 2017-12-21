@@ -5,6 +5,8 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayFloat;
 import ucar.ma2.InvalidRangeException;
@@ -22,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test Reading of CDF-5 files using JNI netcdf-4 iosp
@@ -29,6 +32,7 @@ import java.io.StringWriter;
 @Category(NeedsContentRoot.class)
 public class TestCDF5Reading extends UnitTestCommon
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     static final ArrayFloat.D1 BASELINE;
 
     static {

@@ -4,8 +4,11 @@ import com.amazonaws.services.s3.model.ObjectListing
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.google.common.base.Optional
 import com.google.common.cache.RemovalListener
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Specification
 
+import java.lang.invoke.MethodHandles
 import java.nio.file.Files
 /**
  * Tests the caching behavior of CachingThreddsS3Client.
@@ -14,6 +17,8 @@ import java.nio.file.Files
  * @since 2015/08/27
  */
 class CachingThreddsS3ClientSpec extends Specification {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    
     // create a CachingThreddsS3Client that wraps our mock ThreddsS3Client
     ThreddsS3Client mockThreddsS3Client = Mock(ThreddsS3Client)
     RemovalListener<S3URI, Optional<File>> mockRemovalListener = Mock(RemovalListener)

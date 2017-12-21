@@ -41,6 +41,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -48,6 +50,7 @@ import ucar.httpservices.HTTPSession;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.ByteArrayInputStream;
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
@@ -64,6 +67,7 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestUTF8GetCapabilitiesEncoding {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Parameterized.Parameters(name="{0}")
   public static Collection<Object[]> getTestParameters(){

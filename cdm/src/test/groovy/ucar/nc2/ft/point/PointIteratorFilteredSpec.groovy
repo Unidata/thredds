@@ -1,5 +1,7 @@
 package ucar.nc2.ft.point
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import ucar.ma2.Array
 import ucar.ma2.ArrayObject
@@ -14,11 +16,15 @@ import ucar.nc2.time.CalendarDateUnit
 import ucar.unidata.geoloc.LatLonPointImpl
 import ucar.unidata.geoloc.LatLonRect
 
+import java.lang.invoke.MethodHandles
+
 /**
  * @author cwardgar
  * @since 2015/09/21
  */
 class PointIteratorFilteredSpec extends Specification {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    
     def "space and time filter"() {
         setup: "feature dataset"
         FeatureDatasetPoint fdPoint = PointTestUtil.openPointDataset("pointsToFilter.ncml")

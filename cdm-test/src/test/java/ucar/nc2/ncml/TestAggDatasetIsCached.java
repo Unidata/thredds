@@ -4,6 +4,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -14,6 +16,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.EnumSet;
 import java.util.Formatter;
 import java.util.List;
@@ -26,6 +29,8 @@ import java.util.List;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestAggDatasetIsCached {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @BeforeClass
   public static void setupClass() {
     // All datasets, once opened, will be added to this cache.

@@ -35,6 +35,8 @@ package thredds.server.cdmr;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
@@ -47,9 +49,11 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestCdmRemoteServer {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /* Relies on:
   <dataset name="Test Single Grid Dataset" ID="testSingleGridDataset" serviceName="all"

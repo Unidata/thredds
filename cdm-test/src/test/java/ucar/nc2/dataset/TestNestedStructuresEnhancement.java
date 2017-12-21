@@ -34,6 +34,8 @@ package ucar.nc2.dataset;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Sequence;
 import ucar.nc2.Structure;
@@ -46,6 +48,7 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test that nested structures get enhanced.
@@ -53,6 +56,7 @@ import java.io.IOException;
  * @since Jul 5, 2008
  */
 public class TestNestedStructuresEnhancement {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Ignore("cant deal with BUFR at the moment")
   @Test

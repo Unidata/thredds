@@ -35,14 +35,19 @@ package opendap.test;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPUtil;
 import ucar.nc2.util.EscapeStrings;
 
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public class TestEncode
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     static final String URLILLEGAL = " \"%<>[\\]^`{|}"; // expected
     static final String QUERYILLEGAL = " \"%<>\\^`{|}"; // expected
     static final String allnonalphanum = " !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";

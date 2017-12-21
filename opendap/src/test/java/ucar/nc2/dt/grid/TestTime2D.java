@@ -35,12 +35,16 @@ package ucar.nc2.dt.grid;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -50,6 +54,7 @@ import ucar.unidata.util.test.TestDir;
  */
 @Category(NeedsExternalResource.class)
 public class TestTime2D {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testTime2D() throws Exception {

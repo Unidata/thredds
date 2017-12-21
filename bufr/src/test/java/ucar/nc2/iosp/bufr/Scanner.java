@@ -32,9 +32,12 @@
  */
 package ucar.nc2.iosp.bufr;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
@@ -46,6 +49,7 @@ import java.nio.channels.WritableByteChannel;
  * @since May 9, 2008
  */
 public class Scanner {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /////////////////////////////////////////////////////////////////////
 

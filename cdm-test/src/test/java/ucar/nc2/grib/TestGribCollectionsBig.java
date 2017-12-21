@@ -37,6 +37,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.cache.FileCache;
@@ -46,6 +48,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
@@ -58,6 +61,8 @@ import java.util.Formatter;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCollectionsBig {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   String topdir =  TestDir.cdmUnitTestDir + "gribCollections/rdavm";
   // String topdir =  "B:/rdavm";  // use for local windows to get around samba bug
 

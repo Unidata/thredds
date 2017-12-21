@@ -33,6 +33,8 @@
 package ucar.nc2.ncml;
 
 import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
@@ -42,10 +44,12 @@ import ucar.ma2.*;
 import ucar.nc2.util.Misc;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Date;
 import java.util.List;
 
 public class TestAggSynGrid {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static GridDataset gds = null;
   static final String filename = "file:./" + TestNcML.topDir + "aggSynGrid.xml";

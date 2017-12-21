@@ -33,6 +33,8 @@
 package ucar.nc2.dataset;
 
 import junit.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -41,11 +43,14 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 /** Test TestStandardVar in JUnit framework. */
 
 public class TestStandardVar extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private String filename = TestDir.cdmLocalTestDataDir +"standardVar.nc";
 
   public TestStandardVar( String name) {

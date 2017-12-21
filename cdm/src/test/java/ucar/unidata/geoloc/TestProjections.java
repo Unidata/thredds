@@ -34,12 +34,16 @@ package ucar.unidata.geoloc;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
 import ucar.unidata.geoloc.projection.proj4.AlbersEqualAreaEllipse;
 import ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * test methods projections have in common
@@ -48,6 +52,8 @@ import ucar.unidata.geoloc.projection.proj4.LambertConformalConicEllipse;
  */
 
 public class TestProjections {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   boolean show = false;
   int NTRIALS = 10000;
   double tolerence = 5.0e-4;

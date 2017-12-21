@@ -35,6 +35,7 @@ package ucar.nc2.ft.point.writer;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import java.util.List;
 
@@ -44,6 +45,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
@@ -63,6 +66,7 @@ import ucar.unidata.util.test.TestDir;
  * @since 7/2/2014
  */
 public class TestCFPointWriterMisc {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test

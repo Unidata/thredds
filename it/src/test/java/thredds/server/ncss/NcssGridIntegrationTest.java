@@ -3,16 +3,21 @@ package thredds.server.ncss;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.lang.invoke.MethodHandles;
+
 import static org.junit.Assert.*;
 
 @Category(NeedsCdmUnitTest.class)
 public class NcssGridIntegrationTest {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /* @HttpTest(method = Method.GET, path = "ncss/grid/gribCollection/GFS_CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1/GC?var=Temperature_isobaric&latitude=40&longitude=-102&vertCoord=225")
   public void checkGridAsPointXml() throws JDOMException, IOException {

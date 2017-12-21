@@ -34,6 +34,8 @@ package ucar.nc2.ncml;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -42,6 +44,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -51,6 +54,7 @@ import java.io.IOException;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestAggNested {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void TestNotCached() throws IOException {

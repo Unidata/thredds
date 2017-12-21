@@ -32,6 +32,7 @@ import ucar.nc2.stream.NcStream;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.ByteArrayInputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -40,7 +41,7 @@ import java.util.Collection;
 @ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}, loader = MockTdsContextLoader.class)
 @Category(NeedsCdmUnitTest.class)
 public class CdmrControllerTest {
-    private static final Logger logger = LoggerFactory.getLogger(CdmrControllerTest.class);
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Autowired
   private WebApplicationContext wac;

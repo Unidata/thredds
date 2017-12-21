@@ -33,15 +33,20 @@
 package ucar.nc2;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 
 public class TestRedefine3 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test

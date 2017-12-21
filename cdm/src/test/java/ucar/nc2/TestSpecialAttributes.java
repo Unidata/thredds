@@ -7,10 +7,13 @@ package ucar.nc2;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test accessing special attributes
@@ -18,6 +21,7 @@ import java.io.IOException;
 
 public class TestSpecialAttributes
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Test
     public void testReadAll() throws IOException

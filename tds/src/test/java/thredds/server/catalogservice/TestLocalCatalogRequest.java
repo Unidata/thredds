@@ -32,10 +32,15 @@
  */
 package thredds.server.catalogservice;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.validation.*;
 
+import java.lang.invoke.MethodHandles;
+
 public class TestLocalCatalogRequest {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private String parameterNameCommand = "command";
   private String parameterNameDatasetId = "dataset";

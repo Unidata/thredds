@@ -35,6 +35,8 @@ package ucar.nc2.iosp.hdf5;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NCdumpW;
@@ -45,6 +47,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * @author caron
@@ -52,6 +55,7 @@ import java.io.IOException;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5npoess {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @AfterClass
   static public void after() {

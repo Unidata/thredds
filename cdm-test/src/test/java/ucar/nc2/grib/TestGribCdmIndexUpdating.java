@@ -38,6 +38,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
@@ -51,6 +53,7 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,6 +66,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGribCdmIndexUpdating {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
@@ -150,7 +154,6 @@ public class TestGribCdmIndexUpdating {
       }
 
       // index this
-      org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
       boolean changed = GribCdmIndex.updateGribCollection(config, updateType, logger);
       System.out.printf("changed = %s%n", changed);
 

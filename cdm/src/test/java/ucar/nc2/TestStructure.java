@@ -34,10 +34,13 @@ package ucar.nc2;
 
 import junit.framework.*;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 /**
@@ -45,6 +48,7 @@ import java.util.*;
  */
 
 public class TestStructure extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestStructure(String name) {
     super(name);

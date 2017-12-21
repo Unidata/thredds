@@ -35,6 +35,8 @@ package ucar.nc2.iosp.hdf4;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
@@ -44,6 +46,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -53,6 +56,7 @@ import java.io.IOException;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestH4misc {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   static public String testDir = TestDir.cdmUnitTestDir + "formats/hdf4/";
 
   @Test

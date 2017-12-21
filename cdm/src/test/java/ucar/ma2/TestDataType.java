@@ -2,7 +2,10 @@ package ucar.ma2;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.math.BigInteger;
 
 /**
@@ -12,6 +15,8 @@ import java.math.BigInteger;
  * @since 11/19/13
  */
 public class TestDataType {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private static void doone(String org) {
     BigInteger biggy = new BigInteger(org);
     long convert = biggy.longValue(); // > 63 bits will become "negative".

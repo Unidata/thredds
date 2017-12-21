@@ -3,6 +3,8 @@ package ucar.nc2.jni.netcdf;
 import org.junit.*;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -16,6 +18,7 @@ import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +31,8 @@ import java.util.Map;
  * @since 7/27/12
  */
 public class TestNc4IospWriting {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
     int countNotOK = 0;

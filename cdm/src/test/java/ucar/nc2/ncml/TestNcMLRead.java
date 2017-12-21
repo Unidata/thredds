@@ -34,14 +34,18 @@ package ucar.nc2.ncml;
 
 import junit.framework.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /** Test netcdf dataset in the JUnit framework. */
 
 public class TestNcMLRead extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestNcMLRead( String name) {
     super(name);

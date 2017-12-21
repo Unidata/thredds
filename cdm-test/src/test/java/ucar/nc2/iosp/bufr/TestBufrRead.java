@@ -34,6 +34,8 @@ package ucar.nc2.iosp.bufr;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.util.IO;
 import ucar.unidata.io.RandomAccessFile;
@@ -43,6 +45,7 @@ import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
@@ -53,6 +56,8 @@ import java.util.Formatter;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestBufrRead {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   String unitDir =  TestDir.cdmUnitTestDir + "formats/bufr";
   boolean show = false;
 

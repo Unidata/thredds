@@ -32,11 +32,16 @@
  */
 package ucar.ma2;
 
-import junit.framework.*;
+import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /** Test ma2 get/put methods in the JUnit framework. */
 
 public class TestTxCompose extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestTxCompose( String name) {
     super(name);

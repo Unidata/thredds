@@ -36,10 +36,14 @@ package ucar.nc2.grib.grib2;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.unidata.geoloc.projection.RotatedPole;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test reading GRIB2 files with {@link RotatedPole} projections.
@@ -47,6 +51,7 @@ import ucar.unidata.geoloc.projection.RotatedPole;
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
 public class TestRotatedPole {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /**
    * Tolerance for floating point comparisons.

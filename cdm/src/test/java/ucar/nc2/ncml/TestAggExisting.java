@@ -33,15 +33,19 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /** Test TestNcml - AggExisting  in the JUnit framework. */
 
 public class TestAggExisting {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testNcmlDirect() throws IOException, InvalidRangeException {

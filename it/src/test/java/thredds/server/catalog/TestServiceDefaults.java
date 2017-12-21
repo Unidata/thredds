@@ -4,11 +4,14 @@ package thredds.server.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test services are properly added and overridden
@@ -17,6 +20,7 @@ import java.io.IOException;
  * @since 6/29/2015
  */
 public class TestServiceDefaults {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testStandardServices() throws IOException {

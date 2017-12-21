@@ -4,10 +4,13 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.params.AllClientPNames;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.IO;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.Callable;
 
 /**
@@ -18,6 +21,8 @@ import java.util.concurrent.Callable;
  */
 public class MakeHttpRequestCallable implements Callable<MakeHttpRequestResult>
 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private HttpClient httpClient;
   private String reqUrl;
 

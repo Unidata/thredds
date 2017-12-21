@@ -35,6 +35,8 @@ package ucar.nc2.dataset;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -48,6 +50,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +61,8 @@ import java.util.List;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestTransforms {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private static final boolean show = false;
   private String testDir= TestDir.cdmUnitTestDir + "transforms/";
 

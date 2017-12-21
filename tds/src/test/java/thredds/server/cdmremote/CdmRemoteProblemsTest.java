@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -18,6 +20,8 @@ import thredds.mock.web.MockTdsContextLoader;
 import thredds.util.ContentType;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.lang.invoke.MethodHandles;
+
 /**
  * Single problems in cdmremote testing
  *
@@ -26,35 +30,28 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"}, loader = MockTdsContextLoader.class)
+@ContextConfiguration(locations = { "/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml" },
+                      loader = MockTdsContextLoader.class)
 public class CdmRemoteProblemsTest {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Autowired
- 	private org.springframework.web.context.WebApplicationContext wac;
+    @Autowired private org.springframework.web.context.WebApplicationContext wac;
 
- 	private MockMvc mockMvc;
-  // private String path = "/cdmremote/testStationFeatureCollection/files/Surface_METAR_20060325_0000.nc";
-  private String path = "/cdmremote/testBuoyFeatureCollection/files/Surface_Buoy_20130804_0000.nc";
+    private MockMvc mockMvc;
+    // private String path = "/cdmremote/testStationFeatureCollection/files/Surface_METAR_20060325_0000.nc";
+    private String path = "/cdmremote/testBuoyFeatureCollection/files/Surface_Buoy_20130804_0000.nc";
 
- 	@Before
- 	public void setup(){
- 		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
- 	}
+    @Before public void setup() {
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
 
+    @Test @Category(NeedsCdmUnitTest.class) public void cdmRemoteRequestCapabilitiesTest() throws Exception {
+        System.out.printf("Path = %s%n", path);
+        RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path).param("req", "capabilities");
 
-  @Test
-  @Category(NeedsCdmUnitTest.class)
-   public void cdmRemoteRequestCapabilitiesTest() throws Exception {
-     System.out.printf("Path = %s%n", path);
-     RequestBuilder rb = MockMvcRequestBuilders.get(path).servletPath(path)
-   				.param("req", "capabilities");
+        MvcResult result = this.mockMvc.perform(rb).andExpect(MockMvcResultMatchers.status().is(200))
+                .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader())).andReturn();
 
-     MvcResult result = this.mockMvc.perform( rb )
-               .andExpect(MockMvcResultMatchers.status().is(200))
-               .andExpect(MockMvcResultMatchers.content().contentType(ContentType.xml.getContentHeader()))
-               .andReturn();
-
-    System.out.printf("content = %s%n", result.getResponse().getContentAsString());
-   }
-
+        System.out.printf("content = %s%n", result.getResponse().getContentAsString());
+    }
 }

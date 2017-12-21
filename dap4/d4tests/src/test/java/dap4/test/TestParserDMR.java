@@ -13,16 +13,21 @@ import dap4.core.dmr.parser.ParseUtil;
 import dap4.dap4lib.DMRPrinter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class TestParserDMR extends DapTestCommon
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     static final boolean PARSEDEBUG = false;
 
     // Do a special test to compare the dmr parser print output

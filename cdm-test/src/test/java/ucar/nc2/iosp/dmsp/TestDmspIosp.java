@@ -35,6 +35,8 @@ package ucar.nc2.iosp.dmsp;
 
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
@@ -43,6 +45,7 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -50,6 +53,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class TestDmspIosp extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private String testFilePath = TestDir.cdmUnitTestDir + "formats/dmsp";
   private String testDataFileName = "F14200307192230.n.OIS";
 

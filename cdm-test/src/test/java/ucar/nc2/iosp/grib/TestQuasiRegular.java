@@ -39,11 +39,15 @@ package ucar.nc2.iosp.grib;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.QuasiRegular;
 
 public class TestQuasiRegular {
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static final double x1d = 1.0e30;  /* derivative of the first end point */
     private static final double xnd = 1.0e30;  /* derivative of the nth end point */

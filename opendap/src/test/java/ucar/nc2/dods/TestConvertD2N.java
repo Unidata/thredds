@@ -38,11 +38,14 @@ import opendap.dap.parsers.ParseException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.PrintStream;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Enumeration;
 import java.util.Vector;
 
 import opendap.test.TestSources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.Variable;
@@ -53,6 +56,8 @@ import ucar.unidata.util.test.UtilsMa2Test;
  *
  */
 public class TestConvertD2N {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // debugging
   static DataDDS testDataDDSfromServer(String urlName, String CE) throws IOException,

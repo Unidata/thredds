@@ -1,5 +1,7 @@
 package ucar.nc2.time;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
 import ucar.units.*;
@@ -9,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -21,6 +24,8 @@ import java.util.Date;
  */
 @RunWith(Parameterized.class)
 public class TestCalendarDateUnit {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   DateFormatter df = new DateFormatter();
   UnitFormat format = UnitFormatManager.instance();
 

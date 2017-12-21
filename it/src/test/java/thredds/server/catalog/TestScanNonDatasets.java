@@ -35,10 +35,13 @@ package thredds.server.catalog;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.*;
 import ucar.nc2.constants.FeatureType;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test datasetScan on files that are not datasets - should serve out like straight web server
@@ -47,6 +50,8 @@ import java.io.IOException;
  * @since 3/16/2016.
  */
 public class TestScanNonDatasets {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Test
   public void testStandardServicesDatasetScan() throws IOException {
     String catalog = "/catalog/scanLocalHtml/catalog.xml";

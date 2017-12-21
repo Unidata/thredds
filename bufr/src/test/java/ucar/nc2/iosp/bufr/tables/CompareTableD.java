@@ -35,12 +35,15 @@ package ucar.nc2.iosp.bufr.tables;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.FileInputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.nio.charset.Charset;
 
@@ -49,6 +52,8 @@ import java.nio.charset.Charset;
  * @since Jul 24, 2008
  */
 public class CompareTableD {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   final int default_size = 1200;
 
   //String bmt = "file:C:\\docs\\bufr\\britishMet\\WORKING\\bufr\\Code Tables 2007\\edited/BUFR_Tab_D_6.xml";

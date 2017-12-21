@@ -13,6 +13,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -25,6 +27,7 @@ import ucar.unidata.util.test.category.NotTravis;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +66,8 @@ import java.util.List;
 @Category({NotJenkins.class, NotTravis.class}) // must call explicitly in intellij
 public class GenerateRaw extends DapTestCommon
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     static public boolean GENERATE = false;
     static public boolean DEBUG = false;
     static public boolean DEBUGDATA = false;

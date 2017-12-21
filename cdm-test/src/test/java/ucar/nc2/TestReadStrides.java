@@ -34,18 +34,22 @@ package ucar.nc2;
 
 import junit.framework.*;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.UtilsMa2Test;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.ArrayList;
 
 /** Test reading variable data */
 
 public class TestReadStrides extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestReadStrides( String name) {
     super(name);

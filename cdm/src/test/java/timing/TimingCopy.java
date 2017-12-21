@@ -32,16 +32,19 @@
  */
 package timing;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.Format;
 
 import java.io.*;
-import java.nio.channels.*;
+import java.lang.invoke.MethodHandles;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.net.HttpURLConnection;
+import java.nio.channels.FileChannel;
 import java.util.Date;
 
 /*
@@ -67,6 +70,8 @@ import java.util.Date;
  */
 
 public class TimingCopy {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static boolean debug = true;
 
   static public void main(String args[]) throws IOException {

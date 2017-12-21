@@ -35,6 +35,8 @@ package ucar.util.prefs.ui;
 
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 
@@ -42,10 +44,13 @@ import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Date;
 
 public class TestPanelStore {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static PreferencesExt store;

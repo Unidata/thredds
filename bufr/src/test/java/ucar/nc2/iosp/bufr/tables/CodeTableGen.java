@@ -36,8 +36,11 @@ import org.jdom2.*;
 import org.jdom2.output.XMLOutputter;
 import org.jdom2.output.Format;
 import org.jdom2.input.SAXBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import java.util.List;
 
@@ -46,6 +49,8 @@ import java.util.List;
  * @since Jul 10, 2008
  */
 public class CodeTableGen {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static String root = "C:/dev/tds/bufr/resources/resources/bufr/codes/";
   static String orgXml = root + "Code-FlagTables-11-2007.xml";
   static String trans1 = root + "Code-FlagTables-11-2007.trans1.xml";

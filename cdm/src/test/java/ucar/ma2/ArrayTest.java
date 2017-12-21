@@ -2,7 +2,11 @@ package ucar.ma2;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * Created with IntelliJ IDEA.
@@ -12,6 +16,7 @@ import ucar.nc2.util.Misc;
  * To change this template use File | Settings | File Templates.
  */
 public class ArrayTest {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private Array zeroRank;
   private IndexIterator iter;

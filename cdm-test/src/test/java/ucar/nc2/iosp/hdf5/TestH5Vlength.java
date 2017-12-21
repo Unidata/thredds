@@ -36,6 +36,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Attribute;
@@ -44,12 +46,15 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test nc2 read JUnit framework.
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5Vlength {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   File tempFile;
   PrintStream out;
 

@@ -12,6 +12,7 @@ import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +24,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class TestAdminDebug {
-    private static Logger logger = LoggerFactory.getLogger(TestAdminDebug.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static String urlPrefix =  "https://localhost:8443/thredds/";
     private static Credentials goodCred = new UsernamePasswordCredentials("tds", "secret666");

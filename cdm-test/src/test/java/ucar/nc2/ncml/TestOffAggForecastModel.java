@@ -34,6 +34,8 @@ package ucar.nc2.ncml;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -46,9 +48,12 @@ import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggForecastModel {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private int nruns = 15;
   private int nfore = 11;
 

@@ -37,13 +37,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 public class TestXMLStore {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   static {

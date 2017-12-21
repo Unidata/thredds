@@ -33,13 +33,19 @@
  */
 package ucar.util.prefs.ui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.invoke.MethodHandles;
 import java.text.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
 public class TestFormattedTextField {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static String pattern = "none";
   static JFormattedTextField d1;
   static JTextField patternTF;

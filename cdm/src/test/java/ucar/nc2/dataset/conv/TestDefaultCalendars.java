@@ -2,6 +2,8 @@ package ucar.nc2.dataset.conv;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
@@ -13,10 +15,13 @@ import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import static java.lang.String.format;
 
 public class TestDefaultCalendars {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private final Calendar defaultCoardsCalendar = Calendar.gregorian;
     private final Calendar defaultCFCalendar = Calendar.gregorian;
 

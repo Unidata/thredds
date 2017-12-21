@@ -36,13 +36,18 @@ package thredds.server.catalog;
 
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestDLwriter extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   public TestDLwriter( String name) {
     super(name);
   }

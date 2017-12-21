@@ -36,6 +36,8 @@ package thredds.server.cdmrf;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
@@ -51,6 +53,7 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsRdaData;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test RDA grib datasets in it
@@ -60,6 +63,7 @@ import java.io.IOException;
  */
 @Category(NeedsRdaData.class)
 public class TestRdaProblems {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // /thredds/cdmrfeature/grid/aggregations/g/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E?req=data&
   // var=Temperature_height_above_ground_Mixed_intervals_AverageNforecasts&timePresent=true

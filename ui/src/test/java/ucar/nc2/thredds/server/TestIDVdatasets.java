@@ -32,12 +32,15 @@
  */
 package ucar.nc2.thredds.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.*;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.nc2.units.DateRange;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import ucar.nc2.NetcdfFile;
@@ -57,6 +60,8 @@ import ucar.unidata.util.Format;
  * @author john
  */
 public class TestIDVdatasets {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   boolean extract = false;
   String skip;
   int countDone = 0, maxDone= Integer.MAX_VALUE;

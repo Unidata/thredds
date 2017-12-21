@@ -33,12 +33,15 @@
 package ucar.ma2;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.UtilsTestStructureArray;
 
 import java.io.IOException;
-
+import java.lang.invoke.MethodHandles;
 
 public class TestStructureArrayW extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestStructureArrayW(String name) {
     super(name);

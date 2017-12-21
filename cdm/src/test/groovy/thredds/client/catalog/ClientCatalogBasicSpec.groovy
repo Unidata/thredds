@@ -2,18 +2,20 @@ package thredds.client.catalog
 
 import org.junit.experimental.categories.Category
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import spock.lang.Unroll
 import ucar.unidata.util.test.TestDir
 import ucar.unidata.util.test.category.NeedsExternalResource
+
+import java.lang.invoke.MethodHandles
 
 /**
  * @author cwardgar
  * @since 2015-10-12
  */
 class ClientCatalogBasicSpec extends Specification {
-
-    private static Logger logger = org.slf4j.LoggerFactory.getLogger("testLogger");
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
 
     @Unroll
     def "test local catalog [#catFrag]"() {

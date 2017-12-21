@@ -37,15 +37,19 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPAuthUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Login extends JFrame implements CredentialsProvider
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     static final boolean DEBUG = true;
 
     protected String dfaltuser = null;

@@ -36,6 +36,8 @@ package ucar.nc2.writer;
 import SevenZip.LzmaAlone;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
@@ -50,6 +52,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +68,7 @@ import java.util.zip.Inflater;
  * @since 8/12/2014
  */
 public class TestGribCompressByBit {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   enum Action {floats, floatShaved, rawInts}
   enum ExtraAction {entropyB, entropyI}

@@ -35,15 +35,20 @@ package ucar.nc2;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test writing with fill values
  */
 public class TestWriteFill {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 

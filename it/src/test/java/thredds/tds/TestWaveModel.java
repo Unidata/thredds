@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
@@ -22,6 +24,7 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 
 /**
@@ -34,6 +37,8 @@ import java.text.ParseException;
 @Category(NeedsCdmUnitTest.class)
 @Ignore("FeatureCollection is empty because cdmUnitTest/tds/hioos is empty.")
 public class TestWaveModel {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Test
   public void testNcml() throws IOException, InvalidRangeException {
     String catalog = "/catalog/hioos/model/wav/swan/oahu/catalog.xml";

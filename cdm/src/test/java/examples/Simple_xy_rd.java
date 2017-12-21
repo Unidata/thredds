@@ -13,13 +13,18 @@
 */
 package examples;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.ma2.*;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 public class Simple_xy_rd {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static void main(String args[]) throws IOException {
 

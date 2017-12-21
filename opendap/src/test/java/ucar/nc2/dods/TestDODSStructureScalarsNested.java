@@ -33,11 +33,14 @@
 package ucar.nc2.dods;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /** Test nc2 dods in the JUnit framework.
  *
@@ -62,6 +65,7 @@ import java.io.IOException;
 } NestedStructure;
  */
 public class TestDODSStructureScalarsNested {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private DODSNetcdfFile dodsfile;
 

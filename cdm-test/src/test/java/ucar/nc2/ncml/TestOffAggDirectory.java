@@ -34,6 +34,8 @@ package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -50,10 +52,12 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggDirectory extends TestCase {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testNcmlDirect() throws IOException {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";

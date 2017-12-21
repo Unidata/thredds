@@ -33,6 +33,8 @@
 
 package ucar.nc2.writer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.jpeg.jj2000.j2k.codestream.writer.CodestreamWriter;
 import ucar.jpeg.jj2000.j2k.codestream.writer.FileCodestreamWriter;
 import ucar.jpeg.jj2000.j2k.codestream.writer.HeaderEncoder;
@@ -61,6 +63,7 @@ import ucar.jpeg.jj2000.j2k.wavelet.analysis.ForwardWT;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -72,6 +75,7 @@ import java.util.Vector;
  * @since 8/29/2014
  */
 public class Grib2JpegEncoder {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   /**
    * The exit code of the run method

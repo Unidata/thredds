@@ -35,7 +35,10 @@ package ucar.nc2.dataset;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -45,6 +48,7 @@ import java.util.List;
  * @since 10/20/2015.
  */
 public class TestDatasetUrls {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   static final boolean show = false;
   
   protected void protocheck(String path, String expected) {

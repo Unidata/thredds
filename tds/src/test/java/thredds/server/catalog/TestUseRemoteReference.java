@@ -34,6 +34,8 @@ package thredds.server.catalog;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
@@ -41,6 +43,7 @@ import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.List;
 
@@ -51,6 +54,8 @@ import java.util.List;
  * @since 1/16/2015
  */
 public class TestUseRemoteReference {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private String testCatalog = "thredds/server/catalog/TestRemoteCatalogService.xml";
   private Catalog cat;
 

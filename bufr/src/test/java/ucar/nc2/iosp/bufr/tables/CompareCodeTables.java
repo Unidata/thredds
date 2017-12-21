@@ -32,8 +32,11 @@
 package ucar.nc2.iosp.bufr.tables;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.StringUtil2;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
@@ -49,9 +52,8 @@ import java.nio.charset.Charset;
  * @author caron
  * @since Nov 30, 2009
  */
-
-
 public class CompareCodeTables {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   class Feature {
     int fxy;

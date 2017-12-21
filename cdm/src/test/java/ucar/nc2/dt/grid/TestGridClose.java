@@ -35,6 +35,8 @@ package ucar.nc2.dt.grid;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.NetcdfFile;
@@ -45,6 +47,7 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -53,6 +56,8 @@ import java.io.IOException;
  * @since Apr 13, 2010
  */
 public class TestGridClose {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 

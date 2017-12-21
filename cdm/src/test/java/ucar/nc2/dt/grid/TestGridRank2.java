@@ -33,16 +33,21 @@
 package ucar.nc2.dt.grid;
 
 import junit.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.*;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 /** Test grids with a problem in their dimension. */
 
 public class TestGridRank2 extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private boolean show = false;
 
   public void testWrite() throws Exception {

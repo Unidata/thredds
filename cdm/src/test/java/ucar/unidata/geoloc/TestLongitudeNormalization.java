@@ -5,8 +5,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -19,6 +22,8 @@ import java.util.Random;
  */
 @RunWith(Parameterized.class)
 public class TestLongitudeNormalization {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static boolean show = true;
   static boolean doRandom = false;
 

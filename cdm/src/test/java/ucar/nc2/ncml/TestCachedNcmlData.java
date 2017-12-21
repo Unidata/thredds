@@ -1,6 +1,8 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Structure;
@@ -9,6 +11,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -17,6 +20,7 @@ import java.io.IOException;
  * @since 4/26/12
  */
 public class TestCachedNcmlData {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testCachedData() throws IOException {

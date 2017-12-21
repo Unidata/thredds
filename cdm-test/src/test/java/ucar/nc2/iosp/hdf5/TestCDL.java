@@ -33,12 +33,15 @@
 
 package ucar.nc2.iosp.hdf5;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 import ucar.unidata.util.test.TestDir;
 
@@ -48,6 +51,7 @@ import ucar.unidata.util.test.TestDir;
  * @author caron
  */
 public class TestCDL {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testCDL() throws IOException, InterruptedException {
     File dir = new File(TestDir.cdmUnitTestDir + "formats/netcdf4/files/");

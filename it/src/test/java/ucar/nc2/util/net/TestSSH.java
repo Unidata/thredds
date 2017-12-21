@@ -40,6 +40,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -47,6 +49,7 @@ import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 
 /**
  * This test is to check ssh authorization.
@@ -55,6 +58,8 @@ import java.io.Serializable;
  */
 public class TestSSH extends UnitTestCommon
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     static protected final boolean IGNORE = true;
 
     static protected String SERVER = "localhost:8443";

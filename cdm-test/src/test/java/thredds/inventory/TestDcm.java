@@ -48,6 +48,7 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import java.util.List;
 
@@ -59,6 +60,7 @@ import java.util.List;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestDcm {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testScan() throws IOException {
@@ -138,7 +140,6 @@ public class TestDcm {
 
     // count scanned files
     // String topCollectionName, String topDirS, String olderThan, org.slf4j.Logger logger
-    Logger logger = LoggerFactory.getLogger("testOlderThanInDirectoryCollection");
     DirectoryCollection dcm = new DirectoryCollection("topCollectionName", specp.getRootDir(), true, config.olderThan, logger);
     dcm.setStreamFilter(new StreamFilter(java.util.regex.Pattern.compile(".*grib2"), true));
 

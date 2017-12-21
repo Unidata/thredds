@@ -30,6 +30,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -81,6 +82,8 @@ import java.util.List;
  * @see "https://jira.springsource.org/secure/attachment/19038/SpringJUnit4ParameterizedClassRunner.java"
  */
 public class SpringJUnit4ParameterizedClassRunner extends Suite {
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
 	/**
 	 * Annotation for a method which provides parameters to be injected into the
 	 * test class constructor by <code>Parameterized</code>
@@ -95,8 +98,6 @@ public class SpringJUnit4ParameterizedClassRunner extends Suite {
 		private final int fParameterSetNumber;
 
 		private final List<Object[]> fParameterList;
-
-		private final Logger logger = LoggerFactory.getLogger(TestClassRunnerForParameters.class);
 
 		private final TestContextManager testContextManager;
 		

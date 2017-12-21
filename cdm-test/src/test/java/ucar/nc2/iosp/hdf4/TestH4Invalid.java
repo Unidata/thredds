@@ -34,14 +34,18 @@
 package ucar.nc2.iosp.hdf4;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 // Test a file that should fail check without erroring
 public class TestH4Invalid {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Test
     public void testSmall() throws IOException {

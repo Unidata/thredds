@@ -37,13 +37,10 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /////////////////////////////////////////////////////////////////////////////
 
-
-
 package opendap.test;
 
-import opendap.servers.*;
-import org.junit.Test;
 import opendap.dap.*;
+import opendap.servers.*;
 
 import java.io.EOFException;
 import java.io.IOException;

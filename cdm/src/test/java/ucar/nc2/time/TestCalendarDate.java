@@ -4,7 +4,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.time.CalendarPeriod.Field;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * CalendarDate testing
@@ -13,6 +17,7 @@ import ucar.nc2.time.CalendarPeriod.Field;
  * @since 12/4/12
  */
 public class TestCalendarDate {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
    public void testDateTimeFields() {

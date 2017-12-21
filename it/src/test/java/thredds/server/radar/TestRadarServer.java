@@ -3,6 +3,8 @@ package thredds.server.radar;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPFactory;
@@ -12,6 +14,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -21,6 +24,7 @@ import static org.junit.Assert.fail;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestRadarServer {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Parameterized.Parameters(name="{0}")
   public static java.util.Collection<Object[]> getTestParameters() {

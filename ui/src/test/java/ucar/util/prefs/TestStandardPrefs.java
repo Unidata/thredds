@@ -33,10 +33,15 @@
  */
 package ucar.util.prefs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 import java.util.prefs.*;
 import java.io.*;
 
 public class TestStandardPrefs  {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static void main(String args[]) {
     //System.getProperty("ucar.util.prefs.PreferencesExtFactory");

@@ -17,6 +17,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
@@ -33,6 +35,7 @@ import ucar.nc2.util.IO;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +49,8 @@ import static org.junit.Assert.assertEquals;
 
 @Category(NeedsCdmUnitTest.class)
 public class ConsistentDatesTest {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
   private static final boolean show = true;
 

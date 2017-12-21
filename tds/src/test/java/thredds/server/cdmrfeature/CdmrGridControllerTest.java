@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -18,6 +20,8 @@ import org.springframework.web.context.WebApplicationContext;
 import thredds.util.ContentType;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.lang.invoke.MethodHandles;
+
 /**
  * @author cwardgar
  * @since 2016-10-18
@@ -27,6 +31,8 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 @ContextConfiguration(locations={"/WEB-INF/applicationContext.xml"})
 @Category(NeedsCdmUnitTest.class)
 public class CdmrGridControllerTest {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     @Autowired
     private WebApplicationContext wac;
 

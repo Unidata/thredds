@@ -33,12 +33,17 @@
 package ucar.unidata.util;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.net.*;
 
 /* Test URls */
 
 public class TestURL {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   //static String u = "http://adde.ucar.edu/pointdata?select='id TXKF'&param=day time t td psl";
   static String u = "http://adde.ucar.edu/pointdata?group=rtptsrc&descr=01hr&param=LAT&select=\"ida AZCN;day 07-june-2004;time 00:00 22:00\"&num=all&compress=true";
 
