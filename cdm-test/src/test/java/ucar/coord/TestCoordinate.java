@@ -1,5 +1,7 @@
 package ucar.coord;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.time.CalendarDate;
@@ -7,6 +9,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Indent;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -18,6 +21,8 @@ import java.util.List;
  * @since 12/10/13
  */
 public class TestCoordinate implements Coordinate {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   List<Object> vals;
   Coordinate.Type type = Type.vert;
 

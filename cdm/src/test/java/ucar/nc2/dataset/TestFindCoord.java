@@ -34,10 +34,13 @@ package ucar.nc2.dataset;
 
 import junit.framework.TestCase;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.ncml.NcMLReader;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 
 /**
  * test CoordinateAxis1D.findCoord()
@@ -46,6 +49,7 @@ import java.io.StringReader;
  * @since Jul 8, 2010
  */
 public class TestFindCoord extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestFindCoord(String name) {
     super(name);

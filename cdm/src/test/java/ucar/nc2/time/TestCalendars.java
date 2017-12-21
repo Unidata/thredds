@@ -33,6 +33,10 @@
 package ucar.nc2.time;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test on non-standard Calendars
@@ -41,6 +45,7 @@ import org.junit.Test;
  * @since 11/8/11
  */
 public class TestCalendars {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testEach() {

@@ -32,9 +32,14 @@
  */
 package ucar.ma2;
 
-import junit.framework.*;
+import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 public class TestMAMatrix extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestMAMatrix(String name) {
     super(name);

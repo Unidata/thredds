@@ -32,11 +32,16 @@
  */
 package ucar.ma2;
 
-import junit.framework.*;
+import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /** Test ma2 contructors from java arrays . */
 
 public class TestJavaArray extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestJavaArray( String name) {
     super(name);

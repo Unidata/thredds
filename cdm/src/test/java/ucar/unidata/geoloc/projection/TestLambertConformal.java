@@ -32,11 +32,15 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.projection.LambertConformal;
 
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  *  Some basic tests of the Lambert conformal conic projection class,
@@ -44,6 +48,8 @@ import org.junit.Test;
  */
 public class TestLambertConformal
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
 /**
  *  LambertConformal should accept latitude-at-origin that is at either pole.
  */

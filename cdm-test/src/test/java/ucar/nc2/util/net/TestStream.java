@@ -37,6 +37,8 @@ package ucar.nc2.util.net;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
@@ -49,6 +51,7 @@ import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -60,6 +63,8 @@ import java.net.URISyntaxException;
  */
 @Category(NeedsExternalResource.class)
 public class TestStream {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Test
   public void testStream1() throws URISyntaxException, IOException {
     String catalogName = "http://"+ TestDir.threddsTestServer+"/thredds/catalog.xml";

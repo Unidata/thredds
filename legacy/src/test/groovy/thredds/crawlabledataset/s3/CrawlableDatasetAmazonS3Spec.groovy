@@ -3,9 +3,13 @@ package thredds.crawlabledataset.s3
 import com.amazonaws.services.s3.model.ObjectListing
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.amazonaws.services.s3.model.S3ObjectSummary
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Shared
 import spock.lang.Specification
 import thredds.crawlabledataset.CrawlableDataset
+
+import java.lang.invoke.MethodHandles
 
 /**
  * Tests CrawlableDatasetAmazonS3
@@ -14,6 +18,8 @@ import thredds.crawlabledataset.CrawlableDataset
  * @since 2015/08/14
  */
 class CrawlableDatasetAmazonS3Spec extends Specification {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    
     // Shared resources are initialized in setupSpec()
     @Shared S3URI parentDirUri, childDir1Uri, childDir2Uri, dataset1Uri, dataset2Uri
     @Shared long dataset1Length, dataset2Length

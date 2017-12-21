@@ -35,10 +35,13 @@ package ucar.unidata.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.lang.invoke.MethodHandles;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateUnit;
 
@@ -49,7 +52,7 @@ import ucar.nc2.time.CalendarDateUnit;
  * @since Jun 18, 2008
  */
 public class TestRegexp {
-	
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testLogMatch() {

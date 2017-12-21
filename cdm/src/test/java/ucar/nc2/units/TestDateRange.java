@@ -33,7 +33,10 @@
 package ucar.nc2.units;
 
 import junit.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -46,6 +49,8 @@ import java.util.Date;
  */
 public class TestDateRange extends TestCase
 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   public TestDateRange( String name )
   {
     super( name );

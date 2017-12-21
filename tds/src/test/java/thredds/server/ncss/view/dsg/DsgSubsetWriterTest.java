@@ -33,6 +33,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Formatter;
@@ -43,7 +44,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class DsgSubsetWriterTest {
-    private static final Logger logger = LoggerFactory.getLogger(DsgSubsetWriterTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final boolean isClibraryPresent;
     static {

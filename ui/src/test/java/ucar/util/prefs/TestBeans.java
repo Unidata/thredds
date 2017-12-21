@@ -38,11 +38,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 public class TestBeans {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
   String prefsFilename;
 

@@ -34,9 +34,12 @@
 package ucar.nc2.util;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test DiskCache2
@@ -45,7 +48,7 @@ import java.io.File;
  * @since 7/21/2014
  */
 public class TestDiskCache {
-
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // https://github.com/Unidata/thredds/issues/58  from Cameron Beccario
   @Test

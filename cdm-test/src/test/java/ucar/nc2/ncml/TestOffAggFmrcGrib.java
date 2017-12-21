@@ -34,6 +34,8 @@ package ucar.nc2.ncml;
 
 import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
@@ -45,12 +47,14 @@ import ucar.unidata.util.test.TestDir;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.util.Date;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcGrib extends TestCase {
-  private boolean showValues = false;
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  private boolean showValues = false;
 
   public void testSimple() throws Exception {
     // no fmrcDefinition

@@ -33,6 +33,8 @@ package ucar.nc2.ncml;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.ServiceType;
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;
@@ -43,6 +45,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Class Description
@@ -52,6 +55,8 @@ import java.io.StringReader;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcMisc {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   String location = TestDir.cdmUnitTestDir +"ft/fmrc/efine/";
 
   @Test

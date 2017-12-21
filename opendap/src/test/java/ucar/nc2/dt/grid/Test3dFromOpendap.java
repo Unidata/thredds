@@ -35,14 +35,20 @@ package ucar.nc2.dt.grid;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
 
+import java.lang.invoke.MethodHandles;
+
 @Category(NeedsExternalResource.class)
 public class Test3dFromOpendap {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Test
   public void test3D() throws Exception {
     String endpoint = "dods://"+ TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best";

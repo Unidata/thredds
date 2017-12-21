@@ -37,6 +37,8 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.ServiceType;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.InvalidRangeException;
@@ -51,6 +53,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -70,6 +73,7 @@ import static org.junit.Assert.assertArrayEquals;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestVerticalTransformWithUnitsConversion {
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	
 	private String sameUnitsFile;
 	private String diffUnitsFile;

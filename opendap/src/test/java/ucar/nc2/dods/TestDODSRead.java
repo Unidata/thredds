@@ -33,13 +33,17 @@
 package ucar.nc2.dods;
 
 import opendap.test.TestSources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /** Test nc2 dods in the JUnit framework.
  *  Open and read various test datasets from the dts server.
  */
 public class TestDODSRead {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static boolean showFile = false, showFileDebug= false;
 

@@ -34,12 +34,17 @@ package ucar.nc2.units;
 
 import junit.framework.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
 import ucar.units.Unit;
 import ucar.units.ScaledUnit;
 import ucar.units.DerivedUnit;
 
+import java.lang.invoke.MethodHandles;
+
 public class TestTimeUnits extends TestCase  {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestTimeUnits( String name) {
     super(name);

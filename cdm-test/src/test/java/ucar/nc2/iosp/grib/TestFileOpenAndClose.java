@@ -34,11 +34,14 @@
 package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Keep opening files until we get an error
@@ -47,6 +50,7 @@ import java.io.RandomAccessFile;
  * @since 11/4/2014
  */
 public class TestFileOpenAndClose {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   //@Test
   public void testNFilesOpen() throws IOException {

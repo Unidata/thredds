@@ -37,13 +37,18 @@ import opendap.dap.parsers.*;
 import opendap.dap.*;
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.Diff;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 // Test that the DDS parsing is correct
 
 public class TestClone extends TestFiles {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static final int ISUNKNOWN = 0;
   static final int ISDAS = 1;
   static final int ISDDS = 2;

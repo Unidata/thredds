@@ -40,11 +40,14 @@ import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.nio.charset.Charset;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.iosp.bufr.Descriptor;
 import ucar.unidata.util.StringUtil2;
 
@@ -53,6 +56,8 @@ import ucar.unidata.util.StringUtil2;
  * @since Jul 24, 2008
  */
 public class CompareTableB {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static String btRoot = "C:/dev/tds/thredds/bufrTables/";
   static String bmt = "file:C:/dev/tds/bufr/resources/source/ukmet/original/BUFR_B_080731.xml";
   static String robbt = "C:/dev/tds/bufr/resources/resources/bufr/tables/B4M-000-013-B";

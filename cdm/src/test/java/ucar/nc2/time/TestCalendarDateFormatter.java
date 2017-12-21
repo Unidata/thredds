@@ -2,6 +2,7 @@ package ucar.nc2.time;
 
 import static org.junit.Assert.assertEquals;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Date;
 
 import org.junit.Test;
@@ -15,8 +16,7 @@ import org.slf4j.LoggerFactory;
  * @since 5/3/12
  */
 public class TestCalendarDateFormatter {
-
-  private static final Logger logger = LoggerFactory.getLogger(TestCalendarDateFormatter.class);
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testBad() {

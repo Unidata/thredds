@@ -37,6 +37,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
@@ -51,6 +53,7 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.Parameter;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 /**
@@ -61,6 +64,8 @@ import java.util.*;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestProjections {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private static String testDir= TestDir.cdmUnitTestDir + "transforms/";
   private static LatLonPointImpl testPoint = new LatLonPointImpl(0, 145.0);
 

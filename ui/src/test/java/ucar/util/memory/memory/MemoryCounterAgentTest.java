@@ -33,16 +33,20 @@
 
 package ucar.util.memory.memory;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class MemoryCounterAgentTest {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static void measureSize(Object o) {
     long memShallow = MemoryCounterAgent.sizeOf(o);

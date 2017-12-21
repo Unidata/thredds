@@ -3,6 +3,8 @@ package ucar.nc2.iosp.grib;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dt.GridCoordSystem;
@@ -16,6 +18,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test coordinate extraction on grib file.
@@ -24,6 +27,7 @@ import java.io.IOException;
  * @since 9/10/12
  */
 public class TestFindXYcoords {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   @Category(NeedsCdmUnitTest.class)

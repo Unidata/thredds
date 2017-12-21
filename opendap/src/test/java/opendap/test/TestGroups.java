@@ -34,6 +34,8 @@ package opendap.test;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.util.rc.RC;
 import ucar.unidata.util.test.Diff;
@@ -41,11 +43,14 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TestGroups extends UnitTestCommon
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     // Collect results locally
     static private class Testcase
     {

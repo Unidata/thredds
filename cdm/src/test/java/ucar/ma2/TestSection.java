@@ -32,14 +32,18 @@
  */
 package ucar.ma2;
 
-import junit.framework.*;
+import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NCdumpW;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /** Test ma2 section methods in the JUnit framework. */
 
 public class TestSection extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestSection( String name) {
     super(name);

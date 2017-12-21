@@ -33,6 +33,8 @@
 package ucar.nc2.ncml;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
@@ -44,6 +46,7 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -52,6 +55,8 @@ import java.io.StringReader;
  * @since Nov 24, 2009
  */
 public class TestAggMisc {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     @Test
     public void testNestedValues() throws IOException, InvalidRangeException, InterruptedException {
         String ncml = "<?xml version='1.0' encoding='UTF-8'?>\n" +

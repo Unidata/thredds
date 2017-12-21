@@ -9,8 +9,12 @@ import org.gradle.testkit.runner.TaskOutcome
 import org.gradle.testkit.runner.internal.PluginUnderTestMetadataReading
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Issue
 import spock.lang.Specification
+
+import java.lang.invoke.MethodHandles
 
 /**
  * Test PublishingUtil with ProjectBuilder and GradleRunner.
@@ -19,6 +23,8 @@ import spock.lang.Specification
  * @since 2016-01-16
  */
 class PublishingUtilTest extends Specification {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    
     def "createDependencyManagement() on multi-module project"() {
         setup: "Build a test Project using ProjectBuilder"
         Project rootProject = setupTestProject()

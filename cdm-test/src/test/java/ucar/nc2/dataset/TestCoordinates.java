@@ -37,6 +37,8 @@ package ucar.nc2.dataset;
 
 import junit.framework.*;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
@@ -53,12 +55,14 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test _Coordinates dataset in the JUnit framework.
  */
 
 public class TestCoordinates extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestCoordinates(String name) {
     super(name);

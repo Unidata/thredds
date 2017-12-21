@@ -32,11 +32,17 @@
  */
 package ucar.ma2;
 
-import junit.framework.*;
+import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /** Test ma2  methods in the JUnit framework. */
 
 public class TestMAType extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   public TestMAType( String name) {
     super(name);
   }

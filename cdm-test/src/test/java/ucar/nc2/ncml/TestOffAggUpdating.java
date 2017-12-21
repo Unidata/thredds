@@ -35,6 +35,8 @@ package ucar.nc2.ncml;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.ServiceType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
@@ -49,6 +51,7 @@ import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -62,6 +65,8 @@ import java.nio.file.StandardCopyOption;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggUpdating {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   String dir = TestDir.cdmUnitTestDir + "agg/updating";
   String location = dir + "agg/updating.ncml";
   File dirFile = new File(dir);

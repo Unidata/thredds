@@ -1,7 +1,10 @@
 package ucar.coord;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -13,6 +16,7 @@ import java.util.List;
  * @since 12/10/13
  */
 public class TestCoordinateUniquify {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testCoordinateUnionizer() {

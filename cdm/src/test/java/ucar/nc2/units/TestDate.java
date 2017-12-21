@@ -33,13 +33,18 @@
 package ucar.nc2.units;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.units.*;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestDate {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private DateFormatter formatter = new DateFormatter();
 
   void doTime2(double value, String name, boolean ok) {

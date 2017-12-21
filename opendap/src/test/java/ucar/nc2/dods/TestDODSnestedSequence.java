@@ -32,12 +32,15 @@
  */
 package ucar.nc2.dods;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /** Test nc2 dods in the JUnit framework.
  *
@@ -87,6 +90,7 @@ person1.age, person1.foo
 384
  */
 public class TestDODSnestedSequence {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @org.junit.Test
    public void testNestedSequenceParent() throws IOException {

@@ -2,7 +2,10 @@ package ucar.unidata.util;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +19,8 @@ import static org.junit.Assert.*;
  * To change this template use File | Settings | File Templates.
  */
 public class StringUtil2Test {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private String sep1 = "*|*"; //obnoxious multicharacter separator
     private String sep2 = "."; //obnoxious because in regex the . is a special character
     private String sep3 = "\\"; //obnoxious because of the possibly unintended escape sequence

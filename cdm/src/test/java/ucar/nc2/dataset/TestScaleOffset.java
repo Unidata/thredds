@@ -35,15 +35,19 @@ package ucar.nc2.dataset;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.ma2.*;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 public class TestScaleOffset {
-  @Rule
-  public TemporaryFolder tempFolder = new TemporaryFolder();
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   @Test
   public void testWrite() throws Exception {

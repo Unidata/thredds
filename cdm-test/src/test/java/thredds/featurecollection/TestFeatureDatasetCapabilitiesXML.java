@@ -60,6 +60,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -73,7 +74,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestFeatureDatasetCapabilitiesXML {
-  private static final Logger logger = LoggerFactory.getLogger(TestFeatureDatasetCapabilitiesXML.class);
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
 

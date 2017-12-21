@@ -36,6 +36,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.*;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import thredds.server.catalog.builder.ConfigCatalogBuilder;
@@ -45,6 +47,7 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.List;
 
@@ -56,6 +59,7 @@ import java.util.List;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestConfigCatalogBuilder {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Before
   public void setup() {

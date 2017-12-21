@@ -35,6 +35,8 @@ package ucar.nc2.util.cache;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -44,6 +46,7 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -52,6 +55,7 @@ import java.util.concurrent.*;
  * @since May 31, 2008
  */
 public class TestNetcdfFileCache {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static FileCache cache;
   static FileFactory factory = new MyFileFactory();

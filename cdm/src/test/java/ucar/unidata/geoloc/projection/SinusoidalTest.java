@@ -2,9 +2,15 @@ package ucar.unidata.geoloc.projection;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.*;
 
+import java.lang.invoke.MethodHandles;
+
 public class SinusoidalTest {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     // If we want all of the x-coords in the geographic region to be positive, use this.
     // Will be roughly 20015.8.
     private static final double false_easting = new Sinusoidal().latLonToProj(0, 180).getX();

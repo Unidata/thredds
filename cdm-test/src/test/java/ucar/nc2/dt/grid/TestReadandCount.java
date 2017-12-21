@@ -35,6 +35,8 @@ package ucar.nc2.dt.grid;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -43,6 +45,7 @@ import ucar.nc2.ncml.NcMLReader;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Iterator;
@@ -53,6 +56,8 @@ import java.io.ByteArrayInputStream;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestReadandCount {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private static final boolean show = false, showCount = true;
   private static String griddir = TestDir.cdmUnitTestDir +"conventions/";
   private static String grib1dir = TestDir.cdmUnitTestDir +"formats/grib1/";

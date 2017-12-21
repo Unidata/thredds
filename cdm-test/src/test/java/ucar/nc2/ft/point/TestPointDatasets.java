@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
@@ -51,6 +52,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
@@ -93,6 +96,7 @@ import ucar.unidata.util.StringUtil2;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestPointDatasets {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static List<Object[]> getAllFilesInDirectory(String topdir, FileFilter filter) {
     List<Object[]> result = new ArrayList<>();

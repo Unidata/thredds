@@ -36,7 +36,10 @@ package ucar.nc2.dods;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Structure;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
@@ -46,6 +49,8 @@ import ucar.ma2.StructureDataIterator;
  */
 public class TestDODSStructureForSequence extends TestCase
 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   public TestDODSStructureForSequence( String name)
   {
     super(name);

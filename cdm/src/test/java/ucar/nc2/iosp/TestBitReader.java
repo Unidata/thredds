@@ -36,14 +36,18 @@ package ucar.nc2.iosp;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * from https://github.com/lost-carrier 6/12/2014
  */
 public class TestBitReader {
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	@Test
 	public void testUcar() throws IOException {

@@ -37,12 +37,15 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +58,7 @@ import java.util.List;
  */
 @RunWith(Parameterized.class)
 public class TestGeotiffRead {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   static public File topdir = new File(TestDir.cdmUnitTestDir + "/formats/geotiff/");
 
   // Even if this class is being excluded due to the NeedsCdmUnitTest annotation, JUnit still calls this method.

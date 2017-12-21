@@ -34,8 +34,12 @@
 package ucar.unidata.geoloc;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.projection.LambertConformal;
 import ucar.nc2.util.Misc;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * compare ProjectionImpl.latLonToProjBB against latLonToProjBB2
@@ -44,6 +48,7 @@ import ucar.nc2.util.Misc;
  * @author caron
  */
 public class TestLatLonToProjBB extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   void doTest(ProjectionImpl p, LatLonRect rect) {
     ProjectionRect prect = p.latLonToProjBB( rect);

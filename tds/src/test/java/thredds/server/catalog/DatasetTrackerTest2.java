@@ -35,9 +35,12 @@ package thredds.server.catalog;
 
 import net.openhft.chronicle.map.ChronicleMap;
 import net.openhft.chronicle.map.ChronicleMapBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.server.catalog.tracker.DatasetExt;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -46,9 +49,9 @@ import java.io.*;
  * @since 12/1/2015.
  */
 public class DatasetTrackerTest2 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static void main(String[] args) throws IOException {
-
     ChronicleMapBuilder<String, DatasetExt> builder = ChronicleMapBuilder.of(String.class, DatasetExt.class)
             .averageValueSize(200).entries(100);
 
@@ -66,5 +69,4 @@ public class DatasetTrackerTest2 {
 
     datasetMap.close();
   }
-
 }

@@ -32,7 +32,11 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.*;
+
+import java.lang.invoke.MethodHandles;
 
 /*  import geotransform.transforms.Gdc_To_Utm_Converter;
 import geotransform.transforms.Utm_To_Gdc_Converter;
@@ -43,6 +47,8 @@ import geotransform.coords.Gdc_Coord_3d; */
 /** Test basic projection methods */
 
 public class TestUtm {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static double maxx_all = 0.0;
 
   int REPEAT = 100;

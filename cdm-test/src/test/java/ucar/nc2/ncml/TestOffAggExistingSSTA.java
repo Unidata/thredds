@@ -36,6 +36,8 @@ package ucar.nc2.ncml;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
@@ -46,10 +48,12 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggExistingSSTA {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   String ncml =
     "<?xml version='1.0' encoding='UTF-8'?>\n" +

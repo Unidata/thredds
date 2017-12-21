@@ -33,6 +33,8 @@
 package ucar.nc2.iosp.grib;
 
 import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib2.table.Grib2Table;
@@ -41,6 +43,7 @@ import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Description
@@ -49,6 +52,7 @@ import java.io.IOException;
  * @since 12/18/2014
  */
 public class TestGribTables {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testKmaTable() {

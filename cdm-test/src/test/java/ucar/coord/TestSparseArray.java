@@ -1,8 +1,11 @@
 package ucar.coord;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -14,6 +17,7 @@ import java.util.List;
  * @since 12/12/13
  */
 public class TestSparseArray {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testInfo() {

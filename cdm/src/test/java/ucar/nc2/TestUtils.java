@@ -33,7 +33,10 @@
 package ucar.nc2;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.nc2.constants.CDM;
 
@@ -44,7 +47,7 @@ import ucar.nc2.constants.CDM;
  */
 
 public class TestUtils  {
-
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static public void NCdump( String filename) {
     try {

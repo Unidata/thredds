@@ -6,11 +6,14 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -23,6 +26,8 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestTdsFCcatalogs {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Parameterized.Parameters(name = "{0}{1}")
   public static Collection<Object[]> getTestParameters() {
     return Arrays.asList(new Object[][]{
@@ -41,7 +46,6 @@ public class TestTdsFCcatalogs {
             {"testStationFeatureCollection.v5/files/catalog", "?dataset=testStationFeatureCollection.v5/files/Surface_METAR_20060328_0000.nc"}, // point fc
     });
   }
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestTdsFCcatalogs.class);
 
   @Parameterized.Parameter(value = 0)
   public String path;
@@ -64,5 +68,4 @@ public class TestTdsFCcatalogs {
     Assert.assertNotNull(response);
     logger.debug(new String(response, CDM.utf8Charset));
   }
-
 }

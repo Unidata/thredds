@@ -35,6 +35,8 @@ package ucar.nc2.dataset;
 import junit.framework.*;
 
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.GridDataset;
@@ -43,11 +45,14 @@ import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
+import java.lang.invoke.MethodHandles;
+
 /**
  * Test basic projection methods
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestVertical extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public TestVertical(String name) {
     super(name);

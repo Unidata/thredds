@@ -4,10 +4,13 @@ package thredds.server.catalog;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -20,6 +23,7 @@ import java.util.List;
 // In turn, those collections all have "${cdmUnitTest}" in their spec.
 @Category(NeedsCdmUnitTest.class)
 public class TestTdsPoint {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
    ///////////////////////////////////////////////////
   // work with catalogs with service elements removed

@@ -37,6 +37,8 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.Service;
@@ -50,6 +52,7 @@ import ucar.unidata.util.test.TestFileDirUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +60,8 @@ import java.util.regex.Pattern;
 import static org.junit.Assert.*;
 
 public class TestDatasetScanFilter {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @ClassRule public static final TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static File tmpTestDataDir;

@@ -1,6 +1,10 @@
 package edu.ucar.build.publishing
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import spock.lang.Specification
+
+import java.lang.invoke.MethodHandles
 
 /**
  * Test static methods of PublishToRawRepoTask.
@@ -9,6 +13,8 @@ import spock.lang.Specification
  * @since 2017-09-30
  */
 class PublishToRawRepoTaskSpec extends Specification {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    
     def "stripLeadingAndTrailingSlashes"() {
         expect: 'empty string produces empty string'
         PublishToRawRepoTask.stripLeadingAndTrailingSlashes('') == ''

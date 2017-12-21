@@ -35,6 +35,8 @@ package ucar.nc2.iosp;
 
 import org.junit.*;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -49,6 +51,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 
 /**
@@ -59,6 +62,7 @@ import java.util.Arrays;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestMiscIosp {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static int leaks;
 
   @BeforeClass

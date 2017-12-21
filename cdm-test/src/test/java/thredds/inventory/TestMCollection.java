@@ -34,6 +34,8 @@ package thredds.inventory;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.filter.StreamFilter;
@@ -43,13 +45,14 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Formatter;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestMCollection {
-  org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testStreamFilterInDirPartition() throws IOException {

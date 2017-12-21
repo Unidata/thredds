@@ -33,6 +33,8 @@
 
 package ucar.nc2.writer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
@@ -41,6 +43,7 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
@@ -50,6 +53,7 @@ import java.util.Formatter;
  * @since 8/12/2014
  */
 public class TestGribSize {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static File outDir;
   static PrintStream summaryOut;

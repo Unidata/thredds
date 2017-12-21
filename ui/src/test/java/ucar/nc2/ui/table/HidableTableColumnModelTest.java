@@ -2,13 +2,18 @@ package ucar.nc2.ui.table;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.table.DefaultTableModel;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Created by cwardgar on 1/9/14.
  */
 public class HidableTableColumnModelTest {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     @Test public void testTableModelResize() {
         DefaultTableModel model = new DefaultTableModel(6, 6);
         HidableTableColumnModel tcm = new HidableTableColumnModel(model);

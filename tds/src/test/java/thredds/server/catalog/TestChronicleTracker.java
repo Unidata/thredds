@@ -4,6 +4,8 @@ package thredds.server.catalog;
 import net.openhft.chronicle.map.*;
 import org.jdom2.Element;
 import org.jdom2.output.XMLOutputter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.CatalogRef;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.CatalogCrawler;
@@ -13,6 +15,7 @@ import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.Random;
 
 /**
@@ -22,9 +25,9 @@ import java.util.Random;
  * @since 3/28/2015
  */
 public class TestChronicleTracker {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static void main1(String[] args) {
-
     try {
       String tmp = System.getProperty("java.io.tmpdir");
       String pathname = "C:/temp/chronicleTest/myfile.dat";

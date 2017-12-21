@@ -34,9 +34,13 @@ package thredds.util;
 
 
 import org.junit.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 
 /**
  * _more_
@@ -46,6 +50,7 @@ import java.io.File;
  */
 public class TestStringValidateEncodeUtils
 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testValidSingleLineString()

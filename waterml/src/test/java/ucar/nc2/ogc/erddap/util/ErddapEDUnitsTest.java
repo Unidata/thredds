@@ -2,11 +2,17 @@ package ucar.nc2.ogc.erddap.util;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * Created by cwardgar on 2014/03/12.
  */
 public class ErddapEDUnitsTest {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     /**
      * This tests udunitsToUcum.
      * The most likely bugs are:

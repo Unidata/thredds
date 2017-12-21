@@ -39,12 +39,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.auth.Credentials;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.util.ContentType;
 import ucar.httpservices.*;
 import ucar.nc2.util.IO;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 
 /**
@@ -54,7 +57,7 @@ import java.util.Arrays;
  * @since 10/15/13
  */
 public class TestWithLocalServer {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TestWithLocalServer.class);
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   public static String server = "http://localhost:8081/thredds/";
 
   public static String withPath(String path) {

@@ -34,6 +34,8 @@ package ucar.nc2.util.net;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -41,10 +43,12 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 
 public class TestHTTPMethod extends UnitTestCommon
 {
-
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    
     //////////////////////////////////////////////////
     // Constants
 

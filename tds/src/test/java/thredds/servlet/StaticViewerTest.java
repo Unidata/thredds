@@ -2,6 +2,8 @@ package thredds.servlet;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
@@ -10,6 +12,7 @@ import thredds.server.viewer.ViewerLinkProvider;
 import thredds.server.viewer.ViewerServiceImpl;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -17,6 +20,8 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class StaticViewerTest {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Test
   public void checkViewerPropertyWithUrlReplacement() throws URISyntaxException {
     String host = "http://test.thredds.servlet.StaticViewerTest";

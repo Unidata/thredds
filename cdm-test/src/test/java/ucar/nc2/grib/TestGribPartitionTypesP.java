@@ -39,6 +39,8 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionUpdateType;
@@ -50,6 +52,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,10 +66,10 @@ import java.util.List;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestGribPartitionTypesP {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final String topdir = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80";
   private static final String spec = topdir + "/**/.*grib1";
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -98,7 +101,6 @@ public class TestGribPartitionTypesP {
             spec, null, null, null, partitionType, null);
 
     System.out.printf("============== create %s %n", collectionName);
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
     try (GribCollectionImmutable gc = GribCdmIndex.openGribCollection(config, CollectionUpdateType.always, logger)) {  // recreate the index each time
       Assert.assertNotNull(collectionName, gc);
       indent.incr();

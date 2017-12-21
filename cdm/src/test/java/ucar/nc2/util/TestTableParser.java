@@ -3,9 +3,12 @@ package ucar.nc2.util;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -15,6 +18,7 @@ import java.util.List;
  * @since 4/19/12
  */
 public class TestTableParser {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     ////////////////////////////////////////////////////////////////////////////////////
   static final String testName3 = "/resources/nj22/tables/nexrad.tbl";

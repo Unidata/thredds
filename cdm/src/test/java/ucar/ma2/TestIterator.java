@@ -35,11 +35,16 @@ package ucar.ma2;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
+
+import java.lang.invoke.MethodHandles;
 
 /** Test ma2 section methods in the JUnit framework. */
 
 public class TestIterator {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   int m = 4, n = 3, p = 2;
   int [] sA = { m, n, p };

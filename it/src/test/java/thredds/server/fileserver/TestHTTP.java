@@ -33,6 +33,8 @@
 package thredds.server.fileserver;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
@@ -47,10 +49,13 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /** Test remote netcdf over HTTP in the JUnit framework. */
 public class TestHTTP  {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   String url = "http://" + TestDir.remoteTestServer + "/thredds/fileServer/scanLocal/mydata1.nc";
 
   @Test

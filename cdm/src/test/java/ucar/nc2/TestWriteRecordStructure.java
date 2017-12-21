@@ -35,10 +35,13 @@ package ucar.nc2;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.constants.CDM;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Simple example to create a new netCDF file with a "record structure"
@@ -46,6 +49,8 @@ import java.io.IOException;
  * @author : John Caron
  */
 public class TestWriteRecordStructure {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule
   public TemporaryFolder tempFolder = new TemporaryFolder();
 

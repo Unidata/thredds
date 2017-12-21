@@ -34,6 +34,8 @@ package thredds.server.views;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.web.ModelAndViewAssert;
 import org.springframework.web.servlet.View;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -42,6 +44,7 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -55,8 +58,7 @@ import java.util.Collections;
  */
 public class TestInvCatalogXmlView
 {
-  private static org.slf4j.Logger log =
-          org.slf4j.LoggerFactory.getLogger( TestInvCatalogXmlView.class );
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testUnknownEncoding() throws IOException {

@@ -36,6 +36,8 @@ package thredds.server.cdmr;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -47,6 +49,7 @@ import ucar.nc2.stream.CdmRemote;
 import ucar.unidata.util.test.category.NeedsRdaData;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -56,6 +59,8 @@ import java.io.IOException;
  */
 @Category(NeedsRdaData.class)
 public class TestCdmrTiming {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   String local = /* CdmRemote.SCHEME + */ TestWithLocalServer.server + "cdmremote/rdavmWork/yt.oper.an.sfc.regn400sc.10v_166.200805";
   String rdavm = "http://rdavm.ucar.edu:8080/thredds/cdmremote/files/e/ds629.1/yt.oper.an.sfc/2008/yt.oper.an.sfc.regn400sc.10v_166.200805";
   String cdmUrl = local;

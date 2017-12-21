@@ -1,5 +1,7 @@
 package ucar.nc2.dt.image;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.Index;
@@ -13,6 +15,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.IndexColorModel;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -21,6 +24,7 @@ import java.io.IOException;
  * @since 6/13/13
  */
 public class TestImage {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static byte[] convert(String srcPath, double a, double b) throws IOException {
     NetcdfFile ncfile = NetcdfFile.open(srcPath);

@@ -34,8 +34,11 @@
 package ucar.nc2.util;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.test.TestDir;
 
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.net.URL;
 import java.net.URISyntaxException;
@@ -49,7 +52,7 @@ import java.io.File;
  * @since Jun 16, 2008
  */
 public class TestDatasetURL extends TestCase {
-
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
  
   public TestDatasetURL(String name) {
     super(name);

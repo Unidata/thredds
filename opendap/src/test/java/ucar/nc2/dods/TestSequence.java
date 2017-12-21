@@ -1,13 +1,19 @@
 package ucar.nc2.dods;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 
+import java.lang.invoke.MethodHandles;
+
 public class TestSequence extends TestCase
 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   final String TITLE = "OpenDAP Sequence Test" ;
 
   public TestSequence(String name, String testdir) {

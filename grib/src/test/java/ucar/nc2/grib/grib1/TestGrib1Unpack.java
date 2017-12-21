@@ -3,6 +3,8 @@ package ucar.nc2.grib.grib1;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
@@ -13,6 +15,7 @@ import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test misc GRIB1 unpacking
@@ -21,6 +24,7 @@ import java.io.IOException;
  * @since 11/23/2015.
  */
 public class TestGrib1Unpack {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // Tests reading data with Ecmwf extended complex packing
   @Test

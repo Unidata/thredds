@@ -36,14 +36,19 @@ package ucar.util.prefs;
 
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.beans.*;
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 
 /** simulate a bean that might look like a DB row, say 20 fields */
 public class TestDBBean {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
 
   static {

@@ -32,18 +32,24 @@
  */
 package ucar.ma2;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.List;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.math.BigInteger;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
 /** Test ma2 section methods in the JUnit framework. */
 
 public class TestMAMath {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private int m = 4, n = 3, p = 2;
   private ArrayDouble A = new ArrayDouble(new int[] {m, n, p});
 

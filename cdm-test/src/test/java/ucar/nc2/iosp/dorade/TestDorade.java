@@ -34,6 +34,8 @@ package ucar.nc2.iosp.dorade;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.NetcdfFile;
 
 import ucar.nc2.*;
@@ -44,9 +46,11 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestDorade {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public static String groundDoradeFile = TestDir.cdmUnitTestDir + "formats/dorade/swp.1020511015815.SP0L.573.1.2_SUR_v1";
   public static String airDoradeFile = TestDir.cdmUnitTestDir + "formats/dorade/swp.1030524195200.TA-ELDR.291.-16.5_AIR_v-999";

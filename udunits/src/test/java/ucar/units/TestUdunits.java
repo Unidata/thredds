@@ -34,8 +34,11 @@
 package ucar.units;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -46,6 +49,7 @@ import java.util.TimeZone;
  * @since 7/29/2014
  */
 public class TestUdunits {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testOffsetUnit() throws IOException, NameException, UnitExistsException, OperationException, ConversionException {

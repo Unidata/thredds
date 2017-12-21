@@ -6,12 +6,15 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.iosp.NCheader;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.UnitTestCommon;
 import ucar.unidata.util.test.category.NeedsContentRoot;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +25,7 @@ import java.util.List;
 @RunWith(Parameterized.class)
 public class TestCheckFileType extends UnitTestCommon
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     static final String PREFIX = "thredds/public/testdata/";
 
     @Parameterized.Parameters(name = "{1}")

@@ -32,13 +32,19 @@
  */
 package ucar.unidata.geoloc.projection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.*;
 import junit.framework.*;
 
+import java.lang.invoke.MethodHandles;
+
 /** Test basic projection methods */
 
 public class TestProjectionTiming extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  
   int REPEAT = 100;
   int NPTS = 1000;
   double TOLERENCE = 1.0e-6;

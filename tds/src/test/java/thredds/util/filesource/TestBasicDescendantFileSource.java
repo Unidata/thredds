@@ -36,11 +36,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import ucar.unidata.util.test.TestFileDirUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import static org.junit.Assert.*;
 
@@ -52,6 +55,8 @@ import static org.junit.Assert.*;
  */
 public class TestBasicDescendantFileSource
 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
   private File tmpDir;
 

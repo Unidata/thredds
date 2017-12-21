@@ -33,6 +33,8 @@
 package ucar.nc2.iosp.hdf5;
 
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.NCdumpW;
@@ -45,6 +47,7 @@ import ucar.unidata.util.test.TestDir;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * TestSuite that runs all the sample testsNew
@@ -52,6 +55,8 @@ import java.io.IOException;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   public static boolean dumpFile = false;
   public static String testDir = TestDir.cdmUnitTestDir + "formats/hdf5/";
 

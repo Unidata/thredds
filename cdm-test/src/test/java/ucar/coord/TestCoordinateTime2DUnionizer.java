@@ -2,11 +2,14 @@ package ucar.coord;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Indent;
 
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 /**
@@ -16,6 +19,8 @@ import java.util.*;
  * @since 11/25/2014
  */
 public class TestCoordinateTime2DUnionizer {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static int code = 0;
   static CalendarPeriod timeUnit = CalendarPeriod.of("1 hour");
   static CalendarDate startDate = CalendarDate.parseISOformat(null, "1970-01-01T00:00:00");

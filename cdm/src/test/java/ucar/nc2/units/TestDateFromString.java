@@ -34,7 +34,10 @@ package ucar.nc2.units;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,6 +49,7 @@ import java.util.Date;
  * @since Nov 29, 2005 6:14:37 PM
  */
 public class TestDateFromString {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private String fileName = "xzy_tds_20051129_1235_junk.grib";
   private String dateAsISOString = "2005-11-29T12:35";

@@ -34,6 +34,8 @@ package ucar.nc2.iosp.grib;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -44,10 +46,13 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.lang.invoke.MethodHandles;
+
 import static org.junit.Assert.*;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestGribEnsembles {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   // from jitka
   @Test

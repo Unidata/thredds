@@ -33,14 +33,19 @@
 package ucar.unidata.geoloc;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.projection.*;
 import junit.framework.*;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  *
  * @author John Caron
  */
 public class TestLatLonProjection extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private LatLonProjection p;
 

@@ -1,10 +1,13 @@
 /* Copyright */
 package thredds.server.catalog;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.core.*;
 import thredds.server.catalog.tracker.*;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Describe
@@ -13,6 +16,7 @@ import java.io.*;
  * @since 6/5/2015
  */
 public class TestEsgCats {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   static class Stats {
     int catrefs;

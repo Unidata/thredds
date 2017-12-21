@@ -39,6 +39,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribLevelType;
 import ucar.unidata.util.StringUtil2;
@@ -46,6 +48,7 @@ import ucar.unidata.util.StringUtil2;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.*;
 
@@ -56,6 +59,8 @@ import java.util.*;
  * @since 11/21/11
  */
 public class NcepHtmlScraper {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   static private final boolean debug = false;
   static private final boolean show = false;
 

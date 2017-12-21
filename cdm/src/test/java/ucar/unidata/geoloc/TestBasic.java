@@ -32,13 +32,18 @@
  */
 package ucar.unidata.geoloc;
 import junit.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.unidata.util.Format;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Random;
 
 /** Test basic projection methods */
 
 public class TestBasic extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private final boolean debug1 = false;
   private final boolean debug2 = false;
   private final boolean debug3 = false;

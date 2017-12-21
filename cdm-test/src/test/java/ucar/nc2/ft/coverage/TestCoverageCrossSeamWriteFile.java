@@ -7,6 +7,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.constants.FeatureType;
@@ -24,6 +26,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Test Coverage Cross-Seam subsetting by writing a file.
@@ -32,6 +35,7 @@ import java.io.IOException;
  * @since 9/12/2015.
  */
 public class TestCoverageCrossSeamWriteFile {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   @Category(NeedsCdmUnitTest.class)

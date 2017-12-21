@@ -33,6 +33,8 @@
 package ucar.nc2;
 
 import junit.framework.TestCase;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.util.EscapeStrings;
 import ucar.ma2.*;
 import ucar.nc2.dt.grid.GridDataset;
@@ -43,6 +45,7 @@ import ucar.unidata.io.RandomAccessFile;
 
 import java.io.IOException;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -56,6 +59,7 @@ import java.util.List;
  * @since May 13, 2009
  */
 public class TestMisc extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testBackslashTokens() {
     testBackslashTokens("group/name.member.mom");

@@ -34,6 +34,10 @@ package ucar.ma2;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * test Range class
@@ -42,6 +46,7 @@ import org.junit.Test;
  * @since 11/2/11
  */
 public class TestRange {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testStride() throws InvalidRangeException {

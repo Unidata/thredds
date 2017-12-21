@@ -38,6 +38,8 @@ import org.junit.After;
 import org.junit.Before;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.ArrayInt;
 import ucar.ma2.Index;
 import ucar.nc2.NetcdfFile;
@@ -45,12 +47,14 @@ import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Test ncml value element in the JUnit framework. */
 
 public class TestNcMLValues {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     NetcdfFile ncfile = null;
     String ncml = null;

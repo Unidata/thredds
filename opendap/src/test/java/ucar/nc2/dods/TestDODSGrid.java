@@ -32,6 +32,8 @@
  */
 package ucar.nc2.dods;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayDouble;
 import ucar.ma2.DataType;
@@ -39,6 +41,7 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.Variable;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import static org.junit.Assert.assertEquals;
 
@@ -52,6 +55,7 @@ import static org.junit.Assert.assertEquals;
     } OneD;
 } Simple;*/
 public class TestDODSGrid {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @org.junit.Test
   public void testGrid() throws IOException {

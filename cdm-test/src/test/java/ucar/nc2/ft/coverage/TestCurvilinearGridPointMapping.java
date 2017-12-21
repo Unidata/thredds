@@ -3,6 +3,8 @@ package ucar.nc2.ft.coverage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NetcdfFile;
@@ -15,6 +17,7 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import static org.junit.Assert.assertEquals;
 
@@ -24,6 +27,8 @@ import static org.junit.Assert.assertEquals;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestCurvilinearGridPointMapping {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private String datasetLocation = TestDir.cdmUnitTestDir + "transforms/UTM/artabro_20120425.nc";
   private String covName = "hs";
 

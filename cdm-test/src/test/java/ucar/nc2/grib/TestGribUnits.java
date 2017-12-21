@@ -3,6 +3,8 @@ package ucar.nc2.grib;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Attribute;
 import ucar.nc2.Group;
 import ucar.nc2.Variable;
@@ -11,12 +13,14 @@ import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 /**
  * Created by rmay on 3/2/16.
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestGribUnits {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Test
     public void test_ordered_sequence_units() throws IOException {

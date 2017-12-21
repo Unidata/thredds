@@ -1,6 +1,7 @@
 package thredds.tds;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
@@ -10,6 +11,8 @@ import org.apache.http.client.HttpClient;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.category.NeedsExternalResource;
@@ -19,6 +22,8 @@ import ucar.unidata.util.test.TestDir;
 @Ignore("NO WMS Server yet")
 public class PoundTdsWmsTest
 {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   @Test
   public void hitLocalTdsWms() throws IOException {
     String curUrl;

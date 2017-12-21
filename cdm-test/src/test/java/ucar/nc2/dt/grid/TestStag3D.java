@@ -33,12 +33,15 @@
 package ucar.nc2.dt.grid;
 
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.ma2.Array;
 import junit.framework.TestCase;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
 /**
@@ -49,6 +52,8 @@ import java.util.Formatter;
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestStag3D extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   public void testSubset() throws Exception {
     ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "ft/grid/stag/bora_feb.nc");
 

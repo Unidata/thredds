@@ -3,6 +3,8 @@ package thredds.server.opendap;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -11,6 +13,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.CDM;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URLEncoder;
 
 /**
@@ -20,6 +23,7 @@ import java.net.URLEncoder;
  * @since 4/19/2015
  */
 public class TestOpendapFilters {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testIllegalRequest() throws IOException, InvalidRangeException {

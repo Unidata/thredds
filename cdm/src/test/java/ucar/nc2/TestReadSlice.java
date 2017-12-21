@@ -33,15 +33,19 @@
 package ucar.nc2;
 
 import junit.framework.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.unidata.util.test.UtilsMa2Test;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 /** Test reading variable data */
 
 public class TestReadSlice extends TestCase {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   public void testReadSlice1() throws InvalidRangeException, IOException {
     NetcdfFile ncfile = TestDir.openFileLocal("testWrite.nc");

@@ -33,6 +33,8 @@
 package ucar.nc2.util.cache;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -42,6 +44,7 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,6 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @since May 31, 2008
  */
 public class TestFileCacheConcurrent {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   FileCacheIF cache = new FileCache(50, 100, 30);
   FileFactory factory = new MyFileFactory();

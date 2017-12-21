@@ -1,6 +1,8 @@
 package ucar.nc2.time;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -12,6 +14,7 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -21,6 +24,7 @@ import java.util.List;
  * @since 7/15/13
  */
 public class TestTimeCoordinates {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   //@Test
   // Conventions = "CF-1.0, CW HDF, COARDS"

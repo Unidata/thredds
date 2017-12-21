@@ -33,15 +33,19 @@
 package ucar.nc2.iosp.hdf5;
 
 import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 
 /** Test nc2 read JUnit framework. */
 @Category(NeedsCdmUnitTest.class)
 public class TestH5ReadBasic {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @org.junit.Test
   /* attribute array of String */

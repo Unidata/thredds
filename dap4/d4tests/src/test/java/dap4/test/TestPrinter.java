@@ -9,10 +9,13 @@ import dap4.core.dmr.DapDataset;
 import dap4.core.util.*;
 import dap4.core.data.DSP;
 import dap4.dap4lib.DMRPrinter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
 /**
@@ -21,6 +24,8 @@ import java.util.Map;
 
 public class TestPrinter
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     //////////////////////////////////////////////////
     // Constants
 

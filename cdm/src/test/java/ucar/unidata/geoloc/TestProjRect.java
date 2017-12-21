@@ -39,12 +39,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 /** Test ncml value element in the JUnit framework. */
 @RunWith(Parameterized.class)
 public class TestProjRect {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private double x1, x2, y1, y2;
     private ProjectionRect projectionRect;

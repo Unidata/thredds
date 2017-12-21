@@ -9,12 +9,16 @@ import dap4.servlet.SynDSP;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import thredds.server.dap4.Dap4Controller;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * TestDSR verifies the DSR page
@@ -23,6 +27,8 @@ import thredds.server.dap4.Dap4Controller;
 
 public class TestDSR extends DapTestCommon
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     static protected final boolean DEBUG = false;
 
     //////////////////////////////////////////////////
