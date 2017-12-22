@@ -654,7 +654,7 @@ public class CatalogBuilder {
     // look for dates
     list = parent.getChildren("date", Catalog.defNS);
     for (Element e : list) {
-      DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e));
+      DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e,null));
     }
 
     // look for documentation
@@ -991,6 +991,7 @@ public class CatalogBuilder {
       </xsd:choice>
 
       <xsd:element name="resolution" type="duration" minOccurs="0"/>
+      <xsd:attribute name="calendar" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -1038,9 +1039,11 @@ public class CatalogBuilder {
    */
   protected DateRange readTimeCoverage(Element tElem) {
     if (tElem == null) return null;
-
-    DateType start = readDate(tElem.getChild("start", Catalog.defNS));
-    DateType end = readDate(tElem.getChild("end", Catalog.defNS));
+    
+    String cal = tElem.getAttributeValue("calendar");
+    
+    DateType start = readDate(tElem.getChild("start", Catalog.defNS),cal);
+    DateType end = readDate(tElem.getChild("end", Catalog.defNS),cal);
     TimeDuration duration = readDuration(tElem.getChild("duration", Catalog.defNS));
     TimeDuration resolution = readDuration(tElem.getChild("resolution", Catalog.defNS));
 
@@ -1052,17 +1055,17 @@ public class CatalogBuilder {
     }
   }
 
-  protected DateType readDate(Element elem) {
+  protected DateType readDate(Element elem, String cal) {
     if (elem == null) return null;
     String format = elem.getAttributeValue("format");
     String type = elem.getAttributeValue("type");
-    return makeDateType(elem.getText(), format, type);
+    return makeDateType(elem.getText(), format, type, cal);
   }
 
-  protected DateType makeDateType(String text, String format, String type) {
+  protected DateType makeDateType(String text, String format, String type, String cal) {
     if (text == null) return null;
     try {
-      return new DateType(text, format, type);
+      return new DateType(text, format, type, ucar.nc2.time.Calendar.get(cal));
     } catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad date format = '%s'%n", text);
       return null;
