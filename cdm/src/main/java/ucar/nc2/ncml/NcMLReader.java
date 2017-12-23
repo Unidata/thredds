@@ -522,8 +522,10 @@ public class NcMLReader {
 
     // detect incorrect namespace
     Namespace use = netcdfElem.getNamespace();
-    if (!use.equals(ncNS) && !use.equals(ncNSHttps)) {
-      throw new IllegalArgumentException("Incorrect namespace specified in NcML= " + use.getURI() + "\n   must be=" + ncNS.getURI());
+    if (!use.equals(ncNSHttp) && !use.equals(ncNSHttps)) {
+      String message = String.format("Namespace specified in NcML must be either '%s' or '%s', but was '%s'.",
+              ncNSHttp.getURI(), ncNSHttps.getURI(), use.getURI());
+      throw new IllegalArgumentException(message);
     }
 
     if (ncmlLocation != null) targetDS.setLocation(ncmlLocation);
