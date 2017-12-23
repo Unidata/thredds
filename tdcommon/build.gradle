@@ -20,8 +20,6 @@ dependencies {
     compile libraries["protobuf-java"]
 
     compile libraries["slf4j-api"]
-    compile libraries["log4j-api"]
-    compile libraries["log4j-core"]
 
       // Spring
     compile libraries["spring-core"]
