@@ -39,24 +39,3 @@ tasks.withType(Test).all {
         }
     }
 }
-
-// Add an SLF4J binding to testRuntime, if necessary.
-afterEvaluate {
-    if (testRuntimeHasDepNamed(it, "slf4j-api")) {
-        if (!testRuntimeHasDepNamed(it, "slf4j-jdk14") &&
-            !testRuntimeHasDepNamed(it, "log4j-slf4j-impl")) {
-            logger.info "Using default binding (slf4j-jdk14) to log testing messages in '$it.path'."
-            dependencies.testRuntime libraries["slf4j-jdk14"]
-        }
-    }
-}
-
-boolean testRuntimeHasDepNamed(Project project, String depName) {
-    try {
-        // Groovy truth: empty collections are coerced to false.
-        project.configurations.testRuntime.allDependencies.findAll { it.name == depName }
-    } catch (UnknownConfigurationException e) {  // Project did not have a configuration named 'testRuntime'.
-        logger.debug e.message
-        false
-    }
-}

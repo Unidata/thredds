@@ -12,4 +12,5 @@ dependencies {
     
     compile libraries["junit"]
     compile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
 }

@@ -78,11 +78,6 @@ libraries["spring-security-config"] = "org.springframework.security:spring-secur
 
 libraries["spring-security-web"] = "org.springframework.security:spring-security-web:${versions["spring-security"]}"
 
-// "spring-security-taglibs" is only used in the Maven build of wmotables.
-// wmotables is not built in Gradle, but I'm leaving this here so that
-// dependencies.gradle matches the root POM's dependencyManagement section as closely as possible.
-libraries["spring-security-taglibs"] = "org.springframework.security:spring-security-taglibs:${versions["spring-security"]}"
-
 ////////////////////////////////////////// XML Beans //////////////////////////////////////////
 
 libraries["xmlbeans"] = "org.apache.xmlbeans:xmlbeans:2.6.0"
@@ -105,8 +100,6 @@ versions["slf4j"] = "1.7.25"
 
 libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
-libraries["slf4j-jdk14"] = "org.slf4j:slf4j-jdk14:${versions["slf4j"]}"
-
 libraries["jcl-over-slf4j"] = "org.slf4j:jcl-over-slf4j:${versions["slf4j"]}"
 
 versions["log4j"] = "2.10.0"
@@ -114,6 +107,8 @@ versions["log4j"] = "2.10.0"
 libraries["log4j-web"] = "org.apache.logging.log4j:log4j-web:${versions["log4j"]}"
 
 libraries["log4j-slf4j-impl"] = "org.apache.logging.log4j:log4j-slf4j-impl:${versions["log4j"]}"
+
+libraries["logback-classic"] = "ch.qos.logback:logback-classic:1.2.3"
 
 ////////////////////////////////////////// Testing //////////////////////////////////////////
 

@@ -51,7 +51,7 @@ dependencies {
     
     dap4lib project(':dap4:d4core')
     dap4lib project(':dap4:d4lib')
-    dap4lib libraries["slf4j-jdk14"]
+    dap4lib libraries["logback-classic"]
     
     d4ts project(':dap4:d4ts')
 }

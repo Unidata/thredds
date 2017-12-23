@@ -15,6 +15,7 @@ dependencies {
     compile libraries["httpmime"]
 
     compile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
 }
 
 gretty {

@@ -22,7 +22,9 @@ dependencies {
     compile libraries["jackson-core"]  // Replace what was in aws-java-sdk-s3
     compile libraries["jackson-annotations"]  // Replace what was in aws-java-sdk-s3
     compile libraries["jackson-databind"]  // Replace what was in aws-java-sdk-s3
+    
     compile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
 
     // These are all for Spock.
     testCompile libraries["spock-core"]

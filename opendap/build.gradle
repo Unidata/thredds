@@ -25,6 +25,7 @@ dependencies {
     compile libraries["coverity-escapers"]
 
     compile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
     
     testCompile libraries["JUnitParams"]
 }
