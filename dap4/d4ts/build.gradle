@@ -13,7 +13,6 @@ dependencies {
     compileOnly libraries["javax.servlet-api"]
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]
-    runtime libraries["log4j-core"]
     runtime libraries["log4j-web"]
 }
 

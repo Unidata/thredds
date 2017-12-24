@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ServletContextAware;
-import org.springframework.web.util.Log4jWebConfigurer;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.util.filesource.BasicDescendantFileSource;
 import thredds.util.filesource.DescendantFileSource;
@@ -123,11 +122,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
     }
 
     @Override
-    public void destroy()
-    {
-        logServerStartup.info("TdsContext: shutdownLogging()");
-        Log4jWebConfigurer.shutdownLogging(servletContext); // probably not needed anymore with log4j-web in classpath
-    }
+    public void destroy() { }
 
     @Override
     public void afterPropertiesSet()
@@ -300,10 +295,6 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
         String loggingDirectory = StringUtil2.substitute(logDir.getPath(), "\\", "/");
         System.setProperty("tds.log.dir", loggingDirectory); // variable substitution
 
-        // LOOK Remove log4j init JC 6/13/2012
-        // which is used in log4j.xml file loaded here.
-        // LOOK Remove Log4jWebConfigurer,initLogging - depends on log4g v1, we are using v2 JC 9/2/2013
-        // Log4jWebConfigurer.initLogging( servletContext );
         logServerStartup.info("TdsContext version= " + getVersionInfo());
         logServerStartup.info("TdsContext intialized logging in " + logDir.getPath());
     }

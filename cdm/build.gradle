@@ -26,6 +26,7 @@ dependencies {
     compile libraries["jsr305"]  // Nonnull
 
     compile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
 
     // These are for Spock.
     testCompile libraries["groovy-all"]

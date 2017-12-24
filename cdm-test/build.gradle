@@ -28,6 +28,7 @@ dependencies {
     testCompile libraries["guava"]
 
     testCompile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
 }
 
 task testIndexCreation(type: Test, dependsOn: [classes, testClasses], group: 'Verification',

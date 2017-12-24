@@ -174,7 +174,7 @@ lm.readConfiguration(inputStream);
 === http://logging.apache.org/log4j/2.x/[Log4j 2]
 
 * You must include the https://logging.apache.org/log4j/2.0/log4j-slf4j-impl/index.html[Log4j 2 SLF4J Binding]
-(`log4j-slf4j-impl-${log4j2Version}.jar`) and the Log4j 2 implementation (`log4j-core-${log4j2Version}.jar`) on the classpath.
+(`log4j-slf4j-impl-${log4j2Version}.jar`) on the classpath.
 * You should then https://logging.apache.org/log4j/2.x/manual/configuration.html[configure] the logging by adding a
 `log4j2.xml` config file to your classpath. A minimal version is:
 

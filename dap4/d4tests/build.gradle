@@ -17,11 +17,12 @@ dependencies {
     testCompile project(':httpservices')
     
     testCompile(project(":tds")) {
-        exclude module: "log4j-slf4j-impl"  // We don't want TDS's logger binding.
+        exclude group: "org.apache.logging.log4j"  // We don't want TDS's log4j cruft.
     }
 
     testCompile libraries["javax.servlet-api"]
     testCompile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
 
     // Spring
     compile libraries["spring-test"]
@@ -30,7 +31,6 @@ dependencies {
     compile libraries["spring-beans"]
     compile libraries["spring-web"]
     compile libraries["spring-webmvc"]
-
 }
 
 test {

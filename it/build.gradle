@@ -23,7 +23,7 @@ dependencies {
     testCompile project(":httpservices")
     testCompile project(":tdcommon")
     testCompile(project(":tds")) {
-        exclude module: "log4j-slf4j-impl"  // We don't want TDS's logger binding.
+        exclude group: "org.apache.logging.log4j"  // We don't want TDS's log4j cruft.
     }
 
     testRuntime project(":clcommon")
@@ -44,6 +44,7 @@ dependencies {
     testCompile libraries["xmlunit-core"]  // For comparing catalog XML.
 
     testRuntime libraries["jaxen"]
+    testRuntime libraries["logback-classic"]
 
     // These are for Spock.
     testCompile libraries["groovy-all"]

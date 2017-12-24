@@ -15,6 +15,7 @@ dependencies {
     compile project(':cdm')
     compile libraries["jna"]
     compile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
     
     // These are for Spock.
     testCompile libraries["groovy-all"]

@@ -18,4 +18,5 @@ dependencies {
     compile libraries["jcommander"]
     compile libraries["slf4j-api"]
     testCompile libraries["jsoup"]
+    testRuntime libraries["logback-classic"]
 }

@@ -28,4 +28,5 @@ dependencies {
     compile libraries["guava"]
     compile libraries["joda-time"]
     compile libraries["slf4j-api"]
+    testRuntime libraries["logback-classic"]
 }

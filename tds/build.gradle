@@ -98,8 +98,14 @@ dependencies {
     // Logging
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]
-    runtime libraries["log4j-core"]
     runtime libraries["log4j-web"]
+    testRuntime libraries["logback-classic"]
+}
+
+// "testRuntime" extends from "runtime", meaning that "testRuntime" will get the log4j dependencies declared in
+// "runtime". However, we want logback-classic to be the logger during tests, so exclude all of the log4j stuff.
+configurations.testRuntime {
+    exclude group: "org.apache.logging.log4j"
 }
 
 // Adds ':tds:prepareInplaceWebAppClasses', which ':it:integrationTest' depends on.
