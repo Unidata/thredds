@@ -56,7 +56,7 @@ public class TestResolve1 {
   
   @Test
   public void testResolve() throws IOException {
-    Catalog cat = TestClientCatalog.open(urlString);
+    Catalog cat = ClientCatalogUtil.open(urlString);
     assert cat != null;
 
     Service s = cat.findService( "ACD");
@@ -65,7 +65,7 @@ public class TestResolve1 {
 
     assert getAccessURL(cat, "nest11").equals("http://www.acd.ucar.edu/dods/testServer/flux/CO2.nc");
     assert getAccessURL(cat, "nest12").equals(base+"netcdf/data/flux/NO2.nc") :
-      getAccessURL(cat, "nest12")+" != "+TestClientCatalog.makeFilepath()+"netcdf/data/flux/NO2.nc";
+      getAccessURL(cat, "nest12")+" != "+ClientCatalogUtil.makeFilepath()+"netcdf/data/flux/NO2.nc";
 
     assert getMetadataURL(cat, "nest1", "NETCDF").equals("any.xml");
     assert getMetadataURL(cat, "nest1", "ADN").equals("http://you/corrupt.xml");
