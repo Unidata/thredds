@@ -7,8 +7,6 @@ import ucar.nc2.dataset.DatasetUrl
 import ucar.nc2.dataset.NetcdfDataset
 import ucar.unidata.util.test.TestDir
 
-import java.lang.invoke.MethodHandles
-
 /**
  * Tests caching behavior when datasets are closed and then reacquired.
  *
@@ -16,7 +14,7 @@ import java.lang.invoke.MethodHandles
  * @since 2016-01-02
  */
 class ReacquireClosedDatasetSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(ReacquireClosedDatasetSpec)
     
     def setupSpec() {
         // All datasets, once opened, will be added to this cache. Config values copied from CdmInit.

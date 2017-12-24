@@ -8,14 +8,12 @@ import spock.lang.Unroll
 import thredds.TestWithLocalServer
 import ucar.unidata.util.test.category.NeedsCdmUnitTest
 
-import java.lang.invoke.MethodHandles
-
 /**
  * @author cwardgar
  * @since 2015-10-12
  */
 class ClientCatalogBasicSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private static final Logger logger = LoggerFactory.getLogger(ClientCatalogBasicSpec)
 
     @Unroll
     def "test local catalog [#catFrag]"() {

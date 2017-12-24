@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory
 import spock.lang.Issue
 import spock.lang.Specification
 
-import java.lang.invoke.MethodHandles
-
 /**
  * Test PublishingUtil with ProjectBuilder and GradleRunner.
  *
@@ -23,7 +21,7 @@ import java.lang.invoke.MethodHandles
  * @since 2016-01-16
  */
 class PublishingUtilTest extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private static final Logger logger = LoggerFactory.getLogger(PublishingUtilTest)
     
     def "createDependencyManagement() on multi-module project"() {
         setup: "Build a test Project using ProjectBuilder"

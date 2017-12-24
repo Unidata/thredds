@@ -16,14 +16,12 @@ import ucar.nc2.time.CalendarDateUnit
 import ucar.unidata.geoloc.LatLonPointImpl
 import ucar.unidata.geoloc.LatLonRect
 
-import java.lang.invoke.MethodHandles
-
 /**
  * @author cwardgar
  * @since 2015/09/21
  */
 class PointIteratorFilteredSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(PointIteratorFilteredSpec)
     
     def "space and time filter"() {
         setup: "feature dataset"

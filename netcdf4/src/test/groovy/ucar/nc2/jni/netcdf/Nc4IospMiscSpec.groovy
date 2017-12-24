@@ -12,8 +12,6 @@ import ucar.nc2.NetcdfFile
 import ucar.nc2.NetcdfFileWriter
 import ucar.nc2.Variable
 
-import java.lang.invoke.MethodHandles
-
 /**
  * Tests miscellaneous aspects of Nc4Iosp.
  *
@@ -21,7 +19,7 @@ import java.lang.invoke.MethodHandles
  * @since 2017-03-27
  */
 class Nc4IospMiscSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private static final Logger logger = LoggerFactory.getLogger(Nc4IospMiscSpec)
     
     @Rule TemporaryFolder tempFolder = new TemporaryFolder()
     

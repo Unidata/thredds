@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import ucar.nc2.Attribute
 
-import java.lang.invoke.MethodHandles
-
 /**
  * Test various aspects of Nc4Iosp when the C lib is NOT loaded.
  *
@@ -14,7 +12,7 @@ import java.lang.invoke.MethodHandles
  * @since 2016-12-27
  */
 class UnloadedNc4IospSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private static final Logger logger = LoggerFactory.getLogger(UnloadedNc4IospSpec)
     
     def "flush in define mode, without C lib loaded"() {
         setup:

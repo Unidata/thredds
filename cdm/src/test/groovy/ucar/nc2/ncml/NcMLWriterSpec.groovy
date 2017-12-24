@@ -14,14 +14,12 @@ import ucar.ma2.DataType
 import ucar.nc2.*
 import ucar.nc2.dataset.NetcdfDataset
 
-import java.lang.invoke.MethodHandles
-
 /**
  * @author cwardgar
  * @since 2015/08/05
  */
 class NcMLWriterSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(NcMLWriterSpec)
     
     @Shared
     NetcdfFile ncFile

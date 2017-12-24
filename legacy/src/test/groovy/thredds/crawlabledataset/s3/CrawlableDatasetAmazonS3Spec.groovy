@@ -9,8 +9,6 @@ import spock.lang.Shared
 import spock.lang.Specification
 import thredds.crawlabledataset.CrawlableDataset
 
-import java.lang.invoke.MethodHandles
-
 /**
  * Tests CrawlableDatasetAmazonS3
  *
@@ -18,7 +16,7 @@ import java.lang.invoke.MethodHandles
  * @since 2015/08/14
  */
 class CrawlableDatasetAmazonS3Spec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private static final Logger logger = LoggerFactory.getLogger(CrawlableDatasetAmazonS3Spec)
     
     // Shared resources are initialized in setupSpec()
     @Shared S3URI parentDirUri, childDir1Uri, childDir2Uri, dataset1Uri, dataset2Uri

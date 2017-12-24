@@ -8,8 +8,6 @@ import ucar.nc2.Variable
 import ucar.nc2.dataset.DatasetUrl
 import ucar.nc2.dataset.NetcdfDataset
 
-import java.lang.invoke.MethodHandles
-
 /**
  * Tests acquiring aggregated datasets from a file cache.
  *
@@ -17,7 +15,7 @@ import java.lang.invoke.MethodHandles
  * @since 2015-12-29
  */
 class CacheAggregationsSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(CacheAggregationsSpec)
     
     def setupSpec() {
         // All datasets, once opened, will be added to this cache.

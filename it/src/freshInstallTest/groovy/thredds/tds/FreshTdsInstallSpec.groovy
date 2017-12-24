@@ -9,7 +9,6 @@ import spock.lang.Specification
 import thredds.TestWithLocalServer
 import thredds.util.ContentType
 
-import java.lang.invoke.MethodHandles
 import java.nio.charset.Charset
 
 /**
@@ -21,7 +20,7 @@ import java.nio.charset.Charset
  * @since 2017-04-21
  */
 class FreshTdsInstallSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private static final Logger logger = LoggerFactory.getLogger(FreshTdsInstallSpec)
     
     String propName = "tds.content.root.path"
     
