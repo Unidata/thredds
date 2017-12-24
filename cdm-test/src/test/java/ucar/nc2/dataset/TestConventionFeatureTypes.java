@@ -40,7 +40,7 @@ public class TestConventionFeatureTypes {
     result.add(new Object[]{"cedric", FeatureType.GRID});
     result.add(new Object[]{"cf", FeatureType.GRID});
     result.add(new Object[]{"cf/dsc", FeatureType.POINT});
-    // result.add(new Object[]{"cfradial", FeatureType.RADIAL});
+    result.add(new Object[]{"cfradial", FeatureType.RADIAL});
     result.add(new Object[]{"coards", FeatureType.GRID});
     result.add(new Object[]{"csm", FeatureType.GRID});
     result.add(new Object[]{"gdv", FeatureType.GRID});
@@ -48,7 +48,7 @@ public class TestConventionFeatureTypes {
     result.add(new Object[]{"ifps", FeatureType.GRID});
     result.add(new Object[]{"m3io", FeatureType.GRID});
     result.add(new Object[]{"mars", FeatureType.GRID});
-    //result.add(new Object[]{"mm5", FeatureType.GRID});
+    //result.add(new Object[]{"mm5", FeatureType.GRID});   // Dataset lacks X and Y axes.
     result.add(new Object[]{"nuwg", FeatureType.GRID});
     result.add(new Object[]{"wrf", FeatureType.GRID});
     result.add(new Object[]{"zebra", FeatureType.GRID});
@@ -67,19 +67,14 @@ public class TestConventionFeatureTypes {
   @Test
   public void testFeatureDatasets() throws IOException {
     for (File f :  TestDir.getAllFilesInDirectoryStandardFilter(dir)) {
-      System.out.printf("Open FeatureDataset %s%n", f.getPath());
+      logger.debug("Open FeatureDataset {}", f.getPath());
       try (FeatureDataset fd = FeatureDatasetFactoryManager.open(type, f.getPath(), null, new Formatter())) {
         Assert.assertNotNull(f.getPath(), fd);
         if (type == FeatureType.GRID)
           Assert.assertTrue(f.getPath(), fd.getFeatureType().isCoverageFeatureType());
         else if (type == FeatureType.POINT)
           Assert.assertTrue(f.getPath(), fd.getFeatureType().isPointFeatureType());
-
-      } catch (Throwable t) {
-        System.out.printf("FAIL %s%n", f.getPath());
-        throw t;
       }
-
     }
   }
 
@@ -87,14 +82,11 @@ public class TestConventionFeatureTypes {
    public void testCoverageDatasets() throws IOException {
     if (type != FeatureType.GRID) return;
      for (File f :  TestDir.getAllFilesInDirectoryStandardFilter(dir)) {
-       System.out.printf("Open CoverageDataset %s%n", f.getPath());
+       logger.debug("Open CoverageDataset {}", f.getPath());
        try (NetcdfDataset ds = NetcdfDataset.openDataset(f.getPath())) {
          DtCoverageCSBuilder builder = DtCoverageCSBuilder.classify(ds, new Formatter());
          Assert.assertNotNull(builder);
        }
-
      }
    }
-
  }
-
