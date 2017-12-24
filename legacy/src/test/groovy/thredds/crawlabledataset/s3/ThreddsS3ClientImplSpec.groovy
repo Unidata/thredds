@@ -9,8 +9,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
 
-import java.lang.invoke.MethodHandles
-
 /**
  * Tests that ThreddsS3ClientImpl implements the contract of ThreddsS3Client, particularly with respect to unhappy
  * code paths. Makes heavy use of mocking to avoid actually connecting to Amazon S3.
@@ -22,7 +20,7 @@ import java.lang.invoke.MethodHandles
  * @since 2015/08/26
  */
 class ThreddsS3ClientImplSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private static final Logger logger = LoggerFactory.getLogger(ThreddsS3ClientImplSpec)
     
     ObjectListing emptyMockObjectListing
     ObjectListing nonEmptyMockObjectListing

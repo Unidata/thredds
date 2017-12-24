@@ -6,8 +6,6 @@ import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import ucar.nc2.Attribute
 
-import java.lang.invoke.MethodHandles
-
 /**
  * Test various aspects of Nc4Iosp.
  *
@@ -15,7 +13,7 @@ import java.lang.invoke.MethodHandles
  * @since 2016-12-27
  */
 class Nc4IospSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass())
+    private static final Logger logger = LoggerFactory.getLogger(Nc4IospSpec)
     
     def setup() {
         // Ignore this class's tests if NetCDF-4 isn't present.

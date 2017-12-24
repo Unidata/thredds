@@ -13,14 +13,12 @@ import ucar.nc2.ft.point.FlattenedDatasetPointCollection
 import ucar.nc2.ft.point.PointTestUtil
 import ucar.unidata.util.test.TestDir
 
-import java.lang.invoke.MethodHandles
-
 /**
  * @author cwardgar
  * @since 2015/09/21
  */
 class PointStreamSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(PointStreamSpec)
     
     public static final String cfDocDsgExamplesDir = TestDir.cdmLocalTestDataDir + "cfDocDsgExamples/";
     public static final String pointDir = TestDir.cdmLocalTestDataDir + "point/";

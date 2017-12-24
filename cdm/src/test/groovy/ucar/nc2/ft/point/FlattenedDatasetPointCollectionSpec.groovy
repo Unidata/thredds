@@ -4,26 +4,19 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import ucar.nc2.constants.FeatureType
-import ucar.nc2.ft.DsgFeatureCollection
-import ucar.nc2.ft.FeatureDatasetPoint
-import ucar.nc2.ft.PointFeature
-import ucar.nc2.ft.PointFeatureCC
-import ucar.nc2.ft.PointFeatureCCC
-import ucar.nc2.ft.PointFeatureCollection
+import ucar.nc2.ft.*
 import ucar.nc2.time.CalendarDateRange
 import ucar.nc2.time.CalendarDateUnit
 import ucar.unidata.geoloc.EarthLocationImpl
 import ucar.unidata.geoloc.LatLonPointImpl
 import ucar.unidata.geoloc.LatLonRect
 
-import java.lang.invoke.MethodHandles
-
 /**
  * @author cwardgar
  * @since 2015/06/26
  */
 class FlattenedDatasetPointCollectionSpec extends Specification {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(FlattenedDatasetPointCollectionSpec)
     
     // FDP used in all feature methods. Its getPointFeatureCollectionList() method will be stubbed to return
     // different collections per test.
