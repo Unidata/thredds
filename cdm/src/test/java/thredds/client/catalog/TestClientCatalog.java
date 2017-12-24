@@ -36,7 +36,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.time.CalendarDate;
@@ -44,8 +43,6 @@ import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.TimeUnit;
-import ucar.unidata.util.StringUtil2;
-import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -60,50 +57,14 @@ import java.util.List;
 public class TestClientCatalog {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static public String makeUrlFromFragment(String catFrag) {
-    return "file:" + TestDir.cdmLocalTestDataDir + "thredds/catalog/" + catFrag;
-  }
-
-  static public Catalog open(String urlString) throws IOException {
-    if (!urlString.startsWith("http:") && !urlString.startsWith("file:")) {
-      urlString = makeUrlFromFragment(urlString);
-    } else {
-      urlString = StringUtil2.replace(urlString, "\\", "/");
-    }
-    System.out.printf("Open %s%n", urlString);
-    CatalogBuilder builder = new CatalogBuilder();
-    Catalog cat = builder.buildFromLocation(urlString, null);
-    if (builder.hasFatalError()) {
-      System.out.printf("ERRORS %s%n", builder.getErrorMessage());
-      assert false;
-      return null;
-    } else {
-      String mess = builder.getErrorMessage();
-      if (mess.length() > 0)
-        System.out.printf(" parse Messages = %s%n", builder.getErrorMessage());
-    }
-    return cat;
-  }
-
-  public static String makeFilepath(String catalogName) {
-    return makeFilepath() + catalogName;
-  }
-
-  public static String makeFilepath() {
-    return "file:" + dataDir;
-  }
-
-  public static String dataDir = TestDir.cdmLocalTestDataDir + "thredds/catalog/";
-
-  /////////////////////////////////
-
   @Test
   public void testResolve() throws IOException {
-    Catalog cat = open("testCatref.xml");
-    Assert.assertEquals("catrefURI", makeFilepath("test2.xml"), getCatrefURI(cat.getDatasets(), "catref"));
+    Catalog cat = ClientCatalogUtil.open("testCatref.xml");
+    Assert.assertEquals(
+            "catrefURI", ClientCatalogUtil.makeFilepath("test2.xml"), getCatrefURI(cat.getDatasets(), "catref"));
 
     String catrefURIn = getCatrefNestedURI(cat, "top", "catref-nested");
-    assert catrefURIn.equals(makeFilepath("test0.xml")) : catrefURIn;
+    assert catrefURIn.equals(ClientCatalogUtil.makeFilepath("test0.xml")) : catrefURIn;
   }
 
   private CatalogRef getCatrefNested(Catalog cat, String id, String catName) {
@@ -117,7 +78,7 @@ public class TestClientCatalog {
       if (ds.getName().equals(name)) {
         assert ds instanceof CatalogRef;
         CatalogRef catref = (CatalogRef) ds;
-        System.out.println(name + " = " + catref.getXlinkHref() + " == " + catref.getURI());
+        logger.debug("{} = {} == {}", name, catref.getXlinkHref(), catref.getURI());
         return catref;
       }
     }
@@ -138,7 +99,7 @@ public class TestClientCatalog {
 
   @Test
   public void testDeferredRead() throws IOException {
-    Catalog cat = open("testCatref.xml");
+    Catalog cat = ClientCatalogUtil.open("testCatref.xml");
 
     CatalogRef catref = getCatref(cat.getDatasets(), "catref");
     assert (!catref.isRead());
@@ -151,7 +112,7 @@ public class TestClientCatalog {
 
   @Test
   public void testNested() throws IOException {
-    Catalog cat = open("nestedServices.xml");
+    Catalog cat = ClientCatalogUtil.open("nestedServices.xml");
     assert cat != null;
 
     Dataset ds = cat.findDatasetByID("top");
@@ -166,15 +127,14 @@ public class TestClientCatalog {
     assert ds != null;
     assert ds.getServiceDefault() != null : ds.getID();
 
-
-    System.out.printf("OK%n");
+    logger.debug("OK");
   }
 
   ////////////////////////////
 
   @Test
   public void testGC() throws Exception {
-    Catalog cat = open("MissingGCProblem.xml");
+    Catalog cat = ClientCatalogUtil.open("MissingGCProblem.xml");
     assert cat != null;
 
     Dataset ds = cat.findDatasetByID("hasGC");
@@ -189,13 +149,13 @@ public class TestClientCatalog {
 
   @Test
   public void testTC() throws Exception {
-    Catalog cat = open("TestTimeCoverage.xml");
+    Catalog cat = ClientCatalogUtil.open("TestTimeCoverage.xml");
     assert cat != null;
 
     Dataset ds = cat.findDatasetByID("test1");
     DateRange tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = " + tc);
+    logger.debug("tc = {}", tc);
     assert tc.getEnd().isPresent();
     assert tc.getResolution() == null;
     assert tc.getDuration().equals(new TimeDuration("14 days"));
@@ -203,7 +163,7 @@ public class TestClientCatalog {
     ds = cat.findDatasetByID("test2");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = " + tc);
+    logger.debug("tc = {}", tc);
     CalendarDate got = tc.getStart().getCalendarDate();
     CalendarDate want = CalendarDateFormatter.isoStringToCalendarDate(null, "1999-11-16T12:00:00");
     assert got.equals(want);
@@ -215,14 +175,14 @@ public class TestClientCatalog {
     ds = cat.findDatasetByID("test3");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = " + tc);
+    logger.debug("tc = {}", tc);
     assert tc.getResolution() == null;
     assert tc.getDuration().equals(new TimeDuration("2 days"));
 
     ds = cat.findDatasetByID("test4");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = " + tc);
+    logger.debug("tc = {}", tc);
     TimeDuration r = tc.getResolution();
     assert r != null;
     TimeDuration r2 = new TimeDuration("3 hour");
@@ -236,7 +196,7 @@ public class TestClientCatalog {
 
   @Test
   public void testVariables() throws IOException {
-    Catalog cat = open("TestHarvest.xml");
+    Catalog cat = ClientCatalogUtil.open("TestHarvest.xml");
     assert cat != null;
 
     Dataset ds = cat.findDatasetByID("solve1.dc8");
@@ -255,7 +215,6 @@ public class TestClientCatalog {
     assert dif != null;
     checkVariable(dif, "wind_from_direction",
             "EARTH SCIENCE > Atmosphere > Atmosphere Winds > Surface Winds > wind_from_direction");
-
   }
 
   ThreddsMetadata.VariableGroup getType(List<ThreddsMetadata.VariableGroup> list, String type) {
@@ -277,18 +236,19 @@ public class TestClientCatalog {
   }
 
   /////////////////
+
   @Test
   public void testSubset() throws IOException {
-    Catalog cat = open("InvCatalog-1.0.xml");
+    Catalog cat = ClientCatalogUtil.open("InvCatalog-1.0.xml");
     CatalogXmlWriter writer = new CatalogXmlWriter();
-    System.out.printf("%s%n", writer.writeXML(cat));
+    logger.debug(writer.writeXML(cat));
 
     Dataset ds = cat.findDatasetByID("testSubset");
     assert (ds != null) : "cant find dataset 'testSubset'";
     assert ds.getFeatureType() == FeatureType.GRID;
 
     Catalog subsetCat = cat.subsetCatalogOnDataset(ds);
-    System.out.printf("%s%n", writer.writeXML(subsetCat));
+    logger.debug(writer.writeXML(subsetCat));
 
     List<Dataset> dss = subsetCat.getDatasets();
     assert dss.size() == 1;
@@ -308,13 +268,13 @@ public class TestClientCatalog {
 
   @Test
   public void testTimeCoverage() throws Exception {
-    Catalog cat = open("TestTimeCoverage.xml");
+    Catalog cat = ClientCatalogUtil.open("TestTimeCoverage.xml");
     assert cat != null;
 
     Dataset ds = cat.findDatasetByID("test1");
     DateRange tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = "+tc);
+    logger.debug("tc = {}", tc);
     assert tc.getEnd().isPresent();
     assert tc.getResolution() == null;
     assert tc.getDuration().equals( new TimeDuration("14 days") );
@@ -322,7 +282,7 @@ public class TestClientCatalog {
     ds = cat.findDatasetByID("test2");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = "+tc);
+    logger.debug("tc = {}", tc);
     CalendarDate got = tc.getStart().getCalendarDate();
     CalendarDate want = CalendarDateFormatter.isoStringToCalendarDate(null, "1999-11-16T12:00:00");
     assert got.equals( want);
@@ -334,14 +294,14 @@ public class TestClientCatalog {
     ds = cat.findDatasetByID("test3");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = "+tc);
+    logger.debug("tc = {}", tc);
     assert tc.getResolution() == null;
     assert tc.getDuration().equals( new TimeDuration("2 days") );
 
     ds = cat.findDatasetByID("test4");
     tc = ds.getTimeCoverage();
     assert null != tc;
-    System.out.println(" tc = "+tc);
+    logger.debug("tc = {}", tc);
     TimeDuration r = tc.getResolution();
     assert r != null;
     TimeDuration r2 = new TimeDuration("3 hour");
@@ -350,5 +310,4 @@ public class TestClientCatalog {
     TimeUnit tu = d.getTimeUnit();
     assert tu.getUnitString().equals("days") : tu.getUnitString(); // LOOK should be 3 hours, or hours or ??
  }
-
 }

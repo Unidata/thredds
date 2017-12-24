@@ -54,7 +54,7 @@ public class TestWrite {
   @Test
   public void testWrite1() throws IOException {
     String filename = "test1.xml";
-    Catalog cat = TestClientCatalog.open(filename);
+    Catalog cat = ClientCatalogUtil.open(filename);
     assert cat != null;
 
     File tmpFile = tempFolder.newFile();
@@ -71,7 +71,7 @@ public class TestWrite {
     }
 
     // read it back in
-    Catalog catR = TestClientCatalog.open("file:" + tmpFile.getPath());
+    Catalog catR = ClientCatalogUtil.open("file:" + tmpFile.getPath());
     assert catR != null;
 
     compare( cat, catR);

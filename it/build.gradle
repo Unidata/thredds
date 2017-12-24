@@ -49,9 +49,6 @@ dependencies {
     // These are for Spock.
     testCompile libraries["groovy-all"]
     testCompile libraries["spock-core"]
-
-    // Unlike the other subprojects, we do not need to add an SLF4J binding to testRuntime;
-    // we're overlaying tds (see below), so we're already getting the binding that it declares.
 }
 
 // Gretty will start the webapp before this task and shut it down afterward.

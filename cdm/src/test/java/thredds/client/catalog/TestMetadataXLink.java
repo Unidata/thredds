@@ -118,7 +118,7 @@ public class TestMetadataXLink {
 
   @Test
   public void testXLink() throws IOException {
-    Catalog cat = TestClientCatalog.open("catalogDev.xml");
+    Catalog cat = ClientCatalogUtil.open("catalogDev.xml");
     assert cat != null;
 
     CatalogXmlWriter writer = new CatalogXmlWriter();
@@ -183,7 +183,7 @@ public class TestMetadataXLink {
 
   @Test
   public void testNamespaces() throws IOException {
-    Catalog cat = TestClientCatalog.open("testMetadata.xml");
+    Catalog cat = ClientCatalogUtil.open("testMetadata.xml");
     assert cat != null;
 
     ThreddsMetadata.MetadataOther m = getMetadataByNamespace(cat, "solve", "somethingdifferent");
