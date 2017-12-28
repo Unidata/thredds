@@ -34,8 +34,6 @@ import java.util.*;
  * <tr><td>threddsServerPropName<td>thredds
  *     <td>Property name for the hostname of standard thredds server. Only used in
  *         classes that explicitly reference motherlode.
- * <tr><td>threddsTestServerPropName<td>thredds-test
- *     <td>Property name for the hostname of the Java library thredds test server.
  * <tr><td>remoteTestServerPropName<td>remotetest
  *     <td>Property name for the hostname of the C-library remote test server.
  * </table>
@@ -52,8 +50,6 @@ import java.util.*;
  *     <td>Temporary data directory (for writing temporary data).
  * <tr><td>threddsServer<td>threddsserver<td>thredds.ucar.edu
  *     <td>The hostname of the standard thredds server.
- * <tr><td>threddsTestServer<td>threddstestserver<td>thredds-test.unidata.ucar.edu
- *     <td>The hostname of the standard thredds test server.
  * <tr><td>remoteTestServer<td>remotetestserver<td>remotetest.unidata.ucar.edu
  *     <td>The hostname of the test server for doing C library remote tests
  * </table>
@@ -99,11 +95,6 @@ public class TestDir {
   //////////////////////////////////////////////////////////////////////
   // Various Test Server machines
   //////////////////////////////////////////////////////////////////////
-
-  // thredd-test Test server (for testing)
-
-  static public String threddsTestServerPropName = "threddstestserver";
-  static public String threddsTestServer = "thredds-test.unidata.ucar.edu";
 
   // Remote Test server(s)
 
@@ -167,10 +158,6 @@ public class TestDir {
     }
 
     // Initialize various server values
-
-    String tts = System.getProperty(threddsTestServerPropName);
-    if(tts != null && tts.length() > 0)
-      	threddsTestServer = tts;
 
     String rts = System.getProperty(remoteTestServerPropName);
     if(rts != null && rts.length() > 0)
