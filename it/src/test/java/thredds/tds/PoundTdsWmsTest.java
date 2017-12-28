@@ -1,12 +1,5 @@
 package thredds.tds;
 
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.Future;
-
 import org.apache.http.client.HttpClient;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,7 +9,13 @@ import org.slf4j.LoggerFactory;
 import thredds.TestWithLocalServer;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.TestDir;
+
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.Future;
 
 
 @Ignore("NO WMS Server yet")
@@ -31,7 +30,7 @@ public class PoundTdsWmsTest
     for (int i = 0; i < timeStrings.length; i++) {
       curUrl = baseUrl + timeStrings[i];
       curUrlResponseSize = IO.copyUrlB(curUrl, null, 8000);
-      System.out.println("[" + i + "] " + timeStrings[i] + ": " + curUrlResponseSize);
+      logger.debug("[{}] {}: {}", i, timeStrings[i], curUrlResponseSize);
     }
   }
 
@@ -44,7 +43,7 @@ public class PoundTdsWmsTest
     for (int i = 0; i < ml8081GfsHalfDegreeBestWmsTimeStrings.length; i++) {
       curUrl = ml8081GfsHalfDegreeBestWmsGetMapBaseUrl + ml8081GfsHalfDegreeBestWmsTimeStrings[i];
       curUrlResponseSize = IO.copyUrlB(curUrl, null, 8000);
-      System.out.println("[" + i + "] " + ml8081GfsHalfDegreeBestWmsTimeStrings[i] + ": " + curUrlResponseSize);
+      logger.debug("[{}] {}: {}", i, ml8081GfsHalfDegreeBestWmsTimeStrings[i], curUrlResponseSize);
     }
   }
 
@@ -116,16 +115,16 @@ public class PoundTdsWmsTest
 //
 //      if ( ! curFuture.isCancelled() ) {
 //        curResult = curFuture.get();
-//        System.out.println( curResult.toString() );
+//        logger.debug( curResult.toString() );
 //      } else {
-//        System.out.println( "CANCELLED");
+//        logger.debug( "CANCELLED");
 //        numCancelled++;
 //      }
 //
-//      if ( ! futures.remove( curFuture )) System.out.println( "Future not in list." );
+//      if ( ! futures.remove( curFuture )) logger.debug( "Future not in list." );
 //    }
-//    System.out.println( "Number of Requests     : " + numRequests );
-    System.out.println("Number of Cancellations: " + numCancelled);
+//    logger.debug( "Number of Requests     : {}", numRequests );
+    logger.debug("Number of Cancellations: {}", numCancelled);
   }
 
   private int executeRequests(String baseUrl, String[] timeSeriesStrings, int timesToRepeatTimeSeriesRequests,
@@ -215,10 +214,31 @@ public class PoundTdsWmsTest
                   "2010-11-02T21:00:00.000Z",
                   "2010-11-03T00:00:00.000Z"
           };
-  private static String ml8081GfsHalfDegreeBestWmsGetCapUrl = "http://"+ TestDir.threddsTestServer+"/thredds/wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?service=WMS&version=1.3.0&request=GetCapabilities";
-  private static String ml8081GfsHalfDegreeBestWmsGetMapBaseUrl = "http://"+TestDir.threddsTestServer+"/thredds/wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?service=WMS&version=1.3.0&request=GetMap&TRANSPARENT=true&STYLES=boxfill%2Frainbow&CRS=EPSG%3A4326&COLORSCALERANGE=0.2%2C62.9&NUMCOLORBANDS=20&LOGSCALE=false&EXCEPTIONS=XML&FORMAT=image%2Fpng&BBOX=-180,-90,180,90&WIDTH=256&HEIGHT=256&LAYERS=Precipitable_water&ELEVATION=0&TIME=";
-  private static String[] ml8081GfsHalfDegreeBestWmsTimeStrings = new String[]
-          {
+  private static String ml8081GfsHalfDegreeBestWmsGetCapUrl =
+          TestWithLocalServer.server + "wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?" +
+                  "service=WMS&" +
+                  "version=1.3.0&" +
+                  "request=GetCapabilities";
+
+  private static String ml8081GfsHalfDegreeBestWmsGetMapBaseUrl =
+          TestWithLocalServer.server + "wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?" +
+                  "service=WMS&" +
+                  "version=1.3.0&" +
+                  "request=GetMap&TRANSPARENT=true&" +
+                  "STYLES=contours&" +
+                  "CRS=EPSG%3A4326&" +
+                  "COLORSCALERANGE=0.2%2C62.9&" +
+                  "NUMCOLORBANDS=20&" +
+                  "LOGSCALE=false&" +
+                  "EXCEPTIONS=XML&" +
+                  "FORMAT=image%2Fpng&" +
+                  "BBOX=-180,-90,180,90&" +
+                  "WIDTH=256&" +
+                  "HEIGHT=256&" +
+                  "LAYERS=Precipitable_water_entire_atmosphere_single_layer&" +
+                  "ELEVATION=0&TIME=";
+
+  private static String[] ml8081GfsHalfDegreeBestWmsTimeStrings = new String[] {
                   "2010-11-06T00:00:00.000Z",
                   "2010-11-06T03:00:00.000Z",
                   "2010-11-06T06:00:00.000Z",
