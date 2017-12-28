@@ -33,22 +33,15 @@
 package thredds.client.catalog;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.Attribute;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.util.test.TestDir;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-/** Test reletive URL resolution. */
-
-public class TestResolve1 {
+/** Test relative URL resolution. */
+public class TestResolve {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   String base="http://www.unidata.ucar.edu/";
@@ -61,7 +54,7 @@ public class TestResolve1 {
 
     Service s = cat.findService( "ACD");
     assert s != null;
-    System.out.println("ACD service= "+s);
+    logger.debug("ACD service= {}", s);
 
     assert getAccessURL(cat, "nest11").equals("http://www.acd.ucar.edu/dods/testServer/flux/CO2.nc");
     assert getAccessURL(cat, "nest12").equals(base+"netcdf/data/flux/NO2.nc") :
@@ -86,7 +79,7 @@ public class TestResolve1 {
     assert list != null;
     assert list.size() > 0;
     Access a = (Access) list.get(0);
-    System.out.println(name+" = "+a.getStandardUrlName());
+    logger.debug("{} = {}", name, a.getStandardUrlName());
     return a.getStandardUrlName();
   }
 
@@ -97,7 +90,7 @@ public class TestResolve1 {
     assert list.size() > 0;
     ThreddsMetadata.MetadataOther m = list.get(0);
     assert m != null;
-    System.out.println(name+" = "+m.getXlinkHref());
+    logger.debug("{} = {}", name, m.getXlinkHref());
     assert m.getXlinkHref() != null;
     return m.getXlinkHref();
   }
@@ -109,7 +102,7 @@ public class TestResolve1 {
     assert list.size() > 0;
     for (Documentation elem : list) {
       if (elem.hasXlink() && elem.getXlinkTitle().equals(title)) {
-        System.out.println(name + " " + title + " = " + elem.getURI());
+        logger.debug("{} {} = {}", name, title, elem.getURI());
         return elem.getURI().toString();
       }
     }
@@ -119,33 +112,14 @@ public class TestResolve1 {
   private String getCatref(List list, String name) {
     for (int i=0; i<list.size(); i++) {
       Dataset elem = (Dataset) list.get(i);
-      System.out.println("elemname= "+elem.getName());
+      logger.debug("elemname = {}", elem.getName());
       if (elem.getName().equals(name)) {
         assert elem instanceof CatalogRef;
         CatalogRef catref = (CatalogRef) elem;
-        System.out.println(name+" = "+catref.getXlinkHref());
+        logger.debug("{} = {}", name, catref.getXlinkHref());
         return catref.getXlinkHref();
       }
     }
     return null;
   }
-
-  @Test
-  @Category(NeedsExternalResource.class)
-  public void testResolver() throws IOException {
-    String remoteDataset = "thredds:resolve:http://"+ TestDir.threddsTestServer+"/thredds/catalog/grib/NCEP/RAP/CONUS_13km/files/latest.xml";
-    try {
-      NetcdfFile ncd = NetcdfDataset.openFile(remoteDataset, null);
-      List<Attribute> globalAttrs = ncd.getGlobalAttributes();
-      String testMessage = "";
-      for (Attribute attr : globalAttrs) {
-        testMessage = testMessage + "\n" + attr;
-      }
-      ncd.close();
-      System.out.println(testMessage);
-    } catch (IOException e) {
-      System.out.println(e.getMessage());
-    }
-  }
-
 }
