@@ -49,7 +49,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import thredds.util.ContentType;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
@@ -122,16 +122,16 @@ public class TestGridAsPointP {
 
   @Test
   public void checkGridAsPointCsv() throws JDOMException, IOException {
-    String endpoint = TestWithLocalServer.withPath(ds + "?var=" + varName + query + "&accept=csv");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.csv);
+    String endpoint = TestOnLocalServer.withHttpPath(ds + "?var=" + varName + query + "&accept=csv");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.csv);
     Assert.assertNotNull(result);
     System.out.printf("CSV%n%s%n", new String( result, CDM.utf8Charset));
   }
 
   @Test
   public void checkGridAsPointXml() throws JDOMException, IOException {
-    String endpoint = TestWithLocalServer.withPath(ds + "?var=" + varName + query + "&accept=xml");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    String endpoint = TestOnLocalServer.withHttpPath(ds + "?var=" + varName + query + "&accept=xml");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.xml);
     Assert.assertNotNull(result);
     String xml = new String( result);
 
@@ -162,7 +162,7 @@ public class TestGridAsPointP {
 
   @Test
   public void writeGridAsPointNetcdf() throws JDOMException, IOException {
-    String endpoint = TestWithLocalServer.withPath(ds+"?var="+varName+query+"&accept=netcdf");
+    String endpoint = TestOnLocalServer.withHttpPath(ds+"?var="+varName+query+"&accept=netcdf");
     File tempFile = tempFolder.newFile();
     System.out.printf(" write %sto %n  %s%n", endpoint, tempFile.getAbsolutePath());
 
@@ -189,8 +189,8 @@ public class TestGridAsPointP {
 
   @Test
   public void checkGridAsPointNetcdf() throws JDOMException, IOException {
-    String endpoint = TestWithLocalServer.withPath(ds+"?var="+varName+query+"&accept=netcdf");
-    byte[] content = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
+    String endpoint = TestOnLocalServer.withHttpPath(ds+"?var="+varName+query+"&accept=netcdf");
+    byte[] content = TestOnLocalServer.getContent(endpoint, 200, ContentType.netcdf);
     Assert.assertNotNull(content);
     System.out.printf("return size = %s%n", content.length);
 

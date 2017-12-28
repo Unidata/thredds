@@ -6,7 +6,7 @@ import org.xmlunit.builder.DiffBuilder
 import org.xmlunit.builder.Input
 import org.xmlunit.diff.Diff
 import spock.lang.Specification
-import thredds.TestWithLocalServer
+import thredds.TestOnLocalServer
 import thredds.util.ContentType
 
 import java.nio.charset.Charset
@@ -55,7 +55,7 @@ class FreshTdsInstallSpec extends Specification {
         String endpoint = "$preferredBaseURI/catalog/enhancedCatalog.xml"
         
         expect: "server responds with HTTP code 200 and XML content. method contains JUnit assertions"
-        byte[] response = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml)
+        byte[] response = TestOnLocalServer.getContent(endpoint, 200, ContentType.xml)
         
         when: "compare expected XML (read from test resource) with server response, ignoring comments and whitespace"
         Diff diff = DiffBuilder.compare(Input.fromStream(getClass().getResourceAsStream(controlFileName)))

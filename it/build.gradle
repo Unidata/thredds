@@ -86,7 +86,7 @@ sourceSets {
         groovy.srcDir file("src/$taskName/groovy")
         resources.srcDir file("src/$taskName/resources")
 
-        // Need 'sourceSets.test.output' because we use TestWithLocalServer in our test.
+        // Need 'sourceSets.test.output' because we use TestOnLocalServer in our test.
         compileClasspath += sourceSets.test.output + configurations.testCompile
         runtimeClasspath += output + sourceSets.test.output + configurations.testRuntime
     }

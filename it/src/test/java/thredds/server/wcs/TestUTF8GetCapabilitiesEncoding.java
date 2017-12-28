@@ -43,7 +43,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -85,7 +85,7 @@ public class TestUTF8GetCapabilitiesEncoding {
 
   @Test
   public void readCapabilities() {
-    String endpoint = TestWithLocalServer.withPath(path + "?" + query);
+    String endpoint = TestOnLocalServer.withHttpPath(path + "?" + query);
     System.out.printf("GetCapabilities req = '%s'%n", endpoint);
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {

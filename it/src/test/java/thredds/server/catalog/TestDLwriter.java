@@ -38,7 +38,7 @@ import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import java.io.IOException;
@@ -56,8 +56,8 @@ public class TestDLwriter extends TestCase {
   public void testDLwriter() throws IOException {
     String url = "/DLwriter?type=ADN&catalog=/thredds/catalog/testEnhanced/catalog.xml";
 
-    System.out.println("Response from "+ TestWithLocalServer.withPath(url));
-    String result = IO.readURLcontents(TestWithLocalServer.withPath(url));
+    System.out.println("Response from "+ TestOnLocalServer.withHttpPath(url));
+    String result = IO.readURLcontents(TestOnLocalServer.withHttpPath(url));
     assert result != null;
     System.out.println(result);
   }

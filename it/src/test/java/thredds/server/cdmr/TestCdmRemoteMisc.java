@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.ma2.Array;
@@ -72,7 +72,7 @@ public class TestCdmRemoteMisc {
 
   @Test
   public void testBackslashEscaped() throws Exception {
-    String url = TestWithLocalServer.withPath(urlPath + "/hdf5/grid_1_3d_xyz_aug.h5?req=data&var=HDFEOS_INFORMATION/StructMetadata\\.0");
+    String url = TestOnLocalServer.withHttpPath(urlPath + "/hdf5/grid_1_3d_xyz_aug.h5?req=data&var=HDFEOS_INFORMATION/StructMetadata\\.0");
     try (HTTPMethod m = HTTPFactory.Get(url)) {
       int statusCode = m.execute();
       System.out.printf("status = %d%n", statusCode);
@@ -81,17 +81,15 @@ public class TestCdmRemoteMisc {
 
   @Test
   public void problem() throws IOException {
-    // http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/grib2/SingleRecordNbits0.grib2?req=header
     String problemFile = TestDir.cdmUnitTestDir + "formats/gempak/ndfd_20100913.gem";
     String name = StringUtil2.substitute(problemFile.substring(TestCdmRemoteCompareHeadersP.contentRoot.length()), "\\", "/");
-    String remote = TestWithLocalServer.withPath(TestCdmRemoteCompareHeadersP.urlPath + name);
+    String remote = TestOnLocalServer.withHttpPath(TestCdmRemoteCompareHeadersP.urlPath + name);
     TestCdmRemoteCompareHeadersP.compareDatasets(problemFile, remote, false);
   }
 
   @Test
   public void zeroLenData() throws IOException {
-    // http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/netcdf3/longOffset.nc?req=data&var=time_whole
-    try (NetcdfFile ncremote = new CdmRemote(TestWithLocalServer.withPath(urlPath + "/netcdf3/longOffset.nc"))) {
+    try (NetcdfFile ncremote = new CdmRemote(TestOnLocalServer.withHttpPath(urlPath + "/netcdf3/longOffset.nc"))) {
       Variable v = ncremote.findVariable(null, "time_whole");
       Array data = v.read();
       assert data.getSize() == 0;
@@ -100,8 +98,7 @@ public class TestCdmRemoteMisc {
 
   @Test
   public void backlashEscaped() throws IOException {
-    // cdmremote:http://localhost:8081/thredds/cdmremote/scanCdmUnitTests/formats/hdf5/grid_1_3d_xyz_aug.h5
-    try (NetcdfFile ncremote = new CdmRemote(TestWithLocalServer.withPath(urlPath + "/hdf5/grid_1_3d_xyz_aug.h5"))) {
+    try (NetcdfFile ncremote = new CdmRemote(TestOnLocalServer.withHttpPath(urlPath + "/hdf5/grid_1_3d_xyz_aug.h5"))) {
       Variable v = ncremote.findVariable("HDFEOS_INFORMATION/StructMetadata\\.0");
       Assert.assertNotNull(v);
       Array data = v.read();
@@ -113,7 +110,7 @@ public class TestCdmRemoteMisc {
   public void testByteOrder() {
     try {
       String filename = "/netcdf3/longOffset.nc";
-      String remoteFile = TestWithLocalServer.withPath(urlPath + filename);
+      String remoteFile = TestOnLocalServer.withHttpPath(urlPath + filename);
       CdmRemote ncfileRemote = new CdmRemote(remoteFile);
 
       String localFile = contentRoot+filename;
@@ -141,7 +138,7 @@ public class TestCdmRemoteMisc {
   public void testVlen() {
     try {
       String filename = "/netcdf4/vlen/tst_vl.nc";
-      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      String remoteFile = TestOnLocalServer.withHttpPath(urlPath+filename);
       CdmRemote ncfileRemote = new CdmRemote(remoteFile);
 
       String localFile = contentRoot+filename;
@@ -169,7 +166,7 @@ public class TestCdmRemoteMisc {
   public void testTopVlenInt() {
     try {
       String filename = "/netcdf4/vlen/vlenInt.nc";
-      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      String remoteFile = TestOnLocalServer.withHttpPath(urlPath+filename);
       CdmRemote ncfileRemote = new CdmRemote(remoteFile);
 
       String localFile = contentRoot+filename;
@@ -197,7 +194,7 @@ public class TestCdmRemoteMisc {
   public void testVlenInStructure() {
     try {
       String filename = "/netcdf4/vlen/IntTimSciSamp.nc";
-      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      String remoteFile = TestOnLocalServer.withHttpPath(urlPath+filename);
       CdmRemote ncfileRemote = new CdmRemote(remoteFile);
 
       String localFile = contentRoot+filename;
@@ -225,7 +222,7 @@ public class TestCdmRemoteMisc {
   public void testChardata() { // was failing on char data being sign extended
     try {
       String filename = "/netcdf3/files/c0_64.nc";
-      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      String remoteFile = TestOnLocalServer.withHttpPath(urlPath+filename);
       CdmRemote ncfileRemote = new CdmRemote(remoteFile);
 
       String localFile = contentRoot+filename;
@@ -253,7 +250,7 @@ public class TestCdmRemoteMisc {
   public void testStringArray() {
     try {
       String filename = "/netcdf4/files/tst_string_data.nc";
-      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      String remoteFile = TestOnLocalServer.withHttpPath(urlPath+filename);
       CdmRemote ncfileRemote = new CdmRemote(remoteFile);
 
       String localFile = contentRoot+filename;
@@ -281,7 +278,7 @@ public class TestCdmRemoteMisc {
   public void testVariableNameWithDot() {
     try {
       String filename = "/hdf5/grid_1_3d_xyz_aug.h5";
-      String remoteFile = TestWithLocalServer.withPath(urlPath+filename);
+      String remoteFile = TestOnLocalServer.withHttpPath(urlPath+filename);
       CdmRemote ncfileRemote = new CdmRemote(remoteFile);
 
       String localFile = contentRoot+filename;
@@ -302,9 +299,5 @@ public class TestCdmRemoteMisc {
       e.printStackTrace();
       assert false;
     }
-
   }
-
-
-
 }

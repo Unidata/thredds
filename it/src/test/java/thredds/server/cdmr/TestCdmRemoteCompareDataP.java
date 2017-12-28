@@ -42,7 +42,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -134,7 +134,7 @@ public class TestCdmRemoteCompareDataP {
   @Test
   public void doOne() throws IOException {
     String name = StringUtil2.substitute(filename.substring(contentRoot.length()), "\\", "/");
-    String remote = TestWithLocalServer.withPath(urlPath + name);
+    String remote = TestOnLocalServer.withHttpPath(urlPath + name);
     total++;
     success += compareDatasets(filename, remote, true);
   }

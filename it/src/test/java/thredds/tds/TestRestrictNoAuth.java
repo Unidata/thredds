@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -24,7 +24,7 @@ public class TestRestrictNoAuth {
 
   @Test
   public void testFailNoAuth() {
-    String endpoint = TestWithLocalServer.withPath("/dodsC/testRestrictedDataset/testData2.nc.dds");
+    String endpoint = TestOnLocalServer.withHttpPath("/dodsC/testRestrictedDataset/testData2.nc.dds");
     logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {

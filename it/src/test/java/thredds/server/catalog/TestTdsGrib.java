@@ -6,18 +6,11 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import thredds.client.catalog.*;
-import thredds.client.catalog.tools.DataFactory;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.ma2.Array;
-import ucar.nc2.VariableSimpleIF;
-import ucar.nc2.constants.AxisType;
-import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.units.DateType;
-import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
@@ -108,7 +101,7 @@ public class TestTdsGrib {
 
   @Test
   public void testMissingCollection() throws IOException {
-    String catalogPath = TestWithLocalServer.withPath("catalog/Grib/Nonexist/catalog.xml");
+    String catalogPath = TestOnLocalServer.withHttpPath("catalog/Grib/Nonexist/catalog.xml");
     try (HTTPMethod method = HTTPFactory.Get(null, catalogPath)) {
       int statusCode = method.execute();
       assert statusCode == 404;       // not 500
@@ -117,7 +110,7 @@ public class TestTdsGrib {
 
   @Test
   public void testEmptyCollection() throws IOException {
-    String catalogPath = TestWithLocalServer.withPath("catalog/Grib/Emptiness/catalog.xml");
+    String catalogPath = TestOnLocalServer.withHttpPath("catalog/Grib/Emptiness/catalog.xml");
     try (HTTPMethod method = HTTPFactory.Get(null, catalogPath)) {
       int statusCode = method.execute();
       assert statusCode == 404;       // not 500

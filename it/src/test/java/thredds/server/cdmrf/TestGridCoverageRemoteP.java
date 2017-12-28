@@ -40,7 +40,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.ft2.coverage.*;
@@ -91,7 +91,7 @@ public class TestGridCoverageRemoteP {
   Double time_offset, vert_level;
 
   public TestGridCoverageRemoteP(String endpoint, String covName, String rt_val, String time_val, Double time_offset, Double vert_level) {
-    this.endpoint = ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME + TestWithLocalServer.withPath(endpoint);
+    this.endpoint = ucar.nc2.ft.remote.CdmrFeatureDataset.SCHEME + TestOnLocalServer.withHttpPath(endpoint);
 
     this.covName = covName;
     this.rt_val = rt_val == null ? null : CalendarDate.parseISOformat(null, rt_val);

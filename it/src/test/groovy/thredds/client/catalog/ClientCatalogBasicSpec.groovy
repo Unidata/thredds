@@ -5,7 +5,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import spock.lang.Unroll
-import thredds.TestWithLocalServer
+import thredds.TestOnLocalServer
 import ucar.unidata.util.test.category.NeedsCdmUnitTest
 
 /**
@@ -36,9 +36,9 @@ class ClientCatalogBasicSpec extends Specification {
         }
 
         where:
-        catFrag << [TestWithLocalServer.withPath("catalog.xml"),
-                    TestWithLocalServer.withPath("catalog/testStationFeatureCollection/catalog.xml?" +
-                                                 "dataset=testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
+        catFrag << [TestOnLocalServer.withHttpPath("catalog.xml"),
+                    TestOnLocalServer.withHttpPath("catalog/testStationFeatureCollection/catalog.xml?" +
+                                                   "dataset=testStationFeatureCollection/Metar_Station_Data_fc.cdmr")
         ]
     }
 

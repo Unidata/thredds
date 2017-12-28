@@ -37,7 +37,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
@@ -141,7 +141,7 @@ public class TestTdsNcml {
 
   @Test
   public void testAggExisting() throws IOException, InvalidRangeException {
-    String endpoint = TestWithLocalServer.withPath("dodsC/ExampleNcML/Agg.nc");
+    String endpoint = TestOnLocalServer.withHttpPath("dodsC/ExampleNcML/Agg.nc");
     System.out.printf("%s%n", endpoint);
 
     NetcdfFile ncfile = NetcdfDataset.openFile(endpoint, null);
@@ -178,7 +178,7 @@ public class TestTdsNcml {
 
   @Test
   public void testAddMetadataToScan() throws IOException, InvalidRangeException {
-    String endpoint = TestWithLocalServer.withPath("cdmremote/testGridScan/GFS_CONUS_80km_20120229_1200.grib1");
+    String endpoint = TestOnLocalServer.withHttpPath("cdmremote/testGridScan/GFS_CONUS_80km_20120229_1200.grib1");
     System.out.printf("%s%n", endpoint);
 
     try (NetcdfFile ncd = NetcdfDataset.openFile(endpoint, null)) {

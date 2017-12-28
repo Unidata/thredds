@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.httpservices.*;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ public class TestRestrictDataset {
 
   @Test
   public void testFailNoAuth() {
-    String endpoint = TestWithLocalServer.withPath(path);
+    String endpoint = TestOnLocalServer.withHttpPath(path);
     logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
@@ -115,7 +115,7 @@ public class TestRestrictDataset {
 
   @Test
   public void testFailBadUser() {
-    String endpoint = TestWithLocalServer.withPath(path);
+    String endpoint = TestOnLocalServer.withHttpPath(path);
     logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
@@ -135,7 +135,7 @@ public class TestRestrictDataset {
 
   @Test
   public void testFailBadPassword() {
-    String endpoint = TestWithLocalServer.withPath(path);
+    String endpoint = TestOnLocalServer.withHttpPath(path);
     logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
@@ -158,7 +158,7 @@ public class TestRestrictDataset {
 
   @Test
   public void testSuccess() {
-    String endpoint = TestWithLocalServer.withPath(path);
+    String endpoint = TestOnLocalServer.withHttpPath(path);
     logger.info(String.format("testRestriction req = '%s'", endpoint));
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
@@ -180,7 +180,7 @@ public class TestRestrictDataset {
   // from 4.6
   @Test
   public void testRestriction() {
-    String endpoint = TestWithLocalServer.withPath(path);
+    String endpoint = TestOnLocalServer.withHttpPath(path);
     logger.info(String.format("testRestriction req = '%s'", endpoint));
     try {
       try (HTTPMethod method = HTTPFactory.Get(endpoint)) {

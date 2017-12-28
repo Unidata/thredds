@@ -42,7 +42,10 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.util.ContentType;
-import ucar.httpservices.*;
+import ucar.httpservices.HTTPException;
+import ucar.httpservices.HTTPFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.httpservices.HTTPSession;
 import ucar.nc2.util.IO;
 
 import java.io.File;
@@ -51,17 +54,55 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 
 /**
- * Describe
+ * Utilities for running tests against the embedded TDS that is stood up during :it:test.
  *
  * @author caron
  * @since 10/15/13
  */
-public class TestWithLocalServer {
+public class TestOnLocalServer {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-  public static String server = "http://localhost:8081/thredds/";
 
-  public static String withPath(String path) {
-    return server + StringUtils.stripStart(path, "/\\");  // Remove leading slashes from path.
+  /**
+   * The URL of the local TDS, including context path and trailing slash, but excluding protocol prefix.
+   * Its format is: {@code <hostname>:<port>/<contextPath>/}.
+   */
+  public static final String server = "localhost:8081/thredds/";
+
+  /**
+   * Construct a URL using the specified protocol and path. Its format will be: {@code <protocol>://<server>/<path>}.
+   *
+   * @param protocol  the protocol to prepend to {@link #server}. Any trailing slashes or colons will be removed.
+   * @param path      the path to append to {@link #server}. Any leading slashes will be removed.
+   * @return  a URL using the specified protocol and path.
+   */
+  public static String withProtocolAndPath(String protocol, String path) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(StringUtils.stripEnd(protocol, "/\\:"));  // Remove trailing slashes and colon from protocol.
+    sb.append("://");
+    sb.append(server);
+    sb.append(StringUtils.stripStart(path, "/\\"));     // Remove leading slashes from path.
+
+    return sb.toString();
+  }
+
+  /**
+   * Construct an HTTP URL using the specified path. Its format will be: {@code http://<server>/<path>}.
+   *
+   * @param path  the path to append to {@link #server}. Any leading slashes will be removed.
+   * @return  an HTTP URL using the specified path.
+   */
+  public static String withHttpPath(String path) {
+    return withProtocolAndPath("http", path);
+  }
+
+  /**
+   * Construct a DODS URL using the specified path. Its format will be: {@code dods://<server>/<path>}.
+   *
+   * @param path  the path to append to {@link #server}. Any leading slashes will be removed.
+   * @return  a DODS URL using the specified path.
+   */
+  public static String withDodsPath(String path) {
+    return withProtocolAndPath("dods", path);
   }
 
   public static byte[] getContent(String endpoint, int expectCode, ContentType expectContentType) {
@@ -141,5 +182,4 @@ public class TestWithLocalServer {
       assert false;
     }
   }
-
 }
