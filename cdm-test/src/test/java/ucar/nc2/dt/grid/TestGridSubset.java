@@ -32,21 +32,16 @@
  */
 package ucar.nc2.dt.grid;
 
-import java.io.PrintWriter;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
-
 import org.slf4j.LoggerFactory;
-import thredds.client.catalog.tools.DataFactory;
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.Range;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -56,16 +51,18 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.nc2.util.Misc;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonPointImpl;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.geoloc.*;
 import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.geoloc.vertical.VerticalTransform;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.category.NeedsExternalResource;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class TestGridSubset {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -73,7 +70,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testRegular() throws Exception {
-    try( ucar.nc2.dt.grid.GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc")) {
+    try(GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/nuwg/03061219_ruc.nc")) {
 
       GeoGrid grid = dataset.findGridByName("T");
       assert null != grid;
@@ -129,7 +126,7 @@ public class TestGridSubset {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testWRF() throws Exception {
-    try( GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc")) {
+    try(GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/wrf/wrfout_v2_Lambert.nc")) {
 
       GeoGrid grid = dataset.findGridByName("T");
       assert null != grid;
@@ -169,7 +166,7 @@ public class TestGridSubset {
   @Category(NeedsCdmUnitTest.class)
   public void testMSG() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "transforms/Eumetsat.VerticalPerspective.grb";
-    try( GridDataset dataset = GridDataset.open(filename)) {
+    try(GridDataset dataset = GridDataset.open(filename)) {
       logger.debug("open {}", filename);
       GeoGrid grid = dataset.findGridDatatypeByAttribute(Grib.VARIABLE_ID_ATTNAME, "VAR_3-0-8"); // "Pixel_scene_type");
       assert null != grid : dataset.getLocation();
@@ -203,49 +200,9 @@ public class TestGridSubset {
   }
 
   @Test
-  @Ignore("Bad URL, as of 2015/03/11.")
-  @Category(NeedsExternalResource.class)
-  public void testDODS2() throws Exception {
-    String threddsURL = "http://lead.unidata.ucar.edu:8080/thredds/dqcServlet/latestOUADAS?adas";
-    GridDataset dataset = null;
-
-    try {
-      DataFactory.Result result = new DataFactory().openFeatureDataset(threddsURL, null);
-      assert result.featureDataset != null;
-      dataset = (GridDataset) result.featureDataset;
-
-      GeoGrid grid = dataset.findGridByName("PT");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 4;
-
-      GeoGrid grid_section = grid.subset(null, null, null, 5, 5, 5);
-
-      Array data = grid_section.readDataSlice(-1, -1, -1, -1);
-      assert data.getShape()[0] == 1 : data.getShape()[0];
-      assert data.getShape()[1] == 11 : data.getShape()[1];
-      assert data.getShape()[2] == 26 : data.getShape()[2];
-      assert data.getShape()[3] == 43 : data.getShape()[3];
-
-      grid_section = grid.subset(null, new Range(0, 0), null, 0, 2, 2);
-      data = grid_section.readDataSlice(-1, -1, -1, -1);
-      assert data.getShape()[0] == 1 : data.getShape()[0];
-      assert data.getShape()[1] == 1 : data.getShape()[1];
-      assert data.getShape()[2] == 65 : data.getShape()[2];
-      assert data.getShape()[3] == 106 : data.getShape()[3];
-
-      NCdumpW.printArray(data, "grid_section", System.out, null);
-
-    } finally {
-      if (dataset != null) dataset.close();
-    }
-  }
-
-  @Test
   @Category(NeedsCdmUnitTest.class)
   public void test2D() throws Exception {
-    try( GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc")) {
+    try(GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/mississippi.nc")) {
 
       GeoGrid grid = dataset.findGridByName("salt");
       assert null != grid;
@@ -268,7 +225,9 @@ public class TestGridSubset {
       assert data.getShape()[2] == 32 : data.getShape()[2];
       assert data.getShape()[3] == 64 : data.getShape()[3];
 
-      NCdumpW.printArray(data, "grid_section", System.out, null);
+      StringWriter sw = new StringWriter();
+      NCdumpW.printArray(data, "grid_section", new PrintWriter(sw), null);
+      logger.debug(sw.toString());
 
       LatLonPoint p0 = new LatLonPointImpl(29.0, -90.0);
       LatLonRect bbox = new LatLonRect(p0, 1.0, 2.0);
@@ -299,72 +258,11 @@ public class TestGridSubset {
     }
   }
 
-  @Test
-  @Category(NeedsExternalResource.class)
-  public void test3D() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best")) {
-      logger.debug("{}", dataset.getLocation());
-      //GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best");
-
-      GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 4;
-
-      // x and y stride 10
-      GeoGrid grid_section = grid.subset(null, null, null, 1, 10, 10);
-      Array data = grid_section.readDataSlice(0, -1, -1, -1);      // get first time slice
-      assert data.getRank() == 3;
-      // assert data.getShape()[0] == 6 : data.getShape()[0];
-      assert data.getShape()[1] == 43 : data.getShape()[1];
-      assert data.getShape()[2] == 62 : data.getShape()[2];
-
-      IndexIterator ii = data.getIndexIterator();
-      while (ii.hasNext()) {
-        float val = ii.getFloatNext();
-        if (grid_section.isMissingData(val)) {
-          if (!Float.isNaN(val)) {
-            logger.debug(" got not NaN at = {}", ii);
-          }
-          int[] current = ii.getCurrentCounter();
-          if ((current[1] > 0) && (current[2] > 1)) {
-            logger.debug("got missing at = {}", ii);
-            logger.debug("{} {} ", current[1], current[2]);
-          }
-        }
-      }
-    }
-  }
-
-  private void testLatLonSubset(GeoGrid grid, LatLonRect bbox, int[] shape) throws Exception {
-    //LatLonProjection llproj = new LatLonProjection();
-    //ucar.unidata.geoloc.ProjectionRect[] prect = llproj.latLonToProjRect(bbox);
-    logger.debug("grid bbox = {}", grid.getCoordinateSystem().getLatLonBoundingBox().toString2());
-    logger.debug("constrain bbox = {}", bbox.toString2());
-
-    GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
-    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
-    assert null != gcs2;
-    assert grid_section.getRank() == 2;
-
-    //ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
-    logger.debug("resulting bbox = {}", gcs2.getLatLonBoundingBox().toString2());
-
-    Array data = grid_section.readDataSlice(0, 0, -1, -1);
-    assert data != null;
-    assert data.getRank() == 2;
-    assert data.getShape()[0] == shape[0] : data.getShape()[0];
-    assert data.getShape()[1] == shape[1] : data.getShape()[1];
-  }
-
 
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testLatLonSubset() throws Exception {
     try (GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "conventions/cf/SUPER-NATIONAL_latlon_IR_20070222_1600.nc")) {
-      //GridDataset dataset = GridDataset.open("dods://motherlode.ucar.edu:8080/thredds/dodsC/model/NCEP/NAM/CONUS_12km/NAM_CONUS_12km_20060305_1200.grib2");
-      // GridDataset dataset = GridDataset.open(TestDir.cdmUnitTestDir + "grid/grib/grib2/test/NAM_CONUS_12km_20060305_1200.grib2");
       GeoGrid grid = dataset.findGridByName("micron11");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();
@@ -373,14 +271,30 @@ public class TestGridSubset {
 
       logger.debug("original bbox = {}", gcs.getBoundingBox());
 
-      Array data = null;
-
       LatLonRect bbox = new LatLonRect(new LatLonPointImpl(40.0, -100.0), 10.0, 20.0);
       testLatLonSubset(grid, bbox, new int[]{141, 281});
 
       bbox = new LatLonRect(new LatLonPointImpl(-40.0, -180.0), 120.0, 300.0);
       testLatLonSubset(grid, bbox, new int[]{800, 1300});
     }
+  }
+
+  private void testLatLonSubset(GeoGrid grid, LatLonRect bbox, int[] shape) throws Exception {
+    logger.debug("grid bbox = {}", grid.getCoordinateSystem().getLatLonBoundingBox().toString2());
+    logger.debug("constrain bbox = {}", bbox.toString2());
+
+    GeoGrid grid_section = grid.subset(null, null, bbox, 1, 1, 1);
+    GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
+    assert null != gcs2;
+    assert grid_section.getRank() == 2;
+
+    logger.debug("resulting bbox = {}", gcs2.getLatLonBoundingBox().toString2());
+
+    Array data = grid_section.readDataSlice(0, 0, -1, -1);
+    assert data != null;
+    assert data.getRank() == 2;
+    assert data.getShape()[0] == shape[0] : data.getShape()[0];
+    assert data.getShape()[1] == shape[1] : data.getShape()[1];
   }
 
   // longitude subsetting (CoordAxis1D regular)
@@ -405,7 +319,6 @@ public class TestGridSubset {
       assert null != gcs2;
       assert grid_section.getRank() == grid.getRank();
 
-      //ucar.unidata.geoloc.ProjectionRect subset_prect = gcs2.getBoundingBox();
       logger.debug("resulting bbox = {}", gcs2.getLatLonBoundingBox().toString2());
 
       Array data = grid_section.readDataSlice(0, 0, -1, -1);
@@ -466,87 +379,8 @@ public class TestGridSubset {
   }
 
   @Test
-  @Category(NeedsExternalResource.class)
-  public void testBBSubset() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/GFS/CONUS_80km/best")) {
-      GeoGrid grid = dataset.findGridByName("Pressure_surface");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-
-      logger.debug("original bbox = {}",  gcs.getBoundingBox());
-      logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
-
-      ucar.unidata.geoloc.LatLonRect llbb = gcs.getLatLonBoundingBox();
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
-      logger.debug("subset lat/lon bbox = {}", llbb_subset);
-
-      GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
-      GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
-      assert null != gcs2;
-
-      logger.debug("result lat/lon bbox = {}", gcs2.getLatLonBoundingBox());
-      logger.debug("result bbox = " + gcs2.getBoundingBox());
-
-      ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
-      logger.debug("projection mapArea = {}", pr);
-      assert (pr.closeEnough(gcs2.getBoundingBox()));
-    }
-  }
-
-  @Test
-  @Category(NeedsExternalResource.class)
-  public void testBBSubset2() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_40km/conduit/best")) {
-      GeoGrid grid = dataset.findGridByName("Pressure_hybrid");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-
-      logger.debug("original bbox = {}", gcs.getBoundingBox());
-      logger.debug("lat/lon bbox = {}", gcs.getLatLonBoundingBox());
-
-      ucar.unidata.geoloc.LatLonRect llbb = gcs.getLatLonBoundingBox();
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(new LatLonPointImpl(-15, -140), new LatLonPointImpl(55, 30));
-      logger.debug("subset lat/lon bbox = {}", llbb_subset);
-
-      GeoGrid grid_section = grid.subset(null, null, llbb_subset, 1, 1, 1);
-      GridCoordSystem gcs2 = grid_section.getCoordinateSystem();
-      assert null != gcs2;
-
-      logger.debug("result lat/lon bbox = {}", gcs2.getLatLonBoundingBox());
-      logger.debug("result bbox = {}", gcs2.getBoundingBox());
-
-      ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
-      logger.debug("projection mapArea = {}", pr);
-      assert (pr.closeEnough(gcs2.getBoundingBox()));
-    }
-  }
-
-  @Test
-  @Ignore("Does this dataset exist on a public server?")
-  public void testFMRCSubset() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://localhost:8080/thredds/dodsC/data/cip/fmrcCase1/CIPFMRCCase1_best.ncd")) {
-      GeoGrid grid = dataset.findGridByName("Latitude__90_to_+90");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-
-      Range timeRange = new Range(2, 2);
-      int bestZIndex = 5;
-
-      GeoGrid subset = grid.subset(timeRange, new Range(bestZIndex, bestZIndex), null, null);
-      Array yxData = subset.readYXData(0, 0);
-      NCdumpW.printArray(yxData, "xyData", System.out, null);
-    }
-  }
-
-  @Test
   @Category(NeedsCdmUnitTest.class)
   public void testVerticalAxis() throws Exception {
-    //String url="dods://www.gri.msstate.edu/rsearch_data/nopp/bora_feb.nc";
-    //String varName = "temp";
-
     String uri = TestDir.cdmUnitTestDir + "ncml/nc/cg/CG2006158_120000h_usfc.nc";
     String varName = "CGusfc";
 
@@ -720,30 +554,6 @@ public class TestGridSubset {
     }
   }
 
-  @Test
-  @Category(NeedsExternalResource.class)
-  public void testFindVerticalCoordinate() throws Exception {
-    String filename = "dods://"+TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/Alaska_11km/best";
-    try (GridDataset dataset = GridDataset.open(filename)) {
-      GeoGrid grid = dataset.findGridByName("Geopotential_height_isobaric");
-      assert null != grid;
-
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      CoordinateAxis1D zaxis = gcs.getVerticalAxis();
-      float zCoord = 10000;
-      int zidx = zaxis.findCoordElement(zCoord);
-      assert zidx == 0 : zidx;
-
-      zCoord = 50000;
-      zidx = zaxis.findCoordElement(zCoord);
-      assert zidx == 8 : zidx;
-
-      zCoord = 100000;
-      zidx = zaxis.findCoordElement(zCoord);
-      assert zidx == 28 : zidx;
-    }
-  }
-
   // this one has the coordinate bounds set in the file
   @Test
   public void testSubsetCoordEdges() throws Exception {
@@ -813,92 +623,13 @@ public class TestGridSubset {
       ok &= compare.compareData("subset lon getCoordEdges", fooSubLonAxis.getCoordEdges(), new double[] {36.0, 108.0, 216.0} );
 
       assert ok : "not ok";
-
-    }
-
-  }
-
-  @Test
-  @Category(NeedsExternalResource.class)
-  public void testScaleOffset() throws Exception {
-    try (GridDataset dataset = GridDataset.open("http://esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.oisst.v2/sst.wkmean.1990-present.nc")) {
-      GeoGrid grid = dataset.findGridByName("sst");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-
-      logger.debug("original bbox = {} ({})", gcs.getBoundingBox(), gcs.getLatLonBoundingBox());
-
-      ucar.unidata.geoloc.LatLonRect llbb = gcs.getLatLonBoundingBox();
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
-
-      GeoGrid grid2 = grid.subset(null, null, llbb_subset, 1, 1, 1);
-      GridCoordSystem gcs2 = grid2.getCoordinateSystem();
-      assert null != gcs2;
-
-      logger.debug("subset bbox = {} ({})", gcs2.getBoundingBox(), gcs2.getLatLonBoundingBox());
-
-      logger.debug("original grid var = {}", grid.getVariable());
-      logger.debug("subset grid var = {}", grid2.getVariable());
-
-      //   public Array readDataSlice(int rt, int e, int t, int z, int y, int x) throws java.io.IOException {
-
-      Array data = grid.readDataSlice(0, 0, 159, 0);
-      Array data2 = grid2.readDataSlice(0, 0, 0, 0);
-
-      PrintWriter pw = new PrintWriter(System.out);
-      NCdumpW.printArray(data, "org", pw, null);
-      NCdumpW.printArray(data2, "subset", pw, null);
-
-      ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
-    }
-  }
-
-  @Test
-  @Ignore("Keeps failing on nomads URL.")
-  @Category(NeedsExternalResource.class)
-  public void testScaleOffset2() throws Exception {
-    try (GridDataset dataset = GridDataset.open("dods://nomads.ncdc.noaa.gov/thredds/dodsC/cr20sixhr/air.1936.nc")) {
-      GeoGrid grid = dataset.findGridByName("air");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-
-      logger.debug("original bbox = {} ({})", gcs.getBoundingBox(), gcs.getLatLonBoundingBox());
-
-      ucar.unidata.geoloc.LatLonRect llbb = gcs.getLatLonBoundingBox();
-      ucar.unidata.geoloc.LatLonRect llbb_subset = new LatLonRect(llbb.getLowerLeftPoint(), 20.0, llbb.getWidth() / 2);
-
-      GeoGrid grid2 = grid.subset(null, null, llbb_subset, 1, 1, 1);
-      GridCoordSystem gcs2 = grid2.getCoordinateSystem();
-      assert null != gcs2;
-
-      logger.debug("subset bbox = {} ({})", gcs2.getBoundingBox(), gcs2.getLatLonBoundingBox());
-
-      logger.debug("original grid var = {}", grid.getVariable());
-      logger.debug("subset grid var = {}", grid2.getVariable());
-
-      //   public Array readDataSlice(int rt, int e, int t, int z, int y, int x) throws java.io.IOException {
-
-      Array data = grid.readVolumeData(0);
-      Array data2 = grid2.readVolumeData(0);
-      //Array data2 = grid2.readDataSlice(0, 0, 0, 0);
-
-      //PrintWriter pw = new PrintWriter(System.out);
-      //NCdumpW.printArray(data, "org", pw, null);
-      //NCdumpW.printArray(data2, "subset", pw, null);
-
-      //CompareNetcdf.compareData(data, data2);
-
-      logger.debug("minmax org data = {}", MAMath.getMinMax(data));
-      logger.debug("minmax subset data = {}", MAMath.getMinMax(data2));
     }
   }
 
   @Test
   @Ignore("Does this file exist in a shared location?")
   public void testAaron() throws Exception{
-  // different scale/offset in aggregation
+     // different scale/offset in aggregation
      try (GridDataset dataset = GridDataset.open("G:/work/braekel/dataset.ncml" )) {
        GridDatatype grid = null;
        for (GridDatatype thisGrid : dataset.getGrids()) {
@@ -953,12 +684,13 @@ public class TestGridSubset {
       Array data = grid.readDataSlice(1, 0, 10, 20);
       Array data2 = grid2.readDataSlice(0, 0, 10, 20);
 
-      PrintWriter pw = new PrintWriter(System.out);
+      StringWriter sw = new StringWriter();
+      PrintWriter pw = new PrintWriter(sw);
       NCdumpW.printArray(data, "org", pw, null);
       NCdumpW.printArray(data2, "subset", pw, null);
+      logger.debug(sw.toString());
 
       ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
     }
   }
-
 }
