@@ -48,6 +48,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionRect;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
 import java.io.PrintWriter;
@@ -99,6 +100,7 @@ public class TestGridSubsetThredds {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void test3D() throws Exception {
     try (GridDataset dataset = GridDataset.open(
             "dods://localhost:8081/thredds/dodsC/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc")) {
@@ -135,6 +137,7 @@ public class TestGridSubsetThredds {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testBBSubset() throws Exception {
     try (GridDataset dataset = GridDataset.open(
             "dods://localhost:8081/thredds/dodsC/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc")) {
@@ -164,6 +167,7 @@ public class TestGridSubsetThredds {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testBBSubset2() throws Exception {
     try (GridDataset dataset = GridDataset.open(
             "dods://localhost:8081/thredds/dodsC/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc")) {
@@ -214,6 +218,7 @@ public class TestGridSubsetThredds {
   }
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testFindVerticalCoordinate() throws Exception {
     try (GridDataset dataset = GridDataset.open(
             "dods://localhost:8081/thredds/dodsC/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc")) {
