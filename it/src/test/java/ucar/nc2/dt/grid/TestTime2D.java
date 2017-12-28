@@ -41,8 +41,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.lang.invoke.MethodHandles;
 
@@ -52,27 +51,27 @@ import java.lang.invoke.MethodHandles;
  * @author caron
  * @since 3/11/2015
  */
-@Category(NeedsExternalResource.class)
 public class TestTime2D {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
+  @Category(NeedsCdmUnitTest.class)
   public void testTime2D() throws Exception {
-    try (NetcdfFile dataset = NetcdfDataset.openDataset("dods://"+ TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/GFS/Pacific_40km/TwoD")) {
+    try (NetcdfFile dataset = NetcdfDataset.openDataset(
+            "dods://localhost:8081/thredds/dodsC/gribCollection.v5/GFS_GLOBAL_2p5/TwoD")) {
       Variable v = dataset.findVariable(null, "Pressure_surface");
       assert null != v;
       assert v.getRank() == 4;
 
       // bug is that
-      //   float Pressure_surface(reftime1=478, time=478, y=300, x=369);
+      //    Float32 Pressure_surface[reftime = 4][time = 4][lat = 73][lon = 144];
       // should be
-      // float Pressure_surface(reftime1=478, time=41, y=300, x=369);
+      //   Float32 Pressure_surface[reftime = 4][time = 93][lat = 73][lon = 144];
 
-      // dont rely on exact lengths - check times are equals
+      // dont rely on exact lengths - assert times are not equal.
       Dimension reftime = v.getDimension(0);
       Dimension time = v.getDimension(1);
       Assert.assertNotEquals(reftime.getLength(), time.getLength());
     }
   }
-
 }

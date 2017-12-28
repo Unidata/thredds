@@ -58,7 +58,7 @@ public class TestRemoteCatalogRequest
   private String bindResultMsg;
   private RemoteCatalogRequest rcr;
 
-  private String catUriString = "http://"+ TestDir.threddsTestServer+"/thredds/catalog.xml";
+  private String catUriString = "http://localhost:8081/thredds/catalog.xml";  // May need to move class to :it.
   private String cmdShow = "show";
   private String cmdSubset = "subset";
   private String cmdValidate = "validate";

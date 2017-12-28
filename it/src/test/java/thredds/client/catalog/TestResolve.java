@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2015 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -30,63 +30,40 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.dt.grid;
+package thredds.client.catalog;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.Array;
-import ucar.ma2.IndexIterator;
-import ucar.nc2.dt.GridCoordSystem;
-import ucar.unidata.util.test.category.NeedsExternalResource;
-import ucar.unidata.util.test.TestDir;
+import ucar.nc2.Attribute;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
-@Category(NeedsExternalResource.class)
-public class Test3dFromOpendap {
+/** Test relative URL resolution. */
+public class TestResolve {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void test3D() throws Exception {
-    String endpoint = "dods://"+ TestDir.threddsTestServer+"/thredds/dodsC/grib/NCEP/NAM/CONUS_12km/best";
-    try (GridDataset dataset = GridDataset.open(endpoint)) {
-      Assert.assertNotNull(endpoint, dataset);
-      System.out.printf("open %s%n", endpoint);
+  @Category(NeedsCdmUnitTest.class)
+  public void testResolver() throws IOException {
+    String remoteDataset =
+            "thredds:resolve:http://localhost:8081/thredds/catalog/gribCollection/GFS_CONUS_80km/latest.xml";
 
-      GeoGrid grid = dataset.findGridByName("Relative_humidity_isobaric");
-      assert null != grid;
-      GridCoordSystem gcs = grid.getCoordinateSystem();
-      assert null != gcs;
-      assert grid.getRank() == 4;
+    try (NetcdfFile ncd = NetcdfDataset.openFile(remoteDataset, null)) {
+      List<Attribute> globalAttrs = ncd.getGlobalAttributes();
+      String testMessage = "";
 
-      GeoGrid grid_section = grid.subset(null, null, null, 1, 10, 10);
-
-      Array data = grid_section.readDataSlice(0, -1, -1, -1);
-      assert data.getRank() == 3;
-      // assert data.getShape()[0] == 6 : data.getShape()[0];
-      assert data.getShape()[1] == 43 : data.getShape()[1];
-      assert data.getShape()[2] == 62 : data.getShape()[2];
-
-      IndexIterator ii = data.getIndexIterator();
-      while (ii.hasNext()) {
-        float val = ii.getFloatNext();
-        if (grid_section.isMissingData(val)) {
-          if (!Float.isNaN(val)) {
-            System.out.println(" got not NaN at =" + ii);
-          }
-          int[] current = ii.getCurrentCounter();
-          if ((current[1] > 0) && (current[2] > 1)) {
-            System.out.println(" got missing at =" + ii);
-            System.out.println(current[1] + " " + current[2]);
-          }
-        }
+      for (Attribute attr : globalAttrs) {
+        testMessage = testMessage + "\n" + attr;
       }
 
+      logger.debug(testMessage);
     }
   }
-
 }
-
