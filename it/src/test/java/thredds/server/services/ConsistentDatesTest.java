@@ -19,7 +19,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
@@ -73,8 +73,8 @@ public class ConsistentDatesTest {
   @Test
   @Ignore("WMS not working")
   public void checkWMSDates() throws JDOMException, IOException {
-    String endpoint = TestWithLocalServer.withPath("/wms/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WMS&version=1.3.0&request=GetCapabilities");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    String endpoint = TestOnLocalServer.withHttpPath("/wms/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WMS&version=1.3.0&request=GetCapabilities");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.xml);
     Reader in = new StringReader( new String(result, CDM.utf8Charset));
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
@@ -100,8 +100,8 @@ public class ConsistentDatesTest {
 
   @Test
   public void checkWCSDates() throws JDOMException, IOException {
-    String endpoint = TestWithLocalServer.withPath("/wcs/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=sst");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    String endpoint = TestOnLocalServer.withHttpPath("/wcs/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?service=WCS&version=1.0.0&request=DescribeCoverage&coverage=sst");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.xml);
     Reader in = new StringReader( new String(result, CDM.utf8Charset));
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
@@ -125,8 +125,8 @@ public class ConsistentDatesTest {
 
   @Test
   public void checkNCSSDates() throws JDOMException, IOException {
-    String endpoint = TestWithLocalServer.withPath("/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=xml");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    String endpoint = TestOnLocalServer.withHttpPath("/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=xml");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.xml);
     String results = new String(result, CDM.utf8Charset);
     if (show) System.out.printf("checkNCSSDates%n%s%n", results);
     Reader in = new StringReader( results );
@@ -150,8 +150,8 @@ public class ConsistentDatesTest {
   // PF5_SST_Climatology:  :units = "hour since 0000-01-01 00:00:00";
   @Test
   public void checkNCSSDatesInNetcdf() throws JDOMException, IOException {
-    String endpoint = TestWithLocalServer.withPath("/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=netcdf");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
+    String endpoint = TestOnLocalServer.withHttpPath("/ncss/grid/cdmUnitTest/ncss/climatology/PF5_SST_Climatology_Monthly_1985_2001.nc?var=sst&latitude=45&longitude=-20&temporal=all&accept=netcdf");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.netcdf);
     NetcdfFile nf = NetcdfFile.openInMemory("test_data.ncs", result);
     NetcdfDataset ds = new NetcdfDataset(nf);
 
@@ -207,8 +207,8 @@ public class ConsistentDatesTest {
     };
     List<CalendarDate> expectedCalendarDatesList = Arrays.asList(expectedCalendarDates);
 
-    String endpoint = TestWithLocalServer.withPath("/ncss/grid/scanCdmUnitTests/ncss/test/pr_HRM3_2038-2070.CO.ncml?var=pr&latitude=44&longitude=18&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.netcdf);
+    String endpoint = TestOnLocalServer.withHttpPath("/ncss/grid/scanCdmUnitTests/ncss/test/pr_HRM3_2038-2070.CO.ncml?var=pr&latitude=44&longitude=18&time_start=2038-01-01T03%3A00%3A00Z&time_end=2038-01-02T03%3A00%3A00Z&accept=netcdf");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.netcdf);
 
     ByteArrayInputStream is = new ByteArrayInputStream(result);
     File tmpFile = tempFolder.newFile();

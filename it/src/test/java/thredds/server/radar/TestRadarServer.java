@@ -5,8 +5,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
-import ucar.httpservices.HTTPException;
+import thredds.TestOnLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.nc2.util.IO;
@@ -41,7 +40,7 @@ public class TestRadarServer {
   String xmlEncoding = "application/xml;charset=UTF-8";
   String path;
   public TestRadarServer(String path) {
-    this.path = TestWithLocalServer.withPath(path);
+    this.path = TestOnLocalServer.withHttpPath(path);
   }
 
   @org.junit.Test

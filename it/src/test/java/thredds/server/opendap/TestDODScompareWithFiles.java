@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
@@ -130,7 +130,7 @@ public class TestDODScompareWithFiles {
   @Test
   public void problem() throws IOException {
     String filename = "conventions/coards/inittest24.QRIDV07200.ncml";
-    String dodsUrl = TestWithLocalServer.withPath(path + filename);
+    String dodsUrl = TestOnLocalServer.withHttpPath(path + filename);
     String localPath = contentRoot + filename;
     compareDatasets(dodsUrl, localPath);
   }
@@ -138,7 +138,7 @@ public class TestDODScompareWithFiles {
   @Test
   public void compare() throws IOException {
     filename = StringUtil2.replace(filename, '\\', "/");
-    String dodsUrl = TestWithLocalServer.withPath(path + filename);
+    String dodsUrl = TestOnLocalServer.withHttpPath(path + filename);
     String localPath = contentRoot + filename;
     compareDatasets(dodsUrl, localPath);
   }

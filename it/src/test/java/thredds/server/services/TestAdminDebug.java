@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.constants.CDM;
 
@@ -50,7 +50,7 @@ public class TestAdminDebug {
 
     @Test public void testOpenHtml() {
         String endpoint = urlPrefix + path;
-        byte[] response = TestWithLocalServer.getContent(goodCred, endpoint, new int[] { 200 }, ContentType.html);
+        byte[] response = TestOnLocalServer.getContent(goodCred, endpoint, new int[] { 200 }, ContentType.html);
         if (response != null) {
             logger.debug(new String(response, CDM.utf8Charset));
         }
@@ -58,7 +58,8 @@ public class TestAdminDebug {
 
     @Test public void testOpenHtmlFail() {
         String endpoint = urlPrefix + path;
-        byte[] response = TestWithLocalServer.getContent(badCred, endpoint, new int[] { HttpStatus.SC_UNAUTHORIZED, HttpStatus.SC_FORBIDDEN }, ContentType.html);
+        byte[] response = TestOnLocalServer
+                .getContent(badCred, endpoint, new int[] { HttpStatus.SC_UNAUTHORIZED, HttpStatus.SC_FORBIDDEN }, ContentType.html);
 
         if (response != null) {
             logger.debug(new String(response, CDM.utf8Charset));

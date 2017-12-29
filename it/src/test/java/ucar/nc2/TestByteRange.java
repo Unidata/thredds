@@ -36,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.TestOnLocalServer;
 import ucar.unidata.util.test.UnitTestCommon;
 
 import java.io.PrintWriter;
@@ -80,8 +81,8 @@ public class TestByteRange extends UnitTestCommon
         String threddsRoot = getThreddsroot();
         testcases = new ArrayList<Testcase>();
         testcases.add(new Testcase("TestByteRanges",
-                "http://localhost:8081/thredds/fileServer/localContent/testData.nc"
-                // "http://localhost:8081/thredds/fileServer/scanLocal/sss_binned_L3_MON_SCI_V4.0_2011.nc"
+                TestOnLocalServer.withHttpPath("fileServer/localContent/testData.nc")
+                // TestOnLocalServer.withHttpPath("fileServer/scanLocal/sss_binned_L3_MON_SCI_V4.0_2011.nc")
                 //"http://data.nodc.noaa.gov/thredds/fileServer/aquarius/nodc_binned_V4.0/monthly/sss_binned_L3_MON_SCI_V4.0_2011.nc"
         ));
     }

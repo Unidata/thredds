@@ -10,7 +10,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.util.EntityUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
@@ -39,7 +38,6 @@ abstract public class TestReify extends UnitTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected final String THREDDSPREFIX = "/thredds";
     static protected final String DOWNPREFIX = "/download";
     static protected final String UPPREFIX = "/upload";
     static protected String DOWNLOADDIR;

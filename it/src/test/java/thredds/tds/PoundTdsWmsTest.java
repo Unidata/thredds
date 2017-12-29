@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
@@ -145,7 +145,7 @@ public class PoundTdsWmsTest
     return numRequests;
   }
 
-  private static String baseUrl = TestWithLocalServer.server+"wms/ncWmsPixelMapProblem/GFS_Global_0p5deg_20101026_0000.grib2?service=WMS&version=1.3.0&REQUEST=GetMap&CRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1000&HEIGHT=500&FORMAT=image/png&LAYERS=Precipitable_water&STYLES=boxfill/redblue&COLORSCALERANGE=0,100&TIME=";
+  private static String baseUrl = TestOnLocalServer.withHttpPath("wms/ncWmsPixelMapProblem/GFS_Global_0p5deg_20101026_0000.grib2?service=WMS&version=1.3.0&REQUEST=GetMap&CRS=EPSG:4326&BBOX=-180,-90,180,90&WIDTH=1000&HEIGHT=500&FORMAT=image/png&LAYERS=Precipitable_water&STYLES=boxfill/redblue&COLORSCALERANGE=0,100&TIME=");
   private static String[] timeStrings = new String[]
           {
                   "2010-10-26T00:00:00.000Z",
@@ -215,13 +215,13 @@ public class PoundTdsWmsTest
                   "2010-11-03T00:00:00.000Z"
           };
   private static String ml8081GfsHalfDegreeBestWmsGetCapUrl =
-          TestWithLocalServer.server + "wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?" +
+          TestOnLocalServer.withHttpPath("wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?" +
                   "service=WMS&" +
                   "version=1.3.0&" +
-                  "request=GetCapabilities";
+                  "request=GetCapabilities");
 
   private static String ml8081GfsHalfDegreeBestWmsGetMapBaseUrl =
-          TestWithLocalServer.server + "wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?" +
+          TestOnLocalServer.withHttpPath("wms/fmrc/NCEP/GFS/Global_0p5deg/NCEP-GFS-Global_0p5deg_best.ncd?" +
                   "service=WMS&" +
                   "version=1.3.0&" +
                   "request=GetMap&TRANSPARENT=true&" +
@@ -236,7 +236,7 @@ public class PoundTdsWmsTest
                   "WIDTH=256&" +
                   "HEIGHT=256&" +
                   "LAYERS=Precipitable_water_entire_atmosphere_single_layer&" +
-                  "ELEVATION=0&TIME=";
+                  "ELEVATION=0&TIME=");
 
   private static String[] ml8081GfsHalfDegreeBestWmsTimeStrings = new String[] {
                   "2010-11-06T00:00:00.000Z",

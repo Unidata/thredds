@@ -9,14 +9,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.stream.NcStreamWriter;
 import ucar.nc2.util.CompareNetcdf2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -24,7 +23,6 @@ import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -106,7 +104,7 @@ public class TestCdmRemoteCompareHeadersP {
   @Test
   public void doOne() throws IOException {
     String name = StringUtil2.substitute(filename.substring(contentRoot.length()), "\\", "/");
-    String remote = TestWithLocalServer.withPath(urlPath + name);
+    String remote = TestOnLocalServer.withHttpPath(urlPath + name);
     total++;
     success += compareDatasets(filename, remote, false);
   }

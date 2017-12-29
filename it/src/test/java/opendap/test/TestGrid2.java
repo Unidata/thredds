@@ -36,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.TestOnLocalServer;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
@@ -150,7 +151,7 @@ public class TestGrid2 extends UnitTestCommon
 
 
     static protected final String BASELINE =
-            "netcdf dods://localhost:8081/thredds/dodsC/scanLocal/testgrid2.nc {\n"
+            "netcdf " + TestOnLocalServer.withDodsPath("dodsC/scanLocal/testgrid2.nc") + " {\n"
                     + "  dimensions:\n"
                     + "    time = 2;\n"
                     + "  variables:\n"

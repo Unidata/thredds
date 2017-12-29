@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
 import ucar.httpservices.HTTPSession;
@@ -27,7 +27,7 @@ public class TestOpendapFilters {
 
   @Test
   public void testIllegalRequest() throws IOException, InvalidRangeException {
-    String url = TestWithLocalServer.withPath("/dodsC/scanLocal/testWrite.nc.dds?");
+    String url = TestOnLocalServer.withHttpPath("/dodsC/scanLocal/testWrite.nc.dds?");
     String esc = url + URLEncoder.encode("<bad>\nworse", CDM.UTF8);
     try (HTTPSession session = HTTPFactory.newSession(esc)) {
       HTTPMethod method = HTTPFactory.Get(session);

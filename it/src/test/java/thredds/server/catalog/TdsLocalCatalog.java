@@ -36,7 +36,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
@@ -70,7 +70,7 @@ public class TdsLocalCatalog {
 
   public static Catalog open(String catalogName) throws IOException {
     if (catalogName == null) catalogName = "/catalog.xml";
-    String catalogPath = TestWithLocalServer.withPath(catalogName);
+    String catalogPath = TestOnLocalServer.withHttpPath(catalogName);
     System.out.println("\n open= "+catalogPath);
 
     CatalogBuilder builder = new CatalogBuilder();

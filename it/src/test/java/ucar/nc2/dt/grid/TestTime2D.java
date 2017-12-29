@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.TestOnLocalServer;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -57,8 +58,8 @@ public class TestTime2D {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testTime2D() throws Exception {
-    try (NetcdfFile dataset = NetcdfDataset.openDataset(
-            "dods://localhost:8081/thredds/dodsC/gribCollection.v5/GFS_GLOBAL_2p5/TwoD")) {
+    try (NetcdfFile dataset = NetcdfDataset.openDataset(TestOnLocalServer.withDodsPath(
+            "dodsC/gribCollection.v5/GFS_GLOBAL_2p5/TwoD"))) {
       Variable v = dataset.findVariable(null, "Pressure_surface");
       assert null != v;
       assert v.getRank() == 4;

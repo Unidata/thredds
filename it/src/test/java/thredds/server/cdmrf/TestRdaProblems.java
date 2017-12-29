@@ -38,7 +38,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.tools.DataFactory;
@@ -47,8 +46,6 @@ import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.util.DebugFlagsImpl;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsRdaData;
 
@@ -68,10 +65,9 @@ public class TestRdaProblems {
   // /thredds/cdmrfeature/grid/aggregations/g/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E?req=data&
   // var=Temperature_height_above_ground_Mixed_intervals_AverageNforecasts&timePresent=true
 
-  // http://localhost:8081/thredds/catalog/rdaTest/ds094.2_t/catalog.html?dataset=rdaTest/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E
   @Test
   public void testIndexOutOfBounds() throws IOException, InvalidRangeException {
-    //String endpoint = TestWithLocalServer.withPath("cdmrfeature/grid/rdaTest/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E");
+    //String endpoint = TestOnLocalServer.withHttpPath("cdmrfeature/grid/rdaTest/ds094.2_t/GaussLatLon_880X1760-0p0000N-180p0000E");
     //String ccName = "ds094.2_t#GaussLatLon_880X1760-0p0000N-180p0000E";
     String covName = "Temperature_height_above_ground_Mixed_intervals_AverageNforecasts";
     //System.out.printf("%s%n", endpoint);

@@ -38,7 +38,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -73,7 +73,7 @@ public class TestHttpOpen {
 
   private final String url;
   public TestHttpOpen(String path) {
-      this.url = TestWithLocalServer.withPath(path);
+      this.url = TestOnLocalServer.withHttpPath(path);
   }
 
   // HTTP = 4300 HTTP2 = 5500 msec 20-25% slower

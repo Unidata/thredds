@@ -47,7 +47,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.AxisType;
@@ -60,7 +60,6 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.*;
@@ -83,7 +82,7 @@ public class TestWcsServer {
 
   private final Namespace NS_WCS = Namespace.getNamespace("wcs", "http://www.opengis.net/wcs");
 
-  //private String server = TestWithLocalServer.server+ "wcs/";
+  //private String server = TestOnLocalServer.server+ "wcs/";
   //private String server2 = "http://thredds.ucar.edu/thredds/wcs/";
 
   //private String ncdcWcsServer = "http://eclipse.ncdc.noaa.gov:9090/thredds/wcs/";
@@ -97,8 +96,8 @@ public class TestWcsServer {
 
   @Test
   public void testGetCapabilites() throws IOException, JDOMException {
-    String endpoint = TestWithLocalServer.withPath(dataset1+"&request=GetCapabilities");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    String endpoint = TestOnLocalServer.withHttpPath(dataset1+"&request=GetCapabilities");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.xml);
 
     Reader in = new StringReader( new String(result, CDM.utf8Charset));
     SAXBuilder sb = new SAXBuilder();
@@ -125,32 +124,32 @@ public class TestWcsServer {
 
   @Test
   public void testDescribeCoverage() throws IOException {
-    String endpoint = TestWithLocalServer.withPath(dataset2+"&request=DescribeCoverage&coverage=sst");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, ContentType.xml);
+    String endpoint = TestOnLocalServer.withHttpPath(dataset2+"&request=DescribeCoverage&coverage=sst");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.xml);
   }
 
   @Test
   public void testGetCoverageFuzzyTime() throws IOException { // no longer fails because we use closest time. LOOK is that ok?
-    String endpoint = TestWithLocalServer.withPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, null);
+    String endpoint = TestOnLocalServer.withHttpPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, null);
   }
 
   @Test
   public void testGetCoverageFailBadCoverageName() throws IOException { // should fail because coverage name doesnt exist
-    String endpoint = TestWithLocalServer.withPath(dataset2 + "&request=GetCoverage&COVERAGE=bad&BBOX=10,0,300,80&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 400, null);
+    String endpoint = TestOnLocalServer.withHttpPath(dataset2 + "&request=GetCoverage&COVERAGE=bad&BBOX=10,0,300,80&TIME=2002-12-07T00:00:00Z&FORMAT=GeoTIFF");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 400, null);
   }
 
   @Test
   public void testGetCoverage() throws IOException {
-    String endpoint = TestWithLocalServer.withPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-01T00:00:00Z&FORMAT=GeoTIFF");
-    byte[] result = TestWithLocalServer.getContent(endpoint, 200, null);
+    String endpoint = TestOnLocalServer.withHttpPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-01T00:00:00Z&FORMAT=GeoTIFF");
+    byte[] result = TestOnLocalServer.getContent(endpoint, 200, null);
   }
 
   @Test
   public void testGetCoverageNetcdf() throws IOException {
-    String endpoint = TestWithLocalServer.withPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-01T00:00:00Z&FORMAT=NetCDF3");
-    byte[] content = TestWithLocalServer.getContent(endpoint, 200, null);
+    String endpoint = TestOnLocalServer.withHttpPath(dataset2+"&request=GetCoverage&COVERAGE=sst&BBOX=10,0,300,80&TIME=2002-12-01T00:00:00Z&FORMAT=NetCDF3");
+    byte[] content = TestOnLocalServer.getContent(endpoint, 200, null);
 
     // Open the binary response in memory
     try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
@@ -195,40 +194,40 @@ public class TestWcsServer {
 
   @Test
   public void saveGetCoverageNetcdf() throws IOException {
-    String endpoint = TestWithLocalServer.withPath(dataset2 + "&request=GetCoverage&COVERAGE=sst&BBOX=10,0.01,299.99,80&TIME=2002-12-01T00:00:00Z&FORMAT=NetCDF3");
+    String endpoint = TestOnLocalServer.withHttpPath(dataset2 + "&request=GetCoverage&COVERAGE=sst&BBOX=10,0.01,299.99,80&TIME=2002-12-01T00:00:00Z&FORMAT=NetCDF3");
 
     File tempFile = tempFolder.newFile();
     System.out.printf("write to %s%n", tempFile.getAbsolutePath());
 
-    TestWithLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
+    TestOnLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
   }
 
   @Test
   public void saveGetCoverageNetcdf2() throws IOException {
-    String endpoint = TestWithLocalServer.withPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=NetCDF3");
+    String endpoint = TestOnLocalServer.withHttpPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=NetCDF3");
 
     File tempFile = tempFolder.newFile();
     System.out.printf("write to %s%n", tempFile.getAbsolutePath());
 
-    TestWithLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
+    TestOnLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
   }
 
   @Test
   public void multipleVertGeotiffFail() throws IOException {
-    String endpoint = TestWithLocalServer.withPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=Geotiff");
+    String endpoint = TestOnLocalServer.withHttpPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=Geotiff");
 
     File tempFile = tempFolder.newFile();
     System.out.printf("write to %s%n", tempFile.getAbsolutePath());
 
-    TestWithLocalServer.getContent(endpoint, 400, null);
+    TestOnLocalServer.getContent(endpoint, 400, null);
   }
 
 
   @Test
   public void testVert() throws IOException {
-    String endpoint = TestWithLocalServer.withPath(dataset1+
+    String endpoint = TestOnLocalServer.withHttpPath(dataset1+
             "&request=GetCoverage&COVERAGE=Temperature&TIME=2012-04-19T00:00:00Z&FORMAT=NetCDF3&vertical=800");
-    byte[] content = TestWithLocalServer.getContent(endpoint, 200, null);
+    byte[] content = TestOnLocalServer.getContent(endpoint, 200, null);
 
     // Open the binary response in memory
     try (NetcdfFile nf = NetcdfFile.openInMemory("test_data.nc", content)) {
@@ -264,7 +263,7 @@ public class TestWcsServer {
 
   @org.junit.Test
   public void testFmrc() throws IOException {
-    String endpoint = TestWithLocalServer.withPath("wcs/testNAMfmrc/NAM_FMRC_best.ncd");
+    String endpoint = TestOnLocalServer.withHttpPath("wcs/testNAMfmrc/NAM_FMRC_best.ncd");
     showGetCapabilities(endpoint);
     showDescribeCoverage(endpoint, "Precipitable_water");                   // lon,lat1,lon,lat2
     showGetCoverage(endpoint, "Precipitable_water", "2006-09-25T09:00:00Z",null,"-60,-20,0,50", "netCDF3", false);
@@ -292,7 +291,7 @@ public class TestWcsServer {
     if (bb != null)
       getURL = getURL + "&bbox=" + bb;
 
-    byte[] content = TestWithLocalServer.getContent(getURL, 200, null);
+    byte[] content = TestOnLocalServer.getContent(getURL, 200, null);
 
     // Open the binary response in memory
     if (isNetcdf) {

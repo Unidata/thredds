@@ -39,7 +39,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.TestWithLocalServer;
+import thredds.TestOnLocalServer;
 import thredds.util.ContentType;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -82,7 +82,7 @@ public class TestFileServer {
 
   @Test
   public void downloadFile() {
-    String endpoint = TestWithLocalServer.withPath(path);
-    TestWithLocalServer.getContent(endpoint, 200, type);
+    String endpoint = TestOnLocalServer.withHttpPath(path);
+    TestOnLocalServer.getContent(endpoint, 200, type);
   }
 }

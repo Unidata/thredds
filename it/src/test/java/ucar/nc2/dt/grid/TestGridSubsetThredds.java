@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.TestOnLocalServer;
 import thredds.client.catalog.tools.DataFactory;
 import ucar.ma2.Array;
 import ucar.ma2.IndexIterator;
@@ -102,8 +103,8 @@ public class TestGridSubsetThredds {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void test3D() throws Exception {
-    try (GridDataset dataset = GridDataset.open(
-            "dods://localhost:8081/thredds/dodsC/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc")) {
+    try (GridDataset dataset = GridDataset.open(TestOnLocalServer.withDodsPath(
+            "dodsC/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc"))) {
       logger.debug("{}", dataset.getLocation());
 
       GeoGrid grid = dataset.findGridByName("Relative_humidity");
@@ -169,8 +170,8 @@ public class TestGridSubsetThredds {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testBBSubset2() throws Exception {
-    try (GridDataset dataset = GridDataset.open(
-            "dods://localhost:8081/thredds/dodsC/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc")) {
+    try (GridDataset dataset = GridDataset.open(TestOnLocalServer.withDodsPath(
+            "dodsC/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc"))) {
       GeoGrid grid = dataset.findGridByName("Pressure");
       assert null != grid;
       GridCoordSystem gcs = grid.getCoordinateSystem();

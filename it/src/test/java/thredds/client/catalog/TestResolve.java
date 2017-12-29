@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.TestOnLocalServer;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -52,8 +53,9 @@ public class TestResolve {
   @Test
   @Category(NeedsCdmUnitTest.class)
   public void testResolver() throws IOException {
-    String remoteDataset =
-            "thredds:resolve:http://localhost:8081/thredds/catalog/gribCollection/GFS_CONUS_80km/latest.xml";
+
+    String remoteDataset = TestOnLocalServer.withProtocolAndPath(
+            "thredds:resolve:http", "catalog/gribCollection/GFS_CONUS_80km/latest.xml");
 
     try (NetcdfFile ncd = NetcdfDataset.openFile(remoteDataset, null)) {
       List<Attribute> globalAttrs = ncd.getGlobalAttributes();

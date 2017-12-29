@@ -38,6 +38,7 @@ package ucar.nc2.util.net;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import thredds.TestOnLocalServer;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.client.catalog.tools.CatalogXmlWriter;
@@ -64,7 +65,7 @@ public class TestStream {
 
   @Test
   public void testStream1() throws URISyntaxException, IOException {
-    String catalogName = "http://localhost:8081/thredds/catalog.xml";
+    String catalogName = TestOnLocalServer.withHttpPath("catalog.xml");
     URI catalogURI = new URI(catalogName);
 
     try (HTTPSession client = HTTPFactory.newSession(catalogName)) {
