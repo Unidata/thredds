@@ -32,18 +32,6 @@
  */
 package ucar.nc2;
 
-import java.io.BufferedWriter;
-import java.io.CharArrayWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.util.StringTokenizer;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
 import org.jdom2.Element;
@@ -53,6 +41,10 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLWriter;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Indent;
+
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.util.StringTokenizer;
 
 /**
  * Print contents of an existing netCDF file, using a Writer.
@@ -66,7 +58,8 @@ import ucar.nc2.util.Indent;
  */
 
 public class NCdumpW {
-  private static String usage = "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
+  private static String usage =
+          "usage: NCdumpW <filename> [-cdl | -ncml] [-c | -vall] [-v varName1;varName2;..] [-v varName(0:1,:,12)]\n";
 
   /**
    * Tell NCdumpW if you want values printed.
@@ -76,52 +69,15 @@ public class NCdumpW {
   }
 
   /**
-   * Print netcdf "header only" in CDL.
-   *
-   * @param fileName open this file
-   * @param out      print to this Writer
-   * @return true if successful
-   * @throws java.io.IOException on write error
-   */
-  public static boolean printHeader(String fileName, Writer out) throws java.io.IOException {
-    return print(fileName, out, false, false, false, false, null, null);
-  }
-
-  /**
-   * print NcML representation of this netcdf file, showing coordinate variable data.
-   *
-   * @param fileName open this file
-   * @param out      print to this Writer
-   * @return true if successful
-   * @throws java.io.IOException on write error
-   */
-  public static boolean printNcML(String fileName, Writer out) throws java.io.IOException {
-    return print(fileName, out, false, true, true, false, null, null);
-  }
-
-  /**
-   * NCdump that parses a command string, using default options.
-   *
-   * @param command command string
-   * @param out     send output here
-   * @return true if successful
-   * @throws java.io.IOException on write error
-   */
-  public static boolean print(String command, Writer out) throws java.io.IOException {
-    return print(command, out, null);
-  }
-
-  /**
    * ncdump that parses a command string.
    *
    * @param command command string
    * @param out     send output here
    * @param ct      allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws java.io.IOException on write error
+   * @throws IOException on write error
    */
-  public static boolean print(String command, Writer out, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
-
+  public static boolean print(String command, Writer out, ucar.nc2.util.CancelTask ct) throws IOException {
     // pull out the filename from the command
     String filename;
     StringTokenizer stoke = new StringTokenizer(command);
@@ -132,10 +88,7 @@ public class NCdumpW {
       return false;
     }
 
-    NetcdfFile nc = null;
-    try {
-      nc = NetcdfDataset.openFile(filename, ct);
-
+    try (NetcdfFile nc = NetcdfDataset.openFile(filename, ct)) {
       // the rest of the command
       int pos = command.indexOf(filename);
       command = command.substring(pos + filename.length());
@@ -147,10 +100,8 @@ public class NCdumpW {
       return false;
 
     } finally {
-      if (nc != null) nc.close();
-      out.flush();
+      out.close();
     }
-
   }
 
   /**
@@ -161,10 +112,10 @@ public class NCdumpW {
    * @param out     send output here
    * @param ct      allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws java.io.IOException on write error
+   * @throws IOException on write error
    */
-  public static boolean print(NetcdfFile nc, String command, Writer out, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
-
+  public static boolean print(NetcdfFile nc, String command, Writer out, ucar.nc2.util.CancelTask ct)
+          throws IOException {
     WantValues showValues = WantValues.none;
     boolean ncml = false;
     boolean strict = false;
@@ -221,15 +172,11 @@ public class NCdumpW {
    * @param varNames   semicolon delimited list of variables whose data should be printed
    * @param ct         allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws java.io.IOException on write error
+   * @throws IOException on write error
    */
-  public static boolean print(String filename, Writer out, boolean showAll, boolean showCoords,
-                              boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
-
-    NetcdfFile nc = null;
-    try {
-      //nc = NetcdfFileCache.acquire(fileName, ct);
-      nc = NetcdfDataset.openFile(filename, ct);
+  public static boolean print(String filename, Writer out, boolean showAll, boolean showCoords, boolean ncml,
+          boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws IOException {
+    try (NetcdfFile nc = NetcdfDataset.openFile(filename, ct)){
       return print(nc, out, showAll, showCoords, ncml, strict, varNames, ct);
 
     } catch (java.io.FileNotFoundException e) {
@@ -238,10 +185,7 @@ public class NCdumpW {
       out.flush();
       return false;
 
-    } finally {
-      if (nc != null) nc.close();
     }
-
   }
 
   /**
@@ -257,10 +201,10 @@ public class NCdumpW {
    *                   Fortran90 like selector: eg varName(1:2,*,2)
    * @param ct         allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws java.io.IOException on write error
+   * @throws IOException on write error
    */
   public static boolean print(NetcdfFile nc, Writer out, boolean showAll, boolean showCoords,
-                              boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
+                              boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws IOException {
 
     WantValues showValues = WantValues.none;
     if (showAll)
@@ -286,10 +230,10 @@ public class NCdumpW {
    *                   Fortran90 like selector: eg varName(1:2,*,2)
    * @param ct         allow task to be cancelled; may be null.
    * @return true if successful
-   * @throws java.io.IOException on write error
+   * @throws IOException on write error
    */
-  public static boolean print(NetcdfFile nc, Writer out, WantValues showValues,
-                              boolean ncml, boolean strict, String varNames, ucar.nc2.util.CancelTask ct) throws java.io.IOException {
+  public static boolean print(NetcdfFile nc, Writer out, WantValues showValues, boolean ncml, boolean strict,
+          String varNames, ucar.nc2.util.CancelTask ct) throws IOException {
     boolean headerOnly = (showValues == WantValues.none) && (varNames == null);
 
     try {
@@ -365,7 +309,7 @@ public class NCdumpW {
    * @param v  variable to print
    * @param ct allow task to be cancelled; may be null.
    * @return String result
-   * @throws java.io.IOException on write error
+   * @throws IOException on write error
    */
   static public String printVariableData(VariableIF v, ucar.nc2.util.CancelTask ct) throws IOException {
     Array data = v.read();
@@ -399,30 +343,12 @@ public class NCdumpW {
     return writer.toString();
   }
 
-  /**
-   * Print the data array.
-   *
-   * @param array data to print.
-   * @param name  title the output.
-   * @param out   send output here.
-   * @param ct    allow task to be cancelled; may be null.
-   * @throws java.io.IOException on read error
-   */
-  static public void printArray(Array array, String name, PrintWriter out, CancelTask ct) throws IOException {
-    printArray(array, name, out, new Indent(2), ct);
-  }
-
-  // for backwards compatibility with NCDump
-  static public void printArray(Array array, String name, PrintStream out, CancelTask ct) {
-    PrintWriter pw = new PrintWriter( new OutputStreamWriter(out, CDM.utf8Charset));
-    printArray(array, name, null, pw, new Indent(2), ct, true);
-  }
 
   static public String toString(Array array, String name, CancelTask ct) {
-    CharArrayWriter carray = new CharArrayWriter(100000);
-    PrintWriter pw = new PrintWriter(carray);
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
     printArray(array, name, null, pw, new Indent(2), ct, true);
-    return carray.toString();
+    return sw.toString();
   }
 
   static private void printArray(Array array, String name, PrintWriter out, Indent indent, CancelTask ct)
@@ -468,8 +394,6 @@ public class NCdumpW {
       }
     } else if (array instanceof ArrayObject) {
       printVariableArray(out, (ArrayObject) array, ilev, ct);
-
-
     } else {
       printArray(array, out, ilev, ct);
     }
@@ -651,7 +575,6 @@ public class NCdumpW {
     out.print(indent + "}");
   }
 
-
   static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws IOException {
     try (StructureDataIterator iter = seq.getStructureDataIterator()) {
       while (iter.hasNext()) {
@@ -671,7 +594,7 @@ public class NCdumpW {
    *
    * @param out   send output here.
    * @param sdata StructureData to print.
-   * @throws java.io.IOException on read error
+   * @throws IOException on read error
    */
   static public void printStructureData(PrintWriter out, StructureData sdata) throws IOException {
     printStructureData(out, sdata, new Indent(2), null);
@@ -714,15 +637,6 @@ public class NCdumpW {
       out.print(ma.next());
       out.print(' ');
     }
-  }
-
-  /**
-   * Print array to stdout
-   */
-  static public void printArray(Array ma) {
-    PrintWriter out = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
-    printArray(ma, out);
-    out.flush();
   }
 
   /**
@@ -813,7 +727,7 @@ public class NCdumpW {
       Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
       NCdumpW.print(sbuff.toString(), writer, null);
 
-    } catch (java.io.IOException ioe) {
+    } catch (IOException ioe) {
       ioe.printStackTrace();
     }
   }

@@ -31,18 +31,6 @@
  */
 package thredds.server.ncss.controller.grid;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -60,10 +48,9 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import thredds.mock.web.MockTdsContextLoader;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner;
 import thredds.junit4.SpringJUnit4ParameterizedClassRunner.Parameters;
+import thredds.mock.web.MockTdsContextLoader;
 import ucar.ma2.Array;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
@@ -72,7 +59,16 @@ import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.TestDir;
+
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ParameterizedClassRunner.class)
 @WebAppConfiguration
@@ -184,12 +180,12 @@ public class GridCoverageSubsettingTest {
     Variable v = nf.findVariable(null, "x");
     assert v != null;
     Array x = v.read();
-    NCdumpW.printArray(x);
+    logger.debug(NCdumpW.toString(x));
     System.out.printf("%n");
     v = nf.findVariable(null, "y");
     assert v != null;
     Array y = v.read();
-    NCdumpW.printArray(y);
+    logger.debug(NCdumpW.toString(y));
     System.out.printf("%n");
 
     int nx = (int) x.getSize();

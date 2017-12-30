@@ -731,55 +731,6 @@ map_proj =  1: Lambert Conformal
     WRFEtaTransformBuilder builder = new WRFEtaTransformBuilder(cs);
     return builder.makeCoordinateTransform(ds, null);
   }
-
-  public static void main(String args[]) throws IOException, InvalidRangeException {
-    try (NetcdfFile ncd = NetcdfDataset.openFile("R:/testdata/wrf/WRFOU~C@", null)) {
-
-      Variable glat = ncd.findVariable("GLAT");
-      Array glatData = glat.read();
-      IndexIterator ii = glatData.getIndexIterator();
-      while (ii.hasNext()) {
-        ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
-      }
-      PrintWriter pw = new PrintWriter(new OutputStreamWriter(System.out, CDM.utf8Charset));
-      NCdumpW.printArray(glatData, "GLAT", pw, null);
-
-      Variable glon = ncd.findVariable("GLON");
-      Array glonData = glon.read();
-      ii = glonData.getIndexIterator();
-      while (ii.hasNext()) {
-        ii.setDoubleCurrent(Math.toDegrees(ii.getDoubleNext()));
-      }
-      NCdumpW.printArray(glonData, "GLON", pw, null);
-
-
-      Index index = glatData.getIndex();
-      Index index2 = glatData.getIndex();
-
-      int[] vshape = glatData.getShape();
-      int ny = vshape[1];
-      int nx = vshape[2];
-
-      ArrayDouble.D1 diff_y = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[]{ny});
-      ArrayDouble.D1 diff_x = (ArrayDouble.D1) Array.factory(DataType.DOUBLE, new int[]{nx});
-
-      for (int y = 0; y < ny - 1; y++) {
-        double val = glatData.getDouble(index.set(0, y, 0)) - glatData.getDouble(index2.set(0, y + 1, 0));
-        diff_y.set(y, val);
-      }
-
-      for (int x = 0; x < nx - 1; x++) {
-        double val = glatData.getDouble(index.set(0, 0, x)) - glatData.getDouble(index2.set(0, 0, x + 1));
-        diff_x.set(x, val);
-      }
-
-      NCdumpW.printArray(diff_y, "diff_y", pw, null);
-      NCdumpW.printArray(diff_x, "diff_x", pw, null);
-    }
-
-  }
-
-
 }
 
 /*

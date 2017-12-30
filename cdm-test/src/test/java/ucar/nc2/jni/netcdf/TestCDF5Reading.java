@@ -1,7 +1,6 @@
 package ucar.nc2.jni.netcdf;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -12,18 +11,12 @@ import ucar.ma2.ArrayFloat;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.MAMath;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.NCheader;
 import ucar.unidata.io.RandomAccessFile;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsContentRoot;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -69,12 +62,9 @@ public class TestCDF5Reading extends UnitTestCommon
             jni.setLocation(location + " (jni)");
             Array data = read(jni, "f4", "0:2");
             if(prop_visual) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                NCdumpW.printArray(data, pw);
-                pw.close();
-                sw.close();
-                String testresult = sw.toString().replace('r', ' ').replace('\n', ' ').trim();
+                String dump = NCdumpW.toString(data);
+                logger.debug(dump);
+                String testresult = dump.replace('r', ' ').replace('\n', ' ').trim();
                 visual("CDF Read", testresult);
             }
             Assert.assertTrue(String.format("***Fail: data mismatch"),

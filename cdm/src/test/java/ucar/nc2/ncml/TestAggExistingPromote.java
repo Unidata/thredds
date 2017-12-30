@@ -32,12 +32,17 @@
  */
 package ucar.nc2.ncml;
 
-import junit.framework.*;
-
+import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
+import ucar.ma2.InvalidRangeException;
+import ucar.nc2.Dimension;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -83,7 +88,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getShape()[0] == 3;
     assert datap.getElementType() == String.class;
 
-    NCdumpW.printArray(datap, "time_coverage_end", System.out, null);
+    logger.debug(NCdumpW.toString(datap, "time_coverage_end", null));
 
     String[] resultp = new String[]{"2006-06-07T12:00:00Z", "2006-06-07T13:00:00Z", "2006-06-07T14:00:00Z"};
     int count = 0;
@@ -118,7 +123,7 @@ public class TestAggExistingPromote extends TestCase {
       assert data.getShape()[0] == 3;
       assert data.getElementType() == String.class;
 
-      NCdumpW.printArray(data, "time coord", System.out, null);
+      logger.debug(NCdumpW.toString(data, "time coord", null));
 
       count = 0;
       dataI = data.getIndexIterator();
@@ -207,7 +212,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getSize() == dim.getLength();
     assert datap.getElementType() == String.class;
 
-    NCdumpW.printArray(datap, "title", System.out, null);
+    logger.debug(NCdumpW.toString(datap, "title", null));
 
     while (datap.hasNext())
       assert datap.next().equals("Example Data");
@@ -228,7 +233,7 @@ public class TestAggExistingPromote extends TestCase {
     assert datap.getSize() == dim.getLength();
     assert datap.getElementType() == String.class;
 
-    NCdumpW.printArray(datap, "title", System.out, null);
+    logger.debug(NCdumpW.toString(datap, "title", null));
 
     int count = 0;
     while (datap.hasNext()) {

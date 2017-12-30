@@ -45,8 +45,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -117,7 +117,7 @@ public class TestGribCollectionReadingIosp {
       assert data.getRank() == 4;
       assert data.getDataType() == DataType.FLOAT;
       assert data.getSize() == 2;
-      System.out.printf("%s%n", NCdumpW.toString(data));
+      logger.debug("{}", NCdumpW.toString(data));
       while (data.hasNext()) {
         float val = data.nextFloat();
         assert !Float.isNaN(val);
@@ -139,7 +139,7 @@ public class TestGribCollectionReadingIosp {
       assert data.getRank() == 4;
       assert data.getDataType() == DataType.FLOAT;
       assert data.getSize() == 12;
-      System.out.printf("%s%n", NCdumpW.toString(data));
+      logger.debug("{}", NCdumpW.toString(data));
       while (data.hasNext()) {
         float val = data.nextFloat();
         assert !Float.isNaN(val);

@@ -32,18 +32,19 @@
  */
 package ucar.nc2.iosp.hdf5;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
-import ucar.nc2.*;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.unidata.util.test.CompareNetcdf;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-import java.io.*;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -52,22 +53,6 @@ import java.lang.invoke.MethodHandles;
 @Category(NeedsCdmUnitTest.class)
 public class TestH5ReadStructure {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  File tempFile;
-  PrintWriter out;
-
-  @Before
-  public void setUp() throws Exception {
-    tempFile = File.createTempFile("TestLongOffset", "out");
-    out = new PrintWriter(new FileOutputStream(tempFile));
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    out.close();
-    if (!tempFile.delete())
-      System.out.printf("Delete failed on %s%n", tempFile);
-  }
 
   /*Structure {
      char a_string(10);
@@ -101,7 +86,7 @@ public class TestH5ReadStructure {
         assert (arr.getElementType() == char.class);
         assert (arr instanceof ArrayChar);
         ArrayChar arrc = (ArrayChar) arr;
-        out.println(arrc.getString());
+        logger.debug(arrc.getString());
         assert arrc.getString().equals("Astronomy") : arrc.getString();
 
         arr = d.getArray("b_string");
@@ -109,7 +94,7 @@ public class TestH5ReadStructure {
         assert (arr.getElementType() == char.class);
         assert (arr instanceof ArrayChar);
         arrc = (ArrayChar) arr;
-        out.println(arrc.getString());
+        logger.debug(arrc.getString());
         assert arrc.getString().equals("Biochemistry") : arrc.getString();
       }
 
@@ -156,19 +141,19 @@ public class TestH5ReadStructure {
         assert (arr != null);
         assert (arr.getElementType() == int.class);
         assert (arr instanceof ArrayInt);
-        NCdumpW.printArray(arr, "a_name", out, null);
+        logger.debug(NCdumpW.toString(arr, "a_name", null));
 
         arr = d.getArray("b_name");
         assert (arr != null);
         assert (arr.getElementType() == float.class);
         assert (arr instanceof ArrayFloat);
-        NCdumpW.printArray(arr, "b_name", out, null);
+        logger.debug(NCdumpW.toString(arr, "b_name", null));
 
         arr = d.getArray("c_name");
         assert (arr != null);
         assert (arr.getElementType() == double.class);
         assert (arr instanceof ArrayDouble);
-        NCdumpW.printArray(arr, "c_name", out, null);
+        logger.debug(NCdumpW.toString(arr, "c_name", null));
       }
 
       // this tests that we are using the btree ok
@@ -217,7 +202,7 @@ public class TestH5ReadStructure {
           assert (arr.getElementType() == int.class);
           assert (arr instanceof ArrayInt);
           assert (arr.getInt(arr.getIndex()) == 4 + count);
-          NCdumpW.printArray(arr, "a_name", out, null);
+          logger.debug(NCdumpW.toString(arr, "a_name", null));
 
           arr = d.getArray("b_name");
           assert (arr != null);
@@ -225,7 +210,7 @@ public class TestH5ReadStructure {
           assert (arr instanceof ArrayFloat);
           assert (arr.getSize() == 3);
           assert (arr.getFloat(arr.getIndex()) == (float) 4.0 + count);
-          NCdumpW.printArray(arr, "b_name", out, null);
+          logger.debug(NCdumpW.toString(arr, "b_name", null));
 
           count++;
         }
@@ -253,7 +238,7 @@ public class TestH5ReadStructure {
           assert (arr.getElementType() == int.class);
           assert (arr instanceof ArrayInt);
           assert (arr.getInt(arr.getIndex()) == count);
-          NCdumpW.printArray(arr, "a_name", out, null);
+          logger.debug(NCdumpW.toString(arr, "a_name", null));
 
           arr = d.getArray("b_name");
           assert (arr != null);
@@ -261,7 +246,7 @@ public class TestH5ReadStructure {
           assert (arr instanceof ArrayFloat);
           assert (arr.getSize() == 3);
           assert (arr.getFloat(arr.getIndex()) == (float) count);
-          NCdumpW.printArray(arr, "b_name", out, null);
+          logger.debug(NCdumpW.toString(arr, "b_name", null));
 
           count++;
         }

@@ -47,8 +47,8 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
@@ -95,13 +95,11 @@ public class TestFmrcMisc {
       Assert.assertEquals("hours since 2015-03-08 12:51:00.000 UTC", time.getUnitsString());
       Assert.assertEquals(74, time.getSize());
       Array data = time.read();
-      System.out.printf("%s%n", NCdumpW.toString(data));
+      logger.debug("{}", NCdumpW.toString(data));
 
       for (CalendarDate cd : time.getCalendarDates()) {
         assert cd.getFieldValue(CalendarPeriod.Field.Minute) == 0 : System.out.printf("%s%n", cd);
       }
     }
   }
-
-
 }

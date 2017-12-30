@@ -35,10 +35,15 @@ import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.*;
-import ucar.nc2.*;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.ma2.ArrayInt;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Section;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -90,9 +95,9 @@ public class TestNcMLStrides extends TestCase {
     ArrayInt all = (ArrayInt) time.read();
 
     ArrayInt correct = (ArrayInt) all.section(new Section(stride).getRanges());
-    System.out.printf("correct(%s) %s", stride, NCdumpW.toString(correct));
+    logger.debug("correct({}) {}", stride, NCdumpW.toString(correct));
     ArrayInt data = (ArrayInt) time.read(stride);
-    System.out.printf("data(%s) %s%n", stride, NCdumpW.toString(data));
+    logger.debug("data({}) {}", stride, NCdumpW.toString(data));
     Index ci = correct.getIndex();
     Index di = data.getIndex();
     for (int i=0; i<data.getSize(); i++)

@@ -210,15 +210,15 @@ public class TestNc4IospWriting {
             try (NetcdfFile ncFileOut = writer.write()) {
                 ncFileOut.setLocation("writeEnumType");
 
-                Writer out = new StringWriter();
-                NCdumpW.print(ncFile, out, WantValues.all, false, false, null, null);
-                out.close();
-                mem = out.toString();
+                Writer sw = new StringWriter();
+                NCdumpW.print(ncFile, sw, WantValues.all, false, false, null, null);
+                sw.close();
+                mem = sw.toString();
 
-                out = new StringWriter();
-                NCdumpW.print(ncFileOut, out, WantValues.all, false, false, null, null);
-                out.close();
-                disk = out.toString();
+                sw = new StringWriter();
+                NCdumpW.print(ncFileOut, sw, WantValues.all, false, false, null, null);
+                sw.close();
+                disk = sw.toString();
             }
             String diffs = UnitTestCommon.compare("TestNc4IospWriting.writeEnumType", mem, disk);
             Assert.assertTrue("Differences", diffs == null);

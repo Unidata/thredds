@@ -37,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
-import ucar.ma2.Section;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
@@ -85,7 +84,7 @@ public class TestAggMisc {
             Variable v = ncfile.findVariable("time");
             Array data = v.read();
             assert data.getSize() == 20;
-            NCdumpW.printArray(data);
+            logger.debug(NCdumpW.toString(data));
         }
     }
 
@@ -99,7 +98,7 @@ public class TestAggMisc {
             Variable v = ncfile.findVariable("time");
             Array data = v.read();
             assert data.getSize() == 59;
-            NCdumpW.printArray(data);
+            logger.debug(NCdumpW.toString(data));
         }
     }
 
@@ -113,7 +112,7 @@ public class TestAggMisc {
             Variable v = ncfile.findVariable("time");
             Array data = v.read();
             assert data.getSize() == 3;
-            NCdumpW.printArray(data);
+            logger.debug(NCdumpW.toString(data));
         }
     }
 }

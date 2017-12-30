@@ -38,29 +38,15 @@ import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
-import ucar.nc2.constants.CDM;
 
 /**
- * Static utililities for testing
+ * Static utilities for testing
  *
  * @author Russ Rew
  */
 
 public class TestUtils  {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  static public void NCdump( String filename) {
-    try {
-      PrintWriter pw = new PrintWriter( new OutputStreamWriter(System.out, CDM.utf8Charset));
-      NCdumpW.print(filename, pw, false, true, false, false, null, null);
-      NCdumpW.printNcML(filename, pw);
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      assert (false);
-    }
-
-    System.out.println( "**** NCdump done");
-  }
 
   /** read all data, make sure variable metadata matches the array */
   static public void testReadData( NetcdfFile ncfile, boolean showStatus) {

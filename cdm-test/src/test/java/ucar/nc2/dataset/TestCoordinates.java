@@ -35,7 +35,7 @@
 package ucar.nc2.dataset;
 
 
-import junit.framework.*;
+import junit.framework.TestCase;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +50,8 @@ import ucar.nc2.constants.AxisType;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.ncml.NcMLReader;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -94,7 +94,7 @@ public class TestCoordinates extends TestCase {
 
     // if offset is applied twice, the result is not in +-180 range
     Array data = v.read();
-    NCdumpW.printArray(data);
+    logger.debug(NCdumpW.toString(data));
     IndexIterator ii = data.getIndexIterator();
     while (ii.hasNext()) {
       assert Math.abs(ii.getDoubleNext()) < 180 : ii.getDoubleCurrent();

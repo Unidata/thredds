@@ -45,11 +45,10 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.util.Misc;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 
@@ -83,7 +82,8 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
     int count = 0;
     Array data = v.read();
-    NCdumpW.printArray(data, "time", new PrintWriter(System.out), null);
+    logger.debug(NCdumpW.toString(data, "time", null));
+
     while (data.hasNext()) {
       assert Misc.closeEnough(data.nextInt(), (count + 1) * 3);
       count++;
@@ -117,7 +117,8 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
     int count = 0;
     Array data = v.read();
-    NCdumpW.printArray(data, "time", new PrintWriter(System.out), null);
+    logger.debug(NCdumpW.toString(data, "time", null));
+
     while (data.hasNext()) {
       assert data.nextInt() == count * 3;
       count++;

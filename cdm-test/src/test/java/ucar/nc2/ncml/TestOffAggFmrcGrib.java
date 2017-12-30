@@ -45,11 +45,8 @@ import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringReader;
-import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
-import java.util.Date;
 
 @Category(NeedsCdmUnitTest.class)
 public class TestOffAggFmrcGrib {
@@ -223,7 +220,7 @@ public class TestOffAggFmrcGrib {
             assert data.getShape()[0] == nagg;
             assert data.getElementType() == double.class;
 
-            NCdumpW.printArray(data);
+            logger.debug(NCdumpW.toString(data));
 
             int count = 0;
             IndexIterator dataI = data.getIndexIterator();
@@ -258,9 +255,7 @@ public class TestOffAggFmrcGrib {
         DateUnit du = new DateUnit(units);
 
         Array data = time.read();
-        StringWriter sw = new StringWriter();
-        NCdumpW.printArray(data, "timeCoords", new PrintWriter(sw), null);
-        logger.debug(sw.toString());
+        logger.debug(NCdumpW.toString(data, "timeCoords", null));
 
         assert data.getSize() == nagg * ntimes;
         assert data.getShape()[0] == nagg;
@@ -270,8 +265,7 @@ public class TestOffAggFmrcGrib {
         DateFormatter formatter = new DateFormatter();
         while (data.hasNext()) {
             double val = data.nextDouble();
-            Date date = du.makeDate(val);
-            logger.debug("date = {}", formatter.toDateTimeStringISO(date));
+            logger.debug("date = {}", Double.isNaN(val) ? val : formatter.toDateTimeStringISO(du.makeDate(val)));
         }
 
         Index ima = data.getIndex();

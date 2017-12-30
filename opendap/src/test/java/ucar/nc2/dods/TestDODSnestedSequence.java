@@ -162,7 +162,7 @@ public class TestDODSnestedSequence {
     assert a.getRank() == 1;
     assert a.getSize() == 25 : a.getSize();
 
-    NCdumpW.printArray(a, "stuff", System.out, null);
+    logger.debug(NCdumpW.toString(a, "stuff", null));
 
     int count = 0;
     IndexIterator iter = a.getIndexIterator();
