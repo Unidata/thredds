@@ -1,5 +1,7 @@
 package ucar.unidata.util.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.Section;
 import ucar.nc2.NetcdfFile;
@@ -9,31 +11,22 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 
 /**
- * Manage the test data directories and servers
+ * Manage the test data directories and servers.
  *
  * @author caron
  * @since 3/23/12
- * Modified 12/31/15 to add various test server paths
  *
- * This singleton class computes and stores a variety of constants.
  * <p>
  * <table>
  * <tr><th colspan="3">-D Property Names
  * <tr><th>Static Variable<th>Property Name(s)<th>Description
  * <tr><td>testdataDirPropName<td>unidata.testdata.path
  *     <td>Property name for the path to the Unidata test data directory,
- *         e.g unidata.testdata.path=//shemp/data/testdata2/
- *         the real directory is at shemp:/data/testdata2
- * <tr><td>threddsPropFileName<td>thredds.properties
- *     <td>Filename of the user property file read from the "user.home" directory
- *         if the "unidata.testdata.path" and "unidata.upc.share.path" are not
- *         available as system properties.
- * <tr><td>threddsServerPropName<td>thredds
- *     <td>Property name for the hostname of standard thredds server. Only used in
- *         classes that explicitly reference motherlode.
+ *         e.g unidata.testdata.path=/share/testdata
  * <tr><td>remoteTestServerPropName<td>remotetest
  *     <td>Property name for the hostname of the C-library remote test server.
  * </table>
@@ -46,18 +39,21 @@ import java.util.*;
  *         Migrate all test data here eventually.
  * <tr><td>cdmLocalTestDataDir<td>NA<td>../cdm/src/test/data
  *     <td>Level 1 test data directory (distributed with code and MAY be used in Unidata nightly testing).
- * <tr><td>temporaryLocalTestDataDir<td>NA<td>target/test/tmp
- *     <td>Temporary data directory (for writing temporary data).
- * <tr><td>threddsServer<td>threddsserver<td>thredds.ucar.edu
- *     <td>The hostname of the standard thredds server.
  * <tr><td>remoteTestServer<td>remotetestserver<td>remotetest.unidata.ucar.edu
- *     <td>The hostname of the test server for doing C library remote tests
+ *     <td>The hostname of the test server for doing C library remote tests.
  * </table>
  *
  */
 public class TestDir {
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   /**
-   * path to the Unidata test data directory
+   * Property name for the path to the Unidata test data directory, e.g "unidata.testdata.path=/share/testdata".
+   */
+  private static String testdataDirPropName ="unidata.testdata.path";
+
+  /**
+   * Path to the Unidata test data directory.
    */
   public static String testdataDir = null;
 
@@ -76,21 +72,6 @@ public class TestDir {
    * cdm-test data directory (distributed with code but depends on data not in github)
    */
   public static String cdmTestDataDir = "../cdm-test/src/test/data/";
-
-  //////////////////////////////////////////////////////////////////////
-  /**
-   * Property name for the path to the Unidata test data directory,
-   * e.g unidata.testdata2.path=//shemp/data/testdata2/
-   * the real directory is at shemp:/data/testdata2
-   */
-  private static String testdataDirPropName ="unidata.testdata.path";
-
-  /**
-   * Filename of the user property file read from the "user.home" directory
-   * if the "unidata.testdata2.path" and "unidata.upc.share.path" are not
-   * available as system properties.
-   */
-  private static String threddsPropFileName = "thredds.properties";
 
   //////////////////////////////////////////////////////////////////////
   // Various Test Server machines
@@ -116,45 +97,25 @@ public class TestDir {
 
   //////////////////////////////////////////////////
 
-  // Determine how Unidata "/upc/share" directory is mounted
-  // on local machine by reading system or THREDDS property.
   static {
-    // Check for system property
-    testdataDir = System.getProperty( testdataDirPropName );
-
-    if (testdataDir == null ) {
-      // Get user property.
-      File userHomeDirFile = new File( System.getProperty( "user.home" ) );
-      File userThreddsPropsFile = new File( userHomeDirFile, threddsPropFileName );
-      if ( userThreddsPropsFile.exists() && userThreddsPropsFile.canRead() ) {
-        Properties userThreddsProps = new Properties();
-        try {
-          userThreddsProps.load( new FileInputStream( userThreddsPropsFile ) );
-        } catch ( IOException e ) {
-          System.err.println( "**Failed loading user THREDDS property file: " + e.getMessage() );
-        }
-        if ( userThreddsProps != null && ! userThreddsProps.isEmpty() ) {
-          if ( testdataDir == null )
-            testdataDir = userThreddsProps.getProperty( testdataDirPropName );
-        }
-      }
-    }
+    testdataDir = System.getProperty(testdataDirPropName);  // Check the system property.
 
     // Use default paths if needed.
-    if ( testdataDir == null ) {
+    if (testdataDir == null) {
       testdataDir = "/share/testdata/";
-      System.err.printf( "**No '%s' property, defaulting to '%s'%n", testdataDirPropName, testdataDir );
+      logger.warn("No '{}' property found; using default value '{}'.", testdataDirPropName, testdataDir );
     }
+
     // Make sure paths ends with a slash.
     testdataDir = testdataDir.replace('\\','/'); //canonical
-    if ((!testdataDir.endsWith( "/")))
+    if (!testdataDir.endsWith("/"))
       testdataDir += "/";
 
     cdmUnitTestDir = testdataDir + "cdmUnitTest/";
 
-    File file = new File( cdmUnitTestDir );
-    if ( !file.exists() || !file.isDirectory() ) {
-      System.err.println( "**WARN: Non-existence of Level 3 test data directory [" + file.getAbsolutePath() + "]." );
+    File file = new File(cdmUnitTestDir);
+    if (!file.exists() || !file.isDirectory()) {
+      logger.warn("cdmUnitTest directory does not exist: {}", file.getAbsolutePath());
     }
 
     // Initialize various server values
@@ -174,57 +135,32 @@ public class TestDir {
     AliasTranslator.addAlias("${cdmUnitTest}", cdmUnitTestDir);
   }
 
-  static public void showMem(String where) {
-    Runtime runtime = Runtime.getRuntime();
-    System.out.println(where+ " memory free = " + runtime.freeMemory() * .001 * .001 +
-        " total= " + runtime.totalMemory() * .001 * .001 +
-        " max= " + runtime.maxMemory() * .001 * .001 +
-        " MB");
+  public static NetcdfFile open(String filename) throws IOException {
+    logger.debug("**** Open {}", filename);
+    NetcdfFile ncfile = NetcdfFile.open(filename, null);
+    logger.debug("open {}", ncfile);
+
+    return ncfile;
   }
 
-  private static boolean dumpFile = false;
-
-  public static NetcdfFile open( String filename) {
-    try {
-      if (dumpFile) System.out.println("**** Open "+filename);
-      NetcdfFile ncfile = NetcdfFile.open(filename, null);
-      if (dumpFile) System.out.println("open "+ncfile);
-      return ncfile;
-
-    } catch (java.io.IOException e) {
-
-      try {
-        File absf = new File(filename);
-        System.out.printf("abs path of %s == %s%n", filename, absf.getCanonicalPath());
-      } catch (IOException ioe) {
-        e.printStackTrace();
-      }
-      File pwd = new File (".");
-      System.out.printf("pwd = %s%n", pwd.getAbsolutePath());
-      System.out.println(" fail = "+e);
-      e.printStackTrace();
-      assert false;
-      return null;
-    }
-  }
-
-  public static NetcdfFile openFileLocal( String filename) {
-    return open( TestDir.cdmLocalTestDataDir +filename);
+  public static NetcdfFile openFileLocal(String filename) throws IOException {
+    return open(TestDir.cdmLocalTestDataDir + filename);
   }
 
   static public long checkLeaks() {
     if (RandomAccessFile.getOpenFiles().size() > 0) {
-      System.out.printf("%nRandomAccessFile still open:%n");
+      logger.debug("RandomAccessFile still open:");
       for (String filename : RandomAccessFile.getOpenFiles()) {
-        System.out.printf(" open= %s%n", filename);
+        logger.debug("  open= {}", filename);
       }
     } else {
-      System.out.printf("RandomAccessFile: no leaks%n");
+      logger.debug("RandomAccessFile: no leaks");
     }
-    System.out.printf("RandomAccessFile: count open=%d, max=%d%n", RandomAccessFile.getOpenFileCount(), RandomAccessFile.getMaxOpenFileCount());
+
+    logger.debug("RandomAccessFile: count open={}, max={}",
+            RandomAccessFile.getOpenFileCount(), RandomAccessFile.getMaxOpenFileCount());
     return RandomAccessFile.getOpenFiles().size();
   }
-
 
   ////////////////////////////////////////////////
 
@@ -264,8 +200,6 @@ public class TestDir {
       return true;
     }
   }
-
-  //
 
   /**
    * Call act.doAct() of each file in dirName passing
@@ -308,13 +242,14 @@ public class TestDir {
   public static int actOnAll(String dirName, FileFilter ff, Act act, boolean recurse) throws IOException {
     int count = 0;
 
-    System.out.println("---------------Reading directory "+dirName);
+    logger.debug("---------------Reading directory {}", dirName);
     File allDir = new File( dirName);
     File[] allFiles = allDir.listFiles();
     if (null == allFiles) {
-      System.out.println("---------------INVALID "+dirName);
+      logger.debug("---------------INVALID {}", dirName);
       throw new FileNotFoundException("Cant open "+dirName);
     }
+
     List<File> flist = Arrays.asList(allFiles);
     Collections.sort(flist);
 
@@ -324,7 +259,7 @@ public class TestDir {
         continue;
       if (((ff == null) || ff.accept(f)) && !name.endsWith(".exclude") ) {
         name = StringUtil2.substitute(name, "\\", "/");
-        System.out.println("----acting on file "+name);
+        logger.debug("----acting on file {}", name);
         count += act.doAct(name);
       }
     }
@@ -340,9 +275,6 @@ public class TestDir {
   }
 
   ////////////////////////////////////////////////////////////////////////////
-  public static int readAllDir(String dirName, FileFilter ff) throws IOException {
-    return actOnAll(dirName, ff, new ReadAllVariables());
-  }
 
   public static void readAll(String filename) throws IOException {
     ReadAllVariables act = new ReadAllVariables();
@@ -350,26 +282,11 @@ public class TestDir {
   }
 
   private static class ReadAllVariables implements Act {
-
     @Override
     public int doAct(String filename) throws IOException {
-      System.out.println("\n------Reading filename "+filename);
       try (NetcdfFile ncfile = NetcdfFile.open(filename)) {
-        for (Variable v : ncfile.getVariables()) {
-          if (v.getSize() > max_size) {
-            Section s = makeSubset(v);
-            //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
-            v.read(s);
-          } else {
-            //System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
-            v.read();
-          }
-        }
-      } catch (InvalidRangeException e) {
-        throw new RuntimeException(e);
+        return readAllData(ncfile);
       }
-
-      return 1;
     }
   }
 
@@ -383,120 +300,23 @@ public class TestDir {
     return new Section(shape);
   }
 
-  static public int readAllData( NetcdfFile ncfile) {
-    System.out.println("\n------Reading ncfile "+ncfile.getLocation());
+  static public int readAllData(NetcdfFile ncfile) throws IOException {
+    logger.debug("------Reading ncfile {}", ncfile.getLocation());
     try {
-
       for (Variable v : ncfile.getVariables()) {
         if (v.getSize() > max_size) {
           Section s = makeSubset(v);
-          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize() + " section= " + s);
+          logger.debug("  Try to read variable {} size={} section={}", v.getNameAndDimensions(), v.getSize(), s);
           v.read(s);
         } else {
-          System.out.println("  Try to read variable " + v.getNameAndDimensions() + " size= " + v.getSize());
+          logger.debug("  Try to read variable {} size={}", v.getNameAndDimensions(), v.getSize());
           v.read();
         }
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-      assert false;
+
+      return 1;
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
     }
-
-    return 1;
-  }
-
-  ////////////////////////////////////////////////////
-
-  /**
-   * Returns all of the files in {@code topDir} that satisfy {@code filter}.
-   *
-   * @param topDir  a directory.
-   * @param filter  a file filter.
-   * @return  the files. An empty list will be returned if {@code topDir == null || !topDir.exists()}.
-   */
-  public static List<Object[]> getAllFilesInDirectory(File topDir, FileFilter filter) {
-    if (topDir == null || !topDir.exists()) {
-      return Collections.emptyList();
-    }
-
-    List<File> files = new ArrayList<>();
-
-    for (File f : topDir.listFiles()) {
-      if (filter != null && !filter.accept(f)) continue;
-      files.add( f);
-    }
-    Collections.sort(files);
-
-    List<Object[]> result = new ArrayList<>();
-    for (File f : files) {
-      result.add(new Object[] {f.getAbsolutePath()});
-      System.out.printf("%s%n", f.getAbsolutePath());
-    }
-
-    return result;
-  }
-
-  public static List<File> getAllFilesInDirectoryStandardFilter(File topDir) {
-    if (topDir == null || !topDir.exists())
-      return Collections.emptyList();
-
-    if ((topDir.getName().equals("exclude")) || (topDir.getName().equals("problem")))
-      return Collections.emptyList();
-
-    // get list of files
-    File[] fila = topDir.listFiles();
-    if (fila == null)
-      return Collections.emptyList();
-
-    List<File> files = new ArrayList<>();
-    for (File f : fila) {
-      if (!f.isDirectory()) {
-        files.add(f);
-      }
-    }
-
-    // eliminate redundant files
-    // ".Z", ".zip", ".gzip", ".gz", or ".bz2"
-    if (files.size() > 0) {
-      Collections.sort(files);
-      ArrayList<File> files2 = new ArrayList<>(files);
-
-      File prev = null;
-      for (File f : files) {
-        String name = f.getName();
-        String stem = stem(name);
-        if (name.contains(".gbx") || name.contains(".ncx") ||
-                name.endsWith(".xml") || name.endsWith(".pdf") || name.endsWith(".txt") || name.endsWith(".tar")) {
-          files2.remove(f);
-
-        } else if (prev != null) {
-
-          if (name.endsWith(".ncml")) {
-            if (prev.getName().equals(stem) || prev.getName().equals(stem + ".nc"))
-              files2.remove(prev);
-          } else if (name.endsWith(".bz2")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          } else if (name.endsWith(".gz")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          } else if (name.endsWith(".gzip")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          } else if (name.endsWith(".zip")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          } else if (name.endsWith(".Z")) {
-            if (prev.getName().equals(stem)) files2.remove(f);
-          }
-        }
-        prev = f;
-      }
-      return files2;
-    }
-
-    return files;
-
-  }
-
-  private static String stem(String name) {
-    int pos = name.lastIndexOf('.');
-    return (pos > 0) ? name.substring(0, pos) : name;
   }
 }

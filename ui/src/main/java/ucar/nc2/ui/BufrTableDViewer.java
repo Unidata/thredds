@@ -75,6 +75,8 @@ public class BufrTableDViewer extends JPanel {
 
   private TableD currTable;
 
+  private HashMap<Short, List<String>> usedDds = null;
+
   public BufrTableDViewer(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
@@ -148,18 +150,6 @@ public class BufrTableDViewer extends JPanel {
       }
     });
     buttPanel.add(compareButton);
-
-    AbstractAction usedAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        try {
-          showUsed();
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-      }
-    };
-    BAMutil.setActionProperties(usedAction, "dd", "showUsed", true, 'C', -1);
-    BAMutil.addActionToContainer(buttPanel, usedAction);
 
     // the info window
     compareTA = new TextHistoryPane();
@@ -266,55 +256,6 @@ public class BufrTableDViewer extends JPanel {
   String fxy(short id) {
     return ucar.nc2.iosp.bufr.Descriptor.makeString(id);
   }
-
-  //////////////////////////////////////////////////////////
-
-  private HashMap<Short, List<String>> usedDds = null;
-
-  private void showUsed() throws IOException {
-    String rootDir = Misc.getTestdataDirPath();
-    String dataDir = "cdmUnitTest/formats/bufr/";
-    usedDds = new HashMap<>(3000);
-
-    scanFileForDds(rootDir + dataDir + "uniqueIDD.bufr");
-    scanFileForDds(rootDir + dataDir + "uniqueExamples.bufr");
-    scanFileForDds(rootDir + dataDir + "uniqueBrasil.bufr");
-    scanFileForDds(rootDir + dataDir + "uniqueFnmoc.bufr");
-  }
-
-  public void scanFileForDds(String filename) throws IOException {
-    RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(filename, "r");
-
-    MessageScanner scan = new MessageScanner(raf);
-    while (scan.hasNext()) {
-      Message m = scan.next();
-      if (m == null) continue;
-      BufrTableLookup lookup = m.getLookup(); // bad
-      List<Short> raw = m.dds.getDataDescriptors();
-      String src = m.getHeader().trim() +"("+Integer.toHexString(m.hashCode())+") " + filename;
-      setDataDescriptors(src, lookup, raw);
-    }
-  }
-
-  private void setDataDescriptors(String src, BufrTableLookup lookup, List<Short> seq) {
-    for (Short key : seq) {
-      int f = (key & 0xC000) >> 14;
-      if (f != 3) continue;
-
-      List<String> list = usedDds.get(key);
-      if (list == null) {
-        list = new ArrayList<>();
-        usedDds.put(key, list);
-      }
-      if (!list.contains(src))
-        list.add(src);
-
-      List<Short> subseq = lookup.getDescriptorListTableD(key);
-      if (subseq != null)
-        setDataDescriptors(src, lookup, subseq);
-    }
-  }
-  ////////////////////////////////////////////////////////
 
   /* private HashMap<Short, List<DdsBean>> allVariants = null;
 
@@ -449,7 +390,5 @@ public class BufrTableDViewer extends JPanel {
     public String getDiff() {
       return diff;
     }
-
   }
-
 }
