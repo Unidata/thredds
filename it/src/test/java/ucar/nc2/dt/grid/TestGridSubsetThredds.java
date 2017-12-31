@@ -52,8 +52,6 @@ import ucar.unidata.geoloc.ProjectionRect;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.category.NeedsExternalResource;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 
 public class TestGridSubsetThredds {
@@ -92,9 +90,7 @@ public class TestGridSubsetThredds {
       assert data.getShape()[2] == 65 : data.getShape()[2];
       assert data.getShape()[3] == 106 : data.getShape()[3];
 
-      StringWriter sw = new StringWriter();
-      NCdumpW.printArray(data, "grid_section", new PrintWriter(sw), null);
-      logger.debug(sw.toString());
+      logger.debug(NCdumpW.toString(data, "grid_section", null));
     } finally {
       if (dataset != null) dataset.close();
     }
@@ -212,9 +208,7 @@ public class TestGridSubsetThredds {
       GeoGrid subset = grid.subset(timeRange, new Range(bestZIndex, bestZIndex), null, null);
       Array yxData = subset.readYXData(0, 0);
 
-      StringWriter sw = new StringWriter();
-      NCdumpW.printArray(yxData, "xyData", new PrintWriter(sw), null);
-      logger.debug(sw.toString());
+      logger.debug(NCdumpW.toString(yxData, "xyData", null));
     }
   }
 
@@ -268,11 +262,8 @@ public class TestGridSubsetThredds {
       Array data = grid.readDataSlice(0, 0, 159, 0);
       Array data2 = grid2.readDataSlice(0, 0, 0, 0);
 
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      NCdumpW.printArray(data, "org", pw, null);
-      NCdumpW.printArray(data2, "subset", pw, null);
-      logger.debug(sw.toString());
+      logger.debug(NCdumpW.toString(data, "org", null));
+      logger.debug(NCdumpW.toString(data2, "subset", null));
 
       ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
     }

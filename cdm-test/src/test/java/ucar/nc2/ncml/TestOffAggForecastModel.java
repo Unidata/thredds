@@ -42,8 +42,8 @@ import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.util.Misc;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -202,7 +202,7 @@ public class TestOffAggForecastModel {
       assert data.getShape()[0] == nagg;
       assert data.getElementType() == double.class;
 
-      NCdumpW.printArray(data);
+      logger.debug(NCdumpW.toString(data));
 
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();

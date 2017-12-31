@@ -5,14 +5,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.grib.GribData;
-import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -119,7 +117,7 @@ public class TestGrib1Unpack {
       int[] shape = new int[]{gds.getNy(), gds.getNx()};
       Array dataA = Array.factory(DataType.FLOAT, shape, data);
       Array lineA = dataA.slice(0, lineno);
-      System.out.printf("%s%n", NCdumpW.toString(lineA));
+      logger.debug("{}", NCdumpW.toString(lineA));
     }
     System.out.printf("%n", method);
 

@@ -41,10 +41,10 @@ import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-import java.io.*;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.List;
@@ -152,7 +152,7 @@ public class TestN4reading {
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
       Variable v = ncfile.findVariable("measure_for_measure_var");
       Array data = v.read();
-      NCdumpW.printArray(data, "measure_for_measure_var", new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(data, "measure_for_measure_var", null));
     }
   }
 
@@ -165,21 +165,21 @@ public class TestN4reading {
       System.out.println("\n**** testVlen open\n\n" + ncfile);
       Variable v = ncfile.findVariable("levels");
       Array data = v.read();
-      NCdumpW.printArray(data, "read()", new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(data, "read()", null));
 
       int count = 0;
       while (data.hasNext()) {
         Array as = (Array) data.next();
-        NCdumpW.printArray(as, " " + count, new PrintWriter(System.out), null);
+        logger.debug(NCdumpW.toString(as, " " + count, null));
         count++;
       }
 
       // try subset
       data = v.read("0:9:2, :");
-      NCdumpW.printArray(data, "read(0:9:2,:)", new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(data, "read(0:9:2,:)", null));
 
       data = v.read(new Section().appendRange(0, 9, 2).appendRange(null));
-      NCdumpW.printArray(data, "read(Section)", new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(data, "read(Section)", null));
 
       // fail
       //int[] origin = new int[] {0, 0};
@@ -212,7 +212,7 @@ public class TestN4reading {
       System.out.println("\n**** testVlen2 open\n\n" + ncfile);
       Variable v = ncfile.findVariable("ragged_array");
       Array data = v.read();
-      NCdumpW.printArray(data, "read()", new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(data, "read()", null));
 
       assert data instanceof ArrayObject;
       int row = 0;
@@ -226,7 +226,7 @@ public class TestN4reading {
 
       // try subset
       data = v.read("0:4:2,:");
-      NCdumpW.printArray(data, "read(0:4:2,:)", new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(data, "read(0:4:2,:)", null));
       assert data instanceof ArrayObject;
       row = 0;
       while (data.hasNext()) {
@@ -280,7 +280,7 @@ public class TestN4reading {
       assert m != null;
       assert (m.getDataType() == DataType.STRUCTURE);
 
-      System.out.println(NCdumpW.toString(data, "", null));
+      logger.debug("{}", NCdumpW.toString(data, "", null));
 
     }
     System.out.println("*** testNestedStructure ok");
@@ -362,7 +362,7 @@ public class TestN4reading {
       System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
       Variable v = ncfile.findVariable("fun_soundings");
       Array data = v.read();
-      NCdumpW.printArray(data, "fun_soundings", new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(data, "fun_soundings", null));
 
       assert data instanceof ArrayStructure;
       ArrayStructure as = (ArrayStructure) data;
@@ -414,14 +414,14 @@ public class TestN4reading {
       Variable v = ncfile.findVariable("tim_records");
       int[] vshape = v.getShape();
       Array data = v.read();
-      NCdumpW.printArray(data, v.getFullName(), new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(data, v.getFullName(), null));
 
       assert data instanceof ArrayStructure;
       ArrayStructure as = (ArrayStructure) data;
       assert as.getSize() == vshape[0];  //   int loopDataA(1, *, *);
       StructureData sdata = as.getStructureData(0);
       Array vdata = sdata.getArray("loopDataA");
-      NCdumpW.printArray(vdata, "loopDataA", new PrintWriter(System.out), null);
+      logger.debug(NCdumpW.toString(vdata, "loopDataA", null));
 
       assert vdata instanceof ArrayObject;
       Object o1 = vdata.getObject(0);

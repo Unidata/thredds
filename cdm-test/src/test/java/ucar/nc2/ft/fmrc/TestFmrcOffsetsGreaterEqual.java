@@ -45,8 +45,8 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -126,9 +126,9 @@ original data:
       GridDatatype grid = gridDs.findGridByShortName("salt");
       GridCoordSystem gcs = grid.getCoordinateSystem();
       CoordinateAxis1D timeAxis = gcs.getTimeAxis1D();
-      System.out.printf("timeAxis = %s %s%n", NCdumpW.toString(timeAxis.read()), timeAxis.getUnitsString());
+      logger.debug("timeAxis = {} {}", NCdumpW.toString(timeAxis.read()), timeAxis.getUnitsString());
       CoordinateAxis1D runAxis = gcs.getRunTimeAxis();
-      System.out.printf("runAxis = %s %s%n", NCdumpW.toString( runAxis.read()), runAxis.getUnitsString());
+      logger.debug("runAxis = {} {}", NCdumpW.toString( runAxis.read()), runAxis.getUnitsString());
 
       CalendarDate expected = CalendarDate.parseISOformat(null, "2013-05-05T00:00:00");
       CalendarDateUnit cdu = CalendarDateUnit.of(null, timeAxis.getUnitsString());

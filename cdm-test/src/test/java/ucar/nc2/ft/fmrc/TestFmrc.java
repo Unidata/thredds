@@ -49,8 +49,8 @@ import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
@@ -176,7 +176,7 @@ public class TestFmrc {
           if (axis.getShortName().startsWith("layer_between")) {
             CoordinateAxis1D axis1 = (CoordinateAxis1D) axis;
             Array data = axis.read();
-            NCdumpW.printArray(data);
+            logger.debug(NCdumpW.toString(data));
             Formatter f = new Formatter();
             f.format("%n bounds1=");
             showArray(f, axis1.getBound1());

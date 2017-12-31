@@ -55,7 +55,6 @@ import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 
@@ -156,7 +155,8 @@ public class TestTdsNcml {
 
     int count = 0;
     Array data = v.read();
-    NCdumpW.printArray(data, "time", new PrintWriter(System.out), null);
+    logger.debug(NCdumpW.toString(data, "time", null));
+
     while (data.hasNext()) {
       assert Misc.closeEnough(data.nextInt(), (count + 1) * 3);
       count++;

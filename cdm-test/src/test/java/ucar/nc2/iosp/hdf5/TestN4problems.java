@@ -52,7 +52,6 @@ import ucar.nc2.util.DebugFlagsImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
 
 /**
@@ -105,7 +104,7 @@ public class TestN4problems {
     Variable v = ncfile.findVariable("primary_cloud");
     Array data = v.read();
     System.out.println("\n**** testReadNetcdf4 done\n\n" + ncfile);
-    NCdumpW.printArray(data, "primary_cloud", new PrintWriter(System.out), null);
+    logger.debug(NCdumpW.toString(data, "primary_cloud", null));
     ncfile.close();
     H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
   }

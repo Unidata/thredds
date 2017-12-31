@@ -57,8 +57,6 @@ import ucar.unidata.geoloc.vertical.VerticalTransform;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -225,9 +223,7 @@ public class TestGridSubset {
       assert data.getShape()[2] == 32 : data.getShape()[2];
       assert data.getShape()[3] == 64 : data.getShape()[3];
 
-      StringWriter sw = new StringWriter();
-      NCdumpW.printArray(data, "grid_section", new PrintWriter(sw), null);
-      logger.debug(sw.toString());
+      logger.debug(NCdumpW.toString(data, "grid_section", null));
 
       LatLonPoint p0 = new LatLonPointImpl(29.0, -90.0);
       LatLonRect bbox = new LatLonRect(p0, 1.0, 2.0);
@@ -684,11 +680,8 @@ public class TestGridSubset {
       Array data = grid.readDataSlice(1, 0, 10, 20);
       Array data2 = grid2.readDataSlice(0, 0, 10, 20);
 
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter(sw);
-      NCdumpW.printArray(data, "org", pw, null);
-      NCdumpW.printArray(data2, "subset", pw, null);
-      logger.debug(sw.toString());
+      logger.debug(NCdumpW.toString(data, "org", null));
+      logger.debug(NCdumpW.toString(data2, "subset", null));
 
       ucar.unidata.util.test.CompareNetcdf.compareData(data, data2);
     }

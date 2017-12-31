@@ -641,7 +641,7 @@ public class TestPointDatasets {
         for (ucar.nc2.ft.PointFeature pointFeature : pfc) {
           System.out.printf("   3.hashcode=%d %n", pointFeature.hashCode());
           StructureData sdata = pointFeature.getDataAll();
-          NCdumpW.printStructureData(pw, sdata);
+          logger.debug(NCdumpW.toString(sdata));
         }
       }
     }

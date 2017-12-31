@@ -32,19 +32,20 @@
  */
 package ucar.nc2;
 
-import junit.framework.*;
+import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.constants.CDM;
 import ucar.unidata.util.test.TestDir;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 
 /**
  * test reading a ncfile with long offsets "large format".
  */
-
 public class TestLongOffset extends TestCase  {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -61,24 +62,24 @@ public class TestLongOffset extends TestCase  {
   protected void tearDown() throws Exception {
     out.close();
     if (!tempFile.delete())
-      System.out.printf("delete failed on %s%n",tempFile);
+      logger.debug("delete failed on {}",tempFile);
   }
 
   public void testReadLongOffset() throws IOException {
-    NetcdfFile ncfile = TestDir.openFileLocal("longOffset.nc");
-    ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-    PrintWriter pw = new PrintWriter( new OutputStreamWriter(out, CDM.utf8Charset));
+    try (NetcdfFile ncfile = TestDir.openFileLocal("longOffset.nc")) {
+      ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
 
-    NCdumpW.print(ncfile, "-vall", pw, null);
-    ncfile.close();
+      StringWriter sw = new StringWriter();
+      NCdumpW.print(ncfile, "-vall", sw, null);
+      logger.debug(sw.toString());
+    }
   }
 
   public void testReadLongOffsetV3mode() throws IOException {
-    NetcdfFile ncfile = TestDir.openFileLocal( "longOffset.nc");
-    PrintWriter pw = new PrintWriter( new OutputStreamWriter(out, CDM.utf8Charset));
-
-    NCdumpW.print(ncfile, "-vall", pw, null);
-    ncfile.close();
+    try (NetcdfFile ncfile = TestDir.openFileLocal( "longOffset.nc")) {
+      StringWriter sw = new StringWriter();
+      NCdumpW.print(ncfile, "-vall", sw, null);
+      logger.debug(sw.toString());
+    }
   }
-
 }

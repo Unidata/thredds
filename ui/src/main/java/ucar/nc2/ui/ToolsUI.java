@@ -1734,9 +1734,9 @@ public class ToolsUI extends JPanel {
         else
           ncfile = NetcdfDataset.openFile(filename, null);
 
-        StringWriter writer = new StringWriter(50000);
-        NCdumpW.print(ncfile, command, writer, task);
-        result = writer.toString();
+        StringWriter sw = new StringWriter(50000);
+        NCdumpW.print(ncfile, command, sw, task);
+        result = sw.toString();
 
       } finally {
         try {
@@ -1755,9 +1755,9 @@ public class ToolsUI extends JPanel {
 
       GetDataRunnable runner = new GetDataRunnable() {
         public void run(Object o) throws IOException {
-          StringWriter writer = new StringWriter(50000);
-          NCdumpW.print(ncfile, command, writer, task);
-          result = writer.toString();
+          StringWriter sw = new StringWriter(50000);
+          NCdumpW.print(ncfile, command, sw, task);
+          result = sw.toString();
         }
       };
       task = new GetDataTask(runner, filename, null);
