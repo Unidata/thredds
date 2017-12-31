@@ -39,15 +39,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.invoke.MethodHandles;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,9 +64,7 @@ public class TestGeotiffRead {
   @Parameterized.Parameters(name="{0}")
   public static List<Object[]> getTestParameters() {
     List<Object[]> result = new ArrayList<>();
-
-    result.addAll(TestDir.getAllFilesInDirectory(topdir, null));
-
+    result.addAll(getAllFilesInDirectory(topdir, null));
     return result;
   }
 
@@ -93,19 +89,16 @@ public class TestGeotiffRead {
   public void testRead() throws IOException {
     try (GeoTiff geotiff = new GeoTiff(filename)) {
       geotiff.read();
-      geotiff.showInfo(new PrintWriter(System.out));
+      StringWriter sw = new StringWriter();
+      geotiff.showInfo(new PrintWriter(sw));
+      logger.debug(sw.toString());
 
       IFDEntry tileOffsetTag = geotiff.findTag(Tag.TileOffsets);
       if (tileOffsetTag != null) {
         int tileOffset = tileOffsetTag.value[0];
         IFDEntry tileSizeTag = geotiff.findTag(Tag.TileByteCounts);
         int tileSize = tileSizeTag.value[0];
-        System.out.println("tileOffset =" + tileOffset + " tileSize=" + tileSize);
-        ByteBuffer buffer = geotiff.testReadData(tileOffset, tileSize);
-
-       // for (int i = 0; i < tileSize / 4; i++) {
-       //   System.out.println(i + ": " + buffer.getFloat());
-       // }
+        logger.debug("tileOffset={} tileSize={}", tileOffset, tileSize);
 
       } else {
         IFDEntry stripOffsetTag = geotiff.findTag(Tag.StripOffsets);
@@ -114,15 +107,38 @@ public class TestGeotiffRead {
           IFDEntry stripSizeTag = geotiff.findTag(Tag.StripByteCounts);
           if (stripSizeTag == null) throw new IllegalStateException();
           int stripSize = stripSizeTag.value[0];
-          System.out.println("stripOffset =" + stripOffset + " stripSize=" + stripSize);
-          ByteBuffer buffer = geotiff.testReadData(stripOffset, stripSize);
-
-          //for (int i = 0; i < stripSize / 4; i++) {
-          //  System.out.println(i + ": " + buffer.getFloat());
-          //}
+          logger.debug("stripOffset={} stripSize={}", stripOffset, stripSize);
         }
       }
     }
   }
 
+  /**
+   * Returns all of the files in {@code topDir} that satisfy {@code filter}.
+   *
+   * @param topDir  a directory.
+   * @param filter  a file filter.
+   * @return  the files. An empty list will be returned if {@code topDir == null || !topDir.exists()}.
+   */
+  private static List<Object[]> getAllFilesInDirectory(File topDir, FileFilter filter) {
+    if (topDir == null || !topDir.exists()) {
+      return Collections.emptyList();
+    }
+
+    List<File> files = new ArrayList<>();
+
+    for (File f : topDir.listFiles()) {
+      if (filter != null && !filter.accept(f)) continue;
+      files.add( f);
+    }
+    Collections.sort(files);
+
+    List<Object[]> result = new ArrayList<>();
+    for (File f : files) {
+      result.add(new Object[] {f.getAbsolutePath()});
+      logger.debug("{}", f.getAbsolutePath());
+    }
+
+    return result;
+  }
 }

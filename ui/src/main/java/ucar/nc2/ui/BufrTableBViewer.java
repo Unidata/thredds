@@ -168,18 +168,6 @@ public class BufrTableBViewer extends JPanel {
     BAMutil.setActionProperties(usedAction, "dd", "checkUsed", false, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, usedAction);
 
-    AbstractAction usedAllAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        try {
-          showUsed();
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-      }
-    };
-    BAMutil.setActionProperties(usedAllAction, "dd", "showUsedAll", false, 'U', -1);
-    BAMutil.addActionToContainer(buttPanel, usedAllAction);
-
     AbstractAction diffAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         try {
@@ -441,17 +429,6 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
   ///////////////////////
 
   private HashMap<Short, List<Message>> usedDds = null;
-
-  private void showUsed() throws IOException {
-    String rootDir = Misc.getTestdataDirPath();
-    String dataDir = "cdmUnitTest/formats/bufr/";
-    usedDds = new HashMap<>(3000);
-
-    scanFileForDds(rootDir + dataDir + "uniqueIDD.bufr");
-    scanFileForDds(rootDir + dataDir + "uniqueExamples.bufr");
-    scanFileForDds(rootDir + dataDir + "uniqueBrasil.bufr");
-    scanFileForDds(rootDir + dataDir + "uniqueFnmoc.bufr");
-  }
 
   private void showUsed(String filename) throws IOException {
     usedDds = new HashMap<>(3000);

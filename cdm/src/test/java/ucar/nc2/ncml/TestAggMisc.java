@@ -80,10 +80,10 @@ public class TestAggMisc {
         String location = "testNestedValues.ncml";
 
         try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null)) {
-            readAllData(ncfile);
+            TestDir.readAllData(ncfile);
 
-            Variable v    = ncfile.findVariable("time");
-            Array    data = v.read();
+            Variable v = ncfile.findVariable("time");
+            Array data = v.read();
             assert data.getSize() == 20;
             NCdumpW.printArray(data);
         }
@@ -94,10 +94,10 @@ public class TestAggMisc {
         String filename = "file:./" + TestDir.cdmLocalTestDataDir + "testNested.ncml";
 
         try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
-            readAllData(ncfile);
+            TestDir.readAllData(ncfile);
 
-            Variable v    = ncfile.findVariable("time");
-            Array    data = v.read();
+            Variable v = ncfile.findVariable("time");
+            Array data = v.read();
             assert data.getSize() == 59;
             NCdumpW.printArray(data);
         }
@@ -108,49 +108,12 @@ public class TestAggMisc {
         String filename = "file:./" + TestNcML.topDir + "nested/TestNestedDirs.ncml";
 
         try (NetcdfFile ncfile = NetcdfDataset.openFile(filename, null)) {
-            readAllData(ncfile);
+            TestDir.readAllData(ncfile);
 
-            Variable v    = ncfile.findVariable("time");
-            Array    data = v.read();
+            Variable v = ncfile.findVariable("time");
+            Array data = v.read();
             assert data.getSize() == 3;
             NCdumpW.printArray(data);
         }
-    }
-
-    // The methods below originally belonged to ucar.nc2.TestAll.
-    // They were only being used in this class, however, so I moved them and nuked TestAll.
-
-    static public int readAllData( NetcdfFile ncfile) {
-        System.out.println("\n------Reading ncfile "+ncfile.getLocation());
-        try {
-
-            for (Variable v : ncfile.getVariables()) {
-                if (v.getSize() > max_size) {
-                    Section s = makeSubset(v);
-                    System.out.println("  Try to read variable " + v.getNameAndDimensions() +
-                                       " size= " + v.getSize() + " section= " + s);
-                    v.read(s);
-                } else {
-                    System.out.println("  Try to read variable " + v.getNameAndDimensions() +
-                                       " size= " + v.getSize());
-                    v.read();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            assert false;
-        }
-
-        return 1;
-    }
-
-    static int max_size = 1000 * 1000 * 10;
-    static Section makeSubset(Variable v) throws InvalidRangeException {
-        int[] shape = v.getShape();
-        shape[0] = 1;
-        Section s = new Section(shape);
-        long size = s.computeSize();
-        shape[0] = (int) Math.max(1, max_size / size);
-        return new Section(shape);
     }
 }
