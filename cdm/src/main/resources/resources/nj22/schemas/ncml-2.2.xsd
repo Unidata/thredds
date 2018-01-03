@@ -186,7 +186,7 @@
 
   <xsd:element name="logicalSlice">
     <xsd:complexType>
-      <xsd:attribute name="dimNames" type="xsd:token" use="required"/>
+      <xsd:attribute name="dimName" type="xsd:token" use="required"/>
       <xsd:attribute name="index" type="xsd:int" use="required"/>
     </xsd:complexType>
   </xsd:element>
