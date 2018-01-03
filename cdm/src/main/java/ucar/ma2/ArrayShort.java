@@ -58,16 +58,24 @@ public class ArrayShort extends Array {
    * @return. new ArrayShort.D<rank> or ArrayShort object.
    */
   static ArrayShort factory( Index index, boolean isUnsigned, short[] storage) {
-    switch (index.getRank()) {
-      case 0 : return new ArrayShort.D0(index, isUnsigned, storage);
-      case 1 : return new ArrayShort.D1(index, isUnsigned, storage);
-      case 2 : return new ArrayShort.D2(index, isUnsigned, storage);
-      case 3 : return new ArrayShort.D3(index, isUnsigned, storage);
-      case 4 : return new ArrayShort.D4(index, isUnsigned, storage);
-      case 5 : return new ArrayShort.D5(index, isUnsigned, storage);
-      case 6 : return new ArrayShort.D6(index, isUnsigned, storage);
-      case 7 : return new ArrayShort.D7(index, isUnsigned, storage);
-      default : return new ArrayShort(index, isUnsigned, storage);
+    if (index instanceof Index0D) {
+      return new ArrayShort.D0(index, isUnsigned, storage);
+    } else if (index instanceof Index1D) {
+      return new ArrayShort.D1(index, isUnsigned, storage);
+    } else if (index instanceof Index2D) {
+      return new ArrayShort.D2(index, isUnsigned, storage);
+    } else if (index instanceof Index3D) {
+      return new ArrayShort.D3(index, isUnsigned, storage);
+    } else if (index instanceof Index4D) {
+      return new ArrayShort.D4(index, isUnsigned, storage);
+    } else if (index instanceof Index5D) {
+      return new ArrayShort.D5(index, isUnsigned, storage);
+    } else if (index instanceof Index6D) {
+      return new ArrayShort.D6(index, isUnsigned, storage);
+    } else if (index instanceof Index7D) {
+      return new ArrayShort.D7(index, isUnsigned, storage);
+    } else {
+      return new ArrayShort(index, isUnsigned, storage);
     }
   }
 

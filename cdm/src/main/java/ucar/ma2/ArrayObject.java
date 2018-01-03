@@ -53,17 +53,25 @@ public class ArrayObject extends Array {
    * @return. new ArrayObject.D<rank> or ArrayObject object.
    */
   static ArrayObject factory(DataType dtype, Class elemType, boolean isVlen, Index index, Object[] storage) {
-    switch (index.getRank()) {
-      case 0 : return new ArrayObject.D0(dtype, elemType, isVlen, index, storage);
-      case 1 : return new ArrayObject.D1(dtype, elemType, isVlen, index, storage);
-      case 2 : return new ArrayObject.D2(dtype, elemType, isVlen, index, storage);
-      case 3 : return new ArrayObject.D3(dtype, elemType, isVlen, index, storage);
-      case 4 : return new ArrayObject.D4(dtype, elemType, isVlen, index, storage);
-      case 5 : return new ArrayObject.D5(dtype, elemType, isVlen, index, storage);
-      case 6 : return new ArrayObject.D6(dtype, elemType, isVlen, index, storage);
-      case 7 : return new ArrayObject.D7(dtype, elemType, isVlen, index, storage);
-      default : return new ArrayObject(dtype, elemType, isVlen, index, storage);
-    }
+      if (index instanceof Index0D) {
+          return new ArrayObject.D0(dtype, elemType, isVlen, index, storage);
+      } else if (index instanceof Index1D) {
+          return new ArrayObject.D1(dtype, elemType, isVlen, index, storage);
+      } else if (index instanceof Index2D) {
+          return new ArrayObject.D2(dtype, elemType, isVlen, index, storage);
+      } else if (index instanceof Index3D) {
+          return new ArrayObject.D3(dtype, elemType, isVlen, index, storage);
+      } else if (index instanceof Index4D) {
+          return new ArrayObject.D4(dtype, elemType, isVlen, index, storage);
+      } else if (index instanceof Index5D) {
+          return new ArrayObject.D5(dtype, elemType, isVlen, index, storage);
+      } else if (index instanceof Index6D) {
+          return new ArrayObject.D6(dtype, elemType, isVlen, index, storage);
+      } else if (index instanceof Index7D) {
+          return new ArrayObject.D7(dtype, elemType, isVlen, index, storage);
+      } else {
+          return new ArrayObject(dtype, elemType, isVlen, index, storage);
+      }
   }
 
   ///////////////////////////////////////////////////////////////////////////////

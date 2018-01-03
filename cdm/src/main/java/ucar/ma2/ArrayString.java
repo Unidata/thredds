@@ -58,25 +58,24 @@ public class ArrayString extends Array {
    * @return. new ArrayString.D<rank> or ArrayString object.
    */
   static ArrayString factory(Index index, String[] storage) {
-    switch (index.getRank()) {
-      case 0:
-        return new ArrayString.D0(index, storage);
-      case 1:
-        return new ArrayString.D1(index, storage);
-      case 2:
-        return new ArrayString.D2(index, storage);
-      case 3:
-        return new ArrayString.D3(index, storage);
-      case 4:
-        return new ArrayString.D4(index, storage);
-      case 5:
-        return new ArrayString.D5(index, storage);
-      case 6:
-        return new ArrayString.D6(index, storage);
-      case 7:
-        return new ArrayString.D7(index, storage);
-      default:
-        return new ArrayString(index, storage);
+    if (index instanceof Index0D) {
+      return new ArrayString.D0(index, storage);
+    } else if (index instanceof Index1D) {
+      return new ArrayString.D1(index, storage);
+    } else if (index instanceof Index2D) {
+      return new ArrayString.D2(index, storage);
+    } else if (index instanceof Index3D) {
+      return new ArrayString.D3(index, storage);
+    } else if (index instanceof Index4D) {
+      return new ArrayString.D4(index, storage);
+    } else if (index instanceof Index5D) {
+      return new ArrayString.D5(index, storage);
+    } else if (index instanceof Index6D) {
+      return new ArrayString.D6(index, storage);
+    } else if (index instanceof Index7D) {
+      return new ArrayString.D7(index, storage);
+    } else {
+      return new ArrayString(index, storage);
     }
   }
 

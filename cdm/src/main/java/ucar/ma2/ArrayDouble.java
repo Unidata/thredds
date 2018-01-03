@@ -56,17 +56,25 @@ public class ArrayDouble extends Array {
    * @return. new ArrayDouble.D<rank> or ArrayDouble object.
    */
   static ArrayDouble factory( Index index, double [] storage) {
-    switch (index.getRank()) {
-      case 0 : return new ArrayDouble.D0(index, storage);
-      case 1 : return new ArrayDouble.D1(index, storage);
-      case 2 : return new ArrayDouble.D2(index, storage);
-      case 3 : return new ArrayDouble.D3(index, storage);
-      case 4 : return new ArrayDouble.D4(index, storage);
-      case 5 : return new ArrayDouble.D5(index, storage);
-      case 6 : return new ArrayDouble.D6(index, storage);
-      case 7 : return new ArrayDouble.D7(index, storage);
-      default : return new ArrayDouble(index, storage);
-    }
+      if (index instanceof Index0D) {
+          return new ArrayDouble.D0(index, storage);
+      } else if (index instanceof Index1D) {
+          return new ArrayDouble.D1(index, storage);
+      } else if (index instanceof Index2D) {
+          return new ArrayDouble.D2(index, storage);
+      } else if (index instanceof Index3D) {
+          return new ArrayDouble.D3(index, storage);
+      } else if (index instanceof Index4D) {
+          return new ArrayDouble.D4(index, storage);
+      } else if (index instanceof Index5D) {
+          return new ArrayDouble.D5(index, storage);
+      } else if (index instanceof Index6D) {
+          return new ArrayDouble.D6(index, storage);
+      } else if (index instanceof Index7D) {
+          return new ArrayDouble.D7(index, storage);
+      } else {
+          return new ArrayDouble(index, storage);
+      }
   }
 
   ///////////////////////////////////////////////////////////////////////////////

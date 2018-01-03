@@ -57,16 +57,24 @@ public class ArrayByte extends Array {
    * @return new ArrayByte.D<rank> or ArrayByte object.
    */
   static ArrayByte factory( Index index, boolean isUnsigned, byte [] storage) {
-    switch (index.getRank()) {
-      case 0 : return new ArrayByte.D0(index, isUnsigned, storage);
-      case 1 : return new ArrayByte.D1(index, isUnsigned, storage);
-      case 2 : return new ArrayByte.D2(index, isUnsigned, storage);
-      case 3 : return new ArrayByte.D3(index, isUnsigned, storage);
-      case 4 : return new ArrayByte.D4(index, isUnsigned, storage);
-      case 5 : return  new ArrayByte.D5(index, isUnsigned, storage);
-      case 6 : return new ArrayByte.D6(index, isUnsigned, storage);
-      case 7 : return new ArrayByte.D7(index, isUnsigned, storage);
-      default : return new ArrayByte(index, isUnsigned, storage);
+    if (index instanceof Index0D) {
+      return new ArrayByte.D0(index, isUnsigned, storage);
+    } else if (index instanceof Index1D) {
+      return new ArrayByte.D1(index, isUnsigned, storage);
+    } else if (index instanceof Index2D) {
+      return new ArrayByte.D2(index, isUnsigned, storage);
+    } else if (index instanceof Index3D) {
+      return new ArrayByte.D3(index, isUnsigned, storage);
+    } else if (index instanceof Index4D) {
+      return new ArrayByte.D4(index, isUnsigned, storage);
+    } else if (index instanceof Index5D) {
+      return new ArrayByte.D5(index, isUnsigned, storage);
+    } else if (index instanceof Index6D) {
+      return new ArrayByte.D6(index, isUnsigned, storage);
+    } else if (index instanceof Index7D) {
+      return new ArrayByte.D7(index, isUnsigned, storage);
+    } else {
+      return new ArrayByte(index, isUnsigned, storage);
     }
   }
 

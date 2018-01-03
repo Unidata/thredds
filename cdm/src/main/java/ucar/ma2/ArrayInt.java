@@ -59,16 +59,24 @@ public class ArrayInt extends Array {
    * @return. new ArrayInt.D<rank> or ArrayInt object.
    */
   static ArrayInt factory( Index index, boolean isUnsigned, int [] storage) {
-    switch (index.getRank()) {
-      case 0 : return new ArrayInt.D0(index, isUnsigned, storage);
-      case 1 : return new ArrayInt.D1(index, isUnsigned, storage);
-      case 2 : return new ArrayInt.D2(index, isUnsigned, storage);
-      case 3 : return new ArrayInt.D3(index, isUnsigned, storage);
-      case 4 : return new ArrayInt.D4(index, isUnsigned, storage);
-      case 5 : return new ArrayInt.D5(index, isUnsigned, storage);
-      case 6 : return new ArrayInt.D6(index, isUnsigned, storage);
-      case 7 : return new ArrayInt.D7(index, isUnsigned, storage);
-      default : return new ArrayInt(index, isUnsigned, storage);
+    if (index instanceof Index0D) {
+      return new ArrayInt.D0(index, isUnsigned, storage);
+    } else if (index instanceof Index1D) {
+      return new ArrayInt.D1(index, isUnsigned, storage);
+    } else if (index instanceof Index2D) {
+      return new ArrayInt.D2(index, isUnsigned, storage);
+    } else if (index instanceof Index3D) {
+      return new ArrayInt.D3(index, isUnsigned, storage);
+    } else if (index instanceof Index4D) {
+      return new ArrayInt.D4(index, isUnsigned, storage);
+    } else if (index instanceof Index5D) {
+      return new ArrayInt.D5(index, isUnsigned, storage);
+    } else if (index instanceof Index6D) {
+      return new ArrayInt.D6(index, isUnsigned, storage);
+    } else if (index instanceof Index7D) {
+      return new ArrayInt.D7(index, isUnsigned, storage);
+    } else {
+      return new ArrayInt(index, isUnsigned, storage);
     }
   }
 

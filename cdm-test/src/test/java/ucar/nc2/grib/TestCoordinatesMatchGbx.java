@@ -68,7 +68,7 @@ public class TestCoordinatesMatchGbx {
   @AfterClass
   static public void after() {
     Grib.setDebugFlags(new DebugFlagsImpl());
-    System.out.printf("countersAll = %s%n", countersAll);
+    logger.debug("countersAll = {}", countersAll);
     Variable.permitCaching = true;
   }
 
@@ -79,7 +79,7 @@ public class TestCoordinatesMatchGbx {
   public void readGrib1Files() throws Exception {
     counterCurrent = countersAll.makeSubCounters();
     int fail = readAllDir(TestDir.cdmUnitTestDir + "formats/grib1", null, false);
-    System.out.printf("readGrib1Files = %s%n", counterCurrent);
+    logger.debug("readGrib1Files = {}", counterCurrent);
     countersAll.addTo(counterCurrent);
     Assert.assertEquals(0, fail);
   }
@@ -88,7 +88,7 @@ public class TestCoordinatesMatchGbx {
   public void readGrib2Files() throws Exception {
     counterCurrent = countersAll.makeSubCounters();
     int fail = readAllDir(TestDir.cdmUnitTestDir + "formats/grib2", null, false);
-    System.out.printf("readGrib2Files = %s%n", counterCurrent);
+    logger.debug("readGrib2Files = {}", counterCurrent);
     countersAll.addTo(counterCurrent);
     Assert.assertEquals(0, fail);
   }
@@ -97,7 +97,7 @@ public class TestCoordinatesMatchGbx {
   public void readNcepFiles() throws Exception {
     counterCurrent = countersAll.makeSubCounters();
     int fail = readAllDir(TestDir.cdmUnitTestDir + "tds/ncep", null, true);
-    System.out.printf("readNcepFiles = %s%n", counterCurrent);
+    logger.debug("readNcepFiles = {}", counterCurrent);
     countersAll.addTo(counterCurrent);
     Assert.assertEquals(0, fail);
   }
@@ -106,7 +106,7 @@ public class TestCoordinatesMatchGbx {
   public void readFnmocFiles() throws Exception {
     counterCurrent = countersAll.makeSubCounters();
     int fail = readAllDir(TestDir.cdmUnitTestDir + "tds/fnmoc", null, true);
-    System.out.printf("readFnmocFiles = %s%n", counterCurrent);
+    logger.debug("readFnmocFiles = {}", counterCurrent);
     countersAll.addTo(counterCurrent);
     Assert.assertEquals(0, fail);
   }
@@ -171,7 +171,7 @@ public class TestCoordinatesMatchGbx {
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     helper.readGridDataset();
     helper.readCoverageDataset();
-    System.out.printf("counters= %s%n", counters);
+    logger.debug("counters= {}", counters);
   }
 
   public void testProblem2() throws IOException {
@@ -180,7 +180,7 @@ public class TestCoordinatesMatchGbx {
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     // helper.readGridDataset();
     helper.readCoverageDataset();
-    System.out.printf("counters= %s%n", counters);
+    logger.debug("counters= {}", counters);
   }
 
   @Test
@@ -190,7 +190,7 @@ public class TestCoordinatesMatchGbx {
     GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, counters);
     helper.readGridDataset();
     helper.readCoverageDataset();
-    System.out.printf("counters= %s%n", counters);
+    logger.debug("counters= {}", counters);
   }
 
   int readAllDir(String dirName, String suffix, boolean recurse) throws Exception {
@@ -220,7 +220,7 @@ public class TestCoordinatesMatchGbx {
       GribCoordsMatchGbx helper = new GribCoordsMatchGbx(filename, fileCounters);
       fail = helper.readGridDataset();
       fail2 = helper.readCoverageDataset();
-      if (showFileCounters) System.out.printf("fileCounters= %s%n", fileCounters);
+      if (showFileCounters) logger.debug("fileCounters= {}", fileCounters);
       counterCurrent.addTo(fileCounters);
       return fail + fail2;
     }

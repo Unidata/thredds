@@ -55,17 +55,25 @@ public class ArrayBoolean extends Array {
    * @return. new ArrayDouble.D<rank> or ArrayDouble object.
    */
   static ArrayBoolean factory( Index index, boolean [] storage) {
-    switch (index.getRank()) {
-      case 0 : return new ArrayBoolean.D0(index, storage);
-      case 1 : return new ArrayBoolean.D1(index, storage);
-      case 2 : return new ArrayBoolean.D2(index, storage);
-      case 3 : return new ArrayBoolean.D3(index, storage);
-      case 4 : return new ArrayBoolean.D4(index, storage);
-      case 5 : return new ArrayBoolean.D5(index, storage);
-      case 6 : return new ArrayBoolean.D6(index, storage);
-      case 7 : return new ArrayBoolean.D7(index, storage);
-      default : return new ArrayBoolean(index, storage);
-    }
+      if (index instanceof Index0D) {
+          return new ArrayBoolean.D0(index, storage);
+      } else if (index instanceof Index1D) {
+          return new ArrayBoolean.D1(index, storage);
+      } else if (index instanceof Index2D) {
+          return new ArrayBoolean.D2(index, storage);
+      } else if (index instanceof Index3D) {
+          return new ArrayBoolean.D3(index, storage);
+      } else if (index instanceof Index4D) {
+          return new ArrayBoolean.D4(index, storage);
+      } else if (index instanceof Index5D) {
+          return new ArrayBoolean.D5(index, storage);
+      } else if (index instanceof Index6D) {
+          return new ArrayBoolean.D6(index, storage);
+      } else if (index instanceof Index7D) {
+          return new ArrayBoolean.D7(index, storage);
+      } else {
+          return new ArrayBoolean(index, storage);
+      }
   }
 
   ///////////////////////////////////////////////////////////////////////////////
