@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="beforeLogicalViews.ncml">
+    <variable name="section">
+        <logicalSection section=":,0:2:2,1:2" />
+    </variable>
+    
+    <variable name="slice">
+        <logicalSlice dimName="a" index="1" />
+    </variable>
+    
+    <variable name="reduce">
+        <logicalReduce dimNames="b d" />
+    </variable>
+</netcdf>
