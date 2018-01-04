@@ -60,25 +60,24 @@ public class ArrayChar extends Array implements Iterable<String> {
    * @return. new ArrayDouble.D<rank> or ArrayDouble object.
    */
   static ArrayChar factory(Index index, char[] storage) {
-    switch (index.getRank()) {
-      case 0:
-        return new ArrayChar.D0(index, storage);
-      case 1:
-        return new ArrayChar.D1(index, storage);
-      case 2:
-        return new ArrayChar.D2(index, storage);
-      case 3:
-        return new ArrayChar.D3(index, storage);
-      case 4:
-        return new ArrayChar.D4(index, storage);
-      case 5:
-        return new ArrayChar.D5(index, storage);
-      case 6:
-        return new ArrayChar.D6(index, storage);
-      case 7:
-        return new ArrayChar.D7(index, storage);
-      default:
-        return new ArrayChar(index, storage);
+    if (index instanceof Index0D) {
+      return new ArrayChar.D0(index, storage);
+    } else if (index instanceof Index1D) {
+      return new ArrayChar.D1(index, storage);
+    } else if (index instanceof Index2D) {
+      return new ArrayChar.D2(index, storage);
+    } else if (index instanceof Index3D) {
+      return new ArrayChar.D3(index, storage);
+    } else if (index instanceof Index4D) {
+      return new ArrayChar.D4(index, storage);
+    } else if (index instanceof Index5D) {
+      return new ArrayChar.D5(index, storage);
+    } else if (index instanceof Index6D) {
+      return new ArrayChar.D6(index, storage);
+    } else if (index instanceof Index7D) {
+      return new ArrayChar.D7(index, storage);
+    } else {
+      return new ArrayChar(index, storage);
     }
   }
 

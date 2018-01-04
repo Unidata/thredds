@@ -140,7 +140,7 @@ public class GribCoordsMatchGbx {
 
   private boolean readCoverage(Coverage coverage) throws IOException {
     // if (!coverage.getName().startsWith("Total_pre")) return true;
-    if (showMissing) System.out.printf("%ncoverage %s%n", coverage.getName());
+    if (showMissing) logger.debug("coverage {}", coverage.getName());
     this.cover = coverage;
     countReadsForVariable = 0;
 
@@ -233,7 +233,7 @@ public class GribCoordsMatchGbx {
   int countReadsForVariable;
   private boolean read(GridDatatype gdt) throws IOException {
     // if (!gdt.getName().startsWith("Total_pre")) return true;
-    if (showMissing) System.out.printf(" grid %s%n", gdt.getName());
+    if (showMissing) logger.debug("grid {}", gdt.getName());
     countReadsForVariable = 0;
     gdc = gdt.getCoordinateSystem();
     grid = gdt;
@@ -378,11 +378,11 @@ public class GribCoordsMatchGbx {
   private void readAndTestGrib1(String name, SubsetParams coords) throws IOException {
     GribCollectionImmutable.Record dr = GribDataReader.currentDataRecord;
     if (dr == null) {
-      if (showMissing) System.out.printf("  missing record= %s%n", coords);
+      if (showMissing) logger.debug("missing record= {}", coords);
       counters.count(kind, "missing1");
       return;
     }
-    if (showMissing) System.out.printf("  found record= %s%n", coords);
+    if (showMissing) logger.debug("found record= {}", coords);
     counters.count(kind, "found1");
 
     String filename = GribDataReader.currentDataRafFilename;
@@ -405,7 +405,7 @@ public class GribCoordsMatchGbx {
       runtimeOk &= rt_val.equals(gribDate);
       if (!runtimeOk) {
         tryAgain(coords);
-        System.out.printf("  %s %s failed on runtime %s != gbx %s %n", kind, name, rt_val, gribDate);
+        logger.debug("{} {} failed on runtime {} != gbx {}", kind, name, rt_val, gribDate);
       }
       Assert.assertEquals(gribDate, rt_val);
     }
@@ -423,7 +423,8 @@ public class GribCoordsMatchGbx {
       }
       if (!date_bounds[0].equals(gbxInv[0]) || !date_bounds[1].equals(gbxInv[1])) {
         tryAgain(coords);
-        System.out.printf(" %s %s failed on time intv: coord=[%s,%s] gbx =[%s,%s] %n", kind, name, date_bounds[0], date_bounds[1], gbxInv[0], gbxInv[1]);
+        logger.debug("{} {} failed on time intv: coord=[{},{}] gbx =[{},{}]", kind, name, date_bounds[0],
+                date_bounds[1], gbxInv[0], gbxInv[1]);
       }
       Assert.assertArrayEquals(date_bounds, gbxInv);
 
@@ -431,7 +432,7 @@ public class GribCoordsMatchGbx {
       CalendarDate gbxDate = getForecastDate(pdss, ptime);
       if (!time_val.equals(gbxDate)) {
         tryAgain(coords);
-        System.out.printf("  %s %s failed on time: coord=%s gbx = %s%n", kind, name, time_val, gbxDate);
+        logger.debug("{} {} failed on time: coord={} gbx = {}", kind, name, time_val, gbxDate);
       }
       Assert.assertEquals(time_val, gbxDate);
     }
@@ -449,7 +450,7 @@ public class GribCoordsMatchGbx {
         vertOk &= Misc.closeEnough(edge[1], plevel.getValue2());
         if (!vertOk) {
           tryAgain(coords);
-          System.out.printf("  %s %s failed on vert [%s,%s] != [%s,%s] %n", kind, name, edge[0], edge[1],
+          logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, edge[0], edge[1],
                   plevel.getValue1(), plevel.getValue2());
         }
       }
@@ -457,7 +458,7 @@ public class GribCoordsMatchGbx {
       vertOk &= Misc.closeEnough(vert_val,  plevel.getValue1());
       if (!vertOk) {
         tryAgain(coords);
-        System.out.printf("  %s %s failed on vert %s != %s %n", kind, name, vert_val,  plevel.getValue1());
+        logger.debug("{} {} failed on vert {} != {}", kind, name, vert_val,  plevel.getValue1());
       }
     }
   }
@@ -493,7 +494,7 @@ public class GribCoordsMatchGbx {
     IdxHashGrib2(String idxFile) throws IOException {
       Grib2Index index = new Grib2Index();
       if (!index.readIndex(idxFile, -1, CollectionUpdateType.never)) {
-        System.out.printf("idxFile does not exist %s%n", idxFile);
+        logger.debug("idxFile does not exist {}", idxFile);
         throw new FileNotFoundException();
       }
       for (Grib2Record gr : index.getRecords()) {
@@ -540,7 +541,7 @@ public class GribCoordsMatchGbx {
       runtimeOk &= rt_val.equals(gribDate);
       if (!runtimeOk) {
         tryAgain(coords);
-        System.out.printf("   %s %s failed on runtime %s != %s %n", kind, name, rt_val, gribDate);
+        logger.debug("{} {} failed on runtime {} != {}", kind, name, rt_val, gribDate);
       }
     }
 
@@ -562,7 +563,8 @@ public class GribCoordsMatchGbx {
       }
       if (!timeOk) {
         tryAgain(coords);
-        System.out.printf("   %s %s failed on timeIntv [%s,%s] != %s %n", kind, name, date_bounds[0], date_bounds[1], bean.getTimeCoord());
+        logger.debug("{} {} failed on timeIntv [{},{}] != {}", kind, name, date_bounds[0], date_bounds[1],
+                bean.getTimeCoord());
       }
 
     } else if (time_val != null) {
@@ -571,7 +573,7 @@ public class GribCoordsMatchGbx {
       timeOk &= closeEnough(time_val, dateFromGribRecord);
       if (!timeOk) {
         tryAgain(coords);
-        System.out.printf("   %s %s failed on time %s != %s %n", kind, name, time_val, bean.getTimeCoord());
+        logger.debug("{} {} failed on time {} != {}", kind, name, time_val, bean.getTimeCoord());
       }
     }
 
@@ -586,13 +588,14 @@ public class GribCoordsMatchGbx {
       vertOk &= Misc.closeEnough(hi, bean.getLevelHighValue());
       if (!vertOk) {
         tryAgain(coords);
-        System.out.printf("  %s %s failed on vert [%s,%s] != [%s,%s] %n", kind, name, low, hi, bean.getLevelLowValue(), bean.getLevelHighValue());
+        logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, low, hi, bean.getLevelLowValue(),
+                bean.getLevelHighValue());
       }
     } else if (vert_val != null) {
       vertOk &= Misc.closeEnough(vert_val, bean.getLevelValue1());
       if (!vertOk) {
         tryAgain(coords);
-        System.out.printf("  %s %s failed on vert %s != %s %n", kind, name, vert_val, bean.getLevelValue1());
+        logger.debug("{} {} failed on vert {} != {}", kind, name, vert_val, bean.getLevelValue1());
       }
     }
 

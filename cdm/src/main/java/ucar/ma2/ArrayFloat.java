@@ -57,17 +57,25 @@ public class ArrayFloat extends Array {
    * @return. new ArrayFloat.D<rank> or ArrayFloat object.
    */
   static ArrayFloat factory( Index index, float [] storage) {
-    switch (index.getRank()) {
-      case 0 : return new ArrayFloat.D0(index, storage);
-      case 1 : return new ArrayFloat.D1(index, storage);
-      case 2 : return new ArrayFloat.D2(index, storage);
-      case 3 : return new ArrayFloat.D3(index, storage);
-      case 4 : return new ArrayFloat.D4(index, storage);
-      case 5 : return new ArrayFloat.D5(index, storage);
-      case 6 : return new ArrayFloat.D6(index, storage);
-      case 7 : return new ArrayFloat.D7(index, storage);
-      default : return new ArrayFloat(index, storage);
-    }
+      if (index instanceof Index0D) {
+          return new ArrayFloat.D0(index, storage);
+      } else if (index instanceof Index1D) {
+          return new ArrayFloat.D1(index, storage);
+      } else if (index instanceof Index2D) {
+          return new ArrayFloat.D2(index, storage);
+      } else if (index instanceof Index3D) {
+          return new ArrayFloat.D3(index, storage);
+      } else if (index instanceof Index4D) {
+          return new ArrayFloat.D4(index, storage);
+      } else if (index instanceof Index5D) {
+          return new ArrayFloat.D5(index, storage);
+      } else if (index instanceof Index6D) {
+          return new ArrayFloat.D6(index, storage);
+      } else if (index instanceof Index7D) {
+          return new ArrayFloat.D7(index, storage);
+      } else {
+          return new ArrayFloat(index, storage);
+      }
   }
 
   //////////////////////////////////////////////////////

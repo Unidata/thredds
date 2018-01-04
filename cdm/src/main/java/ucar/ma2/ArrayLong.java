@@ -58,17 +58,25 @@ public class ArrayLong extends Array {
    * @return. new ArrayLong.D<rank> or ArrayLong object.
    */
   static ArrayLong factory( Index index, boolean isUnsigned, long [] storage) {
-    switch (index.getRank()) {
-      case 0 : return new ArrayLong.D0(index, isUnsigned, storage);
-      case 1 : return new ArrayLong.D1(index, isUnsigned, storage);
-      case 2 : return new ArrayLong.D2(index, isUnsigned, storage);
-      case 3 : return new ArrayLong.D3(index, isUnsigned, storage);
-      case 4 : return new ArrayLong.D4(index, isUnsigned, storage);
-      case 5 : return new ArrayLong.D5(index, isUnsigned, storage);
-      case 6 : return new ArrayLong.D6(index, isUnsigned, storage);
-      case 7 : return new ArrayLong.D7(index, isUnsigned, storage);
-      default : return new ArrayLong(index, isUnsigned, storage);
-    }
+      if (index instanceof Index0D) {
+          return new ArrayLong.D0(index, isUnsigned, storage);
+      } else if (index instanceof Index1D) {
+          return new ArrayLong.D1(index, isUnsigned, storage);
+      } else if (index instanceof Index2D) {
+          return new ArrayLong.D2(index, isUnsigned, storage);
+      } else if (index instanceof Index3D) {
+          return new ArrayLong.D3(index, isUnsigned, storage);
+      } else if (index instanceof Index4D) {
+          return new ArrayLong.D4(index, isUnsigned, storage);
+      } else if (index instanceof Index5D) {
+          return new ArrayLong.D5(index, isUnsigned, storage);
+      } else if (index instanceof Index6D) {
+          return new ArrayLong.D6(index, isUnsigned, storage);
+      } else if (index instanceof Index7D) {
+          return new ArrayLong.D7(index, isUnsigned, storage);
+      } else {
+          return new ArrayLong(index, isUnsigned, storage);
+      }
   }
 
   //////////////////////////////////////////////////////
