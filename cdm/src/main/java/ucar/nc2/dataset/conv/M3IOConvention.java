@@ -168,7 +168,9 @@ public class M3IOConvention extends CoordSysBuilder {
     // Makes coordinate axes for Lat/Lon
     double start = findAttributeDouble(ds, startName); // degrees
     double incr = findAttributeDouble(ds, incrName); // degrees
-
+    // The coordinate value should be the cell center.
+    // I recommend also adding a bounds coordinate variable for clarity in the future.
+    start = start + incr / 2.; // shiftin lon and lat to central
     CoordinateAxis v = new CoordinateAxis1D(ds, null, name, DataType.DOUBLE, dimName, unitName,
             "synthesized coordinate from " + startName + " " + incrName + " global attributes");
     v.setValues(n, start, incr);
