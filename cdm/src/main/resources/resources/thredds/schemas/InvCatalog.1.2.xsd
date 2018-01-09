@@ -288,6 +288,7 @@
       </xsd:choice>
 
       <xsd:element name="resolution" type="duration" minOccurs="0"/>
+      <xsd:element name="calendar" type="xsd:string" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
 

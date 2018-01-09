@@ -850,6 +850,7 @@ Example:
       <xsd:element name="duration" type="duration"/>
     </xsd:choice>
     <xsd:element name="resolution" type="duration" minOccurs="0"/>
+    <xsd:element name="calendar" type="xsd:string" minOccurs="0"/>
   </xsd:sequence>
 </xsd:complexType>
 ----
@@ -858,8 +859,12 @@ A timeCoverage element specifies a date range. The date range can be
 specified in three ways: 1) by giving both a _start_ and an _end_
 link:#dateType[date type] element; 2) by specifying a _start_ element
 and a link:#durationType[_duration_] element; or 3) by specifying an
-_end_ element and a _duration_ element. The optional resolution element
-should be used to indicate the data resolution for time series data.
+_end_ element and a _duration_ element.
+
+There are 2 optional elements:
+1. `resolution`: the temporal resolution of time series data.
+2. `calendar`: the <<../../netcdf-java/CDM/CalendarDateTime#_supported_calendars, calendar>>
+in which the dates should be interpreted. If none is specified, `proleptic_gregorian` will be used.
 
 Example:
 
@@ -879,6 +884,12 @@ Example:
   <end>present</end>
   <duration>10 days</duration>
   <resolution>15 minutes</resolution>
+</timeCoverage>
+
+<timeCoverage>
+  <start>2017-02-12</start>
+  <end>2017-03-12</end>
+  <calendar>uniform30day</calendar>  // Difference between start and end will be 30 days, not 28 as in Gregorian.
 </timeCoverage>
 ----
 
