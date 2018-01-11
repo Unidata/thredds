@@ -651,7 +651,7 @@ public class CatalogBuilder {
     // look for dates
     list = parent.getChildren("date", Catalog.defNS);
     for (Element e : list) {
-      DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e,null));
+      DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e, null));
     }
 
     // look for documentation
@@ -981,14 +981,13 @@ public class CatalogBuilder {
   /*
     <xsd:complexType name="timeCoverageType">
     <xsd:sequence>
+      <xsd:attribute name="calendar" type="xsd:string"/>
       <xsd:choice minOccurs="2" maxOccurs="3">
         <xsd:element name="start" type="dateTypeFormatted"/>
         <xsd:element name="end" type="dateTypeFormatted"/>
         <xsd:element name="duration" type="duration"/>
       </xsd:choice>
-
       <xsd:element name="resolution" type="duration" minOccurs="0"/>
-      <xsd:element name="calendar" type="xsd:string" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -1037,7 +1036,7 @@ public class CatalogBuilder {
   protected DateRange readTimeCoverage(Element tElem) {
     if (tElem == null) return null;
     
-    Calendar calendar = readCalendar(tElem.getChild("calendar", Catalog.defNS));
+    Calendar calendar = readCalendar(tElem.getAttributeValue("calendar"));
     DateType start = readDate(tElem.getChild("start", Catalog.defNS), calendar);
     DateType end = readDate(tElem.getChild("end", Catalog.defNS), calendar);
 
@@ -1050,6 +1049,20 @@ public class CatalogBuilder {
       errlog.format(" ** warning: TimeCoverage error ='%s'%n", e.getMessage());
       return null;
     }
+  }
+
+  protected Calendar readCalendar(String calendarAttribValue) {
+    if (calendarAttribValue == null) {
+      return Calendar.getDefault();
+    }
+
+    Calendar calendar = Calendar.get(calendarAttribValue);
+    if (calendar == null) {
+      errlog.format(" ** Parse error: Bad calendar name = '%s'%n", calendarAttribValue);
+      return Calendar.getDefault();
+    }
+
+    return calendar;
   }
 
   protected DateType readDate(Element elem, Calendar calendar) {
@@ -1079,20 +1092,6 @@ public class CatalogBuilder {
       errlog.format(" ** Parse error: Bad duration format = '%s'%n", text);
       return null;
     }
-  }
-
-  protected Calendar readCalendar(Element elem) {
-    if (elem == null) {
-      return Calendar.getDefault();
-    }
-
-    Calendar calendar = Calendar.get(elem.getText());
-    if (calendar == null) {
-      errlog.format(" ** Parse error: Bad calendar name = '%s'%n", elem.getText());
-      return Calendar.getDefault();
-    }
-
-    return calendar;
   }
 
   /*

@@ -199,14 +199,17 @@ public class TestClientCatalog {
     logger.debug("tc = {}", tc);
 
     CalendarDate start = tc.getStart().getCalendarDate();
-    assert CalendarDateFormatter.toDateString(start).equals("2017-02-12");
-    CalendarDate end = tc.getEnd().getCalendarDate();
-    assert CalendarDateFormatter.toDateString(end).equals("2017-03-12");
-
     assert start.getCalendar() == Calendar.uniform30day;  // Using non-default calendar.
-    // In the Gregorian calendar, the difference between 2017-02-12 and 2017-03-12 would be 28 days.
-    // But in the uniform30day calendar, it's 30.
-    assert end.getDifference(start, CalendarPeriod.Field.Day) == 30;
+
+    // This date is valid in the uniform30day calendar. If we tried it with the standard calendar, we'd get an error:
+    //     Illegal base time specification: '2017-02-30' Value 30 for dayOfMonth must be in the range [1,28]
+    assert CalendarDateFormatter.toDateString(start).equals("2017-02-30");
+
+    CalendarDate end = tc.getEnd().getCalendarDate();
+    assert CalendarDateFormatter.toDateString(end).equals("2017-04-01");
+
+    // In the uniform30day calendar, the difference between 2017-02-30 and 2017-04-01 is 31 days.
+    assert end.getDifference(start, CalendarPeriod.Field.Day) == 31;
   }
 
   /////////////

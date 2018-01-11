@@ -45,10 +45,9 @@
   
   <dataset name="test5" ID="test5">
     <metadata inherited="true">
-      <timeCoverage>
-        <start>2017-02-12</start>
-        <end>2017-03-12</end>
-        <calendar>uniform30day</calendar>
+      <timeCoverage calendar="uniform30day">
+        <start>2017-02-30</start>
+        <end>2017-04-01</end>
       </timeCoverage>
     </metadata>
   </dataset>
