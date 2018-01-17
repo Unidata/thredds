@@ -96,7 +96,7 @@ public class DateRange {
   }
 
   /**
-   * Encapsolates a range of dates, using DateType start/end, and/or a TimeDuration.
+   * Encapsulates a range of dates, using DateType start/end, and/or a TimeDuration.
    * A DateRange can be specified in any of the following ways:
    * <ol>
    * <li> a start date and end date
@@ -106,8 +106,8 @@ public class DateRange {
    *
    * @param start      starting date
    * @param end        ending date
-   * @param duration   time duration
-   * @param resolution time resolution; optional
+   * @param duration   time duration; may be null
+   * @param resolution time resolution; may be null
    */
   public DateRange(DateType start, DateType end, TimeDuration duration, TimeDuration resolution) {
     this.start = start;

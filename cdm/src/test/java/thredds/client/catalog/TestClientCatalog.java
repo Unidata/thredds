@@ -38,8 +38,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.client.catalog.tools.CatalogXmlWriter;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
+import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
 import ucar.nc2.units.TimeUnit;
@@ -148,7 +150,7 @@ public class TestClientCatalog {
   }
 
   @Test
-  public void testTC() throws Exception {
+  public void testTimeCoverage() throws Exception {
     Catalog cat = ClientCatalogUtil.open("TestTimeCoverage.xml");
     assert cat != null;
 
@@ -190,6 +192,24 @@ public class TestClientCatalog {
     TimeDuration d = tc.getDuration();
     TimeUnit tu = d.getTimeUnit();
     assert tu.getUnitString().equals("days") : tu.getUnitString(); // LOOK should be 3 hours, or hours or ??
+
+    ds = cat.findDatasetByID("test5");
+    tc = ds.getTimeCoverage();
+    assert null != tc;
+    logger.debug("tc = {}", tc);
+
+    CalendarDate start = tc.getStart().getCalendarDate();
+    assert start.getCalendar() == Calendar.uniform30day;  // Using non-default calendar.
+
+    // This date is valid in the uniform30day calendar. If we tried it with the standard calendar, we'd get an error:
+    //     Illegal base time specification: '2017-02-30' Value 30 for dayOfMonth must be in the range [1,28]
+    assert CalendarDateFormatter.toDateString(start).equals("2017-02-30");
+
+    CalendarDate end = tc.getEnd().getCalendarDate();
+    assert CalendarDateFormatter.toDateString(end).equals("2017-04-01");
+
+    // In the uniform30day calendar, the difference between 2017-02-30 and 2017-04-01 is 31 days.
+    assert end.getDifference(start, CalendarPeriod.Field.Day) == 31;
   }
 
   /////////////
@@ -241,14 +261,14 @@ public class TestClientCatalog {
   public void testSubset() throws IOException {
     Catalog cat = ClientCatalogUtil.open("InvCatalog-1.0.xml");
     CatalogXmlWriter writer = new CatalogXmlWriter();
-    logger.debug(writer.writeXML(cat));
+    logger.debug("{}", writer.writeXML(cat));
 
     Dataset ds = cat.findDatasetByID("testSubset");
     assert (ds != null) : "cant find dataset 'testSubset'";
     assert ds.getFeatureType() == FeatureType.GRID;
 
     Catalog subsetCat = cat.subsetCatalogOnDataset(ds);
-    logger.debug(writer.writeXML(subsetCat));
+    logger.debug("{}", writer.writeXML(subsetCat));
 
     List<Dataset> dss = subsetCat.getDatasets();
     assert dss.size() == 1;
@@ -263,51 +283,4 @@ public class TestClientCatalog {
     assert subsetDs.getFeatureTypeName() != null;
     assert subsetDs.getFeatureTypeName().equalsIgnoreCase("Grid");
   }
-
-  ////////////////////////////
-
-  @Test
-  public void testTimeCoverage() throws Exception {
-    Catalog cat = ClientCatalogUtil.open("TestTimeCoverage.xml");
-    assert cat != null;
-
-    Dataset ds = cat.findDatasetByID("test1");
-    DateRange tc = ds.getTimeCoverage();
-    assert null != tc;
-    logger.debug("tc = {}", tc);
-    assert tc.getEnd().isPresent();
-    assert tc.getResolution() == null;
-    assert tc.getDuration().equals( new TimeDuration("14 days") );
-
-    ds = cat.findDatasetByID("test2");
-    tc = ds.getTimeCoverage();
-    assert null != tc;
-    logger.debug("tc = {}", tc);
-    CalendarDate got = tc.getStart().getCalendarDate();
-    CalendarDate want = CalendarDateFormatter.isoStringToCalendarDate(null, "1999-11-16T12:00:00");
-    assert got.equals( want);
-    assert tc.getResolution() == null;
-    TimeDuration gott = tc.getDuration();
-    TimeDuration wantt = new TimeDuration("P3M");
-    assert gott.equals( wantt);
-
-    ds = cat.findDatasetByID("test3");
-    tc = ds.getTimeCoverage();
-    assert null != tc;
-    logger.debug("tc = {}", tc);
-    assert tc.getResolution() == null;
-    assert tc.getDuration().equals( new TimeDuration("2 days") );
-
-    ds = cat.findDatasetByID("test4");
-    tc = ds.getTimeCoverage();
-    assert null != tc;
-    logger.debug("tc = {}", tc);
-    TimeDuration r = tc.getResolution();
-    assert r != null;
-    TimeDuration r2 = new TimeDuration("3 hour");
-    assert r.equals( r2 );
-    TimeDuration d = tc.getDuration();
-    TimeUnit tu = d.getTimeUnit();
-    assert tu.getUnitString().equals("days") : tu.getUnitString(); // LOOK should be 3 hours, or hours or ??
- }
 }

@@ -281,12 +281,12 @@
   <!-- date and time-->
   <xsd:complexType name="timeCoverageType">
     <xsd:sequence>
+      <xsd:attribute name="calendar" type="xsd:string"/>
       <xsd:choice minOccurs="2" maxOccurs="3">
         <xsd:element name="start" type="dateTypeFormatted"/>
         <xsd:element name="end" type="dateTypeFormatted"/>
         <xsd:element name="duration" type="duration"/>
       </xsd:choice>
-
       <xsd:element name="resolution" type="duration" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>

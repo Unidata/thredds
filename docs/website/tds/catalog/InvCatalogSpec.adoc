@@ -844,12 +844,13 @@ Example:
 ----
 <xsd:complexType name="timeCoverageType">
   <xsd:sequence>
+    <xsd:attribute name="calendar" type="xsd:string"/>
     <xsd:choice minOccurs="2" maxOccurs="3" >
       <xsd:element name="start" type="dateTypeFormatted"/>
       <xsd:element name="end" type="dateTypeFormatted"/>
       <xsd:element name="duration" type="duration"/>
     </xsd:choice>
-    <xsd:element name="resolution" type="duration" minOccurs="0"/>
+    <xsd:element name="calendar" type="xsd:string" minOccurs="0"/>
   </xsd:sequence>
 </xsd:complexType>
 ----
@@ -860,6 +861,10 @@ link:#dateType[date type] element; 2) by specifying a _start_ element
 and a link:#durationType[_duration_] element; or 3) by specifying an
 _end_ element and a _duration_ element. The optional resolution element
 should be used to indicate the data resolution for time series data.
+
+The `calendar` attribute of timeCoverage controls the CDM
+<<../../netcdf-java/CDM/CalendarDateTime#_supported_calendars, calendar>>
+in which dates should be interpreted. If none is specified, `proleptic_gregorian` will be used.
 
 Example:
 
@@ -879,6 +884,11 @@ Example:
   <end>present</end>
   <duration>10 days</duration>
   <resolution>15 minutes</resolution>
+</timeCoverage>
+
+<timeCoverage calendar="uniform30day">
+  <start>2017-02-30</start>  // Valid date in uniform30day calendar but not in Gregorian.
+  <end>2017-04-01</end>      // Difference between start and end is 31 days.
 </timeCoverage>
 ----
 

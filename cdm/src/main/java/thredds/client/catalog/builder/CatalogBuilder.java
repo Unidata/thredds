@@ -36,11 +36,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
-import org.jdom2.input.StAXStreamBuilder;
 import thredds.client.catalog.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
+import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.DateRange;
@@ -50,9 +50,6 @@ import ucar.nc2.util.URLnaming;
 import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.Nullable;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -654,7 +651,7 @@ public class CatalogBuilder {
     // look for dates
     list = parent.getChildren("date", Catalog.defNS);
     for (Element e : list) {
-      DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e));
+      DatasetBuilder.addToList(flds, Dataset.Dates, readDate(e, null));
     }
 
     // look for documentation
@@ -984,12 +981,12 @@ public class CatalogBuilder {
   /*
     <xsd:complexType name="timeCoverageType">
     <xsd:sequence>
+      <xsd:attribute name="calendar" type="xsd:string"/>
       <xsd:choice minOccurs="2" maxOccurs="3">
         <xsd:element name="start" type="dateTypeFormatted"/>
         <xsd:element name="end" type="dateTypeFormatted"/>
         <xsd:element name="duration" type="duration"/>
       </xsd:choice>
-
       <xsd:element name="resolution" type="duration" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -1038,9 +1035,11 @@ public class CatalogBuilder {
    */
   protected DateRange readTimeCoverage(Element tElem) {
     if (tElem == null) return null;
+    
+    Calendar calendar = readCalendar(tElem.getAttributeValue("calendar"));
+    DateType start = readDate(tElem.getChild("start", Catalog.defNS), calendar);
+    DateType end = readDate(tElem.getChild("end", Catalog.defNS), calendar);
 
-    DateType start = readDate(tElem.getChild("start", Catalog.defNS));
-    DateType end = readDate(tElem.getChild("end", Catalog.defNS));
     TimeDuration duration = readDuration(tElem.getChild("duration", Catalog.defNS));
     TimeDuration resolution = readDuration(tElem.getChild("resolution", Catalog.defNS));
 
@@ -1052,17 +1051,31 @@ public class CatalogBuilder {
     }
   }
 
-  protected DateType readDate(Element elem) {
+  protected Calendar readCalendar(String calendarAttribValue) {
+    if (calendarAttribValue == null) {
+      return Calendar.getDefault();
+    }
+
+    Calendar calendar = Calendar.get(calendarAttribValue);
+    if (calendar == null) {
+      errlog.format(" ** Parse error: Bad calendar name = '%s'%n", calendarAttribValue);
+      return Calendar.getDefault();
+    }
+
+    return calendar;
+  }
+
+  protected DateType readDate(Element elem, Calendar calendar) {
     if (elem == null) return null;
     String format = elem.getAttributeValue("format");
     String type = elem.getAttributeValue("type");
-    return makeDateType(elem.getText(), format, type);
+    return makeDateType(elem.getText(), format, type, calendar);
   }
 
-  protected DateType makeDateType(String text, String format, String type) {
+  protected DateType makeDateType(String text, String format, String type, Calendar calendar) {
     if (text == null) return null;
     try {
-      return new DateType(text, format, type);
+      return new DateType(text, format, type, calendar);
     } catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad date format = '%s'%n", text);
       return null;
