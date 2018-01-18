@@ -24,6 +24,9 @@ import java.util.Map;
 public class DatasetTrackerChronicle implements DatasetTracker {
   static private org.slf4j.Logger catalogInitLog = org.slf4j.LoggerFactory.getLogger("catalogInit");
   static private final String datasetName = "/chronicle.datasets.dat";
+  // average size (bytes) of key for database, which is the path to a given dataset.
+  // LOOK: is 512 a good average size? There is no length on file path, so hard to set a maximum.
+  static private final int averagePathLength = 512;
 
   // delete old databases
   public static void cleanupBefore(String pathname, long trackerNumber) {
@@ -101,7 +104,7 @@ public class DatasetTrackerChronicle implements DatasetTracker {
 
   private void open() throws IOException {
     ChronicleMapBuilder<String, DatasetExt> builder = ChronicleMapBuilder.of(String.class, DatasetExt.class)
-            .averageValueSize(200).entries(maxDatasets);
+            .averageValueSize(200).entries(maxDatasets).averageKeySize(averagePathLength);
     datasetMap = builder.createPersistedTo(dbFile);
     changed = false;
   }

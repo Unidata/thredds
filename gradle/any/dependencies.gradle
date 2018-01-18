@@ -170,7 +170,7 @@ libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
 // Annotations
 libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.1"
 
-libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.5.0"
+libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.5.1"
 
 libraries["visad"] = "edu.wisc.ssec:visad:2.0-20130124"
 
@@ -203,8 +203,7 @@ libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.7.9"
 libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.7.9"
 libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.7.9.1"
 
-// Latest version is 3.10.1. Can we upgrade?
-libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:2.4.15") {
+libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.14.5") {
     // We do not need XStream for our use of chronicle-map.
     // Nuke it.
     exclude group: 'com.thoughtworks.xstream', module: 'xstream'
@@ -225,7 +224,7 @@ libraries["oro"] = "oro:oro:2.0.8"
 // The latest version is 3.0.1.RELEASE. Can we update?
 libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
 
-versions["edal"] = "1.2.7"
+versions["edal"] = "1.2.13"
 
 libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
 
