@@ -1,34 +1,6 @@
 /*
- * Copyright 1998-2015 John Caron and University Corporation for Atmospheric Research/Unidata
- *
- *  Portions of this software were developed by the Unidata Program at the
- *  University Corporation for Atmospheric Research.
- *
- *  Access and use of this software shall impose the following obligations
- *  and understandings on the user. The user is granted the right, without
- *  any fee or cost, to use, copy, modify, alter, enhance and distribute
- *  this software, and any derivative works thereof, and its supporting
- *  documentation for any purpose whatsoever, provided that this entire
- *  notice appears in all copies of the software, derivative works and
- *  supporting documentation.  Further, UCAR requests that the user credit
- *  UCAR/Unidata in any publications that result from the use of this
- *  software or in any product that includes this software. The names UCAR
- *  and/or Unidata, however, may not be used in any advertising or publicity
- *  to endorse or promote any products or commercial entity unless specific
- *  written permission is obtained from UCAR/Unidata. The user also
- *  understands that UCAR/Unidata is not obligated to provide the user with
- *  any support, consulting, training or assistance of any kind with regard
- *  to the use, operation and performance of this software nor to provide
- *  the user with any updates, revisions, new versions or "bug fixes."
- *
- *  THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- *  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- *  DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- *  INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- *  FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *  NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- *  WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
+ * See LICENSE.txt for license information.
  */
 
 package thredds.core;
@@ -38,7 +10,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import thredds.client.catalog.ServiceType;
 import thredds.featurecollection.FeatureCollectionCache;
 import thredds.featurecollection.InvDatasetFeatureCollection;
 import thredds.server.admin.DebugCommands;
@@ -68,7 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Formatter;
 
@@ -346,37 +316,30 @@ public class DatasetManager implements InitializingBean {
 
     // try to open as a FeatureDatasetCoverage. This allows GRIB to be handle specially
     String location = getLocationFromRequestPath(reqPath);
-    if (location == null)
-      throw new FileNotFoundException(reqPath);
+    if (location != null) {
+      Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(location);
+      if (!opt.isPresent())
+        throw new FileNotFoundException("Not a Grid Dataset " + reqPath + " err=" + opt.getErrorMessage());
 
-    Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(location);
-    if (!opt.isPresent())
-      throw new FileNotFoundException("Not a Grid Dataset " + reqPath + " err=" + opt.getErrorMessage());
+      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection from file= " + location);
+      return opt.get().getSingleCoverageCollection(); // LOOK doesnt have to be single, then what is the URL?
 
-    if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection from file= " + location);
-    return opt.get().getSingleCoverageCollection(); // LOOK doesnt have to be single, then what is the URL?
-
-    /* otherwise assume its a local file: LOOK GRIB
-    CoverageCollection cc = CoverageDatasetFactory.open(matchPath);
-    assert cc != null;
-    assert cc.getCoverageDatasets().size() == 1;
-    return cc.getCoverageDatasets().get(0);
-
-    NetcdfFile ncfile = openNetcdfFile(req, res, reqPath);
-    if (ncfile == null) return null;
-
-    NetcdfDataset ncd = new NetcdfDataset(ncfile);
-    DtCoverageDataset gds = new DtCoverageDataset(ncd);
-    if (gds.getGrids().size() > 0) {
-      Formatter errlog = new Formatter();
-      FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog);
-      if (cc == null || cc.getCoverageCollections().size() != 1)
-        throw new FileNotFoundException("Not a Grid Dataset " + gds.getName() + " err=" + errlog);
-      return cc.getCoverageCollections().get(0);
     }
 
-    gds.close();
-    throw new IllegalArgumentException("Not a Grid Dataset " + gds.getName()); */
+    // if ncml, must handle special, otherwise we're out of options for opening
+    // a coverage collection.
+
+    String ncml = datasetTracker.findNcml(reqPath);
+    if (ncml != null) {
+      Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openNcmlString(ncml);
+      if (!opt.isPresent())
+        throw new FileNotFoundException("NcML is not a Grid Dataset " + reqPath + " err=" + opt.getErrorMessage());
+
+      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection from NcML");
+      return opt.get().getSingleCoverageCollection();
+    }
+
+    return null;
   }
 
   /////////////////////////////////////////////////////////////////
