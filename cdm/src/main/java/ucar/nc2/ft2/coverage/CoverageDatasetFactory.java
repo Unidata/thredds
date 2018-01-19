@@ -1,16 +1,20 @@
 /*
- * (c) 1998-2017 John Caron and University Corporation for Atmospheric Research/Unidata
+ * (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  */
 package ucar.nc2.ft2.coverage;
 
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.DatasetUrl;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
+import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.Optional;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -125,6 +129,18 @@ public class CoverageDatasetFactory {
       return Optional.empty(e.getCause().getMessage());
     }
 
+  }
+
+  static public Optional<FeatureDatasetCoverage> openNcmlString(String ncml) throws IOException, FileNotFoundException {
+    NetcdfDataset ncd = NcMLReader.readNcML(new StringReader(ncml), null);
+
+    DtCoverageDataset gds = new DtCoverageDataset(ncd);
+    if (gds.getGrids().size() > 0) {
+      Formatter errlog = new Formatter();
+      FeatureDatasetCoverage cc = DtCoverageAdapter.factory(gds, errlog);
+      return  ucar.nc2.util.Optional.of(cc);
+    }
+      return Optional.empty("Could not open NcML as Coverage");
   }
 
 }
