@@ -181,7 +181,17 @@ public class ConfigCatalogInitialization {
 
     switch (readMode) {
       case always:
-        if (databaseAlreadyExists) this.datasetTracker.reinit();
+        // if the database already exists, we need to close it
+        // before we reinit
+        if (databaseAlreadyExists) {
+          logCatalogInit.info("ConfigCatalogInitializion datasetTracker database already exists - closing it before reinitialization.");
+          try {
+            this.datasetTracker.close();
+          } catch (IOException e) {
+            logCatalogInit.error("There was an error closing the datasetTracker database.", e);
+          }
+          this.datasetTracker.reinit();
+        }
         this.catalogTracker = new CatalogTracker(trackerDir, true, numberCatalogs, nextCatId);
         this.dataRootTracker = new DataRootTracker(trackerDir, true, callback);
         this.dataRootPathMatcher = new DataRootPathMatcher(ccc, dataRootTracker);  // starting over
