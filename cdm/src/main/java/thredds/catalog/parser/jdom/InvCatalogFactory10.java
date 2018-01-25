@@ -661,6 +661,15 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
               collection = true;
           }
 
+          // Determine if applies to datasets path, default false.
+          boolean isPath = false;
+          String pathAttVal = curElem.getAttributeValue("path");
+          if (pathAttVal != null) {
+            // If not "false", set to true.
+            if (!pathAttVal.equalsIgnoreCase("false"))
+            	isPath = true;
+          }
+
           // Determine if include or exclude selectors.
           boolean includer = true;
           if (curElem.getName().equals("exclude")) {
@@ -670,13 +679,23 @@ public class InvCatalogFactory10 implements InvCatalogConvertIF, MetadataConvert
             continue;
           }
 
-          // Determine if regExp or wildcard
-          if (regExpAttVal != null) {
-            selectorList.add(new MultiSelectorFilter.Selector(new RegExpMatchOnNameFilter(regExpAttVal), includer, atomic, collection));
-          } else if (wildcardAttVal != null) {
-            selectorList.add(new MultiSelectorFilter.Selector(new WildcardMatchOnNameFilter(wildcardAttVal), includer, atomic, collection));
-          } else if (lastModLimitAttVal != null) {
-            selectorList.add(new MultiSelectorFilter.Selector(new LastModifiedLimitFilter(Long.parseLong(lastModLimitAttVal)), includer, atomic, collection));
+          // Determine if is a dataset 
+          if(!isPath) {
+            // Determine if regExp or wildcard
+            if (regExpAttVal != null) {
+              selectorList.add(new MultiSelectorFilter.Selector(new RegExpMatchOnNameFilter(regExpAttVal), includer, atomic, collection));
+            } else if (wildcardAttVal != null) {
+              selectorList.add(new MultiSelectorFilter.Selector(new WildcardMatchOnNameFilter(wildcardAttVal), includer, atomic, collection));
+            } else if (lastModLimitAttVal != null) {
+              selectorList.add(new MultiSelectorFilter.Selector(new LastModifiedLimitFilter(Long.parseLong(lastModLimitAttVal)), includer, atomic, collection));
+            }
+          }else { 
+              // Determine if regExp or wildcard
+              if (regExpAttVal != null) {
+                selectorList.add(new MultiSelectorFilter.Selector(new RegExpMatchOnPathFilter(regExpAttVal), includer, atomic, collection));
+              } else if (wildcardAttVal != null) {
+                selectorList.add(new MultiSelectorFilter.Selector(new WildcardMatchOnPathFilter(wildcardAttVal), includer, atomic, collection));
+              }
           }
         }
       }
