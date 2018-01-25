@@ -505,7 +505,9 @@ function getFeatureInfo(e)
             //,'wms' // We must always load from the home server
         );
         // Now make the call to GetFeatureInfo
-        OpenLayers.loadURL(featureInfoUrl, '', this, function(response) {
+        OpenLayers.Request.GET({
+            url: featureInfoUrl,
+            callback: function(response) {
             var xmldoc = response.responseXML;
             var lon = parseFloat(getElementValue(xmldoc, 'longitude'));
             var lat = parseFloat(getElementValue(xmldoc, 'latitude'));
@@ -590,7 +592,7 @@ function getFeatureInfo(e)
             popup.autoSize = true;
             popups.push(popup);
             map.addPopup(popup);
-        });
+        }});
         Event.stop(e);
     }
 }
