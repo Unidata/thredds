@@ -1,34 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
- *
- * Portions of this software were developed by the Unidata Program at the
- * University Corporation for Atmospheric Research.
- *
- * Access and use of this software shall impose the following obligations
- * and understandings on the user. The user is granted the right, without
- * any fee or cost, to use, copy, modify, alter, enhance and distribute
- * this software, and any derivative works thereof, and its supporting
- * documentation for any purpose whatsoever, provided that this entire
- * notice appears in all copies of the software, derivative works and
- * supporting documentation.  Further, UCAR requests that the user credit
- * UCAR/Unidata in any publications that result from the use of this
- * software or in any product that includes this software. The names UCAR
- * and/or Unidata, however, may not be used in any advertising or publicity
- * to endorse or promote any products or commercial entity unless specific
- * written permission is obtained from UCAR/Unidata. The user also
- * understands that UCAR/Unidata is not obligated to provide the user with
- * any support, consulting, training or assistance of any kind with regard
- * to the use, operation and performance of this software nor to provide
- * the user with any updates, revisions, new versions or "bug fixes."
- *
- * THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
- * INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
- * FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
- * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+ * (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  */
 package thredds.server.wcs;
 
@@ -47,13 +18,28 @@ import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+
 import thredds.TestOnLocalServer;
 import thredds.util.ContentType;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.Coverage;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageCoordAxis1D;
+import ucar.nc2.ft2.coverage.CoverageCoordSys;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.ft2.coverage.HorizCoordSys;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.time.Calendar;
@@ -61,12 +47,6 @@ import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Misc;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-
-import java.io.*;
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -93,7 +73,6 @@ public class TestWcsServer {
   private String dataset1 = "/wcs/cdmUnitTest/ncss/CONUS_80km_nc/GFS_CONUS_80km_20120419_0000.nc"+baloney;
   private String dataset2 = "/wcs/cdmUnitTest/conventions/coards/sst.mnmean.nc"+baloney;
 
-
   @Test
   public void testGetCapabilites() throws IOException, JDOMException {
     String endpoint = TestOnLocalServer.withHttpPath(dataset1+"&request=GetCapabilities");
@@ -107,14 +86,14 @@ public class TestWcsServer {
     XPathExpression<Element> xpath = XPathFactory.instance().compile("//wcs:CoverageOfferingBrief", Filters.element(), null, NS_WCS);
     List<Element> elements = xpath.evaluate(doc);
     for (Element emt : elements) {
-        System.out.println("XPath has result: " + emt.getContent());
+        logger.debug("XPath has result: {}", emt.getContent());
     }
     assertEquals(7, elements.size());
 
     XPathExpression<Element> xpath2 = XPathFactory.instance().compile("//wcs:CoverageOfferingBrief/wcs:name", Filters.element(), null, NS_WCS);
     List<String> names = new ArrayList<>();
     for (Element elem : xpath2.evaluate(doc)) {
-      System.out.printf(" %s==%s%n", elem.getName(), elem.getValue());
+      logger.debug(" {}=={}", elem.getName(), elem.getValue());
       names.add(elem.getValue());
     }
     Assert.assertEquals(7, names.size());
@@ -171,7 +150,7 @@ public class TestWcsServer {
       assertNotNull("time", time);
       Assert.assertEquals(1, time.getNcoords());
       CalendarDate date = time.makeDate( time.getCoordMidpoint(0));
-      System.out.printf("date = %s%n", date);
+      logger.debug("date = {}", date);
       CalendarDate expected = CalendarDate.parseISOformat(Calendar.gregorian.toString(), "2002-12-01T00:00:00Z"); // CF i guess
       Assert.assertEquals(expected.getMillis(), date.getMillis());
       Assert.assertEquals(expected.getCalendar(), date.getCalendar());
@@ -197,7 +176,7 @@ public class TestWcsServer {
     String endpoint = TestOnLocalServer.withHttpPath(dataset2 + "&request=GetCoverage&COVERAGE=sst&BBOX=10,0.01,299.99,80&TIME=2002-12-01T00:00:00Z&FORMAT=NetCDF3");
 
     File tempFile = tempFolder.newFile();
-    System.out.printf("write to %s%n", tempFile.getAbsolutePath());
+    logger.debug("write to {}", tempFile.getAbsolutePath());
 
     TestOnLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
   }
@@ -207,7 +186,7 @@ public class TestWcsServer {
     String endpoint = TestOnLocalServer.withHttpPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=NetCDF3");
 
     File tempFile = tempFolder.newFile();
-    System.out.printf("write to %s%n", tempFile.getAbsolutePath());
+    logger.debug("write to {}", tempFile.getAbsolutePath());
 
     TestOnLocalServer.saveContentToFile(endpoint, 200, ContentType.netcdf, tempFile);
   }
@@ -217,7 +196,7 @@ public class TestWcsServer {
     String endpoint = TestOnLocalServer.withHttpPath(dataset1+"&request=GetCoverage&COVERAGE=Temperature&FORMAT=Geotiff");
 
     File tempFile = tempFolder.newFile();
-    System.out.printf("write to %s%n", tempFile.getAbsolutePath());
+    logger.debug("write to {}", tempFile.getAbsolutePath());
 
     TestOnLocalServer.getContent(endpoint, 400, null);
   }
@@ -249,14 +228,14 @@ public class TestWcsServer {
       assertNotNull("time", time);
       Assert.assertEquals(1, time.getNcoords());
       CalendarDate date = time.makeDate(time.getCoordMidpoint(0));
-      System.out.printf("date = %s%n", date);
+      logger.debug("date = {}", date);
       Assert.assertEquals(date, CalendarDate.parseISOformat(null, "2012-04-19T00:00:00Z"));
 
       CoverageCoordAxis1D vert = (CoverageCoordAxis1D) csys.getZAxis();
       assertNotNull("vert", vert);
       Assert.assertEquals(1, vert.getNcoords());
       double vertCoord = vert.getCoordMidpoint(0);
-      System.out.printf("date = %s%n", date);
+      logger.debug("date = {}", date);
       Assert.assertEquals(800.0, vertCoord, Misc.maxReletiveError);
     }
   }
@@ -267,6 +246,14 @@ public class TestWcsServer {
     showGetCapabilities(endpoint);
     showDescribeCoverage(endpoint, "Precipitable_water");                   // lon,lat1,lon,lat2
     showGetCoverage(endpoint, "Precipitable_water", "2006-09-25T09:00:00Z",null,"-60,-20,0,50", "netCDF3", false);
+  }
+
+  @Test
+  public void testCatalogNcml() throws IOException, JDOMException {
+    // test for opening NcML written in the catalog.
+    // https://www.unidata.ucar.edu/mailing_lists/archives/thredds/2018/msg00003.html
+    String endpoint = TestOnLocalServer.withHttpPath("wcs/ExampleNcML/Agg.nc");
+    assert(isGetCoverageWcsDoc(endpoint));
   }
 
   ////////////////////////////////////////////////////////////////
@@ -297,16 +284,26 @@ public class TestWcsServer {
     if (isNetcdf) {
       try (NetcdfFile nf = NetcdfFile.openInMemory("WCS-return", content)) {
         assert nf != null;
-        System.out.printf("%s%n", nf);
+        logger.debug("{}", nf);
       }
     }
   }
 
-  private void showRead(String url) throws IOException {
-    System.out.println("****************\n");
-    System.out.println(url+"\n");
-    String contents = IO.readURLcontentsWithException( url);
-    System.out.println(contents);
+  private boolean isGetCoverageWcsDoc(String url) throws JDOMException, IOException {
+    byte[] result = TestOnLocalServer.getContent(url+baloney+"&request=GetCapabilities", 200, ContentType.xml);
+    Reader in = new StringReader( new String(result, CDM.utf8Charset));
+    SAXBuilder sb = new SAXBuilder();
+    Document doc = sb.build(in);
+
+    boolean isName =  doc.getRootElement().getName().equals("WCS_Capabilities");
+    boolean isNamespace = doc.getRootElement().getNamespaceURI().equals(NS_WCS.getURI());
+    return (isName && isNamespace);
   }
 
+  private void showRead(String url) throws IOException {
+    logger.debug("****************");
+    logger.debug(url);
+    String contents = IO.readURLcontentsWithException( url);
+    logger.debug(contents);
+  }
 }
