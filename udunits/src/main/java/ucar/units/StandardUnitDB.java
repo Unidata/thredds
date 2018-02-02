@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -265,6 +265,15 @@ public final class StandardUnitDB extends UnitDBImpl {
 		au("barleycorn", "in/3");
 
 		au("arpentlin", "191.835 ft");
+
+        /*
+         * UNITS OF SUBSTANCE
+         */
+        au("avogadro_constant", "6.02214179e23/mol");
+        au("molecule", "1/avogadro_constant");
+        au("molec", "molecule");
+        au("nucleon", "molecule");
+        au("nuc", "molecule");
 
 		/*
 		 * UNITS OF TIME
