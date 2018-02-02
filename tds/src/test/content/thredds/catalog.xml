@@ -168,8 +168,8 @@
     </dataset>
 
     <!-- test NcML aggregation in dataset -->
-    <dataset name="Example NcML Aggregation" ID="ExampleNcMLAgg" urlPath="ExampleNcML/Agg.nc">
-      <serviceName>odap</serviceName>
+    <dataset name="Example NcML Aggregation - GRID default services" ID="ExampleNcMLAgg" urlPath="ExampleNcML/Agg.nc">
+      <serviceName>all</serviceName>
       <dataType>Grid</dataType>
       <ncml:netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
         <attribute name="ncmlAdded" value="stuff"/>
