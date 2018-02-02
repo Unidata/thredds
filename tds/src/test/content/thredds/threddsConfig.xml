@@ -87,7 +87,6 @@
   </GribIndex>
 
   <AggregationCache>
-    <dir>/tomcat_home/content/thredds/cache/agg/</dir>
     <scour>24 hours</scour>
     <maxAge>90 days</maxAge>
     <cachePathPolicy>OneDirectory</cachePathPolicy>
