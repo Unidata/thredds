@@ -196,7 +196,13 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
     try {
       Variable ga = ds.findVariable("latitude");
       if (ga != null) {
-        latv = ga.readScalarDouble();
+        if(ga.isScalar())
+          latv = ga.readScalarDouble();
+        else {
+          Array gar = ga.read();
+          latv = gar.getDouble(0);
+        }
+
       } else {
         latv = 0.0;
       }
@@ -204,14 +210,24 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
       ga = ds.findVariable("longitude");
 
       if (ga != null) {
-        lonv = ga.readScalarDouble();
+        if(ga.isScalar())
+          lonv = ga.readScalarDouble();
+        else {
+          Array gar = ga.read();
+          lonv = gar.getDouble(0);
+        }
       } else {
         lonv = 0.0;
       }
 
       ga = ds.findVariable("altitude");
       if (ga != null) {
-        elev = ga.readScalarDouble();
+        if(ga.isScalar())
+          elev = ga.readScalarDouble();
+        else {
+          Array gar = ga.read();
+          elev = gar.getDouble(0);
+        }
       } else {
         elev = 0.0;
       }
