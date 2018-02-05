@@ -33,8 +33,12 @@
 package ucar.nc2.dt.radial;
 
 
-import ucar.ma2.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 
+import ucar.ma2.Array;
 import ucar.nc2.Attribute;
 import ucar.nc2.Variable;
 import ucar.nc2.VariableSimpleIF;
@@ -46,14 +50,9 @@ import ucar.nc2.dt.TypedDatasetFactoryIF;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.units.DateUnit;
-
 import ucar.unidata.geoloc.Earth;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-
-import java.io.IOException;
-
-import java.util.*;
 
 import static ucar.ma2.MAMath.fuzzyEquals;
 
@@ -67,6 +66,8 @@ import static ucar.ma2.MAMath.fuzzyEquals;
  */
 public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements TypedDatasetFactoryIF {
 
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFnetCDF2Dataset.class);
+
   private NetcdfDataset ds = null;
   private double latv, lonv, elev;
   private double[] time;
@@ -78,8 +79,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   private int[] ray_n_gates;
   private int[] ray_start_index;
   private int nsweeps;
-  private boolean isStationairy;
-  private boolean isStationairyChecked = false;
+  private boolean isStationary;
+  private boolean isStationaryChecked = false;
 
   /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
@@ -283,11 +284,11 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
 
   public boolean isStationary() {
     // only check once
-    if (!isStationairyChecked) {
+    if (!isStationaryChecked) {
       Variable lat = ds.findVariable("latitude");
       if (lat != null) {
         if (lat.isScalar())
-          isStationairy = lat.getSize() == 1;
+          isStationary = lat.getSize() == 1;
         else {
           // if array, check to see if all of the values are
           // approximately the same
@@ -299,16 +300,17 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
             for (int i = 1; i < gar.getSize(); i++) {
               gar2.setObject(i, firstVal);
             }
-            isStationairy = fuzzyEquals(gar, gar2);
+            isStationary = fuzzyEquals(gar, gar2);
           } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error reading latitude variable {}. Cannot determine if " +
+                    "platform is stationary. Setting to default (false).", lat.getFullName());
           }
         }
       }
-      isStationairyChecked = true;
+      isStationaryChecked = true;
     }
 
-    return isStationairy;
+    return isStationary;
   }
 
   protected void setTimeUnits() throws Exception {
