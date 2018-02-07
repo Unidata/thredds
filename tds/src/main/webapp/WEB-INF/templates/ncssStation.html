@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!--/* Replace this "head" element with the one in pointFragments. Pass the "title" element below to the fragment. */-->
+<head th:replace="templates/pointFragments :: head(~{::title})">
+  <title>NetCDF Subset Service for Stations</title>
+</head>
+
+<body onload="init(horizExtentWKT)">
+<form id="form" method="GET" action="datasetPath" th:attr="action=${datasetPath}">
+  <div class="grid-container">
+    <!--/* Replace "div .header" element with the one in commonFragments. Pass the text of the "title" element
+           (defined above) to the fragment. Also pass the empty fragment ("~{}"), as this element doesn't have any "h4"
+           children. See http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#using-the-empty-fragment. */-->
+    <div class="header" th:replace="templates/commonFragments :: header(~{::title/text()}, ~{})" />
+
+    <!--/* Pass the "h4" child to the fragment. */-->
+    <div class="dataset" th:replace="templates/commonFragments :: dataset(~{::div.dataset/h4})">
+      <h4>(<a href="dataset.xml">Dataset Description</a> | <a href="station.xml">Station List</a>)</h4>
+    </div>
+
+    <div class="main" th:replace="templates/pointFragments :: main" />
+
+    <div class="sidebar">
+      <h3>Horizontal extent:</h3>
+
+      <div th:replace="templates/commonFragments :: map" />
+
+      <h3>Horizontal subset:</h3>
+
+      <div id="horizSubsetInput">
+        <div class="tabContainer">
+          <button type="button" onclick="selectTab(latLonSubset, this)" class="defaultButton">Lat/lon box</button>
+
+          <button type="button" onclick="selectTab(pointSubset, this)">Lat/lon point</button>
+
+          <button type="button" onclick="selectTab(stationSubset, this)">Stations</button>
+        </div>
+
+        <div th:replace="templates/commonFragments :: latLonSubset" />
+
+        <div th:replace="templates/commonFragments :: pointSubset" />
+
+        <div id="stationSubset" class="tabPane sidebarInput">
+          <h5>Comma-separated list of stations</h5>
+
+          <textarea id="stationListText" class="sl_textArea" name="stns" rows="2" required>all</textarea>
+        </div>
+      </div>
+
+      <h3>Time subset:</h3>
+
+      <div th:replace="templates/commonFragments :: timeSubsetInput" />
+
+      <h3>Output format:</h3>
+
+      <div th:replace="templates/commonFragments :: outputFormatInput" />
+    </div>
+
+    <div class="requestBuilder" th:replace="templates/commonFragments :: requestBuilder" />
+
+    <div class="buttons" th:replace="templates/commonFragments :: buttons" />
+
+    <div class="footer" th:replace="templates/commonFragments :: footer" />
+  </div>
+</form>
+</body>
+
+</html>
