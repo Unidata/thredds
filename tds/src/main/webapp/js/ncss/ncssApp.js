@@ -5,39 +5,64 @@ function init(horizExtentWKT) {
 }
 
 function initMap(horizExtentWKT) {
-    if (typeof OpenLayers === "undefined") {
-        console.log("Could not load OpenLayers Javascript library, likely because there's no internet connection.");
-        return;
-    }
+    // See http://openlayers.org/en/latest/apidoc/ol.Map.html
 
-    var wmsLayer = new OpenLayers.Layer.WMS("OpenLayers WMS", "http://vmap0.tiles.osgeo.org/wms/vmap0",
-        { layers: 'basic' }, { wrapDateLine: true }
-    );
-
-    var vectorLayer = new OpenLayers.Layer.Vector({
-        renderers: [ "Canvas" ]
+    var mousePositionControl = new ol.control.MousePosition({
+        projection: 'EPSG:4326',
+        className: 'olControlMousePosition',  // Defined in sidebar.css.
+        coordinateFormat: function(coordinate) {
+            return ol.coordinate.format(coordinate, '({x}, {y})', 2);
+        }
     });
 
-    var wkt = new OpenLayers.Format.WKT();
-    vectorLayer.addFeatures(wkt.read(horizExtentWKT));
+    var controls = [
+        new ol.control.Zoom(),
+        new ol.control.Rotate(),
+        mousePositionControl
+    ];
 
-    var map = new OpenLayers.Map('map');  // Attach to the element with the 'map' id.
-    map.addLayers([ wmsLayer, vectorLayer ]);
+    var wktFeature = new ol.format.WKT().readFeature(horizExtentWKT, {
+        // See https://gis.stackexchange.com/a/48952 for definitions of these coordinate systems.
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857'
+    });
 
-    map.zoomToExtent(new OpenLayers.Bounds(
-        vectorLayer.getDataExtent().left,
-        vectorLayer.getDataExtent().bottom,
-        vectorLayer.getDataExtent().right,
-        vectorLayer.getDataExtent().top));
+    // horizontalExtent layer is yellow.
+    var vectorStyle = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: '#ffff00',
+            width: 1
+        }),
+        fill: new ol.style.Fill({
+            color: 'rgba(255, 255, 0, 0.2)'
+        })
+    });
 
-    var mousePosition = new OpenLayers.Control.MousePosition();
-    mousePosition.numDigits = 2;
-    mousePosition.separator = ", ";
-    mousePosition.prefix = "<span style='background-color: rgba(255, 255, 255, 0.5)'>(";
-    mousePosition.suffix = ")</span>";
-    mousePosition.emptyString = `${mousePosition.prefix}Mouse is not over map${mousePosition.suffix}`;
+    var layers = [
+        new ol.layer.Tile({
+            source: new ol.source.OSM()
+        }),
+        new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: [wktFeature]
+            }),
+            style: vectorStyle
+        })
+    ];
 
-    map.addControl(mousePosition);
+    var map = new ol.Map({
+        controls: controls,
+        layers: layers,
+        target: 'map',
+        view: new ol.View({
+            center: [0, 0],
+            zoom: 1,
+            // Restrict panning of the map such that the center cannot be outside of [-180, -85.05, 180, 85.05].
+            extent: ol.proj.get("EPSG:3857").getExtent()
+        })
+    });
+
+    map.getView().fit(wktFeature.getGeometry());  // Zoom map to fit wktFeature.
 }
 
 function addEventListeners() {
@@ -153,8 +178,8 @@ function selectTab(selectedTabPane, clickedTabButton) {
 // Enable or disable all elements with the specified tag names contained in the parent.
 // The elements are searched for recursively.
 function setDescendantsWithTagNamesDisabled(parent, tagNames, disabled) {
-    for (let inputDescendant of getDescendantsWithTagNames(parent, tagNames)) {
-        inputDescendant.disabled = disabled;
+    for (let descendant of getDescendantsWithTagNames(parent, tagNames)) {
+        descendant.disabled = disabled;
     }
 }
 

@@ -39,6 +39,16 @@
 	margin: 4px 0 1em 0 !important;
 }
 
+.olControlMousePosition {
+    bottom: 0;
+    right: 3px;
+    display: block;
+    position: absolute;
+    font-family: Arial;
+    font-size: smaller;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
 
 .tabContainer {
 	display: flex;
