@@ -16,6 +16,9 @@
 
   <!-- "script" elements must have explicit closing tags. See https://stackoverflow.com/questions/69913 -->
   <script src="https://openlayers.org/en/v4.6.4/build/ol.js"></script>
+  <!-- As of 2018-02-08, Safari and Edge do not natively support the "FormData.entries()" method, which we utilize in
+       buildAccessUrl(). This provides a replacement implementation. See https://github.com/jimmywarting/FormData. -->
+  <script src="https://cdn.rawgit.com/jimmywarting/FormData/3.0.9/FormData.js"></script>
   <script type="text/javascript" src="../../js/ncss/ncssApp.js" th:src="@{/js/ncss/ncssApp.js}"></script>
 
   <!--/* This is a placeholder where our "script" block containing inline Javascript will be inserted. */-->
