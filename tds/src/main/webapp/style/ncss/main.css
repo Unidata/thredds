@@ -91,6 +91,7 @@ button {
     cursor: pointer;
     outline: none;
     padding: 6px;
+    margin: 0;
 
     transition: 0.3s;  /* Determines the speed of the "hover" effect. */
     border: 1px solid transparent;  /* This border will be made opaque in "button:active". */
