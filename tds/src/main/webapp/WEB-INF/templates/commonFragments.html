@@ -9,10 +9,12 @@
 
   <!-- Common metadata and styles. -->
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+  <link rel="stylesheet" type="text/css" href="https://necolas.github.io/normalize.css/8.0.0/normalize.css">
   <link rel="stylesheet" type="text/css" href="../../style/ncss/main.css" th:href="@{/style/ncss/main.css}"/>
   <link rel="stylesheet" type="text/css" href="../../style/ncss/layout.css" th:href="@{/style/ncss/layout.css}"/>
   <link rel="stylesheet" type="text/css" href="../../style/ncss/sidebar.css" th:href="@{/style/ncss/sidebar.css}"/>
-  <link rel="stylesheet" href="https://openlayers.org/en/v4.6.4/css/ol.css" type="text/css">
+  <link rel="stylesheet" type="text/css" href="https://openlayers.org/en/v4.6.4/css/ol.css">
 
   <!-- "script" elements must have explicit closing tags. See https://stackoverflow.com/questions/69913 -->
   <script src="https://openlayers.org/en/v4.6.4/build/ol.js"></script>
@@ -100,10 +102,10 @@
         <div id="timeRangeSubset" class="tabPane sidebarInput">
           <div class="verticalInputBoxesGrid vibg_3boxes">
             <label class="vibg_label1" for="time_start">Start:</label>
-            <input class="vibg_box1" type="text" name="time_start" id="time_start" size="25" required />
+            <input class="vibg_box1" type="text" name="time_start" id="time_start" size="27" required />
 
             <label class="vibg_label2" for="time_end">End:</label>
-            <input class="vibg_box2" type="text" name="time_end" id="time_end" size="25" required />
+            <input class="vibg_box2" type="text" name="time_end" id="time_end" size="27" required />
 
             <label class="vibg_label3" for="timeStride">Stride:</label>
             <input class="vibg_box3" type="text" name="timeStride" id="timeStride" size="10" value="1" required />
@@ -114,7 +116,7 @@
 
         <div id="singleTimeSubset" class="tabPane sidebarInput">
           <label for="time">Time:</label>
-          <input type="text" name="time" id="time" size="25" required />
+          <input type="text" name="time" id="time" size="27" required />
         </div>
       </div>
 

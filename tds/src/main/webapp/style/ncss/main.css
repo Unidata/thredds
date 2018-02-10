@@ -7,11 +7,6 @@
 body {
     font-family: verdana, arial, helvetica, sans-serif;
     font-size: 10pt;
-    margin: 0;
-}
-
-form {
-    margin: 0;
 }
 
 
@@ -91,7 +86,6 @@ button {
     cursor: pointer;
     outline: none;
     padding: 6px;
-    margin: 0;
 
     transition: 0.3s;  /* Determines the speed of the "hover" effect. */
     border: 1px solid transparent;  /* This border will be made opaque in "button:active". */
@@ -109,6 +103,11 @@ button:active {
 button.active {
     background-color: var(--main-background-color);
     border: 1px solid var(--main-border-color);
+}
+
+
+input[type=checkbox] {
+    margin: 3px 0.5ex;
 }
 
 

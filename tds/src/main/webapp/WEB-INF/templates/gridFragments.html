@@ -38,7 +38,7 @@
 
       <div class="coverageSet" th:each="coverageSet : ${gcd.coverageSets}">
         <button type="button" class="accordionButton" onclick="toggleAccordion(this)">
-          With coordiante axes:
+          With coordinate axes:
           <span class="bold" th:text="${coverageSet.coordSys.name}">Coordinate axes</span>
           <span class="accordionIcon">&#x25b2;</span>  <!-- Unicode up arrow. Modified by Javascript. -->
         </button>
