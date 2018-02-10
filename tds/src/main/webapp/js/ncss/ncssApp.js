@@ -1,117 +1,212 @@
-Ncss.map = null;
-Ncss.log("Ncss loading...");
+function init(horizExtentWKT) {
+    initMap(horizExtentWKT);
+    addEventListeners();
+    resetForm();
+}
 
-Ncss.changeTemporalSubsetting = function () {
-    var timeRangeTab = $('#inputTimeRange');
-    var singleTimeTab = $('#inputSingleTime');
-    var temporalSubset = $('#timeRangeSubset');
-    var singleTimeSubset = $('#singleTimeSubset');
+function initMap(horizExtentWKT) {
+    // See http://openlayers.org/en/latest/apidoc/ol.Map.html
 
-    if (timeRangeTab.attr('class') == "selected") {  // just a toggle
-        Ncss.log("changeTemporalSubsetting timeRangeTab selected");
-        timeRangeTab.removeClass("selected").addClass("unselected");
-        singleTimeTab.removeClass("unselected").addClass("selected");
-        temporalSubset.addClass('hidden');
-        singleTimeSubset.removeClass('hidden');
-
-        $('input[name=time]').removeAttr("disabled");
-        $('input[name=time_start]').attr("disabled", "disabled");
-        $('input[name=time_end]').attr("disabled", "disabled");
-        $('input[name=timeStride]').attr("disabled", "disabled");
-
-    } else {
-        Ncss.log("changeTemporalSubsetting timeRangeTab not selected");
-        timeRangeTab.removeClass("unselected").addClass("selected");
-        singleTimeTab.removeClass("selected").addClass("unselected");
-        temporalSubset.removeClass('hidden');
-        singleTimeSubset.addClass('hidden');
-
-        $('input[name=time]').attr("disabled", "disabled");
-        $('input[name=time_start]').removeAttr("disabled");
-        $('input[name=time_end]').removeAttr("disabled");
-        $('input[name=timeStride]').removeAttr("disabled");
-    }
-    Ncss.buildAccessUrl();
-};
-
-Ncss.initMapPreview = function () {
-    var vector_layer = new OpenLayers.Layer.Vector({
-        renderers: ["Canvas"]
+    var mousePositionControl = new ol.control.MousePosition({
+        projection: 'EPSG:4326',
+        className: 'olControlMousePosition',  // Defined in sidebar.css.
+        coordinateFormat: function(coordinate) {
+            return ol.coordinate.format(coordinate, '({x}, {y})', 2);
+        }
     });
 
-    var wkt = new OpenLayers.Format.WKT();
-    vector_layer.addFeatures(wkt.read(gridWKT));
-    var geometry = OpenLayers.Geometry.fromWKT(gridWKT);
-    var gridCentroid = geometry.getCentroid();
+    var controls = [
+        new ol.control.Zoom(),
+        new ol.control.Rotate(),
+        mousePositionControl
+    ];
 
-    //Checks if we got a geometry, if so we should get a good centroid for it.
-    //otherwise preview is not available
-    //if(typeof gridCentroid !== "undefined" ){
+    var wktFeature = new ol.format.WKT().readFeature(horizExtentWKT, {
+        // See https://gis.stackexchange.com/a/48952 for definitions of these coordinate systems.
+        dataProjection: 'EPSG:4326',
+        featureProjection: 'EPSG:3857'
+    });
 
-    if (gridCentroid !== null) {
-        // Init map preview
-        map = new OpenLayers.Map({
-            div: "gridPreview",
-            theme: null,
-            controls: [new OpenLayers.Control.Navigation(), new OpenLayers.Control.Zoom(), new OpenLayers.Control.MousePosition({numDigits: 2, separator: '|', emptyString: 'Mouse is not over map', formatOutput: ncssFormatOutput})], //No controls in preview
-            layers: [
-                new OpenLayers.Layer.MapServer("Basic", "http://vmap0.tiles.osgeo.org/wms/vmap0",
-                    {layers: 'basic'},
-                    {wrapDateLine: true}
-                )
-            ],
-            center: new OpenLayers.LonLat(gridCentroid.x, gridCentroid.y),
-            zoom: 0
-        });
+    // horizontalExtent layer is yellow.
+    var vectorStyle = new ol.style.Style({
+        stroke: new ol.style.Stroke({
+            color: '#ffff00',
+            width: 1
+        }),
+        fill: new ol.style.Fill({
+            color: 'rgba(255, 255, 0, 0.2)'
+        })
+    });
 
-        map.addLayer(vector_layer);
-        Ncss.gridCrossesDateLine =
-            (vector_layer.getDataExtent().left <= 180 & vector_layer.getDataExtent().right >= 180);
+    var layers = [
+        new ol.layer.Tile({
+            source: new ol.source.OSM()
+        }),
+        new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: [wktFeature]
+            }),
+            style: vectorStyle
+        })
+    ];
 
-        Ncss.log("layer data extent:" +
-            vector_layer.getDataExtent().left + ", " +
-            vector_layer.getDataExtent().bottom + ", " +
-            vector_layer.getDataExtent().right + ", " +
-            vector_layer.getDataExtent().top);
+    var map = new ol.Map({
+        controls: controls,
+        layers: layers,
+        target: 'map',
+        view: new ol.View({
+            center: [0, 0],
+            zoom: 1,
+            // Restrict panning of the map such that the center cannot be outside of [-180, -85.05, 180, 85.05].
+            extent: ol.proj.get("EPSG:3857").getExtent()
+        })
+    });
 
-        map.zoomToExtent(new OpenLayers.Bounds(
-            vector_layer.getDataExtent().left,
-            vector_layer.getDataExtent().bottom,
-            vector_layer.getDataExtent().right,
-            vector_layer.getDataExtent().top));
-    } else {
-        //preview not available --> hide the map div
-        $('#gridPreviewFrame').css('border', 'none');
-    }
-};
+    map.getView().fit(wktFeature.getGeometry());  // Zoom map to fit wktFeature.
+}
 
-Ncss.buildAccessUrl = function () {
-    var req = $("form").serialize();
-    var serverUrl = document.URL.split("/thredds/")[0];
-    var dataUrl = serverUrl + $("#datasetPath")[0].innerHTML;
-    $("#urlBuilder").html(dataUrl + "?" + req);
-};
+function addEventListeners() {
+    // Any time an input is changed or a button is clicked, rebuild the access URL.
+    for (let inputTag of getDescendantsWithTagNames(document.body, ["input", "button", "select", "textarea"])) {
+        var inputTagName = inputTag.tagName.toLowerCase();
+        var inputTagType = inputTag.getAttribute("type");
 
-Ncss.resetForm = function () {
-    $("form")[0].reset();
-    Ncss.buildAccessUrl();
-};
-
-var ncssFormatOutput = function (lonLat) {
-    var digits = parseInt(this.numDigits);
-
-    if (Ncss.gridCrossesDateLine) {
-        if (lonLat.lon < 0) {
-            lonLat.lon += 360;
+        if (inputTagName == "select") {
+            inputTag.addEventListener("change", buildAccessUrl)
+        } else if (inputTagName == "input" && inputTagType == "text" || inputTagName == "textarea") {
+            inputTag.addEventListener("input", buildAccessUrl)
+        } else {
+            // inputTag is some kind of button.
+            if (!inputTag.classList.contains("accordionButton")) {  // Don't buildAccessUrl() for accordion buttons.
+                inputTag.addEventListener("click", buildAccessUrl);
+            }
         }
     }
+}
 
-    var newHtml =
-        this.prefix +
-        lonLat.lon.toFixed(digits) +
-        this.separator +
-        lonLat.lat.toFixed(digits) +
-        this.suffix;
+function resetForm() {
+    document.getElementById("form").reset();
 
-    return newHtml;
-};
+    clickAllButtonsWithClass("defaultButton");
+    clickAllButtonsWithClass("resetButton");
+    setAllAccordionsVisible(false);
+}
+
+// Programmatically click all buttons that have the specified class.
+function clickAllButtonsWithClass(className) {
+    for (let button of document.getElementsByClassName(className)) {
+        button.click();
+    }
+}
+
+//////////////////////////////////////////////////////////////////////
+
+function buildAccessUrl() {
+    // Exclude the NCSS page (usually named something like "/dataset.html") from the end of the URL, leaving only
+    // the URL of the dataset.
+    var datasetUrl = document.URL.substring(0, document.URL.lastIndexOf("/"));
+
+    var formData = new FormData(document.getElementById("form"));
+    var queryString = "";
+
+    for (const entry of formData) {
+        if (queryString != "") {
+            queryString += "&";
+        }
+
+        // We intentionally do no filtering of elements, even ones with no values, because we want to display
+        // EXACTLY the URL that the form will submit.
+        queryString += `${entry[0]}=${entry[1]}`
+    };
+
+    var accessUrl = encodeURI(`${datasetUrl}?${queryString}`);
+    document.getElementById("urlBuilder").innerHTML = accessUrl;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+function toggleAccordion(accordionButton) {
+    var buttonIsActive = accordionButton.classList.contains("active");
+    setAccordionVisible(accordionButton, !buttonIsActive);
+}
+
+function setAccordionVisible(accordionButton, visible) {
+    // accordionIcon is a child of accordionButton.
+    var accordionIcon = accordionButton.getElementsByClassName("accordionIcon")[0];
+    // accordionElem is a sibling of accordionButton.
+    var accordionElem = accordionButton.parentNode.getElementsByTagName("ul")[0];
+
+    if (visible) {
+        accordionButton.classList.add("active");     // If "active" is already in classList, this is a no-op.
+        accordionIcon.innerHTML = "&#x25b2;";        // Unicode up arrow.
+        accordionElem.style.display = "block";       // Show accordionElem.
+    } else {
+        accordionButton.classList.remove("active");  // If "active" isn't in classList, this is a no-op.
+        accordionIcon.innerHTML = "&#x25bc;";        // Unicode down arrow.
+        accordionElem.style.display = "none";        // Hide accordionElem.
+    }
+}
+
+function setAllAccordionsVisible(visible) {
+    for (let accordionButton of document.getElementsByClassName("accordionButton")) {
+        setAccordionVisible(accordionButton, visible);
+    }
+}
+
+//////////////////////////////////////////////////////////////////////
+
+function selectTab(selectedTabPane, clickedTabButton) {
+    // Remove the "active" class from all buttons that are siblings of clickedTabButton.
+    for (let siblingTabButton of clickedTabButton.parentNode.getElementsByTagName("button")) {
+        siblingTabButton.classList.remove("active")
+    }
+
+    // Make clickedTabButton active.
+    clickedTabButton.classList.add("active");
+
+    // Hide the tab panes that are siblings of selectedTabPane and disable their input and textarea elements.
+    for (let siblingTabPane of selectedTabPane.parentNode.getElementsByClassName("tabPane")) {
+        siblingTabPane.style.display = "none";
+        setDescendantsWithTagNamesDisabled(siblingTabPane, ["input", "textarea"], true);
+    }
+
+    // Make selectedTabPane visible and enable its input and textarea elements.
+    selectedTabPane.style.display = "block";
+    setDescendantsWithTagNamesDisabled(selectedTabPane, ["input", "textarea"], false);
+}
+
+// Enable or disable all elements with the specified tag names contained in the parent.
+// The elements are searched for recursively.
+function setDescendantsWithTagNamesDisabled(parent, tagNames, disabled) {
+    for (let descendant of getDescendantsWithTagNames(parent, tagNames)) {
+        descendant.disabled = disabled;
+    }
+}
+
+// Recursively retrieve all tags with the specified names that parent contains.
+function getDescendantsWithTagNames(parent, tagNames) {
+    var ret = [];
+    for (let descendant of parent.querySelectorAll('*')) {
+        for (let tagName of tagNames) {
+            if (descendant.tagName === tagName.toUpperCase()) {
+                ret.push(descendant);
+            }
+        }
+    }
+    return ret;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+function setInputValues(inputsMap) {
+    for (inputName in inputsMap) {
+        var elementsWithName = document.getElementsByName(inputName);
+
+        console.assert(elementsWithName.length == 1,
+            `Expected to find exactly 1 element named '${inputName}', but found ${elementsWithName.length}.`);
+        console.assert(elementsWithName[0].tagName.toUpperCase() == "INPUT",
+            `Expected element named '${inputName}' to be an INPUT tag, not '${elementsWithName[0].tagName}'.`);
+
+        elementsWithName[0].value = inputsMap[inputName];
+    }
+}

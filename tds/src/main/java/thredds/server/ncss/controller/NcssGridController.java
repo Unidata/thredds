@@ -57,7 +57,8 @@ import java.util.Random;
 @Controller
 @RequestMapping("/ncss/grid")
 public class NcssGridController extends AbstractNcssController {
-  static private final short ESTIMATED_COMPRESION_RATE = 4;  // Compression rate used to estimate the filesize of netcdf4 compressed files
+  // Compression rate used to estimate the filesize of netcdf4 compressed files
+  static private final short ESTIMATED_COMPRESION_RATE = 4;
 
   @Autowired
   private AllowedServices allowedServices;
@@ -67,8 +68,8 @@ public class NcssGridController extends AbstractNcssController {
   }
 
   @RequestMapping("**")     // data request
-  public void handleRequest(HttpServletRequest req, HttpServletResponse res, @Valid NcssGridParamsBean params, BindingResult validationResult)
-          throws Exception {
+  public void handleRequest(HttpServletRequest req, HttpServletResponse res, @Valid NcssGridParamsBean params,
+          BindingResult validationResult) throws Exception {
 
     if (!allowedServices.isAllowed(StandardService.netcdfSubsetGrid))
       throw new ServiceNotAllowed(StandardService.netcdfSubsetGrid.toString());
@@ -97,17 +98,18 @@ public class NcssGridController extends AbstractNcssController {
     }
   }
 
-  private void handleRequestGrid(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, CoverageCollection gcd)
-          throws IOException, NcssException, ParseException, InvalidRangeException {
+  private void handleRequestGrid(HttpServletResponse res, NcssGridParamsBean params, String datasetPath,
+          CoverageCollection gcd) throws IOException, NcssException, InvalidRangeException {
 
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());
-    NetcdfFileWriter.Version version = (sf == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
+    NetcdfFileWriter.Version version =
+            (sf == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
 
     // all variables have to have the same vertical axis if a vertical coordinate was set. LOOK can we relax this ?
     if (params.getVertCoord() != null && !checkVarsHaveSameVertAxis(gcd, params) ) {
-        throw new NcssException("The variables requested: " + params.getVar() +
-                " have different vertical levels. Grid requests with vertCoord must have variables with same vertical levels.");
+        throw new NcssException("The variables requested: " + params.getVar() + " have different vertical levels. " +
+                "Grid requests with vertCoord must have variables with same vertical levels.");
       }
 
     String responseFile = getResponseFileName(datasetPath, version);
@@ -137,16 +139,17 @@ public class NcssGridController extends AbstractNcssController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
-  File makeCFNetcdfFile(CoverageCollection gcd, String responseFilename, NcssGridParamsBean params, NetcdfFileWriter.Version version)
-          throws NcssException, InvalidRangeException, ParseException, IOException {
-
-    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null); // default chunking - let user control at some point
+  File makeCFNetcdfFile(CoverageCollection gcd, String responseFilename, NcssGridParamsBean params,
+          NetcdfFileWriter.Version version) throws InvalidRangeException, IOException {
+    // default chunking - let user control at some point
+    NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null);
     SubsetParams subset = params.makeSubset(gcd);
 
     // Test maxFileDownloadSize
     long maxFileDownloadSize = ThreddsConfig.getBytes("NetcdfSubsetService.maxFileDownloadSize", -1L);
     if (maxFileDownloadSize > 0) {
-      Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), true, writer);
+      Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(
+              gcd, params.getVar(), subset, params.isAddLatLon(), true, writer);
       if (!estimatedSizeo.isPresent())
         throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
 
@@ -155,11 +158,13 @@ public class NcssGridController extends AbstractNcssController {
         estimatedSize /= ESTIMATED_COMPRESION_RATE;
 
       if (estimatedSize > maxFileDownloadSize)
-        throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
+        throw new RequestTooLargeException(
+                "NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
     }
 
     // write the file
-    Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(gcd, params.getVar(), subset, params.isAddLatLon(), false, writer);
+    Optional<Long> estimatedSizeo = CFGridCoverageWriter2.writeOrTestSize(
+            gcd, params.getVar(), subset, params.isAddLatLon(), false, writer);
     if (!estimatedSizeo.isPresent())
       throw new InvalidRangeException("Request contains no data: " + estimatedSizeo.getErrorMessage());
 
@@ -180,8 +185,8 @@ public class NcssGridController extends AbstractNcssController {
 
   ///////////////////////////////////////////////////////////////
 
-  private void handleRequestGridAsPoint(HttpServletResponse res, NcssGridParamsBean params, String datasetPath, CoverageCollection gcd)
-          throws Exception {
+  private void handleRequestGridAsPoint(HttpServletResponse res, NcssGridParamsBean params, String datasetPath,
+          CoverageCollection gcd) throws Exception {
 
     SupportedFormat sf = SupportedOperation.POINT_REQUEST.getSupportedFormat(params.getAccept());
 
@@ -193,7 +198,8 @@ public class NcssGridController extends AbstractNcssController {
       SubsetParams ncssParams = new SubsetParams()
               .set(SubsetParams.timeAll, true)
               .set(SubsetParams.variables, params.getVar());
-      DsgSubsetWriter pds = DsgSubsetWriterFactory.newInstance(fd, ncssParams, ncssDiskCache, res.getOutputStream(), sf);
+      DsgSubsetWriter pds = DsgSubsetWriterFactory.newInstance(
+              fd, ncssParams, ncssDiskCache, res.getOutputStream(), sf);
       setResponseHeaders(res, pds.getHttpHeaders(datasetPath, sf.isStream()));
       pds.respond(res, fd, datasetPath, ncssParams, sf);
     }
@@ -205,7 +211,8 @@ public class NcssGridController extends AbstractNcssController {
       responder.streamGridAsPointResponse(res.getOutputStream(), params, sf);
 
     } else {
-      NetcdfFileWriter.Version version = (sf == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
+      NetcdfFileWriter.Version version =
+          (sf == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
       String responseFile = getResponseFileName(datasetPath, version);
 
       GridResponder responder = new GridResponder(gcd, responseFile);
@@ -235,28 +242,25 @@ public class NcssGridController extends AbstractNcssController {
   ///////////////////////////////////////////////////////////
 
   @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
-  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res) throws IOException, NcssException {
-
+  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res)
+          throws IOException, NcssException {
     if (!allowedServices.isAllowed(StandardService.netcdfSubsetGrid))
       throw new ServiceNotAllowed(StandardService.netcdfSubsetGrid.toString());
 
     if (!req.getParameterMap().isEmpty())
       throw new NcssException("Invalid info request.");
 
-    // the forms and dataset description
-    String path = req.getServletPath();
-    boolean wantXML = path.endsWith("/dataset.xml") || path.endsWith("/pointDataset.xml");
-    boolean showPointForm = path.endsWith("/pointDataset.html");
     String datasetPath = getDatasetPath(req);
 
     try (CoverageCollection gcd = TdsRequestedDataset.getCoverageCollection(req, res, datasetPath)) {
       if (gcd == null) return null; // restricted dataset
-      return ncssShowDatasetInfo.showGridFormTh(gcd, buildDatasetUrl(datasetPath), wantXML);
+      return ncssShowDatasetInfo.showGridFormTh(gcd, buildDatasetUrl(datasetPath), req.getServletPath());
     }
   }
 
   /* @RequestMapping("** /datasetBoundaries.xml")
-  void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res) throws IOException, UnsupportedResponseFormatException {
+  void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res)
+      throws IOException, UnsupportedResponseFormatException {
 
     //Checking request format...
     SupportedFormat sf = getSupportedFormat(params, SupportedOperation.DATASET_BOUNDARIES_REQUEST);
@@ -291,7 +295,8 @@ public class NcssGridController extends AbstractNcssController {
    * Checks that all the requested vars exist. If "all", fills out the param.vars with all grid names
    * Throws exception if some of the variables in the request are not contained in the dataset
    */
-  private void checkRequestedVars(CoverageCollection gcd, NcssGridParamsBean params) throws VariableNotContainedInDatasetException {
+  private void checkRequestedVars(CoverageCollection gcd, NcssGridParamsBean params)
+          throws VariableNotContainedInDatasetException {
 
     // if var == all --> all variables requested
     if (params.getVar().get(0).equalsIgnoreCase("all")) {
@@ -303,7 +308,8 @@ public class NcssGridController extends AbstractNcssController {
     for (String gridName : params.getVar()) {
       Coverage grid = gcd.findCoverage(gridName);
       if (grid == null)
-        throw new VariableNotContainedInDatasetException("Variable: " + gridName + " is not contained in the requested dataset");
+        throw new VariableNotContainedInDatasetException(
+                "Variable: " + gridName + " is not contained in the requested dataset");
     }
   }
 
@@ -318,7 +324,7 @@ public class NcssGridController extends AbstractNcssController {
    * Returns true if all the variables have the same vertical axis (if they have an axis).
    * Could be broadened to allow all with same coordinate unites? coordinate value??
    */
-  protected boolean checkVarsHaveSameVertAxis(CoverageCollection gcd, NcssGridParamsBean params) throws VariableNotContainedInDatasetException {
+  protected boolean checkVarsHaveSameVertAxis(CoverageCollection gcd, NcssGridParamsBean params) {
     String zaxisName = null;
     for (String gridName : params.getVar()) {
       Coverage grid = gcd.findCoverage(gridName);

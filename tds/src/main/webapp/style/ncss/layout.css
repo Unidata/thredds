@@ -1,73 +1,103 @@
-#header{
-	background-color: #FFFFFF;
-	margin: 2px auto 12px auto;
-	height:50px;
-	border-bottom:1px solid #cccccc;
-	width:99%;
+.grid-container {
+	display: grid;
+	grid-template-areas:
+			'header header'
+			'dataset dataset'
+			'main sidebar'
+			'requestBuilder requestBuilder'
+			'buttons buttons'
+			'footer footer';
+	grid-row-gap: 4px;
+	grid-column-gap: 1em;
+
+	/* Constrain the size of sidebar to 302px, which is just large enough to contain the map and border. */
+	grid-template-columns: auto 302px;
+
+	padding: 1em;
 }
 
-#header #dataset{
-	margin:8px 0 0 4px;
-	float:left;
+.grid-container > div {
+	padding-bottom: 6px;
+
+	/* These ensure that long text strings get wrapped properly, instead of breaking the layout. */
+	overflow: auto;
+	overflow-wrap: break-word;
 }
 
-#header #unidata{
-	float:right;
-}
-
-#header #unidata #logo{
-	background-image:url('https://www.unidata.ucar.edu/img/v3/logos/uniLogo.png');
-	background-repeat:no-repeat;
-	width:50px;
-	height:44px;
-	float:left;
-	margin-left:2px;
+.grid-container > div:last-child {
+	padding-bottom: 0;  /* Last layout item has no margin-bottom. */
 }
 
 
-#header #unidata #title{
-	background-image:url('https://www.unidata.ucar.edu/img/v3/logos/uniTitle.png');
-	background-position:right top;
-	background-repeat:no-repeat;
-	float:left;
-	height:44px;
-	width:300px;
-	margin:4px;
+.header {
+	grid-area: header;
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	justify-content: space-between;
+	border-bottom: 1px solid var(--main-border-color);
 }
 
-#header #unidata #title #service{
-	margin:24px 0 0 0;
-	text-align:right;
+.unidata {
+	display: flex;
+	flex-direction: row;
 }
 
-#header #title #service span.bold{
-	font-weight:bold;
+.appTitle {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	margin-right: 6px;
 }
 
-#header #title #service span.service{
-	font-weight:bold;
-	color:#006996;
+
+.dataset {
+	grid-area: dataset;
+	border-bottom: 1px dotted var(--main-border-color);
 }
 
-#container {
-  background-color: #FFFFFF;	
-  margin: 0 auto 0 auto;
-  width: 99%;
-  text-align: left;  
-  clear:both;
+
+.main {
+	grid-area: main;
 }
 
-#container #dataheader{
-	margin:4px 0;
-	width:100%;
-	border-bottom:1px dotted #cfcfcf;
-	min-width:1004px;
+
+.coverageSet {
+	margin-bottom: 1em;
 }
 
-td.leftCol{
-	min-width:704px;
+.coverage {
+	margin-left: 2em;
 }
 
-td.rightCol{
-	min-width:280px;
+.coverage:first-of-type {
+	margin-top: 4px;
+}
+
+
+.accordionIcon {
+	padding-left: 3em;
+}
+
+
+.requestBuilder {
+	grid-area: requestBuilder;
+	text-align: center;
+}
+
+
+.buttons {
+	grid-area: buttons;
+	justify-self: center;
+}
+
+.buttons > button {
+	margin: 2px;
+}
+
+
+.footer {
+	grid-area: footer;
+	text-align: center;
+	border-top: 1px solid var(--main-border-color);
 }

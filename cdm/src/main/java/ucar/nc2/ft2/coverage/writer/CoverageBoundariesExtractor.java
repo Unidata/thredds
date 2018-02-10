@@ -36,6 +36,7 @@ package ucar.nc2.ft2.coverage.writer;
 import ucar.nc2.ft2.coverage.*;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 import java.util.ArrayList;
@@ -172,15 +173,13 @@ public class CoverageBoundariesExtractor {
   }
 
   private List<LatLonPoint> getLatLons1D(HorizCoordSys hcs) {
+    LatLonRect latLonBB = hcs.makeLatlonBB(null);
+
     List<LatLonPoint> latLonPoints = new ArrayList<>();
-
-    CoverageCoordAxis1D latAxis = hcs.getYAxis();
-    CoverageCoordAxis1D lonAxis = hcs.getXAxis();
-
-    latLonPoints.add(new LatLonPointImpl(latAxis.getCoordEdge1(0), lonAxis.getCoordEdge1(0)));
-    latLonPoints.add(new LatLonPointImpl(latAxis.getCoordEdge1(0), lonAxis.getCoordEdgeLast()));
-    latLonPoints.add(new LatLonPointImpl(latAxis.getCoordEdgeLast(), lonAxis.getCoordEdgeLast()));
-    latLonPoints.add(new LatLonPointImpl(latAxis.getCoordEdgeLast(), lonAxis.getCoordEdge1(0)));
+    latLonPoints.add(latLonBB.getLowerLeftPoint());
+    latLonPoints.add(latLonBB.getLowerRightPoint());
+    latLonPoints.add(latLonBB.getUpperRightPoint());
+    latLonPoints.add(latLonBB.getUpperLeftPoint());
 
     return latLonPoints;
   }

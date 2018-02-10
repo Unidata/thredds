@@ -414,6 +414,12 @@ public class HorizCoordSys {
       double minLat = Math.min(lataxis.getCoordEdge1(0), lataxis.getCoordEdgeLast());
       double deltaLon = Math.abs(lonaxis.getCoordEdgeLast() - lonaxis.getCoordEdge1(0));
       double deltaLat = Math.abs(lataxis.getCoordEdgeLast() - lataxis.getCoordEdge1(0));
+
+      if (Math.abs(deltaLon) >= 360) {  // Coverage contains all longitudes. Let's normalize to [-180, 180].
+        minLon = -180;
+        deltaLon = 360;
+      }
+
       return new LatLonRect(new LatLonPointImpl(minLat, minLon), deltaLat, deltaLon);
     }
   }
