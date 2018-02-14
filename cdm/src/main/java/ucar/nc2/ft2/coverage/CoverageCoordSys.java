@@ -53,11 +53,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CoverageCoordSys {
 
-  public static String makeCoordSysName(List<String> axisName) {
-    Formatter fname = new Formatter();
-    for (String axis : axisName)
-      fname.format(" %s", axis);
-    return fname.toString();
+  public static String makeCoordSysName(List<String> axisNames) {
+    StringBuilder sb = new StringBuilder();
+    for (String axisName : axisNames) {
+      sb.append(axisName).append(' ');
+    }
+    return sb.deleteCharAt(sb.length() - 1).toString();  // Nuke trailing space.
   }
 
   //////////////////////////////////////////////////
