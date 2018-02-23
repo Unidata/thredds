@@ -43,6 +43,14 @@ public class TestCFRadial {
                 FeatureType.RADIAL, filename, null, buf);
     }
 
+    private RadialDatasetSweep arrayLatLonData() throws IOException
+    {
+        String filename = TestDir.cdmUnitTestDir + "conventions/cfradial/cfrad.20171127_202111.203_to_20171127_202123.085_DOW7_v275_s04_el7.00_SUR.nc";
+        Formatter buf = new Formatter();
+        return (RadialDatasetSweep) FeatureDatasetFactoryManager.open(
+                FeatureType.RADIAL, filename, null, buf);
+    }
+
     @Test
     public void testBasic() throws IOException
     {
@@ -167,6 +175,13 @@ public class TestCFRadial {
             data = var.getSweep(2).readData(50);
             Assert.assertEquals(673, data.length);
             Assert.assertEquals(5.99, data[100], 1e-2);
+        }
+    }
+
+    @Test
+    public void testArrayLatLon() throws IOException {
+        try (RadialDatasetSweep ds = arrayLatLonData()) {
+           Assert.assertTrue(ds.isStationary());
         }
     }
 }
