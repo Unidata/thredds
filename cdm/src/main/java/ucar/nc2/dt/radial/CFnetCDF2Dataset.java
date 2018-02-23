@@ -55,6 +55,8 @@ import java.io.IOException;
 
 import java.util.*;
 
+import static ucar.ma2.MAMath.fuzzyEquals;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -76,6 +78,8 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   private int[] ray_n_gates;
   private int[] ray_start_index;
   private int nsweeps;
+  private boolean isStationairy;
+  private boolean isStationairyChecked = false;
 
   /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
@@ -278,8 +282,33 @@ public class CFnetCDF2Dataset extends RadialDatasetSweepAdapter implements Typed
   }
 
   public boolean isStationary() {
-    Variable lat = ds.findVariable("latitude");
-    return lat.getSize() == 1;
+    // only check once
+    if (!isStationairyChecked) {
+      Variable lat = ds.findVariable("latitude");
+      if (lat != null) {
+        if (lat.isScalar())
+          isStationairy = lat.getSize() == 1;
+        else {
+          // if array, check to see if all of the values are
+          // approximately the same
+          Array gar = null;
+          try {
+            gar = lat.read();
+            Object firstVal = gar.getObject(0);
+            Array gar2 = gar.copy();
+            for (int i = 1; i < gar.getSize(); i++) {
+              gar2.setObject(i, firstVal);
+            }
+            isStationairy = fuzzyEquals(gar, gar2);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }
+      }
+      isStationairyChecked = true;
+    }
+
+    return isStationairy;
   }
 
   protected void setTimeUnits() throws Exception {
