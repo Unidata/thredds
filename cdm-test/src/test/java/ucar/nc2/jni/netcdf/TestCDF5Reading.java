@@ -68,7 +68,7 @@ public class TestCDF5Reading extends UnitTestCommon
                 visual("CDF Read", testresult);
             }
             Assert.assertTrue(String.format("***Fail: data mismatch"),
-                                              MAMath.fuzzyEquals(data, BASELINE));
+                                              MAMath.nearlyEquals(data, BASELINE));
             System.err.println("***Pass");
         }
     }

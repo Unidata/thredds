@@ -408,7 +408,7 @@ public class CoordinateAxis2D extends CoordinateAxis {
       ArrayDouble.D2 values = getCoordValuesArray();
       ArrayDouble.D1 valuesForRun = (ArrayDouble.D1) values.slice(0,run_idx );
       for (int i=0; i<valuesForRun.getSize(); i++) {
-        if (Misc.closeEnough(valuesForRun.get(i), wantOffset))
+        if (Misc.nearlyEquals(valuesForRun.get(i), wantOffset))
           return i;
       }
       return -1;

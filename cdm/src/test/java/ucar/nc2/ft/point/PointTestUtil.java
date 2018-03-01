@@ -211,7 +211,7 @@ public class PointTestUtil {
             Array memberArray1 = sdata1.getArray(memberName);
             Array memberArray2 = sdata2.getArray(memberName);
 
-            if (!MAMath.fuzzyEquals(memberArray1, memberArray2)) {
+            if (!MAMath.nearlyEquals(memberArray1, memberArray2)) {
                 return false;
             }
         }

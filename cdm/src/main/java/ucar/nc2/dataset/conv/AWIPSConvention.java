@@ -257,7 +257,7 @@ public class AWIPSConvention extends CoordSysBuilder {
         Variable coord = ds.getRootGroup().findVariable(name);
         Array coordData = coord.read();
         Array newData = Array.makeArray(coord.getDataType(), values);
-        if (MAMath.fuzzyEquals(coordData, newData)) {
+        if (MAMath.nearlyEquals(coordData, newData)) {
           if (debugBreakup) parseInfo.format("  use existing coord %s%n", dim);
           return dim;
         }

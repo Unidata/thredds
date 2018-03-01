@@ -34,7 +34,7 @@ public class TestSparseArray {
     Formatter info = new Formatter(System.out);
     sa.showInfo(info, null);
 
-    assert Misc.closeEnough(sa.getDensity(), 0.906667);
+    assert Misc.nearlyEquals(sa.getDensity(), 0.906667f);
 
   }
 }

@@ -89,8 +89,8 @@ public class TestGribCoverageRead {
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertEquals(241.699997, first, first*Misc.maxReletiveError);
-      Assert.assertEquals(225.099991, last, last*Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(241.699997, first));
+      Assert.assertTrue(Misc.nearlyEquals(225.099991, last));
     }
   }
 
@@ -120,8 +120,8 @@ public class TestGribCoverageRead {
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertEquals(241.699997, first, first*Misc.maxReletiveError);
-      Assert.assertEquals(225.099991, last, last*Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(241.699997, first));
+      Assert.assertTrue(Misc.nearlyEquals(225.099991, last));
     }
   }
 
@@ -151,8 +151,8 @@ public class TestGribCoverageRead {
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertEquals(219.5, first, first * Misc.maxReletiveError);
-      Assert.assertEquals(218.6, last, last * Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(219.5, first));
+      Assert.assertTrue(Misc.nearlyEquals(218.6, last));
     }
   }
 
@@ -181,11 +181,11 @@ public class TestGribCoverageRead {
 
       float val = data.getFloat(40600);
       System.out.printf("data val at %d = %f%n", 40600, val);
-      Assert.assertEquals(281.627563, val, val * Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(281.627563, val));
 
       val = data.getFloat(55583);
       System.out.printf("data val at %d = %f%n", 55583, val);
-      Assert.assertEquals(281.690063, val, val*Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(281.690063, val));
 
     }
   }
@@ -215,11 +215,11 @@ public class TestGribCoverageRead {
 
       float val = data.getFloat(3179);
       System.out.printf("data val at %d = %f%n", 3179, val);
-      Assert.assertEquals(98.0, val, val * Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(98.0, val));
 
       val = data.getFloat(5020);
       System.out.printf("data val at %d = %f%n", 5020, val);
-      Assert.assertEquals(60.0, val, val * Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(60.0, val));
 
     }
   }
@@ -250,11 +250,11 @@ public class TestGribCoverageRead {
 
       float val = data.getFloat(0);
       System.out.printf("data val first = %f%n", val);
-      Assert.assertEquals(-0.10470009, val, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(-0.10470009, val));
 
       val = data.getFloat( (int)data.getSize()-1);
       System.out.printf("data val last = %f%n", val);
-      Assert.assertEquals(0.18079996, val, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(0.18079996, val));
     }
   }
 

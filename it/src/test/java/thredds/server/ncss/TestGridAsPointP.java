@@ -157,7 +157,7 @@ public class TestGridAsPointP {
     Assert.assertEquals((int) ntimes, elements.size());
     elem0 = elements.get(0);
     double val = Double.parseDouble(elem0.getContent(0).getValue());
-    Assert.assertEquals(dataVal, val, Misc.maxReletiveError * dataVal);
+    Assert.assertTrue(Misc.nearlyEquals(dataVal, val));
   }
 
   @Test

@@ -486,7 +486,7 @@ public class NcMLWriter {
         for (int i = 2; i < a.getSize(); i++) {
           double v1 = a.getDouble(ima.set(i));
           double v0 = a.getDouble(ima.set(i - 1));
-          if (!ucar.nc2.util.Misc.closeEnough(v1 - v0, incr))
+          if (!ucar.nc2.util.Misc.nearlyEquals(v1 - v0, incr))
             isRegular = false;
         }
 

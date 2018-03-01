@@ -1036,7 +1036,7 @@ public class Grib2DataPanel extends JPanel {
       Formatter f= new Formatter();
       if (minScale == Double.MAX_VALUE)
         f.format("N/A");
-      if (Misc.closeEnough(minScale, maxScale))
+      if (Misc.nearlyEquals(minScale, maxScale))
         f.format("%g",minScale);
       else
         f.format("(%g,%g)",minScale,maxScale);

@@ -424,7 +424,7 @@ public class TestStandardVar extends TestCase {
     ima = A.getIndex();
 
     val = A.getFloat(ima.set(1,1));
-    assert Misc.closeEnough(val, -999.99) : val;
+    assert Misc.nearlyEquals(val, -999.99) : val;
     assert v.isMissing(val);
   }
 

@@ -398,7 +398,7 @@ class DoradeRADD extends DoradeDescriptor {
     //
     for (int i = 2; i < cellRanges.length; i++) {
       float space = cellRanges[i] - cellRanges[i - 1];
-      if (!Misc.closeEnough(space, cellSpacing) && (Math.abs(space / cellSpacing - 1.0) > 0.01)) {
+      if (!Misc.nearlyEquals(space, cellSpacing) && (Math.abs(space / cellSpacing - 1.0) > 0.01)) {
         throw new DescriptorException("variable cell spacing");
       }
     }

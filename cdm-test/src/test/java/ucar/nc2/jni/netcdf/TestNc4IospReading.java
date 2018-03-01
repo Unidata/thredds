@@ -90,7 +90,7 @@ public class TestNc4IospReading {
       //NCdumpW.printArray(data1);
       System.out.printf("Read from jni%n");
       Array data2 = read(jni, "salinity", "0,11:12,22,:");
-      assert MAMath.fuzzyEquals(data1, data2);
+      assert MAMath.nearlyEquals(data1, data2);
       System.out.printf("data is equal%n");
     }
   }

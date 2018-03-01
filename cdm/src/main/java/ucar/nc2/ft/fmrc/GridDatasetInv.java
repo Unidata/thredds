@@ -352,7 +352,7 @@ public class GridDatasetInv {
 
     public boolean hasOffset(double want) {
       for (double got : tc.getOffsetHours() ) {
-        if (Misc.closeEnough(want, got)) return true;
+        if (Misc.nearlyEquals(want, got)) return true;
       }
       return false;
     } */

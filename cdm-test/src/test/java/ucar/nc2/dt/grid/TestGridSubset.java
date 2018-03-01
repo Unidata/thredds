@@ -178,10 +178,10 @@ public class TestGridSubset {
       ProjectionImpl p = gcs.getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
       logger.debug("{} -> {}", bbox, prect);
-      assert Misc.closeEnough(prect.getMinX(), -2129.5688);
-      assert Misc.closeEnough(prect.getWidth(), 4297.8453);
-      assert Misc.closeEnough(prect.getMinY(), -1793.0041);
-      assert Misc.closeEnough(prect.getHeight(), 3308.3885);
+      assert Misc.nearlyEquals(prect.getMinX(), -2129.5688);
+      assert Misc.nearlyEquals(prect.getWidth(), 4297.8453);
+      assert Misc.nearlyEquals(prect.getMinY(), -1793.0041);
+      assert Misc.nearlyEquals(prect.getHeight(), 3308.3885);
 
       LatLonRect bb2 = p.projToLatLonBB(prect);
       logger.debug("{} -> {}", prect, bb2);
@@ -431,7 +431,7 @@ public class TestGridSubset {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       logger.debug("projection mapArea = {}", pr);
-      assert (pr.closeEnough(gcs2.getBoundingBox()));
+      assert (pr.nearlyEquals(gcs2.getBoundingBox()));
     }
   }
 
@@ -462,7 +462,7 @@ public class TestGridSubset {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       logger.debug("projection mapArea = {}", pr);
-      assert (pr.closeEnough(gcs2.getBoundingBox()));
+      assert (pr.nearlyEquals(gcs2.getBoundingBox()));
 
       CoordinateAxis xaxis = gcs.getXHorizAxis();
       CoordinateAxis yaxis = gcs.getYHorizAxis();
@@ -546,7 +546,7 @@ public class TestGridSubset {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       logger.debug("projection mapArea = {}", pr);
-      assert (pr.closeEnough(gcs2.getBoundingBox()));
+      assert (pr.nearlyEquals(gcs2.getBoundingBox()));
     }
   }
 

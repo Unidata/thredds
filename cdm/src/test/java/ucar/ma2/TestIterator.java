@@ -96,7 +96,7 @@ public class TestIterator {
         for (k=0; k<p; k++) {
           double val = iter.getDoubleNext();
           double myVal = (double) (i*100+j*10+k);
-          Assert.assertEquals(val, myVal, Misc.maxReletiveError);
+          Assert.assertTrue(Misc.nearlyEquals(val, myVal));
         }
       }
     }
@@ -123,7 +123,7 @@ public class TestIterator {
         for (k=0; k<p; k++) {
           double val = iter.getDoubleNext();
           double myVal = (double) (i*100+j*10+k);
-          Assert.assertEquals(val, myVal, Misc.maxReletiveError);
+          Assert.assertTrue(Misc.nearlyEquals(val, myVal));
         }
       }
     }

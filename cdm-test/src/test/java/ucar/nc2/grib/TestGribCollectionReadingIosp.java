@@ -84,8 +84,8 @@ public class TestGribCollectionReadingIosp {
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertEquals(300.33002, first, first*Misc.maxReletiveError);
-      Assert.assertEquals(279.49, last, last*Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(300.33002, first));
+      Assert.assertTrue(Misc.nearlyEquals(279.49, last));
     }
   }
 
@@ -102,7 +102,7 @@ public class TestGribCollectionReadingIosp {
       assert data.getSize() == 2;
       float[] got = (float []) data.copyTo1DJavaArray();
       float[] expect = new float[] {103031.914f, 103064.164f};
-      Assert.assertArrayEquals(expect, got, (float) Misc.maxReletiveError);
+      Assert.assertArrayEquals(expect, got, (float) Misc.defaultMaxRelativeDiffFloat);
     }
   }
 
@@ -124,7 +124,7 @@ public class TestGribCollectionReadingIosp {
       }
       float[] got = (float []) data.copyTo1DJavaArray();
       float[] expect = new float[] {68.0f, 74.0f};
-      Assert.assertArrayEquals(expect, got, (float) Misc.maxReletiveError);
+      Assert.assertArrayEquals(expect, got, (float) Misc.defaultMaxRelativeDiffFloat);
     }
   }
 
@@ -146,7 +146,7 @@ public class TestGribCollectionReadingIosp {
       }
       float[] got = (float []) data.copyTo1DJavaArray();
       float[] expect = new float[] {57.8f, 53.1f, 91.3f, 85.5f, 80.0f, 69.3f, 32.8f, 41.8f, 88.9f, 81.3f, 70.9f, 70.6f};
-      Assert.assertArrayEquals(expect, got, (float) Misc.maxReletiveError);
+      Assert.assertArrayEquals(expect, got, (float) Misc.defaultMaxRelativeDiffFloat);
     }
   }
 

@@ -121,9 +121,9 @@ public class TestOffAggFmrcNetcdf extends TestCase {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert Misc.closeEnough(dataI.getDoubleNext(), -832.6983183345455);
-      assert Misc.closeEnough(dataI.getDoubleNext(), -751.4273183345456);
-      assert Misc.closeEnough(dataI.getDoubleNext(), -670.1563183345455);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), -832.6983183345455);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), -751.4273183345456);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), -670.1563183345455);
 
   }
 
@@ -200,7 +200,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     for (int i=0; i < nagg; i++)
       for (int j=0; j < noff; j++) {
         double val = data.getDouble(ima.set(i,j));
-        assert Misc.closeEnough(val, result[i][j]);
+        assert Misc.nearlyEquals(val, result[i][j]);
       }
 
 

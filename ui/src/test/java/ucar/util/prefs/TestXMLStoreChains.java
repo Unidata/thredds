@@ -106,7 +106,7 @@ public class TestXMLStoreChains {
       assert ival == 2 : "testChain fail 1 " + ival;
 
       double dval  = node.getDouble("TestDouble", 0.0);
-      assert Misc.closeEnough(dval, 3.14159) : "testChain fail 2 " + dval;
+      assert Misc.nearlyEquals(dval, 3.14159) : "testChain fail 2 " + dval;
 
       node.putDouble("TestDouble", 3.14159);
       node.putDouble("TestFloat", -999.0);
@@ -119,7 +119,7 @@ public class TestXMLStoreChains {
       prefs = store.getPreferences();
       node = prefs.node("/myApp");
       dval  = node.getDouble("TestDouble", 0.0);
-      assert Misc.closeEnough(dval, 0.0) : "testChain fail 2 " + dval;
+      assert Misc.nearlyEquals(dval, 0.0) : "testChain fail 2 " + dval;
 
       // but not if they are in the default
       store = XMLStore.createFromFile(storeFile, null);
@@ -218,10 +218,10 @@ public class TestXMLStoreChains {
 
     node = prefs.node("/myApp");
     double dval  = node.getDouble("TestDouble", 0.0);
-    assert Misc.closeEnough(dval, 3.14159) : "testStandardChain fail 6 " + dval;
+    assert Misc.nearlyEquals(dval, 3.14159) : "testStandardChain fail 6 " + dval;
 
     float fval  = node.getFloat("TestFloat", 0.0F);
-    assert Misc.closeEnough(fval, -999.0F) : "testStandardChain fail 7 " + fval;
+    assert Misc.nearlyEquals(fval, -999.0F) : "testStandardChain fail 7 " + fval;
 
   }
 

@@ -89,7 +89,7 @@ public class TestTimeUnits extends TestCase  {
     assert tu.getValue() == 33.0;
     assert 3600.0 * tu.getValue() == tu.getValueInSeconds() : tu.getValue() +" "+tu.getValueInSeconds();
     assert tu.getUnitString().equals( unitBefore);
-    assert Misc.closeEnough(tu.getValueInSeconds(), 11.0 * secsBefore) : (tu.getValueInSeconds())+" "+ secsBefore;
+    assert Misc.nearlyEquals(tu.getValueInSeconds(), 11.0 * secsBefore) : (tu.getValueInSeconds())+" "+ secsBefore;
 
     System.out.println();
     tu.setValueInSeconds( 3600.0);
@@ -98,7 +98,7 @@ public class TestTimeUnits extends TestCase  {
     assert tu.getValue() == 1.0;
     assert tu.getValueInSeconds() == 3600.0 : tu.getValueInSeconds();
     assert tu.getUnitString().equals( unitBefore);
-    assert Misc.closeEnough( 3.0 * tu.getValueInSeconds(), secsBefore) : tu.getValueInSeconds()+" "+secsBefore;
+    assert Misc.nearlyEquals( 3.0 * tu.getValueInSeconds(), secsBefore) : tu.getValueInSeconds()+" "+secsBefore;
 
     TimeUnit day = new TimeUnit(1.0, "day");
     double hoursInDay = day.convertTo(1.0, tu);

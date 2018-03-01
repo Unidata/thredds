@@ -38,7 +38,6 @@ import ucar.nc2.Group;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.util.Format;
 
@@ -732,7 +731,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
       increment = (getCoordValue(n - 1) - getCoordValue(0)) / (n - 1);
       isRegular = true;
       for (int i = 1; i < getSize(); i++)
-        if (!ucar.nc2.util.Misc.closeEnough(getCoordValue(i) - getCoordValue(i - 1), increment, 5.0e-3)) {
+        if (!ucar.nc2.util.Misc.nearlyEquals(getCoordValue(i) - getCoordValue(i - 1), increment, 5.0e-3)) {
           isRegular = false;
           break;
         }
@@ -904,12 +903,12 @@ public class CoordinateAxis1D extends CoordinateAxis {
     /* flip if needed
     boolean firstLower = true; // in the first interval, is lower < upper ?
     for (int i = 0; i < value1.length; i++) {
-      if (Misc.closeEnough(value1[i], value2[i])) continue; // skip when lower == upper
+      if (Misc.nearlyEquals(value1[i], value2[i])) continue; // skip when lower == upper
       firstLower = value1[i] < value2[i];
       break;
     }
     // check first against last : lower, unless all lower equal then upper
-    boolean goesUp = (n < 2) || value1[n - 1] > value1[0] || (Misc.closeEnough(value1[n - 1], value2[0]) && value2[n - 1] > value2[0]);
+    boolean goesUp = (n < 2) || value1[n - 1] > value1[0] || (Misc.nearlyEquals(value1[n - 1], value2[0]) && value2[n - 1] > value2[0]);
     if (goesUp != firstLower) {
       double[] temp = value1;
       value1 = value2;
@@ -919,7 +918,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
     // decide if they are contiguous
     boolean contig = true;
     for (int i = 0; i < n - 1; i++) {
-      if (!ucar.nc2.util.Misc.closeEnough(value1[i + 1], value2[i]))
+      if (!ucar.nc2.util.Misc.nearlyEquals(value1[i + 1], value2[i]))
         contig = false;
     }
 

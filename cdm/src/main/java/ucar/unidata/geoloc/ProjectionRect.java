@@ -489,6 +489,7 @@ public class ProjectionRect implements java.io.Serializable {
     s.writeDouble(getHeight());
   }
 
+  // Exact comparison is needed in order to be consistent with hashCode().
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -518,17 +519,23 @@ public class ProjectionRect implements java.io.Serializable {
     return result;
   }
 
-  // cannot do approx compare and be consistent with equals
-  // so make it a seperate method
-  private static final double maxReletiveError = 1.0e-5;
-  public boolean closeEnough(ProjectionRect that) {
-    if (!Misc.closeEnough(that.height, height, maxReletiveError)) return false;
-    if (!Misc.closeEnough(that.width, width, maxReletiveError)) return false;
-    if (!Misc.closeEnough(that.x, x, maxReletiveError)) return false;
-    if (!Misc.closeEnough(that.y, y, maxReletiveError)) return false;
-
-    return true;
+  /**
+   * Returns the result of {@link #nearlyEquals(ProjectionRect, double)}, with {@link Misc#defaultMaxRelativeDiffFloat}.
+   */
+  public boolean nearlyEquals(ProjectionRect other) {
+    return nearlyEquals(other, Misc.defaultMaxRelativeDiffFloat);
   }
 
-
+  /**
+   * Returns {@code true} if this rectangle is nearly equal to {@code other}. The "near equality" of corners is
+   * determined using {@link ProjectionPoint#nearlyEquals(ProjectionPoint, double)}, with the specified maxRelDiff.
+   *
+   * @param other    the other rectangle to check.
+   * @param maxRelDiff  the maximum {@link Misc#relativeDifference relative difference} that two corners may have.
+   * @return {@code true} if this rectangle is nearly equal to {@code other}.
+   */
+  public boolean nearlyEquals(ProjectionRect other, double maxRelDiff) {
+    return this.getLowerLeftPoint() .nearlyEquals(other.getLowerLeftPoint(),  maxRelDiff) &&
+           this.getUpperRightPoint().nearlyEquals(other.getUpperRightPoint(), maxRelDiff);
+  }
 }

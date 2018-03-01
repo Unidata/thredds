@@ -98,7 +98,7 @@ public class TestDODSSubset {
 
     for (int i=0; i<5; i++) {
       double val = ad.get(i);
-      assert Misc.closeEnough(val, tFloat64[i], 1.0e-9);
+      assert Misc.nearlyEquals(val, tFloat64[i], 1.0e-9);
     }
 
     dodsfile.close();

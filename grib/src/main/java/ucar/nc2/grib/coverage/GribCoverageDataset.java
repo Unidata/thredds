@@ -413,7 +413,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   private int alreadyHaveAtIndex(RuntimeSmoosher tester) {
     for (int i = 0; i < runtimes.size(); i++)
-      if (runtimes.get(i).closeEnough(tester)) return i;
+      if (runtimes.get(i).nearlyEquals(tester)) return i;
     return -1;
   }
   */

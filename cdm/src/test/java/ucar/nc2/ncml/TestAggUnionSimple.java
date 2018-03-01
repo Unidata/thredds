@@ -247,9 +247,9 @@ public class TestAggUnionSimple extends TestCase {
       assert data.getElementType() == float.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert Misc.closeEnough(dataI.getDoubleNext(), 10.0);
-      assert Misc.closeEnough(dataI.getDoubleNext(), 9.0);
-      assert Misc.closeEnough(dataI.getDoubleNext(), 8.0);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), 10.0);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), 9.0);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), 8.0);
     } catch (IOException io) {
     }
 

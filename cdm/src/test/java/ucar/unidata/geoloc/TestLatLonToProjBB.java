@@ -37,7 +37,6 @@ import junit.framework.TestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.unidata.geoloc.projection.LambertConformal;
-import ucar.nc2.util.Misc;
 
 import java.lang.invoke.MethodHandles;
 
@@ -53,7 +52,7 @@ public class TestLatLonToProjBB extends TestCase {
   void doTest(ProjectionImpl p, LatLonRect rect) {
     ProjectionRect prect = p.latLonToProjBB( rect);
     ProjectionRect prect2 = p.latLonToProjBB2( rect);
-    if (!equals( prect, prect2)) {
+    if (!prect.nearlyEquals(prect2)) {
       System.out.println("\nFAIL Projection= " + p);
       System.out.println("  llbb= " + rect.toString2());
       System.out.println("  latLonToProjBB= " + prect);
@@ -80,16 +79,6 @@ public class TestLatLonToProjBB extends TestCase {
   public void testLC() {
     doTests(new LambertConformal(40.0, 0, 20.0, 60.0), 0);
   }
-
-  boolean equals(ProjectionRect prect1, ProjectionRect prect2) {
-    boolean b1 = equals( prect1.getLowerLeftPoint(), prect2.getLowerLeftPoint());
-    boolean b2 = equals( prect1.getUpperRightPoint(), prect2.getUpperRightPoint());
-    return b1 && b2;
-  }
-
-  boolean equals(ProjectionPoint pt1, ProjectionPoint pt2) {
-      return Misc.closeEnough(pt1.getX(), pt2.getX()) &&  Misc.closeEnough(pt1.getY(), pt2.getY());
-    }
 
   public void utestProblem() {
     ProjectionImpl p = new LambertConformal(40.0, 0, 20.0, 60.0);

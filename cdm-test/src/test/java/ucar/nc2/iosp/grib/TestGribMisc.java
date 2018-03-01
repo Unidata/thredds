@@ -68,7 +68,7 @@ public class TestGribMisc {
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       Variable v = ncfile.findVariable("isobaric");
       float val = v.readScalarFloat();
-      assert Misc.closeEnough(val, 92500.0) : val;
+      assert Misc.nearlyEquals(val, 92500.0) : val;
     }
   }
 
@@ -121,8 +121,8 @@ public class TestGribMisc {
       int[] origin = {0, 38, 281};
       int[] shape = {1, 1, 2};
       Array vals = v.read(origin, shape);
-      assert Misc.closeEnough(vals.getFloat(0), 0.0) : vals.getFloat(0);
-      assert Misc.closeEnough(vals.getFloat(1), 1.0) : vals.getFloat(1);
+      assert Misc.nearlyEquals(vals.getFloat(0), 0.0) : vals.getFloat(0);
+      assert Misc.nearlyEquals(vals.getFloat(1), 1.0) : vals.getFloat(1);
     }
   }
 
@@ -182,8 +182,8 @@ public class TestGribMisc {
        assert v != null : ncfile.getLocation();
        ArrayFloat vals = (ArrayFloat) (v.read("0,:,0").reduce());   // read first column - its flipped
        System.out.printf("%s: first=%f last=%f%n", v.getFullName(), vals.getFloat(0), vals.getFloat((int)vals.getSize()-1));
-       assert Misc.closeEnough( vals.getFloat(0), 243.289993);
-       assert Misc.closeEnough( vals.getFloat((int)vals.getSize()-1), 242.080002);
+       assert Misc.nearlyEquals( vals.getFloat(0), 243.289993);
+       assert Misc.nearlyEquals( vals.getFloat((int)vals.getSize()-1), 242.080002);
      }
    }
 

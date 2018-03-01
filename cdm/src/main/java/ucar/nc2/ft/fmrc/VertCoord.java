@@ -124,7 +124,7 @@ public class VertCoord implements Comparable {
       return false;
 
     for (int i = 0; i < values1.length; i++) {
-      if (!ucar.nc2.util.Misc.closeEnough(values1[i], other.values1[i]))
+      if (!ucar.nc2.util.Misc.nearlyEquals(values1[i], other.values1[i]))
         return false;
     }
 
@@ -137,7 +137,7 @@ public class VertCoord implements Comparable {
     if (values2.length != other.values2.length)
       return false;
     for (int i = 0; i < values2.length; i++) {
-      if (!ucar.nc2.util.Misc.closeEnough(values2[i], other.values2[i]))
+      if (!ucar.nc2.util.Misc.nearlyEquals(values2[i], other.values2[i]))
         return false;
     }
 
@@ -232,7 +232,7 @@ public class VertCoord implements Comparable {
 
     public int compareTo(Object o) {
       LevelCoord other = (LevelCoord) o;
-      //if (closeEnough(value1, other.value1) && closeEnough(value2, other.value2)) return 0;
+      //if (nearlyEquals(value1, other.value1) && nearlyEquals(value2, other.value2)) return 0;
       if (mid < other.mid) return -1;
       if (mid > other.mid) return 1;
       return 0;
@@ -242,7 +242,7 @@ public class VertCoord implements Comparable {
       if (this == oo) return true;
       if (!(oo instanceof LevelCoord)) return false;
       LevelCoord other = (LevelCoord) oo;
-      return (ucar.nc2.util.Misc.closeEnough(value1, other.value1) && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
+      return (ucar.nc2.util.Misc.nearlyEquals(value1, other.value1) && ucar.nc2.util.Misc.nearlyEquals(value2, other.value2));
     }
 
     public int hashCode2() {
@@ -256,8 +256,8 @@ public class VertCoord implements Comparable {
 
       LevelCoord that = (LevelCoord) o;
 
-      if (!ucar.nc2.util.Misc.closeEnough(that.value1, value1)) return false;
-      if (!ucar.nc2.util.Misc.closeEnough(that.value2, value2)) return false;
+      if (!ucar.nc2.util.Misc.nearlyEquals(that.value1, value1)) return false;
+      if (!ucar.nc2.util.Misc.nearlyEquals(that.value2, value2)) return false;
 
       return true;
     }

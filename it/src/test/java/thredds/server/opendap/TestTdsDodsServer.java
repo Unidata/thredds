@@ -144,7 +144,7 @@ public class TestTdsDodsServer {
       Assert.assertNotNull("time axis", time);
       Assert.assertEquals(1, time.getSize());
       Array data = time.read();
-      Assert.assertEquals(102840.0, data.getFloat(0), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(102840.0, data.getFloat(0)));
     }
   }
 

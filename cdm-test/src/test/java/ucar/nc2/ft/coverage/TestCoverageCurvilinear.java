@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.ma2.InvalidRangeException;
-import ucar.nc2.NCdumpW;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.Coverage;
 import ucar.nc2.ft2.coverage.CoverageCoordSys;
@@ -160,8 +159,8 @@ public class TestCoverageCurvilinear {
       int[] expectedShape = new int[] {1,1,22,12};
       Assert.assertArrayEquals(expectedShape, data.getShape());
       // NCdumpW.printArray(data);
-      Assert.assertEquals(0.0036624447, data.getDouble(ima.set(0, 0, 0, 0)), Misc.maxReletiveError);
-      Assert.assertEquals(0.20564626, data.getDouble(ima.set(0, 0, 21, 11)), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(0.0036624447, data.getDouble(ima.set(0, 0, 0, 0))));
+      Assert.assertTrue(Misc.nearlyEquals(0.20564626, data.getDouble(ima.set(0, 0, 21, 11))));
     }
   }
 
@@ -190,8 +189,8 @@ public class TestCoverageCurvilinear {
       int[] expectedShape = new int[] {1,151,171};
       Assert.assertArrayEquals(expectedShape, data.getShape());
       // NCdumpW.printArray(data);
-      Assert.assertEquals(1.782, data.getDouble(ima.set(0, 0, 0)), Misc.maxReletiveError);
-      Assert.assertEquals(1.769, data.getDouble(ima.set(0, 11, 0)), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(1.782, data.getDouble(ima.set(0, 0, 0))));
+      Assert.assertTrue(Misc.nearlyEquals(1.769, data.getDouble(ima.set(0, 11, 0))));
     } catch (InvalidRangeException e) {
       e.printStackTrace();
     }

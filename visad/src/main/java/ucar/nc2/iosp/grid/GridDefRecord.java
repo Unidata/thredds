@@ -577,7 +577,7 @@ public abstract class GridDefRecord {
   }
 
   /**
-   * Compare GridDefRecords, the numerics will use closeEnough so values that
+   * Compare GridDefRecords, the numerics will use nearlyEquals so values that
    * differ in 3 or 4th decimal places will return equal. This is being coded
    * because the NDFD model dx differ in the 3 decimal place otherwise equal.
    */
@@ -599,7 +599,7 @@ public abstract class GridDefRecord {
         //double
         double d = local.getDouble( key );
         double od = other.getDouble( key );
-        if( ! Misc.closeEnough(d, od) )
+        if( ! Misc.nearlyEquals(d, od) )
           return false;
       } else if( val.matches( "^[0-9]+")) {
         // int

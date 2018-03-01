@@ -27,7 +27,8 @@ file in the "user.home" directory. An example:</p>
 <p>The following static variables are provided for accessing the above directories:</p><ul><li>upcShareDir:String - "//zero/share/"</li><li>upcShareTestDataDir:String - "//zero/share/testdata/" [NOTE: No longer exists]</li><li>upcShareThreddsDataDir:String - "//zero/share/thredds/data/"</li><li>upcShareDirFile:File -&nbsp;"//zero/share"</li><li>testDataDir:File - "//newshemp/testdata</li><li>cdmTestDataDir:String - "cdm/target/test/tmp/"</li><li>temporaryDataDir:String - "target/test/tmp/"</li></ul><p>Note
 that all the String variables end with a slash ("/"). All are checked
 that they exist (error messages are output if they don't or can't be
-created).</p><p>The following static methods are provided:</p><ul><li>closeEnough(double,double):boolean</li><li>closeEnough(double,double,double):boolean</li><li>closeEnough(float,float):boolean</li><li>openAllInDir(String dirName, FileFilter ff)</li><li>readAllDir(String dirName, FileFilter ff)</li><li>...</li></ul><p></p>
+created).</p><p>The following static methods are provided:</p><ul><li>nearlyEquals(double,double):boolean</li><li>
+  nearlyEquals(double,double,double):boolean</li><li>nearlyEquals(float,float):boolean</li><li>openAllInDir(String dirName, FileFilter ff)</li><li>readAllDir(String dirName, FileFilter ff)</li><li>...</li></ul><p></p>
 
 <h3>CDM ucar.unidata.utils.TestFileDirUtils</h3><p>Static utility methods for creating directories and files.</p>
 

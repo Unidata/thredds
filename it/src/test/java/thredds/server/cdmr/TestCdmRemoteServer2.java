@@ -96,7 +96,7 @@ public class TestCdmRemoteServer2 {
       double[] expect = new double[]{366.0, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 5479.395, 6209.88, 6940.365, 7670.85, 8401.335};
       Array data = time.getCoordsAsArray();
       for (int i = 0; i < expect.length; i++)
-        assert Misc.closeEnough(expect[i], data.getDouble(i));
+        assert Misc.nearlyEquals(expect[i], data.getDouble(i));
 
     }
   }

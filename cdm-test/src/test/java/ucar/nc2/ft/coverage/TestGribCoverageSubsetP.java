@@ -248,7 +248,7 @@ public class TestGribCoverageSubsetP {
 
           } else {
             double val2 = timeOffsetAxis.getCoordMidpoint(0);
-            Assert.assertEquals(val2, time_offset, Misc.maxReletiveError);
+            Assert.assertTrue(Misc.nearlyEquals(val2, time_offset));
           }
         }
       }
@@ -258,7 +258,7 @@ public class TestGribCoverageSubsetP {
         Assert.assertNotNull(AxisType.Pressure.toString(), zAxis);
         Assert.assertEquals(1, zAxis.getNcoords());
         double val = ((CoverageCoordAxis1D) zAxis).getCoordMidpoint(0);
-        Assert.assertEquals(vert_level.doubleValue(), val, Misc.maxReletiveError);
+        Assert.assertTrue(Misc.nearlyEquals(vert_level.doubleValue(), val));
       }
     }
 

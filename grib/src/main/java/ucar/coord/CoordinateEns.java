@@ -105,7 +105,7 @@ public class CoordinateEns implements Coordinate {
   public int getIndexByMember(double need) {
     for (int i = 0; i < ensSorted.size(); i++) {
       EnsCoord.Coord coord = ensSorted.get(i);
-      if (Misc.closeEnough(need, coord.getEnsMember())) return i;
+      if (Misc.nearlyEquals(need, coord.getEnsMember())) return i;
     }
     return -1;
   }

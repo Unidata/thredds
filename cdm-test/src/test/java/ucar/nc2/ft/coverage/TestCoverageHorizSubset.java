@@ -47,10 +47,10 @@ public class TestCoverageHorizSubset {
       ProjectionImpl p = hcs.getTransform().getProjection();
       ProjectionRect prect = p.latLonToProjBB(bbox); // must override default implementation
       System.out.printf("%s -> %s %n", bbox, prect);
-      assert Misc.closeEnough(prect.getMinX(), -2129.5688);
-      assert Misc.closeEnough(prect.getWidth(), 4297.8453);
-      assert Misc.closeEnough(prect.getMinY(), -1793.0041);
-      assert Misc.closeEnough(prect.getHeight(), 3308.3885);
+      assert Misc.nearlyEquals(prect.getMinX(), -2129.5688);
+      assert Misc.nearlyEquals(prect.getWidth(), 4297.8453);
+      assert Misc.nearlyEquals(prect.getMinY(), -1793.0041);
+      assert Misc.nearlyEquals(prect.getHeight(), 3308.3885);
 
       LatLonRect bb2 = p.projToLatLonBB(prect);
       System.out.printf("%s -> %s %n", prect, bb2);

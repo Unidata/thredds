@@ -374,7 +374,7 @@ public class CoordinateSharer<T> {
     }
 
     // try to merge runtime whose values differ by < smooshTolerence
-    public boolean closeEnough(RuntimeSmoosher that) {
+    public boolean nearlyEquals(RuntimeSmoosher that) {
       Sets.SetView<Long> common = Sets.intersection(this.coordSet, that.coordSet);
       int total = Math.min(this.runtime.getSize(), that.runtime.getSize());
 

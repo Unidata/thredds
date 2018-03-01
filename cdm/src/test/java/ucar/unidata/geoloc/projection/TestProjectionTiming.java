@@ -78,8 +78,8 @@ public class TestProjectionTiming extends TestCase {
         LatLonPoint endL = proj.projToLatLon( p);
 
         if (checkit) {
-          assert Misc.closeEnough(from[0][i], endL.getLatitude()) : "lat: "+from[0][i] + "!="+ endL.getLatitude();
-          assert closeEnoughLon(from[1][i], endL.getLongitude())  : "lon: "+from[1][i] + "!="+ endL.getLongitude();
+          assert Misc.nearlyEquals(from[0][i], endL.getLatitude()) : "lat: "+from[0][i] + "!="+ endL.getLatitude();
+          assert nearlyEqualsLon(from[1][i], endL.getLongitude())  : "lon: "+from[1][i] + "!="+ endL.getLongitude();
         }
       }
     }
@@ -96,8 +96,8 @@ public class TestProjectionTiming extends TestCase {
 
         if (checkit) {
           for (int i=0; i<NPTS; i++) {
-            assert Misc.closeEnough(from[0][i], result2[0][i]) : "lat: "+from[0][i] + "!="+ result2[0][i];
-            assert closeEnoughLon(from[1][i], result2[1][i])  : "lon: "+from[1][i] + "!="+ result2[1][i];
+            assert Misc.nearlyEquals(from[0][i], result2[0][i]) : "lat: "+from[0][i] + "!="+ result2[0][i];
+            assert nearlyEqualsLon(from[1][i], result2[1][i])  : "lon: "+from[1][i] + "!="+ result2[1][i];
           }
         }
     }
@@ -108,8 +108,8 @@ public class TestProjectionTiming extends TestCase {
 
   }
 
-  public static boolean closeEnoughLon( double v1, double v2) {
-    return Misc.closeEnough(LatLonPointImpl.lonNormal(v1), LatLonPointImpl.lonNormal(v2) );
+  public static boolean nearlyEqualsLon( double v1, double v2) {
+    return Misc.nearlyEquals(LatLonPointImpl.lonNormal(v1), LatLonPointImpl.lonNormal(v2) );
   }
 
   public void testEachProjection() {

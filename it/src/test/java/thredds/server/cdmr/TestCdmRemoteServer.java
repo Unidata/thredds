@@ -95,7 +95,7 @@ public class TestCdmRemoteServer {
       Assert.assertNotNull("time axis", time);
       double[] expect = new double[]{0., 6.0, 12.0, 18.0};
       double[] have = (double []) time.getCoordsAsArray().get1DJavaArray(DataType.DOUBLE);
-      Assert.assertArrayEquals(expect, have, Misc.maxReletiveError);
+      Assert.assertArrayEquals(expect, have, Misc.defaultMaxRelativeDiffDouble);
     }
   }
 }

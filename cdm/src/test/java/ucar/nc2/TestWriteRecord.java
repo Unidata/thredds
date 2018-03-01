@@ -263,10 +263,10 @@ public class TestWriteRecord {
         values = lon.read();
         assert (values instanceof ArrayFloat.D1);
         ArrayFloat.D1 fa = (ArrayFloat.D1) values;
-        assert (Misc.closeEnough(fa.get(0), -109.0f)) : fa.get(0);
-        assert (Misc.closeEnough(fa.get(1), -107.0f)) : fa.get(1);
-        assert (Misc.closeEnough(fa.get(2), -105.0f)) : fa.get(2);
-        assert (Misc.closeEnough(fa.get(3), -103.0f)) : fa.get(3);
+        assert (Misc.nearlyEquals(fa.get(0), -109.0f)) : fa.get(0);
+        assert (Misc.nearlyEquals(fa.get(1), -107.0f)) : fa.get(1);
+        assert (Misc.nearlyEquals(fa.get(2), -105.0f)) : fa.get(2);
+        assert (Misc.nearlyEquals(fa.get(3), -103.0f)) : fa.get(3);
 
         /* Now we can just use the MultiArray to access values, or
            we can copy the MultiArray elements to another array with
@@ -308,15 +308,15 @@ public class TestWriteRecord {
         Array    tValues = t.read();
         assert (tValues instanceof ArrayDouble.D3);
         ArrayDouble.D3 Ta = (ArrayDouble.D3) tValues;
-        assert Misc.closeEnough(Ta.get(0, 0, 0), 1.0f) : Ta.get(0, 0, 0);
-        assert Misc.closeEnough(Ta.get(1, 1, 1), 10.0f) : Ta.get(1, 1, 1);
+        assert Misc.nearlyEquals(Ta.get(0, 0, 0), 1.0f) : Ta.get(0, 0, 0);
+        assert Misc.nearlyEquals(Ta.get(1, 1, 1), 10.0f) : Ta.get(1, 1, 1);
 
         /* Read subset of the temperature data */
         tValues = t.read(new int[3], new int[] { 2, 2, 2 });
         assert (tValues instanceof ArrayDouble.D3);
         Ta = (ArrayDouble.D3) tValues;
-        assert Misc.closeEnough(Ta.get(0, 0, 0), 1.0f) : Ta.get(0, 0, 0);
-        assert Misc.closeEnough(Ta.get(1, 1, 1), 10.0f) : Ta.get(1, 1, 1);
+        assert Misc.nearlyEquals(Ta.get(0, 0, 0), 1.0f) : Ta.get(0, 0, 0);
+        assert Misc.nearlyEquals(Ta.get(1, 1, 1), 10.0f) : Ta.get(1, 1, 1);
 
       } catch (InvalidRangeException e) {
           e.printStackTrace();

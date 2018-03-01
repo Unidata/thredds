@@ -438,7 +438,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (!hasMissingValue)
       return false;
     for (double aMissingValue : missingValue)
-      if (Misc.closeEnough(val, aMissingValue))
+      if (Misc.nearlyEquals(val, aMissingValue))
         return true;
     return false;
   }

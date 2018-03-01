@@ -121,7 +121,7 @@ public class TestWaveModel {
       double[] expect = new double[]{21., 45.};
       Array data = time.getCoordsAsArray();
       for (int i = 0; i < expect.length; i++)
-        assert Misc.closeEnough(expect[i], data.getDouble(i));
+        assert Misc.nearlyEquals(expect[i], data.getDouble(i));
 
       CoverageCoordAxis runtime = gcs.getAxis(AxisType.RunTime);
       Assert.assertNotNull("runtime axis", runtime);
@@ -130,7 +130,7 @@ public class TestWaveModel {
       expect = new double[]{0, 24};
       data = runtime.getCoordsAsArray();
       for (int i = 0; i < expect.length; i++)
-        assert Misc.closeEnough(expect[i], data.getDouble(i));
+        assert Misc.nearlyEquals(expect[i], data.getDouble(i));
     }
   }
 

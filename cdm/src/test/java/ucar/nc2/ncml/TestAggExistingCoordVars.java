@@ -145,7 +145,7 @@ public class TestAggExistingCoordVars extends TestCase {
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
         double val = dataI.getDoubleNext();
-        assert Misc.closeEnough(val, result[count]) : val +" != "+ result[count];
+        assert Misc.nearlyEquals(val, result[count]) : val +" != "+ result[count];
         count++;
       }
 
@@ -225,7 +225,7 @@ public class TestAggExistingCoordVars extends TestCase {
       int count = 0;
       IndexIterator dataI = data.getIndexIterator();
       while (dataI.hasNext()) {
-        assert Misc.closeEnough(dataI.getDoubleNext(), result[count]);
+        assert Misc.nearlyEquals(dataI.getDoubleNext(), result[count]);
         count++;
       }
 

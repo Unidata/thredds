@@ -431,8 +431,8 @@ public class TestProjections {
       LatLonPoint ll = proj.projToLatLon(startP);
       ProjectionPoint endP = proj.latLonToProj(ll);
 
-      assert (TestAll.closeEnough(startP.getX(), endP.getX()));
-      assert (TestAll.closeEnough(startP.getY(), endP.getY()));
+      assert (TestAll.nearlyEquals(startP.getX(), endP.getX()));
+      assert (TestAll.nearlyEquals(startP.getY(), endP.getY()));
     }  */
 
     if (show)

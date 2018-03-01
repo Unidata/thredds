@@ -32,6 +32,8 @@
  */
 package ucar.unidata.geoloc;
 
+import ucar.nc2.util.Misc;
+
 /**
  * Points on the Earth's surface, represented as (longitude,latitude),
  * in units of degrees.
@@ -57,10 +59,19 @@ public interface LatLonPoint {
   double getLatitude();
 
   /**
-   * Returns true if this represents the same point as pt.
-   *
-   * @param pt point to check
-   * @return true if this represents the same point
+   * Returns the result of {@link #nearlyEquals(LatLonPoint, double)}, with {@link Misc#defaultMaxRelativeDiffDouble}.
    */
-  boolean equals(LatLonPoint pt);
+  default boolean nearlyEquals(LatLonPoint other) {
+    return nearlyEquals(other, Misc.defaultMaxRelativeDiffDouble);
+  }
+
+  /**
+   * Returns {@code true} if this point is nearly equal to {@code other}. The "near equality" of points is determined
+   * using {@link Misc#nearlyEquals(double, double, double)}, with the specified maxRelDiff.
+   *
+   * @param other    the other point to check.
+   * @param maxRelDiff  the maximum {@link Misc#relativeDifference relative difference} the two points may have.
+   * @return {@code true} if this point is nearly equal to {@code other}.
+   */
+  boolean nearlyEquals(LatLonPoint other, double maxRelDiff);
 }

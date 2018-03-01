@@ -59,7 +59,7 @@ public class GribCoverageValidator implements GribDataValidator {
       Assert.assertTrue("time coord lower", tinv[1] >= timeOffset);          // upper >= time
 
     } else {
-      Assert.assertEquals("offset coord", timeOffset, ptime.getForecastTime(), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(timeOffset, ptime.getForecastTime()));
     }
 
     // vert
@@ -75,14 +75,14 @@ public class GribCoverageValidator implements GribDataValidator {
         Assert.assertTrue("vert coord upper", upper >= wantVert);          // upper >= vert
 
       } else {
-        Assert.assertEquals("vert coord", lev1, wantVert, Misc.maxReletiveError);
+        Assert.assertTrue(Misc.nearlyEquals(lev1, wantVert));
       }
     }
 
     // ens
     Double wantEns = coords.getEnsCoord();
     if (wantEns != null) {
-      Assert.assertEquals("ens coord", pds.getPerturbationNumber(), wantEns, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(pds.getPerturbationNumber(), wantEns));
     }
 
   }
@@ -131,18 +131,18 @@ public class GribCoverageValidator implements GribDataValidator {
       //double upper = Math.max(level1val, level2val);
       //Assert.assertTrue("vert coord lower", lower <= wantVert);          // lower <= vert
       //Assert.assertTrue("vert coord upper", upper >= wantVert);          // upper >= vert
-      Assert.assertEquals("vert coord 1", vertCoordIntv[0], level1val, Misc.maxReletiveError);
-      Assert.assertEquals("vert coord 2", vertCoordIntv[1], level2val, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(vertCoordIntv[0], level1val));
+      Assert.assertTrue(Misc.nearlyEquals(vertCoordIntv[1], level2val));
 
     } else if (vertCoord != null) {
-      Assert.assertEquals("vert coord", vertCoord, level1val, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(vertCoord, level1val));
     }
 
     // ens
     Double wantEns = coords.getEnsCoord();
     if (wantEns != null) {
       Grib2Pds.PdsEnsemble pdse = (Grib2Pds.PdsEnsemble) pds;
-      Assert.assertEquals("ens coord", wantEns, pdse.getPerturbationNumber(), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(wantEns, pdse.getPerturbationNumber()));
     }
 
   }

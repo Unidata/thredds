@@ -318,9 +318,9 @@ public class TestAggSynthetic extends TestCase {
     assert (data instanceof ArrayDouble);
     IndexIterator dataI = data.getIndexIterator();
     double val = dataI.getDoubleNext();
-    assert Misc.closeEnough(val, 0.0) : val;
-    assert Misc.closeEnough(dataI.getDoubleNext(), 10.0) : dataI.getDoubleCurrent();
-    assert Misc.closeEnough(dataI.getDoubleNext(), 99.0) : dataI.getDoubleCurrent();
+    assert Misc.nearlyEquals(val, 0.0) : val;
+    assert Misc.nearlyEquals(dataI.getDoubleNext(), 10.0) : dataI.getDoubleCurrent();
+    assert Misc.nearlyEquals(dataI.getDoubleNext(), 99.0) : dataI.getDoubleCurrent();
   }
 
   public void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {

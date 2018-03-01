@@ -209,7 +209,7 @@ public class CoverageCoordAxisBuilder {
     for (int i = 0; i < values.length - 2; i += 2) {
       double diff = values[i + 2] - values[i];  // difference of consecutive starting interval values // LOOK roundoff
       resol.count(diff);
-      if (isContiguous && !Misc.closeEnough(values[i+1], values[i+2])) // difference of this ending interval values with next starting value
+      if (isContiguous && !Misc.nearlyEquals(values[i+1], values[i+2])) // difference of this ending interval values with next starting value
         isContiguous = false;
     }
 
@@ -226,7 +226,7 @@ public class CoverageCoordAxisBuilder {
     if (ncoords == 2) {
       double diff0 = values[1] - values[0];
       double diff1 = values[3] - values[2];
-      regular = Misc.closeEnough(diff0, diff1);
+      regular = Misc.nearlyEquals(diff0, diff1);
     }
 
     if (regular && isContiguous) {

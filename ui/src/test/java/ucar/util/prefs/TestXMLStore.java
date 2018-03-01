@@ -100,10 +100,10 @@ public class TestXMLStore {
     PreferencesExt prefs = store.getPreferences();
 
     double d = prefs.getDouble("testD", 0.0);
-    assert Misc.closeEnough(d, 3.14157) : "double failed " + d;
+    assert Misc.nearlyEquals(d, 3.14157) : "double failed " + d;
 
     float f = prefs.getFloat("testF", 0.0F);
-    assert Misc.closeEnough(f, 1.23456F) : "float failed";
+    assert Misc.nearlyEquals(f, 1.23456F) : "float failed";
 
     long ll = prefs.getLong("testL", 0);
     assert ll == 12345678900L : "long failed";
@@ -133,10 +133,10 @@ public class TestXMLStore {
     Preferences prefs = store.getPreferences().node("SemperUbi");
 
     double d = prefs.getDouble("testD", 0.0);
-    assert Misc.closeEnough(d, 3.14158) : "double failed";
+    assert Misc.nearlyEquals(d, 3.14158) : "double failed";
 
     float f = prefs.getFloat("testF", 0.0F);
-    assert Misc.closeEnough(f, 1.23457F) : "float failed";
+    assert Misc.nearlyEquals(f, 1.23457F) : "float failed";
 
     long ll = prefs.getLong("testL", 0);
     assert ll == 12345678901L : "long failed";

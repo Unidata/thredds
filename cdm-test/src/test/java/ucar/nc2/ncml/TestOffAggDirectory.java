@@ -138,9 +138,9 @@ public class TestOffAggDirectory extends TestCase {
     assert data.getElementType() == float.class;
 
     IndexIterator dataI = data.getIndexIterator();
-    assert Misc.closeEnough(dataI.getFloatNext(), 43.0f) : dataI.getFloatCurrent();
-    assert Misc.closeEnough(dataI.getFloatNext(), 43.01045f) : dataI.getFloatCurrent();
-    assert Misc.closeEnough(dataI.getFloatNext(), 43.020893f) : dataI.getFloatCurrent();
+    assert Misc.nearlyEquals(dataI.getFloatNext(), 43.0f) : dataI.getFloatCurrent();
+    assert Misc.nearlyEquals(dataI.getFloatNext(), 43.01045f) : dataI.getFloatCurrent();
+    assert Misc.nearlyEquals(dataI.getFloatNext(), 43.020893f) : dataI.getFloatCurrent();
 
   }
 
@@ -165,7 +165,7 @@ public class TestOffAggDirectory extends TestCase {
     int count = 0;
     IndexIterator dataI = data.getIndexIterator();
     while (dataI.hasNext())
-      assert Misc.closeEnough( dataI.getFloatNext(), vals[count++]);
+      assert Misc.nearlyEquals( dataI.getFloatNext(), vals[count++]);
   }
 
   public void testReadData(NetcdfFile ncfile) throws IOException {
@@ -197,7 +197,7 @@ public class TestOffAggDirectory extends TestCase {
     for (int i=0; i<shape[0]; i++) {
         double val = data.getDouble( tIndex.set(i, 133, 133));
         // System.out.println(" "+val);
-        assert Misc.closeEnough(vals[i], val) : val;
+        assert Misc.nearlyEquals(vals[i], val) : val;
       }
   }
 
@@ -232,7 +232,7 @@ public class TestOffAggDirectory extends TestCase {
         if (Double.isNaN(val))
           assert Double.isNaN(vals[i]);
         else
-          assert Misc.closeEnough(vals[i], val) : val;
+          assert Misc.nearlyEquals(vals[i], val) : val;
       }
   }
 

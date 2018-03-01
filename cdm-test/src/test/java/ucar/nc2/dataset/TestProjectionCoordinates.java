@@ -42,6 +42,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
@@ -108,11 +109,8 @@ public class TestProjectionCoordinates {
     System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
     System.out.printf( "end = %f %f%n", start2.getLatitude(), start2.getLongitude());
 
-    assert Misc.closeEnough(start1.getLatitude(), startLat) : Misc.howClose(start1.getLatitude(), startLat);
-    assert Misc.closeEnough(start1.getLongitude(), startLon) : Misc.howClose(start1.getLongitude(), startLon);
-
-    assert Misc.closeEnough(start2.getLatitude(), endLat,  2.0E-4) :  Misc.howClose(start2.getLatitude(), endLat);
-    assert Misc.closeEnough(start2.getLongitude(),endLon, 2.0E-4) : Misc.howClose(start2.getLongitude(), endLon);
+    assert start1.nearlyEquals(new LatLonPointImpl(startLat, startLon));
+    assert start2.nearlyEquals(new LatLonPointImpl(endLat, endLon), 2.0E-4);
 
     ncd.close();
   }

@@ -32,6 +32,8 @@
  */
 package ucar.unidata.geoloc;
 
+import ucar.nc2.util.Misc;
+
 import java.util.Formatter;
 
 /**
@@ -200,18 +202,22 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
   /**
    * East latitude in degrees, always +/- 90
    */
-  private double lat;
+  protected double lat;
 
   /**
    * North longitude in degrees, always +/- 180
    */
-  private double lon;
+  protected double lon;
 
   /**
    * Default constructor with values 0,0.
    */
   public LatLonPointImpl() {
-    this(0.0, 0.0);
+    // Don't initialize by calling setLatitude() and setLongitude(), as those methods throw
+    // UnsupportedOperationException in LatLonPointImmutable, and this constructor is (implicitly) invoked in the
+    // LatLonPointImmutable constructors.
+    this.lat = 0;
+    this.lon = 0;
   }
 
   /**
@@ -303,33 +309,29 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
     this.lat = latNormal(lat);
   }
 
-
-  /**
-   * Check for equality with another object.
-   *
-   * @param obj object to check
-   * @return true if this represents the same point as pt
-   */
-  public boolean equals(Object obj) {
-    if (!(obj instanceof LatLonPointImpl)) {
-      return false;
+  @Override
+  public boolean nearlyEquals(LatLonPoint other, double maxRelDiff) {
+    boolean lonOk = Misc.nearlyEquals(other.getLongitude(), this.lon, maxRelDiff);
+    if (!lonOk) {
+      lonOk = Misc.nearlyEquals(lonNormal360(other.getLongitude()), lonNormal360(this.lon), maxRelDiff);
     }
-    LatLonPointImpl that = (LatLonPointImpl) obj;
-    return (this.lat == that.lat) && (this.lon == that.lon);
+    return lonOk && Misc.nearlyEquals(other.getLatitude(), this.lat, maxRelDiff);
   }
 
-  /**
-   * Check for equality with another point.
-   *
-   * @param pt point to check
-   * @return true if this represents the same point as pt
-   */
-  public boolean equals(LatLonPoint pt) {
-    boolean lonOk = closeEnough(pt.getLongitude(), this.lon);
-    if (!lonOk) {
-      lonOk = closeEnough(lonNormal360(pt.getLongitude()), lonNormal360(this.lon));
+  // Exact comparison is needed in order to be consistent with hashCode().
+  @Override
+  public boolean equals(Object other) {
+    if (this == other) {
+      return true;
     }
-    return lonOk && closeEnough(pt.getLatitude(), this.lat);
+    if (!(other instanceof LatLonPoint)) {
+      return false;
+    }
+    LatLonPoint that = (LatLonPoint) other;
+    if (Double.compare(that.getLatitude(), this.getLatitude()) != 0) {
+      return false;
+    }
+    return Double.compare(that.getLongitude(), this.getLongitude()) == 0;
   }
 
   @Override
@@ -341,25 +343,6 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
     temp = Double.doubleToLongBits(lon);
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
-  }
-
-  /**
-   * Check to see if the values are close enough.
-   *
-   * @param d1 first value
-   * @param d2 second value
-   * @return true if they are pretty close
-   */
-  private boolean closeEnough(double d1, double d2) {
-    // TODO:  This should be moved to a utility method in ucar.util
-    // that all ucar classes could use.
-    if (d1 != 0.0) {
-      return Math.abs((d1 - d2) / d1) < 1.0e-9;
-    }
-    if (d2 != 0.0) {
-      return Math.abs((d1 - d2) / d2) < 1.0e-9;
-    }
-    return true;
   }
 
   /**
@@ -382,5 +365,4 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
     sbuff.format("%s %s", latToString(lat, sigDigits), lonToString(lon, sigDigits));
     return sbuff.toString();
   }
-
 }

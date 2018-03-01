@@ -520,24 +520,24 @@ public class CompareNetcdf2 {
 
   public boolean compareData(String name, Array data1, double[] data2) {
     Array data2a = Array.factory(DataType.DOUBLE, new int[]{data2.length}, data2);
-    return compareData(name, data1, data2a, TOL, false, false);
+    return compareData(name, data1, data2a, false, false);
   }
 
   public boolean compareData(String name, double[] data1, double[] data2) {
     Array data1a = Array.factory(DataType.DOUBLE, new int[]{data1.length}, data1);
     Array data2a = Array.factory(DataType.DOUBLE, new int[]{data2.length}, data2);
-    return compareData(name, data1a, data2a, TOL, false, false);
+    return compareData(name, data1a, data2a, false, false);
   }
 
   public boolean compareData(String name, Array data1, Array data2, boolean justOne) {
-    return compareData(name, data1, data2, TOL, justOne, true);
+    return compareData(name, data1, data2, justOne, true);
   }
 
   public boolean compareData(String name, Array data1, Array data2) {
-    return compareData(name, data1, data2, TOL, false, true);
+    return compareData(name, data1, data2, false, true);
   }
 
-  private boolean compareData(String name, Array data1, Array data2, double tol, boolean justOne, boolean testTypes) {
+  private boolean compareData(String name, Array data1, Array data2, boolean justOne, boolean testTypes) {
     boolean ok = true;
     if (data1.getSize() != data2.getSize()) {
       f.format(" DIFF %s: size %d !== %d%n", name, data1.getSize(), data2.getSize());
@@ -571,7 +571,7 @@ public class CompareNetcdf2 {
           if (justOne) break;
 
         } else if (v1 instanceof Array) {
-          ok &= compareData(name, (Array) v1, (Array) v2, tol, justOne, testTypes);
+          ok &= compareData(name, (Array) v1, (Array) v2, justOne, testTypes);
         }
       }
 
@@ -579,30 +579,28 @@ public class CompareNetcdf2 {
       while (iter1.hasNext() && iter2.hasNext()) {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
-        if (!Double.isNaN(v1) || !Double.isNaN(v2))
-          if (!Misc.closeEnough(v1, v2, tol)) {
-            f.format(" DIFF double %s: %f != %f count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
-            ok = false;
-            if (justOne) break;
-          }
+        if (!Misc.nearlyEquals(v1, v2)) {
+          f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
+          ok = false;
+          if (justOne) break;
+        }
       }
     } else if (dt == DataType.FLOAT) {
       while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
-        if (!Float.isNaN(v1) || !Float.isNaN(v2))
-          if (!Misc.closeEnough(v1, v2, (float) tol)) {
-            f.format(" DIFF float %s: %f != %f count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
-            ok = false;
-            if (justOne) break;
-          }
+        if (!Misc.nearlyEquals(v1, v2)) {
+          f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
+          ok = false;
+          if (justOne) break;
+        }
       }
     } else if (dt.getPrimitiveClassType() == int.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
         int v1 = iter1.getIntNext();
         int v2 = iter2.getIntNext();
         if (v1 != v2) {
-          f.format(" DIFF int %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+          f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
           ok = false;
           if (justOne) break;
         }
@@ -612,7 +610,7 @@ public class CompareNetcdf2 {
         short v1 = iter1.getShortNext();
         short v2 = iter2.getShortNext();
         if (v1 != v2) {
-          f.format(" DIFF short %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+          f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
           ok = false;
           if (justOne) break;
         }
@@ -622,7 +620,7 @@ public class CompareNetcdf2 {
         byte v1 = iter1.getByteNext();
         byte v2 = iter2.getByteNext();
         if (v1 != v2) {
-          f.format(" DIFF byte %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+          f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
           ok = false;
           if (justOne) break;
         }
@@ -632,7 +630,7 @@ public class CompareNetcdf2 {
         long v1 = iter1.getLongNext();
         long v2 = iter2.getLongNext();
         if (v1 != v2) {
-          f.format(" DIFF long %s: %d != %d count=%s diff = %f pdiff = %f %n", name, v1, v2, iter1, diff(v1, v2), pdiff(v1, v2));
+          f.format(createNumericDataDiffMessage(dt, name, v1, v2, iter1));
           ok = false;
           if (justOne) break;
         }
@@ -660,7 +658,7 @@ public class CompareNetcdf2 {
 
     } else if (dt == DataType.STRUCTURE) {
       while (iter1.hasNext() && iter2.hasNext()) {
-        compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), tol, justOne);
+        compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), justOne);
       }
 
     } else if (dt == DataType.OPAQUE) {
@@ -682,7 +680,13 @@ public class CompareNetcdf2 {
     return ok;
   }
 
-  public boolean compareStructureData(StructureData sdata1, StructureData sdata2, double tol, boolean justOne) {
+  private String createNumericDataDiffMessage(DataType dt, String name, Number v1, Number v2, IndexIterator iter) {
+    return String.format(" DIFF %s %s: %s != %s;  count = %s, absDiff = %s, relDiff = %s %n",
+            dt, name, v1, v2, iter, Misc.absoluteDifference(v1.doubleValue(), v2.doubleValue()),
+            Misc.relativeDifference(v1.doubleValue(), v2.doubleValue()));
+  }
+
+  public boolean compareStructureData(StructureData sdata1, StructureData sdata2, boolean justOne) {
     boolean ok = true;
 
     StructureMembers sm1 = sdata1.getStructureMembers();
@@ -697,21 +701,10 @@ public class CompareNetcdf2 {
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
       Array data1 = sdata1.getArray(m1);
       Array data2 = sdata2.getArray(m2);
-      ok &= compareData(m1.getName(), data1, data2, tol, justOne, true);
+      ok &= compareData(m1.getName(), data1, data2, justOne, true);
     }
 
     return ok;
-  }
-
-  static private final double TOL = 1.0e-5;
-  static private final float TOLF = 1.0e-5f;
-
-  static public double diff(double d1, double d2) {
-    return Math.abs(d1 - d2);
-  }
-
-  static public double pdiff(double d1, double d2) {
-    return 100 * Math.abs((d1 - d2) / d1);
   }
 
   public static void main(String arg[]) throws IOException {

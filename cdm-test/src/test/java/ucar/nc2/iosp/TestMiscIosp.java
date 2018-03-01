@@ -141,7 +141,7 @@ public class TestMiscIosp {
       Attribute att = v.findAttribute(CDM.MISSING_VALUE);
       assert att != null;
       assert att.getDataType() == DataType.FLOAT;
-      assert Misc.closeEnough(att.getNumericValue().floatValue(), -9999.0f);
+      assert Misc.nearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
@@ -160,7 +160,7 @@ public class TestMiscIosp {
       Attribute att = v.findAttribute(CDM.MISSING_VALUE);
       assert att != null;
       assert att.getDataType() == DataType.FLOAT;
-      assert Misc.closeEnough(att.getNumericValue().floatValue(), -9999.0f);
+      assert Misc.nearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
@@ -180,7 +180,7 @@ public class TestMiscIosp {
       Attribute att = v.findAttribute(CDM.MISSING_VALUE);
       assert att != null;
       assert att.getDataType() == DataType.FLOAT;
-      assert Misc.closeEnough(att.getNumericValue().floatValue(), -9999.0f);
+      assert Misc.nearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});

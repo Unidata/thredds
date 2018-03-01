@@ -112,17 +112,17 @@ public class TestScaleOffset {
       assert vs != null;
       readEnhanced = vs.read();
       //TestCompare.compareData(readEnhanced, unpacked);
-      closeEnough(packed, unpacked, readEnhanced, 1.0 / so.scale);
+      nearlyEquals(packed, unpacked, readEnhanced, 1.0 / so.scale);
     }
 
     Array cnvertPacked = MAMath.convert2Unpacked(readPacked, so);
     //TestCompare.compareData(readUnpacked, unpacked);
-    closeEnough(packed, cnvertPacked, readEnhanced, 1.0 / so.scale);
+    nearlyEquals(packed, cnvertPacked, readEnhanced, 1.0 / so.scale);
 
     doSubset(filename);
   }
 
-  void closeEnough(Array packed, Array data1, Array data2, double close) {
+  void nearlyEquals(Array packed, Array data1, Array data2, double close) {
     IndexIterator iterp = packed.getIndexIterator();
     IndexIterator iter1 = data1.getIndexIterator();
     IndexIterator iter2 = data2.getIndexIterator();

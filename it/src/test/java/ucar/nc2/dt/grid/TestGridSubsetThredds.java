@@ -159,7 +159,7 @@ public class TestGridSubsetThredds {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       logger.debug("projection mapArea = {}", pr);
-      assert (pr.closeEnough(gcs2.getBoundingBox()));
+      assert (pr.nearlyEquals(gcs2.getBoundingBox()));
     }
   }
 
@@ -189,7 +189,7 @@ public class TestGridSubsetThredds {
 
       ProjectionRect pr = gcs2.getProjection().getDefaultMapArea();
       logger.debug("projection mapArea = {}", pr);
-      assert (pr.closeEnough(gcs2.getBoundingBox()));
+      assert (pr.nearlyEquals(gcs2.getBoundingBox()));
     }
   }
 

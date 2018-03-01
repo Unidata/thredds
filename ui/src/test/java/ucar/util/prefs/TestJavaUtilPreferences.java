@@ -68,11 +68,11 @@ public class TestJavaUtilPreferences {
 
       userRoot.putDouble("testD", 3.14157);
       double d = userRoot.getDouble("testD", 0.0);
-      assert Misc.closeEnough(d, 3.14157) : "double failed";
+      assert Misc.nearlyEquals(d, 3.14157) : "double failed";
 
       userRoot.putFloat("testF", 1.23456F);
       float f = userRoot.getFloat("testF", 0.0F);
-      assert Misc.closeEnough(f, 1.23456F) : "float failed";
+      assert Misc.nearlyEquals(f, 1.23456F) : "float failed";
 
       userRoot.putLong("testL", 12345678900L);
       long ll = userRoot.getLong("testL", 0);
@@ -120,7 +120,7 @@ public class TestJavaUtilPreferences {
       }
 
       float f = subNode.getFloat("testF", 0.0F);
-      assert Misc.closeEnough(f, 1.23456F) : "float failed";
+      assert Misc.nearlyEquals(f, 1.23456F) : "float failed";
 
       long ll = subNode.getLong("testL", 0);
       assert ll == 12345678900L : "long failed";
