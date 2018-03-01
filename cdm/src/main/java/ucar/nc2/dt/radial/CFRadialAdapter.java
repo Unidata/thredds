@@ -54,10 +54,14 @@ import java.io.IOException;
 
 import java.util.*;
 
+import static ucar.ma2.MAMath.fuzzyEquals;
+
 /**
  * CF-Radial
  */
 public class CFRadialAdapter extends AbstractRadialAdapter {
+
+  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CFRadialAdapter.class);
 
   private NetcdfDataset ds = null;
   private double latv, lonv, elev;
@@ -70,6 +74,8 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   private int[] ray_n_gates;
   private int[] ray_start_index;
   private int nsweeps;
+  private boolean isStationary;
+  private boolean isStationaryChecked = false;
 
   /////////////////////////////////////////////////
   // TypedDatasetFactoryIF
@@ -193,7 +199,12 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
     try {
       Variable ga = ds.findVariable("latitude");
       if (ga != null) {
-        latv = ga.readScalarDouble();
+        if(ga.isScalar()) {
+          latv = ga.readScalarDouble();
+        } else {
+          Array gar = ga.read();
+          latv = gar.getDouble(0);
+        }
       } else {
         latv = 0.0;
       }
@@ -201,14 +212,23 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
       ga = ds.findVariable("longitude");
 
       if (ga != null) {
-        lonv = ga.readScalarDouble();
-      } else {
+        if(ga.isScalar()) {
+          lonv = ga.readScalarDouble();
+        } else {
+          Array gar = ga.read();
+          lonv = gar.getDouble(0);
+        }      } else {
         lonv = 0.0;
       }
 
       ga = ds.findVariable("altitude");
       if (ga != null) {
-        elev = ga.readScalarDouble();
+        if(ga.isScalar()) {
+          elev = ga.readScalarDouble();
+        } else {
+          Array gar = ga.read();
+          elev = gar.getDouble(0);
+        }
       } else {
         elev = 0.0;
       }
@@ -259,8 +279,34 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
   }
 
   public boolean isStationary() {
-    Variable lat = ds.findVariable("latitude");
-    return lat.getSize() == 1;
+    // only check once
+    if (!isStationaryChecked) {
+      Variable lat = ds.findVariable("latitude");
+      if (lat != null) {
+        if (lat.isScalar())
+          isStationary = lat.getSize() == 1;
+        else {
+          // if array, check to see if all of the values are
+          // approximately the same
+          Array gar = null;
+          try {
+            gar = lat.read();
+            Object firstVal = gar.getObject(0);
+            Array gar2 = gar.copy();
+            for (int i = 1; i < gar.getSize(); i++) {
+              gar2.setObject(i, firstVal);
+            }
+            isStationary = fuzzyEquals(gar, gar2);
+          } catch (IOException e) {
+            log.error("Error reading latitude variable {}. Cannot determine if " +
+                    "platform is stationary. Setting to default (false).", lat.getFullName());
+          }
+        }
+      }
+      isStationaryChecked = true;
+    }
+
+    return isStationary;
   }
 
   protected void setTimeUnits() throws Exception {

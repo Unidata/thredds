@@ -51,6 +51,8 @@ public class Grib1SectionIndicator {
 
   private final long messageLength;
   private final long startPos;
+  private final int messageLengthNotFixed;
+  boolean isMessageLengthFixed=false;
 
   /**
    * Read Grib2SectionIndicator from raf.
@@ -67,15 +69,21 @@ public class Grib1SectionIndicator {
       if (b[i] != MAGIC[i])
         throw new IllegalArgumentException("Not a GRIB record");
 
-    messageLength = GribNumbers.uint3(raf);
+    messageLengthNotFixed = GribNumbers.uint3(raf);
     int edition = raf.read();
     if (edition != 1)
       throw new IllegalArgumentException("Not a GRIB-1 record");
+    messageLength = Grib1RecordScanner.getFixedTotalLengthEcmwfLargeGrib(raf, messageLengthNotFixed);
+    if(messageLength!=messageLengthNotFixed) {
+    	isMessageLengthFixed = true;
+    }
   }
 
   public Grib1SectionIndicator(long startPos, long messageLength) {
     this.startPos = startPos;
     this.messageLength = messageLength;
+    this.messageLengthNotFixed = (int)messageLength;
+    this.isMessageLengthFixed = false;
   }
 
   /**
