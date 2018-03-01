@@ -131,11 +131,11 @@ public class GribCoverageValidator implements GribDataValidator {
       //double upper = Math.max(level1val, level2val);
       //Assert.assertTrue("vert coord lower", lower <= wantVert);          // lower <= vert
       //Assert.assertTrue("vert coord upper", upper >= wantVert);          // upper >= vert
-      Assert.assertTrue(Misc.nearlyEquals(vertCoordIntv[0], level1val));
-      Assert.assertTrue(Misc.nearlyEquals(vertCoordIntv[1], level2val));
+      Assert.assertTrue(Misc.nearlyEquals(vertCoordIntv[0], level1val, 1e-6));
+      Assert.assertTrue(Misc.nearlyEquals(vertCoordIntv[1], level2val, 1e-6));
 
     } else if (vertCoord != null) {
-      Assert.assertTrue(Misc.nearlyEquals(vertCoord, level1val));
+      Assert.assertTrue(Misc.nearlyEquals(vertCoord, level1val, 1e-6));
     }
 
     // ens

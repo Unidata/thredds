@@ -134,7 +134,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
-      Assert.assertTrue(Misc.nearlyEquals(0.244, testValue));
+      Assert.assertTrue(Misc.nearlyEquals(0.244f, testValue));
     }
   }
 
@@ -167,7 +167,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0,0,2,2));
-      Assert.assertTrue(Misc.nearlyEquals(0.073, testValue));
+      Assert.assertTrue(Misc.nearlyEquals(0.073f, testValue));
     }
   }
 
@@ -415,7 +415,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
-      Assert.assertTrue(Misc.nearlyEquals(244.8, testValue));
+      Assert.assertTrue(Misc.nearlyEquals(244.8f, testValue));
     }
   }
 
@@ -446,7 +446,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 0, 0));
-      Assert.assertTrue(Misc.nearlyEquals(244.3, testValue));
+      Assert.assertTrue(Misc.nearlyEquals(244.3f, testValue));
     }
   }
 

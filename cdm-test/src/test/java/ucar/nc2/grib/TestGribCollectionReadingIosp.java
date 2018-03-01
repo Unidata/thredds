@@ -84,8 +84,8 @@ public class TestGribCollectionReadingIosp {
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertTrue(Misc.nearlyEquals(300.33002, first));
-      Assert.assertTrue(Misc.nearlyEquals(279.49, last));
+      Assert.assertTrue(Misc.nearlyEquals(300.33002f, first));
+      Assert.assertTrue(Misc.nearlyEquals(279.49f, last));
     }
   }
 

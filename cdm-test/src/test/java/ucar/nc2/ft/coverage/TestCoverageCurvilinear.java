@@ -128,7 +128,7 @@ public class TestCoverageCurvilinear {
       System.out.printf("data shape=%s%n", Misc.showInts(data.getShape()));
       Assert.assertArrayEquals(geo.getCoordSysForData().getShape(), data.getShape());
 
-      int[] expectedShape = new int[] {1,166,160};
+      int[] expectedShape = new int[] {1, 165, 161};
       Assert.assertArrayEquals(expectedShape, data.getShape());
       //NCdumpW.printArray(data);
     }
@@ -159,8 +159,8 @@ public class TestCoverageCurvilinear {
       int[] expectedShape = new int[] {1,1,22,12};
       Assert.assertArrayEquals(expectedShape, data.getShape());
       // NCdumpW.printArray(data);
-      Assert.assertTrue(Misc.nearlyEquals(0.0036624447, data.getDouble(ima.set(0, 0, 0, 0))));
-      Assert.assertTrue(Misc.nearlyEquals(0.20564626, data.getDouble(ima.set(0, 0, 21, 11))));
+      Assert.assertTrue(Misc.nearlyEquals(0.0036624447, data.getDouble(ima.set(0, 0, 0, 0)), 1e-6));
+      Assert.assertTrue(Misc.nearlyEquals(0.20564626, data.getDouble(ima.set(0, 0, 21, 11)), 1e-6));
     }
   }
 
@@ -189,8 +189,8 @@ public class TestCoverageCurvilinear {
       int[] expectedShape = new int[] {1,151,171};
       Assert.assertArrayEquals(expectedShape, data.getShape());
       // NCdumpW.printArray(data);
-      Assert.assertTrue(Misc.nearlyEquals(1.782, data.getDouble(ima.set(0, 0, 0))));
-      Assert.assertTrue(Misc.nearlyEquals(1.769, data.getDouble(ima.set(0, 11, 0))));
+      Assert.assertTrue(Misc.nearlyEquals(1.782, data.getDouble(ima.set(0, 0, 0)), 1e-6));
+      Assert.assertTrue(Misc.nearlyEquals(1.769, data.getDouble(ima.set(0, 11, 0)), 1e-6));
     } catch (InvalidRangeException e) {
       e.printStackTrace();
     }

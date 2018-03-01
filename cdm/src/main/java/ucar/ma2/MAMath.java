@@ -710,9 +710,9 @@ public class MAMath {
 
   /**
    * Returns true if the specified arrays have the same size, signedness, and <b>approximately</b> equal corresponding
-   * elements. {@code float} elements must be within {@code 1.0e-5} of each other, as determined by
-   * {@link Misc#nearlyEquals(double, double, double)}. Similarly, {@code double} elements must be within
-   * {@code 1.0e-8} of each other.
+   * elements. {@code float} elements must be within {@link Misc#defaultMaxRelativeDiffFloat} of each other, as
+   * determined by {@link Misc#nearlyEquals(double, double, double)}. Similarly, {@code double} elements must be within
+   * {@link Misc#defaultMaxRelativeDiffDouble} of each other.
    * <p>
    * {@link #equals(Array, Array)} is an alternative to this method that requires that corresponding elements be
    * <b>exactly</b> equal. It is suitable for use in {@link Object#equals} implementations, whereas this method isn't.
@@ -739,14 +739,14 @@ public class MAMath {
       while (iter1.hasNext() && iter2.hasNext()) {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
-        if (!Misc.nearlyEquals(v1, v2, 1.0e-8))
+        if (!Misc.nearlyEquals(v1, v2, Misc.defaultMaxRelativeDiffDouble))
           return false;
       }
     } else if (dt == DataType.FLOAT) {
       while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
-        if (!Misc.nearlyEquals(v1, v2, 1.0e-5))
+        if (!Misc.nearlyEquals(v1, v2, Misc.defaultMaxRelativeDiffDouble))
           return false;
       }
     } else if (dt.getPrimitiveClassType() == int.class) {

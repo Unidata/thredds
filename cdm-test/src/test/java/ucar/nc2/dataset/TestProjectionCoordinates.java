@@ -109,7 +109,7 @@ public class TestProjectionCoordinates {
     System.out.printf( "start = %f %f%n", start1.getLatitude(), start1.getLongitude());
     System.out.printf( "end = %f %f%n", start2.getLatitude(), start2.getLongitude());
 
-    assert start1.nearlyEquals(new LatLonPointImpl(startLat, startLon));
+    assert start1.nearlyEquals(new LatLonPointImpl(startLat, startLon), 2.0E-4);
     assert start2.nearlyEquals(new LatLonPointImpl(endLat, endLon), 2.0E-4);
 
     ncd.close();

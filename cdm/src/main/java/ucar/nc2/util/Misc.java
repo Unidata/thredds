@@ -67,12 +67,20 @@ public class Misc {
    * @return   the absolute difference.
    */
   public static float absoluteDifference(float a, float b) {
-    return Math.abs(a - b);
+    if (Float.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+      return 0;
+    } else {
+      return Math.abs(a - b);
+    }
   }
 
   /** Same as {@link #absoluteDifference(float, float)}, but for doubles. */
   public static double absoluteDifference(double a, double b) {
-    return Math.abs(a - b);
+    if (Double.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+      return 0;
+    } else {
+      return Math.abs(a - b);
+    }
   }
 
   /**
@@ -92,7 +100,7 @@ public class Misc {
   public static float relativeDifference(float a, float b) {
     float absDiff = absoluteDifference(a, b);
 
-    if (a == b) {  // shortcut, handles infinities and NaNs
+    if (Float.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
       return 0;
     } else if (a == 0 || b == 0 || absDiff < Float.MIN_NORMAL) {
       return absDiff / Float.MIN_NORMAL;
@@ -106,7 +114,7 @@ public class Misc {
   public static double relativeDifference(double a, double b) {
     double absDiff = absoluteDifference(a, b);
 
-    if (a == b) {  // shortcut, handles infinities and NaNs
+    if (Double.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
       return 0;
     } else if (a == 0 || b == 0 || absDiff < Double.MIN_NORMAL) {
       return absDiff / Double.MIN_NORMAL;

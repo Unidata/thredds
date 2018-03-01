@@ -151,8 +151,8 @@ public class TestGribCoverageRead {
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
       System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertTrue(Misc.nearlyEquals(219.5, first));
-      Assert.assertTrue(Misc.nearlyEquals(218.6, last));
+      Assert.assertTrue(Misc.nearlyEquals(219.5f, first));
+      Assert.assertTrue(Misc.nearlyEquals(218.6f, last));
     }
   }
 
@@ -250,11 +250,11 @@ public class TestGribCoverageRead {
 
       float val = data.getFloat(0);
       System.out.printf("data val first = %f%n", val);
-      Assert.assertTrue(Misc.nearlyEquals(-0.10470009, val));
+      Assert.assertTrue(Misc.nearlyEquals(-0.10470009f, val));
 
       val = data.getFloat( (int)data.getSize()-1);
       System.out.printf("data val last = %f%n", val);
-      Assert.assertTrue(Misc.nearlyEquals(0.18079996, val));
+      Assert.assertTrue(Misc.nearlyEquals(0.18079996f, val));
     }
   }
 
