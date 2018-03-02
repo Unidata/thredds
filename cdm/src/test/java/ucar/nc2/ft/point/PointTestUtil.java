@@ -1,12 +1,12 @@
 package ucar.nc2.ft.point;
 
-import com.google.common.math.DoubleMath;
 import ucar.ma2.Array;
 import ucar.ma2.MAMath;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureMembers;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
+import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.EarthLocation;
 import ucar.unidata.geoloc.Station;
 
@@ -159,9 +159,9 @@ public class PointTestUtil {
 
         if (!equals(pointFeat1.getLocation(), pointFeat2.getLocation())) {
             return false;
-        } else if (!DoubleMath.fuzzyEquals(pointFeat1.getObservationTime(), pointFeat2.getObservationTime(), 1.0e-8)) {
+        } else if (!Misc.nearlyEquals(pointFeat1.getObservationTime(), pointFeat2.getObservationTime(), 1.0e-8)) {
             return false;
-        } else if (!DoubleMath.fuzzyEquals(pointFeat1.getNominalTime(), pointFeat2.getNominalTime(), 1.0e-8)) {
+        } else if (!Misc.nearlyEquals(pointFeat1.getNominalTime(), pointFeat2.getNominalTime(), 1.0e-8)) {
             return false;
         } else if (!equals(pointFeat1.getFeatureData(), pointFeat2.getFeatureData())) {
             return false;
@@ -181,13 +181,9 @@ public class PointTestUtil {
             return false;
         }
 
-        if (!DoubleMath.fuzzyEquals(loc1.getLatitude(), loc2.getLatitude(), 1.0e-8)) {
+        if (!loc1.getLatLon().nearlyEquals(loc2.getLatLon(), 1.0e-8)) {
             return false;
-        } else if (!DoubleMath.fuzzyEquals(loc1.getLongitude(), loc2.getLongitude(), 1.0e-8)) {
-            return false;
-        } else if (!DoubleMath.fuzzyEquals(loc1.getAltitude(), loc2.getAltitude(), 1.0e-8)) {
-            return false;
-        } else if (!Objects.deepEquals(loc1.getLatLon(), loc2.getLatLon())) {
+        } else if (!Misc.nearlyEquals(loc1.getAltitude(), loc2.getAltitude(), 1.0e-8)) {
             return false;
         } else if (!Objects.deepEquals(loc1.isMissing(), loc2.isMissing())) {
             return false;

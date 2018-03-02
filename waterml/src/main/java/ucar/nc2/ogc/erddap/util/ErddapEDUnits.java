@@ -4,7 +4,7 @@
  */
 package ucar.nc2.ogc.erddap.util;
 
-import com.google.common.math.DoubleMath;
+import ucar.nc2.util.Misc;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,7 +98,7 @@ public class ErddapEDUnits {
 
                 //use 'factor', since it is more forgiving than udunitsToUcum converter
                 String u;
-                if (DoubleMath.fuzzyEquals(baf[1], 0.001, 1e-6)) {  // Can't simply do "baf[1] == 0.001".
+                if (Misc.nearlyEquals(baf[1], 0.001, 1e-6)) {  // Can't simply do "baf[1] == 0.001".
                     u = "ms";
                 } else if (baf[1] == 1) {
                     u = "s";
