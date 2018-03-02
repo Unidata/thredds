@@ -34,7 +34,13 @@
 package ucar.unidata.geoloc.projection.sat;
 
 import ucar.nc2.constants.CF;
-import ucar.unidata.geoloc.*;
+import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.LatLonRect;
+import ucar.unidata.geoloc.ProjectionImpl;
+import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.ProjectionRect;
 
 /**
  * Describe: https://cf-pcmdi.llnl.gov/trac/ticket/72
@@ -83,10 +89,22 @@ import ucar.unidata.geoloc.*;
 
 public class Geostationary extends ProjectionImpl {
   private static final String NAME = CF.GEOSTATIONARY;
+  private boolean isGeoCoordinateScaled = false;
+  private double geoCoordinateScaleFactor;
+
   GEOSTransform navigation = null;
 
   public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
-            double semi_major_axis, double inv_flattening, boolean isSweepX) {
+                       double semi_major_axis, double inv_flattening, boolean isSweepX) {
+
+    // scale factors (last two doubles in the sig) less than zero indicate no scaling of map x, y coordinates
+    this(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX,
+            -1.0);
+  }
+
+  public Geostationary(double subLonDegrees, double perspective_point_height, double semi_minor_axis,
+            double semi_major_axis, double inv_flattening, boolean isSweepX,
+                       double geoCoordinateScaleFactor) {
     super(NAME, false);
 
     String scanGeometry = GEOSTransform.GOES;
@@ -102,6 +120,11 @@ public class Geostationary extends ProjectionImpl {
     // double subLonDegrees, double perspective_point_height, double semi_minor_axis, double semi_major_axis, double inverse_flattening, String sweep_angle_axis
     navigation = new GEOSTransform(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, scanGeometry);
     makePP();
+
+    if (geoCoordinateScaleFactor > 0) {
+      isGeoCoordinateScaled = true;
+      this.geoCoordinateScaleFactor = geoCoordinateScaleFactor;
+    }
   }
 
   public Geostationary() {
@@ -128,7 +151,7 @@ public class Geostationary extends ProjectionImpl {
     makePP();
   }
 
-  public Geostationary(double subLonDegrees, String sweepAngleAxis) {
+  public Geostationary(double subLonDegrees, String sweepAngleAxis, double geoCoordinateScaleFactor) {
     super(NAME, false);
     String scanGeometry = GEOSTransform.GOES;
 
@@ -140,6 +163,12 @@ public class Geostationary extends ProjectionImpl {
     }
 
     navigation = new GEOSTransform(subLonDegrees, scanGeometry);
+
+    if (geoCoordinateScaleFactor > 0) {
+      isGeoCoordinateScaled = true;
+      this.geoCoordinateScaleFactor = geoCoordinateScaleFactor;
+    }
+
     makePP();
   }
 
@@ -158,7 +187,7 @@ public class Geostationary extends ProjectionImpl {
    */
   @Override
   public ProjectionImpl constructCopy() {
-    return new Geostationary(navigation.sub_lon_degrees, navigation.scan_geom);
+    return new Geostationary(navigation.sub_lon_degrees, navigation.scan_geom, geoCoordinateScaleFactor);
   }
 
   @Override
@@ -169,13 +198,22 @@ public class Geostationary extends ProjectionImpl {
   @Override
   public ProjectionPoint latLonToProj(LatLonPoint latlon, ProjectionPointImpl destPoint) {
     double[] satCoords = navigation.earthToSat(latlon.getLongitude(), latlon.getLatitude());
+    double x = satCoords[0];
+    double y = satCoords[1];
+
+    // scale back to required units of x, y (we need them in radians)
+    if (isGeoCoordinateScaled) x = x * geoCoordinateScaleFactor;
+
     destPoint.setLocation(satCoords[0], satCoords[1]);
     return destPoint;
   }
 
   @Override
   public LatLonPoint projToLatLon(ProjectionPoint ppt, LatLonPointImpl destPoint) {
-    double[] lonlat = navigation.satToEarth(ppt.getX(), ppt.getY());
+    double x = ppt.getX();
+    double y = ppt.getY();
+    if (isGeoCoordinateScaled) x = x * geoCoordinateScaleFactor;
+    double[] lonlat = navigation.satToEarth(x, y);
     destPoint.setLongitude(lonlat[0]);
     destPoint.setLatitude(lonlat[1]);
     return destPoint;
@@ -187,8 +225,16 @@ public class Geostationary extends ProjectionImpl {
     if (ProjectionPointImpl.isInfinite(pt1) || ProjectionPointImpl.isInfinite(pt2))
       return true;
 
+    double x1 = pt1.getX();
+    double x2 = pt2.getX();
+
+    if (isGeoCoordinateScaled) {
+      x1 = x1 * geoCoordinateScaleFactor;
+      x2 = x2 * geoCoordinateScaleFactor;
+    }
+
     // opposite signed X values, larger then 100 km
-    return (pt1.getX() * pt2.getX() < 0) && (Math.abs(pt1.getX() - pt2.getX()) > 100);
+    return (x1 * x2 < 0) && (Math.abs(x1 - x2) > 100);
   }
 
   @Override
@@ -199,6 +245,8 @@ public class Geostationary extends ProjectionImpl {
     Geostationary that = (Geostationary) o;
 
     if (!navigation.equals(that.navigation)) return false;
+
+    if (!(geoCoordinateScaleFactor == that.geoCoordinateScaleFactor)) return false;
 
     return true;
   }
