@@ -33,7 +33,6 @@
 package ucar.ma2;
 
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
 import ucar.nc2.util.Misc;
@@ -711,8 +710,9 @@ public class MAMath {
 
   /**
    * Returns true if the specified arrays have the same size, signedness, and <b>approximately</b> equal corresponding
-   * elements. {@code float} elements must be within {@code 1.0e-5} of each other and {@code double} elements must be
-   * within {@code 1.0e-8} of each other.
+   * elements. {@code float} elements must be within {@link Misc#defaultMaxRelativeDiffFloat} of each other, as
+   * determined by {@link Misc#nearlyEquals(double, double, double)}. Similarly, {@code double} elements must be within
+   * {@link Misc#defaultMaxRelativeDiffDouble} of each other.
    * <p>
    * {@link #equals(Array, Array)} is an alternative to this method that requires that corresponding elements be
    * <b>exactly</b> equal. It is suitable for use in {@link Object#equals} implementations, whereas this method isn't.
@@ -721,7 +721,7 @@ public class MAMath {
    * @param data2  the other array to be tested for equality.
    * @return true if the specified arrays have the same size, signedness, and approximately equal corresponding elems.
    */
-  public static boolean fuzzyEquals(Array data1, Array data2) {
+  public static boolean nearlyEquals(Array data1, Array data2) {
     if (data1 == data2) {  // Covers case when both are null.
       return true;
     } else if (data1 == null || data2 == null) {
@@ -739,17 +739,15 @@ public class MAMath {
       while (iter1.hasNext() && iter2.hasNext()) {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
-        if (!Double.isNaN(v1) || !Double.isNaN(v2))
-          if (!Misc.closeEnough(v1, v2, 1.0e-8))
-            return false;
+        if (!Misc.nearlyEquals(v1, v2, Misc.defaultMaxRelativeDiffDouble))
+          return false;
       }
     } else if (dt == DataType.FLOAT) {
       while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
-        if (!Float.isNaN(v1) || !Float.isNaN(v2))
-          if (!Misc.closeEnough(v1, v2, 1.0e-5))
-            return false;
+        if (!Misc.nearlyEquals(v1, v2, Misc.defaultMaxRelativeDiffDouble))
+          return false;
       }
     } else if (dt.getPrimitiveClassType() == int.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
@@ -775,6 +773,12 @@ public class MAMath {
         long v2 = iter2.getLongNext();
         if (v1 != v2) return false;
       }
+    } else {
+      while (iter1.hasNext() && iter2.hasNext()) {
+        if (!Objects.equals(iter1.next(), iter2.next())) {
+          return false;
+        }
+      }
     }
 
     return true;
@@ -789,7 +793,7 @@ public class MAMath {
    * because it's <b>impossible</b> to write a strictly-conforming {@link Object#equals} implementation when an
    * epsilon is incorporated, due to the transitivity requirement.
    * <p>
-   * {@link #fuzzyEquals} is an alternative to this method that returns true if the corresponding elements are
+   * {@link #nearlyEquals} is an alternative to this method that returns true if the corresponding elements are
    * "approximately" equal to each other.
    *
    * @param array1 one array to be tested for equality.
@@ -805,14 +809,14 @@ public class MAMath {
       return false;
     }
 
-    // MAMath.isEquals() does not require DataTypes to be equal, but in so doing, it becomes non-symmetric.
+    // MAMath.nearlyEquals() does not require DataTypes to be equal, but in so doing, it becomes non-symmetric.
     // For example, suppose we have 2 arrays:
     //     ArrayLong  al;
     //     ArrayShort as;
     // If al contains elements that don't fit in a short, we could have the following:
-    //     MAMath.isEquals(al, as);  // true
-    //     MAMath.isEquals(as, al);  // false
-    // This is because when MAMath.isEquals() does comparisons, elements from the 2nd array are converted to the
+    //     MAMath.nearlyEquals(al, as);  // true
+    //     MAMath.nearlyEquals(as, al);  // false
+    // This is because when MAMath.nearlyEquals() does comparisons, elements from the 2nd array are converted to the
     // type of the 1st array.
     //
     // In our implementation, we avoid this problem--and thus preserve symmetry--by insisting that the element
@@ -823,7 +827,7 @@ public class MAMath {
       return false;
     }
 
-    // MAMath.isEquals() only requires that the 2 arrays have the same size, not the same shape. That was an
+    // MAMath.nearlyEquals() only requires that the 2 arrays have the same size, not the same shape. That was an
     // option I considered. Also, there's MAMath.conformable(), which returns true if shapes are equal after
     // reduction (e.g. { 3,4,5 } and { 3,1,4,1,5 } are conformable). By definition, conformable arrays have
     // the same size.
@@ -833,7 +837,7 @@ public class MAMath {
     // operations on them and get the same result. But imagine this:
     //     Array a1 = Array.factory(DataType.INT, new int[] { 3,4 }, new int[] { 0,1,2,3,4,5,6,7,8,9,10,11 });
     //     Array a2 = Array.factory(DataType.INT, new int[] { 2,6 }, new int[] { 0,1,2,3,4,5,6,7,8,9,10,11 });
-    // MAMath.isEquals() will consider the arrays equal because they have the same size, but:
+    // MAMath.nearlyEquals() will consider the arrays equal because they have the same size, but:
     //     a1.getInt(a1.getIndex().set(1, 1)) == 5
     //     a2.getInt(a2.getIndex().set(1, 1)) == 7
     if (!Arrays.equals(array1.getShape(), array2.getShape())) {

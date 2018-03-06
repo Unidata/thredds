@@ -81,6 +81,9 @@ public class GribCoordsMatchGbx {
   private static final int MAX_READS = -1;
   private static final boolean showMissing = false;
 
+  // The maximum relative difference for floating-point comparisons.
+  private static final double maxRelDiff = 1e-6;
+
   public static Counters getCounters() {
     Counters countersAll = new Counters();
     countersAll.add(KIND_GRID);
@@ -108,7 +111,7 @@ public class GribCoordsMatchGbx {
     return result;
   }
 
-  boolean closeEnough(CalendarDate date1, CalendarDate date2) {
+  boolean nearlyEquals(CalendarDate date1, CalendarDate date2) {
     return Math.abs(date1.getMillis() - date2.getMillis()) < 5000; // 5 secs
   }
 
@@ -446,8 +449,8 @@ public class GribCoordsMatchGbx {
       if (edge != null) {
        // double low = Math.min(edge[0], edge[1]);
         //double hi = Math.max(edge[0], edge[1]);
-        vertOk &= Misc.closeEnough(edge[0], plevel.getValue1());
-        vertOk &= Misc.closeEnough(edge[1], plevel.getValue2());
+        vertOk &= Misc.nearlyEquals(edge[0], plevel.getValue1(), maxRelDiff);
+        vertOk &= Misc.nearlyEquals(edge[1], plevel.getValue2(), maxRelDiff);
         if (!vertOk) {
           tryAgain(coords);
           logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, edge[0], edge[1],
@@ -455,7 +458,7 @@ public class GribCoordsMatchGbx {
         }
       }
     } else if (vert_val != null) {
-      vertOk &= Misc.closeEnough(vert_val,  plevel.getValue1());
+      vertOk &= Misc.nearlyEquals(vert_val,  plevel.getValue1(), maxRelDiff);
       if (!vertOk) {
         tryAgain(coords);
         logger.debug("{} {} failed on vert {} != {}", kind, name, vert_val,  plevel.getValue1());
@@ -558,8 +561,8 @@ public class GribCoordsMatchGbx {
         date_bounds = makeDateBounds(coords, rt_val);
       }
       if (date_bounds != null) {
-        timeOk &= closeEnough(date_bounds[0], dateFromGribRecord.getStart());
-        timeOk &= closeEnough(date_bounds[1], dateFromGribRecord.getEnd());
+        timeOk &= nearlyEquals(date_bounds[0], dateFromGribRecord.getStart());
+        timeOk &= nearlyEquals(date_bounds[1], dateFromGribRecord.getEnd());
       }
       if (!timeOk) {
         tryAgain(coords);
@@ -570,7 +573,7 @@ public class GribCoordsMatchGbx {
     } else if (time_val != null) {
       // timeOk &= timeCoord == bean.getTimeCoordValue();   // true if GC
       CalendarDate dateFromGribRecord = bean.getForecastDate();
-      timeOk &= closeEnough(time_val, dateFromGribRecord);
+      timeOk &= nearlyEquals(time_val, dateFromGribRecord);
       if (!timeOk) {
         tryAgain(coords);
         logger.debug("{} {} failed on time {} != {}", kind, name, time_val, bean.getTimeCoord());
@@ -584,15 +587,15 @@ public class GribCoordsMatchGbx {
       vertOk &= bean.isLayer();
       double low = Math.min(edge[0], edge[1]);
       double hi = Math.max(edge[0], edge[1]);
-      vertOk &= Misc.closeEnough(low, bean.getLevelLowValue());
-      vertOk &= Misc.closeEnough(hi, bean.getLevelHighValue());
+      vertOk &= Misc.nearlyEquals(low, bean.getLevelLowValue(), maxRelDiff);
+      vertOk &= Misc.nearlyEquals(hi, bean.getLevelHighValue(), maxRelDiff);
       if (!vertOk) {
         tryAgain(coords);
         logger.debug("{} {} failed on vert [{},{}] != [{},{}]", kind, name, low, hi, bean.getLevelLowValue(),
                 bean.getLevelHighValue());
       }
     } else if (vert_val != null) {
-      vertOk &= Misc.closeEnough(vert_val, bean.getLevelValue1());
+      vertOk &= Misc.nearlyEquals(vert_val, bean.getLevelValue1(), maxRelDiff);
       if (!vertOk) {
         tryAgain(coords);
         logger.debug("{} {} failed on vert {} != {}", kind, name, vert_val, bean.getLevelValue1());

@@ -33,8 +33,10 @@
 package ucar.unidata.geoloc;
 
 import com.google.common.base.Preconditions;
+import ucar.nc2.util.Misc;
 import ucar.unidata.util.Format;
 
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 /**
@@ -200,7 +202,6 @@ public class LatLonRect {
     return new LatLonPointImpl(lowerLeft.getLatitude(), upperRight.getLongitude());
   }
 
-
   /**
    * Get whether the bounding box crosses the +/- 180 seam
    *
@@ -210,29 +211,40 @@ public class LatLonRect {
     return crossDateline;
   }
 
+  // Exact comparison is needed in order to be consistent with hashCode().
+  @Override public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    LatLonRect that = (LatLonRect) o;
+    return Objects.equals(upperRight, that.upperRight) && Objects.equals(lowerLeft, that.lowerLeft);
+  }
+
+  @Override public int hashCode() {
+    return Objects.hash(upperRight, lowerLeft);
+  }
+
   /**
-   * determine whether two bounding boxes are equal in values
-   *
-   * @param other other bounding box
-   * @return true if this represents the same bounding box as other
+   * Returns the result of {@link #nearlyEquals(LatLonRect, double)}, with {@link Misc#defaultMaxRelativeDiffFloat}.
    */
-  public boolean equals(LatLonRect other) {
-    return lowerLeft.equals(other.getLowerLeftPoint())
-        && upperRight.equals(other.getUpperRightPoint());
+  public boolean nearlyEquals(LatLonRect other) {
+    return nearlyEquals(other, Misc.defaultMaxRelativeDiffFloat);
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    return equals((LatLonRect) o);
-  }
-
-  @Override
-  public int hashCode() {
-    int result = upperRight.hashCode();
-    result = 31 * result + lowerLeft.hashCode();
-    return result;
+  /**
+   * Returns {@code true} if this rectangle is nearly equal to {@code other}. The "near equality" of corners is
+   * determined using {@link LatLonPoint#nearlyEquals(LatLonPoint, double)}, with the specified maxRelDiff.
+   *
+   * @param other    the other rectangle to check.
+   * @param maxRelDiff  the maximum {@link Misc#relativeDifference relative difference} that two corners may have.
+   * @return {@code true} if this rectangle is nearly equal to {@code other}.
+   */
+  public boolean nearlyEquals(LatLonRect other, double maxRelDiff) {
+    return this.getLowerLeftPoint() .nearlyEquals(other.getLowerLeftPoint(),  maxRelDiff) &&
+           this.getUpperRightPoint().nearlyEquals(other.getUpperRightPoint(), maxRelDiff);
   }
 
   /**
@@ -555,11 +567,4 @@ public class LatLonRect {
     return " lat= [" + Format.dfrac(getLatMin(), 2) + "," + Format.dfrac(getLatMax(), 2) +
         "] lon= [" + Format.dfrac(getLonMin(), 2) + "," + Format.dfrac(getLonMax(), 2) + "]";
   }
-
-  /* public static void main(String args[]) {
-    // ll: 63.45S 180.0W+ ur: 74.65N 180.0E does not contains point 74.65N 50.26E
-    LatLonRect rect = LatLonRect.parse("ll: 63.45S 180.0W+ ur: 74.65N 180.0E");
-    LatLonPointImpl pt = LatLonPointImpl.parse("74.65N 50.26E");
-  }  */
-
 }

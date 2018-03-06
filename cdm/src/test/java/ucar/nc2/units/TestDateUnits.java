@@ -142,7 +142,7 @@ public class TestDateUnits {
 
     value = du.makeValue(d);
     System.out.println("testDateValue " + value + " == " + formatter.toDateTimeStringISO(d));
-    assert Misc.closeEnough(value, 365) : value;
+    assert Misc.nearlyEquals(value, 365) : value;
   }
 
   private void showUnitInfo(Unit uu) {

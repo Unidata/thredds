@@ -42,8 +42,8 @@ public class TestCoordinateND {
     System.out.printf("%s%n", f);
     System.out.printf("reindexed %s%n====================%n", counter.show());
 
-    assert Misc.closeEnough(curr.getSparseArray().getDensity(), 1.0);
-    assert Misc.closeEnough(reindexed.getSparseArray().getDensity(), .826446);
+    assert Misc.nearlyEquals(curr.getSparseArray().getDensity(), 1.0f);
+    assert Misc.nearlyEquals(reindexed.getSparseArray().getDensity(), .826446f);
   }
 
   static public CoordinateND<Short> makeCoordinateND(int rank, int size) {

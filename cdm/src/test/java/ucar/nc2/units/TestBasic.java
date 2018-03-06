@@ -62,7 +62,7 @@ public class TestBasic extends TestCase {
       if (debug) System.out.println("5 knots is " +
         knot.convertTo(5, meterPerSecondUnit) +
         ' ' + format.format(meterPerSecondUnit));
-      assert(Misc.closeEnough(2.5722222, knot.convertTo(5, meterPerSecondUnit)));
+      assert Misc.nearlyEquals(2.5722222f, knot.convertTo(5, meterPerSecondUnit));
 
     } catch (Exception e) {
       System.out.println("Exception " + e);
@@ -84,7 +84,7 @@ public class TestBasic extends TestCase {
 
     try {
       if (debug) System.out.println("t2.convertTo(0.0, t1) " +t2.convertTo(0.0, t1));
-      assert(Misc.closeEnough(86400.0, t2.convertTo(0.0, t1)));
+      assert(Misc.nearlyEquals(86400.0, t2.convertTo(0.0, t1)));
     } catch (Exception e) {
       System.out.println("testTimeConversion failed 2 =" +e);
     }
@@ -105,7 +105,7 @@ public class TestBasic extends TestCase {
 
     try {
       System.out.println("t2.convertTo(0.0, t1) " +t2.convertTo(0.0, t1));
-      // assert(closeEnough(86400.0, t2.convertTo(0.0, t1)));
+      // assert(nearlyEquals(86400.0, t2.convertTo(0.0, t1)));
     } catch (Exception e) {
       System.out.println("testTimeConversion failed 2 =" +e);
     }

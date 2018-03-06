@@ -39,9 +39,9 @@ package ucar.unidata.geoloc;
  * @author caron
  * @since 7/29/2014
  */
-public class LatLonPointImmutable implements LatLonPoint {
-  public static final LatLonPointImmutable INVALID = new LatLonPointImmutable(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
-  private final double lat, lon;
+public class LatLonPointImmutable extends LatLonPointImpl {
+  public static final LatLonPointImmutable INVALID = new LatLonPointImmutable(
+          Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
   public LatLonPointImmutable(double lat, double lon) {
     this.lat = lat;
@@ -49,43 +49,22 @@ public class LatLonPointImmutable implements LatLonPoint {
   }
 
   public LatLonPointImmutable(LatLonPoint pt) {
-    this.lat = pt.getLatitude();
-    this.lon = pt.getLongitude();
+    this(pt.getLatitude(), pt.getLongitude());
   }
 
+  /**
+   * @throws UnsupportedOperationException because instances of this class are meant to be immutable.
+   */
   @Override
-  public double getLongitude() {
-    return lon;
+  public void setLongitude(double lon) throws UnsupportedOperationException {
+    throw new UnsupportedOperationException("Instances of this class are meant to be immutable.");
   }
 
+  /**
+   * @throws UnsupportedOperationException because instances of this class are meant to be immutable.
+   */
   @Override
-  public double getLatitude() {
-    return lat;
-  }
-
-  @Override
-  public boolean equals(LatLonPoint pt) {
-    if (Double.compare(pt.getLatitude(), lat) != 0) return false;
-    if (Double.compare(pt.getLongitude(), lon) != 0) return false;
-    return true;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof LatLonPoint)) return false;
-    LatLonPoint that = (LatLonPoint) o;
-    return equals(that);
-  }
-
-  @Override
-  public int hashCode() {
-    int result;
-    long temp;
-    temp = Double.doubleToLongBits(lat);
-    result = (int) (temp ^ (temp >>> 32));
-    temp = Double.doubleToLongBits(lon);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    return result;
+  public void setLatitude(double lat) {
+    throw new UnsupportedOperationException("Instances of this class are meant to be immutable.");
   }
 }

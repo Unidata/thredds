@@ -47,7 +47,7 @@ public class TestScanMode {
 
     Index ima = data.getIndex();
     float val = data.getFloat(ima);
-    assert Misc.closeEnough(val, 5.0192626E-5);
+    assert Misc.nearlyEquals(val, 5.0192626E-5);
 
     gds.close();
   }
@@ -71,7 +71,7 @@ public class TestScanMode {
 
     Index ima = data.getIndex();
     float val = data.getFloat(ima);
-    assert Misc.closeEnough(val, 0.0);
+    assert Misc.nearlyEquals(val, 0.0);
 
     gds.close();
   }

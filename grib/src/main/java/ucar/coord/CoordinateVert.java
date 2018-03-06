@@ -90,7 +90,7 @@ public class CoordinateVert implements Coordinate {
     } else {
       for (int i=0; i<levelSorted.size(); i++) {
         VertCoord.Level level = levelSorted.get(i);
-        if (Misc.closeEnough(need, level.getValue1())) return i;
+        if (Misc.nearlyEquals(need, level.getValue1())) return i;
       }
       return -1;
     }

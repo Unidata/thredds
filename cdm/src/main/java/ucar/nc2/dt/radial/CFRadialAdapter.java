@@ -54,7 +54,7 @@ import java.io.IOException;
 
 import java.util.*;
 
-import static ucar.ma2.MAMath.fuzzyEquals;
+import static ucar.ma2.MAMath.nearlyEquals;
 
 /**
  * CF-Radial
@@ -296,7 +296,7 @@ public class CFRadialAdapter extends AbstractRadialAdapter {
             for (int i = 1; i < gar.getSize(); i++) {
               gar2.setObject(i, firstVal);
             }
-            isStationary = fuzzyEquals(gar, gar2);
+            isStationary = nearlyEquals(gar, gar2);
           } catch (IOException e) {
             log.error("Error reading latitude variable {}. Cannot determine if " +
                     "platform is stationary. Setting to default (false).", lat.getFullName());

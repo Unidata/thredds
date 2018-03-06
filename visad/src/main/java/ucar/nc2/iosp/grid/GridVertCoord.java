@@ -503,7 +503,7 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
      */
     public int compareTo(Object o) {
       LevelCoord other = (LevelCoord) o;
-      // if (closeEnough(value1, other.value1) && closeEnough(value2, other.value2)) return 0;
+      // if (nearlyEquals(value1, other.value1) && nearlyEquals(value2, other.value2)) return 0;
       if (mid < other.mid) {
         return -1;
       }
@@ -527,8 +527,8 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
         return false;
       }
       LevelCoord other = (LevelCoord) oo;
-      return (ucar.nc2.util.Misc.closeEnough(value1, other.value1)
-          && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
+      return (ucar.nc2.util.Misc.nearlyEquals(value1, other.value1)
+          && ucar.nc2.util.Misc.nearlyEquals(value2, other.value2));
     }
 
     /**
@@ -558,11 +558,11 @@ public class GridVertCoord implements Comparable<GridVertCoord> {
     for (int i = 0; i < levels.size(); i++) {
       LevelCoord lc = (LevelCoord) levels.get(i);
       if (usesBounds) {
-        if (ucar.nc2.util.Misc.closeEnough(lc.value1, val) && ucar.nc2.util.Misc.closeEnough(lc.value2, val2)) {
+        if (ucar.nc2.util.Misc.nearlyEquals(lc.value1, val) && ucar.nc2.util.Misc.nearlyEquals(lc.value2, val2)) {
           return i;
         }
       } else {
-        if (ucar.nc2.util.Misc.closeEnough(lc.value1, val)) {
+        if (ucar.nc2.util.Misc.nearlyEquals(lc.value1, val)) {
           return i;
         }
       }

@@ -413,7 +413,7 @@ public abstract class Grib2Gds {
       super.finish();
 
       if (lo2 < lo1) lo2 += 360.0F;
-      if (Misc.closeEnough(lo1, lo2)) { // canadian met has global with lo1 = lo2 = 180
+      if (Misc.nearlyEquals(lo1, lo2)) { // canadian met has global with lo1 = lo2 = 180
         lo1 -= 360.0F;
       }
 
@@ -421,7 +421,7 @@ public abstract class Grib2Gds {
       float scale = getScale();
       deltaLon = getOctet4(64) * scale;
       float calcDelta = (lo2 - lo1) / (getNx() - 1); // more accurate - deltaLon may have roundoff
-      if (!Misc.closeEnough(deltaLon, calcDelta)) {
+      if (!Misc.nearlyEquals(deltaLon, calcDelta)) {
         log.debug("deltaLon {} != calcDeltaLon {}", deltaLon, calcDelta);
         deltaLon = calcDelta;
       }
@@ -429,7 +429,7 @@ public abstract class Grib2Gds {
       deltaLat = getOctet4(68) * scale;
       if (la2 < la1) deltaLat = -deltaLat;
       calcDelta = (la2 - la1) / (getNy() - 1); // more accurate - deltaLat may have roundoff
-      if (!Misc.closeEnough(deltaLat, calcDelta)) {
+      if (!Misc.nearlyEquals(deltaLat, calcDelta)) {
         log.debug("deltaLat {} != calcDeltaLat {}", deltaLat, calcDelta);
         deltaLat = calcDelta;
       }
@@ -447,11 +447,11 @@ public abstract class Grib2Gds {
       if (!super.equals(o)) return false;
 
       LatLon other = (LatLon) o;
-      if (!Misc.closeEnoughAbs(la1, other.la1, maxReletiveErrorPos * deltaLat))
+      if (!Misc.nearlyEqualsAbs(la1, other.la1, maxReletiveErrorPos * deltaLat))
         return false;   // allow some slop, reletive to grid size
-      if (!Misc.closeEnoughAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
-      if (!Misc.closeEnoughAbs(la2, other.la2, maxReletiveErrorPos * deltaLat)) return false;
-      if (!Misc.closeEnoughAbs(lo2, other.lo2, maxReletiveErrorPos * deltaLon)) return false;
+      if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
+      if (!Misc.nearlyEqualsAbs(la2, other.la2, maxReletiveErrorPos * deltaLat)) return false;
+      if (!Misc.nearlyEqualsAbs(lo2, other.lo2, maxReletiveErrorPos * deltaLon)) return false;
       return true;
     }
 
@@ -768,12 +768,12 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
 
       Mercator that = (Mercator) o;
 
-      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY))
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY))
         return false;   // allow some slop, reletive to grid size
-      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
-      if (!Misc.closeEnoughAbs(lad, that.lad, maxReletiveErrorPos * dY)) return false;
-      if (!Misc.closeEnough(dY, that.dY)) return false;
-      if (!Misc.closeEnough(dX, that.dX)) return false;
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.nearlyEqualsAbs(lad, that.lad, maxReletiveErrorPos * dY)) return false;
+      if (!Misc.nearlyEquals(dY, that.dY)) return false;
+      if (!Misc.nearlyEquals(dX, that.dX)) return false;
 
       return true;
     }
@@ -784,8 +784,8 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
         int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
         int useLad = (int) Math.round(lad / (maxReletiveErrorPos * dY));
-        int useDeltaLon = (int) Math.round(dX / Misc.maxReletiveError);
-        int useDeltaLat = (int) Math.round(dY / Misc.maxReletiveError);
+        int useDeltaLon = (int) Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = (int) Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -902,13 +902,13 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
 
       PolarStereographic that = (PolarStereographic) o;
 
-      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY))
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY))
         return false;   // allow some slop, reletive to grid size
-      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
-      if (!Misc.closeEnough(lad, that.lad)) return false;
-      if (!Misc.closeEnough(lov, that.lov)) return false;
-      if (!Misc.closeEnough(dY, that.dY)) return false;
-      if (!Misc.closeEnough(dX, that.dX)) return false;
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.nearlyEquals(lad, that.lad)) return false;
+      if (!Misc.nearlyEquals(lov, that.lov)) return false;
+      if (!Misc.nearlyEquals(dY, that.dY)) return false;
+      if (!Misc.nearlyEquals(dX, that.dX)) return false;
 
       if (projCenterFlag != that.projCenterFlag) return false;
 
@@ -920,10 +920,10 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       if (hashCode == 0) {
         int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) Math.round(lad / Misc.maxReletiveError);
-        int useLov = (int) Math.round(lov / Misc.maxReletiveError);
-        int useDeltaLon = (int) Math.round(dX / Misc.maxReletiveError);
-        int useDeltaLat = (int) Math.round(dY / Misc.maxReletiveError);
+        int useLad = (int) Math.round(lad / Misc.defaultMaxRelativeDiffFloat);
+        int useLov = (int) Math.round(lov / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLon = (int) Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = (int) Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -1063,15 +1063,15 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
 
       LambertConformal that = (LambertConformal) o;
 
-      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY))
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY))
         return false;   // allow some slop, reletive to grid size
-      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
-      if (!Misc.closeEnough(lad, that.lad)) return false;
-      if (!Misc.closeEnough(lov, that.lov)) return false;
-      if (!Misc.closeEnough(dY, that.dY)) return false;
-      if (!Misc.closeEnough(dX, that.dX)) return false;
-      if (!Misc.closeEnough(latin1, that.latin1)) return false;
-      if (!Misc.closeEnough(latin2, that.latin2)) return false;
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.nearlyEquals(lad, that.lad)) return false;
+      if (!Misc.nearlyEquals(lov, that.lov)) return false;
+      if (!Misc.nearlyEquals(dY, that.dY)) return false;
+      if (!Misc.nearlyEquals(dX, that.dX)) return false;
+      if (!Misc.nearlyEquals(latin1, that.latin1)) return false;
+      if (!Misc.nearlyEquals(latin2, that.latin2)) return false;
 
       return true;
     }
@@ -1081,12 +1081,12 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
       if (hashCode == 0) {
         int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) Math.round(lad / Misc.maxReletiveError);
-        int useLov = (int) Math.round(lov / Misc.maxReletiveError);
-        int useDeltaLon = (int) Math.round(dX / Misc.maxReletiveError);
-        int useDeltaLat = (int) Math.round(dY / Misc.maxReletiveError);
-        int useLatin1 = (int) Math.round(latin1 / Misc.maxReletiveError);
-        int useLatin2 = (int) Math.round(latin2 / Misc.maxReletiveError);
+        int useLad = (int) Math.round(lad / Misc.defaultMaxRelativeDiffFloat);
+        int useLov = (int) Math.round(lov / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLon = (int) Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = (int) Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
+        int useLatin1 = (int) Math.round(latin1 / Misc.defaultMaxRelativeDiffFloat);
+        int useLatin2 = (int) Math.round(latin2 / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;

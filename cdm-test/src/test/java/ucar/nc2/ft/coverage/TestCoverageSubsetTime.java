@@ -134,7 +134,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
-      Assert.assertEquals(0.244, testValue, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(0.244f, testValue));
     }
   }
 
@@ -167,7 +167,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0,0,2,2));
-      Assert.assertEquals(0.073, testValue, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(0.073f, testValue));
     }
   }
 
@@ -199,7 +199,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0,0,1,0));
-      Assert.assertEquals(371.5, testValue, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(371.5, testValue));
     }
   }
 
@@ -236,8 +236,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(timeAxis);
       Assert.assertEquals(92, timeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.discontiguousInterval, timeAxis.getSpacing());
-      Assert.assertEquals(0.0, timeAxis.getStartValue(), Misc.maxReletiveError);
-      Assert.assertEquals(384.0, timeAxis.getEndValue(), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(0.0, timeAxis.getStartValue()));
+      Assert.assertTrue(Misc.nearlyEquals(384.0, timeAxis.getEndValue()));
 
       // LOOK need to test data
     }
@@ -270,8 +270,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(runtimeAxis);
       Assert.assertEquals(4, runtimeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.regularPoint, runtimeAxis.getSpacing());
-      Assert.assertEquals(0.0, runtimeAxis.getCoordMidpoint(0), Misc.maxReletiveError);
-      Assert.assertEquals(6.0, runtimeAxis.getResolution(), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(0.0, runtimeAxis.getCoordMidpoint(0)));
+      Assert.assertTrue(Misc.nearlyEquals(6.0, runtimeAxis.getResolution()));
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
       Assert.assertNotNull(timeAxis);
@@ -283,7 +283,7 @@ public class TestCoverageSubsetTime {
         Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge2(0) >= offsetVal);          // upper >= time
 
       }else {
-        Assert.assertEquals("offset coord", offsetVal, timeAxis1D.getCoordMidpoint(0), offsetVal*Misc.maxReletiveError);
+        Assert.assertTrue(Misc.nearlyEquals(offsetVal, timeAxis1D.getCoordMidpoint(0)));
       }
 
       // LOOK need to test data
@@ -317,8 +317,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(runtimeAxis);
       Assert.assertEquals(3, runtimeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, runtimeAxis.getSpacing());
-      Assert.assertEquals(0.0, runtimeAxis.getCoordMidpoint(0), Misc.maxReletiveError);
-      Assert.assertEquals(6.0, runtimeAxis.getResolution(), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(0.0, runtimeAxis.getCoordMidpoint(0)));
+      Assert.assertTrue(Misc.nearlyEquals(6.0, runtimeAxis.getResolution()));
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.Time);
       if (timeAxis != null) {
@@ -415,7 +415,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
-      Assert.assertEquals(244.8, testValue, testValue * Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(244.8f, testValue));
     }
   }
 
@@ -446,7 +446,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 0, 0));
-      Assert.assertEquals(244.3, testValue, testValue * Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(244.3f, testValue));
     }
   }
 
@@ -477,7 +477,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
-      Assert.assertEquals(250.5, testValue, testValue * Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(250.5, testValue));
     }
   }
 

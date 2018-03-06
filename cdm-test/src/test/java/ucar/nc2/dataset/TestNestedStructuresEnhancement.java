@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.Sequence;
-import ucar.nc2.Structure;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.ma2.StructureData;
@@ -102,7 +101,7 @@ public class TestNestedStructuresEnhancement {
 
         ArrayStructure as = data.getArrayStructure("Geopotential");
         assert as != null;
-        assert Misc.closeEnough(as.getScalarFloat(0, as.findMember("Wind_speed")), 6.1);
+        assert Misc.nearlyEquals(as.getScalarFloat(0, as.findMember("Wind_speed")), 6.1);
       }
     }
   }

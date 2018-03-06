@@ -71,8 +71,8 @@ public class TestCurvilinearGridPointMapping {
       Assert.assertNotNull("HorizCoordSys", hcs);
 
       LatLonPoint llPnt = hcs.getLatLon(j, i);
-      Assert.assertEquals(lat, llPnt.getLatitude(), lat*Misc.maxReletiveError);
-      Assert.assertEquals(lon, llPnt.getLongitude(), lon*Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(lat, llPnt.getLatitude()));
+      Assert.assertTrue(Misc.nearlyEquals(lon, llPnt.getLongitude()));
     }
   }
 

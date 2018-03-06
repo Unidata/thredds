@@ -199,7 +199,7 @@ public class GridCoverageSubsettingTest {
 
       System.out.printf("Expected ProjectionRect=%s%n", expect.rect.toString2(6));
       System.out.printf("Actual ProjectionRect=%s%n", prect.toString2(6));
-      assertTrue(expect.rect.closeEnough(prect));
+      assertTrue(expect.rect.nearlyEquals(prect));
     }
 
     //ucar.nc2.dt.grid.GridDataset gdsDataset = new ucar.nc2.dt.grid.GridDataset(new NetcdfDataset(nf));

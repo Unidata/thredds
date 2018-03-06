@@ -44,7 +44,7 @@ public class TestLongitudeWrap {
   public void doit() {
     double compute = lonDiff(lat1, lat2);
     System.out.printf("(%f - %f) = %f, expect %f%n", lat1, lat2, compute, expected);
-    Assert.assertEquals(expected, compute, expected * Misc.maxReletiveError);
+    Assert.assertTrue(Misc.nearlyEquals(expected, compute));
     Assert.assertTrue(Math.abs(compute) < 360.0);
   }
 

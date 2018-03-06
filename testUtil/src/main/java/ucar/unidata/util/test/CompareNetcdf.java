@@ -37,6 +37,7 @@ import org.junit.Assert;
 import ucar.nc2.dataset.VariableEnhanced;
 import ucar.nc2.*;
 import ucar.ma2.*;
+import ucar.nc2.util.Misc;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -321,15 +322,15 @@ public class CompareNetcdf {
   }
 
   static public void compareData(Array data1, Array data2) {
-    compareData(data1, data2, TOL, true);
+    compareData(data1, data2, true);
   }
 
   static public void compareData(Array data1, double[] data2) {
     Array data2a = Array.factory(DataType.DOUBLE, new int[]{data2.length}, data2);
-    compareData( data1, data2a, TOL, false);
+    compareData( data1, data2a, false);
   }
 
-  static private void compareData(Array data1, Array data2, double tol, boolean checkType) {
+  static private void compareData(Array data1, Array data2, boolean checkType) {
     Assert.assertEquals("data size", data1.getSize(), data2.getSize());
     Assert.assertEquals("data unsigned", data1.isUnsigned(), data2.isUnsigned());
     if (checkType)
@@ -343,18 +344,15 @@ public class CompareNetcdf {
       while (iter1.hasNext() && iter2.hasNext()) {
         double v1 = iter1.getDoubleNext();
         double v2 = iter2.getDoubleNext();
-        if (!Double.isNaN(v1) || !Double.isNaN(v2))
-          assert closeEnough(v1, v2, tol) : v1 + " != " + v2 + " count=" + iter1 + " diff = " + diff(v1, v2) + " pdiff=" + pdiff(v1, v2);
+        assert Misc.nearlyEquals(v1, v2) : String.format("%f != %f;  count = %s, absDiff = %f, relDiff = %f",
+                v1, v2, iter1, Misc.absoluteDifference(v1, v2), Misc.relativeDifference(v1, v2));
       }
     } else if (dt == DataType.FLOAT) {
       while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
-        if (!Float.isNaN(v1) || !Float.isNaN(v2)) {
-          if (!closeEnough(v1, v2, (float) tol))
-            System.out.printf("HEY CompareNetcdf%n");
-          assert closeEnough(v1, v2, (float) tol) : v1 + " != " + v2 + " count=" + iter1;
-        }
+        assert Misc.nearlyEquals(v1, v2) : String.format("%f != %f;  count = %s, absDiff = %f, relDiff = %f",
+                v1, v2, iter1, Misc.absoluteDifference(v1, v2), Misc.relativeDifference(v1, v2));
       }
     } else if (dt.getPrimitiveClassType() == int.class) {
       while (iter1.hasNext() && iter2.hasNext()) {
@@ -382,12 +380,12 @@ public class CompareNetcdf {
       }
     } else if (dt == DataType.STRUCTURE) {
       while (iter1.hasNext() && iter2.hasNext()) {
-        compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next(), tol);
+        compareStructureData((StructureData) iter1.next(), (StructureData) iter2.next());
       }
     }
   }
 
-  static public void compareStructureData(StructureData sdata1, StructureData sdata2, double tol) {
+  static public void compareStructureData(StructureData sdata1, StructureData sdata2) {
     StructureMembers sm1 = sdata1.getStructureMembers();
     StructureMembers sm2 = sdata2.getStructureMembers();
     assert sm1.getMembers().size() == sm2.getMembers().size();
@@ -397,46 +395,7 @@ public class CompareNetcdf {
       StructureMembers.Member m2 = sm2.findMember(m1.getName());
       Array data1 = sdata1.getArray(m1);
       Array data2 = sdata2.getArray(m2);
-      compareData( data1, data2, tol, true);
+      compareData(data1, data2, true);
     }
-
-  }
-
-  static private final double TOL = 1.0e-5;
-  static private final float TOLF = 1.0e-5f;
-
-  static public boolean closeEnoughP(double d1, double d2) {
-    if (Math.abs(d1) < TOL) return Math.abs(d1 - d2) < TOL;
-    return Math.abs((d1 - d2) / d1) < TOL;
-  }
-
-  static public boolean closeEnough(double d1, double d2) {
-    return Math.abs(d1 - d2) < TOL;
-  }
-
-  static public boolean closeEnough(double d1, double d2, double tol) {
-    return Math.abs(d1 - d2) < tol;
-  }
-
-  static public boolean closeEnoughP(double d1, double d2, double tol) {
-    if (Math.abs(d1) < tol) return Math.abs(d1 - d2) < tol;
-    return Math.abs((d1 - d2) / d1) < tol;
-  }
-
-  static public double diff(double d1, double d2) {
-    return Math.abs(d1 - d2);
-  }
-
-  static public double pdiff(double d1, double d2) {
-    return Math.abs((d1 - d2) / d1);
-  }
-
-  static public boolean closeEnough(float d1, float d2) {
-    return Math.abs(d1 - d2) < TOLF;
-  }
-
-  static public boolean closeEnoughP(float d1, float d2) {
-    if (Math.abs(d1) < TOLF) return Math.abs(d1 - d2) < TOLF;
-    return Math.abs((d1 - d2) / d1) < TOLF;
   }
 }

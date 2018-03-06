@@ -74,7 +74,7 @@ public class TestLatLonProjection extends TestCase {
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
       LatLonRect p2 = p.projToLatLonBB(ma2);
 
-      Assert.assertEquals(llbb + " => " + ma2 + " => " + p2, llbb, p2);
+      Assert.assertTrue(llbb + " => " + ma2 + " => " + p2, llbb.nearlyEquals(p2));
     }
   }
 
@@ -89,7 +89,7 @@ public class TestLatLonProjection extends TestCase {
       ProjectionRect ma2 = p.latLonToProjBB(llbb);
       LatLonRect p2 = p.projToLatLonBB(ma2);
 
-      Assert.assertEquals(llbb + " => " + ma2 + " => " + p2, llbb, p2);
+      Assert.assertTrue(llbb + " => " + ma2 + " => " + p2, llbb.nearlyEquals(p2));
     }
   }
 

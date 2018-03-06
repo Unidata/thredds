@@ -220,7 +220,7 @@ class CoordAxisHelper {
     for (int i = 0; i < axis.getNcoords(); i++) {
       double edge1 = axis.getCoordEdge1(i);
       double edge2 = axis.getCoordEdge2(i);
-      if (Misc.closeEnough(edge1, target[0]) && Misc.closeEnough(edge2, target[1]))
+      if (Misc.nearlyEquals(edge1, target[0]) && Misc.nearlyEquals(edge2, target[1]))
         return i;
     }
     return -1;
@@ -514,12 +514,12 @@ class CoordAxisHelper {
 
   int search(double want) {
     if (axis.getNcoords() == 1) {
-      return Misc.closeEnough(want, axis.getStartValue()) ? 0 : -1;
+      return Misc.nearlyEquals(want, axis.getStartValue()) ? 0 : -1;
     }
     if (axis.isRegular()) {
       double fval = (want - axis.getStartValue()) / axis.getResolution();
       double ival = Math.rint(fval);
-      return Misc.closeEnough(fval, ival) ? (int) ival : (int) -ival - 1; // LOOK
+      return Misc.nearlyEquals(fval, ival) ? (int) ival : (int) -ival - 1; // LOOK
     }
 
     // otherwise do a binary search

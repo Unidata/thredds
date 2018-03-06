@@ -68,7 +68,7 @@ public class TestLongitudeNormalization {
     double compute = lonNormalFrom(lon, from);
     if (expectedDiff != null) {
       if (show) System.out.printf("(%f from %f) = %f, diff = %f expectedDiff %f%n", lon, from, compute, compute - lon, expectedDiff);
-      Assert.assertEquals(expectedDiff, compute - lon, lon * Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(expectedDiff, compute - lon));
     } else {
       if (show) System.out.printf("(%f from %f) = %f, diff = %f%n", lon, from, compute, compute - lon);
     }

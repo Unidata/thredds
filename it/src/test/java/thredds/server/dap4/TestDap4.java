@@ -2,7 +2,6 @@
 package thredds.server.dap4;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class TestDap4 {
       Assert.assertNotNull("time axis", time);
       double[] expect = new double[]{0., 6.0, 12.0, 18.0};
       double[] have = time.getCoordValues();
-      Assert.assertArrayEquals(expect, have, Misc.maxReletiveError);
+      Assert.assertArrayEquals(expect, have, Misc.defaultMaxRelativeDiffDouble);
     }
   }
 }

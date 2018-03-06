@@ -74,7 +74,7 @@ public class MetarField {
   }
 
   void sum(double d) {
-    if (!Misc.closeEnough(d, -99999.0))
+    if (!Misc.nearlyEquals(d, -99999.0))
       sum += d; // LOOK kludge for missing data
   }
 }

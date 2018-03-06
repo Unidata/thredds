@@ -265,9 +265,9 @@ public class TimeCoord implements Comparable {
         return false;
 
       for (int i = 0; i < bound1.length; i++) {
-        if (!ucar.nc2.util.Misc.closeEnough(bound1[i], tother.bound1[i]))
+        if (!ucar.nc2.util.Misc.nearlyEquals(bound1[i], tother.bound1[i]))
           return false;
-        if (!ucar.nc2.util.Misc.closeEnough(bound2[i], tother.bound2[i]))
+        if (!ucar.nc2.util.Misc.nearlyEquals(bound2[i], tother.bound2[i]))
           return false;
       }
       return true;
@@ -278,7 +278,7 @@ public class TimeCoord implements Comparable {
         return false;
 
       for (int i = 0; i < offset.length; i++) {
-        if (!ucar.nc2.util.Misc.closeEnough(offset[i], tother.offset[i]))
+        if (!ucar.nc2.util.Misc.nearlyEquals(offset[i], tother.offset[i]))
           return false;
       }
       return true;
@@ -287,7 +287,7 @@ public class TimeCoord implements Comparable {
 
   public int findInterval(double b1, double b2) {
     for (int i = 0; i < getNCoords(); i++)
-      if (Misc.closeEnough(bound1[i], b1) && Misc.closeEnough(bound2[i], b2))
+      if (Misc.nearlyEquals(bound1[i], b1) && Misc.nearlyEquals(bound2[i], b2))
         return i;
     return -1;
   }
@@ -295,7 +295,7 @@ public class TimeCoord implements Comparable {
   public int findIndex(double offsetHour) {
     double[] off = getOffsetTimes();
     for (int i = 0; i < off.length; i++)
-      if (Misc.closeEnough(off[i], offsetHour))
+      if (Misc.nearlyEquals(off[i], offsetHour))
         return i;
     return -1;
   }
@@ -422,23 +422,23 @@ public class TimeCoord implements Comparable {
 
       Tinv tinv = (Tinv) o;
 
-      if (!Misc.closeEnough(b2, tinv.b2)) return false;
-      if (!Misc.closeEnough(b1, tinv.b1)) return false;
+      if (!Misc.nearlyEquals(b2, tinv.b2)) return false;
+      if (!Misc.nearlyEquals(b1, tinv.b1)) return false;
 
       return true;
     }
 
     @Override
     public int hashCode() {
-      int result = (int) Math.round(b1 / Misc.maxReletiveError);
-      result = 31 * result + (int) Math.round(b2/Misc.maxReletiveError);
+      int result = (int) Math.round(b1 / Misc.defaultMaxRelativeDiffDouble);
+      result = 31 * result + (int) Math.round(b2/Misc.defaultMaxRelativeDiffDouble);
       return result;
     }
 
     @Override
     public int compareTo(Tinv o) {
-      boolean b1close = Misc.closeEnough(b1, o.b1);
-      boolean b2close = Misc.closeEnough(b2, o.b2);
+      boolean b1close = Misc.nearlyEquals(b1, o.b1);
+      boolean b2close = Misc.nearlyEquals(b2, o.b2);
       if (b1close && b2close) return 0;
       if (b2close) return Double.compare(b1, o.b1);
       return Double.compare(b2, o.b2);

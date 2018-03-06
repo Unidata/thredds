@@ -159,15 +159,15 @@ public class TestWcsServer {
       HorizCoordSys hcs = csys.getHorizCoordSys();
       CoverageCoordAxis1D xaxis = hcs.getXAxis();
       Assert.assertEquals(291, xaxis.getNcoords());
-      Assert.assertEquals(10.5, xaxis.getCoordMidpoint(0), Misc.maxReletiveError);
-      Assert.assertEquals(300.5, xaxis.getEndValue(), Misc.maxReletiveError); // LOOK is that ok? BB = 10-300: its just catching the edge
-      Assert.assertEquals(1.0, xaxis.getResolution(), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(10.5, xaxis.getCoordMidpoint(0)));
+      Assert.assertTrue(Misc.nearlyEquals(300.5, xaxis.getEndValue())); // LOOK is that ok? BB = 10-300: its just catching the edge
+      Assert.assertTrue(Misc.nearlyEquals(1.0, xaxis.getResolution()));
 
       CoverageCoordAxis1D yaxis = hcs.getYAxis();
       Assert.assertEquals(81, yaxis.getNcoords());
-      Assert.assertEquals(79.5, yaxis.getCoordMidpoint(0), Misc.maxReletiveError);
-      Assert.assertEquals(-.5, yaxis.getEndValue(), Misc.maxReletiveError); // LOOK is that ok? BB = 0-80: its just catching the edge
-      Assert.assertEquals(-1.0, yaxis.getResolution(), Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(79.5, yaxis.getCoordMidpoint(0)));
+      Assert.assertTrue(Misc.nearlyEquals(-.5, yaxis.getEndValue())); // LOOK is that ok? BB = 0-80: its just catching the edge
+      Assert.assertTrue(Misc.nearlyEquals(-1.0, yaxis.getResolution()));
     }
   }
 
@@ -236,7 +236,7 @@ public class TestWcsServer {
       Assert.assertEquals(1, vert.getNcoords());
       double vertCoord = vert.getCoordMidpoint(0);
       logger.debug("date = {}", date);
-      Assert.assertEquals(800.0, vertCoord, Misc.maxReletiveError);
+      Assert.assertTrue(Misc.nearlyEquals(800.0, vertCoord));
     }
   }
 

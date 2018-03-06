@@ -54,15 +54,6 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
   }
 
   /**
-   * Constructor that copies Point2D values into this.
-   *
-   * @param pt point to copy
-   *
-  public ProjectionPointImpl(Point2D pt) {
-    super(pt.getX(), pt.getY());
-  } */
-
-  /**
    * Constructor that copies ProjectionPoint values into this.
    *
    * @param pt point to copy
@@ -99,13 +90,24 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
     this.y = y;
   }
 
-  // must be exact compare to be consistent with hashCode
+  @Override
+  public boolean nearlyEquals(ProjectionPoint other, double maxRelDiff) {
+    return Misc.nearlyEquals(x, other.getX(), maxRelDiff) && Misc.nearlyEquals(y, other.getY(), maxRelDiff);
+  }
+
+  // Exact comparison is needed in order to be consistent with hashCode().
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     ProjectionPointImpl that = (ProjectionPointImpl) o;
-    if (Double.compare(that.x, x) != 0) return false;
+    if (Double.compare(that.x, x) != 0) {
+      return false;
+    }
     return Double.compare(that.y, y) == 0;
   }
 
@@ -118,16 +120,6 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
     temp = Double.doubleToLongBits(y);
     result = 31 * result + (int) (temp ^ (temp >>> 32));
     return result;
-  }
-
-  /**
-   * Returns true if this represents the same point as pt, using Misc.closeEnough.
-   *
-   * @param pt2 point to check against
-   * @return true if this represents the same point as pt2.
-   */
-  public boolean equals(ProjectionPoint pt2) {
-    return Misc.closeEnough(getX(), pt2.getX()) &&  Misc.closeEnough(getY(), pt2.getY());
   }
 
   /**
@@ -158,16 +150,6 @@ public class ProjectionPointImpl implements ProjectionPoint, java.io.Serializabl
        this.x = x;
        this.y = y;
    }
-
-
-  /**
-   * set x,y location from  pt
-   *
-   * @param pt point to use for values
-   *
-  public void setLocation(Point2D pt) {
-    setLocation(pt.getX(), pt.getY());
-  } */
 
   /**
    * See if either coordinate is +/- infinite. This happens sometimes

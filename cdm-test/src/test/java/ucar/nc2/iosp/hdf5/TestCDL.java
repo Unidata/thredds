@@ -112,7 +112,7 @@ public class TestCDL {
     try {
       double val1 = Double.parseDouble(toke1);
       double val2 = Double.parseDouble(toke2);
-      return Misc.closeEnough(val1, val2);
+      return Misc.nearlyEquals(val1, val2);
     } catch (NumberFormatException e) {
       //System.out.println(e.getMessage());
       return false;

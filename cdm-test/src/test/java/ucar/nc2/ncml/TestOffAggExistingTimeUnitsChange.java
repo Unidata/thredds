@@ -85,7 +85,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     logger.debug(NCdumpW.toString(data, "time", null));
 
     while (data.hasNext()) {
-      assert Misc.closeEnough(data.nextInt(), (count + 1) * 3);
+      assert Misc.nearlyEquals(data.nextInt(), (count + 1) * 3);
       count++;
     }
 

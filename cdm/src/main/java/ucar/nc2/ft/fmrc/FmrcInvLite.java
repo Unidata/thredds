@@ -275,7 +275,7 @@ public class FmrcInvLite implements java.io.Serializable {
 
           while (true) { // incr run till we find it
             double run_offset = runOffset[runIdx];
-            if (Misc.closeEnough(run_offset, tc_offset))
+            if (Misc.nearlyEquals(run_offset, tc_offset))
               break;
             runIdx++;
             if (log.isDebugEnabled()) {
@@ -386,7 +386,7 @@ public class FmrcInvLite implements java.io.Serializable {
         for (int time = 0; time < noffsets; time++) { // search for all offsets that match - presumably 0 or 1 per run
           double baseOffset = timeOffset[run * noffsets + time];
           if (Double.isNaN(baseOffset)) continue;
-          if (Misc.closeEnough(baseOffset, offset))
+          if (Misc.nearlyEquals(baseOffset, offset))
             result.add(new TimeInv(run, time, offset - timeOffset[run * noffsets])); // use offset from start of run
         }
       }
@@ -401,7 +401,7 @@ public class FmrcInvLite implements java.io.Serializable {
           double baseOffset = getTimeCoord(run, time);
           if (Double.isNaN(baseOffset)) continue;
           double runOffset = baseOffset - FmrcInvLite.this.runOffset[run]; // subtract the base offset for this run
-          if (Misc.closeEnough(runOffset, offset))
+          if (Misc.nearlyEquals(runOffset, offset))
             result.add(new TimeInv(run, time, baseOffset));
         }
       }
@@ -498,14 +498,14 @@ public class FmrcInvLite implements java.io.Serializable {
       // LOOK linear search!
       private int findIndex(int runIdx, double want) {
         for (int j = 0; j < noffsets; j++)
-          if (Misc.closeEnough(timeOffset[runIdx * noffsets + j], want)) return j;
+          if (Misc.nearlyEquals(timeOffset[runIdx * noffsets + j], want)) return j;
         return -1;
       }
 
       // LOOK linear search!
       private int findBounds(int runIdx, double b1, double b2) {
         for (int j = 0; j < noffsets; j++)
-          if (Misc.closeEnough(timeBounds[2*(runIdx * noffsets + j)], b1) && Misc.closeEnough(timeBounds[2*(runIdx * noffsets + j)+1], b2))
+          if (Misc.nearlyEquals(timeBounds[2*(runIdx * noffsets + j)], b1) && Misc.nearlyEquals(timeBounds[2*(runIdx * noffsets + j)+1], b2))
             return j;
         return -1;
       }
@@ -579,9 +579,9 @@ public class FmrcInvLite implements java.io.Serializable {
 
     @Override
     public int compareTo(TimeInv o) {
-      if (Misc.closeEnough(offset, o.offset)) return 0;
+      if (Misc.nearlyEquals(offset, o.offset)) return 0;
       if (!isInterval) return Double.compare(offset, o.offset);
-      if (Misc.closeEnough(startIntv, o.startIntv)) return 0;
+      if (Misc.nearlyEquals(startIntv, o.startIntv)) return 0;
       return Double.compare(startIntv, o.startIntv);
     }
   }
@@ -718,7 +718,7 @@ public class FmrcInvLite implements java.io.Serializable {
     RunTimeDatasetInventory(CalendarDate run) throws FileNotFoundException {
       double offset = FmrcInv.getOffsetInHours(base, run);
       for (int i = 0; i < runOffset.length; i++) {
-        if (Misc.closeEnough(runOffset[i], offset)) {
+        if (Misc.nearlyEquals(runOffset[i], offset)) {
           runIdx = i;
           break;
         }
@@ -858,7 +858,7 @@ public class FmrcInvLite implements java.io.Serializable {
       boolean ok = false;
       double[] offsets = getForecastOffsets();
       for (int i=0; i<offsets.length; i++)
-        if (Misc.closeEnough(offsets[i], offset)) ok = true;
+        if (Misc.nearlyEquals(offsets[i], offset)) ok = true;
 
       if (!ok)
         throw new FileNotFoundException("No constant offset dataset for = " + offset);

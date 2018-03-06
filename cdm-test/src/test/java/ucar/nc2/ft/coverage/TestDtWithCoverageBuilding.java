@@ -165,7 +165,7 @@ public class TestDtWithCoverageBuilding {
         Assert.assertEquals(10, time.getNcoords());
         double[] timeValuesGrib = time.getValues();
         for (int i=0; i<time.getNcoords(); i++)
-          Assert.assertEquals(timeValuesDt[i], timeValuesGrib[i], Misc.maxReletiveError);
+          Assert.assertTrue(Misc.nearlyEquals(timeValuesDt[i], timeValuesGrib[i]));
 
         CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
         Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
@@ -173,7 +173,7 @@ public class TestDtWithCoverageBuilding {
         Assert.assertEquals(10, runtime.getNcoords());
         double[] runValuesGrib = runtime.getValues();
         for (int i=0; i<runtime.getNcoords(); i++)
-          Assert.assertEquals(runValuesDt[i], runValuesGrib[i], Misc.maxReletiveError);
+          Assert.assertTrue(Misc.nearlyEquals(runValuesDt[i], runValuesGrib[i]));
 
       }
     }

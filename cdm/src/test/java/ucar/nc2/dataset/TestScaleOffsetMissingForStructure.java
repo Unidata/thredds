@@ -138,7 +138,7 @@ public class TestScaleOffsetMissingForStructure extends TestCase {
       if (count == 0)
         assert Float.isNaN(dval) : dval;
       else
-        assert TestAll.closeEnough(dval, 1040.8407) : dval;
+        assert TestAll.nearlyEquals(dval, 1040.8407) : dval;
       count++;
     } */
 

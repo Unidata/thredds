@@ -100,7 +100,7 @@ public class TestReadSection extends TestCase {
     while (s1.hasNext()) {
       double d1 = s1.getDoubleNext();
       double d2 = s2.getDoubleNext();
-      assert Misc.closeEnough(d1, d2) : count+" "+d1 +" != "+d2;
+      assert Misc.nearlyEquals(d1, d2) : count+" "+d1 +" != "+d2;
       count++;
     }
 
@@ -164,7 +164,7 @@ public class TestReadSection extends TestCase {
     while (s1.hasNext()) {
       double d1 = s1.getDoubleNext();
       double d2 = s2.getDoubleNext();
-      assert Misc.closeEnough( d1, d2) : count+" "+d1 +" != "+d2;
+      assert Misc.nearlyEquals( d1, d2) : count+" "+d1 +" != "+d2;
       count++;
     }
 

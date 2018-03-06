@@ -186,7 +186,7 @@ public class TestGridCoverageRemoteP {
 
           } else {
             double val2 = timeOffsetAxis.getCoordMidpoint(0);
-            Assert.assertEquals(val2, time_offset, Misc.maxReletiveError);
+            Assert.assertTrue(Misc.nearlyEquals(val2, time_offset));
           }
         }
       }
@@ -196,7 +196,7 @@ public class TestGridCoverageRemoteP {
         Assert.assertNotNull(AxisType.Pressure.toString(), zAxis);
         Assert.assertEquals(1, zAxis.getNcoords());
         double val = zAxis.getCoordMidpoint(0);
-        Assert.assertEquals(vert_level.doubleValue(), val, Misc.maxReletiveError);
+        Assert.assertTrue(Misc.nearlyEquals(vert_level.doubleValue(), val));
       }
     }
 

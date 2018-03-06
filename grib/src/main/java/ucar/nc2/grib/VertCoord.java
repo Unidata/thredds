@@ -33,6 +33,8 @@
 
 package ucar.nc2.grib;
 
+import ucar.nc2.util.Misc;
+
 import javax.annotation.concurrent.Immutable;
 
 import java.util.*;
@@ -144,7 +146,7 @@ public class VertCoord {
       return false;
 
     for (int i = 0; i < coords.size(); i++) {
-      if (!coords.get(i).closeEnough(other.coords.get(i)))
+      if (!coords.get(i).nearlyEquals(other.coords.get(i)))
         return false;
     }
 
@@ -252,8 +254,8 @@ public class VertCoord {
     }
 
     // cannot do approx equals and be consistent with hashCode, so make seperate call
-    public boolean closeEnough(Level other) {
-      return (ucar.nc2.util.Misc.closeEnough(value1, other.value1) && ucar.nc2.util.Misc.closeEnough(value2, other.value2));
+    public boolean nearlyEquals(Level other) {
+      return Misc.nearlyEquals(value1, other.value1) && Misc.nearlyEquals(value2, other.value2);
     }
 
     public String toString() {
@@ -286,4 +288,3 @@ public class VertCoord {
     boolean isVerticalCoordinate();
   }
 }
-

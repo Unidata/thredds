@@ -374,7 +374,7 @@ public class TestN4reading {
       System.out.printf("the %d record has %d elements for vlen member %s%n%n", index, vdata.getSize(), member);
       assert vdata.getSize() == 3;
       Index ii = vdata.getIndex();
-      assert Misc.closeEnough(vdata.getFloat(ii.set(2)), 21.5);
+      assert Misc.nearlyEquals(vdata.getFloat(ii.set(2)), 21.5);
 
       String memberName = "temp_vl";
       int count = 0;

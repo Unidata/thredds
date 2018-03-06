@@ -413,7 +413,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   private int alreadyHaveAtIndex(RuntimeSmoosher tester) {
     for (int i = 0; i < runtimes.size(); i++)
-      if (runtimes.get(i).closeEnough(tester)) return i;
+      if (runtimes.get(i).nearlyEquals(tester)) return i;
     return -1;
   }
   */
@@ -1014,13 +1014,6 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     return axisNames;
   }
 
-  private String makeCoordSysName(List<String> axes) {
-    Formatter fname = new Formatter();
-    for (String axis : axes)
-      fname.format(" %s", axis);
-    return fname.toString();
-  }
-
   private Coverage makeCoverage(GribCollectionImmutable.VariableIndex gribVar, Map<Coordinate, List<CoverageCoordAxis>> coord2axisMap) {
 
     AttributeContainerHelper atts = new AttributeContainerHelper(gribVar.makeVariableName());
@@ -1056,7 +1049,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     } */
 
-    String coordSysName = makeCoordSysName(makeAxisNameList(gribVar, coord2axisMap));
+    String coordSysName = CoverageCoordSys.makeCoordSysName(makeAxisNameList(gribVar, coord2axisMap));
 
     return new Coverage(gribVar.makeVariableName(), DataType.FLOAT, atts.getAttributes(), coordSysName, gribVar.makeVariableUnits(),
             gribVar.makeVariableDescription(), this, gribVar);

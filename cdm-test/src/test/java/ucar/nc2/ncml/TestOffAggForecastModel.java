@@ -178,9 +178,9 @@ public class TestOffAggForecastModel {
       assert data.getElementType() == double.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert Misc.closeEnough(dataI.getDoubleNext(), -832.6983183345455);
-      assert Misc.closeEnough(dataI.getDoubleNext(), -751.4273183345456);
-      assert Misc.closeEnough(dataI.getDoubleNext(), -670.1563183345455);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), -832.6983183345455);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), -751.4273183345456);
+      assert Misc.nearlyEquals(dataI.getDoubleNext(), -670.1563183345455);
 
   }
 
@@ -266,7 +266,7 @@ public class TestOffAggForecastModel {
         for (int k=0; k<shape[2]; k++) {
           double val = data.getDouble( tIndex.set(i, j, k));
           //System.out.println(" "+val);
-          assert Misc.closeEnough(val, 100*(i+origin[0]) + 10*j + k) : val;
+          assert Misc.nearlyEquals(val, 100*(i+origin[0]) + 10*j + k) : val;
         } */
 
   }

@@ -199,8 +199,8 @@ public class TestOffAggFmrcGrib {
         assert data.getElementType() == double.class || data.getElementType() == float.class;
 
         int last = (int) data.getSize() - 1;
-        assert Misc.closeEnough(data.getDouble(0), -832.2073364257812) : data.getDouble(0);
-        assert Misc.closeEnough(data.getDouble(last), 4369.20068359375) : data.getDouble(last);
+        assert Misc.nearlyEquals(data.getDouble(0), -832.2073364257812) : data.getDouble(0);
+        assert Misc.nearlyEquals(data.getDouble(last), 4369.20068359375) : data.getDouble(last);
     }
 
     private void testAggCoordVar(NetcdfFile ncfile, int nagg, DateUnit du, int[] runhours) {
@@ -275,7 +275,7 @@ public class TestOffAggFmrcGrib {
                 logger.debug("run={} tidx={} val={}", run, tidx, val);
 
                 if (!Double.isNaN(val)) {
-                    assert Misc.closeEnough(val, timevals[run][tidx]) :
+                    assert Misc.nearlyEquals(val, timevals[run][tidx]) :
                             "run,time=(" + run + "," + tidx + "): " + val + " != " + timevals[run][tidx];
                 }
             }

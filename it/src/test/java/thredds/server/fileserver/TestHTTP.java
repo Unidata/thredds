@@ -107,14 +107,14 @@ public class TestHTTP  {
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
-    assert( 1.2 == att.getNumericValue().doubleValue());
+    assert( Misc.nearlyEquals(1.2f, att.getNumericValue().floatValue()));
 
     att = temp.findAttribute("versionF");
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
     assert( 1.2f == att.getNumericValue().floatValue());
-    assert( Misc.closeEnough(1.2, att.getNumericValue().doubleValue()));
+    assert( Misc.nearlyEquals(1.2f, att.getNumericValue().floatValue()));
 
     att = temp.findAttribute("versionI");
     assert( null != att);

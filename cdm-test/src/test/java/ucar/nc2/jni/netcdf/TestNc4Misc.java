@@ -348,7 +348,7 @@ public class TestNc4Misc {
       while (data.hasNext() && orgData.hasNext()) {
         float val = data.nextFloat();
         float orgval = orgData.nextFloat();
-        Assert.assertEquals(orgval, val, Misc.maxReletiveError);
+        Assert.assertTrue(Misc.nearlyEquals(orgval, val));
       }
     }
   }

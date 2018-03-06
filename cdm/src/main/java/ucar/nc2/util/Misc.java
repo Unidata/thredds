@@ -44,98 +44,133 @@ import java.util.List;
  * @author caron
  */
 public class Misc {
-
   public static final int referenceSize = 4;   // estimates pointer size, in principle JVM dependent
   public static final int objectSize = 16;   // estimates pointer size, in principle JVM dependent
 
-  //private static double maxAbsoluteError = 1.0e-6;
-  public static final double maxReletiveError = 1.0e-6;
-
-  static public double howClose(double d1, double d2) {
-    double pd = (d1 - d2) / d1;
-    return Math.abs(pd);
-  }
-
-
-  /* http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm
-    http://floating-point-gui.de/errors/comparison/
-  bool AlmostEqualRelative(float A, float B, float maxRelDiff)
-  {
-      // Calculate the difference.
-      float diff = fabs(A - B);
-      A = fabs(A);
-      B = fabs(B);
-      // Find the largest
-      float largest = (B > A) ? B : A;
-
-      if (diff <= largest * maxRelDiff)
-          return true;
-      return false;
-  } */
+  /**
+   * The default maximum {@link #relativeDifference(float, float) relative difference} that two floats can have in
+   * order to be deemed {@link #nearlyEquals(float, float) nearly equal}.
+   */
+  public static final float defaultMaxRelativeDiffFloat = 1.0e-5f;
 
   /**
-   * Check if numbers are equal with given reletive tolerance
-   *
-   * @param v1         first floating point number
-   * @param v2         second floating point number
-   * @param maxRelDiff maximum reletive difference
-   * @return true if within tolerance
+   * The default maximum {@link #relativeDifference(double, double) relative difference} that two doubles can have in
+   * order to be deemed {@link #nearlyEquals(double, double) nearly equal}.
    */
-  public static boolean closeEnough(double v1, double v2, double maxRelDiff) {
-    if (Double.isNaN(v1) && Double.isNaN(v2)) return true;
-    if (Double.isNaN(v1) || Double.isNaN(v2)) return false;   // prob not needed
-    if(v1 == v2) return true; // handle infinities
-    double diff = Math.abs(v1 - v2);
-    double largest = Math.max(Math.abs(v1), Math.abs(v2));
-    return diff <= largest * maxRelDiff;
+  public static final double defaultMaxRelativeDiffDouble = 1.0e-8;
+
+  /**
+   * Returns the absolute difference between two numbers, i.e. {@code |a - b|}.
+   *
+   * @param a  first number.
+   * @param b  second number.
+   * @return   the absolute difference.
+   */
+  public static float absoluteDifference(float a, float b) {
+    if (Float.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+      return 0;
+    } else {
+      return Math.abs(a - b);
+    }
+  }
+
+  /** Same as {@link #absoluteDifference(float, float)}, but for doubles. */
+  public static double absoluteDifference(double a, double b) {
+    if (Double.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+      return 0;
+    } else {
+      return Math.abs(a - b);
+    }
   }
 
   /**
-   * Check if numbers are equal with default tolerance
+   * Returns the relative difference between two numbers, i.e. {@code |a - b| / max(|a|, |b|)}.
+   * <p>
+   * For cases where {@code a == 0}, {@code b == 0}, or {@code a} and {@code b} are extremely close, traditional
+   * relative difference calculation breaks down. So, in those instances, we compute the difference relative to
+   * {@link Float#MIN_NORMAL}, i.e. {@code |a - b| / Float.MIN_NORMAL}.
    *
-   * @param v1 first floating point number
-   * @param v2 second floating point number
-   * @return true if within tolerance
+   * @param a  first number.
+   * @param b  second number.
+   * @return   the relative difference.
+   * @see <a href="http://floating-point-gui.de/errors/comparison/">The Floating-Point Guide</a>
+   * @see <a href="https://randomascii.wordpress.com/2012/02/25/comparing-floating-point-numbers-2012-edition/">
+   *          Comparing Floating Point Numbers, 2012 Edition</a>
    */
-  public static boolean closeEnough(double v1, double v2) {
-    return closeEnough(v1, v2, maxReletiveError);
+  public static float relativeDifference(float a, float b) {
+    float absDiff = absoluteDifference(a, b);
+
+    if (Float.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+      return 0;
+    } else if (a == 0 || b == 0 || absDiff < Float.MIN_NORMAL) {
+      return absDiff / Float.MIN_NORMAL;
+    } else {
+      float maxAbsValue = Math.max(Math.abs(a), Math.abs(b));
+      return absDiff / maxAbsValue;
+    }
   }
 
-  public static boolean closeEnough(float v1, float v2, float maxRelDiff) {
-    if (Float.isNaN(v1) && Float.isNaN(v2)) return true;
-    if (Float.isNaN(v1) || Float.isNaN(v2)) return false;   // prob not needed
+  /** Same as {@link #relativeDifference(float, float)}, but for doubles. */
+  public static double relativeDifference(double a, double b) {
+    double absDiff = absoluteDifference(a, b);
 
-    float diff = Math.abs(v1 - v2);
-    float largest = Math.max(Math.abs(v1), Math.abs(v2));
-    return diff <= largest * maxRelDiff;
+    if (Double.compare(a, b) == 0) {  // Shortcut: handles infinities and NaNs.
+      return 0;
+    } else if (a == 0 || b == 0 || absDiff < Double.MIN_NORMAL) {
+      return absDiff / Double.MIN_NORMAL;
+    } else {
+      double maxAbsValue = Math.max(Math.abs(a), Math.abs(b));
+      return absDiff / maxAbsValue;
+    }
+  }
+
+  /** Returns the result of {@link #nearlyEquals(float, float, float)}, with {@link #defaultMaxRelativeDiffFloat}. */
+  public static boolean nearlyEquals(float a, float b) {
+    return nearlyEquals(a, b, defaultMaxRelativeDiffFloat);
   }
 
   /**
-   * Check if numbers are equal with default tolerance
+   * Returns {@code true} if {@code a} and {@code b} are nearly equal. Specifically, it checks whether the
+   * {@link #relativeDifference(float, float) relative difference} of the two numbers is less than {@code maxRelDiff}.
    *
-   * @param v1 first floating point number
-   * @param v2 second floating point number
-   * @return true if within tolerance
+   * @param a  first number.
+   * @param b  second number.
+   * @param maxRelDiff  the maximum {@link #relativeDifference relative difference} the two numbers may have.
+   * @return {@code true} if {@code a} and {@code b} are nearly equal.
    */
-  public static boolean closeEnough(float v1, float v2) {
-    return closeEnough(v1, v2, maxReletiveError);
+  public static boolean nearlyEquals(float a, float b, float maxRelDiff) {
+    return relativeDifference(a, b) < maxRelDiff;
   }
 
   /**
-   * Check if numbers are equal with given absolute tolerance
-   *
-   * @param v1         first floating point number
-   * @param v2         second floating point number
-   * @param maxAbsDiff maximum absolute difference
-   * @return true if within tolerance
+   * Returns the result of {@link #nearlyEquals(double, double, double)}, with {@link #defaultMaxRelativeDiffDouble}.
    */
-  public static boolean closeEnoughAbs(double v1, double v2, double maxAbsDiff) {
-    return Math.abs(v1 - v2) <= Math.abs(maxAbsDiff);
+  public static boolean nearlyEquals(double a, double b) {
+    return nearlyEquals(a, b, defaultMaxRelativeDiffDouble);
   }
 
-  public static boolean closeEnoughAbs(float v1, float v2, float maxAbsDiff) {
-    return Math.abs(v1 - v2) <= Math.abs(maxAbsDiff);
+  /** Same as {@link #nearlyEquals(float, float, float)}, but for doubles. */
+  public static boolean nearlyEquals(double a, double b, double maxRelDiff) {
+    return relativeDifference(a, b) < maxRelDiff;
   }
+
+  /**
+   * Check if two numbers are nearly equal with given absolute tolerance.
+   *
+   * @param a  first number.
+   * @param b  second number.
+   * @param maxAbsDiff  the maximum {@link #absoluteDifference absolute difference} the two numbers may have.
+   * @return true if within tolerance.
+   */
+  public static boolean nearlyEqualsAbs(float a, float b, float maxAbsDiff) {
+    return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
+  }
+
+  /** Same as {@link #nearlyEqualsAbs(float, float, float)}, but with doubles. */
+  public static boolean nearlyEqualsAbs(double a, double b, double maxAbsDiff) {
+    return absoluteDifference(a, b) <= Math.abs(maxAbsDiff);
+  }
+
 
   static public String showInts(int[] inta) {
     if (inta == null) return "null";
@@ -222,7 +257,7 @@ public class Misc {
 
     int ndiff = 0;
     for (int i = 0; i < len; i++) {
-      if (!Misc.closeEnough(raw1[i], raw2[i]) && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i])) {
+      if (!Misc.nearlyEquals(raw1[i], raw2[i]) && !Double.isNaN(raw1[i]) && !Double.isNaN(raw2[i])) {
         f.format(" %5d : %3f != %3f%n", i, raw1[i], raw2[i]);
         ndiff++;
       }

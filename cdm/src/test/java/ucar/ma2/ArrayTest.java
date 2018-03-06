@@ -38,7 +38,7 @@ public class ArrayTest {
     Array data = Array.factory(DataType.USHORT, new int[]{nz, ny, nx}, vals);
     double sum = MAMath.sumDouble(data);
     double sumReduce = MAMath.sumDouble(data.reduce(0));
-    assert Misc.closeEnough(sum, sumReduce);
+    assert Misc.nearlyEquals(sum, sumReduce);
   }
 
   // Demonstrates bug in https://github.com/Unidata/thredds/issues/581.

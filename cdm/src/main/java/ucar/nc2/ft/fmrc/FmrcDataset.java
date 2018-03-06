@@ -718,7 +718,7 @@ class FmrcDataset {
     // look in the runIdx row of coords to see if a value matches want, return index else -1
     private int findIndex(ArrayDouble.D2 coords, int runIdx, int ntimes, double want) {
       for (int j=0; j<ntimes; j++)
-        if (Misc.closeEnough(coords.get(runIdx, j), want)) return j;
+        if (Misc.nearlyEquals(coords.get(runIdx, j), want)) return j;
       return -1;
     }
 
@@ -1133,7 +1133,7 @@ class FmrcDataset {
     // linear search - barf
      private int findIndex(double offsetHour) {
       for (int i = 0; i < offsets.length; i++)
-        if (Misc.closeEnough(offsets[i], offsetHour))
+        if (Misc.nearlyEquals(offsets[i], offsetHour))
           return i;
       return -1;
     }

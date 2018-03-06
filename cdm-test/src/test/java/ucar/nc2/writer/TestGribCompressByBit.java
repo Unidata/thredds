@@ -307,7 +307,7 @@ public class TestGribCompressByBit {
     float[] fdata = bean.readData();
     for (int i=0; i<rawData.length; i++) {
       float convert = bean.info.convert(rawData[i]);
-      if (!Misc.closeEnough(convert, fdata[i]))
+      if (!Misc.nearlyEquals(convert, fdata[i]))
         System.out.printf("%d %d %f (%f)%n", i, rawData[i], fdata[i], convert);
       if (rawData[i] < 0) {
         System.out.printf("*** %d %d %f (%f)%n", i, rawData[i], fdata[i], bean.info.convert(rawData[i]));

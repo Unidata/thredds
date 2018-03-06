@@ -168,7 +168,7 @@ This means, among other things, that corresponding floating-point elements must 
 some epsilon of each other.
 * Added method `hashCode(Array array)`. It is intended for use in `Object.hashCode()` implementations and is
 compatible with `equals(Array, Array)`.
-* Renamed `isEqual(Array, Array)` to `fuzzyEquals(Array, Array)`. This was done to avoid (some) confusion with the new
+* Renamed `isEqual(Array, Array)` to `nearlyEquals(Array, Array)`. This was done to avoid (some) confusion with the new
 `equals(Array, Array)`, and to highlight that this method performs *approximate* comparison of floating-point numbers,
 instead of the exact comparison done by `equals(Array, Array)`.
 

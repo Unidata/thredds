@@ -406,7 +406,7 @@ public abstract class Grib1Gds {
       float calcDelta = (lo2 - lo1) / (nx-1); // more accurate - deltaLon may have roundoff
       if (deltaLon != GribNumbers.UNDEFINED) deltaLon *= scale3; // undefined for thin grids
       else deltaLon = calcDelta;
-      if (!Misc.closeEnough(deltaLon, calcDelta)) {
+      if (!Misc.nearlyEquals(deltaLon, calcDelta)) {
         log.debug("deltaLon != calcDeltaLon");
         deltaLon = calcDelta;
       }
@@ -439,7 +439,7 @@ public abstract class Grib1Gds {
         deltaLat = calcDelta;
       }  */
 
-      if (!Misc.closeEnough(deltaLat, calcDelta)) {
+      if (!Misc.nearlyEquals(deltaLat, calcDelta)) {
         log.debug("deltaLat != calcDeltaLat");
         deltaLat = calcDelta;
       }
@@ -496,10 +496,10 @@ public abstract class Grib1Gds {
       if (!super.equals(o)) return false;
 
       LatLon other = (LatLon) o;
-      if (!Misc.closeEnoughAbs(la1, other.la1, maxReletiveErrorPos * deltaLat)) return false;   // allow some slop, reletive to grid size
-      if (!Misc.closeEnoughAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
-      if (!Misc.closeEnough(deltaLat, other.deltaLat)) return false;
-      if (!Misc.closeEnough(deltaLon, other.deltaLon)) return false;
+      if (!Misc.nearlyEqualsAbs(la1, other.la1, maxReletiveErrorPos * deltaLat)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.nearlyEqualsAbs(lo1, other.lo1, maxReletiveErrorPos * deltaLon)) return false;
+      if (!Misc.nearlyEquals(deltaLat, other.deltaLat)) return false;
+      if (!Misc.nearlyEquals(deltaLon, other.deltaLon)) return false;
       return true;
     }
 
@@ -508,8 +508,8 @@ public abstract class Grib1Gds {
       if (hashCode == 0) {
         int useLat = (int) (la1 / (maxReletiveErrorPos * deltaLat));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) (lo1 / (maxReletiveErrorPos * deltaLon));
-        int useDeltaLon = (int) (deltaLon / Misc.maxReletiveError);
-        int useDeltaLat = (int) (deltaLat / Misc.maxReletiveError);
+        int useDeltaLon = (int) (deltaLon / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = (int) (deltaLat / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -772,11 +772,11 @@ Grid definition –   polar stereographic
 
       PolarStereographic that = (PolarStereographic) o;
 
-      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
-      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
-      if (!Misc.closeEnough(lov, that.lov)) return false;
-      if (!Misc.closeEnough(dY, that.dY)) return false;
-      if (!Misc.closeEnough(dX, that.dX)) return false;
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.nearlyEquals(lov, that.lov)) return false;
+      if (!Misc.nearlyEquals(dY, that.dY)) return false;
+      if (!Misc.nearlyEquals(dX, that.dX)) return false;
 
       if (projCenterFlag != that.projCenterFlag) return false;
 
@@ -788,9 +788,9 @@ Grid definition –   polar stereographic
       if (hashCode == 0) {
         int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
-        int useLov = (int) (lov / Misc.maxReletiveError);
-        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
-        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+        int useLov = (int) (lov / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = (int) (dY / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -949,14 +949,14 @@ Grid definition –   polar stereographic
 
       LambertConformal that = (LambertConformal) o;
 
-      if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
-      if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
-      if (!Misc.closeEnough(lad, that.lad)) return false;
-      if (!Misc.closeEnough(lov, that.lov)) return false;
-      if (!Misc.closeEnough(dY, that.dY)) return false;
-      if (!Misc.closeEnough(dX, that.dX)) return false;
-      if (!Misc.closeEnough(latin1, that.latin1)) return false;
-      if (!Misc.closeEnough(latin2, that.latin2)) return false;
+      if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, relative to grid size
+      if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+      if (!Misc.nearlyEquals(lad, that.lad)) return false;
+      if (!Misc.nearlyEquals(lov, that.lov)) return false;
+      if (!Misc.nearlyEquals(dY, that.dY)) return false;
+      if (!Misc.nearlyEquals(dX, that.dX)) return false;
+      if (!Misc.nearlyEquals(latin1, that.latin1)) return false;
+      if (!Misc.nearlyEquals(latin2, that.latin2)) return false;
 
       return true;
     }
@@ -966,12 +966,12 @@ Grid definition –   polar stereographic
       if (hashCode == 0) {
         int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) (lad / Misc.maxReletiveError);
-        int useLov = (int) (lov / Misc.maxReletiveError);
-        int useDeltaLon = (int) (dX / Misc.maxReletiveError);
-        int useDeltaLat = (int) (dY / Misc.maxReletiveError);
-        int useLatin1 = (int) (latin1 / Misc.maxReletiveError);
-        int useLatin2 = (int) (latin2 / Misc.maxReletiveError);
+        int useLad = (int) (lad / Misc.defaultMaxRelativeDiffFloat);
+        int useLov = (int) (lov / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = (int) (dY / Misc.defaultMaxRelativeDiffFloat);
+        int useLatin1 = (int) (latin1 / Misc.defaultMaxRelativeDiffFloat);
+        int useLatin2 = (int) (latin2 / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -1096,11 +1096,11 @@ Grid definition –   polar stereographic
 
        Mercator that = (Mercator) o;
 
-       if (!Misc.closeEnoughAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
-       if (!Misc.closeEnoughAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
-       if (!Misc.closeEnough(latin, that.latin)) return false;
-       if (!Misc.closeEnough(dY, that.dY)) return false;
-       if (!Misc.closeEnough(dX, that.dX)) return false;
+       if (!Misc.nearlyEqualsAbs(la1, that.la1, maxReletiveErrorPos * dY)) return false;   // allow some slop, reletive to grid size
+       if (!Misc.nearlyEqualsAbs(lo1, that.lo1, maxReletiveErrorPos * dX)) return false;
+       if (!Misc.nearlyEquals(latin, that.latin)) return false;
+       if (!Misc.nearlyEquals(dY, that.dY)) return false;
+       if (!Misc.nearlyEquals(dX, that.dX)) return false;
 
        return true;
      }
@@ -1110,9 +1110,9 @@ Grid definition –   polar stereographic
        if (hashCode == 0) {
          int useLat = (int) (la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
          int useLon = (int) (lo1 / (maxReletiveErrorPos * dX));
-         int useLad = (int) (latin / Misc.maxReletiveError);
-         int useDeltaLon = (int) (dX / Misc.maxReletiveError);
-         int useDeltaLat = (int) (dY / Misc.maxReletiveError);
+         int useLad = (int) (latin / Misc.defaultMaxRelativeDiffFloat);
+         int useDeltaLon = (int) (dX / Misc.defaultMaxRelativeDiffFloat);
+         int useDeltaLat = (int) (dY / Misc.defaultMaxRelativeDiffFloat);
 
          int result = super.hashCode();
          result = 31 * result + useLat;
@@ -1200,7 +1200,7 @@ Grid definition –   polar stereographic
       if (!super.equals(o)) return false;
 
       RotatedLatLon other = (RotatedLatLon) o;
-      return Misc.closeEnough(angleRotation, other.angleRotation);
+      return Misc.nearlyEquals(angleRotation, other.angleRotation);
     }
 
     @Override

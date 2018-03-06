@@ -286,7 +286,7 @@ public class Sinusoidal extends ProjectionImpl {
         double toLat_r = fromY / earthRadius;
         double toLon_r;
 
-        if (Misc.closeEnough(Math.abs(toLat_r), PI_OVER_2, 1e-10)) {
+        if (Misc.nearlyEquals(Math.abs(toLat_r), PI_OVER_2, 1e-10)) {
             toLat_r = toLat_r < 0 ? -PI_OVER_2 : +PI_OVER_2;
             toLon_r = Math.toRadians(centMeridian);  // if lat == +- pi/2, set lon = centMeridian (Snyder 248)
         } else if (Math.abs(toLat_r) < PI_OVER_2) {
@@ -295,7 +295,7 @@ public class Sinusoidal extends ProjectionImpl {
             return INVALID;  // Projection point is off the map.
         }
 
-        if (Misc.closeEnough(Math.abs(toLon_r), PI, 1e-10)) {
+        if (Misc.nearlyEquals(Math.abs(toLon_r), PI, 1e-10)) {
             toLon_r = toLon_r < 0 ? -PI : +PI;
         } else if (Math.abs(toLon_r) > PI) {
             return INVALID;  // Projection point is off the map.
