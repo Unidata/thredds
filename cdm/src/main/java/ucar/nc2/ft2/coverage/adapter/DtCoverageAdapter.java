@@ -229,6 +229,9 @@ public class DtCoverageAdapter implements CoverageReader, CoordAxisReader {
     // 1D case
     if (dtCoordAxis instanceof CoordinateAxis1D) {
       CoordinateAxis1D axis1D = (CoordinateAxis1D) dtCoordAxis;
+      // Fix discontinuities in longitude axis. These occur when the axis crosses the date line.
+      axis1D.correctLongitudeWrap();
+
       startValue = axis1D.getCoordValue(0);
       endValue = axis1D.getCoordValue((int) dtCoordAxis.getSize() - 1);
 

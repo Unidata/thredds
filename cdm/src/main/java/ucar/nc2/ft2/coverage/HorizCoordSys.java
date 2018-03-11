@@ -36,17 +36,12 @@ package ucar.nc2.ft2.coverage;
 import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
-import ucar.ma2.MAMath;
-import ucar.ma2.RangeIterator;
+import ucar.ma2.*;
 import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.*;
 
 import javax.annotation.concurrent.Immutable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 /**
  * Horizontal CoordSys
@@ -61,81 +56,88 @@ import java.util.List;
  * @author caron
  * @since 7/11/2015
  */
+// TODO: This class is trying to do too much: it's handling projection, latLon1D AND latLon2D CRSs. We should break
+// some of the code into HorizCoordSysProj, HorizCoordSysLatlon1D, and HorizCoordSysLatLon2D subclasses. HorizCoordSys
+// might then become an interface or abstract class with common method declarations/definitions.
 @Immutable
 public class HorizCoordSys {
   static private final Logger logger = LoggerFactory.getLogger(HorizCoordSys.class);
 
-  public static HorizCoordSys factory(CoverageCoordAxis1D xaxis, CoverageCoordAxis1D yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
-    boolean isProjection = (xaxis != null) && (yaxis != null) && (transform != null);
-    boolean hasLatLon = (lataxis != null) && (lonaxis != null);
-    boolean has2DlatLon = lataxis instanceof LatLonAxis2D && lonaxis instanceof LatLonAxis2D;
+  public static HorizCoordSys factory(CoverageCoordAxis1D xAxis, CoverageCoordAxis1D yAxis, CoverageCoordAxis latAxis,
+          CoverageCoordAxis lonAxis, CoverageTransform transform) {
+    boolean isProjection = (xAxis != null) && (yAxis != null) && (transform != null);
+    boolean hasLatLon = (latAxis != null) && (lonAxis != null);
+    boolean has2DlatLon = latAxis instanceof LatLonAxis2D && lonAxis instanceof LatLonAxis2D;
     if (!isProjection && !hasLatLon) {
       throw new IllegalArgumentException("must have horiz coordinates (x,y,projection or lat,lon)");
     }
 
     if (!isProjection && has2DlatLon)
-      return new HorizCoordSys2D((LatLonAxis2D) lataxis, (LatLonAxis2D) lonaxis);
+      return new HorizCoordSys2D((LatLonAxis2D) latAxis, (LatLonAxis2D) lonAxis);
     else
-      return new HorizCoordSys(xaxis, yaxis, lataxis, lonaxis, transform);
+      return new HorizCoordSys(xAxis, yAxis, latAxis, lonAxis, transform);
   }
 
-  private final CoverageCoordAxis1D xaxis, yaxis;
-  private final CoverageCoordAxis1D lataxis, lonaxis;
-  protected final LatLonAxis2D lataxis2D, lonaxis2D;// used in HorizCoordSys2D, do we really need to keep these in HorizCoordSys ?
+  private final CoverageCoordAxis1D xAxis, yAxis;
+  private final CoverageCoordAxis1D latAxis, lonAxis;
+  // used in HorizCoordSys2D, do we really need to keep these in HorizCoordSys?
+  protected final LatLonAxis2D latAxis2D, lonAxis2D;
   private final CoverageTransform transform;
   private final boolean isProjection;
-  private final boolean hasLatLon2D;              // may be true if isProjection
+  private final boolean isLatLon1D;
+  private boolean isLatLon2D;  // isProjection and isLatLon2D may both be "true".
 
-  protected HorizCoordSys(CoverageCoordAxis1D xaxis, CoverageCoordAxis1D yaxis, CoverageCoordAxis lataxis, CoverageCoordAxis lonaxis, CoverageTransform transform) {
-    this.xaxis = xaxis;
-    this.yaxis = yaxis;
+  protected HorizCoordSys(CoverageCoordAxis1D xAxis, CoverageCoordAxis1D yAxis, CoverageCoordAxis latAxis,
+          CoverageCoordAxis lonAxis, CoverageTransform transform) {
+    this.xAxis = xAxis;
+    this.yAxis = yAxis;
     this.transform = transform;
-    this.isProjection = (xaxis != null) && (yaxis != null) && (transform != null);
-    boolean isLatLon1D = lataxis instanceof CoverageCoordAxis1D && lonaxis instanceof CoverageCoordAxis1D;
-    boolean hasLatLon2D = lataxis instanceof LatLonAxis2D && lonaxis instanceof LatLonAxis2D;
-    assert isProjection || isLatLon1D || hasLatLon2D : "missing horiz coordinates (x,y,projection or lat,lon)";
+    this.isProjection = (xAxis != null) && (yAxis != null) && (transform != null);
+    this.isLatLon1D = latAxis instanceof CoverageCoordAxis1D && lonAxis instanceof CoverageCoordAxis1D;
+    this.isLatLon2D = latAxis instanceof LatLonAxis2D && lonAxis instanceof LatLonAxis2D;
+    assert isProjection || isLatLon1D || isLatLon2D : "missing horiz coordinates (x,y,projection or lat,lon)";
 
-    if (isProjection && hasLatLon2D) {
+    if (isProjection && isLatLon2D) {
       boolean ok = true;
-      if (!lataxis.getDependsOn().equalsIgnoreCase(lonaxis.getDependsOn())) ok = false;
-      if (lataxis.getDependenceType() != CoverageCoordAxis.DependenceType.twoD) ok = false;
-      if (lonaxis.getDependenceType() != CoverageCoordAxis.DependenceType.twoD) ok = false;
-      String dependsOn = lataxis.getDependsOn();
-      if (!dependsOn.contains(xaxis.getName())) ok = false;
-      if (!dependsOn.contains(yaxis.getName())) ok = false;
+      if (!latAxis.getDependsOn().equalsIgnoreCase(lonAxis.getDependsOn())) ok = false;
+      if (latAxis.getDependenceType() != CoverageCoordAxis.DependenceType.twoD) ok = false;
+      if (lonAxis.getDependenceType() != CoverageCoordAxis.DependenceType.twoD) ok = false;
+      String dependsOn = latAxis.getDependsOn();
+      if (!dependsOn.contains(xAxis.getName())) ok = false;
+      if (!dependsOn.contains(yAxis.getName())) ok = false;
       if (!ok) {
-        hasLatLon2D = false;
+        isLatLon2D = false;
       }
     }
-    this.hasLatLon2D = hasLatLon2D;
-    if (!isProjection && hasLatLon2D && !(this instanceof HorizCoordSys2D))
+
+    if (!isProjection && isLatLon2D && !(this instanceof HorizCoordSys2D))
       System.out.printf("HEY Should be HorizCoordSys2D%n");
 
-      if (isLatLon1D) {
-      this.lataxis = (CoverageCoordAxis1D) lataxis;
-      this.lonaxis = (CoverageCoordAxis1D) lonaxis;
+    if (isLatLon1D) {
+      this.latAxis = (CoverageCoordAxis1D) latAxis;
+      this.lonAxis = (CoverageCoordAxis1D) lonAxis;
     } else {
-      this.lataxis = null;
-      this.lonaxis = null;
+      this.latAxis = null;
+      this.lonAxis = null;
     }
 
-    if (hasLatLon2D) {
-      this.lataxis2D = (LatLonAxis2D) lataxis;
-      this.lonaxis2D = (LatLonAxis2D) lonaxis;
+    if (isLatLon2D) {
+      this.latAxis2D = (LatLonAxis2D) latAxis;
+      this.lonAxis2D = (LatLonAxis2D) lonAxis;
     } else {
-      this.lataxis2D = null;
-      this.lonaxis2D = null;
+      this.latAxis2D = null;
+      this.lonAxis2D = null;
     }
   }
 
   public String getName() {
     if (isProjection)
-      return xaxis.getName() + " " + yaxis.getName() + " " + transform.getName();
+      return xAxis.getName() + " " + yAxis.getName() + " " + transform.getName();
     else
-      return lataxis.getName() + " " + lonaxis.getName();
+      return latAxis.getName() + " " + lonAxis.getName();
   }
 
-  public boolean getIsProjection() {
+  public boolean isProjection() {
     return isProjection;
   }
 
@@ -145,10 +147,10 @@ public class HorizCoordSys {
 
   public List<CoverageCoordAxis> getCoordAxes() {
     List<CoverageCoordAxis> result = new ArrayList<>();
-    if (xaxis != null) result.add(xaxis);
-    if (yaxis != null) result.add(yaxis);
-    if (lataxis != null) result.add(lataxis);
-    if (lonaxis != null) result.add(lonaxis);
+    if (xAxis != null) result.add(xAxis);
+    if (yAxis != null) result.add(yAxis);
+    if (latAxis != null) result.add(latAxis);
+    if (lonAxis != null) result.add(lonAxis);
     return result;
   }
 
@@ -159,7 +161,6 @@ public class HorizCoordSys {
   /////////////////////////////////////////////////////////////////////////////////////
 
   public Optional<HorizCoordSys> subset(SubsetParams params) {
-
     LatLonRect llbb = (LatLonRect) params.get(SubsetParams.latlonBB);
     ProjectionRect projbb = (ProjectionRect) params.get(SubsetParams.projBB);
     LatLonPoint latlon = (LatLonPoint) params.get(SubsetParams.latlonPoint);
@@ -175,8 +176,8 @@ public class HorizCoordSys {
     try {
       if (latlon != null) { // overrides other horiz subset params
         if (isProjection) {
-          CoordAxisHelper xhelper = new CoordAxisHelper(xaxis);
-          CoordAxisHelper yhelper = new CoordAxisHelper(yaxis);
+          CoordAxisHelper xhelper = new CoordAxisHelper(xAxis);
+          CoordAxisHelper yhelper = new CoordAxisHelper(yAxis);
 
           // we have to transform latlon to projection coordinates
           ProjectionImpl proj = transform.getProjection();
@@ -190,10 +191,10 @@ public class HorizCoordSys {
           else errMessages.format("yaxis: %s;%n", optb.getErrorMessage());
 
         } else {
-          CoordAxisHelper xhelper = new CoordAxisHelper(lonaxis);
-          CoordAxisHelper yhelper = new CoordAxisHelper(lataxis);
+          CoordAxisHelper xhelper = new CoordAxisHelper(lonAxis);
+          CoordAxisHelper yhelper = new CoordAxisHelper(latAxis);
 
-          double lonNormal = LatLonPointImpl.lonNormalFrom(latlon.getLongitude(), lonaxis.getStartValue());
+          double lonNormal = LatLonPointImpl.lonNormalFrom(latlon.getLongitude(), lonAxis.getStartValue());
           optb = xhelper.subsetContaining(lonNormal);
           if (optb.isPresent()) lonaxisSubset = new CoverageCoordAxis1D(optb.get());
           else errMessages.format("lonaxis: %s;%n", optb.getErrorMessage());
@@ -205,11 +206,11 @@ public class HorizCoordSys {
 
       } else if (projbb != null) {
         if (isProjection) {
-          opt = xaxis.subset(projbb.getMinX(), projbb.getMaxX(), horizStride);
+          opt = xAxis.subset(projbb.getMinX(), projbb.getMaxX(), horizStride);
           if (opt.isPresent()) xaxisSubset = (CoverageCoordAxis1D) opt.get();
           else errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
 
-          opt = yaxis.subset(projbb.getMinY(), projbb.getMaxY(), horizStride);
+          opt = yAxis.subset(projbb.getMinY(), projbb.getMaxY(), horizStride);
           if (opt.isPresent()) yaxisSubset = (CoverageCoordAxis1D) opt.get();
           else errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
 
@@ -226,7 +227,7 @@ public class HorizCoordSys {
         } */
 
       } else if (llbb != null) {
-        LatLonRect full = makeLatlonBB(null);
+        LatLonRect full = calcLatLonBoundingBox();
         assert full != null;
 
         if (!full.containedIn(llbb)) { // if request contains entire bb, then no subsetting needed
@@ -235,11 +236,11 @@ public class HorizCoordSys {
             // we have to transform latlon to projection coordinates
             ProjectionImpl proj = transform.getProjection();
             ProjectionRect prect = proj.latLonToProjBB(llbb); // allow projection to override
-            opt = xaxis.subset(prect.getMinX(), prect.getMaxX(), horizStride);
+            opt = xAxis.subset(prect.getMinX(), prect.getMaxX(), horizStride);
             if (opt.isPresent()) xaxisSubset = (CoverageCoordAxis1D) opt.get();
             else errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
 
-            opt = yaxis.subset(prect.getMinY(), prect.getMaxY(), horizStride);
+            opt = yAxis.subset(prect.getMinY(), prect.getMaxY(), horizStride);
             if (opt.isPresent()) yaxisSubset = (CoverageCoordAxis1D) opt.get();
             else errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
 
@@ -248,7 +249,7 @@ public class HorizCoordSys {
             if (opt.isPresent()) lonaxisSubset = opt.get();
             else errMessages.format("lonaxis: %s;%n", opt.getErrorMessage());
 
-            opt = lataxis.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride);
+            opt = latAxis.subset(llbb.getLatMin(), llbb.getLatMax(), horizStride);
             if (opt.isPresent()) lataxisSubset = opt.get();
             else errMessages.format("lataxis: %s;%n", opt.getErrorMessage());
           }
@@ -256,20 +257,20 @@ public class HorizCoordSys {
 
       } else if (horizStride > 1) { // no bounding box, just horiz stride
         if (isProjection) {
-          opt = xaxis.subsetByIndex(xaxis.getRange().setStride(horizStride));
+          opt = xAxis.subsetByIndex(xAxis.getRange().setStride(horizStride));
           if (opt.isPresent()) xaxisSubset = (CoverageCoordAxis1D) opt.get();
           else errMessages.format("xaxis: %s;%n", opt.getErrorMessage());
 
-          opt = yaxis.subsetByIndex(yaxis.getRange().setStride(horizStride));
+          opt = yAxis.subsetByIndex(yAxis.getRange().setStride(horizStride));
           if (opt.isPresent()) yaxisSubset = (CoverageCoordAxis1D) opt.get();
           else errMessages.format("yaxis: %s;%n", opt.getErrorMessage());
 
         } else {
-          opt = lonaxis.subsetByIndex(lonaxis.getRange().setStride(horizStride));
+          opt = lonAxis.subsetByIndex(lonAxis.getRange().setStride(horizStride));
           if (opt.isPresent()) lonaxisSubset = opt.get();
           else errMessages.format("lonaxis: %s;%n", opt.getErrorMessage());
 
-          opt = lataxis.subsetByIndex(lataxis.getRange().setStride(horizStride));
+          opt = latAxis.subsetByIndex(latAxis.getRange().setStride(horizStride));
           if (opt.isPresent()) lataxisSubset = opt.get();
           else errMessages.format("lataxis: %s;%n", opt.getErrorMessage());
         }
@@ -283,68 +284,48 @@ public class HorizCoordSys {
       return Optional.empty(errs);
 
     // makes a copy of the axis
-    if (xaxisSubset == null && xaxis != null) xaxisSubset = (CoverageCoordAxis1D) xaxis.copy();
-    if (yaxisSubset == null && yaxis != null) yaxisSubset = (CoverageCoordAxis1D) yaxis.copy();
-    if (lataxisSubset == null && lataxis != null) lataxisSubset = lataxis.copy();
-    if (lonaxisSubset == null && lonaxis != null) lonaxisSubset = lonaxis.copy();
+    if (xaxisSubset == null && xAxis != null) xaxisSubset = (CoverageCoordAxis1D) xAxis.copy();
+    if (yaxisSubset == null && yAxis != null) yaxisSubset = (CoverageCoordAxis1D) yAxis.copy();
+    if (lataxisSubset == null && latAxis != null) lataxisSubset = latAxis.copy();
+    if (lonaxisSubset == null && lonAxis != null) lonaxisSubset = lonAxis.copy();
 
     return Optional.of(new HorizCoordSys(xaxisSubset, yaxisSubset, lataxisSubset, lonaxisSubset, transform));
   }
 
   public LatLonPoint getLatLon(int yindex, int xindex) {
     if (isProjection) {
-      double x = xaxis.getCoordMidpoint(xindex);
-      double y = yaxis.getCoordMidpoint(xindex);
+      double x = xAxis.getCoordMidpoint(xindex);
+      double y = yAxis.getCoordMidpoint(xindex);
       ProjectionImpl proj = transform.getProjection();
       return proj.projToLatLon(x, y);
     } else {
-      double lat = lataxis.getCoordMidpoint(yindex);
-      double lon = lonaxis.getCoordMidpoint(xindex);
+      double lat = latAxis.getCoordMidpoint(yindex);
+      double lon = lonAxis.getCoordMidpoint(xindex);
       return new LatLonPointImpl(lat, lon);
     }
   }
 
-  /*
-    longitude subset, after normalizing to start
-    draw a circle, representing longitude values from start to start + 360.
-    all values are on this circle and are > start.
-    put start at bottom of circle, end > start, data has values from start, counterclockwise to end.
-    wantMin, wantMax can be anywhere, want goes from wantMin counterclockwise to wantMax.
-    wantMin may be less than or greater than wantMax.
-
-    cases:
-      A. wantMin < wantMax
-         1 wantMin, wantMax > end : empty
-         2 wantMin, wantMax < end : [wantMin, wantMax]
-         3 wantMin < end, wantMax > end : [wantMin, end]
-
-      B. wantMin > wantMax
-         1 wantMin, wantMax > end : all [start, end]
-         2 wantMin, wantMax < end : 2 pieces: [wantMin, end] + [start, max]
-         3 wantMin < end, wantMax > end : [wantMin, end]
-
-   */
-
-  // heres where to deal with crossing seam
+  // here's where to deal with crossing seam
   private Optional<CoverageCoordAxis> subsetLon(LatLonRect llbb, int stride) throws InvalidRangeException {
-    double wantMin = LatLonPointImpl.lonNormalFrom(llbb.getLonMin(), lonaxis.getStartValue());
-    double wantMax = LatLonPointImpl.lonNormalFrom(llbb.getLonMax(), lonaxis.getStartValue());
-    double start = lonaxis.getStartValue();
-    double end  = lonaxis.getEndValue();
+    double wantMin = LatLonPointImpl.lonNormalFrom(llbb.getLonMin(), lonAxis.getStartValue());
+    double wantMax = LatLonPointImpl.lonNormalFrom(llbb.getLonMax(), lonAxis.getStartValue());
+    double start = lonAxis.getStartValue();
+    double end  = lonAxis.getEndValue();
 
     // use MAMath.MinMax as a container for two values, min and max
     List<MAMath.MinMax> lonIntvs = subsetLonIntervals(wantMin, wantMax, start, end);
 
     if (lonIntvs.size() == 0)
-      return Optional.empty(String.format("longitude want [%f,%f] does not intersect lon axis [%f,%f]", wantMin, wantMax, start, end));
+      return Optional.empty(String.format(
+              "longitude want [%f,%f] does not intersect lon axis [%f,%f]", wantMin, wantMax, start, end));
 
     if (lonIntvs.size() == 1) {
       MAMath.MinMax lonIntv = lonIntvs.get(0);
-      return lonaxis.subset(lonIntv.min, lonIntv.max, stride);
+      return lonAxis.subset(lonIntv.min, lonIntv.max, stride);
     }
 
     // this is the seam crossing case
-    return lonaxis.subsetByIntervals(lonIntvs, stride);
+    return lonAxis.subsetByIntervals(lonIntvs, stride);
  }
 
  /*
@@ -365,9 +346,8 @@ public class HorizCoordSys {
        1 wantMin, wantMax > end : all [start, end]
        2 wantMin, wantMax < end : 2 pieces: [wantMin, end] + [start, max]
        3 wantMin < end, wantMax > end : [wantMin, end]
-
  */
-  private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end) throws InvalidRangeException {
+  private List<MAMath.MinMax> subsetLonIntervals(double wantMin, double wantMax, double start, double end) {
     if (wantMin <= wantMax) {
       if (wantMin > end && wantMax > end) // none A.1
         return Collections.EMPTY_LIST;
@@ -394,36 +374,6 @@ public class HorizCoordSys {
     return Collections.EMPTY_LIST;
   }
 
-  public ProjectionRect makeProjectionBB() {
-    if (!isProjection) return null;
-    double minX = Math.min(xaxis.getCoordEdge1(0), xaxis.getCoordEdgeLast());
-    double minY = Math.min(yaxis.getCoordEdge1(0), yaxis.getCoordEdgeLast());
-    double width = Math.abs(xaxis.getCoordEdgeLast() - xaxis.getCoordEdge1(0));
-    double height = Math.abs(yaxis.getCoordEdgeLast() - yaxis.getCoordEdge1(0));
-    return new ProjectionRect( new ProjectionPointImpl(minX,minY), width, height);
-  }
-
-  // LOOK may need to override in HorizCoordsys2D ?
-  public LatLonRect makeLatlonBB(ProjectionRect projBB) {
-    if (isProjection) {
-      if (projBB == null) projBB = makeProjectionBB();
-      return transform.getProjection().projToLatLonBB(projBB);
-
-    } else {
-      double minLon = Math.min(lonaxis.getCoordEdge1(0), lonaxis.getCoordEdgeLast());
-      double minLat = Math.min(lataxis.getCoordEdge1(0), lataxis.getCoordEdgeLast());
-      double deltaLon = Math.abs(lonaxis.getCoordEdgeLast() - lonaxis.getCoordEdge1(0));
-      double deltaLat = Math.abs(lataxis.getCoordEdgeLast() - lataxis.getCoordEdge1(0));
-
-      if (Math.abs(deltaLon) >= 360) {  // Coverage contains all longitudes. Let's normalize to [-180, 180].
-        minLon = -180;
-        deltaLon = 360;
-      }
-
-      return new LatLonRect(new LatLonPointImpl(minLat, minLon), deltaLat, deltaLon);
-    }
-  }
-
   // return y, x range
   public List<RangeIterator> getRanges() {
     List<RangeIterator> result = new ArrayList<>();
@@ -436,19 +386,19 @@ public class HorizCoordSys {
   }
 
   public CoverageCoordAxis1D getXAxis() {
-    return (xaxis != null) ? xaxis : lonaxis;
+    return (xAxis != null) ? xAxis : lonAxis;
   }
 
   public CoverageCoordAxis1D getYAxis() {
-    return (yaxis != null) ? yaxis : lataxis;
+    return (yAxis != null) ? yAxis : latAxis;
   }
 
   public LatLonAxis2D getLonAxis2D() {
-    return lonaxis2D;
+    return lonAxis2D;
   }
 
   public LatLonAxis2D getLatAxis2D() {
-    return lataxis2D;
+    return latAxis2D;
   }
 
   public static class CoordReturn {
@@ -459,29 +409,29 @@ public class HorizCoordSys {
   public Optional<CoordReturn> findXYindexFromCoord(double x, double y) {
     CoordReturn result = new CoordReturn();
     if (isProjection) {
-      CoordAxisHelper xhelper = new CoordAxisHelper(xaxis);
-      CoordAxisHelper yhelper = new CoordAxisHelper(yaxis);
+      CoordAxisHelper xhelper = new CoordAxisHelper(xAxis);
+      CoordAxisHelper yhelper = new CoordAxisHelper(yAxis);
       result.x = xhelper.findCoordElement(x, false);
       result.y = yhelper.findCoordElement(y, false);
 
-      if (result.x >= 0 && result.x < xaxis.getNcoords() && result.y >= 0 && result.y < yaxis.getNcoords()) {
-        result.xcoord = xaxis.getCoordMidpoint(result.x);
-        result.ycoord = yaxis.getCoordMidpoint(result.y);
+      if (result.x >= 0 && result.x < xAxis.getNcoords() && result.y >= 0 && result.y < yAxis.getNcoords()) {
+        result.xcoord = xAxis.getCoordMidpoint(result.x);
+        result.ycoord = yAxis.getCoordMidpoint(result.y);
         return Optional.of(result);
       } else {
         return Optional.empty("not in grid");
       }
 
     } else { // 1D lat lon case
-      CoordAxisHelper xhelper = new CoordAxisHelper(lonaxis);
-      CoordAxisHelper yhelper = new CoordAxisHelper(lataxis);
-      double lon = LatLonPointImpl.lonNormalFrom(x, lonaxis.getStartValue());
+      CoordAxisHelper xhelper = new CoordAxisHelper(lonAxis);
+      CoordAxisHelper yhelper = new CoordAxisHelper(latAxis);
+      double lon = LatLonPointImpl.lonNormalFrom(x, lonAxis.getStartValue());
       result.x = xhelper.findCoordElement(lon, false);
       result.y = yhelper.findCoordElement(y, false);
 
-      if (result.x >= 0 && result.x < lonaxis.getNcoords() && result.y >= 0 && result.y < lataxis.getNcoords()) {
-        result.xcoord = lonaxis.getCoordMidpoint(result.x);
-        result.ycoord = lataxis.getCoordMidpoint(result.y);
+      if (result.x >= 0 && result.x < lonAxis.getNcoords() && result.y >= 0 && result.y < latAxis.getNcoords()) {
+        result.xcoord = lonAxis.getCoordMidpoint(result.x);
+        result.ycoord = latAxis.getCoordMidpoint(result.y);
         return Optional.of(result);
       } else {
         return Optional.empty("not in grid");
@@ -489,4 +439,332 @@ public class HorizCoordSys {
     }
   }
 
+  ///////////////////////////////////// Boundary calculations /////////////////////////////////////
+
+  /**
+   * Calculates the bounding box of this coordinate reference system, in projection coordinates. If this CRS
+   * {@link #isProjection isn't a projection}, than {@code null} is returned.
+   *
+   * @return  the bounding box of this CRS, in projection coordinates.
+   */
+  public ProjectionRect calcProjectionBoundingBox() {
+    if (!isProjection) return null;
+    double minX = Math.min(xAxis.getCoordEdgeFirst(), xAxis.getCoordEdgeLast());
+    double minY = Math.min(yAxis.getCoordEdgeFirst(), yAxis.getCoordEdgeLast());
+    double width = Math.abs(xAxis.getCoordEdgeLast() - xAxis.getCoordEdgeFirst());
+    double height = Math.abs(yAxis.getCoordEdgeLast() - yAxis.getCoordEdgeFirst());
+    return new ProjectionRect(new ProjectionPointImpl(minX, minY), width, height);
+  }
+
+  /**
+   * Calculates the bounding box of this coordinate reference system, in latitude/longitude. This method properly
+   * handles coverages that straddle the international date line by deriving its bounding box from the
+   * {@link #calcConnectedLatLonBoundaryPoints(int, int) connected latitude/longitude boundary}.
+   * <p>
+   * If this CRS {@link #isProjection is a projection}, its lat/lon boundary is computed by converting each point
+   * in its {@link #calcProjectionBoundaryPoints() projection boundary} to latitude/longitude using the
+   * {@link Projection projection}.
+   *
+   * @return  the bounding box of this CRS, in latitude/longitude.
+   */
+  public LatLonRect calcLatLonBoundingBox() {
+    double minLat = Double.MAX_VALUE;
+    double minLon = Double.MAX_VALUE;
+    double maxLat = -Double.MAX_VALUE;
+    double maxLon = -Double.MAX_VALUE;
+
+    for (LatLonPointNoNormalize boundaryPoint : calcConnectedLatLonBoundaryPoints()) {
+      minLat = Math.min(minLat, boundaryPoint.getLatitude());
+      minLon = Math.min(minLon, boundaryPoint.getLongitude());
+      maxLat = Math.max(maxLat, boundaryPoint.getLatitude());
+      maxLon = Math.max(maxLon, boundaryPoint.getLongitude());
+    }
+
+    return new LatLonRect(new LatLonPointImpl(minLat, minLon), new LatLonPointImpl(maxLat, maxLon));
+  }
+
+  /**
+   * Calls {@link #calcConnectedLatLonBoundaryPoints(int, int)} with {@link Integer#MAX_VALUE} as both arguments.
+   * In effect, the boundary will contain ALL of the points along the edges of the CRS.
+   *
+   * @return  the connected latitude/longitude boundary of this CRS.
+   */
+  public List<LatLonPointNoNormalize> calcConnectedLatLonBoundaryPoints() {
+    return calcConnectedLatLonBoundaryPoints(Integer.MAX_VALUE, Integer.MAX_VALUE);
+  }
+
+  /**
+   * Calculates the latitude/longitude boundary of this coordinate reference system. The boundary starts at the lower
+   * left corner of the coverage--i.e. {@code (y[0], x[0])}--and consists of the points that lie along the bottom,
+   * right, top, and left edges, in that order.
+   * <p>
+   * The {@code maxPointsInYEdge} parameter establishes a limit on the number of boundary points that'll be included
+   * from the right and left edges. {@code maxPointsInXEdge} establishes a similar limit for the bottom and top edges.
+   * The size of the returned list will be {@code ≤ 2 * maxPointsInYEdge + 2 * maxPointsInXEdge}. Note that the corners
+   * are always included, regardless of the arguments. If you wish to include ALL of the points along the edges in
+   * the boundary, simply choose values for the parameters that are greater than the lengths of the corresponding
+   * axes in the CRS. {@link Integer#MAX_VALUE} works great. In that case, the size of the returned list will be
+   * {@code 2 * numXcoords + 2 * numYcoords}.
+   * <p>
+   * If this CRS {@link #isProjection is a projection}, the lat/lon boundary is computed by converting each point
+   * in its {@link #calcProjectionBoundaryPoints() projection boundary} to latitude/longitude using the
+   * {@link Projection projection}.
+   * <p>
+   * Points in the boundary will be {@link #connectLatLonPoints connected}. This facilitates proper interpretation of
+   * the boundary if it's rendered as a georeferenced polygon, particularly when the boundary crosses the international
+   * date line.
+   *
+   * @param maxPointsInYEdge  the maximum number of boundary points to include from the right and left edges.
+   * @param maxPointsInXEdge  the maximum number of boundary points to include from the bottom and top edges.
+   * @return  the connected latitude/longitude boundary of this CRS.
+   */
+  public List<LatLonPointNoNormalize> calcConnectedLatLonBoundaryPoints(int maxPointsInYEdge, int maxPointsInXEdge) {
+    List<LatLonPoint> points;
+
+    if (isProjection) {
+      points = calcLatLonBoundaryPointsFromProjection(maxPointsInYEdge, maxPointsInXEdge);
+    } else if (isLatLon1D) {
+      points = calcLatLon1DBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
+    } else if (isLatLon2D) {
+      points = calcLatLon2DBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
+    } else {
+      throw new AssertionError("HorizCoordSys was not a projection, latLon1D, or latLon2D.");
+    }
+
+    return connectLatLonPoints(points);
+  }
+
+  /**
+   * Calls {@link #calcProjectionBoundaryPoints(int, int)} with {@link Integer#MAX_VALUE} as both arguments.
+   * In effect, the boundary will contain ALL of the points along the edges of the CRS.
+   *
+   * @return  the boundary of this coordinate reference system, in projection coordinates.
+   */
+  public List<ProjectionPoint> calcProjectionBoundaryPoints() {
+    return calcProjectionBoundaryPoints(Integer.MAX_VALUE, Integer.MAX_VALUE);
+  }
+
+  /**
+   * Calculates the boundary of this coordinate reference system, in projection coordinates. The boundary starts at the
+   * lower left corner of the coverage--i.e. {@code (y[0], x[0])}--and consists of the points that lie along the bottom,
+   * right, top, and left edges, in that order.
+   * <p>
+   * The {@code maxPointsInYEdge} parameter establishes a limit on the number of boundary points that'll be included
+   * from the right and left edges. {@code maxPointsInXEdge} establishes a similar limit for the bottom and top edges.
+   * The size of the returned list will be {@code ≤ 2 * maxPointsInYEdge + 2 * maxPointsInXEdge}. Note that the corners
+   * are always included, regardless of the arguments. If you wish to include ALL of the points along the edges in
+   * the boundary, simply choose values for the parameters that are greater than the lengths of the corresponding
+   * axes in the CRS. {@link Integer#MAX_VALUE} works great. In that case, the size of the returned list will be
+   * {@code 2 * numXcoords + 2 * numYcoords}.
+   *
+   * @param maxPointsInYEdge  the maximum number of boundary points to include from the right and left edges.
+   * @param maxPointsInXEdge  the maximum number of boundary points to include from the bottom and top edges.
+   * @return  the boundary of this coordinate reference system, in projection coordinates.
+   * @throws UnsupportedOperationException  if this CRS is not a projection.
+   */
+  public List<ProjectionPoint> calcProjectionBoundaryPoints(int maxPointsInYEdge, int maxPointsInXEdge) {
+    if (!isProjection) {
+      throw new UnsupportedOperationException("Coordinate system is not a projection.");
+    }
+    checkMaxPointsInEdges(maxPointsInYEdge, maxPointsInXEdge);
+
+    int numYtotal = yAxis.getNcoords();
+    int numXtotal = xAxis.getNcoords();
+    int strideY = calcStride(numYtotal, maxPointsInYEdge);
+    int strideX = calcStride(numXtotal, maxPointsInXEdge);
+
+    List<ProjectionPoint> points = new LinkedList<>();
+
+    // Bottom boundary points
+    for (int i = 0; i < numXtotal; i += strideX) {
+      points.add(new ProjectionPointImpl(xAxis.getCoordEdge1(i), yAxis.getCoordEdgeFirst()));
+    }
+
+    // Right boundary points
+    for (int j = 0; j < numYtotal; j += strideY) {
+      points.add(new ProjectionPointImpl(xAxis.getCoordEdgeLast(), yAxis.getCoordEdge1(j)));
+    }
+
+    // Top boundary points
+    for (int i = numXtotal - 1; i >= 0; i -= strideX) {
+      points.add(new ProjectionPointImpl(xAxis.getCoordEdge2(i), yAxis.getCoordEdgeLast()));
+    }
+
+    // Left boundary points
+    for (int j = numYtotal - 1; j >= 0; j -= strideY) {
+      points.add(new ProjectionPointImpl(xAxis.getCoordEdgeFirst(), yAxis.getCoordEdge2(j)));
+    }
+
+    assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);
+    return points;
+  }
+
+  private List<LatLonPoint> calcLatLon1DBoundaryPoints(int maxPointsInYEdge, int maxPointsInXEdge) {
+    if (!isLatLon1D) {
+      throw new UnsupportedOperationException("Coordinate system is not 1D latitude/longitude.");
+    }
+    checkMaxPointsInEdges(maxPointsInYEdge, maxPointsInXEdge);
+
+    int numYtotal = latAxis.getNcoords();
+    int numXtotal = lonAxis.getNcoords();
+    int strideY = calcStride(numYtotal, maxPointsInYEdge);
+    int strideX = calcStride(numXtotal, maxPointsInXEdge);
+
+    List<LatLonPoint> points = new LinkedList<>();
+
+    // Bottom boundary points
+    for (int i = 0; i < numXtotal; i += strideX) {
+      points.add(new LatLonPointImpl(latAxis.getCoordEdgeFirst(), lonAxis.getCoordEdge1(i)));
+    }
+
+    // Right boundary points
+    for (int j = 0; j < numYtotal; j += strideY) {
+      points.add(new LatLonPointImpl(latAxis.getCoordEdge1(j), lonAxis.getCoordEdgeLast()));
+    }
+
+    // Top boundary points
+    for (int i = numXtotal - 1; i >= 0; i -= strideX) {
+      points.add(new LatLonPointImpl(latAxis.getCoordEdgeLast(), lonAxis.getCoordEdge2(i)));
+    }
+
+    // Left boundary points
+    for (int j = numYtotal - 1; j >= 0; j -= strideY) {
+      points.add(new LatLonPointImpl(latAxis.getCoordEdge2(j), lonAxis.getCoordEdgeFirst()));
+    }
+
+    assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);
+    return points;
+  }
+
+  private List<LatLonPoint> calcLatLonBoundaryPointsFromProjection(int maxPointsInYEdge, int maxPointsInXEdge) {
+    List<ProjectionPoint> projPoints = calcProjectionBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
+    List<LatLonPoint> latLonPoints = new LinkedList<>();
+
+    for (ProjectionPoint projPoint : projPoints) {
+      latLonPoints.add(transform.getProjection().projToLatLon(projPoint));
+    }
+
+    return latLonPoints;
+  }
+
+  private List<LatLonPoint> calcLatLon2DBoundaryPoints(int maxPointsInYEdge, int maxPointsInXEdge) {
+    if (!isLatLon2D) {
+      throw new UnsupportedOperationException("Coordinate system is not 2D latitude/longitude.");
+    }
+    checkMaxPointsInEdges(maxPointsInYEdge, maxPointsInXEdge);
+
+    assert Arrays.equals(latAxis2D.getShape(), lonAxis2D.getShape()) : "2D lat/lon axes ought to have the same shape";
+    int[] midpointsShape = latAxis2D.getShape().clone();  // Clone because we will modify later.
+
+    int numYtotal = midpointsShape[0];
+    int numXtotal = midpointsShape[1];
+    int strideY = calcStride(numYtotal, maxPointsInYEdge);
+    int strideX = calcStride(numXtotal, maxPointsInXEdge);
+
+    ArrayDouble.D2 latEdges = (ArrayDouble.D2) latAxis2D.getCoordBoundsAsArray();
+    ArrayDouble.D2 lonEdges = (ArrayDouble.D2) lonAxis2D.getCoordBoundsAsArray();
+
+    assert Arrays.equals(latEdges.getShape(), lonEdges.getShape()) : "2D lat/lon edges ought to have the same shape";
+    int[] edgesShape = latEdges.getShape();
+    midpointsShape[0]++;
+    midpointsShape[1]++;
+    assert Arrays.equals(midpointsShape, edgesShape) : "edgesShape should be 1 greater than midpointsShape in each dim";
+
+    List<LatLonPoint> points = new LinkedList<>();
+
+    // Bottom boundary points: y = 0
+    for (int i = 0; i < numXtotal; i += strideX) {
+      points.add(new LatLonPointImpl(latEdges.get(0, i), lonEdges.get(0, i)));
+    }
+
+    // Right boundary points: x = numXtotal
+    // numXtotal is not OOB, because edgesShape is 1 bigger than midpointsShape in each dim, and numXtotal
+    // is relative to midpointsShape.
+    for (int j = 0; j < numYtotal; j += strideY) {
+      points.add(new LatLonPointImpl(latEdges.get(j, numXtotal), lonEdges.get(j, numXtotal)));
+    }
+
+    // Top boundary points: y = numYtotal
+    for (int i = numXtotal; i > 0; i -= strideX) {
+      points.add(new LatLonPointImpl(latEdges.get(numYtotal, i), lonEdges.get(numYtotal, i)));
+    }
+
+    // Left boundary points: x = 0
+    for (int j = numYtotal; j > 0; j -= strideY) {
+      points.add(new LatLonPointImpl(latEdges.get(j, 0), lonEdges.get(j, 0)));
+    }
+
+    assertNotExceedingMaxBoundaryPoints(points.size(), maxPointsInYEdge, maxPointsInXEdge);
+    return points;
+  }
+
+  private static void checkMaxPointsInEdges(int maxPointsInYEdge, int maxPointsInXEdge)
+          throws IllegalArgumentException {
+    if (maxPointsInYEdge < 1) {
+      throw new IllegalArgumentException(String.format("maxPointsInYEdge (%d) must be > 0", maxPointsInYEdge));
+    } else if (maxPointsInXEdge < 1) {
+      throw new IllegalArgumentException(String.format("maxPointsInXEdge (%d) must be > 0", maxPointsInXEdge));
+    }
+  }
+
+  private static int calcStride(int numTotal, int maxToInclude) {
+    int stride = Math.max(1, (int) Math.ceil(numTotal / (double) maxToInclude));
+    int numIncluded = (int) Math.ceil(numTotal / (double) stride);
+
+    assert numIncluded <= maxToInclude : String.format(
+            "We're set to include %d points, but we wanted a max of %d.", numIncluded, maxToInclude);
+    return stride;
+  }
+
+  private static void assertNotExceedingMaxBoundaryPoints(
+        int numBoundaryPoints, int maxPointsInYEdge, int maxPointsInXEdge) {
+    // Widen to long to avoid possible overflow, because last two arguments will often be Integer.MAX_VALUE.
+    long maxBoundaryPoints = 2 * (long) maxPointsInYEdge + 2 * (long) maxPointsInXEdge;
+
+    assert numBoundaryPoints <= maxBoundaryPoints :
+        String.format("We should be returning a maximum of %d boundary points, but we're returning %d instead.",
+            maxBoundaryPoints, numBoundaryPoints);
+  }
+
+  /**
+   * Returns a list of points that is equivalent to the input list, but with longitude values adjusted to ensure that
+   * adjacent elements are "connected".
+   * <p>
+   * Two points are "connected" if the absolute difference of their {@link LatLonPointImpl#lonNormal normalized
+   * longitudes} is {@code ≤180}. For example, the longitudes {@code 112} and {@code 124} are connected. So are
+   * {@code 15} and {@code -27}.
+   * <p>
+   * Two points may be "disconnected" if they lie on opposite sides of the international date line. For example,
+   * the longitudes {@code 175} and {@code -175} are disconnected because their absolute difference is {@code 350},
+   * which is {@code >180}. To connect the two points, we adjust the second longitude to an equivalent value
+   * in the range {@code [firstLon ± 180]} by adding or subtracting {@code 360}. So, {@code -175} would become
+   * {@code 185}. We perform this adjustment for each pair of adjacent elements in the list.
+   * <p>
+   * Performing the above adjustment will result in longitudes that lie outside of the normalized range of
+   * ({@code [-180, 180]}). To be precise, if adjustments are necessary, all of the longitudes in the returned list
+   * will be in either {@code [-360, 0]} or {@code [0, 360]}. Consequently, adjusted points cannot be returned as
+   * {@link LatLonPoint}s; they are returned as {@link LatLonPointNoNormalize} objects instead.
+   * <p>
+   * Longitudes {@code lon1} and {@code lon2} are considered equivalent if {@code lon1 == lon2 + 360 * i}, for some
+   * integer {@code i}.
+   *
+   * @param points  a sequence of normalized lat/lon points that potentially crosses the international date line.
+   * @return  an equivalent sequence of points that has been adjusted to be "connected".
+   */
+  public static List<LatLonPointNoNormalize> connectLatLonPoints(List<LatLonPoint> points) {
+    LinkedList<LatLonPointNoNormalize> connectedPoints = new LinkedList<>();
+
+    for (LatLonPoint point : points) {
+      double curLat = point.getLatitude();
+      double curLon = point.getLongitude();
+
+      if (!connectedPoints.isEmpty()) {
+        double prevLon = connectedPoints.getLast().getLongitude();
+        curLon = LatLonPointImpl.lonNormal(curLon, prevLon);
+      }
+      connectedPoints.add(new LatLonPointNoNormalize(curLat, curLon));
+    }
+
+    return connectedPoints;
+  }
 }

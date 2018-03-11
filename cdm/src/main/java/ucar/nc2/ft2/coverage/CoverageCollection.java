@@ -107,27 +107,19 @@ public class CoverageCollection implements Closeable, CoordSysContainer {
     this.hcs = wireHorizCoordSys();
     this.reader = reader;
 
-    if (hcs.getIsProjection()) {
+    if (hcs.isProjection()) {
       if (projBoundingBox != null)
         this.projBoundingBox = projBoundingBox;
       else
-        this.projBoundingBox = hcs.makeProjectionBB();
-      this.latLonBoundingBox = hcs.makeLatlonBB(this.projBoundingBox);
-
+        this.projBoundingBox = hcs.calcProjectionBoundingBox();
     } else {
-      if (latLonBoundingBox != null)
-        this.latLonBoundingBox = latLonBoundingBox;
-      else
-        this.latLonBoundingBox = hcs.makeLatlonBB(null);
-
-      // ?? not sure if this is needed
-      if (this.latLonBoundingBox != null)
-        this.projBoundingBox = new ProjectionRect(
-              new ProjectionPointImpl(this.latLonBoundingBox.getLonMin(), this.latLonBoundingBox.getLatMin()),
-              this.latLonBoundingBox.getWidth(), this.latLonBoundingBox.getHeight());
-      else
-        this.projBoundingBox = null;
+      this.projBoundingBox = null;
     }
+
+    if (latLonBoundingBox != null)
+      this.latLonBoundingBox = latLonBoundingBox;
+    else
+      this.latLonBoundingBox = hcs.calcLatLonBoundingBox();
   }
 
   private List<CoordSysSet> wireObjectsTogether(List<Coverage> coverages) {

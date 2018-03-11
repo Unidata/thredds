@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+    <dimension name="y" length="4" />
+    <dimension name="x" length="4" />
+    
+    <variable name="Temperature_surface" shape="y x" type="float">
+        <attribute name="long_name" value="Temperature @ Ground or water surface" />
+        <attribute name="units" value="K" />
+        <attribute name="grid_mapping" value="PolarStereographic_Projection" />
+        <attribute name="coordinates" value="y x" />
+        <values start="1" increment="1" />
+    </variable>
+    
+    <variable name="y" shape="y" type="float">
+        <attribute name="standard_name" value="projection_y_coordinate" />
+        <attribute name="units" value="km" />
+        <values>-2000 -1100 -200 700</values>
+    </variable>
+    
+    <variable name="x" shape="x" type="float">
+        <attribute name="standard_name" value="projection_x_coordinate" />
+        <attribute name="units" value="km" />
+        <values>-4000 -3000 -2000 -1000</values>
+    </variable>
+    
+    <variable name="PolarStereographic_Projection" shape="" type="int">
+        <attribute name="grid_mapping_name" value="stereographic" />
+        <attribute name="longitude_of_projection_origin" type="double" value="255.0" />
+        <attribute name="latitude_of_projection_origin" type="double" value="90.0" />
+        <attribute name="scale_factor_at_projection_origin" type="double" value="0.9330127018922193" />
+        <attribute name="earth_radius" type="double" value="6371229.0" />
+        <values>0</values>
+    </variable>
+    
+    <attribute name="Conventions" value="CF-1.6" />
+</netcdf>
