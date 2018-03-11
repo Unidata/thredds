@@ -35,12 +35,12 @@
           <button type="button" onclick="selectTab(latLonSubset, this)" class="defaultButton">Lat/lon box</button>
 
           <button type="button" onclick="selectTab(coordinateSubset, this)"
-                  th:if="${gcd.horizCoordSys.isProjection}">Proj X/Y box</button>
+                  th:if="${gcd.horizCoordSys.isProjection()}">Proj X/Y box</button>
         </div>
 
         <div th:replace="templates/commonFragments :: latLonSubset" />
 
-        <div id="coordinateSubset" class="tabPane sidebarInput" th:if="${gcd.horizCoordSys.isProjection}">
+        <div id="coordinateSubset" class="tabPane sidebarInput" th:if="${gcd.horizCoordSys.isProjection()}">
           <h5>Bounding box (in projection coords)</h5>
 
           <div class="boundingBoxGrid">

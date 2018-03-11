@@ -220,6 +220,10 @@ public class CoverageCoordAxis1D extends CoverageCoordAxis { // implements Itera
     throw new IllegalStateException("Unknown spacing=" + spacing);
   }
 
+  public double getCoordEdgeFirst() {
+    return getCoordEdge1(0);
+  }
+
   public double getCoordEdgeLast() {
     return getCoordEdge2(ncoords - 1);
   }

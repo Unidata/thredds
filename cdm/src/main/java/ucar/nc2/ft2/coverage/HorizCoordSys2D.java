@@ -38,7 +38,6 @@ import ucar.nc2.util.Optional;
 import ucar.unidata.geoloc.LatLonPoint;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionRect;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -69,18 +68,6 @@ public class HorizCoordSys2D extends HorizCoordSys {
     return true;
   }
 
-  @Override
-  public LatLonRect makeLatlonBB(ProjectionRect projBB) {
-    synchronized (this) {
-      if (edges == null) edges = new Edges();
-    }
-    LatLonPointImpl min = new LatLonPointImpl(edges.latMinMax.min, edges.lonMinMax.min);
-    double height = edges.latMinMax.max - edges.latMinMax.min;
-    double width = edges.lonMinMax.max - edges.lonMinMax.min;
-    return new LatLonRect(min, height, width);
-
-  }
-
     @Override
   public Optional<HorizCoordSys> subset(SubsetParams params) {
 
@@ -97,13 +84,13 @@ public class HorizCoordSys2D extends HorizCoordSys {
         errMessages.format("%s;%n", opt.getErrorMessage());
       } else {
         List<RangeIterator> ranges = opt.get();
-        lataxisSubset = lataxis2D.subset(ranges.get(1), ranges.get(0));  // x, y
-        lonaxisSubset = lonaxis2D.subset(ranges.get(1), ranges.get(0));
+        lataxisSubset = latAxis2D.subset(ranges.get(1), ranges.get(0));  // x, y
+        lonaxisSubset = lonAxis2D.subset(ranges.get(1), ranges.get(0));
       }
     } else if (horizStride > 1) {
       try {
-        lataxisSubset = lataxis2D.subset(new Range(0, ncols-1, horizStride), new Range(0, nrows-1, horizStride));
-        lonaxisSubset = lonaxis2D.subset(new Range(0, ncols-1, horizStride), new Range(0, nrows-1, horizStride));
+        lataxisSubset = latAxis2D.subset(new Range(0, ncols-1, horizStride), new Range(0, nrows-1, horizStride));
+        lonaxisSubset = lonAxis2D.subset(new Range(0, ncols-1, horizStride), new Range(0, nrows-1, horizStride));
       } catch (InvalidRangeException e) {
         errMessages.format("%s;%n", e.getMessage());
       }
@@ -114,22 +101,22 @@ public class HorizCoordSys2D extends HorizCoordSys {
       return Optional.empty(errs);
 
     // makes a copy of the axis
-    if (lataxisSubset == null) lataxisSubset = (LatLonAxis2D) lataxis2D.copy();
-    if (lonaxisSubset == null) lonaxisSubset = (LatLonAxis2D) lonaxis2D.copy();
+    if (lataxisSubset == null) lataxisSubset = (LatLonAxis2D) latAxis2D.copy();
+    if (lonaxisSubset == null) lonaxisSubset = (LatLonAxis2D) lonAxis2D.copy();
 
     return Optional.of(new HorizCoordSys2D(lataxisSubset, lonaxisSubset));
   }
 
   @Override
   public LatLonPoint getLatLon(int yindex, int xindex) {
-    double lat = lataxis2D.getCoord(yindex, xindex);
-    double lon = lonaxis2D.getCoord(yindex, xindex);
+    double lat = latAxis2D.getCoord(yindex, xindex);
+    double lon = lonAxis2D.getCoord(yindex, xindex);
     return new LatLonPointImpl(lat, lon);
   }
 
   @Override
   public List<RangeIterator> getRanges() {
-    return lataxis2D.getRanges(); // both are the same
+    return latAxis2D.getRanges(); // both are the same
   }
 
   @Override
@@ -153,8 +140,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
   @Override
   public List<CoverageCoordAxis> getCoordAxes() {
     List<CoverageCoordAxis> result = new ArrayList<>();
-    result.add(lataxis2D);
-    result.add(lonaxis2D);
+    result.add(latAxis2D);
+    result.add(lonAxis2D);
     return result;
   }
 
@@ -172,8 +159,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
     private MAMath.MinMax latMinMax, lonMinMax;
 
     Edges() {
-      latEdge = (ArrayDouble.D2) lataxis2D.getCoordBoundsAsArray();
-      lonEdge = (ArrayDouble.D2) lonaxis2D.getCoordBoundsAsArray();
+      latEdge = (ArrayDouble.D2) latAxis2D.getCoordBoundsAsArray();
+      lonEdge = (ArrayDouble.D2) lonAxis2D.getCoordBoundsAsArray();
 
       // assume missing values have been converted to NaNs
       latMinMax = MAMath.getMinMax(latEdge);
@@ -187,7 +174,8 @@ public class HorizCoordSys2D extends HorizCoordSys {
       }
 
       if (debug)
-        System.out.printf("Bounds (%d %d): lat= (%f,%f) lon = (%f,%f) %n", nrows, ncols, latMinMax.min, latMinMax.max, lonMinMax.min, lonMinMax.max);
+        System.out.printf("Bounds (%d %d): lat= (%f,%f) lon = (%f,%f) %n",
+                nrows, ncols, latMinMax.min, latMinMax.max, lonMinMax.min, lonMinMax.max);
     }
 
     /**
@@ -334,7 +322,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
     private boolean detIsPositive(double x0, double y0, double x1, double y1, double x2, double y2) {
       double det = (x1 * y2 - y1 * x2 - x0 * y2 + y0 * x2 + x0 * y1 - y0 * x1);
       if (det == 0)
-        log.warn("determinate = 0 on lat/lon=" + lataxis2D.getName() + ", " + lonaxis2D.getName()); // LOOK needed?
+        log.warn("determinate = 0 on lat/lon=" + latAxis2D.getName() + ", " + lonAxis2D.getName()); // LOOK needed?
       return det > 0;
     }
 
@@ -485,7 +473,7 @@ public class HorizCoordSys2D extends HorizCoordSys {
       double minx = LatLonPointImpl.lonNormalFrom(llpt.getLongitude(), lonMinMax.min);
       double maxx = LatLonPointImpl.lonNormalFrom(urpt.getLongitude(), lonMinMax.min);
 
-      int shape[] = lonaxis2D.getShape();
+      int shape[] = lonAxis2D.getShape();
       int ny = shape[0];
       int nx = shape[1];
       int minCol = Integer.MAX_VALUE, minRow = Integer.MAX_VALUE;

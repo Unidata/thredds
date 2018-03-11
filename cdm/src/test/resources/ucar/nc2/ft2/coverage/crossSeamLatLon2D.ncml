@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+    <dimension name="y" length="4" />
+    <dimension name="x" length="4" />
+    
+    <variable name="Temperature_surface" shape="y x" type="float">
+        <attribute name="long_name" value="Temperature @ Ground or water surface" />
+        <attribute name="units" value="K" />
+        <attribute name="coordinates" value="lat lon" />
+        <values start="1" increment="1" />
+    </variable>
+    
+    <variable name="lat" shape="y x" type="double">
+        <attribute name="units" value="degrees_north" />
+        <attribute name="standard_name" value="latitude" />
+        <!--
+            These were generated from the projection in crossSeamProjection.ncml using the following Groovy code:
+            
+            for (int j = 0; j < horizCoordSys.yAxis.ncoords; ++j) {
+                for (int i = 0; i < horizCoordSys.xAxis.ncoords; ++i) {
+                    double y = horizCoordSys.yAxis.getCoordMidpoint(j)
+                    double x = horizCoordSys.xAxis.getCoordMidpoint(i)
+                    println horizCoordSys.transform.projection.projToLatLon(x, y).latitude
+                }
+            }
+        -->
+        <values>
+            48.771275207078986 56.257940168398875 63.23559652027781 68.69641273007204
+            51.52824383539942  59.91283563136657  68.26407960692367 75.7452461192097
+            52.765818800755305 61.615297053148296 70.80822358575152 80.19456756234185
+            52.28356434154232  60.94659393490472  69.78850194830888 78.27572828144659
+        </values>
+    </variable>
+    
+    <variable name="lon" shape="y x" type="double">
+        <attribute name="units" value="degrees_east" />
+        <attribute name="standard_name" value="longitude" />
+        <!-- These were generated similarly to the latitudes. -->
+        <values>
+            -168.434948822922   -161.3099324740202  -150.0              -131.56505117707798
+            -179.6237487511738  -174.86369657175186 -166.1892062570269  -147.27368900609372
+             167.86240522611175  168.81407483429038  170.71059313749964  176.3099324740202
+             155.0737544933483   151.8659776936037   145.70995378081128  130.00797980144134
+        </values>
+    </variable>
+    
+    <attribute name="Conventions" value="CF-1.6" />
+</netcdf>

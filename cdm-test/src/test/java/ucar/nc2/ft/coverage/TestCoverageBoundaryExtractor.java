@@ -38,36 +38,33 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.constants.FeatureType;
-import ucar.nc2.ft2.coverage.*;
+import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
+import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
 import ucar.nc2.ft2.coverage.writer.CoverageBoundariesExtractor;
-import ucar.nc2.util.Optional;
-import ucar.unidata.geoloc.LatLonPoint;
-import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.geoloc.ProjectionImpl;
-import ucar.unidata.geoloc.ProjectionRect;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
+import ucar.unidata.geoloc.LatLonPointNoNormalize;
 import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
- * Describe
+ * Test CoverageBoundaryExtractor.
  *
  * @author caron
- * @since 10/7/2015.
+ * @since 10/7/2015
  */
 @Category(NeedsCdmUnitTest.class)
 public class TestCoverageBoundaryExtractor {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
-  public void TestCoverageBoundaryExtractorProjection() throws IOException, InvalidRangeException {
+  public void TestCoverageBoundaryExtractorProjection() throws IOException {
     String endpoint = TestDir.cdmUnitTestDir + "tds/ncep/DGEX_Alaska_12km_20100524_0000.grib2"; // Polar stereographic
-    System.out.printf("open %s%n", endpoint);
+    logger.info("open {}", endpoint);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       assert cc != null;
@@ -77,26 +74,22 @@ public class TestCoverageBoundaryExtractor {
       Assert.assertEquals(FeatureType.GRID, gds.getCoverageType());
 
       CoverageBoundariesExtractor extract = new CoverageBoundariesExtractor(gds);
-      System.out.printf("%s%n", extract.getBoundaryAsWKT());
-      List<ucar.unidata.geoloc.LatLonPoint> latlons = extract.getBoundaryPoints();
+      logger.info("{}", extract.getBoundaryAsWKT());
+      List<LatLonPointNoNormalize> latlons = gds.getHorizCoordSys().calcConnectedLatLonBoundaryPoints();
 
-      //Assert.assertTrue(latlons.size()+"< 400", latlons.size() <= 400);
-      LatLonPoint prev = null;
+      LatLonPointNoNormalize prev = null;
       int count = 0;
-      for (LatLonPoint pt : latlons) {
-        System.out.printf("%d: %s   diff= %s%n", count++, pt, diff(prev, pt));
+      for (LatLonPointNoNormalize pt : latlons) {
+        logger.info("{}: {}   diff= {}", count++, pt, diff(prev, pt));
         prev = pt;
       }
     }
   }
 
-  private String diff(LatLonPoint prev, LatLonPoint pt) {
+  private String diff(LatLonPointNoNormalize prev, LatLonPointNoNormalize pt) {
     if (prev == null) return "";
     double diffLat =  (pt.getLatitude()-prev.getLatitude());
     double diffLon =  (pt.getLongitude()-prev.getLongitude());
     return String.format("(%f.3, %f.3)", diffLat, diffLon);
   }
-
-
-
 }
