@@ -61,17 +61,17 @@ public interface LatLonPoint {
   /**
    * Returns the result of {@link #nearlyEquals(LatLonPoint, double)}, with {@link Misc#defaultMaxRelativeDiffDouble}.
    */
-  default boolean nearlyEquals(LatLonPoint other) {
-    return nearlyEquals(other, Misc.defaultMaxRelativeDiffDouble);
+  default boolean nearlyEquals(LatLonPoint that) {
+    return nearlyEquals(that, Misc.defaultMaxRelativeDiffDouble);
   }
 
   /**
-   * Returns {@code true} if this point is nearly equal to {@code other}. The "near equality" of points is determined
+   * Returns {@code true} if this point is nearly equal to {@code that}. The "near equality" of points is determined
    * using {@link Misc#nearlyEquals(double, double, double)}, with the specified maxRelDiff.
    *
-   * @param other    the other point to check.
+   * @param that    the other point to check.
    * @param maxRelDiff  the maximum {@link Misc#relativeDifference relative difference} the two points may have.
-   * @return {@code true} if this point is nearly equal to {@code other}.
+   * @return {@code true} if this point is nearly equal to {@code that}.
    */
-  boolean nearlyEquals(LatLonPoint other, double maxRelDiff);
+  boolean nearlyEquals(LatLonPoint that, double maxRelDiff);
 }

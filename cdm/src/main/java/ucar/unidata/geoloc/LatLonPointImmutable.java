@@ -34,7 +34,7 @@
 package ucar.unidata.geoloc;
 
 /**
- * An immutable LatLonPoint
+ * An immutable {@link LatLonPoint}.
  *
  * @author caron
  * @since 7/29/2014
@@ -44,8 +44,8 @@ public class LatLonPointImmutable extends LatLonPointImpl {
           Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY);
 
   public LatLonPointImmutable(double lat, double lon) {
-    this.lat = lat;
-    this.lon = lon;
+    this.lat = latNormal(lat);
+    this.lon = lonNormal(lon);
   }
 
   public LatLonPointImmutable(LatLonPoint pt) {

@@ -310,12 +310,9 @@ public class LatLonPointImpl implements LatLonPoint, java.io.Serializable {
   }
 
   @Override
-  public boolean nearlyEquals(LatLonPoint other, double maxRelDiff) {
-    boolean lonOk = Misc.nearlyEquals(other.getLongitude(), this.lon, maxRelDiff);
-    if (!lonOk) {
-      lonOk = Misc.nearlyEquals(lonNormal360(other.getLongitude()), lonNormal360(this.lon), maxRelDiff);
-    }
-    return lonOk && Misc.nearlyEquals(other.getLatitude(), this.lat, maxRelDiff);
+  public boolean nearlyEquals(LatLonPoint that, double maxRelDiff) {
+    return Misc.nearlyEquals(that.getLatitude(),  this.lat, maxRelDiff) &&
+           Misc.nearlyEquals(that.getLongitude(), this.lon, maxRelDiff);
   }
 
   // Exact comparison is needed in order to be consistent with hashCode().
