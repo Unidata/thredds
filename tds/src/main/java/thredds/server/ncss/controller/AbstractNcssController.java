@@ -136,7 +136,8 @@ public abstract class AbstractNcssController {
   // common methods
 
   private static final String[] endings = new String[]{"/dataset.xml", "/dataset.html", "/pointDataset.html",
-          "/pointDataset.xml", "/datasetBoundaries.xml", "/station.xml"
+          "/pointDataset.xml", "/datasetBoundaries.xml", "/datasetBoundaries.wkt", "/datasetBoundaries.json",
+          "/station.xml"
   };
 
   public String getDatasetPath(HttpServletRequest req) {

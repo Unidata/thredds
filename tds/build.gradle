@@ -94,6 +94,7 @@ dependencies {
     testCompile libraries["spring-test"]
     testCompile libraries["hamcrest-core"]
     testCompile libraries["commons-io"]
+    testCompile libraries["JUnitParams"]
 
     // Logging
     compile libraries["slf4j-api"]

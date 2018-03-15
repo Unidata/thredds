@@ -47,7 +47,6 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.CoverageCollection;
-import ucar.nc2.ft2.coverage.writer.CoverageBoundariesExtractor;
 import ucar.nc2.ft2.coverage.writer.CoverageDatasetCapabilities;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -183,7 +182,7 @@ public class NcssShowFeatureDatasetInfo {
       Map<String, Object> model = new HashMap<>();
       model.put("gcd", gcd);
       model.put("datasetPath", datasetUrlPath);
-      model.put("horizExtentWKT", CoverageBoundariesExtractor.getDatasetBoundariesWKT(gcd));
+      model.put("horizExtentWKT", gcd.getHorizCoordSys().getLatLonBoundaryAsWKT(50, 100));
 
       if (servletPath.endsWith("dataset.html")) {
         model.put("accept", makeAcceptList(SupportedOperation.GRID_REQUEST));

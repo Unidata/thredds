@@ -228,7 +228,8 @@ where:
   {description}           = dataset.[xml|html] |  pointDataset.[xml|html] | datasetBoundaries.xml | stations.xml
   dataset.[xml|html]      = the dataset description in xml or as a web form (may be point or grid)
   pointDataset.[xml|html] = the grid-as-point or the point dataset description in xml or as a web form
-  datasetBoundaries.xml   = the description of the bounding boxes for grid datasets
+  datasetBoundaries.wkt   = the description of the bounding boxes for grid datasets in WKT
+  datasetBoundaries.json  = the description of the bounding boxes for grid datasets in GeoJSON
   station.xml             = the list of valid stations for a station dataset
   {query}                 = the KVPs to describe the subset that you want (see below for valid combinations)
 ------------------------------------------------------------------------------------------------------------------------------------
