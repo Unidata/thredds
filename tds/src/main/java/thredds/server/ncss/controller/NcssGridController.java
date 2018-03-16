@@ -2,9 +2,10 @@
  * Copyright (c) 1998-2017 University Corporation for Atmospheric Research/Unidata
  * See LICENSE.txt for license information.
  */
-
 package thredds.server.ncss.controller;
 
+import org.jdom2.Document;
+import org.jdom2.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,7 @@ import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
 import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
+import ucar.nc2.ft2.coverage.writer.CoverageDatasetCapabilities;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Optional;
 
@@ -42,10 +44,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Formatter;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Handles NCSS Grid Requests
@@ -70,7 +69,6 @@ public class NcssGridController extends AbstractNcssController {
   @RequestMapping("**")     // data request
   public void handleRequest(HttpServletRequest req, HttpServletResponse res, @Valid NcssGridParamsBean params,
           BindingResult validationResult) throws Exception {
-
     if (!allowedServices.isAllowed(StandardService.netcdfSubsetGrid))
       throw new ServiceNotAllowed(StandardService.netcdfSubsetGrid.toString());
 
@@ -100,7 +98,6 @@ public class NcssGridController extends AbstractNcssController {
 
   private void handleRequestGrid(HttpServletResponse res, NcssGridParamsBean params, String datasetPath,
           CoverageCollection gcd) throws IOException, NcssException, InvalidRangeException {
-
     // Supported formats are netcdf3 (default) and netcdf4 (if available)
     SupportedFormat sf = SupportedOperation.GRID_REQUEST.getSupportedFormat(params.getAccept());
     NetcdfFileWriter.Version version =
@@ -139,7 +136,7 @@ public class NcssGridController extends AbstractNcssController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
-  File makeCFNetcdfFile(CoverageCollection gcd, String responseFilename, NcssGridParamsBean params,
+  private File makeCFNetcdfFile(CoverageCollection gcd, String responseFilename, NcssGridParamsBean params,
           NetcdfFileWriter.Version version) throws InvalidRangeException, IOException {
     // default chunking - let user control at some point
     NetcdfFileWriter writer = NetcdfFileWriter.createNew(version, responseFilename, null);
@@ -183,11 +180,9 @@ public class NcssGridController extends AbstractNcssController {
     return ncFile.getPath();
   }
 
-  ///////////////////////////////////////////////////////////////
 
   private void handleRequestGridAsPoint(HttpServletResponse res, NcssGridParamsBean params, String datasetPath,
           CoverageCollection gcd) throws Exception {
-
     SupportedFormat sf = SupportedOperation.POINT_REQUEST.getSupportedFormat(params.getAccept());
 
     CoverageAsPoint covp = new CoverageAsPoint(gcd, params.getVar(), params.makeSubset(gcd));
@@ -205,58 +200,62 @@ public class NcssGridController extends AbstractNcssController {
     }
   }
 
-    /*
-    if (sf.isStream()) {
-      GridResponder responder = new GridResponder(gcd, "");
-      responder.streamGridAsPointResponse(res.getOutputStream(), params, sf);
-
-    } else {
-      NetcdfFileWriter.Version version =
-          (sf == SupportedFormat.NETCDF3) ? NetcdfFileWriter.Version.netcdf3 : NetcdfFileWriter.Version.netcdf4;
-      String responseFile = getResponseFileName(datasetPath, version);
-
-      GridResponder responder = new GridResponder(gcd, responseFile);
-      File netcdfResult = responder.makeDSGnetcdfFile(params, version);
-
-      // filename download attachment
-      String suffix = version.getSuffix();
-      int pos = datasetPath.lastIndexOf("/");
-      String filename = (pos >= 0) ? datasetPath.substring(pos + 1) : datasetPath;
-      if (!filename.endsWith(suffix)) {
-        filename += suffix;
-      }
-
-      // Headers...
-      HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.set(ContentType.HEADER, sf.getMimeType());
-      httpHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(filename));
-      setResponseHeaders(res, httpHeaders);
-
-      IO.copyFileB(netcdfResult, res.getOutputStream(), 60000);
-      res.flushBuffer();
-      res.getOutputStream().close();
-      res.setStatus(HttpServletResponse.SC_OK);
-    }
-  } */
-
   ///////////////////////////////////////////////////////////
 
-  @RequestMapping(value = {"**/dataset.html", "**/dataset.xml", "**/pointDataset.html", "**/pointDataset.xml"})
-  public ModelAndView getDatasetDescription(HttpServletRequest req, HttpServletResponse res)
-          throws IOException, NcssException {
-    if (!allowedServices.isAllowed(StandardService.netcdfSubsetGrid))
-      throw new ServiceNotAllowed(StandardService.netcdfSubsetGrid.toString());
-
-    if (!req.getParameterMap().isEmpty())
-      throw new NcssException("Invalid info request.");
-
+  @RequestMapping(value = {"**/dataset.xml", "**/pointDataset.xml"})
+  // Same response for both Grid and GridAsPoint.
+  public ModelAndView getDatasetDescriptionXml(HttpServletRequest req, HttpServletResponse res) throws IOException {
     String datasetPath = getDatasetPath(req);
 
     try (CoverageCollection gcd = TdsRequestedDataset.getCoverageCollection(req, res, datasetPath)) {
       if (gcd == null) return null; // restricted dataset
-      return ncssShowDatasetInfo.showGridFormTh(gcd, buildDatasetUrl(datasetPath), req.getServletPath());
+      String datasetUrlPath = buildDatasetUrl(datasetPath);
+
+      CoverageDatasetCapabilities writer = new CoverageDatasetCapabilities(gcd, "path");
+      Document doc = writer.makeDatasetDescription();
+      Element root = doc.getRootElement();
+      root.setAttribute("location", datasetUrlPath);
+      root.addContent(makeAcceptXML(SupportedOperation.GRID_REQUEST));
+
+      return new ModelAndView("threddsXmlView", "Document", doc);
     }
   }
+
+  @RequestMapping(value = "**/dataset.html")
+  public ModelAndView getGridDatasetDescriptionHtml(HttpServletRequest req, HttpServletResponse res)
+          throws IOException {
+    return getDatasetDescriptionHtml(req, res, SupportedOperation.GRID_REQUEST);
+  }
+
+  @RequestMapping(value = "**/pointDataset.html")
+  public ModelAndView getGridAsPointDatasetDescriptionHtml(HttpServletRequest req, HttpServletResponse res)
+          throws IOException {
+    return getDatasetDescriptionHtml(req, res, SupportedOperation.GRID_AS_POINT_REQUEST);
+  }
+
+  private ModelAndView getDatasetDescriptionHtml(HttpServletRequest req, HttpServletResponse res,
+          SupportedOperation op) throws IOException {
+    String datasetPath = getDatasetPath(req);
+
+    try (CoverageCollection gcd = TdsRequestedDataset.getCoverageCollection(req, res, datasetPath)) {
+      if (gcd == null) return null; // restricted dataset
+      String datasetUrlPath = buildDatasetUrl(datasetPath);
+
+      Map<String, Object> model = new HashMap<>();
+      model.put("gcd", gcd);
+      model.put("datasetPath", datasetUrlPath);
+      model.put("horizExtentWKT", gcd.getHorizCoordSys().getLatLonBoundaryAsWKT(50, 100));
+      model.put("accept", makeAcceptList(op));
+
+      switch (op) {
+        case GRID_REQUEST: return new ModelAndView("templates/ncssGrid", model);
+        case GRID_AS_POINT_REQUEST: return new ModelAndView("templates/ncssGridAsPoint", model);
+        default: throw new AssertionError("Who passed in a " + op + "?");
+      }
+    }
+  }
+
+  ///////////////////////////////////////////////////////////
 
   // Supported for backwards compatibility. We prefer that datasetBoundaries.wkt or datasetBoundaries.json are used.
   @RequestMapping("**/datasetBoundaries.xml")
@@ -294,6 +293,7 @@ public class NcssGridController extends AbstractNcssController {
     }
   }
 
+  ///////////////////////////////////////////////////////////
 
   /**
    * Checks that all the requested vars exist. If "all", fills out the param.vars with all grid names
@@ -342,5 +342,4 @@ public class NcssGridController extends AbstractNcssController {
     }
     return true;
   }
-
 }

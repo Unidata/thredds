@@ -32,6 +32,7 @@
  */
 package thredds.server.ncss.controller;
 
+import org.jdom2.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,19 +41,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import thredds.core.StandardService;
 import thredds.server.config.TdsContext;
 import thredds.server.ncss.exception.NcssException;
+import thredds.server.ncss.format.SupportedFormat;
+import thredds.server.ncss.format.SupportedOperation;
 import thredds.util.TdsPathUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -71,72 +73,15 @@ public abstract class AbstractNcssController {
   TdsContext tdsContext;
 
   @Autowired
-  NcssShowFeatureDatasetInfo ncssShowDatasetInfo;
-
-  @Autowired
   NcssDiskCache ncssDiskCache;
-
-    /* @RequestMapping("/ncss/grid/**")
-  public String forwardGrid(HttpServletRequest req) {
-    String reqString = req.getServletPath();
-    assert reqString.startsWith("/ncss/grid");
-    reqString = reqString.substring(10);
-    String forwardString = "forward:/ncss" + reqString;  // strip off '?/grid
-    if (null != req.getQueryString())
-      forwardString += "?"+req.getQueryString();
-
-     return forwardString;
-  }  */
-
-  /**
-   * figure out how to deal with requests that dont have grid or point in them
-   *
-   * @ RequestMapping("**")
-   * public void handleRequest(HttpServletRequest req, HttpServletResponse res,
-   * @ Valid NcssParamsBean params,
-   * BindingResult validationResult) throws Exception {
-   * <p/>
-   * // System.out.printf("%s%n", ServletUtil.showRequestDetail(null, req));
-   * <p/>
-   * if (validationResult.hasErrors()) {
-   * handleValidationErrorsResponse(res, HttpServletResponse.SC_BAD_REQUEST, validationResult);
-   * return;
-   * }
-   * <p/>
-   * String datasetPath = getDatasetPath(req);
-   * try (FeatureDataset fd = TdsRequestedDataset.getFeatureDataset(req, res, datasetPath)) {
-   * if (fd == null) return;
-   * <p/>
-   * Formatter errs = new Formatter();
-   * if (!params.intersectsTime(fd, errs)) {
-   * handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, errs.toString());
-   * return;
-   * }
-   * <p/>
-   * FeatureType ft = fd.getFeatureType();
-   * if (ft == FeatureType.GRID) {
-   * if (!params.hasLatLonPoint()) {
-   * handleRequestGrid(res, params, datasetPath, (GridDataset) fd);
-   * } else {
-   * handleRequestGridAsPoint(res, params, datasetPath, fd);
-   * }
-   * } else if (ft == FeatureType.POINT) {
-   * handleRequestDsg(res, params, datasetPath, fd);
-   * } else if (ft == FeatureType.STATION) {
-   * handleRequestDsg(res, params, datasetPath, fd);
-   * } else {
-   * throw new UnsupportedOperationException("Feature Type " + ft.toString() + " not supported");
-   * }
-   * <p/>
-   * }
-   * }
-   */
 
   //////////////////////////////////////////////////////////////////////////
   // common methods
 
-  private static final String[] endings = new String[]{"/dataset.xml", "/dataset.html", "/pointDataset.html",
-          "/pointDataset.xml", "/datasetBoundaries.xml", "/datasetBoundaries.wkt", "/datasetBoundaries.json",
+  private static final String[] endings = new String[] {
+          "/dataset.xml", "/dataset.html",
+          "/pointDataset.html", "/pointDataset.xml",
+          "/datasetBoundaries.xml", "/datasetBoundaries.wkt", "/datasetBoundaries.json",
           "/station.xml"
   };
 
@@ -161,30 +106,6 @@ public abstract class AbstractNcssController {
     return tdsContext.getContextPath() + getBase() + path;
   }
 
-  protected void handleValidationErrorsResponse(HttpServletResponse response, int status,
-                                                BindingResult validationResult) {
-
-    List<ObjectError> errors = validationResult.getAllErrors();
-    response.setStatus(status);
-    // String responseStr="Validation errors: ";
-    StringBuilder responseStr = new StringBuilder();
-    responseStr.append("Validation errors: ");
-    for (ObjectError err : errors) {
-      responseStr.append(err.getDefaultMessage());
-      responseStr.append("  -- ");
-    }
-
-    try {
-      PrintWriter pw = response.getWriter();
-      pw.write(responseStr.toString());
-      pw.flush();
-
-    } catch (IOException ioe) {
-      logger.error(ioe.getMessage());
-    }
-
-  }
-
   protected void handleValidationErrorMessage(HttpServletResponse response, int status, String errorMessage) {
     response.setStatus(status);
 
@@ -198,8 +119,29 @@ public abstract class AbstractNcssController {
     }
   }
 
+  public static Element makeAcceptXML(SupportedOperation ops) {
+    Element acceptList = new Element("AcceptList");
+    for (SupportedFormat sf : ops.getSupportedFormats()) {
+      Element accept =
+              new Element("accept").addContent(sf.getFormatName()).setAttribute("displayName", sf.getFormatName());
+      acceptList.addContent(accept);
+    }
+
+    return acceptList;
+  }
+
+  public static List<String> makeAcceptList(SupportedOperation ops) {
+    List<String> result = new ArrayList<>();
+    for (SupportedFormat sf : ops.getSupportedFormats()) {
+      result.add(sf.getFormatName());
+    }
+
+    return result;
+  }
+
   ////////////////////////////////////////////////////////
   // Exception handlers
+
   @ExceptionHandler(NcssException.class)
   public ResponseEntity<String> handle(NcssException e) {
     HttpHeaders responseHeaders = new HttpHeaders();
@@ -215,7 +157,7 @@ public abstract class AbstractNcssController {
     if (path.startsWith(StandardService.netcdfSubsetGrid.getBase())) {               // strip off /ncss/grid/
       path = path.substring(StandardService.netcdfSubsetGrid.getBase().length());
 
-    } else if (path.startsWith(StandardService.netcdfSubsetPoint.getBase())) {               // strip off /ncss/point/
+    } else if (path.startsWith(StandardService.netcdfSubsetPoint.getBase())) {       // strip off /ncss/point/
       path = path.substring(StandardService.netcdfSubsetPoint.getBase().length());
     }
 
@@ -230,6 +172,4 @@ public abstract class AbstractNcssController {
 
     return path;
   }
-
-
 }
