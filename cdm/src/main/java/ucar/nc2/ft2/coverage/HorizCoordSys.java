@@ -767,4 +767,64 @@ public class HorizCoordSys {
 
     return connectedPoints;
   }
+
+
+
+  /**
+   * Calls {@link #getLatLonBoundaryAsWKT(int, int)} with {@link Integer#MAX_VALUE} as both arguments.
+   * In effect, the boundary will contain ALL of the points along the edges of the CRS.
+   *
+   * @return  the latitude/longitude boundary of this CRS as a polygon in WKT.
+   */
+  public String getLatLonBoundaryAsWKT() {
+    return getLatLonBoundaryAsWKT(Integer.MAX_VALUE, Integer.MAX_VALUE);
+  }
+
+  /**
+   * Returns the {@link #calcConnectedLatLonBoundaryPoints(int, int) latitude/longitude boundary} of this coordinate
+   * reference system as a polygon in WKT. It is used in the OpenLayers map in NCSS, as well as the
+   * "datasetBoundaries" endpoint.
+   *
+   * @param maxPointsInYEdge  the maximum number of boundary points to include from the right and left edges.
+   * @param maxPointsInXEdge  the maximum number of boundary points to include from the bottom and top edges.
+   * @return  the latitude/longitude boundary of this CRS as a polygon in WKT.
+   */
+  public String getLatLonBoundaryAsWKT(int maxPointsInYEdge, int maxPointsInXEdge) {
+    List<LatLonPointNoNormalize> points = calcConnectedLatLonBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
+    StringBuilder sb = new StringBuilder("POLYGON((");
+
+    for (LatLonPointNoNormalize point : points) {
+      sb.append(String.format("%.3f %.3f, ", point.getLongitude(), point.getLatitude()));
+    }
+
+    sb.delete(sb.length() - 2, sb.length());  // Nuke trailing comma and space.
+    sb.append("))");
+    return sb.toString();
+  }
+
+  /**
+   * Calls {@link #getLatLonBoundaryAsGeoJSON(int, int)} with {@link Integer#MAX_VALUE} as both arguments.
+   * In effect, the boundary will contain ALL of the points along the edges of the CRS.
+   *
+   * @return  the latitude/longitude boundary of this CRS as a polygon in GeoJSON.
+   */
+  public String getLatLonBoundaryAsGeoJSON() {
+    return getLatLonBoundaryAsGeoJSON(Integer.MAX_VALUE, Integer.MAX_VALUE);
+  }
+
+  /**
+   * Similar to {@link #getLatLonBoundaryAsWKT}, but returns a GeoJSON polygon instead.
+   */
+  public String getLatLonBoundaryAsGeoJSON(int maxPointsInYEdge, int maxPointsInXEdge) {
+    List<LatLonPointNoNormalize> points = calcConnectedLatLonBoundaryPoints(maxPointsInYEdge, maxPointsInXEdge);
+    StringBuilder sb = new StringBuilder("{ 'type': 'Polygon', 'coordinates': [ [ ");
+
+    for (LatLonPointNoNormalize point : points) {
+      sb.append(String.format("[%.3f, %.3f], ", point.getLongitude(), point.getLatitude()));
+    }
+
+    sb.delete(sb.length() - 2, sb.length());  // Nuke trailing comma and space.
+    sb.append(" ] ] }");
+    return sb.toString();
+  }
 }

@@ -11,23 +11,23 @@
       var horizExtentWKT = /*[[${horizExtentWKT}]]*/ 'POLYGON((-90 45, 90 45, 90 -45, -90 -45, -90 45))';
 
       var fullLatLonExt = {
-          north: /*[[${#numbers.formatDecimal(gcd.latlonBoundingBox.latMax, 0, 3)}]]*/ "45.0000",
-          south: /*[[${#numbers.formatDecimal(gcd.latlonBoundingBox.latMin, 0, 3)}]]*/ "-45.0000",
-          west:  /*[[${#numbers.formatDecimal(gcd.latlonBoundingBox.lonMin, 0, 3)}]]*/ "-90.0000",
-          east:  /*[[${#numbers.formatDecimal(gcd.latlonBoundingBox.lonMax, 0, 3)}]]*/ "90.0000"
+          north: /*[[${#numbers.formatDecimal(gcd.latlonBoundingBox?.latMax, 0, 3)}]]*/ "45.0000",
+          south: /*[[${#numbers.formatDecimal(gcd.latlonBoundingBox?.latMin, 0, 3)}]]*/ "-45.0000",
+          west:  /*[[${#numbers.formatDecimal(gcd.latlonBoundingBox?.lonMin, 0, 3)}]]*/ "-90.0000",
+          east:  /*[[${#numbers.formatDecimal(gcd.latlonBoundingBox?.lonMax, 0, 3)}]]*/ "90.0000"
       };
 
       var fullProjExt = {
-          maxy: /*[[${#numbers.formatDecimal(gcd.projBoundingBox.maxY, 0, 0)}]]*/ "75",
-          miny: /*[[${#numbers.formatDecimal(gcd.projBoundingBox.minY, 0, 0)}]]*/ "25",
-          minx: /*[[${#numbers.formatDecimal(gcd.projBoundingBox.minX, 0, 0)}]]*/ "0",
-          maxx: /*[[${#numbers.formatDecimal(gcd.projBoundingBox.maxX, 0, 0)}]]*/ "100"
+          maxy: /*[[${#numbers.formatDecimal(gcd.projBoundingBox?.maxY, 0, 0)}]]*/ "75",
+          miny: /*[[${#numbers.formatDecimal(gcd.projBoundingBox?.minY, 0, 0)}]]*/ "25",
+          minx: /*[[${#numbers.formatDecimal(gcd.projBoundingBox?.minX, 0, 0)}]]*/ "0",
+          maxx: /*[[${#numbers.formatDecimal(gcd.projBoundingBox?.maxX, 0, 0)}]]*/ "100"
       };
 
       var fullTimeExt = {
-          time_start: /*[[${gcd.calendarDateRange.start.toString()}]]*/ "2006-09-25T06:00:00Z",
-          time_end:   /*[[${gcd.calendarDateRange.end.toString()}]]*/   "2006-09-26T00:00:00Z",
-          time:       /*[[${gcd.calendarDateRange.end.toString()}]]*/   "2006-09-26T00:00:00Z"
+          time_start: /*[[${gcd.calendarDateRange?.start?.toString()}]]*/ "2006-09-25T06:00:00Z",
+          time_end:   /*[[${gcd.calendarDateRange?.end?.toString()}]]*/   "2006-09-26T00:00:00Z",
+          time:       /*[[${gcd.calendarDateRange?.end?.toString()}]]*/   "2006-09-26T00:00:00Z"
       };
   </script>
 </head>

@@ -207,17 +207,6 @@ public class CoverageDatasetCapabilities {
   }
 
 
-  /**
-   * Returns a WKT polygon with the dataset boundaries
-   *
-   * @return WKT string
-   *
-  public String getDatasetBoundariesWKT(){
-
-  return GridBoundariesExtractor.valueOf(gds).getDatasetBoundariesWKT();
-  }  */
-
-
   // display name plus the dimensions
   private String getShapeString(int[] shape) {
     StringBuilder buf = new StringBuilder();

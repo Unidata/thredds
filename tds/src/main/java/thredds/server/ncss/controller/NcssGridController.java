@@ -22,6 +22,7 @@ import thredds.server.ncss.exception.*;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssGridParamsBean;
+import thredds.server.ncss.params.NcssParamsBean;
 import thredds.server.ncss.view.dsg.DsgSubsetWriter;
 import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import thredds.util.Constants;
@@ -41,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -258,37 +258,41 @@ public class NcssGridController extends AbstractNcssController {
     }
   }
 
-  /* @RequestMapping("** /datasetBoundaries.xml")
-  void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res)
-      throws IOException, UnsupportedResponseFormatException {
+  // Supported for backwards compatibility. We prefer that datasetBoundaries.wkt or datasetBoundaries.json are used.
+  @RequestMapping("**/datasetBoundaries.xml")
+  public void getDatasetBoundaries(NcssParamsBean params, HttpServletRequest req, HttpServletResponse res)
+          throws IOException, UnsupportedResponseFormatException {
+    SupportedFormat format = SupportedOperation.DATASET_BOUNDARIES_REQUEST.getSupportedFormat(params.getAccept());
 
-    //Checking request format...
-    SupportedFormat sf = getSupportedFormat(params, SupportedOperation.DATASET_BOUNDARIES_REQUEST);
-    String datasetPath = getDatasetPath(req);
+    switch (format) {
+      case WKT:  getDatasetBoundariesWKT(req, res);     break;
+      case JSON: getDatasetBoundariesGeoJSON(req, res); break;
+      default: throw new IllegalArgumentException(String.format(
+              "Expected %s or %s, but got %s", SupportedFormat.WKT, SupportedFormat.JSON, format));
+    }
+  }
 
-    try (GridCoverageDataset gcd = TdsRequestedDataset.getGridCoverage(req, res, datasetPath)) {
+  @RequestMapping("**/datasetBoundaries.wkt")
+  public void getDatasetBoundariesWKT(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    try (CoverageCollection gcd = TdsRequestedDataset.getCoverageCollection(req, res, getDatasetPath(req))) {
       if (gcd == null) return;
 
-      String boundaries = getBoundaries(sf, gcd);
-
-      res.setContentType(sf.getMimeType());
-      res.getWriter().write(boundaries);
+      res.setContentType(SupportedFormat.WKT.getMimeType());
+      res.getWriter().write(gcd.getHorizCoordSys().getLatLonBoundaryAsWKT());
       res.getWriter().flush();
     }
   }
 
-  private String getBoundaries(SupportedFormat format, GridCoverageDataset gcd) {
+  @RequestMapping("**/datasetBoundaries.json")
+  public void getDatasetBoundariesGeoJSON(HttpServletRequest req, HttpServletResponse res) throws IOException {
+    try (CoverageCollection gcd = TdsRequestedDataset.getCoverageCollection(req, res, getDatasetPath(req))) {
+      if (gcd == null) return;
 
-    String boundaries = "";
-    GridBoundariesExtractor gbe = GridBoundariesExtractor.valueOf(gcd);
-
-    if (format == SupportedFormat.WKT)
-      boundaries = gbe.getDatasetBoundariesWKT();
-    if (format == SupportedFormat.JSON)
-      boundaries = gbe.getDatasetBoundariesGeoJSON();
-
-    return boundaries;
-  }  */
+      res.setContentType(SupportedFormat.JSON.getMimeType());
+      res.getWriter().write(gcd.getHorizCoordSys().getLatLonBoundaryAsGeoJSON());
+      res.getWriter().flush();
+    }
+  }
 
 
   /**
