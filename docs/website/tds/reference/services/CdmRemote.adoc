@@ -17,7 +17,8 @@ include ../../../netcdf-java/reference/stream/CdmrCommon.adoc[]
     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
-    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/"/>
     <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
     <service name="cdmrFeature" serviceType="CdmrFeature" base="/thredds/cdmrfeature/grid/"/>
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>

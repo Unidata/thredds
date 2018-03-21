@@ -121,7 +121,7 @@ results in the following viewer link:
 === Selecting the Dataset access URL used in the Viewer Link
 
 When a Dataset has more than one kind of access, each access will have a
-seperate URL. Use the service type inside of curly brackets to select
+separate URL. Use the service type inside of curly brackets to select
 which access URL to use.
 
 For example, the following:
@@ -132,7 +132,8 @@ For example, the following:
     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
-    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/"/>
+    <service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/"/>
     <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
     <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>

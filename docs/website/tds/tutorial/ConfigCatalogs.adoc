@@ -122,10 +122,16 @@ values given here* according to service type:
 <service name="odap" serviceType="OPeNDAP" base="/thredds/dodsC/" />
 --------------------------------------------------------------------
 
-=== NetCDF Subset Service
+=== NetCDF Subset Service for Grids
 
 ------------------------------------------------------------------------
-<service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/" />
+<service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+------------------------------------------------------------------------
+
+=== NetCDF Subset Service for Points
+
+------------------------------------------------------------------------
+<service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/" />
 ------------------------------------------------------------------------
 
 === WCS

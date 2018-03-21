@@ -8,7 +8,7 @@
     <service name="all" base="" serviceType="compound">
         <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
         <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
-        <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+        <service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
         <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
     </service>
 

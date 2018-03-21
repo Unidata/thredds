@@ -76,7 +76,8 @@ catalog:
     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" />
     <!--service name="wcs" serviceType="WCS" base="/thredds/wcs/" /-->
     <!--service name="wms" serviceType="WMS" base="/thredds/wms/" /-->
-    <!--service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/" /-->
+    <!--<service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /-->
+    <!--<service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/" /-->
   </service>
 
   <service name="dap" base="" serviceType="compound">

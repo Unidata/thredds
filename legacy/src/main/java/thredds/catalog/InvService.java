@@ -19,7 +19,8 @@ public class InvService {
   public static final InvService cdmrfeature = new InvService("cdmrfeature", ServiceType.CdmrFeature.toString(), "/thredds/cdmrfeature/", "", "");
   public static final InvService fileServer = new InvService("fileServer", ServiceType.HTTPServer.toString(), "/thredds/fileServer/", "", "");
   public static final InvService latest = new InvService("latest", ServiceType.RESOLVER.toString(), "", "", "");
-  public static final InvService ncss = new InvService("ncss", ServiceType.NetcdfSubset.toString(), "/thredds/ncss/", "", "");
+  public static final InvService ncssGrid = new InvService("ncssGrid", ServiceType.NetcdfSubset.toString(), "/thredds/ncss/grid/", "", "");
+  public static final InvService ncssPoint = new InvService("ncssPoint", ServiceType.NetcdfSubset.toString(), "/thredds/ncss/point/", "", "");
   public static final InvService opendap = new InvService("opendap", ServiceType.OPENDAP.toString(), "/thredds/dodsC/", "", "");
   public static final InvService dap4 = new InvService("dap4", ServiceType.DAP4.toString(), "/thredds/dap4/", "", "");
   public static final InvService wcs = new InvService("wcs", ServiceType.WCS.toString(), "/thredds/wcs/", "", "");
