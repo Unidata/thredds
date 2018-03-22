@@ -48,11 +48,14 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   static public final boolean DEBUG = false;
 
+  static public int NC_TURN_OFF_LOGGING = -1;
+
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Nc4Iosp.class);
   static private org.slf4j.Logger startupLog = org.slf4j.LoggerFactory.getLogger("serverStartup");
   static private Nc4prototypes nc4 = null;
   static public final String JNA_PATH = "jna.library.path";
   static public final String JNA_PATH_ENV = "JNA_PATH"; // environment var
+  static public final String JNA_LOG_LEVEL = "jna.library.loglevel";
 
   static public final String TRANSLATECONTROL = "ucar.translate";
   static public final String TRANSLATE_NONE = "none";
@@ -120,16 +123,31 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
         // Make the library synchronized
         nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
-
         startupLog.info("Nc4Iosp: NetCDF-4 C library loaded (jna_path='{}', libname='{}').", jnaPath, libName);
-        log.debug("Netcdf nc_inq_libvers='{}' isProtected={}", nc4.nc_inq_libvers(), Native.isProtected());
+        startupLog.debug("Netcdf nc_inq_libvers='{}' isProtected={}", nc4.nc_inq_libvers(), Native.isProtected());
       } catch (Throwable t) {
         String message = String.format(
-                        "Nc4Iosp: NetCDF-4 C library not present (jna_path='%s', libname='%s').", jnaPath, libName);
+                "Nc4Iosp: NetCDF-4 C library not present (jna_path='%s', libname='%s').", jnaPath, libName);
         startupLog.warn(message, t);
       }
+      String slevel = nullify(System.getProperty(JNA_LOG_LEVEL));
+      int newlevel = 0; // Force at least HDF5 traceback
+      if (slevel != null)
+        try {
+          newlevel = Integer.parseInt(slevel);
+        } catch (NumberFormatException nfe) {
+          newlevel = 0; /* To get HDF5 traceback */
+        }
+      try {
+        int oldlevel = nc4.nc_set_log_level(newlevel);
+        startupLog.info(String.format("Nc4Iosp: set log level: old=%d new=%d", oldlevel, newlevel));
+      } catch (Throwable t) {
+        String message = String.format(
+                "Nc4Iosp: could not set log level (level=%d jna_path='%s', libname='%s').", newlevel, jnaPath, libName);
+        startupLog.warn("Nc4Iosp: "+t.getMessage());
+        startupLog.warn(message);
+      }
     }
-
     return nc4;
   }
 
@@ -151,6 +169,20 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static public synchronized Nc4prototypes getCLibrary()
   {
       return isClibraryPresent() ? nc4 : null;
+  }
+
+  static public synchronized int setLogLevel(int level)
+	throws IOException
+  {
+      int oldlevel = -1;
+      if(!isClibraryPresent() || nc4 == null)
+	throw new IOException("Netcdf-c library not available");
+      try {
+	oldlevel = nc4.nc_set_log_level(level);
+      } catch (Exception e) {
+	throw new IOException("Netcdf-c library not available",e);
+      }
+      return oldlevel;
   }
 
   /**
