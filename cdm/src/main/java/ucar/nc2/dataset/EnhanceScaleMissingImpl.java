@@ -191,6 +191,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
       } else {
         fillValue = N3iosp.getFillValueDefault(forVar.getDataType()).doubleValue();
       }
+      fillValue = convertScaleOffsetMissing(fillValue);
       hasFillValue = true;
       fillType = (null != fillValueAtt) ? fillValueAtt.getDataType() : forVar.getDataType();
       if (hasScaleOffset) forVar.remove(fillValueAtt);
