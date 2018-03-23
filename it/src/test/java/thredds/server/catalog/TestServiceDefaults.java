@@ -68,7 +68,7 @@ public class TestServiceDefaults {
     Catalog cat = TdsLocalCatalog.open(catalog);
     Assert.assertEquals(3, cat.getServices().size());
 
-    check(cat, "all", 11);
+    check(cat, "all", 12);
     check(cat, "GridServices", 11);
     check(cat, "opendapOnly", 1);
 

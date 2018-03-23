@@ -518,7 +518,8 @@ Note: The required *serviceType* and *base* values are shown in bold.
 <service name="all" serviceType="Compound" base="">
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="opendap" serviceType="OPENDAP" base="/thredds/dodsC/"/>
-    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid"/>
+    <service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/"/>
     <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
 
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>

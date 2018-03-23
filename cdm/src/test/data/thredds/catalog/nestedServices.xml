@@ -5,16 +5,17 @@
 
 		<!-- compound service error -->
     <service name="all" serviceType="Compound" base="">
-     <service name="most" serviceType="Compound" base="">
-       <service name="iso" serviceType="ISO" base="/thredds/iso/" />
-       <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
-       <service name="ncss" serviceType="NetCDFSubset" base="/thredds/ncss/" />
-       <service name="ncml" serviceType="NCML" base="/thredds/ncml/" />
-       <service name="uddc" serviceType="UDDC" base="/thredds/uddc/" />
-       <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
-       <service name="wms" serviceType="WMS" base="/thredds/wms/" />
-     </service>
-     <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" />
+      <service name="most" serviceType="Compound" base="">
+        <service name="iso" serviceType="ISO" base="/thredds/iso/" />
+        <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
+        <service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+        <service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/" />
+        <service name="ncml" serviceType="NCML" base="/thredds/ncml/" />
+        <service name="uddc" serviceType="UDDC" base="/thredds/uddc/" />
+        <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+        <service name="wms" serviceType="WMS" base="/thredds/wms/" />
+      </service>
+      <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" />
     </service>
 
   <!-- use top service -->

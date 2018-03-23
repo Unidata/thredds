@@ -161,7 +161,7 @@ public class TestTdsDatasetScan {
     Assert.assertNotNull(orgServices);
     Assert.assertEquals(ServiceType.Compound, orgServices.getType());
     Assert.assertNotNull(orgServices.getNestedServices());
-    Assert.assertEquals(11, orgServices.getNestedServices().size());  // has 11 services
+    Assert.assertEquals(12, orgServices.getNestedServices().size());  // has 12 services
     boolean hasFileServer = false;
     for (Service sn : orgServices.getNestedServices())
       if( ServiceType.HTTPServer == sn.getType()) hasFileServer = true;

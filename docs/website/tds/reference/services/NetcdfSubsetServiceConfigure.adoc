@@ -31,17 +31,23 @@ the <<ThreddsConfigXMLFile#ncss,threddsConfig.xml>> docs.
 
 == Serving Datasets with the Netcdf Subset Service
 
-In your configuration catalogs, you must define the service like this:
+In your configuration catalogs, you must define the service like this is you're serving GRID data:
 
 --------------------------------------------------------------------------------
-<service name="subsetServer" serviceType="NetcdfSubset" base="/thredds/ncss/" />
+<service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
 --------------------------------------------------------------------------------
 
-Then as usual, add the service to any datasets that you want served, eg:
+and like this if you're serving POINT data:
+
+--------------------------------------------------------------------------------
+<service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/" />
+--------------------------------------------------------------------------------
+
+Then, as usual, add the service to any datasets that you want served, e.g.:
 
 ------------------------------------------------------------------
 <dataset name="datasetName" ID="datasetID" urlPath="/my/urlPath">
-   <serviceName>subsetServer</serviceName>
+   <serviceName>ncssGrid</serviceName>
 </dataset>
 ------------------------------------------------------------------
 

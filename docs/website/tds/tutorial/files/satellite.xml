@@ -5,7 +5,7 @@
     <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
     <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
-    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/"/>
+    <service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
     <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
     <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
@@ -15,7 +15,7 @@
     <service name="ncdods2" serviceType="OPENDAP" base="/thredds/dodsC/"/>
     <service name="wcs2" serviceType="WCS" base="/thredds/wcs/"/>
     <service name="wms2" serviceType="WMS" base="/thredds/wms/"/>
-    <service name="ncss2" serviceType="NetcdfSubset" base="/thredds/ncss/"/>
+    <service name="ncssGrid2" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
     <service name="ncml2" serviceType="NCML" base="/thredds/ncml/"/>
     <service name="uddc2" serviceType="UDDC" base="/thredds/uddc/"/>
     <service name="iso2" serviceType="ISO" base="/thredds/iso/"/>
