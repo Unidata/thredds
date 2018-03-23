@@ -4,6 +4,7 @@
  */
 package ucar.nc2.dataset;
 
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -12,11 +13,14 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.util.Misc;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.net.URISyntaxException;
 
-public class TestScaleOffset {
+public class TestScaleOffsetMissing {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -44,7 +48,6 @@ public class TestScaleOffset {
         }
       }
 
-      boolean isUnsigned   = true;
       double  missingValue = -9999;
       int     nbits        = 16;
 
@@ -53,7 +56,7 @@ public class TestScaleOffset {
       ncfile.addVariable("unpacked", DataType.DOUBLE, "lat lon");
 
       ncfile.addVariable("packed", DataType.SHORT, "lat lon");
-      //ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, new Short( (short) -9999));
+      ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, new Short( (short) -9999));
       ncfile.addVariableAttribute("packed", CDM.SCALE_FACTOR, so.scale);
       ncfile.addVariableAttribute("packed", "add_offset", so.offset);
 
@@ -80,16 +83,15 @@ public class TestScaleOffset {
 
     // read the packed form, enhance using scale/offset, compare to original
     try (NetcdfDataset ncd = NetcdfDataset.openDataset(filename)) {
-      Variable vs = ncd.findVariable("packed");
-      assert vs != null;
+      VariableDS vs = (VariableDS) ncd.findVariable("packed");
+      vs.setUseNaNs(false);
       readEnhanced = vs.read();
-      //TestCompare.compareData(readEnhanced, unpacked);
+
       nearlyEquals(packed, unpacked, readEnhanced, 1.0 / so.scale);
     }
 
-    Array cnvertPacked = MAMath.convert2Unpacked(readPacked, so);
-    //TestCompare.compareData(readUnpacked, unpacked);
-    nearlyEquals(packed, cnvertPacked, readEnhanced, 1.0 / so.scale);
+    Array convertPacked = MAMath.convert2Unpacked(readPacked, so);
+    nearlyEquals(packed, convertPacked, readEnhanced, 1.0 / so.scale);
 
     doSubset(filename);
   }
@@ -125,6 +127,45 @@ public class TestScaleOffset {
       logger.debug(NCdumpW.toString(readSection));
 
       ucar.unidata.util.test.CompareNetcdf.compareData(readEnhanced, readSection);
+    }
+  }
+
+
+  // Asserts that "scale_factor" is applied to "_FillValue".
+  // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1065.
+  @Test
+  public void testScaledFillValue() throws URISyntaxException, IOException {
+    File testResource = new File(getClass().getResource("testScaledMissingValue.ncml").toURI());
+
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+      VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
+
+      double expectedFillValue = .99999;
+      double actualFillValue = fooVar.getMissingDataArray(new int[] { 1 }).getDouble(0);
+
+      // Scale factor of "1.e-05" has been applied to original "99999".
+      Assert.assertTrue(String.format("%f != %f", expectedFillValue, actualFillValue),
+              Misc.nearlyEquals(expectedFillValue, actualFillValue));
+
+      fooVar.setUseNaNs(false);
+      double fooValWithoutNaNs = fooVar.read().getDouble(0);
+
+      // "foo" value is equals to fill value. Scale factor has been applied to both.
+      Assert.assertTrue(String.format("%f != %f", actualFillValue, fooValWithoutNaNs),
+              Misc.nearlyEquals(actualFillValue, fooValWithoutNaNs));
+
+      // "foo" value is considered a fill.
+      Assert.assertTrue(fooVar.isFillValue(fooValWithoutNaNs));
+
+
+      fooVar.setUseNaNs(true);
+      double fooValWithNaNs = fooVar.read().getDouble(0);
+
+      // "foo" value was converted to NaN because it was equal to _FillValue.
+      Assert.assertTrue(Double.isNaN(fooValWithNaNs));
+
+      // Note that we can't use isFillValue() because we've set useNaNs to "true". See the EnhanceScaleMissing Javadoc.
+      Assert.assertTrue(fooVar.isMissing(fooValWithNaNs));
     }
   }
 }
