@@ -152,16 +152,24 @@ public class CF1Convention extends CSMConvention {
       if (grid_mapping != null) {
         Variable gridMap = ds.findVariable(grid_mapping);
         if (gridMap == null) {
-          Group g = v.getParentGroup(); // might be group reletive - CF does not specify
+          Group g = v.getParentGroup(); // might be group relative - CF does not specify
           gridMap = g.findVariable(grid_mapping);
         }
         if (gridMap != null) {
           gridMap.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
-          gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
+
+          String grid_mapping_name = ds.findAttValueIgnoreCase(gridMap, CF.GRID_MAPPING_NAME, null);
+          if (grid_mapping_name != null && grid_mapping_name.equals(CF.LATITUDE_LONGITUDE)) {
+            // "grid_mapping_name == latitude_longitude" is special in CF: it's applied to variables that describe
+            // properties of lat/lon CRSes.
+            gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.Lat + " " + AxisType.Lon));
+          } else {
+            gridMap.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
+          }
+
           got_grid_mapping = true;
         }
       }
-
     }
 
     if (!got_grid_mapping) { // see if there are any grid mappings anyway
@@ -169,7 +177,12 @@ public class CF1Convention extends CSMConvention {
         String grid_mapping_name = ds.findAttValueIgnoreCase(v, CF.GRID_MAPPING_NAME, null);
         if (grid_mapping_name != null) {
           v.addAttribute(new Attribute(_Coordinate.TransformType, TransformType.Projection.toString()));
-          v.addAttribute(new Attribute(_Coordinate.AxisTypes, "GeoX GeoY"));
+
+          if (grid_mapping_name.equals(CF.LATITUDE_LONGITUDE)) {
+            v.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.Lat + " " + AxisType.Lon));
+          } else {
+            v.addAttribute(new Attribute(_Coordinate.AxisTypes, AxisType.GeoX + " " + AxisType.GeoY));
+          }
         }
       }
     }

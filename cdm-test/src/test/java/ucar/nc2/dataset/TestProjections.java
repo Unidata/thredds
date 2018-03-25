@@ -26,12 +26,7 @@ import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
 import ucar.unidata.geoloc.ProjectionPoint;
 import ucar.unidata.geoloc.ProjectionPointImpl;
-import ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea;
-import ucar.unidata.geoloc.projection.LambertConformal;
-import ucar.unidata.geoloc.projection.Mercator;
-import ucar.unidata.geoloc.projection.RotatedPole;
-import ucar.unidata.geoloc.projection.Sinusoidal;
-import ucar.unidata.geoloc.projection.Stereographic;
+import ucar.unidata.geoloc.projection.*;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
@@ -69,7 +64,10 @@ public class TestProjections {
 
             {testDir + "Mercator.grib1", "Mercator_Projection", "Temperature_isobaric", Mercator.class, null},
 
-            {testDir + "Eumetsat.VerticalPerspective.grb", "SpaceViewPerspective_Projection", "Pixel_scene_type", MSGnavigation.class, testPoint},
+            {testDir + "Eumetsat.VerticalPerspective.grb",
+                    "SpaceViewPerspective_Projection",
+                    "Pixel_scene_type",
+                    MSGnavigation.class, testPoint},
 
             {testDir + "sinusoidal/MOD13Q1.A2008033.h12v04.005.2008051065305.hdf",
                     "MODIS_Grid_16DAY_250m_500m_VI/Data_Fields/Projection",
@@ -122,8 +120,14 @@ public class TestProjections {
             // https://github.com/Unidata/thredds/issues/1008
             {testDir + "geostationary/GOES16_FullDisk_20180205_060047_0.47_6km_0.0S_75.0W.nc4",
                     "fixedgrid_projection",
-                    "Sectorized_CMI", Geostationary.class,
-                    new LatLonPointImpl(40,-105)},
+                    "Sectorized_CMI",
+                    Geostationary.class, new LatLonPointImpl(40,-105)},
+
+            {TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4",
+                    "LatLon_Projection",
+                    "Absolute_vorticity_isobaric",
+                    LatLonProjection.class, testPoint
+            }
     };
 
     return Arrays.asList(data);
@@ -196,7 +200,6 @@ public class TestProjections {
             radius = p.getNumericValue();
           }
         }
-        System.out.printf("%n");
 
         assert found;
         assert (radius > 10000) : radius; // meters
@@ -220,5 +223,4 @@ public class TestProjections {
 
     }
   }
-
 }

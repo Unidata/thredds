@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.geotiff;
 
 import org.junit.Assert;
@@ -48,7 +47,6 @@ public class TestGeoTiffWriter {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule public final TemporaryFolder tempFolder = new TemporaryFolder();
-  private boolean show = false;
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -77,7 +75,7 @@ public class TestGeoTiffWriter {
   public void testWriteCoverage() throws IOException, InvalidRangeException {
     File f = new File(filename);
     String gridOut = tempFolder.newFile().getAbsolutePath();
-    System.out.printf("geotiff read grid %s (%s) from %s write %s%n", field, type, filename, gridOut);
+    logger.debug("geotiff read grid {} ({}) from {} write {}", field, type, filename, gridOut);
 
     Array dtArray;
     try (GridDataset gds = GridDataset.open(filename)) {
@@ -108,10 +106,10 @@ public class TestGeoTiffWriter {
     // read it back in
     try (GeoTiff geotiff = new GeoTiff(gridOut)) {
       geotiff.read();
-      if (show) System.out.printf("%s%n----------------------------------------------------%n", geotiff.showInfo());
+      logger.debug("{}", geotiff.showInfo());
 
       String gridOut2 = tempFolder.newFile().getAbsolutePath();
-      System.out.printf("geotiff2 read coverage %s write %s%n", filename, gridOut2);
+      logger.debug("geotiff2 read coverage {} write {}", filename, gridOut2);
 
       GeoReferencedArray covArray;
       try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
@@ -139,10 +137,11 @@ public class TestGeoTiffWriter {
       // read it back in
       try (GeoTiff geotiff2 = new GeoTiff(gridOut2)) {
         geotiff2.read();
-        if (show) System.out.printf("%s%n----------------------------------------------------%n", geotiff2.showInfo());
+        logger.debug("{}", geotiff2.showInfo());
 
-        Formatter out = new Formatter(System.out);
+        Formatter out = new Formatter();
         geotiff.compare(geotiff2, out);
+        logger.debug("{}", out.toString());
       }
 
       // compare file s are equal
