@@ -326,6 +326,14 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     return scaleMissingProxy.getValidMin();
   }
 
+  public double getFillValue() {
+    return scaleMissingProxy.getFillValue();
+  }
+
+  public double[] getMissingValues() {
+    return scaleMissingProxy.getMissingValues();
+  }
+
   public boolean hasFillValue() {
     return scaleMissingProxy.hasFillValue();
   }

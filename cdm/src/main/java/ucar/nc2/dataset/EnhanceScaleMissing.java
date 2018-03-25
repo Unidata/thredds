@@ -144,11 +144,15 @@ public interface EnhanceScaleMissing extends IsMissingEvaluator {
 
   /** true if Variable has _FillValue attribute */
   boolean hasFillValue();
+  /** return value of _FillValue attribute */
+  double getFillValue();
   /** return true if val equals the _FillValue  */
   boolean isFillValue( double val );
 
   /** true if Variable has missing_value attribute */
   boolean hasMissingValue();
+  /** return values of missing_value attributes */
+  double[] getMissingValues();
   /** return true if val equals a missing_value  */
   boolean isMissingValue( double val );
 
