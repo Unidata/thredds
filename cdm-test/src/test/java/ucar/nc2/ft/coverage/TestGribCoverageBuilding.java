@@ -20,6 +20,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
+import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -130,7 +131,7 @@ public class TestGribCoverageBuilding {
   public void testTimeOffsetSubsetWhenTimePresent() throws IOException {
     String filename = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     String gridName = "Temperature_isobaric";
-    System.out.printf("file %s coverage %s%n", filename, gridName);
+    logger.debug("file {} coverage {}", filename, gridName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
@@ -162,7 +163,6 @@ public class TestGribCoverageBuilding {
 
   @Test
   public void testGaussianLats() throws IOException {
-
     String filename = TestDir.cdmUnitTestDir + "formats/grib1/cfs.wmo";
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, cc);
@@ -187,4 +187,21 @@ public class TestGribCoverageBuilding {
     }
   }
 
+  // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1048.
+  @Test
+  public void testLatLonCoordTransformAddedToCollection() throws IOException {
+    String filename = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/GFS_Global_2p5deg_20150301_0000.grib2.ncx4";
+    try (FeatureDatasetCoverage featDsetCov = CoverageDatasetFactory.open(filename)) {
+      Assert.assertEquals(1, featDsetCov.getCoverageCollections().size());
+      CoverageCollection covColl = featDsetCov.getCoverageCollections().get(0);
+
+      Assert.assertEquals(1, covColl.getCoordTransforms().size());
+      CoverageTransform covTransform = covColl.getCoordTransforms().get(0);
+      Assert.assertTrue(covTransform.getProjection() instanceof LatLonProjection);
+
+      Attribute gridMappingNameAttrib = covTransform.findAttribute("grid_mapping_name");
+      Assert.assertNotNull("CoverageTransform didn't contain 'grid_mapping_name' attribute.", gridMappingNameAttrib);
+      Assert.assertEquals("latitude_longitude", gridMappingNameAttrib.getStringValue());
+    }
+  }
 }

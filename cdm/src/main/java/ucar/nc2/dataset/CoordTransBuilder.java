@@ -2,7 +2,6 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.dataset;
 
 import ucar.nc2.AttributeContainer;
@@ -41,6 +40,7 @@ public class CoordTransBuilder {
     registerTransform(CF.LAMBERT_AZIMUTHAL_EQUAL_AREA, LambertAzimuthal.class);
     registerTransform(CF.LAMBERT_CONFORMAL_CONIC , LambertConformalConic.class);
     registerTransform(CF.LAMBERT_CYLINDRICAL_EQUAL_AREA , LambertCylindricalEqualArea.class);
+    registerTransform(CF.LATITUDE_LONGITUDE, LatLon.class);
     registerTransformMaybe("mcidas_area", "ucar.nc2.iosp.mcidas.McIDASAreaTransformBuilder"); // optional - needs visad.jar
     registerTransform(CF.MERCATOR, Mercator.class);
     registerTransform("MSGnavigation", MSGnavigation.class);

@@ -141,13 +141,13 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
     // make horiz transform if needed
     List<CoverageTransform> transforms = new ArrayList<>();
-    if (!isLatLon) {
-      AttributeContainerHelper projAtts = new AttributeContainerHelper(group.horizCoordSys.getId());
-      for (Parameter p : group.getGdsHorizCoordSys().proj.getProjectionParameters())
-        projAtts.addAttribute(new Attribute(p));
-      CoverageTransform projTransform = new CoverageTransform(group.horizCoordSys.getId(), projAtts, true);
-      transforms.add(projTransform);
-    }
+
+    AttributeContainerHelper projAtts = new AttributeContainerHelper(group.horizCoordSys.getId());
+    for (Parameter p : group.getGdsHorizCoordSys().proj.getProjectionParameters())
+      projAtts.addAttribute(new Attribute(p));
+    CoverageTransform projTransform = new CoverageTransform(group.horizCoordSys.getId(), projAtts, true);
+
+    transforms.add(projTransform);
 
     // potential variables - need to remove any 2D LatLon
     List<GribCollectionImmutable.VariableIndex> vars = new ArrayList<>(group.getVariables());
