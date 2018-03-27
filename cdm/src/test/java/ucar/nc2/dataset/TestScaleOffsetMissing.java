@@ -135,13 +135,13 @@ public class TestScaleOffsetMissing {
   // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1065.
   @Test
   public void testScaledFillValue() throws URISyntaxException, IOException {
-    File testResource = new File(getClass().getResource("testScaledMissingValue.ncml").toURI());
+    File testResource = new File(getClass().getResource("testScaledFillValue.ncml").toURI());
 
     try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
       VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
 
       double expectedFillValue = .99999;
-      double actualFillValue = fooVar.getMissingDataArray(new int[] { 1 }).getDouble(0);
+      double actualFillValue = fooVar.getFillValue();
 
       // Scale factor of "1.e-05" has been applied to original "99999".
       Assert.assertTrue(String.format("%f != %f", expectedFillValue, actualFillValue),
@@ -166,6 +166,52 @@ public class TestScaleOffsetMissing {
 
       // Note that we can't use isFillValue() because we've set useNaNs to "true". See the EnhanceScaleMissing Javadoc.
       Assert.assertTrue(fooVar.isMissing(fooValWithNaNs));
+    }
+  }
+
+  // Asserts that EnhanceScaleMissingImpl compares floating-point values in a "fuzzy" manner.
+  // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1068.
+  @Test
+  public void testScaleMissingFloatingPointComparisons() throws IOException, URISyntaxException {
+    File testResource = new File(getClass().getResource("testScaleMissingFloatingPointComparisons.ncml").toURI());
+
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(testResource.getAbsolutePath(), true, null)) {
+      VariableDS fooVar = (VariableDS) ncd.findVariable("foo");
+      fooVar.setUseNaNs(false);
+
+      // Values have been multiplied by scale_factor == 0.01f. scale_factor is a float, meaning that we can't compare
+      // its products with nearlyEquals() using the default Misc.defaultMaxRelativeDiffDouble.
+      Assert.assertTrue(Misc.nearlyEquals(0, fooVar.getValidMin(), Misc.defaultMaxRelativeDiffFloat));
+      Assert.assertTrue(Misc.nearlyEquals(1, fooVar.getValidMax(), Misc.defaultMaxRelativeDiffFloat));
+
+      // Argument is a double, which has higher precision that our scaled _FillValue (float).
+      // This assertion failed before the bug was fixed.
+      Assert.assertTrue(fooVar.isFillValue(-.01));
+
+      Array fooVals = fooVar.read();
+      Assert.assertEquals(4, fooVals.getSize());
+
+      // foo[0] == -1 (raw); -.01 (scaled). It is equal to fill value and outside of valid_range.
+      double actualFooVal = fooVals.getDouble(0);
+      Assert.assertTrue(fooVar.isFillValue(actualFooVal));
+      Assert.assertTrue(fooVar.isInvalidData(actualFooVal));
+      Assert.assertTrue(fooVar.isMissing(actualFooVal));
+
+      // foo[1] == 0 (raw); 0.0 (scaled). It is within valid_range.
+      actualFooVal = fooVals.getDouble(1);
+      Assert.assertFalse(fooVar.isInvalidData(actualFooVal));
+      Assert.assertFalse(fooVar.isMissing(actualFooVal));
+
+      // foo[2] == 100 (raw); 1.0 (scaled). It is within valid_range.
+      actualFooVal = fooVals.getDouble(2);
+      // These assertions failed before the bug was fixed.
+      Assert.assertFalse(fooVar.isInvalidData(actualFooVal));
+      Assert.assertFalse(fooVar.isMissing(actualFooVal));
+
+      // foo[3] == 101 (raw); 1.01 (scaled). It is outside of valid_range.
+      actualFooVal = fooVals.getDouble(0);
+      Assert.assertTrue(fooVar.isInvalidData(actualFooVal));
+      Assert.assertTrue(fooVar.isMissing(actualFooVal));
     }
   }
 }

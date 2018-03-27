@@ -363,12 +363,20 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * return true if val is outside the valid range
    */
   public boolean isInvalidData(double val) {
+    // valid_min and valid_max may have been multiplied by scale_factor, which could be a float, not a double.
+    // That potential loss of precision means that we cannot do the nearlyEquals() comparison with
+    // Misc.defaultMaxRelativeDiffDouble.
+    boolean greaterThanOrEqualToValidMin =
+            Misc.nearlyEquals(val, valid_min, Misc.defaultMaxRelativeDiffFloat) || val > valid_min;
+    boolean lessThanOrEqualToValidMax =
+            Misc.nearlyEquals(val, valid_max, Misc.defaultMaxRelativeDiffFloat) || val < valid_max;
+
     if (hasValidRange)
-      return ((val < valid_min) || (val > valid_max));
+      return !greaterThanOrEqualToValidMin || !lessThanOrEqualToValidMax;
     else if (hasValidMin)
-      return (val < valid_min);
+      return !greaterThanOrEqualToValidMin;
     else if (hasValidMax)
-      return (val > valid_max);
+      return !lessThanOrEqualToValidMax;
     return false;
   }
 
@@ -383,7 +391,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * return true if val equals the _FillValue
    */
   public boolean isFillValue(double val) {
-    return hasFillValue && (val == fillValue);
+    return hasFillValue && Misc.nearlyEquals(val, fillValue, Misc.defaultMaxRelativeDiffFloat);
   }
 
   public double getFillValue() {
@@ -411,7 +419,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
     if (!hasMissingValue)
       return false;
     for (double aMissingValue : missingValue)
-      if (Misc.nearlyEquals(val, aMissingValue))
+      if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat))
         return true;
     return false;
   }
