@@ -3032,24 +3032,18 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         SizeT[] shape = convertSizeT(section.getShape());
         boolean isUnsigned = isUnsigned(typeid);
         int sectionLen = (int) section.computeSize();
-        SizeT[] stride = convertSizeT(section.getStride());
 
         assert values.getSize() == sectionLen;
 
-
-        boolean stride1 = true;
-        for(int i = 0; i < stride.length; i++) {
-            if(stride[i].longValue() != 1) {
-                stride1 = false;
-                break;
-            }
-        }
+        int[] secStride = section.getStride();
+        boolean stride1 = isStride1(secStride);
 
         ByteBuffer bb = values.getDataAsByteBuffer(ByteOrder.nativeOrder());
         byte[] data = bb.array();
         if(stride1) {
             ret = nc4.nc_put_vara(grpid, varid, origin, shape, data);
         } else {
+            SizeT[] stride = convertSizeT(secStride);
             ret = nc4.nc_put_vars(grpid, varid, origin, shape, stride, data);
         }
         return ret;
