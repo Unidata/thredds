@@ -1,0 +1,155 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+
+entries:
+- title: Sidebar
+  product: netCDF-Java Tutorial
+  version: 5.0.0
+  folders:
+
+  - title:
+    output: pdf
+    type: frontmatter
+    folderitems:
+    - title:
+      url: /titlepage
+      output: pdf
+      type: frontmatter
+    - title:
+      url: /tocpage
+      output: pdf
+      type: frontmatter
+
+  - title: Overview
+    output: web, pdf
+    folderitems:
+    - title: The Common Data Model
+      url: /common_data_model_overview.html
+      output: web, pdf
+
+    - title: Building from Source
+      url: /building_from_source.html
+      output: web, pdf
+
+#  - title: Working with CDM datasets
+#    output: web, pdf
+#    folderitems:
+#    - title: NetcdfFile - reading CDM files
+#      url:
+#      output: web, pdf
+#
+#    - title: NetcdfDataset - enahnced files, coordinate systems
+#      url:
+#      output: web, pdf
+#
+#    - title: NetcdfFileWriteable - writing netCDF-3 Files (CDM 4.2)
+#      url:
+#      output: web, pdf
+#
+#    - title: writing netCDF-3 and netCDF-4 Files (CDM 4.3+)
+#      url:
+#      output: web, pdf
+#
+#  - title: NcML
+#    output: web, pdf
+#    folderitems:
+#    - title: Modifying existing files
+#      url:
+#      output: web, pdf
+#
+#    - title: Aggregation
+#      url:
+#      output: web, pdf
+#
+#  - title: Writing an I/O Service Provider
+#    output: web, pdf
+#    folderitems:
+#    - title: Implementing an IOSP - Overview
+#      url:
+#      output: web, pdf
+#
+#    - title: Example - Lightning data
+#      url:
+#      output: web, pdf
+#
+#    - title: Example - DMSP data
+#      url:
+#      output: web, pdf
+#
+#    - title: IOSP details
+#      url:
+#      output: web, pdf
+#
+#    - title: Other Classes Needed when writing an IOSP
+#      url:
+#      output: web, pdf
+#
+#  - title: Coordinate Systems
+#    output: web, pdf
+#    folderitems:
+#    - title: _Coordinate Attribute Examples
+#      url:
+#      output: web, pdf
+#
+#    - title: Coordinate System Builder
+#      url:
+#      output: web, pdf
+#
+#    - title: Coordinate Transforms - Projections and Vertical Transforms
+#      url:
+#      output: web, pdf
+#
+#  - title: Scientific Feature Types
+#    output: web, pdf
+#    folderitems:
+#    - title: Feature Dataset Overview
+#      url:
+#      output: web, pdf
+#
+#    - title: Grid Datasets
+#      url:
+#      output: web, pdf
+#
+#    - title: Radial Datatype
+#      url:
+#      output: web, pdf
+#
+#    - title: Point Feature Datasets (aka Discrete Sampling Geometry datasets)
+#      url:
+#      output: web, pdf
+#
+#  - title: Runtime Loading
+#    output: web, pdf
+#    folderitems:
+#    - title: Summary
+#      url:
+#      output: web, pdf
+#
+#  - title: Reference Docs
+#    output: web, pdf
+#    folderitems:
+#    - title: CDM Utility Programs
+#      url:
+#      output: web, pdf
+#
+#    - title: Cookbook Examples
+#      url:
+#      output: web, pdf
+#
+#    - title: netCDF-Java and TDS Doc Guide
+#      url: /doc_guide.html
+#      output: web, pdf
+#
+  - title: netCDF-Java Reference Docs
+    output: web, pdf
+    folderitems:
+#    - title: ArrayStructures
+#      url:
+#      output: web, pdf
+#
+#    - title: BUFR Files
+#      url: 
+#      output: web, pdf
+    - title: netCDF-Java and TDS Doc Guide
+      url: /ncj_doc_guide.html
+      output: web, pdf
