@@ -1,0 +1,122 @@
+footer {
+  font-size: 0.8em;
+  font-family: "UbuntuRegular", Arial, Helvetica;
+  font-style: italic;
+}
+
+footer div[class*='col-'] a:link, footer div[class*='col-'] a:visited {
+  color: #FFFFFF;
+}
+
+footer div[class*='col-'] a::after {
+  content: '';
+}
+
+div[class*='triptych-'] {
+  min-height: 100px;
+  color: #DDDDDD;
+  height: 100%;
+}
+
+footer div.row {}
+
+footer div div div[class*='triptych-'] {
+  padding: 0em 0.6em;
+}
+
+footer div div.triptych-left {
+  background-color: #06778F;
+}
+
+footer div div.triptych-center {
+  background-color: #81B2C0;
+}
+
+footer div div.triptych-right {
+  background-color: #034250;
+}
+
+footer p.triptych-header {
+  color: #FFFFFF;
+  font-size: 1.0em;
+  font-style: normal;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 2px solid #CCCCCC;
+  /* max-width: 95%; */
+  /* margin: 10px; */
+  padding: 5px 0 5px 0;
+}
+
+footer p.triptych-center {
+  text-align: center;
+}
+
+footer table.triptych-center {
+  width: 100%;
+  background-color: #81B2C0;
+  margin: 0 auto;
+  border: none;
+}
+
+footer table.triptych-center tbody tr {
+  background-color: inherit;
+}
+
+footer table.triptych-center tbody tr td {
+  border-top: none;
+}
+
+footer div.footer-logos {
+  float: right;
+  max-height: 30px;
+}
+footer div.footer-logos img {
+	position: relative;
+	height: 24px;
+	top: 2px;
+	float:right;
+}
+
+footer div.row div[class*='col-'] ul {
+  padding-left: 0.3em;
+  padding-bottom: 0.5em;
+  margin-bottom: 0;
+  list-style: none;
+}
+
+footer div.row div[class*='col-'] ul li {
+  padding-bottom: 0.3em;
+}
+
+
+/* Small devices (tablets, 768px and up)
+   Below 768px the triptych turns into stacked horizontal bars
+*/
+
+@media (min-width: 768px) {
+  .row.is-flex {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .row.is-flex>[class*='col-'] {
+    display: flex;
+    flex-direction: column;
+  }
+  footer div.row div[class*='col-']:first-child {
+    padding-right: 0;
+  }
+  footer div.row div[class*='col-']:last-child {
+    padding-left: 0;
+  }
+  footer {
+    font-size: 0.7em;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  footer {
+    font-size: 0.8em;
+  }
+}
