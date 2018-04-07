@@ -39,6 +39,7 @@ import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
+import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -142,7 +143,14 @@ public class TestSequence {
   public void readStructureWithinSequence() throws IOException {
     File dataset = new File(TestDir.cdmTestDataDir + "ucar/nc2/bufr/IUPT02_KBBY_281400_522246081.bufr.2018032814");
 
-    /* The structure of the file (with irrelevant bits removed) is:
+    // We will populate this below. 14 is the number of records in "obs[0].struct1".
+    ArrayFloat.D1 actualUcomponentValues = new ArrayFloat.D1(14);
+
+    // Read the enhanced values of "obs.struct1.u-component". Of course, we could do this much more concisely with
+    // "ncFile.findVariable("obs.struct1.u-component").read()", but we're trying to demonstrate a bug in
+    // ArrayStructureMA.factoryMA() that only occurs when we iterate over a Sequence with unknown length ("obs").
+    try (NetcdfFile ncFile = NetcdfDataset.openDataset(dataset.getAbsolutePath())) {
+      /* The structure of the file (with irrelevant bits removed) is:
         netcdf {
           variables:
             Sequence {
@@ -151,15 +159,28 @@ public class TestSequence {
               } struct1(14);
             } obs(*);
         }
-     */
-    try (NetcdfFile ncFile = NetcdfFile.open(dataset.getAbsolutePath())) {
-      Variable uCompVar = ncFile.findVariable("obs.struct1.u-component");
-      Assert.assertNotNull(uCompVar);
-      Array array = uCompVar.read();  // Before the bug fix, this threw a NullPointerException.
+       */
+      Structure obs = (Structure) ncFile.findVariable("obs");
+      ArrayStructure obsArray = (ArrayStructure) obs.read();  // Before the bug fix, this threw a NullPointerException.
 
-      short[] expected = new short[] {
-              4085, 4086, 4089, 4088, 4091, 4094, 4096, 4099, 4101, 4109, 4112, 4113, 4118, 4124 };
-      Assert.assertArrayEquals(expected, (short[]) array.get1DJavaArray(DataType.SHORT));
+      try (StructureDataIterator obsIter = obsArray.getStructureDataIterator()) {
+        Assert.assertTrue(obsIter.hasNext());
+        StructureData obsData = obsIter.next();
+        Assert.assertFalse("Expected to find only one 'obs' record.", obsIter.hasNext());
+
+        ArrayStructure struct1Array = obsData.getArrayStructure("struct1");
+
+        try (StructureDataIterator struct1Iter = struct1Array.getStructureDataIterator()) {
+          for (int index = 0; struct1Iter.hasNext(); ++index) {
+            actualUcomponentValues.set(index, struct1Iter.next().getScalarFloat("u-component"));
+          }
+        }
+      }
     }
+
+    Array expectedUcomponentValues = Array.makeFromJavaArray(new float[] {
+            -1.1f, -1.0f, -0.7f, -0.8f, -0.5f, -0.2f, 0.0f, 0.3f, 0.5f, 1.3000001f, 1.6f, 1.7f, 2.2f, 2.8f
+    });
+    Assert.assertTrue(MAMath.nearlyEquals(expectedUcomponentValues, actualUcomponentValues));
   }
 }

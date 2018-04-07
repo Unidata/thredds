@@ -9,6 +9,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.Sequence;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Concrete implementation of ArrayStructure, data storage is in member arrays, which are converted to
@@ -185,18 +187,57 @@ public class ArrayStructureMA extends ArrayStructure {
   /**
    * Turn any ArrayStructure into a ArrayStructureMA
    * @param from copy from here. If from is a ArrayStructureMA, return it.
-   * @return equivilent ArrayStructureMA
+   * @return equivalent ArrayStructureMA
    * @throws java.io.IOException on error reading a sequence
    */
   static public ArrayStructureMA factoryMA(ArrayStructure from) throws IOException {
     if (from instanceof ArrayStructureMA)
       return (ArrayStructureMA) from;
 
-    StructureMembers tosm = new StructureMembers( new StructureMembers(from.getStructureMembers()));
-    ArrayStructureMA to = new ArrayStructureMA(tosm, from.getShape());
-    for (StructureMembers.Member m : from.getMembers()) {
-      to.setMemberArray(m.getName(), from.extractMemberArray(m));
+    // To create an ArrayStructureMA that we can iterate over later, we need to know the shape of "from".
+    if (from.getSize() > 0) {
+      ArrayStructureMA to = new ArrayStructureMA(new StructureMembers(from.getStructureMembers()), from.getShape());
+      for (StructureMembers.Member m : from.getMembers()) {
+        to.setMemberArray(m.getName(), from.extractMemberArray(m));
+      }
+      return to;
     }
+
+    // from.getSize() <= 0. This usually means that "from" is an ArraySequence, and that we won't know its size until
+    // we iterate over it. extractMemberArray() will do that iteration for us, and then we can use the size of the
+    // array it returns to determine the shape of "from".
+
+    int numRecords = -1;
+    Map<String, Array> memberArrayMap = new LinkedHashMap<>();
+
+    for (StructureMembers.Member m : from.getMembers()) {
+      Array array = from.extractMemberArray(m);
+      assert array.getSize() > 0 : "array's size should have been computed in extractMemberArray().";
+      int firstDimLen = array.getShape()[0];
+
+      if (numRecords == -1) {
+        numRecords = firstDimLen;
+      } else {
+        assert numRecords == firstDimLen : String.format("Expected all structure members to have the same first" +
+                "dimension length, but %d != %d.", numRecords, firstDimLen);
+      }
+
+      memberArrayMap.put(m.getName(), array);
+    }
+
+    int[] shape;
+    if (numRecords == -1) {
+      shape = new int[] { 0 };  // "from" really was empty.
+    } else {
+      shape = new int[] { numRecords };
+    }
+
+    ArrayStructureMA to = new ArrayStructureMA(new StructureMembers(from.getStructureMembers()), shape);
+
+    for (Map.Entry<String, Array> entry : memberArrayMap.entrySet()) {
+      to.setMemberArray(entry.getKey(), entry.getValue());
+    }
+
     return to;
   }
 
