@@ -352,9 +352,6 @@ public class NCdumpW {
       if (printSeq) printSequence(out, (ArraySequence) array, ilev, ct);
 
     } else if (array instanceof ArrayStructure) {
-      if (array.getSize() == 1)
-        printStructureData(out, (StructureData) array.getObject(array.getIndex()), ilev, ct);
-      else
         printStructureDataArray(out, (ArrayStructure) array, ilev, ct);
 
     } else if (array.getElementType() == ByteBuffer.class) { // opaque type
