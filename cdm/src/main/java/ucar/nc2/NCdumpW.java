@@ -530,7 +530,7 @@ public class NCdumpW {
   }
 
   static private void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) { // throws IOException {
-    out.println("\n" + indent + "{");
+    out.print("\n" + indent + "{");
     indent.incr();
     IndexIterator iter = array.getIndexIterator();
     boolean first = true;
@@ -541,7 +541,7 @@ public class NCdumpW {
       first = false;
     }
     indent.decr();
-    out.print(indent + "}");
+    out.print("\n" + indent + "}");
   }
 
   static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws IOException {
