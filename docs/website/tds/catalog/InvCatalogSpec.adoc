@@ -194,7 +194,7 @@ entries, and is typically placed on _collection_ datasets.
 
 If you want the same dataset to appear in multiple places in the same
 catalog, use an _alias_ attribute. Define it in one place (with all
-apropriate metadata), then wherever else it should appear, make a
+appropriate metadata), then wherever else it should appear, make a
 dataset with an alias to it, whose value is the _ID_ of the defined
 dataset. ( Note it may not refer to a dataset in another catalog
 referred to by a _catalogRef_ element.) In this case, any other
@@ -499,8 +499,8 @@ Examples:
 </xsd:complexType>
 ----
 
-The _documentation_ element may contain arbitrary plain text content, or
-XHTML.We call this kind of content "human readable" information. It
+The _documentation_ element may contain arbitrary plain text content.
+We call this kind of content "human readable" information. It
 has an optional link:#docTypeEnum[documentation type] attribute, such as
 summary, funding, history, etc.
 
