@@ -85,7 +85,7 @@ class DeleteFromNexusTask extends DefaultTask {
     List<Component> search() {
         HttpBuilder http = HttpBuilder.configure {
             request.uri = host
-            request.uri.path = "/service/siesta/rest/beta/search"
+            request.uri.path = "/service/rest/beta/search"
             request.contentType = ContentTypes.JSON.first()
         }
         
@@ -142,7 +142,7 @@ class DeleteFromNexusTask extends DefaultTask {
         
         components.each { Component component ->
             http.delete {
-                request.uri.path = "/service/siesta/rest/beta/components/${component.id}"
+                request.uri.path = "/service/rest/beta/components/${component.id}"
                 
                 response.success { FromServer ret, Map<String, ?> jsonResponse ->
                     logger.info "DELETE successful (${ret.statusCode}): ${request.uri.toURI()}"
