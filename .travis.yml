@@ -9,10 +9,6 @@ language: java
 # Setting sudo to "true" forces the job to run on Travis's standard infrastructure, which seems to fix the problem.
 sudo: true
 
-# Need to run on Ubuntu Precise (v12.04.5) until we rebuild netCDF-C for
-# Ubuntu Trusty (v14.04.5), the new Travis default
-dist: precise
-
 env:
   global:
     # Must specify libnetcdf location this way; the 'jna.library.path' system property does not work.
@@ -26,9 +22,6 @@ env:
     # become part of the S3 URL.
     - TEST_REPORT_DIR="build/reports/allTests"
     - TDS_LOGS_DIR="tds/src/test/content/thredds/logs"
-  matrix:
-    - TASK="build"
-    - TASK="docs"
 
 addons:
   # See the note in travis/after_script.sh about the environment variables that Travis artifact uploading requires.
@@ -41,11 +34,6 @@ addons:
 
 jdk:
   - oraclejdk8
-
-before_install:
-  - if [[ $TASK == "docs" ]]; then
-      gem install asciidoctor coderay;
-    fi
 
 # Skip the installation step entirely; we don't need it for Gradle builds.
 # https://docs.travis-ci.com/user/customizing-the-build#Skipping-the-Installation-Step

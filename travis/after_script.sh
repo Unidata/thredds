@@ -2,8 +2,6 @@
 
 # Display the S3 URLs of the artifacts that Travis uploaded.
 #
-# Only do so for the "build" task, as that is where the artifacts are actually created.
-#
 # Also, only do so if the ARTIFACTS_KEY variable is set. It--along with ARTIFACTS_SECRET and ARTIFACTS_BUCKET--must be
 # defined in order for Travis to be able to upload artifacts. Because they contain sensitive information, we've defined
 # those values in the Travis repository settings of the Unidata/thredds repo.
@@ -18,7 +16,7 @@
 # An alternative mechanism for protecting sensitive information is encrypted variables. But once again, those
 # variables are not made available to untrusted builds such as pull requests coming from another repository.
 # See https://docs.travis-ci.com/user/environment-variables/#Encrypted-Variables
-if [ $TASK == "build" ] && [ -n "$ARTIFACTS_KEY" ]; then
+if [ -n "$ARTIFACTS_KEY" ]; then
     S3_URL="http://unidata-tds.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}"
     echo "The test report is available at:"
     echo "    $S3_URL/index.html"
