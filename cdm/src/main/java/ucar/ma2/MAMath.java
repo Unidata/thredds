@@ -718,7 +718,7 @@ public class MAMath {
       while (iter1.hasNext() && iter2.hasNext()) {
         float v1 = iter1.getFloatNext();
         float v2 = iter2.getFloatNext();
-        if (!Misc.nearlyEquals(v1, v2, Misc.defaultMaxRelativeDiffDouble))
+        if (!Misc.nearlyEquals(v1, v2, Misc.defaultMaxRelativeDiffFloat))
           return false;
       }
     } else if (dt.getPrimitiveClassType() == int.class) {

@@ -10,14 +10,14 @@ netcdf test_sequence_1.syn {
 
   // global attributes:
   string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
- data:
-s =
-  {
-    i1 =
+  data:
+    s =
       {
--920699049      }
-    sh1 =
-      {
-896      }
-  } s
+        i1 =
+          {-920699049
+          }
+        sh1 =
+          {896
+          }
+      } s
 }

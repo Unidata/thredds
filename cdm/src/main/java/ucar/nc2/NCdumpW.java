@@ -352,9 +352,6 @@ public class NCdumpW {
       if (printSeq) printSequence(out, (ArraySequence) array, ilev, ct);
 
     } else if (array instanceof ArrayStructure) {
-      if (array.getSize() == 1)
-        printStructureData(out, (StructureData) array.getObject(array.getIndex()), ilev, ct);
-      else
         printStructureDataArray(out, (ArrayStructure) array, ilev, ct);
 
     } else if (array.getElementType() == ByteBuffer.class) { // opaque type
@@ -533,7 +530,7 @@ public class NCdumpW {
   }
 
   static private void printVariableArray(PrintWriter out, ArrayObject array, Indent indent, CancelTask ct) { // throws IOException {
-    out.println("\n" + indent + "{");
+    out.print("\n" + indent + "{");
     indent.incr();
     IndexIterator iter = array.getIndexIterator();
     boolean first = true;
@@ -544,7 +541,7 @@ public class NCdumpW {
       first = false;
     }
     indent.decr();
-    out.print(indent + "}");
+    out.print("\n" + indent + "}");
   }
 
   static private void printSequence(PrintWriter out, ArraySequence seq, Indent indent, CancelTask ct) { // throws IOException {

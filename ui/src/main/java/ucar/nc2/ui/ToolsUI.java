@@ -1527,8 +1527,8 @@ public class ToolsUI extends JPanel {
           if (debugCB)
             System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " when=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
 
-          // eliminate multiple events from same selection
-          if (eventOK) { //  && (e.getWhen() > lastEvent + 10000)) { // not sure of units - must be nanosecs - ?? platform dependednt ??
+          // eliminate multiple events from same selection by ignoring events occurring within 100ms of last one.
+          if (eventOK && (e.getWhen() > lastEvent + 100)) {
             doit(cb.getSelectedItem());
             lastEvent = e.getWhen();
           }
@@ -1656,9 +1656,6 @@ public class ToolsUI extends JPanel {
             ta.appendLine("\n***Cancelled by User");
 
           ta.gotoTop();
-
-          if (task.isSuccess() && !task.isCancel())
-            cb.setSelectedItem(filename);
         }
       });
     }

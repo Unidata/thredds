@@ -341,10 +341,10 @@ public class ArraySequence extends ArrayStructure {
               result.add(innerIter.next());
             count++;
           }
-          StructureData[] da = new StructureData[result.size()];
+
           rshape[0] = count;
           StructureMembers membersw = new StructureMembers(proxym.getStructureMembers()); // no data arrays get propagated
-          return new ArrayStructureW(membersw, rshape, da);
+          return new ArrayStructureW(membersw, rshape, result.toArray(new StructureData[0]));
         }
       }
     }
