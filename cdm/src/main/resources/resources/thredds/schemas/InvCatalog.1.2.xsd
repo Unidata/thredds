@@ -147,7 +147,7 @@
 
   <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
   <!-- Documentation element -->
-  <!-- this is human readable info, as text, or an Xlink to text or HTML -->
+  <!-- this is human readable info, as text or XHTML, or an Xlink to text or HTML -->
   <xsd:complexType name="documentationType" mixed="true">
     <xsd:sequence>
       <xsd:any namespace="http://www.w3.org/1999/xhtml" minOccurs="0" maxOccurs="unbounded" processContents="strict"/>

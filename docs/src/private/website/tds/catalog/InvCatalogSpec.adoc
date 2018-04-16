@@ -499,10 +499,16 @@ Examples:
 </xsd:complexType>
 ----
 
-The _documentation_ element may contain arbitrary plain text content.
-We call this kind of content "human readable" information. It
+The _documentation_ element may contain arbitrary plain text content, or
+XHTML. We call this kind of content "human readable" information. It
 has an optional link:#docTypeEnum[documentation type] attribute, such as
 summary, funding, history, etc.
+
+Note that if a _documentation_ element in a server-side catalog contains XHTML,
+that XHTML will not be preserved when a client catalog is generated from it.
+We currently have an https://github.com/Unidata/thredds/issues/1088[issue on GitHub]
+to track the bug. This also means that the XHTML won't be displayed in the
+HTML version of the client catalog (i.e. the dataset summary page) that TDS displays.
 
 The _documentation_ element may also contain an
 http://www.w3.org/TR/xlink/[XLink] to an HTML or plain text web page.
