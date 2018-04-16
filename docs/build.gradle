@@ -1,17 +1,74 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    
+    dependencies {
+        classpath libraries["jruby-gradle-plugin"]
+    }
+}
+
+// Adds 'assemble', 'check', 'build', and 'clean' tasks.
+// See: https://docs.gradle.org/current/userguide/standard_plugins.html#sec:base_plugins
+apply plugin: 'base'
+
+apply plugin: 'com.github.jruby-gradle.base'
+
+dependencies {
+    jrubyExec 'rubygems:jekyll:3.4.0'
+    // Without this, we get: LoadError: no such file to load -- bundler
+    jrubyExec 'rubygems:bundler:1.14.4'
+}
+
+ext {
+    jekyllSrc = file("src/public/userguide/").absolutePath
+    jekyllDest = file("build/_site/").absolutePath
+    
+    commonFlags = [ '--source', jekyllSrc, '--destination', jekyllDest ]
+}
+
+import com.github.jrubygradle.JRubyExec
 import edu.ucar.build.publishing.DeleteFromNexusTask
 import edu.ucar.build.publishing.PublishToRawRepoTask
 
 apply from: "$rootDir/gradle/any/properties.gradle"  // For Nexus credential properties.
 
-task publish(type: PublishToRawRepoTask) {
+
+task jekyllBuild(type: JRubyExec, group: 'Jekyll', description: 'Build your site.') {
+    // Enable task to be UP-TO-DATE.
+    inputs.file jekyllSrc
+    outputs.file jekyllDest
+    
+    script "jekyll"
+    
+    scriptArgs "build"
+    scriptArgs commonFlags
+    
+    // Consider enabling this to help us determine when pages need to be pushed to Nexus.
+    // A copy of .jekyll-metadata could be stored in the repo and then compared to the local file.
+    // See https://jekyllrb.com/docs/configuration/#incremental-regeneration
+    // scriptArgs "--incremental"
+}
+
+tasks.assemble.dependsOn tasks.jekyllBuild
+
+task jekyllServe(type: JRubyExec, group: 'Jekyll', description: 'Serve your site locally.') {
+    // This task starts a server; it is never considered UP-TO-DATE.
+    outputs.upToDateWhen { false }
+    
+    script "jekyll"
+    
+    scriptArgs "serve"
+    scriptArgs commonFlags
+}
+
+
+task publish(type: PublishToRawRepoTask, dependsOn: jekyllBuild) {
     host = "https://artifacts.unidata.ucar.edu/"
     repoName = "thredds-doc"
 
-    srcFile = file('website/')
-    destPath = version
-    
-    // Disable this task until new thredds docs are ready to go.
-    enabled = false
+    srcFile = file(jekyllDest)
+    destPath = "$version/userguide"
 }
 
 // By default, this will perform a dry run, which simply prints the components that the query matched.
