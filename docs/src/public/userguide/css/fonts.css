@@ -5,7 +5,6 @@
     src: url('../fonts/Ubuntu-R-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -13,15 +12,13 @@
     src: url('../fonts/Ubuntu-RI-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
     font-family: 'UbuntuBold';
-    src: url('../fonts/Ubuntu-B-webfont.woff') format('woff')
+    src: url('../fonts/Ubuntu-B-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -29,7 +26,6 @@
     src: url('../fonts/Ubuntu-BI-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -37,7 +33,6 @@
     src: url('../fonts/Ubuntu-L-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -45,7 +40,6 @@
     src: url('../fonts/Ubuntu-LI-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -53,7 +47,6 @@
     src: url('../fonts/Ubuntu-M-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -61,7 +54,6 @@
     src: url('../fonts/Ubuntu-MI-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
 
 @font-face {
@@ -69,5 +61,4 @@
     src: url('../fonts/Ubuntu-C-webfont.woff') format('woff');
     font-weight: normal;
     font-style: normal;
-
 }
