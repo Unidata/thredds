@@ -109,6 +109,7 @@ footer div.row div[class*='col-'] ul li {
   }
   footer div.row div[class*='col-']:last-child {
     padding-left: 0;
+    flex: 1 0; /* For Safari */
   }
   footer {
     font-size: 0.7em;
