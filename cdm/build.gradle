@@ -35,39 +35,4 @@ dependencies {
     testCompile libraries["commons-io"]
 }
 
-javadoc {
-    title = 'Public javadoc for netcdf-java version ' + version
-    source = fileTree(dir: 'src/main/java').matching {
-        include 'thredds/client/catalog/*.java'
-        include 'ucar/ma2/*.java'
-        include 'ucar/nc2/*.java'
-        include 'ucar/nc2/constants/*.java'
-        include 'ucar/nc2/dataset/**/*.java'
-        include 'ucar/nc2/dt/radial/*.java'
-        include 'ucar/nc2/ft/*.java'
-        include 'ucar/nc2/ft2/*.java'
-        include 'ucar/nc2/ncml/*.java'
-        include 'ucar/nc2/time/*.java'
-        include 'ucar/nc2/units/*.java'
-        include 'ucar/nc2/util/*.java'
-        include 'ucar/unidata/**/*.java'
-    }
-}
-
-// TODO: Use the Sync task for this.
-task releaseDocs(dependsOn: javadoc, group: 'Release') {
-    doLast {
-        String releaseDir = new File(webdir, "javadoc").absolutePath
-
-        ant.delete(dir: releaseDir)
-        ant.mkdir(dir: releaseDir)
-
-        copy {
-            println "copyDocs to " + releaseDir
-            from("build/docs/javadoc")
-            into releaseDir
-        }
-    }
-}
-
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'

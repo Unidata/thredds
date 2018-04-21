@@ -64,8 +64,6 @@ gradle.projectsEvaluated {
         }
     }
     
-    Collection<Project> javaProjects = subprojects.findAll { it.plugins.withType(JavaPlugin) }
-    
     configure (javaProjects) {  // The 'sourceSets' property will only be found on Java projects.
         sonarqube {
             properties {

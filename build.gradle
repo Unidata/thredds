@@ -60,10 +60,20 @@ ext {
     vendor = "UCAR/Unidata"
 
     // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
-    url = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"
+    url = "https://docs.unidata.ucar.edu/thredds/$version/userguide/index.html"
 
     SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
     buildTimestamp = iso_8601_format.format(new Date())
+    
+    // Project groups
+    javaProjects = subprojects.findAll { it.plugins.withType(JavaPlugin) }
+    
+    internalProjects = subprojects.findAll { it.path in [
+            ':dap4', ':dap4:d4tests', ':dap4:d4ts', ':opendap:dtswar',
+            ':docs', ':it', ':cdm-test', ':testUtil'
+    ] }
+    
+    publishedProjects = subprojects - internalProjects
 }
 
 apply from: "$rootDir/gradle/root/testing.gradle"

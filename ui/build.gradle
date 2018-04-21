@@ -187,46 +187,6 @@ task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension'
 
 ///////////////////////////////////////////////////////
 
-javadoc {
-    title = 'All javadoc for netcdf-java version ' + version
-    source = fileTree(dir: '../bufr/src/main/java', include: '**/*.java')
-    source = source.plus(fileTree(dir: '../cdm/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../clcommon/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../grib/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../httpservices/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../netcdf4/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../opendap/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../udunits/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../ui/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../visad/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../waterml/src/main/java', include: '**/*.java'))
-
-    source = source.plus(fileTree(dir: '../dap4/d4core/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../dap4/d4lib/src/main/java', include: '**/*.java'))
-    source = source.plus(fileTree(dir: '../dap4/d4cdm/src/main/java', include: '**/*.java'))
-}
-
-task releaseDocs(dependsOn: javadoc, group: 'Release') {
-    doLast {
-        if (project.hasProperty("webdir")) {
-            String releaseDir = new File(webdir, "javadocAll").absolutePath
-
-            ant.delete(dir: releaseDir)
-            ant.mkdir(dir: releaseDir)
-
-            copy {
-                println "copyDocs to " + releaseDir
-                from("build/docs/javadoc")
-                into releaseDir
-            }
-        } else {
-            println "Property \"webdir\" must be defined to run \"releaseDocs\" task."
-        }
-    }
-}
-
-///////////////////////////////////////////////////////
-
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate
  * entries in {@code origJarFile} will be excluded from {@code destJarFile}. Also, any old signature files
@@ -244,7 +204,7 @@ def rejar(File origJarFile, File destJarFile) {
 
         NioGroovyMethods.withCloseable(jarOutStream) {
             java.util.regex.Pattern signatureFilePattern = ~/META-INF\/.+\.(DSA|SF|RSA)/
-            Set<String> entriesWritten = new HashSet<>();
+            Set<String> entriesWritten = new HashSet<>()
 
             for (JarEntry origJarEntry : origJar.entries()) {
                 if (origJarEntry.name =~ signatureFilePattern) {
@@ -265,7 +225,7 @@ def writeEntry(JarFile jar, JarEntry jarEntry, JarOutputStream jarOutStream) {
         InputStream jarEntryInputStream = jar.getInputStream(jarEntry)
 
         NioGroovyMethods.withCloseable(jarEntryInputStream) {
-            byte[] buffer = new byte[8192];
+            byte[] buffer = new byte[8192]
             int bytesRead;
 
             while ((bytesRead = jarEntryInputStream.read(buffer)) != -1) {
@@ -273,6 +233,6 @@ def writeEntry(JarFile jar, JarEntry jarEntry, JarOutputStream jarOutStream) {
             }
         }
     } finally {
-        jarOutStream.closeEntry();
+        jarOutStream.closeEntry()
     }
 }
