@@ -1,0 +1,21 @@
+tasks.withType(Javadoc).all {  // Common Javadoc config.
+    group = "Documentation"
+    
+    options.encoding = 'UTF-8'
+    options.docEncoding = 'UTF-8'
+    options.charSet = 'UTF-8'
+    
+    // When instances of JDK classes appear in our Javadoc (e.g. "java.lang.String"), create links out of them to
+    // Oracle's JavaSE 8 Javadoc.
+    options.links("https://docs.oracle.com/javase/8/docs/api/")
+    
+    if (JavaVersion.current().isJava8Compatible()) {
+        // doclint="all" (the default) will identify 100s of errors in our docs and cause no Javadoc to be generated.
+        // So, turn it off. See http://blog.joda.org/2014/02/turning-off-doclint-in-jdk-8-javadoc.html
+        options.addStringOption('Xdoclint:none', '-quiet')
+        
+        // TODO: Actually use doclint and fix the errors it finds. Below are the options that the Gradle project uses.
+        // At the very least, try 'reference'.
+        // options.addStringOption 'Xdoclint:syntax,html,reference', '-quiet'
+    }
+}

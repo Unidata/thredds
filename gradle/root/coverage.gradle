@@ -9,7 +9,6 @@ apply from: "$rootDir/gradle/any/properties.gradle"  // For Coveralls repo token
 gradle.projectsEvaluated {  // Several statements below rely upon all subprojects having been evaluated.
     // Add the source directories for each Java subproject to one big FileCollection.
     // Ditto for the class directories.
-    Collection<Project> javaProjects = subprojects.findAll { it.plugins.withType(JavaPlugin) }
     FileCollection allSubprojectSourceDirs = files(javaProjects*.sourceSets*.main*.allSource*.srcDirs)
     FileCollection allSubprojectClassDirs = files(javaProjects*.sourceSets*.main*.output)
     
