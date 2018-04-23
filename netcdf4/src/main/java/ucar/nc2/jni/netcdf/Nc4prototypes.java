@@ -3,6 +3,8 @@
  * See LICENSE for license information.
  */
 
+/* WARNING: This file is seriously out of date WRT Nc4prototypes.java */
+
 package ucar.nc2.jni.netcdf;
 
 import com.sun.jna.Library;
@@ -383,5 +385,34 @@ public interface Nc4prototypes extends Library {
 
   /* Set the log level. */
   int nc_set_log_level(int newlevel);
+
+  /* Add the new inmemory APIs */
+
+  static public class NC_memio extends Structure {
+    static int NC_MEMIO_LOCKED = 1;// Do not try to realloc or free provided memory
+    public NativeLong size; /* Length of memory chunk */
+    public Pointer memory;  /* Pointer to memory chunk */
+    public int flags;
+
+    protected List getFieldOrder()
+    {
+      List fields = new ArrayList();
+      fields.add("size");
+      fields.add("memory");
+      fields.add("flags");
+      return fields;
+    }
+  }
+
+  // Treate a memory block as a file; read-only: Note does NOT use NC_memio
+  int nc_open_mem(String path, int mode, Nativelong size, byte[] memory, IntByReference ncidp);
+
+  int nc_create_mem(String path, int mode, NativeLong initialsize, IntByReference ncidp);
+
+  // Alternative to nc_open_mem with extended capabilites
+  int nc_open_memio(String path, int mode, NC_memio info, IntByReference ncidp);
+
+  // Close memory file and return the final memory state
+  int nc_close_memio(int ncid, NC_memio info);
 
 }
