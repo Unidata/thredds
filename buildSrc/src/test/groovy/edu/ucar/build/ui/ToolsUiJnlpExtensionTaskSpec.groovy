@@ -58,7 +58,7 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
         and: "create a writer with the specified properties"
         ToolsUiJnlpExtensionTask.Writer writer = new ToolsUiJnlpExtensionTask.Writer()
         writer.with {
-            codebase = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart"
+            codebase = "https://artifacts.unidata.ucar.edu/repository/thredds-misc/current/webstart/"
             applicationVersion = rootProject.version
             applicationJarName = rootProject.jar.archiveName
             dependenciesConfig = rootProject.configurations.runtime
@@ -114,7 +114,7 @@ class ToolsUiJnlpExtensionTaskSpec extends Specification {
             }
             
             task $taskName(type: edu.ucar.build.ui.ToolsUiJnlpExtensionTask) {
-                codebase = 'https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart'
+                codebase = 'https://artifacts.unidata.ucar.edu/repository/thredds-misc/current/webstart/'
                 outputFile = file('${outputFile.name}')
             }
         """

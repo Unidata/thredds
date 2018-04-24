@@ -9,6 +9,13 @@ ext {
     // Used to publish static analysis report to https://sonarcloud.io/dashboard?id=thredds
     SONARQUBE_USER_TOKEN_KEY = 'sonarqube.user.token'
     
+    // Path to the keystore containing the certificate that we sign Webstart JARs with.
+    KEYSTORE_PATH = 'keystore.path'
+    // Password to access the keystore.
+    KEYSTORE_PASSWORD = 'keystore.password'
+    // Name of the entry within the keystore associated with the certificate.
+    KEYSTORE_ALIAS = 'keystore.alias'
+    
     // Do not propagate these system properties to the Gretty web-apps or Gradle test executors.
     systemPropertiesBlackList = [
             // Passing this causes "java.lang.ClassNotFoundException: org.jacoco.agent.rt.internal_932a715.PreMain"
