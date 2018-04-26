@@ -86,30 +86,25 @@ class SignJarsTask extends DefaultTask {
     }
     
     void sign(File jarFile) {
-        // Limit to 2 iterations, just as a sanity check. The logic within the loop shouldn't allow for more.
-        for (int i : 1..2) {
+        try {
+            ant.signjar(jar: jarFile, keystore: keystorePath, storepass: keystorePassword, alias: keystoreAlias,
+                        destDir: outputDir, preservelastmodified: true, verbose: false)
+        } catch (BuildException e1) {
+            // The BuildException that we get when an Ant task fails isn't very helpful. In the case of signjar, it just
+            // has "e.getMessage() == 'jarsigner returned: 1'". "e.getCause()" and "e.getSuppressed()" are both null.
+            // So, we can't find out exactly why the failure happened. We just have to assume it was caused by dupes.
+            logger.info "jarsigner failed to sign '${jarFile.name}', likely because it contains duplicate entries. " +
+                    "Removing dupes and trying again."
+            jarFile = rejar(jarFile, new File(temporaryDir, jarFile.name))
+    
             try {
                 ant.signjar(jar: jarFile, keystore: keystorePath, storepass: keystorePassword, alias: keystoreAlias,
                             destDir: outputDir, preservelastmodified: true, verbose: false)
-                return
-            } catch (BuildException e) {
-                // If jarFile is inside temporaryDir, that means it's a rejar created in the previous iteration.
-                // Unfortunately, jarsigner STILL failed to sign it, meaning that the failure is likely unrelated to
-                // duplicate entries. So, to avoid an infinite loop, we exit here. No point in rejarring a rejar.
-                if (jarFile.parentFile == temporaryDir) {
-                    throw new GradleException("jarsigner failed to sign '${jarFile.name}', even after rejarring it.", e)
-                }
-            
-                // The BuildException that we get when an Ant task fails isn't very helpful. In the case of signjar,
-                // it just has "e.message == 'jarsigner returned: 1'". e.cause and e.suppressed are both null.
-                // So, we can't find out exactly why the failure happened. We just have to assume it was dupes.
-                println "jarsigner failed to sign '${jarFile.name}', likely because it contains duplicate entries. " +
-                        "Removing dupes and trying again."
-                jarFile = rejar(jarFile, new File(temporaryDir, jarFile.name))
+            } catch (BuildException e2) {
+                // jarsigner STILL failed to sign it, meaning that the failure is likely unrelated to duplicate entries.
+                throw new GradleException("jarsigner failed to sign '${jarFile.name}', even after rejarring it.", e)
             }
         }
-        
-        assert false : "Control shouldn't have ever gotten here. WTF happened?"
     }
     
     /**
