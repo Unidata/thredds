@@ -183,7 +183,7 @@ libraries["commons-lang3"] = "org.apache.commons:commons-lang3:3.4"
 libraries["jj2000"] = "edu.ucar:jj2000:5.3"
 
 // The easy HTTP client for Groovy (and Java). Used in buildSrc.
-libraries["http-builder-ng-core"] = "io.github.http-builder-ng:http-builder-ng-core:1.0.0"
+libraries["http-builder-ng-okhttp"] = "io.github.http-builder-ng:http-builder-ng-okhttp:1.0.3"
 
 ////////////////////////////// TDS ///////////////////////////////////////////
 

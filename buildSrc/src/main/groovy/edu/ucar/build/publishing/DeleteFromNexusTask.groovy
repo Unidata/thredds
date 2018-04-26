@@ -3,6 +3,7 @@ package edu.ucar.build.publishing
 import groovyx.net.http.ContentTypes
 import groovyx.net.http.FromServer
 import groovyx.net.http.HttpBuilder
+import groovyx.net.http.OkHttpBuilder
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.internal.tasks.options.Option
@@ -127,17 +128,9 @@ class DeleteFromNexusTask extends DefaultTask {
     }
     
     def destroy(List<Component> components) {
-        HttpBuilder http = HttpBuilder.configure {
+        HttpBuilder http = OkHttpBuilder.configure {
             request.uri = host
-            
-            // The DELETE command at '/rest/beta/components/$id' will not respond with an authentication challenge.
-            // Therefore, our authentication must be preemptive, which basically means pre-sending the Authorization
-            // header. The 'request.auth.basic()' method doesn't provide this functionality (it has a 'preemptive'
-            // argument, but it doesn't seem to do anything). This is probably because the underlying core, apache,
-            // and okhttp client libraries don't support preemptive auth out of the box. So, we must manually add the
-            // header ourselves.
-            // See https://www.javaworld.com/article/2092353/core-java/httpclient-basic-authentication.html
-            request.headers['Authorization'] = 'Basic ' + "$username:$password".bytes.encodeBase64().toString()
+            request.auth.basic username, password
         }
         
         components.each { Component component ->
