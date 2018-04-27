@@ -1,12 +1,3 @@
-import com.google.common.collect.Iterables
-import edu.ucar.build.ui.ToolsUiJnlpBaseTask
-import edu.ucar.build.ui.ToolsUiJnlpExtensionTask
-import org.codehaus.groovy.runtime.NioGroovyMethods
-
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import java.util.jar.JarOutputStream
-
 description = "Provides a graphical interface to much of the functionality in the CDM library."
 ext.title = "ToolsUI"
 
@@ -16,6 +7,7 @@ apply from: "$rootDir/gradle/any/testing.gradle"
 apply from: "$rootDir/gradle/any/coverage.gradle"
 apply from: "$rootDir/gradle/any/archiving.gradle"
 apply from: "$rootDir/gradle/any/publishing.gradle"
+apply from: "$rootDir/gradle/any/properties.gradle"  // For keystore and Nexus properties.
 
 dependencies {
     compile project(":cdm")
@@ -54,19 +46,16 @@ ext {
     // See http://docs.oracle.com/javase/8/docs/technotes/guides/javaws/developersguide/syntax.html#jnlp_elements
     // The Codebase attributes in the JAR manifest and JNLP must match, or else javaws fails to start with the error:
     // "Application Blocked by Java Security".
-    webstartCodebase = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/"
+    webstartCodebase = "https://artifacts.unidata.ucar.edu/repository/thredds-misc/$version/webstart/"
 
     // Webstart can also work if both Codebase attributes are unspecified.
     // Setting this property to null will produce a manifest and JNLP files with no Codebase attributes.
     // LOOK: Use this for local Webstart testing; use the other for deployment to production.
 //     webstartCodebase = null
 
-    webstartWorkingDir = "build/signed"
-    if (project.hasProperty("webdir")) {
-        webstartDir = new File(webdir, "webstart")
-    }
-
-    depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']
+    webstartBuildDir  = file("$buildDir/webstart")
+    extensionJnlpFile = file("$webstartBuildDir/netCDFtoolsExtraJars.jnlp")
+    baseJnlpFile      = file("$webstartBuildDir/netCDFtools.jnlp")
 }
 
 jar {
@@ -98,141 +87,66 @@ jar {
     // LOOK: Does that make the 'Class-Path' manifest attribute and 'download="lazy"' JNLP attributes pointless?
 }
 
+import edu.ucar.build.ui.ToolsUiJnlpExtensionTask
+import edu.ucar.build.ui.ToolsUiJnlpBaseTask
+import edu.ucar.build.ui.SignJarsTask
+
 task toolsUiJnlpExtension(type: ToolsUiJnlpExtensionTask) {
     codebase = webstartCodebase
-    outputFile = file("$buildDir/webstart/netCDFtoolsExtraJars.jnlp")
+    outputFile = extensionJnlpFile
 }
 
 task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask, dependsOn: toolsUiJnlpExtension) {
-    File toolsUiJnlpExtensionFile = Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
-
     codebase = webstartCodebase
-    extensionJnlpFileName = toolsUiJnlpExtensionFile.name
-    outputFile = file("$buildDir/webstart/netCDFtools.jnlp")
+    extensionJnlpFileName = extensionJnlpFile.name
+    outputFile = baseJnlpFile
 }
 
-/*
- * It's possible to test web start files locally before deploying them.
- * 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,
- *    such as '/Users/cwardgar/Desktop'
- * 2. Uncomment the 'webstartCodebase = null' line in the ext{} block above.
- * 3. Run this task: ./gradlew :ui:clean :ui:releaseWebstart
- * 4. You may need to white-list web starts from the local file system. Go to Java Control Panel->Security->
- *    Edit Site List... and add the entry "file:/".
- * 5. cd to "webdir" and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
- *    but I couldn't get that working (and there was no error feedback).
- */
-/*
- * The following properties should be in gradle.properties:
- * keystore=name of keystore file
- * keystoreAlias=idv
- * keystorePassword=password of keystore file
- * webdir:parent of conan content directory
- */
-// TODO: Use the Sync task for this.
-task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension', 'toolsUiJnlpBase'])  {
-    doLast {
-        if (project.hasProperty("webdir") && project.hasProperty("keystore")
-                && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
-            ant.delete(dir: webstartWorkingDir)
-            ant.mkdir(dir: webstartWorkingDir)
-
-            copy {
-                println "copyJnlp"
-                from Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
-                from Iterables.getOnlyElement(tasks.toolsUiJnlpBase.outputs.files.files)
-                from rootProject.file('docs/website/netcdf-java/nc.gif')
-                // Referenced in the ToolsUI base JNLP file.
-                into webstartWorkingDir
-            }
-
-            println "signjar:"
-            println "\twebdir = $webdir"
-            println "\tkeystore = $keystore"
-            println "\tkeystoreAlias = $keystoreAlias"
-            println "\tkeystorePassword = $keystorePassword"
-
-            ant.signjar(jar: tasks.jar.archivePath, destDir: webstartWorkingDir, alias: keystoreAlias,
-                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
-
-            for (file in configurations.runtime.resolve()) {
-                if (depsToRejar.contains(file.name)) {
-                    println "$file contains duplicate entries or old signature files. Rejarring."
-
-                    File rejarredFile = new File(temporaryDir, file.name)
-                    rejar file, rejarredFile
-                    file = rejarredFile
-                }
-
-                println "Signing $file"
-                ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
-                        keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
-            }
-
-            ant.delete(dir: webstartDir)
-            ant.mkdir(dir: webstartDir)
-
-            copy {
-                println "copy2web"
-                from(webstartWorkingDir)
-                into webstartDir
-            }
-        } else {
-            println "Several properties (\"webdir\", \"keystore\", \"keystoreAlias\", \"keystorePassword\" )\n"
-            +"must be defined to run \"releaseWebstart\" task."
-        }
-    }
-
-}
-
-///////////////////////////////////////////////////////
-
-/**
- * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate
- * entries in {@code origJarFile} will be excluded from {@code destJarFile}. Also, any old signature files
- * (i.e. META-INF/*.DSA, META-INF/*.SF, META-INF/*.RSA) will be excluded.
- *
- * @param origJarFile the original JAR file.
- * @param destJarFile the destination JAR file.
- */
-def rejar(File origJarFile, File destJarFile) {
-    JarFile origJar = new JarFile(origJarFile);
-
-    NioGroovyMethods.withCloseable(origJar) {
-        JarOutputStream jarOutStream = new JarOutputStream(
-                new BufferedOutputStream(new FileOutputStream(destJarFile)))
-
-        NioGroovyMethods.withCloseable(jarOutStream) {
-            java.util.regex.Pattern signatureFilePattern = ~/META-INF\/.+\.(DSA|SF|RSA)/
-            Set<String> entriesWritten = new HashSet<>()
-
-            for (JarEntry origJarEntry : origJar.entries()) {
-                if (origJarEntry.name =~ signatureFilePattern) {
-                    logger.debug "Excluding signature file: $origJarEntry.name"
-                } else if (!entriesWritten.add(origJarEntry.getName())) {
-                    logger.debug "Skipping duplicate entry: $origJarEntry.name"
-                } else {
-                    writeEntry origJar, origJarEntry, jarOutStream
-                }
-            }
-        }
+task signJars(type: SignJarsTask, dependsOn: jar) {
+    def jarsToSign = [ tasks.jar.archivePath ]          // ui-<version>.jar
+    jarsToSign.addAll configurations.runtime.resolve()  // All its dependencies.
+    
+    sourceJars = files(jarsToSign)
+    outputDir  = webstartBuildDir
+    
+    onlyIf {
+        // Will be evaluated at task execution time, not during configuration.
+        // Fails the build if the specified properties haven't been provided.
+        keystorePath     = getPropertyOrFailBuild KEYSTORE_PATH
+        keystorePassword = getPropertyOrFailBuild KEYSTORE_PASSWORD
+        keystoreAlias    = getPropertyOrFailBuild KEYSTORE_ALIAS
+        return true
     }
 }
 
-def writeEntry(JarFile jar, JarEntry jarEntry, JarOutputStream jarOutStream) {
-    try {
-        jarOutStream.putNextEntry(jarEntry);
-        InputStream jarEntryInputStream = jar.getInputStream(jarEntry)
+// It's possible to test Webstart files locally before publishing them.
+// 1. Uncomment the 'webstartCodebase = null' line in the ext{} block above.
+// 2. Run this task: ./gradlew :ui:buildWebstart
+// 3. You may need to whitelist Webstart locations that refer to the local file system.
+//    Go to "Java Control Panel->Security->Edit Site List..." and add the entry "file:/".
+// 4. Navigate to $webstartBuildDir and execute: javaws netCDFtools.jnlp
+task buildWebstart(group: "Webstart") {
+    description = "Create the JNLP and signed JARs needed for Webstart."
+    
+    // Aggregates other Webstart tasks.
+    dependsOn toolsUiJnlpExtension, toolsUiJnlpBase, signJars
+}
 
-        NioGroovyMethods.withCloseable(jarEntryInputStream) {
-            byte[] buffer = new byte[8192]
-            int bytesRead;
+import edu.ucar.build.publishing.PublishToRawRepoTask
 
-            while ((bytesRead = jarEntryInputStream.read(buffer)) != -1) {
-                jarOutStream.write(buffer, 0, bytesRead)
-            }
-        }
-    } finally {
-        jarOutStream.closeEntry()
+task publishWebstart(type: PublishToRawRepoTask, dependsOn: buildWebstart) {
+    group = "Webstart"
+    description = "Publish Webstart to Nexus."
+    
+    host = "https://artifacts.unidata.ucar.edu/"
+    repoName = "thredds-misc"
+    
+    srcFile = webstartBuildDir
+    destPath = "$version/webstart"
+    
+    onlyIf {
+        username = getPropertyOrFailBuild NEXUS_USERNAME_KEY
+        password = getPropertyOrFailBuild NEXUS_PASSWORD_KEY
+        return true
     }
 }

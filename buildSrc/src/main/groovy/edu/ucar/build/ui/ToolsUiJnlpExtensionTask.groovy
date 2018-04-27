@@ -53,7 +53,7 @@ class ToolsUiJnlpExtensionTask extends DefaultTask {
     File outputFile
     
     ToolsUiJnlpExtensionTask() {
-        group = 'Release'
+        group = 'Webstart'
         description = "Writes the auxiliary webstart (JNLP) file for ToolsUI."
     }
     

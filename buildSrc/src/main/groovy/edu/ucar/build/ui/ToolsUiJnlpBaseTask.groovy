@@ -63,7 +63,7 @@ class ToolsUiJnlpBaseTask extends DefaultTask {
     File outputFile
     
     ToolsUiJnlpBaseTask() {
-        group = 'Release'
+        group = 'Webstart'
         description = "Writes the base webstart (JNLP) file for ToolsUI."
     }
     
@@ -103,10 +103,8 @@ class ToolsUiJnlpBaseTask extends DefaultTask {
                     information() {
                         title('NetCDF ToolsUI')
                         vendor('Unidata')
-                        homepage(href: 'https://www.unidata.ucar.edu/' +
-                                       'software/thredds/current/netcdf-java/documentation.htm')
-                        description(kind: 'short', 'Graphical interface to netCDF-Java / Common Data Model')
-                        icon(href: 'nc.gif')
+                        homepage(href: "https://docs.unidata.ucar.edu/thredds/current/userguide/")
+                        description(kind: 'short', 'Graphical interface to NetCDF-Java / Common Data Model')
                         'offline-allowed'()
                     }
             

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="7.0" codebase="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart" version="1.5">
+<jnlp spec="7.0" codebase="https://artifacts.unidata.ucar.edu/repository/thredds-misc/current/webstart/" version="1.5">
     <information>
         <title>NetCDF ToolsUI</title>
         <vendor>Unidata</vendor>
-        <homepage href="https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"/>
-        <description kind="short">Graphical interface to netCDF-Java / Common Data Model</description>
-        <icon href="nc.gif"/>
+        <homepage href="https://docs.unidata.ucar.edu/thredds/current/userguide/"/>
+        <description kind="short">Graphical interface to NetCDF-Java / Common Data Model</description>
         <offline-allowed/>
     </information>
     
