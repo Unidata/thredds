@@ -142,7 +142,7 @@ task publishWebstart(type: PublishToRawRepoTask, dependsOn: buildWebstart) {
     repoName = "thredds-misc"
     
     srcFile = webstartBuildDir
-    destPath = "$version/webstart"
+    destPath = "$version/webstart/"
     
     onlyIf {
         username = getPropertyOrFailBuild NEXUS_USERNAME_KEY

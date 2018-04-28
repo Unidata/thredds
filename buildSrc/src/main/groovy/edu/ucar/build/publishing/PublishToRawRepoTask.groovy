@@ -3,13 +3,18 @@ package edu.ucar.build.publishing
 import groovy.io.FileType
 import groovyx.net.http.ContentTypes
 import groovyx.net.http.FromServer
+import groovyx.net.http.HttpBuilder
+import groovyx.net.http.MultipartContent
+import groovyx.net.http.OkHttpBuilder
+import groovyx.net.http.OkHttpEncoders
+import okhttp3.OkHttpClient
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-import groovyx.net.http.HttpBuilder
-import java.util.regex.Matcher
+
+import java.util.concurrent.TimeUnit
 
 /**
  * Publishes artifacts to a Nexus Repository Manager 3 raw repository.
@@ -48,8 +53,8 @@ class PublishToRawRepoTask extends DefaultTask {
     
     /**
      * The destination, relative to {@code repoName}'s root, to which artifacts will be published, e.g.
-     * {@code https://artifacts.unidata.ucar.edu/$destPath/index.adoc}. Leading and trailing slashes are neither
-     * required nor prohibited; their presence makes no difference.
+     * {@code https://artifacts.unidata.ucar.edu/$repoName/$destPath/index.adoc}. Leading and trailing slashes are
+     * neither required nor prohibited; their presence makes no difference.
      * <p>
      * This property is {@code "/"} by default.
      */
@@ -64,6 +69,13 @@ class PublishToRawRepoTask extends DefaultTask {
     @Input
     String password
     
+    /**
+     * When the sums of the sizes of the source files included in a multipart POST request exceeds this value,
+     * stop adding additional files to the request. Submit it and start building the next one.
+     */
+    @Input @Optional
+    int endRequestThreshold = 5 * 1024 * 1024  // 5 MB
+    
     // No @Output. The task will never be considered up-to-date.
     
     PublishToRawRepoTask() {
@@ -73,7 +85,7 @@ class PublishToRawRepoTask extends DefaultTask {
     
     @TaskAction
     def publish() {
-        def srcFiles = []
+        LinkedList<File> srcFiles = new LinkedList<>()
     
         if (srcFile.isFile()) {
             srcFiles << srcFile
@@ -85,24 +97,51 @@ class PublishToRawRepoTask extends DefaultTask {
             throw new GradleException("'$srcFile' isn't a normal file or directory. Most likely it doesn't exist.")
         }
     
-        HttpBuilder http = HttpBuilder.configure {
+        HttpBuilder http = OkHttpBuilder.configure {
             request.uri = host
-            request.contentType = ContentTypes.BINARY.first()
-    
-            // Do preemptive auth. This isn't strictly necessary because the 'PUT /repository/*' endpoint DOES return
-            // an authentication challenge if the client's initial request doesn't include credentials.
-            // However, preemptive auth is likely faster as it saves us a round trip with the server.
-            // See the comment in DeleteFromNexusTask.destroy() for more info about preemptive auth.
-            request.headers['Authorization'] = 'Basic ' + "$username:$password".bytes.encodeBase64().toString()
-        }
-    
-        srcFiles.each { File file ->
-            http.put {
-                request.uri.path = makeResourcePath(repoName, destPath, srcFile, file)
-                request.body = file.bytes
+            request.uri.path = "/service/rest/beta/components"
+            request.uri.query['repository'] = repoName
             
+            request.contentType = ContentTypes.MULTIPART_FORMDATA.first()
+            request.encoder ContentTypes.MULTIPART_FORMDATA.first(), OkHttpEncoders.&multipart
+            request.auth.basic username, password
+    
+            client.clientCustomizer { OkHttpClient.Builder builder ->
+                // "readTimeout" refers to how long we should wait for the server to respond to our request.
+                // The I/O performance of the "data" volume on nexus-prod is wildly variable, so we have to increase
+                // the read timeout. The connect, read, and write timeouts are all 10 seconds by default.
+                builder.readTimeout(5, TimeUnit.MINUTES)
+            }
+    
+            logger.info "Publishing ${srcFiles.size()} files to directory '$destPath' at '${request.uri.toURI()}'."
+        }
+        
+        while (!srcFiles.isEmpty()) {
+            int numFilesInRequest = 0
+            int sumOfSizesOfFilesInRequest = 0
+            
+            http.post {
+                request.body = MultipartContent.multipart {
+                    field 'raw.directory', destPath
+            
+                    for (int assetNum = 1; !srcFiles.isEmpty() &&
+                                           sumOfSizesOfFilesInRequest < endRequestThreshold; ++assetNum) {
+                        File file = srcFiles.removeFirst()
+                        String remoteFilePath = relativize(srcFile, file)
+                
+                        field "raw.asset${assetNum}.filename", remoteFilePath
+                        part "raw.asset${assetNum}", remoteFilePath, ContentTypes.BINARY.first(), file
+                        
+                        ++numFilesInRequest
+                        sumOfSizesOfFilesInRequest += file.size()
+                    }
+                }
+    
                 response.success { FromServer ret ->
-                    logger.info "PUT successful (${ret.statusCode}): ${request.uri.toURI()}"
+                    logger.info String.format(
+                            "POSTed multipart request including %d files totalling %.2f MB to Nexus. " +
+                            "There are %d files remaining.",
+                            numFilesInRequest, sumOfSizesOfFilesInRequest / 1_048_576, srcFiles.size())
                 }
                 response.failure { FromServer ret ->
                     throw new GradleException(ret.message)
@@ -112,55 +151,6 @@ class PublishToRawRepoTask extends DefaultTask {
                 }
             }
         }
-    
-        logger.info "Published ${srcFiles.size()} documents to Nexus."
-    }
-    
-    
-    /**
-     * Makes a resource path from the given arguments that will be appended to {@link #host} to form the full artifact
-     * URL. The format of the path will be: {@code /repository/$repoName/$destPath/$relativeSrcPath}. If
-     * {@code srcBase == srcFile}, the path will simply be:
-     * <code>/repository/$repoName/$destPath/${srcFile.name}</code>
-     *
-     * @param repoName  the name of a raw repository.
-     * @param destPath  the destination path. Will be excluded from resource path if it's {@code "/"} or {@code ""}.
-     * @param srcBase   the base directory within which {@code srcFile} lives.
-     * @param srcFile   a file within {@code srcBase}.
-     * @return  the resource path that {@code srcFile} will have on {@link #host} when it's published.
-     * @throws IllegalArgumentException  if {@code repoName} is null or empty.
-     */
-    static String makeResourcePath(String repoName, String destPath, File srcBase, File srcFile)
-            throws IllegalArgumentException {
-        if (!repoName) {
-            throw new IllegalArgumentException("repoName must be non-null and non-empty.")
-        }
-        
-        StringBuilder sb = new StringBuilder("/repository/")
-        sb << repoName << '/'
-    
-        String destPathStripped = stripLeadingAndTrailingSlashes(destPath)
-        if (destPathStripped) {
-            sb << destPathStripped << '/'
-        }
-        
-        sb << relativize((srcBase == srcFile ? srcBase.parentFile : srcBase), srcFile)
-        return sb.toString()
-    }
-    
-    /**
-     * Strips all leading and trailing forward slashes from the given string. Internal slashes are left alone.
-     *
-     * @param s  a string.
-     * @return   the given string with all leading and trailing forward slashes removed.
-     */
-    static String stripLeadingAndTrailingSlashes(String s) {
-        Matcher matcher = (s =~ '^/*(.*?)/*$')  // First and third quantifiers are greedy; the second is lazy.
-        assert matcher.matches() : "Pattern should match every string, but failed to match '$s'."
-    
-        // Match numbering starts at 0; capture group numbering starts at 1.
-        // See http://mrhaki.blogspot.com/2009/09/groovy-goodness-matchers-for-regular.html
-        return matcher[0][1]
     }
     
     /**

@@ -23,10 +23,10 @@ dependencies {
 }
 
 ext {
-    userGuideSrc = file("src/public/userguide/").absolutePath
-    userGuideDest = file("$buildDir/userguide/").absolutePath
+    userGuideSrcDir = file("src/public/userguide/")
+    userGuideDestDir = file("$buildDir/userguide/")
     
-    commonFlags = [ '--source', userGuideSrc, '--destination', userGuideDest ]
+    commonFlags = [ '--source', userGuideSrcDir.absolutePath, '--destination', userGuideDestDir.absolutePath ]
 }
 
 import com.github.jrubygradle.JRubyExec
@@ -35,9 +35,8 @@ task buildUserGuide(type: JRubyExec) {
     group = "Documentation"
     description = 'Build user guide website.'
     
-    // Enable task to be UP-TO-DATE.
-    inputs.file userGuideSrc
-    outputs.file userGuideDest
+    inputs.files userGuideSrcDir
+    outputs.dir userGuideDestDir
     
     script "jekyll"
     
@@ -141,15 +140,15 @@ tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask confi
 task publishUserGuide(type: PublishToRawRepoTask, dependsOn: buildUserGuide) {
     description = "Publish user guide to Nexus."
 
-    srcFile = file(userGuideDest)
-    destPath = "$version/userguide"
+    srcFile = userGuideDestDir
+    destPath = "$version/userguide/"
 }
 
 task publishJavadocCdm(type: PublishToRawRepoTask, dependsOn: buildJavadocCdm) {
     description = "Publish Javadoc for the CDM subproject to Nexus."
     
     srcFile = tasks.buildJavadocCdm.destinationDir
-    destPath = "$version/javadoc"
+    destPath = "$version/javadoc/"
 }
 
 gradle.projectsEvaluated {
@@ -160,7 +159,7 @@ gradle.projectsEvaluated {
         description = "Publish Javadoc for all Java subprojects to Nexus."
         
         srcFile = tasks.buildJavadocAll.destinationDir
-        destPath = "$version/javadocAll"
+        destPath = "$version/javadocAll/"
     }
     
     // We're deliberately NOT naming this task "publish", because we don't want it running when we do a:

@@ -12,7 +12,7 @@ apply from: "../gradle/any/dependencies.gradle"
 apply from: "../gradle/any/coverage.gradle"
 
 dependencies {
-    compile libraries["http-builder-ng-core"]
+    compile libraries["http-builder-ng-okhttp"]  // For Nexus tasks.
     
     testCompile (libraries["spock-core"]) {
         // The Gradle API drags in the bundled version of Groovy that Gradle ships with (localGroovy()) –
