@@ -391,7 +391,7 @@ public interface Nc4prototypes extends Library {
   static public class NC_memio extends Structure {
     static int NC_MEMIO_LOCKED = 1;// Do not try to realloc or free provided memory
     public NativeLong size; /* Length of memory chunk */
-    public Pointer memory;  /* Pointer to memory chunk */
+    public byte[] memory;  /* memory chunk */
     public int flags;
 
     protected List getFieldOrder()

@@ -44,8 +44,7 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  * @see "http://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
  * @since Oct 30, 2008
  */
-public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {
-
+c
   static public final boolean DEBUG = false;
 
   static public int NC_TURN_OFF_LOGGING = -1;
