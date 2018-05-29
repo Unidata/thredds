@@ -12,7 +12,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -122,19 +122,10 @@ public class TestAggUnionSimple extends TestCase {
 
   static NetcdfFile ncfile = null;
 
-  public void setUp() {
+  public void setUp() throws IOException {
     if (ncfile != null) return;
     String filename = "file:./" + TestNcML.topDir + "aggUnionSimple.xml";
-
-    try {
-      ncfile = NetcdfDataset.openDataset(filename, false, null);
-    } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = " + e);
-    } catch (IOException e) {
-      System.out.println("IO error = " + e);
-      e.printStackTrace();
-      assert false;
-    }
+    ncfile = NetcdfDataset.openDataset(filename, false, null);
   }
 
   public void tearDown() throws IOException {
@@ -158,12 +149,12 @@ public class TestAggUnionSimple extends TestCase {
   }
 
   public void testRead() {
-    System.out.println("ncfile = " + ncfile);
+    logger.debug("ncfile = \n{}", ncfile);
     ucar.nc2.TestUtils.testReadData(ncfile, true);
   }
 
   public void testStructure() {
-    System.out.println("TestNested = \n" + ncfile);
+    logger.debug("TestNested = \n{}", ncfile);
 
     Attribute att = ncfile.findGlobalAttribute("title");
     assert null != att;
@@ -187,8 +178,7 @@ public class TestAggUnionSimple extends TestCase {
     assert timeDim.isUnlimited();
   }
 
-  public void testReadCoordvar() {
-
+  public void testReadCoordvar() throws IOException {
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
     assert lat.getShortName().equals("lat");
@@ -210,25 +200,20 @@ public class TestAggUnionSimple extends TestCase {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-
-    try {
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 21;
-      assert data.getShape()[0] == 21;
-      assert data.getElementType() == float.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 10.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 9.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 8.0);
-    } catch (IOException io) {
-    }
-
+  
+    Array data = lat.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 21;
+    assert data.getShape()[0] == 21;
+    assert data.getElementType() == float.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 10.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 9.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 8.0);
   }
 
-  public void testReadData() {
-
+  public void testReadData() throws IOException {
     Variable v = ncfile.findVariable("lflx");
     assert null != v;
     assert v.getShortName().equals("lflx");
@@ -254,51 +239,41 @@ public class TestAggUnionSimple extends TestCase {
     assert att.getStringValue().equals("grams/kg m/s");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-
-    try {
-      Array data = v.read();
-      assert data.getRank() == 3;
-      assert data.getSize() == 360 * 21 * 456;
-      assert data.getShape()[0] == 456;
-      assert data.getShape()[1] == 21;
-      assert data.getShape()[2] == 360;
-      assert data.getElementType() == short.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert 32766 == dataI.getShortNext();
-      assert 32766 == dataI.getShortNext();
-      assert 32766 == dataI.getShortNext();
-      assert 32766 == dataI.getShortNext();
-    } catch (IOException io) {
-    }
+  
+    Array data = v.read();
+    assert data.getRank() == 3;
+    assert data.getSize() == 360 * 21 * 456;
+    assert data.getShape()[0] == 456;
+    assert data.getShape()[1] == 21;
+    assert data.getShape()[2] == 360;
+    assert data.getElementType() == short.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    assert 32766 == dataI.getShortNext();
+    assert 32766 == dataI.getShortNext();
+    assert 32766 == dataI.getShortNext();
+    assert 32766 == dataI.getShortNext();
   }
 
-  public void testReadSlice() {
-
+  public void testReadSlice() throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable("lflx");
     int[] origin = {0, 6, 5};
     int[] shape = {1, 2, 3};
-    try {
-      Array data = v.read(origin, shape).reduce();
-      assert data.getRank() == 2;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getElementType() == short.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getShortNext() == -22711;
-      assert dataI.getShortNext() == -22239;
-      assert dataI.getShortNext() == -22585;
-      assert dataI.getShortNext() == -22670;
-      assert dataI.getShortNext() == 32766;
-      assert dataI.getShortNext() == 32766;
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  
+    Array data = v.read(origin, shape).reduce();
+    assert data.getRank() == 2;
+    assert data.getSize() == 6;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getElementType() == short.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getShortNext() == -22711;
+    assert dataI.getShortNext() == -22239;
+    assert dataI.getShortNext() == -22585;
+    assert dataI.getShortNext() == -22670;
+    assert dataI.getShortNext() == 32766;
+    assert dataI.getShortNext() == 32766;
   }
 
   /* test that scanning gives the exact same result
@@ -320,5 +295,4 @@ public class TestAggUnionSimple extends TestCase {
     assert v != null;
     scanFile.close();
   }
-
 }

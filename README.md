@@ -132,5 +132,6 @@ as well as in the `LICENSE.txt` file accompanying the software.
 Furthermore, this project includes code from third-party open-source software components:
 * [Gretty](https://github.com/akhikhl/gretty): for details, see `buildSrc/README.md`
 * [ERDDAP](https://coastwatch.pfeg.noaa.gov/erddap/index.html): for details, see `waterml/README.md`
+* [JUnit](https://github.com/junit-team/junit4): for details, see `testUtil/README.md`
 
-Each of these software components have their own license. Please see `docs/licenses/third-party/`.
+Each of these software components have their own license. Please see `docs/src/private/licenses/third-party/`.

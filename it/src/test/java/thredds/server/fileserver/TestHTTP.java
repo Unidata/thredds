@@ -17,7 +17,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class TestHTTP  {
   public void testOpenNetcdfFile() throws IOException {
     try (NetcdfFile ncfile = NetcdfFile.open(url)) {
       test(ncfile);
-      System.out.println("*****************  Test testOpenNetcdfFile over HTTP done");
+      logger.debug("*****************  Test testOpenNetcdfFile over HTTP done");
     }
   }
 
@@ -42,7 +42,7 @@ public class TestHTTP  {
   public void testOpenNetcdfDataset() throws IOException {
     try (NetcdfFile ncfile = NetcdfDataset.openDataset(url)) {
       test(ncfile);
-      System.out.println("*****************  Test testOpenNetcdfDataset over HTTP done");
+      logger.debug("*****************  Test testOpenNetcdfDataset over HTTP done");
     }
   }
 
@@ -53,7 +53,7 @@ public class TestHTTP  {
     DataFactory tdataFactory = new DataFactory();
     try (NetcdfDataset ncfile = tdataFactory.openDataset(ds, false, null, log)) {
       test(ncfile);
-      System.out.println("*****************  Test testDataFactory over HTTP done");
+      logger.debug("*****************  Test testDataFactory over HTTP done");
     }
   }
 
@@ -79,14 +79,14 @@ public class TestHTTP  {
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
-    assert( Misc.nearlyEquals(1.2f, att.getNumericValue().floatValue()));
+    Assert2.assertNearlyEquals(1.2f, att.getNumericValue().floatValue());
 
     att = temp.findAttribute("versionF");
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
     assert( 1.2f == att.getNumericValue().floatValue());
-    assert( Misc.nearlyEquals(1.2f, att.getNumericValue().floatValue()));
+    Assert2.assertNearlyEquals(1.2f, att.getNumericValue().floatValue());
 
     att = temp.findAttribute("versionI");
     assert( null != att);

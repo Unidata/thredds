@@ -16,9 +16,9 @@ import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.Misc;
 import ucar.nc2.util.cache.FileCache;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -56,7 +56,7 @@ public class TestMiscIosp {
   public void testFyiosp() throws IOException {
      String fileIn =  TestDir.cdmUnitTestDir + "formats/fysat/SATE_L3_F2C_VISSR_MWB_SNO_CNB-DAY-2008010115.AWX";
      try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
-       System.out.printf("open %s %n", ncf.getLocation());
+       logger.debug("open {}", ncf.getLocation());
 
        String val = ncf.findAttValueIgnoreCase(null, "version", null);
        assert val != null;
@@ -75,7 +75,7 @@ public class TestMiscIosp {
   @Test
   public void testUamiv() throws IOException {
     try (NetcdfFile ncfile = NetcdfFile.open(TestDir.cdmUnitTestDir + "formats/uamiv/uamiv.grid", null)) {
-      System.out.printf("open %s %n", ncfile.getLocation());
+      logger.debug("open {}", ncfile.getLocation());
       ucar.nc2.Variable v = ncfile.findVariable("UP");
       assert v != null;
       assert v.getDataType() == DataType.FLOAT;
@@ -89,7 +89,7 @@ public class TestMiscIosp {
   public void testGini() throws IOException, InvalidRangeException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/gini/n0r_20041013_1852-compress";
     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
-      System.out.printf("open %s %n", ncf.getLocation());
+      logger.debug("open {}", ncf.getLocation());
 
       ucar.nc2.Variable v = ncf.findVariable("Reflectivity");
       assert v != null;
@@ -105,7 +105,7 @@ public class TestMiscIosp {
   public void testGrads() throws IOException, InvalidRangeException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
-      System.out.printf("open %s %n", ncf.getLocation());
+      logger.debug("open {}", ncf.getLocation());
 
       ucar.nc2.Variable v = ncf.findVariable("mask");
       assert v != null;
@@ -113,7 +113,7 @@ public class TestMiscIosp {
       Attribute att = v.findAttribute(CDM.MISSING_VALUE);
       assert att != null;
       assert att.getDataType() == DataType.FLOAT;
-      assert Misc.nearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
+      Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
@@ -124,7 +124,7 @@ public class TestMiscIosp {
   public void testGradsWithRAFCache() throws IOException, InvalidRangeException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/grads/mask.ctl";
     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
-      System.out.printf("open %s %n", ncf.getLocation());
+      logger.debug("open {}", ncf.getLocation());
 
       ucar.nc2.Variable v = ncf.findVariable("mask");
       assert v != null;
@@ -132,7 +132,7 @@ public class TestMiscIosp {
       Attribute att = v.findAttribute(CDM.MISSING_VALUE);
       assert att != null;
       assert att.getDataType() == DataType.FLOAT;
-      assert Misc.nearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
+      Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});
@@ -144,7 +144,7 @@ public class TestMiscIosp {
   public void testGrads2() throws IOException, InvalidRangeException {
     String fileIn = TestDir.cdmUnitTestDir + "formats/grads/pdef.ctl";
     try (ucar.nc2.NetcdfFile ncf = ucar.nc2.NetcdfFile.open(fileIn)) {
-      System.out.printf("open %s %n", ncf.getLocation());
+      logger.debug("open {}", ncf.getLocation());
 
       ucar.nc2.Variable v = ncf.findVariable("pdef");
       assert v != null;
@@ -152,7 +152,7 @@ public class TestMiscIosp {
       Attribute att = v.findAttribute(CDM.MISSING_VALUE);
       assert att != null;
       assert att.getDataType() == DataType.FLOAT;
-      assert Misc.nearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
+      Assert2.assertNearlyEquals(att.getNumericValue().floatValue(), -9999.0f);
 
       Array data = v.read();
       assert Arrays.equals(data.getShape(), new int[]{1, 1, 180, 360});

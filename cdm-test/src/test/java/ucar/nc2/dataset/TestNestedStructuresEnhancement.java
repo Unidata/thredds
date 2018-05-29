@@ -15,7 +15,7 @@ import ucar.nc2.iosp.bufr.BufrIosp2;
 import ucar.ma2.StructureData;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.ArrayStructure;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
@@ -34,7 +34,7 @@ public class TestNestedStructuresEnhancement {
   public void testNestedTable() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.openFile(filename, null)) {
-      System.out.printf("Open %s%n", ncfile.getLocation());
+      logger.debug("Open {}", ncfile.getLocation());
       Sequence outer = (Sequence) ncfile.findVariable(BufrIosp2.obsRecord);
       assert outer != null;
 
@@ -59,7 +59,7 @@ public class TestNestedStructuresEnhancement {
   public void testNestedTableEnhanced() throws IOException, InvalidRangeException {
     String filename = TestDir.cdmLocalTestDataDir + "dataset/nestedTable.bufr";
     try (NetcdfFile ncfile = ucar.nc2.dataset.NetcdfDataset.openDataset(filename)) {
-      System.out.printf("Open %s%n", ncfile.getLocation());
+      logger.debug("Open {}", ncfile.getLocation());
       SequenceDS outer = (SequenceDS) ncfile.findVariable(BufrIosp2.obsRecord);
       assert outer != null;
 
@@ -73,9 +73,8 @@ public class TestNestedStructuresEnhancement {
 
         ArrayStructure as = data.getArrayStructure("Geopotential");
         assert as != null;
-        assert Misc.nearlyEquals(as.getScalarFloat(0, as.findMember("Wind_speed")), 6.1);
+        Assert2.assertNearlyEquals(as.getScalarFloat(0, as.findMember("Wind_speed")), 6.1);
       }
     }
   }
-
 }

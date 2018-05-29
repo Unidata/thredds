@@ -23,7 +23,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
@@ -113,7 +113,7 @@ public class TestTdsNcml {
   @Test
   public void testAggExisting() throws IOException, InvalidRangeException {
     String endpoint = TestOnLocalServer.withHttpPath("dodsC/ExampleNcML/Agg.nc");
-    System.out.printf("%s%n", endpoint);
+    logger.debug("{}", endpoint);
 
     NetcdfFile ncfile = NetcdfDataset.openFile(endpoint, null);
 
@@ -130,7 +130,7 @@ public class TestTdsNcml {
     logger.debug(NCdumpW.toString(data, "time", null));
 
     while (data.hasNext()) {
-      assert Misc.nearlyEquals(data.nextInt(), (count + 1) * 3);
+      Assert2.assertNearlyEquals(data.nextInt(), (count + 1) * 3);
       count++;
     }
 
@@ -151,7 +151,7 @@ public class TestTdsNcml {
   @Test
   public void testAddMetadataToScan() throws IOException, InvalidRangeException {
     String endpoint = TestOnLocalServer.withHttpPath("cdmremote/testGridScan/GFS_CONUS_80km_20120229_1200.grib1");
-    System.out.printf("%s%n", endpoint);
+    logger.debug("{}", endpoint);
 
     try (NetcdfFile ncd = NetcdfDataset.openFile(endpoint, null)) {
       Assert.assertNotNull(ncd);
@@ -161,5 +161,4 @@ public class TestTdsNcml {
       Assert.assertEquals("stuff", att.getStringValue());
     }
   }
-
 }

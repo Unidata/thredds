@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.Variable;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -70,7 +70,7 @@ public class TestDODSSubset {
 
     for (int i=0; i<5; i++) {
       double val = ad.get(i);
-      assert Misc.nearlyEquals(val, tFloat64[i], 1.0e-9);
+      Assert2.assertNearlyEquals(val, tFloat64[i], 1.0e-9);
     }
 
     dodsfile.close();

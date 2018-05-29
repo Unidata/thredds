@@ -17,8 +17,8 @@ import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -48,7 +48,7 @@ public class GribCoverageValidator implements GribDataValidator {
     Double timeOffset = coords.getTimeOffset();
     double[] timeOffsetIntv = coords.getTimeOffsetIntv(); // LOOK ??
     if (timeOffset == null) {
-      System.out.printf("HEY no timeOffsetCoord ");
+      logger.debug("HEY no timeOffsetCoord ");
       return;
     }
 
@@ -57,9 +57,8 @@ public class GribCoverageValidator implements GribDataValidator {
       int tinv[] = ptime.getInterval();
       Assert.assertTrue("time coord lower", tinv[0] <= timeOffset);          // lower <= time
       Assert.assertTrue("time coord lower", tinv[1] >= timeOffset);          // upper >= time
-
     } else {
-      Assert.assertTrue(Misc.nearlyEquals(timeOffset, ptime.getForecastTime()));
+      Assert2.assertNearlyEquals(timeOffset, ptime.getForecastTime());
     }
 
     // vert
@@ -75,14 +74,14 @@ public class GribCoverageValidator implements GribDataValidator {
         Assert.assertTrue("vert coord upper", upper >= wantVert);          // upper >= vert
 
       } else {
-        Assert.assertTrue(Misc.nearlyEquals(lev1, wantVert));
+        Assert2.assertNearlyEquals(lev1, wantVert);
       }
     }
 
     // ens
     Double wantEns = coords.getEnsCoord();
     if (wantEns != null) {
-      Assert.assertTrue(Misc.nearlyEquals(pds.getPerturbationNumber(), wantEns));
+      Assert2.assertNearlyEquals(pds.getPerturbationNumber(), wantEns);
     }
 
   }
@@ -115,7 +114,7 @@ public class GribCoverageValidator implements GribDataValidator {
     } else {
       CalendarDate fdate = cust.getForecastDate(gr);
       if (!fdate.equals(wantTimeOffset))
-        System.out.printf("HEY forecast date%n");
+        logger.debug("HEY forecast date");
       Assert.assertEquals("time coord", wantTimeOffset, fdate);
     }
 
@@ -131,20 +130,18 @@ public class GribCoverageValidator implements GribDataValidator {
       //double upper = Math.max(level1val, level2val);
       //Assert.assertTrue("vert coord lower", lower <= wantVert);          // lower <= vert
       //Assert.assertTrue("vert coord upper", upper >= wantVert);          // upper >= vert
-      Assert.assertTrue(Misc.nearlyEquals(vertCoordIntv[0], level1val, 1e-6));
-      Assert.assertTrue(Misc.nearlyEquals(vertCoordIntv[1], level2val, 1e-6));
+      Assert2.assertNearlyEquals(vertCoordIntv[0], level1val, 1e-6);
+      Assert2.assertNearlyEquals(vertCoordIntv[1], level2val, 1e-6);
 
     } else if (vertCoord != null) {
-      Assert.assertTrue(Misc.nearlyEquals(vertCoord, level1val, 1e-6));
+      Assert2.assertNearlyEquals(vertCoord, level1val, 1e-6);
     }
 
     // ens
     Double wantEns = coords.getEnsCoord();
     if (wantEns != null) {
       Grib2Pds.PdsEnsemble pdse = (Grib2Pds.PdsEnsemble) pds;
-      Assert.assertTrue(Misc.nearlyEquals(wantEns, pdse.getPerturbationNumber()));
+      Assert2.assertNearlyEquals(wantEns, pdse.getPerturbationNumber());
     }
-
   }
-
 }

@@ -3,7 +3,7 @@ package ucar.coord;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -25,25 +25,25 @@ public class TestCoordinateND {
     GribRecordStats counter = new GribRecordStats();
     Formatter f = new Formatter();
     prev.showInfo(f, counter);
-    System.out.printf("%s%n", f);
-    System.out.printf("prev %s%n====================%n", counter.show());
+    logger.debug("{}", f);
+    logger.debug("prev {}", counter.show());
 
     CoordinateND<Short> curr = makeCoordinateND(2, 11);
     counter = new GribRecordStats();
     f = new Formatter();
     curr.showInfo(f, counter);
-    System.out.printf("%s%n", f);
-    System.out.printf("curr %s%n====================%n", counter.show());
+    logger.debug("{}", f);
+    logger.debug("curr {}", counter.show());
 
     CoordinateND<Short> reindexed = new CoordinateND.Builder<Short>().reindex(curr.getCoordinates(), prev);
     counter = new GribRecordStats();
     f = new Formatter();
     reindexed.showInfo(f, counter);
-    System.out.printf("%s%n", f);
-    System.out.printf("reindexed %s%n====================%n", counter.show());
-
-    assert Misc.nearlyEquals(curr.getSparseArray().getDensity(), 1.0f);
-    assert Misc.nearlyEquals(reindexed.getSparseArray().getDensity(), .826446f);
+    logger.debug("{}", f);
+    logger.debug("reindexed {}", counter.show());
+  
+    Assert2.assertNearlyEquals(curr.getSparseArray().getDensity(), 1.0f);
+    Assert2.assertNearlyEquals(reindexed.getSparseArray().getDensity(), .826446f);
   }
 
   static public CoordinateND<Short> makeCoordinateND(int rank, int size) {

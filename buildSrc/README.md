@@ -7,7 +7,7 @@ and utilities for use in the building of THREDDS. For reference, see
 ## Inclusion of third-party software
 
 This project contains source code from [Gretty](https://github.com/akhikhl/gretty), version 1.4.2.
-The license for Gretty is available in `/thredds/docs/licenses/third-party/gretty/`.
+The license for Gretty is available in `docs/src/private/licenses/third-party/gretty/`.
 
 ### Details of use:
 

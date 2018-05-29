@@ -18,7 +18,7 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.grid.GridDataset;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -35,7 +35,7 @@ public class TestOffAggDirectory extends TestCase {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestNcmlAggDirectory.open "+ filename);
+    logger.debug(" TestNcmlAggDirectory.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -49,7 +49,7 @@ public class TestOffAggDirectory extends TestCase {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" TestNcmlAggExisting.openDataset "+ filename);
+    logger.debug(" TestNcmlAggExisting.openDataset {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -63,7 +63,7 @@ public class TestOffAggDirectory extends TestCase {
     String filename = "file:" + TestDir.cdmUnitTestDir + "ncml/nc/seawifs/aggDirectory.ncml";
 
     GridDataset gds = GridDataset.open( filename);
-    System.out.println(" TestNcmlAggExisting.openGrid "+ filename);
+    logger.debug(" TestNcmlAggExisting.openGrid {}", filename);
 
     List grids = gds.getGrids();
     assert grids.size() == 2;
@@ -110,10 +110,9 @@ public class TestOffAggDirectory extends TestCase {
     assert data.getElementType() == float.class;
 
     IndexIterator dataI = data.getIndexIterator();
-    assert Misc.nearlyEquals(dataI.getFloatNext(), 43.0f) : dataI.getFloatCurrent();
-    assert Misc.nearlyEquals(dataI.getFloatNext(), 43.01045f) : dataI.getFloatCurrent();
-    assert Misc.nearlyEquals(dataI.getFloatNext(), 43.020893f) : dataI.getFloatCurrent();
-
+    Assert2.assertNearlyEquals(dataI.getFloatNext(), 43.0f);
+    Assert2.assertNearlyEquals(dataI.getFloatNext(), 43.01045f);
+    Assert2.assertNearlyEquals(dataI.getFloatNext(), 43.020893f);
   }
 
   public void testAggCoordVar(NetcdfFile ncfile) throws IOException {
@@ -137,7 +136,7 @@ public class TestOffAggDirectory extends TestCase {
     int count = 0;
     IndexIterator dataI = data.getIndexIterator();
     while (dataI.hasNext())
-      assert Misc.nearlyEquals( dataI.getFloatNext(), vals[count++]);
+      Assert2.assertNearlyEquals(dataI.getFloatNext(), vals[count++]);
   }
 
   public void testReadData(NetcdfFile ncfile) throws IOException {
@@ -168,8 +167,7 @@ public class TestOffAggDirectory extends TestCase {
     Index tIndex = data.getIndex();
     for (int i=0; i<shape[0]; i++) {
         double val = data.getDouble( tIndex.set(i, 133, 133));
-        // System.out.println(" "+val);
-        assert Misc.nearlyEquals(vals[i], val) : val;
+        Assert2.assertNearlyEquals(vals[i], val);
       }
   }
 
@@ -204,7 +202,7 @@ public class TestOffAggDirectory extends TestCase {
         if (Double.isNaN(val))
           assert Double.isNaN(vals[i]);
         else
-          assert Misc.nearlyEquals(vals[i], val) : val;
+          Assert2.assertNearlyEquals(vals[i], val);
       }
   }
 
@@ -219,10 +217,7 @@ public class TestOffAggDirectory extends TestCase {
       " </aggregation>\n" +
       "</netcdf> ";
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), null);
-    System.out.printf("result=%s %n", ncfile);
+    logger.debug("result={}", ncfile);
     ncfile.close();
   }
-
-
 }
-

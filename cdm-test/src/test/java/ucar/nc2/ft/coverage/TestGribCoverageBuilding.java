@@ -19,8 +19,8 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.projection.LatLonProjection;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -81,7 +81,7 @@ public class TestGribCoverageBuilding {
         Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, runtime.getSpacing());
         Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, runtime.getDependenceType());
         Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), runtime.makeDate(0));
-        Assert.assertTrue(Misc.nearlyEquals(6.0, runtime.getResolution()));
+        Assert2.assertNearlyEquals(6.0, runtime.getResolution());
 
         CoverageCoordAxis time = csys.getAxis(AxisType.TimeOffset);
         Assert.assertNotNull(AxisType.TimeOffset.toString(), time);
@@ -89,7 +89,7 @@ public class TestGribCoverageBuilding {
         Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, time.getSpacing());
         Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
         Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), time.makeDate(0));
-        Assert.assertTrue(Misc.nearlyEquals(6.0, time.getResolution()));
+        Assert2.assertNearlyEquals(6.0, time.getResolution());
         Assert.assertEquals(true, csys.isTime2D(time));
       }
     }
@@ -115,7 +115,7 @@ public class TestGribCoverageBuilding {
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, time.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), time.makeDate(0));
-      Assert.assertTrue(Misc.nearlyEquals(6.0, time.getResolution()));
+      Assert2.assertNearlyEquals(6.0, time.getResolution());
       Assert.assertEquals(false, csys.isTime2D(time));
 
       CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
@@ -150,7 +150,7 @@ public class TestGribCoverageBuilding {
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, time.getSpacing());
       Assert.assertEquals(CoverageCoordAxis.DependenceType.independent, time.getDependenceType());
       Assert.assertEquals(CalendarDate.parseISOformat(null, "2012-02-27T00:00:00Z"), time.makeDate(0));
-      Assert.assertTrue(Misc.nearlyEquals(6.0, time.getResolution()));
+      Assert2.assertNearlyEquals(6.0, time.getResolution());
 
       CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
       Assert.assertNotNull(AxisType.RunTime.toString(), runtime);

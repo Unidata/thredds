@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -32,7 +33,7 @@ public class TestAggTiled extends TestCase {
     String filename = "file:./" + TestNcML.topDir + "tiled/testAggTiled.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestNcmlAggExisting.open " + ncfile);
+    logger.debug(" TestNcmlAggExisting.open {}", ncfile);
 
     testDimensions(ncfile);
     testCoordVar(ncfile, "lat", nlat, DataType.DOUBLE);
@@ -71,7 +72,7 @@ public class TestAggTiled extends TestCase {
     String filename = "file:./" + TestNcML.topDir + "tiled/testAggTiled.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestNcmlAggExisting.open " + ncfile);
+    logger.debug(" TestNcmlAggExisting.open {}", ncfile);
 
     Variable v = ncfile.findVariable("temperature");
     v.setCaching(false);
@@ -118,11 +119,11 @@ public class TestAggTiled extends TestCase {
     int count = 0;
     IndexIterator dataI = data.getIndexIterator();
     while (dataI.hasNext())
-      assert TestUtils.close(dataI.getDoubleNext(), (double) count++);
+      Assert2.assertNearlyEquals(dataI.getDoubleNext(), (double) count++);
 
   }
 
-  public void testReadData(NetcdfFile ncfile, Variable v) {
+  public void testReadData(NetcdfFile ncfile, Variable v) throws IOException {
     assert v.getShortName().equals("temperature");
     assert v.getRank() == 2;
     assert v.getSize() == nlon * nlat : v.getSize();
@@ -134,28 +135,22 @@ public class TestAggTiled extends TestCase {
 
     assert v.getDimension(0) == ncfile.findDimension("lat");
     assert v.getDimension(1) == ncfile.findDimension("lon");
-
-    try {
-      Array data = v.read();
-      assert data.getRank() == 2;
-      assert data.getSize() == nlon * nlat;
-      assert data.getShape()[0] == nlat;
-      assert data.getShape()[1] == nlon;
-      assert data.getElementType() == double.class;
-
-      int[] shape = data.getShape();
-      Index tIndex = data.getIndex();
-      for (int row = 0; row < shape[0]; row++)
-        for (int col = 0; col < shape[1]; col++) {
-          double val = data.getDouble( tIndex.set(row, col));
-          double truth = getVal(row, col);
-          assert TestUtils.close(val, truth) : val + "!=" + truth+"("+row+","+col+")";
-        }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  
+    Array data = v.read();
+    assert data.getRank() == 2;
+    assert data.getSize() == nlon * nlat;
+    assert data.getShape()[0] == nlat;
+    assert data.getShape()[1] == nlon;
+    assert data.getElementType() == double.class;
+  
+    int[] shape = data.getShape();
+    Index tIndex = data.getIndex();
+    for (int row = 0; row < shape[0]; row++)
+      for (int col = 0; col < shape[1]; col++) {
+        double val = data.getDouble( tIndex.set(row, col));
+        double truth = getVal(row, col);
+        Assert2.assertNearlyEquals(val, truth);
+      }
   }
 
   private double getVal(int row, int col) {
@@ -165,35 +160,28 @@ public class TestAggTiled extends TestCase {
       return (col < 12 ) ? 144 + (row-6) * 12 + col : 216 + (row-6) * 12 + (col-12);
   }
 
-  public void testReadDataSection(Variable v, Section s) throws InvalidRangeException {
-    System.out.println("Read Section "+s);
-
-    try {
-      Array data = v.read(s);
-      assert data.getRank() == 2;
-      assert data.getSize() == s.computeSize();
-      assert data.getShape()[0] == s.getShape(0);
-      assert data.getShape()[1] == s.getShape(1);
-      assert data.getElementType() == double.class;
-
-      int startRow = s.getOrigin(0);
-      int startCol = s.getOrigin(1);
-      int strideRow = s.getStride(0);
-      int strideCol = s.getStride(1);
-
-      int[] shape = data.getShape();
-      Index tIndex = data.getIndex();
-      for (int row = 0; row < shape[0]; row++)
-        for (int col = 0; col < shape[1]; col++) {
-          double val = data.getDouble( tIndex.set(row, col));
-          double truth = getVal(startRow + row*strideRow, startCol + col*strideCol);
-          assert TestUtils.close(val, truth) : val + "!=" + truth+"("+row+","+col+")";
-        }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  public void testReadDataSection(Variable v, Section s) throws InvalidRangeException, IOException {
+    logger.debug("Read Section {}", s);
+  
+    Array data = v.read(s);
+    assert data.getRank() == 2;
+    assert data.getSize() == s.computeSize();
+    assert data.getShape()[0] == s.getShape(0);
+    assert data.getShape()[1] == s.getShape(1);
+    assert data.getElementType() == double.class;
+  
+    int startRow = s.getOrigin(0);
+    int startCol = s.getOrigin(1);
+    int strideRow = s.getStride(0);
+    int strideCol = s.getStride(1);
+  
+    int[] shape = data.getShape();
+    Index tIndex = data.getIndex();
+    for (int row = 0; row < shape[0]; row++)
+      for (int col = 0; col < shape[1]; col++) {
+        double val = data.getDouble( tIndex.set(row, col));
+        double truth = getVal(startRow + row*strideRow, startCol + col*strideCol);
+        Assert2.assertNearlyEquals(val, truth);
+      }
   }
-
 }
