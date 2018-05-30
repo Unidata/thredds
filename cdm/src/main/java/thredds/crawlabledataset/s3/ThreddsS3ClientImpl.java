@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -127,6 +129,17 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
                 }
             }
             objectListing.getObjectSummaries().remove(self);
+
+            // S3 Objects may contain a double slash in the key
+            // similar to an empty folder in a path. Thredds can't handle
+            // these so any key containing a double-slash needs to be exluded
+            List<String> commonPrefixesCopy = new ArrayList<String>(objectListing.getCommonPrefixes());
+
+            for (String commonPrefix: commonPrefixesCopy) {
+                if (commonPrefix.contains("//")) {
+                    objectListing.getCommonPrefixes().remove(commonPrefix);
+                }
+            }
 
             if (objectListing.getObjectSummaries().isEmpty() && objectListing.getCommonPrefixes().isEmpty()) {
                 // There are no empty directories in a S3 hierarchy.
