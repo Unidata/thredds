@@ -1,4 +1,3 @@
-/* Copyright */
 package ucar.nc2.ft.coverage;
 
 import java.io.IOException;
@@ -23,7 +22,7 @@ import ucar.nc2.ft2.coverage.adapter.DtCoverageAdapter;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCS;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.ft2.coverage.adapter.GridCS;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -165,7 +164,7 @@ public class TestDtWithCoverageBuilding {
         Assert.assertEquals(10, time.getNcoords());
         double[] timeValuesGrib = time.getValues();
         for (int i=0; i<time.getNcoords(); i++)
-          Assert.assertTrue(Misc.nearlyEquals(timeValuesDt[i], timeValuesGrib[i]));
+          Assert2.assertNearlyEquals(timeValuesDt[i], timeValuesGrib[i]);
 
         CoverageCoordAxis runtime = csys.getAxis(AxisType.RunTime);
         Assert.assertNotNull(AxisType.RunTime.toString(), runtime);
@@ -173,8 +172,7 @@ public class TestDtWithCoverageBuilding {
         Assert.assertEquals(10, runtime.getNcoords());
         double[] runValuesGrib = runtime.getValues();
         for (int i=0; i<runtime.getNcoords(); i++)
-          Assert.assertTrue(Misc.nearlyEquals(runValuesDt[i], runValuesGrib[i]));
-
+          Assert2.assertNearlyEquals(runValuesDt[i], runValuesGrib[i]);
       }
     }
   }

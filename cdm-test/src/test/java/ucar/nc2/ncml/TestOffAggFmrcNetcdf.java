@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -30,7 +30,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     String filename = "file:"+ TestDir.cdmUnitTestDir + "ncml/nc/ncmodels/aggFmrcNetcdf.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestAggForecastModel.open "+ filename);
+    logger.debug(" TestAggForecastModel.open: {}", filename);
 
     int nagg = 15;
 
@@ -65,7 +65,6 @@ public class TestOffAggFmrcNetcdf extends TestCase {
   }
 
  private void testYCoordVar(NetcdfFile ncfile) throws IOException {
-
     Variable lat = ncfile.findVariable("y");
     assert null != lat;
     assert lat.getShortName().equals("y");
@@ -85,18 +84,17 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     assert att.getStringValue().equals("km");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 65;
-      assert data.getShape()[0] == 65;
-      assert data.getElementType() == double.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), -832.6983183345455);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), -751.4273183345456);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), -670.1563183345455);
-
+  
+    Array data = lat.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 65;
+    assert data.getShape()[0] == 65;
+    assert data.getElementType() == double.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), -832.6983183345455);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), -751.4273183345456);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), -670.1563183345455);
   }
 
   private void testRunCoordVar(NetcdfFile ncfile, int nagg) {
@@ -172,13 +170,9 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     for (int i=0; i < nagg; i++)
       for (int j=0; j < noff; j++) {
         double val = data.getDouble(ima.set(i,j));
-        assert Misc.nearlyEquals(val, result[i][j]);
+        Assert2.assertNearlyEquals(val, result[i][j]);
       }
-
-
   }
-
-
 
   private void testReadData(NetcdfFile ncfile, int nagg) throws IOException {
     Variable v = ncfile.findVariable("P_sfc");
@@ -212,7 +206,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
     while (ii.hasNext()) {
       sum += ii.getFloatNext();
     } */
-    System.out.println(" sum= "+sum);
+    logger.debug(" sum= {}", sum);
 
   }
 
@@ -234,7 +228,7 @@ public class TestOffAggFmrcNetcdf extends TestCase {
        for (int j=0; j<shape[1]; j++)
         for (int k=0; k<shape[2]; k++) {
           double val = data.getDouble( tIndex.set(i, j, k));
-          //System.out.println(" "+val);
+          //logger.debug(" {}", val);
           assert TestUtils.close(val, 100*(i+origin[0]) + 10*j + k) : val;
         } */
 

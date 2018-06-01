@@ -11,15 +11,13 @@ import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.util.Misc;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * Test index to coordinate space mapping for curvilinear grids, e.g., lat(i,j), lon(i,j).
@@ -56,7 +54,7 @@ public class TestCurvilinearGridPointMapping {
 
     double latVal = latArray.getDouble(0);
     double lonVal = lonArray.getDouble(0);
-    System.out.printf("%f,%f%n", latVal, lonVal);
+    logger.debug("{}, {}", latVal, lonVal);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(datasetLocation)) {
       Assert.assertNotNull(datasetLocation, cc);
@@ -71,41 +69,8 @@ public class TestCurvilinearGridPointMapping {
       Assert.assertNotNull("HorizCoordSys", hcs);
 
       LatLonPoint llPnt = hcs.getLatLon(j, i);
-      Assert.assertTrue(Misc.nearlyEquals(lat, llPnt.getLatitude()));
-      Assert.assertTrue(Misc.nearlyEquals(lon, llPnt.getLongitude()));
+      Assert2.assertNearlyEquals(lat, llPnt.getLatitude());
+      Assert2.assertNearlyEquals(lon, llPnt.getLongitude());
     }
   }
-
-  /**
-   * Test GridCoordSystem.findXYindexFromLatLonBounded()
-   *
-   * @throws IOException
-   *
-  @Test
-  public void checkGridCoordSystem_findXYindexFromLatLonBounded() throws IOException {
-
-    try (CoverageDatasetCollection cc = CoverageDatasetFactory.open(datasetLocation)) {
-      Assert.assertNotNull(datasetLocation, cc);
-      CoverageDataset gcs = cc.findCoverageDataset(FeatureType.GRID);
-      Assert.assertNotNull("gcs", gcs);
-      Coverage cover = gcs.findCoverage(covName);
-      Assert.assertNotNull(covName, cover);
-
-      GridDataset gd = GridDataset.open(datasetLocation);
-
-      GridDatatype hsGrid = gd.findGridDatatype("hs");
-      GridCoordSystem coordSys = hsGrid.getCoordinateSystem();
-      CalendarDate date = coordSys.getTimeAxis1D().getCalendarDate(0);
-
-      int[] xy = coordSys.findXYindexFromLatLonBounded(lat, lon, null);
-      assertEquals(i, xy[0]);
-      assertEquals(j, xy[1]);
-
-      GridAsPointDataset hsGridAsPoint = new GridAsPointDataset(Collections.singletonList(hsGrid));
-      GridAsPointDataset.Point point = hsGridAsPoint.readData(hsGrid, date, lat, lon);
-
-      assertEquals(lat, point.lat, 0.001);
-      assertEquals(lon, point.lon, 0.001);
-    }
-  } */
 }

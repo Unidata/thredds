@@ -27,7 +27,7 @@ import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.TimeOffsetAxis;
 import ucar.nc2.grib.collection.GribDataReader;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -53,7 +53,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("test1Runtime1TimeOffset Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -67,7 +67,7 @@ public class TestCoverageSubsetTime {
       params.set(SubsetParams.runtime, runtime);
       double offsetVal = 51.0;  // should fail
       params.set(SubsetParams.timeOffset, offsetVal);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
       testGeoArray(geo, runtime, null, offsetVal);
@@ -82,7 +82,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("test1Runtime1TimeOffset Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("test1Runtime1TimeOffset Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -96,7 +96,7 @@ public class TestCoverageSubsetTime {
       params.set(SubsetParams.runtime, runtime);
       double offsetVal = 205.0;
       params.set(SubsetParams.timeOffset, offsetVal);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
       testGeoArray(geo, runtime, null, offsetVal);
@@ -112,7 +112,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("test1Runtime1TimeInterval Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -126,7 +126,7 @@ public class TestCoverageSubsetTime {
       params.set(SubsetParams.runtime, runtime);
       CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-06T19:30:00Z"); // (6,12), (12,18)
       params.set(SubsetParams.time, time);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
       testGeoArray(geo, runtime, time, null);
@@ -134,7 +134,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
-      Assert.assertTrue(Misc.nearlyEquals(0.244f, testValue));
+      Assert2.assertNearlyEquals(0.244f, testValue);
     }
   }
 
@@ -145,7 +145,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("test1Runtime1TimeInterval Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("test1Runtime1TimeInterval Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -159,7 +159,7 @@ public class TestCoverageSubsetTime {
       params.set(SubsetParams.runtime, runtime);
       CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T11:00:00Z"); // (6,12), (12,18)
       params.set(SubsetParams.time, time);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
       testGeoArray(geo, runtime, time, null);
@@ -167,7 +167,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0,0,2,2));
-      Assert.assertTrue(Misc.nearlyEquals(0.073f, testValue));
+      Assert2.assertNearlyEquals(0.073f, testValue);
     }
   }
 
@@ -177,7 +177,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Total_ozone_entire_atmosphere_single_layer";
 
-    System.out.printf("test1Runtime1Time Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("test1Runtime1Time Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -191,7 +191,7 @@ public class TestCoverageSubsetTime {
       params.set(SubsetParams.runtime, runtime);
       CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
       params.set(SubsetParams.time, time);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
       testGeoArray(geo, runtime, time, null);
@@ -199,7 +199,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0,0,1,0));
-      Assert.assertTrue(Misc.nearlyEquals(371.5, testValue));
+      Assert2.assertNearlyEquals(371.5, testValue);
     }
   }
 
@@ -208,7 +208,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("testConstantRuntime Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("testConstantRuntime Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -220,7 +220,7 @@ public class TestCoverageSubsetTime {
       SubsetParams params = new SubsetParams();
       CalendarDate runtime = CalendarDate.parseISOformat(null, "2015-03-01T12:00:00Z");
       params.set(SubsetParams.runtime, runtime);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
       CoverageCoordSys geoCs = geo.getCoordSysForData();
@@ -236,8 +236,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(timeAxis);
       Assert.assertEquals(92, timeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.discontiguousInterval, timeAxis.getSpacing());
-      Assert.assertTrue(Misc.nearlyEquals(0.0, timeAxis.getStartValue()));
-      Assert.assertTrue(Misc.nearlyEquals(384.0, timeAxis.getEndValue()));
+      Assert2.assertNearlyEquals(0.0, timeAxis.getStartValue());
+      Assert2.assertNearlyEquals(384.0, timeAxis.getEndValue());
 
       // LOOK need to test data
     }
@@ -248,7 +248,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Momentum_flux_u-component_surface_Mixed_intervals_Average";
 
-    System.out.printf("testConstantOffset Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("testConstantOffset Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -261,7 +261,7 @@ public class TestCoverageSubsetTime {
       double offsetVal = 205.0;
       params.set(SubsetParams.timeOffset, offsetVal);
       params.set(SubsetParams.runtimeAll, true);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
       CoverageCoordSys geoCs = geo.getCoordSysForData();
@@ -270,8 +270,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(runtimeAxis);
       Assert.assertEquals(4, runtimeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.regularPoint, runtimeAxis.getSpacing());
-      Assert.assertTrue(Misc.nearlyEquals(0.0, runtimeAxis.getCoordMidpoint(0)));
-      Assert.assertTrue(Misc.nearlyEquals(6.0, runtimeAxis.getResolution()));
+      Assert2.assertNearlyEquals(0.0, runtimeAxis.getCoordMidpoint(0));
+      Assert2.assertNearlyEquals(6.0, runtimeAxis.getResolution());
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.TimeOffset);
       Assert.assertNotNull(timeAxis);
@@ -282,8 +282,8 @@ public class TestCoverageSubsetTime {
         Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge1(0) <= offsetVal);          // lower <= time
         Assert.assertTrue("time coord lower", timeAxis1D.getCoordEdge2(0) >= offsetVal);          // upper >= time
 
-      }else {
-        Assert.assertTrue(Misc.nearlyEquals(offsetVal, timeAxis1D.getCoordMidpoint(0)));
+      } else {
+        Assert2.assertNearlyEquals(offsetVal, timeAxis1D.getCoordMidpoint(0));
       }
 
       // LOOK need to test data
@@ -295,7 +295,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Pressure_convective_cloud_bottom";
 
-    System.out.printf("testConstantForecast Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("testConstantForecast Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -308,7 +308,7 @@ public class TestCoverageSubsetTime {
       CalendarDate time = CalendarDate.parseISOformat(null, "2015-03-01T15:00:00Z");
       params.set(SubsetParams.time, time);
       params.set(SubsetParams.runtimeAll, true);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
       CoverageCoordSys geoCs = geo.getCoordSysForData();
@@ -317,8 +317,8 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(runtimeAxis);
       Assert.assertEquals(3, runtimeAxis.getNcoords());
       Assert.assertEquals(CoverageCoordAxis.Spacing.irregularPoint, runtimeAxis.getSpacing());
-      Assert.assertTrue(Misc.nearlyEquals(0.0, runtimeAxis.getCoordMidpoint(0)));
-      Assert.assertTrue(Misc.nearlyEquals(6.0, runtimeAxis.getResolution()));
+      Assert2.assertNearlyEquals(0.0, runtimeAxis.getCoordMidpoint(0));
+      Assert2.assertNearlyEquals(6.0, runtimeAxis.getResolution());
 
       CoverageCoordAxis timeAxis = geoCs.getAxis(AxisType.Time);
       if (timeAxis != null) {
@@ -393,7 +393,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
-    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("testBestPresent Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -405,7 +405,7 @@ public class TestCoverageSubsetTime {
       SubsetParams params = new SubsetParams();
       params.set(SubsetParams.timePresent, true);
       params.setVertCoord(3658.0);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
 
@@ -415,7 +415,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
-      Assert.assertTrue(Misc.nearlyEquals(244.8f, testValue));
+      Assert2.assertNearlyEquals(244.8f, testValue);
     }
   }
 
@@ -424,7 +424,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
-    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("testBestPresent Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -436,7 +436,7 @@ public class TestCoverageSubsetTime {
       SubsetParams params = new SubsetParams();
       params.setTime(CalendarDate.parseISOformat(null, "2015-03-03T00:00:00Z"));
       params.setVertCoord(3658.0);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
 
@@ -446,7 +446,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 0, 0));
-      Assert.assertTrue(Misc.nearlyEquals(244.3f, testValue));
+      Assert2.assertNearlyEquals(244.3f, testValue);
     }
   }
 
@@ -455,7 +455,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_2p5deg/gfs_2p5deg.ncx4";
     String covName = "Temperature_altitude_above_msl";
 
-    System.out.printf("testBestPresent Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("testBestPresent Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -467,7 +467,7 @@ public class TestCoverageSubsetTime {
       SubsetParams params = new SubsetParams();
       params.setTimeOffset(48.0);
       params.setVertCoord(3658.0);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
 
       GeoReferencedArray geo = cover.readData(params);
 
@@ -477,7 +477,7 @@ public class TestCoverageSubsetTime {
       Array data = geo.getData();
       Index ai = data.getIndex();
       float testValue = data.getFloat(ai.set(0, 0, 3, 0));
-      Assert.assertTrue(Misc.nearlyEquals(250.5, testValue));
+      Assert2.assertNearlyEquals(250.5, testValue);
     }
   }
 
@@ -489,7 +489,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     String covName = "Temperature_isobaric";
 
-    System.out.printf("testSrcNoParams Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("testSrcNoParams Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -499,7 +499,7 @@ public class TestCoverageSubsetTime {
       Assert.assertNotNull(covName, cover);
 
       SubsetParams params = new SubsetParams();
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
       GeoReferencedArray geo = cover.readData(params);
 
       int[] resultShape = geo.getData().getShape();
@@ -513,7 +513,7 @@ public class TestCoverageSubsetTime {
     String endpoint = TestDir.cdmUnitTestDir + "ncss/GFS/CONUS_80km/GFS_CONUS_80km_20120227_0000.grib1";
     String covName = "Temperature_isobaric";
 
-    System.out.printf("testSrcTimePresent Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("testSrcTimePresent Dataset {} coverage {}", endpoint, covName);
 
     try (FeatureDatasetCoverage cc = CoverageDatasetFactory.open(endpoint)) {
       Assert.assertNotNull(endpoint, cc);
@@ -529,7 +529,7 @@ public class TestCoverageSubsetTime {
 
       SubsetParams params = new SubsetParams();
       params.set(SubsetParams.timePresent, true);
-      System.out.printf("  subset %s%n", params);
+      logger.debug("  subset {}", params);
       GeoReferencedArray geo = cover.readData(params);
 
       int[] resultShape = geo.getData().getShape();

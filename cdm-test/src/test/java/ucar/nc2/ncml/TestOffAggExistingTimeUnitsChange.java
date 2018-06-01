@@ -16,7 +16,7 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -40,7 +40,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
 
   public void testNamExtract() throws IOException, InvalidRangeException {
     String location = TestDir.cdmUnitTestDir + "ncml/nc/namExtract/test_agg.ncml";
-    System.out.println(" TestOffAggExistingTimeUnitsChange.open "+ location);
+    logger.debug(" TestOffAggExistingTimeUnitsChange.open {}", location);
 
     NetcdfFile ncfile = NetcdfDataset.openFile(location, null);
 
@@ -57,7 +57,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
     logger.debug(NCdumpW.toString(data, "time", null));
 
     while (data.hasNext()) {
-      assert Misc.nearlyEquals(data.nextInt(), (count + 1) * 3);
+      Assert2.assertNearlyEquals(data.nextInt(), (count + 1) * 3);
       count++;
     }
 
@@ -76,7 +76,7 @@ public class TestOffAggExistingTimeUnitsChange extends TestCase {
                     "</netcdf>";
 
     String location = "file:"+ TestDir.cdmUnitTestDir + "ncml/nc/narr/";
-    System.out.printf(" TestOffAggExistingTimeUnitsChange.testNarrGrib=%s%n%s", location, ncml);
+    logger.debug(" TestOffAggExistingTimeUnitsChange.testNarrGrib={}\n{}", location, ncml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), location, null);
 
     Variable v = ncfile.findVariable("time");

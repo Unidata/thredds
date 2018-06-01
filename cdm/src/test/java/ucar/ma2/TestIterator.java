@@ -4,12 +4,11 @@
  */
 package ucar.ma2;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.lang.invoke.MethodHandles;
 
@@ -52,10 +51,8 @@ public class TestIterator {
 
   @Test
   public void testFastIter() {
-
     int count = 0;
     IndexIterator iter = A.getIndexIterator();
-    //System.out.println(iter);
     while(iter.hasNext()) {
       iter.getDoubleNext();
       count++;
@@ -68,7 +65,7 @@ public class TestIterator {
         for (k=0; k<p; k++) {
           double val = iter.getDoubleNext();
           double myVal = (double) (i*100+j*10+k);
-          Assert.assertTrue(Misc.nearlyEquals(val, myVal));
+          Assert2.assertNearlyEquals(val, myVal);
         }
       }
     }
@@ -82,7 +79,6 @@ public class TestIterator {
     Index index = A.getIndex();
     IndexIterator iter = index.getSlowIndexIterator(A);
 
-    //System.out.println(iter);
     while(iter.hasNext()) {
       iter.getDoubleNext();
       count++;
@@ -95,7 +91,7 @@ public class TestIterator {
         for (k=0; k<p; k++) {
           double val = iter.getDoubleNext();
           double myVal = (double) (i*100+j*10+k);
-          Assert.assertTrue(Misc.nearlyEquals(val, myVal));
+          Assert2.assertNearlyEquals(val, myVal);
         }
       }
     }
@@ -117,23 +113,15 @@ public class TestIterator {
     }
     assert(count == 1);
     assert(sum == 10.0);
-
-    System.out.println(" testScalerIter");
   }
 
   @Test
-  public void testSectionIter() {
-
-    try {
-      secA = (ArrayDouble) A.section( new Section(m1+":"+m2+",:,:").getRanges() );
-    } catch (InvalidRangeException e) {
-      System.out.println("testMAsection failed == "+ e);
-      return;
-    }
+  public void testSectionIter() throws InvalidRangeException {
+    secA = (ArrayDouble) A.section( new Section(m1+":"+m2+",:,:").getRanges() );
 
     int count = 0;
     IndexIterator iter = secA.getIndexIterator();
-    //System.out.println(iter);
+
     while(iter.hasNext()) {
       iter.getDoubleNext();
       count++;
@@ -154,21 +142,15 @@ public class TestIterator {
 
 
   @Test
-    public void testSectionRank2() {
-      ArrayDouble secA2;
-      try {
-        secA2 = (ArrayDouble) A.section( new Section("2,:,:").getRanges() );
-      } catch (InvalidRangeException e) {
-        System.out.println("testMAsectionrank2 failed == "+ e);
-        return;
-      }
+    public void testSectionRank2() throws InvalidRangeException {
+      ArrayDouble secA2 = (ArrayDouble) A.section( new Section("2,:,:").getRanges() );
 
       IndexIterator iter = secA2.getIndexIterator();
       for (i=0; i<n; i++) {
         for (j=0; j<p; j++) {
             double val = iter.getDoubleNext();
             //double myVal = (double) (i+m1)*100+j*10+k;
-            //System.out.println(val+ " "+myVal);
+            //logger.debug(val+ " "+myVal);
             assert (val == 200+i*10+j);
         }
       }
@@ -204,6 +186,4 @@ public class TestIterator {
     }
     assert (count == expected);
   }
-
-
 }

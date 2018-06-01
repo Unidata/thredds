@@ -19,6 +19,7 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.Misc;
 import ucar.nc2.util.Optional;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
@@ -74,7 +75,7 @@ public class TestGridCoverageRemoteP {
 
   @Test
   public void testReadGridCoverageSlice() throws IOException, InvalidRangeException {
-    System.out.printf("Test Dataset %s coverage %s%n", endpoint, covName);
+    logger.debug("Test Dataset {} coverage {}", endpoint, covName);
 
     FeatureDatasetCoverage cc = null;
     try {
@@ -98,7 +99,8 @@ public class TestGridCoverageRemoteP {
 
   // LOOK replicated from cdm_test/TestCoverageSubset
   void readOne(Coverage cover, CalendarDate rt_val, CalendarDate time_val, Double time_offset, Double vert_level) throws IOException, InvalidRangeException {
-    System.out.printf("%n===Request Subset %s runtime=%s time=%s timeOffset=%s vert=%s %n", cover.getName(), rt_val, time_val, time_offset, vert_level);
+    logger.debug("===Request Subset {} runtime={} time={} timeOffset={} vert={}",
+            cover.getName(), rt_val, time_val, time_offset, vert_level);
 
     SubsetParams subset = new SubsetParams();
     if (rt_val != null)
@@ -112,8 +114,8 @@ public class TestGridCoverageRemoteP {
 
     GeoReferencedArray geoArray = cover.readData(subset);
     CoverageCoordSys geoCs = geoArray.getCoordSysForData();
-    System.out.printf("%n%s%n", geoArray);
-    System.out.printf("%ngeoArray shape=%s%n", Misc.showInts(geoArray.getData().getShape()));
+    logger.debug("{}", geoArray);
+    logger.debug("geoArray shape={}", Misc.showInts(geoArray.getData().getShape()));
 
     if (rt_val != null) {
       CoverageCoordAxis1D runAxis = (CoverageCoordAxis1D) geoCs.getAxis(AxisType.RunTime);
@@ -158,7 +160,7 @@ public class TestGridCoverageRemoteP {
 
           } else {
             double val2 = timeOffsetAxis.getCoordMidpoint(0);
-            Assert.assertTrue(Misc.nearlyEquals(val2, time_offset));
+            Assert2.assertNearlyEquals(val2, time_offset);
           }
         }
       }
@@ -168,10 +170,8 @@ public class TestGridCoverageRemoteP {
         Assert.assertNotNull(AxisType.Pressure.toString(), zAxis);
         Assert.assertEquals(1, zAxis.getNcoords());
         double val = zAxis.getCoordMidpoint(0);
-        Assert.assertTrue(Misc.nearlyEquals(vert_level.doubleValue(), val));
+        Assert2.assertNearlyEquals(vert_level.doubleValue(), val);
       }
     }
-
   }
-
 }

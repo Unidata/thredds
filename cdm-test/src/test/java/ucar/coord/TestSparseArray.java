@@ -3,7 +3,7 @@ package ucar.coord;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -31,10 +31,10 @@ public class TestSparseArray {
 
     SparseArray<Short> sa = new SparseArray<>(sizes, track, list, 0);
 
-    Formatter info = new Formatter(System.out);
+    Formatter info = new Formatter();
     sa.showInfo(info, null);
-
-    assert Misc.nearlyEquals(sa.getDensity(), 0.906667f);
-
+    logger.debug(info.toString());
+  
+    Assert2.assertNearlyEquals(sa.getDensity(), 0.906667f);
   }
 }

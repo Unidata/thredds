@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -69,15 +69,14 @@ public class TestXMLStore {
   @Test
   public void testPersistence() throws IOException {
     XMLStore store = XMLStore.createFromFile(storeFile, null);
-    //store.writeToStream( System.out);
 
     PreferencesExt prefs = store.getPreferences();
 
     double d = prefs.getDouble("testD", 0.0);
-    assert Misc.nearlyEquals(d, 3.14157) : "double failed " + d;
+    Assert2.assertNearlyEquals(d, 3.14157);
 
     float f = prefs.getFloat("testF", 0.0F);
-    assert Misc.nearlyEquals(f, 1.23456F) : "float failed";
+    Assert2.assertNearlyEquals(f, 1.23456F);
 
     long ll = prefs.getLong("testL", 0);
     assert ll == 12345678900L : "long failed";
@@ -107,10 +106,10 @@ public class TestXMLStore {
     Preferences prefs = store.getPreferences().node("SemperUbi");
 
     double d = prefs.getDouble("testD", 0.0);
-    assert Misc.nearlyEquals(d, 3.14158) : "double failed";
+    Assert2.assertNearlyEquals(d, 3.14158);
 
     float f = prefs.getFloat("testF", 0.0F);
-    assert Misc.nearlyEquals(f, 1.23457F) : "float failed";
+    Assert2.assertNearlyEquals(f, 1.23457F);
 
     long ll = prefs.getLong("testL", 0);
     assert ll == 12345678901L : "long failed";

@@ -25,7 +25,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.StringUtil2;
@@ -116,12 +116,12 @@ public class TestTdsDodsServer {
       Assert.assertNotNull("time axis", time);
       Assert.assertEquals(1, time.getSize());
       Array data = time.read();
-      Assert.assertTrue(Misc.nearlyEquals(102840.0, data.getFloat(0)));
+      Assert2.assertNearlyEquals(102840.0, data.getFloat(0));
     }
   }
 
   private void doOne(String urlString) throws IOException {
-    System.out.printf("Open and read %s%n", urlString);
+    logger.debug("Open and read {}", urlString);
 
     NetcdfFile ncd = NetcdfDataset.openFile(urlString, null);
     assert ncd != null;
@@ -131,7 +131,7 @@ public class TestTdsDodsServer {
     int n = vlist.size();
     assert n > 0;
     Variable v = (Variable) vlist.get(n / 2);
-    System.out.printf("Read all data from %s%n", v.getName());
+    logger.debug("Read all data from {}", v.getName());
     Array data = v.read();
     assert data.getSize() == v.getSize();
 
@@ -149,7 +149,7 @@ public class TestTdsDodsServer {
         filename = StringUtil2.remove(filename, dirName);
         String dodsUrl = urlPrefix + filename;
         String localPath = dirName + filename;
-        System.out.println("--Compare " + localPath + " to " + dodsUrl);
+        logger.debug("--Compare {} to {}", localPath, dodsUrl);
 
         NetcdfDataset org_ncfile = NetcdfDataset.openDataset(localPath);
         NetcdfDataset dods_file = NetcdfDataset.openDataset(dodsUrl);
@@ -158,8 +158,8 @@ public class TestTdsDodsServer {
         CompareNetcdf2 mind = new CompareNetcdf2(f, false, false, false);
         boolean ok = mind.compare(org_ncfile, dods_file, new TestDODScompareWithFiles.DodsObjFilter(), false, false, false);
         if (!ok) {
-          System.out.printf("--Compare %s%n", filename);
-          System.out.printf("  %s%n", f);
+          logger.debug("--Compare {}", filename);
+          logger.debug("  {}", f);
         }
         Assert.assertTrue( localPath+ " != "+dodsUrl, ok);
 
@@ -167,6 +167,4 @@ public class TestTdsDodsServer {
       }
     }, false);
   }
-
-
 }

@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -24,7 +25,7 @@ public class TestAggExisting {
     String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -40,7 +41,7 @@ public class TestAggExisting {
     String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -55,7 +56,7 @@ public class TestAggExisting {
     String filename = "./"+TestNcML.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -73,7 +74,7 @@ public class TestAggExisting {
     String filename = "file:./"+TestNcML.topDir + "aggExisting6.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -91,7 +92,7 @@ public class TestAggExisting {
     String filename = "./"+TestNcML.topDir + "aggExisting6.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -106,7 +107,7 @@ public class TestAggExisting {
     String filename = "file:./"+TestNcML.topDir + "aggExisting7.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -121,7 +122,7 @@ public class TestAggExisting {
     String filename = "./"+TestNcML.topDir + "aggExisting7.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -136,7 +137,7 @@ public class TestAggExisting {
     String filename = "file:./"+TestNcML.topDir + "aggExistingWcoords.xml";
 
     NetcdfFile ncfile = NetcdfDataset.openDataset( filename, true, null);
-    System.out.println(" testNcmlDatasetWcoords.open "+ filename);
+    logger.debug(" testNcmlDatasetWcoords.open {}", filename);
 
     testDimensions(ncfile);
     testCoordVar(ncfile);
@@ -144,14 +145,14 @@ public class TestAggExisting {
     testReadData(ncfile);
     testReadSlice(ncfile);
     ncfile.close();
-    System.out.println(" testNcmlDatasetWcoords.closed ");
+    logger.debug(" testNcmlDatasetWcoords.closed ");
   }
 
   // remove test - now we get a coordinate initialized to missing data, but at least testCoordsAdded works!
   // @Test
-  public void testNoCoords() throws IOException, InvalidRangeException {
+  public void testNoCoords() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingNoCoords.xml";
-    System.out.printf("%s%n", filename);
+    logger.debug("{}", filename);
     NetcdfDataset ncd = null;
 
     try {
@@ -163,12 +164,12 @@ public class TestAggExisting {
     } finally {
       if (ncd != null) ncd.close();
     }
-    //System.out.printf("%s%n", ncd);
+    //logger.debug("{}", ncd);
     //assert false;
   }
 
   @Test
-  public void testNoCoordsDir() throws IOException, InvalidRangeException {
+  public void testNoCoordsDir() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingNoCoordsDir.xml";
 
     NetcdfDataset ncd = null;
@@ -177,20 +178,23 @@ public class TestAggExisting {
     } catch (Exception e) {
       assert true;
       return;
+    } finally {
+      if (ncd != null) ncd.close();
     }
-    System.out.printf("%s%n", ncd);
+    
+    logger.debug("{}", ncd);
     assert false;
   }
 
   @Test
-  public void testCoordsAdded() throws IOException, InvalidRangeException {
+  public void testCoordsAdded() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "aggExistingAddCoord.ncml";
-    System.out.printf("%s%n", filename);
+    logger.debug("{}", filename);
     NetcdfDataset ncd = null;
 
     try {
       ncd = NetcdfDataset.openDataset( filename, true, null);
-      System.out.printf("%s%n", ncd);
+      logger.debug("{}", ncd);
     } finally {
       if (ncd != null) ncd.close();
     }
@@ -244,10 +248,9 @@ public class TestAggExisting {
       assert data.getElementType() == float.class;
 
       IndexIterator dataI = data.getIndexIterator();
-      assert TestUtils.close(dataI.getDoubleNext(), 41.0);
-      assert TestUtils.close(dataI.getDoubleNext(), 40.0);
-      assert TestUtils.close(dataI.getDoubleNext(), 39.0);
-
+      Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
+      Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
+      Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
   }
 
   public void testAggCoordVar(NetcdfFile ncfile) {
@@ -317,8 +320,7 @@ public class TestAggExisting {
        for (int j=0; j<shape[1]; j++)
         for (int k=0; k<shape[2]; k++) {
           double val = data.getDouble( tIndex.set(i, j, k));
-          // System.out.println(" "+val);
-          assert TestUtils.close(val, 100*i + 10*j + k) : val;
+          Assert2.assertNearlyEquals(val, 100*i + 10*j + k);
         }
 
     } catch (IOException io) {
@@ -344,8 +346,7 @@ public class TestAggExisting {
        for (int j=0; j<shape[1]; j++)
         for (int k=0; k<shape[2]; k++) {
           double val = data.getDouble( tIndex.set(i, j, k));
-          //System.out.println(" "+val);
-          assert TestUtils.close(val, 100*(i+origin[0]) + 10*j + k) : val;
+          Assert2.assertNearlyEquals(val, 100*(i+origin[0]) + 10*j + k);
         }
 
   }
