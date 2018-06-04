@@ -275,97 +275,147 @@ public enum DataType {
   }
 
   /**
-   * convert an unsigned long to a String
+   * Convert the argument to the next largest integral data type by an unsigned conversion. In the larger data type,
+   * the upper-order bits will be zero, and the lower-order bits will be equivalent to the bits in {@code number}.
+   * Thus, we are "widening" the argument by prepending a bunch of zero bits to it.
+   * <p/>
+   * This widening operation is intended to be used on unsigned integral values that are being stored within one of
+   * Java's signed, integral data types. For example, if we have the bit pattern "11001010" and treat it as
+   * an unsigned byte, it'll have the decimal value "202". However, if we store that bit pattern in a (signed)
+   * byte, Java will interpret it as "-52". Widening the byte to a short will mean that the most-significant
+   * set bit is no longer the sign bit, and thus Java will no longer consider the value to be negative.
+   * <p/>
+   * <table border="1">
+   *     <tr>
+   *         <th>Argument type</th>
+   *         <th>Result type</th>
+   *     </tr>
+   *     <tr>
+   *         <td>Byte</td>
+   *         <td>Short</td>
+   *     </tr>
+   *     <tr>
+   *         <td>Short</td>
+   *         <td>Integer</td>
+   *     </tr>
+   *     <tr>
+   *         <td>Integer</td>
+   *         <td>Long</td>
+   *     </tr>
+   *     <tr>
+   *         <td>Long</td>
+   *         <td>BigInteger</td>
+   *     </tr>
+   *     <tr>
+   *         <td>Any other Number subtype</td>
+   *         <td>Just return argument</td>
+   *     </tr>
+   * </table>
    *
-   * @param li unsigned int
-   * @return equivilent long value
-   */
-  static public String unsignedLongToString(long li) {
-    if (li >= 0) return Long.toString(li);
-
-    // else do the hard part - see http://technologicaloddity.com/2010/09/22/biginteger-as-unsigned-long-in-java/
-    byte[] val = new byte[8];
-    for (int i = 0; i < 8; i++) {
-      val[7 - i] = (byte) ((li) & 0xFF);
-      li = li >>> 8;
-    }
-
-    BigInteger biggy = new BigInteger(1, val);
-    return biggy.toString();
-  }
-
-  /**
-   * Return a number that is equivalent to the specified value, but represented by the next larger data type.
-   * For example, a short will be widened to an int and a long will be widened to a {@link BigInteger}.
-   *
-   * @param number  a number.
-   * @return  a wider Number with the same value.
+   * @param number  an integral number to treat as unsigned.
+   * @return  an equivalent but wider value that Java will interpret as non-negative.
    */
   // Tested indirectly in TestMAMath.convertUnsigned()
   public static Number widenNumber(Number number) {
-    if (number instanceof BigInteger) {
-      return number;  // No need to widen a BigInteger.
-    } else if (number instanceof Long) {
-      return unsignedLongToBigInt(number.longValue());
-    } else if (number instanceof Integer) {
-      return unsignedIntToLong(number.intValue());
+    if (number instanceof Byte) {
+      return unsignedByteToShort(number.byteValue());
     } else if (number instanceof Short) {
       return unsignedShortToInt(number.shortValue());
-    } else if (number instanceof Byte) {
-      return unsignedByteToShort(number.byteValue());
+    } else if (number instanceof Integer) {
+      return unsignedIntToLong(number.intValue());
+    } else if (number instanceof Long) {
+      return unsignedLongToBigInt(number.longValue());
     } else {
-      throw new IllegalArgumentException(String.format(
-              "%s is an unsupported Number subtype.", number.getClass().getSimpleName()));
+      return number;
     }
   }
 
-  static final private BigInteger BIG_UMASK64 = new BigInteger("FFFFFFFFFFFFFFFF", 16);
+  /**
+   * This method is similar to {@link #widenNumber}, but only integral types <i>that are negative</i> are widened.
+   *
+   * @param number  an integral number to treat as unsigned.
+   * @return  an equivalent value that Java will interpret as non-negative.
+   */
+  public static Number widenNumberIfNegative(Number number) {
+    if (number instanceof Byte && number.byteValue() < 0) {
+      return unsignedByteToShort(number.byteValue());
+    } else if (number instanceof Short && number.shortValue() < 0) {
+      return unsignedShortToInt(number.shortValue());
+    } else if (number instanceof Integer && number.intValue() < 0) {
+      return unsignedIntToLong(number.intValue());
+    } else if (number instanceof Long && number.longValue() < 0) {
+      return unsignedLongToBigInt(number.longValue());
+    }
+
+    return number;
+  }
 
   /**
-   * Widen an unsigned long to a {@link BigInteger}.
+   * Converts the argument to a {@link BigInteger} by an unsigned conversion.  In an unsigned conversion to a
+   * {@link BigInteger}, zero and positive {@code long} values are mapped to a numerically equal {@link BigInteger}
+   * value and negative {@code long} values are mapped to a {@link BigInteger} value equal to the input plus
+   * 2<sup>64</sup>.
    *
-   * @param l  an unsigned long
+   * @param l  a {@code long} to treat as unsigned.
    * @return   the equivalent {@link BigInteger} value.
    */
-  // Tested indirectly in TestMAMath.convertUnsigned()
-  static public BigInteger unsignedLongToBigInt(long l) {
-    BigInteger bi = BigInteger.valueOf(l);
-    return bi.and(BIG_UMASK64);
+  public static BigInteger unsignedLongToBigInt(long l) {
+    // This is a copy of the implementation of Long.toUnsignedBigInteger(), which is private for some reason.
+
+    if (l >= 0L)
+      return BigInteger.valueOf(l);
+    else {
+      int upper = (int) (l >>> 32);
+      int lower = (int) l;
+
+      // return (upper << 32) + lower
+      return (BigInteger.valueOf(Integer.toUnsignedLong(upper))).shiftLeft(32).
+              add(BigInteger.valueOf(Integer.toUnsignedLong(lower)));
+    }
   }
 
   /**
-   * Widen an unsigned int to a long.
+   * Converts the argument to a {@code long} by an unsigned conversion.  In an unsigned conversion to a {@code long},
+   * the high-order 32 bits of the {@code long} are zero and the low-order 32 bits are equal to the bits of the integer
+   * argument.
    *
-   * @param i  an unsigned int.
-   * @return   the equivalent long value.
+   * Consequently, zero and positive {@code int} values are mapped to a numerically equal {@code long} value and
+   * negative {@code int} values are mapped to a {@code long} value equal to the input plus 2<sup>32</sup>.
+   *
+   * @param i  an {@code int} to treat as unsigned.
+   * @return   the equivalent {@code long} value.
    */
-  // Tested indirectly in TestMAMath.convertUnsigned()
-  static public long unsignedIntToLong(int i) {
-    return (i & 0xffffffffL);
+  public static long unsignedIntToLong(int i) {
+    return Integer.toUnsignedLong(i);
   }
 
   /**
-   * Widen an unsigned short to an int.
+   * Converts the argument to an {@code int} by an unsigned conversion.  In an unsigned conversion to an {@code int},
+   * the high-order 16 bits of the {@code int} are zero and the low-order 16 bits are equal to the bits of the {@code
+   * short} argument.
    *
-   * @param s  an unsigned short.
-   * @return   the equivalent int value.
+   * Consequently, zero and positive {@code short} values are mapped to a numerically equal {@code int} value and
+   * negative {@code short} values are mapped to an {@code int} value equal to the input plus 2<sup>16</sup>.
+   *
+   * @param s  a {@code short} to treat as unsigned.
+   * @return   the equivalent {@code int} value.
    */
-  // Tested indirectly in TestMAMath.convertUnsigned()
-  static public int unsignedShortToInt(short s) {
-    return (s & 0xffff);
+  public static int unsignedShortToInt(short s) {
+    return Short.toUnsignedInt(s);
   }
 
   /**
-   * Widen an unsigned byte to a short.
+   * Converts the argument to a {@code short} by an unsigned conversion.  In an unsigned conversion to a {@code
+   * short}, the high-order 8 bits of the {@code short} are zero and the low-order 8 bits are equal to the bits of
+   * the {@code byte} argument.
    *
-   * @param b  an unsigned byte.
-   * @return   the equivalent short value.
+   * Consequently, zero and positive {@code byte} values are mapped to a numerically equal {@code short} value and
+   * negative {@code byte} values are mapped to a {@code short} value equal to the input plus 2<sup>8</sup>.
+   *
+   * @param b  a {@code byte} to treat as unsigned.
+   * @return   the equivalent {@code short} value.
    */
-  // Tested indirectly in TestMAMath.convertUnsigned()
-  static public short unsignedByteToShort(byte b) {
-    // b is a byte and 0xFF is an int. The Java spec says: "When operands are of different types,
-    // automatic binary numeric promotion occurs with the smaller operand type being converted to the larger."
-    // So, for the AND operation, both values will be ints.
-    return (short) (b & 0xff);
+  public static short unsignedByteToShort(byte b) {
+    return (short) Byte.toUnsignedInt(b);
   }
 }

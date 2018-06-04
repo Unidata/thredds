@@ -1128,16 +1128,19 @@ public abstract class Array {
     StringBuilder sbuff = new StringBuilder();
     IndexIterator ii = getIndexIterator();
     while (ii.hasNext()) {
-      Object data = ii.getObjectNext();
-      if (data instanceof Number && isUnsigned()) {
-        // 'data' is unsigned, but will be treated as signed when we print it below, because Java only has signed
-        // types. If it is large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted as the
-        // sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're going
-        // to widen the number before printing it.
-        data = DataType.widenNumber((Number) data);
+      Object value = ii.getObjectNext();
+  
+      if (isUnsigned()) {
+        assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
+    
+        // "value" is an unsigned number, but it will be treated as signed when we print it below, because Java only
+        // has signed types. If it's large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted
+        // as the sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're
+        // going to widen the number before printing it, but only if the unsigned number is being seen as negative.
+        value = DataType.widenNumberIfNegative((Number) value);
       }
 
-      sbuff.append(data);
+      sbuff.append(value);
       sbuff.append(" ");
     }
     return sbuff.toString();
