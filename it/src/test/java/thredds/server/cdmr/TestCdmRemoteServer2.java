@@ -20,7 +20,7 @@ import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.grid.GeoGrid;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public class TestCdmRemoteServer2 {
     DataFactory fac = new DataFactory();
     try (DataFactory.Result dataResult = fac.openFeatureDataset( ds, null)) {
       if (dataResult.fatalError) {
-        System.out.printf("fatalError= %s%n", dataResult.errLog);
+        logger.debug("fatalError = {}", dataResult.errLog);
         assert false;
       }
       Assert.assertNotNull(dataResult.featureDataset);
@@ -68,8 +68,7 @@ public class TestCdmRemoteServer2 {
       double[] expect = new double[]{366.0, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 5479.395, 6209.88, 6940.365, 7670.85, 8401.335};
       Array data = time.getCoordsAsArray();
       for (int i = 0; i < expect.length; i++)
-        assert Misc.nearlyEquals(expect[i], data.getDouble(i));
-
+        Assert2.assertNearlyEquals(expect[i], data.getDouble(i));
     }
   }
 
@@ -100,13 +99,13 @@ public class TestCdmRemoteServer2 {
   private void doOne(Dataset ds) throws IOException {
     Access access = ds.getAccess(ServiceType.CdmRemote);
     if (access == null) {
-      System.out.printf("No cdmremote access for %s%n", ds.getName());
+      logger.debug("No cdmremote access for {}", ds.getName());
       return;
     }
 
     DataFactory fac = new DataFactory();
     DataFactory.Result dataResult = fac.openFeatureDataset(access, null);
-    System.out.println("DataFactory.Result= "+dataResult);
+    logger.debug("DataFactory.Result = {}", dataResult);
   }
 
   @Test
@@ -142,5 +141,4 @@ public class TestCdmRemoteServer2 {
       Array data = grid.readDataSlice(0,0,0,0);
     }
   }
-
 }

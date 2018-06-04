@@ -45,7 +45,7 @@ import ucar.nc2.ft2.coverage.adapter.DtCoverageDataset;
 import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import static org.junit.Assert.assertEquals;
@@ -159,15 +159,15 @@ public class TestWcsServer {
       HorizCoordSys hcs = csys.getHorizCoordSys();
       CoverageCoordAxis1D xaxis = hcs.getXAxis();
       Assert.assertEquals(291, xaxis.getNcoords());
-      Assert.assertTrue(Misc.nearlyEquals(10.5, xaxis.getCoordMidpoint(0)));
-      Assert.assertTrue(Misc.nearlyEquals(300.5, xaxis.getEndValue())); // LOOK is that ok? BB = 10-300: its just catching the edge
-      Assert.assertTrue(Misc.nearlyEquals(1.0, xaxis.getResolution()));
+      Assert2.assertNearlyEquals(10.5, xaxis.getCoordMidpoint(0));
+      Assert2.assertNearlyEquals(300.5, xaxis.getEndValue()); // LOOK is that ok? BB = 10-300: its just catching the edge
+      Assert2.assertNearlyEquals(1.0, xaxis.getResolution());
 
       CoverageCoordAxis1D yaxis = hcs.getYAxis();
       Assert.assertEquals(81, yaxis.getNcoords());
-      Assert.assertTrue(Misc.nearlyEquals(79.5, yaxis.getCoordMidpoint(0)));
-      Assert.assertTrue(Misc.nearlyEquals(-.5, yaxis.getEndValue())); // LOOK is that ok? BB = 0-80: its just catching the edge
-      Assert.assertTrue(Misc.nearlyEquals(-1.0, yaxis.getResolution()));
+      Assert2.assertNearlyEquals(79.5, yaxis.getCoordMidpoint(0));
+      Assert2.assertNearlyEquals(-.5, yaxis.getEndValue()); // LOOK is that ok? BB = 0-80: its just catching the edge
+      Assert2.assertNearlyEquals(-1.0, yaxis.getResolution());
     }
   }
 
@@ -236,7 +236,7 @@ public class TestWcsServer {
       Assert.assertEquals(1, vert.getNcoords());
       double vertCoord = vert.getCoordMidpoint(0);
       logger.debug("date = {}", date);
-      Assert.assertTrue(Misc.nearlyEquals(800.0, vertCoord));
+      Assert2.assertNearlyEquals(800.0, vertCoord);
     }
   }
 

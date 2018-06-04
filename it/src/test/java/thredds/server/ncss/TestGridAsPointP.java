@@ -34,7 +34,7 @@ import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.IO;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.File;
@@ -92,11 +92,11 @@ public class TestGridAsPointP {
   }
 
   @Test
-  public void checkGridAsPointCsv() throws JDOMException, IOException {
+  public void checkGridAsPointCsv() {
     String endpoint = TestOnLocalServer.withHttpPath(ds + "?var=" + varName + query + "&accept=csv");
     byte[] result = TestOnLocalServer.getContent(endpoint, 200, ContentType.csv);
     Assert.assertNotNull(result);
-    System.out.printf("CSV%n%s%n", new String( result, CDM.utf8Charset));
+    logger.debug("CSV\n{}", new String( result, CDM.utf8Charset));
   }
 
   @Test
@@ -106,48 +106,48 @@ public class TestGridAsPointP {
     Assert.assertNotNull(result);
     String xml = new String( result);
 
-    System.out.printf("xml=%s%n", xml);
+    logger.debug("xml={}", xml);
     Reader in = new StringReader(xml);
     SAXBuilder sb = new SAXBuilder();
     Document doc = sb.build(in);
 
     String xpathq = String.format("/stationFeatureCollection/stationFeature");
-    System.out.printf("xpathq='%s'%n", xpathq);
+    logger.debug("xpathq='{}'", xpathq);
     XPathExpression <Element> xpath = XPathFactory.instance().compile(xpathq, Filters.element());
     List<Element> elements = xpath.evaluate(doc);
     Assert.assertEquals((int) ntimes, elements.size());
     Element elem0 = elements.get(0);
     CalendarDate cd = CalendarDate.parseISOformat(null, elem0.getAttributeValue("date"));
-    System.out.printf(" xml date=%s%n", cd);
+    logger.debug(" xml date={}", cd);
     Assert.assertEquals(date0, cd);
 
     xpathq = String.format("/stationFeatureCollection/stationFeature/data[@name='%s']", varName);
-    System.out.printf("xpathq='%s'%n", xpathq);
+    logger.debug("xpathq='{}'", xpathq);
     xpath = XPathFactory.instance().compile(xpathq, Filters.element());
     elements = xpath.evaluate(doc);
     Assert.assertEquals((int) ntimes, elements.size());
     elem0 = elements.get(0);
     double val = Double.parseDouble(elem0.getContent(0).getValue());
-    Assert.assertTrue(Misc.nearlyEquals(dataVal, val));
+    Assert2.assertNearlyEquals(dataVal, val);
   }
 
   @Test
   public void writeGridAsPointNetcdf() throws JDOMException, IOException {
     String endpoint = TestOnLocalServer.withHttpPath(ds+"?var="+varName+query+"&accept=netcdf");
     File tempFile = tempFolder.newFile();
-    System.out.printf(" write %sto %n  %s%n", endpoint, tempFile.getAbsolutePath());
+    logger.debug(" write {} to {}", endpoint, tempFile.getAbsolutePath());
 
     try (HTTPSession session = HTTPFactory.newSession(endpoint)) {
       HTTPMethod method = HTTPFactory.Get(session);
       int statusCode = method.execute();
       if (statusCode != 200) {
-        System.out.printf("statusCode = %d '%s'%n", statusCode, method.getResponseAsString());
+        logger.debug("statusCode = {} '{}'", statusCode, method.getResponseAsString());
         return;
       }
 
       IO.appendToFile(method.getResponseAsStream(), tempFile.getAbsolutePath());
     }
-    System.out.printf(" file length %d bytes exists=%s %n  %s%n", tempFile.length(), tempFile.exists(), tempFile.getAbsolutePath());
+    logger.debug(" file length {} bytes exists={} {}", tempFile.length(), tempFile.exists(), tempFile.getAbsolutePath());
 
     // Open the result file as Station feature dataset
     Formatter errlog = new Formatter();
@@ -163,12 +163,11 @@ public class TestGridAsPointP {
     String endpoint = TestOnLocalServer.withHttpPath(ds+"?var="+varName+query+"&accept=netcdf");
     byte[] content = TestOnLocalServer.getContent(endpoint, 200, ContentType.netcdf);
     Assert.assertNotNull(content);
-    System.out.printf("return size = %s%n", content.length);
+    logger.debug("return size = {}", content.length);
 
     // Open the binary response in memory
     Formatter errlog = new Formatter();
     try (NetcdfFile nf = NetcdfFile.openInMemory("checkGridAsPointNetcdf.nc", content)) {
-      // System.out.printf("%s%n", nf);
       FeatureDataset fd = FeatureDatasetFactoryManager.wrap(FeatureType.STATION, new NetcdfDataset(nf), null, errlog);
       assertNotNull(errlog.toString(), fd);
       VariableSimpleIF v = fd.getDataVariable(varName);

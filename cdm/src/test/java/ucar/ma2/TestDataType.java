@@ -17,22 +17,6 @@ import java.math.BigInteger;
 public class TestDataType {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private static void doone(String org) {
-    BigInteger biggy = new BigInteger(org);
-    long convert = biggy.longValue(); // > 63 bits will become "negative".
-    String convertS = DataType.unsignedLongToString(convert);
-    Assert.assertEquals(org, convertS);
-  }
-
-  @Test
-  public void testUnsignedLongToString () {
-    doone("18446744073709551615");
-    doone("18446744073709551614");
-    doone("18446744073709551613");
-    doone(Long.toString(Long.MAX_VALUE));
-    doone("0");
-  }
-
   @Test
   public void testUnsignedLongToBigInt() {
     Assert.assertEquals("The long round-trips as expected.",
@@ -46,5 +30,59 @@ public class TestDataType {
 
     Assert.assertEquals("Interpret signed long as unsigned long",
             overflowAsBigInt, DataType.unsignedLongToBigInt(overflowAsLong));
+  }
+  
+  @Test
+  public void convertUnsignedByte() {
+    // Widen regardless
+    assertSameNumber((short) 12, DataType.widenNumber((byte) 12));
+    
+    // Widen only if negative.
+    assertSameNumber((byte)  12,  DataType.widenNumberIfNegative((byte) 12));
+    assertSameNumber((short) 155, DataType.widenNumberIfNegative((byte) 155));
+    assertSameNumber((short) 224, DataType.widenNumberIfNegative((byte) -32));
+  }
+  
+  @Test
+  public void convertUnsignedShort() {
+    // Widen regardless
+    assertSameNumber((int) 3251, DataType.widenNumber((short) 3251));
+    
+    // Widen only if negative.
+    assertSameNumber((short) 3251,  DataType.widenNumberIfNegative((short) 3251));
+    assertSameNumber((int)   40000, DataType.widenNumberIfNegative((short) 40000));
+    assertSameNumber((int)   43314, DataType.widenNumberIfNegative((short) -22222));
+  }
+  
+  @Test
+  public void convertUnsignedInt() {
+    // Widen regardless
+    assertSameNumber((long) 123456, DataType.widenNumber((int) 123456));
+    
+    // Widen only if negative.
+    assertSameNumber((int)  123456,      DataType.widenNumberIfNegative((int) 123456));
+    assertSameNumber((long) 3500000000L, DataType.widenNumberIfNegative((int) 3500000000L));
+    assertSameNumber((long) 4289531025L, DataType.widenNumberIfNegative((int) -5436271));
+  }
+  
+  @Test
+  public void convertUnsignedLong() {
+    // The maximum signed long is 9223372036854775807.
+    // So, the number below fits in an unsigned long, but not a signed long.
+    BigInteger tenQuintillion = new BigInteger("10000000000000000000");  // Nineteen zeros.
+    
+    // Widen regardless
+    assertSameNumber(BigInteger.valueOf(3372036854775L), DataType.widenNumber((long) 3372036854775L));
+    
+    // Widen only if negative.
+    assertSameNumber(3372036854775L,                         DataType.widenNumberIfNegative((long) 3372036854775L));
+    assertSameNumber(tenQuintillion,                         DataType.widenNumberIfNegative(tenQuintillion.longValue()));
+    assertSameNumber(new BigInteger("18446620616920539271"), DataType.widenNumberIfNegative((long) -123456789012345L));
+  }
+  
+  // Asserts tha numbers have the same type and value.
+  private static void assertSameNumber(Number expected, Number actual) {
+    Assert.assertEquals(expected.getClass(), actual.getClass());
+    Assert.assertEquals(expected, actual);
   }
 }

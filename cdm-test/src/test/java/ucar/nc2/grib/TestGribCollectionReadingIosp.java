@@ -17,6 +17,7 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -38,7 +39,7 @@ public class TestGribCollectionReadingIosp {
   public void testReadBest() throws IOException, InvalidRangeException {
     String endpoint = TestDir.cdmUnitTestDir + "gribCollections/gfs_conus80/gfsConus80_file.ncx4";
     String covName = "Best/Temperature_height_above_ground";
-    System.out.printf("open %s var=%s%n", endpoint, covName);
+    logger.debug("open {} var={}", endpoint, covName);
 
     try (NetcdfDataset ds = NetcdfDataset.openDataset(endpoint)) {
       assert ds != null;
@@ -49,15 +50,15 @@ public class TestGribCollectionReadingIosp {
       Variable time = ds.findVariable("Best/time3");
       Array timeData = time.read();
       for (int i=0; i< timeData.getSize(); i++)
-        System.out.printf("time(%d) = %f%n", i, timeData.getDouble(i));
-      System.out.printf("%s%n", time.findAttribute("units"));
+        logger.debug("time({}) = {}", i, timeData.getDouble(i));
+      logger.debug("{}", time.findAttribute("units"));
 
       Array data = v.read("30,0,:,:"); // Time  coord : 180 == 2014-10-31T12:00:00Z
       float first = data.getFloat(0);
       float last = data.getFloat((int)data.getSize()-1);
-      System.out.printf("data first = %f last=%f%n", first, last);
-      Assert.assertTrue(Misc.nearlyEquals(300.33002f, first));
-      Assert.assertTrue(Misc.nearlyEquals(279.49f, last));
+      logger.debug("data first = {} last = {}", first, last);
+      Assert2.assertNearlyEquals(300.33002f, first);
+      Assert2.assertNearlyEquals(279.49f, last);
     }
   }
 

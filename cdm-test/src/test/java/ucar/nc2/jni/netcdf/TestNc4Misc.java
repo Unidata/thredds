@@ -10,10 +10,10 @@ import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.util.Misc;
 import ucar.nc2.write.Nc4Chunking;
 import ucar.nc2.write.Nc4ChunkingDefault;
 import ucar.nc2.write.Nc4ChunkingStrategy;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
@@ -50,7 +50,7 @@ public class TestNc4Misc {
 
     Variable time;
     try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, location)) {
-      System.out.printf("write to file = %s%n", new File(location).getAbsolutePath());
+      logger.debug("write to file = {}", new File(location).getAbsolutePath());
 
       Dimension timeDim = writer.addUnlimitedDimension("time");
       List<Dimension> dims = new ArrayList<>();
@@ -138,7 +138,7 @@ public class TestNc4Misc {
     }
 
     File resultFile = new File(location);
-    System.out.printf("Wrote data file %s size=%d%n", location, resultFile.length());
+    logger.debug("Wrote data file {} size={}", location, resultFile.length());
     assert resultFile.length() < 100 * 1000 : resultFile.length();
 
     try (NetcdfFile file = NetcdfFile.open(location)) {
@@ -210,7 +210,7 @@ public class TestNc4Misc {
     }
 
     File resultFile = new File(location);
-    System.out.printf("Wrote data file %s size=%d%n", location, resultFile.length());
+    logger.debug("Wrote data file {} size={}", location, resultFile.length());
     assert resultFile.length() < 100 * 1000 : resultFile.length();
 
     try (NetcdfFile file = NetcdfFile.open(location)) {
@@ -252,7 +252,7 @@ public class TestNc4Misc {
      */
     for (NetcdfFileWriter.Version version : versions) {
 
-      System.out.println("Writing version " + version);
+      logger.debug("Writing version {}", version);
 
       /**
        * Create the file writer and reserve some extra space in the header
@@ -275,7 +275,7 @@ public class TestNc4Misc {
       writer.create();
       writer.flush();
       writer.close();
-      System.out.println("File written " + fileName);
+      logger.debug("File written {}", fileName);
 
       /**
        * Now we're going to detect the file format using the HDF 5 library.
@@ -285,9 +285,9 @@ public class TestNc4Misc {
        * Now delete the file, getting ready for the next format.
        */
       File file = new File(fileName);
-      System.out.println("file.exists() = " + file.exists());
-      System.out.println("file.length() = " + file.length());
-      System.out.println("file.delete() = " + file.delete());
+      logger.debug("file.exists() = {}", file.exists());
+      logger.debug("file.length() = {}", file.length());
+      logger.debug("file.delete() = {}", file.delete());
   
     } // for
   
@@ -310,7 +310,7 @@ public class TestNc4Misc {
   }
   
   private void doRename(String filename) throws IOException {
-    System.out.printf("Rename %s%n", filename);
+    logger.debug("Rename {}", filename);
     // old and new name of variable
     String oldVarName = "Pressure_reduced_to_MSL_msl";
     String newVarName = "Pressure_MSL";
@@ -337,18 +337,18 @@ public class TestNc4Misc {
     try (NetcdfFile ncd = NetcdfFile.open(filename)) {
       Variable var = ncd.findVariable(newVarName);
       Assert.assertNotNull(var);
-      System.out.printf(" check %s%n", var.getNameAndDimensions());
+      logger.debug(" check {}", var.getNameAndDimensions());
       String attValue = ncd.findAttValueIgnoreCase(var, attrToChange, "");
       Assert.assertEquals(attValue, newAttrValue);
       
       Array data = var.read();
-      System.out.printf("%s%n", data);
+      logger.debug("{}", data);
       orgData.resetLocalIterator();
       data.resetLocalIterator();
       while (data.hasNext() && orgData.hasNext()) {
         float val = data.nextFloat();
         float orgval = orgData.nextFloat();
-        Assert.assertTrue(Misc.nearlyEquals(orgval, val));
+        Assert2.assertNearlyEquals(orgval, val);
       }
     }
   }

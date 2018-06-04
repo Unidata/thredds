@@ -11,7 +11,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.CompareNetcdf2;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 
 import java.io.IOException;
@@ -45,12 +45,12 @@ public class TestStandardVar extends TestCase {
     // case 1
     ncfile.addVariable("t1", DataType.DOUBLE, dims);
     ncfile.addVariableAttribute("t1", CDM.SCALE_FACTOR, new Double(2.0));
-    ncfile.addVariableAttribute("t1", "add_offset", new Double(77.0));
+    ncfile.addVariableAttribute("t1", CDM.ADD_OFFSET, new Double(77.0));
 
     // case 2
     ncfile.addVariable("t2", DataType.BYTE, dims);
     ncfile.addVariableAttribute("t2", CDM.SCALE_FACTOR, new Short( (short) 2));
-    ncfile.addVariableAttribute("t2", "add_offset", new Short( (short) 77));
+    ncfile.addVariableAttribute("t2", CDM.ADD_OFFSET, new Short( (short) 77));
 
     // case 3
     ncfile.addVariable("t3", DataType.BYTE, dims);
@@ -64,7 +64,7 @@ public class TestStandardVar extends TestCase {
     ncfile.addVariable("t5", DataType.SHORT, dims);
     ncfile.addVariableAttribute("t5", CDM.MISSING_VALUE, new Short( (short) -9999));
     ncfile.addVariableAttribute("t5", CDM.SCALE_FACTOR, new Short( (short) 2));
-    ncfile.addVariableAttribute("t5", "add_offset", new Short( (short) 77));
+    ncfile.addVariableAttribute("t5", CDM.ADD_OFFSET, new Short( (short) 77));
 
     // case 1
     ncfile.addVariable("m1", DataType.DOUBLE, dims);
@@ -118,8 +118,6 @@ public class TestStandardVar extends TestCase {
 
     // all done
     ncfile.close();
-
-    System.out.println( "**************TestStandardVar Write done");
   }
 
   private NetcdfFile ncfileRead;
@@ -181,9 +179,7 @@ public class TestStandardVar extends TestCase {
     }
 
     assert( null == t1.findAttribute(CDM.SCALE_FACTOR));
-    assert( null == t1.findAttribute("add_offset"));
-
-    System.out.println( "**************TestStandardVar ReadDouble");
+    assert( null == t1.findAttribute(CDM.ADD_OFFSET));
   }
 
  public void readByte2Short() throws Exception {
@@ -214,7 +210,6 @@ public class TestStandardVar extends TestCase {
         assert( A.getShort(ima.set(i,j)) == (2 * (i*10+j) + 77));
       }
     }
-    System.out.println( "**************TestStandardVar readByte2Short");
   }
 
   public void readByte() throws Exception  {
@@ -232,7 +227,7 @@ public class TestStandardVar extends TestCase {
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
-    System.out.println("_FillValue = "+att.getNumericValue().byteValue());
+    logger.debug("_FillValue = {}", att.getNumericValue().byteValue());
     assert( ((byte) 255) == att.getNumericValue().byteValue());
     assert( DataType.BYTE == att.getDataType());
 
@@ -251,7 +246,6 @@ public class TestStandardVar extends TestCase {
         assert( A.getFloat(ima.set(i,j)) == (i*10+j));
       }
     }
-    System.out.println( "**************TestStandardVar ReadByte");
   }
 
   public void readShortMissing() throws Exception {
@@ -270,7 +264,7 @@ public class TestStandardVar extends TestCase {
     assert( null != att);
     assert( !att.isArray());
     assert( 1 == att.getLength());
-    System.out.println("missing_value = "+att.getNumericValue().shortValue());
+    logger.debug("missing_value = {}", att.getNumericValue().shortValue());
     assert( ((short) -9999) == att.getNumericValue().shortValue());
     assert( DataType.SHORT == att.getDataType());
 
@@ -302,8 +296,6 @@ public class TestStandardVar extends TestCase {
     vs.setMissingDataIsMissing(true);
     assert( vs.hasMissing());
     assert( vs.isMissing( (double) ((short) -9999)));
-
-    System.out.println( "**************TestStandardVar Read readShortMissing");
   }
 
 
@@ -337,7 +329,7 @@ public class TestStandardVar extends TestCase {
         float val = A.getFloat(ima.set(i,j));
         float want = 2* (i*10+j) + 77;
         if( val != want)
-          System.out.println(i+" "+j+" "+val+" "+ want);
+          logger.debug("{} {} {} {}", i, j, val, want);
         assert( val == want);
       }
     }
@@ -365,16 +357,14 @@ public class TestStandardVar extends TestCase {
         float val = A2.getFloat(ima2.set(i,j));
         float want = 2* (i*10+j) + 77;
         if( val != want)
-          System.out.println(i+" "+j+" "+val+" "+ want);
+          logger.debug("{} {} {} {}", i, j, val, want);
         assert( val == want) : val+" != "+ want;
       }
     }
 
     assert( null == vs.findAttribute(CDM.SCALE_FACTOR));
-    assert( null == vs.findAttribute("add_offset"));
+    assert( null == vs.findAttribute(CDM.ADD_OFFSET));
     assert( null == vs.findAttribute(CDM.MISSING_VALUE));
-
-    System.out.println( "**************TestStandardVar Read readShort2FloatMissing");
   }
 
   public void readDoubleMissing() throws Exception {
@@ -396,7 +386,7 @@ public class TestStandardVar extends TestCase {
     ima = A.getIndex();
 
     val = A.getFloat(ima.set(1,1));
-    assert Misc.nearlyEquals(val, -999.99) : val;
+    Assert2.assertNearlyEquals(val, -999.99);
     assert v.isMissing(val);
   }
 
@@ -412,11 +402,8 @@ public class TestStandardVar extends TestCase {
     Array data = enhancedVar.read();
     Array dataDefer =  deferVar.read();
 
-    System.out.printf("Enhanced=");
-    logger.debug(NCdumpW.toString(data));
-    System.out.printf("%nDeferred=");
-    logger.debug(NCdumpW.toString(dataDefer));
-    System.out.printf("%nProcessed=");
+    logger.debug("Enhanced = {}", NCdumpW.toString(data));
+    logger.debug("Deferred = {}", NCdumpW.toString(dataDefer));
 
     CompareNetcdf2 nc = new CompareNetcdf2(new Formatter(System.out), false, false, true);
     assert !nc.compareData(enhancedVar.getShortName(), data, dataDefer, false);
@@ -426,7 +413,7 @@ public class TestStandardVar extends TestCase {
       double val = deferVar.convertScaleOffsetMissing(ii.getDoubleNext());
       ii.setDoubleCurrent(val);
     }
-    logger.debug(NCdumpW.toString(dataDefer));
+    logger.debug("Processed = {}", NCdumpW.toString(dataDefer));
 
     assert nc.compareData(enhancedVar.getShortName(), data, dataDefer, false);
 
@@ -450,9 +437,4 @@ public class TestStandardVar extends TestCase {
     }
     return data;
   }
-
-
-
-
-
 }

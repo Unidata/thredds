@@ -111,16 +111,6 @@ public class Attribute extends CDMNode
   }
 
   /**
-   * Find whether the underlying data should be interpreted as unsigned.
-   * Only affects byte, short, and int.
-   *
-   * @return true if the data is unsigned integer type.
-   */
-  public boolean isUnsigned() {
-    return dataType.isUnsigned();
-  }
-
-  /**
    * Get the value as an Array.
    *
    * @return Array of values.
@@ -184,8 +174,7 @@ public class Attribute extends CDMNode
   }
 
   /**
-   * Retrieve numeric value.
-   * Equivalent to <code>getNumericValue(0)</code>
+   * Retrieve numeric value. Equivalent to <code>getNumericValue(0)</code>
    *
    * @return the first element of the value array, or null if its a String that cant be converted.
    */
@@ -196,10 +185,10 @@ public class Attribute extends CDMNode
   /// these deal with array-valued attributes
 
   /**
-   * Retrieve a numeric value by index. If its a String, it will try to parse it as a double.
+   * Retrieve a numeric value by index. If it's a String, it will try to parse it as a double.
    *
    * @param index the index into the value array.
-   * @return Number <code>value[index]</code>, or null if its a non-parsable String or
+   * @return Number <code>value[index]</code>, or null if its a non-parseable String or
    * the index is out of range.
    */
   public Number getNumericValue(int index) {
@@ -294,7 +283,7 @@ public class Attribute extends CDMNode
         if (i != 0) f.format(", ");
 
         Number number = getNumericValue(i);
-        if (isUnsigned()) {
+        if (dataType.isUnsigned()) {
           // 'number' is unsigned, but will be treated as signed when we print it below, because Java only has signed
           // types. If it is large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted as the
           // sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're going
@@ -303,7 +292,7 @@ public class Attribute extends CDMNode
         }
         f.format("%s", number);
 
-        if (isUnsigned()) {
+        if (dataType.isUnsigned()) {
           f.format("U");
         }
 
@@ -435,8 +424,7 @@ public class Attribute extends CDMNode
   public Attribute(String name, List values, boolean isUnsigned) {
     this(name);
     if(values == null || values.size() == 0)
-	throw new IllegalArgumentException("Cannot determine attribute's type");
-    int n = values.size();
+	  throw new IllegalArgumentException("Cannot determine attribute's type");
     Class c = values.get(0).getClass();
     setDataType(DataType.getType(c, isUnsigned));
     setValues(values);

@@ -109,48 +109,6 @@ public class MAMath {
   }
 
   /**
-   * Convert unsigned data to signed data of a wider type.
-   *
-   * @param unsigned must be of type byte, short, int, or long.
-   * @return converted data of type short, int, long, or {@link java.math.BigInteger}.
-   */
-  public static Array convertUnsigned(Array unsigned) {
-    if (unsigned.getElementType().equals(byte.class)) {
-      Array result = Array.factory(DataType.SHORT, unsigned.getShape());
-      IndexIterator ii = result.getIndexIterator();
-      unsigned.resetLocalIterator();
-      while (unsigned.hasNext())
-        ii.setShortNext( DataType.widenNumber(unsigned.nextByte()).shortValue());
-      return result;
-
-    } else if (unsigned.getElementType().equals(short.class)) {
-      Array result = Array.factory(DataType.INT, unsigned.getShape());
-      IndexIterator ii = result.getIndexIterator();
-      unsigned.resetLocalIterator();
-      while (unsigned.hasNext())
-        ii.setIntNext( DataType.widenNumber(unsigned.nextShort()).intValue());
-      return result;
-
-    } else if (unsigned.getElementType().equals(int.class)) {
-      Array result = Array.factory(DataType.LONG, unsigned.getShape());
-      IndexIterator ii = result.getIndexIterator();
-      unsigned.resetLocalIterator();
-      while (unsigned.hasNext())
-        ii.setLongNext( DataType.widenNumber(unsigned.nextInt()).longValue());
-      return result;
-    } else if (unsigned.getElementType().equals(long.class)) {
-      Array result = ArrayObject.factory(DataType.OBJECT, BigInteger.class, false, Index.factory(unsigned.getShape()));
-      IndexIterator ii = result.getIndexIterator();
-      unsigned.resetLocalIterator();
-      while (unsigned.hasNext())
-        ii.setObjectNext( DataType.widenNumber(unsigned.nextLong()));
-      return result;
-    }
-
-    throw new IllegalArgumentException("Cant convertUnsigned type= "+unsigned.getElementType());
-  }
-
-  /**
    * Convert original array to desired type
    *
    * @param org original array

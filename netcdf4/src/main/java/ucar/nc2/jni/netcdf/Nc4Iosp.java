@@ -2803,15 +2803,12 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private void writeAttribute(int grpid, int varid, Attribute att, Variable v) throws IOException {
     if (v != null && att.getShortName().equals(CDM.FILL_VALUE)) {
       if (att.getLength() != 1) {
-        log.warn("_FillValue length must be one on var = " + v.getFullName());
+        log.warn("_FillValue length must be one on var = {}", v.getFullName());
         return;
       }
       if (att.getDataType() != v.getDataType()) {
-        log.warn("_FillValue type must agree with var = " + v.getFullName() + " type " + att.getDataType() + "!=" + v.getDataType());
-        return;
-      }
-      if (att.isUnsigned() != v.getDataType().isUnsigned()) {
-        log.warn("_FillValue isUnsigned must agree with var = " + v.getFullName() + " isUnsigned " + att.isUnsigned() + "!=" + v.getDataType().isUnsigned());
+        log.warn("_FillValue type ({}) does not agree with variable '{}' type ({}).",
+                att.getDataType(), v.getFullName(), v.getDataType());
         return;
       }
     }

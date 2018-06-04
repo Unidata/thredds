@@ -10,13 +10,12 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.ma2.InvalidRangeException;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -34,11 +33,11 @@ public class TestAggExistingCoordVars extends TestCase {
     super(name);
   }
 
-  public void testType1() throws IOException, InvalidRangeException {
+  public void testType1() throws IOException {
     String filename = "file:./"+ TestNcML.topDir + "aggExisting1.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename);
+    logger.debug(" TestNcmlAggExisting.open {}", filename);
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -50,24 +49,18 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getDataType() == DataType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
-
-    try {
-      Array data = time.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 59;
-      assert data.getShape()[0] == 59;
-      assert data.getElementType() == int.class;
-
-      int count = 0;
-      IndexIterator dataI = data.getIndexIterator();
-      while (dataI.hasNext()) {
-        assert dataI.getIntNext() == 7 + 2 * count;
-        count++;
-      }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
+  
+    Array data = time.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 59;
+    assert data.getShape()[0] == 59;
+    assert data.getElementType() == int.class;
+  
+    int count = 0;
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      assert dataI.getIntNext() == 7 + 2 * count;
+      count++;
     }
 
     ncfile.close();
@@ -88,11 +81,11 @@ public class TestAggExistingCoordVars extends TestCase {
     "  </aggregation>\n" +
     "</netcdf>";
 
-  public void testType2() throws IOException, InvalidRangeException {
+  public void testType2() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "aggExisting2.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML( new StringReader(aggExisting2), filename, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename+"\n"+ncfile);
+    logger.debug(" TestNcmlAggExisting.open {}\n{}", filename, ncfile);
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -106,34 +99,29 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     double[] result = new double[] {12, 13, 14};
-    try {
-      Array data = time.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == double.class;
-
-      int count = 0;
-      IndexIterator dataI = data.getIndexIterator();
-      while (dataI.hasNext()) {
-        double val = dataI.getDoubleNext();
-        assert Misc.nearlyEquals(val, result[count]) : val +" != "+ result[count];
-        count++;
-      }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
+    
+    Array data = time.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 3;
+    assert data.getShape()[0] == 3;
+    assert data.getElementType() == double.class;
+  
+    int count = 0;
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      double val = dataI.getDoubleNext();
+      Assert2.assertNearlyEquals(val, result[count]);
+      count++;
     }
 
     ncfile.close();
   }
 
-  public void testType3() throws IOException, InvalidRangeException {
+  public void testType3() throws IOException {
     String filename = "file:./"+TestNcML.topDir + "aggExisting.xml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
-    System.out.println(" TestNcmlAggExisting.open "+ filename+"\n"+ncfile);
+    logger.debug(" TestNcmlAggExisting.open {}\n{}", filename, ncfile);
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -149,28 +137,22 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getDataType() == DataType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
-
-    try {
-      Array data = time.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 59;
-      assert data.getShape()[0] == 59;
-      assert data.getElementType() == int.class;
-
-      int count = 0;
-      IndexIterator dataI = data.getIndexIterator();
-      while (dataI.hasNext())
-        assert dataI.getIntNext() == count++;
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  
+    Array data = time.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 59;
+    assert data.getShape()[0] == 59;
+    assert data.getElementType() == int.class;
+  
+    int count = 0;
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext())
+      assert dataI.getIntNext() == count++;
 
     ncfile.close();
   }
 
-  public void testType4() throws IOException, InvalidRangeException {
+  public void testType4() throws IOException {
     String filename = "file:"+TestNcML.topDir + "aggExisting4.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -187,23 +169,18 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     double[] result = new double[] {1.1496816E9, 1.1496852E9, 1.1496888E9  };
-    try {
-      Array data = time.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == double.class;
-
-      int count = 0;
-      IndexIterator dataI = data.getIndexIterator();
-      while (dataI.hasNext()) {
-        assert Misc.nearlyEquals(dataI.getDoubleNext(), result[count]);
-        count++;
-      }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
+  
+    Array data = time.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 3;
+    assert data.getShape()[0] == 3;
+    assert data.getElementType() == double.class;
+  
+    int count = 0;
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      Assert2.assertNearlyEquals(dataI.getDoubleNext(), result[count]);
+      count++;
     }
 
     ncfile.close();
@@ -226,26 +203,21 @@ public class TestAggExistingCoordVars extends TestCase {
     assert time.getDimension(0) == ncfile.findDimension("time");
 
     String[] result = new String[] { "2006-06-07T12:00:00Z",   "2006-06-07T13:00:00Z",   "2006-06-07T14:00:00Z"};
-    try {
-      Array data = time.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == String.class;
-
-      logger.debug(NCdumpW.toString(data, "time coord", null));
-
-      int count = 0;
-      IndexIterator dataI = data.getIndexIterator();
-      while (dataI.hasNext()) {
-        String val = (String) dataI.getObjectNext();
-        assert val.equals( result[count]) : val+" != "+ result[count];
-        count++;
-      }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
+  
+    Array data = time.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 3;
+    assert data.getShape()[0] == 3;
+    assert data.getElementType() == String.class;
+  
+    logger.debug(NCdumpW.toString(data, "time coord", null));
+  
+    int count = 0;
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      String val = (String) dataI.getObjectNext();
+      assert val.equals( result[count]) : val+" != "+ result[count];
+      count++;
     }
 
     ncfile.close();
@@ -272,34 +244,29 @@ public class TestAggExistingCoordVars extends TestCase {
     DateFormatter df = new DateFormatter();
 
     String[] result = new String[] {"2006-06-07T12:00:00Z",   "2006-06-07T13:00:00Z",   "2006-06-07T14:00:00Z"};
-    try {
-      Array data = time.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == double.class;
-
-      logger.debug(NCdumpW.toString(data, "time coord", null));
-
-      int count = 0;
-      IndexIterator dataI = data.getIndexIterator();
-      while (dataI.hasNext()) {
-        double val = dataI.getDoubleNext();
-        Date dateVal = du.makeDate(val);
-        String dateS = df.toDateTimeStringISO(dateVal);
-        assert dateS.equals( result[count]) : dateS+" != "+ result[count];
-        count++;
-      }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
+  
+    Array data = time.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 3;
+    assert data.getShape()[0] == 3;
+    assert data.getElementType() == double.class;
+  
+    logger.debug(NCdumpW.toString(data, "time coord", null));
+  
+    int count = 0;
+    IndexIterator dataI = data.getIndexIterator();
+    while (dataI.hasNext()) {
+      double val = dataI.getDoubleNext();
+      Date dateVal = du.makeDate(val);
+      String dateS = df.toDateTimeStringISO(dateVal);
+      assert dateS.equals( result[count]) : dateS+" != "+ result[count];
+      count++;
     }
 
     ncfile.close();
   }
 
-  public void testClimatologicalDate() throws IOException, InvalidRangeException {
+  public void testClimatologicalDate() throws IOException {
     String filename = "file:"+TestNcML.topDir + "aggExisting5.ncml";
 
     NetcdfFile ncfile = NcMLReader.readNcML(filename, null);
@@ -315,20 +282,18 @@ public class TestAggExistingCoordVars extends TestCase {
 
     assert time.getDimension(0) == ncfile.findDimension("time");
 
-      Array data = time.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 59;
-      assert data.getShape()[0] == 59;
-      assert data.getElementType() == int.class;
+    Array data = time.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 59;
+    assert data.getShape()[0] == 59;
+    assert data.getElementType() == int.class;
 
-      int count = 0;
-      while (data.hasNext()) {
-        assert data.nextInt() == count : data.nextInt() +"!="+ count;
-        count++;
-      }
+    int count = 0;
+    while (data.hasNext()) {
+      assert data.nextInt() == count : data.nextInt() +"!="+ count;
+      count++;
+    }
 
     ncfile.close();
   }
-
-
 }

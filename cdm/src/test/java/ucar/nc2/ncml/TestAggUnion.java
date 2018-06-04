@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.dataset.VariableDS;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -121,18 +121,10 @@ public class TestAggUnion extends TestCase {
 
   static NetcdfFile ncfile = null;
 
-  public void setUp() {
+  public void setUp() throws IOException {
     if (ncfile != null) return;
     String filename = "file:./" + TestNcML.topDir + "aggUnion.xml";
-
-    try {
-      ncfile = NcMLReader.readNcML(filename, null);
-    } catch (java.net.MalformedURLException e) {
-      System.out.println("bad URL error = " + e);
-    } catch (IOException e) {
-      System.out.println("IO error = " + e);
-      e.printStackTrace();
-    }
+    ncfile = NcMLReader.readNcML(filename, null);
   }
 
   public void tearDown() throws IOException {
@@ -165,7 +157,7 @@ public class TestAggUnion extends TestCase {
   }
 
   public void testMetadata() {
-    System.out.println("TestNested = \n" + ncfile);
+    logger.debug("TestNested = \n{}", ncfile);
 
     Attribute att = ncfile.findGlobalAttribute("title");
     assert null != att;
@@ -189,8 +181,7 @@ public class TestAggUnion extends TestCase {
     assert timeDim.isUnlimited();
   }
 
-  public void testCoordvar() {
-
+  public void testCoordvar() throws IOException {
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
     assert lat.getShortName().equals("lat");
@@ -211,25 +202,20 @@ public class TestAggUnion extends TestCase {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-
-    try {
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == float.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 41.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 40.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {
-    }
-
+  
+    Array data = lat.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 3;
+    assert data.getShape()[0] == 3;
+    assert data.getElementType() == float.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
   }
 
-  public void testReadData() {
-
+  public void testReadData() throws IOException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     assert null != v;
     assert v.getShortName().equals("ReletiveHumidity");
@@ -255,86 +241,67 @@ public class TestAggUnion extends TestCase {
     assert att.getStringValue().equals("percent");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-
-    try {
-      Array data = v.read();
-      assert data.getRank() == 3;
-      assert data.getSize() == 24 : data.getSize();
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 4;
-      assert data.getElementType() == int.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 2;
-      assert dataI.getIntNext() == 3;
-      assert dataI.getIntNext() == 4;
-      assert dataI.getIntNext() == 5;
-    } catch (IOException io) {
-    }
+  
+    Array data = v.read();
+    assert data.getRank() == 3;
+    assert data.getSize() == 24 : data.getSize();
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 4;
+    assert data.getElementType() == int.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 1;
+    assert dataI.getIntNext() == 2;
+    assert dataI.getIntNext() == 3;
+    assert dataI.getIntNext() == 4;
+    assert dataI.getIntNext() == 5;
   }
 
-  public void testReadSlice() {
-
+  public void testReadSlice() throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 3, 1};
-
-    try {
-      Array data = v.read(origin, shape);
-      assert data.getRank() == 3;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 1;
-      assert data.getElementType() == int.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 5;
-      assert dataI.getIntNext() == 9;
-      assert dataI.getIntNext() == 21;
-      assert dataI.getIntNext() == 25;
-      assert dataI.getIntNext() == 29;
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  
+    Array data = v.read(origin, shape);
+    assert data.getRank() == 3;
+    assert data.getSize() == 6;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 1;
+    assert data.getElementType() == int.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 1;
+    assert dataI.getIntNext() == 5;
+    assert dataI.getIntNext() == 9;
+    assert dataI.getIntNext() == 21;
+    assert dataI.getIntNext() == 25;
+    assert dataI.getIntNext() == 29;
   }
 
-  public void testReadSlice2() {
-
+  public void testReadSlice2() throws IOException, InvalidRangeException {
     Variable v = ncfile.findVariable("ReletiveHumidity");
     int[] origin = new int[3];
     int[] shape = {2, 1, 3};
-
-    try {
-      Array data = v.read(origin, shape).reduce();
-      assert data.getRank() == 2;
-      assert data.getSize() == 6;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getElementType() == int.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 1;
-      assert dataI.getIntNext() == 2;
-      assert dataI.getIntNext() == 3;
-      assert dataI.getIntNext() == 21;
-      assert dataI.getIntNext() == 22;
-      assert dataI.getIntNext() == 23;
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  
+    Array data = v.read(origin, shape).reduce();
+    assert data.getRank() == 2;
+    assert data.getSize() == 6;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getElementType() == int.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 1;
+    assert dataI.getIntNext() == 2;
+    assert dataI.getIntNext() == 3;
+    assert dataI.getIntNext() == 21;
+    assert dataI.getIntNext() == 22;
+    assert dataI.getIntNext() == 23;
   }
 
-  public void testReadDataAlias() {
+  public void testReadDataAlias() throws IOException {
 
     Variable v = ncfile.findVariable("T");
     assert null == v;
@@ -364,25 +331,20 @@ public class TestAggUnion extends TestCase {
     assert att.getStringValue().equals("degC");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-
-    try {
-      Array data = v.read();
-      assert data.getRank() == 3;
-      assert data.getSize() == 24;
-      assert data.getShape()[0] == 2;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 4;
-      assert data.getElementType() == double.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 1.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 2.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 3.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 4.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 2.0);
-    } catch (IOException io) {
-      io.printStackTrace();
-    }
+  
+    Array data = v.read();
+    assert data.getRank() == 3;
+    assert data.getSize() == 24;
+    assert data.getShape()[0] == 2;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 4;
+    assert data.getElementType() == double.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 1.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 3.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 4.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 2.0);
   }
-
 }

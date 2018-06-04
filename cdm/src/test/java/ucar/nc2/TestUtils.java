@@ -16,7 +16,6 @@ import ucar.ma2.Array;
  *
  * @author Russ Rew
  */
-
 public class TestUtils  {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -31,7 +30,7 @@ public class TestUtils  {
       assert (false);
     }
 
-    if (showStatus) System.out.println( "**** testReadData done on "+ncfile.getLocation());
+    if (showStatus) logger.debug( "**** testReadData done on {}", ncfile.getLocation());
   }
 
   static public void testVarMatchesData( Variable v, boolean showStatus) throws IOException {
@@ -45,26 +44,6 @@ public class TestUtils  {
     for (int i=0; i<data.getRank(); i++)
       assert dataShape[i] == varShape[i];
 
-    if (showStatus) System.out.println( "**** testReadData done on "+v.getFullName());
-  }
-
-  static public boolean close( double d1, double d2) {
-    if (Double.isNaN(d1))
-      return Double.isNaN(d2);
-
-    if (d1 != 0.0)
-      return Math.abs((d1-d2)/d1) < 1.0e-9;
-    else
-      return Math.abs(d1-d2) < 1.0e-9;
-  }
-
-  static public boolean close( float d1, float d2) {
-    if (Float.isNaN(d1))
-      return Float.isNaN(d2);
-
-    if (d1 != 0.0)
-      return Math.abs((d1-d2)/d1) < 1.0e-5;
-    else
-      return Math.abs(d1-d2) < 1.0e-5;
+    if (showStatus) logger.debug( "**** testReadData done on {}", v.getFullName());
   }
 }

@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -164,7 +164,7 @@ public class TestAggSynthetic extends TestCase {
   }
 
   public void testDimensions(NetcdfFile ncfile) {
-    System.out.println("ncfile = \n" + ncfile);
+    logger.debug("ncfile = {}", ncfile);
 
     Dimension latDim = ncfile.findDimension("lat");
     assert null != latDim;
@@ -184,8 +184,7 @@ public class TestAggSynthetic extends TestCase {
     assert timeDim.getLength() == 3 : timeDim.getLength();
   }
 
-  public void testCoordVar(NetcdfFile ncfile) {
-
+  public void testCoordVar(NetcdfFile ncfile) throws IOException {
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
     assert lat.getShortName().equals("lat");
@@ -205,24 +204,39 @@ public class TestAggSynthetic extends TestCase {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-
-    try {
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == float.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert TestUtils.close(dataI.getDoubleNext(), 41.0);
-      assert TestUtils.close(dataI.getDoubleNext(), 40.0);
-      assert TestUtils.close(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {
-    }
-
+  
+    Array data = lat.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 3;
+    assert data.getShape()[0] == 3;
+    assert data.getElementType() == float.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
   }
 
-  public void testAggCoordVar(NetcdfFile ncfile) {
+  public void testAggCoordVar(NetcdfFile ncfile) throws IOException {
+    Variable time = ncfile.findVariable("time");
+    assert null != time;
+    assert time.getShortName().equals("time");
+    assert time.getRank() == 1 : time.getRank();
+    assert time.getShape()[0] == 3;
+    assert time.getDataType() == DataType.INT;
+
+    assert time.getDimension(0) == ncfile.findDimension("time");
+  
+    Array data = time.read();
+  
+    assert (data instanceof ArrayInt.D1) : data.getClass().getName();
+    ArrayInt.D1 dataI = (ArrayInt.D1) data;
+    assert dataI.get(0) == 0;
+    assert dataI.get(1) == 10;
+    assert dataI.get(2) == 99;
+  }
+
+  public void testAggCoordVar2(NetcdfFile ncfile) throws IOException {
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -232,47 +246,14 @@ public class TestAggSynthetic extends TestCase {
     assert time.getDataType() == DataType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
-
-    try {
-      Array data = time.read();
-
-      assert (data instanceof ArrayInt.D1) : data.getClass().getName();
-      ArrayInt.D1 dataI = (ArrayInt.D1) data;
-      assert dataI.get(0) == 0;
-      assert dataI.get(1) == 10;
-      assert dataI.get(2) == 99;
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
-
-  }
-
-  public void testAggCoordVar2(NetcdfFile ncfile) {
-
-    Variable time = ncfile.findVariable("time");
-    assert null != time;
-    assert time.getShortName().equals("time");
-    assert time.getRank() == 1 : time.getRank();
-    assert time.getShape()[0] == 3;
-    assert time.getDataType() == DataType.INT;
-
-    assert time.getDimension(0) == ncfile.findDimension("time");
-
-    try {
-      Array data = time.read();
-
-      assert (data instanceof ArrayInt);
-      IndexIterator dataI = data.getIndexIterator();
-      assert dataI.getIntNext() == 0 : dataI.getIntCurrent();
-      assert dataI.getIntNext() == 1 : dataI.getIntCurrent();
-      assert dataI.getIntNext() == 2 : dataI.getIntCurrent();
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  
+    Array data = time.read();
+  
+    assert (data instanceof ArrayInt);
+    IndexIterator dataI = data.getIndexIterator();
+    assert dataI.getIntNext() == 0 : dataI.getIntCurrent();
+    assert dataI.getIntNext() == 1 : dataI.getIntCurrent();
+    assert dataI.getIntNext() == 2 : dataI.getIntCurrent();
   }
 
   public void testAggCoordVar3(NetcdfFile ncfile) throws IOException {
@@ -290,9 +271,9 @@ public class TestAggSynthetic extends TestCase {
     assert (data instanceof ArrayDouble);
     IndexIterator dataI = data.getIndexIterator();
     double val = dataI.getDoubleNext();
-    assert Misc.nearlyEquals(val, 0.0) : val;
-    assert Misc.nearlyEquals(dataI.getDoubleNext(), 10.0) : dataI.getDoubleCurrent();
-    assert Misc.nearlyEquals(dataI.getDoubleNext(), 99.0) : dataI.getDoubleCurrent();
+    Assert2.assertNearlyEquals(val, 0.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 10.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 99.0);
   }
 
   public void testAggCoordVarScan(NetcdfFile ncfile) throws IOException {
@@ -315,7 +296,7 @@ public class TestAggSynthetic extends TestCase {
     }
   }
 
-  public void testAggCoordVarJoinedScalar(NetcdfFile ncfile) {
+  public void testAggCoordVarJoinedScalar(NetcdfFile ncfile) throws IOException {
 
     Variable time = ncfile.findVariable("time");
     assert null != time;
@@ -325,21 +306,14 @@ public class TestAggSynthetic extends TestCase {
     assert time.getDataType() == DataType.INT;
 
     assert time.getDimension(0) == ncfile.findDimension("time");
-
-    try {
-      Array data = time.read();
-
-      assert (data instanceof ArrayInt.D1) : data.getClass().getName();
-      ArrayInt.D1 dataI = (ArrayInt.D1) data;
-      assert dataI.get(0) == 82932;
-      assert dataI.get(1) == 83232;
-      assert dataI.get(2) == 83532;
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
-
+  
+    Array data = time.read();
+  
+    assert (data instanceof ArrayInt.D1) : data.getClass().getName();
+    ArrayInt.D1 dataI = (ArrayInt.D1) data;
+    assert dataI.get(0) == 82932;
+    assert dataI.get(1) == 83232;
+    assert dataI.get(2) == 83532;
   }
 
   public void testAggCoordVarNoCoord(NetcdfFile ncfile) throws IOException {
@@ -418,8 +392,7 @@ public class TestAggSynthetic extends TestCase {
       for (int j = 0; j < shape[1]; j++)
         for (int k = 0; k < shape[2]; k++) {
           double val = data.getDouble(tIndex.set(i, j, k));
-          // System.out.println(" "+val);
-          assert TestUtils.close(val, 100 * i + 10 * j + k) : val;
+          Assert2.assertNearlyEquals(val, 100 * i + 10 * j + k);
         }
 
   }
@@ -441,8 +414,7 @@ public class TestAggSynthetic extends TestCase {
       for (int j = 0; j < shape[1]; j++)
         for (int k = 0; k < shape[2]; k++) {
           double val = data.getDouble(tIndex.set(i, j, k));
-          //System.out.println(" "+val);
-          assert TestUtils.close(val, 100 * (i + origin[0]) + 10 * j + k) : val;
+          Assert2.assertNearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k);
         }
   }
 
@@ -452,5 +424,4 @@ public class TestAggSynthetic extends TestCase {
     readSlice(ncfile, new int[]{2, 0, 0}, new int[]{1, 3, 4}, name);
     readSlice(ncfile, new int[]{1, 0, 0}, new int[]{2, 2, 3}, name);
   }
-
 }

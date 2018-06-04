@@ -14,6 +14,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class TestScaleOffsetMissing {
       ncfile.addVariable("unpacked", DataType.DOUBLE, "lat lon");
 
       ncfile.addVariable("packed", DataType.SHORT, "lat lon");
-      ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, new Short( (short) -9999));
+      ncfile.addVariableAttribute("packed", CDM.MISSING_VALUE, (short) -9999);
       ncfile.addVariableAttribute("packed", CDM.SCALE_FACTOR, so.scale);
       ncfile.addVariableAttribute("packed", "add_offset", so.offset);
 
@@ -107,7 +108,6 @@ public class TestScaleOffsetMissing {
       double p = iterp.getDoubleNext();
       double diff = Math.abs(v1 - v2);
       assert (diff < close) : v1 + " != " + v2 + " index=" + iter1+" packed="+p;
-      //System.out.println(v1 + " == " + v2 + " index=" + iter1+" packed="+p);
     }
   }
 
@@ -144,15 +144,13 @@ public class TestScaleOffsetMissing {
       double actualFillValue = fooVar.getFillValue();
 
       // Scale factor of "1.e-05" has been applied to original "99999".
-      Assert.assertTrue(String.format("%f != %f", expectedFillValue, actualFillValue),
-              Misc.nearlyEquals(expectedFillValue, actualFillValue));
+      Assert2.assertNearlyEquals(expectedFillValue, actualFillValue);
 
       fooVar.setUseNaNs(false);
       double fooValWithoutNaNs = fooVar.read().getDouble(0);
 
       // "foo" value is equals to fill value. Scale factor has been applied to both.
-      Assert.assertTrue(String.format("%f != %f", actualFillValue, fooValWithoutNaNs),
-              Misc.nearlyEquals(actualFillValue, fooValWithoutNaNs));
+      Assert2.assertNearlyEquals(actualFillValue, fooValWithoutNaNs);
 
       // "foo" value is considered a fill.
       Assert.assertTrue(fooVar.isFillValue(fooValWithoutNaNs));
@@ -181,8 +179,8 @@ public class TestScaleOffsetMissing {
 
       // Values have been multiplied by scale_factor == 0.01f. scale_factor is a float, meaning that we can't compare
       // its products with nearlyEquals() using the default Misc.defaultMaxRelativeDiffDouble.
-      Assert.assertTrue(Misc.nearlyEquals(0, fooVar.getValidMin(), Misc.defaultMaxRelativeDiffFloat));
-      Assert.assertTrue(Misc.nearlyEquals(1, fooVar.getValidMax(), Misc.defaultMaxRelativeDiffFloat));
+      Assert2.assertNearlyEquals(0, fooVar.getValidMin(), Misc.defaultMaxRelativeDiffFloat);
+      Assert2.assertNearlyEquals(1, fooVar.getValidMax(), Misc.defaultMaxRelativeDiffFloat);
 
       // Argument is a double, which has higher precision that our scaled _FillValue (float).
       // This assertion failed before the bug was fixed.

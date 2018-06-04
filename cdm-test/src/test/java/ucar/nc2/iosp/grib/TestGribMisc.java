@@ -44,7 +44,7 @@ import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1RecordScanner;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 import ucar.unidata.util.test.TestDir;
 
@@ -64,11 +64,11 @@ public class TestGribMisc {
   @Test
   public void pdsScaleOverflow() throws Exception {
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/pdsScale.grib2";
-    System.out.printf("%s%n", filename);
+    logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       Variable v = ncfile.findVariable("isobaric");
       float val = v.readScalarFloat();
-      assert Misc.nearlyEquals(val, 92500.0) : val;
+      Assert2.assertNearlyEquals(val, 92500.0);
     }
   }
 
@@ -76,7 +76,7 @@ public class TestGribMisc {
   public void pdsGenType() throws Exception {
     // this one has a analysis and forecast in same variable
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/08Aug08.12z.cras45_NA.grib2";
-    System.out.printf("%s%n", filename);
+    logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
       assert v != null : ncfile.getLocation();
@@ -84,7 +84,7 @@ public class TestGribMisc {
 
     // this one has a forecast and error = must be seperate variables
     filename = TestDir.cdmUnitTestDir + "formats/grib2/RTMA_CONUS_2p5km_20111225_0000.grib2";
-    System.out.printf("%s%n", filename);
+    logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       assert ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-3-0_L1") != null; // Pressure_Surface
       assert ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_error_L103") != null; // Temperature_error_height_above_ground
@@ -95,7 +95,7 @@ public class TestGribMisc {
   public void thinGrid() throws Exception {
     // this one has a analysis and forecast in same variable
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/thinGrid.grib2";
-    System.out.printf("%s%n", filename);
+    logger.debug("{}", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L105");
       assert v != null : ncfile.getLocation();
@@ -115,14 +115,14 @@ public class TestGribMisc {
     // a corner case with a single-bit field; this case was broken in the
     // original jj2000 code
     String filename = TestDir.cdmUnitTestDir + "tds/ncep/GFS_Global_onedeg_20100913_0000.grib2";
-    System.out.printf("testJPEG2K %s%n", filename);
+    logger.debug("testJPEG2K: {}", filename);
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_2-0-0_L1"); // Land_cover_0__sea_1__land_surface
       int[] origin = {0, 38, 281};
       int[] shape = {1, 1, 2};
       Array vals = v.read(origin, shape);
-      assert Misc.nearlyEquals(vals.getFloat(0), 0.0) : vals.getFloat(0);
-      assert Misc.nearlyEquals(vals.getFloat(1), 1.0) : vals.getFloat(1);
+      Assert2.assertNearlyEquals(vals.getFloat(0), 0.0);
+      Assert2.assertNearlyEquals(vals.getFloat(1), 1.0);
     }
   }
 
@@ -130,7 +130,7 @@ public class TestGribMisc {
   public void testNBits0() throws IOException {
     // Tests of GRIB2 nbits=0; should be reference value (0.0), not missing value
     String filename = TestDir.cdmUnitTestDir + "formats/grib2/SingleRecordNbits0.grib2";
-    System.out.printf("testNBits0 %s%n", filename);
+    logger.debug("testNBits0: {}", filename);
 
     try (NetcdfFile ncfile = NetcdfFile.open(filename, null)) {
       Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-1-194_L1");
@@ -181,9 +181,9 @@ public class TestGribMisc {
        Variable v = ncfile.findVariableByAttribute(null, Grib.VARIABLE_ID_ATTNAME, "VAR_0-0-0_L1");
        assert v != null : ncfile.getLocation();
        ArrayFloat vals = (ArrayFloat) (v.read("0,:,0").reduce());   // read first column - its flipped
-       System.out.printf("%s: first=%f last=%f%n", v.getFullName(), vals.getFloat(0), vals.getFloat((int)vals.getSize()-1));
-       assert Misc.nearlyEquals( vals.getFloat(0), 243.289993);
-       assert Misc.nearlyEquals( vals.getFloat((int)vals.getSize()-1), 242.080002);
+       logger.debug("{}: first={} last={}", v.getFullName(), vals.getFloat(0), vals.getFloat((int)vals.getSize()-1));
+       Assert2.assertNearlyEquals(vals.getFloat(0), 243.289993);
+       Assert2.assertNearlyEquals(vals.getFloat((int)vals.getSize()-1), 242.080002);
      }
    }
 
@@ -237,7 +237,4 @@ public class TestGribMisc {
     //Grib1RecordScanner.setAllowBadDsLength(false);
     //Grib1RecordScanner.setAllowBadIsLength(false);
   } */
-
-
-
 }

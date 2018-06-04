@@ -377,21 +377,24 @@ public class NCdumpW {
   static private void printArray(Array ma, PrintWriter out, Indent indent, CancelTask ct) {
     if (ct != null && ct.isCancel()) return;
 
-    if (ma.isUnsigned()) {
-      // The values in 'ma' are unsigned, but will be treated as signed when we print them below, because Java only has
-      // signed types. If they are large enough ( >= 2^(BIT_WIDTH-1) ), their most-significant bits will be interpreted
-      // as the sign bit, which will result in invalid (negative) values being printed. To prevent that, we're going to
-      // widen the numbers before printing them.
-      ma = MAMath.convertUnsigned(ma);
-    }
-
     int rank = ma.getRank();
     Index ima = ma.getIndex();
 
     // scalar
     if (rank == 0) {
-      Object o = ma.getObject(ima);
-      out.print(o.toString());
+      Object value = ma.getObject(ima);
+  
+      if (ma.isUnsigned()) {
+        assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
+    
+        // "value" is an unsigned number, but it will be treated as signed when we print it below, because Java only
+        // has signed types. If it's large enough ( >= 2^(BIT_WIDTH-1) ), its most-significant bit will be interpreted
+        // as the sign bit, which will result in an invalid (negative) value being printed. To prevent that, we're
+        // going to widen the number before printing it, but only if the unsigned number is being seen as negative.
+        value = DataType.widenNumberIfNegative((Number) value);
+      }
+      
+      out.print(value.toString());
       return;
     }
 
@@ -402,11 +405,16 @@ public class NCdumpW {
 
     if ((rank == 1) && (ma.getElementType() != StructureData.class)) {
       for (int ii = 0; ii < last; ii++) {
-        Object o = ma.getObject(ima.set(ii));
+        Object value = ma.getObject(ima.set(ii));
+  
+        if (ma.isUnsigned()) {
+          assert value instanceof Number : "A data type being unsigned implies that it is numeric.";
+          value = DataType.widenNumberIfNegative((Number) value);
+        }
 
         if(ii > 0)
           out.print(", ");
-        out.print(o.toString());
+        out.print(value.toString());
         if (ct != null && ct.isCancel()) return;
       }
       out.print("}");

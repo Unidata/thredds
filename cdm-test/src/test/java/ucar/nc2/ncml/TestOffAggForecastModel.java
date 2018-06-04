@@ -13,7 +13,7 @@ import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.*;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -41,7 +41,7 @@ public class TestOffAggForecastModel {
   @Test
   public void testForecastModel() throws IOException, InvalidRangeException {
     String filename = "file:./"+TestDir.cdmUnitTestDir + "ncml/offsite/aggForecastModel.xml";
-    System.out.println(" TestOffAggForecastModel.testForecastModel=\n"+ ncml);
+    logger.debug(" TestOffAggForecastModel.testForecastModel=\n{}", ncml);
     NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null);
 
     testDimensions(ncfile, nruns);
@@ -66,7 +66,7 @@ public class TestOffAggForecastModel {
       boolean ok = newModelFile.renameTo(newModelFileSave);
       if (!ok) throw new IOException("cant rename file "+newModelFile);
     } else if (!newModelFile.exists() && newModelFileSave.exists()) {
-      System.out.println("already renamed");
+      logger.debug("already renamed");
     } else if (!newModelFile.exists() && !newModelFileSave.exists()) {
       throw new IOException("missing "+newModelFile.getPath());
     } else if (newModelFile.exists() && newModelFileSave.exists()) {
@@ -74,9 +74,9 @@ public class TestOffAggForecastModel {
       if (!ok) throw new IOException("cant delete file "+newModelFile.getPath());
     }
 
-    System.out.println(" TestOffAggForecastModel.testForecastModel=\n"+ ncml);
+    logger.debug(" TestOffAggForecastModel.testForecastModel=\n{}", ncml);
     try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null)) {
-      System.out.println(" TestAggForecastModel.open " + filename);
+      logger.debug(" TestAggForecastModel.open {}", filename);
 
       testDimensions(ncfile, nruns - 1);
       testCoordVar(ncfile);
@@ -91,7 +91,7 @@ public class TestOffAggForecastModel {
       throw new IOException("cant rename file");
 
     try (NetcdfFile ncfile = NcMLReader.readNcML(new StringReader(ncml), filename, null)) {
-      System.out.println(" TestAggForecastModel.open " + filename);
+      logger.debug(" TestAggForecastModel.open {}", filename);
 
       testDimensions(ncfile, nruns);
       testCoordVar(ncfile);
@@ -143,17 +143,16 @@ public class TestOffAggForecastModel {
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
 
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 65;
-      assert data.getShape()[0] == 65;
-      assert data.getElementType() == double.class;
+    Array data = lat.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 65;
+    assert data.getShape()[0] == 65;
+    assert data.getElementType() == double.class;
 
-      IndexIterator dataI = data.getIndexIterator();
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), -832.6983183345455);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), -751.4273183345456);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), -670.1563183345455);
-
+    IndexIterator dataI = data.getIndexIterator();
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), -832.6983183345455);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), -751.4273183345456);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), -670.1563183345455);
   }
 
   public void testAggCoordVar(NetcdfFile ncfile, int nagg) {
@@ -237,7 +236,7 @@ public class TestOffAggForecastModel {
        for (int j=0; j<shape[1]; j++)
         for (int k=0; k<shape[2]; k++) {
           double val = data.getDouble( tIndex.set(i, j, k));
-          //System.out.println(" "+val);
+          //logger.debug(" {}", val);
           assert Misc.nearlyEquals(val, 100*(i+origin[0]) + 10*j + k) : val;
         } */
 
@@ -250,4 +249,3 @@ public class TestOffAggForecastModel {
     testReadSlice( ncfile, new int[] {10, 0, 0, 0}, new int[] {4, 10, 2, 3} );
    }
 }
-

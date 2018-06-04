@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.lang.invoke.MethodHandles;
 
@@ -38,7 +38,7 @@ public class ArrayTest {
     Array data = Array.factory(DataType.USHORT, new int[]{nz, ny, nx}, vals);
     double sum = MAMath.sumDouble(data);
     double sumReduce = MAMath.sumDouble(data.reduce(0));
-    assert Misc.nearlyEquals(sum, sumReduce);
+    Assert2.assertNearlyEquals(sum, sumReduce);
   }
 
   // Demonstrates bug in https://github.com/Unidata/thredds/issues/581.

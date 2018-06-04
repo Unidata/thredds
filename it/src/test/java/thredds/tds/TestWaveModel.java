@@ -20,7 +20,7 @@ import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 import java.io.IOException;
@@ -121,7 +121,7 @@ public class TestWaveModel {
       double[] expect = new double[]{21., 45.};
       Array data = time.getCoordsAsArray();
       for (int i = 0; i < expect.length; i++)
-        assert Misc.nearlyEquals(expect[i], data.getDouble(i));
+        Assert2.assertNearlyEquals(expect[i], data.getDouble(i));
 
       CoverageCoordAxis runtime = gcs.getAxis(AxisType.RunTime);
       Assert.assertNotNull("runtime axis", runtime);
@@ -130,8 +130,7 @@ public class TestWaveModel {
       expect = new double[]{0, 24};
       data = runtime.getCoordsAsArray();
       for (int i = 0; i < expect.length; i++)
-        assert Misc.nearlyEquals(expect[i], data.getDouble(i));
+        Assert2.assertNearlyEquals(expect[i], data.getDouble(i));
     }
   }
-
 }

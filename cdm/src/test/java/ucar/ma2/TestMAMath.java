@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.math.BigInteger;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -254,32 +253,5 @@ public class TestMAMath {
 
     // Null
     assertEquals(0, MAMath.hashCode(null));
-  }
-
-  @Test
-  public void convertUnsigned() {
-    Array unsignedBytes = Array.makeFromJavaArray(new byte[]  { 12, (byte) 155, -32 });
-    Array widenedBytes  = Array.makeFromJavaArray(new short[] { 12, 155,        224 });
-    assertTrue(MAMath.equals(widenedBytes, MAMath.convertUnsigned(unsignedBytes)));
-
-    Array unsignedShorts = Array.makeFromJavaArray(new short[] { 3251, (short) 40000, -22222 });
-    Array widenedShorts  = Array.makeFromJavaArray(new int[]   { 3251, 40000,         43314  });
-    assertTrue(MAMath.equals(widenedShorts, MAMath.convertUnsigned(unsignedShorts)));
-
-    Array unsignedInts = Array.makeFromJavaArray(new int[]  { 123456, (int) 3500000000L, -5436271    });
-    Array widenedInts  = Array.makeFromJavaArray(new long[] { 123456, 3500000000L,       4289531025L });
-    assertTrue(MAMath.equals(widenedInts, MAMath.convertUnsigned(unsignedInts)));
-
-    Array unsignedLongs = Array.makeFromJavaArray(new long[] {
-        // LONG.MAX_VALUE = 9223372036854775807
-        3372036854775L, new BigInteger("10000000000000000000").longValue(), -123456789012345L
-    });
-
-    Array widenedLongs = ArrayObject.factory(DataType.OBJECT, BigInteger.class, false, Index.factory(new int[] {3}));
-    widenedLongs.setObject(0, BigInteger.valueOf(3372036854775L));
-    widenedLongs.setObject(1, new BigInteger("10000000000000000000"));
-    widenedLongs.setObject(2, new BigInteger("18446620616920539271"));
-
-    assertTrue(MAMath.equals(widenedLongs, MAMath.convertUnsigned(unsignedLongs)));
   }
 }

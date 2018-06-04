@@ -12,7 +12,7 @@ import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.units.DateFormatter;
 import ucar.nc2.units.DateUnit;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
@@ -171,8 +171,8 @@ public class TestOffAggFmrcGrib {
         assert data.getElementType() == double.class || data.getElementType() == float.class;
 
         int last = (int) data.getSize() - 1;
-        assert Misc.nearlyEquals(data.getDouble(0), -832.2073364257812) : data.getDouble(0);
-        assert Misc.nearlyEquals(data.getDouble(last), 4369.20068359375) : data.getDouble(last);
+        Assert2.assertNearlyEquals(data.getDouble(0), -832.2073364257812);
+        Assert2.assertNearlyEquals(data.getDouble(last), 4369.20068359375);
     }
 
     private void testAggCoordVar(NetcdfFile ncfile, int nagg, DateUnit du, int[] runhours) {
@@ -247,8 +247,7 @@ public class TestOffAggFmrcGrib {
                 logger.debug("run={} tidx={} val={}", run, tidx, val);
 
                 if (!Double.isNaN(val)) {
-                    assert Misc.nearlyEquals(val, timevals[run][tidx]) :
-                            "run,time=(" + run + "," + tidx + "): " + val + " != " + timevals[run][tidx];
+                    Assert2.assertNearlyEquals(val, timevals[run][tidx]);
                 }
             }
         }

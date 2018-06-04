@@ -13,7 +13,7 @@ import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.ma2.*;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -30,7 +30,7 @@ public class TestAggSynGrid {
   public static void setUp() throws IOException {
     if (gds != null) return;
     gds = ucar.nc2.dt.grid.GridDataset.open(filename);
-    System.out.printf("open %s%n", filename);
+    logger.debug("open {}", filename);
   }
 
   @AfterClass
@@ -61,7 +61,7 @@ public class TestAggSynGrid {
     for (int i = 0; i < dates.length; i++) {
       Date d = dates[i];
       ucar.nc2.util.NamedObject name = (ucar.nc2.util.NamedObject) names.get(i);
-      System.out.println(name.getName() + " == " + d);
+      logger.debug("{} == {}", name.getName(), d);
     }
   }
 
@@ -88,7 +88,7 @@ public class TestAggSynGrid {
   }
 
   @Test
-  public void testCoordVar() {
+  public void testCoordVar() throws IOException {
     NetcdfFile ncfile = gds.getNetcdfFile();
     Variable lat = ncfile.findVariable("lat");
     assert null != lat;
@@ -109,21 +109,17 @@ public class TestAggSynGrid {
     assert att.getStringValue().equals("degrees_north");
     assert att.getNumericValue() == null;
     assert att.getNumericValue(3) == null;
-
-    try {
-      Array data = lat.read();
-      assert data.getRank() == 1;
-      assert data.getSize() == 3;
-      assert data.getShape()[0] == 3;
-      assert data.getElementType() == float.class;
-
-      IndexIterator dataI = data.getIndexIterator();
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 41.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 40.0);
-      assert Misc.nearlyEquals(dataI.getDoubleNext(), 39.0);
-    } catch (IOException io) {
-    }
-
+  
+    Array data = lat.read();
+    assert data.getRank() == 1;
+    assert data.getSize() == 3;
+    assert data.getShape()[0] == 3;
+    assert data.getElementType() == float.class;
+  
+    IndexIterator dataI = data.getIndexIterator();
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 41.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 40.0);
+    Assert2.assertNearlyEquals(dataI.getDoubleNext(), 39.0);
   }
 
   @Test
@@ -148,7 +144,7 @@ public class TestAggSynGrid {
   }
 
   @Test
-  public void testReadData() {
+  public void testReadData() throws IOException {
     NetcdfFile ncfile = gds.getNetcdfFile();
     Variable v = ncfile.findVariable("T");
     assert null != v;
@@ -165,69 +161,51 @@ public class TestAggSynGrid {
     assert v.getDimension(0) == ncfile.findDimension("time");
     assert v.getDimension(1) == ncfile.findDimension("lat");
     assert v.getDimension(2) == ncfile.findDimension("lon");
-
-    try {
-      Array data = v.read();
-      assert data.getRank() == 3;
-      assert data.getSize() == 36;
-      assert data.getShape()[0] == 3;
-      assert data.getShape()[1] == 3;
-      assert data.getShape()[2] == 4;
-      assert data.getElementType() == double.class;
-
-      int[] shape = data.getShape();
-      Index tIndex = data.getIndex();
-      for (int i = 0; i < shape[0]; i++)
-        for (int j = 0; j < shape[1]; j++)
-          for (int k = 0; k < shape[2]; k++) {
-            double val = data.getDouble(tIndex.set(i, j, k));
-            // System.out.println(" "+val);
-            assert Misc.nearlyEquals(val, 100 * i + 10 * j + k) : val;
-          }
-
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  
+    Array data = v.read();
+    assert data.getRank() == 3;
+    assert data.getSize() == 36;
+    assert data.getShape()[0] == 3;
+    assert data.getShape()[1] == 3;
+    assert data.getShape()[2] == 4;
+    assert data.getElementType() == double.class;
+  
+    int[] shape = data.getShape();
+    Index tIndex = data.getIndex();
+    for (int i = 0; i < shape[0]; i++)
+      for (int j = 0; j < shape[1]; j++)
+        for (int k = 0; k < shape[2]; k++) {
+          double val = data.getDouble(tIndex.set(i, j, k));
+          Assert2.assertNearlyEquals(val, 100 * i + 10 * j + k);
+        }
   }
 
-  public void readSlice(int[] origin, int[] shape) {
+  public void readSlice(int[] origin, int[] shape) throws IOException, InvalidRangeException {
     NetcdfFile ncfile = gds.getNetcdfFile();
     Variable v = ncfile.findVariable("T");
-
-    try {
-      Array data = v.read(origin, shape);
-      assert data.getRank() == 3;
-      assert data.getSize() == shape[0] * shape[1] * shape[2];
-      assert data.getShape()[0] == shape[0] : data.getShape()[0] + " " + shape[0];
-      assert data.getShape()[1] == shape[1];
-      assert data.getShape()[2] == shape[2];
-      assert data.getElementType() == double.class;
-
-      Index tIndex = data.getIndex();
-      for (int i = 0; i < shape[0]; i++)
-        for (int j = 0; j < shape[1]; j++)
-          for (int k = 0; k < shape[2]; k++) {
-            double val = data.getDouble(tIndex.set(i, j, k));
-            //System.out.println(" "+val);
-            assert Misc.nearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k) : val;
-          }
-
-    } catch (InvalidRangeException io) {
-      assert false;
-    } catch (IOException io) {
-      io.printStackTrace();
-      assert false;
-    }
+  
+    Array data = v.read(origin, shape);
+    assert data.getRank() == 3;
+    assert data.getSize() == shape[0] * shape[1] * shape[2];
+    assert data.getShape()[0] == shape[0] : data.getShape()[0] + " " + shape[0];
+    assert data.getShape()[1] == shape[1];
+    assert data.getShape()[2] == shape[2];
+    assert data.getElementType() == double.class;
+  
+    Index tIndex = data.getIndex();
+    for (int i = 0; i < shape[0]; i++)
+      for (int j = 0; j < shape[1]; j++)
+        for (int k = 0; k < shape[2]; k++) {
+          double val = data.getDouble(tIndex.set(i, j, k));
+          Assert2.assertNearlyEquals(val, 100 * (i + origin[0]) + 10 * j + k);
+        }
   }
 
-  public void testReadSlice() {
-
+  @Test
+  public void testReadSlice() throws IOException, InvalidRangeException {
     readSlice(new int[]{0, 0, 0}, new int[]{3, 3, 4});
     readSlice(new int[]{0, 0, 0}, new int[]{2, 3, 2});
     readSlice(new int[]{2, 0, 0}, new int[]{1, 3, 4});
     readSlice(new int[]{1, 0, 0}, new int[]{2, 2, 3});
   }
-
 }
-

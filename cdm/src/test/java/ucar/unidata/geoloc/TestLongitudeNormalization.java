@@ -7,12 +7,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Describe
@@ -23,9 +22,6 @@ import java.util.Random;
 @RunWith(Parameterized.class)
 public class TestLongitudeNormalization {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  static boolean show = true;
-  static boolean doRandom = false;
 
   @Parameterized.Parameters(name = "{0}")
   public static List<Object[]> getTestParameters() {
@@ -40,16 +36,6 @@ public class TestLongitudeNormalization {
     result.add(new Object[]{181.0, -200.0, -360.0});
     result.add(new Object[]{-200.0, 200.0, 720.0});
     result.add(new Object[]{-179.0, 180.0, 360.0});
-
-    if (doRandom) {
-      show = false;
-      Random r = new Random();
-      for (int i = 0; i < 1000; i++) {
-        double lon = 1000.0 * r.nextDouble() - 500.0;
-        double from = 1000.0 * r.nextDouble() - 500.0;
-        result.add(new Object[]{lon, from, null});
-      }
-    }
 
     return result;
   }
@@ -66,12 +52,14 @@ public class TestLongitudeNormalization {
   @Test
   public void doit() {
     double compute = lonNormalFrom(lon, from);
+    
     if (expectedDiff != null) {
-      if (show) System.out.printf("(%f from %f) = %f, diff = %f expectedDiff %f%n", lon, from, compute, compute - lon, expectedDiff);
-      Assert.assertTrue(Misc.nearlyEquals(expectedDiff, compute - lon));
+      logger.debug("({} from {}) = {}, diff = {} expectedDiff {}", lon, from, compute, compute - lon, expectedDiff);
+      Assert2.assertNearlyEquals(expectedDiff, compute - lon);
     } else {
-      if (show) System.out.printf("(%f from %f) = %f, diff = %f%n", lon, from, compute, compute - lon);
+      logger.debug("({} from {}) = {}, diff = {}", lon, from, compute, compute - lon);
     }
+    
     String msg = String.format("(%f from %f) = %f%n", lon, from, compute);
     Assert.assertTrue(msg, compute >= from);
     Assert.assertTrue(msg, compute < from + 360);

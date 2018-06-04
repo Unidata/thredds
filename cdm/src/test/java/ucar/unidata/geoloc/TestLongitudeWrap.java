@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.util.Misc;
+import ucar.unidata.util.test.Assert2;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -43,8 +43,8 @@ public class TestLongitudeWrap {
   @Test
   public void doit() {
     double compute = lonDiff(lat1, lat2);
-    System.out.printf("(%f - %f) = %f, expect %f%n", lat1, lat2, compute, expected);
-    Assert.assertTrue(Misc.nearlyEquals(expected, compute));
+    logger.debug("({} - {}) = {}, expect {}", lat1, lat2, compute, expected);
+    Assert2.assertNearlyEquals(expected, compute);
     Assert.assertTrue(Math.abs(compute) < 360.0);
   }
 
@@ -59,5 +59,4 @@ public class TestLongitudeWrap {
   static public double lonDiff(double lon1, double lon2) {
     return Math.IEEEremainder(lon1 - lon2, 720.0);
   }
-
 }
