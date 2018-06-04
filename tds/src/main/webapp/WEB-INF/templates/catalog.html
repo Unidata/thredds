@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!--/* Replace this "head" element with the one in commonFragments. Pass the "title" element below to the fragment. */-->
+<head th:replace="templates/commonFragments :: head(~{::title}, ~{::script}, ~{::link})">
+    <title>Catalog</title>
+    <link rel="stylesheet" href="/thredds/tdsCat.css" type="text/css">
+    <script type="text/javascript" th:inline="javascript"></script>
+</head>
+<body>
+    <h1 th:text="${name}"><img src="/thredds/threddsIcon.png" alt="Initial TDS Installation" align="left" valign="top"/>
+    </h1>
+    <hr size="1" noshade="noshade"><table width="100%" cellspacing="0" cellpadding="5" align="center">
+        <tbody>
+            <tr>
+                <th align="left"><font size="+1">Dataset</font></th>
+                <th align="center"><font size="+1">Size</font></th>
+                <th align="right"><font size="+1">Last Modified</font></th>
+            </tr>
+            <tr class="subset" th:each="subset , rowStat : ${items}" th:bgcolor="${rowStat.even} ? '#eeeeee' : '#ffffff'">
+                <td align="left">&nbsp;&nbsp;&nbsp;&nbsp;
+                    <img src="${subset.getIconSrc()}" alt="Folder"> &nbsp;
+                    <a th:href="${subset.getHref()}"
+                       th:if="${subset.useHref()}"><code th:text="${subset.getDisplayName()}"></code></a>
+                    <code th:if="${!subset.useHref()}" th:text="${subset.GgtDisplayName()}"></code></td>
+                <td align="right">&nbsp;<code th:text="${subset.getDataSize()}"></code></td>
+                <td align="right"><code th:text="${subset.getLastModified()}">--</code></td>
+            </tr>
+        </tbody>
+    </table>
+    <hr size="1" noshade="noshade"><h3><a href="/thredds/catalog.html">Initial TDS Installation (please change threddsConfig.xml)</a> at <a href="http://www.my.site/">My Group</a> see <a href="/thredds/info/serverInfo.html"> Info </a><br>
+    THREDDS Data Server [Version $projectVersion - $buildTimestamp] <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/index.html"> Documentation</a></h3>
+</body>
+</html>

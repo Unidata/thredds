@@ -22,6 +22,7 @@ import thredds.core.TdsRequestedDataset;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * LocalCatalogServiceController using client/server catalogs
@@ -33,64 +34,78 @@ import java.net.URISyntaxException;
 @Controller
 @RequestMapping(value = "/catalog")
 public class CatalogServiceController {
-  // private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+    // private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
-  @Autowired
-  private CatalogManager catalogManager;
+    @Autowired
+    private CatalogManager catalogManager;
 
-  @Autowired
-  ConfigCatalogHtmlWriter writer;
+    @Autowired
+    ConfigCatalogHtmlWriter writer;
 
-  @RequestMapping(value = "**", method = {RequestMethod.GET})
-  protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response, CatalogRequest params) throws Exception {
+    @RequestMapping(value = "**", method = {RequestMethod.GET})
+    protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response, CatalogRequest params) throws Exception {
 
-    TdsRequestedDataset reqD = new TdsRequestedDataset(request, "/catalog");
-    String path = reqD.getPath();
-    boolean isHtml = path.endsWith(".html");
-    String catalogPath = path.replaceAll(".html$", ".xml");
+        TdsRequestedDataset reqD = new TdsRequestedDataset(request, "/catalog");
+        String path = reqD.getPath();
+        boolean isHtml = path.endsWith(".html");
+        String catalogPath = path.replaceAll(".html$", ".xml");
 
-    Catalog catalog;
-    URI baseUri;
-    String baseUriString = request.getRequestURL().toString();
-    try {
-      baseUri = new URI(baseUriString);
-      catalog = catalogManager.getCatalog(catalogPath, baseUri);
+        Catalog catalog;
+        URI baseUri;
+        String baseUriString = request.getRequestURL().toString();
+        try {
+            baseUri = new URI(baseUriString);
+            catalog = catalogManager.getCatalog(catalogPath, baseUri);
 
-    } catch (URISyntaxException e) {
-      String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
-      throw new URISyntaxException(msg, e.getReason());
+        } catch (URISyntaxException e) {
+            String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
+            throw new URISyntaxException(msg, e.getReason());
+        }
+
+        // no catalog found
+        if (catalog == null)
+            throw new FileNotFoundException(request.getRequestURI());
+
+        if (isHtml) {
+            return handleHTMLRequest(request, response, catalog, params);
+        } else {
+            return handleXMLRequest(request, response, catalog, params);
+        }
     }
 
-    // no catalog found
-    if (catalog == null)
-      throw new FileNotFoundException(request.getRequestURI());
+    protected ModelAndView handleXMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
+        if (params.dataset != null) {
+            Dataset dataset = catalog.findDatasetByID(params.dataset);
+            if (dataset == null)
+                throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
 
-    // Otherwise, handle catalog as indicated by "command".
-    if (params.dataset != null) {
-      Dataset dataset = catalog.findDatasetByID(params.dataset);
-      if (dataset == null)
-        throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + baseUriString + "].");
+            Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
+            return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
 
-      if (isHtml) {
-        int i = writer.showDataset(baseUriString, dataset, request, response, true);
-        return null;
-
-      } else {
-        Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
-        return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
-      }
-
-    } else {
-      if (isHtml) {
-        int i = writer.writeCatalog(request, response, catalog, true);
-        return null;
-
-      } else {
-        return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
-      }
+        } else {
+            return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
+        }
     }
-  }
 
+    protected ModelAndView handleHTMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
+        if (params.dataset != null) {
+            Dataset dataset = catalog.findDatasetByID(params.dataset);
+            if (dataset == null)
+                throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
+
+            Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
+
+            int i = writer.showDataset(request.getRequestURL().toString(), dataset, request, response, true);
+            return null;
+//            Map<String, Object> model = new HashMap<>();
+//            model.put("catalog", subsetCat);
+//            return new ModelAndView("templates/dataset", CatalogViewContextParser.getDatasetViewContext(dataset, true));
+        } else {
+//            int i = writer.writeCatalog(request, response, catalog, true);
+//            return null;
+            return new ModelAndView("templates/catalog", CatalogViewContextParser.getCatalogViewContext(catalog, true));
+        }
+    }
 
   /* private ModelAndView handlePublicDocumentRequest(HttpServletRequest request, HttpServletResponse response, String path)
           throws IOException, ServletException {

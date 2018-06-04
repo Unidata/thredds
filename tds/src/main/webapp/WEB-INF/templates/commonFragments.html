@@ -4,24 +4,14 @@
 <!--/* The indentation of the fragments below matches the indentation of the elements that they will replace in the
        target templates. Do not normalize it, or else the generated HTML won't be pretty any more. */-->
 
-<head th:fragment="head(title, scripts)">
-  <title th:replace="${title}">NetCDF Subset Service</title>
+<head th:fragment="head(title, scripts, style)">
+  <title th:replace="${title}">THREDDS Data Server</title>
 
   <!-- Common metadata and styles. -->
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
-  <link rel="stylesheet" type="text/css" href="https://necolas.github.io/normalize.css/8.0.0/normalize.css">
-  <link rel="stylesheet" type="text/css" href="../../style/ncss/main.css" th:href="@{/style/ncss/main.css}"/>
-  <link rel="stylesheet" type="text/css" href="../../style/ncss/layout.css" th:href="@{/style/ncss/layout.css}"/>
-  <link rel="stylesheet" type="text/css" href="../../style/ncss/sidebar.css" th:href="@{/style/ncss/sidebar.css}"/>
-  <link rel="stylesheet" type="text/css" href="https://openlayers.org/en/v4.6.4/css/ol.css">
-
-  <!-- "script" elements must have explicit closing tags. See https://stackoverflow.com/questions/69913 -->
-  <script src="https://openlayers.org/en/v4.6.4/build/ol.js"></script>
-  <!-- As of 2018-02-08, Safari and Edge do not natively support the "FormData.entries()" method, which we utilize in
-       buildAccessUrl(). This provides a replacement implementation. See https://github.com/jimmywarting/FormData. -->
-  <script src="https://cdn.rawgit.com/jimmywarting/FormData/3.0.9/FormData.js"></script>
-  <script type="text/javascript" src="../../js/ncss/ncssApp.js" th:src="@{/js/ncss/ncssApp.js}"></script>
+  <!--/* This is a placeholder where our page-specific stylesheet  can be inserted. */-->
+  <th:block th:replace="${style}" />
 
   <!--/* This is a placeholder where our "script" block containing inline Javascript will be inserted. */-->
   <th:block th:replace="${scripts}" />

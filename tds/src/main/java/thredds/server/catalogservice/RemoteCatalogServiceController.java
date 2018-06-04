@@ -91,8 +91,7 @@ public class RemoteCatalogServiceController {
     // Otherwise, handle catalog as indicated by "command".
      switch (params.getCommand()) {
       case SHOW:
-        writer.writeCatalog(request, response, catalog, false);
-        return null;
+          return new ModelAndView("templates/catalog", CatalogViewContextParser.getCatalogViewContext(catalog, false));
 
       case SUBSET:
         String datasetId = params.getDataset();
@@ -105,9 +104,7 @@ public class RemoteCatalogServiceController {
         }
 
         if (params.isHtmlView()) {
-          writer.showDataset(uri.toString(), dataset, request, response, false);
-          return null;
-
+            return new ModelAndView("templates/Dataset", CatalogViewContextParser.getDatasetViewContext(dataset, false));
         } else {
           Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
           return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
@@ -122,7 +119,6 @@ public class RemoteCatalogServiceController {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, msg);
         return null;
     }
-
   }
 
   public static ModelAndView constructValidationMessageModelAndView(URI uri, String validationMessage, HtmlConfigBean htmlConfig) {
