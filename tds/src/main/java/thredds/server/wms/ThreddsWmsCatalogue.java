@@ -150,7 +150,7 @@ public class ThreddsWmsCatalogue implements WmsCatalogue {
          * go here if caching is desired for the TDS WMS.
          */
         MapDomain mapDomain = new MapDomain(params.getBbox(), params.getWidth(), params.getHeight(),
-                params.getTargetZ(), null);
+                params.getTargetZ(), params.getTargetT());
         List<? extends DiscreteFeature<?, ?>> extractedFeatures = dataset.extractMapFeatures(
                 CollectionUtils.setOf(layerName), mapDomain);
         return new FeaturesAndMemberName(extractedFeatures, layerName);
