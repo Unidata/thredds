@@ -5,50 +5,39 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0
            http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">
-
+  
   <service name="all" base="" serviceType="compound">
-    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
-    <service name="dap4" serviceType="DAP4" base="/thredds/dap4/" />
-    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" />
-    <!--service name="wcs" serviceType="WCS" base="/thredds/wcs/" /-->
-    <!--service name="wms" serviceType="WMS" base="/thredds/wms/" /-->
-    <!--<service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" /-->
-    <!--<service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/" /-->
-  </service>
-
-  <service name="dap" base="" serviceType="compound">
-    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
-    <service name="dap4" serviceType="DAP4" base="/thredds/dap4/" />
+    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/"/>
+    <service name="dap4" serviceType="DAP4" base="/thredds/dap4/"/>
+    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="cdmrFeature" serviceType="CdmrFeature" base="/thredds/cdmrfeature/grid/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
   </service>
 
   <datasetRoot path="test" location="content/testdata/" />
 
-  <dataset name="Test Single Dataset" ID="testDataset"
-           serviceName="dap"  urlPath="test/testData.nc" dataType="Grid"/>
+  <dataset name="Test Grid Dataset" ID="testGrid"
+           serviceName="all"  urlPath="test/crossSeamProjection.nc" dataType="Grid"/>
 
-  <dataset name="Test Single Dataset 2" ID="testDataset2"
-           serviceName="odap" urlPath="test/testData2.grib2" dataType="Grid"/>
+  <dataset name="Test Point Dataset" ID="testPoint"
+           serviceName="all" urlPath="test/H.1.1.nc" dataType="Point"/>
+  
+  <dataset name="Test Station Dataset" ID="testStation"
+           serviceName="all" urlPath="test/H.2.1.1.nc" dataType="Point"/>
 
   <datasetScan name="Test all files in a directory" ID="testDatasetScan"
                path="testAll" location="content/testdata">
     <metadata inherited="true">
       <serviceName>all</serviceName>
-      <dataType>Grid</dataType>
     </metadata>
-
-    <filter>
-      <include wildcard="*eta_211.nc"/>
-      <include wildcard="testgrid*.nc"/>
-    </filter>
   </datasetScan>
 
   <catalogRef xlink:title="Test Enhanced Catalog" xlink:href="enhancedCatalog.xml" name=""/>
-
-  <datasetScan name="Uploaded Files" ID="upload"
-                     location="${tds.upload.dir}" path="upload/">
-	    <metadata inherited="true">
-	      <serviceName>all</serviceName>
-	    </metadata>
-  </datasetScan>
-
 </catalog>

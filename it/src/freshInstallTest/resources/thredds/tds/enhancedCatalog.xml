@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" name="Unidata THREDDS-IDD NetCDF-OpenDAP Server" version="1.2">
-  <service name="latest" serviceType="Resolver" base="" />
-  <service name="both" serviceType="Compound" base="">
-    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
-    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+  <service name="all" serviceType="compound" base="">
+    <service name="odap" serviceType="OpenDAP" base="/thredds/dodsC/" />
+    <service name="dap4" serviceType="DAP4" base="/thredds/dap4/" />
+    <service name="http" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="wms" serviceType="WMS" base="/thredds/wms/" />
+    <service name="ncssGrid" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+    <service name="ncssPoint" serviceType="NetcdfSubset" base="/thredds/ncss/point/" />
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/" />
+    <service name="cdmrFeature" serviceType="CdmrFeature" base="/thredds/cdmrfeature/grid/" />
+    <service name="iso" serviceType="ISO" base="/thredds/iso/" />
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/" />
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/" />
   </service>
   <dataset name="NCEP Model Data">
     <metadata inherited="true">
-      <serviceName>both</serviceName>
+      <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
       <dataType>Grid</dataType>
       <dataFormat>NetCDF</dataFormat>

@@ -173,15 +173,11 @@
     <typicalDataset>penultimate</typicalDataset>
   </Aggregation>
   -->
-
-  <!--
-  The Netcdf Subset Service is off by default.
+  
   <NetcdfSubsetService>
-    <allow>false</allow>
-    <scour>10 min</scour>
-    <maxAge>-1 min</maxAge>
+    <scour>15 min</scour>
+    <maxAge>30 min</maxAge>
   </NetcdfSubsetService>
-  -->
 
   <!--
   <Opendap>
