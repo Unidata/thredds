@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!--/* Replace this "head" element with the one in commonFragments. Pass the "title" element below to the fragment. */-->
+<head th:replace="templates/commonFragments :: head(~{::title}, ~{::script}, ~{::link})">
+    <title>Catalog Services</title>
+    <link rel="stylesheet" href="/thredds/tds.css" type="text/css">
+    <script type="text/javascript" th:inline="javascript">
+    </script>
+</head>
+
+    <!-- TODO: Make common fragment -->
+    <table width="100%">
+        <tbody><tr><td>
+            <img th:src="${logoUrl}" th:alt="${logoAlt}" align="left" valign="top" hspace="10" vspace="2">
+            <h3><strong><a th:href="${installUrl}" th:text="${installName}">THREDDS-DEV Data Server</a></strong></h3>
+            <h3><strong><a th:href="${webappUrl}" th:text="${webbappName}">THREDDS Data Server</a></strong></h3>
+        </td></tr>
+        </tbody>
+    </table>
+
+    <h2 th:text="'Catalog ' + ${dataset.getCatUrl()}"></h2>
+    <h2 th:text="'Dataset: ' + ${dataset.getName()}"></h2>
+
+    <div th:if="${dataset.getAllContext().size() > 0}">
+        <ul>
+            <li th:each="prop : ${dataset.getAllContext()}" th:utext="'<em>' + ${prop.key} + ': </em>' + ${prop.value}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getDocumentation().size() > 0}">
+        <h3>Documentation:</h3>
+        <ul>
+            <li th:each="doc : ${dataset.getDocumentation()}" th:if="${doc.inlineContent != null}"
+                th:utext="'<strong>' + ${doc.type} + '</strong>' + ${doc.inlineContent}"></li>
+            <li th:each="doc : ${dataset.getDocumentation()}" th:if="${doc.href != null}"
+                th:utext="'<strong>' + ${doc.type} + '</strong> <a href=' + ${doc.href} + '>' + ${doc.title} + '</a>'"></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getAccess().size() > 0}">
+        <h3 th:if="${dataset.getAccess().size() > 0}">Access:</h3>
+        <ol>
+            <li th:each="access : ${dataset.getAccess()}"
+                th:utext="'<b>' + ${access.serviceTypeName} + ': </b><a href=' + ${access.href} + '>' + ${access.href} + '</a>'"></li>
+        </ol>
+    </div>
+
+    <div th:if="${dataset.getContributors().size() > 0}">
+        <h3>Contributors:</h3>
+        <ul>
+            <li th:each="contributor : ${dataset.getContributors()}" th:utext="${contributor.role != null ? '<strong>('+contributor.role+')</strong> : '' } + ${contributor.name}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getKeywords().size() > 0}">
+        <h3>Keywords:</h3>
+        <ul>
+            <li th:each="keyword : ${dataset.getKeywords()}" th:utext="${keyword.vocab != null ? '<strong>('+keyword.vocab)+')</strong> : '' } + ${keyword.text}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getDates().size() > 0}">
+        <h3>Dates:</h3>
+        <ul>
+            <li th:each="date : ${dataset.getDates()}" th:utext="${date.type != null ? '<strong>('+date.type)+')</strong> : '' } + ${date.text}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getProjects().size() > 0}">
+        <h3>Projects:</h3>
+        <ul>
+            <li th:each="project : ${dataset.getProjects()}" th:utext="${project.vocab != null ? '<strong>('+project.vocab+')</strong> : '' } + ${project.text}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getCreators().size() > 0}">
+        <h3>Creators:</h3>
+        <ul>
+            <li th:each="creator : ${dataset.getCreators()}" th:utext="'<strong>' + ${creator.name} + '</strong>">
+                <ul>
+                    <li th:utext="'<em>email: </em>' + ${creator.email"></li>
+                    <li th:utext="'<a href=' + ${creator.href} + '>' + ${creator.href} + '</a>'"></li></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <div th:if="${dataset.getPublishers().size() > 0}">
+        <h3>Publishers:</h3>
+        <ul>
+            <li th:each="publisher : ${dataset.getPublishers()}" th:utext="'<strong>' + ${publisher.name} + '</strong>">
+                <ul>
+                    <li th:utext="'<em>email: </em>' + ${publisher.email}"></li>
+                    <li th:utext="'<a href=' + ${publisher.href} + '>' + ${publisher.href} + '</a>'"></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getVariables().size() > 0}">
+        <h3>Variables:</h3>
+        <ul th:if="${}">
+            <li><a href="https://thredds-dev.unidata.ucar.edu/thredds/metadata/grib/NCEP/NDFD/NWS/CONUS/NOAAPORT/TwoD?metadata=variableMap">VariableMap</a></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getGeospatialCoverage() != null}">
+        <h3>GeospatialCoverage:</h3>
+        <ul>
+            <li th:utext="'<em> Longitude: </em>' + ${dataset.getGeospatialCoverage().eastWestRange}"></li>
+            <li th:utext="'<em> Latitude: </em>' + ${dataset.getGeospatialCoverage().northSouthRange}"></li>
+            <li th:if="${dataset.getGeospatialCoverage().upDownRange != null}"
+                th:utext="'<em> Altitude: </em>' + ${dataset.upDownRange} + ' (positive is <strong>' + ${dataset.getGeospatialCoverage().zPositive} + '</strong>)'}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getTimeCoverage() != null}">
+        <h3>TimeCoverage:</h3>
+        <ul>
+            <li th:if="${dataset.getTimeCoverage().start != null}" th:utext="'<em> Start: </em> ' + ${dataset.getTimeCoverage().start}"></li>
+            <li th:if="${dataset.getTimeCoverage().end != null}" th:utext="'<em> End: </em> ' + ${dataset.getTimeCoverage().end}"></li>
+            <li th:if="${dataset.getTimeCoverage().duration != null}" th:utext="'<em> Duration: </em> ' + ${dataset.getTimeCoverage().duration}"></li>
+            <li th:if="${dataset.getTimeCoverage().resolution != null}" th:utext="'<em> Resolution: </em> ' + ${dataset.getTimeCoverage().resolution}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${dataset.getProperties().size() > 0}">
+        <h3>Properties:</h3>
+        <ul>
+            <li th:each="prop : dataset.getProperties()" th:if="${prop.attachLink != null}"
+                th:utext="'<a href=' + ${prop.href} + '>' + ${prop.name} + '</a>'"></li>
+            <li th:each="prop : dataset.getProperties()" th:if="${prop.attachLink == null}"
+                th:text="'${prop.name} + ' = ' + ${prop.value}"></li>
+        </ul>
+    </div>
+
+    <h3>Viewers:</h3><ul>
+        <li> <a href="/thredds/Godiva.html?server=https://thredds-dev.unidata.ucar.edu/thredds/wms/grib/NCEP/NDFD/NWS/CONUS/NOAAPORT/TwoD">Godiva3 (browser-based)</a></li>
+        <li> <a href="/thredds/view/ToolsUI.jnlp?catalog=https://thredds-dev.unidata.ucar.edu/thredds/catalog/grib/NCEP/NDFD/NWS/CONUS/NOAAPORT/catalog.xml&amp;dataset=grib/NCEP/NDFD/NWS/CONUS/NOAAPORT/TwoD">NetCDF-Java ToolsUI (webstart)</a></li>
+        <li> <a href="/thredds/view/idv.jnlp?url=https://thredds-dev.unidata.ucar.edu/thredds/dodsC/grib/NCEP/NDFD/NWS/CONUS/NOAAPORT/TwoD">Integrated Data Viewer (IDV) (webstart)</a></li>
+    </ul>
+
+</body>
+</html>

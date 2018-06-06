@@ -42,6 +42,9 @@ public class CatalogServiceController {
     @Autowired
     ConfigCatalogHtmlWriter writer;
 
+    @Autowired
+    CatalogViewContextParser parser;
+
     @RequestMapping(value = "**", method = {RequestMethod.GET})
     protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response, CatalogRequest params) throws Exception {
 
@@ -92,18 +95,14 @@ public class CatalogServiceController {
             Dataset dataset = catalog.findDatasetByID(params.dataset);
             if (dataset == null)
                 throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
+//
+//            Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
 
-            Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
-
-            int i = writer.showDataset(request.getRequestURL().toString(), dataset, request, response, true);
-            return null;
-//            Map<String, Object> model = new HashMap<>();
-//            model.put("catalog", subsetCat);
-//            return new ModelAndView("templates/dataset", CatalogViewContextParser.getDatasetViewContext(dataset, true));
-        } else {
-//            int i = writer.writeCatalog(request, response, catalog, true);
+//            int i = writer.showDataset(request.getRequestURL().toString(), dataset, request, response, true);
 //            return null;
-            return new ModelAndView("templates/catalog", CatalogViewContextParser.getCatalogViewContext(catalog, true));
+            return new ModelAndView("templates/dataset", parser.getDatasetViewContext(dataset, true));
+        } else {
+            return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, true));
         }
     }
 

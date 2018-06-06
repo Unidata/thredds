@@ -54,6 +54,9 @@ public class RemoteCatalogServiceController {
   @Autowired
   private ConfigCatalogHtmlWriter writer;
 
+  @Autowired
+  private CatalogViewContextParser parser;
+
   @InitBinder // ("RemoteCatalogRequest")  LOOK
   protected void initBinder(WebDataBinder binder) {
     binder.setValidator(new RemoteCatalogRequestValidator());
@@ -91,7 +94,7 @@ public class RemoteCatalogServiceController {
     // Otherwise, handle catalog as indicated by "command".
      switch (params.getCommand()) {
       case SHOW:
-          return new ModelAndView("templates/catalog", CatalogViewContextParser.getCatalogViewContext(catalog, false));
+          return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, false));
 
       case SUBSET:
         String datasetId = params.getDataset();
@@ -104,7 +107,7 @@ public class RemoteCatalogServiceController {
         }
 
         if (params.isHtmlView()) {
-            return new ModelAndView("templates/Dataset", CatalogViewContextParser.getDatasetViewContext(dataset, false));
+            return new ModelAndView("templates/dataset", parser.getDatasetViewContext(dataset, false));
         } else {
           Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
           return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
