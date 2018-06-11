@@ -4,6 +4,8 @@
  */
 package ucar.nc2.dataset;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
@@ -11,28 +13,23 @@ import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.util.Misc;
 
-import java.util.EnumSet;
+import javax.annotation.Nonnull;
+import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
+
+import static ucar.ma2.DataType.*;
 
 /**
- * Implementation of EnhanceScaleMissing for missing data, unsigned, and scale/offset packed data.
+ * Implementation of EnhanceScaleMissing for unsigned data, scale/offset packed data, and missing data.
  *
  * @author caron
+ * @author cwardgar
  * @see EnhanceScaleMissing
  */
 class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
-  // Default fill values, used unless _FillValue variable attribute is set.
-  // duplicated from N3iosp, used in getFillValue.
-  /* static private final byte NC_FILL_BYTE = -127;
-  static private final char NC_FILL_CHAR = 0;
-  static private final short NC_FILL_SHORT = (short) -32767;
-  static private final int NC_FILL_INT = -2147483647;
-  static private final float NC_FILL_FLOAT = 9.9692099683868690e+36f; /* near 15 * 2^119
-  static private final double NC_FILL_DOUBLE = 9.9692099683868690e+36;  */
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static private final boolean debug = false, debugRead = false, debugMissing = false;
-
-  private DataType convertedDataType = null;
-  private boolean useNaNs = false;
+  private DataType origDataType = null, unsignedConversionType = null, scaledOffsetType = null;
 
   // defaults from NetcdfDataset modes
   private boolean invalidDataIsMissing = NetcdfDataset.invalidDataIsMissing;
@@ -43,15 +40,15 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   private double scale = 1.0, offset = 0.0;
 
   private boolean hasValidRange = false, hasValidMin = false, hasValidMax = false;
-  private double valid_min = -Double.MAX_VALUE, valid_max = Double.MAX_VALUE;
+  private double validMin = -Double.MAX_VALUE, validMax = Double.MAX_VALUE;
 
   private boolean hasFillValue = false;
-  private double fillValue; // LOOK making it double not really correct
+  private double fillValue; // LOOK: making it double not really correct. What about CHAR?
 
   private boolean hasMissingValue = false;
-  private double[] missingValue;
+  private double[] missingValue;  // LOOK: also wrong to make double, for the same reason.
 
-  private boolean isUnsigned;
+  private DataType.Signedness signedness;
 
 
   /**
@@ -66,8 +63,8 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * @param forVar the Variable to decorate.
    */
   EnhanceScaleMissingImpl(VariableDS forVar) {
-    this(forVar, NetcdfDataset.useNaNs, NetcdfDataset.fillValueIsMissing,
-            NetcdfDataset.invalidDataIsMissing, NetcdfDataset.missingDataIsMissing);
+    this(forVar, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
+        NetcdfDataset.missingDataIsMissing);
   }
 
   /**
@@ -75,668 +72,498 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * If scale/offset attributes are found, remove them from the decorated variable.
    *
    * @param forVar               the Variable to decorate.
-   * @param useNaNs              pre-fill isMissing() data with NaNs
    * @param fillValueIsMissing   use _FillValue for isMissing()
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  EnhanceScaleMissingImpl(VariableDS forVar, boolean useNaNs, boolean fillValueIsMissing,
-                          boolean invalidDataIsMissing, boolean missingDataIsMissing) {
-
+  private EnhanceScaleMissingImpl(VariableDS forVar, boolean fillValueIsMissing, boolean invalidDataIsMissing,
+          boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
     this.missingDataIsMissing = missingDataIsMissing;
 
-    boolean isNetcdfIosp = false;
-    NetcdfFile ncfile = forVar.getNetcdfFile();
-    if (ncfile != null) {
-      String iosp = ncfile.getFileTypeId();
-      isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(iosp) ||
-              DataFormatType.NETCDF4.getDescription().equals(iosp);
-    }
-
-    // see if underlying variable has scale/offset already applied
-    Variable orgVar = forVar.getOriginalVariable();
-    if (orgVar instanceof VariableDS) {
-      VariableDS orgVarDS = (VariableDS) orgVar;
-      EnumSet<NetcdfDataset.Enhance> orgEnhanceMode = orgVarDS.getEnhanceMode();
-      if ((orgEnhanceMode != null) && orgEnhanceMode.contains(NetcdfDataset.Enhance.ScaleMissing))
-        return;
-    }
-
-    // deal with legacy use of attribute with Unsigned = true
-    Attribute unsignedAttrib = forVar.findAttributeIgnoreCase(CDM.UNSIGNED);
-    boolean isUnsignedSet = unsignedAttrib != null && unsignedAttrib.getStringValue().equalsIgnoreCase("true");
-    if (isUnsignedSet) {
-      forVar.setDataType(forVar.getDataType().withSignedness(DataType.Signedness.UNSIGNED));
-    }
-
-    this.isUnsigned = forVar.getDataType().isUnsigned();
-    this.convertedDataType = forVar.getDataType();  // only for netcDF !!??
-
-    DataType scaleType = null, missType = null, validType = null;
-    if (debug) System.out.println("EnhancementsImpl for Variable = " + forVar.getFullName());
-    Attribute att;
-
-    // scale and offset
-    if (null != (att = forVar.findAttribute(CDM.SCALE_FACTOR))) {
-      if (!att.isString()) {
-        scale = att.getNumericValue().doubleValue();
-        hasScaleOffset = true;
-        scaleType = att.getDataType();
-        forVar.remove(att);
-        if (debug) System.out.println("scale = " + scale + " type " + scaleType);
+    this.origDataType = forVar.getDataType();
+    this.unsignedConversionType = origDataType;
+    
+    // unsignedConversionType is initialized to origDataType, and origDataType may be a non-integral type that doesn't
+    // have an "unsigned flavor" (such as FLOAT and DOUBLE). Furthermore, unsignedConversionType may start out as
+    // integral, but then be widened to non-integral (i.e. LONG -> DOUBLE). For these reasons, we cannot rely upon
+    // unsignedConversionType to store the signedness of the variable. We need a separate field.
+    this.signedness = origDataType.getSignedness();
+  
+    // In the event of conflict, "unsigned" wins. Potential conflicts include:
+    // 1. origDataType is unsigned, but variable has "_Unsigned == false" attribute.
+    // 2. origDataType is signed,   but variable has "_Unsigned == true"  attribute.
+    if (signedness == Signedness.SIGNED) {
+      Attribute unsignedAtt = forVar.findAttributeIgnoreCase(CDM.UNSIGNED);
+      if (unsignedAtt != null && unsignedAtt.getStringValue().equalsIgnoreCase("true")) {
+          this.signedness = Signedness.UNSIGNED;
       }
     }
-    if (null != (att = forVar.findAttribute(CDM.ADD_OFFSET))) {
-      if (!att.isString()) {
-        offset = att.getNumericValue().doubleValue();
-        hasScaleOffset = true;
-        DataType offType = att.getDataType();
-        if (rank(offType) > rank(scaleType))
-          scaleType = offType;
-        forVar.remove(att);
-        if (debug) System.out.println("offset = " + offset);
-      }
+
+    if (signedness == Signedness.UNSIGNED) {
+      // We may need a larger data type to hold the results of the unsigned conversion.
+      this.unsignedConversionType = nextLarger(origDataType).withSignedness(Signedness.UNSIGNED);
+      logger.debug("assign unsignedConversionType = {}", unsignedConversionType);
+    }
+    
+    DataType scaleType = null, offsetType = null, validType = null;
+    logger.debug("{} for Variable = {}", getClass().getSimpleName(), forVar.getFullName());
+
+    Attribute scaleAtt = forVar.findAttribute(CDM.SCALE_FACTOR);
+    if (scaleAtt != null && !scaleAtt.isString()) {
+      scaleType = getAttributeDataType(scaleAtt);
+      scale = convertUnsigned(scaleAtt.getNumericValue(), scaleType).doubleValue();
+      hasScaleOffset = true;
+      logger.debug("scale = {}    type = {}", scale, scaleType);
+    }
+
+    Attribute offsetAtt = forVar.findAttribute(CDM.ADD_OFFSET);
+    if (offsetAtt != null && !offsetAtt.isString()) {
+      offsetType = getAttributeDataType(offsetAtt);
+      offset = convertUnsigned(offsetAtt.getNumericValue(), offsetType).doubleValue();
+      hasScaleOffset = true;
+      logger.debug("offset = {}", offset);
     }
 
     ////// missing data : valid_range. assume here its in units of unpacked data. correct this below
-    Attribute validRangeAtt;
-    if (null != (validRangeAtt = forVar.findAttribute(CDM.VALID_RANGE))) {
-      if (!validRangeAtt.isString() && validRangeAtt.getLength() > 1) {
-        valid_min = validRangeAtt.getNumericValue(0).doubleValue();
-        valid_max = validRangeAtt.getNumericValue(1).doubleValue();
-        hasValidRange = true;
-        validType = validRangeAtt.getDataType();
-        if (hasScaleOffset) forVar.remove(validRangeAtt);
-        if (debug) System.out.println("valid_range = " + valid_min + " " + valid_max);
-      }
-    }
-
-    Attribute validMinAtt = null, validMaxAtt = null;
-    if (!hasValidRange) {
-      if (null != (validMinAtt = forVar.findAttribute("valid_min"))) {
-        if (!validMinAtt.isString()) {
-          valid_min = validMinAtt.getNumericValue().doubleValue();
-          hasValidMin = true;
-          validType = validMinAtt.getDataType();
-          if (hasScaleOffset) forVar.remove(validMinAtt);
-          if (debug) System.out.println("valid_min = " + valid_min);
-        }
-      }
-
-      if (null != (validMaxAtt = forVar.findAttribute("valid_max"))) {
-        if (!validMaxAtt.isString()) {
-          valid_max = validMaxAtt.getNumericValue().doubleValue();
-          hasValidMax = true;
-          DataType t = validMaxAtt.getDataType();
-          if (rank(t) > rank(validType))
-            validType = t;
-          if (hasScaleOffset) forVar.remove(validMaxAtt);
-          if (debug) System.out.println("valid_min = " + valid_max);
-        }
-      }
-    }
-    boolean hasValidData = hasValidMin || hasValidMax || hasValidRange;
-    if (hasValidMin && hasValidMax)
+    Attribute validRangeAtt = forVar.findAttribute(CDM.VALID_RANGE);
+    if (validRangeAtt != null && !validRangeAtt.isString() && validRangeAtt.getLength() > 1) {
+      validType = getAttributeDataType(validRangeAtt);
+      validMin = convertUnsigned(validRangeAtt.getNumericValue(0), validType).doubleValue();
+      validMax = convertUnsigned(validRangeAtt.getNumericValue(1), validType).doubleValue();
       hasValidRange = true;
+      logger.debug("valid_range = {}  {}", validMin, validMax);
+    }
+
+    Attribute validMinAtt = forVar.findAttribute(CDM.VALID_MIN);
+    Attribute validMaxAtt = forVar.findAttribute(CDM.VALID_MAX);
+
+    // Only process the valid_min and valid_max attributes if valid_range isn't present.
+    if (!hasValidRange) {
+      if (validMinAtt != null && !validMinAtt.isString()) {
+        validType = getAttributeDataType(validMinAtt);
+        validMin = convertUnsigned(validMinAtt.getNumericValue(), validType).doubleValue();
+        hasValidMin = true;
+        logger.debug("valid_min = {}", validMin);
+      }
+
+      if (validMaxAtt != null && !validMaxAtt.isString()) {
+        validType = largestOf(validType, getAttributeDataType(validMaxAtt));
+        validMax = convertUnsigned(validMaxAtt.getNumericValue(), validType).doubleValue();
+        hasValidMax = true;
+        logger.debug("valid_min = {}", validMax);
+      }
+
+      if (hasValidMin && hasValidMax) {
+        hasValidRange = true;
+      }
+    }
 
     /// _FillValue
-    DataType fillType = null;
     Attribute fillValueAtt = forVar.findAttribute(CDM.FILL_VALUE);
-    boolean fillAttOk = (null != fillValueAtt && !fillValueAtt.isString() && fillValueAtt.getLength() > 0);
-    if (fillAttOk || isNetcdfIosp) {
-      if (fillAttOk) {
-        fillValue = fillValueAtt.getNumericValue().doubleValue();
-      } else {
-        fillValue = N3iosp.getFillValueDefault(forVar.getDataType()).doubleValue();
-      }
-      fillValue = convertScaleOffsetMissing(fillValue);
+    if (fillValueAtt != null && !fillValueAtt.isString()) {
+      DataType fillType = getAttributeDataType(fillValueAtt);
+      fillValue = convertUnsigned(fillValueAtt.getNumericValue(), fillType).doubleValue();
+      fillValue = applyScaleOffset(fillValue);  // This will fail when _FillValue is CHAR.
       hasFillValue = true;
-      fillType = (null != fillValueAtt) ? fillValueAtt.getDataType() : forVar.getDataType();
-      if (hasScaleOffset) forVar.remove(fillValueAtt);
+    } else {
+      // No _FillValue attribute found. Instead, if file is NetCDF and variable is numeric, use the default fill value.
+      String fileTypeId = forVar.getNetcdfFile() == null ? null : forVar.getNetcdfFile().getFileTypeId();
+      
+      boolean isNetcdfIosp = DataFormatType.NETCDF.getDescription().equals(fileTypeId) ||
+              DataFormatType.NETCDF4.getDescription().equals(fileTypeId);
+      
+      if (isNetcdfIosp && unsignedConversionType.isNumeric()) {
+        fillValue = applyScaleOffset(N3iosp.getFillValueDefault(unsignedConversionType));
+        hasFillValue = true;
+      }
     }
 
     /// missing_value
-    if (null != (att = forVar.findAttribute(CDM.MISSING_VALUE))) {
-      if (att.isString()) {
-        String svalue = att.getStringValue();
-        if (forVar.getDataType() == DataType.CHAR) {
+    Attribute missingValueAtt = forVar.findAttribute(CDM.MISSING_VALUE);
+    if (missingValueAtt != null) {
+      if (missingValueAtt.isString()) {
+        String svalue = missingValueAtt.getStringValue();
+        if (origDataType == DataType.CHAR) {
           missingValue = new double[1];
-          if (svalue.length() == 0) missingValue[0] = 0;
-          else missingValue[0] = svalue.charAt(0);
+          if (svalue.length() == 0) {
+            missingValue[0] = 0;
+          } else {
+            missingValue[0] = svalue.charAt(0);
+          }
 
-          missType = DataType.CHAR;
           hasMissingValue = true;
-
         } else {  // not a CHAR - try to fix problem where they use a numeric value as a String attribute
-
           try {
             missingValue = new double[1];
             missingValue[0] = Double.parseDouble(svalue);
-            missType = att.getDataType();
             hasMissingValue = true;
           } catch (NumberFormatException ex) {
-            if (debug) System.out.println("String missing_value not parsable as double= " + att.getStringValue());
+            logger.debug("String missing_value not parseable as double = {}", missingValueAtt.getStringValue());
           }
         }
-
       } else { // not a string
-        missingValue = getValueAsDouble(att);
-        missType = att.getDataType();
-        for (double mv : missingValue)
-          if (!Double.isNaN(mv))
+        DataType missType = getAttributeDataType(missingValueAtt);
+        
+        missingValue = new double[missingValueAtt.getLength()];
+        for (int i = 0; i < missingValue.length; i++) {
+          missingValue[i] = convertUnsigned(missingValueAtt.getNumericValue(i), missType).doubleValue();
+          missingValue[i] = applyScaleOffset(missingValue[i]);
+        }
+        logger.debug("missing_data: {}", Arrays.toString(missingValue));
+        
+        for (double mv : missingValue) {
+          if (!Double.isNaN(mv)) {
             hasMissingValue = true;   // dont need to do anything if its already a NaN
+            break;
+          }
+        }
       }
-      if (hasScaleOffset) forVar.remove(att);
     }
-
-    // missing
-    boolean hasMissing = (invalidDataIsMissing && hasValidData) ||
-            (fillValueIsMissing && hasFillValue) ||
-            (missingDataIsMissing && hasMissingValue);
 
     /// assign convertedDataType if needed
     if (hasScaleOffset) {
+      scaledOffsetType = largestOf(unsignedConversionType, scaleType, offsetType).withSignedness(signedness);
+      logger.debug("assign scaledOffsetType = {}", scaledOffsetType);
 
-      convertedDataType = forVar.getDataType();
-      if (hasMissing) { // with default fill, always has missing data unless explicitly turned off
-        // has missing data : must be float or double
-        if (rank(scaleType) > rank(convertedDataType))
-          convertedDataType = scaleType;
-        if (missingDataIsMissing && rank(missType) > rank(convertedDataType))
-          convertedDataType = missType;
-        if (fillValueIsMissing && rank(fillType) > rank(convertedDataType))
-          convertedDataType = fillType;
-        if (invalidDataIsMissing && rank(validType) > rank(convertedDataType))
-          convertedDataType = validType;
-        if (rank(convertedDataType) < rank(DataType.DOUBLE))
-          convertedDataType = DataType.FLOAT;
-
-      } else {
-        // no missing data; can use wider of data and scale
-        if (rank(scaleType) > rank(convertedDataType))
-          convertedDataType = scaleType;
-      }
-      if (debug) System.out.println("assign dataType = " + convertedDataType);
-
-      // validData may be external or internal
-      if (hasValidData) {
-        DataType orgType = forVar.getDataType();
-
-        // If valid_range is the same type as scale_factor (actually the wider of
-        // scale_factor and add_offset) and this is wider than the external data, then it
-        // will be interpreted as being in the units of the internal (unpacked) data.
-        // Otherwise it is in the units of the external (unpacked) data.
-        // we assumed unpacked data above, redo if its really packed data
-        if (!((rank(validType) == rank(scaleType)) && (rank(scaleType) >= rank(orgType)))) {
-          if (validRangeAtt != null) {
-            double[] values = getValueAsDouble(validRangeAtt);
-            valid_min = values[0];
-            valid_max = values[1];
-          } else {
-            if (validMinAtt != null) {
-              double[] values = getValueAsDouble(validMinAtt);
-              valid_min = values[0];
-            }
-            if (validMaxAtt != null) {
-              double[] values = getValueAsDouble(validMaxAtt);
-              valid_max = values[0];
-            }
+      // validData may be packed or unpacked
+      if (hasValidData()) {
+        if (rank(validType) == rank(largestOf(scaleType, offsetType)) &&
+                rank(validType) > rank(unsignedConversionType)) {
+          // If valid_range is the same type as the wider of scale_factor and add_offset, PLUS
+          // it is wider than the (packed) data, we know that the valid_range values were stored as unpacked.
+          // We already assumed that this was the case when we first read the attribute values, so there's
+          // nothing for us to do here.
+        } else {
+          // Otherwise, the valid_range values were stored as packed. So now we must unpack them.
+          if (hasValidRange || hasValidMin) {
+            validMin = applyScaleOffset(validMin);
+          }
+          if (hasValidRange || hasValidMax) {
+            validMax = applyScaleOffset(validMax);
           }
         }
       }
     }
-
-    if (hasMissing && ((convertedDataType == DataType.DOUBLE) || (convertedDataType == DataType.FLOAT)))
-      this.useNaNs = useNaNs;
-    if (debug) System.out.println("this.useNaNs = " + this.useNaNs);
   }
-
-  private double[] getValueAsDouble(Attribute att) {
-    int n = att.getLength();
-    double[] value = new double[n];
-
-    if (debugMissing) System.out.printf("missing_data: ");
-    for (int i = 0; i < n; i++) {
-      if (isUnsigned && att.getDataType() == DataType.BYTE)                       // LOOK BYTE or UBYTE ?
-        value[i] = convertScaleOffsetMissing(att.getNumericValue(i).byteValue());
-      else if (isUnsigned && att.getDataType() == DataType.SHORT)
-        value[i] = convertScaleOffsetMissing(att.getNumericValue(i).shortValue());
-      else if (isUnsigned && att.getDataType() == DataType.INT)
-        value[i] = convertScaleOffsetMissing(att.getNumericValue(i).intValue());
-      else
-        value[i] = scale * att.getNumericValue(i).doubleValue() + offset;
-      if (debugMissing) System.out.print(" " + value[i]);
+  
+  // Get the data type of an attribute. Make it unsigned if the variable is unsigned.
+  private DataType getAttributeDataType(Attribute attribute) {
+    DataType dataType = attribute.getDataType();
+    if (signedness == Signedness.UNSIGNED) {
+      // If variable is unsigned, make its integral attributes unsigned too.
+      dataType = dataType.withSignedness(signedness);
     }
-    if (debugMissing) System.out.println();
-    return value;
+    return dataType;
   }
-
-  private int rank(DataType c) {
-    if (c == null) return -1;
-    if (c.getPrimitiveClassType() == byte.class)
-      return 0;
-    else if (c.getPrimitiveClassType() == short.class)
-      return 1;
-    else if (c.getPrimitiveClassType() == int.class)
-      return 2;
-    else if (c.getPrimitiveClassType() == long.class)
-      return 3;
-    else if (c == DataType.FLOAT)
-      return 4;
-    else if (c == DataType.DOUBLE)
-      return 5;
-    else
+  
+  /**
+   * Returns a distinct integer for each of the {@link DataType#isNumeric() numeric} data types that can be used to
+   * (roughly) order them by {@link DataType#getSize() size}. {@code BYTE < UBYTE < SHORT < USHORT < INT < UINT <
+   * FLOAT < LONG < ULONG < DOUBLE}. {@code -1} will be returned for all non-numeric data types.
+   *
+   * @param dataType  a numeric data type.
+   * @return  a distinct integer for each of the numeric data types that can be used to (roughly) order them by size.
+   */
+  public static int rank(DataType dataType) {
+    if (dataType == null) {
       return -1;
+    }
+
+    switch (dataType) {
+      case BYTE:   return 0;
+      case UBYTE:  return 1;
+      case SHORT:  return 2;
+      case USHORT: return 3;
+      case INT:    return 4;
+      case UINT:   return 5;
+      case FLOAT:  return 6;
+      case LONG:   return 7;
+      case ULONG:  return 8;
+      case DOUBLE: return 9;
+      default:     return -1;
+    }
+  }
+  
+  /**
+   * Returns the data type that is the largest among the arguments. Relative sizes of data types are determined via
+   * {@link #rank(DataType)}.
+   *
+   * @param dataTypes  an array of numeric data types.
+   * @return  the data type that is the largest among the arguments.
+   */
+  public static DataType largestOf(DataType... dataTypes) {
+    DataType widest = null;
+    for (DataType dataType : dataTypes) {
+      if (widest == null) {
+        widest = dataType;
+      } else if (rank(dataType) > rank(widest)) {
+        widest = dataType;
+      }
+    }
+    return widest;
+  }
+  
+  /**
+   * Returns the smallest numeric data type that:
+   * <ol>
+   *     <li>can hold a larger integer than {@code dataType} can</li>
+   *     <li>if integral, has the same signedness as {@code dataType}</li>
+   * </ol>
+   * The relative sizes of data types are determined in a manner consistent with {@link #rank(DataType)}.
+   * <p/>
+   * <table border="1">
+   *     <tr>  <th>Argument</th>  <th>Result</th>  </tr>
+   *     <tr>  <td>BYTE</td>      <td>SHORT</td>   </tr>
+   *     <tr>  <td>UBYTE</td>     <td>USHORT</td>  </tr>
+   *     <tr>  <td>SHORT</td>     <td>INT</td>     </tr>
+   *     <tr>  <td>USHORT</td>    <td>UINT</td>    </tr>
+   *     <tr>  <td>INT</td>       <td>LONG</td>    </tr>
+   *     <tr>  <td>UINT</td>      <td>ULONG</td>   </tr>
+   *     <tr>  <td>LONG</td>      <td>DOUBLE</td>  </tr>
+   *     <tr>  <td>ULONG</td>     <td>DOUBLE</td>  </tr>
+   *     <tr>
+   *         <td>Any other data type</td>
+   *         <td>Just return argument</td>
+   *     </tr>
+   * </table>
+   * <p/>
+   * The returned type is intended to be just big enough to hold the result of performing an unsigned conversion of a
+   * value of the smaller type. For example, the {@code byte} value {@code -106} equals {@code 150} when interpreted
+   * as unsigned. That won't fit in a (signed) {@code byte}, but it will fit in a {@code short}.
+   *
+   * @param dataType  an integral data type.
+   * @return  the next larger type.
+   */
+  public static DataType nextLarger(DataType dataType) {
+    switch (dataType) {
+      case BYTE:   return SHORT;
+      case UBYTE:  return USHORT;
+      case SHORT:  return INT;
+      case USHORT: return UINT;
+      case INT:    return LONG;
+      case UINT:   return ULONG;
+      case LONG:   return DOUBLE;
+      case ULONG:  return DOUBLE;
+      default:     return dataType;
+    }
   }
 
-  /**
-   * @return converted DataType, else null if hasScaleOffset is true.
-   */
-  public DataType getConvertedDataType() {
-    return convertedDataType;
+  @Override public double getScaleFactor() {
+    return scale;
   }
 
-  /**
-   * true if Variable has valid_range, valid_min or valid_max attributes
-   */
-  public boolean hasInvalidData() {
+  @Override public double getOffset() {
+    return offset;
+  }
+  
+  @Override public Signedness getSignedness() {
+    return signedness;
+  }
+  
+  @Override public DataType getScaledOffsetType() {
+    return scaledOffsetType;
+  }
+  
+  @Nonnull @Override public DataType getUnsignedConversionType() {
+    return unsignedConversionType;
+  }
+
+  @Override
+  public boolean hasValidData() {
     return hasValidRange || hasValidMin || hasValidMax;
   }
-
-  /**
-   * return the minimum value in the valid range
-   */
+  
+  @Override
   public double getValidMin() {
-    return valid_min;
+    return validMin;
   }
-
-  /**
-   * return the maximum value in the valid range
-   */
+  
+  @Override
   public double getValidMax() {
-    return valid_max;
+    return validMax;
   }
-
-  /**
-   * return true if val is outside the valid range
-   */
+  
+  @Override
   public boolean isInvalidData(double val) {
     // valid_min and valid_max may have been multiplied by scale_factor, which could be a float, not a double.
     // That potential loss of precision means that we cannot do the nearlyEquals() comparison with
     // Misc.defaultMaxRelativeDiffDouble.
     boolean greaterThanOrEqualToValidMin =
-            Misc.nearlyEquals(val, valid_min, Misc.defaultMaxRelativeDiffFloat) || val > valid_min;
+        Misc.nearlyEquals(val, validMin, Misc.defaultMaxRelativeDiffFloat) || val > validMin;
     boolean lessThanOrEqualToValidMax =
-            Misc.nearlyEquals(val, valid_max, Misc.defaultMaxRelativeDiffFloat) || val < valid_max;
+        Misc.nearlyEquals(val, validMax, Misc.defaultMaxRelativeDiffFloat) || val < validMax;
 
-    if (hasValidRange)
-      return !greaterThanOrEqualToValidMin || !lessThanOrEqualToValidMax;
-    else if (hasValidMin)
-      return !greaterThanOrEqualToValidMin;
-    else if (hasValidMax)
-      return !lessThanOrEqualToValidMax;
-    return false;
+    return (hasValidRange && !(greaterThanOrEqualToValidMin && lessThanOrEqualToValidMax)) ||
+           (hasValidMin   && !greaterThanOrEqualToValidMin) ||
+           (hasValidMax   && !lessThanOrEqualToValidMax);
   }
-
-  /**
-   * true if Variable has _FillValue attribute
-   */
+  
+  @Override
   public boolean hasFillValue() {
     return hasFillValue;
   }
-
-  /**
-   * return true if val equals the _FillValue
-   */
+  
+  @Override
   public boolean isFillValue(double val) {
     return hasFillValue && Misc.nearlyEquals(val, fillValue, Misc.defaultMaxRelativeDiffFloat);
   }
-
+  
+  @Override
   public double getFillValue() {
     return fillValue;
   }
-
-  /**
-   * true if Variable data will be converted using scale and offet
-   */
+  
+  @Override
   public boolean hasScaleOffset() {
     return hasScaleOffset;
   }
-
-  /**
-   * true if Variable has missing_value attribute
-   */
+  
+  @Override
   public boolean hasMissingValue() {
     return hasMissingValue;
   }
-
-  /**
-   * return true if val equals a missing_value (low level)
-   */
+  
+  @Override
   public boolean isMissingValue(double val) {
-    if (!hasMissingValue)
+    if (!hasMissingValue) {
       return false;
-    for (double aMissingValue : missingValue)
-      if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat))
+    }
+    for (double aMissingValue : missingValue) {
+      if (Misc.nearlyEquals(val, aMissingValue, Misc.defaultMaxRelativeDiffFloat)) {
         return true;
+      }
+    }
     return false;
   }
-
+  
+  @Override
   public double[] getMissingValues() {
     return missingValue;
   }
-
-  /**
-   * set whether to use NaNs for missing values, for efficiency
-   */
-  public void setUseNaNs(boolean useNaNs) {
-    this.useNaNs = useNaNs;
-  }
-
-  /**
-   * @return whether to use NaNs for missing values (for efficiency)
-   */
-  public boolean getUseNaNs() {
-    return useNaNs;
-  }
-
-  /**
-   * set if _FillValue is considered isMissing(); better set in constructor if possible
-   */
+  
+  @Override
   public void setFillValueIsMissing(boolean b) {
     this.fillValueIsMissing = b;
   }
-
-  /**
-   * set if valid_range is considered isMissing(); better set in constructor if possible
-   */
+  
+  @Override
   public void setInvalidDataIsMissing(boolean b) {
     this.invalidDataIsMissing = b;
   }
-
-  /**
-   * set if missing_data is considered isMissing(); better set in constructor if possible
-   */
+  
+  @Override
   public void setMissingDataIsMissing(boolean b) {
     this.missingDataIsMissing = b;
   }
-
-  /**
-   * true if Variable has missing data values
-   */
+  
+  @Override
   public boolean hasMissing() {
-    return (invalidDataIsMissing && hasInvalidData()) ||
-            (fillValueIsMissing && hasFillValue()) ||
-            (missingDataIsMissing && hasMissingValue());
+    return (invalidDataIsMissing && hasValidData()) || (fillValueIsMissing && hasFillValue()) ||
+        (missingDataIsMissing && hasMissingValue());
   }
-
-  /**
-   * Is this a missing value ?
-   *
-   * @param val check this value
-   * @return true if missing
-   */
+  
+  @Override
   public boolean isMissing(double val) {
-    if (Double.isNaN(val)) return true;
-    return hasMissing() && isMissing_(val);
-  }
-
-  /**
-   * Optimize "Is this a missing value"? Assumes NaNs have already been set if its missing.
-   *
-   * @param val check this value
-   * @return true if missing
-   */
-  public boolean isMissingFast(double val) {
-    if (useNaNs) return Double.isNaN(val); // no need to check again
-    if (Double.isNaN(val)) return true;
-    return hasMissing() && isMissing_(val);
-  }
-
-  // find data values that match a missing value
-  /* assumes that hasMissing() == true
-  private final boolean isMissing_(double val) {
-    return (invalidDataIsMissing && isInvalidData(val)) ||
-        (fillValueIsMissing && isFillValue(val)) ||
-        (missingDataIsMissing && isMissingValue(val));
-  } */
-
-  private boolean isMissing_(double val) {
-    if (missingDataIsMissing && hasMissingValue && isMissingValue(val))
+    if (Double.isNaN(val)) {
       return true;
-    if (fillValueIsMissing && hasFillValue && isFillValue(val))
-      return true;
-    if (invalidDataIsMissing)
-      return isInvalidData(val);
-    return false;
-  }
-
-  /**
-   * Get FillValue. Check if set, use default value if not
-   *
-   * @param dt the variable datatype
-   * @return java primitive array of length 1, or a String.
-   */
-  public Object getFillValue(DataType dt) {
-    DataType useType = convertedDataType == null ? dt : convertedDataType;
-    if (useType.getPrimitiveClassType() == byte.class) {
-      byte[] result = new byte[1];
-      result[0] = hasFillValue ? (byte) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UBYTE : N3iosp.NC_FILL_BYTE);
-      return result;
-
-    } else if (useType == DataType.BOOLEAN) {
-      boolean[] result = new boolean[1];
-      result[0] = false;
-      return result;
-
-    } else if (useType == DataType.CHAR) {
-      char[] result = new char[1];
-      result[0] = hasFillValue ? (char) fillValue : N3iosp.NC_FILL_CHAR;
-      return result;
-
-    } else if (useType.getPrimitiveClassType() == short.class) {
-      short[] result = new short[1];
-      result[0] = hasFillValue ? (short) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_USHORT : N3iosp.NC_FILL_SHORT);
-      return result;
-
-    } else if (useType.getPrimitiveClassType() == int.class) {
-      int[] result = new int[1];
-      result[0] = hasFillValue ? (int) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UINT : N3iosp.NC_FILL_INT);
-      return result;
-
-    } else if (useType.getPrimitiveClassType() == long.class) {
-      long[] result = new long[1];
-      result[0] = hasFillValue ? (long) fillValue : (dt.isUnsigned() ? N3iosp.NC_FILL_UINT64 : N3iosp.NC_FILL_INT64);
-      return result;
-
-    } else if (useType == DataType.FLOAT) {
-      float[] result = new float[1];
-      result[0] = hasFillValue ? (float) fillValue : N3iosp.NC_FILL_FLOAT;
-      return result;
-
-    } else if (useType == DataType.DOUBLE) {
-      double[] result = new double[1];
-      result[0] = hasFillValue ? fillValue : N3iosp.NC_FILL_DOUBLE;
-      return result;
-
     } else {
-      String[] result = new String[1];
-      result[0] = CDM.FILL_VALUE;
-      return result;
+      return (missingDataIsMissing && isMissingValue(val)) || (fillValueIsMissing && isFillValue(val)) ||
+             (invalidDataIsMissing && isInvalidData(val));
     }
   }
-
-  public double convertScaleOffsetMissing(byte valb) {
-    if (!hasScaleOffset)
-      return useNaNs && isMissing((double) valb) ? Double.NaN : (double) valb;
-
-    double convertedValue;
-    if (isUnsigned)
-      convertedValue = scale * DataType.unsignedByteToShort(valb) + offset;
-    else
-      convertedValue = scale * valb + offset;
-
-    return useNaNs && isMissing(convertedValue) ? Double.NaN : convertedValue;
+  
+  
+  @Override
+  public Number convertUnsigned(Number value) {
+    return convertUnsigned(value, signedness);
+  }
+  
+  private static Number convertUnsigned(Number value, DataType dataType) {
+    return convertUnsigned(value, dataType.getSignedness());
+  }
+  
+  private static Number convertUnsigned(Number value, Signedness signedness) {
+    if (signedness == Signedness.UNSIGNED) {
+      // Handle integral types that should be treated as unsigned by widening them if necessary.
+      return DataType.widenNumberIfNegative(value);
+    } else {
+      return value;
+    }
+  }
+  
+  @Override
+  public Array convertUnsigned(Array in) {
+    return convert(in, true, false, false);
   }
 
-  public double convertScaleOffsetMissing(short vals) {
-    if (!hasScaleOffset)
-      return useNaNs && isMissing((double) vals) ? Double.NaN : (double) vals;
-
-    double convertedValue;
-    if (isUnsigned)
-      convertedValue = scale * DataType.unsignedShortToInt(vals) + offset;
-    else
-      convertedValue = scale * vals + offset;
-
-    return useNaNs && isMissing(convertedValue) ? Double.NaN : convertedValue;
+  @Override
+  public double applyScaleOffset(Number value) {
+    double convertedValue = value.doubleValue();
+    return hasScaleOffset ? scale * convertedValue + offset : convertedValue;
   }
-
-  public double convertScaleOffsetMissing(int vali) {
-    if (!hasScaleOffset)
-      return useNaNs && isMissing((double) vali) ? Double.NaN : (double) vali;
-
-    double convertedValue;
-    if (isUnsigned)
-      convertedValue = scale * DataType.unsignedIntToLong(vali) + offset;
-    else
-      convertedValue = scale * vali + offset;
-
-    return useNaNs && isMissing(convertedValue) ? Double.NaN : convertedValue;
+  
+  @Override
+  public Array applyScaleOffset(Array in) {
+    return convert(in, false, true, false);
   }
-
-  public double convertScaleOffsetMissing(long vall) {
-    if (!hasScaleOffset)
-      return useNaNs && isMissing((double) vall) ? Double.NaN : (double) vall;
-
-    double convertedValue = scale * vall + offset;
-    return useNaNs && isMissing(convertedValue) ? Double.NaN : convertedValue;
+  
+  @Override
+  public Number convertMissing(Number value) {
+    return isMissing(value.doubleValue()) ? Double.NaN : value;
   }
-
-  public double convertScaleOffsetMissing(double value) {
-    if (!hasScaleOffset)
-      return useNaNs && isMissing(value) ? Double.NaN : value;
-
-    double convertedValue = scale * value + offset;
-    return useNaNs && isMissing(convertedValue) ? Double.NaN : convertedValue;
+  
+  @Override
+  public Array convertMissing(Array in) {
+    return convert(in, false, false, true);
   }
-
-  public Array convertScaleOffsetMissing(Array data) {
-    if (hasScaleOffset())
-      data = convertScaleOffset(data);
-    else if (hasMissing() && getUseNaNs())
-      data = convertMissing(data);
-    return data;
-  }
-
-  /**
-   * Convert Data with scale and offset.
-   * Also translate missing data to NaNs if useNaNs = true.
-   *
-   * @param in data to convert
-   * @return converted data.
-   */
-  private Array convertScaleOffset(Array in) {
-    if (!hasScaleOffset) return in;
-    if (debugRead) System.out.println("convertScaleOffset ");
-
-    Array out = Array.factory(convertedDataType, in.getShape());
+  
+  @Override
+  public Array convert(Array in, boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
+    if (!in.getDataType().isNumeric() || (!convertUnsigned && !applyScaleOffset && !convertMissing)) {
+      return in;  // Nothing to do!
+    }
+    
+    if (getSignedness() == Signedness.SIGNED) {
+      convertUnsigned = false;
+    }
+    if (!hasScaleOffset()) {
+      applyScaleOffset = false;
+    }
+    
+    DataType outType = origDataType;
+    if (convertUnsigned) {
+      outType = getUnsignedConversionType();
+    }
+    if (applyScaleOffset) {
+      outType = getScaledOffsetType();
+    }
+  
+    if (outType != DataType.FLOAT && outType != DataType.DOUBLE) {
+      convertMissing = false;
+    }
+    
+    Array out = Array.factory(outType, in.getShape());
     IndexIterator iterIn = in.getIndexIterator();
     IndexIterator iterOut = out.getIndexIterator();
-
-    if (isUnsigned && in.getElementType() == byte.class)
-      convertScaleOffsetUnsignedByte(iterIn, iterOut);
-    else if (isUnsigned && in.getElementType() == short.class)
-      convertScaleOffsetUnsignedShort(iterIn, iterOut);
-    else if (isUnsigned && in.getElementType() == int.class)
-      convertScaleOffsetUnsignedInt(iterIn, iterOut);
-    else {
-      boolean checkMissing = useNaNs && hasMissing();
-      while (iterIn.hasNext()) {
-        double val = scale * iterIn.getDoubleNext() + offset;
-        iterOut.setDoubleNext(checkMissing && isMissing_(val) ? Double.NaN : val);
+  
+    while (iterIn.hasNext()) {
+      Number value = (Number) iterIn.getObjectNext();
+      
+      if (convertUnsigned) {
+        value = convertUnsigned(value);
       }
+      if (applyScaleOffset) {
+        value = applyScaleOffset(value);
+      }
+      if (convertMissing) {
+        value = convertMissing(value);
+      }
+      
+      iterOut.setObjectNext(value);
     }
-
+  
     return out;
   }
-
-  private void convertScaleOffsetUnsignedByte(IndexIterator iterIn, IndexIterator iterOut) {
-    boolean checkMissing = useNaNs && hasMissing();
-    while (iterIn.hasNext()) {
-      byte valb = iterIn.getByteNext();
-      double val = scale * DataType.unsignedByteToShort(valb) + offset;
-      iterOut.setDoubleNext(checkMissing && isMissing_(val) ? Double.NaN : val);
-    }
-  }
-
-  private void convertScaleOffsetUnsignedShort(IndexIterator iterIn, IndexIterator iterOut) {
-    boolean checkMissing = useNaNs && hasMissing();
-    while (iterIn.hasNext()) {
-      short valb = iterIn.getShortNext();
-      double val = scale * DataType.unsignedShortToInt(valb) + offset;
-      iterOut.setDoubleNext(checkMissing && isMissing_(val) ? Double.NaN : val);
-    }
-  }
-
-  private void convertScaleOffsetUnsignedInt(IndexIterator iterIn, IndexIterator iterOut) {
-    boolean checkMissing = useNaNs && hasMissing();
-    while (iterIn.hasNext()) {
-      int valb = iterIn.getIntNext();
-      double val = scale * DataType.unsignedIntToLong(valb) + offset;
-      iterOut.setDoubleNext(checkMissing && isMissing_(val) ? Double.NaN : val);
-    }
-  }
-
-  /**
-   * Translate missing data to NaNs. Data must be DOUBLE or FLOAT
-   *
-   * @param in convert this array
-   * @return same array, with missing values replaced by NaNs
-   */
-  private Array convertMissing(Array in) {
-    if (debugRead) System.out.println("convertMissing ");
-
-    IndexIterator iterIn = in.getIndexIterator();
-    if (in.getElementType() == double.class) {
-      while (iterIn.hasNext()) {
-        double val = iterIn.getDoubleNext();
-        if (isMissing_(val))
-          iterIn.setDoubleCurrent(Double.NaN);
-      }
-    } else if (in.getElementType() == float.class) {
-      while (iterIn.hasNext()) {
-        float val = iterIn.getFloatNext();
-        if (isMissing_(val))
-          iterIn.setFloatCurrent(Float.NaN);
-      }
-    }
-    return in;
-  }
-
-  /**
-   * Convert (in place) all values in the given array that are considered
-   * as "missing" to Float.NaN
-   *
-   * @param values input array
-   * @return input array, with missing values converted to NaNs.
-   */
-  public float[] setMissingToNaN(float[] values) {
-    if (!hasMissing()) return values;
-    for (int i = 0; i < values.length; i++) {
-      if (isMissing_(values[i]))
-        values[i] = Float.NaN;
-    }
-    return values;
-  }
-
-  static public void main(String[] args) {
-    double d = Double.NaN;
-    float f = (float) d;
-    System.out.println(" f=" + f + " " + Float.isNaN(f) + " " + Double.isNaN((double) f));
-
-  }
-
 }

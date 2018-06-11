@@ -627,8 +627,7 @@ public class CoordSysTable extends JPanel {
     VariableDS ve = (VariableDS) v;
     Formatter buff = new Formatter();
     buff.format("%s:", v.getFullName());
-    EnumSet<NetcdfDataset.Enhance> enhanceMode = ve.getEnhanceMode();
-    buff.format("enhanceMode= %s%n", enhanceMode);
+    buff.format("enhanceMode= %s%n", ve.getEnhanceMode());
     ve.showScaleMissingProxy(buff);
     return buff.toString();
   }
@@ -1027,5 +1026,4 @@ public class CoordSysTable extends JPanel {
       this.incr = incr;
     }
   }
-
 }

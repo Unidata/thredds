@@ -5,6 +5,7 @@
         <attribute name="valid_min" type="byte" value="0" />
         <attribute name="valid_max" type="byte" value="100" />
         <attribute name="_FillValue" type="byte" value="-1" />
+        <attribute name="missing_value" type="byte" value="-1 101" />
         <values>-1 0 100 101</values>
     </variable>
 </netcdf>

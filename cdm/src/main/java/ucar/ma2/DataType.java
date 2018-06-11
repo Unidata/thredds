@@ -286,26 +286,11 @@ public enum DataType {
    * set bit is no longer the sign bit, and thus Java will no longer consider the value to be negative.
    * <p/>
    * <table border="1">
-   *     <tr>
-   *         <th>Argument type</th>
-   *         <th>Result type</th>
-   *     </tr>
-   *     <tr>
-   *         <td>Byte</td>
-   *         <td>Short</td>
-   *     </tr>
-   *     <tr>
-   *         <td>Short</td>
-   *         <td>Integer</td>
-   *     </tr>
-   *     <tr>
-   *         <td>Integer</td>
-   *         <td>Long</td>
-   *     </tr>
-   *     <tr>
-   *         <td>Long</td>
-   *         <td>BigInteger</td>
-   *     </tr>
+   *     <tr>  <th>Argument type</th>  <th>Result type</th>  </tr>
+   *     <tr>  <td>Byte</td>           <td>Short</td>        </tr>
+   *     <tr>  <td>Short</td>          <td>Integer</td>      </tr>
+   *     <tr>  <td>Integer</td>        <td>Long</td>         </tr>
+   *     <tr>  <td>Long</td>           <td>BigInteger</td>   </tr>
    *     <tr>
    *         <td>Any other Number subtype</td>
    *         <td>Just return argument</td>
@@ -315,7 +300,6 @@ public enum DataType {
    * @param number  an integral number to treat as unsigned.
    * @return  an equivalent but wider value that Java will interpret as non-negative.
    */
-  // Tested indirectly in TestMAMath.convertUnsigned()
   public static Number widenNumber(Number number) {
     if (number instanceof Byte) {
       return unsignedByteToShort(number.byteValue());

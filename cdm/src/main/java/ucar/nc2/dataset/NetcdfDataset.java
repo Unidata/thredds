@@ -44,18 +44,17 @@ import java.util.*;
  * mode" can be set through setDefaultEnhanceMode(). One can also explicitly set the enhancements you want in
  * the dataset factory methods. The enhancements are:
  * <ul>
- * <li>ScaleMissing : process scale/offset/missing attributes, and automatically convert the data.
- * <li>ScaleMissingDefer : process scale/offset/missing attributes, but dont automatically convert the data. You can call
- * VariableEnhanced.convertScaleOffsetMissing() on the data manually.
- * <li>CoordSystem : extract CoordinateSystem using the CoordSysBuilder plug-in mechanism
- * <li>ConvertEnums : automaticlly convert enum values to their corresponding Strings. If you want to do this manually, you
- * can call Variable.lookupEnumString() manually.
+ *   <li>ConvertEnums: convert enum values to their corresponding Strings. If you want to do this manually,
+ *       you can call Variable.lookupEnumString().</li>
+ *   <li>ConvertUnsigned: reinterpret the bit patterns of any negative values as unsigned.</li>
+ *   <li>ApplyScaleOffset: process scale/offset attributes, and automatically convert the data.</li>
+ *   <li>ConvertMissing: replace missing data with NaNs, for efficiency.</li>
+ *   <li>CoordSystems: extract CoordinateSystem using the CoordSysBuilder plug-in mechanism.</li>
  * </ul>
  * <p>
- * Automatic ScaleMissing processing has some overhead, and if you need maximum performance, but still want to use
- * scale/offset/missing value handling, open the NetcdfDataset with ScaleMissingDefer.
- * The VariableDS data type is not promoted, and the data is not converted on a read, but you can call the
- * convertScaleOffsetMissing() routines which will do the conversion on a point-by-point basis.
+ * Automatic scale/offset processing has some overhead that you may not want to incur up-front. If so, open the
+ * NetcdfDataset without {@code ApplyScaleOffset}. The VariableDS data type is not promoted and the data is not
+ * converted on a read, but you can call the convertScaleOffset() routines to do the conversion later.
  *
  * @author caron
  * @see ucar.nc2.NetcdfFile
@@ -70,7 +69,7 @@ import java.util.*;
        NcML location is read in as the NetcdfDataset, then modified by the NcML
        orgFile = null
     3) NcML explicit
-       NcML location is read in, then transfered to new NetcdfDataset as needed
+       NcML location is read in, then transferred to new NetcdfDataset as needed
        orgFile = file defined by NcML location
     4) NcML new
        NcML location = null
@@ -85,27 +84,27 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Possible enhancements for a NetcdfDataset
    */
   public enum Enhance {
+    /** Convert enums to Strings. */
+    ConvertEnums,
     /**
-     * Calculate scale/offset and missing values, promoting data type if needed
+     * For {@link ucar.nc2.constants.CDM#UNSIGNED} variables, reinterpret the bit patterns of any negative values as
+     * unsigned. The result will be positive values that must be stored in a
+     * {@link EnhanceScaleMissingImpl#nextLarger larger data type}.
      */
-    ScaleMissing,
+    ConvertUnsigned,
+    /** Apply scale and offset to values, promoting the data type if needed. */
+    ApplyScaleOffset,
     /**
-     * Calculate scale/offset/missing info, but dont automatically convert data.
-     * Data can then be converted manually through VariableDS.convertScaleOffsetMissing().
-     * Dont use both ScaleMissingDefer and ScaleMissing
+     * Replace {@link EnhanceScaleMissing#isMissing missing} data with NaNs, for efficiency. Note that if the
+     * enhanced data type is not {@code FLOAT} or {@code DOUBLE}, this has no effect.
      */
-    ScaleMissingDefer,
-    /**
-     * build coordinate systems
-     */
-    CoordSystems,
-    /**
-     * convert enums to Strings
-     */
-    ConvertEnums
+    ConvertMissing,
+    /** Build coordinate systems. */
+    CoordSystems
   }
 
-  static private Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ScaleMissing, Enhance.CoordSystems, Enhance.ConvertEnums));
+  static private Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
+          Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems));
   static private Set<Enhance> EnhanceNone = Collections.unmodifiableSet(EnumSet.noneOf(Enhance.class));
   static private Set<Enhance> defaultEnhanceMode = EnhanceAll;
 
@@ -129,53 +128,49 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
   }
 
   /**
-   * Find the set of Enhancements that matches the String. For backwards compatibility, 'true' = All.
+   * Retrieve the set of Enhancements that is associated with the given string.
+   * <p/>
+   * <table border="1">
+   *   <tr>  <th>String</th>  <th>Enhancements</th>  </tr>
+   *   <tr>  <td>All</td>  <td>ConvertEnums, ConvertUnsigned, ApplyScaleOffset, ConvertMissing, CoordSystems</td>  </tr>
+   *   <tr>  <td>None</td>               <td> &lt;empty&gt; </td>                                    </tr>
+   *   <tr>  <td>ConvertEnums</td>       <td>ConvertEnums</td>                                       </tr>
+   *   <tr>  <td>ConvertUnsigned</td>    <td>ConvertUnsigned</td>                                    </tr>
+   *   <tr>  <td>ApplyScaleOffset</td>   <td>ApplyScaleOffset</td>                                   </tr>
+   *   <tr>  <td>ConvertMissing</td>     <td>ConvertMissing</td>                                     </tr>
+   *   <tr>  <td>CoordSystems</td>       <td>CoordSystems</td>                                       </tr>
+   *   <tr>  <td>true</td>               <td>Alias for "All"</td>                                    </tr>
+   *   <tr>  <td>ScaleMissingDefer</td>  <td>Alias for "None"</td>                                   </tr>
+   *   <tr>  <td>AllDefer</td>           <td>ConvertEnums, CoordSystems</td>                         </tr>
+   *   <tr>  <td>ScaleMissing</td>       <td>ConvertUnsigned, ApplyScaleOffset, ConvertMissing</td>  </tr>
+   * </table>
    *
-   * @param enhanceMode : 'None', 'All', 'ScaleMissing', 'ScaleMissingDefer', 'CoordSystems', All',  case insensitive
-   * @return EnumSet<EnhanceMode>
+   * @param enhanceMode  a string from the above table.
+   * @return  the set corresponding to {@code enhanceMode}, or {@code null} if there is no correspondence.
    */
   static public Set<Enhance> parseEnhanceMode(String enhanceMode) {
     if (enhanceMode == null) return null;
-
-    Set<Enhance> mode = null;
-
-    if (enhanceMode.equalsIgnoreCase("true") || enhanceMode.equalsIgnoreCase("All")) {
-      mode = getEnhanceAll();
-    } else if (enhanceMode.equalsIgnoreCase("AllDefer")) {
-      mode = EnumSet.of(Enhance.ScaleMissingDefer, Enhance.CoordSystems, Enhance.ConvertEnums);
-    } else if (enhanceMode.equalsIgnoreCase("ScaleMissing")) {
-      mode = EnumSet.of(Enhance.ScaleMissing);
-    } else if (enhanceMode.equalsIgnoreCase("ScaleMissingDefer")) {
-      mode = EnumSet.of(Enhance.ScaleMissingDefer);
-    } else if (enhanceMode.equalsIgnoreCase("CoordSystems")) {
-      mode = EnumSet.of(Enhance.CoordSystems);
-    } else if (enhanceMode.equalsIgnoreCase("ConvertEnums")) {
-      mode = EnumSet.of(Enhance.ConvertEnums);
+    
+    switch (enhanceMode.toLowerCase()) {
+      case "all":               return getEnhanceAll();
+      case "none":              return getEnhanceNone();
+      case "convertenums":      return EnumSet.of(Enhance.ConvertEnums);
+      case "convertunsigned":   return EnumSet.of(Enhance.ConvertUnsigned);
+      case "applyscaleoffset":  return EnumSet.of(Enhance.ApplyScaleOffset);
+      case "convertmissing":    return EnumSet.of(Enhance.ConvertMissing);
+      case "coordsystems":      return EnumSet.of(Enhance.CoordSystems);
+      // Legacy strings, retained for backwards compatibility:
+      case "true":              return getEnhanceAll();
+      case "scalemissingdefer": return getEnhanceNone();
+      case "alldefer":          return EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
+      case "scalemissing":      return EnumSet.of(
+              Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing);
+      // Return null by default, since some valid strings actually return an empty set.
+      default: return null;
     }
-
-    return mode;
   }
 
-  static protected boolean useNaNs = true;
   static protected boolean fillValueIsMissing = true, invalidDataIsMissing = true, missingDataIsMissing = true;
-
-  /**
-   * Set whether to use NaNs for missing values, for efficiency
-   *
-   * @param b true if want to replace missing values with NaNs (default true)
-   */
-  static public void setUseNaNs(boolean b) {
-    useNaNs = b;
-  }
-
-  /**
-   * Get whether to use NaNs for missing values, for efficiency
-   *
-   * @return whether to use NaNs for missing values, for efficiency
-   */
-  static public boolean getUseNaNs() {
-    return useNaNs;
-  }
 
   /**
    * Set if _FillValue attribute is considered isMissing()
@@ -239,7 +234,8 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   // no state, so a singleton is ok
   static private class MyNetcdfFileFactory implements ucar.nc2.util.cache.FileFactory {
-    public NetcdfFile open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
+    public NetcdfFile open(DatasetUrl location, int buffer_size, CancelTask cancelTask, Object iospMessage)
+            throws IOException {
       return openFile(location, buffer_size, cancelTask, iospMessage);
     }
   }
@@ -266,10 +262,10 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    *                            the calling thread.
    * @param period              (secs) do periodic cleanups every this number of seconds.
    */
-  static public synchronized void initNetcdfFileCache(int minElementsInMemory, int maxElementsInMemory, int hardLimit,
-                                                      int period) {
-    netcdfFileCache = new ucar.nc2.util.cache.FileCache("NetcdfFileCache ", minElementsInMemory, maxElementsInMemory,
-                                                        hardLimit, period);
+  static public synchronized void initNetcdfFileCache(
+          int minElementsInMemory, int maxElementsInMemory, int hardLimit, int period) {
+    netcdfFileCache = new ucar.nc2.util.cache.FileCache(
+            "NetcdfFileCache ", minElementsInMemory, maxElementsInMemory, hardLimit, period);
   }
 
   static public synchronized void disableNetcdfFileCache() {
@@ -332,7 +328,7 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Factory method for opening a dataset through the netCDF API, and identifying its coordinate variables.
    *
    * @param location   location of file
-   * @param enhance    if true, process scale/offset/missing and add Coordinate Systems
+   * @param enhance    if true, use defaultEnhanceMode, else no enhancements
    * @param cancelTask allow task to be cancelled; may be null.
    * @return NetcdfDataset object
    * @throws java.io.IOException on read error
@@ -395,8 +391,9 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * Possible remove all direct access to Variable.enhance
    */
   static private CoordSysBuilderIF enhance(NetcdfDataset ds, Set<Enhance> mode, CancelTask cancelTask) throws IOException {
-    //if (ds.isEnhanceProcessed) return;
-    if (mode == null) return null;
+    if (mode == null) {
+        mode = EnumSet.noneOf(Enhance.class);
+    }
 
     // CoordSysBuilder may enhance dataset: add new variables, attributes, etc
     CoordSysBuilderIF builder = null;
@@ -406,10 +403,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
       ds.convUsed = builder.getConventionUsed();
     }
 
-    // now enhance scale/offset, using augmented dataset
+    // now enhance enum/scale/offset/unsigned, using augmented dataset
     if ((mode.contains(Enhance.ConvertEnums) && !ds.enhanceMode.contains(Enhance.ConvertEnums))
-            || (mode.contains(Enhance.ScaleMissing) && !ds.enhanceMode.contains(Enhance.ScaleMissing))
-            || (mode.contains(Enhance.ScaleMissingDefer) && !ds.enhanceMode.contains(Enhance.ScaleMissingDefer))) {
+            || (mode.contains(Enhance.ConvertUnsigned) && !ds.enhanceMode.contains(Enhance.ConvertUnsigned))
+            || (mode.contains(Enhance.ApplyScaleOffset) && !ds.enhanceMode.contains(Enhance.ApplyScaleOffset))
+            || (mode.contains(Enhance.ConvertMissing) && !ds.enhanceMode.contains(Enhance.ConvertMissing))) {
       for (Variable v : ds.getVariables()) {
         VariableEnhanced ve = (VariableEnhanced) v;
         ve.enhance(mode);

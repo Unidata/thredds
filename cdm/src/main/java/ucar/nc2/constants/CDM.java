@@ -39,6 +39,8 @@ public class CDM {
   public static final String UDUNITS = "udunits";
   public static final String UNSIGNED = "_Unsigned";
   public static final String VALID_RANGE = "valid_range";
+  public static final String VALID_MIN = "valid_min";
+  public static final String VALID_MAX = "valid_max";
 
   // staggering for _Coordinate.Stagger
   public static final String ARAKAWA_E = "Arakawa-E";

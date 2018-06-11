@@ -104,7 +104,7 @@ public class TestUnsigned {
 
       Variable v = ncd.findVariable("bvar");
       Assert.assertNotNull(v);
-      Assert.assertEquals(DataType.UBYTE, v.getDataType());
+      Assert.assertEquals(DataType.USHORT, v.getDataType());
 
       boolean hasSigned = false;
       Array data = v.read();
@@ -128,7 +128,7 @@ public class TestUnsigned {
 
       Variable v = ncd.findVariable("bvar");
       Assert.assertNotNull(v);
-      Assert.assertEquals(DataType.UBYTE, v.getDataType());
+      Assert.assertEquals(DataType.USHORT, v.getDataType());
 
       boolean hasSigned = false;
       Array data = v.read();
@@ -217,6 +217,4 @@ public class TestUnsigned {
       Assert.assertTrue(!hasSigned);
     }
   }
-
-
 }

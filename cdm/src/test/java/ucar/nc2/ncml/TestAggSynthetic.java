@@ -229,11 +229,11 @@ public class TestAggSynthetic extends TestCase {
   
     Array data = time.read();
   
-    assert (data instanceof ArrayInt.D1) : data.getClass().getName();
-    ArrayInt.D1 dataI = (ArrayInt.D1) data;
-    assert dataI.get(0) == 0;
-    assert dataI.get(1) == 10;
-    assert dataI.get(2) == 99;
+    assert (data instanceof ArrayDouble.D1) : data.getClass().getName();
+    ArrayDouble.D1 dataD = (ArrayDouble.D1) data;
+    assert dataD.get(0) == 0;
+    assert dataD.get(1) == 10;
+    assert dataD.get(2) == 99;
   }
 
   public void testAggCoordVar2(NetcdfFile ncfile) throws IOException {
