@@ -150,41 +150,40 @@ The kind of enhancements made when a NetcdfDataset is opened is
 described by **NetcdfDataset.Enhance**, an enumerated type with these
 possible values:
 
-* *ScaleMissing* : process scale/offset/missing attributes, and convert
-data
-* *ScaleMissingDefer* : calculate scale/offset/missing info, but dont
-automatically convert data.
-* *CoordSystems* : just add coordinate systems
-* **ConvertEnums**: convert enums to Strings
+* *ConvertEnums*: convert enum values to their corresponding Strings.
+* *ConvertUnsigned*: reinterpret the bit patterns of any negative values as unsigned.
+* *ApplyScaleOffset*: process scale/offset attributes, and automatically convert the data.
+* *ConvertMissing*: replace missing data with NaNs, for efficiency.
+* *CoordSystems*: add coordinate system information.
 
-When using the *ScaleMissing* enhance mode, scale/offset/missing
-attributes are processed when the dataset is opened, and the datatype of
-a Variable is promoted if necessary to match the unpacked data type.
-Data is automatically converted when read.
+When using the *ConvertEnums* enhance mode, Variables of type *enum* are
+promoted to String types and data is automatically converted using the
+EnumTypedef objects, which are maps of the stored integer values to
+String values.
 
-When using the *ScaleMissingDefer* enhance mode, scale/offset/missing
-attributes are processed when the dataset is opened, but the datatype of
-a Variable is NOT promoted, and data is not converted. After reading
-data, you can convert the entire Array with
-__VariableEnhanced.convertArray(Array data)__, or convert single values
-with the _convertScaleOffsetMissing_ methods, eg
-__VariableEnhanced.convertScaleOffsetMissing(byte value)__.
+When using the *ConvertUnsigned* enhance mode, data are widened to the next larger integral type. To accommodate the
+conversion, the data type of the variable is promoted to the next larger type. Note that this only occurs if the
+original data type of the variable is unsigned.
 
-When using *CoordSystems* ** enhance mode, _CoordSysBuilder_ is called
+When using the *ApplyScaleOffset* enhance mode, scale and offset
+attributes are processed when the dataset is opened, and the data type of
+the Variable is promoted if necessary to match the unpacked data type.
+Data are automatically converted when read.
+
+When using the *ConvertMissing* enhance mode, missing values are replaced by NaNs, for efficiency. Note that if
+the enhanced data type is not _float_ or _double_, this enhancement has no effect.
+
+When using the *CoordSystems* enhance mode, _CoordSysBuilder_ is called
 to populate the coordinate system objects in the NetcdfDataset when the
 dataset is opened.
 
-When using *ConvertEnums* enhance mode, Variables of type *enum* are
-promoted to String types and data is automatically converted using the
-EnumTypedef objectss, which are maps of the stored integer values to
-String values.
-
 The enhancement of a dataset can be controlled by passing in a Set of
-Enhance to **NetcdfDataset**.openDataset(). The default enhance mode is
+Enhance enums to **NetcdfDataset**.openDataset(). The default enhance mode is
 
 [source,java]
 ----
- Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ScaleMissing, Enhance.CoordSystems, Enhance.ConvertEnums));
+ Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
+        Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing, Enhance.CoordSystems));
 ----
 
 and can be changed through
@@ -205,7 +204,8 @@ explicitly set the EnhanceMode:
 
 [source,java]
 ----
-NetcdfDataset openDataset(String location, Set<Enhance> enhanceMode, int buffer_size, CancelTask cancelTask, Object spiObject);
+NetcdfDataset openDataset(
+        DatasetUrl location, Set<Enhance> enhanceMode, int buffer_size, CancelTask cancelTask, Object spiObject)
 ----
 
 One can also set the buffer size used for reading data, pass in a

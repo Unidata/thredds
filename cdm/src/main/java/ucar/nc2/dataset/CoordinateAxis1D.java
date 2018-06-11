@@ -852,7 +852,7 @@ public class CoordinateAxis1D extends CoordinateAxis {
 
     Array data;
     try {
-      boundsVar.setUseNaNs(false); // missing values not allowed
+      boundsVar.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing);  // Don't convert missing values to NaN.
       data = boundsVar.read();
     } catch (IOException e) {
       log.warn("CoordinateAxis1D.hasBounds read failed ", e);

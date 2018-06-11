@@ -5,7 +5,6 @@
 
 package ucar.nc2.ui;
 
-import org.apache.http.client.config.AuthSchemes;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
@@ -69,7 +68,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
-import java.awt.Dimension;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -906,15 +904,6 @@ public class ToolsUI extends JPanel {
       }
     };
     BAMutil.setActionPropertiesToggle(a, null, "set Use Maximal CoordSystem", CoordSysBuilder.getUseMaximalCoordSys(), 'N', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setUseNaNs(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "set NaNs for missing values", NetcdfDataset.getUseNaNs(), 'N', -1);
     BAMutil.addActionToMenu(dsMenu, a);
 
     a = new AbstractAction() {

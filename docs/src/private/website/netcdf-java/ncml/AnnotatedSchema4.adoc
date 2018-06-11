@@ -112,11 +112,11 @@ dataset defined by the XML instance document, NOT the referenced dataset
 if there is one.
 7.  The optional _*title*_ attribute provides a way to add a human
 readable title to the netCDF dataset.
-8.  The optional _*enhance*_ attribute indicates whether the referenced
-dataset is opened in enhanced mode, and can be set to _All, AllDefer,
-ScaleMissing, ScaleMissingDefer, CoordSystems, or None_ (case
-insensitive). For backwards compatibility, a value of _true_ means
-__All__. Default is __None__. See
+8.  The optional _*enhance*_ attribute indicates whether the referenced dataset is opened in enhanced mode, and can
+be set to one of: _All_, _None_, _ConvertEnums_, _ConvertUnsigned_, _ApplyScaleOffset_, _ConvertMissing_, or
+_CoordSystems_ (case insensitive). For backwards compatibility, we also support _true_ (alias for _All_),
+_ScaleMissingDefer_ (alias for _None_), _AllDefer_ (combination of _ConvertEnums_ and _CoordSystems_), and
+_ScaleMissing_ (combination of _ConvertUnsigned_, _ApplyScaleOffset_, and _ConvertMissing_). The default is _None_. See
 http://www.unidata.ucar.edu/software/netcdf-java/tutorial/NetcdfDataset.html#enhance[NetcdfDataset.EnhanceMode].
 9.  The optional _*addRecords*_ attribute is used only when the
 referenced datasets is a netCDF-3 file. If true (default false) then a

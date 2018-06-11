@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+    <variable name="missingUnsigned" shape="6" type="byte">
+        <attribute name="_Unsigned" value="true" />
+        <attribute name="valid_min" type="byte" value="-106" />
+        <attribute name="valid_max" type="byte" value="-6" />
+        <attribute name="_FillValue" type="byte" value="-1" />
+        <attribute name="missing_value" type="byte" value="-1" />
+        
+        <values>-107 -106 -6 -5 -1 80</values>
+    </variable>
+    
+    <variable name="scaleOffsetMissingUnsigned" shape="6" type="byte">
+        <attribute name="_Unsigned" value="true" />
+        <attribute name="valid_min" type="byte" value="-106" />
+        <attribute name="valid_max" type="byte" value="-6" />
+        <attribute name="_FillValue" type="byte" value="-1" />
+        <attribute name="missing_value" type="byte" value="-1" />
+        
+        <!-- This is the only difference between the missingUnsigned and scaleOffsetMissingUnsigned vars. -->
+        <attribute name="scale_factor" type="short" value="100" />
+        <attribute name="add_offset" type="int" value="1" />
+        
+        <values>-107 -106 -6 -5 -1 80</values>
+    </variable>
+    
+    <variable name="scaleValidRange" shape="5" type="ushort">
+        <attribute name="scale_factor" type="float" value="0.01" />
+        <attribute name="valid_range" type="ushort" value="990 1010" />
+        <!-- Test that "If valid_range is present, valid_min and valid_max attributes are ignored." -->
+        <attribute name="valid_min" type="byte" value="-106" />
+        <attribute name="valid_max" type="byte" value="-6" />
+    
+        <values>980 990 1000 1010 1020</values>
+    </variable>
+    
+    <variable name="unpackedValidRange" shape="5" type="ushort">
+        <attribute name="scale_factor" type="float" value="0.01" />
+        <attribute name="valid_range" type="float" value="9.9 10.1" />  <!-- already unpacked -->
+        
+        <values>980 990 1000 1010 1020</values>
+    </variable>
+    
+    <variable name="unsignedOffsetAttribute" shape="1" type="byte">
+        <attribute name="add_offset" type="byte" isUnsigned="true" value="-100" />  <!-- 156 -->
+        <values>-50</values>
+    </variable>
+</netcdf>

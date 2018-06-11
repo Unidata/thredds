@@ -2,51 +2,49 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-
 package ucar.nc2.dataset;
 
+import com.google.common.collect.Sets;
 import ucar.ma2.*;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dataset.NetcdfDataset.Enhance;
 import ucar.nc2.util.CancelTask;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.EnumSet;
-import java.util.Formatter;
-import java.util.Set;
+import java.util.*;
 
 /**
- * An wrapper around a Variable, creating an "enhanced" Variable.
- * The original Variable is used for the I/O.
+ * A wrapper around a Variable, creating an "enhanced" Variable. The original Variable is used for the I/O.
  * There are several distinct uses:
  * <ol>
- * <li>  1) handle scale/offset/missing values/enum conversion; this can change DataType and data values
- * <li>  2) container for coordinate system information
- * <li>  3) NcML modifications to underlying Variable
+ *   <li>Handle scale/offset/missing/enum/unsigned conversion; this can change DataType and data values</li>
+ *   <li>Container for coordinate system information</li>
+ *   <li>NcML modifications to underlying Variable</li>
  * </ol>
  *
  * @author caron
  * @see NetcdfDataset
  */
-
-public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, EnhanceScaleMissing {
+public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissing {
   private EnhancementsImpl enhanceProxy;
-  private EnhanceScaleMissingImpl scaleMissingProxy;
-  private EnumSet<NetcdfDataset.Enhance> enhanceMode;
-  private boolean needScaleOffsetMissing = false;
-  private boolean needEnumConversion = false;
-  private boolean needUnsignedConversion = false;
+  // Assign a dummy value for now. We'll replace it with the proper value in enhance().
+  private EnhanceScaleMissingImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingImpl();
+  private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
 
   protected Variable orgVar; // wrap this Variable : use it for the I/O
   protected DataType orgDataType; // keep separate for the case where there is no orgVar.
   protected String orgName; // in case Variable was renamed, and we need to keep track of the original name
-
+  
   /**
    * Constructor when there's no underlying variable.
-   * You must also set the values by doing one of:<ol>
-   * <li>set the values with setCachedData()
-   * <li>set a proxy reader with setProxyReader()
+   * You must also set the values by doing one of:
+   * <ol>
+   *   <li>set the values with setCachedData()</li>
+   *   <li>set a proxy reader with setProxyReader()</li>
    * </ol>
    * Otherwise, it is assumed to have constant values (using the fill value)
    *
@@ -61,11 +59,10 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    */
   public VariableDS(NetcdfDataset ds, Group group, Structure parentStructure, String shortName,
                     DataType dataType, String dims, String units, String desc) {
-
     super(ds, group, parentStructure, shortName);
     setDataType(dataType);
     setDimensions(dims);
-    // this.orgDataType = dataType;
+    this.orgDataType = dataType;
 
     if (dataType == DataType.STRUCTURE)
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + shortName);
@@ -76,7 +73,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       addAttribute(new Attribute(CDM.LONG_NAME, desc));
 
     this.enhanceProxy = new EnhancementsImpl(this, units, desc);
-    this.scaleMissingProxy = new EnhanceScaleMissingImpl(); // gets replaced later, in enhance()
   }
 
   /**
@@ -90,7 +86,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    *                  Must not be a Structure, use StructureDS instead.
    */
   public VariableDS(Group group, Structure parent, String shortName, Variable orgVar) {
-    //coverity[FORWARD_NULL]
     super(null, group, parent, shortName);
     setDimensions(getDimensionsString()); // reset the dimensions
 
@@ -106,7 +101,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     this.orgDataType = orgVar.getDataType();
 
     this.enhanceProxy = new EnhancementsImpl(this);
-    this.scaleMissingProxy = new EnhanceScaleMissingImpl();
   }
 
   /**
@@ -142,8 +136,6 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     this.enhanceProxy = new EnhancementsImpl(this);
     if (enhance) {
       enhance(NetcdfDataset.getDefaultEnhanceMode());
-    } else {
-      this.scaleMissingProxy = new EnhanceScaleMissingImpl();
     }
   }
 
@@ -161,16 +153,13 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     this.orgVar = vds;
     this.orgDataType = vds.orgDataType;
     this.orgName = vds.orgName;
-
-    this.scaleMissingProxy = vds.scaleMissingProxy;
+    
     this.enhanceProxy = new EnhancementsImpl(this); //decouple coordinate systems
+    this.scaleMissingUnsignedProxy = vds.scaleMissingUnsignedProxy;
 
     this.enhanceMode = vds.enhanceMode;
-    if (isCopy) { // enhancement done in orgVar
-      //this.needScaleOffsetMissing = vds.needScaleOffsetMissing;
-      //this.needEnumConversion = vds.needEnumConversion;
-    } else {
-      createNewCache(); // dont share cache unless its a copy      
+    if (!isCopy) {
+      createNewCache(); // dont share cache unless its a copy
     }
   }
 
@@ -188,238 +177,145 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   /**
    * Remove coordinate system info.
    */
-  public void clearCoordinateSystems() {
+  @Override public void clearCoordinateSystems() {
     this.enhanceProxy = new EnhancementsImpl(this, getUnitsString(), getDescription());
   }
 
   /**
-   * DO NOT USE DIRECTLY. public by accident.
-   * Calculate scale/offset/missing value info. This may change the DataType.
+   * Calculate scale/offset/missing/enum/unsigned value info. This may change the DataType.
    */
-  public void enhance(Set<NetcdfDataset.Enhance> mode) {
+  @Override public void enhance(Set<Enhance> mode) {
     this.enhanceMode = EnumSet.copyOf(mode);
-
-    boolean alreadyScaleOffsetMissing = false;
-    boolean alreadyEnumConversion = false;
-
-    // see if underlying variable has enhancements already applied
-    if (orgVar != null && orgVar instanceof VariableDS) {
+  
+    // enhance() may have been called previously, with a different enhancement set.
+    // So, we need to reset to default before we process this new set.
+    setDataType(orgDataType);
+    
+    // Initialize EnhanceScaleMissingImpl. We can't do this in the constructors because this object may not
+    // contain all of the relevant attributes at that time. NcMLReader is an example of this: the VariableDS is
+    // constructed first, and then Attributes are added to it later.
+    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingImpl(this);
+  
+    if (needEnhancement(Enhance.ConvertEnums) && dataType.isEnum()) {
+      setDataType(DataType.STRING);  // LOOK promote data type to STRING ????
+      return;  // We can return here, because the other conversions don't apply to STRING.
+    }
+  
+    if (needEnhancement(Enhance.ConvertUnsigned)) {
+      // We may need a larger data type to hold the results of the unsigned conversion.
+      setDataType(scaleMissingUnsignedProxy.getUnsignedConversionType());
+    }
+    
+    if (needEnhancement(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR) &&
+            scaleMissingUnsignedProxy.hasScaleOffset()) {
+      setDataType(scaleMissingUnsignedProxy.getScaledOffsetType());
+    }
+  }
+  
+  /**
+   * Returns {@code true} if the given enhancement is desired (i.e. it's a member of {@code this.enhanceMode}),
+   * AND the enhancement hasn't already been done to {@code orgVar}. If {@code orgVar == null} (i.e. we're not
+   * wrapping another variable), then the latter condition doesn't apply.
+   */
+  private boolean needEnhancement(Enhance enhancement) {
+    if (!this.enhanceMode.contains(enhancement)) {
+      return false;
+    }
+  
+    if (orgVar instanceof VariableDS) {
       VariableDS orgVarDS = (VariableDS) orgVar;
-      EnumSet<NetcdfDataset.Enhance> orgEnhanceMode = orgVarDS.getEnhanceMode();
-      if (orgEnhanceMode != null) {
-        if (orgEnhanceMode.contains(NetcdfDataset.Enhance.ScaleMissing)) {
-          alreadyScaleOffsetMissing = true;
-          this.enhanceMode.add(NetcdfDataset.Enhance.ScaleMissing); // Note: promote the enhancement to the wrapped variable
-        }
-        if (orgEnhanceMode.contains(NetcdfDataset.Enhance.ConvertEnums)) {
-          alreadyEnumConversion = true;
-          this.enhanceMode.add(NetcdfDataset.Enhance.ConvertEnums); // Note: promote the enhancement to the wrapped variable
-        }
+      
+      if (orgVarDS.getEnhanceMode().contains(enhancement)) {
+        return false;  // Enhancement already done by orgVar.
       }
     }
-
-    // do we need to calculate the ScaleMissing ?
-    if (!alreadyScaleOffsetMissing && (dataType.isNumeric() || dataType == DataType.CHAR) &&
-            mode.contains(NetcdfDataset.Enhance.ScaleMissing) || mode.contains(NetcdfDataset.Enhance.ScaleMissingDefer)) {
-
-      this.scaleMissingProxy = new EnhanceScaleMissingImpl(this);
-
-      // promote the data type if ScaleMissing is set
-      if (mode.contains(NetcdfDataset.Enhance.ScaleMissing) &&
-              scaleMissingProxy.hasScaleOffset() && (scaleMissingProxy.getConvertedDataType() != getDataType())) {
-        setDataType(scaleMissingProxy.getConvertedDataType());
-        removeAttributeIgnoreCase(CDM.UNSIGNED);
-      }
-
-      // do we need to actually convert data ?
-      needScaleOffsetMissing = mode.contains(NetcdfDataset.Enhance.ScaleMissing) &&
-              (scaleMissingProxy.hasScaleOffset() || scaleMissingProxy.getUseNaNs());
-    }
-
-    // do we need to do enum conversion ?
-    if (!alreadyEnumConversion && mode.contains(NetcdfDataset.Enhance.ConvertEnums) && dataType.isEnum()) {
-      this.needEnumConversion = true;
-
-      // LOOK promote data type to STRING ????
-      setDataType(DataType.STRING);
-      removeAttributeIgnoreCase(CDM.UNSIGNED);
-    }
-
-    // do we need to do unsigned conversion ?
-    Variable ultimateOrigVar = this;
-    while (ultimateOrigVar instanceof VariableDS && ((VariableDS) ultimateOrigVar).getOriginalVariable() != null) {
-      ultimateOrigVar = ((VariableDS) ultimateOrigVar).getOriginalVariable();
-    }
-
-    if (ultimateOrigVar == this) {
-      needUnsignedConversion = false;
-    } else {
-      needUnsignedConversion = this.getDataType().isUnsigned() && !ultimateOrigVar.getDataType().isUnsigned();
-    }
+  
+    return true;
   }
 
   boolean needConvert() {
-    if (needScaleOffsetMissing || needEnumConversion || needUnsignedConversion) return true;
-    if ((orgVar != null) && (orgVar instanceof VariableDS)) return ((VariableDS) orgVar).needConvert();
-    return false;
+    return needEnhancement(Enhance.ConvertEnums) || needEnhancement(Enhance.ConvertUnsigned) ||
+           needEnhancement(Enhance.ApplyScaleOffset) || needEnhancement(Enhance.ConvertMissing);
   }
 
   Array convert(Array data) {
-    if (needScaleOffsetMissing)
-      return convertScaleOffsetMissing(data);
-    else if (needEnumConversion)
+    if (needEnhancement(Enhance.ConvertEnums) && dataType.isEnum()) {
+      // Creates STRING data. As a result, we can return here, because the other conversions don't apply to STRING.
       return convertEnums(data);
-    else if (needUnsignedConversion)
-      return convertUnsigned(data);
-
-    if ((orgVar != null) && (orgVar instanceof VariableDS))
-      return ((VariableDS) orgVar).convert(data);
-
-    return data;
+    } else {
+      return scaleMissingUnsignedProxy.convert(data, needEnhancement(Enhance.ConvertUnsigned),
+              needEnhancement(Enhance.ApplyScaleOffset), needEnhancement(Enhance.ConvertMissing));
+    }
+  }
+  
+  protected Array convertEnums(Array values) {
+    if (!values.getDataType().isEnum()) {
+      return values;  // Nothing to do!
+    }
+    
+    Array result = Array.factory(DataType.STRING, values.getShape());
+    IndexIterator ii = result.getIndexIterator();
+    values.resetLocalIterator();
+    while (values.hasNext()) {
+      String sval = lookupEnumString(values.nextInt());
+      ii.setObjectNext(sval);
+    }
+    return result;
   }
 
   /**
-   * Get the enhancement mode
+   * Returns the enhancements applied to this variable. If this variable wraps another variable, the returned set will
+   * also contain the enhancements applied to the nested variable, recursively.
    *
-   * @return the enhancement mode
+   * @return  the enhancements applied to this variable.
    */
-  public EnumSet<NetcdfDataset.Enhance> getEnhanceMode() {
-    return enhanceMode;
+  @Nonnull
+  public Set<Enhance> getEnhanceMode() {
+    if (!(orgVar instanceof VariableDS)) {
+      return Collections.unmodifiableSet(enhanceMode);
+    } else {
+      VariableDS orgVarDS = (VariableDS) orgVar;
+      return Sets.union(enhanceMode, orgVarDS.getEnhanceMode());
+    }
   }
-
-  // Enhancements interface
-
-  public void addCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
-    enhanceProxy.addCoordinateSystem(p0);
+  
+  /**
+   * Add {@code enhancement} to this variable. It may result in a change of data type.
+   *
+   * @param enhancement  the enhancement to add.
+   * @return  {@code true} if the set of enhancements changed as a result of the call.
+   */
+  public boolean addEnhancement(Enhance enhancement) {
+    if (enhanceMode.add(enhancement)) {
+      enhance(enhanceMode);
+      return true;
+    } else {
+      return false;
+    }
   }
-
-  public void removeCoordinateSystem(ucar.nc2.dataset.CoordinateSystem p0) {
-    enhanceProxy.removeCoordinateSystem(p0);
+  
+  /**
+   * Remove {@code enhancement} from this variable. It may result in a change of data type.
+   *
+   * @param enhancement  the enhancement to remove.
+   * @return  {@code true} if the set of enhancements changed as a result of the call.
+   */
+  public boolean removeEnhancement(Enhance enhancement) {
+    if (enhanceMode.remove(enhancement)) {
+      enhance(enhanceMode);
+      return true;
+    } else {
+      return false;
+    }
   }
-
-  public java.util.List<CoordinateSystem> getCoordinateSystems() {
-    return enhanceProxy.getCoordinateSystems();
-  }
-
-  public java.lang.String getDescription() {
-    return enhanceProxy.getDescription();
-  }
-
-  public java.lang.String getUnitsString() {
-    return enhanceProxy.getUnitsString();
-  }
-
-  public void setUnitsString(String units) {
-    enhanceProxy.setUnitsString(units);
-  }
-
-  // EnhanceScaleMissing interface
-  public Array convertScaleOffsetMissing(Array data) {
-    return scaleMissingProxy.convertScaleOffsetMissing(data);
-  }
-
-  public double getValidMax() {
-    return scaleMissingProxy.getValidMax();
-  }
-
-  public double getValidMin() {
-    return scaleMissingProxy.getValidMin();
-  }
-
-  public double getFillValue() {
-    return scaleMissingProxy.getFillValue();
-  }
-
-  public double[] getMissingValues() {
-    return scaleMissingProxy.getMissingValues();
-  }
-
-  public boolean hasFillValue() {
-    return scaleMissingProxy.hasFillValue();
-  }
-
-  public boolean hasInvalidData() {
-    return scaleMissingProxy.hasInvalidData();
-  }
-
-  public boolean hasMissing() {
-    return scaleMissingProxy.hasMissing();
-  }
-
-  public boolean hasMissingValue() {
-    return scaleMissingProxy.hasMissingValue();
-  }
-
-  public boolean hasScaleOffset() {
-    return scaleMissingProxy.hasScaleOffset();
-  }
-
-  public boolean isFillValue(double p0) {
-    return scaleMissingProxy.isFillValue(p0);
-  }
-
-  public boolean isInvalidData(double p0) {
-    return scaleMissingProxy.isInvalidData(p0);
-  }
-
-  public boolean isMissing(double val) {
-    return scaleMissingProxy.isMissing(val);
-  }
-
-  public boolean isMissingFast(double val) {
-    return scaleMissingProxy.isMissingFast(val);
-  }
-
-  public boolean isMissingValue(double p0) {
-    return scaleMissingProxy.isMissingValue(p0);
-  }
-
-  public void setFillValueIsMissing(boolean p0) {
-    scaleMissingProxy.setFillValueIsMissing(p0);
-  }
-
-  public void setInvalidDataIsMissing(boolean p0) {
-    scaleMissingProxy.setInvalidDataIsMissing(p0);
-  }
-
-  public void setMissingDataIsMissing(boolean p0) {
-    scaleMissingProxy.setMissingDataIsMissing(p0);
-  }
-
-  public void setUseNaNs(boolean useNaNs) {
-    scaleMissingProxy.setUseNaNs(useNaNs);
-  }
-
-  public boolean getUseNaNs() {
-    return scaleMissingProxy.getUseNaNs();
-  }
-
-  public double convertScaleOffsetMissing(byte value) {
-    return scaleMissingProxy.convertScaleOffsetMissing(value);
-  }
-
-  public double convertScaleOffsetMissing(short value) {
-    return scaleMissingProxy.convertScaleOffsetMissing(value);
-  }
-
-  public double convertScaleOffsetMissing(int value) {
-    return scaleMissingProxy.convertScaleOffsetMissing(value);
-  }
-
-  public double convertScaleOffsetMissing(long value) {
-    return scaleMissingProxy.convertScaleOffsetMissing(value);
-  }
-
-  public double convertScaleOffsetMissing(double value) {
-    return scaleMissingProxy.convertScaleOffsetMissing(value);
-  }
+  
 
   /**
    * A VariableDS usually wraps another Variable.
    *
    * @return original Variable or null
    */
-  public ucar.nc2.Variable getOriginalVariable() {
+  @Override public Variable getOriginalVariable() {
     return orgVar;
   }
 
@@ -428,7 +324,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    *
    * @param orgVar original Variable, must not be a Structure
    */
-  public void setOriginalVariable(ucar.nc2.Variable orgVar) {
+  @Override public void setOriginalVariable(Variable orgVar) {
     if (orgVar instanceof Structure)
       throw new IllegalArgumentException("VariableDS must not wrap a Structure; name=" + orgVar.getFullName());
     this.orgVar = orgVar;
@@ -437,7 +333,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
   /**
    * When this wraps another Variable, get the original Variable's DataType.
    *
-   * @return original Variable's DataType, or current data type if it doesnt wrap anothe rvariable
+   * @return original Variable's DataType, or current data type if it doesnt wrap another variable
    */
   public DataType getOriginalDataType() {
     return orgDataType != null ? orgDataType : getDataType();
@@ -448,11 +344,11 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    *
    * @return original Variable's name
    */
-  public String getOriginalName() {
+  @Override public String getOriginalName() {
     return orgName;
   }
-
-  public String lookupEnumString(int val) {
+  
+  @Override public String lookupEnumString(int val) {
     if (dataType.isEnum())
       return super.lookupEnumString(val);
     return orgVar.lookupEnumString(val);
@@ -464,8 +360,8 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     super.setShortName(newName);
     return newName;
   }
-
-  public String toStringDebug() {
+  
+  @Override public String toStringDebug() {
     return (orgVar != null) ? orgVar.toStringDebug() : "";
   }
 
@@ -498,14 +394,7 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
     else
       result = proxyReader.reallyRead(this, null);
 
-    if (needScaleOffsetMissing)
-      return convertScaleOffsetMissing(result);
-    else if (needEnumConversion)
-      return convertEnums(result);
-    else if (needUnsignedConversion)
-      return convertUnsigned(result);
-    else
-      return result;
+    return convert(result);
   }
 
   // do not call directly
@@ -529,20 +418,14 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
       result = super._read(section);
     else
       result = proxyReader.reallyRead(this, section, null);
-
-    if (needScaleOffsetMissing)
-      return convertScaleOffsetMissing(result);
-    else if (needEnumConversion)
-      return convertEnums(result);
-    else if (needUnsignedConversion)
-      return convertUnsigned(result);
-    else
-      return result;
+  
+    return convert(result);
   }
 
   // do not call directly
   @Override
-  public Array reallyRead(Variable client, Section section, CancelTask cancelTask) throws IOException, InvalidRangeException {
+  public Array reallyRead(Variable client, Section section, CancelTask cancelTask)
+          throws IOException, InvalidRangeException {
     // see if its really a full read
     if ((null == section) || section.computeSize() == getSize())
       return reallyRead(client, cancelTask);
@@ -568,8 +451,39 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    * @return Array with given shape
    */
   public Array getMissingDataArray(int[] shape) {
-    Object data = scaleMissingProxy.getFillValue(getDataType());
-    return Array.factoryConstant(dataType, shape, data);
+    Object storage;
+
+    switch (getDataType()) {
+      case BOOLEAN:
+        storage = new boolean[1]; break;
+      case BYTE:
+      case UBYTE:
+      case ENUM1:
+        storage = new byte[1]; break;
+      case CHAR:
+        storage = new char[1]; break;
+      case SHORT:
+      case USHORT:
+      case ENUM2:
+        storage = new short[1]; break;
+      case INT:
+      case UINT:
+      case ENUM4:
+        storage = new int[1]; break;
+      case LONG:
+      case ULONG:
+        storage = new long[1]; break;
+      case FLOAT:
+        storage = new float[1]; break;
+      case DOUBLE:
+        storage = new double[1]; break;
+      default:
+        storage = new Object[1];
+    }
+
+    Array array = Array.factoryConstant(getDataType(), shape, storage);
+    array.setObject(0, scaleMissingUnsignedProxy.getFillValue());
+    return array;
   }
 
   /**
@@ -578,52 +492,169 @@ public class VariableDS extends ucar.nc2.Variable implements VariableEnhanced, E
    * @param f put info here
    */
   public void showScaleMissingProxy(Formatter f) {
-    f.format("use NaNs = %s%n", scaleMissingProxy.getUseNaNs());
-    f.format("has missing = %s%n", scaleMissingProxy.hasMissing());
-    if (scaleMissingProxy.hasMissing()) {
-      if (scaleMissingProxy.hasMissingValue()) {
+    f.format("has missing = %s%n", scaleMissingUnsignedProxy.hasMissing());
+    if (scaleMissingUnsignedProxy.hasMissing()) {
+      if (scaleMissingUnsignedProxy.hasMissingValue()) {
         f.format("   missing value(s) = ");
-        for (double d : scaleMissingProxy.getMissingValues())
+        for (double d : scaleMissingUnsignedProxy.getMissingValues())
           f.format(" %f", d);
         f.format("%n");
       }
-      if (scaleMissingProxy.hasFillValue())
-        f.format("   fillValue = %f%n", scaleMissingProxy.getFillValue());
-      if (scaleMissingProxy.hasInvalidData())
-        f.format("   valid min/max = [%f,%f]%n", scaleMissingProxy.getValidMin(), scaleMissingProxy.getValidMax());
+      if (scaleMissingUnsignedProxy.hasFillValue())
+        f.format("   fillValue = %f%n", scaleMissingUnsignedProxy.getFillValue());
+      if (scaleMissingUnsignedProxy.hasValidData())
+        f.format("   valid min/max = [%f,%f]%n",
+                scaleMissingUnsignedProxy.getValidMin(), scaleMissingUnsignedProxy.getValidMax());
     }
-    Object mv = scaleMissingProxy.getFillValue(getDataType());
-    String mvs = (mv instanceof String) ? (String) mv : java.lang.reflect.Array.get(mv, 0).toString();
-    f.format("FillValue or default = %s%n", mvs);
+    f.format("FillValue or default = %s%n", scaleMissingUnsignedProxy.getFillValue());
 
-    f.format("%nhas scale/offset = %s%n", scaleMissingProxy.hasScaleOffset());
-    if (scaleMissingProxy.hasScaleOffset()) {
-      double offset = scaleMissingProxy.convertScaleOffsetMissing(0.0);
-      double scale = scaleMissingProxy.convertScaleOffsetMissing(1.0) - offset;
+    f.format("%nhas scale/offset = %s%n", scaleMissingUnsignedProxy.hasScaleOffset());
+    if (scaleMissingUnsignedProxy.hasScaleOffset()) {
+      double offset = scaleMissingUnsignedProxy.applyScaleOffset(0.0);
+      double scale = scaleMissingUnsignedProxy.applyScaleOffset(1.0) - offset;
       f.format("   scale_factor = %f add_offset = %f%n", scale, offset);
     }
-    f.format("original data type = %s%n", getDataType());
-    f.format("converted data type = %s%n", scaleMissingProxy.getConvertedDataType());
+    f.format("original data type = %s%n", orgDataType);
+    f.format("converted data type = %s%n", getDataType());
   }
-
-  protected Array convertEnums(Array values) {
-    DataType dt = DataType.getType(values);
-    if (!dt.isNumeric())
-      throw new IllegalStateException("HEY !dt.isNumeric() "+dt);
-
-    Array result = Array.factory(DataType.STRING, values.getShape());
-    IndexIterator ii = result.getIndexIterator();
-    values.resetLocalIterator();
-    while (values.hasNext()) {
-      String sval = lookupEnumString(values.nextInt());
-      ii.setObjectNext(sval);
-    }
-    return result;
+  
+  ////////////////////////////////////////////// Enhancements //////////////////////////////////////////////
+  
+  @Override public String getDescription() {
+    return enhanceProxy.getDescription();
   }
-
-  protected Array convertUnsigned(Array org) {
-    return Array.factory(
-            org.getDataType().withSignedness(DataType.Signedness.UNSIGNED), org.getShape(), org.getStorage());
+  
+  @Override public String getUnitsString() {
+    return enhanceProxy.getUnitsString();
+  }
+  
+  @Override public void setUnitsString(String units) {
+    enhanceProxy.setUnitsString(units);
+  }
+  
+  @Override public List<CoordinateSystem> getCoordinateSystems() {
+    return enhanceProxy.getCoordinateSystems();
+  }
+  
+  @Override public void addCoordinateSystem(CoordinateSystem cs) {
+    enhanceProxy.addCoordinateSystem(cs);
+  }
+  
+  @Override public void removeCoordinateSystem(CoordinateSystem cs) {
+    enhanceProxy.removeCoordinateSystem(cs);
+  }
+  
+  ////////////////////////////////////////////// EnhanceScaleMissing //////////////////////////////////////////////
+  
+  @Override public boolean hasScaleOffset() {
+    return scaleMissingUnsignedProxy.hasScaleOffset();
+  }
+  
+  @Override public double getScaleFactor() {
+    return scaleMissingUnsignedProxy.getScaleFactor();
+  }
+  
+  @Override public double getOffset() {
+    return scaleMissingUnsignedProxy.getOffset();
+  }
+  
+  @Override public boolean hasMissing() {
+    return scaleMissingUnsignedProxy.hasMissing();
+  }
+  
+  @Override public boolean isMissing(double val) {
+    return scaleMissingUnsignedProxy.isMissing(val);
+  }
+  
+  @Override public boolean hasValidData() {
+    return scaleMissingUnsignedProxy.hasValidData();
+  }
+  
+  @Override public double getValidMin() {
+    return scaleMissingUnsignedProxy.getValidMin();
+  }
+  
+  @Override public double getValidMax() {
+    return scaleMissingUnsignedProxy.getValidMax();
+  }
+  
+  @Override public boolean isInvalidData(double val) {
+    return scaleMissingUnsignedProxy.isInvalidData(val);
+  }
+  
+  @Override public boolean hasFillValue() {
+    return scaleMissingUnsignedProxy.hasFillValue();
+  }
+  
+  @Override public double getFillValue() {
+    return scaleMissingUnsignedProxy.getFillValue();
+  }
+  
+  @Override public boolean isFillValue(double val) {
+    return scaleMissingUnsignedProxy.isFillValue(val);
+  }
+  
+  @Override public boolean hasMissingValue() {
+    return scaleMissingUnsignedProxy.hasMissingValue();
+  }
+  
+  @Override public double[] getMissingValues() {
+    return scaleMissingUnsignedProxy.getMissingValues();
+  }
+  
+  @Override public boolean isMissingValue(double val) {
+    return scaleMissingUnsignedProxy.isMissingValue(val);
+  }
+  
+  @Override public void setFillValueIsMissing(boolean b) {
+    scaleMissingUnsignedProxy.setFillValueIsMissing(b);
+  }
+  
+  @Override public void setInvalidDataIsMissing(boolean b) {
+    scaleMissingUnsignedProxy.setInvalidDataIsMissing(b);
+  }
+  
+  @Override public void setMissingDataIsMissing(boolean b) {
+    scaleMissingUnsignedProxy.setMissingDataIsMissing(b);
+  }
+  
+  @Nullable @Override public DataType getScaledOffsetType() {
+    return scaleMissingUnsignedProxy.getScaledOffsetType();
+  }
+  
+  @Nonnull @Override public DataType getUnsignedConversionType() {
+    return scaleMissingUnsignedProxy.getUnsignedConversionType();
+  }
+  
+  @Override public DataType.Signedness getSignedness() {
+    return scaleMissingUnsignedProxy.getSignedness();
+  }
+  
+  @Override public double applyScaleOffset(Number value) {
+    return scaleMissingUnsignedProxy.applyScaleOffset(value);
+  }
+  
+  @Override public Array applyScaleOffset(Array data) {
+    return scaleMissingUnsignedProxy.applyScaleOffset(data);
+  }
+  
+  @Override public Number convertUnsigned(Number value) {
+    return scaleMissingUnsignedProxy.convertUnsigned(value);
+  }
+  
+  @Override public Array convertUnsigned(Array in) {
+    return scaleMissingUnsignedProxy.convertUnsigned(in);
+  }
+  
+  @Override public Number convertMissing(Number value) {
+    return scaleMissingUnsignedProxy.convertMissing(value);
+  }
+  
+  @Override public Array convertMissing(Array in) {
+    return scaleMissingUnsignedProxy.convertMissing(in);
+  }
+  
+  @Override public Array convert(Array in, boolean convertUnsigned, boolean applyScaleOffset, boolean convertMissing) {
+    return scaleMissingUnsignedProxy.convert(in, convertUnsigned, applyScaleOffset, convertMissing);
   }
 }
-

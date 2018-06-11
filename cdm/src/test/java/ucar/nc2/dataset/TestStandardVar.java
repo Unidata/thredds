@@ -4,7 +4,7 @@
  */
 package ucar.nc2.dataset;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.*;
@@ -20,17 +20,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Formatter;
 
-/** Test TestStandardVar in JUnit framework. */
-
-public class TestStandardVar extends TestCase {
+public class TestStandardVar {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private String filename = TestDir.cdmLocalTestDataDir +"standardVar.nc";
-
-  public TestStandardVar( String name) {
-    super(name);
-  }
-
+  
+  @Test
   public void testWriteStandardVar() throws Exception {
     NetcdfFileWriter ncfile = NetcdfFileWriter.createNew(filename, false);
 
@@ -122,6 +117,8 @@ public class TestStandardVar extends TestCase {
 
   private NetcdfFile ncfileRead;
   private NetcdfDataset dsRead;
+  
+  @Test
   public void testReadStandardVar() throws Exception {
     ncfileRead = NetcdfFile.open(filename);
     dsRead = NetcdfDataset.openDataset(filename);
@@ -139,7 +136,6 @@ public class TestStandardVar extends TestCase {
   }
 
   public void readDouble() throws Exception {
-
     Variable t1 = null;
     assert(null != (t1 = ncfileRead.findVariable("t1")));
     assert( t1.getDataType() == DataType.DOUBLE);
@@ -177,9 +173,6 @@ public class TestStandardVar extends TestCase {
         assert( A.getDouble(ima.set(i,j)) == (2.0 * (i*10.0+j) + 77.0));
       }
     }
-
-    assert( null == t1.findAttribute(CDM.SCALE_FACTOR));
-    assert( null == t1.findAttribute(CDM.ADD_OFFSET));
   }
 
  public void readByte2Short() throws Exception {
@@ -197,11 +190,11 @@ public class TestStandardVar extends TestCase {
     assert(null != (t2 = dsRead.findVariable("t2")));
     assert t2 instanceof VariableEnhanced;
     VariableDS vs = (VariableDS) t2;
-    assert( vs.getDataType() == DataType.FLOAT) : vs.getDataType();
+    assert( vs.getDataType() == DataType.SHORT) : vs.getDataType();
     assert( vs.hasMissing());
 
     Array A = vs.read();
-    assert( A.getElementType() == float.class) : A.getElementType();
+    assert( A.getElementType() == short.class) : A.getElementType();
     Index ima = A.getIndex();
     int[] shape = A.getShape();
     int i,j;
@@ -309,7 +302,7 @@ public class TestStandardVar extends TestCase {
     assert v instanceof VariableEnhanced;
     assert v instanceof VariableDS;
     VariableDS vs = (VariableDS) v;
-    assert( vs.getDataType() == DataType.FLOAT);
+    assert( vs.getDataType() == DataType.SHORT);
 
     assert( vs.hasMissing());
     assert( vs.hasMissingValue());
@@ -322,49 +315,17 @@ public class TestStandardVar extends TestCase {
     int[] shape = A.getShape();
     int i,j;
 
-    assert (vs.isMissing(A.getFloat(ima.set(0,0))));
+    assert (vs.isMissing(A.getShort(ima.set(0,0))));
 
     for (i=0; i<shape[0]; i++) {
       for (j=1; j<shape[1]; j++) {
-        float val = A.getFloat(ima.set(i,j));
+        float val = A.getShort(ima.set(i,j));
         float want = 2* (i*10+j) + 77;
         if( val != want)
           logger.debug("{} {} {} {}", i, j, val, want);
         assert( val == want);
       }
     }
-
-    // useNaNs
-    vs.setUseNaNs(true);
-    assert( vs.getDataType() == DataType.FLOAT);
-
-    assert( vs.hasMissing());
-    assert( vs.hasMissingValue());
-    double mv2 = 2 * (-9999) + 77;
-    assert( vs.isMissing( mv2));
-    assert( vs.isMissingValue( mv2));
-
-    Array A2 = vs.read();
-    Index ima2 = A2.getIndex();
-    int[] shape2 = A2.getShape();
-
-    double mval = A2.getFloat(ima2.set(0,0));
-    assert vs.isMissing(mval);
-    assert Double.isNaN(mval);
-
-    for (i=0; i<shape2[0]; i++) {
-      for (j=1; j<shape2[1]; j++) {
-        float val = A2.getFloat(ima2.set(i,j));
-        float want = 2* (i*10+j) + 77;
-        if( val != want)
-          logger.debug("{} {} {} {}", i, j, val, want);
-        assert( val == want) : val+" != "+ want;
-      }
-    }
-
-    assert( null == vs.findAttribute(CDM.SCALE_FACTOR));
-    assert( null == vs.findAttribute(CDM.ADD_OFFSET));
-    assert( null == vs.findAttribute(CDM.MISSING_VALUE));
   }
 
   public void readDoubleMissing() throws Exception {
@@ -379,8 +340,8 @@ public class TestStandardVar extends TestCase {
     assert Double.isNaN(val);
     assert v.isMissing(val);
 
-    // reread with useNans off
-    v.setUseNaNs(false);
+    // Reread without converting missing values to NaNs.
+    v.removeEnhancement(NetcdfDataset.Enhance.ConvertMissing);
     v.createNewCache();
     A = v.read();
     ima = A.getIndex();
@@ -389,52 +350,35 @@ public class TestStandardVar extends TestCase {
     Assert2.assertNearlyEquals(val, -999.99);
     assert v.isMissing(val);
   }
-
+  
+  @Test
   public void testEnhanceDefer() throws IOException {
     DatasetUrl durl = new DatasetUrl(null, filename);
-
-    NetcdfDataset ncd = NetcdfDataset.openDataset(durl, EnumSet.of(NetcdfDataset.Enhance.ScaleMissing), -1, null, null);
-    VariableDS enhancedVar = (VariableDS) ncd.findVariable("t1");
-
-    NetcdfDataset ncdefer = NetcdfDataset.openDataset(durl, EnumSet.of(NetcdfDataset.Enhance.ScaleMissingDefer), -1, null, null);
-    VariableDS deferVar = (VariableDS) ncdefer.findVariable("t1");
-
-    Array data = enhancedVar.read();
-    Array dataDefer =  deferVar.read();
-
-    logger.debug("Enhanced = {}", NCdumpW.toString(data));
-    logger.debug("Deferred = {}", NCdumpW.toString(dataDefer));
-
-    CompareNetcdf2 nc = new CompareNetcdf2(new Formatter(System.out), false, false, true);
-    assert !nc.compareData(enhancedVar.getShortName(), data, dataDefer, false);
-
-    IndexIterator ii = dataDefer.getIndexIterator();
-    while (ii.hasNext()) {
-      double val = deferVar.convertScaleOffsetMissing(ii.getDoubleNext());
-      ii.setDoubleCurrent(val);
+    
+    try (NetcdfDataset ncd = NetcdfDataset.openDataset(
+            durl, EnumSet.of(NetcdfDataset.Enhance.ApplyScaleOffset), -1, null, null)) {
+      try (NetcdfDataset ncdefer = NetcdfDataset.openDataset(durl, null, -1, null, null)) {
+        
+        VariableDS enhancedVar = (VariableDS) ncd.findVariable("t1");
+        VariableDS deferVar = (VariableDS) ncdefer.findVariable("t1");
+        
+        Array enhancedData = enhancedVar.read();
+        Array deferredData =  deferVar.read();
+        
+        logger.debug("Enhanced = {}", NCdumpW.toString(enhancedData));
+        logger.debug("Deferred = {}", NCdumpW.toString(deferredData));
+        
+        Formatter compareOutputFormatter = new Formatter();
+        CompareNetcdf2 nc = new CompareNetcdf2(compareOutputFormatter, false, false, true);
+        
+        logger.debug("Comparison result = {}", compareOutputFormatter.toString());
+        assert !nc.compareData(enhancedVar.getShortName(), enhancedData, deferredData, false);
+        
+        Array processedData = enhancedVar.applyScaleOffset(deferredData);
+        
+        logger.debug("Processed = {}", NCdumpW.toString(deferredData));
+        assert nc.compareData(enhancedVar.getShortName(), enhancedData, processedData, false);
+      }
     }
-    logger.debug("Processed = {}", NCdumpW.toString(dataDefer));
-
-    assert nc.compareData(enhancedVar.getShortName(), data, dataDefer, false);
-
-    ncd.close();
-    ncdefer.close();
-  }
-
-  // for jon blower
-  private Array getEnhancedArray(VariableDS vds) throws IOException {
-    Array data = vds.read();
-    EnumSet<NetcdfDataset.Enhance> mode = vds.getEnhanceMode();
-    if (mode.contains(NetcdfDataset.Enhance.ScaleMissing))
-      return data;
-    if (!mode.contains(NetcdfDataset.Enhance.ScaleMissingDefer))
-      throw new IllegalStateException("Must include "+NetcdfDataset.Enhance.ScaleMissingDefer);
-
-    IndexIterator ii = data.getIndexIterator();
-    while (ii.hasNext()) {
-      double val = vds.convertScaleOffsetMissing(ii.getDoubleNext());
-      ii.setDoubleCurrent(val);
-    }
-    return data;
   }
 }
