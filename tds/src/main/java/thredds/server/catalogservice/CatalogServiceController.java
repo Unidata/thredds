@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.core.CatalogManager;
-import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.core.TdsRequestedDataset;
 
 import java.io.FileNotFoundException;
@@ -34,77 +33,69 @@ import java.util.*;
 @Controller
 @RequestMapping(value = "/catalog")
 public class CatalogServiceController {
-    // private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
+  // private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private CatalogManager catalogManager;
+  @Autowired
+  private CatalogManager catalogManager;
 
-    @Autowired
-    ConfigCatalogHtmlWriter writer;
+  @Autowired
+  CatalogViewContextParser parser;
 
-    @Autowired
-    CatalogViewContextParser parser;
+  @RequestMapping(value = "**", method = {RequestMethod.GET})
+  protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response, CatalogRequest params) throws Exception {
 
-    @RequestMapping(value = "**", method = {RequestMethod.GET})
-    protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response, CatalogRequest params) throws Exception {
+    TdsRequestedDataset reqD = new TdsRequestedDataset(request, "/catalog");
+    String path = reqD.getPath();
+    boolean isHtml = path.endsWith(".html");
+    String catalogPath = path.replaceAll(".html$", ".xml");
 
-        TdsRequestedDataset reqD = new TdsRequestedDataset(request, "/catalog");
-        String path = reqD.getPath();
-        boolean isHtml = path.endsWith(".html");
-        String catalogPath = path.replaceAll(".html$", ".xml");
+    Catalog catalog;
+    URI baseUri;
+    String baseUriString = request.getRequestURL().toString();
+    try {
+      baseUri = new URI(baseUriString);
+      catalog = catalogManager.getCatalog(catalogPath, baseUri);
 
-        Catalog catalog;
-        URI baseUri;
-        String baseUriString = request.getRequestURL().toString();
-        try {
-            baseUri = new URI(baseUriString);
-            catalog = catalogManager.getCatalog(catalogPath, baseUri);
-
-        } catch (URISyntaxException e) {
-            String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
-            throw new URISyntaxException(msg, e.getReason());
-        }
-
-        // no catalog found
-        if (catalog == null)
-            throw new FileNotFoundException(request.getRequestURI());
-
-        if (isHtml) {
-            return handleHTMLRequest(request, response, catalog, params);
-        } else {
-            return handleXMLRequest(request, response, catalog, params);
-        }
+    } catch (URISyntaxException e) {
+      String msg = "Bad URI syntax [" + baseUriString + "]: " + e.getMessage();
+      throw new URISyntaxException(msg, e.getReason());
     }
 
-    protected ModelAndView handleXMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
-        if (params.dataset != null) {
-            Dataset dataset = catalog.findDatasetByID(params.dataset);
-            if (dataset == null)
-                throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
+    // no catalog found
+    if (catalog == null)
+      throw new FileNotFoundException(request.getRequestURI());
 
-            Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
-            return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
-
-        } else {
-            return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
-        }
+    if (isHtml) {
+      return handleHTMLRequest(request, response, catalog, params);
+    } else {
+      return handleXMLRequest(request, response, catalog, params);
     }
+  }
 
-    protected ModelAndView handleHTMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
-        if (params.dataset != null) {
-            Dataset dataset = catalog.findDatasetByID(params.dataset);
-            if (dataset == null)
-                throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
-//
-//            Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
+  protected ModelAndView handleXMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
+    if (params.dataset != null) {
+      Dataset dataset = catalog.findDatasetByID(params.dataset);
+      if (dataset == null)
+        throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
 
-//            int i = writer.showDataset(request.getRequestURL().toString(), dataset, request, response, true);
-//            return null;
-            return new ModelAndView("templates/dataset", parser.getDatasetViewContext(dataset, true));
-        } else {
-            return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, true));
-        }
+      Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
+      return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
+
+    } else {
+      return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
     }
+  }
+
+  protected ModelAndView handleHTMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
+    if (params.dataset != null) {
+      Dataset dataset = catalog.findDatasetByID(params.dataset);
+      if (dataset == null)
+        throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
+      return new ModelAndView("templates/dataset", parser.getDatasetViewContext(dataset, request,true));
+    } else {
+      return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, true));
+    }
+  }
 
   /* private ModelAndView handlePublicDocumentRequest(HttpServletRequest request, HttpServletResponse response, String path)
           throws IOException, ServletException {

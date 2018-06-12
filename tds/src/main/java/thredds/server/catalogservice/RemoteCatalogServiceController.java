@@ -20,7 +20,6 @@ import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.client.catalog.builder.CatalogBuilder;
 import thredds.core.AllowedServices;
-import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.core.StandardService;
 import thredds.server.config.HtmlConfigBean;
 import thredds.server.exception.ServiceNotAllowed;
@@ -50,9 +49,6 @@ public class RemoteCatalogServiceController {
 
   @Autowired
   private HtmlConfigBean htmlConfig;
-
-  @Autowired
-  private ConfigCatalogHtmlWriter writer;
 
   @Autowired
   private CatalogViewContextParser parser;
@@ -92,9 +88,9 @@ public class RemoteCatalogServiceController {
 
     ///////////////////////////////////////////
     // Otherwise, handle catalog as indicated by "command".
-     switch (params.getCommand()) {
+    switch (params.getCommand()) {
       case SHOW:
-          return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, false));
+        return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, false));
 
       case SUBSET:
         String datasetId = params.getDataset();
@@ -107,7 +103,7 @@ public class RemoteCatalogServiceController {
         }
 
         if (params.isHtmlView()) {
-            return new ModelAndView("templates/dataset", parser.getDatasetViewContext(dataset, false));
+          return new ModelAndView("templates/dataset", parser.getDatasetViewContext(dataset, request, false));
         } else {
           Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
           return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);

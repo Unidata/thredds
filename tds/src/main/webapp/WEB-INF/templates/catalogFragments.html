@@ -19,7 +19,7 @@
         <code th:if="${!subset.useHref()}" th:text="${subset.getDisplayName()}"></code></td>
     <td align="right">&nbsp;<code th:text="${subset.getDataSize()}"></code></td>
     <td align="right"><code th:text="${subset.getLastModified() != null ? subset.getLastModified() : '--'}">--</code></td>
-    <tr class="catalog-item" th:each="nested , rowStat : ${subset.getCatalogItems()}" th:replace="templates/catalogFragments :: item(${nested}, ${rowStat})"></tr>
+<tr class="catalog-item" th:each="nested , rowStat : ${subset.getCatalogItems()}" th:replace="templates/catalogFragments :: item(${nested}, ${rowStat})"></tr>
 </tr>
 </body>
 

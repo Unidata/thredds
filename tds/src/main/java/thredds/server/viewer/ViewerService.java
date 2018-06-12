@@ -22,5 +22,7 @@ public interface ViewerService {
 	boolean registerViewer(Viewer v);
 	
 	void showViewers(Formatter sbuff, Dataset dataset, HttpServletRequest req);
+
+	List<ViewerLinkProvider.ViewerLink> getViewerLinks(Dataset dataset, HttpServletRequest req);
 	
 }
