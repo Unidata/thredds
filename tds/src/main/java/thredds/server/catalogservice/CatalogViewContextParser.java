@@ -56,7 +56,6 @@ public class CatalogViewContextParser {
     populateDatasetContext(ds, context, req, isLocalCatalog);
 
     model.put("dataset", context);
-
     return model;
   }
 
@@ -320,6 +319,8 @@ class DatasetContext {
 
   private String catUrl;
 
+  private String catName;
+
   private Map<String, Object> context;
 
   private List<Map<String, String>> documentation;
@@ -353,12 +354,14 @@ class DatasetContext {
   private List<Map<String, String>> viewerLinks;
 
 
-  // TODO: viewers
-
   public DatasetContext(Dataset ds, boolean isLocalCatalog) {
     // Get display name can catalog url
     this.name = ds.getName();
-    this.catUrl = ds.getCatalogUrl();
+    String catUrl = ds.getCatalogUrl();
+    if (catUrl.indexOf('#') > 0)
+      catUrl = catUrl.substring(0, catUrl.lastIndexOf('#'));
+    this.catUrl = catUrl;
+    this.catName = ds.getParentCatalog().getName();
 
     setContext(ds);
     setDocumentation(ds);
@@ -693,6 +696,8 @@ class DatasetContext {
   public String getName() { return this.name; }
 
   public String getCatUrl() { return this.catUrl; }
+
+  public String getCatName() { return this.catName; }
 
   public List<Map<String, String>> getDocumentation() { return this.documentation; }
 

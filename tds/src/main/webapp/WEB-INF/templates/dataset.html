@@ -14,41 +14,60 @@
 
 <body>
 
+    <div class="container">
 
-    <div th:replace="~{templates/commonFragments :: header}"/>
+        <div th:replace="~{templates/commonFragments :: header}"/>
 
-    <h2 th:text="'Catalog ' + ${dataset.getCatUrl()}"></h2>
-    <h2 th:text="'Dataset: ' + ${dataset.getName()}"></h2>
+        <div th:replace="~{templates/datasetFragments :: returnButton}"/>
 
-    <div th:replace="${dataset.getAllContext().size() > 0} ? ~{templates/datasetFragments :: context} : ~{}"/>
+        <div class="content">
 
-    <div th:replace="${dataset.getDocumentation().size() > 0} ? ~{templates/datasetFragments :: documentation} : ~{}"/>
+            <div th:replace="${dataset.getAccess().size() > 0} ? ~{templates/datasetFragments :: access} : ~{}"/>
 
-    <div th:replace="${dataset.getAccess().size() > 0} ? ~{templates/datasetFragments :: access} : ~{}"/>
+        </div>
 
-    <div th:replace="${dataset.getContributors().size() > 0} ? ~{templates/datasetFragments :: contributors} : ~{}"/>
+        <div class="content">
 
-    <div th:replace="${dataset.getKeywords().size() > 0} ? ~{templates/datasetFragments :: keywords} : ~{}"/>
+            <h3 th:text="'Dataset: ' + ${dataset.getName()}"></h3>
+            <h3 th:text="'Catalog: ' + ${dataset.getCatName() != null ? dataset.getCatName() : dataset.getCatUrl()}"></h3>
 
-    <div th:replace="${dataset.getDates().size() > 0} ? ~{templates/datasetFragments :: dates} : ~{}"/>
+            <div th:replace="${dataset.getAllContext().size() > 0} ? ~{templates/datasetFragments :: context} : ~{}"/>
 
-    <div th:replace="${dataset.getProjects().size() > 0} ? ~{templates/datasetFragments :: projects} : ~{}"/>
+        </div>
 
-    <div th:replace="${dataset.getCreators().size() > 0} ? ~{templates/datasetFragments :: creators} : ~{}"/>
-    
-    <div th:replace="${dataset.getPublishers().size() > 0} ? ~{templates/datasetFragments :: publishers} : ~{}"/>
+        <div class="content">
 
-    <div th:replace="${dataset.getVariables().size() > 0} ? ~{templates/datasetFragments :: variables} : ~{}"/>
+            <div th:replace="${dataset.getDocumentation().size() > 0} ? ~{templates/datasetFragments :: documentation} : ~{}"/>
 
-    <div th:replace="${dataset.getGeospatialCoverage() != null} ? ~{templates/datasetFragments :: geospatialCoverage} : ~{}"/>
+            <div th:replace="${dataset.getContributors().size() > 0} ? ~{templates/datasetFragments :: contributors} : ~{}"/>
 
-    <div th:replace="${dataset.getTimeCoverage() != null} ? ~{templates/datasetFragments :: timeCoverage} : ~{}"/>
+            <div th:replace="${dataset.getKeywords().size() > 0} ? ~{templates/datasetFragments :: keywords} : ~{}"/>
 
-    <div th:replace="${dataset.getProperties().size() > 0} ? ~{templates/datasetFragments :: properties} : ~{}"/>
+            <div th:replace="${dataset.getDates().size() > 0} ? ~{templates/datasetFragments :: dates} : ~{}"/>
 
-    <div th:replace="${dataset.getViewerLinks().size() > 0} ? ~{templates/datasetFragments :: viewers} : ~{}"/>
+            <div th:replace="${dataset.getProjects().size() > 0} ? ~{templates/datasetFragments :: projects} : ~{}"/>
 
-    <div th:replace="~{templates/commonFragments :: footer}"/>
+            <div th:replace="${dataset.getCreators().size() > 0} ? ~{templates/datasetFragments :: creators} : ~{}"/>
+
+            <div th:replace="${dataset.getPublishers().size() > 0} ? ~{templates/datasetFragments :: publishers} : ~{}"/>
+
+            <div th:replace="${dataset.getVariables().size() > 0} ? ~{templates/datasetFragments :: variables} : ~{}"/>
+
+            <div th:replace="${dataset.getGeospatialCoverage() != null} ? ~{templates/datasetFragments :: geospatialCoverage} : ~{}"/>
+
+            <div th:replace="${dataset.getTimeCoverage() != null} ? ~{templates/datasetFragments :: timeCoverage} : ~{}"/>
+
+            <div th:replace="${dataset.getProperties().size() > 0} ? ~{templates/datasetFragments :: properties} : ~{}"/>
+
+            <div th:replace="${dataset.getViewerLinks().size() > 0} ? ~{templates/datasetFragments :: viewers} : ~{}"/>
+
+        </div>
+
+        <div th:replace="~{templates/datasetFragments :: returnButton}"/>
+
+        <div th:replace="~{templates/commonFragments :: footer}"/>
+
+    </div>
 
 </body>
 </html>
