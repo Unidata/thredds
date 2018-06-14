@@ -1,10 +1,15 @@
+html, body {
+    height:100%;
+    margin: 0;
+    padding: 0;
+}
+
 body{
    font-weight: normal;
    font-size: 10pt;
    font-family: Arial, Helvetica, sans-serif;
    color: #000000;
    text-decoration: none;
-   margin: 0px;
 }
 
 td {
@@ -208,7 +213,6 @@ small.imageinc {
    text-align: justify;
 }
 
-
 div.header, div.footer {
     color: #E3E4E6;
     background-color: #06778F;
@@ -216,6 +220,7 @@ div.header, div.footer {
     border: 1px solid #CFCFCF;
     border-style: outset;
     margin-bottom: 8px;
+    box-sizing: border-box;
 }
 
 .header-logo {
@@ -225,6 +230,21 @@ div.header, div.footer {
 
 .header-info {
     margin-left: 75px;
+}
+
+.footer-buffer {
+    background-color:  #E3E4E6;
+    height: 90px;
+    margin-top: 4px;
+}
+
+
+div.footer {
+    position: absolute;
+    height: 90px;
+    bottom: 0px;
+    left: 15px;
+    right: 15px;
 }
 
 table.property-table {
@@ -246,13 +266,16 @@ a.static:visited {
 
 div.container {
     background-color: #E3E4E6;
+    min-height: 100%;
+    width: 100%;
+    position: relative;
     padding: 10px 15px;
-    height: -webkit-fill-available;
+    box-sizing: border-box;
 }
 
 div.content {
     background-color: #FFFFFF;
-    margin-bottom: 8px;
+    margin-top: 8px;
     padding: 5px 10px;
     border: 1px solid #CFCFCF;
 }

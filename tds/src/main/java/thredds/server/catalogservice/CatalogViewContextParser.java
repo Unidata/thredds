@@ -41,6 +41,10 @@ public class CatalogViewContextParser {
     Map<String, Object> model = new HashMap<>();
     addBaseContext(model);
 
+    Catalog parent = cat.getParentCatalog();
+    if (parent != null) {
+      model.put("parentHref", parent.getBaseURI());
+    }
     List<CatalogItemContext> catalogItems = new ArrayList<>();
     addCatalogItems(cat, catalogItems, isLocalCatalog, 0);
     model.put("items", catalogItems);
