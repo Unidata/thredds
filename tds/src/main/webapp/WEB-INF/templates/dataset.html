@@ -53,9 +53,9 @@
 
             <div th:replace="${dataset.getVariables().size() > 0} ? ~{templates/datasetFragments :: variables} : ~{}"/>
 
-            <div th:replace="${dataset.getGeospatialCoverage() != null} ? ~{templates/datasetFragments :: geospatialCoverage} : ~{}"/>
+            <div th:replace="${dataset.getGeospatialCoverage().size() > 0} ? ~{templates/datasetFragments :: geospatialCoverage} : ~{}"/>
 
-            <div th:replace="${dataset.getTimeCoverage() != null} ? ~{templates/datasetFragments :: timeCoverage} : ~{}"/>
+            <div th:replace="${dataset.getTimeCoverage().size() > 0} ? ~{templates/datasetFragments :: timeCoverage} : ~{}"/>
 
             <div th:replace="${dataset.getProperties().size() > 0} ? ~{templates/datasetFragments :: properties} : ~{}"/>
 

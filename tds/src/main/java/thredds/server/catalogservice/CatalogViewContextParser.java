@@ -37,14 +37,15 @@ public class CatalogViewContextParser {
   @Autowired
   private TdsServerInfoBean serverInfo;
 
-  public Map<String, Object> getCatalogViewContext(Catalog cat, boolean isLocalCatalog) {
+  public Map<String, Object> getCatalogViewContext(Catalog cat, HttpServletRequest req, boolean isLocalCatalog) {
     Map<String, Object> model = new HashMap<>();
     addBaseContext(model);
 
     Catalog parent = cat.getParentCatalog();
-    if (parent != null) {
-      model.put("parentHref", parent.getBaseURI());
-    }
+    URI parentURI;
+    if (parent != null) parentURI = parent.getBaseURI();
+    if (parent != null) model.put("parentHref", parent.getBaseURI().toString());
+
     List<CatalogItemContext> catalogItems = new ArrayList<>();
     addCatalogItems(cat, catalogItems, isLocalCatalog, 0);
     model.put("items", catalogItems);
@@ -357,9 +358,8 @@ class DatasetContext {
 
   private List<Map<String, String>> viewerLinks;
 
-
-  public DatasetContext(Dataset ds, boolean isLocalCatalog) {
-    // Get display name can catalog url
+  public DatasetContext (Dataset ds, boolean isLocalCatalog) {
+    // Get display name and catalog url
     this.name = ds.getName();
     String catUrl = ds.getCatalogUrl();
     if (catUrl.indexOf('#') > 0)

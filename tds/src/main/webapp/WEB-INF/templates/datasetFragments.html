@@ -154,8 +154,12 @@
     <div th:fragment="geospatialCoverage">
         <h3 class="section">GeospatialCoverage:</h3>
         <ul>
-            <li><em> Longitude: </em><th:block th:text="${dataset.getGeospatialCoverage().get('eastWestRange')}"/></li>
-            <li><em> Latitude: </em><th:block th:text="${dataset.getGeospatialCoverage().get('northSouthRange')}"/></li>
+            <li th:if="${dataset.getGeospatialCoverage().get('eastWestRange') != null}">
+                <em> Longitude: </em><th:block th:text="${dataset.getGeospatialCoverage().get('eastWestRange')}"/>
+            </li>
+            <li th:if="${dataset.getGeospatialCoverage().get('northSouthRange') != null}">
+                <em> Latitude: </em><th:block th:text="${dataset.getGeospatialCoverage().get('northSouthRange')}"/>
+            </li>
             <li th:if="${dataset.getGeospatialCoverage().get('upDownRange') != null}">
                 <em> Altitude: </em><th:block th:utext="${dataset.getGeospatialCoverage().get('upDownRange')} + ' (positive is <strong>' + ${dataset.getGeospatialCoverage().get('zPositive')} + '</strong>)'"/>
             </li>

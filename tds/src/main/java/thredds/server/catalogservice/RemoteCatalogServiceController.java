@@ -90,7 +90,7 @@ public class RemoteCatalogServiceController {
     // Otherwise, handle catalog as indicated by "command".
     switch (params.getCommand()) {
       case SHOW:
-        return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, false));
+        return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, request,false));
 
       case SUBSET:
         String datasetId = params.getDataset();

@@ -83,7 +83,7 @@ public class CatalogServiceController {
 
     } else {
       return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
-    }
+    }  
   }
 
   protected ModelAndView handleHTMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
@@ -93,7 +93,7 @@ public class CatalogServiceController {
         throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
       return new ModelAndView("templates/dataset", parser.getDatasetViewContext(dataset, request,true));
     } else {
-      return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, true));
+      return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, request,true));
     }
   }
 
