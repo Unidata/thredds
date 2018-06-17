@@ -38,6 +38,10 @@ public class TdsRequestedDataset {
     datasetManager = _datasetManager;
   }
 
+  static public DatasetManager getDatasetManager() {
+    return datasetManager;
+  }
+
   static private DatasetManager datasetManager;
 
   // return null means request has been handled, and calling routine should exit without further processing

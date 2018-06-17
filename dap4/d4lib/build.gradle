@@ -7,6 +7,7 @@ apply from: "$rootDir/gradle/any/publishing.gradle"
 dependencies {
     compile project(':dap4:d4core')
     compile project(':httpservices')
+    compile project(':netcdf4')
 
     compile libraries["jna"]
     compile libraries["jcommander"]
