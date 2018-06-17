@@ -176,9 +176,9 @@ public class TestServlet extends DapTestCommon
             throws Exception
     {
         //if(DEBUGDATA) DapController.DUMPDATA = true;
-	if(USESPRING) {
+	/*USESPRING
   	    this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-	} else {	
+	else */ {
             StandaloneMockMvcBuilder mvcbuilder =
                 MockMvcBuilders.standaloneSetup(new Dap4Controller());
             mvcbuilder.setValidator(new TestServlet.NullValidator());
