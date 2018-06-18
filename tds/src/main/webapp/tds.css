@@ -208,4 +208,30 @@ small.imageinc {
    text-align: justify;
 }
 
+div.header, div.footer {
+    color: #E3E4E6;
+    background-color: #06778F;
+    padding: 3px 20px;
+    border: 1px solid #CFCFCF;
+    border-style: outset;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+}
+
+.header-logo {
+    float: left;
+    margin-top: 1.2em;
+}
+
+.header-info {
+    margin-left: 75px;
+}
+
+a.static {
+    color: #FFFFFF;
+}
+
+a.static:visited {
+    color: #FFFFFF;
+}
 

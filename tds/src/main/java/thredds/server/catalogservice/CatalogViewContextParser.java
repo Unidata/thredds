@@ -39,13 +39,7 @@ public class CatalogViewContextParser {
 
   public Map<String, Object> getCatalogViewContext(Catalog cat, boolean isLocalCatalog) {
     Map<String, Object> model = new HashMap<>();
-    String googleTrackingCode = htmlConfig.getGoogleTrackingCode();
-    if (googleTrackingCode.isEmpty()) googleTrackingCode = null;
-    model.put("googleTracking", googleTrackingCode);
-
-    model.put("serverName", serverInfo.getName());
-    model.put("logoUrl", serverInfo.getLogoUrl());
-    model.put("logoAlt", serverInfo.getLogoAltText());
+    addBaseContext(model);
 
     List<CatalogItemContext> catalogItems = new ArrayList<>();
     addCatalogItems(cat, catalogItems, isLocalCatalog, 0);
@@ -56,15 +50,7 @@ public class CatalogViewContextParser {
   public  Map<String, Object> getDatasetViewContext(Dataset ds, HttpServletRequest req, boolean isLocalCatalog)
   {
     Map<String, Object> model = new HashMap<>();
-
-    model.put("googleTracking", htmlConfig.getGoogleTrackingCode());
-    model.put("serverName", serverInfo.getName());
-    model.put("logoUrl", serverInfo.getLogoUrl());
-    model.put("logoAlt", serverInfo.getLogoAltText());
-    model.put("installName", htmlConfig.getInstallName());
-    model.put("installUrl", htmlConfig.getInstallUrl());
-    model.put("webappName", htmlConfig.getWebappName());
-    model.put("webappUrl", htmlConfig.getWebappUrl());
+    addBaseContext(model);
 
     DatasetContext context = new DatasetContext(ds, isLocalCatalog);
     populateDatasetContext(ds, context, req, isLocalCatalog);
@@ -72,6 +58,24 @@ public class CatalogViewContextParser {
     model.put("dataset", context);
 
     return model;
+  }
+
+  private void addBaseContext(Map<String, Object> model) {
+    String googleTrackingCode = htmlConfig.getGoogleTrackingCode();
+    if (googleTrackingCode.isEmpty()) googleTrackingCode = null;
+    model.put("googleTracking", googleTrackingCode);
+    model.put("serverName", serverInfo.getName());
+    model.put("logoUrl", serverInfo.getLogoUrl());
+    model.put("logoAlt", serverInfo.getLogoAltText());
+    model.put("installName", htmlConfig.getInstallName());
+    model.put("installUrl", htmlConfig.getInstallUrl());
+    model.put("webappName", htmlConfig.getWebappName());
+    model.put("webappUrl", htmlConfig.getWebappUrl());
+    model.put("webappVersion", htmlConfig.getWebappVersion());
+    model.put("webappBuildTimestamp", htmlConfig.getWebappVersionBuildDate());
+    model.put("webbappDocsUrl", htmlConfig.getWebappDocsUrl());
+    model.put("hostInst", htmlConfig.getHostInstName());
+    model.put("hostInstUrl", htmlConfig.getHostInstUrl());
   }
 
   protected void addCatalogItems(DatasetNode cat, List<CatalogItemContext> catalogItems, boolean isLocalCatalog, int level)

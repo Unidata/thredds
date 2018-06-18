@@ -18,6 +18,7 @@
 </head>
 
 <body>
+
     <div class="header" th:fragment="header(titleText, switchLinks)">
       <div class="pageTitle">
         <h1 th:text="${titleText}">NetCDF Subset Service</h1>
@@ -37,115 +38,23 @@
       </div>
     </div>
 
-    <div class="dataset" th:fragment="dataset(datasetDesc)">
-      <h2>
-        <!-- Don't allow line break to occur between "Dataset:" label and the path. -->
-        Dataset:&nbsp;<span id="datasetPath" class="black" th:text="${datasetPath}">
-            /thredds/ncss/some/dataset/path
-        </span>
-      </h2>
-      <!--/* ncssStation.html is the only template that will override this default elem. */-->
-      <h4 th:replace="${datasetDesc}">(<a href="dataset.xml">Dataset Description</a>)</h4>
-    </div>
 
-    <!--/********************************** Sidebar fragments **********************************/-->
-
-    <div id="map" th:fragment="map"> <!-- This div is where we install the OpenLayers.Map in initMap(). --> </div>
-
-        <div id="latLonSubset" class="tabPane sidebarInput" th:fragment="latLonSubset">
-          <h5>Bounding box (in decimal degrees)</h5>
-
-          <div class="boundingBoxGrid">
-            <label class="topLabel" for="north">North</label>
-            <input class="topBox" type="text" name="north" id="north" required />
-
-            <label class="leftLabel" for="west">West</label>
-            <input class="leftBox" type="text" name="west" id="west" required />
-
-            <label class="rightLabel" for="east">East</label>
-            <input class="rightBox" type="text" name="east" id="east" required />
-
-            <label class="bottomLabel" for="south">South</label>
-            <input class="bottomBox" type="text" name="south" id="south" required />
-          </div>
-
-          <div th:replace=":: resetButtonContainer(fullLatLonExt)" />
-        </div>
-
-        <div id="pointSubset" class="tabPane sidebarInput" th:fragment="pointSubset">
-          <h5>Nearest to location (in decimal degrees)</h5>
-
-          <div class="verticalInputBoxesGrid vibg_2boxes">
-            <label class="vibg_label1" for="latitude">Latitude:</label>
-            <input class="vibg_box1" type="text" name="latitude" id="latitude" size="10" required/>
-
-            <label class="vibg_label2" for="longitude">Longitude:</label>
-            <input class="vibg_box2" type="text" name="longitude" id="longitude" size="10" required/>
-          </div>
-        </div>
-
-      <div id="timeSubsetInput" th:fragment="timeSubsetInput">
-        <div class="tabContainer">
-          <button type="button" onclick="selectTab(timeRangeSubset, this)" class="defaultButton">Time range</button>
-
-          <button type="button" onclick="selectTab(singleTimeSubset, this)">Single time</button>
-        </div>
-
-        <div id="timeRangeSubset" class="tabPane sidebarInput">
-          <div class="verticalInputBoxesGrid vibg_3boxes">
-            <label class="vibg_label1" for="time_start">Start:</label>
-            <input class="vibg_box1" type="text" name="time_start" id="time_start" size="27" required />
-
-            <label class="vibg_label2" for="time_end">End:</label>
-            <input class="vibg_box2" type="text" name="time_end" id="time_end" size="27" required />
-
-            <label class="vibg_label3" for="timeStride">Stride:</label>
-            <input class="vibg_box3" type="text" name="timeStride" id="timeStride" size="10" value="1" required />
-          </div>
-
-          <div th:replace=":: resetButtonContainer(fullTimeExt)" />
-        </div>
-
-        <div id="singleTimeSubset" class="tabPane sidebarInput">
-          <label for="time">Time:</label>
-          <input type="text" name="time" id="time" size="27" required />
-        </div>
+    <div th:fragment="header">
+      <div class="header">
+        <div class="header-logo"><img th:src="${logoUrl}" th:alt="${logoAlt}"></div>
+        <div class="header-info"><h3><strong><a class="static" th:href="${webappUrl}" th:text="${webappName}"></a></strong></h3>
+          <h3><strong><a class="static" th:href="${installUrl}" th:text="${installName}"></a></strong></h3></div>
       </div>
+    </div>
 
-      <div id="outputFormatInput" class="sidebarInput" th:fragment="outputFormatInput">
-        <label for="accept">Format:</label>
 
-        <select id="accept" name="accept" size="1">
-          <option th:each="opt : ${accept}" th:value="${opt}" th:text="${opt}">format</option>
-        </select>
+    <div th:fragment="footer">
+      <div class="footer-buffer"></div>
+      <div class="footer">
+        <h4><a class="static" th:href="${installUrl}" th:text="${installName}"></a> at <a class="static" th:href="${hostInstUrl}" th:text="${hostInst}"></a> see <a class="static" href="/thredds/info/serverInfo.html"> Info </a></h4>
+        <h4><th:block th:text="${webappName} + ' [Version ' + ${webappVersion} + ' - ' + ${webappBuildTimestamp} + ']'"/><a class="static" th:href="${webbappDocsUrl}"> Documentation</a></h4>
       </div>
-
-          <div class="resetButtonContainer" th:fragment="resetButtonContainer(inputsMap)">
-            <button type="button" class="resetButton" th:onclick="|setInputValues(${inputsMap})|">
-              Reset to full extension
-            </button>
-          </div>
-
-    <!--/***************************************************************************************/-->
-
-    <div class="requestBuilder" th:fragment="requestBuilder">
-      <h3>NCSS request URL:</h3>
-      <pre id="urlBuilder">THIS WILL BE REPLACED BY buildAccessUrl().</pre>
     </div>
-
-    <div class="buttons" th:fragment="buttons">
-      <button type="submit">Submit</button>
-      <button type="button" onclick="resetForm()">Reset</button>
-    </div>
-
-    <div class="footer" th:fragment="footer">
-      <h3>
-        <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/services/NetcdfSubsetServiceReference.html">
-          NetCDF Subset Service Documentation
-        </a>
-      </h3>
-    </div>
-</body>
 
 </body>
 </html>

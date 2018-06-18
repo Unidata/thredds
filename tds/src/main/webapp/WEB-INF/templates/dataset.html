@@ -12,15 +12,8 @@
 
 <body>
 
-    <!-- TODO: Make common header -->
-    <table width="100%">
-        <tbody><tr><td>
-            <img th:src="${logoUrl}" th:alt="${logoAlt}" align="left" valign="top" hspace="10" vspace="2">
-            <h3><strong><a th:href="${installUrl}" th:text="${installName}">THREDDS-DEV Data Server</a></strong></h3>
-            <h3><strong><a th:href="${webappUrl}" th:text="${webappName}">THREDDS Data Server</a></strong></h3>
-        </td></tr>
-        </tbody>
-    </table>
+
+    <div th:replace="~{templates/datasetFragments :: catalogHeader}"/>
 
     <h2 th:text="'Catalog ' + ${dataset.getCatUrl()}"></h2>
     <h2 th:text="'Dataset: ' + ${dataset.getName()}"></h2>
@@ -53,6 +46,7 @@
 
     <div th:replace="${dataset.getViewerLinks().size() > 0} ? ~{templates/datasetFragments :: viewers} : ~{}"/>
 
-<!--TODO: make common footer -->
+    <div th:replace="~{templates/datasetFragments :: catalogFooter}"/>
+
 </body>
 </html>
