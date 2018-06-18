@@ -176,11 +176,14 @@ public class Geostationary extends AbstractCoordTransBuilder {
 
       List<CoordinateAxis> cas = ds.getCoordinateAxes();
       for (CoordinateAxis ca : cas) {
-        if (ca.getAxisType().equals(AxisType.GeoX)) {
-          xScaleFactor = checkMapCoordinateUnits(ca);
-        } else if (ca.getAxisType().equals(AxisType.GeoY)) {
-          yScaleFactor = checkMapCoordinateUnits(ca);
-        }
+          AxisType axisType = ca.getAxisType();
+          if (axisType != null) {
+              if (ca.getAxisType().equals(AxisType.GeoX)) {
+                  xScaleFactor = checkMapCoordinateUnits(ca);
+              } else if (ca.getAxisType().equals(AxisType.GeoY)) {
+                  yScaleFactor = checkMapCoordinateUnits(ca);
+              }
+          }
       }
 
       ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(
