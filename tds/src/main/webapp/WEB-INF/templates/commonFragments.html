@@ -20,6 +20,7 @@
 <body>
 
     <div th:fragment="header">
+      <div class="header-buffer"></div>
       <div class="header">
         <div class="header-logo"><img th:src="${logoUrl}" th:alt="${logoAlt}"></div>
         <div class="header-info"><h3><strong><a class="static" th:href="${webappUrl}" th:text="${webappName}"></a></strong></h3>
@@ -36,4 +37,5 @@
     </div>
 
 </body>
+
 </html>

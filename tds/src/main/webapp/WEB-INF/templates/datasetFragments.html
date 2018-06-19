@@ -16,7 +16,7 @@
     </div>
 
     <!--<div th:fragment="sectionTemplate(title, isOrdered, listItems)">-->
-        <!--<h3 class="section" th:text="${title}"></h3>-->
+        <!--<h3 th:text="${title}"></h3>-->
         <!--<ul th:if="${!isOrdered}">-->
             <!--<th:block th:replace="${listItems}" />-->
         <!--</ul>-->
@@ -38,8 +38,8 @@
     <!--</ul>-->
     <!--</div>-->
 
-    <div th:fragment="documentation">
-        <h3 class="section">Description:</h3>
+    <div th:fragment="documentation" class="tab-content info" id="docs">
+        <h3>Description:</h3>
         <ul>
             <li class="doc" th:each="doc : ${dataset.getDocumentation()}" th:if="${doc.get('inlineContent') != null}">
                 <strong th:text="${doc.get('type')} + ': '"></strong>
@@ -52,8 +52,8 @@
         </ul>
     </div>
 
-    <div th:fragment="access">
-        <h3 class="section">Access:</h3>
+    <div th:fragment="access" class="tab-content access" id="access">
+        <h3>Access:</h3>
         <ol>
             <li th:each="access : ${dataset.getAccess()}">
                 <b th:text="${access.get('serviceTypeName')} + ': '"></b>
@@ -62,8 +62,8 @@
         </ol>
     </div>
 
-    <div th:fragment="contributors">
-        <h3 class="section">Contributors:</h3>
+    <div th:fragment="contributors" class="tab-content info" id="contributors">
+        <h3>Contributors:</h3>
         <ul>
             <li th:each="contributor : ${dataset.getContributors()}">
                 <strong th:if="${contributor.get('role') != null}" th:text="${contributor.get('role')}"></strong>
@@ -72,8 +72,8 @@
         </ul>
     </div>
 
-    <div th:fragment="keywords">
-        <h3 class="section">Keywords:</h3>
+    <div th:fragment="keywords" class="tab-content info" id="keywords">
+        <h3>Keywords:</h3>
         <ul>
             <li th:each="keyword : ${dataset.getKeywords()}">
                 <strong th:if="${keyword.get('vocab') != null}" th:text="${keyword.get('vocab')}"></strong>
@@ -82,8 +82,8 @@
         </ul>
     </div>
 
-    <div th:fragment="dates">
-        <h3 class="section">Dates:</h3>
+    <div th:fragment="dates" class="tab-content info" id="dates">
+        <h3>Dates:</h3>
         <ul>
             <li th:each="date : ${dataset.getDates()}">
                 <strong th:if="${date.get('type') != null}" th:text="${date.get('type')}"></strong>
@@ -92,8 +92,8 @@
         </ul>
     </div>
 
-    <div th:fragment="projects">
-        <h3 class="section">Projects:</h3>
+    <div th:fragment="projects" class="tab-content info" id="projects">
+        <h3>Projects:</h3>
         <ul>
             <li th:each="project : ${dataset.getProjects()}">
                 <strong th:if="${project.get('vocab') != null}" th:text="${project.get('vocab')}"></strong>
@@ -102,8 +102,8 @@
         </ul>
     </div>
 
-    <div th:fragment="creators">
-        <h3 class="section">Creators:</h3>
+    <div th:fragment="creators" class="tab-content info" id="creators">
+        <h3>Creators:</h3>
         <ul>
             <li th:each="creator : ${dataset.getCreators()}">
                 <strong th:text="${creator.get('name')}"></strong>
@@ -115,8 +115,8 @@
         </ul>
     </div>
 
-    <div th:fragment="publishers">
-        <h3 class="section">Publishers:</h3>
+    <div th:fragment="publishers" class="tab-content info" id="publishers">
+        <h3>Publishers:</h3>
         <ul>
             <li th:each="publisher : ${dataset.getPublishers()}">
                 <strong th:text="${publisher.get('name')}"></strong>
@@ -128,8 +128,8 @@
         </ul>
     </div>
 
-    <div th:fragment="variables">
-        <h3 class="section">Variables:</h3>
+    <div th:fragment="variables" class="tab-content info" id="vars">
+        <h3>Variables:</h3>
         <ul>
             <li th:each="varGroup : ${dataset.getVariables()}"><em>Vocabulary</em> <th:block th:text="' ['"/>
                 <a th:if="${varGroup.get('href') != null}" th:href="${varGroup.get('href')}" th:text="${varGroup.get('title')}"></a>
@@ -151,8 +151,8 @@
         </div>
     </div>
 
-    <div th:fragment="geospatialCoverage">
-        <h3 class="section">GeospatialCoverage:</h3>
+    <div th:fragment="geospatialCoverage" class="tab-content info" id="geo">
+        <h3>GeospatialCoverage:</h3>
         <ul>
             <li th:if="${dataset.getGeospatialCoverage().get('eastWestRange') != null}">
                 <em> Longitude: </em><th:block th:text="${dataset.getGeospatialCoverage().get('eastWestRange')}"/>
@@ -166,8 +166,8 @@
         </ul>
     </div>
 
-    <div th:fragment="timeCoverage">
-        <h3 class="section">TimeCoverage:</h3>
+    <div th:fragment="timeCoverage" class="tab-content info" id="time">
+        <h3>TimeCoverage:</h3>
         <ul>
             <li th:if="${dataset.getTimeCoverage().get('start') != null}"><em> Start: </em><th:block th:text="${dataset.getTimeCoverage().get('start')}"/></li>
             <li th:if="${dataset.getTimeCoverage().get('end') != null}"><em> End: </em><th:block th:text="${dataset.getTimeCoverage().get('end')}"/>
@@ -176,8 +176,8 @@
         </ul>
     </div>
 
-    <div th:fragment="properties">
-        <h3 class="section">Properties:</h3>
+    <div th:fragment="properties" class="tab-content info" id="props">
+        <h3>Properties:</h3>
         <ul>
             <li th:each="prop : ${dataset.getProperties()}" th:if="${prop.get('attachLink') != null}">
                 <a th:href="${prop.get('href')}" th:text="${prop.get('name')}"></a></li>
@@ -186,8 +186,8 @@
         </ul>
     </div>
 
-    <div th:fragment="viewers">
-        <h3 class="section">Viewers:</h3>
+    <div th:fragment="viewers" class="tab-content access" id="viewers">
+        <h3>Viewers:</h3>
         <ul>
             <li th:each="link : ${dataset.getViewerLinks()}">
                 <a th:href="${link.get('href')}" th:text="${link.get('title')}"></a>
