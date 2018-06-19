@@ -48,10 +48,19 @@
      * that are HTML catalog views. The CSS document given in the "standardCssUrl"
      * element is used in all other generated HTML pages.
 
-    <standardCssUrl>tds.css</standardCssUrl>
-    <catalogCssUrl>tdsCat.css</catalogCssUrl>
-    <datasetCssUrl>tdsDst.css</datasetCssUrl>
-    <openDapCssUrl>tdsDap.css</openDapCssUrl>
+    LOOK
+    <customCssUrls>
+      <standardCssUrl>tds.css</standardCssUrl>
+      <catalogCssUrl>tdsCat.css</catalogCssUrl>
+      <datasetCssUrl>tdsDst.css</datasetCssUrl>
+      <openDapCssUrl>tdsDap.css</openDapCssUrl>
+    </customCssUrls>
+     * -->
+
+    <!--
+     * location of user-supplied Thymeleaf templates.
+
+    <htmlTemplatesDir>templates/customTemplates.html</htmlTemplatesDir>
      * -->
 
     <!--
