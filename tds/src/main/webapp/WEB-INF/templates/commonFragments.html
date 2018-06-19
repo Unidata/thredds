@@ -19,26 +19,6 @@
 
 <body>
 
-    <div class="header" th:fragment="header(titleText, switchLinks)">
-      <div class="pageTitle">
-        <h1 th:text="${titleText}">NetCDF Subset Service</h1>
-        <h4 th:replace="${switchLinks}">Switch to alternate request type.</h4>
-      </div>
-
-      <div class="unidata">
-        <div class="appTitle">
-          <img src="https://www.unidata.ucar.edu/img/v3/logos/uniTitle.png">
-          <div>
-            <span class="bold">THREDDS Data Server</span>
-            <span class="service">NetCDF Subset Service</span>
-          </div>
-        </div>
-
-        <img src="https://www.unidata.ucar.edu/img/v3/logos/uniLogo.png">
-      </div>
-    </div>
-
-
     <div th:fragment="header">
       <div class="header">
         <div class="header-logo"><img th:src="${logoUrl}" th:alt="${logoAlt}"></div>

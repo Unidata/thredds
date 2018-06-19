@@ -61,21 +61,30 @@ public class CatalogViewContextParser {
   }
 
   private void addBaseContext(Map<String, Object> model) {
+
     String googleTrackingCode = htmlConfig.getGoogleTrackingCode();
     if (googleTrackingCode.isEmpty()) googleTrackingCode = null;
     model.put("googleTracking", googleTrackingCode);
+
     model.put("serverName", serverInfo.getName());
     model.put("logoUrl", serverInfo.getLogoUrl());
     model.put("logoAlt", serverInfo.getLogoAltText());
+
     model.put("installName", htmlConfig.getInstallName());
     model.put("installUrl", htmlConfig.getInstallUrl());
+
     model.put("webappName", htmlConfig.getWebappName());
     model.put("webappUrl", htmlConfig.getWebappUrl());
     model.put("webappVersion", htmlConfig.getWebappVersion());
     model.put("webappBuildTimestamp", htmlConfig.getWebappVersionBuildDate());
     model.put("webbappDocsUrl", htmlConfig.getWebappDocsUrl());
+
     model.put("hostInst", htmlConfig.getHostInstName());
     model.put("hostInstUrl", htmlConfig.getHostInstUrl());
+
+    model.put("standardCSS", htmlConfig.getPageCssUrl());
+    model.put("catalogCSS", htmlConfig.getCatalogCssUrl());
+    model.put("datasetCSS", htmlConfig.getDatasetCssUrl());
   }
 
   protected void addCatalogItems(DatasetNode cat, List<CatalogItemContext> catalogItems, boolean isLocalCatalog, int level)

@@ -6,6 +6,8 @@
 <head th:replace="templates/commonFragments :: head(~{::title}, ~{::script}, ~{::link})">
     <title>Catalog Services</title>
     <link rel="stylesheet" href="/thredds/tds.css" type="text/css">
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(standardCSS)}" th:href="'/thredds/' + ${standardCSS}" type="text/css">
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(datasetCSS)}" th:href="'/thredds/' + ${datasetCSS}" type="text/css">
     <script type="text/javascript" th:inline="javascript">
     </script>
 </head>
@@ -13,7 +15,7 @@
 <body>
 
 
-    <div th:replace="~{templates/datasetFragments :: catalogHeader}"/>
+    <div th:replace="~{templates/commonFragments :: header}"/>
 
     <h2 th:text="'Catalog ' + ${dataset.getCatUrl()}"></h2>
     <h2 th:text="'Dataset: ' + ${dataset.getName()}"></h2>
@@ -46,7 +48,7 @@
 
     <div th:replace="${dataset.getViewerLinks().size() > 0} ? ~{templates/datasetFragments :: viewers} : ~{}"/>
 
-    <div th:replace="~{templates/datasetFragments :: catalogFooter}"/>
+    <div th:replace="~{templates/commonFragments :: footer}"/>
 
 </body>
 </html>
