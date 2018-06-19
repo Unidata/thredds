@@ -10,6 +10,7 @@ import dap4.core.util.DapDump;
 import dap4.dap4lib.ChunkInputStream;
 import dap4.dap4lib.FileDSP;
 import dap4.dap4lib.RequestMode;
+import dap4.dap4lib.netcdf.NetcdfLoader;
 import dap4.servlet.DapCache;
 import dap4.servlet.Generator;
 import dap4.servlet.SynDSP;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import thredds.server.dap4.Dap4Controller;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -43,8 +45,32 @@ import java.util.List;
  * test client side deserialization (see TestCDMClient).
  */
 
+/*
+Normally, we would like to use Spring applicationContext
+and autowiring for this class.
+This can work under, say, Jenkins or Travis, but
+it fails under Intellij at the moment because of Mocking.
+I have managed to get it to work partly, but currently it
+crashes trying to initialize the ChronicleMap cache.
+It should be noted that AFAIK none of the Mocking tests will
+work under Intellij; TestServlet is just one example.
+
+I have included the necessary changes marked with the tag
+USESPRING to remind me of what needs to be done someday.
+*/
+
+/* USESPRING
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@ContextConfiguration(
+        locations = {"/WEB-INF/applicationContext.xml", "/WEB-INF/spring-servlet.xml"},
+        loader = MockTdsContextLoader.class)
+*/
+
 public class TestServlet extends DapTestCommon
 {
+    static final boolean USESPRING = false;
+
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static public boolean DEBUG = false;
@@ -138,6 +164,11 @@ public class TestServlet extends DapTestCommon
 
     protected List<TestCase> chosentests = new ArrayList<TestCase>();
 
+    /* USESPRING
+	@Autowired
+	private WebApplicationContext wac;
+    */
+
     //////////////////////////////////////////////////
 
     @Before
@@ -145,11 +176,14 @@ public class TestServlet extends DapTestCommon
             throws Exception
     {
         //if(DEBUGDATA) DapController.DUMPDATA = true;
-
-        StandaloneMockMvcBuilder mvcbuilder =
+	/*USESPRING
+  	    this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+	else */ {
+            StandaloneMockMvcBuilder mvcbuilder =
                 MockMvcBuilders.standaloneSetup(new Dap4Controller());
-        mvcbuilder.setValidator(new TestServlet.NullValidator());
-        this.mockMvc = mvcbuilder.build();
+            mvcbuilder.setValidator(new TestServlet.NullValidator());
+            this.mockMvc = mvcbuilder.build();
+	}
         testSetup();
         if(prop_ascii)
             Generator.setASCII(true);
@@ -188,10 +222,17 @@ public class TestServlet extends DapTestCommon
     public void testServlet()
             throws Exception
     {
-        DapCache.flush();
-        for(TestCase testcase : chosentests) {
-            doOneTest(testcase);
-        }
+        NetcdfLoader.setLogLevel(5);
+        Nc4Iosp.setLogLevel(5);
+	try {
+            DapCache.flush();
+            for(TestCase testcase : chosentests) {
+                doOneTest(testcase);
+            }
+	} finally {
+            NetcdfLoader.setLogLevel(0);
+            Nc4Iosp.setLogLevel(0);
+	}
     }
 
     //////////////////////////////////////////////////

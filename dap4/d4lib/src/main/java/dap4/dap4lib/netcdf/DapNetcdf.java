@@ -601,4 +601,7 @@ public interface DapNetcdf extends Library
 
     /* Set the per-variable cache size, nelems, and preemption policy. */
     int nc_get_var_chunk_cache(int ncid, int varid, SizeTByReference sizep, SizeTByReference nelemsp, FloatByReference preemptionp);  // size_t
+
+    /* Set the log level. */
+    int nc_set_log_level(int newlevel);
 }

@@ -136,25 +136,38 @@ public class Dap4Controller extends DapController
         return "dap4";
     }
 
+    // There is a problem Spring under intellij when using mocking.
+    // See TestServlet for more info.  In any case, if autowiring does
+    // not work, then TdsRequestedDataset.getLocationFromRequestPath
+    // will fail because it internal DatasetManager value will be null.
+    // Autowiring would have set it to non-null. So, check to see if
+    // the autowiring worked and if so use
+    // TdsRequestedDataset.getLocationFromRequestPath.
+    // Otherwise, compute the proper path from the drq.getResourceRoot.
+    // This is completely a hack until such time as we can get things
+    // to work under Intellij.
     @Override
     public String
     getResourcePath(DapRequest drq, String location)
             throws DapException
     {
-        String prefix = drq.getResourceRoot();
         String realpath;
-        if(prefix != null) {
-            realpath = DapUtil.canonjoin(prefix, location);
-        } else
+        if(TdsRequestedDataset.getDatasetManager() != null) {
             realpath = TdsRequestedDataset.getLocationFromRequestPath(location);
+        } else {
+            assert TdsRequestedDataset.getDatasetManager() == null;
+            String prefix = drq.getResourceRoot();
+            assert (prefix != null);
+            realpath = DapUtil.canonjoin(prefix, location);
+        }
 
-        if(!TESTING) {
-            if(!TdsRequestedDataset.resourceControlOk(drq.getRequest(), drq.getResponse(), realpath))
+        if (!TESTING) {
+            if (!TdsRequestedDataset.resourceControlOk(drq.getRequest(), drq.getResponse(), realpath))
                 throw new DapException("Not authorized: " + location)
                         .setCode(DapCodes.SC_FORBIDDEN);
         }
         File f = new File(realpath);
-        if(!f.exists() || !f.canRead())
+        if (!f.exists() || !f.canRead())
             throw new DapException("Not found: " + location)
                     .setCode(DapCodes.SC_NOT_FOUND);
         //ncfile = TdsRequestedDataset.getNetcdfFile(this.request, this.response, path);
