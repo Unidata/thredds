@@ -19,14 +19,14 @@
 
     <!--/* Use the no-operation token to cause the fragment to use its existing value for the dataset description elem.
            See http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#using-the-no-operation-token. */-->
-    <div class="dataset" th:replace="templates/commonFragments :: dataset(_)" />
+    <div class="dataset" th:replace="templates/ncssFragments :: dataset(_)" />
 
     <div class="main" th:replace="templates/gridFragments :: main" />
 
     <div class="sidebar">
       <h3>Horizontal extent:</h3>
 
-      <div th:replace="templates/commonFragments :: map" />
+      <div th:replace="templates/ncssFragments :: map" />
 
       <h3>Horizontal subset:</h3>
 
@@ -38,7 +38,7 @@
                   th:if="${gcd.horizCoordSys.isProjection()}">Proj X/Y box</button>
         </div>
 
-        <div th:replace="templates/commonFragments :: latLonSubset" />
+        <div th:replace="templates/ncssFragments :: latLonSubset" />
 
         <div id="coordinateSubset" class="tabPane sidebarInput" th:if="${gcd.horizCoordSys.isProjection()}">
           <h5>Bounding box (in projection coords)</h5>
@@ -57,7 +57,7 @@
             <input class="bottomBox" type="text" name="miny" id="miny" required />
           </div>
 
-          <div th:replace="templates/commonFragments :: resetButtonContainer(fullProjExt)" />
+          <div th:replace="templates/ncssFragments :: resetButtonContainer(fullProjExt)" />
         </div>
       </div>
 
@@ -68,7 +68,7 @@
 
       <h3>Time subset:</h3>
 
-      <div th:replace="templates/commonFragments :: timeSubsetInput" />
+      <div th:replace="templates/ncssFragments :: timeSubsetInput" />
 
       <h3>Vertical subset:</h3>
 
@@ -76,7 +76,7 @@
 
       <h3>Output format:</h3>
 
-      <div th:replace="templates/commonFragments :: outputFormatInput" />
+      <div th:replace="templates/ncssFragments :: outputFormatInput" />
 
       <h3>CF compliance:</h3>
 
@@ -86,11 +86,11 @@
       </div>
     </div>
 
-    <div class="requestBuilder" th:replace="templates/commonFragments :: requestBuilder" />
+    <div class="requestBuilder" th:replace="templates/ncssFragments :: requestBuilder" />
 
-    <div class="buttons" th:replace="templates/commonFragments :: buttons" />
+    <div class="buttons" th:replace="templates/ncssFragments :: buttons" />
 
-    <div class="footer" th:replace="templates/commonFragments :: footer" />
+    <div class="footer" th:replace="templates/ncssFragments :: footer" />
   </div>
 </form>
 </body>

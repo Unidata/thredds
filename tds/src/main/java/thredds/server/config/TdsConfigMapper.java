@@ -95,8 +95,10 @@ class TdsConfigMapper {
 
 
   enum HtmlConfigMappings {
-    HTML_STANDARD_CSS_URL("htmlSetup.standardCssUrl", null, "tds.css"),
-    HTML_CATALOG_CSS_URL("htmlSetup.catalogCssUrl", null, "tdsCat.css"),
+    HTML_STANDARD_CSS_URL("htmlSetup.standardCssUrl", null, ""),
+    HTML_CATALOG_CSS_URL("htmlSetup.catalogCssUrl", null, ""),
+    HTML_DATASET_CSS_URL("htmlSetip.datasetCssUrl", null, ""),
+    HTML_OPENDAP_CSS_URL("htmlSetup.openDapCssUrl", null, "tdsDap.css"),
     GOOGLE_TRACKING_CODE("htmlSetup.googleTrackingCode", null, ""),
 
     HTML_FOLDER_ICON_URL("htmlSetup.folderIconUrl", null, "folder.gif"),
@@ -136,6 +138,8 @@ class TdsConfigMapper {
 
       htmlConfig.setPageCssUrl(HTML_STANDARD_CSS_URL.getValueFromThreddsConfig());
       htmlConfig.setCatalogCssUrl(HTML_CATALOG_CSS_URL.getValueFromThreddsConfig());
+      htmlConfig.setDatasetCssUrl(HTML_DATASET_CSS_URL.getValueFromThreddsConfig());
+      htmlConfig.setOpenDapCssUrl(HTML_OPENDAP_CSS_URL.getValueFromThreddsConfig());
       htmlConfig.setGoogleTrackingCode(GOOGLE_TRACKING_CODE.getValueFromThreddsConfig());
 
       htmlConfig.setFolderIconUrl(HTML_FOLDER_ICON_URL.getValueFromThreddsConfig());

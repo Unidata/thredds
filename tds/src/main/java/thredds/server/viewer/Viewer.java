@@ -17,13 +17,12 @@ import javax.servlet.http.HttpServletRequest;
  *
  */
 public interface Viewer {
-
   /**
    * Is this dataset vieweable by me?
    * @param ds the dataset
    * @return  true if viewable
    */
-   boolean isViewable( Dataset ds);
+  boolean isViewable( Dataset ds);
 
   /**
    * Get an HTML fragment link to the viewer JNLP file, for this dataset.
@@ -34,6 +33,13 @@ public interface Viewer {
    * @param req the request
    * @return HTML fragment string
    */
-   String getViewerLinkHtml( Dataset ds, HttpServletRequest req);
+  String getViewerLinkHtml( Dataset ds, HttpServletRequest req);
+
+  /**
+   ** @param ds the dataset to view
+   * @param req the request
+   * @return HTML fragment string
+   */
+  ViewerLinkProvider.ViewerLink getViewerLink(Dataset ds, HttpServletRequest req);
 
 }

@@ -16,12 +16,12 @@ import javax.servlet.http.HttpServletResponse;
 import thredds.client.catalog.Catalog;
 import thredds.client.catalog.Dataset;
 import thredds.core.CatalogManager;
-import thredds.core.ConfigCatalogHtmlWriter;
 import thredds.core.TdsRequestedDataset;
 
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.*;
 
 /**
  * LocalCatalogServiceController using client/server catalogs
@@ -39,7 +39,7 @@ public class CatalogServiceController {
   private CatalogManager catalogManager;
 
   @Autowired
-  ConfigCatalogHtmlWriter writer;
+  CatalogViewContextParser parser;
 
   @RequestMapping(value = "**", method = {RequestMethod.GET})
   protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response, CatalogRequest params) throws Exception {
@@ -65,32 +65,37 @@ public class CatalogServiceController {
     if (catalog == null)
       throw new FileNotFoundException(request.getRequestURI());
 
-    // Otherwise, handle catalog as indicated by "command".
-    if (params.dataset != null) {
-      Dataset dataset = catalog.findDatasetByID(params.dataset);
-      if (dataset == null)
-        throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + baseUriString + "].");
-
-      if (isHtml) {
-        int i = writer.showDataset(baseUriString, dataset, request, response, true);
-        return null;
-
-      } else {
-        Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
-        return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
-      }
-
+    if (isHtml) {
+      return handleHTMLRequest(request, response, catalog, params);
     } else {
-      if (isHtml) {
-        int i = writer.writeCatalog(request, response, catalog, true);
-        return null;
-
-      } else {
-        return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
-      }
+      return handleXMLRequest(request, response, catalog, params);
     }
   }
 
+  protected ModelAndView handleXMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
+    if (params.dataset != null) {
+      Dataset dataset = catalog.findDatasetByID(params.dataset);
+      if (dataset == null)
+        throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
+
+      Catalog subsetCat = catalog.subsetCatalogOnDataset(dataset);
+      return new ModelAndView("threddsInvCatXmlView", "catalog", subsetCat);
+
+    } else {
+      return new ModelAndView("threddsInvCatXmlView", "catalog", catalog);
+    }
+  }
+
+  protected ModelAndView handleHTMLRequest(HttpServletRequest request, HttpServletResponse response, Catalog catalog, CatalogRequest params) throws Exception {
+    if (params.dataset != null) {
+      Dataset dataset = catalog.findDatasetByID(params.dataset);
+      if (dataset == null)
+        throw new FileNotFoundException("Did not find dataset [" + params.dataset + "] in catalog [" + request.getRequestURL().toString() + "].");
+      return new ModelAndView("templates/dataset", parser.getDatasetViewContext(dataset, request,true));
+    } else {
+      return new ModelAndView("templates/catalog", parser.getCatalogViewContext(catalog, true));
+    }
+  }
 
   /* private ModelAndView handlePublicDocumentRequest(HttpServletRequest request, HttpServletResponse response, String path)
           throws IOException, ServletException {

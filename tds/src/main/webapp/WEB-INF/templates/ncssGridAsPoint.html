@@ -19,14 +19,14 @@
 
     <!--/* Use the no-operation token to cause the fragment to use its existing value for the dataset description elem.
            See http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#using-the-no-operation-token. */-->
-    <div class="dataset" th:replace="templates/commonFragments :: dataset(_)" />
+    <div class="dataset" th:replace="templates/ncssFragments :: dataset(_)" />
 
     <div class="main" th:replace="templates/gridFragments :: main" />
 
     <div class="sidebar">
       <h3>Horizontal extent:</h3>
 
-      <div th:replace="templates/commonFragments :: map" />
+      <div th:replace="templates/ncssFragments :: map" />
 
       <h3>Horizontal subset:</h3>
 
@@ -35,12 +35,12 @@
           <button type="button" onclick="selectTab(pointSubset, this)" class="defaultButton">Lat/lon point</button>
         </div>
 
-        <div th:replace="templates/commonFragments :: pointSubset" />
+        <div th:replace="templates/ncssFragments :: pointSubset" />
       </div>
 
       <h3>Time subset:</h3>
 
-      <div th:replace="templates/commonFragments :: timeSubsetInput" />
+      <div th:replace="templates/ncssFragments :: timeSubsetInput" />
 
       <h3>Vertical subset:</h3>
 
@@ -48,14 +48,14 @@
 
       <h3>Output format:</h3>
 
-      <div th:replace="templates/commonFragments :: outputFormatInput" />
+      <div th:replace="templates/ncssFragments :: outputFormatInput" />
     </div>
 
-    <div class="requestBuilder" th:replace="templates/commonFragments :: requestBuilder" />
+    <div class="requestBuilder" th:replace="templates/ncssFragments :: requestBuilder" />
 
-    <div class="buttons" th:replace="templates/commonFragments :: buttons" />
+    <div class="buttons" th:replace="templates/ncssFragments :: buttons" />
 
-    <div class="footer" th:replace="templates/commonFragments :: footer" />
+    <div class="footer" th:replace="templates/ncssFragments :: footer" />
   </div>
 </form>
 </body>

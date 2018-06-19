@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!--/* Replace this "head" element with the one in commonFragments. Pass the "title" element below to the fragment. */-->
+<head th:replace="templates/commonFragments :: head(~{::title}, ~{::script}, ~{::link})">
+    <title>Catalog Services</title>
+    <link rel="stylesheet" href="/thredds/tds.css" type="text/css">
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(standardCSS)}" th:href="'/thredds/' + ${standardCSS}" type="text/css">
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(datasetCSS)}" th:href="'/thredds/' + ${datasetCSS}" type="text/css">
+    <script type="text/javascript" th:inline="javascript">
+    </script>
+</head>
+
+<body>
+
+
+    <div th:replace="~{templates/commonFragments :: header}"/>
+
+    <h2 th:text="'Catalog ' + ${dataset.getCatUrl()}"></h2>
+    <h2 th:text="'Dataset: ' + ${dataset.getName()}"></h2>
+
+    <div th:replace="${dataset.getAllContext().size() > 0} ? ~{templates/datasetFragments :: context} : ~{}"/>
+
+    <div th:replace="${dataset.getDocumentation().size() > 0} ? ~{templates/datasetFragments :: documentation} : ~{}"/>
+
+    <div th:replace="${dataset.getAccess().size() > 0} ? ~{templates/datasetFragments :: access} : ~{}"/>
+
+    <div th:replace="${dataset.getContributors().size() > 0} ? ~{templates/datasetFragments :: contributors} : ~{}"/>
+
+    <div th:replace="${dataset.getKeywords().size() > 0} ? ~{templates/datasetFragments :: keywords} : ~{}"/>
+
+    <div th:replace="${dataset.getDates().size() > 0} ? ~{templates/datasetFragments :: dates} : ~{}"/>
+
+    <div th:replace="${dataset.getProjects().size() > 0} ? ~{templates/datasetFragments :: projects} : ~{}"/>
+
+    <div th:replace="${dataset.getCreators().size() > 0} ? ~{templates/datasetFragments :: creators} : ~{}"/>
+    
+    <div th:replace="${dataset.getPublishers().size() > 0} ? ~{templates/datasetFragments :: publishers} : ~{}"/>
+
+    <div th:replace="${dataset.getVariables().size() > 0} ? ~{templates/datasetFragments :: variables} : ~{}"/>
+
+    <div th:replace="${dataset.getGeospatialCoverage() != null} ? ~{templates/datasetFragments :: geospatialCoverage} : ~{}"/>
+
+    <div th:replace="${dataset.getTimeCoverage() != null} ? ~{templates/datasetFragments :: timeCoverage} : ~{}"/>
+
+    <div th:replace="${dataset.getProperties().size() > 0} ? ~{templates/datasetFragments :: properties} : ~{}"/>
+
+    <div th:replace="${dataset.getViewerLinks().size() > 0} ? ~{templates/datasetFragments :: viewers} : ~{}"/>
+
+    <div th:replace="~{templates/commonFragments :: footer}"/>
+
+</body>
+</html>

@@ -39,46 +39,54 @@ import thredds.client.catalog.Dataset;
 import thredds.client.catalog.ServiceType;
 import thredds.server.config.ThreddsConfig;
 import thredds.server.viewer.Viewer;
+import thredds.server.viewer.ViewerLinkProvider;
 
 /**
  * A Viewer for viewing datasets using the built-in Godiva3 client.  The viewer
  * must be configured in {@code ${tomcat_home}/content/thredds/threddsConfig.xml}, as per
- * instructions <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/Viewers.html">here</a>(needs updated).
+ * instructions <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/Viewers.html">here</a>(needs updated). *
  * @author Jon
  */
 public class Godiva3Viewer implements Viewer {
-    static private final Logger logger = LoggerFactory.getLogger(Godiva3Viewer.class);
+  static private final Logger logger = LoggerFactory.getLogger(Godiva3Viewer.class);
 
-    /**
-     * Returns true if this is a gridded dataset that is accessible via WMS.
-     */
-    @Override
-    public boolean isViewable(Dataset ds)
-    {
-        Access access = ds.getAccess(ServiceType.WMS);
-        return access != null && (ThreddsConfig.getBoolean("WMS.allow", false));
+  static private final String title = "Godiva3 (browser-based)";
+
+  /**
+   * Returns true if this is a gridded dataset that is accessible via WMS.
+   */
+  @Override
+  public boolean isViewable(Dataset ds) {
+    Access access = ds.getAccess(ServiceType.WMS);
+    return access != null && (ThreddsConfig.getBoolean("WMS.allow", false));
+  }
+
+  @Override
+  public String getViewerLinkHtml(Dataset ds, HttpServletRequest req) {
+    ViewerLinkProvider.ViewerLink viewerLink = getViewerLink(ds, req);
+    return "<a href='" + viewerLink.getUrl() + "'>" + viewerLink.getTitle() + "</a>";
+  }
+
+  @Override
+  public ViewerLinkProvider.ViewerLink getViewerLink(Dataset ds, HttpServletRequest req) {
+    Access access = ds.getAccess(ServiceType.WMS);
+    if (access == null) return null;
+
+    URI dataURI = access.getStandardUri();
+    if (dataURI == null) {
+      logger.warn("Godiva3Viewer access URL failed on {}", ds.getName());
+      return null;
     }
 
-    @Override
-    public String getViewerLinkHtml(Dataset ds, HttpServletRequest req)
-    {
-      Access access = ds.getAccess(ServiceType.WMS);
-      if (access == null) return null;
+    try {
+      URI base = new URI(req.getRequestURL().toString());
+      dataURI = base.resolve(dataURI);
 
-      URI dataURI = access.getStandardUri();
-      if (dataURI == null) {
-        logger.warn("Godiva3Viewer access URL failed on {}", ds.getName());
-        return null;
-      }
-
-      try {
-        URI base = new URI( req.getRequestURL().toString());
-        dataURI = base.resolve( dataURI);
-
-      } catch (URISyntaxException e) {
-        logger.warn("Godiva3Viewer URL=" + req.getRequestURL().toString(), e);
-        return null;
-      }
-      return "<a href='" + req.getContextPath() + "/Godiva.html?server="+ dataURI.toString()+"'>Godiva3 (browser-based)</a>";
+    } catch (URISyntaxException e) {
+      logger.warn("Godiva3Viewer URL=" + req.getRequestURL().toString(), e);
+      return null;
     }
+    String url = req.getContextPath() + "/Godiva.html?server=" + dataURI.toString();
+    return new ViewerLinkProvider.ViewerLink(Godiva3Viewer.title, url);
+  }
 }

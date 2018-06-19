@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
 import com.coverity.security.Escape;
+import opendap.util.Tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,6 +104,22 @@ public class ViewerServiceImpl implements ViewerService {
     out.format("</ul>\r\n");
   }
 
+  @Override
+  public List<ViewerLinkProvider.ViewerLink> getViewerLinks(Dataset dataset, HttpServletRequest req) {
+    List<ViewerLinkProvider.ViewerLink> viewerLinks = new ArrayList<>();
+
+    for (Viewer viewer : viewers) {
+      if (viewer.isViewable(dataset)) {
+        if (viewer instanceof ViewerLinkProvider) {
+          viewerLinks.addAll(((ViewerLinkProvider) viewer).getViewerLinks(dataset, req));
+        } else {
+          viewerLinks.add(viewer.getViewerLink(dataset, req));
+        }
+      }
+    }
+    return viewerLinks;
+  }
+
   @SuppressWarnings("unused")
   @PostConstruct
   private void registerViewers() {
@@ -115,6 +132,7 @@ public class ViewerServiceImpl implements ViewerService {
   // Viewers...
   // ToolsUI
   private static class ToolsUI implements Viewer {
+    private static final String title = "NetCDF-Java toolUi (webstart)";
 
     public boolean isViewable(Dataset ds) {
       String id = ds.getID();
@@ -122,18 +140,27 @@ public class ViewerServiceImpl implements ViewerService {
     }
 
     public String getViewerLinkHtml(Dataset ds, HttpServletRequest req) {
+      ViewerLinkProvider.ViewerLink viewerLink = this.getViewerLink(ds, req);
+      Formatter query = new Formatter();
+      query.format("<a href='%s'>%s</a>", viewerLink.getUrl(), viewerLink.getTitle());
+      return query.toString();
+    }
+
+    @Override
+    public ViewerLinkProvider.ViewerLink getViewerLink(Dataset ds, HttpServletRequest req) {
       String base = ds.getParentCatalog().getUriString();
       if (base.endsWith(".html"))
         base = base.substring(0, base.length() - 5) + ".xml";
       Formatter query = new Formatter();
-      query.format("<a href='%s/view/ToolsUI.jnlp?", req.getContextPath());
-      query.format("catalog=%s&amp;dataset=%s'>NetCDF-Java ToolsUI (webstart)</a>", base, ds.getID());
-      return query.toString();
+      query.format("%s/view/ToolsUI.jnlp?", req.getContextPath());
+      query.format("catalog=%s&amp;dataset=%s", base, ds.getID());
+      return new ViewerLinkProvider.ViewerLink(ToolsUI.title, query.toString());
     }
   }
 
   // IDV
   private static class IDV implements Viewer {
+    private static final String title = "Integrated Data Viewer (IDV) (webstart)";
 
     public boolean isViewable(Dataset ds) {
       Access access = getOpendapAccess(ds);
@@ -145,6 +172,13 @@ public class ViewerServiceImpl implements ViewerService {
     }
 
     public String getViewerLinkHtml(Dataset ds, HttpServletRequest req) {
+      ViewerLinkProvider.ViewerLink viewerLink = this.getViewerLink(ds, req);
+
+      return "<a href='" + viewerLink.getUrl() +  "'>" + viewerLink.getTitle() + "</a>";
+    }
+
+    @Override
+    public ViewerLinkProvider.ViewerLink getViewerLink(Dataset ds, HttpServletRequest req) {
       Access access = getOpendapAccess(ds);
       if (access == null)
         return null;
@@ -163,10 +197,9 @@ public class ViewerServiceImpl implements ViewerService {
           logger.error("Resolve URL with " + req.getRequestURL(), e);
         }
       }
-
-      return "<a href='" + req.getContextPath() + "/view/idv.jnlp?url="
-              + dataURI.toString()
-              + "'>Integrated Data Viewer (IDV) (webstart)</a>";
+      String url = req.getContextPath() + "/view/idv.jnlp?url="
+              + dataURI.toString();
+      return new ViewerLinkProvider.ViewerLink(IDV.title, url);
     }
 
     private Access getOpendapAccess(Dataset ds) {
@@ -179,6 +212,7 @@ public class ViewerServiceImpl implements ViewerService {
 
   // LOOK whats this for ??
   private static final String propertyNamePrefix = "viewer";
+
   private static class StaticView implements ViewerLinkProvider {
 
     public boolean isViewable(Dataset ds) {
@@ -191,6 +225,14 @@ public class ViewerServiceImpl implements ViewerService {
         return null;
       ViewerLink firstLink = viewerLinks.get(0);
       return "<a href='" + firstLink.getUrl() + "'>" + firstLink.getTitle() + "</a>";
+    }
+
+    @Override
+    public ViewerLink getViewerLink(Dataset ds, HttpServletRequest req) {
+      List<ViewerLink> viewerLinks = getViewerLinks(ds, req);
+      if (viewerLinks.isEmpty())
+        return null;
+      return viewerLinks.get(0);
     }
 
     @Override
