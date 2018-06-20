@@ -1293,4 +1293,12 @@ public class Nc4wrapper implements Nc4prototypes
         }
     }
 
+    /* Get the log level. */
+    public int nc_get_log_level()
+    {
+        synchronized (Nc4Lock.class) {ce();
+            return cx(nc4.nc_get_log_level());
+        }
+    }
+
 }

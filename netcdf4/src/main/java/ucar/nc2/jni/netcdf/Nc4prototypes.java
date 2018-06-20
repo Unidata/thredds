@@ -383,4 +383,7 @@ public interface Nc4prototypes extends Library {
   /* Set the log level. */
   int nc_set_log_level(int newlevel);
 
+  /* Get the current log level. */
+  int nc_get_log_level();
+
 }

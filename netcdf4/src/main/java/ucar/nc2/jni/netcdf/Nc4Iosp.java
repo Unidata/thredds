@@ -72,7 +72,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   static private String jnaPath = null;
   static private String libName = DEFAULTNETCDF4LIBNAME;
 
-  static private int log_level = 0;
+  static private int log_level = -1;
 
   // TODO: These flags currently control debug messages that are printed to STDOUT. They ought to be logged to SLF4J.
   // We could use SLF4J markers to filter which debug-level messages are printed.
@@ -143,7 +143,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         }
       }
       try {
-        int oldlevel = setLogLevel(log_level);
+        int oldlevel = getLogLevel();
+        setLogLevel(log_level);
         startupLog.info(String.format("Nc4Iosp: set log level: old=%d new=%d",
                 oldlevel, log_level));
       } catch (Throwable t) {
@@ -181,8 +182,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
    * Set the log level for loaded library.
    * Do nothing if set_log_level is not available.
    */
-  static public synchronized int setLogLevel(int level)
-  {
+  static public synchronized void setLogLevel(int level)
+   {
     int oldlevel = -1;
     log_level = level;
     if (nc4 != null) {
@@ -193,9 +194,25 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         // do nothing
       }
     }
-    return oldlevel;
   }
 
+  /**
+   * Get the log level for loaded library.
+   * Do nothing if get_log_level is not available.
+   */
+  static public synchronized int getLogLevel()
+  {
+    int oldlevel = -1;
+    if (nc4 != null) {
+      try {
+        int level = nc4.nc_get_log_level();
+	oldlevel = level; // do in 2 steps in case step 1 throws exception
+      } catch (java.lang.UnsatisfiedLinkError e) {
+        // do nothing
+      }
+    }
+    return oldlevel;
+  }
 
   /**
    * Convert a zero-length string to null

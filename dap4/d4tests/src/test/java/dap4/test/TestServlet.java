@@ -201,7 +201,7 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_struct_type.nc");
+            chosentests = locate("test_opaque.nc");
             prop_visual = true;
             prop_generate = false;
             prop_baseline = false;
@@ -222,7 +222,7 @@ public class TestServlet extends DapTestCommon
     public void testServlet()
             throws Exception
     {
-        NetcdfLoader.setLogLevel(5);
+        int oldlevel = Nc4Iosp.getLogLevel();
         Nc4Iosp.setLogLevel(5);
 	try {
             DapCache.flush();
@@ -230,8 +230,7 @@ public class TestServlet extends DapTestCommon
                 doOneTest(testcase);
             }
 	} finally {
-            NetcdfLoader.setLogLevel(0);
-            Nc4Iosp.setLogLevel(0);
+	    Nc4Iosp.setLogLevel(oldlevel);
 	}
     }
 
