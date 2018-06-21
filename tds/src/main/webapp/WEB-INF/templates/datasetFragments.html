@@ -15,29 +15,6 @@
         </table>
     </div>
 
-    <!--<div th:fragment="sectionTemplate(title, isOrdered, listItems)">-->
-        <!--<h3 th:text="${title}"></h3>-->
-        <!--<ul th:if="${!isOrdered}">-->
-            <!--<th:block th:replace="${listItems}" />-->
-        <!--</ul>-->
-        <!--<ol th:if="${isOrdered}">-->
-            <!--<th:block th:replace="${listItems}" />-->
-        <!--</ol>-->
-    <!--</div>-->
-
-    <!--<div th:fragment="documentation" th:replace="this :: sectionTemplate('Documentation', false, ~{::li.doc})">-->
-    <!--<ul>-->
-    <!--<li class="doc" th:each="doc : ${dataset.getDocumentation()}" th:if="${doc.get('inlineContent') != null}">-->
-    <!--<strong th:text="${doc.get('type')} + ': '"></strong>-->
-    <!--<th:block th:text="${doc.get('inlineContent')}"/>-->
-    <!--</li>-->
-    <!--<li class="doc" th:each="doc : ${dataset.getDocumentation()}" th:if="${doc.get('href') != null}">-->
-    <!--<strong th:text="${doc.get('type')}"></strong>-->
-    <!--<a th:href="${doc.get('href')}" th:text="${doc.get('title')}"></a>-->
-    <!--</li>-->
-    <!--</ul>-->
-    <!--</div>-->
-
     <div th:fragment="documentation" class="tab-content info" id="docs">
         <h3>Description:</h3>
         <ul>

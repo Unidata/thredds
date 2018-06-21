@@ -82,6 +82,7 @@ public class CatalogViewContextParser {
     model.put("webappVersion", htmlConfig.getWebappVersion());
     model.put("webappBuildTimestamp", htmlConfig.getWebappVersionBuildDate());
     model.put("webbappDocsUrl", htmlConfig.getWebappDocsUrl());
+    model.put("contextPath", htmlConfig.getWebappContextPath());
 
     model.put("hostInst", htmlConfig.getHostInstName());
     model.put("hostInstUrl", htmlConfig.getHostInstUrl());

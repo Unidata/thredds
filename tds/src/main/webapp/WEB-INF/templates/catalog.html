@@ -5,9 +5,9 @@
 <head th:replace="templates/commonFragments :: head(~{::title}, ~{::script}, ~{::link})">
     <title>TDS Catalog</title>
 
-    <link rel="stylesheet" href="/thredds/tds.css" type="text/css">
-    <link rel="stylesheet" th:if="${!#strings.isEmpty(standardCSS)}" th:href="'/thredds/' + ${standardCSS}" type="text/css">
-    <link rel="stylesheet" th:if="${!#strings.isEmpty(catalogCSS)}" th:href="'/thredds/' + ${catalogCSS}" type="text/css">
+    <link rel="stylesheet" th:href="${contextPath} + '/tds.css'" type="text/css">
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(standardCSS)}" th:href="${contextPath} + '/' + ${standardCSS}" type="text/css">
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(catalogCSS)}" th:href="${contextPath} + '/' + ${catalogCSS}" type="text/css">
 
     <!-- Google Analytics -->
     <script th:if="${googleTracking != null}" type="text/javascript" th:inline="javascript">
@@ -26,9 +26,13 @@
 
     <div class="container">
 
-        <div th:replace="~{templates/commonFragments :: header}"/>
+        <div th:replace="~{ext:tdsTemplateFragments :: header} ?: ~{templates/commonFragments :: header}"/>
 
         <div th:if="${parentHref != null}"><a th:href="${parentHref}">Back</a></div>
+
+        <div class="content" th:if="~{ext:tdsTemplateFragments :: catalogCustomContentTop}">
+            <div th:replace="~{ext:tdsTemplateFragments :: catalogCustomContentTop}"></div>
+        </div>
 
         <div class="content">
             <div class="section-header">Catalog</div>
@@ -60,7 +64,11 @@
 
         </div>
 
-        <div th:replace="~{templates/commonFragments :: footer}"/>
+        <div class="content" th:if="~{ext:tdsTemplateFragments :: catalogCustomContentBottom}">
+            <div th:replace="~{ext:tdsTemplateFragments :: catalogCustomContentBottom}"></div>
+        </div>
+
+        <div th:replace="~{ext:tdsTemplateFragments :: footer} ?: ~{templates/commonFragments :: footer}"/>
 
     </div>
 

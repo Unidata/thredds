@@ -3,11 +3,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 <!--/* Replace this "head" element with the one in commonFragments. Pass the "title" element below to the fragment. */-->
-<head th:replace="templates/commonFragments :: head(~{::title}, ~{::script}, ~{::link})">
+<head th:replace="~{templates/commonFragments :: head(~{::title}, ~{::script}, ~{::link})}">
     <title>Catalog Services</title>
-    <link rel="stylesheet" href="/thredds/tds.css" type="text/css">
-    <link rel="stylesheet" th:if="${!#strings.isEmpty(standardCSS)}" th:href="'/thredds/' + ${standardCSS}" type="text/css">
-    <link rel="stylesheet" th:if="${!#strings.isEmpty(datasetCSS)}" th:href="'/thredds/' + ${datasetCSS}" type="text/css">
+
+    <link rel="stylesheet" th:href="${contextPath} + '/tds.css'" type="text/css">
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(standardCSS)}" th:href="${contextPath} + '/' + ${standardCSS}" type="text/css">
+    <link rel="stylesheet" th:if="${!#strings.isEmpty(datasetCSS)}" th:href="${contextPath} + '/' + ${datasetCSS}" type="text/css">
     <script type="text/javascript" th:inline="javascript">
         function initTabs(sectionNames) {
             for (var j = 0; j < sectionNames.length; j++) {
@@ -50,7 +51,7 @@
 
     <div class="container">
 
-        <div th:replace="~{templates/commonFragments :: header}"/>
+        <div th:replace="~{ext:tdsTemplateFragments :: header} ?: ~{templates/commonFragments :: header}"/>
 
         <div th:replace="~{templates/datasetFragments :: returnButton}"/>
 
@@ -71,11 +72,18 @@
             <div class="button-pane">
                 <div class="tab-button access" th:if="${dataset.getAccess().size() > 0}" onclick="switchTab(this, 'access', 'access')">Access</div>
                 <div class="tab-button access" th:if="${dataset.getViewerLinks().size() > 0}" onclick="switchTab(this, 'viewers', 'access')">Preview</div>
+                <div th:if="~{ext:tdsTemplateFragments :: customAccessTabButtons}">
+                    <div th:replace="~{ext:tdsTemplateFragments :: customAccessTabButtons}"/>
+                </div>
             </div>
 
             <div th:replace="${dataset.getAccess().size() > 0} ? ~{templates/datasetFragments :: access} : ~{}"/>
 
             <div th:replace="${dataset.getViewerLinks().size() > 0} ? ~{templates/datasetFragments :: viewers} : ~{}"/>
+
+            <div th:if="~{ext:tdsTemplateFragments :: customAccessTabContent}">
+                <div th:replace="~{ext:tdsTemplateFragments :: customAccessTabContent}"/>
+            </div>
 
         </div>
 
@@ -93,6 +101,9 @@
             <div class="tab-button info" th:if="${dataset.getGeospatialCoverage().size() > 0}" onclick="switchTab(this, 'geo', 'info')">Geospatial Coverage</div>
             <div class="tab-button info" th:if="${dataset.getTimeCoverage().size() > 0}" onclick="switchTab(this, 'time', 'info')">Time Coverage</div>
             <div class="tab-button info" th:if="${dataset.getProperties().size() > 0}" onclick="switchTab(this, 'props', 'info')">Properties</div>
+            <div th:if="~{ext:tdsTemplateFragments :: customInfoTabButtons}">
+                <div th:replace="~{ext:tdsTemplateFragments :: customInfoTabButtons}"/>
+            </div>
         </div>
 
             <div th:replace="${dataset.getDocumentation().size() > 0} ? ~{templates/datasetFragments :: documentation} : ~{}"/>
@@ -117,11 +128,19 @@
 
             <div th:replace="${dataset.getProperties().size() > 0} ? ~{templates/datasetFragments :: properties} : ~{}"/>
 
+            <div th:if="~{ext:tdsTemplateFragments :: customInfoTabContent}">
+                <div th:replace="~{ext:tdsTemplateFragments :: customInfoTabContent}"/>
+            </div>
+
+        </div>
+
+        <div class="content" th:if="~{ext:tdsTemplateFragments :: datasetCustomContentBottom}">
+            <div th:replace="~{ext:tdsTemplateFragments :: datasetCustomContentBottom}"></div>
         </div>
 
         <div th:replace="~{templates/datasetFragments :: returnButton}"/>
 
-        <div th:replace="~{templates/commonFragments :: footer}"/>
+        <div th:replace="~{ext:tdsTemplateFragments :: footer} ?: ~{templates/commonFragments :: footer}"/>
 
     </div>
 

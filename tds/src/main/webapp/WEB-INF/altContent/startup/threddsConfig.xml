@@ -58,12 +58,6 @@
      * -->
 
     <!--
-     * location of user-supplied Thymeleaf templates.
-
-    <htmlTemplatesDir>templates/customTemplates.html</htmlTemplatesDir>
-     * -->
-
-    <!--
      * The Google Analytics Tracking ID you would like to use for the
      * webpages associated with THREDDS. This will not track WMS or DAP
      * requests for data, only browsing the catalog.

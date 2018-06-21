@@ -281,6 +281,7 @@ div.container {
 div.content {
     margin-top: 8px;
     border: 1px solid #CFCFCF;
+    background-color: #FFFFFF;
 }
 
 div.section-header {
