@@ -6,7 +6,14 @@
 
 <!--/* Replace this "head" element with the one in commonFragments.
        Pass on the "title" element we received from ncssPoint, along with the "script" element we define below. */-->
-<head th:fragment="head(title)" th:replace="templates/commonFragments :: head(~{::title},~{::script})">
+<head th:fragment="head(title)" th:replace="templates/commonFragments :: head(~{::title},~{::script},~{::link})">
+
+  <link rel="stylesheet" type="text/css" href="https://necolas.github.io/normalize.css/8.0.0/normalize.css">
+  <link rel="stylesheet" type="text/css" href="../../style/ncss/main.css" th:href="@{/style/ncss/main.css}">
+  <link rel="stylesheet" type="text/css" href="../../style/ncss/layout.css" th:href="@{/style/ncss/layout.css}">
+  <link rel="stylesheet" type="text/css" href="../../style/ncss/sidebar.css" th:href="@{/style/ncss/sidebar.css}">
+  <link rel="stylesheet" type="text/css" href="https://openlayers.org/en/v4.6.4/css/ol.css">
+
   <script type="text/javascript" th:inline="javascript">
       var horizExtentWKT = /*[[${horizExtentWKT}]]*/ 'POLYGON((-90 45, 90 45, 90 -45, -90 -45, -90 45))';
 
@@ -15,6 +22,7 @@
           south: /*[[${#numbers.formatDecimal(boundingBox?.latMin, 0, 3)}]]*/ "-45.0000",
           west:  /*[[${#numbers.formatDecimal(boundingBox?.lonMin, 0, 3)}]]*/ "-90.0000",
           east:  /*[[${#numbers.formatDecimal(boundingBox?.lonMax, 0, 3)}]]*/ "90.0000"
+      };
       };
 
       var fullTimeExt = {

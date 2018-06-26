@@ -9,10 +9,10 @@
 <body onload="init(horizExtentWKT)">
 <form id="form" method="GET" action="datasetPath" th:attr="action=${datasetPath}">
   <div class="grid-container">
-    <!--/* Replace "div .header" element with the one in commonFragments. Pass the text of the "title" element
+    <!--/* Replace "div .header" element with the one in ncssFragments. Pass the text of the "title" element
            (defined above) to the fragment. Also pass the empty fragment ("~{}"), as this element doesn't have any "h4"
            children. See http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#using-the-empty-fragment. */-->
-    <div class="header" th:replace="templates/commonFragments :: header(~{::title/text()}, ~{})" />
+    <div class="header" th:replace="templates/ncssFragments :: header(~{::title/text()}, ~{})" />
 
     <!--/* Pass the "h4" child to the fragment. */-->
     <div class="dataset" th:replace="templates/ncssFragments :: dataset(~{::div.dataset/h4})">

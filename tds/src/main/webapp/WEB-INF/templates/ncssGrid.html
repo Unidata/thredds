@@ -9,11 +9,11 @@
 <body onload="init(horizExtentWKT)">
 <form id="form" method="GET" action="datasetPath" th:attr="action=${datasetPath}">
   <div class="grid-container">
-    <!--/* Replace "div .header" element with the one in commonFragments. Pass the text of the "title" element
+    <!--/* Replace "div .header" element with the one in ncssFragments. Pass the text of the "title" element
            (defined above) and the "h4" element to the fragment. Note that we can't simply pass "~{::h4}", as that
            will select every "h4" element in this entire document.
            See http://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#fragment-specification-syntax. */-->
-    <div class="header" th:replace="templates/commonFragments :: header(~{::title/text()}, ~{::div.header/h4})">
+    <div class="header" th:replace="templates/ncssFragments :: header(~{::title/text()}, ~{::div.header/h4})">
       <h4>(<a href="ncssGridAsPoint.html" th:href="@{pointDataset.html}">Switch to Grids As Points</a>)</h4>
     </div>
 
