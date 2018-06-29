@@ -1,10 +1,15 @@
+html, body {
+    height:100%;
+    margin: 0;
+    padding: 0;
+}
+
 body{
    font-weight: normal;
    font-size: 10pt;
    font-family: Arial, Helvetica, sans-serif;
    color: #000000;
    text-decoration: none;
-   margin-top: 0px;
 }
 
 td {
@@ -209,13 +214,26 @@ small.imageinc {
 }
 
 div.header, div.footer {
-    color: #E3E4E6;
+    position: absolute;
+    left: 0px;
+    right: 0px;
     background-color: #06778F;
     padding: 3px 20px;
     border: 1px solid #CFCFCF;
     border-style: outset;
-    margin-bottom: 8px;
     box-sizing: border-box;
+    overflow: hidden;
+}
+
+div.header {
+    height: 94px;
+    top: 0px;
+    margin-bottom: 8px;
+}
+
+div.footer {
+    height: 90px;
+    bottom: 0px;
 }
 
 .header-logo {
@@ -227,6 +245,22 @@ div.header, div.footer {
     margin-left: 75px;
 }
 
+.footer-buffer, .header-buffer {
+    background-color:  #E3E4E6;
+    height: 90px;
+    margin-top: 4px;
+}
+
+table.property-table {
+    padding: 10px;
+}
+
+table.property-table > tbody > tr > td {
+    border: 1px solid #CFCFCF;
+    padding: 2px 5px;
+    font-size: 12pt;
+}
+
 a.static {
     color: #FFFFFF;
 }
@@ -235,3 +269,75 @@ a.static:visited {
     color: #FFFFFF;
 }
 
+div.container {
+    background-color: #E3E4E6;
+    min-height: 100%;
+    width: 100%;
+    position: relative;
+    padding: 10px 50px;
+    box-sizing: border-box;
+}
+
+div.content {
+    margin-top: 8px;
+    border: 1px solid #CFCFCF;
+    background-color: #FFFFFF;
+}
+
+div.section-header {
+    background-color: #81B2C0;
+    padding: 5px;
+    color: #FFFFFF;
+    font-size: 14pt;
+    font-weight: bold;
+}
+
+div.section-content {
+    background-color: #FFFFFF;
+    padding: 5px 10px;
+}
+
+div.button {
+    text-align: right;
+    padding: 5px;
+}
+
+* {
+    word-wrap: break-word;
+}
+
+.button-pane {
+    margin-top: 10px;
+    overflow: hidden;
+    background-color: #06778F;
+}
+
+.tab-button {
+    background-color: #06778F;
+    padding: 8px;
+    font-size: 14pt;
+    font-weight: bold;
+    float:left;
+    color: #FFFFFF;
+}
+
+.tab-button:hover {
+    cursor: pointer;
+    color: black;
+    background-color: #E3E4E6;
+}
+
+.tab-button.active {
+    background-color: #81B2C0
+}
+
+.tab-content {
+    background-color: #FFFFFF;
+    display: none;
+    padding: 5px 10px;
+    border: 1px solid #CFCFCF;
+}
+
+.tab-container {
+    background-color: #81B2C0;
+}

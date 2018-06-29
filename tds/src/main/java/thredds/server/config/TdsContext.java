@@ -223,6 +223,16 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
         }
         this.publicContentDirSource = new BasicDescendantFileSource(this.publicContentDirectory);
 
+        // templates dir
+        File templatesDirectory = new File(this.threddsDirectory, "templates");
+        if(!templatesDirectory.exists()) {
+            if(!templatesDirectory.mkdir()) {
+                String msg = "Couldn't create TDS templates directory [" + templatesDirectory.getPath() + "].";
+                logServerStartup.error("TdsContext.init(): " + msg);
+                throw new IllegalStateException(msg);
+            }
+        }
+
     /* places to look for catalogs ??
     List<DescendantFileSource> chain = new ArrayList<>();
     DescendantFileSource contentMinusPublicSource =
@@ -269,17 +279,25 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
                 IO.copyFile(defaultThreddsConfigFile, threddsConfigFile);
             }
 
-      File wmsConfigXmlFile = new File(threddsDirectory, "wmsConfig.xml");
-      if (!wmsConfigXmlFile.exists()) {
-        File defaultWmsConfigXmlFile = new File(startupContentDirectory, "wmsConfig.xml");
-        logServerStartup.info("TdsContext.init(): Copying default WMS config file from {}.", defaultWmsConfigXmlFile);
-        IO.copyFile(defaultWmsConfigXmlFile, wmsConfigXmlFile);
-      }
-    } catch (IOException e) {
-      String message = String.format("Could not copy default startup files to %s.", threddsDirectory);
-      logServerStartup.error("TdsContext.init(): " + message);
-      throw new IllegalStateException(message, e);
-    }
+            File wmsConfigXmlFile = new File(threddsDirectory, "wmsConfig.xml");
+            if (!wmsConfigXmlFile.exists()) {
+                File defaultWmsConfigXmlFile = new File(startupContentDirectory, "wmsConfig.xml");
+                logServerStartup.info("TdsContext.init(): Copying default WMS config file from {}.", defaultWmsConfigXmlFile);
+                IO.copyFile(defaultWmsConfigXmlFile, wmsConfigXmlFile);
+            }
+
+            File customTemplateFragmentsFile = new File(templatesDirectory, "tdsTemplateFragments.html");
+            if (!customTemplateFragmentsFile.exists()) {
+                File defaultTemplateFragmentsFile = new File(startupContentDirectory, "tdsTemplateFragments.html");
+                logServerStartup.info("TdsContext.init(): Copying default template fragments file from {}.", defaultTemplateFragmentsFile);
+                IO.copyFile(defaultTemplateFragmentsFile, customTemplateFragmentsFile);
+            }
+
+        } catch (IOException e) {
+          String message = String.format("Could not copy default startup files to %s.", threddsDirectory);
+          logServerStartup.error("TdsContext.init(): " + message);
+          throw new IllegalStateException(message, e);
+        }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // logging

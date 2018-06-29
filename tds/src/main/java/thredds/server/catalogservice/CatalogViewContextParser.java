@@ -37,9 +37,14 @@ public class CatalogViewContextParser {
   @Autowired
   private TdsServerInfoBean serverInfo;
 
-  public Map<String, Object> getCatalogViewContext(Catalog cat, boolean isLocalCatalog) {
+  public Map<String, Object> getCatalogViewContext(Catalog cat, HttpServletRequest req, boolean isLocalCatalog) {
     Map<String, Object> model = new HashMap<>();
     addBaseContext(model);
+
+    Catalog parent = cat.getParentCatalog();
+    URI parentURI;
+    if (parent != null) parentURI = parent.getBaseURI();
+    if (parent != null) model.put("parentHref", parent.getBaseURI().toString());
 
     List<CatalogItemContext> catalogItems = new ArrayList<>();
     addCatalogItems(cat, catalogItems, isLocalCatalog, 0);
@@ -56,7 +61,6 @@ public class CatalogViewContextParser {
     populateDatasetContext(ds, context, req, isLocalCatalog);
 
     model.put("dataset", context);
-
     return model;
   }
 
@@ -78,6 +82,7 @@ public class CatalogViewContextParser {
     model.put("webappVersion", htmlConfig.getWebappVersion());
     model.put("webappBuildTimestamp", htmlConfig.getWebappVersionBuildDate());
     model.put("webbappDocsUrl", htmlConfig.getWebappDocsUrl());
+    model.put("contextPath", htmlConfig.getWebappContextPath());
 
     model.put("hostInst", htmlConfig.getHostInstName());
     model.put("hostInstUrl", htmlConfig.getHostInstUrl());
@@ -320,6 +325,8 @@ class DatasetContext {
 
   private String catUrl;
 
+  private String catName;
+
   private Map<String, Object> context;
 
   private List<Map<String, String>> documentation;
@@ -352,13 +359,14 @@ class DatasetContext {
 
   private List<Map<String, String>> viewerLinks;
 
-
-  // TODO: viewers
-
-  public DatasetContext(Dataset ds, boolean isLocalCatalog) {
-    // Get display name can catalog url
+  public DatasetContext (Dataset ds, boolean isLocalCatalog) {
+    // Get display name and catalog url
     this.name = ds.getName();
-    this.catUrl = ds.getCatalogUrl();
+    String catUrl = ds.getCatalogUrl();
+    if (catUrl.indexOf('#') > 0)
+      catUrl = catUrl.substring(0, catUrl.lastIndexOf('#'));
+    this.catUrl = catUrl;
+    this.catName = ds.getParentCatalog().getName();
 
     setContext(ds);
     setDocumentation(ds);
@@ -693,6 +701,8 @@ class DatasetContext {
   public String getName() { return this.name; }
 
   public String getCatUrl() { return this.catUrl; }
+
+  public String getCatName() { return this.catName; }
 
   public List<Map<String, String>> getDocumentation() { return this.documentation; }
 
