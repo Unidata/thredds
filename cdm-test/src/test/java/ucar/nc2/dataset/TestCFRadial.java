@@ -127,7 +127,7 @@ public class TestCFRadial {
             float[] data = var.readAllData();
             Assert.assertEquals(9233280, data.length);
             Assert.assertEquals(18.5, data[4616640], 1e-6);
-            Assert.assertTrue(Float.isNaN(data[4617412]));
+            Assert.assertTrue(Float.isNaN(data[941]));
 
             // Check getting sweep
             data = var.getSweep(6).readData();
@@ -159,6 +159,7 @@ public class TestCFRadial {
             Assert.assertEquals(561180, data.length);
             Assert.assertEquals(18.92, data[142285], 1e-2);
             Assert.assertEquals(32.03, data[142286], 1e-2);
+            Assert.assertTrue(Float.isNaN(data[254]));
 
             // Check getting sweep
             data = var.getSweep(3).readData();
@@ -166,7 +167,6 @@ public class TestCFRadial {
 
             // Need to check data in padded, missing portion
             Assert.assertEquals(18.80, data[0], 1e-2);
-            Assert.assertTrue(Float.isNaN(data[254]));
             Assert.assertEquals(18.82, data[995], 1e-2);
 
             // Check random portion of data from a sweep and ray

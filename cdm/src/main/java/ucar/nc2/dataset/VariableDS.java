@@ -33,7 +33,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   private EnhancementsImpl enhanceProxy;
   // Assign a dummy value for now. We'll replace it with the proper value in enhance().
   private EnhanceScaleMissingImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingImpl();
-  private EnumSet<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
+  private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
 
   protected Variable orgVar; // wrap this Variable : use it for the I/O
   protected DataType orgDataType; // keep separate for the case where there is no orgVar.
@@ -157,7 +157,6 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     this.enhanceProxy = new EnhancementsImpl(this); //decouple coordinate systems
     this.scaleMissingUnsignedProxy = vds.scaleMissingUnsignedProxy;
 
-    this.enhanceMode = vds.enhanceMode;
     if (!isCopy) {
       createNewCache(); // dont share cache unless its a copy
     }
@@ -184,8 +183,15 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   /**
    * Calculate scale/offset/missing/enum/unsigned value info. This may change the DataType.
    */
-  @Override public void enhance(Set<Enhance> mode) {
-    this.enhanceMode = EnumSet.copyOf(mode);
+  @Override public void enhance(Set<Enhance> enhancements) {
+    this.enhanceMode = EnumSet.copyOf(enhancements);
+
+    // this.enhanceMode will only contain enhancements not already applied to orgVar.
+    if (orgVar instanceof VariableDS) {
+      for (Enhance orgVarEnhancement : ((VariableDS) orgVar).getEnhanceMode()) {
+        this.enhanceMode.remove(orgVarEnhancement);
+      }
+    }
   
     // enhance() may have been called previously, with a different enhancement set.
     // So, we need to reset to default before we process this new set.
@@ -196,60 +202,44 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     // constructed first, and then Attributes are added to it later.
     this.scaleMissingUnsignedProxy = new EnhanceScaleMissingImpl(this);
   
-    if (needEnhancement(Enhance.ConvertEnums) && dataType.isEnum()) {
+    if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
       setDataType(DataType.STRING);  // LOOK promote data type to STRING ????
       return;  // We can return here, because the other conversions don't apply to STRING.
     }
   
-    if (needEnhancement(Enhance.ConvertUnsigned)) {
+    if (this.enhanceMode.contains(Enhance.ConvertUnsigned)) {
       // We may need a larger data type to hold the results of the unsigned conversion.
       setDataType(scaleMissingUnsignedProxy.getUnsignedConversionType());
     }
     
-    if (needEnhancement(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR) &&
+    if (this.enhanceMode.contains(Enhance.ApplyScaleOffset) && (dataType.isNumeric() || dataType == DataType.CHAR) &&
             scaleMissingUnsignedProxy.hasScaleOffset()) {
       setDataType(scaleMissingUnsignedProxy.getScaledOffsetType());
     }
   }
-  
-  /**
-   * Returns {@code true} if the given enhancement is desired (i.e. it's a member of {@code this.enhanceMode}),
-   * AND the enhancement hasn't already been done to {@code orgVar}. If {@code orgVar == null} (i.e. we're not
-   * wrapping another variable), then the latter condition doesn't apply.
-   */
-  private boolean needEnhancement(Enhance enhancement) {
-    if (!this.enhanceMode.contains(enhancement)) {
-      return false;
-    }
-  
-    if (orgVar instanceof VariableDS) {
-      VariableDS orgVarDS = (VariableDS) orgVar;
-      
-      if (orgVarDS.getEnhanceMode().contains(enhancement)) {
-        return false;  // Enhancement already done by orgVar.
-      }
-    }
-  
-    return true;
-  }
 
   boolean needConvert() {
-    return needEnhancement(Enhance.ConvertEnums) || needEnhancement(Enhance.ConvertUnsigned) ||
-           needEnhancement(Enhance.ApplyScaleOffset) || needEnhancement(Enhance.ConvertMissing);
+    Set<Enhance> enhancements = getEnhanceMode();
+    return enhancements.contains(Enhance.ConvertEnums) || enhancements.contains(Enhance.ConvertUnsigned) ||
+           enhancements.contains(Enhance.ApplyScaleOffset) || enhancements.contains(Enhance.ConvertMissing);
   }
 
   Array convert(Array data) {
-    if (needEnhancement(Enhance.ConvertEnums) && dataType.isEnum()) {
+    return convert(data, enhanceMode);
+  }
+
+  Array convert(Array data, Set<NetcdfDataset.Enhance> enhancements) {
+    if (enhancements.contains(Enhance.ConvertEnums) && orgDataType.isEnum()) {
       // Creates STRING data. As a result, we can return here, because the other conversions don't apply to STRING.
       return convertEnums(data);
     } else {
-      return scaleMissingUnsignedProxy.convert(data, needEnhancement(Enhance.ConvertUnsigned),
-              needEnhancement(Enhance.ApplyScaleOffset), needEnhancement(Enhance.ConvertMissing));
+      return scaleMissingUnsignedProxy.convert(data, enhancements.contains(Enhance.ConvertUnsigned),
+              enhancements.contains(Enhance.ApplyScaleOffset), enhancements.contains(Enhance.ConvertMissing));
     }
   }
   
-  protected Array convertEnums(Array values) {
-    if (!values.getDataType().isEnum()) {
+  private Array convertEnums(Array values) {
+    if (!values.getDataType().isIntegral()) {
       return values;  // Nothing to do!
     }
     
@@ -374,9 +364,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
   }
 
   public boolean hasCachedDataRecurse() {
-    if (super.hasCachedData()) return true;
-    if ((orgVar != null) && orgVar.hasCachedData()) return true;
-    return false;
+    return super.hasCachedData() || ((orgVar != null) && orgVar.hasCachedData());
   }
 
   @Override

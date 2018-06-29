@@ -69,7 +69,7 @@ public class TestConventions  {
       assert grid != null;
       GridCoordSystem gcs = grid.getCoordinateSystem();
       assert gcs.isLatLon();
-      Assert.assertEquals(DataType.UBYTE, grid.getDataType());
+      Assert.assertEquals(DataType.BYTE, grid.getDataType());
     }
   }
 
