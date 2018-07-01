@@ -229,7 +229,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
       //return Array.factoryConstant(dataType.getPrimitiveClassType(), section.getShape(), data);
     }
 
-    // do any needed conversions (scale/offset, enums, etc)
+    // do any needed conversions (enum/scale/offset/missing/unsigned, etc)
     return convert(result, section);
   }
 
@@ -260,7 +260,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
   }
 
   // possible things needed:
-  //   1) scale/offset/enum conversion
+  //   1) enum/scale/offset/missing/unsigned conversion
   //   2) name, info change
   //   3) variable with cached data added to StructureDS through NcML
 
@@ -273,7 +273,7 @@ public class StructureDS extends ucar.nc2.Structure implements VariableEnhanced 
     }
 
     // LOOK! converting to ArrayStructureMA
-    // do any scale/offset/enum conversions
+    // do any enum/scale/offset/missing/unsigned conversions
     ArrayStructure newAS = ArrayStructureMA.factoryMA(orgAS);
     for (StructureMembers.Member m : newAS.getMembers()) {
       VariableEnhanced v2 = (VariableEnhanced) findVariable(m.getName());
