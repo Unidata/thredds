@@ -179,6 +179,10 @@
     <maxAge>30 min</maxAge>
   </NetcdfSubsetService>
 
+  <JupyterNotebookService>
+    <allow>true</allow>
+  </JupyterNotebookService>
+
   <!--
   <Opendap>
     <ascLimit>50</ascLimit>
