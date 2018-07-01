@@ -233,6 +233,16 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
             }
         }
 
+        // jupyter notebooks dir
+        File notebooksDirectory = new File(this.threddsDirectory, "notebooks");
+        if(!notebooksDirectory.exists()) {
+            if(!notebooksDirectory.mkdir()) {
+                String msg = "Couldn't create TDS notebooks directory [" + templatesDirectory.getPath() + "].";
+                logServerStartup.error("TdsContext.init(): " + msg);
+                throw new IllegalStateException(msg);
+            }
+        }
+
     /* places to look for catalogs ??
     List<DescendantFileSource> chain = new ArrayList<>();
     DescendantFileSource contentMinusPublicSource =
@@ -291,6 +301,16 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
                 File defaultTemplateFragmentsFile = new File(startupContentDirectory, "tdsTemplateFragments.html");
                 logServerStartup.info("TdsContext.init(): Copying default template fragments file from {}.", defaultTemplateFragmentsFile);
                 IO.copyFile(defaultTemplateFragmentsFile, customTemplateFragmentsFile);
+            }
+
+            File startupNotebooks = new File(startupContentDirectory, "jupyter_notebooks");
+            for (File defaultNotebook : startupNotebooks.listFiles()) {
+                String fileName = defaultNotebook.getName();
+                File jupyterViewer = new File(notebooksDirectory, fileName);
+                if (!jupyterViewer.exists()) {
+                    logServerStartup.info("TdsContext.init(): Copying default jupyter notebook file {}.", defaultNotebook);
+                    IO.copyFile(defaultNotebook, jupyterViewer);
+                }
             }
 
         } catch (IOException e) {
