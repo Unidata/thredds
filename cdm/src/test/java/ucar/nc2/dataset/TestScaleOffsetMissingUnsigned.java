@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class TestScaleOffsetMissing {
+public class TestScaleOffsetMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -165,12 +165,13 @@ public class TestScaleOffsetMissing {
       // "foo" value was converted to NaN because it was equal to _FillValue.
       Assert.assertTrue(Double.isNaN(fooValWithNaNs));
 
-      // Note that we can't use isFillValue() because we've set useNaNs to "true". See the EnhanceScaleMissing Javadoc.
+      // Note that we can't use isFillValue() because we've applied the ConvertMissing enhancement.
+      // See the EnhanceScaleMissingUnsigned Javadoc.
       Assert.assertTrue(fooVar.isMissing(fooValWithNaNs));
     }
   }
 
-  // Asserts that EnhanceScaleMissingImpl compares floating-point values in a "fuzzy" manner.
+  // Asserts that EnhanceScaleMissingUnsignedImpl compares floating-point values in a "fuzzy" manner.
   // This test demonstrated the bug in https://github.com/Unidata/thredds/issues/1068.
   @Test
   public void testScaleMissingFloatingPointComparisons() throws IOException, URISyntaxException {
@@ -262,7 +263,8 @@ public class TestScaleOffsetMissing {
       // "scaleOffsetMissingUnsigned" was originally UBYTE, but scale_factor (SHORT) and add_offset (INT) caused it to
       // be UINT due to:
       /*
-       *   <li>The data type of the variable will be set to the {@link EnhanceScaleMissingImpl#largestOf largest of}:
+       *   <li>The data type of the variable will be set to the
+       *       {@link EnhanceScaleMissingUnsignedImpl#largestOf largest of}:
        *     <ul>
        *       <li>the original data type</li>
        *       <li>the unsigned conversion type, if applicable</li>

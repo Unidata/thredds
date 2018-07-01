@@ -29,10 +29,10 @@ import java.util.*;
  * @author caron
  * @see NetcdfDataset
  */
-public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissing {
+public class VariableDS extends Variable implements VariableEnhanced, EnhanceScaleMissingUnsigned {
   private EnhancementsImpl enhanceProxy;
   // Assign a dummy value for now. We'll replace it with the proper value in enhance().
-  private EnhanceScaleMissingImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingImpl();
+  private EnhanceScaleMissingUnsignedImpl scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl();
   private Set<Enhance> enhanceMode = EnumSet.noneOf(Enhance.class);
 
   protected Variable orgVar; // wrap this Variable : use it for the I/O
@@ -197,10 +197,10 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     // So, we need to reset to default before we process this new set.
     setDataType(orgDataType);
     
-    // Initialize EnhanceScaleMissingImpl. We can't do this in the constructors because this object may not
+    // Initialize EnhanceScaleMissingUnsignedImpl. We can't do this in the constructors because this object may not
     // contain all of the relevant attributes at that time. NcMLReader is an example of this: the VariableDS is
     // constructed first, and then Attributes are added to it later.
-    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingImpl(this);
+    this.scaleMissingUnsignedProxy = new EnhanceScaleMissingUnsignedImpl(this);
   
     if (this.enhanceMode.contains(Enhance.ConvertEnums) && dataType.isEnum()) {
       setDataType(DataType.STRING);  // LOOK promote data type to STRING ????
@@ -532,7 +532,7 @@ public class VariableDS extends Variable implements VariableEnhanced, EnhanceSca
     enhanceProxy.removeCoordinateSystem(cs);
   }
   
-  ////////////////////////////////////////////// EnhanceScaleMissing //////////////////////////////////////////////
+  //////////////////////////////////////////// EnhanceScaleMissingUnsigned ////////////////////////////////////////////
   
   @Override public boolean hasScaleOffset() {
     return scaleMissingUnsignedProxy.hasScaleOffset();

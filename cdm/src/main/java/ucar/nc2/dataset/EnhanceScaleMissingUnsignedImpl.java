@@ -20,13 +20,13 @@ import java.util.Arrays;
 import static ucar.ma2.DataType.*;
 
 /**
- * Implementation of EnhanceScaleMissing for unsigned data, scale/offset packed data, and missing data.
+ * Implementation of EnhanceScaleMissingUnsigned for unsigned data, scale/offset packed data, and missing data.
  *
  * @author caron
  * @author cwardgar
- * @see EnhanceScaleMissing
+ * @see EnhanceScaleMissingUnsigned
  */
-class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
+class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private DataType origDataType = null, unsignedConversionType = null, scaledOffsetType = null;
@@ -54,7 +54,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
   /**
    * Constructor, when you dont want anything done.
    */
-  EnhanceScaleMissingImpl() {
+  EnhanceScaleMissingUnsignedImpl() {
   }
 
   /**
@@ -62,7 +62,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    *
    * @param forVar the Variable to decorate.
    */
-  EnhanceScaleMissingImpl(VariableDS forVar) {
+  EnhanceScaleMissingUnsignedImpl(VariableDS forVar) {
     this(forVar, NetcdfDataset.fillValueIsMissing, NetcdfDataset.invalidDataIsMissing,
         NetcdfDataset.missingDataIsMissing);
   }
@@ -76,7 +76,7 @@ class EnhanceScaleMissingImpl implements EnhanceScaleMissing {
    * @param invalidDataIsMissing use valid_range for isMissing()
    * @param missingDataIsMissing use missing_value for isMissing()
    */
-  private EnhanceScaleMissingImpl(VariableDS forVar, boolean fillValueIsMissing, boolean invalidDataIsMissing,
+  private EnhanceScaleMissingUnsignedImpl(VariableDS forVar, boolean fillValueIsMissing, boolean invalidDataIsMissing,
           boolean missingDataIsMissing) {
     this.fillValueIsMissing = fillValueIsMissing;
     this.invalidDataIsMissing = invalidDataIsMissing;
