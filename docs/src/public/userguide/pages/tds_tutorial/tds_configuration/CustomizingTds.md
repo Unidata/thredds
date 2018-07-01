@@ -15,7 +15,9 @@ UI customization can be implemented through the contribution of both CSS stylesh
 
 ## CSS Stylesheets
 
-Custom stylesheets are specified in the `threddsConfig.xml` configuration file.
+To customize TDS using CSS, custom CSS documents should be placed inside tds.content.root.path/thredds/public.
+
+TDS is configured to use the CSS documents supplied in the `public` directory in `threddsConfig.xml`.
 There are three properties within the `htmlSetup` element used to define stylesheets:
 
 ~~~xml
@@ -26,11 +28,8 @@ There are three properties within the `htmlSetup` element used to define stylesh
 </htmlSetup>
 ~~~
 
-Values given for `catalogCssUrl` and `datasetCssUrl` will be applied as stylesheets on the Catalog and Dataset
-access HTML pages, respectively. A path supplied to `standardCssUrl` will be used in all generated HTML pages.
-
-Note: Paths to CSS files may be absolute or relative, relative paths must be relative to the webapp URL,
- i.e. http://server:port/thredds/.
+CSS documents given for `catalogCssUrl` and `datasetCssUrl` elements will be applied on the Catalog and Dataset
+access HTML pages, respectively. A CSS document supplied to `standardCssUrl` will be used in all generated HTML pages.
 
 ## Thymeleaf Templates
 
