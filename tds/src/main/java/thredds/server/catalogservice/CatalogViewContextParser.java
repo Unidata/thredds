@@ -81,7 +81,7 @@ public class CatalogViewContextParser {
     model.put("webappUrl", htmlConfig.getWebappUrl());
     model.put("webappVersion", htmlConfig.getWebappVersion());
     model.put("webappBuildTimestamp", htmlConfig.getWebappVersionBuildDate());
-    model.put("webbappDocsUrl", htmlConfig.getWebappDocsUrl());
+    model.put("webappDocsUrl", htmlConfig.getWebappDocsUrl());
     model.put("contextPath", htmlConfig.getWebappContextPath());
 
     model.put("hostInst", htmlConfig.getHostInstName());
@@ -489,6 +489,8 @@ class DatasetContext {
       }
       Map<String, String> accessMap = new HashMap<>();
       accessMap.put("serviceTypeName", s.getServiceTypeName());
+      accessMap.put("serviceDesc", s.getDesc());
+      accessMap.put("accessType", s.getAccessType());
       accessMap.put("href", queryString == null ? urlString : urlString + "?" + queryString);
       this.access.add(accessMap);
     }

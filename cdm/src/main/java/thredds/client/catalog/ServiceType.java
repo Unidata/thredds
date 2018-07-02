@@ -4,7 +4,6 @@
  */
 package thredds.client.catalog;
 
-import java.util.HashMap;
 
 /**
  * Service Type enums
@@ -18,7 +17,7 @@ public enum ServiceType {
   CdmRemote("Provides index subsetting on remote CDM datasets, using ncstream.", AccessType.DataAccess),                //
   CdmrFeature("Provides coordinate subsetting on remote CDM Feature Datasets, using ncstream.", AccessType.DataAccess), //
   Compound,       //
-  DAP4    ,       //
+  DAP4("Access dataset through OPeNDAP using the DAP4 protocol.", AccessType.DataAccess),                               //
   DODS,           // deprecated
   File,           //  deprecated
   FTP,            //
@@ -30,12 +29,12 @@ public enum ServiceType {
   NcJSON,         //
   NCML("Provide NCML representation of a dataset.", AccessType.Metadata),                                               //
   NetcdfSubset("A web service for subsetting CDM scientific datasets.", AccessType.DataAccess),                         //
-  OPENDAP("Access dataset through OPeNDAP protcol.", AccessType.DataAccess),                                            //
+  OPENDAP("Access dataset through OPeNDAP using the DAP2 protcol.", AccessType.DataAccess),                             //
   OPENDAPG,       //
   Resolver,       //
   THREDDS,        //
   UDDC("An evaluation of how well the metadata contained in the dataset" +
-          " conforms to the BetCDF Attribute Convention for Data Discovery (NACDD", AccessType.Metadata),               //
+          " conforms to the BetCDF Attribute Convention for Data Discovery (NACDD)", AccessType.Metadata),              //
   WebForm,        //    ??
   WCS("Supports access to geospatial data as 'coverages'.", AccessType.DataAccess),                                     //
   WFS,            //
