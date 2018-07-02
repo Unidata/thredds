@@ -31,12 +31,15 @@
 
     <div th:fragment="access" class="tab-content access" id="access">
         <h3>Access:</h3>
-        <ol>
-            <li th:each="access : ${dataset.getAccess()}">
-                <b th:text="${access.get('serviceTypeName')} + ': '"></b>
-                <a th:href="${access.get('href')}" th:text="${access.get('href')}"></a>
-            </li>
-        </ol>
+        <table class="property-table">
+            <tr><th>Service</th><th>Type</th><th>Description</th></tr>
+            <tr th:each="access : ${dataset.getAccess()}">
+                <td><a th:href="${access.get('href')}">
+                <b th:text="${access.get('serviceTypeName')}"></b></a></td>
+                <td th:if="${access.get('accessType') != null}" th:text="${access.get('accessType')}"/>
+                <td th:text="${access.get('serviceDesc') == null ? '' : access.get('serviceDesc')}"/>
+            </tr>
+        </table>
     </div>
 
     <div th:fragment="contributors" class="tab-content info" id="contributors">
