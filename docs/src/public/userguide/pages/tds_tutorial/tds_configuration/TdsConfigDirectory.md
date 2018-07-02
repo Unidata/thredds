@@ -38,3 +38,5 @@ For now, we will focus on the following subset of the content directory:
      * `ehcache/`
      * `ncss/`
      * `wcs/`
+   * `templates/`
+     * `tdsTemplateFragments.html` - user-supplied Thymeleaf HTML templates (see [Customizing TDS](/customizing_tds.html#thymeleaf-templates) for details).
