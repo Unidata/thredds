@@ -336,6 +336,7 @@ div.button {
     display: none;
     padding: 5px 10px;
     border: 1px solid #CFCFCF;
+    min-height: 120px;
 }
 
 .tab-container {
