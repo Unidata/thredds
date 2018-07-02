@@ -430,6 +430,7 @@ public class CatalogBuilder {
      <xsd:attribute name="base" type="xsd:string" use="required" />
      <xsd:attribute name="serviceType" type="serviceTypes" use="required" />
      <xsd:attribute name="desc" type="xsd:string"/>
+     <xsd:attribute name="accessType" type="xsd:string"/>
      <xsd:attribute name="suffix" type="xsd:string" />
     </xsd:complexType>
    </xsd:element>
@@ -440,10 +441,15 @@ public class CatalogBuilder {
     String serviceBase = s.getAttributeValue("base");
     String suffix = s.getAttributeValue("suffix");
     String desc = s.getAttributeValue("desc");
+    String accessType = s.getAttributeValue("accessType");
 
     ServiceType type = ServiceType.getServiceTypeIgnoreCase(typeS);
     if (type == null) {
       errlog.format(" non-standard service type = '%s'%n", typeS);
+    }
+    else {
+      if (desc == null) desc = type.getDescription();
+      if (accessType == null) accessType = type.getAccessType();
     }
 
     List<Property> properties = null;
@@ -461,7 +467,7 @@ public class CatalogBuilder {
       services.add(readService(e));
     }
 
-    Service result = new Service(name, serviceBase, typeS, desc, suffix, services, properties);
+    Service result = new Service(name, serviceBase, typeS, desc, suffix, services, properties, accessType);
     serviceMap.put(name, result);
     return result;
   }

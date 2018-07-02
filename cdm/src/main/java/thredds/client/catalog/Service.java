@@ -24,15 +24,28 @@ public class Service {            // (7)
   private final String base;
   private final String typeS;
   private final String desc;
+  private final String accessType;
   private final String suffix;
   private final List<Service> nestedServices;
   private final List<Property> properties;
+
+  public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties, String accessType) {
+    this.name = name;
+    this.base = base; // (base.length() == 0 || base.endsWith("/")) ? base : base + "/";
+    this.typeS = typeS;
+    this.desc = desc;
+    this.accessType = accessType;
+    this.suffix = suffix;
+    this.nestedServices = nestedServices;
+    this.properties = properties;
+  }
 
   public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
     this.name = name;
     this.base = base; // (base.length() == 0 || base.endsWith("/")) ? base : base + "/";
     this.typeS = typeS;
     this.desc = desc;
+    this.accessType = ServiceType.AccessType.Unknown.getName();
     this.suffix = suffix;
     this.nestedServices = nestedServices;
     this.properties = properties;
@@ -56,6 +69,8 @@ public class Service {            // (7)
   public String getDesc() {
     return desc;
   }
+
+  public String getAccessType() { return accessType; }
 
   public String getSuffix() {
     return suffix == null ? "" : suffix;
