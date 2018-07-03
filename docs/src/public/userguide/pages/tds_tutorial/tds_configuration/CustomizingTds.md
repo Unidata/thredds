@@ -116,14 +116,14 @@ Each tab button must implement the click event handler `switchTab(buttonElement,
 `templates/tdsTemplateFragments.html`
 ~~~html
 <div th:fragment="customInfoTabButtons">
-     <div class="tab-button info" onclick="switchTab(this, 'custom1', 'info')">Custom1</div>
-     <div class="tab-button info" onclick="switchTab(this, 'custom2', 'info')">Custom2</div>
- </div>
+   <div class="tab-button info" onclick="switchTab(this, 'custom1', 'info')">Custom1</div>
+   <div class="tab-button info" onclick="switchTab(this, 'custom2', 'info')">Custom2</div>
+</div>
 
- <div th:fragment="customInfoTabContent">
-     <div class="tab-content info" id="custom1">This is one contributed tab pane...</div>
-     <div class="tab-content info" id="custom2">..and this is a second!</div>
- </div>
+<div th:fragment="customInfoTabContent">
+   <div class="tab-content info" id="custom1">This is one contributed tab pane...</div>
+   <div class="tab-content info" id="custom2">..and this is a second!</div>
+</div>
 ~~~
 
 In the above example, the `tab-button` and `tab-content` classes apply the same style to the contributed tabs as the
@@ -135,3 +135,118 @@ Current contributable tabs are:
   * `customAccessTabButtons/customAccessTabContent` - adds tabs to the tab pane holding the "Access" and "Preview" views
   * `customInfoTabButtons/customInfoTabContent` - adds tabs to the tab pane holding view with information about the dataset
 
+### Using TDS Properties in Contributed Templates
+Information from the server is passed to the templated pages through a data model. The properties made available to
+the template parser are:
+
+~~~java
+{
+  String googleTracking,
+  String serverName,
+  String logoUrl,
+  String logoAlt,
+  String installName,
+  String installUrl,
+  String webappName,
+  String wabappUrl,
+  String webappVersion,
+  String webappBuildTimestamp,
+  String webappDocsUrl,
+  String contextPath,
+  String hostInst,
+  String hostInstUrl
+}
+~~~
+
+Additionally, the catalog page is passed the properties `boolean rootCatalog`, which is set to `true` only on the top-level catalog page, and `List<CatalogItemContext> items`, a set of items in the Catalog
+defined as `CatalogItemContext` data contracts:
+
+~~~java
+class CatalogItemContext {
+
+  String getDisplayName();
+
+  int getLevel();
+
+  String getDataSize();
+
+  String getLastModified();
+
+  String getIconSrc();
+
+  String getHref();
+}
+~~~
+
+Similarly, the dataset page is passed the property `DatasetContext dataset`, a data contract defining the properties
+of the dataset:
+
+~~~java
+class DatasetContext {
+
+  String getName();
+
+  String getCatUrl();
+
+  String getCatName();
+
+  List<Map<String, String>> get Documentation();
+
+  List<Map<String, String>> getAccess();
+
+  List<Map<String, String>> getContributors();
+
+  List<Map<String, String>> getKeywords();
+
+  List<Map<String, String>> getDates();
+
+  List<Map<String, String>> getProjects();
+
+  List<Map<String, String>> getCreators();
+
+  List<Map<String, String>> getPublishers();
+
+  List<Map<String, String>> getVariables();
+
+  String getVaraiableMapLink();
+
+  Map<String, Object> getGeospatialCoverage();
+
+  Map<String, Object> getTimeCoverage();
+
+  List<Map<String, String>> getMetadata();
+
+  List<Map<String, String>> getProperties();
+
+  Map<String, Object> getAllContext();
+
+  Object getContextItem(String key);
+
+  List<Map<String, String>> getViewerLinks();
+}
+~~~
+
+*Example:* Add a section to a dataset view which links to the host institution site and
+displays a table of all properties returned by `getAllContext()`.
+
+`templates/tdsTemplateFragments.html`
+~~~html
+<div th:fragment="datasetCustomContentBottom">
+    <h3>Properties of
+      <th:block th:text="${dataset.getName()}"
+       - hosted by <a th:href="${hostInstUrl}" th:text="${hostInst}"></a>
+    </h3>
+    <table class="property-table">
+        <tr th:each="prop : ${dataset.getAllContext()}">
+            <td><em th:text="${prop.key}"/><td th:text="${prop.value}"/>
+        </tr>
+    </table>
+</div>
+~~~
+
+### Adding TDS Properties to Templates
+Don't see what you're looking for?
+If the properties exposed to the template parser do not meet your needs,
+you are encouraged to update the above data models by submitting a pull request to
+[https://github.com/Unidata/thredds](https://github.com/Unidata/thredds). The data models are defined and populated in
+[`CatalogViewContextParser.js'](https://github.com/Unidata/thredds/blob/5.0.0/tds/src/main/java/thredds/server/catalogservice/CatalogViewContextParser.java).

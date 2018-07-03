@@ -28,7 +28,9 @@
 
         <div th:replace="~{ext:tdsTemplateFragments :: header} ?: ~{templates/commonFragments :: header}"/>
 
-        <div th:if="${parentHref != null}"><a th:href="${parentHref}">Back</a></div>
+        <div class="content" th:if="${rootCatalog}">
+            <div th:replace="~{ext:tdsTemplateFragments :: banner} ?: ~{templates/commonFragments :: banner}"/>
+        </div>
 
         <div class="content" th:if="~{ext:tdsTemplateFragments :: catalogCustomContentTop}">
             <div th:replace="~{ext:tdsTemplateFragments :: catalogCustomContentTop}"></div>

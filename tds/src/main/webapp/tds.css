@@ -342,3 +342,13 @@ div.button {
 .tab-container {
     background-color: #81B2C0;
 }
+
+.banner {
+  padding: 10px 20px;
+  background-color: #81B2C0;
+  border: 1px solid #9C9C9C;
+}
+
+.banner>h2 {
+  color: #000000
+}
