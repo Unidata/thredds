@@ -36,6 +36,16 @@
       </div>
     </div>
 
+    <div th:fragment="banner" class="banner">
+        <h2>Welcome to
+            <th:block th:text="${webappName}"/>
+             top-level TDS Catalog.
+        </h2>
+        <h3>Hosted by
+            <a class="static" th:href="${hostInstUrl}" th:text="${hostInst}"></a>.
+        </h3>
+    </div>
+
 </body>
 
 </html>

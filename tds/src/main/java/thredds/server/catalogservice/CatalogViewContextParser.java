@@ -9,7 +9,6 @@ import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.TdsContext;
 import thredds.server.config.TdsServerInfoBean;
-import thredds.server.viewer.Viewer;
 import thredds.server.viewer.ViewerLinkProvider;
 import thredds.server.viewer.ViewerService;
 import ucar.nc2.units.DateType;
@@ -21,6 +20,7 @@ import ucar.unidata.util.StringUtil2;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Component
 public class CatalogViewContextParser {
@@ -37,14 +37,19 @@ public class CatalogViewContextParser {
   @Autowired
   private TdsServerInfoBean serverInfo;
 
+  private static final String ROOT_CAT_PATTERN = "/thredds/catalog/catalog.(html|xml)";
+
   public Map<String, Object> getCatalogViewContext(Catalog cat, HttpServletRequest req, boolean isLocalCatalog) {
     Map<String, Object> model = new HashMap<>();
     addBaseContext(model);
 
-    Catalog parent = cat.getParentCatalog();
-    URI parentURI;
-    if (parent != null) parentURI = parent.getBaseURI();
-    if (parent != null) model.put("parentHref", parent.getBaseURI().toString());
+    try {
+      if (Pattern.matches(CatalogViewContextParser.ROOT_CAT_PATTERN, cat.getBaseURI().getPath())) {
+        model.put("rootCatalog", true);
+      }
+    } catch(Exception e) {
+      model.put("rootCatalog", false);
+    }
 
     List<CatalogItemContext> catalogItems = new ArrayList<>();
     addCatalogItems(cat, catalogItems, isLocalCatalog, 0);
@@ -311,11 +316,11 @@ class CatalogItemContext {
 
   public String getIconSrc() { return  this.iconSrc; }
 
-  public void setIconSrc(String iconSrc) { this.iconSrc = iconSrc; }
+  protected void setIconSrc(String iconSrc) { this.iconSrc = iconSrc; }
 
   public String getHref() { return this.itemhref; }
 
-  public void setHref(String href) { this.itemhref = href; }
+  protected void setHref(String href) { this.itemhref = href; }
 
 }
 
@@ -738,11 +743,11 @@ class DatasetContext {
 
   public Object getContextItem(String key) { return this.context.get(key); }
 
-  public void addContextItem(String key, Object value) { this.context.put(key, value); }
+  protected void addContextItem(String key, Object value) { this.context.put(key, value); }
 
   public List<Map<String, String>> getViewerLinks() { return this.viewerLinks; }
 
-  public void setViewers(Dataset ds, List<ViewerLinkProvider.ViewerLink> viewerLinks) {
+  protected void setViewers(Dataset ds, List<ViewerLinkProvider.ViewerLink> viewerLinks) {
     for (ViewerLinkProvider.ViewerLink viewer : viewerLinks) {
       Map<String, String> viewerMap = new HashMap<>();
       viewerMap.put("title", viewer.getTitle());
