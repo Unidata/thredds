@@ -60,7 +60,7 @@ libraries["jruby-gradle-plugin"] = "com.github.jruby-gradle:jruby-gradle-plugin:
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.3.13.RELEASE"
+versions["spring"] = "4.3.18.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -144,7 +144,7 @@ libraries["objenesis"] = "org.objenesis:objenesis:2.4"
 // See https://github.com/coverity/coverity-security-library
 libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 
-libraries["guava"] = "com.google.guava:guava:19.0"
+libraries["guava"] = "com.google.guava:guava:25.1-jre"
 
 libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.2"
 
@@ -201,9 +201,9 @@ libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s
 }
 
 // replace the jackson.core libs that were excluded from aws-java-sdk-s3
-libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.7.9"
-libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.7.9"
-libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.7.9.1"
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.6"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.6"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.6"
 
 libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.15.1") {
     // We do not need XStream for our use of chronicle-map.
