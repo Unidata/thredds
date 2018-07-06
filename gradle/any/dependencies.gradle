@@ -74,7 +74,7 @@ libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spri
 
 ////////////////////////////////////////// Spring security //////////////////////////////////////////
 
-versions["spring-security"] = "4.2.3.RELEASE"
+versions["spring-security"] = "4.2.7.RELEASE"
 
 libraries["spring-security-config"] = "org.springframework.security:spring-security-config:${versions["spring-security"]}"
 
@@ -104,7 +104,7 @@ libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
 libraries["jcl-over-slf4j"] = "org.slf4j:jcl-over-slf4j:${versions["slf4j"]}"
 
-versions["log4j"] = "2.10.0"
+versions["log4j"] = "2.11.0"
 
 libraries["log4j-web"] = "org.apache.logging.log4j:log4j-web:${versions["log4j"]}"
 
@@ -311,6 +311,13 @@ configurations.all {
                 dep.useTarget libraries["jcl-over-slf4j"]
             }
         }
+
+        // Force the use of org.slf4j:slf4j-api:1.7.25 (over 1.8.0-alpha2) due to vulnerability.
+        // alpha2 is pulled in by org.apache.logging.log4j:log4j-slf4j-impl, which we pull in
+        // and is currently at the latest version. if we bump to 1.8.0-alpha2, many libraries that
+        // depend on slj4j break. See: https://github.com/gatling/gatling/issues/3290
+        // So, our only option is to override it with the latest 1.7.x version...for now...
+        force 'org.slf4j:slf4j-api:1.7.25'
     }
     
     // STAX is already included in Java 1.6+; no need for a third-party depenency.
@@ -335,4 +342,5 @@ configurations.all {
              ...
      */
     exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+
 }
