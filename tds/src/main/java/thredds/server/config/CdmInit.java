@@ -297,12 +297,18 @@ public class CdmInit implements InitializingBean,  DisposableBean{
 
     // AmazonS3Client configuration
 
+    String s3ServiceEndpoint = ThreddsConfig.get("ThreddsS3ClientImpl.s3ServiceEndpoint", "http://s3.amazonaws.com");
     int maxListingPages = ThreddsConfig.getInt("ThreddsS3ClientImpl.maxListingPages", Integer.MAX_VALUE);
+    int connectTimeOut = ThreddsConfig.getInt("ThreddsS3ClientImpl.s3ConnectTimeOut", 50*1000);
+    int socketTimeOut = ThreddsConfig.getInt("ThreddsS3ClientImpl.s3SocketTimeOut", 50*1000);
     int maxMetadataEntries = ThreddsConfig.getInt("CachingThreddsS3Client.maxMetadataEntries", 10000);
     int maxFileEntries = ThreddsConfig.getInt("CachingThreddsS3Client.maxFileEntries", 100);
     int entryExpirationTime = ThreddsConfig.getSeconds("CachingThreddsS3Client.entryExpirationTime", 13*60);
 
+    ThreddsS3ClientImpl.setS3ServiceEndpoint(s3ServiceEndpoint);
     ThreddsS3ClientImpl.setMaxListingPages(maxListingPages);
+    ThreddsS3ClientImpl.setConnectTimeOut(connectTimeOut);
+    ThreddsS3ClientImpl.setSocketTimeOut(socketTimeOut);
     CachingThreddsS3Client.setMaxMetadataEntries(maxMetadataEntries);
     CachingThreddsS3Client.setMaxFileEntries(maxFileEntries);
     CachingThreddsS3Client.setEntryExpirationTime(entryExpirationTime);
