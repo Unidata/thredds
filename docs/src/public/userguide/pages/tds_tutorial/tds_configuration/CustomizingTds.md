@@ -249,4 +249,4 @@ Don't see what you're looking for?
 If the properties exposed to the template parser do not meet your needs,
 you are encouraged to update the above data models by submitting a pull request to
 [https://github.com/Unidata/thredds](https://github.com/Unidata/thredds). The data models are defined and populated in
-[`CatalogViewContextParser.js'](https://github.com/Unidata/thredds/blob/5.0.0/tds/src/main/java/thredds/server/catalogservice/CatalogViewContextParser.java).
+[`CatalogViewContextParser.java'](https://github.com/Unidata/thredds/blob/5.0.0/tds/src/main/java/thredds/server/catalogservice/CatalogViewContextParser.java).
