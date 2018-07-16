@@ -170,7 +170,7 @@
         <h3>Viewers:</h3>
         <ul>
             <li th:each="link : ${dataset.getViewerLinks()}">
-                <a th:href="${link.get('href')}" th:text="${link.get('title')}" download></a>
+                <a th:href="${link.get('href')}" th:text="${link.get('title')}"></a>
             </li>
         </ul>
     </div>
