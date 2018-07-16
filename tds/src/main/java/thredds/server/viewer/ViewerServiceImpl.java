@@ -233,7 +233,8 @@ public class ViewerServiceImpl implements ViewerService {
     }
 
     public String getViewerLinkHtml( Dataset ds, HttpServletRequest req) {
-      return "No html available, please join us here in 2018.";
+      ViewerLinkProvider.ViewerLink viewerLink = this.getViewerLink(ds, req);
+      return "<a href='" + viewerLink.getUrl() +  "'>" + viewerLink.getTitle() + "</a>";
     }
 
     public ViewerLinkProvider.ViewerLink getViewerLink(Dataset ds, HttpServletRequest req) {
