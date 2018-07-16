@@ -28,9 +28,7 @@ public enum StandardService {
 
   iso(ServiceType.ISO, "/iso/"),
   iso_ncml(ServiceType.NCML, "/ncml/"),
-  uddc(ServiceType.UDDC, "/uddc/"),
-
-  jupyterNotebook(ServiceType.JUPYTERNOTEBOOK, "/notebook/");
+  uddc(ServiceType.UDDC, "/uddc/");
 
   static public StandardService getStandardServiceIgnoreCase(String typeS) {
     for (StandardService s : values())
