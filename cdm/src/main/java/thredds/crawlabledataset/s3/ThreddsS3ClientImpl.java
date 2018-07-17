@@ -1,6 +1,16 @@
 package thredds.crawlabledataset.s3;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSCredentialsProviderChain;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
+import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.auth.SystemPropertiesCredentialsProvider;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import org.apache.http.HttpStatus;
@@ -22,18 +32,35 @@ import java.util.Objects;
 public class ThreddsS3ClientImpl implements ThreddsS3Client {
     private static final Logger logger = LoggerFactory.getLogger(ThreddsS3ClientImpl.class);
 
+    private static String s3ServiceEndpoint = "http://s3.amazonaws.com";  // http is much faster
     private static int maxListingPages = Integer.MAX_VALUE;
+    private static int connectTimeOut = 50*1000; //Default sdk timeout
+    private static int socketTimeOut = 50*1000;  //Default sdk timeout
 
     private final AmazonS3Client s3Client;
+
+    public static void setS3ServiceEndpoint(String s3ServiceEndpoint) {
+        ThreddsS3ClientImpl.s3ServiceEndpoint = s3ServiceEndpoint;
+    }
 
     public static void setMaxListingPages(int i) {
         maxListingPages = i;
     };
 
+    public static void setConnectTimeOut(int connectTimeOut) {
+        ThreddsS3ClientImpl.connectTimeOut = connectTimeOut;
+    }
+
+    public static void setSocketTimeOut(int socketTimeOut) {
+        ThreddsS3ClientImpl.socketTimeOut = socketTimeOut;
+    }
+
     public ThreddsS3ClientImpl() {
-        // Use HTTP; it's much faster.
-        this.s3Client = new AmazonS3Client();
-        this.s3Client.setEndpoint("http://s3.amazonaws.com");
+        ClientConfiguration clientConfiguration = new ClientConfiguration()
+            .withConnectionTimeout(connectTimeOut)
+            .withSocketTimeout(socketTimeOut);
+        s3Client = new AmazonS3Client(defaultCredentialsProvider(), clientConfiguration);
+        s3Client.setEndpoint(s3ServiceEndpoint);
     }
 
     public ThreddsS3ClientImpl(AmazonS3Client s3Client) {
@@ -84,6 +111,19 @@ public class ThreddsS3ClientImpl implements ThreddsS3Client {
     @Override
     public File getLocalCopy(S3URI s3uri) throws IOException {
         return saveObjectToFile(s3uri, s3uri.getTempFile());
+    }
+
+    private AWSCredentialsProvider defaultCredentialsProvider() {
+        return new DefaultAWSCredentialsProviderChain() {
+            public AWSCredentials getCredentials() {
+                try {
+                    return super.getCredentials();
+                } catch (AmazonClientException var2) {
+                    logger.debug("No credentials available; falling back to anonymous access");
+                    return null;
+                }
+            }
+        };
     }
 
     private ObjectMetadata getObjectMetadata(S3URI s3uri) {
