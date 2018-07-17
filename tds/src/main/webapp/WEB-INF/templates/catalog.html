@@ -26,7 +26,7 @@
 
     <div class="container">
 
-        <div th:replace="~{ext:tdsTemplateFragments :: header} ?: ~{templates/commonFragments :: header}"/>
+        <div th:replace="~{templates/commonFragments :: header-container}"/>
 
         <div class="content" th:if="${rootCatalog}">
             <div th:replace="~{ext:tdsTemplateFragments :: banner} ?: ~{templates/commonFragments :: banner}"/>
@@ -70,9 +70,12 @@
             <div th:replace="~{ext:tdsTemplateFragments :: catalogCustomContentBottom}"></div>
         </div>
 
-        <div th:replace="~{ext:tdsTemplateFragments :: footer} ?: ~{templates/commonFragments :: footer}"/>
+        <div th:replace="~{templates/commonFragments :: footer-container}"/>
 
     </div>
 
 </body>
+
+<script th:replace="~{templates/commonFragments :: load-scripts}"></script>
+
 </html>

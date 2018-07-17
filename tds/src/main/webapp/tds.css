@@ -213,7 +213,7 @@ small.imageinc {
    text-align: justify;
 }
 
-div.header, div.footer {
+div#header, div#footer {
     position: absolute;
     left: 0px;
     right: 0px;
@@ -225,29 +225,25 @@ div.header, div.footer {
     overflow: hidden;
 }
 
-div.header {
-    height: 94px;
+div#header {
     top: 0px;
     margin-bottom: 8px;
 }
 
-div.footer {
-    height: 90px;
+div#footer {
     bottom: 0px;
 }
 
 .header-logo {
     float: left;
-    margin-top: 1.2em;
 }
 
 .header-info {
     margin-left: 75px;
 }
 
-.footer-buffer, .header-buffer {
+#footer-buffer, #header-buffer {
     background-color:  #E3E4E6;
-    height: 90px;
     margin-top: 4px;
 }
 

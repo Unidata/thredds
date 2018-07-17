@@ -370,7 +370,7 @@ class DatasetContext {
     String catUrl = ds.getCatalogUrl();
     if (catUrl.indexOf('#') > 0)
       catUrl = catUrl.substring(0, catUrl.lastIndexOf('#'));
-    this.catUrl = catUrl;
+    this.catUrl = catUrl.replace("xml", "html");
     this.catName = ds.getParentCatalog().getName();
 
     setContext(ds);
