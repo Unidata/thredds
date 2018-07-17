@@ -51,7 +51,7 @@
 
     <div class="container">
 
-        <div th:replace="~{ext:tdsTemplateFragments :: header} ?: ~{templates/commonFragments :: header}"/>
+        <div th:replace="~{templates/commonFragments :: header-container}"/>
 
         <div th:replace="~{templates/datasetFragments :: returnButton}"/>
 
@@ -140,9 +140,12 @@
 
         <div th:replace="~{templates/datasetFragments :: returnButton}"/>
 
-        <div th:replace="~{ext:tdsTemplateFragments :: footer} ?: ~{templates/commonFragments :: footer}"/>
+        <div th:replace="~{templates/commonFragments :: footer-container}"/>
 
     </div>
 
 </body>
+
+<script th:replace="~{templates/commonFragments :: load-scripts}"></script>
+
 </html>

@@ -48,20 +48,13 @@ To contribute a template fragment, place the `fragment` element in `templates/td
 
 *Example: Overwriting the default header*
 
-'template/tdstemplateFragments.html'
+'template/tdsTemplateFragments.html'
 ~~~html
 <div th:fragment="header">Your header content here</div>
 ~~~
 
-Note: The above example will replace the default TDS header with our own and exclude all default style for TDS headers.
-To include TDS style, the header fragment must invoke the classes `header` and `header-buffer` as follows:
-
-~~~html
-<div th:fragment="header">
-  <div class="header-buffer"></div>
-  <div class="header">Your header content here</div>
-</div>
-~~~
+Note: The templating system will automatically attach default TDS CSS properties to custom headers and footers;
+to avoid this behavior, users must provide their own overrides through custom stylesheets.
 
 Current default fragments which may be overridden are:
   * `header`
