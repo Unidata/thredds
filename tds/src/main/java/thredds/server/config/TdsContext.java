@@ -235,8 +235,8 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
 
         // jupyter notebooks dir
         File notebooksDirectory = new File(this.threddsDirectory, "notebooks");
-        if(!notebooksDirectory.exists()) {
-            if(!notebooksDirectory.mkdir()) {
+        if (!notebooksDirectory.exists()) {
+            if (!notebooksDirectory.mkdir()) {
                 String msg = "Couldn't create TDS notebooks directory [" + templatesDirectory.getPath() + "].";
                 logServerStartup.error("TdsContext.init(): " + msg);
                 throw new IllegalStateException(msg);

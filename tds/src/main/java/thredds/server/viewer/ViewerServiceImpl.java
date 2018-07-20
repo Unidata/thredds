@@ -19,15 +19,16 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.common.io.Files;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
+import thredds.core.AllowedServices;
 import thredds.core.StandardService;
 import thredds.server.config.TdsContext;
+import thredds.server.notebook.JupyterNotebookServiceCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
 import ucar.unidata.util.StringUtil2;
@@ -46,6 +47,12 @@ public class ViewerServiceImpl implements ViewerService {
 
   @Autowired
   TdsContext tdsContext;
+
+  @Autowired
+  private JupyterNotebookServiceCache  jupyterNotebooks;
+
+  @Autowired
+  private AllowedServices allowedServices;
 
   @Override
   public List<Viewer> getViewers() {
@@ -134,14 +141,7 @@ public class ViewerServiceImpl implements ViewerService {
     registerViewer(new ToolsUI());
     registerViewer(new IDV());
     registerViewer(new StaticView());
-    File notebooksDir = new File(tdsContext.getThreddsDirectory(), "notebooks");
-    if (notebooksDir.exists() && notebooksDir.isDirectory() && notebooksDir.listFiles(new FileFilter() {
-      @Override
-      public boolean accept(File pathname) {
-        return Files.getFileExtension(pathname.getName()).equals("ipynb");
-      }
-    }).length > 0)
-    registerViewer(new JupyterNotebookViewer());
+    registerViewer(new JupyterNotebookViewer(jupyterNotebooks, allowedServices));
   }
 
   // Viewers...
@@ -228,8 +228,18 @@ public class ViewerServiceImpl implements ViewerService {
   private static class JupyterNotebookViewer implements Viewer {
     private static final String title = "Jupyter Notebook viewer";
 
+    private JupyterNotebookServiceCache jupyterNotebooks;
+
+    private AllowedServices allowedServices;
+
+    public JupyterNotebookViewer (JupyterNotebookServiceCache jupyterNotebooks, AllowedServices allowedServices) {
+      this.jupyterNotebooks = jupyterNotebooks;
+      this.allowedServices = allowedServices;
+    }
+
     public boolean isViewable(Dataset ds) {
-      return true;
+      return this.allowedServices.isAllowed(StandardService.jupyterNotebook)
+        && jupyterNotebooks.getNotebookFilename(ds) != null;
     }
 
     public String getViewerLinkHtml( Dataset ds, HttpServletRequest req) {
@@ -244,7 +254,7 @@ public class ViewerServiceImpl implements ViewerService {
       String catalogServiceBase = StandardService.catalogRemote.getBase();
       catUrl = catUrl.substring(catUrl.indexOf(catalogServiceBase) + catalogServiceBase.length()).replace("html", "xml");
 
-      String url = req.getContextPath() + "/notebook/" + ds.getID() + "?catalog=" + catUrl;
+      String url = req.getContextPath() + StandardService.jupyterNotebook.getBase() + ds.getID() + "?catalog=" + catUrl;
       return new ViewerLinkProvider.ViewerLink(JupyterNotebookViewer.title, url);
     }
   }

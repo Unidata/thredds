@@ -21,6 +21,7 @@
         <entry key="iso" value="true"/>
         <entry key="iso_ncml" value="true"/>
         <entry key="uddc" value="true"/>
+        <entry key="jupyterNotebook" value="true"/>
       </map>
     </property>
 
@@ -31,6 +32,7 @@
         <value>cdmrFeatureGrid</value>
         <value>dap4</value>
         <value>httpServer</value>
+        <value>jupyterNotebook</value>
         <value>netcdfSubsetGrid</value>
         <value>wms</value>
         <value>wcs</value>
@@ -53,6 +55,7 @@
         <value>cdmRemote</value>
         <value>dap4</value>
         <value>httpServer</value>
+        <value>jupyterNotebook</value>
         <value>netcdfSubsetPoint</value>
         <value>iso</value>
         <value>iso_ncml</value>
@@ -66,6 +69,7 @@
         <value>cdmRemote</value>
         <value>dap4</value>
         <value>httpServer</value>
+        <value>jupyterNotebook</value>
         <value>iso</value>
         <value>iso_ncml</value>
         <value>uddc</value>
