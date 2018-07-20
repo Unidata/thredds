@@ -24,6 +24,7 @@ public enum ServiceType {
   GRIDFTP,        //
   H5Service,      //
   HTTPServer("HTTP file download.", AccessType.DataAccess),                                                             //
+  JupyterNotebook("Access dataset using Siphon in a Jupyter Notebook", AccessType.DataAccess),                          //
   ISO("Provide ISO 19115 metdata representation of a dataset's structure and metadata.", AccessType.Metadata),          //
   LAS,            //
   NcJSON,         //

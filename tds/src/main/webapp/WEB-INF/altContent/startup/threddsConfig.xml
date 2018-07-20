@@ -180,6 +180,14 @@
   </NetcdfSubsetService>
 
   <!--
+  <JupyterNotebookService>
+    <allow>false</allow>
+    <maxAge>60</scour>
+    <maxFiles>100</maxFiles>
+  </JupyterNotebookService>
+  -->
+
+  <!--
   <Opendap>
     <ascLimit>50</ascLimit>
     <binLimit>500</binLimit>
