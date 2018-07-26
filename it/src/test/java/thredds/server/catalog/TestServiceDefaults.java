@@ -1,4 +1,8 @@
-/* Copyright */
+/*
+ * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package thredds.server.catalog;
 
 import org.junit.Assert;
@@ -36,7 +40,7 @@ public class TestServiceDefaults {
     Service s = ds.getServiceDefault();
     Assert.assertNotNull(s);
     Assert.assertTrue(s.getType() == ServiceType.Compound);
-    Assert.assertEquals(12, s.getNestedServices().size());
+    Assert.assertEquals(13, s.getNestedServices().size());
   }
 
   // Relies on:
@@ -59,7 +63,7 @@ public class TestServiceDefaults {
     Assert.assertNotNull(s);
 
     Assert.assertTrue(s.getType() == ServiceType.Compound);
-    Assert.assertEquals(11, s.getNestedServices().size());
+    Assert.assertEquals(13, s.getNestedServices().size());
   }
 
   @Test
@@ -69,7 +73,7 @@ public class TestServiceDefaults {
     Assert.assertEquals(3, cat.getServices().size());
 
     check(cat, "all", 12);
-    check(cat, "GridServices", 12);
+    check(cat, "GridServices", 13);
     check(cat, "opendapOnly", 1);
 
     Service localServices = cat.findService("opendapOnly");
