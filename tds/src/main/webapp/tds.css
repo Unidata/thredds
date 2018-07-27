@@ -236,10 +236,12 @@ div#footer {
 
 .header-logo {
     float: left;
+    padding-top: 8px;
 }
 
 .header-info {
     margin-left: 75px;
+    padding-top: 3px;
 }
 
 #footer-buffer, #header-buffer {

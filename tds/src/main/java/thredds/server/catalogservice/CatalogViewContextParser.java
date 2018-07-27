@@ -9,6 +9,7 @@ import thredds.server.catalog.FeatureCollectionRef;
 import thredds.server.config.HtmlConfigBean;
 import thredds.server.config.TdsContext;
 import thredds.server.config.TdsServerInfoBean;
+import thredds.server.notebook.JupyterNotebookServiceCache;
 import thredds.server.viewer.ViewerLinkProvider;
 import thredds.server.viewer.ViewerService;
 import ucar.nc2.units.DateType;
@@ -447,7 +448,8 @@ class DatasetContext {
       Service s = a.getService();
       String urlString = !isLocalCatalog ? a.getStandardUrlName() : a.getUnresolvedUrlName();
       String queryString = null;
-      // String fullUrlString = urlString;
+      String catalogUrl = null;
+      String datasetId = null;
 
       ServiceType stype = s.getType();
       if (stype != null) {
@@ -472,13 +474,24 @@ class DatasetContext {
           case NCML:
           case UDDC:
           case ISO:
-            String catalogUrl = ds.getCatalogUrl();
-            String datasetId = ds.getId();
+            catalogUrl = ds.getCatalogUrl();
+            datasetId = ds.getId();
             if (catalogUrl != null && datasetId != null) {
               if (catalogUrl.indexOf('#') > 0)
                 catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
               queryString = "catalog=" + catalogUrl + "&dataset=" + datasetId;
             }
+            break;
+
+          case JupyterNotebook:
+            datasetId = ds.getId();
+            catalogUrl = ds.getCatalogUrl();
+            if (catalogUrl.indexOf('#') > 0)
+              catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
+            catalogUrl = catalogUrl.substring(catalogUrl.indexOf("/catalog/") + ("/catalog/").length())
+                    .replace("html", "xml");
+            queryString = "catalog=" + catalogUrl;
+            urlString = urlString.substring(0, urlString.indexOf(s.getBase()) + s.getBase().length()) + datasetId;
             break;
 
           case NetcdfSubset:

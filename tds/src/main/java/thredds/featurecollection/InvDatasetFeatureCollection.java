@@ -172,7 +172,8 @@ public abstract class InvDatasetFeatureCollection implements Closeable {
         nestedOk.add(service);
       }
     }
-    virtualService = new Service("VirtualServices", "", ServiceType.Compound.toString(), null, null, nestedOk, orgService.getProperties());
+    virtualService = new Service("VirtualServices", "", ServiceType.Compound.toString(), ServiceType.Compound.getDescription(),
+            null, nestedOk, orgService.getProperties(), ServiceType.Compound.getAccessType());
   }
 
   public void close() {

@@ -121,6 +121,8 @@ public class NotebookController {
   private File getNotebookFile(Dataset ds, Catalog cat) {
 
     String filename = jupyterNotbooks.getNotebookFilename(ds);
+    if (filename == null) return null;
+
     File notebooksDir = new File(tdsContext.getThreddsDirectory(), "notebooks");
 
     if (notebooksDir.exists() && notebooksDir.isDirectory()) {
