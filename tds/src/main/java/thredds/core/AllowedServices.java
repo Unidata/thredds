@@ -153,7 +153,7 @@ public class AllowedServices implements AllowedServicesIF {
   private Service makeService(StandardService ss) {
     String path = ss.base.startsWith("/") ? tdsContext.getContextPath() + ss.base : ss.base;
     // (String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties
-    return new Service(ss.type.toString(), path, ss.type.toString(), null, null, null, null);
+    return new Service(ss.type.toString(), path, ss.type.toString(), ss.type.getDescription(), null, null, null, ss.type.getAccessType());
   }
 
   ////////////////////////////////////////////////
@@ -165,28 +165,35 @@ public class AllowedServices implements AllowedServicesIF {
   }
 
   public Service getStandardServices(FeatureType featType) {
+    ServiceType compoundService = ServiceType.Compound;
     if (featType.isCoverageFeatureType()) {
-      return new Service("GridServices", "", ServiceType.Compound.toString(), null, null, allowedGridServices, null);
+      return new Service("GridServices", "", compoundService.toString(), compoundService.getDescription(),
+              null, allowedGridServices, null, compoundService.getAccessType());
     }
 
     if (featType.isPointFeatureType()) {
-      return new Service("PointServices", "", ServiceType.Compound.toString(), null, null, allowedPointServices, null);
+      return new Service("PointServices", "", compoundService.toString(), compoundService.getDescription(),
+              null, allowedPointServices, null, compoundService.getAccessType());
     }
 
     if (featType == FeatureType.RADIAL) {
-      return new Service("RadialServices", "", ServiceType.Compound.toString(), null, null, allowedRadialServices, null);
+      return new Service("RadialServices", "", compoundService.toString(), compoundService.getDescription(),
+              null, allowedRadialServices, null, compoundService.getAccessType());
     }
 
     return null;
   }
 
   public Service getStandardCollectionServices(FeatureType featType) {
+    ServiceType compoundService = ServiceType.Compound;
     if (featType.isCoverageFeatureType()) {
-      return new Service("GridCollectionServices", "", ServiceType.Compound.toString(), null, null, allowedGridServices, null);
+      return new Service("GridCollectionServices", "", compoundService.toString(), compoundService.getDescription(),
+              null, allowedGridServices, null, compoundService.getAccessType());
     }
 
     if (featType.isPointFeatureType()) {
-      return new Service("PointCollectionServices", "", ServiceType.Compound.toString(), null, null, allowedPointCollectionServices, null);
+      return new Service("PointCollectionServices", "", compoundService.toString(),
+              null, null, allowedPointCollectionServices, null, compoundService.getAccessType());
     }
 
     return null;

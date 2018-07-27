@@ -27,7 +27,6 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
-import thredds.server.config.TdsContext;
 import thredds.server.notebook.JupyterNotebookServiceCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
@@ -44,9 +43,6 @@ public class ViewerServiceImpl implements ViewerService {
 
   private List<Viewer> viewers = new ArrayList<>();
   private HashMap<String, String> templates = new HashMap<>();
-
-  @Autowired
-  TdsContext tdsContext;
 
   @Autowired
   private JupyterNotebookServiceCache  jupyterNotebooks;

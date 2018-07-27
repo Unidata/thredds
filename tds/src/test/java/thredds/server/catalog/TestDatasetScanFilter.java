@@ -69,9 +69,11 @@ public class TestDatasetScanFilter {
     TestFileDirUtils.addFile(secondDayDir, "PROFILER_wind_06min_20131108_0016.nc");
 
     StandardService ss = StandardService.resolver;
-    Service latest = new Service(ss.getType().toString(), ss.getBase(), ss.getType().toString(), null, null, null, null);
+    Service latest = new Service(ss.getType().toString(), ss.getBase(), ss.getType().toString(), ss.getType().getDescription(),
+            null, null, null, ss.getType().getAccessType());
     StandardService ss2 = StandardService.httpServer;
-    Service httpServer = new Service(ss2.getType().toString(), ss2.getBase(), ss2.getType().toString(), null, null, null, null);
+    Service httpServer = new Service(ss2.getType().toString(), ss2.getBase(), ss2.getType().toString(), ss.getType().getDescription(),
+            null, null, null, ss.getType().getAccessType());
 
     DatasetScan.setSpecialServices(latest, httpServer);
   }

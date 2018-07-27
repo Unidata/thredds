@@ -40,17 +40,6 @@ public class Service {            // (7)
     this.properties = properties;
   }
 
-  public Service(String name, String base, String typeS, String desc, String suffix, List<Service> nestedServices, List<Property> properties) {
-    this.name = name;
-    this.base = base; // (base.length() == 0 || base.endsWith("/")) ? base : base + "/";
-    this.typeS = typeS;
-    this.desc = desc;
-    this.accessType = ServiceType.AccessType.Unknown.getName();
-    this.suffix = suffix;
-    this.nestedServices = nestedServices;
-    this.properties = properties;
-  }
-
   public String getName() {
     return name;
   }

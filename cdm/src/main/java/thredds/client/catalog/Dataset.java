@@ -84,7 +84,7 @@ public class Dataset extends DatasetNode implements ThreddsMetadataContainer {
   static public Dataset makeStandalone(String urlPath, String featureType, String dataFormatS, String serviceType) {
     DatasetBuilder builder = new DatasetBuilder(null);
     builder.put(FeatureType, featureType);
-    Service service = new Service("anon", "", serviceType, null, null, null, null);
+    Service service = new Service("anon", "", serviceType, null, null, null, null, null);
     AccessBuilder access = new AccessBuilder(builder, urlPath, service, dataFormatS, 0);
     builder.addAccess(access);
     return builder.makeDataset(null);

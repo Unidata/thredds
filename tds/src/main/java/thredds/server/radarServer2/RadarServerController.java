@@ -174,7 +174,7 @@ public class RadarServerController {
         CatalogBuilder cb = new CatalogBuilder();
         cb.addService(new Service("radarServer", URLbase,
                 "QueryCapability", null, null, new ArrayList<Service>(),
-                new ArrayList<Property>()));
+                new ArrayList<Property>(), null));
         cb.setName("THREDDS Radar Server");
 
         DatasetBuilder mainDB = new DatasetBuilder(null);
@@ -263,7 +263,7 @@ public class RadarServerController {
         CatalogBuilder cb = new CatalogBuilder();
         cb.addService(new Service("radarServer", URLbase,
                 "DQC", null, null, new ArrayList<Service>(),
-                new ArrayList<Property>()));
+                new ArrayList<Property>(), null));
         cb.setName("Radar Data");
 
         DatasetBuilder mainDB = new DatasetBuilder(null);
@@ -474,17 +474,17 @@ public class RadarServerController {
             dataset += "/";
 
         Service dap = new Service("OPENDAP", "/thredds/dodsC/" + dataset,
-                ServiceType.OPENDAP.toString(), null, null,
-                new ArrayList<Service>(), new ArrayList<Property>());
+                ServiceType.OPENDAP.toString(), ServiceType.OPENDAP.getDescription(), null,
+                new ArrayList<Service>(), new ArrayList<Property>(), ServiceType.OPENDAP.getAccessType());
         Service cdmr = new Service("CDMRemote", "/thredds/cdmremote/" + dataset,
-                ServiceType.CdmRemote.toString(), null, null,
-                new ArrayList<Service>(), new ArrayList<Property>());
+                ServiceType.CdmRemote.toString(), ServiceType.CdmRemote.getDescription(), null,
+                new ArrayList<Service>(), new ArrayList<Property>(), ServiceType.CdmRemote.getAccessType());
         Service files = new Service("HTTPServer", "/thredds/fileServer/" + dataset,
-                ServiceType.HTTPServer.toString(), null, null,
-                new ArrayList<Service>(), new ArrayList<Property>());
+                ServiceType.HTTPServer.toString(), ServiceType.HTTPServer.getDescription(), null,
+                new ArrayList<Service>(), new ArrayList<Property>(), ServiceType.HTTPServer.getAccessType());
         cb.addService(new Service("RadarServices", "",
-                ServiceType.Compound.toString(), null, null,
-                Arrays.asList(dap, files, cdmr), new ArrayList<Property>()));
+                ServiceType.Compound.toString(), ServiceType.Compound.getDescription(), null,
+                Arrays.asList(dap, files, cdmr), new ArrayList<Property>(), ServiceType.Compound.getAccessType()));
         cb.setName("Radar " + inv.getName() + " datasets in near real time");
 
         DatasetBuilder mainDB = new DatasetBuilder(null);
