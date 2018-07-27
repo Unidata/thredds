@@ -9,6 +9,7 @@ package ucar.nc2.constants;
  * Enumeration of CDM Feature types, aka "Scientific Data Types".
  *
  * @author john caron
+ * @author wchen@usgs.gov
  * @see <a href="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Types</a>
  */
 /*
@@ -52,6 +53,8 @@ public enum FeatureType {
 
   ANY_POINT,  // Any of the point types
   POINT,      // unconnected points
+  LINE,		  // two connected points
+  POLYGON,	  // three or more connected lines which enclose an area
   PROFILE,    // fixed x,y with data along z
   STATION,    // timeseries at named location
   STATION_PROFILE, // timeseries of profiles
@@ -82,14 +85,15 @@ public enum FeatureType {
 
   public boolean isPointFeatureType() {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY) ||
-            (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.TRAJECTORY_PROFILE);
+            (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.TRAJECTORY_PROFILE) ||
+            (this == FeatureType.LINE) || (this == FeatureType.POLYGON);
   }
 
   public boolean isCoverageFeatureType() {
     return (this == FeatureType.COVERAGE) ||
             (this == FeatureType.GRID) || (this == FeatureType.FMRC) || (this == FeatureType.SWATH)|| (this == FeatureType.CURVILINEAR);
   }
-
+  
   public boolean isUnstructuredGridFeatureType() {
     return this == FeatureType.UGRID;
   }

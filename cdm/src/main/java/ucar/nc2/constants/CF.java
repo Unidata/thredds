@@ -9,28 +9,83 @@ import ucar.nc2.NetcdfFile;
 /**
  * Constants used in CF Conventions.
  *
+ * Updated for CF 1.8
+ *
  * @author caron
- * @since Jan 21, 2009
+ * @author wchen@usgs.gov
  */
 public class CF {
 
-  // attribute names
+  // general attribute names
+  public static final String ACTUAL_RANGE = "actual_range";
+  public static final String ANCILLARY_VARIABLES = "ancillary_variables";
+  public static final String ADD_OFFSET = "add_offset";
   public static final String AXIS = "axis";
   public static final String BOUNDS = "bounds";
   public static final String CALENDAR = "calendar";
   public static final String CELL_METHODS = "cell_methods";
+  public static final String CELL_MEASURES = "cell_measures";
   public static final String CF_ROLE = "cf_role";
+  public static final String CLIMATOLOGY = "climatology";
+  public static final String CONVENTIONS = "Conventions";
+  public static final String CRS_WKT = "crs_wkt";
+  public static final String COMPRESS = "compress";
   public static final String COORDINATES = "coordinates";
+  public static final String EXTERNAL_VARIABLES = "external_variables";
   public static final String FEATURE_TYPE = "featureType";
-  public static final String POSITIVE = "positive";
-  public static final String STANDARD_NAME = "standard_name";
-  
   public static final String FORMULA_TERMS = "formula_terms";
+  public static final String LONG_NAME = "long_name";
+  public static final String POSITIVE = "positive";
+  public static final String SCALE_FACTOR = "scale_factor";
+  public static final String STANDARD_NAME = "standard_name";
+  public static final String UNITS = "units";
+  
+  // data types
+  public static final String CHAR = "char";
+  public static final String BYTE = "byte";
+  public static final String SHORT = "short";
+  public static final String INT = "int";
+  public static final String FLOAT = "float";
+  public static final String REAL = "real";
+  public static final String DOUBLE = "double";
+
+  // data type range attributes
+  public static final String VALID_MIN = "valid_min";
+  public static final String VALID_MAX = "valid_max";
+  public static final String VALID_RANGE = "valid_range";
+  public static final String _FILLVALUE = "_FillValue";
+  public static final String MISSING_VALUE = "missing_value";
+
+  // flag related attributes
+  public static final String FLAG_MASKS = "flag_masks"; 
+  public static final String FLAG_VALUES = "flag_values";
+  public static final String FLAG_MEANINGS = "flag_meanings";
+  
+  // general file attributes, though not required for compatibility with COOARDS
+  public static final String TITLE = "title";
+  public static final String HISTORY = "history";
+  public static final String INSTITUTION = "institution";
+  public static final String SOURCE = "source";
+  public static final String COMMENT = "comment";
+  public static final String REFERENCES = "references";
 
   // positive values
   public static final String POSITIVE_UP = "up";
   public static final String POSITIVE_DOWN = "down";
 
+  // geometry attributes, introduced in CF 1.8
+  public static final String GEOMETRY = "geometry";
+  public static final String GEOMETRY_TYPE = "geometry_type";
+  public static final String PART_NODE_COUNT = "part_node_count";
+  public static final String NODES = "nodes";
+  public static final String NODE_COUNT = "node_count";
+  public static final String NODE_COORDINATES = "node_coordinates";
+  public static final String INTERIOR_RING = "interior_ring";
+  
+  // calendar leap specification
+  public static final String LEAP_MONTH = "leap_month";
+  public static final String LEAP_YEAR = "leap_year";
+  
   // grid mapping names
   public static final String ALBERS_CONICAL_EQUAL_AREA = "albers_conical_equal_area";
   public static final String AZIMUTHAL_EQUIDISTANT = "azimuthal_equidistant";
@@ -87,7 +142,7 @@ public class CF {
   public static final String ocean_double_sigma_coordinate = "ocean_double_sigma_coordinate";
 
   public static final String formula_terms = "formula_terms";
-
+  
   // standard_names
   public static final String ENSEMBLE = "realization";
   public static final String LATITUDE = "latitude";
@@ -114,7 +169,7 @@ public class CF {
 
   // not official - used in CFwriter for attribute name
   public static final String DSG_REPRESENTATION = "DSG_representation";
-
+ 
   ///////////////////////////////////////////////////////////////////
   // DSG proposed - not adopted; here for backwards compatibility
   public static final String RAGGED_ROWSIZE = "CF:ragged_row_count";
@@ -129,12 +184,16 @@ public class CF {
   public static final String featureTypeAtt2 = "CF:featureType";
   public static final String featureTypeAtt3 = "CF:feature_type"; // GRIB was using this form (!)
   ///////////////////////////////////////////////////////////////////////
-
+  
+  /**
+   * 
+   */
+  
   /**
    * Map from CF feature type names to our FeatureType enums.
    */
   public enum FeatureType {
-    point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile;
+    point, timeSeries, profile, trajectory, timeSeriesProfile, trajectoryProfile, line, polygon,;
 
     public static FeatureType convert(ucar.nc2.constants.FeatureType ft) {
       switch (ft) {
@@ -150,6 +209,10 @@ public class CF {
           return CF.FeatureType.timeSeriesProfile;
         case TRAJECTORY_PROFILE:
           return CF.FeatureType.trajectoryProfile;
+        case LINE:
+          return CF.FeatureType.line;
+        case POLYGON:
+          return CF.FeatureType.polygon;
       }
       return null;
     }
@@ -168,6 +231,10 @@ public class CF {
           return ucar.nc2.constants.FeatureType.STATION_PROFILE;
         case trajectoryProfile:
           return ucar.nc2.constants.FeatureType.TRAJECTORY_PROFILE;
+        case line:
+          return ucar.nc2.constants.FeatureType.LINE;
+        case polygon:
+          return ucar.nc2.constants.FeatureType.POLYGON;
       }
       return null;
     }
@@ -184,6 +251,8 @@ public class CF {
       if (s.equalsIgnoreCase("stationProfileTimeSeries")) return FeatureType.timeSeriesProfile;
       if (s.equalsIgnoreCase("trajectoryProfile")) return FeatureType.trajectoryProfile;
       if (s.equalsIgnoreCase("section")) return FeatureType.trajectoryProfile;
+      if (s.equalsIgnoreCase("line")) return FeatureType.line;
+      if (s.equalsIgnoreCase("polygon")) return FeatureType.polygon;
       return null;
     }
 
