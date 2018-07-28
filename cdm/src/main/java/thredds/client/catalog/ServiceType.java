@@ -24,7 +24,7 @@ public enum ServiceType {
   GRIDFTP,        //
   H5Service,      //
   HTTPServer("HTTP file download.", AccessType.DataAccess),                                                             //
-  JupyterNotebook("Access dataset using Siphon in a Jupyter Notebook", AccessType.DataAccess),                          //
+  JupyterNotebook("Generate a Jupyter Notebook that uses Siphon to access this dataset.", AccessType.DataAccess),                          //
   ISO("Provide ISO 19115 metdata representation of a dataset's structure and metadata.", AccessType.Metadata),          //
   LAS,            //
   NcJSON,         //
@@ -35,7 +35,7 @@ public enum ServiceType {
   Resolver,       //
   THREDDS,        //
   UDDC("An evaluation of how well the metadata contained in the dataset" +
-          " conforms to the BetCDF Attribute Convention for Data Discovery (NACDD)", AccessType.Metadata),              //
+          " conforms to the NetCDF Attribute Convention for Data Discovery (NACDD)", AccessType.Metadata),              //
   WebForm,        //    ??
   WCS("Supports access to geospatial data as 'coverages'.", AccessType.DataAccess),                                     //
   WFS,            //
