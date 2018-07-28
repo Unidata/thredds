@@ -34,7 +34,6 @@
         <value>httpServer</value>
         <value>jupyterNotebook</value>
         <value>netcdfSubsetGrid</value>
-        <value>netcdfSubsetPoint</value>
         <value>wms</value>
         <value>wcs</value>
         <value>iso</value>
