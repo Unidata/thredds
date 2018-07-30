@@ -28,7 +28,6 @@ public class CF {
   public static final String CF_ROLE = "cf_role";
   public static final String CLIMATOLOGY = "climatology";
   public static final String CONVENTIONS = "Conventions";
-  public static final String CRS_WKT = "crs_wkt";
   public static final String COMPRESS = "compress";
   public static final String COORDINATES = "coordinates";
   public static final String EXTERNAL_VARIABLES = "external_variables";
@@ -142,7 +141,7 @@ public class CF {
   public static final String ocean_double_sigma_coordinate = "ocean_double_sigma_coordinate";
 
   public static final String formula_terms = "formula_terms";
-  
+
   // standard_names
   public static final String ENSEMBLE = "realization";
   public static final String LATITUDE = "latitude";
@@ -169,7 +168,7 @@ public class CF {
 
   // not official - used in CFwriter for attribute name
   public static final String DSG_REPRESENTATION = "DSG_representation";
- 
+
   ///////////////////////////////////////////////////////////////////
   // DSG proposed - not adopted; here for backwards compatibility
   public static final String RAGGED_ROWSIZE = "CF:ragged_row_count";

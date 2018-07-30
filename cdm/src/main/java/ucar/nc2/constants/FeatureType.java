@@ -53,7 +53,7 @@ public enum FeatureType {
 
   ANY_POINT,  // Any of the point types
   POINT,      // unconnected points
-  LINE,		  // two connected points
+  LINE,		  // two or more connected points
   POLYGON,	  // three or more connected lines which enclose an area
   PROFILE,    // fixed x,y with data along z
   STATION,    // timeseries at named location
@@ -93,7 +93,7 @@ public enum FeatureType {
     return (this == FeatureType.COVERAGE) ||
             (this == FeatureType.GRID) || (this == FeatureType.FMRC) || (this == FeatureType.SWATH)|| (this == FeatureType.CURVILINEAR);
   }
-  
+
   public boolean isUnstructuredGridFeatureType() {
     return this == FeatureType.UGRID;
   }
