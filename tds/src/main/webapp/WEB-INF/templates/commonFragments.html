@@ -37,7 +37,7 @@
     </div>
 
     <div th:fragment="footer-content">
-      <h4><a class="static" th:href="${installUrl}" th:text="${installName}"></a> at <a class="static" th:href="${hostInstUrl}" th:text="${hostInst}"></a></h4>
+      <h4><a class="static" th:href="${installUrl}" th:text="${installName}"></a> at <a class="static" th:href="${hostInstUrl}" th:text="${hostInst}"></a> see <a class="static" th:href="${contextPath} + '/info/serverInfo.html'"> Info </a></h4>
       <h4><a class="static" th:href="${webappUrl}" th:text="${webappName}"></a>
         <th:block th:text="' [Version ' + ${webappVersion} + ' - ' + ${webappBuildTimestamp} + ']'"/>
         <a class="static" th:href="${webappDocsUrl}"> Documentation</a></h4>
