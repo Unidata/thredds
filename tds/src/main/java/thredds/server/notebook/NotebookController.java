@@ -84,7 +84,7 @@ public class NotebookController {
     res.setHeader(Constants.Content_Length, Integer.toString(fileContents.length()));
 
     // Set content...
-    String mimeType =  tdsContext.getServletContext().getMimeType(responseFile.getName());
+    String mimeType =  "application/x-ipynb+json";
     res.setContentType(mimeType);
     res.getOutputStream().write(fileContents.getBytes());
     res.flushBuffer();
