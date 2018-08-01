@@ -73,10 +73,10 @@ public class Nc4ChunkingDefault extends Nc4ChunkingStrategy {
 
   @Override
   public long[] computeChunking(Variable v) {
-    /* check attribute
+
     int[] resultFromAtt = computeChunkingFromAttribute(v);
     if (resultFromAtt != null)
-      return convertToLong(resultFromAtt); */
+      return convertToLong(resultFromAtt);
 
     int maxElements = defaultChunkSize / v.getElementSize();
 
