@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
+import thredds.server.config.TdsContext;
 import thredds.server.notebook.JupyterNotebookServiceCache;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.util.IO;
@@ -43,6 +44,9 @@ public class ViewerServiceImpl implements ViewerService {
 
   private List<Viewer> viewers = new ArrayList<>();
   private HashMap<String, String> templates = new HashMap<>();
+
+  @Autowired
+  private TdsContext tdsContext;
 
   @Autowired
   private JupyterNotebookServiceCache  jupyterNotebooks;
@@ -137,7 +141,7 @@ public class ViewerServiceImpl implements ViewerService {
     registerViewer(new ToolsUI());
     registerViewer(new IDV());
     registerViewer(new StaticView());
-    registerViewer(new JupyterNotebookViewer(jupyterNotebooks, allowedServices));
+    registerViewer(new JupyterNotebookViewer(jupyterNotebooks, allowedServices, tdsContext.getContentRootPathProperty()));
   }
 
   // Viewers...
@@ -228,9 +232,12 @@ public class ViewerServiceImpl implements ViewerService {
 
     private AllowedServices allowedServices;
 
-    public JupyterNotebookViewer (JupyterNotebookServiceCache jupyterNotebooks, AllowedServices allowedServices) {
+    private String contentDir;
+
+    public JupyterNotebookViewer (JupyterNotebookServiceCache jupyterNotebooks, AllowedServices allowedServices, String contentDir) {
       this.jupyterNotebooks = jupyterNotebooks;
       this.allowedServices = allowedServices;
+      this.contentDir = contentDir;
     }
 
     public boolean isViewable(Dataset ds) {
@@ -247,6 +254,9 @@ public class ViewerServiceImpl implements ViewerService {
       String catUrl = ds.getCatalogUrl();
       if (catUrl.indexOf('#') > 0)
         catUrl = catUrl.substring(0, catUrl.lastIndexOf('#'));
+      if (catUrl.indexOf(contentDir) > -1) {
+        catUrl = catUrl.substring(catUrl.indexOf(contentDir) + contentDir.length());
+      }
       String catalogServiceBase = StandardService.catalogRemote.getBase();
       catUrl = catUrl.substring(catUrl.indexOf(catalogServiceBase) + catalogServiceBase.length()).replace("html", "xml");
 
