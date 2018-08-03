@@ -69,15 +69,10 @@ public class NotebookController {
 
     // Transform notebook with dataset id;
     String fileContents = new String(Files.readAllBytes(Paths.get(responseFile.getAbsolutePath())));
-//    URI baseURI = catalog.getBaseURI();
-//    String catUrlString = baseURI.toString();
-//    if (!baseURI.isAbsolute()) {
-//      String host = req.getRequestURL().toString();
-//      catUrlString = host.substring(0, host.indexOf(req.getRequestURI())) + catUrlString;
-//    }
-//    if (!catUrlString.endsWith(catalogName)) { catUrlString += catalogName; }
+
+    // Build catalog URL
     String catUrlString = req.getRequestURL().toString();
-    catUrlString = catUrlString.substring(catUrlString.indexOf(getBase())) + StandardService.catalogRemote.getBase() + catalogName;
+    catUrlString = catUrlString.substring(0, catUrlString.indexOf(getBase())) + StandardService.catalogRemote.getBase() + catalogName;
 
     fileContents = fileContents.replace(DS_REPLACE_TEXT, dataset.getName()).replace(CAT_REPLACE_TEXT, catUrlString);
 
