@@ -117,8 +117,8 @@ entries:
       url: /adding_ncss.html
       output: web, pdf
 
-    - title: Customizing TDS
-      url: /customizing_tds.html
+    - title: Extending TDS Services
+      url: /extending_tds.html
       output: web, pdf
 
   - title: Monitoring and Debugging
