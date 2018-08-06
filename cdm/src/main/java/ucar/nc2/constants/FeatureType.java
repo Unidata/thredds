@@ -54,7 +54,6 @@ public enum FeatureType {
 
   ANY_POINT,  // Any of the point types
   POINT,      // unconnected points
-  POLYGON,	  // three or more connected lines which enclose an area
   PROFILE,    // fixed x,y with data along z
   STATION,    // timeseries at named location
   STATION_PROFILE, // timeseries of profiles

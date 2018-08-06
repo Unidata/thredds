@@ -80,6 +80,9 @@ public class CF {
   public static final String NODE_COUNT = "node_count";
   public static final String NODE_COORDINATES = "node_coordinates";
   public static final String INTERIOR_RING = "interior_ring";
+  public static final String POINT = "point";
+  public static final String LINE = "line";
+  public static final String POLYGON = "polygon";
   
   // calendar leap specification
   public static final String LEAP_MONTH = "leap_month";
