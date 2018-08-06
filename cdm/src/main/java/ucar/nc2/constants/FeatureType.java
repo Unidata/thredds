@@ -50,10 +50,10 @@ public enum FeatureType {
   FMRC,       // two time dimensions, runtime and forecast time
   SWATH,      // 2D latlon, dependent time, polar orbiting satellites
   CURVILINEAR,// 2D latlon, independent time
+  SIMPGEO,	  // new simple geometry coverage type
 
   ANY_POINT,  // Any of the point types
   POINT,      // unconnected points
-  LINE,		  // two or more connected points
   POLYGON,	  // three or more connected lines which enclose an area
   PROFILE,    // fixed x,y with data along z
   STATION,    // timeseries at named location
@@ -85,13 +85,12 @@ public enum FeatureType {
 
   public boolean isPointFeatureType() {
     return (this == FeatureType.POINT) || (this == FeatureType.STATION) || (this == FeatureType.TRAJECTORY) ||
-            (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.TRAJECTORY_PROFILE) ||
-            (this == FeatureType.LINE) || (this == FeatureType.POLYGON);
+            (this == FeatureType.PROFILE) || (this == FeatureType.STATION_PROFILE) || (this == FeatureType.TRAJECTORY_PROFILE);
   }
 
   public boolean isCoverageFeatureType() {
     return (this == FeatureType.COVERAGE) ||
-            (this == FeatureType.GRID) || (this == FeatureType.FMRC) || (this == FeatureType.SWATH)|| (this == FeatureType.CURVILINEAR);
+            (this == FeatureType.GRID) || (this == FeatureType.FMRC) || (this == FeatureType.SWATH)|| (this == FeatureType.CURVILINEAR) || (this == FeatureType.SIMPGEO);
   }
 
   public boolean isUnstructuredGridFeatureType() {

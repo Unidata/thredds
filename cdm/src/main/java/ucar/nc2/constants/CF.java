@@ -204,10 +204,6 @@ public class CF {
           return CF.FeatureType.timeSeriesProfile;
         case TRAJECTORY_PROFILE:
           return CF.FeatureType.trajectoryProfile;
-        case LINE:
-          return CF.FeatureType.line;
-        case POLYGON:
-          return CF.FeatureType.polygon;
       }
       return null;
     }
@@ -226,10 +222,6 @@ public class CF {
           return ucar.nc2.constants.FeatureType.STATION_PROFILE;
         case trajectoryProfile:
           return ucar.nc2.constants.FeatureType.TRAJECTORY_PROFILE;
-        case line:
-          return ucar.nc2.constants.FeatureType.LINE;
-        case polygon:
-          return ucar.nc2.constants.FeatureType.POLYGON;
       }
       return null;
     }
@@ -246,8 +238,6 @@ public class CF {
       if (s.equalsIgnoreCase("stationProfileTimeSeries")) return FeatureType.timeSeriesProfile;
       if (s.equalsIgnoreCase("trajectoryProfile")) return FeatureType.trajectoryProfile;
       if (s.equalsIgnoreCase("section")) return FeatureType.trajectoryProfile;
-      if (s.equalsIgnoreCase("line")) return FeatureType.line;
-      if (s.equalsIgnoreCase("polygon")) return FeatureType.polygon;
       return null;
     }
 
