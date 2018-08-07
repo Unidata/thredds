@@ -24,16 +24,27 @@ publishing {
         
         threddsParent(MavenPublication) {  // Maven BOM publication
             artifactId 'thredds-parent'
-            
+
             pom.withXml{
                 List<Project> publishedProjects = allprojects*.findAll { it.plugins.withType(MavenPublishPlugin) }
                 List<MavenPublication> allPubs = publishedProjects.publishing.publications.flatten()
-                List<MavenPublication> webAndJavaPubs = allPubs.findAll {
-                    // Don't include threddsParent or any of the fatJar pubs in dependencyManagement.
-                    it.name.contains('Web') || it.name.contains('Java')
+
+                // Don't include threddsParent (and related), legacy, or any of the fatJar
+                // pubs in dependencyManagement.
+                def ignoreThesePubNames = ["d4ts",
+                                           "dap4lib",
+                                           "ncIdv",
+                                           "netcdfAll",
+                                           "tdmFat",
+                                           "threddsParent",
+                                           "toolsUI",
+                                           "legacy"]
+
+                List<MavenPublication> pubsToUseForBom = allPubs.findAll {
+                    !ignoreThesePubNames.contains(it.name)
                 }
-                
-                asNode().append PublishingUtil.createDependencyManagement(webAndJavaPubs)
+
+                asNode().append PublishingUtil.createDependencyManagement(pubsToUseForBom)
             }
         }
     }
