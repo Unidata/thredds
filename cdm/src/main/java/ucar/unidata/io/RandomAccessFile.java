@@ -190,7 +190,7 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
   static private final ucar.nc2.util.cache.FileFactory factory = new FileFactory() {
     public FileCacheable open(String location, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
       location = StringUtil2.replace(location, "\\", "/"); // canonicalize the name
-      RandomAccessFile result = new RandomAccessFile(location, "rw", buffer_size);
+      RandomAccessFile result = new RandomAccessFile(location, "r", buffer_size);
       result.cacheState = 1;  // in use
       return result;
     }
@@ -518,14 +518,6 @@ public class RandomAccessFile implements DataInput, DataOutput, FileCacheable, C
 
     bufferStart = pos;
     filePosition = pos;
-
-
-    try {
-      Thread.currentThread().sleep(100);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
 
     dataSize = read_(pos, buffer, 0, buffer.length);
 

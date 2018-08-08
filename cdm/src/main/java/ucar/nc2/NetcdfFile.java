@@ -557,27 +557,40 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         uriString = StringUtil2.unescape(uriString.substring(5));  // 11/10/2010 from erussell@ngs.org
       }
 
-      if (isCompressed(uriString)) {
-        String uncompressedFileName = getFilePrefix(uriString);
-        raf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
-        try {
-          makeUncompressed(uriString, uncompressedFileName);
-          return raf;
-        } catch (Exception e) {
-          log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
-          //allow to fall through to open the "compressed" file directly - may be a misnamed suffix
-        }
+      String uncompressedFileName = null;
+      try {
+        uncompressedFileName = makeUncompressed(uriString);
+      } catch (Exception e) {
+        log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
+        //allow to fall through to open the "compressed" file directly - may be a misnamed suffix
       }
 
-      // normal case - not compressed
-      raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, buffer_size);
+      if (uncompressedFileName != null) {
+        // open uncompressed file as a RandomAccessFile.
+        raf = ucar.unidata.io.RandomAccessFile.acquire(uncompressedFileName, buffer_size);
+        //raf = new ucar.unidata.io.MMapRandomAccessFile(uncompressedFileName, "r");
 
+      } else {
+        // normal case - not compressed
+        raf = ucar.unidata.io.RandomAccessFile.acquire(uriString, buffer_size);
+        //raf = new ucar.unidata.io.MMapRandomAccessFile(uriString, "r");
+      }
     }
 
     return raf;
   }
 
-  static private String makeUncompressed(String filename, String uncompressedFilename) throws Exception {
+  static private String makeUncompressed(String filename) throws Exception {
+    // see if its a compressed file
+    int pos = filename.lastIndexOf('.');
+    if (pos < 0) return null;
+
+    String suffix = filename.substring(pos + 1);
+    String uncompressedFilename = filename.substring(0, pos);
+
+    if (!suffix.equalsIgnoreCase("Z") && !suffix.equalsIgnoreCase("zip") && !suffix.equalsIgnoreCase("gzip")
+            && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
+      return null;
 
     // see if already decompressed, look in cache if need be
     File uncompressedFile = DiskCache.getFileStandardPolicy(uncompressedFilename);
@@ -590,7 +603,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         // obtain the lock
         while (true) { // loop waiting for the lock
           try {
-            lock = stream.getChannel().lock(0, Long.MAX_VALUE, true); // wait till its unlocked
+            lock = stream.getChannel().lock(0, 1, true); // wait till its unlocked
             break;
 
           } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
@@ -622,7 +635,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       FileLock lock;
       while (true) { // loop waiting for the lock
         try {
-          lock = fout.getChannel().lock();
+          lock = fout.getChannel().lock(0, 1, false);
           break;
 
         } catch (OverlappingFileLockException oe) { // not sure why lock() doesnt block
@@ -634,7 +647,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
       }
 
       try {
-        String suffix = getFileSuffix(filename);
         if (suffix.equalsIgnoreCase("Z")) {
           try (InputStream in = new UncompressInputStream(new FileInputStream(filename))) {
             copy(in, fout, 100000);
@@ -2478,58 +2490,6 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     return EscapeStrings.backslashEscape(vname, NetcdfFile.reserved);
   }
 */
-
-
-  /**
-   * Get a filename suffix
-   *
-   * @param filename the file name
-   * @return suffix - eg .gz
-   */
-  static private String getFileSuffix(String filename) {
-
-    int pos = filename.lastIndexOf('.');
-    if (pos < 0) return null;
-
-    String suffix = filename.substring(pos + 1);
-
-    return suffix;
-  }
-
-  /**
-   * Get a filename prefix
-   *
-   * @param filename the file name
-   * @return prefix before the last "."
-   */
-  static private String getFilePrefix(String filename) {
-
-    int pos = filename.lastIndexOf('.');
-    if (pos < 0) return null;
-
-    String prefix = filename.substring(0, pos);
-
-    return prefix;
-
-  }
-
-  /**
-   * Test if a filename might be for a compressed file just by looking at conventional suffixes for compressed files
-   *
-   * @param filename the file name
-   * @return true if it is a compressed file name otherwise false
-   */
-  static private boolean isCompressed(String filename) {
-
-    // see if its a compressed file
-    String suffix = getFileSuffix(filename);
-
-    if (!suffix.equalsIgnoreCase("Z") && !suffix.equalsIgnoreCase("zip") && !suffix.equalsIgnoreCase("gzip")
-            && !suffix.equalsIgnoreCase("gz") && !suffix.equalsIgnoreCase("bz2"))
-      return false;
-
-    return true;
-  }
 
 
 }
