@@ -135,7 +135,7 @@ public class JupyterNotebookServiceCache {
       if (this.accept_datasetIDs.contains(ds.getID())) {
         return true;
       }
-      if (this.accept_catalogs.contains(ds.getCatalogUrl())) {
+      if (this.accept_catalogs.contains(ds.getParentCatalog().getUriString()) || this.accept_catalogs.contains(ds.getParentCatalog().getName())) {
         return true;
       }
       if (this.accept_dataset_types.contains(ds.getFeatureTypeName())) {
@@ -160,10 +160,11 @@ public class JupyterNotebookServiceCache {
       if (md.accept_datasetIDs.contains(id)) { return -1; }
 
       // catalogs
-      String catalog = ds.getCatalogUrl();
-      if (this.accept_catalogs.contains(catalog) && md.accept_catalogs.contains(catalog)) { return tiebreaker; }
-      if (this.accept_catalogs.contains(catalog)) { return 1; }
-      if (md.accept_catalogs.contains(catalog)) { return -1; }
+      String catUrl = ds.getParentCatalog().getUriString();
+      String catName = ds.getParentCatalog().getName();
+      if ((this.accept_catalogs.contains(catUrl) || this.accept_catalogs.contains(catName)) && (md.accept_catalogs.contains(catUrl) || md.accept_catalogs.contains(catName))) { return tiebreaker; }
+      if (this.accept_catalogs.contains(catUrl) || this.accept_catalogs.contains(catName)) { return 1; }
+      if (md.accept_catalogs.contains(catUrl) || md.accept_catalogs.contains(catName)) { return -1; }
 
       // data type
       String dataType = ds.getFeatureTypeName();

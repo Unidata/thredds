@@ -63,7 +63,7 @@ public class CatalogViewContextParser {
     Map<String, Object> model = new HashMap<>();
     addBaseContext(model);
 
-    DatasetContext context = new DatasetContext(ds, isLocalCatalog);
+    DatasetContext context = new DatasetContext(ds, isLocalCatalog, tdsContext.getContentRootPathProperty());
     populateDatasetContext(ds, context, req, isLocalCatalog);
 
     model.put("dataset", context);
@@ -327,6 +327,8 @@ class CatalogItemContext {
 
 class DatasetContext {
 
+  private String contentDir;
+
   private String name;
 
   private String catUrl;
@@ -365,7 +367,8 @@ class DatasetContext {
 
   private List<Map<String, String>> viewerLinks;
 
-  public DatasetContext (Dataset ds, boolean isLocalCatalog) {
+  public DatasetContext (Dataset ds, boolean isLocalCatalog, String contentDir) {
+    this.contentDir = contentDir;
     // Get display name and catalog url
     this.name = ds.getName();
     String catUrl = ds.getCatalogUrl();
@@ -488,6 +491,9 @@ class DatasetContext {
             catalogUrl = ds.getCatalogUrl();
             if (catalogUrl.indexOf('#') > 0)
               catalogUrl = catalogUrl.substring(0, catalogUrl.lastIndexOf('#'));
+            if (catalogUrl.indexOf(contentDir) > -1) {
+              catalogUrl = catalogUrl.substring(catalogUrl.indexOf(contentDir) + contentDir.length());
+            }
             catalogUrl = catalogUrl.substring(catalogUrl.indexOf("/catalog/") + ("/catalog/").length())
                     .replace("html", "xml");
             queryString = "catalog=" + catalogUrl;

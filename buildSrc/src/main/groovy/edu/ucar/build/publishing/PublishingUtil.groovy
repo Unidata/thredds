@@ -164,7 +164,7 @@ abstract class PublishingUtil {
         pubs.each { MavenPublication pub ->
             MavenPomInternal pom = pub.pom
             MavenProjectIdentity projId = pom.projectIdentity
-            
+
             pub.artifacts.each { MavenArtifact artifact ->
                 if (!artifact.classifier) {
                     // This is the primary artifact, either a JAR or WAR. Obviously, we want to include it in the BOM.
