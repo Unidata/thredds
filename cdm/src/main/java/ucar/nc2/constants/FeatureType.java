@@ -9,6 +9,7 @@ package ucar.nc2.constants;
  * Enumeration of CDM Feature types, aka "Scientific Data Types".
  *
  * @author john caron
+ * @author wchen@usgs.gov
  * @see <a href="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Types</a>
  */
 /*
@@ -49,6 +50,7 @@ public enum FeatureType {
   FMRC,       // two time dimensions, runtime and forecast time
   SWATH,      // 2D latlon, dependent time, polar orbiting satellites
   CURVILINEAR,// 2D latlon, independent time
+  SIMPLE_GEOMETRY,	  // new simple geometry coverage type
 
   ANY_POINT,  // Any of the point types
   POINT,      // unconnected points
@@ -87,7 +89,7 @@ public enum FeatureType {
 
   public boolean isCoverageFeatureType() {
     return (this == FeatureType.COVERAGE) ||
-            (this == FeatureType.GRID) || (this == FeatureType.FMRC) || (this == FeatureType.SWATH)|| (this == FeatureType.CURVILINEAR);
+            (this == FeatureType.GRID) || (this == FeatureType.FMRC) || (this == FeatureType.SWATH)|| (this == FeatureType.CURVILINEAR) || (this == FeatureType.SIMPLE_GEOMETRY);
   }
 
   public boolean isUnstructuredGridFeatureType() {
