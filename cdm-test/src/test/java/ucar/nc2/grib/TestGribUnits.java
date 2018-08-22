@@ -39,7 +39,7 @@ public class TestGribUnits {
         // Make sure we return grib units of "degree true" as "degree_true"
         String filename = "tds/ncep/NDFD_CONUS_5km_20140805_1200.grib2";
         try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + filename)) {
-            Group grp = ds.findGroup("LambertConformal_1377X2145-38p23N-95p44W-2");
+            Group grp = ds.getRootGroup();
             Assert.assertNotNull(grp);
 
             Variable var = grp.findVariable("Wind_direction_from_which_blowing_height_above_ground");
@@ -56,7 +56,7 @@ public class TestGribUnits {
         // Make sure we don't add '.' to "Code table a.b.c"
         String filename = "tds/ncep/NDFD_CONUS_5km_20140805_1200.grib2";
         try (NetcdfDataset ds = NetcdfDataset.openDataset(TestDir.cdmUnitTestDir + filename)) {
-            Group grp = ds.findGroup("LambertConformal_1377X2145-38p23N-95p44W");
+            Group grp = ds.getRootGroup();
             Assert.assertNotNull(grp);
 
             Variable var = grp.findVariable("Categorical_Rain_surface");
