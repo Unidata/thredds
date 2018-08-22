@@ -164,9 +164,9 @@ public class StringUtil2 {
     boolean ok = true;
     for (int i = 0; i < name.length(); i++) {
       int c = name.charAt(i);
-      if (c < 0x20) ok = false;
-      if (c == '/') ok = false;
-      if (c == ' ') ok = false;
+      // if (c < 0x20) ok = false;
+      // if (c == '/') ok = false;
+      // if (c == ' ') ok = false;
       if (!ok) break;
     }
     if (ok) return name;
