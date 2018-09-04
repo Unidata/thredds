@@ -124,6 +124,8 @@ public class TdsInit implements ApplicationListener<ContextRefreshedEvent>, Disp
           initThreddsConfig();
           readThreddsConfig();
           logVersionMessage();
+          // add warning about web start deprecation
+          startupLog.warn("Web Start has been deprecated for >Java 9 and is slated for removal - see http://www.oracle.com/technetwork/java/eol-135779.html)");
 
           // read catalogs
           String readModeS = ThreddsConfig.get("ConfigCatalog.reread", "always");

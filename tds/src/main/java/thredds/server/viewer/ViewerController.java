@@ -29,6 +29,7 @@ import ucar.unidata.util.StringUtil2;
 
 @Controller
 @RequestMapping("/view")
+@Deprecated
 public class ViewerController {
   private static Logger log = LoggerFactory.getLogger(ViewerController.class);
 
