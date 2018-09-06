@@ -24,7 +24,9 @@ class ThreddsS3ClientImplSpec extends Specification {
     AmazonServiceException amazonServiceException
 
     def setupSpec() {
-        ThreddsS3ClientImpl.setMaxListingPages(2)
+        AmazonS3ClientOptions clientOptions = new AmazonS3ClientOptions()
+        clientOptions.setMaxListingPages(2)
+        ThreddsS3ClientImpl.setClientOptions(clientOptions)
     }
 
     def setup() {
