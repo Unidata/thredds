@@ -15,6 +15,11 @@ dependencies {
     compile libraries["spring-core"]
     compile libraries["quartz"]
     compile libraries["chronicle-map"]
+    // because we exclude jna, jna-platfrom from chronicle-map, add
+    // our replacement libs here
+    compile libraries["jna"]
+    compile libraries["jna-platform"]
+
     compile libraries["jsr305"]
     compile libraries["guava"]
     compile libraries["protobuf-java"]
