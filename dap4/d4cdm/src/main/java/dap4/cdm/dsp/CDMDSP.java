@@ -1019,19 +1019,19 @@ public class CDMDSP extends AbstractDSP
         // the rule is that the declared dimension's fqn
         // must be a prefix of the dimension reference.
         for (Map.Entry<DapNode, CDMNode> entry : this.nodemap.getCDMMap().entrySet()) {
-            if (entry.getValue() == null)
-                continue;
             if (entry.getValue().getSort() != CDMSort.DIMENSION)
                 continue;
             Dimension d = (Dimension) entry.getValue();
-            if (isdeclfor(d, dimref))
+            if (isDimDeclFor(d, dimref))
                 return d;
         }
         return null;
     }
 
-    protected boolean isdeclfor(Dimension decl, Dimension ref)
+    protected boolean isDimDeclFor(Dimension decl, Dimension ref)
     {
+        if(!decl.isShared())
+            return false; // Has no name
         // First check shortname and size
         if (!decl.getShortName().equals(ref.getShortName()))
             return false;
