@@ -168,6 +168,9 @@ libraries["je"] = "com.sleepycat:je:4.0.92"
 
 libraries["jna"] = "net.java.dev.jna:jna:4.2.2"
 
+// replaces the one that we exclude from chronicle-map
+libraries["jna-platform"] = "net.java.dev.jna:jna-platform:4.2.2"
+
 // replace by javax.time
 libraries["joda-time"] = "joda-time:joda-time:2.9.4"
 
@@ -218,6 +221,7 @@ libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.15
     // We should be able to get rid of this on the next release of chronicle-map,
     // as their snapshot BOM pom shows that they pulled back on jna.
     exclude group: 'net.java.dev.jna', module: 'jna'
+    exclude group: 'net.java.dev.jna', module: 'jna-platform'
     // We do not need XStream for our use of chronicle-map.
     // Nuke it.
     exclude group: 'com.thoughtworks.xstream', module: 'xstream'
