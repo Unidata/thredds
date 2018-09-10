@@ -1,6 +1,7 @@
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information.
-*/
+/*
+ * Copyright (c) 2012-2018 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 
 package dap4.cdm.dsp;
 
@@ -20,7 +21,6 @@ import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.*;
-import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.util.CancelTask;
 
 import java.io.IOException;
@@ -42,8 +42,6 @@ public class CDMDSP extends AbstractDSP
     static protected final boolean DEBUG = false;
     static protected final boolean DUMPCDL = false;
 
-    static protected final Class NC4CLASS = ucar.nc2.jni.netcdf.Nc4Iosp.class;
-
     // NetcdfDataset enhancement to use: need only coord systems
     static protected Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
 
@@ -57,26 +55,6 @@ public class CDMDSP extends AbstractDSP
     //////////////////////////////////////////////////
     // Class methods
 
-    /**
-     * Make sure that NC4Iosp is registered and library loaded
-     * (Is this really the right place for this?)
-     */
-    static public void
-    loadNc4Iosp()
-            throws DapException
-    {
-        if (nc4loaded) return;
-        nc4loaded = true;
-        if (!NetcdfFile.iospRegistered(NC4CLASS)) {
-            try {
-                // register before H5Iosp
-                NetcdfFile.registerIOProvider(NC4CLASS, false);
-                Nc4Iosp.setLibraryAndPath(null, null); // use defaults
-            } catch (Throwable e) {
-                throw new DapException(e.getMessage(), e.getCause());
-            }
-        }
-    }
 
     //////////////////////////////////////////////////
     // Instance variables
