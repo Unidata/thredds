@@ -1,4 +1,6 @@
-![THREDDS icon](http://www.unidata.ucar.edu/images/logos/thredds_netcdf-75x75.png)
+![THREDDS icon](http://www.unidata.ucar.edu/images/logos/netcdfjava_tds_150x150.png)
+<br>
+<br>
 [![Travis Build Status](https://secure.travis-ci.org/Unidata/thredds.svg?branch=master)](http://travis-ci.org/Unidata/thredds)
 [![Coverage Status](https://coveralls.io/repos/github/Unidata/thredds/badge.svg?branch=origin%2F5.0.0)](https://coveralls.io/github/Unidata/thredds?branch=origin%2F5.0.0)
 
