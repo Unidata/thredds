@@ -223,7 +223,7 @@ libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
 
 libraries["oro"] = "oro:oro:2.0.8"
 
-libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.7-imos-SNAPSHOT") {
+libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.11-imos-SNAPSHOT") {
     // This is an external dependency on an old artifact of ours.
     // The "cdm" artifact that we build in this project will take its place.
     // This needs to be a local exclusion; globally excluding "edu.ucar:cdm" would be very bad.
