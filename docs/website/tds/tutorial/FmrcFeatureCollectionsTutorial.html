@@ -16,7 +16,7 @@
     <ul>
       <li><a href="../reference/collections/CollectionSpecification.html">Collection specification</a></li>
       <li><a href="../reference/collections/FeatureCollections.html">Feature Collections Reference </a></li>
-      <li><a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">FMRC poster</a></li>
+      <li><a href="files/FmrcPoster.pdf">FMRC poster</a></li>
     </ul>
   </div>
   <p>The <code>featureCollection</code> element is a way to tell the TDS to serve collections of
@@ -27,7 +27,7 @@
 
   <p>A Forecast Model Run Collection is a collection of forecast model output. A special kind of aggregation, called an <strong>FMRC Aggregation</strong>, creates a
     dataset that has two time coordinates, called the <strong>run time </strong>and the <strong>forecast time</strong>. This dataset can then be sliced up in various ways to create
-    1D time views of the model output. See this <a href="http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf">poster</a> for a detailed
+    1D time views of the model output. See this <a href="files/FmrcPoster.pdf">poster</a> for a detailed
     example. As of TDS 4.2, you should use the <code>featureCollection</code> element in your configuration catalog. (The previous way of doing this was with a <code>datasetFmrc</code>
     element, which is now deprecated.)</p>
   <p>The component files of the collection must all be recognized as the <em><strong>Grid</strong></em> Feature type by the CDM software.</p>

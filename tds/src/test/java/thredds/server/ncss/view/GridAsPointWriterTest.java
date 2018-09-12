@@ -67,7 +67,11 @@ public class GridAsPointWriterTest {
 				{SupportedFormat.CSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0) },
 				{SupportedFormat.CSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1) },
 				{SupportedFormat.CSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2) },
-				
+
+				{SupportedFormat.GEOCSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0) },
+				{SupportedFormat.GEOCSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1) },
+				{SupportedFormat.GEOCSV_STREAM, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2) },
+
 				{SupportedFormat.XML_STREAM, GridAsPointDataParameters.getGroupedVars().get(0) , GridAsPointDataParameters.getPathInfo().get(0), GridAsPointDataParameters.getPoints().get(0) },
 				{SupportedFormat.XML_STREAM, GridAsPointDataParameters.getGroupedVars().get(1) , GridAsPointDataParameters.getPathInfo().get(1), GridAsPointDataParameters.getPoints().get(1) },
 				{SupportedFormat.XML_STREAM, GridAsPointDataParameters.getGroupedVars().get(2) , GridAsPointDataParameters.getPathInfo().get(2), GridAsPointDataParameters.getPoints().get(2) },
@@ -101,13 +105,13 @@ public class GridAsPointWriterTest {
 
     String datasetPath = AbstractNcssController.getDatasetPath(this.pathInfo);
 		gridDataset = DatasetHandlerAdapter.openGridDataset(datasetPath);
-    assert gridDataset != null;
+		assert gridDataset != null;
 
 		List<String> keys = new ArrayList<String>( vars.keySet());		
 		GridAsPointDataset gridAsPointDataset = NcssRequestUtils.buildGridAsPointDataset(gridDataset, vars.get(keys.get(0)) );		
 		
 		DiskCache2 diskCache = NcssDiskCache.getInstance().getDiskCache();
-    pointDataWriter = PointDataWriterFactory.factory(supportedFormat, new ByteArrayOutputStream(), diskCache);
+		pointDataWriter = PointDataWriterFactory.factory(supportedFormat, new ByteArrayOutputStream(), diskCache);
 
 		List<CalendarDate> dates = gridAsPointDataset.getDates();
 		Random rand = new Random();

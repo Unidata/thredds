@@ -24,16 +24,31 @@
     <description>Global Multi-Grid Wave Model (Static Grids)</description>
   </parameter>
   <parameter code="12">
-    <description>Probabilistic Storm Surge</description>
+    <description>Probabilistic Storm Surge (P-Surge)</description>
   </parameter>
   <parameter code="13">
     <description>Hurricane Multi-Grid Wave Model</description>
   </parameter>
   <parameter code="14">
-    <description>Extratropical Storm Surge Model</description>
+    <description>Extra-tropical Storm Surge Atlantic Domain</description>
+  </parameter>
+  <parameter code="15">
+    <description>Nearshore Wave Prediction System (NWPS)</description>
+  </parameter>
+  <parameter code="16">
+    <description>Extra-Tropical Storm Surge (ETSS)</description>
+  </parameter>
+  <parameter code="17">
+    <description>Extra-tropical Storm Surge Pacific Domain</description>
+  </parameter>
+  <parameter code="18">
+    <description>Probabilistic Extra-Tropical Storm Surge (P-ETSS)</description>
   </parameter>
   <parameter code="19">
     <description>Limited-area Fine Mesh (LFM) analysis</description>
+  </parameter>
+  <parameter code="20">
+    <description>Extra-tropical Storm Surge Micronesia Domain</description>
   </parameter>
   <parameter code="25">
     <description>Snow Cover Analysis</description>
@@ -43,9 +58,6 @@
   </parameter>
   <parameter code="31">
     <description>Value added post processed field</description>
-  </parameter>
-  <parameter code="39">
-    <description>Nested Grid forecast Model (NGM)</description>
   </parameter>
   <parameter code="42">
     <description>Global Optimum Interpolation Analysis (GOI) from GFS model</description>
@@ -89,6 +101,12 @@
   <parameter code="70">
     <description>Quasi-Lagrangian Hurricane Model (QLM)</description>
   </parameter>
+  <parameter code="71">
+    <description>Hurricane Weather Research and Forecasting (HWRF) Model</description>
+  </parameter>
+  <parameter code="72">
+    <description>Hurricane Non-Hydrostatic Multiscale Model on the B Grid (HNMMB)</description>
+  </parameter>
   <parameter code="73">
     <description>Fog Forecast model - Ocean Prod. Center</description>
   </parameter>
@@ -119,6 +137,9 @@
   <parameter code="82">
     <description>Analysis from GDAS (Global Data Assimilation System)</description>
   </parameter>
+  <parameter code="83">
+    <description>High Resolution Rapid Refresh (HRRR)</description>
+  </parameter>
   <parameter code="84">
     <description>MESO NAM Model (currently 12 km)</description>
   </parameter>
@@ -126,7 +147,7 @@
     <description>Real Time Ocean Forecast System (RTOFS)</description>
   </parameter>
   <parameter code="86">
-    <description>RUC Model, from Forecast Systems Lab (isentropic; scale: 60km at 40N)</description>
+    <description>Early Hurricane Wind Speed Probability Model</description>
   </parameter>
   <parameter code="87">
     <description>CAC Ensemble Forecasts from Spectral (ENSMB)</description>
@@ -156,7 +177,7 @@
     <description>T126/L42 Global Spectral Model from MRF run</description>
   </parameter>
   <parameter code="96">
-    <description>Global Forecast System Model T574 - Forecast hours 00-192 T190 - Forecast hours 204 - 384</description>
+    <description>Global Forecast System Model T1534 - Forecast hours 00-384 T574 - Forecast hours 00-192 T190 - Forecast hours 204-384</description>
   </parameter>
   <parameter code="98">
     <description>Climate Forecast System Model -- Atmospheric model (GFS) coupled to a multi level ocean model . Currently GFS spectral model at T62, 64 levels coupled to 40 level MOM3 ocean model.</description>
@@ -164,14 +185,11 @@
   <parameter code="99">
     <description>Miscellaneous Test ID</description>
   </parameter>
-  <parameter code="100">
-    <description>RUC Surface Analysis (scale: 60km at 40N)</description>
-  </parameter>
-  <parameter code="101">
-    <description>RUC Surface Analysis (scale: 40km at 40N)</description>
+  <parameter code="104">
+    <description>National Blend GRIB</description>
   </parameter>
   <parameter code="105">
-    <description>RUC Model from FSL (isentropic; scale: 20km at 40N)</description>
+    <description>Rapid Refresh (RAP)</description>
   </parameter>
   <parameter code="107">
     <description>Global Ensemble Forecast System (GEFS)</description>
@@ -205,6 +223,12 @@
   </parameter>
   <parameter code="117">
     <description>NEMS GFS Aerosol Component</description>
+  </parameter>
+  <parameter code="118">
+    <description>URMA (UnRestricted Mesoscale Analysis)</description>
+  </parameter>
+  <parameter code="119">
+    <description>WAM (Whole Atmosphere Model)</description>
   </parameter>
   <parameter code="120">
     <description>Ice Concentration Analysis</description>
@@ -241,6 +265,12 @@
   </parameter>
   <parameter code="131">
     <description>Great Lakes Wave Model</description>
+  </parameter>
+  <parameter code="132">
+    <description>High Resolution Ensemble Forecast (HREF)</description>
+  </parameter>
+  <parameter code="133">
+    <description>Great Lakes Short Range Wave Model</description>
   </parameter>
   <parameter code="140">
     <description>North American Regional Reanalysis (NARR)</description>

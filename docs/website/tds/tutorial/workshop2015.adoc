@@ -54,7 +54,7 @@ Form] (Repeated submissions encouraged)
  ** Other Services (Not covered) 
  *** Catalog Service (link:../reference/CatalogService.html[reference])
  *** WCS (link:../reference/WCS.html[reference])
- *** ncWMS (http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration[configure])(link:../reference/WMS.html[reference])
+ *** ncWMS (link:../reference/WMS.html[configure])
  *** ncIso (link:AddingServices.html#Setup[configure])(link:../reference/ncISO.html[reference])
 
 === 12:30 - 2:00 Lunch
@@ -85,7 +85,7 @@ Form] (Repeated submissions encouraged)
  * Source code on https://github.com/Unidata/thredds[GitHub]
  ** Exercise: link:../../netcdf-java/tutorial/SourceCodeBuild.html[Build THREDDS from source code]
  ** Exercise: link:../../netcdf-java/tutorial/Contributing.html[Submit a pull request]
- * Maven artifacts on https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus]
+ * Maven artifacts on https://artifacts.unidata.ucar.edu[Nexus]
  ** link:../../netcdf-java/reference/BuildDependencies.html[How to use them in your project]
  * CDM/TDS Nightly Build/Test System (link:images/jenkins.png[Jenkins])
  * Continuous Integration on https://travis-ci.org/Unidata/thredds[Travis]

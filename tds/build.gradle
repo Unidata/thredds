@@ -1,7 +1,9 @@
+import edu.ucar.build.ui.ToolsUiJnlpBaseTask
+
 description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
         "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
 ext.title = "THREDDS Data Server (TDS)"
-ext.url = "http://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
+ext.url = "https://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
 
 apply plugin: 'war'
 
@@ -37,16 +39,17 @@ dependencies {
     compile libraries["spring-webmvc"]
 
     runtime libraries["threddsIso"]
+    runtime libraries["ncsos"]
     compile libraries["ncwms"]
-    compile libraries["geoapi-pending"]
     compile libraries["oro"]
 
-    provided libraries["javax.servlet-api"]
-    runtime libraries["jstl"]
+    compileOnly libraries["javax.servlet-api"]
+    runtime libraries["taglibs-standard-impl"]
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]
     runtime libraries["jaxen"]
-
+    
+    testCompile libraries["javax.servlet-api"]  // Needed during test runtime as well, so testCompileOnly is no good.
     testCompile libraries["spring-test"]
     testCompile libraries["hamcrest-core"]
     testCompile libraries["httpunit"]
@@ -65,31 +68,60 @@ test {
     exclude 'thredds/tds/**'
 }
 
+// Need to evaluate :ui first so that the 'webstartCodebase' property is available.
+Project uiProject = rootProject.project(':ui')
+evaluationDependsOn uiProject.path
+
+task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask) {
+    codebase = uiProject.webstartCodebase
+    applicationArgument = '{catalog}#{dataset}'
+    outputFile = file("$buildDir/webstart/ToolsUI.jnlp")
+}
+
 // Tests expect for test resources to be copied to the same directory as the test classes.
 processTestResources.destinationDir = compileTestJava.destinationDir
 
 processTestResources {
     from "src/main/webapp"
     from "src/main/webapp/WEB-INF/classes"
+    
+    // Creates an inferred task dependency on toolsUiJnlpBase.
+    // See https://docs.gradle.org/current/userguide/more_about_tasks.html#sec:task_input_output_side_effects
+    // This file is needed by ViewControllerTest.testLaunchViewerToolsUIVRequest().
+    from (tasks.toolsUiJnlpBase.outputs) {
+        into 'WEB-INF/views'
+    }
 }
 
 war {
-    // Exclude tds.properties from the War CopySpec. We'll re-add it below, with filtering.
-    // TODO: Is there a less-awkward way to filter a single file when it's already part of a CopySpec?
-    exclude 'WEB-INF/classes/thredds/server/tds.properties'  // Relative to src/main/webapp/
-
-    // This is a hack to handle Maven-style placeholders in a file to be filtered: http://goo.gl/9sQebt
-    // Once Maven is out of the picture, the easiest way to refactor this is to remove the dots from the property
-    // keys, so that expand(Map) works as expected.
-    ant.properties['project.version'] = project.version
-    ant.properties['build.timestamp'] = project.buildTimestamp  // Defined in root project.
-
-    from ('src/main/webapp/WEB-INF/classes/thredds/server/tds.properties') {
-        into 'WEB-INF/classes/thredds/server'
-        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+    // Assert that no servlet-api JAR is slated for inclusion in the WAR.
+    doFirst {
+        File servletApiJar = classpath.find { it.name.contains("servlet-api") }
+        if (servletApiJar) {
+            // This will fail the build.
+            throw new GradleException("Found a servlet-api JAR in the WAR classpath: ${servletApiJar.name}")
+        }
     }
+    
+    // Replace '$projectVersion' and '$buildTimestamp' placeholders with the correct values.
+    // Currently, we only use those placeholders in tds.properties and README.txt.
+    def properties = [:]
+    properties['projectVersion'] = project.version
+    properties['buildTimestamp'] = project.buildTimestamp  // Defined in root project.
+    
+    // War CopySpec already includes everything in 'src/main/webapp', which tds.properties lives within.
+    // So, the from() and into() methods aren't needed.
+    filesMatching('**/tds.properties') {
+        expand properties
+    }
+    
     from('README.txt') {
         into 'docs'
-        filter(org.apache.tools.ant.filters.ExpandProperties, project: ant.project)
+        expand properties
+    }
+    
+    // This file is needed by ViewerServiceImpl.ToolsUI.getViewerLinkHtml().
+    from (tasks.toolsUiJnlpBase.outputs) {
+        into 'WEB-INF/views'
     }
 }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.3.6</table>
+  <title>Solar radiation</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-6.shtml</source>
+  <parameter code="0">
+    <shortName>GSOLIRR</shortName>
+    <description>Global Solar Irradiance (See Note 1)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>GSOLEXP</shortName>
+    <description>Global Solar Exposure (See Note 2)</description>
+    <units>J m-2</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>DIRSOLIR</shortName>
+    <description>Direct Solar Irradiance (See Note 3)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>DIRSOLEX</shortName>
+    <description>Direct Solar Exposure (See Note 4)</description>
+    <units>J m-2</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>DIFSOLIR</shortName>
+    <description>Diffuse Solar Irradiance (See Note 5)</description>
+    <units>W m-2</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>DIFSOLEX</shortName>
+    <description>Diffuse Solar Exposure (See Note 6)</description>
+    <units>J m-2</units>
+  </parameter>
+</parameterMap>

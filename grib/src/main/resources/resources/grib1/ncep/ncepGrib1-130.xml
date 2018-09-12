@@ -47,6 +47,11 @@
     <description>Open water evaporation (standing water)</description>
     <units>W/m2</units>
   </parameter>
+  <parameter code="153">
+    <shortName>NCRAIN</shortName>
+    <description>Number concentration for rain particles</description>
+    <units />
+  </parameter>
   <parameter code="154">
     <shortName>LSPA</shortName>
     <description>Land Surface Precipitation Accumulation (LSPA)</description>
@@ -133,7 +138,7 @@
     <units>%</units>
   </parameter>
   <parameter code="171">
-    <shortName>RLYRS&gt;</shortName>
+    <shortName />
     <description>Number of soil layers in root zone</description>
     <units>non-dim</units>
   </parameter>

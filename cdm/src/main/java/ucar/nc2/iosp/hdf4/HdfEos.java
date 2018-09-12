@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2009 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
  *
  * Portions of this software were developed by the Unidata Program at the
  * University Corporation for Atmospheric Research.
@@ -107,7 +107,7 @@ public class HdfEos {
    */
   static public boolean amendFromODL(NetcdfFile ncfile, Group eosGroup) throws IOException {
     String smeta = getStructMetadata(eosGroup);
-    if (smeta == null) return false;
+    if (smeta == null) { return false; }
 
     HdfEos fixer = new HdfEos();
     fixer.fixAttributes(ncfile.getRootGroup());
@@ -115,6 +115,9 @@ public class HdfEos {
     return true;
   }
 
+    /**
+     *
+     */
   static public boolean getEosInfo(NetcdfFile ncfile, Group eosGroup, Formatter f) throws IOException {
     String smeta = getStructMetadata(eosGroup);
     if (smeta == null) {
@@ -130,6 +133,9 @@ public class HdfEos {
     return true;
   }
 
+    /**
+     *
+     */
   static private String getStructMetadata(Group eosGroup) throws IOException {
     StringBuilder sbuff = null;
     String structMetadata = null;
@@ -137,7 +143,7 @@ public class HdfEos {
     int n = 0;
     while (true) {
       Variable structMetadataVar = eosGroup.findVariable("StructMetadata." + n);
-      if (structMetadataVar == null) break;
+      if (structMetadataVar == null) { break; }
       if ((structMetadata != null) && (sbuff == null)) { // more than 1 StructMetadata
         sbuff = new StringBuilder(64000);
         sbuff.append(structMetadata);
@@ -155,219 +161,263 @@ public class HdfEos {
         log.error("Unsupported array type {} for StructMetadata", A.getElementType());
       }
 
-      if (sbuff != null)
+      if (sbuff != null) {
         sbuff.append(structMetadata);
+      }
       n++;
     }
     return (sbuff != null) ? sbuff.toString() : structMetadata;
   }
 
-  /**
-   * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata
-   *
-   * @param ncfile Amend this file
-   * @param structMetadata  structMetadata as String
-   * @throws IOException on read error
-   */
-  private void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
-    Group rootg = ncfile.getRootGroup();
+    /**
+     * Amend the given NetcdfFile with metadata from HDF-EOS structMetadata
+     *
+     * @param ncfile Amend this file
+     * @param structMetadata  structMetadata as String
+     * @throws IOException on read error
+     */
+    private void amendFromODL(NetcdfFile ncfile, String structMetadata) throws IOException {
+        Group rootg = ncfile.getRootGroup();
 
-    ODLparser parser = new ODLparser();
-    Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
-    FeatureType featureType = null;
+        ODLparser parser = new ODLparser();
+        Element root = parser.parseFromString(structMetadata); // now we have the ODL in JDOM elements
+        FeatureType featureType = null;
 
-    // SWATH
-    Element swathStructure = root.getChild("SwathStructure");
-    if (swathStructure != null) {
-      List<Element> swaths = swathStructure.getChildren();
-      for (Element elemSwath : swaths) {
-        Element swathNameElem = elemSwath.getChild("SwathName");
-        if (swathNameElem == null) {
-          log.warn("No SwathName element in {} {} ", elemSwath.getName(), ncfile.getLocation());
-          continue;
-        }
-        String swathName = NetcdfFile.makeValidCdmObjectName(swathNameElem.getText().trim());
-        Group swathGroup = findGroupNested(rootg, swathName);
-        //if (swathGroup == null)
-        //  swathGroup = findGroupNested(rootg, H4header.createValidObjectName(swathName));
+        // SWATH
+        Element swathStructure = root.getChild("SwathStructure");
+        if (swathStructure != null) {
+            List<Element> swaths = swathStructure.getChildren();
+            for (Element elemSwath : swaths) {
+                Element swathNameElem = elemSwath.getChild("SwathName");
+                if (swathNameElem == null) {
+                    log.warn("No SwathName element in {} {} ", elemSwath.getName(), ncfile.getLocation());
+                    continue;
+                }
+                String swathName = NetcdfFile.makeValidCdmObjectName(swathNameElem.getText().trim());
+                Group swathGroup = findGroupNested(rootg, swathName);
+                //if (swathGroup == null)
+                //  swathGroup = findGroupNested(rootg, H4header.createValidObjectName(swathName));
 
-        if (swathGroup != null) {
-          featureType = amendSwath(ncfile, elemSwath, swathGroup);
-        } else {
-          log.warn("Cant find swath group {} {}", swathName, ncfile.getLocation());
-        }
-      }
-    }
-
-    // GRID
-    Element gridStructure = root.getChild("GridStructure");
-    if (gridStructure != null) {
-      List<Element> grids = gridStructure.getChildren();
-      for (Element elemGrid : grids) {
-        Element gridNameElem = elemGrid.getChild("GridName");
-        if (gridNameElem == null) {
-          log.warn("No GridName element in {} {} ", elemGrid.getName(), ncfile.getLocation());
-          continue;
-        }
-        String gridName = NetcdfFile.makeValidCdmObjectName(gridNameElem.getText().trim());
-        Group gridGroup = findGroupNested(rootg, gridName);
-        //if (gridGroup == null)
-        //  gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
-        if (gridGroup != null) {
-          featureType = amendGrid(elemGrid, ncfile, gridGroup, ncfile.getLocation());
-        } else {
-          log.warn("Cant find Grid group {} {}", gridName, ncfile.getLocation());
-        }
-      }
-    }
-
-    // POINT - NOT DONE YET
-    Element pointStructure = root.getChild("PointStructure");
-    if (pointStructure != null) {
-      List<Element> pts = pointStructure.getChildren();
-      for (Element elem : pts) {
-        Element nameElem = elem.getChild("PointName");
-        if (nameElem == null) {
-          log.warn("No PointName element in {} {}", elem.getName(), ncfile.getLocation());
-          continue;
-        }
-        String name = nameElem.getText().trim();
-        Group ptGroup = findGroupNested(rootg, name);
-        //if (ptGroup == null)
-        //  ptGroup = findGroupNested(rootg, H4header.createValidObjectName(name));
-        if (ptGroup != null) {
-          featureType = FeatureType.POINT;
-        } else {
-          log.warn("Cant find Point group {} {}", name, ncfile.getLocation());
-        }
-      }
-    }
-
-    if (featureType != null) {
-      if (showWork) System.out.println("***EOS featureType= "+featureType.toString());
-      rootg.addAttribute(new Attribute(CF.FEATURE_TYPE, featureType.toString()));
-      // rootg.addAttribute(new Attribute(CDM.CONVENTIONS, "HDFEOS"));
-    }
-
-  }
-
-  private FeatureType amendSwath(NetcdfFile ncfile, Element swathElem, Group parent) {
-    FeatureType featureType = FeatureType.SWATH;
-    List<Dimension> unknownDims = new ArrayList<>();
-
-    // Dimensions
-    Element d = swathElem.getChild("Dimension");
-    List<Element> dims = d.getChildren();
-    for (Element elem : dims) {
-      String name = elem.getChild("DimensionName").getText().trim();
-      name = NetcdfFile.makeValidCdmObjectName(name);
-
-      if (name.equalsIgnoreCase("scalar"))
-        continue;
-      String sizeS = elem.getChild("Size").getText().trim();
-      int length = Integer.parseInt(sizeS);
-      if (length > 0) {
-        Dimension dim = parent.findDimensionLocal(name);
-        if (dim != null) {                 // already added - may be dimension scale ?
-          if (dim.getLength() != length) { // ok as long as it matches
-            log.error("Conflicting Dimensions = {} {}", dim, ncfile.getLocation());
-            throw new IllegalStateException("Conflicting Dimensions = "+name);
-          }
-        } else {
-          dim = new Dimension(name, length);
-          if (parent.addDimensionIfNotExists(dim) && showWork) System.out.printf(" Add dimension %s %n",dim);
-        }
-      } else {
-        log.warn("Dimension "+name+" has size "+sizeS, ncfile.getLocation());
-        Dimension udim = new Dimension(name, 1);
-        udim.setGroup(parent);
-        unknownDims.add( udim);
-        if (showWork) System.out.printf(" Add dimension %s %n", udim);
-      }
-    }
-
-    // Dimension Maps
-    Element dmap = swathElem.getChild("DimensionMap");
-    List<Element> dimMaps = dmap.getChildren();
-    for (Element elem : dimMaps) {
-      String geoDimName = elem.getChild("GeoDimension").getText().trim();
-      geoDimName = NetcdfFile.makeValidCdmObjectName(geoDimName);
-      String dataDimName = elem.getChild("DataDimension").getText().trim();
-      dataDimName = NetcdfFile.makeValidCdmObjectName(dataDimName);
-
-      String offsetS = elem.getChild("Offset").getText().trim();
-      String incrS = elem.getChild("Increment").getText().trim();
-      int offset = Integer.parseInt(offsetS);
-      int incr = Integer.parseInt(incrS);
-
-      // make new variable for this dimension map
-      Variable v = new Variable(ncfile, parent, null, dataDimName);
-      v.setDimensions(geoDimName);
-      v.setDataType(DataType.INT);
-      int npts = (int) v.getSize();
-      Array data = Array.makeArray(v.getDataType(), npts, offset, incr);
-      v.setCachedData(data, true);
-      v.addAttribute(new Attribute("_DimensionMap", ""));
-      parent.addVariable(v);
-      if (showWork) System.out.printf(" Add dimensionMap %s %n", v);
-    }
-
-    // Geolocation Variables
-    Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
-    if (geoFieldsG == null) geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
-    if (geoFieldsG != null) {
-      Variable latAxis = null, lonAxis = null;
-      Element floc = swathElem.getChild("GeoField");
-      List<Element> varsLoc = floc.getChildren();
-      for (Element elem : varsLoc) {
-        String varname = elem.getChild("GeoFieldName").getText().trim();
-        Variable v = geoFieldsG.findVariable(varname);
-        //if (v == null)
-        //  v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
-        assert v != null : varname;
-        AxisType axis = addAxisType(ncfile, v);
-        if (axis == AxisType.Lat) latAxis = v;
-        if (axis == AxisType.Lon) lonAxis = v;
-
-        Element dimList = elem.getChild("DimList");
-        List<Element> values = dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
-        if (showWork) System.out.printf(" set coordinate %s %n", v);
-      }
-      if ((latAxis != null) && (lonAxis != null)) {
-        List<Dimension> xyDomain = CoordinateSystem.makeDomain(new Variable[] {latAxis, lonAxis});
-       if (xyDomain.size() < 2) featureType = FeatureType.PROFILE;  // ??
-      }
-
-    }
-
-    // Data Variables
-    Group dataG = parent.findGroup(DATA_FIELDS);
-    if (dataG == null) dataG = parent.findGroup(DATA_FIELDS2);
-    if (dataG != null) {
-      Element f = swathElem.getChild("DataField");
-      List<Element> vars = f.getChildren();
-      for (Element elem : vars) {
-        Element dataFieldNameElem = elem.getChild("DataFieldName");
-        if (dataFieldNameElem == null) continue;
-        String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
-        Variable v = dataG.findVariable(varname);
-        //if (v == null)
-        //  v = dataG.findVariable( H4header.createValidObjectName(varname));
-        if (v == null) {
-          log.error("Cant find variable {} {}", varname, ncfile.getLocation());
-          continue;
+                if (swathGroup != null) {
+                    featureType = amendSwath(ncfile, elemSwath, swathGroup);
+                } else {
+                    log.warn("Cant find swath group {} {}", swathName, ncfile.getLocation());
+                }
+            }
         }
 
-        Element dimList = elem.getChild("DimList");
-        List<Element> values = dimList.getChildren("value");
-        setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
-      }
+        // GRID
+        Element gridStructure = root.getChild("GridStructure");
+        if (gridStructure != null) {
+            List<Element> grids = gridStructure.getChildren();
+            for (Element elemGrid : grids) {
+                Element gridNameElem = elemGrid.getChild("GridName");
+                if (gridNameElem == null) {
+                    log.warn("No GridName element in {} {} ", elemGrid.getName(), ncfile.getLocation());
+                    continue;
+                }
+                String gridName = NetcdfFile.makeValidCdmObjectName(gridNameElem.getText().trim());
+                Group gridGroup = findGroupNested(rootg, gridName);
+                //if (gridGroup == null)
+                //  gridGroup = findGroupNested(rootg, H4header.createValidObjectName(gridName));
+                if (gridGroup != null) {
+                    featureType = amendGrid(elemGrid, ncfile, gridGroup, ncfile.getLocation());
+                } else {
+                    log.warn("Cant find Grid group {} {}", gridName, ncfile.getLocation());
+                }
+            }
+        }
+
+        // POINT - NOT DONE YET
+        Element pointStructure = root.getChild("PointStructure");
+        if (pointStructure != null) {
+            List<Element> pts = pointStructure.getChildren();
+            for (Element elem : pts) {
+                Element nameElem = elem.getChild("PointName");
+                if (nameElem == null) {
+                    log.warn("No PointName element in {} {}", elem.getName(), ncfile.getLocation());
+                    continue;
+                }
+                String name = nameElem.getText().trim();
+                Group ptGroup = findGroupNested(rootg, name);
+                //if (ptGroup == null)
+                //  ptGroup = findGroupNested(rootg, H4header.createValidObjectName(name));
+                if (ptGroup != null) {
+                    featureType = FeatureType.POINT;
+                } else {
+                    log.warn("Cant find Point group {} {}", name, ncfile.getLocation());
+                }
+            }
+        }
+
+        if (featureType != null) {
+            if (showWork) { log.debug("***EOS featureType= {}", featureType.toString()); }
+            rootg.addAttribute(new Attribute(CF.FEATURE_TYPE, featureType.toString()));
+            // rootg.addAttribute(new Attribute(CDM.CONVENTIONS, "HDFEOS"));
+        }
     }
 
-    return featureType;
-  }
+    /**
+     *
+     */
+    private FeatureType amendSwath(NetcdfFile ncfile, Element swathElem, Group parent) {
+        FeatureType featureType = FeatureType.SWATH;
+        List<Dimension> unknownDims = new ArrayList<>();
 
+        // Dimensions
+        Element d = swathElem.getChild("Dimension");
+        List<Element> dims = d.getChildren();
+        for (Element elem : dims) {
+            String name = elem.getChild("DimensionName").getText().trim();
+            name = NetcdfFile.makeValidCdmObjectName(name);
+
+            if (name.equalsIgnoreCase("scalar")) {
+                continue;
+            }
+            String sizeS = elem.getChild("Size").getText().trim();
+            int length = Integer.parseInt(sizeS);
+            if (length > 0) {
+                Dimension dim = parent.findDimensionLocal(name);
+                if (dim != null) {                 // already added - may be dimension scale ?
+                    if (dim.getLength() != length) { // ok as long as it matches
+                        log.error("Conflicting Dimensions = {} {}", dim, ncfile.getLocation());
+                        throw new IllegalStateException("Conflicting Dimensions = "+name);
+                    }
+                } else {
+                    dim = new Dimension(name, length);
+                    if (parent.addDimensionIfNotExists(dim) && showWork) {
+                        log.debug(" Add dimension {}",dim);
+                    }
+                }
+            } else {
+                log.warn("Dimension {} has size {} {}", name, sizeS, ncfile.getLocation());
+                Dimension udim = new Dimension(name, 1);
+                udim.setGroup(parent);
+                unknownDims.add( udim);
+                if (showWork) {
+                    log.debug(" Add dimension {}", udim);
+                }
+            }
+        }
+
+        // Dimension Maps
+        Element dmap = swathElem.getChild("DimensionMap");
+        List<Element> dimMaps = dmap.getChildren();
+        for (Element elem : dimMaps) {
+            String geoDimName = elem.getChild("GeoDimension").getText().trim();
+            geoDimName = NetcdfFile.makeValidCdmObjectName(geoDimName);
+            String dataDimName = elem.getChild("DataDimension").getText().trim();
+            dataDimName = NetcdfFile.makeValidCdmObjectName(dataDimName);
+
+            String offsetS = elem.getChild("Offset").getText().trim();
+            String incrS = elem.getChild("Increment").getText().trim();
+            int offset = Integer.parseInt(offsetS);
+            int incr = Integer.parseInt(incrS);
+
+            // make new variable for this dimension map
+            Variable v = new Variable(ncfile, parent, null, dataDimName);
+            v.setDimensions(geoDimName);
+            v.setDataType(DataType.INT);
+            int npts = (int) v.getSize();
+            Array data = Array.makeArray(v.getDataType(), npts, offset, incr);
+            v.setCachedData(data, true);
+            v.addAttribute(new Attribute("_DimensionMap", ""));
+            parent.addVariable(v);
+            if (showWork) {
+                log.debug(" Add dimensionMap {}", v);
+            }
+        }
+
+        // Geolocation Variables
+        Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
+        if (geoFieldsG == null) {
+            geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
+        }
+        if (geoFieldsG != null) {
+            Variable latAxis = null, lonAxis = null, timeAxis = null;
+            Element floc = swathElem.getChild("GeoField");
+            List<Element> varsLoc = floc.getChildren();
+            for (Element elem : varsLoc) {
+                String varname = elem.getChild("GeoFieldName").getText().trim();
+                Variable v = geoFieldsG.findVariable(varname);
+                //if (v == null)
+                //  v = geoFieldsG.findVariable( H4header.createValidObjectName(varname));
+                assert v != null : varname;
+                AxisType axis = addAxisType(ncfile, v);
+                if (axis == AxisType.Lat)  { latAxis = v; }
+                if (axis == AxisType.Lon)  { lonAxis = v; }
+                if (axis == AxisType.Time) { timeAxis = v; }
+
+                Element dimList = elem.getChild("DimList");
+                List<Element> values = dimList.getChildren("value");
+                setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
+                if (showWork) {
+                    log.debug(" set coordinate {}", v);
+                }
+            }
+
+            // Treat possibility that this is a discrete geometry featureType.
+            // We check if lat and lon axes are 2D and if not (1) see if it looks like a
+            // trajectory, or (2) otherwise tag it as a profile.
+            // This could/should be expanded to consider other FTs.
+            if ((latAxis != null) && (lonAxis != null)) {
+                log.debug ("found lonAxis and latAxis -- testing XY domain");
+                List<Dimension> xyDomain = CoordinateSystem.makeDomain(new Variable[] {latAxis, lonAxis});
+                log.debug ("xyDomain size {}", xyDomain.size());
+                if (xyDomain.size() < 2) {
+                    if (timeAxis != null)
+                    {
+                        log.debug ("found timeAxis -- testing if trajectory");
+                        Dimension dd1 = timeAxis.getDimension(0);
+                        Dimension dd2 = latAxis.getDimension(0);
+                        Dimension dd3 = lonAxis.getDimension(0);
+                   
+                        if (dd1.equals (dd2) && dd1.equals(dd3)) {
+                            featureType = FeatureType.TRAJECTORY;
+                        } else {
+                            featureType = FeatureType.PROFILE;  // ??
+                        }
+                    } else {
+                        featureType = FeatureType.PROFILE;  // ??
+                    }
+                }
+            }
+        }
+
+        // Data Variables
+        Group dataG = parent.findGroup(DATA_FIELDS);
+        if (dataG == null) {
+            dataG = parent.findGroup(DATA_FIELDS2);
+        }
+        if (dataG != null) {
+            Element f = swathElem.getChild("DataField");
+            List<Element> vars = f.getChildren();
+            for (Element elem : vars) {
+                Element dataFieldNameElem = elem.getChild("DataFieldName");
+                if (dataFieldNameElem == null) {
+                    continue;
+                }
+                String varname = NetcdfFile.makeValidCdmObjectName(dataFieldNameElem.getText().trim());
+                Variable v = dataG.findVariable(varname);
+                //if (v == null)
+                //  v = dataG.findVariable( H4header.createValidObjectName(varname));
+                if (v == null) {
+                    log.error("Cant find variable {} {}", varname, ncfile.getLocation());
+                    continue;
+                }
+
+                Element dimList = elem.getChild("DimList");
+                List<Element> values = dimList.getChildren("value");
+                setSharedDimensions( v, values, unknownDims, ncfile.getLocation());
+            }
+        }
+
+        return featureType;
+    }
+
+    /**
+     *
+     */
   private AxisType addAxisType(NetcdfFile ncfile, Variable v) {
     String name = v.getShortName();
     if (name.equalsIgnoreCase("Latitude") || name.equalsIgnoreCase("GeodeticLatitude")) {
@@ -459,8 +509,9 @@ public class HdfEos {
     for (Element elem : dims) {
       String name = elem.getChild("DimensionName").getText().trim();
       name = NetcdfFile.makeValidCdmObjectName(name);
-      if (name.equalsIgnoreCase("scalar"))
+      if (name.equalsIgnoreCase("scalar")) {
         continue;
+      }
 
       String sizeS = elem.getChild("Size").getText().trim();
       int length = Integer.parseInt(sizeS);
@@ -468,22 +519,24 @@ public class HdfEos {
       if ((old == null) || (old.getLength() != length)) {
         if (length > 0) {
           Dimension dim = new Dimension(name, length);
-          if (parent.addDimensionIfNotExists(dim) && showWork)
-            System.out.printf(" Add dimension %s %n", dim);
+          if (parent.addDimensionIfNotExists(dim) && showWork) {
+            log.debug(" Add dimension {}", dim);
+          }
         } else {
           log.warn("Dimension {} has size {} {} ", sizeS, name, location);
           Dimension udim = new Dimension(name, 1);
           udim.setGroup(parent);
           unknownDims.add( udim);
-          if (showWork) System.out.printf(" Add dimension %s %n", udim);
+          if (showWork) { log.debug(" Add dimension {}", udim); }
         }
       }
     }
 
     // Geolocation Variables
     Group geoFieldsG = parent.findGroup(GEOLOC_FIELDS);
-    if (geoFieldsG == null)  geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
-
+    if (geoFieldsG == null) {
+        geoFieldsG = parent.findGroup(GEOLOC_FIELDS2);
+    }
     if (geoFieldsG != null) {
       Element floc = gridElem.getChild("GeoField");
       List<Element> varsLoc = floc.getChildren();
@@ -502,8 +555,9 @@ public class HdfEos {
 
     // Data Variables
     Group dataG = parent.findGroup(DATA_FIELDS);
-    if (dataG == null) dataG = parent.findGroup(DATA_FIELDS2);  // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
-
+    if (dataG == null) {
+        dataG = parent.findGroup(DATA_FIELDS2);  // eg C:\data\formats\hdf4\eos\mopitt\MOP03M-200501-L3V81.0.1.hdf
+    }
     if (dataG != null) {
       Element f = gridElem.getChild("DataField");
       List<Element> vars = f.getChildren();
@@ -523,8 +577,9 @@ public class HdfEos {
       // get projection
       String projS = null;
       Element projElem = gridElem.getChild("Projection");
-      if (projElem != null)
+      if (projElem != null) {
         projS = projElem.getText().trim();
+      }
       boolean isLatLon = "GCTP_GEO".equals(projS);
 
       // look for XDim, YDim coordinate variables
@@ -535,8 +590,9 @@ public class HdfEos {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
               v.addAttribute(new Attribute(CDM.UNITS, CDM.LAT_UNITS));
             }
-            if (v.getShortName().equals("XDim"))
+            if (v.getShortName().equals("XDim")) {
               v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+            }
           }
         }
       }
@@ -546,7 +602,7 @@ public class HdfEos {
 
   private void addAttributeIfExists(Element elem, String name, Variable v, boolean isDoubleArray) {
     Element child = elem.getChild(name);
-    if (child == null) return;
+    if (child == null) { return; }
     if (isDoubleArray) {
       List<Element> vElems = child.getChildren();
       List<Double> values = new ArrayList<>();
@@ -567,16 +623,18 @@ public class HdfEos {
 
   // convert to shared dimensions
   private void setSharedDimensions(Variable v, List<Element> values, List<Dimension> unknownDims, String location) {
-    if (values.size() == 0)
+    if (values.size() == 0) {
       return;
+    }
 
     // remove the "scalar" dumbension
     Iterator<Element> iter = values.iterator();
     while (iter.hasNext()) {
       Element value = iter.next();
       String dimName = value.getText().trim();
-      if (dimName.equalsIgnoreCase("scalar"))
+      if (dimName.equalsIgnoreCase("scalar")) {
         iter.remove();
+      }
     }
 
     // gotta have same number of dimensions
@@ -596,22 +654,24 @@ public class HdfEos {
 
       Dimension dim = group.findDimension(dimName);
       Dimension oldDim = oldDims.get(i);
-      if (dim == null)
+      if (dim == null) {
         dim = checkUnknownDims(dimName, unknownDims, oldDim, location);
+      }
 
       if (dim == null) {
         log.error("Unknown Dimension= {} for variable = {} {} ", dimName, v.getFullName(), location);
         return;
       }
       if (dim.getLength() != oldDim.getLength()) {
-        log.error("Shared dimension ("+dim.getShortName()+") has different length than data dimension ("+oldDim.getShortName()+
-            ") shared="+ dim.getLength() + " org=" + oldDim.getLength() + " for "+ v+" "+location);
+        log.error("Shared dimension ({}) has different length than data dimension ({}) shared={} org={} for {} {}",
+                    dim.getShortName(), oldDim.getShortName(),
+                    dim.getLength(), oldDim.getLength(), v, location);
         return;
       }
       newDims.add(dim);
     }
     v.setDimensions(newDims);
-    if (showWork) System.out.printf(" set shared dimensions for %s %n", v.getNameAndDimensions());
+    if (showWork) { log.debug(" set shared dimensions for {}", v.getNameAndDimensions()); }
   }
 
   // look if the wanted dimension is in the  unknownDims list.
@@ -619,8 +679,9 @@ public class HdfEos {
     for (Dimension dim : unknownDims) {
       if (dim.getShortName().equals(wantDim)) {
         int len = oldDim.getLength();
-        if (len == 0)
+        if (len == 0) {
           dim.setUnlimited( true); // allow zero length dimension !!
+        }
         dim.setLength(len); // use existing (anon) dimension
         Group parent = dim.getGroup();
         parent.addDimensionIfNotExists(dim);  // add to the parent
@@ -636,13 +697,11 @@ public class HdfEos {
   private Group findGroupNested(Group parent, String name) {
 
     for (Group g : parent.getGroups()) {
-      if (g.getShortName().equals(name))
-        return g;
+      if (g.getShortName().equals(name)) { return g; }
     }
     for (Group g : parent.getGroups()) {
       Group result = findGroupNested(g, name);
-      if (result != null)
-        return result;
+      if (result != null) { return result; }
     }
     return null;
   }
@@ -650,12 +709,15 @@ public class HdfEos {
   private void fixAttributes(Group g) {
     for (Variable v : g.getVariables()) {
       for (Attribute a : v.getAttributes()) {
-        if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS"))
+        if (a.getShortName().equalsIgnoreCase("UNIT") || a.getShortName().equalsIgnoreCase("UNITS")) {
           a.setShortName(CDM.UNITS);
-        if (a.getShortName().equalsIgnoreCase("SCALE_FACTOR"))
+        }
+        if (a.getShortName().equalsIgnoreCase("SCALE_FACTOR")) {
           a.setShortName(CDM.SCALE_FACTOR);
-        if (a.getShortName().equalsIgnoreCase("OFFSET"))
+        }
+        if (a.getShortName().equalsIgnoreCase("OFFSET")) {
           a.setShortName(CDM.ADD_OFFSET);
+        }
       }
     }
 

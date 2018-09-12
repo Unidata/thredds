@@ -212,38 +212,41 @@
 
 <p>The following are WCS URLs for our test datasets: </p>
 <ul>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/sst.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/ocean.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/eta.nc</strong></li>
-  <li><strong>http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/sst.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/ocean.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/eta.nc</strong></li>
+  <li><strong>http://thredds.ucar.edu/thredds/wcs/galeon/testdata/RUC.nc</strong></li>
 </ul>
 <p>Here are example WCS queries for the first dataset: </p>
 <ul>
   <li>
-    <strong>GetCapabilities</strong>:<a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS">/thredds/wcs/galeon/testdata/RUC.nc?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS</a>
+    <strong>GetCapabilities</strong>:
+    <a href="http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS">/thredds/wcs/galeon/testdata/striped.nc?request=GetCapabilities&amp;version=1.0.0&amp;service=WCS</a>
   </li>
-  <li><strong>DescribeCoverage</strong>:
-    <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&amp;version=1.0.0&amp;service=WCS&amp;coverage=ta">/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&amp;version=1.0.0&amp;service=WCS&amp;coverage=ta</a>
+  <li>
+    <strong>DescribeCoverage</strong>:
+    <a href="http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&amp;version=1.0.0&amp;service=WCS&amp;coverage=ta">/thredds/wcs/galeon/testdata/striped.nc?request=DescribeCoverage&amp;version=1.0.0&amp;service=WCS&amp;coverage=ta</a>
   </li>
-  <li><strong>GetCoverage</strong> (GeoTIFF):
-    <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=GeoTIFF&amp;coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57%20">/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=GeoTIFF&amp;
-      coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57
-    </a></li>
-  <li><strong>GetCoverage </strong>(NetCDF3) :
-    <a href="http://motherlode.ucar.edu:8080/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=NetCDF3&amp;coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57%20">/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=NetCDF3&amp;
-      coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57
-    </a></li>
+  <li>
+    <strong>GetCoverage</strong> (GeoTIFF):
+    <a href="http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=GeoTIFF&amp;coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57%20">/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=GeoTIFF&amp;coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57
+    </a>
+  </li>
+  <li>
+    <strong>GetCoverage</strong> (NetCDF3):
+    <a href="http://thredds.ucar.edu/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=NetCDF3&amp;coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57%20">/thredds/wcs/galeon/testdata/striped.nc?request=GetCoverage&amp;version=1.0.0&amp;service=WCS&amp;format=NetCDF3&amp;coverage=ta&amp;time=2005-05-10T00:00:00Z&amp;vertical=100.0&amp;bbox=-134,11,-47,57
+    </a>
+  </li>
 </ul>
 <h2>WCS Clients</h2>
 
 <p>A few WCS clients we know of (though we haven't tried all of them):</p>
 <ul>
   <li>OWSlib [free] - <a href="http://pypi.python.org/pypi/OWSLib/">http://pypi.python.org/pypi/OWSLib/</a>&nbsp;</li>
-  <li>GI-go [free] - <a href="http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome">http://zeus.pin.unifi.it/cgi-bin/twiki/view/GIgo/WebHome</a></li>
   <li>CADCorp [commercial] - <a href="http://www.cadcorp.com/">http://www.cadcorp.com/</a> - has a "no cost" product
-    called&nbsp;<a href="http://www.cadcorp.com/products_geographical_information_systems/map_browser.htm">Map Browser</a></li>
-  <li>IDL [commercial] - <a href="http://www.ittvis.com/ProductServices/IDL.aspx">http://www.ittvis.com/ProductServices/IDL.aspx</a></li>
+    called&nbsp;<a href="https://www.cadcorp.com/products/free-mapping-software/">Map Browser</a></li>
+  <li>IDL [commercial] - <a href="http://www.harrisgeospatial.com/ProductsandSolutions/GeospatialProducts/IDL.aspx)">http://www.harrisgeospatial.com/ProductsandSolutions/GeospatialProducts/IDL.aspx)</a></li>
   <li>gvSIG [free] - <a href="http://www.gvsig.org/web/">http://www.gvsig.org/web/</a></li>
 </ul>
 <p>This one is not a general client. It is a server site with a web interface for accessing their served data:</p>
@@ -254,7 +257,7 @@
 
 <hr width="100%">
 <address><img src="../thread.png" height="108" width="110">This document is maintained by Unidata and was
-  last updated February 2009. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
+  last updated April 2017. Send comments to <a href="mailto:support-thredds@unidata.ucar.edu">THREDDS
     support</a>.
 </address>
 <p align="center">&nbsp;</p>

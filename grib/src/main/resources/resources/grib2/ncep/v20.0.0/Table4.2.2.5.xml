@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.2.5</table>
+  <title>Glaciers and Inland Ice Products</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-2-5.shtml</source>
+  <parameter code="1">
+    <shortName>GLACTMP</shortName>
+    <description>Glacier Temperature</description>
+    <units>K</units>
+  </parameter>
+</parameterMap>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.3.2</table>
+  <title>Cloud Properties</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-2.shtml</source>
+  <parameter code="0">
+    <shortName>CSKPROB</shortName>
+    <description>Clear Sky Probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>CTOPTMP</shortName>
+    <description>Cloud Top Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>CTOPRES</shortName>
+    <description>Cloud Top Pressure</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>CLDTYPE</shortName>
+    <description>Cloud Type</description>
+    <units>See Table 4.218</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>CLDPHAS</shortName>
+    <description>Cloud Phase</description>
+    <units>See Table 4.218</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>CLDODEP</shortName>
+    <description>Cloud Optical Depth</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>CLDPER</shortName>
+    <description>Cloud Particle Effective Radius</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>CLDLWP</shortName>
+    <description>Cloud Liquid Water Path</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>CLDIWP</shortName>
+    <description>Cloud Ice Water Path</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="9">
+    <shortName>CLDALB</shortName>
+    <description>Cloud Albedo</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="10">
+    <shortName>CLDEMISS</shortName>
+    <description>Cloud Emissivity</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="11">
+    <shortName>EAODR</shortName>
+    <description>Effective Absorption Optical Depth Ratio</description>
+    <units>Numeric</units>
+  </parameter>
+</parameterMap>

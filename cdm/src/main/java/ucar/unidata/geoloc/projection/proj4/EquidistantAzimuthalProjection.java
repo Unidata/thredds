@@ -19,6 +19,8 @@ limitations under the License.
  */
 package ucar.unidata.geoloc.projection.proj4;
 
+import java.util.Objects;
+
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.CF;
 import ucar.unidata.geoloc.*;
@@ -57,6 +59,8 @@ public class EquidistantAzimuthalProjection extends ProjectionImpl {
 
   public EquidistantAzimuthalProjection(double lat0, double lon0, double falseEasting, double falseNorthing, Earth earth) {
     super("EquidistantAzimuthalProjection", false);
+
+    Objects.requireNonNull(earth, "Azimuthal equidistant constructor requires non-null Earth");
 
     this.lat0 = lat0;
     this.lon0 = lon0;

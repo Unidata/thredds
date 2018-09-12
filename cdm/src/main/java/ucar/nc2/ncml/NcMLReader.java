@@ -60,8 +60,12 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  */
 
 public class NcMLReader {
-  static private final Namespace ncNS = thredds.client.catalog.Catalog.ncmlNS;
+
+  static private final Namespace ncNSHttp = thredds.client.catalog.Catalog.ncmlNS;
+  static private final Namespace ncNSHttps = thredds.client.catalog.Catalog.ncmlNSHttps;
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcMLReader.class);
+
+  private Namespace ncNS;
 
   private static boolean debugURL = false, debugXML = false, showParsedXML = false;
   private static boolean debugOpen = false, debugConstruct = false, debugCmd = false;
@@ -344,7 +348,6 @@ public class NcMLReader {
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
   static public NetcdfDataset readNcML(String ncmlLocation, Element netcdfElem, CancelTask cancelTask) throws IOException {
-
     // the ncml probably refers to another dataset, but doesnt have to
     String referencedDatasetUri = netcdfElem.getAttributeValue("location");
     if (referencedDatasetUri == null)
@@ -388,6 +391,12 @@ public class NcMLReader {
    * @throws IOException on read error, or bad referencedDatasetUri URI
    */
   private NetcdfDataset _readNcML(String ncmlLocation, String referencedDatasetUri, Element netcdfElem, CancelTask cancelTask) throws IOException {
+
+    // get ncml namespace and set namespace variable
+    this.ncNS = ncNSHttp;
+    if (netcdfElem.getNamespaceURI().startsWith("https")) {
+      this.ncNS = ncNSHttps;
+    }
 
     // augment URI.resolve(), by also dealing with base file: URIs
     referencedDatasetUri = URLnaming.resolve(ncmlLocation, referencedDatasetUri);
@@ -485,7 +494,7 @@ public class NcMLReader {
 
     // detect incorrect namespace
     Namespace use = netcdfElem.getNamespace();
-    if (!use.equals(ncNS)) {
+    if (!use.equals(ncNS) && !use.equals(ncNSHttps)) {
       throw new IllegalArgumentException("Incorrect namespace specified in NcML= " + use.getURI() + "\n   must be=" + ncNS.getURI());
     }
 

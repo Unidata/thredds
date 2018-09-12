@@ -74,10 +74,7 @@
 <p>Further WMS configuration properties are set in the <code>wmsConfig.xml</code> file. These
   properties are mainly related with styling of WMS images. Similar to the <code>threddsConfig.xml</code>
   file, the WMS configuration file (<code>wmsConfig.xml</code>) is found in the
-  <code>${tomcat_home}/content/thredds</code> directory. A detailed description of the
-  <code>wmsConfig.xml</code> file can be found at the MyOcean
-  <a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">
-    "Detailed WMS Configuration" page</a>.
+  <code>${tomcat_home}/content/thredds</code> directory.
 </p>
 
 <p>If you are installing a new TDS, you should find a default <code>wmsConfig.xml</code> file (along
@@ -86,6 +83,162 @@
   you will have to copy the default file from
   <code>${tomcat_home}/webapps/thredds/WEB-INF/altContent/startup/wmsConfig.xml</code>.
 </p>
+
+<h2 id="Overviewoftheconfigfile">Overview of the config file</h2>
+<p>
+  The file allows the system administrator to configure default style information at a number of levels:
+</p>
+<ol><li>Global defaults that apply to the entire server
+</li><li>Overrides for specific parameters (identified by standard names), applied to all datasets
+</li><li>Overrides for specific datasets
+</li><li>Overrides for specific variables within a dataset
+</li></ol><p>
+  Each level of configuration in the list above overrides the previous ones.  The sections below give examples of each level of configuration.
+</p>
+<h2 id="Propertiesthatcanbeconfigured">Properties that can be configured</h2>
+<p>
+  The config file allows the following properties to be configured:
+</p>
+<table class="wiki">
+  <tr><td><strong>Property key</strong></td><td><strong>Syntax/possible values</strong></td><td><strong>Level</strong></td><td><strong>Meaning</strong>
+  </td></tr><tr><td>allowFeatureInfo</td><td><tt>true</tt> or <tt>false</tt></td><td>Global or per-dataset</td><td>Whether or not the GetFeatureInfo operation is allowed for a dataset*
+</td></tr><tr><td>defaultColorScaleRange</td><td><tt>min</tt> <tt>max</tt> (two floating-point numbers, separated by a space)</td><td>Global, per-standard name or per-variable</td><td>A sensible value range, to be applied to the bottom and top of the colour scale.  Does not have to be precise.
+</td></tr><tr><td>defaultPaletteName</td><td>palette name</td><td>Global, per-standard name or per-variable</td><td>The name of the default palette to be used
+</td></tr><tr><td>defaultNumColorBands</td><td>integer between 5 and 254 inclusive</td><td>Global, per-standard name or per-variable</td><td>The number of individual colours to use by default in creating images
+</td></tr><tr><td>logScaling</td><td><tt>true</tt> or <tt>false</tt></td><td>Global, per-standard name or per-variable</td><td>Whether to use logarithmic or linear spacing of values along the colour scale.  Logarithmic spacing is appropriate for variables whose values span several orders of magnitude, and are always greater than zero
+</td></tr></table>
+<p>
+  *The <tt>allowFeatureInfo</tt> property is almost always enabled (i.e. set "true").  It can be disabled in rare cases in which the sysadmin does not wish to expose data values through this operation.
+</p>
+<p>
+  Note that these quantities must always be defined in the config file <strong>in this order</strong>, otherwise validation will fail.  (It is OK to omit quantities, except in the global defaults section.)
+</p>
+<h2 id="Configfileexamples">Config file examples</h2>
+<h3 id="Asimpleconfigfile">A simple config file</h3>
+<p>
+  The simplest legal config file contains only global defaults.  The example below omits the DTD declaration for brevity: please do not omit this in your <tt>wmsConfig.xml</tt> file, or the automatic validation will not work:
+</p>
+<pre class="wiki">&lt;wmsConfig&gt;
+    &lt;global&gt;
+        &lt;defaults&gt;
+            &lt;allowFeatureInfo&gt;true&lt;/allowFeatureInfo&gt;
+            &lt;defaultColorScaleRange&gt;-50 50&lt;/defaultColorScaleRange&gt;
+            &lt;defaultPaletteName&gt;rainbow&lt;/defaultPaletteName&gt;
+            &lt;defaultNumColorBands&gt;254&lt;/defaultNumColorBands&gt;
+            &lt;logScaling&gt;false&lt;/logScaling&gt;
+        &lt;/defaults&gt;
+    &lt;/global&gt;
+&lt;/wmsConfig&gt;
+</pre><p>
+  Most of these defaults will be acceptable for most datasets on your server.  However, the <tt>defaultColorScaleRange</tt> will not be appropriate for many of the variables you are serving.  Note that <strong>all five quantities must be defined in this section.</strong>
+</p>
+<h3 id="Overridingsettingsbaseduponstandardnames">Overriding settings based upon standard names</h3>
+<p>
+  One way to define more sensible defaults is to override the global default settings for all variables with certain CF standard names (see <a class="ext-link" href="http://cfconventions.org/standard-names.html"><span class="icon"> </span>here</a>) for a current list of standard names.  For example, the file below sets a colour scale range for all variables with the standard name of <tt>sea_water_temperature</tt> and defines that chlorophyll measurements should be displayed with a logarithmic scaling.
+</p>
+<pre class="wiki">&lt;wmsConfig&gt;
+    &lt;global&gt;
+        &lt;defaults&gt;
+            ... (omitted for brevity: still mandatory in the config file)
+        &lt;/defaults&gt;
+        &lt;standardNames&gt;
+            &lt;standardName name="sea_water_temperature" units="K"&gt;
+                &lt;defaultColorScaleRange&gt;268 308&lt;/defaultColorScaleRange&gt;
+            &lt;/standardName&gt;
+            &lt;standardName name="mass_concentration_of_chlorophyll_in_sea_water" units="kg m-3"&gt;
+                &lt;logScaling&gt;true&lt;/logScaling&gt;
+            &lt;/standardName&gt;
+        &lt;/standardNames&gt;
+    &lt;/global&gt;
+&lt;/wmsConfig&gt;
+</pre><p>
+  A few things are noteworthy here:
+</p>
+<ol><li>Any properties that are not set on a per-standard name basis will be taken from the global defaults.
+</li><li>These defaults are still considered "global" and will apply to all datasets unless overridden on a per-dataset basis.
+</li><li>It is mandatory to specify the units in which you are specifying the default colour scale range.  If a variable in one of your datasets uses the same standard name but different units, the scale will automatically be converted to the new units, <em>provided that the units can be identified as valid UDUNITS strings</em>.
+</li></ol><h3 id="Per-datasetoverrides">Per-dataset overrides</h3>
+<p>
+  You may specify settings for particular datasets, which override any settings in the <tt>&lt;global&gt;</tt> section.  The only tricky part is creating a string that identifies a dataset.  In THREDDS, datasets are identified by their URL path.  For example, for the WMS capabilities document at:
+</p>
+<p>
+  <tt>http://myserver.com/thredds/wms/NCOF/POLCOMS/IRISH_SEA/POLCOMS-Irish-Sea_best.ncd?service=WMS&amp;version=1.3.0&amp;request=GetCapabilities</tt>
+</p>
+<p>
+  the URL path is <tt>NCOF/POLCOMS/IRISH_SEA/POLCOMS-Irish-Sea_best.ncd</tt>.  It is the part of the above URL that is unique to the dataset.
+</p>
+<p>
+  To specify that all variables in this dataset should use the <tt>occam</tt> palette, use the following config file:
+</p>
+<pre class="wiki">&lt;wmsConfig&gt;
+    &lt;global&gt;
+        ...
+    &lt;/global&gt;
+    &lt;overrides&gt;
+        &lt;datasetPath pathSpec="NCOF/POLCOMS/IRISH_SEA/POLCOMS-Irish-Sea_best.ncd"&gt;
+            &lt;pathDefaults&gt;
+                &lt;defaultPaletteName&gt;occam&lt;/defaultPaletteName&gt;
+            &lt;/pathDefaults&gt;
+        &lt;/datasetPath&gt;
+    &lt;/overrides&gt;
+&lt;/wmsConfig&gt;
+</pre><p>
+  Note that the <tt>pathSpec</tt> also accepts wildcards.  So you could also have set:
+</p>
+<p>
+  <tt>&lt;datasetPath pathSpec="NCOF/POLCOMS/IRISH_SEA/*.ncd"&gt;</tt>
+</p>
+<p>
+  which would match all URL paths with the above pattern.  If you specify a number of pathSpecs that all match the same URL path, the longest pattern is deemed to be the most specific and will be used.  So, for example, in the config file below:
+</p>
+<pre class="wiki">&lt;wmsConfig&gt;
+    &lt;global&gt;
+        ...
+    &lt;/global&gt;
+    &lt;overrides&gt;
+        &lt;datasetPath pathSpec="NCOF/*"&gt;
+            &lt;pathDefaults&gt;
+                &lt;defaultPaletteName&gt;redblue&lt;/defaultPaletteName&gt;
+            &lt;/pathDefaults&gt;
+        &lt;/datasetPath&gt;
+        &lt;datasetPath pathSpec="NCOF/POLCOMS/IRISH_SEA/POLCOMS-*.ncd"&gt;
+            &lt;pathDefaults&gt;
+                &lt;defaultPaletteName&gt;occam&lt;/defaultPaletteName&gt;
+            &lt;/pathDefaults&gt;
+        &lt;/datasetPath&gt;
+    &lt;/overrides&gt;
+&lt;/wmsConfig&gt;
+</pre><p>
+  The dataset with URL path <tt>NCOF/POLCOMS/IRISH_SEA/POLCOMS-Irish-Sea_best.ncd</tt> matches both pathSpecs, but the second pathSpec is longer, and so the dataset will use the occam palette by default.  However, the URL path <tt>NCOF/METOFFICE/foo/bar.nc</tt> only matches the first pathSpec and will use the redblue palette.
+</p>
+<h3 id="Per-variableoverrides">Per-variable overrides</h3>
+<p>
+  The most specific (and most verbose) way to specify a style is to specify the style of a particular variable within a particular dataset.  Variables are identified by their internal names (note: not their standard names) with a dataset.  For example, the following config file overrides the global default colour scale range for a particular variable within a dataset:
+</p>
+<pre class="wiki">&lt;wmsConfig&gt;
+    &lt;global&gt;
+        ...
+    &lt;/global&gt;
+    &lt;overrides&gt;
+        &lt;datasetPath pathSpec="NCOF/POLCOMS/IRISH_SEA/POLCOMS-*.ncd"&gt;
+            &lt;pathDefaults&gt;
+                ... (can still specify defaults for this dataset)
+            &lt;/pathDefaults&gt;
+            &lt;variables&gt;
+                &lt;variable id="TMP"&gt;
+                    &lt;defaultColorScaleRange&gt;280 290&lt;/defaultColorScaleRange&gt;
+                &lt;/variable&gt;
+                &lt;variable id="SAL"&gt;
+                    &lt;defaultColorScaleRange&gt;30 35&lt;/defaultColorScaleRange&gt;
+                &lt;/variable&gt;
+            &lt;/variables&gt;
+        &lt;/datasetPath&gt;
+        &lt;datasetPath pathSpec="foo/bar"&gt;
+            ...
+        &lt;/datasetPath&gt;
+    &lt;/overrides&gt;
+&lt;/wmsConfig&gt;
+</pre></div>
 
 <h2>Change to CRS List in WMS GetCapabilities Documents</h2>
 

@@ -32,16 +32,19 @@
  */
 package ucar.nc2;
 
-import ucar.ma2.*;
+import net.jcip.annotations.Immutable;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.nc2.constants.CDM;
+import ucar.nc2.util.Indent;
 
+import java.nio.ByteBuffer;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
-import java.nio.ByteBuffer;
 import java.util.Map;
-
-import net.jcip.annotations.Immutable;
-import ucar.nc2.util.Indent;
 
 /**
  * An Attribute has a name and a value, used for associating arbitrary metadata with a Variable or a Group.
@@ -55,6 +58,12 @@ import ucar.nc2.util.Indent;
 @Immutable
 public class Attribute extends CDMNode {
 
+  static final String SPECIALPREFIX = "_";
+  static final String[] SPECIALS = new String[]{
+          CDM.NCPROPERTIES, CDM.ISNETCDF4, CDM.SUPERBLOCKVERSION,
+          CDM.DAP4_LITTLE_ENDIAN, CDM.EDU_UCAR_PREFIX
+  };
+
   /**
    * Turn a list into a map
    * @param atts list of attributes
@@ -66,6 +75,20 @@ public class Attribute extends CDMNode {
     if (atts == null) return result;
     for (Attribute att : atts) result.put(att.getShortName(), att);
     return result;
+  }
+
+  static public boolean
+  isspecial(Attribute a)
+  {
+    String nm = a.getShortName();
+    if(nm.startsWith(SPECIALPREFIX)) {
+      /* Check for selected special attributes */
+      for(String s : SPECIALS) {
+        if(nm.startsWith(s))
+          return true; /* is special */
+      }
+    }
+    return false; /* is not special */
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -337,7 +360,7 @@ public class Attribute extends CDMNode {
     DataType dt = DataType.getType(val.getClass());
     Array vala = Array.factory(dt.getPrimitiveClassType(), shape);
     Index ima = vala.getIndex();
-    vala.setDouble(ima.set0(0), val.doubleValue());
+    vala.setObject(ima.set0(0), val);
     setValues(vala);
     this.isUnsigned = isUnsigned;
     if (isUnsigned) vala.setUnsigned(true);

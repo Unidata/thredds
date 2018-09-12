@@ -1,12 +1,23 @@
 language: java
 sudo: false
 
+# Need to run on Ubuntu Precise (v12.04.5) until we rebuild netCDF-C for 
+# Ubuntu Trusty (v14.04.5), the new Travis default
+dist: precise
+
 addons:
   artifacts:
-    bucket: unidata-tds-tests
+    bucket: unidata-tds
     paths:
       - $TRAVIS_UPLOAD_PATH
     target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
+
+  # Workaround for Travis CI issue 7732 causing buffer overflow in OpenJDK7.
+  # See https://github.com/travis-ci/travis-ci/issues/5227#issuecomment-165131913
+  # Maybe this won't be necessary once we switch dist (above) from precise to trusty?
+  hosts:
+    - thredds
+  hostname: thredds
 
 env:
   global:
@@ -28,7 +39,7 @@ script:
 
   - if [[ $BUILD_IDV == false ]]; then
       echo If available, test report at;
-      echo http://unidata-tds-tests.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
+      echo http://unidata-tds.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
       ./gradlew --info testAll;
     fi
 

@@ -176,7 +176,7 @@ public class AbstractNcssController {
         return getDatasetPath(req.getServletPath());
     }
 
-    public static String getDatasetPath(String path) {
+    public static String  getDatasetPath(String path) {
       if (path.startsWith(NcssController.servletPathGrid)) {               // strip off /ncss/grid/
           path = path.substring(NcssController.servletPathGrid.length());
 

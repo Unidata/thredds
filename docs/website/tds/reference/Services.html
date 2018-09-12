@@ -29,6 +29,7 @@
           <li><a href="#NCSS">NCSS</a></li>
           <li><a href="#cdmremote">CDMRemote</a></li>
           <li><a href="#HTTP">HTTP File Download</a></li>
+          <li><a href="#SOS">OGC SOS</a></li>
         </ul>
       </li>
     </ul>
@@ -538,7 +539,7 @@
         More setup, configuration, and implementation details for the TDS's
         OGC WMS implementation are available <a href="WMS.html">here</a>.
         Including a link to configuration information for the underlying
-        WMS implementation (ncWMS: "<a href="http://www.resc.reading.ac.uk/trac/myocean-tools/wiki/WmsDetailedConfiguration">Detailed ncWMS Configuration</a>")
+        WMS implementation (ncWMS: "<a href="WMS.html">Detailed ncWMS Configuration</a>")
       </li>
     </ul>
   </td>
@@ -583,7 +584,49 @@
     </ul>
   </td>
 </tr>
-
+  <tr>
+    <td><a name="SOS">OGC Sensor Observation Service (SOS)</a></td>
+    <td>
+      <table width="100%">
+        <tr>
+          <th colspan="2">Basic Configuration</th>
+        </tr>
+        <tr>
+          <td>Default&nbsp;Availability</td>
+          <td>Disabled</td>
+        </tr>
+        <tr>
+          <td>Access Point</td>
+          <td><code>/thredds/sos/*</code></td>
+        </tr>
+        <tr>
+          <th colspan="2">Catalog Service Configuration<br/>
+            (exact values <a href="#tdsServiceElemRequirements">required</a>)
+          </th>
+        </tr>
+        <tr>
+          <td>Service Type</td>
+          <td><strong>Sensor Observation Service (SOS)</strong></td>
+        </tr>
+        <tr>
+          <td>Service Base URL</td>
+          <td><strong>/thredds/sos/</strong></td>
+        </tr>
+      </table>
+    </td>
+    <td>Sensor Observation Service
+      <ul>
+        <li>The SOS standard is applicable to use cases in which sensor data
+          needs to be managed in an interoperable way. For more information,
+          see the <a href="http://www.opengeospatial.org/standards/sos">OGC</a>
+          SOS page, or the ncSOS
+          <a href="https://github.com/asascience-open/ncSOS/wiki">wiki</a>,
+          maintained by the developers of the ncSOS plugin, Applied Science
+          Associates.
+        </li>
+      </ul>
+    </td>
+  </tr>
 </table>
 
 <hr width="100%"/>
@@ -626,6 +669,9 @@
 <pre>&lt;service name="uddc" serviceType="<strong>UDDC</strong>" base="<strong>/thredds/uddc/"</strong>&nbsp;/&gt;</pre>
 
 
+<h4>SOS</h4>
+<pre>&lt;service name="sos" serviceType="<strong>SOS</strong>" base="<strong>/thredds/sos/"</strong>&nbsp;/&gt;</pre>
+
 <h3><a name="compoundExample">Example compound <code>service</code> Element</a></h3>
 
 <pre>
@@ -641,7 +687,10 @@
     &lt;service name=&quot;iso&quot; serviceType=&quot;<strong>ISO</strong>&quot; base=&quot;<strong>/thredds/iso/</strong>&quot;/&gt;
     &lt;service name=&quot;ncml&quot; serviceType=&quot;<strong>NCML</strong>&quot; base=&quot;<strong>/thredds/ncml/</strong>&quot;/&gt;
     &lt;service name=&quot;uddc&quot; serviceType=&quot;<strong>UDDC</strong>&quot; base=&quot;<strong>/thredds/uddc/</strong>&quot;/&gt;
-&lt;/service&gt;
+
+    &lt;service name=&quot;sos&quot; serviceType=&quot;<strong>SOS</strong>&quot; base=&quot;<strong>/thredds/sos/</strong>&quot;/&gt;
+
+  &lt;/service&gt;
 </pre>
 
 <hr width="100%"/>

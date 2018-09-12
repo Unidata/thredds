@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -106,17 +106,38 @@ public class Geostationary extends AbstractCoordTransBuilder {
       if (Double.isNaN(perspective_point_height)) {
          throw new IllegalArgumentException("Must specify "+CF.PERSPECTIVE_POINT_HEIGHT);
       }
-      double semi_minor_axis = readAttributeDouble( ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
-      if (Double.isNaN(semi_minor_axis)) {
-         throw new IllegalArgumentException("Must specify "+CF.SEMI_MINOR_AXIS);
-      }
+
       double semi_major_axis = readAttributeDouble( ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
       if (Double.isNaN(semi_major_axis)) {
          throw new IllegalArgumentException("Must specify "+CF.SEMI_MAJOR_AXIS);
       }
 
-      double inv_flattening = readAttributeDouble( ctv, CF.INVERSE_FLATTENING, Double.NaN);
+      double semi_minor_axis = readAttributeDouble( ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
+      double inv_flattening  = readAttributeDouble( ctv, CF.INVERSE_FLATTENING, Double.NaN);
 
+      if (Double.isNaN(semi_minor_axis) && Double.isNaN(inv_flattening)) {
+         throw new IllegalArgumentException("Must specify "+CF.SEMI_MINOR_AXIS+" and/or "+CF.INVERSE_FLATTENING);
+      }
+      else if (Double.isNaN(semi_minor_axis)) {
+          final double flattening = 1. / inv_flattening;
+          semi_minor_axis = semi_major_axis * (1. - flattening);
+      }
+      else if (Double.isNaN(inv_flattening))
+      {
+        if (semi_minor_axis != semi_major_axis) {
+          final double flattening = (semi_major_axis - semi_minor_axis) / semi_major_axis;
+          inv_flattening = 1. / flattening;
+        }
+        else {
+          // Do nothing. The calculations results in inv_flattening = 1. / 0., and it is already
+          // set to Double.NaN.
+        }
+      }
+      else {
+        // Both semi_minor_axis and inv_flattening are specified.
+        assert (! Double.isNaN(semi_minor_axis)) && (! Double.isNaN(inv_flattening));
+        // If we were obsessive, we could do a sanity test to verify the values are consistent.
+      }
 
       String sweep_angle = readAttribute( ctv, CF.SWEEP_ANGLE_AXIS, null);
       String fixed_angle = readAttribute( ctv, CF.FIXED_ANGLE_AXIS, null);

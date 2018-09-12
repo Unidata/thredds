@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<parameterMap>
+  <table>Table4.2.3.4</table>
+  <title>Volcanic Ash</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-3-4.shtml</source>
+  <parameter code="0">
+    <shortName>VOLAPROB</shortName>
+    <description>Volcanic Ash Probability</description>
+    <units>%</units>
+  </parameter>
+  <parameter code="1">
+    <shortName>VOLACDTT</shortName>
+    <description>Volcanic Ash Cloud Top Temperature</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>VOLACDTP</shortName>
+    <description>Volcanic Ash Cloud Top Pressure</description>
+    <units>Pa</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>VOLACDTH</shortName>
+    <description>Volcanic Ash Cloud Top Height</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>VOLACDEM</shortName>
+    <description>Volcanic Ash Cloud Emissity</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="5">
+    <shortName>VOLAEADR</shortName>
+    <description>Volcanic Ash Effective Absorption Depth Ratio</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="6">
+    <shortName>VOLACDOD</shortName>
+    <description>Volcanic Ash Cloud Optical Depth</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="7">
+    <shortName>VOLACDEN</shortName>
+    <description>Volcanic Ash Column Density</description>
+    <units>kg m-2</units>
+  </parameter>
+  <parameter code="8">
+    <shortName>VOLAPER</shortName>
+    <description>Volcanic Ash Particle Effective Radius</description>
+    <units>m</units>
+  </parameter>
+</parameterMap>

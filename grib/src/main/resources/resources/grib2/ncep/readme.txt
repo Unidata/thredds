@@ -818,3 +818,13 @@ Conflicts=0 extra=3 udunits=0
 09/10/2014 caron
 
  screen scraped NCEP again. Havent yet integerated, put into ncep/v13.0.0 to compare with old.
+
+11/17/2016 sarms
+  - updated ncep grib2 table using ucar/nc2/grib/grib2/table/NcepHtmlScraper.java
+
+12/01/2017 sarms
+  - updated ncep grib2 tables to v20.0.0 using ucar/nc2/grib/grib2/table/NcepHtmlScraper.java.
+    Noticed a warning that "*** Cant parse 0-90 == 0-90 Elevation in increments of 100 m" on
+    http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-216.shtml. Not sure how to interpret
+    without an example file, so will leave out for now. Has been left out since 2015, when this
+    table appeared.

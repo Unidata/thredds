@@ -3,5 +3,5 @@ apply plugin: 'war'
 dependencies {
     compile project(':dap4:d4core')
     compile project(':dap4:d4servletshared')
-    provided libraries["javax.servlet-api"]
+    compileOnly libraries["javax.servlet-api"]
 }
