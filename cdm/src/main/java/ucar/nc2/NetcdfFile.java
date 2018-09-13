@@ -68,23 +68,37 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Read-only scientific datasets that are accessible through the netCDF API.
- * Immutable after setImmutable() is called. However, reading data is not thread-safe.
- * <p> Be sure to close the file when done, best practice is to enclose in a try/finally block:
+ * <p>Read-only scientific datasets that are accessible through the netCDF API.
+ * Immutable after {@code setImmutable()} is called. However, reading data is not
+ * thread-safe.</p>
+ *
+ * <p>Be sure to close the file when done. Either enclose in a try/finally block:</p>
+ *
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
  *  ncfile = NetcdfFile.open(fileName);
- *  ...
+ *  // do stuff
  * } finally {
- *  ncfile.close();
+ *  if(ncfile != null) { ncfile.close(); }
  * }
  * </pre>
- * <p/>
+ *
+ * <p>Or better yet, use try-with-resources:</p>
+ *
+ * <pre>
+ * try (NetcdfFile ncfile = NetcdfFile.open(fileName)) {
+ *  // do stuff
+ * }
+ * </pre>
+ *
  * <h3>Naming</h3>
+ * <p>
  * Each object has a name (aka "full name") that is unique within the entire netcdf file, and
  * a "short name" that is unique within the parent group.
- * These coincide for objects in the root group, and so are backwards compatible with version 3 files.
+ * These coincide for objects in the root group, and so are backwards compatible with version
+ * 3 files.</p>
+ *
  * <ol>
  * <li>Variable: group1/group2/varname
  * <li>Structure member Variable: group1/group2/varname.s1.s2
