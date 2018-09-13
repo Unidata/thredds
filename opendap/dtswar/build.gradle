@@ -6,9 +6,9 @@ apply plugin: 'war'
 dependencies {
     compile project(':cdm')
     compile project(':opendap')
-
-    provided libraries["javax.servlet-api"]
-    runtime libraries["jstl"]
+    
+    compileOnly libraries["javax.servlet-api"]
+    runtime libraries["taglibs-standard-impl"]
 
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]

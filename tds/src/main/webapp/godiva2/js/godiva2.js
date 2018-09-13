@@ -142,7 +142,7 @@ window.onload = function()
     var bluemarble_demis_wms = new OpenLayers.Layer.WMS1_1_1( "Demis BlueMarble",
         "http://www2.demis.nl/wms/wms.ashx?WMS=BlueMarble" , {layers: 'Earth Image,Borders,Coastlines'});
     var bluemarble_wms = new OpenLayers.Layer.WMS1_1_1( "Blue Marble + bathymetry",
-        "http://neowms.sci.gsfc.nasa.gov/wms/wms", {layers: 'BlueMarbleNG-TB', format: 'image/jpeg'});
+        "https://neo.sci.gsfc.nasa.gov/wms/wms", {layers: 'BlueMarbleNG-TB', format: 'image/jpeg'});
     var srtm_dem = new OpenLayers.Layer.WMS( "SRTM DEM",
         "http://iceds.ge.ucl.ac.uk/cgi-bin/icedswms?", {layers:'bluemarble,srtm30'}, {wrapDateLine: true});
     var ol_wms = new OpenLayers.Layer.WMS1_1_1( "OpenLayers WMS",
@@ -170,7 +170,7 @@ window.onload = function()
     var polarWindow = new OpenLayers.Bounds(windowLow, windowLow, windowHigh, windowHigh);
     var northPoleBaseLayer = new OpenLayers.Layer.WMS1_1_1(
         "North polar stereographic",
-        "http://nsidc.org/cgi-bin/atlas_north",
+        "https://nsidc.org/cgi-bin/atlas_north",
         {
             layers: 'country_borders,arctic_circle',
             format: 'image/png'
@@ -185,7 +185,7 @@ window.onload = function()
     );
     var southPoleBaseLayer = new OpenLayers.Layer.WMS1_1_1(
         "South polar stereographic",
-        "http://nsidc.org/cgi-bin/atlas_south",
+        "https://nsidc.org/cgi-bin/atlas_south",
         {
             layers: 'country_borders,antarctic_circle',
             format: 'image/png'
@@ -211,9 +211,18 @@ window.onload = function()
     seazone_wms.setVisibility(false);*/
 
     // 2016-05-20 - srtm_dem, ol_wms and human_wms not responding - disabling layers.
-    map.addLayers([demis_wms, bluemarble_demis_wms, bluemarble_wms, /*srtm_dem, ol_wms, human_wms,*/ northPoleBaseLayer, southPoleBaseLayer, drawinglayer/*, seazone_wms, essi_wms*/]);
 
-    map.setBaseLayer(demis_wms);
+    if (location.protocol === 'https:') {
+        map.addLayers(
+            [bluemarble_wms, northPoleBaseLayer, southPoleBaseLayer, drawinglayer]);
+        map.setBaseLayer(bluemarble_wms);
+    } else {
+        map.addLayers(
+            [demis_wms, bluemarble_demis_wms, bluemarble_wms, /*srtm_dem, ol_wms, human_wms,*/
+             northPoleBaseLayer, southPoleBaseLayer, drawinglayer/*, seazone_wms, essi_wms*/]);
+        map.setBaseLayer(demis_wms);
+    }
+
     projectionCode = map.baseLayer.projection.getCode();
 
     // Make sure the Google Earth and Permalink links are kept up to date when

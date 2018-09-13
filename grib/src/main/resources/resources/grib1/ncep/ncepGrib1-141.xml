@@ -174,57 +174,57 @@
   </parameter>
   <parameter code="200">
     <shortName>ASO4</shortName>
-    <description>Sulfate (SO4) Particulates   2.5 m Diameter</description>
+    <description>Sulfate (SO4) Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="201">
     <shortName>ANH4</shortName>
-    <description>Ammonia (NH4) Particulates   2.5 m Diameter</description>
+    <description>Ammonia (NH4) Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="202">
     <shortName>ANO3</shortName>
-    <description>Nitrate (NO3) Particulates   2.5 m Diameter</description>
+    <description>Nitrate (NO3) Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="203">
     <shortName>AORGA</shortName>
-    <description>Organic Particulates   2.5 m Diameter</description>
+    <description>Organic Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="204">
     <shortName>AORGPA</shortName>
-    <description>Primarily Organic Particulates   2.5 m Diameter</description>
+    <description>Primarily Organic Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="205">
     <shortName>AORGB</shortName>
-    <description>Biogenically Originated Particulates   2.5 m Diameter</description>
+    <description>Biogenically Originated Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="206">
     <shortName>AEC</shortName>
-    <description>Elemental Carbon Particulates   2.5 m Diameter</description>
+    <description>Elemental Carbon Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="207">
     <shortName>A25</shortName>
-    <description>Unspecified Anthropogenic Particulates   2.5 m Diameter</description>
+    <description>Unspecified Anthropogenic Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="208">
     <shortName>AH2O</shortName>
-    <description>Water Particulates   2.5 m Diameter</description>
+    <description>Water Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="209">
     <shortName>ANA</shortName>
-    <description>Sodium Particulates   2.5 m Diameter</description>
+    <description>Sodium Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="210">
     <shortName>ACL</shortName>
-    <description>Chloride Particulates   2.5 m Diameter</description>
+    <description>Chloride Particulates  2.5 m Diameter</description>
     <units>g/m3</units>
   </parameter>
   <parameter code="216">
@@ -274,7 +274,7 @@
   </parameter>
   <parameter code="228">
     <shortName>SRFATKN</shortName>
-    <description>Surface Area Contributed by Particulates   0.1 m Diameter</description>
+    <description>Surface Area Contributed by Particulates  0.1 m Diameter</description>
     <units>m2/m3</units>
   </parameter>
   <parameter code="229">

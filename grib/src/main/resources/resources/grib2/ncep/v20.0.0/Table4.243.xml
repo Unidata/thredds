@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<codeTable>
+  <table>Table 4.243</table>
+  <title>Tile Class</title>
+  <source>http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-243.shtml</source>
+  <parameter code="1">
+    <description>Evergreen broadleaved forest</description>
+  </parameter>
+  <parameter code="2">
+    <description>Deciduous broadleaved closed forest</description>
+  </parameter>
+  <parameter code="3">
+    <description>Deciduous broadleaved open forest</description>
+  </parameter>
+  <parameter code="4">
+    <description>Evergreen needle-leaf forest</description>
+  </parameter>
+  <parameter code="5">
+    <description>Deciduous needle-leaf forest</description>
+  </parameter>
+  <parameter code="6">
+    <description>Mixed leaf trees</description>
+  </parameter>
+  <parameter code="7">
+    <description>Fresh water flooded trees</description>
+  </parameter>
+  <parameter code="8">
+    <description>Saline water flooded trees</description>
+  </parameter>
+  <parameter code="9">
+    <description>Mosaic tree/natural vegetation</description>
+  </parameter>
+  <parameter code="10">
+    <description>Burnt tree cover</description>
+  </parameter>
+  <parameter code="11">
+    <description>Evergreen shurbs closed-open</description>
+  </parameter>
+  <parameter code="12">
+    <description>Deciduous shurbs closed-open</description>
+  </parameter>
+  <parameter code="13">
+    <description>Herbaceous vegetation closed-open</description>
+  </parameter>
+  <parameter code="14">
+    <description>Sparse herbaceous or grass</description>
+  </parameter>
+  <parameter code="15">
+    <description>Flooded shurbs or herbaceous</description>
+  </parameter>
+  <parameter code="16">
+    <description>Cultivated and managed areas</description>
+  </parameter>
+  <parameter code="17">
+    <description>Mosaic crop/tree/natural vegetation</description>
+  </parameter>
+  <parameter code="18">
+    <description>Mosaic crop/shrub/grass</description>
+  </parameter>
+  <parameter code="19">
+    <description>Bare areas</description>
+  </parameter>
+  <parameter code="20">
+    <description>Water</description>
+  </parameter>
+  <parameter code="21">
+    <description>Snow and ice</description>
+  </parameter>
+  <parameter code="22">
+    <description>Artificial surface</description>
+  </parameter>
+  <parameter code="23">
+    <description>Ocean</description>
+  </parameter>
+  <parameter code="24">
+    <description>Irrigated croplands</description>
+  </parameter>
+  <parameter code="25">
+    <description>Rain fed croplands</description>
+  </parameter>
+  <parameter code="26">
+    <description>Mosaic cropland (50-70%)-vegetation (20-50%)</description>
+  </parameter>
+  <parameter code="27">
+    <description>Mosaic vegetation (50-70%)-cropland (20-50%)</description>
+  </parameter>
+  <parameter code="28">
+    <description>Closed broadleaved evergreen forest</description>
+  </parameter>
+  <parameter code="29">
+    <description>Closed needle-leaved evergreen forest</description>
+  </parameter>
+  <parameter code="30">
+    <description>Open needle-leaved deciduous forest</description>
+  </parameter>
+  <parameter code="31">
+    <description>Mixed broadleaved and needle-leave forest</description>
+  </parameter>
+  <parameter code="32">
+    <description>Mosaic shrubland (50-70%)-grassland (20-50%)</description>
+  </parameter>
+  <parameter code="33">
+    <description>Mosaic grassland (50-70%)-shrubland (20-50%)</description>
+  </parameter>
+  <parameter code="34">
+    <description>Closed to open shrubland</description>
+  </parameter>
+  <parameter code="35">
+    <description>Sparse vegetation</description>
+  </parameter>
+  <parameter code="36">
+    <description>Closed to open forest regularly flooded</description>
+  </parameter>
+  <parameter code="37">
+    <description>Closed forest or shrubland permanently flooded</description>
+  </parameter>
+  <parameter code="38">
+    <description>Closed to open grassland regularly flooded</description>
+  </parameter>
+  <parameter code="39">
+    <description>Undefined</description>
+  </parameter>
+  <parameter code="255">
+    <description>Missing</description>
+  </parameter>
+</codeTable>

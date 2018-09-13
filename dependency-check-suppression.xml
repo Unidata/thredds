@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+   <suppress>
+      <notes><![CDATA[
+      file name example: tdmFat-4.6.11-SNAPSHOT.jar
+      file name example: tdm-4.6.11-SNAPSHOT.jar
+      ]]></notes>
+      <filePath regex="true">.*\/tdm.*\.jar</filePath>
+      <cpe>cpe:/a:tdm_project:tdm</cpe>
+   </suppress>
+   <suppress>
+      <notes><![CDATA[
+      file name example: ncwms-1.2.tds.4.6.11-SNAPSHOT.jar
+      ]]></notes>
+      <filePath regex="true">.*\/ncwms.*\.jar</filePath>
+      <cpe>cpe:/a:trac:trac:-</cpe>
+   </suppress>
+</suppressions>

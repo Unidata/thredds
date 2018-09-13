@@ -313,11 +313,13 @@ public class GridDatasetInfo {
 		//accept list for Grid As Point requests
 		Element gridAsPoint = new Element("GridAsPoint");
 
-    // LOOK this is wrong - should be using SupportedOperation class or something
+        // LOOK this is wrong - should be using SupportedOperation class or something
 		gridAsPoint.addContent(new Element("accept").addContent("xml").setAttribute("displayName", "xml") );
 		gridAsPoint.addContent(new Element("accept").addContent("xml_file").setAttribute("displayName", "xml (file)"));
 		gridAsPoint.addContent(new Element("accept").addContent("csv").setAttribute("displayName", "csv"));
 		gridAsPoint.addContent(new Element("accept").addContent("csv_file").setAttribute("displayName", "csv (file)"));
+		gridAsPoint.addContent(new Element("accept").addContent("geocsv").setAttribute("displayName", "geocsv"));
+		gridAsPoint.addContent(new Element("accept").addContent("geocsv_file").setAttribute("displayName", "geocsv (file)"));
 		gridAsPoint.addContent(new Element("accept").addContent("netcdf").setAttribute("displayName", "netcdf"));
 
 		//accept list for Grid requests

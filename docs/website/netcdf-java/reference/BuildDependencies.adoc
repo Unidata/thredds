@@ -14,9 +14,9 @@ Releases repository:
 <!-- In Maven -->
 <repositories>
     <repository>
-        <id>unidata-releases</id>
-        <name>Unidata Releases</name>
-        <url>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/</url>
+        <id>unidata-all</id>
+        <name>Unidata All</name>
+        <url>https://artifacts.unidata.ucar.edu/repository/unidata-all/</url>
     </repository>
 </repositories>
 ----
@@ -26,7 +26,7 @@ Releases repository:
 // In Gradle
 repositories {
     maven {
-        url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/"
+        url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
     }
 }
 ----
@@ -138,7 +138,7 @@ dependencies {
 
 This is the appropriate option if you're not using a dependency management tool like Maven or Gradle and you don't
 care about jar size or compatibility with other libraries. Simply include
-https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/[netcdfAll-${netcdfJavaVersion}.jar]
+https://artifacts.unidata.ucar.edu/repository/unidata-all/edu/ucar/netcdfAll/[netcdfAll-${netcdfJavaVersion}.jar]
 on the classpath when you run your program. You'll also need a <<Logging,logger>>.
 
 == Logging

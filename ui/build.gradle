@@ -1,3 +1,12 @@
+import com.google.common.collect.Iterables
+import edu.ucar.build.ui.ToolsUiJnlpBaseTask
+import edu.ucar.build.ui.ToolsUiJnlpExtensionTask
+
+import java.util.jar.JarEntry
+import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
+import org.codehaus.groovy.runtime.NioGroovyMethods
+
 description = "Provides a graphical interface to much of the functionality in the CDM library."
 ext.title = "ToolsUI"
 
@@ -10,6 +19,8 @@ dependencies {
     compile project(":opendap")
     compile project(":waterml")
     compile project(":httpservices")
+    
+    runtime project(":visadCdm")  // For Gempak IOSPs.
 
     compile libraries["ehcache-core"]
     compile libraries["jdom2"]
@@ -31,27 +42,47 @@ dependencies {
 
 //////////////////////////////////////////////////////////
 
-task showDependencies << {
-    for (file in configurations.runtime.resolve()) {
-        println " " + file
+ext {
+    // See http://docs.oracle.com/javase/8/docs/technotes/guides/deploy/manifest.html#CIHJIIHD
+    // See http://docs.oracle.com/javase/8/docs/technotes/guides/javaws/developersguide/syntax.html#jnlp_elements
+    // The Codebase attributes in the JAR manifest and JNLP must match, or else javaws fails to start with the error:
+    // "Application Blocked by Java Security".
+    webstartCodebase = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/webstart/"
+    
+    // Webstart can also work if both Codebase attributes are unspecified.
+    // Setting this property to null will produce a manifest and JNLP files with no Codebase attributes.
+    // LOOK: Use this for local Webstart testing; use the other for deployment to production.
+//     webstartCodebase = null
+    
+    webstartWorkingDir = "build/signed"
+    if (project.hasProperty("webdir")) {
+        webstartDir = new File(webdir, "webstart")
     }
+    
+    depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']
 }
 
 jar {
     manifest {
-        attributes 'Main-Class': 'ucar.nc2.ui.ToolsUI',
-                // These are security attributes, necessary for Web Start: http://goo.gl/Ob6Wid
-                // ui.jar is the first jar in the JNLP, so I think its manifest is the only one that needs these.
-                'Application-Name': project.title,
-                'Codebase': 'http://www.unidata.ucar.edu/software/thredds/',
-                'Permissions': 'all-permissions',
-                'Trusted-Only': 'true',
-
-                // MANIFEST.MF is an @Input to the Jar task, so when it changes, Jar will be considered out-of-date.
-                // Here, we're writing an attribute to MANIFEST.MF. When its value changes, MANIFEST.MF will change,
-                // and Jar will be considered out-of-date.
-                // So, indirectly, we've made the "runtime" configuration an @Input to the Jar task.
-                'Class-Path': configurations.runtime.collect { it.name }.join(' ')
+        Map<String,?> attribs = [:]
+        attribs['Main-Class'] = 'ucar.nc2.ui.ToolsUI'
+    
+        // MANIFEST.MF is an @Input to the Jar task, so when it changes, Jar will be considered out-of-date.
+        // Here, we're writing an attribute to MANIFEST.MF. When its value changes, MANIFEST.MF will change,
+        // and Jar will be considered out-of-date.
+        // So, indirectly, we've made the "runtime" configuration an @Input to the Jar task.
+        attribs['Class-Path'] = configurations.runtime.collect { it.name }.join(' ')
+        
+        // The attributes below are necessary for Web Start; see http://goo.gl/Ob6Wid.
+        // ui-<version>.jar is the main jar in the ToolsUI extension JNLP file, so only its manifest needs these.
+        attribs['Application-Name'] = project.title
+        attribs['Permissions'] = 'all-permissions'
+        attribs['Trusted-Only'] = 'true'
+        if (webstartCodebase) {
+            attribs['Codebase'] = webstartCodebase
+        }
+        
+        attributes attribs
     }
 
     // I used to create META-INF/INDEX.LIST here to speedup Web Start loading, but it turns out that Spring and
@@ -60,36 +91,40 @@ jar {
     // LOOK: Does that make the 'Class-Path' manifest attribute and 'download="lazy"' JNLP attributes pointless?
 }
 
-ext {
-    toolsUIjar = 'toolsUI-' + version + '.jar'
-    webstartWorkingDir = "build/signed"
-    if (project.hasProperty("webdir")) {
-        webstartDir = new File(webdir, "webstart")
-    }
-
-    depsToRejar = ['xmlbeans-2.6.0.jar', 'Saxon-HE-9.4.0.6.jar']
+task toolsUiJnlpExtension(type: ToolsUiJnlpExtensionTask) {
+    codebase = webstartCodebase
+    outputFile = file("$buildDir/webstart/netCDFtoolsExtraJars.jnlp")
 }
 
-// It's possible to test web start files locally before deploying them.
-// 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,
-// such as /thredds/ui/build.
-// 2. Comment-out the 'Codebase' manifest attribute above.
-// 3. Run this task.
-// 4. Open the 2 JNLP files that were copied to webdir. Remove the "codebase" and "href" attributes from the top-level
-// "jnlp" element.
-// 5. You may also need to white-list web starts from the local file system. Go to Java Control Panel->Security->
-// Edit Site List... and add the entry "file:/".
-// 6. cd to "webdir" and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
-// but I couldn't get that working (and there was no error feedback).
-// TODO: Use the Sync task for this.
-/* following properties should be in gradle.properties:
-   keystore=name of keystore file
-   keystoreAlias=idv
-   keystorePassword=password of keystore file
-   webdir:parent of conan content directory
-   ftpdir:ftp directory
+task toolsUiJnlpBase(type: ToolsUiJnlpBaseTask, dependsOn: toolsUiJnlpExtension) {
+    File toolsUiJnlpExtensionFile = Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
+    
+    codebase = webstartCodebase
+    extensionJnlpFileName = toolsUiJnlpExtensionFile.name
+    outputFile = file("$buildDir/webstart/netCDFtools.jnlp")
+}
+
+/*
+ * It's possible to test web start files locally before deploying them.
+ * 1. Open your gradle.properties file (~/.gradle/gradle.properties) and change "webdir" to a local directory,
+ *    such as '/Users/cwardgar/Desktop'
+ * 2. Uncomment the 'webstartCodebase = null' line in the ext{} block above.
+ * 3. Run this task: ./gradlew :ui:clean :ui:releaseWebstart
+ * 4. You may need to white-list web starts from the local file system. Go to Java Control Panel->Security->
+ *    Edit Site List... and add the entry "file:/".
+ * 5. cd to "webdir" and execute "javaws netCDFtools.jnlp". You may also be able to simply double-click that file,
+ *    but I couldn't get that working (and there was no error feedback).
  */
-task releaseWebstart(dependsOn: jar, group: 'Release') << {
+/*
+ * The following properties should be in gradle.properties:
+ * keystore=name of keystore file
+ * keystoreAlias=idv
+ * keystorePassword=password of keystore file
+ * webdir:parent of conan content directory
+ * ftpdir:ftp directory
+ */
+// TODO: Use the Sync task for this.
+task releaseWebstart(group: 'Release', dependsOn: ['jar', 'toolsUiJnlpExtension', 'toolsUiJnlpBase']) << {
     if (project.hasProperty("webdir") && project.hasProperty("keystore")
             && project.hasProperty("keystoreAlias") && project.hasProperty("keystorePassword")) {
         ant.delete(dir: webstartWorkingDir)
@@ -97,8 +132,9 @@ task releaseWebstart(dependsOn: jar, group: 'Release') << {
 
         copy {
             println "copyJnlp"
-            from 'netCDFtools.jnlp'
-            from 'netCDFtoolsExtraJars.jnlp'
+            from Iterables.getOnlyElement(tasks.toolsUiJnlpExtension.outputs.files.files)
+            from Iterables.getOnlyElement(tasks.toolsUiJnlpBase.outputs.files.files)
+            from rootProject.file('docs/website/netcdf-java/nc.gif')  // Referenced in the ToolsUI base JNLP file.
             into webstartWorkingDir
         }
 
@@ -108,8 +144,8 @@ task releaseWebstart(dependsOn: jar, group: 'Release') << {
         println "\tkeystoreAlias = $keystoreAlias"
         println "\tkeystorePassword = $keystorePassword"
 
-        ant.signjar(jar: "build/libs/ui-" + version + ".jar", destDir: webstartWorkingDir, alias: keystoreAlias,
-                keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
+        ant.signjar(jar: tasks.jar.archivePath, destDir: webstartWorkingDir, alias: keystoreAlias,
+                keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
 
         for (file in configurations.runtime.resolve()) {
             if (depsToRejar.contains(file.name)) {
@@ -119,10 +155,10 @@ task releaseWebstart(dependsOn: jar, group: 'Release') << {
                 rejar file, rejarredFile
                 file = rejarredFile
             }
-
+            
             println "Signing $file"
             ant.signjar(jar: file, destDir: webstartWorkingDir, alias: keystoreAlias,
-                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: true)
+                    keystore: keystore, storepass: keystorePassword, preservelastmodified: true, verbose: false)
         }
 
         ant.delete(dir: webstartDir)
@@ -179,11 +215,6 @@ task releaseDocs(dependsOn: javadoc, group: 'Release') << {
 }
 
 ///////////////////////////////////////////////////////
-
-import java.util.jar.JarEntry
-import java.util.jar.JarFile
-import java.util.jar.JarOutputStream
-import org.codehaus.groovy.runtime.NioGroovyMethods
 
 /**
  * Creates a new JAR file at {@code destJarFile} containing the contents of {@code origJarFile}. Any duplicate

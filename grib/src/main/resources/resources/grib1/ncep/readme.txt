@@ -60,3 +60,9 @@
   - The update was focused on disambiguating some of the parameters by adding the platform name
     from which they were obtained (i.e. replacing "Downward Shortwave Radiation Flux" with
     "Downward Shortwave Radiation Flux from GOES-UMD Pinker".
+
+11/17/2016 sarms
+  - updated ncep grib1 tables using ucar/nc2/grib/grib1/tables/NcepHtmlScraper.java
+
+12/01/2017 sarms
+  - updated ncep grib1 tables using ucar/nc2/grib/grib1/tables/NcepHtmlScraper.java

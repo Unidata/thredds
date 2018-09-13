@@ -9,7 +9,7 @@ dependencies {
     compile project(':cdm')
     compile project(':httpservices')
 
-    provided libraries["javax.servlet-api"]
+    compileOnly libraries["javax.servlet-api"]
     compile libraries["jdom2"]
     compile libraries["httpclient"]
     compile libraries["httpcore"]

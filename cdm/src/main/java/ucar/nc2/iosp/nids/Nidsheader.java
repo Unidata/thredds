@@ -2519,7 +2519,7 @@ class Nidsheader{
             ctilt = pname_lookup(99, pLevel);
 
             ctitle = "HighResolution: Base Velocity";
-            cunit = "KT";
+            cunit = "m/s";
             cname = "BaseVelocityDV";
             summary = ctilt + " is a radial image of base velocity field and its range 124 nm";
 
@@ -2756,11 +2756,11 @@ class Nidsheader{
                 lon_min = longitude + t2;
                 lon_max = longitude - t2;
                 summary = ctilt + " is a radial image of base velocity" + (prod_elevation/10 + 1) +  " and  range 32 nm";
-                cunit = "KT";
+                cunit = "m/s";
             }
             else {
                 summary = ctilt + " is a radial image of base velocity at tilt " + (prod_elevation/10 + 1);
-                cunit = "KT";
+                cunit = "m/s";
             }
             cmemo = "Rad Vel "+ prod_elevation/10. + " DEG " + cmode[pinfo.opmode];
             ctitle = "VEL: Radial Velocity" ;

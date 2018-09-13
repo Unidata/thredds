@@ -704,6 +704,13 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
         svctype = decodePathExtension(trueurl); // look at the path extension
       } else {
         svctype = disambiguateHttp(trueurl);
+        // special cases
+        if ((svctype == null || svctype == ServiceType.HTTPServer)) {
+          // ncml file being served over http?
+          if (checkIfRemoteNcml(trueurl)) {
+            svctype = ServiceType.NCML;
+          }
+        }
       }
     }
 
@@ -843,6 +850,47 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
       return null;
     }
+  }
+
+  static private boolean checkIfRemoteNcml(String location) throws IOException {
+    boolean isRemoteNcml = false;
+
+    if (decodePathExtension(location)==ServiceType.NCML) {
+      // just because location ends with ncml does not mean it's ncml
+      // if the ncml file is being served up via http by a remote server,
+      // we should be able to read the first bit of it and see if it even
+      // looks like an ncml file.
+      try (HTTPMethod method = HTTPFactory.Get(location)) {
+        // the first 128 bytes should contain enough info to tell if this looks like
+        // an actual ncml file or not. For example, here is a 128 byte response
+        // <?xml version="1.0" encoding="UTF-8"?>\n<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="dods://ma
+        method.setRange(0, 128);
+        method.setRequestHeader("accept-encoding", "identity");
+        int statusCode = method.execute();
+        if (statusCode >= 300) {
+          if (statusCode == 401) {
+            throw new IOException("Unauthorized to open dataset " + location);
+          } else if (statusCode == 406) {
+            String msg = location + " - this server does not support returning content without any encoding.";
+            msg = msg + " Please download the file locally. Return status=" + statusCode;
+            throw new IOException(msg);
+          } else {
+            throw new IOException(location + " is not a valid URL, return status=" + statusCode);
+          }
+        }
+
+        String strResponse = method.getResponseAsString();
+        // look for the ncml element as well as a reference to the ncml namespace URI
+        // This may not be robust, but worst case, the user will need to download the NcML
+        // file to read it.
+        if (strResponse.contains("<netcdf ") &&
+                strResponse.contains("unidata.ucar.edu/namespaces/netcdf/ncml")) {
+          isRemoteNcml = true;
+        }
+      }
+    }
+
+    return isRemoteNcml;
   }
 
   // not sure what other opendap servers do, so fall back on check for dds

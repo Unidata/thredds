@@ -32,6 +32,8 @@
  */
 package ucar.nc2.dods;
 
+import com.google.common.base.Joiner;
+
 import net.jcip.annotations.NotThreadSafe;
 import ucar.nc2.constants.CF;
 import ucar.nc2.util.EscapeStrings;
@@ -1102,8 +1104,37 @@ if(OLDGROUPCODE) {
         Attribute axes = v.findAttribute(CF.COORDINATES);
         Attribute _axes = v.findAttribute(_Coordinate.Axes);
         if ((null != axes) && (null != _axes)) {
-            v.addAttribute(new Attribute(_Coordinate.Axes, axes.getStringValue() + " " + _axes.getStringValue()));
+            v.addAttribute(combineAxesAttrs(axes, _axes));
         }
+    }
+
+    /**
+     *
+     * Safely combine the multiple axis attributes without duplication
+     *
+     * @param axis1 axis attribute 1
+     * @param axis2 axis attribute 2
+     * @return the combined axis attribute
+     */
+    protected static Attribute combineAxesAttrs(Attribute axis1, Attribute axis2) {
+
+        List axesCombinedValues = new ArrayList<String>();
+        // each axis attribute is a whitespace delimited string, so just join the strings to make
+        // an uber string of all values
+        String axisValuesStr = axis1.getStringValue() + " " + axis2.getStringValue();
+        // axis attributes are whitespace delimited, so split on whitespace to get each axis name
+        String[] axisValues = axisValuesStr.split("\\s");
+        for (String ax : axisValues) {
+            // only add if axis name is unique - no dupes
+            if (!axesCombinedValues.contains(ax) && !ax.equals("")) {
+                axesCombinedValues.add(ax);
+            }
+        }
+
+        // going to rejoin this list of strings to be one whitespace delimited string
+        Joiner joiner = Joiner.on(" ");
+
+        return new Attribute(_Coordinate.Axes, joiner.join(axesCombinedValues));
     }
 
     private void addAttributes(Group g, DodsV dodsV)

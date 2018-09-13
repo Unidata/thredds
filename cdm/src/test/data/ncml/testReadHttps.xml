@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nc:netcdf xmlns:nc="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
+  location="file:src/test/data/example1.nc">
+
+  <nc:explicit/>
+
+  <nc:dimension name="time" length="2" isUnlimited="true"/>
+  <nc:dimension name="lat" length="3"/>
+  <nc:dimension name="lon" length="4"/>
+
+  <nc:variable name="rh" type="int" shape="time lat lon">
+    <nc:attribute name="long_name" type="string" value="relative humidity"/>
+    <nc:attribute name="units" type="string" value="percent"/>
+  </nc:variable>
+  <nc:variable name="T" type="double" shape="time lat lon">
+    <nc:attribute name="long_name" type="string" value="surface temperature"/>
+    <nc:attribute name="units" type="string" value="degC"/>
+  </nc:variable>
+  <nc:variable name="lat" type="float" shape="lat">
+    <nc:attribute name="units" type="string" value="degrees_north"/>
+    <nc:values separator=" ">41.0 40.0 39.0</nc:values>
+  </nc:variable>
+  <nc:variable name="lon" type="float" shape="lon">
+    <nc:attribute name="units" type="string" value="degrees_east"/>
+    <nc:values separator=" ">-109.0 -107.0 -105.0 -103.0</nc:values>
+  </nc:variable>
+  <nc:variable name="time" type="int" shape="time">
+    <nc:attribute name="units" type="string" value="hours"/>
+    <nc:values separator=" ">6 18</nc:values>
+  </nc:variable>
+
+  <nc:attribute name="title" type="string" value="Example Data"/>
+  <nc:attribute name="testByte" type="byte" value="1 2 3 4"/>
+  <nc:attribute name="testShort" type="short" value="1 2 3 4"/>
+  <nc:attribute name="testInt" type="int" value="1 2 3 4"/>
+  <nc:attribute name="testFloat" type="float" value="1 2 3 4"/>
+  <nc:attribute name="testDouble" type="double" value="1 2 3 4"/>
+
+
+</nc:netcdf>

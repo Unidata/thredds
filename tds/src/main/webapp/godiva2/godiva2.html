@@ -8,16 +8,14 @@
         
         <!-- Resets the browser's CSS definitions. This should reduce the
              problem of fonts appearing differently in different browsers. -->
-        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/reset-fonts-grids/reset-fonts-grids.css">
+        <link rel="stylesheet" type="text/css" href="css/yui/reset-fonts-grids.css">
         
         <link rel="stylesheet" type="text/css" href="css/godiva2.css">
         
-        <script type="text/javascript" src="js/OpenLayers-2.10.js"></script>
+        <script type="text/javascript" src="js/OpenLayers-2.13.1.js"></script>
         <script type="text/javascript" src="js/WMS1_1_1.js"></script>
         <script type="text/javascript" src="js/WMS1_3.js"></script>
-        <!-- Comment out the line below to stop using Google Maps -->
-        <!--<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAA7YuB_Hd5LuBiQ3-he19uDxTFRfqDGOwfXAlOK-54sJyR4NNS5RSdkyh_Ih5CfURmd5umFAKNKx8oJg"></script>-->
-        
+
         <!-- Stuff for the calendar -->
         <style type="text/css">@import url(css/calendar-blue.css);</style>
         <script type="text/javascript" src="js/calendar.js"></script>
@@ -25,13 +23,13 @@
         <script type="text/javascript" src="js/calendar-setup.js"></script>
         
         <!-- For the tree control --> 
-        <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.5.2/build/treeview/assets/skins/sam/treeview.css">
-        <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-        <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/treeview/treeview-min.js"></script>
+        <link type="text/css" rel="stylesheet" href="css/yui/treeview.css">
+        <script type="text/javascript" src="js/yui/yahoo-dom-event.js"></script>
+        <script type="text/javascript" src="js/yui/treeview-min.js"></script>
         
         <!-- For the pop-up panel (used in the palette selector) -->
-        <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/2.5.2/build/container/assets/skins/sam/container.css">
-        <script type="text/javascript" src="http://yui.yahooapis.com/2.5.2/build/container/container-min.js"></script>
+        <link rel="stylesheet" type="text/css" href="css/yui/container.css">
+        <script type="text/javascript" src="js/yui/container-min.js"></script>
         
         <!-- Prototype is used only for Ajax requests in server.js - can we refactor
              to remove this dependency? -->
@@ -54,10 +52,10 @@
         <div id="layerSelector" class="yui-skin-sam"></div>
 
         <div id="help" class="help">
-            <p><a href="http://www.resc.rdg.ac.uk/trac/ncWMS/wiki/GodivaTwoUserGuide">User guide</a></p>
+            <p><a href="https://www.unidata.ucar.edu/software/thredds/current/tds/reference/GodivaUsersGuide.html">User guide</a></p>
         </div>
 
-        <a href="http://www.resc.reading.ac.uk/" target="_blank"><img id="resclogo" src="http://www.resc.reading.ac.uk/images/new_logo_72dpi_web.png" alt="ReSC logo"></a>
+        <a href="http://www.met.reading.ac.uk/resc/home/" target="_blank"><img id="resclogo" src="img/new_logo_72dpi_web.png" alt="ReSC logo"></a>
 
     </div>
 
@@ -118,7 +116,7 @@
                     <option value="0.33">33%</option>
                 </select>
             </span>
-            <span id="poweredBy">Powered by <a href="http://www.openlayers.org" target="_blank">OpenLayers</a> and <a href="http://www.opengeospatial.org" target="_blank">OGC</a> standards</span>
+            <span id="poweredBy">Powered by <a href="https://openlayers.org" target="_blank">OpenLayers</a> and <a href="https://openlayers.org" target="_blank">OGC</a> standards</span>
             <span id="permalink"></span>
         </div>
     </div>

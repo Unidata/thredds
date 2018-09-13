@@ -7,20 +7,53 @@ allprojects {  // Doesn't apply any plugins: safe to run closure on all projects
     // TODO: Specify preferred repository with each dependency definition (although, have a sensible default).
     // Then, based on the declared dependencies, automatically add the necessary repos, and ONLY the necessary repos.
     repositories {
-        mavenCentral()
+        // Prefer JCenter to Maven Central. See
+        // https://blog.bintray.com/2015/02/09/android-studio-migration-from-maven-central-to-jcenter/
+        jcenter()
+        mavenCentral()  // JCenter isn't quite a superset of Maven Central.
+        
+        // All of the repositories below could be replaced with:
+        //     url "https://artifacts.unidata.ucar.edu/repository/unidata-all/"
+        // which is a group repository that contains all other repositories. However, I prefer to list all source
+        // repos explicitly so that we know where all artifacts ultimately come from.
+        
+        // Hosted releases repositories.
         maven {
-            // JitPack builds GitHub projects on demand and publishes ready-to-use packages.
-            // We need this because Spock requires CGLIB 3.2+ in order to work on Java 8.
-            // However, as of 2015-08-26, v3.2 hasn't been released, even though working code exists on master.
-            // So, using JitPack, we're going to grab an appropriate CGLIB artifact.
-            // See https://github.com/cglib/cglib/issues/32
-            url "https://jitpack.io"  // For libraries["cglib-nodep"]
+            // For "threddsIso", "ncwms", "visad" and "jj2000".
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-releases/"
         }
         maven {
-            url "https://artifacts.unidata.ucar.edu/content/repositories/unidata"
+            // For "bounce" and several dependencies needed by "ncwms".
+            // Contains artifacts that are not available in any other Maven repository on the net.
+            // We should be concerned that we're relying on any such artifacts. TODO: Remove our dependence on these.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-3rdparty/"
+        }
+    
+        // Third-party repositories.
+        maven {
+            // For "geotk-referencing", which is needed by "ncwms". Repositories are not inherited from a dependency,
+            // so we must duplicate ncwms's needed repos here. See https://stackoverflow.com/a/19908009/3874643.
+            url "http://maven.geotoolkit.org/"
         }
         maven {
-            url "https://artifacts.unidata.ucar.edu/content/repositories/unidata-3rdparty/"
+            url "https://dl.bintray.com/cwardgar/maven/"  // For 'com.cwardgar.gretty-fork:gretty'.
+        }
+        maven {
+            url "http://maven.asascience.com/maven/ncsos-releases/"  // For "ncsos".
+        }
+        maven {
+            url "http://52north.org/maven/repo/releases/"  // For "52n-oxf-xmlbeans".
+        }
+        
+        // Hosted snapshots repository. We want this to be last so that we can minimize warnings such as:
+        //   Failed to get resource: HEAD. [HTTP HTTP/1.1 400 Repository version policy:
+        //   SNAPSHOT does not allow version: 1.4:
+        //   https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/org/khelekore/prtree/1.4/prtree-1.4.pom]
+        // The warning is harmless, and is even an expected part of artifact resolution, but it's spammy as hell,
+        // especially when you're running something like "./gradlew dependencies".
+        maven {
+            // For "threddsIso" and "ncwms" snapshots.
+            url "https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/"
         }
         maven {
             url "http://content.aodn.org.au/repo/maven/"
@@ -39,19 +72,15 @@ ext {
 
 ////////////////////////////////////////// Plugins //////////////////////////////////////////
 
-// Original plugin (last release was 1.2.4): https://github.com/akhikhl/gretty
-// Fork of original (first release was 1.2.5): https://github.com/saladinkzn/gretty
-libraries["gretty"] = "ru.shadam.gretty:gretty:1.3.0"
+libraries["gretty"] = "com.cwardgar.gretty-fork:gretty:2.0.1"
 
 libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1"
 
-libraries["gradle-extra-configurations-plugin"] = "com.netflix.nebula:gradle-extra-configurations-plugin:2.2.1"
-
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.1.6.RELEASE"
+versions["spring"] = "4.3.13.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -91,7 +120,7 @@ libraries["52n-xml-sampling-v20"] = "org.n52.sensorweb:52n-xml-sampling-v20:${ve
 
 ////////////////////////////////////////// Logging //////////////////////////////////////////
 
-versions["slf4j"] = "1.7.7"
+versions["slf4j"] = "1.7.22"
 
 libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
@@ -99,7 +128,7 @@ libraries["slf4j-jdk14"] = "org.slf4j:slf4j-jdk14:${versions["slf4j"]}"
 
 libraries["jcl-over-slf4j"] = "org.slf4j:jcl-over-slf4j:${versions["slf4j"]}"
 
-versions["log4j"] = "2.2"
+versions["log4j"] = "2.8.2"
 
 libraries["log4j-api"] = "org.apache.logging.log4j:log4j-api:${versions["log4j"]}"
 
@@ -121,18 +150,18 @@ libraries["com.eclipsesource.restfuse"] = "com.restfuse:com.eclipsesource.restfu
 
 libraries["httpunit"] = "httpunit:httpunit:1.7"
 
-// These four are all for Spock.
+libraries["xmlunit-core"] = "org.xmlunit:xmlunit-core:2.3.0"
 
+// These four are all for Spock.
 libraries["spock-core"] = "org.spockframework:spock-core:1.0-groovy-2.4"
 
 libraries["groovy-all"] = "org.codehaus.groovy:groovy-all:2.4.7"
 
 // In Spock, allows mocking of classes (in addition to interfaces).
-// 5503bcca74 is the most recent commit on the cglib master branch as of 2015-08-26.
-libraries["cglib-nodep"] = "com.github.cglib.cglib:cglib-nodep:5503bcca74"
+libraries["cglib-nodep"] = "cglib:cglib-nodep:3.2.4"
 
 // In Spock, allows mocking of classes without default constructor (together with CGLIB).
-libraries["objenesis"] = "org.objenesis:objenesis:2.2"
+libraries["objenesis"] = "org.objenesis:objenesis:2.4"
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 
@@ -158,13 +187,13 @@ libraries["jdom2"] = "org.jdom:jdom2:2.0.4"
 
 libraries["je"] = "com.sleepycat:je:4.0.92"
 
-libraries["jna"] = "net.java.dev.jna:jna:4.1.0"
+libraries["jna"] = "net.java.dev.jna:jna:4.2.2"
 
 libraries["joda-time"] = "joda-time:joda-time:2.8.1"
 
-libraries["jsoup"] = "org.jsoup:jsoup:1.7.2"
+libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
 
-libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:2.5.0"
+libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.5.0"
 
 libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.0"
 
@@ -186,7 +215,7 @@ libraries["jfreechart"] = "org.jfree:jfreechart:1.0.19"
 
 libraries["jgoodies-forms"] = "com.jgoodies:jgoodies-forms:1.6.0"
 
-libraries["commons-fileupload"] = "commons-fileupload:commons-fileupload:1.2.2"
+libraries["commons-fileupload"] = "commons-fileupload:commons-fileupload:1.3.3"
 
 libraries["commons-io"] = "commons-io:commons-io:2.4"
 
@@ -194,28 +223,50 @@ libraries["commons-compress"] = "org.apache.commons:commons-compress:1.8.1"
 
 libraries["oro"] = "oro:oro:2.0.8"
 
-libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.7-imos-SNAPSHOT") {
+libraries["ncwms"] = dependencies.create("uk.ac.rdg.resc:ncwms:1.2.tds.4.6.11-imos-SNAPSHOT") {
     // This is an external dependency on an old artifact of ours.
     // The "cdm" artifact that we build in this project will take its place.
     // This needs to be a local exclusion; globally excluding "edu.ucar:cdm" would be very bad.
     exclude group: 'edu.ucar', module: 'cdm'  // version "4.6.1"
 }
 
-libraries["geoapi-pending"] = "org.opengis:geoapi-pending:3.1-M04"
-
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
 
-libraries["jstl"] = "javax.servlet:jstl:1.2"
+libraries["taglibs-standard-impl"] = "org.apache.taglibs:taglibs-standard-impl:1.2.5"
 
 libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
 
-libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.1.Final"
+libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
 
 libraries["jaxen"] = "jaxen:jaxen:1.1.4"
 
-libraries["threddsIso"] = "EDS:threddsIso:2.2.8"
+libraries["threddsIso"] = "EDS:threddsIso:2.2.10"
 
-libraries["aws-java-sdk-s3"] = "com.amazonaws:aws-java-sdk-s3:1.10.11"
+libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s3:1.11.236") {
+    // exclude jackson deps so that they can be overridden 
+    // with 2.7.x deps to address security issue. See
+    // https://github.com/aws/aws-sdk-java/issues/1159
+    // as of the time these were added, the versions of these were:
+    // jackson-core: 2.6.7
+    // jackson-annotations: 2.6.0
+    // jackson-databind: 2.6.7.1
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-core'
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-annotations'
+    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
+}
+
+// replace the jackson.core libs that were excluded from aws-java-sdk-s3
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.7.9"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.7.9"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.7.9.1"
+
+libraries["ncsos"] = dependencies.create("com.asascience:ncsos:1.4.3") {
+    // This is an external TDS plugin that depends on an old
+    // thredds-parent artifact of ours (version 4.5.3).
+    // Need to exclude old artifacts used in the build
+    exclude group: 'edu.ucar', module: 'netcdf4'
+    exclude group: 'edu.ucar', module: 'tds'
+}
 
 //////////////////////////// Transitive dependency replacements and exclusions ////////////////////////////
 

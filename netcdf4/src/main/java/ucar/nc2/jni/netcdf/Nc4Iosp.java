@@ -170,6 +170,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         // jna_path may still be null (the user didn't specify a "jna.library.path"), but try to load anyway;
         // the necessary libs may be on the system PATH.
         nc4 = (Nc4prototypes) Native.loadLibrary(libName, Nc4prototypes.class);
+        // Make the library synchronized
+        nc4 = (Nc4prototypes) Native.synchronizedLibrary(nc4);
 
         startupLog.info("Nc4Iosp: NetCDF-4 C library loaded (jna_path='{}', libname='{}').", jnaPath, libName);
         log.debug("Netcdf nc_inq_libvers='{}' isProtected={}", nc4.nc_inq_libvers(), Native.isProtected());
@@ -223,7 +225,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private boolean fill = true;
   private int ncid = -1;        // file id
   private int format = 0;       // from nc_inq_format
-  private boolean isClosed = false;
+  private boolean isClosed;
 
   private Map<Integer, UserType> userTypes = new HashMap<>();  // hash by typeid
   private Map<Group, Integer> groupHash = new HashMap<>();     // group -> nc4 grpid
@@ -317,6 +319,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     IntByReference ncidp = new IntByReference();
     int ret = nc4.nc_open(location, readOnly ? NC_NOWRITE : NC_WRITE, ncidp);
     if (ret != 0) throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+
+    isClosed = false;
     ncid = ncidp.getValue();
 
     // format
@@ -380,43 +384,50 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   }
 
   private void makeDimensions(Group4 g4) throws IOException {
-    IntByReference ndimsp = new IntByReference();
-    int ret = nc4.nc_inq_ndims(g4.grpid, ndimsp);
+    // We need this in order to allocate the correct length for dimIdsInGroup.
+    IntByReference numDimsInGoup_p = new IntByReference();
+    int ret = nc4.nc_inq_ndims(g4.grpid, numDimsInGoup_p);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    int[] dimids = new int[ndimsp.getValue()];
-    ret = nc4.nc_inq_dimids(g4.grpid, ndimsp, dimids, 0);
+    IntByReference numDimidsInGroup_p = new IntByReference();
+    int[] dimIdsInGroup = new int[numDimsInGoup_p.getValue()];
+    ret = nc4.nc_inq_dimids(g4.grpid, numDimidsInGroup_p, dimIdsInGroup, 0);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    IntByReference nunlimdimsp = new IntByReference();
-    int[] unlimdimids = new int[Nc4prototypes.NC_MAX_DIMS];
-    ret = nc4.nc_inq_unlimdims(g4.grpid, nunlimdimsp, unlimdimids);
+    assert numDimsInGoup_p.getValue() == numDimidsInGroup_p.getValue() :
+            String.format("Number of dimensions in group (%s) differed from number of dimension IDs in group (%s).",
+                    numDimsInGoup_p.getValue(), numDimidsInGroup_p.getValue());
+
+    // We need this in order to allocate the correct length for unlimitedDimIdsInGroup.
+    IntByReference numUnlimitedDimsInGroup_p = new IntByReference();
+    ret = nc4.nc_inq_unlimdims(g4.grpid, numUnlimitedDimsInGroup_p, null);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
 
-    int ndims = ndimsp.getValue();
-    for (int i = 0; i < ndims; i++) {
-      byte[] name = new byte[Nc4prototypes.NC_MAX_NAME + 1];
-      SizeTByReference lenp = new SizeTByReference();
-      ret = nc4.nc_inq_dim(g4.grpid, dimids[i], name, lenp);
+    int[] unlimitedDimIdsInGroup = new int[numUnlimitedDimsInGroup_p.getValue()];
+    ret = nc4.nc_inq_unlimdims(g4.grpid, numUnlimitedDimsInGroup_p, unlimitedDimIdsInGroup);
+    if (ret != 0)
+      throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+
+    // Ensure array is sorted so that we can use binarySearch on it.
+    Arrays.sort(unlimitedDimIdsInGroup);
+
+    for (int dimId : dimIdsInGroup) {
+      byte[] dimNameBytes = new byte[Nc4prototypes.NC_MAX_NAME + 1];
+      SizeTByReference dimLength_p = new SizeTByReference();
+      ret = nc4.nc_inq_dim(g4.grpid, dimId, dimNameBytes, dimLength_p);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
-      String dname = makeString(name);
 
-      boolean isUnlimited = containsInt(nunlimdimsp.getValue(), unlimdimids, i);
-      Dimension dim = new Dimension(dname, lenp.getValue().intValue(), true, isUnlimited, false);
-      ncfile.addDimension(g4.g, dim);
-      log.debug("add Dimension {} ({})", dim, dimids[i]);
-    }
-  }
+      String dimName = makeString(dimNameBytes);
+      boolean isUnlimited = Arrays.binarySearch(unlimitedDimIdsInGroup, dimId) >= 0;
 
-  private boolean containsInt(int n, int[] have, int want) {
-    for (int i = 0; i < n; i++) {
-      if (have[i] == want) return true;
+      Dimension dimension = new Dimension(dimName, dimLength_p.getValue().intValue(), true, isUnlimited, false);
+      ncfile.addDimension(g4.g, dimension);
+      log.debug("add Dimension {} ({})", dimension, dimId);
     }
-    return false;
   }
 
   private void updateDimensions(Group g) throws IOException {
@@ -1488,7 +1499,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     return readDataSection(vinfo.g4.grpid, vinfo.varid, vinfo.typeid, section);
   }
 
-  private Array readDataSection(int grpid, int varid, int typeid, Section section)
+  Array readDataSection(int grpid, int varid, int typeid, Section section)
           throws IOException, InvalidRangeException {
     // general sectioning with strides
     SizeT[] origin = convertSizeT(section.getOrigin());
@@ -1538,6 +1549,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_INT:
+      case Nc4prototypes.NC_UINT:
         int[] vali = new int[len];
 
         ret = isUnsigned ? nc4.nc_get_vars_uint(grpid, varid, origin, shape, stride, vali)
@@ -1548,6 +1560,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_INT64:
+      case Nc4prototypes.NC_UINT64:
         long[] vall = new long[len];
         ret = isUnsigned ? nc4.nc_get_vars_ulonglong(grpid, varid, origin, shape, stride, vall)
                 : nc4.nc_get_vars_longlong(grpid, varid, origin, shape, stride, vall);
@@ -1557,6 +1570,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         break;
 
       case Nc4prototypes.NC_SHORT:
+      case Nc4prototypes.NC_USHORT:
         short[] vals = new short[len];
         ret = isUnsigned ? nc4.nc_get_vars_ushort(grpid, varid, origin, shape, stride, vals)
                 : nc4.nc_get_vars_short(grpid, varid, origin, shape, stride, vals);
@@ -2267,6 +2281,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     ret = nc4.nc_create(filename, createMode(), ncidp);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
+
+    isClosed = false;
     ncid = ncidp.getValue();
 
     _setFill();
@@ -2334,8 +2350,10 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
     // dimensions
     for (Dimension dim : g4.g.getDimensions()) {
-      int dimid = addDimension(g4.grpid, dim.getShortName(), dim.getLength());
+      int dimLength = dim.isUnlimited() ? Nc4prototypes.NC_UNLIMITED : dim.getLength();
+      int dimid = addDimension(g4.grpid, dim.getShortName(), dimLength);
       g4.dimHash.put(dim, dimid);
+
       if (debugWrite)
         System.out.printf(" create dim '%s' (%d) in group '%s'%n", dim.getShortName(), dimid, g4.g.getFullName());
     }
@@ -2719,6 +2737,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
     if (att.getShortName().equals(CDM.CHUNK_SIZES)) return;
     if (att.getShortName().equals(CDM.COMPRESS)) return;
+    if (att.getShortName().equals(CDM.NCPROPERTIES)) return;
+    if (att.getShortName().equals(CDM.ISNETCDF4)) return;
 
     int ret = 0;
     Array values = att.getValues();
@@ -3267,6 +3287,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public void flush() throws IOException {
+    if (nc4 == null || ncid < 0) return;  // not open yet
+
     int ret = nc4.nc_sync(ncid);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
@@ -3296,12 +3318,15 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
 
   @Override
   public boolean rewriteHeader(boolean largeFile) throws IOException {
+    // Rewriting just the header is not possible in NetCDF-4, so always return false.
+    // This will cause NetcdfFileWriter.setRedefineMode(false) to rewrite the entire file instead.
     return false;
   }
 
-
   @Override
   public void updateAttribute(Variable v2, Attribute att) throws IOException {
+    if (nc4 == null || ncid < 0) return;  // not open yet
+
     if (v2 == null)
       writeAttribute(ncid, Nc4prototypes.NC_GLOBAL, att, null);
     else {

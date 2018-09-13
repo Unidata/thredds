@@ -7,8 +7,8 @@ dependencies {
     compile project(':dap4:d4ts')
     compile project(':cdm')
     compile project(':netcdf4')
-
-    provided libraries["javax.servlet-api"]
+    
+    compileOnly libraries["javax.servlet-api"]
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-core"]
