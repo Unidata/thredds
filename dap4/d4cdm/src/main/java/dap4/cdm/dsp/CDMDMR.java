@@ -4,12 +4,6 @@
 package dap4.cdm.dsp;
 
 import dap4.core.dmr.*;
-import dap4.core.util.DapException;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static dap4.dap4lib.netcdf.DapNetcdf.*;
 
 public class CDMDMR
 {

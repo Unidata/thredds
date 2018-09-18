@@ -190,7 +190,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         oldlevel = nc4.nc_set_log_level(log_level);
         startupLog.info(String.format("NetcdfLoader: set log level: old=%d new=%d", oldlevel, log_level));
       } catch (java.lang.UnsatisfiedLinkError e) {
-        // do nothing
+        // ignore
       }
     }
     return oldlevel;
@@ -373,7 +373,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (format == Nc4prototypes.NC_FORMAT_NETCDF4) {
       // read subordinate groups
       IntByReference numgrps = new IntByReference();
-      ret = nc4.nc_inq_grps(g4.grpid, numgrps, Pointer.NULL);
+      ret = nc4.nc_inq_grps(g4.grpid, numgrps, null);
       if (ret != 0)
         throw new IOException(ret + ": " + nc4.nc_strerror(ret));
       int[] group_ids = new int[numgrps.getValue()];
@@ -1148,7 +1148,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     IntByReference ndimsp = new IntByReference();
     IntByReference nattsp = new IntByReference();
 
-    int ret = nc4.nc_inq_var(grpid, varno, name, xtypep, ndimsp, Pointer.NULL, nattsp);
+    int ret = nc4.nc_inq_var(grpid, varno, name, xtypep, ndimsp, null, nattsp);
     if(ret != 0)
       throw new IOException("nc_inq_var faild: code="+ret);
     String vname = makeString(name);
@@ -1427,7 +1427,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
   private void makeUserTypes(int grpid, Group g) throws IOException {
     // find user types in this group
     IntByReference ntypesp = new IntByReference();
-    int ret = nc4.nc_inq_typeids(grpid, ntypesp, Pointer.NULL);
+    int ret = nc4.nc_inq_typeids(grpid, ntypesp, null);
     if (ret != 0)
       throw new IOException(ret + ": " + nc4.nc_strerror(ret));
     int ntypes = ntypesp.getValue();

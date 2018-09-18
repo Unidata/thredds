@@ -98,11 +98,11 @@ public class TestMisc extends UnitTestCommon
         assert (esinputs.length == esoutputs.length);
         for(int i = 0; i < esinputs.length && pass; i++) {
             String result = EscapeStrings.escapeURL(esinputs[i]);
-            stderr.printf("input= |%s|\n", esinputs[i]);
-            stderr.printf("result=|%s|\n", result);
-            stderr.printf("output=|%s|\n", esoutputs[i]);
+            System.err.printf("input= |%s|\n", esinputs[i]);
+            System.err.printf("result=|%s|\n", result);
+            System.err.printf("output=|%s|\n", esoutputs[i]);
             if(!result.equals(esoutputs[i])) pass = false;
-            stdout.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
+            System.err.printf("input=%s output=%s pass=%s\n", esinputs[i], result, pass);
         }
         Assert.assertTrue("TestMisc.testEscapeStrings", pass);
     }
@@ -116,10 +116,10 @@ public class TestMisc extends UnitTestCommon
 
         try (HTTPMethod m = HTTPFactory.Get(catalogName)) {
             int statusCode = m.execute();
-            stdout.printf("status = %d%n", statusCode);
+            System.err.printf("status = %d%n", statusCode);
             try {
                 String content = m.getResponseAsString("ASCII");
-                stdout.printf("cat = %s%n", content);
+                System.err.printf("cat = %s%n", content);
             } catch (Throwable t) {
                 t.printStackTrace();
                 assert false;
@@ -140,9 +140,9 @@ public class TestMisc extends UnitTestCommon
         }
         String result = buf.toString();
         boolean ok = expected.equals(result);
-        stderr.printf("path=|%s| result=|%s| pass=%s\n",
+        System.err.printf("path=|%s| result=|%s| pass=%s\n",
                 path, result, (ok ? "true" : "false"));
-        stderr.flush();
+        System.err.flush();
         return ok;
     }
 
@@ -178,7 +178,7 @@ public class TestMisc extends UnitTestCommon
             try (HTTPMethod m = HTTPFactory.Get(file)) {
                 m.setRange(0, 9);
                 int statusCode = m.execute();
-                stdout.printf("status = %d%n", statusCode);
+                System.err.printf("status = %d%n", statusCode);
                 Assert.assertTrue("Unexpected return code: " + statusCode, statusCode == 206);
                 byte[] result = m.getResponseAsBytes();
                 Assert.assertTrue("Wrong size result", result.length == 10);
@@ -229,7 +229,7 @@ public class TestMisc extends UnitTestCommon
                 res = m.executeRaw();
             } catch (HTTPException e) {
                 if(e.getCause() instanceof ConnectionPoolTimeoutException) {
-                    stderr.println("TestMisc: timeout: " + i);
+                    System.err.println("TestMisc: timeout: " + i);
                 } else
                     throw e;
             }

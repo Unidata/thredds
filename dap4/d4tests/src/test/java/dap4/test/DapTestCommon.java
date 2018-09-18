@@ -7,7 +7,6 @@ package dap4.test;
 import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
-import dap4.dap4lib.DapLog;
 import dap4.dap4lib.FileDSP;
 import dap4.servlet.DapCache;
 import dap4.servlet.DapController;
@@ -18,8 +17,6 @@ import org.apache.http.HttpVersion;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHttpResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
@@ -56,7 +53,6 @@ import java.util.List;
 @WebAppConfiguration("file:src/test/data")
 abstract public class DapTestCommon extends UnitTestCommon
 {
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     //////////////////////////////////////////////////
     // Constants
@@ -303,7 +299,7 @@ abstract public class DapTestCommon extends UnitTestCommon
                     }
                 }
                 if(!ok && debug)
-                    stderr.println("Ignoring: " + file.toString());
+                    System.err.println("Ignoring: " + file.toString());
             }
             return ok;
         }
@@ -334,7 +330,7 @@ abstract public class DapTestCommon extends UnitTestCommon
     static {
         dap4root = locateDAP4Root(threddsroot);
         if(dap4root == null)
-            stderr.println("Cannot locate /dap4 parent dir");
+            System.err.println("Cannot locate /dap4 parent dir");
         dap4testroot = canonjoin(dap4root, D4TESTDIRNAME);
         dap4resourcedir = canonjoin(dap4testroot, DFALTRESOURCEPATH);
     }
@@ -385,7 +381,7 @@ abstract public class DapTestCommon extends UnitTestCommon
 
         this.d4tsserver = TestDir.dap4TestServer;
         if(DEBUG)
-            stderr.println("DapTestCommon: d4tsServer=" + d4tsserver);
+            System.err.println("DapTestCommon: d4tsServer=" + d4tsserver);
     }
 
     /**
@@ -447,11 +443,11 @@ abstract public class DapTestCommon extends UnitTestCommon
         if(!captured.endsWith("\n"))
             captured = captured + "\n";
         // Dump the output for visual comparison
-        stderr.println("\n"+header + ":");
-        stderr.println("---------------");
-        stderr.print(captured);
-        stderr.println("---------------");
-        stderr.flush();
+        System.err.println("\n"+header + ":");
+        System.err.println("---------------");
+        System.err.print(captured);
+        System.err.println("---------------");
+        System.err.flush();
     }
 
     protected void
@@ -460,7 +456,7 @@ abstract public class DapTestCommon extends UnitTestCommon
     {
         String svc = "http://" + this.d4tsserver + "/d4ts";
         if(!checkServer(svc))
-            stderr.println("D4TS Server not reachable: " + svc);
+            System.err.println("D4TS Server not reachable: " + svc);
         // Since we will be accessing it thru NetcdfDataset, we need to change the schema.
         d4tsserver = "dap4://" + d4tsserver + "/d4ts";
     }
@@ -505,7 +501,7 @@ abstract public class DapTestCommon extends UnitTestCommon
             System.err.printf("Netcdf-c library version: %s%n", getCLibraryVersion());
             System.err.flush();
         } catch (Exception e) {
-            DapLog.warn("Cannot load ucar.nc2.jni.netcdf.Nc4Iosp");
+            System.err.println("Cannot load ucar.nc2.jni.netcdf.Nc4Iosp");
         }
     }
 
@@ -542,17 +538,17 @@ abstract public class DapTestCommon extends UnitTestCommon
         File testdirf = new File(path);
         assert (testdirf.canRead());
         File[] filelist = testdirf.listFiles();
-        stderr.println("\n*******************");
-        stderr.printf("Contents of %s:%n", path);
+        System.err.println("\n*******************");
+        System.err.printf("Contents of %s:%n", path);
         for(int i = 0; i < filelist.length; i++) {
             File file = filelist[i];
             String fname = file.getName();
-            stderr.printf("\t%s%s%n",
+            System.err.printf("\t%s%s%n",
                     fname,
                     (file.isDirectory() ? "/" : ""));
         }
-        stderr.println("*******************");
-        stderr.flush();
+        System.err.println("*******************");
+        System.err.flush();
     }
 
     static public String

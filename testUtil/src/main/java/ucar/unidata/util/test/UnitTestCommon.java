@@ -7,7 +7,6 @@ package ucar.unidata.util.test;
 import org.junit.rules.TemporaryFolder;
 import ucar.httpservices.HTTPFactory;
 import ucar.httpservices.HTTPMethod;
-import ucar.httpservices.HTTPUtil;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -16,7 +15,10 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,15 +27,18 @@ abstract public class UnitTestCommon
     //////////////////////////////////////////////////
     // Static Constants
 
+    static public boolean LOGSTDIO = System.getProperty("intellij") == null;
+
     static public final boolean DEBUG = false;
 
     static public final Charset UTF8 = Charset.forName("UTF-8");
 
     static protected final int[] OKCODES = new int[]{200, 404};
 
+    protected static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UnitTestCommon.class);
+
     // Look for these to verify we have found the thredds root
     static final String[] DEFAULTSUBDIRS = new String[]{"httpservices", "cdm", "tds", "opendap", "dap4"};
-
 
     // NetcdfDataset enhancement to use: need only coord systems
     static final Set<NetcdfDataset.Enhance> ENHANCEMENT = EnumSet.of(NetcdfDataset.Enhance.CoordSystems);
@@ -319,7 +324,7 @@ abstract public class UnitTestCommon
         System.err.println(sep.toString());
         System.err.println("Testing " + title + ": " + header + ":");
         System.err.println("===============");
-        System.err.print(captured);
+        System.err.println(captured);
         System.err.println(sep.toString());
         System.err.println("===============");
     }
@@ -327,9 +332,9 @@ abstract public class UnitTestCommon
     static public String
     compare(String tag, String baseline, String testresult)
     {
-	// Check for empty testresult
+        // Check for empty testresult
         if(testresult.trim().length() == 0)
-	    return ">>>> EMPTY TEST RESULT";
+            return ">>>> EMPTY TEST RESULT";
         try {
             // Diff the two print results
             Diff diff = new Diff(tag);
@@ -387,6 +392,20 @@ abstract public class UnitTestCommon
             System.err.println(" ; fail");
             return false;
         }
+    }
+
+    protected void
+    bindstd()
+    {
+        if(LOGSTDIO)
+        SysStreamLogger.bindSystemStreams();
+    }
+
+    protected void
+    unbindstd()
+    {
+        if(LOGSTDIO)
+        SysStreamLogger.unbindSystemStreams();
     }
 
     //////////////////////////////////////////////////
@@ -661,21 +680,18 @@ abstract public class UnitTestCommon
         return false;
     }
 
-
+    /*
     // Replacement for stderr & stdout
     static public class STDIO
     {
-        public org.slf4j.Logger log;
-
         public STDIO(String name)
         {
-            log = org.slf4j.LoggerFactory.getLogger(name);
         }
 
         public void
         printf(String format, Object... args)
         {
-            log.info(String.format(format, args));
+            System.err.println(String.format(format, args));
         }
 
         public void
@@ -718,6 +734,22 @@ abstract public class UnitTestCommon
             temporaryfolder = new TemporaryFolder();
         return temporaryfolder.newFile(name);
     }
-
+    static public void
+    logify(String s)
+    {
+        StringReader rs = new StringReader(s);
+        BufferedReader r = new BufferedReader(rs);
+        String line = null;
+        for(; ; ) {
+            try {
+                line = r.readLine();
+            } catch (IOException ioe) {
+                break;
+            }
+            if(line == null) break;
+            System.err.println(line);
+        }
+    }
+    */
 }
 
