@@ -213,15 +213,13 @@ public class ToolsUI extends JPanel {
     tabbedPane.addTab("NcML", ncmlTabPane);
     tabbedPane.addTab("URLdump", new JLabel("URLdump"));
     tabbedPane.setSelectedIndex(0);
-    tabbedPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    tabbedPane.addChangeListener(e -> {
         Component c = tabbedPane.getSelectedComponent();
         if (c instanceof JLabel) {
           int idx = tabbedPane.getSelectedIndex();
           String title = tabbedPane.getTitleAt(idx);
           makeComponent(tabbedPane, title);
         }
-      }
     });
 
     setLayout(new BorderLayout());
@@ -316,15 +314,13 @@ public class ToolsUI extends JPanel {
   }
 
   private void addListeners(final JTabbedPane tabPane) {
-    tabPane.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    tabPane.addChangeListener(e -> {
         Component c = tabPane.getSelectedComponent();
         if (c instanceof JLabel) {
           int idx = tabPane.getSelectedIndex();
           String title = tabPane.getTitleAt(idx);
           makeComponent(tabPane, title);
         }
-      }
     });
     tabPane.addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent e) {
@@ -350,7 +346,9 @@ public class ToolsUI extends JPanel {
       if (cTitle.equals(title)) break;
     }
     if (idx >= n) {
-      if (debugTab) System.out.println("Cant find " + title + " in " + parent);
+      if (debugTab) {
+        System.out.println("Cant find " + title + " in " + parent);
+      }
       return;
     }
 
@@ -638,12 +636,14 @@ public class ToolsUI extends JPanel {
         break;
 
       default:
-        System.out.println("tabbedPane unknown component " + title);
+        log.warn ("tabbedPane unknown component {}", title);
         return;
     }
 
     parent.setComponentAt(idx, c);
-    if (debugTab) System.out.println("tabbedPane changed " + title + " added ");
+    if (debugTab) {
+      System.out.println("tabbedPane changed " + title + " added ");
+    }
   }
 
   private void makeMenuBar() {
@@ -864,7 +864,9 @@ public class ToolsUI extends JPanel {
   }
 
   public void setDebugFlags() {
-    if (debug) System.out.println("checkDebugFlags ");
+    if (debug) {
+      System.out.println("checkDebugFlags ");
+    }
     NetcdfFile.setDebugFlags(debugFlags);
     ucar.nc2.iosp.hdf5.H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
@@ -1283,7 +1285,8 @@ public class ToolsUI extends JPanel {
       }
       jumptoThreddsDatatype(threddsData);
 
-    } catch (IOException ioe) {
+    }
+    catch (IOException ioe) {
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
       ioe.printStackTrace();
     }
@@ -1292,7 +1295,9 @@ public class ToolsUI extends JPanel {
 
   // jump to the appropriate tab based on datatype of InvAccess
   private void jumptoThreddsDatatype(thredds.client.catalog.Access invAccess) {
-    if (invAccess == null) return;
+    if (invAccess == null) {
+      return;
+    }
 
     thredds.client.catalog.Service s = invAccess.getService();
     if (s.getType() == thredds.client.catalog.ServiceType.HTTPServer) {
@@ -1315,7 +1320,8 @@ public class ToolsUI extends JPanel {
       // if no feature type, just open as a NetcdfDataset
       try {
         openNetcdfFile(threddsDataFactory.openDataset(invAccess, true, null, null));
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
       }
       return;
@@ -1329,14 +1335,16 @@ public class ToolsUI extends JPanel {
         return;
       }
       jumptoThreddsDatatype(threddsData);
-
-    } catch (IOException ioe) {
+    }
+    catch (IOException ioe) {
       ioe.printStackTrace();
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
       if (threddsData != null) {
         try {
           threddsData.close();
-        } catch (IOException ioe2) {
+        }
+        catch (IOException ioe2) {
+          // Okay to fall through?
         }
       }
     }
@@ -1350,7 +1358,8 @@ public class ToolsUI extends JPanel {
       JOptionPane.showMessageDialog(this, "Cant open dataset=" + threddsData.errLog);
       try {
         threddsData.close();
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         e.printStackTrace();
       }
       return;
@@ -1362,33 +1371,33 @@ public class ToolsUI extends JPanel {
         coveragePanel.setDataset(threddsData.featureDataset);
         tabbedPane.setSelectedComponent(ftTabPane);
         ftTabPane.setSelectedComponent(coveragePanel);
-
-      } else if (threddsData.featureDataset instanceof GridDataset) {
+      }
+      else if (threddsData.featureDataset instanceof GridDataset) {
         makeComponent(ftTabPane, "Grids");
         gridPanel.setDataset((GridDataset) threddsData.featureDataset);
         tabbedPane.setSelectedComponent(ftTabPane);
         ftTabPane.setSelectedComponent(gridPanel);
       }
-
-    } else if (threddsData.featureType == FeatureType.IMAGE) {
+    }
+    else if (threddsData.featureType == FeatureType.IMAGE) {
       makeComponent(ftTabPane, "Images");
       imagePanel.setImageLocation(threddsData.imageURL);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(imagePanel);
-
-    } else if (threddsData.featureType == FeatureType.RADIAL) {
+    }
+    else if (threddsData.featureType == FeatureType.RADIAL) {
       makeComponent(ftTabPane, "Radial");
       radialPanel.setDataset((RadialDatasetSweep) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(radialPanel);
-
-    } else if (threddsData.featureType.isPointFeatureType()) {
+    }
+    else if (threddsData.featureType.isPointFeatureType()) {
       makeComponent(ftTabPane, "PointFeature");
       pointFeaturePanel.setPointFeatureDataset((PointDatasetImpl) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(pointFeaturePanel);
-
-    } else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
+    }
+    else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
       makeComponent(ftTabPane, "StationRadial");
       stationRadialPanel.setStationRadialDataset(threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
@@ -1403,34 +1412,43 @@ public class ToolsUI extends JPanel {
     NetcdfFile ncfile = null;
     try {
       DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-      if (addCoords)
+      if (addCoords) {
         ncfile = NetcdfDataset.acquireDataset(durl, true, task);
-      else
+      }
+      else {
         ncfile = NetcdfDataset.acquireFile(durl, task);
+      }
 
-      if (ncfile == null)
+      if (ncfile == null) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location);
-      else if (setUseRecordStructure)
+      }
+      else if (setUseRecordStructure) {
         ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      }
 
-    } catch (IOException ioe) {
+    }
+    catch (IOException ioe) {
       String message = ioe.getMessage();
-      if ((null == message) && (ioe instanceof EOFException))
+      if ((null == message) && (ioe instanceof EOFException)) {
         message = "Premature End of File";
+      }
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + message);
-      if (!(ioe instanceof FileNotFoundException))
+      if (! (ioe instanceof FileNotFoundException)) {
         ioe.printStackTrace();
+      }
 
       ncfile = null;
 
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location + "\n" + e.getMessage());
       log.error("NetcdfDataset.open cant open " + location, e);
       e.printStackTrace();
 
       try {
         if (ncfile != null) ncfile.close();
-      } catch (IOException ee) {
+      }
+      catch (IOException ee) {
         System.out.printf("close failed%n");
       }
       ncfile = null;
@@ -1461,7 +1479,8 @@ public class ToolsUI extends JPanel {
           IO.copyUrlB(values[1], out, 60000);
           downloadStatus = values[1] + " written to " + values[0];
 
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
           downloadStatus = "Error opening " + values[0] + " and reading " + values[1] + "\n" + ioe.getMessage();
         }
       }
@@ -1469,11 +1488,9 @@ public class ToolsUI extends JPanel {
 
     GetDataTask task = new GetDataTask(runner, urlString, values);
     ProgressMonitor pm = new ProgressMonitor(task);
-    pm.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    pm.addActionListener(e -> {
         JOptionPane.showMessageDialog(null, e.getActionCommand() + "\n" + downloadStatus);
         downloadStatus = null;
-      }
     });
     pm.start(this, "Download", 30);
   }
@@ -1511,24 +1528,24 @@ public class ToolsUI extends JPanel {
       buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       cb = new ComboBox(prefs);
-      cb.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (debugCB)
+      cb.addActionListener(e -> {
+          if (debugCB) {
             System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " when=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
+          }
 
           // eliminate multiple events from same selection by ignoring events occurring within 100ms of last one.
           if (eventOK && (e.getWhen() > lastEvent + 100)) {
             doit(cb.getSelectedItem());
             lastEvent = e.getWhen();
           }
-        }
       });
 
       AbstractAction closeAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           try {
             closeOpenFiles();
-          } catch (IOException e1) {
+          }
+          catch (IOException e1) {
             System.out.printf("close failed");
           }
         }
@@ -1574,7 +1591,8 @@ public class ToolsUI extends JPanel {
         topPanel.add(new JLabel(command), BorderLayout.WEST);
         topPanel.add(cb, BorderLayout.CENTER);
         topPanel.add(buttPanel, BorderLayout.EAST);
-      } else {
+      }
+      else {
         topPanel.add(buttPanel, BorderLayout.EAST);
       }
 
@@ -1589,11 +1607,18 @@ public class ToolsUI extends JPanel {
     }
 
     void doit(Object command) {
-      if (busy) return;
-      if (command == null) return;
-      if (command instanceof String)
+      if (busy) {
+        return;
+      }
+      if (command == null) {
+        return;
+      }
+      if (command instanceof String) {
         command = ((String) command).trim();
-      if (debug) System.out.println(getClass().getName() + " process=" + command);
+      }
+      if (debug) {
+        System.out.println(getClass().getName() + " process=" + command);
+      }
 
       busy = true;
       if (process(command)) {
@@ -1634,18 +1659,19 @@ public class ToolsUI extends JPanel {
       ta = new TextHistoryPane(true);
       add(ta, BorderLayout.CENTER);
 
-      stopButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (task.isSuccess())
+      stopButton.addActionListener(e -> {
+          if (task.isSuccess()) {
             ta.setText(result);
-          else
+          }
+          else {
             ta.setText(task.errMsg);
+          }
 
-          if (task.isCancel())
+          if (task.isCancel()) {
             ta.appendLine("\n***Cancelled by User");
+          }
 
           ta.gotoTop();
-        }
       });
     }
 
@@ -1664,16 +1690,19 @@ public class ToolsUI extends JPanel {
         filename = input.substring(1, pos);
         command = input.substring(pos + 1);
 
-      } else if ((input.indexOf('\'') == 0) && ((pos = input.indexOf('\'', 1)) > 0)) {
+      }
+      else if ((input.indexOf('\'') == 0) && ((pos = input.indexOf('\'', 1)) > 0)) {
         filename = input.substring(1, pos);
         command = input.substring(pos + 1);
 
-      } else {
+      }
+      else {
         pos = input.indexOf(' ');
         if (pos > 0) {
           filename = input.substring(0, pos);
           command = input.substring(pos);
-        } else {
+        }
+        else {
           filename = input;
           command = null;
         }
@@ -1687,20 +1716,26 @@ public class ToolsUI extends JPanel {
 
     public void run(Object o) throws IOException {
       try {
-        if (addCoords)
+        if (addCoords) {
           ncfile = NetcdfDataset.openDataset(filename, true, null);
-        else
+        }
+        else {
           ncfile = NetcdfDataset.openFile(filename, null);
+        }
 
         StringWriter sw = new StringWriter(50000);
         NCdumpW.print(ncfile, command, sw, task);
         result = sw.toString();
 
-      } finally {
+      }
+      finally {
         try {
-          if (ncfile != null) ncfile.close();
+          if (ncfile != null) {
+            ncfile.close();
+          }
           ncfile = null;
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
           System.out.printf("Error closing %n");
         }
       }
@@ -1781,10 +1816,11 @@ public class ToolsUI extends JPanel {
             try {
               SimpleUnit su = SimpleUnit.factoryWithExceptions(units);
               sb.append(" unit convert = ").append(su.toString());
-              if (su.isUnknownUnit())
+              if (su.isUnknownUnit()) {
                 sb.append(" UNKNOWN UNIT");
-
-            } catch (Exception ioe) {
+              }
+            }
+            catch (Exception ioe) {
               sb.append(" unit convert failed ");
               sb.insert(0, "**** Fail ");
             }
@@ -1792,12 +1828,12 @@ public class ToolsUI extends JPanel {
 
           ta.appendLine(sb.toString());
         }
-
-      } catch (FileNotFoundException ioe) {
+      }
+      catch (FileNotFoundException ioe) {
         ta.setText("Failed to open <" + command + ">");
         err = true;
-
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         ioe.printStackTrace();
         err = true;
       }
@@ -1822,26 +1858,20 @@ public class ToolsUI extends JPanel {
       add(ta, BorderLayout.CENTER);
 
       JButton compareButton = new JButton("Compare");
-      compareButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      compareButton.addActionListener(e -> {
           compare(cb.getSelectedItem());
-        }
       });
       buttPanel.add(compareButton);
 
       JButton dateButton = new JButton("UdunitDate");
-      dateButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      dateButton.addActionListener(e -> {
           checkUdunits(cb.getSelectedItem());
-        }
       });
       buttPanel.add(dateButton);
 
       JButton cdateButton = new JButton("CalendarDate");
-      cdateButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      cdateButton.addActionListener(e -> {
           checkCalendarDate(cb.getSelectedItem());
-        }
       });
       buttPanel.add(cdateButton);
     }
@@ -1857,14 +1887,15 @@ public class ToolsUI extends JPanel {
         ta.appendLine("SimpleUnit.isUnknownUnit       = " + su.isUnknownUnit());
 
         return true;
-
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
 
         if (Debug.isSet("Xdeveloper")) {
           StringWriter sw = new StringWriter(10000);
           e.printStackTrace(new PrintWriter(sw));
           ta.setText(sw.toString());
-        } else {
+        }
+        else {
           ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
         }
         return false;
@@ -1889,16 +1920,16 @@ public class ToolsUI extends JPanel {
         ta.setText("<" + su1.toString() + "> isConvertable to <" + su2.toString() + ">=" +
                 SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
 
-      } catch (Exception e) {
-
+      }
+      catch (Exception e) {
         if (Debug.isSet("Xdeveloper")) {
           StringWriter sw = new StringWriter(10000);
           e.printStackTrace(new PrintWriter(sw));
           ta.setText(sw.toString());
-        } else {
+        }
+        else {
           ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
         }
-
       }
     }
 
@@ -1920,7 +1951,8 @@ public class ToolsUI extends JPanel {
         else
           ta.appendLine("\nDateUnit.getStandardOrISO = " + formatter.toDateTimeString(d2));
 
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         // ok to fall through
       }
       ta.appendLine("isDate = " + isDate);
@@ -1935,12 +1967,14 @@ public class ToolsUI extends JPanel {
             ta.appendLine("\nTimeUnit = " + du);
           }
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
           if (Debug.isSet("Xdeveloper")) {
             StringWriter sw = new StringWriter(10000);
             e.printStackTrace(new PrintWriter(sw));
             ta.setText(sw.toString());
-          } else {
+          }
+          else {
             ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
           }
         }
@@ -1954,7 +1988,8 @@ public class ToolsUI extends JPanel {
         ta.setText("\nParse CalendarDate: <" + command + ">\n");
         CalendarDate cd = CalendarDate.parseUdunits(null, command);
         ta.appendLine("CalendarDate = " + cd);
-      } catch (Throwable t) {
+      }
+      catch (Throwable t) {
         ta.appendLine("not a CalendarDateUnit= " + t.getMessage());
       }
 
@@ -1974,7 +2009,8 @@ public class ToolsUI extends JPanel {
         ta.appendLine(" Base            = " + cdu.getBaseCalendarDate());
         ta.appendLine(" isCalendarField = " + cdu.isCalendarField());
 
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         ta.appendLine("not a CalendarDateUnit= " + e.getMessage());
 
         try {
@@ -1991,7 +2027,8 @@ public class ToolsUI extends JPanel {
             DateFormatter format = new DateFormatter();
             ta.appendLine(" DateFormatter= " + format.toDateTimeString(cd.toDate()));
           }
-        } catch (Exception ee) {
+        }
+        catch (Exception ee) {
           ta.appendLine("Failed on CalendarDateUnit " + ee.getMessage());
         }
       }
@@ -2014,10 +2051,8 @@ public class ToolsUI extends JPanel {
       buttPanel.add(testCB);
 
       JButton compareButton = new JButton("Apply");
-      compareButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      compareButton.addActionListener(e -> {
           apply(cb.getSelectedItem(), testCB.getSelectedItem());
-        }
       });
       buttPanel.add(compareButton);
     }
@@ -2063,19 +2098,16 @@ public class ToolsUI extends JPanel {
       add(coordSysTable, BorderLayout.CENTER);
 
       AbstractButton summaryButton = BAMutil.makeButtcon("Information", "Summary Info", false);
-      summaryButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      summaryButton.addActionListener(e -> {
           Formatter f = new Formatter();
           coordSysTable.summaryInfo(f);
           detailTA.setText(f.toString());
           detailWindow.show();
-        }
       });
       buttPanel.add(summaryButton);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           if (ds != null) {
             try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ds)) {
               detailTA.appendLine(info.getParseInfo());
@@ -2088,14 +2120,12 @@ public class ToolsUI extends JPanel {
             }
             detailWindow.show();
           }
-        }
       });
       buttPanel.add(infoButton);
 
 
       JButton dsButton = new JButton("Object dump");
-      dsButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      dsButton.addActionListener(e -> {
           if (ds != null) {
             StringWriter sw = new StringWriter(5000);
             NetcdfDataset.debugDump(new PrintWriter(sw), ds);
@@ -2103,7 +2133,6 @@ public class ToolsUI extends JPanel {
             detailTA.gotoTop();
             detailWindow.show();
           }
-        }
       });
       buttPanel.add(dsButton);
     }
@@ -2184,15 +2213,21 @@ public class ToolsUI extends JPanel {
 
           if (e.getPropertyName().equals("openNetcdfFile")) {
             NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-            if (ncfile != null) openNetcdfFile(ncfile);
+            if (ncfile != null) {
+              openNetcdfFile(ncfile);
+            }
 
-          } else if (e.getPropertyName().equals("openCoordSystems")) {
+          }
+          else if (e.getPropertyName().equals("openCoordSystems")) {
             NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-            if (ncfile == null) return;
+            if (ncfile == null) {
+              return;
+            }
             try {
               NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
               openCoordSystems(ncd);
-            } catch (IOException e1) {
+            }
+            catch (IOException e1) {
               e1.printStackTrace();
             }
 
@@ -2320,9 +2355,13 @@ public class ToolsUI extends JPanel {
 
       AbstractAction fileAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          if (bufrFileChooser == null) initBufrFileChooser();
+          if (bufrFileChooser == null) {
+            initBufrFileChooser();
+          }
           String filename = bufrFileChooser.chooseFilename();
-          if (filename == null) return;
+          if (filename == null) {
+            return;
+          }
           cb.setSelectedItem(filename);
         }
       };
@@ -2334,18 +2373,14 @@ public class ToolsUI extends JPanel {
 
       JButton accept = new JButton("Accept");
       buttPanel.add(accept);
-      accept.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      accept.addActionListener(e -> {
           accept();
-        }
       });
 
       tables = new JComboBox<>(BufrTables.getTableConfigsAsArray());
       buttPanel.add(tables);
-      tables.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      tables.addActionListener(e -> {
           acceptTable((BufrTables.TableConfig) tables.getSelectedItem());
-        }
       });
 
       bufrTable = new BufrTableBViewer(prefs, buttPanel);
@@ -2433,18 +2468,14 @@ public class ToolsUI extends JPanel {
 
       JButton accept = new JButton("Accept");
       buttPanel.add(accept);
-      accept.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      accept.addActionListener(e -> {
           accept();
-        }
       });
 
       tables = new JComboBox<>(BufrTables.getTableConfigsAsArray());
       buttPanel.add(tables);
-      tables.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      tables.addActionListener(e -> {
           acceptTable((BufrTables.TableConfig) tables.getSelectedItem());
-        }
       });
 
 
@@ -2598,14 +2629,12 @@ public class ToolsUI extends JPanel {
       });
 
       AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
-      showButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      showButt.addActionListener(e -> {
           Formatter f = new Formatter();
           gribTable.showCollection(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(showButt);
     }
@@ -2664,54 +2693,47 @@ public class ToolsUI extends JPanel {
       });
 
       AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
-      showButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      showButt.addActionListener(e -> {
           Formatter f = new Formatter();
           gribTable.showCollection(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(showButt);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           gribTable.checkProblems(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
       AbstractButton gdsButton = BAMutil.makeButtcon("Information", "Show GDS use", false);
-      gdsButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      gdsButton.addActionListener(e -> {
           Formatter f = new Formatter();
           gribTable.showGDSuse(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(gdsButton);
 
       AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
-      writeButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      writeButton.addActionListener(e -> {
           Formatter f = new Formatter();
           try {
             if (!gribTable.writeIndex(f)) return;
-          } catch (IOException e1) {
+          }
+          catch (IOException e1) {
             e1.printStackTrace();
           }
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(writeButton);
     }
@@ -2774,26 +2796,22 @@ public class ToolsUI extends JPanel {
       });
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           gribTable.showInfo(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
       AbstractButton checkButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-      checkButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      checkButton.addActionListener(e -> {
           Formatter f = new Formatter();
           gribTable.checkProblems(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(checkButton);
     }
@@ -2856,14 +2874,12 @@ public class ToolsUI extends JPanel {
       });
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           gribTable.checkProblems(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
     }
@@ -3061,30 +3077,27 @@ public class ToolsUI extends JPanel {
       add(gribTable, BorderLayout.CENTER);
 
       AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
-      showButt.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      showButt.addActionListener(e -> {
           Formatter f = new Formatter();
           gribTable.showCollection(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(showButt);
 
       AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
-      writeButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      writeButton.addActionListener(e -> {
           Formatter f = new Formatter();
           try {
             if (!gribTable.writeIndex(f)) return;
-          } catch (IOException e1) {
+          }
+          catch (IOException e1) {
             e1.printStackTrace();
           }
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(writeButton);
     }
@@ -3387,10 +3400,8 @@ public class ToolsUI extends JPanel {
       final JComboBox<WmoTemplateTable.Version> modes = new JComboBox<>(WmoTemplateTable.Version.values());
       modes.setSelectedItem(WmoTemplateTable.standard);
       topPanel.add(modes, BorderLayout.CENTER);
-      modes.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      modes.addActionListener(e -> {
           codeTable.setTable((WmoTemplateTable.Version) modes.getSelectedItem());
-        }
       });
 
       codeTable = new GribWmoTemplatesPanel(prefs, buttPanel);
@@ -3422,10 +3433,8 @@ public class ToolsUI extends JPanel {
       final JComboBox<WmoCodeTable.Version> modes = new JComboBox<>(WmoCodeTable.Version.values());
       modes.setSelectedItem(WmoCodeTable.standard);
       topPanel.add(modes, BorderLayout.CENTER);
-      modes.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      modes.addActionListener(e -> {
           codeTable.setTable((WmoCodeTable.Version) modes.getSelectedItem());
-        }
       });
 
       codeTable = new GribWmoCodesPanel(prefs, buttPanel);
@@ -3649,13 +3658,12 @@ public class ToolsUI extends JPanel {
       add(hdf5Table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Compact Representation", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           try {
             hdf5Table.showInfo(f);
-
-          } catch (IOException ioe) {
+          }
+          catch (IOException ioe) {
             StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
@@ -3665,18 +3673,16 @@ public class ToolsUI extends JPanel {
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
       AbstractButton infoButton2 = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton2.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton2.addActionListener(e -> {
           Formatter f = new Formatter();
           try {
             hdf5Table.showInfo2(f);
-
-          } catch (IOException ioe) {
+          }
+          catch (IOException ioe) {
             StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
@@ -3686,25 +3692,23 @@ public class ToolsUI extends JPanel {
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton2);
 
       AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
-      eosdump.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      eosdump.addActionListener(e -> {
           try {
             Formatter f = new Formatter();
             hdf5Table.getEosInfo(f);
             detailTA.setText(f.toString());
             detailWindow.show();
-          } catch (IOException ioe) {
+          }
+          catch (IOException ioe) {
             StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
             detailWindow.show();
           }
-        }
       });
       buttPanel.add(eosdump);
 
@@ -3758,13 +3762,12 @@ public class ToolsUI extends JPanel {
       add(hdf5Table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           try {
             hdf5Table.showInfo(f);
-
-          } catch (IOException ioe) {
+          }
+          catch (IOException ioe) {
             StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
@@ -3774,7 +3777,6 @@ public class ToolsUI extends JPanel {
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
     }
@@ -3827,20 +3829,19 @@ public class ToolsUI extends JPanel {
       add(hdf4Table, BorderLayout.CENTER);
 
       AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
-      eosdump.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      eosdump.addActionListener(e -> {
           try {
             Formatter f = new Formatter();
             hdf4Table.getEosInfo(f);
             detailTA.setText(f.toString());
             detailWindow.show();
-          } catch (IOException ioe) {
+          }
+          catch (IOException ioe) {
             StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
             detailWindow.show();
           }
-        }
       });
       buttPanel.add(eosdump);
     }
@@ -4065,12 +4066,12 @@ public class ToolsUI extends JPanel {
       add(table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           try {
             table.showInfo(f);
-          } catch (IOException e1) {
+          }
+          catch (IOException e1) {
             StringWriter sw = new StringWriter(5000);
             e1.printStackTrace(new PrintWriter(sw));
             f.format("%s", sw.toString());
@@ -4078,32 +4079,27 @@ public class ToolsUI extends JPanel {
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
       AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
-      collectionButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      collectionButton.addActionListener(e -> {
           table.showCollectionInfo(true);
-        }
       });
       buttPanel.add(collectionButton);
 
       AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show Dataset", false);
-      viewButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      viewButton.addActionListener(e -> {
           try {
             table.showDataset();
-
-          } catch (IOException e1) {
+          }
+          catch (IOException e1) {
             StringWriter sw = new StringWriter(5000);
             e1.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
             detailTA.gotoTop();
             detailWindow.show();
           }
-        }
       });
       buttPanel.add(viewButton);
     }
@@ -4154,12 +4150,12 @@ public class ToolsUI extends JPanel {
       add(table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           try {
             table.showInfo(f);
-          } catch (IOException e1) {
+          }
+          catch (IOException e1) {
             StringWriter sw = new StringWriter(5000);
             e1.printStackTrace(new PrintWriter(sw));
             f.format("%s", sw.toString());
@@ -4167,17 +4163,15 @@ public class ToolsUI extends JPanel {
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
       AbstractButton refreshButton = BAMutil.makeButtcon("Undo", "Refresh", false);
-      refreshButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      refreshButton.addActionListener(e -> {
           try {
             table.refresh();
-
-          } catch (Exception e1) {
+          }
+          catch (Exception e1) {
             Formatter f = new Formatter();
             StringWriter sw = new StringWriter(5000);
             e1.printStackTrace(new PrintWriter(sw));
@@ -4186,7 +4180,6 @@ public class ToolsUI extends JPanel {
             detailTA.gotoTop();
             detailWindow.show();
           }
-        }
       });
       buttPanel.add(refreshButton);
 
@@ -4237,29 +4230,29 @@ public class ToolsUI extends JPanel {
       add(dsTable, BorderLayout.CENTER);
 
       AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
-      viewButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      viewButton.addActionListener(e -> {
           if (ds != null) {
             GridDataset gridDataset = dsTable.getGridDataset();
             if (gridUI == null) makeGridUI();
             gridUI.setDataset(gridDataset);
             viewerWindow.show();
           }
-        }
       });
       buttPanel.add(viewButton);
 
       AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
-      imageButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      imageButton.addActionListener(e -> {
           if (ds != null) {
             GridDatatype grid = dsTable.getGrid();
-            if (grid == null) return;
-            if (imageWindow == null) makeImageWindow();
+            if (grid == null) {
+              return;
+            }
+            if (imageWindow == null) {
+              makeImageWindow();
+            }
             imageViewer.setImageFromGrid(grid);
             imageWindow.show();
           }
-        }
       });
       buttPanel.add(imageButton);
 
@@ -4394,26 +4387,26 @@ public class ToolsUI extends JPanel {
       add(dsTable, BorderLayout.CENTER);
 
       AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
-      viewButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      viewButton.addActionListener(e -> {
           CoverageCollection gridDataset = dsTable.getCoverageDataset();
-          if (gridDataset == null) return;
-          if (display == null) makeDisplay();
+          if (gridDataset == null) {
+            return;
+          }
+          if (display == null) {
+            makeDisplay();
+          }
           display.setDataset(dsTable);
           viewerWindow.show();
-        }
       });
       buttPanel.add(viewButton);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           dsTable.showInfo(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
@@ -4515,15 +4508,13 @@ public class ToolsUI extends JPanel {
       add(dsTable, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           RadialDatasetSweep radialDataset = dsTable.getRadialDataset();
           Formatter info = new Formatter();
           radialDataset.getDetailInfo(info);
           detailTA.setText(info.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
     }
@@ -4605,14 +4596,12 @@ public class ToolsUI extends JPanel {
       add(dsViewer, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           if (ncfile != null) {
             detailTA.setText(ncfile.getDetailInfo());
             detailTA.gotoTop();
             detailWindow.show();
           }
-        }
       });
       buttPanel.add(infoButton);
 
@@ -4715,7 +4704,8 @@ public class ToolsUI extends JPanel {
 
       try {
         if (ncfile != null) ncfile.close();
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         System.out.printf("close failed %n");
       }
 
@@ -4723,8 +4713,8 @@ public class ToolsUI extends JPanel {
         NetcdfFile ncnew = openFile(command, addCoords, null);
         if (ncnew != null)
           setDataset(ncnew);
-
-      } catch (Exception ioe) {
+      }
+      catch (Exception ioe) {
         StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
         detailTA.setText(sw.toString());
@@ -4732,11 +4722,13 @@ public class ToolsUI extends JPanel {
         err = true;
       }
 
-      return !err;
+      return (! err);
     }
 
     void closeOpenFiles() throws IOException {
-      if (ncfile != null) ncfile.close();
+      if (ncfile != null) {
+        ncfile.close();
+      }
       ncfile = null;
     }
 
@@ -4744,7 +4736,8 @@ public class ToolsUI extends JPanel {
       try {
         if (ncfile != null) ncfile.close();
         ncfile = null;
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         System.out.printf("close failed %n");
       }
       ncfile = nc;
@@ -4759,7 +4752,6 @@ public class ToolsUI extends JPanel {
       super.save();
       dsWriter.save();
     }
-
   }
 
   /////////////////////////////////////////////////////////////////////
@@ -4777,22 +4769,28 @@ public class ToolsUI extends JPanel {
           if (e.getPropertyName().equals("openPointFeatureDataset")) {
             String datasetName = (String) e.getNewValue();
             openPointFeatureDataset(datasetName);
-          } else if (e.getPropertyName().equals("openNetcdfFile")) {
+          }
+          else if (e.getPropertyName().equals("openNetcdfFile")) {
             String datasetName = (String) e.getNewValue();
             openNetcdfFile(datasetName);
-          } else if (e.getPropertyName().equals("openCoordSystems")) {
+          }
+          else if (e.getPropertyName().equals("openCoordSystems")) {
             String datasetName = (String) e.getNewValue();
             openCoordSystems(datasetName);
-          } else if (e.getPropertyName().equals("openNcML")) {
+          }
+          else if (e.getPropertyName().equals("openNcML")) {
             String datasetName = (String) e.getNewValue();
             openNcML(datasetName);
-          } else if (e.getPropertyName().equals("openGridDataset")) {
+          }
+          else if (e.getPropertyName().equals("openGridDataset")) {
             String datasetName = (String) e.getNewValue();
             openGridDataset(datasetName);
-          } else if (e.getPropertyName().equals("openCoverageDataset")) {
+          }
+          else if (e.getPropertyName().equals("openCoverageDataset")) {
             String datasetName = (String) e.getNewValue();
             openCoverageDataset(datasetName);
-          } else if (e.getPropertyName().equals("openRadialDataset")) {
+          }
+          else if (e.getPropertyName().equals("openRadialDataset")) {
             String datasetName = (String) e.getNewValue();
             openRadialDataset(datasetName);
           }
@@ -4804,7 +4802,9 @@ public class ToolsUI extends JPanel {
       AbstractAction fileAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           String filename = dirChooser.chooseFilename();
-          if (filename == null) return;
+          if (filename == null) {
+            return;
+          }
           cb.setSelectedItem(filename);
         }
       };
@@ -4840,12 +4840,12 @@ public class ToolsUI extends JPanel {
       add(table, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           try {
             table.showCollection(f);
-          } catch (Exception e1) {
+          }
+          catch (Exception e1) {
             StringWriter sw = new StringWriter(5000);
             e1.printStackTrace(new PrintWriter(sw));
             f.format("%s", sw.toString());
@@ -4853,7 +4853,6 @@ public class ToolsUI extends JPanel {
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
@@ -4861,13 +4860,15 @@ public class ToolsUI extends JPanel {
 
     boolean process(Object o) {
       String command = (String) o;
-      if (command == null) return false;
+      if (command == null) {
+        return false;
+      }
 
       try {
         table.setCollection(command);
         return true;
-
-      } catch (Exception ioe) {
+      }
+      catch (Exception ioe) {
         StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
         detailTA.setText(sw.toString());
@@ -4907,13 +4908,15 @@ public class ToolsUI extends JPanel {
 
     boolean process(Object o) {
       String command = (String) o;
-      if (command == null) return false;
+      if (command == null) {
+        return false;
+      }
 
       try {
         //table.setCollectionFromConfig(command);
         return true;
-
-      } catch (Exception ioe) {
+      }
+      catch (Exception ioe) {
         ioe.printStackTrace();
         StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
@@ -4949,15 +4952,17 @@ public class ToolsUI extends JPanel {
       add(pfViewer, BorderLayout.CENTER);
 
       types = new JComboBox<>();
-      for (FeatureType ft : FeatureType.values())
+      for (FeatureType ft : FeatureType.values()) {
         types.addItem(ft);
+      }
       types.getModel().setSelectedItem(FeatureType.ANY_POINT);
       buttPanel.add(types);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (pfDataset == null) return;
+      infoButton.addActionListener(e -> {
+          if (pfDataset == null) {
+            return;
+          }
           Formatter f = new Formatter();
           pfDataset.getDetailInfo(f);
           detailTA.setText(f.toString());
@@ -4965,33 +4970,32 @@ public class ToolsUI extends JPanel {
           detailTA.appendLine(getCapabilities(pfDataset));
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
       AbstractButton calcButton = BAMutil.makeButtcon("V3", "Calculate the latlon/dateRange", false);
-      calcButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (pfDataset == null) return;
+      calcButton.addActionListener(e -> {
+          if (pfDataset == null) {
+            return;
+          }
           Formatter f = new Formatter();
           pfDataset.calcBounds(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(calcButton);
 
       AbstractButton xmlButton = BAMutil.makeButtcon("XML", "pointConfig.xml", false);
-      xmlButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          if (pfDataset == null) return;
+      xmlButton.addActionListener(e -> {
+          if (pfDataset == null) {
+            return;
+          }
           Formatter f = new Formatter();
           ucar.nc2.ft.point.standard.PointConfigXML.writeConfigXML(pfDataset, f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(xmlButton);
     }
@@ -5002,7 +5006,9 @@ public class ToolsUI extends JPanel {
     }
 
     void closeOpenFiles() throws IOException {
-      if (pfDataset != null) pfDataset.close();
+      if (pfDataset != null) {
+        pfDataset.close();
+      }
       pfDataset = null;
       pfViewer.clear();
     }
@@ -5017,7 +5023,8 @@ public class ToolsUI extends JPanel {
 
       try {
         if (pfDataset != null) pfDataset.close();
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         System.out.printf("close failed %n");
       }
       detailTA.clear();
@@ -5106,12 +5113,10 @@ public class ToolsUI extends JPanel {
       buttPanel.add(types);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           detailTA.setText(wmsViewer.getDetailInfo());
           detailTA.gotoTop();
           detailWindow.show();
-        }
       });
       buttPanel.add(infoButton);
     }
@@ -5141,8 +5146,7 @@ public class ToolsUI extends JPanel {
       add(radialViewer, BorderLayout.CENTER);
 
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           if (radarCollectionDataset != null) {
             Formatter info = new Formatter();
             radarCollectionDataset.getDetailInfo(info);
@@ -5150,7 +5154,6 @@ public class ToolsUI extends JPanel {
             detailTA.gotoTop();
             detailWindow.show();
           }
-        }
       });
       buttPanel.add(infoButton);
     }
@@ -5161,7 +5164,9 @@ public class ToolsUI extends JPanel {
     }
 
     void closeOpenFiles() throws IOException {
-      if (radarCollectionDataset != null) radarCollectionDataset.close();
+      if (radarCollectionDataset != null) {
+        radarCollectionDataset.close();
+      }
       radarCollectionDataset = null;
     }
 
@@ -5175,7 +5180,8 @@ public class ToolsUI extends JPanel {
 
       try {
         if (radarCollectionDataset != null) radarCollectionDataset.close();
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         System.out.printf("close failed %n");
       }
 
@@ -5189,8 +5195,8 @@ public class ToolsUI extends JPanel {
 
         setStationRadialDataset(result.featureDataset);
         return true;
-
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         StringWriter sw = new StringWriter(5000);
         e.printStackTrace(new PrintWriter(sw));
         detailTA.setText(log.toString());
@@ -5201,7 +5207,8 @@ public class ToolsUI extends JPanel {
         if (result != null) {
           try {
             result.close();
-          } catch (IOException ioe2) {
+          }
+          catch (IOException ioe2) {
             JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + ioe2.getMessage());
           }
         }
@@ -5214,7 +5221,8 @@ public class ToolsUI extends JPanel {
 
       try {
         if (radarCollectionDataset != null) radarCollectionDataset.close();
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         System.out.printf("close failed %n");
       }
 
@@ -5241,8 +5249,8 @@ public class ToolsUI extends JPanel {
       try {
         if (null != command)
           imagePanel.setImageFromUrl(command);
-
-      } catch (Exception ioe) {
+      }
+      catch (Exception ioe) {
         ioe.printStackTrace();
         StringWriter sw = new StringWriter(5000);
         ioe.printStackTrace(new PrintWriter(sw));
@@ -5274,12 +5282,10 @@ public class ToolsUI extends JPanel {
       add(ta, BorderLayout.CENTER);
 
       JButton readButton = new JButton("read geotiff");
-      readButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      readButton.addActionListener(e -> {
           String item = cb.getSelectedItem().toString();
           String fname = item.trim();
           read(fname);
-        }
       });
       buttPanel.add(readButton);
     }
@@ -5292,7 +5298,7 @@ public class ToolsUI extends JPanel {
         gridDs = ucar.nc2.dt.grid.GridDataset.open(filename);
         java.util.List grids = gridDs.getGrids();
         if (grids.size() == 0) {
-          System.out.println("No grids found.");
+          log.warn("No grids found.");
           return false;
         }
 
@@ -5307,15 +5313,16 @@ public class ToolsUI extends JPanel {
 
         read(fileOut);
         JOptionPane.showMessageDialog(null, "File written to " + fileOut);
-
-
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         ioe.printStackTrace();
         return false;
-      } finally {
+      }
+      finally {
         try {
           if (gridDs != null) gridDs.close();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
           System.out.printf("close failed %n");
         }
       }
@@ -5329,13 +5336,15 @@ public class ToolsUI extends JPanel {
         geotiff.read();
 
         ta.setText(geotiff.showInfo());
-      } catch (IOException ioe) {
+      }
+      catch (IOException ioe) {
         ioe.printStackTrace();
-
-      } finally {
+      }
+      finally {
         try {
           if (geotiff != null) geotiff.close();
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
           System.out.printf("close failed %n");
         }
       }
@@ -5364,15 +5373,15 @@ public class ToolsUI extends JPanel {
     public void run() {
       try {
         getData.run(o);
-
-      } catch (FileNotFoundException ioe) {
+      }
+      catch (FileNotFoundException ioe) {
         errMsg = ("Cant open " + name + " " + ioe.getMessage());
         // ioe.printStackTrace();
         success = false;
         done = true;
         return;
-
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         StringWriter sw = new StringWriter(5000);
         e.printStackTrace(new PrintWriter(sw));
         errMsg = sw.toString();
@@ -5477,7 +5486,9 @@ public class ToolsUI extends JPanel {
 
     String version;
     try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
-      if (is == null) return "5.0";
+      if (is == null) {
+        return "5.0";
+      }
       BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
       StringBuilder sbuff = new StringBuilder();
       for (int i = 0; i < 3; i++) {
@@ -5485,7 +5496,8 @@ public class ToolsUI extends JPanel {
         sbuff.append("<br>");
       }
       version = sbuff.toString();
-    } catch (IOException ioe) {
+    }
+    catch (IOException ioe) {
       ioe.printStackTrace();
       version = "version unknown";
     }
@@ -5530,14 +5542,16 @@ public class ToolsUI extends JPanel {
     prefs.putBeanObject(FRAME_SIZE, bounds);
     try {
       store.save();
-    } catch (IOException ioe) {
+    }
+    catch (IOException ioe) {
       ioe.printStackTrace();
     }
 
     done = true; // on some systems, still get a window close event
     ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-    if (cache != null)
+    if (cache != null) {
       cache.clearCache(true);
+    }
     FileCache.shutdown(); // shutdown threads
     DiskCache2.exit(); // shutdown threads
     MetadataManager.closeAll(); // shutdown bdb
@@ -5553,9 +5567,8 @@ public class ToolsUI extends JPanel {
   private static String wantDataset = null;
 
   private static void setDataset() {
-    SwingUtilities.invokeLater(new Runnable() { // do it in the swing event thread
-
-      public void run() {
+    SwingUtilities.invokeLater(( ) -> {
+        // do it in the swing event thread
         int pos = wantDataset.indexOf('#');
         if (pos > 0) {
           String catName = wantDataset.substring(0, pos); // {catalog}#{dataset}
@@ -5569,7 +5582,6 @@ public class ToolsUI extends JPanel {
 
         // default
         ui.openNetcdfFile(wantDataset);
-      }
     });
   }
 
@@ -5588,7 +5600,8 @@ public class ToolsUI extends JPanel {
           doSavePrefsAndUI();
         }
       });
-    } else {
+    }
+    else {
       try {
         // Switch to Nimbus Look and Feel, if it's available.
         for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -5597,7 +5610,8 @@ public class ToolsUI extends JPanel {
             break;
           }
         }
-      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+      }
+      catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
               UnsupportedLookAndFeelException e) {
         log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
       }
@@ -5625,7 +5639,7 @@ public class ToolsUI extends JPanel {
       }
 
       public void windowClosing(WindowEvent e) {
-        if (!done) exit();
+        if (! done) exit();
       }
     });
 
@@ -5634,7 +5648,10 @@ public class ToolsUI extends JPanel {
     Rectangle have = frame.getGraphicsConfiguration().getBounds();
     Rectangle def = new Rectangle(50, 50, 800, 800);
     Rectangle want = (Rectangle) prefs.getBean(FRAME_SIZE, def);
-    if (want.getX() > have.getWidth() - 25) want = def; // may be off screen when switcing between 2 monitor system
+    if (want.getX() > have.getWidth() - 25) {
+      // may be off screen when switcing between 2 monitor system
+      want = def;
+    }
 
     frame.setBounds(want);
 
@@ -5643,8 +5660,9 @@ public class ToolsUI extends JPanel {
     frame.setVisible(true);
 
     // in case a dataset was on the command line
-    if (wantDataset != null)
+    if (wantDataset != null) {
       setDataset();
+    }
   }
 
   static boolean isCacheInit = false;
@@ -5676,7 +5694,7 @@ public class ToolsUI extends JPanel {
       // see if another version is running, if so send it the message
       sm = new SocketMessage(14444, wantDataset);
       if (sm.isAlreadyRunning()) {
-        System.out.println("ToolsUI already running - pass argument= '" + wantDataset + "' to it and exit");
+        log.error("ToolsUI already running - pass argument= '{}}' to it and exit", wantDataset);
         System.exit(0);
       }
 
@@ -5686,11 +5704,14 @@ public class ToolsUI extends JPanel {
       sm = new SocketMessage(14444, null);
       if (sm.isAlreadyRunning()) {
         System.out.println("ToolsUI already running - start up another copy");
-      } else {
+      }
+      else {
         sm.addEventListener(new SocketMessage.EventListener() {
           public void setMessage(SocketMessage.Event event) {
             wantDataset = event.getMessage();
-            if (debugListen) System.out.println(" got message= '" + wantDataset);
+            if (debugListen) {
+              System.out.println(" got message= '" + wantDataset);
+            }
             setDataset();
           }
         });
@@ -5723,8 +5744,9 @@ public class ToolsUI extends JPanel {
             RuntimeConfigParser.read(fis, errlog);
             configRead = true;
             System.out.println(errlog);
-          } catch (IOException ioe) {
-            System.out.println("Error reading " + runtimeConfig + "=" + ioe.getMessage());
+          }
+          catch (IOException ioe) {
+            log.warn("Error reading {} = {}", runtimeConfig, ioe.getMessage());
           }
         }
       }
@@ -5739,8 +5761,9 @@ public class ToolsUI extends JPanel {
             RuntimeConfigParser.read(fis, errlog);
             configRead = true;
             System.out.println(errlog);
-          } catch (IOException ioe) {
-            System.out.println("Error reading " + filename + "=" + ioe.getMessage());
+          }
+          catch (IOException ioe) {
+            log.warn("Error reading {} = {}", filename, ioe.getMessage());
           }
         }
       }
@@ -5764,8 +5787,9 @@ public class ToolsUI extends JPanel {
         prefs = store.getPreferences();
 
         Debug.setStore(prefs.node("Debug"));
-      } catch (IOException e) {
-        System.out.println("XMLStore Creation failed " + e);
+      }
+      catch (IOException e) {
+        log.warn("XMLStore Creation failed ", e.toString());
       }
 
       // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
@@ -5774,14 +5798,16 @@ public class ToolsUI extends JPanel {
       try {
         // thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
         thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
       }
 
       UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
       try {
         HTTPSession.setGlobalCredentialsProvider(provider);
-      }catch (HTTPException e) {
+      }
+      catch (HTTPException e) {
         log.error("Failed to set global credentials");
       }
       HTTPSession.setGlobalUserAgent("ToolsUI v5.0");
@@ -5806,13 +5832,9 @@ public class ToolsUI extends JPanel {
     WmsViewer.setHttpClient(client);
     */
 
-      SwingUtilities.invokeLater(new Runnable() {
-        @Override
-        public void run() {
+      SwingUtilities.invokeLater(( ) -> {
           createGui();
-        }
       });
     }
   }
-
 }
