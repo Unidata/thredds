@@ -81,7 +81,6 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
   static private List<Convention> conventionList = new ArrayList<>();
   static private Map<String, String> ncmlHash = new HashMap<>();
   static private boolean useMaximalCoordSys = true;
-  static private boolean useCompleteCoordSys = true;
   static private boolean userMode = false;
 
   /**
@@ -832,9 +831,12 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
    * Examine existing CS. create a subset of axes that fits the variable. Choose the one with highest rank.
    * It must have X,Y or lat,lon. If so, add it.
    *
-   * @param ncDataset why
+   * @param ncDataset need this to see if incomplete coordinate systems are allowed
    */
   protected void makeCoordinateSystemsMaximal(NetcdfDataset ncDataset) {
+
+    boolean requireCompleteCoordSys = !ncDataset.getEnhanceMode().contains(NetcdfDataset.Enhance.IncompleteCoordSystems);
+
     for (VarProcess vp : varList) {
       VariableEnhanced ve = (VariableEnhanced) vp.v;
 
@@ -852,13 +854,33 @@ public class CoordSysBuilder implements CoordSysBuilderIF {
 
       String csName = CoordinateSystem.makeName(axisList);
       CoordinateSystem cs = ncDataset.findCoordinateSystem(csName);
-      if (cs != null && (!useCompleteCoordSys || cs.isComplete(ve))) {
+      boolean okToBuild = false;
+
+      // do coordinate systems need to be complete?
+      // default enhance mode is yes, they must be complete
+      if (requireCompleteCoordSys) {
+        if (cs != null) {
+          // only build if coordinate system is complete
+          okToBuild = cs.isComplete(ve);
+        }
+      } else {
+        // coordinate system can be incomplete, so we're ok to build if we find something
+        okToBuild = true;
+      }
+
+      if (cs != null && okToBuild) {
         ve.addCoordinateSystem(cs);
         parseInfo.format(" assigned maximal CoordSystem '%s' for var= %s%n", cs.getName(), ve.getFullName());
 
       } else {
         CoordinateSystem csnew = new CoordinateSystem(ncDataset, axisList, null);
-        if (!useCompleteCoordSys || csnew.isComplete(ve)) {
+        // again, do coordinate systems need to be complete?
+        // default enhance mode is yes, they must be complete
+        if (requireCompleteCoordSys) {
+          // only build if new coordinate system is complete
+          okToBuild = csnew.isComplete(ve);
+        }
+        if (okToBuild) {
           csnew.setImplicit(true);
           ve.addCoordinateSystem(csnew);
           ncDataset.addCoordinateSystem(csnew);

@@ -100,7 +100,11 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
      */
     ConvertMissing,
     /** Build coordinate systems. */
-    CoordSystems
+    CoordSystems,
+    /** Build coordinate systems allowing for incomplete coordinate systems (i.e. not
+     * every dimension in a variable has a corresponding coordinate variable.
+     */
+    IncompleteCoordSystems,
   }
 
   static private Set<Enhance> EnhanceAll = Collections.unmodifiableSet(EnumSet.of(Enhance.ConvertEnums,
@@ -133,16 +137,17 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
    * <table border="1">
    *   <tr>  <th>String</th>  <th>Enhancements</th>  </tr>
    *   <tr>  <td>All</td>  <td>ConvertEnums, ConvertUnsigned, ApplyScaleOffset, ConvertMissing, CoordSystems</td>  </tr>
-   *   <tr>  <td>None</td>               <td> &lt;empty&gt; </td>                                    </tr>
-   *   <tr>  <td>ConvertEnums</td>       <td>ConvertEnums</td>                                       </tr>
-   *   <tr>  <td>ConvertUnsigned</td>    <td>ConvertUnsigned</td>                                    </tr>
-   *   <tr>  <td>ApplyScaleOffset</td>   <td>ApplyScaleOffset</td>                                   </tr>
-   *   <tr>  <td>ConvertMissing</td>     <td>ConvertMissing</td>                                     </tr>
-   *   <tr>  <td>CoordSystems</td>       <td>CoordSystems</td>                                       </tr>
-   *   <tr>  <td>true</td>               <td>Alias for "All"</td>                                    </tr>
-   *   <tr>  <td>ScaleMissingDefer</td>  <td>Alias for "None"</td>                                   </tr>
-   *   <tr>  <td>AllDefer</td>           <td>ConvertEnums, CoordSystems</td>                         </tr>
-   *   <tr>  <td>ScaleMissing</td>       <td>ConvertUnsigned, ApplyScaleOffset, ConvertMissing</td>  </tr>
+   *   <tr>  <td>None</td>                   <td> &lt;empty&gt; </td>                                    </tr>
+   *   <tr>  <td>ConvertEnums</td>           <td>ConvertEnums</td>                                       </tr>
+   *   <tr>  <td>ConvertUnsigned</td>        <td>ConvertUnsigned</td>                                    </tr>
+   *   <tr>  <td>ApplyScaleOffset</td>       <td>ApplyScaleOffset</td>                                   </tr>
+   *   <tr>  <td>ConvertMissing</td>         <td>ConvertMissing</td>                                     </tr>
+   *   <tr>  <td>CoordSystems</td>           <td>CoordSystems</td>                                       </tr>
+   *   <tr>  <td>IncompleteCoordSystems</td> <td>CoordSystems</td>                                       </tr>
+   *   <tr>  <td>true</td>                   <td>Alias for "All"</td>                                    </tr>
+   *   <tr>  <td>ScaleMissingDefer</td>      <td>Alias for "None"</td>                                   </tr>
+   *   <tr>  <td>AllDefer</td>               <td>ConvertEnums, CoordSystems</td>                         </tr>
+   *   <tr>  <td>ScaleMissing</td>           <td>ConvertUnsigned, ApplyScaleOffset, ConvertMissing</td>  </tr>
    * </table>
    *
    * @param enhanceMode  a string from the above table.
@@ -152,18 +157,20 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
     if (enhanceMode == null) return null;
     
     switch (enhanceMode.toLowerCase()) {
-      case "all":               return getEnhanceAll();
-      case "none":              return getEnhanceNone();
-      case "convertenums":      return EnumSet.of(Enhance.ConvertEnums);
-      case "convertunsigned":   return EnumSet.of(Enhance.ConvertUnsigned);
-      case "applyscaleoffset":  return EnumSet.of(Enhance.ApplyScaleOffset);
-      case "convertmissing":    return EnumSet.of(Enhance.ConvertMissing);
-      case "coordsystems":      return EnumSet.of(Enhance.CoordSystems);
+      case "all":                    return getEnhanceAll();
+      case "none":                   return getEnhanceNone();
+      case "convertenums":           return EnumSet.of(Enhance.ConvertEnums);
+      case "convertunsigned":        return EnumSet.of(Enhance.ConvertUnsigned);
+      case "applyscaleoffset":       return EnumSet.of(Enhance.ApplyScaleOffset);
+      case "convertmissing":         return EnumSet.of(Enhance.ConvertMissing);
+      case "coordsystems":           return EnumSet.of(Enhance.CoordSystems);
+      case "incompletecoordsystems": return EnumSet.of(Enhance.CoordSystems,
+                                                       Enhance.IncompleteCoordSystems);
       // Legacy strings, retained for backwards compatibility:
-      case "true":              return getEnhanceAll();
-      case "scalemissingdefer": return getEnhanceNone();
-      case "alldefer":          return EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
-      case "scalemissing":      return EnumSet.of(
+      case "true":                   return getEnhanceAll();
+      case "scalemissingdefer":      return getEnhanceNone();
+      case "alldefer":               return EnumSet.of(Enhance.ConvertEnums, Enhance.CoordSystems);
+      case "scalemissing":           return EnumSet.of(
               Enhance.ConvertUnsigned, Enhance.ApplyScaleOffset, Enhance.ConvertMissing);
       // Return null by default, since some valid strings actually return an empty set.
       default: return null;
@@ -417,7 +424,14 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
     // now find coord systems which may change some Variables to axes, etc
     if (builder != null) {
-      builder.buildCoordinateSystems(ds);
+      // temporarily set enhanceMode if incomplete coordinate systems are allowed
+      if (mode.contains(Enhance.IncompleteCoordSystems)) {
+        ds.enhanceMode.add(Enhance.IncompleteCoordSystems);
+        builder.buildCoordinateSystems(ds);
+        ds.enhanceMode.remove(Enhance.IncompleteCoordSystems);
+      } else {
+        builder.buildCoordinateSystems(ds);
+      }
     }
 
     /* timeTaxis must be CoordinateAxis1DTime
@@ -461,6 +475,22 @@ public class NetcdfDataset extends ucar.nc2.NetcdfFile {
 
   static public NetcdfDataset acquireDataset(DatasetUrl location, boolean enhanceMode, ucar.nc2.util.CancelTask cancelTask) throws IOException {
     return acquireDataset(null, location, enhanceMode ? defaultEnhanceMode : null, -1, cancelTask, null);
+  }
+
+  /**
+   * Same as openDataset, but file is acquired through the File Cache, with specified enhancements.
+   * You still close with NetcdfDataset.close(), the release is handled automatically.
+   * You must first call initNetcdfFileCache() for caching to actually take place.
+   *
+   * @param location   location of file, passed to FileFactory
+   * @param enhanceMode how to enhance. if null, then no enhancement
+   * @param cancelTask allow task to be cancelled; may be null.
+   * @return NetcdfDataset object
+   * @throws java.io.IOException on read error
+   */
+
+  static public NetcdfDataset acquireDataset(DatasetUrl location, Set<Enhance> enhanceMode, ucar.nc2.util.CancelTask cancelTask) throws IOException {
+    return acquireDataset(null, location, enhanceMode, -1, cancelTask, null);
   }
 
   /*
