@@ -9,7 +9,7 @@ import dap4.core.util.DapException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static dap4.dap4lib.netcdf.DapNetcdf.*;
+import static  ucar.nc2.jni.netcdf.Nc4prototypes.*;
 import static dap4.dap4lib.netcdf.Nc4Notes.*;
 
 abstract public class Nc4DMR

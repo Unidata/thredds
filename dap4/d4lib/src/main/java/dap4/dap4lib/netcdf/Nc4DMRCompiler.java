@@ -12,8 +12,10 @@ import dap4.core.util.Convert;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
+import ucar.nc2.jni.netcdf.Nc4prototypes;
+import ucar.nc2.jni.netcdf.SizeTByReference;
 
-import static dap4.dap4lib.netcdf.DapNetcdf.*;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 import static dap4.dap4lib.netcdf.Nc4DSP.*;
 import static dap4.dap4lib.netcdf.Nc4Notes.*;
 
@@ -32,7 +34,6 @@ public class Nc4DMRCompiler
     static public final String UCARTAGVLEN = Nc4DSP.UCARTAGVLEN;
     static public final String UCARTAGOPAQUE = Nc4DSP.UCARTAGOPAQUE;
 
-    static final Pointer NC_NULL = Pointer.NULL;
     static final int NC_FALSE = 0;
     static final int NC_TRUE = 1;
     // "null" id(s)
@@ -66,7 +67,7 @@ public class Nc4DMRCompiler
     //////////////////////////////////////////////////
     // Instance Variables
 
-    protected DapNetcdf nc4 = null;
+    protected Nc4prototypes nc4 = null;
 
     protected boolean trace = false;
     protected boolean closed = false;
@@ -313,7 +314,7 @@ public class Nc4DMRCompiler
 
         // Get everything but actual dims
         errcheck(ret = nc4.nc_inq_compound_field(ti.gid, ti.id, fid, namep,
-                offsetp, fieldtypep, ndimsp, NC_NULL));
+                offsetp, fieldtypep, ndimsp, null));
         int fieldtype = fieldtypep.getValue();
         TypeNotes baset = (TypeNotes) this.dsp.find(fieldtype, NoteSort.TYPE);
         if(baset == null)
@@ -358,7 +359,7 @@ public class Nc4DMRCompiler
         IntByReference ndimsp = new IntByReference();
         IntByReference xtypep = new IntByReference();
         IntByReference nattsp = new IntByReference();
-        errcheck(ret = nc4.nc_inq_var(gid, vid, namep, xtypep, ndimsp, NC_NULL, nattsp));
+        errcheck(ret = nc4.nc_inq_var(gid, vid, namep, xtypep, ndimsp, null, nattsp));
         String name = Nc4DSP.makeString(namep);
         TypeNotes xtype = (TypeNotes) this.dsp.find(xtypep.getValue(), NoteSort.TYPE);
         if(DEBUG) {
@@ -436,7 +437,7 @@ public class Nc4DMRCompiler
         // Finally, extract the size of the structure, which is the same
         // as the size of the singleton field
         ti.setRecordSize(fieldtype.getSize());
-        ti.setSize(DapNetcdf.Vlen_t.VLENSIZE);
+        ti.setSize(Nc4prototypes.Vlen_t.VLENSIZE);
     }
 
     protected void
@@ -474,13 +475,12 @@ public class Nc4DMRCompiler
     {
         int ret, n;
         IntByReference ip = new IntByReference();
-        errcheck(ret = nc4.nc_inq_grps(gid, ip, NC_NULL));
+        errcheck(ret = nc4.nc_inq_grps(gid, ip, null));
         n = ip.getValue();
-        int[] grpids;
+        int[] grpids = null;
         if(n > 0) {
-            Nc4Pointer mem = Nc4DSP.Nc4Pointer.allocate(NC_INT_BYTES * n);
-            errcheck(ret = nc4.nc_inq_grps(gid, ip, mem.p));
-            grpids = mem.p.getIntArray(0, n);
+            grpids = new int[n];
+            errcheck(ret = nc4.nc_inq_grps(gid, ip, grpids));
         } else
             grpids = new int[0];
         return grpids;
@@ -494,13 +494,9 @@ public class Nc4DMRCompiler
         IntByReference ip = new IntByReference();
         errcheck(ret = nc4.nc_inq_ndims(gid, ip));
         n = ip.getValue();
-        int[] dimids;
-        if(n > 0) {
-            Nc4Pointer mem = Nc4DSP.Nc4Pointer.allocate(NC_INT_BYTES * n);
-            errcheck(ret = nc4.nc_inq_dimids(gid, ip, mem.p, NC_FALSE));
-            dimids = mem.p.getIntArray(0, n);
-        } else
-            dimids = new int[0];
+        int[] dimids = new int[n];
+        if(n > 0)
+            errcheck(ret = nc4.nc_inq_dimids(gid, ip, dimids, NC_FALSE));
         return dimids;
     }
 
@@ -510,16 +506,11 @@ public class Nc4DMRCompiler
     {
         int ret, n;
         IntByReference ip = new IntByReference();
-        errcheck(ret = nc4.nc_inq_unlimdims(gid, ip, NC_NULL));
+        errcheck(ret = nc4.nc_inq_unlimdims(gid, ip, null));
         n = ip.getValue();
-        int[] dimids;
-        if(n == 0)
-            dimids = new int[0];
-        else {
-            Nc4Pointer mem = Nc4Pointer.allocate(NC_INT_BYTES * n);
-            errcheck(ret = nc4.nc_inq_unlimdims(gid, ip, mem.p));
-            dimids = mem.p.getIntArray(0, n);
-        }
+        int[] dimids = new int[n];
+        if(n > 0)
+            errcheck(ret = nc4.nc_inq_unlimdims(gid, ip, dimids));
         return dimids;
     }
 
@@ -529,15 +520,11 @@ public class Nc4DMRCompiler
     {
         int ret, n;
         IntByReference ip = new IntByReference();
-        errcheck(ret = nc4.nc_inq_typeids(gid, ip, NC_NULL));
+        errcheck(ret = nc4.nc_inq_typeids(gid, ip, null));
         n = ip.getValue();
-        int[] typeids;
-        if(n > 0) {
-            Nc4Pointer mem = Nc4DSP.Nc4Pointer.allocate(NC_INT_BYTES * n);
-            errcheck(ret = nc4.nc_inq_typeids(gid, ip, mem.p));
-            typeids = mem.p.getIntArray(0, n);
-        } else
-            typeids = new int[0];
+        int[] typeids = new int[n];
+        if(n > 0)
+            errcheck(ret = nc4.nc_inq_typeids(gid, ip, typeids));
         return typeids;
     }
 
@@ -549,13 +536,9 @@ public class Nc4DMRCompiler
         IntByReference ip = new IntByReference();
         errcheck(ret = nc4.nc_inq_nvars(gid, ip));
         n = ip.getValue();
-        int[] ids;
-        if(n > 0) {
-            Nc4Pointer mem = Nc4DSP.Nc4Pointer.allocate(NC_INT_BYTES * n);
-            errcheck(ret = nc4.nc_inq_varids(gid, ip, mem.p));
-            ids = mem.p.getIntArray(0, n);
-        } else
-            ids = new int[0];
+        int[] ids = new int[n];
+        if(n > 0)
+            errcheck(ret = nc4.nc_inq_varids(gid, ip, ids));
         return ids;
     }
 
@@ -564,18 +547,13 @@ public class Nc4DMRCompiler
             throws DapException
     {
         int ret;
-        int[] dimids;
+        int[] dimids = new int[ndims];
 
         if(ndims > 0) {
             byte[] namep = new byte[NC_MAX_NAME + 1];
             IntByReference ndimsp = new IntByReference();
-            IntByReference xtypep = new IntByReference();
-            IntByReference nattsp = new IntByReference();
-            Nc4Pointer mem = Nc4Pointer.allocate(NC_INT_BYTES * ndims);
-            errcheck(ret = nc4.nc_inq_var(gid, vid, namep, xtypep, ndimsp, mem.p, nattsp));
-            dimids = mem.p.getIntArray(0, ndims);
-        } else
-            dimids = new int[0];
+            errcheck(ret = nc4.nc_inq_var(gid, vid, null, null, ndimsp, dimids, null));
+        }
         return dimids;
     }
 
@@ -584,18 +562,11 @@ public class Nc4DMRCompiler
             throws DapException
     {
         int ret;
-        int[] dimsizes;
+        int[] dimsizes = new int[ndims];
         if(ndims > 0) {
-            byte[] name = new byte[NC_MAX_NAME + 1];
-            SizeTByReference offsetp = new SizeTByReference();
-            IntByReference fieldtypep = new IntByReference();
             IntByReference ndimsp = new IntByReference();
-            Nc4Pointer mem = Nc4Pointer.allocate(NC_INT_BYTES * ndims);
-            errcheck(ret = nc4.nc_inq_compound_field(gid, tid, fid, name,
-                    offsetp, fieldtypep, ndimsp, mem.p));
-            dimsizes = mem.p.getIntArray(0, ndims);
-        } else
-            dimsizes = new int[0];
+            errcheck(ret = nc4.nc_inq_compound_field(gid, tid, fid, null, null, null, ndimsp, dimsizes));
+        }
         return dimsizes;
     }
 
@@ -612,7 +583,7 @@ public class Nc4DMRCompiler
         if(isglobal)
             errcheck(ret = nc4.nc_inq_natts(gid, nattsp));
         else {
-            errcheck(ret = nc4.nc_inq_var(gid, vid, namep, xtypep, ndimsp, NC_NULL, nattsp));
+            errcheck(ret = nc4.nc_inq_var(gid, vid, namep, xtypep, ndimsp, null, nattsp));
         }
         n = nattsp.getValue();
         String[] names = new String[n];

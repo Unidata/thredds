@@ -4,21 +4,16 @@
 
 package dap4.test;
 
-import dap4.core.data.DSPRegistry;
 import dap4.core.dmr.parser.DOM4Parser;
 import dap4.core.util.DapDump;
 import dap4.dap4lib.ChunkInputStream;
-import dap4.dap4lib.FileDSP;
 import dap4.dap4lib.RequestMode;
-import dap4.dap4lib.netcdf.NetcdfLoader;
 import dap4.servlet.DapCache;
 import dap4.servlet.Generator;
-import dap4.servlet.SynDSP;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,10 +23,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import thredds.server.dap4.Dap4Controller;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.jni.netcdf.Nc4wrapper;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.math.BigInteger;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -70,8 +65,6 @@ USESPRING to remind me of what needs to be done someday.
 public class TestServlet extends DapTestCommon
 {
     static final boolean USESPRING = false;
-
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static public boolean DEBUG = false;
     static public boolean DEBUGDATA = false;
@@ -165,7 +158,7 @@ public class TestServlet extends DapTestCommon
     protected List<TestCase> chosentests = new ArrayList<TestCase>();
 
     /* USESPRING
-	@Autowired
+    @Autowired
 	private WebApplicationContext wac;
     */
 
@@ -175,15 +168,18 @@ public class TestServlet extends DapTestCommon
     public void setup()
             throws Exception
     {
+        super.bindstd();
+        Nc4wrapper.TRACE = false;
         //if(DEBUGDATA) DapController.DUMPDATA = true;
-	/*USESPRING
-  	    this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-	else */ {
+        /*USESPRING
+          this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+	else */
+        {
             StandaloneMockMvcBuilder mvcbuilder =
-                MockMvcBuilders.standaloneSetup(new Dap4Controller());
+                    MockMvcBuilders.standaloneSetup(new Dap4Controller());
             mvcbuilder.setValidator(new TestServlet.NullValidator());
             this.mockMvc = mvcbuilder.build();
-	}
+        }
         testSetup();
         if(prop_ascii)
             Generator.setASCII(true);
@@ -192,6 +188,14 @@ public class TestServlet extends DapTestCommon
                 canonjoin(getResourceRoot(), GENERATEDIR));
         defineAllTestcases();
         chooseTestcases();
+    }
+
+    @After
+    public void cleanup()
+            throws Exception
+    {
+        super.unbindstd();
+        Nc4wrapper.TRACE = false;
     }
 
     //////////////////////////////////////////////////
@@ -222,17 +226,15 @@ public class TestServlet extends DapTestCommon
     public void testServlet()
             throws Exception
     {
-        NetcdfLoader.setLogLevel(5);
         Nc4Iosp.setLogLevel(5);
-	try {
+        try {
             DapCache.flush();
             for(TestCase testcase : chosentests) {
                 doOneTest(testcase);
             }
-	} finally {
-            NetcdfLoader.setLogLevel(0);
+        } finally {
             Nc4Iosp.setLogLevel(0);
-	}
+        }
     }
 
     //////////////////////////////////////////////////
@@ -242,21 +244,20 @@ public class TestServlet extends DapTestCommon
     doOneTest(TestCase testcase)
             throws Exception
     {
-        stderr.println("Testcase: " + testcase.testinputpath);
-        stderr.println("Baseline: " + testcase.baselinepath);
-        stderr.flush();
+        System.err.println("Testcase: " + testcase.testinputpath);
+        System.err.println("Baseline: " + testcase.baselinepath);
         if(PARSEDEBUG) DOM4Parser.setGlobalDebugLevel(1);
         for(String extension : testcase.extensions) {
             RequestMode ext = RequestMode.modeFor(extension);
             switch (ext) {
-            case DMR:
-                dodmr(testcase);
-                break;
-            case DAP:
-                dodata(testcase);
-                break;
-            default:
-                Assert.assertTrue("Unknown extension", false);
+                case DMR:
+                    dodmr(testcase);
+                    break;
+                case DAP:
+                    dodata(testcase);
+                    break;
+                default:
+                    Assert.assertTrue("Unknown extension", false);
             }
         }
     }
@@ -289,7 +290,7 @@ public class TestServlet extends DapTestCommon
         } else if(prop_diff) { //compare with baseline
             // Read the baseline file
             String baselinecontent = readfile(testcase.baselinepath + ".dmr");
-            stderr.println("DMR Comparison");
+            System.err.println("DMR Comparison");
             Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, sdmr));
         }
     }
@@ -342,7 +343,7 @@ public class TestServlet extends DapTestCommon
         if(prop_diff) {
             //compare with baseline
             // Read the baseline file
-            stderr.println("Data Comparison:");
+            System.err.println("Data Comparison:");
             String baselinecontent = readfile(testcase.baselinepath + ".dap");
             Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, sdata));
         }

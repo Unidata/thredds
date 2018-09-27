@@ -10,6 +10,8 @@ import dap4.core.dmr.*;
 import dap4.core.util.*;
 import dap4.dap4lib.AbstractCursor;
 import dap4.dap4lib.LibTypeFcns;
+import ucar.nc2.jni.netcdf.Nc4prototypes;
+import ucar.nc2.jni.netcdf.SizeT;
 
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
@@ -159,9 +161,9 @@ public class Nc4Cursor extends AbstractCursor
         Nc4Cursor rec = new Nc4Cursor(Scheme.RECORD, (Nc4DSP) getDSP(), (DapVariable) getTemplate(), this);
 /*
         Nc4Pointer seqvlen = getMemory();
-        long vlensize = DapNetcdf.Vlen_t.VLENSIZE;
+        long vlensize = Nc4prototypes.Vlen_t.VLENSIZE;
         Nc4Pointer recnovlen = seqvlen.share(vlensize*recno,vlensize); // recno'th vlen
-        DapNetcdf.Vlen_t vleninstance = new DapNetcdf.Vlen_t(recnovlen.p);
+        Nc4prototypes.Vlen_t vleninstance = new Nc4prototypes.Vlen_t(recnovlen.p);
         vleninstance.read(); // get the actual vlen contents for this sequence
         Pointer vlenmem = vleninstance.p;
         int vlencount = vleninstance.len;
@@ -236,7 +238,7 @@ public class Nc4Cursor extends AbstractCursor
     {
         DapVariable atomvar = (DapVariable) getTemplate();
         // Get into memory
-        DapNetcdf nc4 = ((Nc4DSP) this.dsp).getJNI();
+        Nc4prototypes nc4 = ((Nc4DSP) this.dsp).getJNI();
         int ret;
         DapType basetype = ti.getType();
         Object result = null;
@@ -281,7 +283,7 @@ public class Nc4Cursor extends AbstractCursor
             Odometer ithodom = subodoms.get(i);
             totalsize += ithodom.totalSize();
         }
-        DapNetcdf nc4 = ((Nc4DSP) this.dsp).getJNI();
+        Nc4prototypes nc4 = ((Nc4DSP) this.dsp).getJNI();
         SizeT[] startp = new SizeT[rank];
         SizeT[] countp = new SizeT[rank];
         SizeT[] stridep = new SizeT[rank];
@@ -338,7 +340,7 @@ public class Nc4Cursor extends AbstractCursor
         if(template.isTopLevel()) {
             int ret;
             mem = Nc4Pointer.allocate(ti.getSize());
-            DapNetcdf nc4 = ((Nc4DSP) this.dsp).getJNI();
+            Nc4prototypes nc4 = ((Nc4DSP) this.dsp).getJNI();
             if(index.getRank() == 0) {
                 readcheck(nc4, ret = nc4.nc_get_var(vi.gid, vi.id, mem.p));
             } else {
@@ -371,12 +373,12 @@ public class Nc4Cursor extends AbstractCursor
         TypeNotes ti = vi.basetype;
         Nc4Pointer mem;
         Nc4Cursor cursor = null;
-        DapNetcdf.Vlen_t[] vlen = new DapNetcdf.Vlen_t[1];
+        Nc4prototypes.Vlen_t[] vlen = new Nc4prototypes.Vlen_t[1];
         // Given a seq var e.g v(d1,d2), where we have an index argument,
         // get that object, which will be a vlen
         if(template.isTopLevel()) {
             int ret;
-            DapNetcdf nc4 = ((Nc4DSP) this.dsp).getJNI();
+            Nc4prototypes nc4 = ((Nc4DSP) this.dsp).getJNI();
             SizeT[] extents = indexToSizes(index);
             // read te index't vlen
             readcheck(nc4, ret = nc4.nc_get_var1(vi.gid, vi.id, extents, vlen));
@@ -387,11 +389,11 @@ public class Nc4Cursor extends AbstractCursor
             // The memory for a sequence field is the vector of vlen objects.
             // We need to extract the index'th vlen for this field
             Nc4Pointer pp = getMemory(); // should be the vector
-            int vlensize = DapNetcdf.Vlen_t.VLENSIZE;
+            int vlensize = Nc4prototypes.Vlen_t.VLENSIZE;
             // point to the index'th element in the vector
             pp = pp.share(pos * vlensize, vlensize);
             // convert to a Vlen_T object
-            vlen[0] = new DapNetcdf.Vlen_t(pp.p);
+            vlen[0] = new Nc4prototypes.Vlen_t(pp.p);
             vlen[0].read();
         }
         // At this point, vlen[0] is the index'th vlen
@@ -537,7 +539,7 @@ public class Nc4Cursor extends AbstractCursor
     }
 
     static public void
-    errcheck(DapNetcdf nc4, int ret)
+    errcheck(Nc4prototypes nc4, int ret)
             throws DapException
     {
         if(ret != 0) {
@@ -547,7 +549,7 @@ public class Nc4Cursor extends AbstractCursor
     }
 
     static public void
-    readcheck(DapNetcdf nc4, int ret)
+    readcheck(Nc4prototypes nc4, int ret)
             throws DapException
     {
         try {

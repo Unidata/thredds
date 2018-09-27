@@ -210,7 +210,7 @@ public class TestUpload extends TestReify
                 if(srcbytes[i] != targetbytes[i])
                     Assert.fail("***Fail: Upload file and Source file differ at byte " + i);
             }
-            stdout.println("***Pass: Upload file exists and Source and uploaded files are identical");
+            System.err.println("***Pass: Upload file exists and Source and uploaded files are identical");
         }
     }
 

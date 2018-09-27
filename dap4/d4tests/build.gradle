@@ -22,6 +22,10 @@ dependencies {
 
     testCompile libraries["javax.servlet-api"]
     testCompile libraries["slf4j-api"]
+
+    compile libraries["slf4j-api"]
+    runtime libraries["log4j-slf4j-impl"]
+    runtime libraries["log4j-web"]
     testRuntime libraries["logback-classic"]
 
     // Spring

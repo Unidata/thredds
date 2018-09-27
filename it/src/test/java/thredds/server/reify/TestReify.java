@@ -147,7 +147,7 @@ abstract public class TestReify extends UnitTestCommon
             throws Exception
     {
         if(notimplemented) {
-            stderr.println("Server up/download not implemented: tests aborted");
+            System.err.println("Server up/download not implemented: tests aborted");
             return;
         }
         Assert.assertTrue("No defined testcases", this.alltestcases.size() > 0);
@@ -175,7 +175,7 @@ abstract public class TestReify extends UnitTestCommon
                 if(code != 200) {
                     sresult = new String(bytes, "utf8");
                     notimplemented = true;
-                    stderr.printf("Server properties call failed: status=%d msg=%s", code, sresult);
+                    System.err.printf("Server properties call failed: status=%d msg=%s", code, sresult);
                     return;
                 }
                 // Convert to string
@@ -183,10 +183,10 @@ abstract public class TestReify extends UnitTestCommon
                 if(bytes != null && bytes.length > 0)
                     sresult = new String(bytes, "utf8");
                 sresult = urlDecode(sresult);
-                stderr.printf("Getproperties: result=|%s|", sresult);
+                System.err.printf("Getproperties: result=|%s|", sresult);
             }
         } catch (IOException e) {
-            stderr.println("Server call failure: " + e.getMessage());
+            System.err.println("Server call failure: " + e.getMessage());
             notimplemented = true;
             return;
         }
