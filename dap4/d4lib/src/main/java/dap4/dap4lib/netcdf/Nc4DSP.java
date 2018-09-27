@@ -25,14 +25,16 @@ import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
 import dap4.dap4lib.DapCodes;
 import dap4.dap4lib.XURI;
+import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.jni.netcdf.Nc4prototypes;
+import ucar.nc2.jni.netcdf.SizeTByReference;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static dap4.dap4lib.netcdf.DapNetcdf.*;
 import static dap4.dap4lib.netcdf.Nc4Notes.*;
+import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
 
 /**
  * DSP for reading netcdf files through jni interface to netcdf4 library
@@ -148,17 +150,17 @@ public class Nc4DSP extends AbstractDSP
         Map<Long, Notes> sortnotes = this.allnotes.get(sort);
         assert sortnotes != null;
         switch (sort) {
-        case TYPE:
-        case GROUP:
-        case DIM:
-            assert sortnotes.get(id) == null;
-            sortnotes.put((long) id, note);
-            break;
-        case VAR:
-            long gv = Nc4Notes.getVarId((VarNotes) note);
-            assert sortnotes.get(gv) == null;
-            sortnotes.put(gv, note);
-            break;
+            case TYPE:
+            case GROUP:
+            case DIM:
+                assert sortnotes.get(id) == null;
+                sortnotes.put((long) id, note);
+                break;
+            case VAR:
+                long gv = Nc4Notes.getVarId((VarNotes) note);
+                assert sortnotes.get(gv) == null;
+                sortnotes.put(gv, note);
+                break;
         }
     }
 
@@ -204,19 +206,19 @@ public class Nc4DSP extends AbstractDSP
     noteSortFor(DapNode node)
     {
         switch (node.getSort()) {
-        case ATOMICTYPE:
-        case STRUCTURE:
-        case SEQUENCE:
-            return NoteSort.TYPE;
-        case VARIABLE:
-            return NoteSort.VAR;
-        case GROUP:
-        case DATASET:
-            return NoteSort.GROUP;
-        case DIMENSION:
-            return NoteSort.DIM;
-        default:
-            break;
+            case ATOMICTYPE:
+            case STRUCTURE:
+            case SEQUENCE:
+                return NoteSort.TYPE;
+            case VARIABLE:
+                return NoteSort.VAR;
+            case GROUP:
+            case DATASET:
+                return NoteSort.GROUP;
+            case DIMENSION:
+                return NoteSort.DIM;
+            default:
+                break;
         }
         return null;
     }
@@ -291,7 +293,7 @@ public class Nc4DSP extends AbstractDSP
     //////////////////////////////////////////////////
     // Instance Variables
 
-    protected DapNetcdf nc4 = null;
+    protected Nc4prototypes nc4 = null;
 
     protected boolean trace = false;
     protected boolean closed = false;
@@ -311,11 +313,7 @@ public class Nc4DSP extends AbstractDSP
     {
         super();
         if(this.nc4 == null) {
-            try {
-                this.nc4 = NetcdfLoader.load();
-            } catch (IOException ioe) {
-                throw new DapException(ioe);
-            }
+            this.nc4 = Nc4Iosp.getCLibrary();
             if(this.nc4 == null)
                 throw new DapException("Could not load libnetcdf");
         }
@@ -390,17 +388,17 @@ public class Nc4DSP extends AbstractDSP
         Nc4Cursor vardata = (Nc4Cursor) super.getVariableData(var);
         if(vardata == null) {
             switch (type.getTypeSort()) {
-            case Structure:
-                vardata = new Nc4Cursor(DataCursor.Scheme.STRUCTARRAY, this, var, null);
-                break;
-            case Sequence:
-                vardata = new Nc4Cursor(DataCursor.Scheme.SEQARRAY, this, var, null);
-                break;
-            default:
-                if(!type.isAtomic())
-                    throw new DapException("Unexpected cursor type: " + type);
-                vardata = new Nc4Cursor(DataCursor.Scheme.ATOMIC, this, var, null);
-                break;
+                case Structure:
+                    vardata = new Nc4Cursor(DataCursor.Scheme.STRUCTARRAY, this, var, null);
+                    break;
+                case Sequence:
+                    vardata = new Nc4Cursor(DataCursor.Scheme.SEQARRAY, this, var, null);
+                    break;
+                default:
+                    if(!type.isAtomic())
+                        throw new DapException("Unexpected cursor type: " + type);
+                    vardata = new Nc4Cursor(DataCursor.Scheme.ATOMIC, this, var, null);
+                    break;
             }
             super.addVariableData(var, vardata);
         }
@@ -412,7 +410,7 @@ public class Nc4DSP extends AbstractDSP
     // Accessors
 
 
-    public DapNetcdf getJNI()
+    public Nc4prototypes getJNI()
     {
         return this.nc4;
     }
