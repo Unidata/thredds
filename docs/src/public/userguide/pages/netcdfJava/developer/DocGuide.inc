@@ -1,10 +1,61 @@
-## Documentation Theme for Jekyll
+## Working with the Docs
 
-<http://idratherbewriting.com/documentation-theme-jekyll/index.html>
+The THREDDS project utilizes Jekyll for building and organizing documentation.
+We use JRuby to run Jekyll, and have included into our gradle build system.
+Jekyll can build an html based documentation set for publication on the web, which we run in an automated fashon and publish to our nexus server with each github commit.
+Jekyll also has the capability to stand up a local webserver to allow for live editing of the documentation.
+Simply execute the following from the command line at the top level of the github repo:
+
+~~~bash
+./gradlew serveUserGuide 
+~~~
+
+Once the appropriate ruby gems have been downloaded, Jekyll will start:
+
+~~~bash
+Configuration file: C:\Users\lesserwhirls\dev\unidata\repos\thredds\50\docs\src\public\userguide/_config.yml
+Configuration file: C:\Users\lesserwhirls\dev\unidata\repos\thredds\50\docs\src\public\userguide/_config.yml
+            Source: C:\Users\lesserwhirls\dev\unidata\repos\thredds\50\docs\src\public\userguide
+       Destination: C:\Users\lesserwhirls\dev\unidata\repos\thredds\50\docs\build\userguide
+ Incremental build: disabled. Enable with --incremental
+      Generating...
+                    done in 6.778 seconds.
+  Please add the following to your Gemfile to avoid polling for changes:
+    gem 'wdm', '>= 0.1.0' if Gem.win_platform?
+ Auto-regeneration: enabled for 'C:\Users\lesserwhirls\dev\unidata\repos\thredds\50\docs\src\public\userguide'
+Configuration file: C:\Users\lesserwhirls\dev\unidata\repos\thredds\50\docs\src\public\userguide/_config.yml
+    Server address: http://127.0.0.1:4005/
+  Server running... press ctrl-c to stop.
+~~~
+
+Note the `Server address` in the output - this is where you should point your browser to see a live view of the documentation.
+Each time a documentation file is edited and saved, Jekyll will regenerate the html file:
+
+~~~bash
+Regenerating: 1 file(s) changed at 2018-10-08 17:10:10 ...done in 5.132 seconds.
+~~~
+
+If there is an error in the markdown syntax, a message will appear on the command line, like so:
+
+~~~bash
+{%raw%}Regenerating: 1 file(s) changed at 2018-10-08 17:14:34   Liquid Exception: Liquid error (line 2): Invalid syntax for include tag: ~~~ ## General Kramdown Syntax Jekyll uses kramdown, which is a superset of Markdown. General kramdown syntax can be found here: <https://kramdown.gettalong.org/syntax.html> ## Documentation Theme for Jekyll We use the Documentation Theme for Jekyll. Information on how the theme works can be found here: <http://idratherbewriting.com/documentation-theme-jekyll/index.html> ## Front Matter Each markdown file needs to start with some front matter: ~~~md title: Documentation Guide last_updated: 2016-09-27 sidebar: tdsTutorial_sidebar toc: false permalink: doc_guide.html ~~~ ## Headers All headings start off as level 2. The `title` set in the front matter will be displayed at the top of the rendered html page and uses the level 1 heading. Headings, and their level number, are denoted by the number of hashtags on a line: # level 1 ## level 2 ### level 3 ~~~md # level 1 ## level 2 ### level 3 ~~~ ## netCDF-Java, TDS jargon italicize TDS specific jargon on first use: _catalog roots_ _client catalog_ _configuration catalog_ ~~~md _catalog roots_ _client catalog_ _configuration catalog_ ~~~ inline text html, xml elements, properties, code variables, snippits, file paths, surround in back ticks, like this: `<catalog>` ~~~md `<catalog>` ~~~ ## Keeping git diffs clean One line of text per line in file blank line needed for new paragraph, so no formatting issue in doing this. this keeps git diff clean ~~~md One line of text per line in file blank line needed for new paragraph, so no formatting issue in doing this. this keeps git diff clean ~~~ ## links General format is: ~~~md [text of link](url){:target="_blank"} ~~~ When linking between markdown files, the `url` will be the permalink defined in the front matter of the markdown file you wish to link to. ## highlight blocks These templates under the top level `_includes/` directory. Here is what we have right now: {%include troubleshooting.html content=" Troubleshooting block. " Valid syntax: {% include file.ext param='value' param2='value' %} in pages/netcdfJava/developer/DocGuide.md block. "{%endraw%}
+~~~
+
+Note that these errors are often cryptic, so it is a good idea to save and force Jekyll to regenerate often.
 
 ## General Kramdown Syntax
 
+Jekyll uses kramdown, which is a superset of Markdown.
+General kramdown syntax can be found here:
+
 <https://kramdown.gettalong.org/syntax.html>
+
+## Documentation Theme for Jekyll
+
+We use the Documentation Theme for Jekyll.
+Information on how the theme works can be found here:
+
+<http://idratherbewriting.com/documentation-theme-jekyll/index.html>
 
 ## Front Matter
 
