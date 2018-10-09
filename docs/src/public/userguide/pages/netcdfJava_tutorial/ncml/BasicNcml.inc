@@ -232,7 +232,7 @@ In the ToolsUI **NcML Tab**, browse to your data directory and again open the da
 The NcML is generated and displayed.
 
 Make some simple modifications, changing an attribute value or adding a new attribute.
-Save the NcML to disk image {% include inline_image.html file="netcdf-java/tutorial/basic_ncml/Save.jpg" alt="Save button" %}.
+Save the NcML to disk {% include inline_image.html file="netcdf-java/tutorial/basic_ncml/Save.jpg" alt="Save button" %}.
 Note that the default NcML filename will be the original file name with the extension changed to ncml.
 Save the NcML to example1.ncml.
 

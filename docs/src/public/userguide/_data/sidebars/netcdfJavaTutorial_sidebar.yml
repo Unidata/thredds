@@ -50,16 +50,16 @@ entries:
 #      url:
 #      output: web, pdf
 #
-#  - title: NcML
-#    output: web, pdf
-#    folderitems:
-#    - title: Modifying existing files
-#      url:
-#      output: web, pdf
-#
-#    - title: Aggregation
-#      url:
-#      output: web, pdf
+  - title: NcML
+    output: web, pdf
+    folderitems:
+    - title: Modifying existing files
+      url: /ncj_basic_ncml_tutorial.html
+      output: web, pdf
+
+    - title: Aggregation
+      url: /ncj_ncml_aggregation.html
+      output: web, pdf
 #
 #  - title: Writing an I/O Service Provider
 #    output: web, pdf
