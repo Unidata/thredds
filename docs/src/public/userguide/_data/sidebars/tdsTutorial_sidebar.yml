@@ -281,3 +281,7 @@ entries:
     - title: Coverage Datasets
       url: /coverage_datasets.html
       output: web, pdf
+
+    - title: Annotated Schema for NcML
+      url: /tds_annotated_ncml_schema.html
+      output: web, pdf

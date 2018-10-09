@@ -153,3 +153,7 @@ entries:
     - title: netCDF-Java and TDS Doc Guide
       url: /ncj_doc_guide.html
       output: web, pdf
+      
+    - title: Annotated Schema for NcML
+      url: /ncj_annotated_ncml_schema.html
+      output: web, pdf
