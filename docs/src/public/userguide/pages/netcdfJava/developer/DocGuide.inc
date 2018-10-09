@@ -180,16 +180,34 @@ Thinking ahead block
 " %}{%endraw%}
 ```
 
+## files
+
+To include a link to download a file contained within the documentation, use:
+
+~~~md
+{%raw%}{% include files.html file="<path to file starting directly under files/>" text="link text" %}{%endraw%}
+~~~
+
+For example, to link the NcML file `$PATH_TO_GIT_REPO/docs/src/public/userguide/files/netcdfJava_tutorial/ncml/basic_ncml/exercise1.ncml `, like this:
+
+{% include link_file.html file="netcdfJava_tutorial/ncml/basic_ncml/exercise1.ncml" text="my link text" %}
+
+use:
+
+~~~md
+{%raw%}{% include link_file.html file="netcdfJava_tutorial/ncml/basic_ncml/exercise1.ncml" text="my link text" %}{%endraw%}
+~~~
+
 ## images
 
 Image
 
-```
+~~~md
 {%raw%}{% include image.html file="<location of image starting at images/>" alt="alt text" caption="caption" %}{%endraw%}
-```
+~~~
 
 Note that you must always include a caption, even if it is empty.
-For example, to link to the image `$PATH_TO_GIT_REPO/thredds-doc/images/sl_website-under-construction.jpeg`:
+For example, to link to the image `$PATH_TO_GIT_REPO/docs/src/public/userguide/images/sl_website-under-construction.jpeg`:
 
 {% include image.html file="sl_website-under-construction.jpeg" alt="alt text" caption="" %}
 
@@ -197,6 +215,11 @@ For example, to link to the image `$PATH_TO_GIT_REPO/thredds-doc/images/sl_websi
 {%raw%}{% include image.html file="sl_website-under-construction.jpeg" alt="alt text" caption="" %}{%endraw%}
 ~~~
 
+To add an image in line, like this &rarr; {% include inline_image.html file="netcdf-java/tutorial/basic_ncml/Save.jpg" alt="Save button" %}, use:
+
+~~~md
+{%raw%}{% include inline_image.html file="netcdf-java/tutorial/basic_ncml/Save.jpg" alt="Save button" %}{%endraw%}
+~~~
 
 ## sidebars
 
