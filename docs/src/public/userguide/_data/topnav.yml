@@ -26,6 +26,8 @@ topnav_dropdowns:
           url: /netcdf_java_tutorial_index.html
     - title: External Docs
       folderitems:
+        - title: netCDF-Java public javadocs
+          external_url: https://docs.unidata.ucar.edu/thredds/5.0.0-SNAPSHOT/javadoc/
         - title: Rosetta
           external_url: https://www.unidata.ucar.edu/software/rosetta/docs/
         - title: Siphon
