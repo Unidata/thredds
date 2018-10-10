@@ -245,9 +245,9 @@ If you add a new sidebar, you will need to make sure to add it to the `_config.y
    ~~~
    ~~~~~
 
-   All indented text are aligned with the "R" in "Restart", which is 3 spaces.
+   All indented text are aligned with the `"R"` in `"Restart"`, which is 3 spaces.
    Alignment is with the start of the text in the bullet of the list.
-   This works the same way with nested lists as w
+   This works the same way with nested lists.
 
 2. Using the `~` character in code blocks
 
@@ -306,7 +306,7 @@ permalink: ncj_doc_guide.html
 Each markdown file contains both identical (title, last_update, toc) as well as unique (sidebar, permalink) frontmatter, but references the same actual content, which is contained within the file `pages/netcdfJava/developer/DocGuide.inc`
 This is the only way to have the same information contained within different tutorials, while preserving the tutorial sidebar.
 
-Yes, this is ugly. First, we capture the raw text and store it as a string called "rmd".
-From there, the string is passed through two Liquid Filters --- liquify and markdownify.
-"liquify" interperets the liquid tags in the file, and markidownify renders any markdown in the text.
+Yes, this is ugly. First, we capture the raw text and store it as a string called `"rmd"`.
+From there, the string is passed through two Liquid Filters - liquify and markdownify.
+`"liquify"` interprets the liquid tags in the file, and markidownify renders any markdown in the text.
 Note that the filters must be applied in this order.
