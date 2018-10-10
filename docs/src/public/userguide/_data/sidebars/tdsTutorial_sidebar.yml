@@ -128,10 +128,6 @@ entries:
       url: /tds_monitoring_and_debugging.html
       output: web, pdf
 
-    - title: Tomcat and TDS Logs
-      url: /tomcat_and_tds_logs.html
-      output: web, pdf
-
     - title: Using the TdsMonitor Tool
       url: /using_the_tdsmonitor_tool.html
       output: web, pdf
