@@ -285,3 +285,7 @@ entries:
     - title: Annotated Schema for NcML
       url: /tds_annotated_ncml_schema.html
       output: web, pdf
+
+    - title: Collection Specification String
+      url: /collection_spec_string_ref.html
+      output: web, pdf

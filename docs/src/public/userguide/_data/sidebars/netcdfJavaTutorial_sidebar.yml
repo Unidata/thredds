@@ -165,3 +165,31 @@ entries:
     - title: NcML Cookbook
       url: /ncj_ncml_cookbook.html
       output: web, pdf
+
+    - title: Dataset URLs
+      url: /ncj_dataset_urls.html
+      output: web, pdf
+
+    - title: Read over HTTP
+      url: /ncj_read_over_http.html
+      output: web, pdf
+
+    - title: CDM File Types
+      url: /ncj_file_types.html
+      output: web, pdf
+
+    - title: CDM Disk Caching
+      url: /ncj_disk_caching.html
+      output: web, pdf
+
+    - title: CDMRemote
+      url: /ncj_cdmremote.html
+      output: web, pdf
+
+    - title: CDM Feature Datasets
+      url: /ncj_feature_datasets.html
+      output: web, pdf
+
+    - title: CDMRemote Feature Datasets
+      url: /ncj_cdmremote_feature_datasets.html
+      output: web, pdf
