@@ -132,10 +132,6 @@ entries:
       url: /using_the_tdsmonitor_tool.html
       output: web, pdf
 
-    - title: 3rd Party Tools
-      url: /third_party_tools.html
-      output: web, pdf
-
   - title: netCDF Markup Language (NcML)
     output: web, pdf
     folderitems:
