@@ -204,6 +204,10 @@ entries:
       url: /production_server_overview.html
       output: web, pdf
 
+    - title: Running Behind a Proxy Server
+      url: /tds_behind_proxy.html
+      output: web, pdf
+
     - title: Troubleshooting Problems
       url: /troubleshooting_problems.html
       output: web, pdf
@@ -250,10 +254,6 @@ entries:
       url: /wms_ref.html
       output: web, pdf
 
-    - title: Remote Management Reference
-      url: /remote_management_ref.html
-      output: web, pdf
-
     - title: Netcdf Subset Service Reference
       url: /netcdf_subset_service_ref.html
       output: web, pdf
@@ -280,4 +280,12 @@ entries:
 
     - title: Collection Specification String
       url: /collection_spec_string_ref.html
+      output: web, pdf
+
+    - title: Remote Management Reference
+      url: /remote_management_ref.html
+      output: web, pdf
+
+    - title: TDM Reference
+      url: /tdm_ref.html
       output: web, pdf

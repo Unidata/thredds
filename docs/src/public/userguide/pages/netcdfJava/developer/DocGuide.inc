@@ -180,6 +180,28 @@ Thinking ahead block
 " %}{%endraw%}
 ```
 
+Note - if you want to include a link inside a highlight block that opens in a new window, you will need to use actual html, like:
+
+~~~md
+{%raw%}<a href=\"https://tomcat.apache.org/tomcat-8.0-doc/config/realm.html\" target=\"_blank\">{%endraw%}
+~~~
+
+So, for example:
+
+~~~md
+{%raw%}{%include ahead.html content="{%endraw%}
+{%raw%}Tomcat Realms:{%endraw%}
+{%raw%}A <a href=\"https://tomcat.apache.org/tomcat-8.0-doc/config/realm.html\" target=\"_blank\">realm</a> element represents a database of usernames, passwords, and roles (similar to Unix groups) assigned to those users.{%endraw%}
+{%raw%}" %}{%endraw%}
+~~~
+
+looks like:
+
+{%include ahead.html content="
+Tomcat Realms:
+A <a href=\"https://tomcat.apache.org/tomcat-8.0-doc/config/realm.html\" target=\"_blank\">realm</a> element represents a database of usernames, passwords, and roles (similar to Unix groups) assigned to those users.
+" %}
+
 ## files
 
 To include a link to download a file contained within the documentation, use:
