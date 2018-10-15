@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         name="Unidata THREDDS Data Server" version="1.0.3">
+
+  <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+
+  <featureCollection featureType="FMRC" name="GOMOOS" harvest="true" path="fmrc/USGS/GOMOOS">
+    <metadata inherited="true">
+      <serviceName>ncdods</serviceName>
+      <dataFormat>netCDF</dataFormat>
+      <documentation type="summary">Munge this with NcML</documentation>
+    </metadata>
+
+    <collection spec="/machine/tds/workshop/ncml/gomoos/gomoos.#yyyyMMdd#.cdf$"/>
+    <protoDataset>
+      <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+        <attribute name="History" value="Processed by Kraft"/>
+      </netcdf>
+    </protoDataset>
+
+    <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
+      <variable name="time">
+        <attribute name="units" value="days since 2006-11-01 00:00 UTC"/>
+      </variable>
+      <attribute name="Conventions" value="CF-1.0"/>
+    </netcdf>
+  </featureCollection>
+</catalog>

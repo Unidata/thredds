@@ -128,16 +128,8 @@ entries:
       url: /tds_monitoring_and_debugging.html
       output: web, pdf
 
-    - title: Tomcat and TDS Logs
-      url: /tomcat_and_tds_logs.html
-      output: web, pdf
-
     - title: Using the TdsMonitor Tool
       url: /using_the_tdsmonitor_tool.html
-      output: web, pdf
-
-    - title: 3rd Party Tools
-      url: /third_party_tools.html
       output: web, pdf
 
   - title: netCDF Markup Language (NcML)
@@ -212,6 +204,10 @@ entries:
       url: /production_server_overview.html
       output: web, pdf
 
+    - title: Running Behind a Proxy Server
+      url: /tds_behind_proxy.html
+      output: web, pdf
+
     - title: Troubleshooting Problems
       url: /troubleshooting_problems.html
       output: web, pdf
@@ -258,10 +254,6 @@ entries:
       url: /wms_ref.html
       output: web, pdf
 
-    - title: Remote Management Reference
-      url: /remote_management_ref.html
-      output: web, pdf
-
     - title: Netcdf Subset Service Reference
       url: /netcdf_subset_service_ref.html
       output: web, pdf
@@ -280,4 +272,20 @@ entries:
 
     - title: Coverage Datasets
       url: /coverage_datasets.html
+      output: web, pdf
+
+    - title: Annotated Schema for NcML
+      url: /tds_annotated_ncml_schema.html
+      output: web, pdf
+
+    - title: Collection Specification String
+      url: /collection_spec_string_ref.html
+      output: web, pdf
+
+    - title: Remote Management Reference
+      url: /remote_management_ref.html
+      output: web, pdf
+
+    - title: TDM Reference
+      url: /tdm_ref.html
       output: web, pdf
