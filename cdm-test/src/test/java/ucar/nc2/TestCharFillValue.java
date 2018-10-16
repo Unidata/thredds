@@ -1,7 +1,7 @@
-/*********************************************************************
- * Copyright 2018, UCAR/Unidata
- * See netcdf/COPYRIGHT file for copying and redistribution conditions.
- ********************************************************************/
+/*
+ * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 
 /*
 The code that demonstrates the problem can be found below. The issue is due
