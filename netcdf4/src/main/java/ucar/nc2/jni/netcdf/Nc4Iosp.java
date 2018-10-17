@@ -2819,9 +2819,13 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
         return;
       }
       if (att.getDataType() != v.getDataType()) {
-        log.warn("_FillValue type ({}) does not agree with variable '{}' type ({}).",
+	    // Special case hack for _FillValue type match for char typed variables
+        if(att.getDataType() != DataType.STRING
+           || v.getDataType() != DataType.CHAR) {
+          log.warn("_FillValue type ({}) does not agree with variable '{}' type ({}).",
                 att.getDataType(), v.getFullName(), v.getDataType());
-        return;
+          return;
+        } // else char typed variable with string typed _FillValue
       }
     }
 
@@ -2839,13 +2843,27 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     Array values = att.getValues();
     switch (att.getDataType()) {
       case STRING: // problem may be that we are mapping char * atts to string type
-        if (att.getLength() == 1 && !att.getShortName().equals(CDM.FILL_VALUE)) {
-          byte[] svalb = att.getStringValue().getBytes(CDM.utf8Charset);
-          ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(svalb.length), svalb);
-        } else {
-          String[] svalues = new String[att.getLength()];
-          for (int i = 0; i < att.getLength(); i++) svalues[i] = (String) att.getValue(i);
-          ret = nc4.nc_put_att_string(grpid, varid, att.getShortName(), new SizeT(att.getLength()), svalues);
+        if(v != null
+	        && att.getShortName().equals(CDM.FILL_VALUE)
+           && att.getLength() == 1
+           && v.getDataType() == DataType.CHAR) {
+           // special handling of _FillValue if v.getDataType() == CHAR
+           byte[] svalb = att.getStringValue().getBytes(CDM.utf8Charset);
+           ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(svalb.length), svalb);
+        } else { // String valued attribute
+            if(this.version != NetcdfFileWriter.Version.netcdf4) {
+                // Must write it as character typed attribute
+                StringBuilder text = new StringBuilder();
+                // Concatenate all the attribute strings
+                for(int i=0;i<att.getLength();i++)
+                    text.append(att.getStringValue(i));
+                byte[] svalb = text.toString().getBytes(CDM.utf8Charset);
+                ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(svalb.length), svalb);
+            } else { // Can write as string typed attribute
+                String[] svalues = new String[att.getLength()];
+                for(int i = 0; i < att.getLength(); i++) svalues[i] = (String) att.getValue(i);
+                ret = nc4.nc_put_att_string(grpid, varid, att.getShortName(), new SizeT(att.getLength()), svalues);
+            }
         }
         break;
       case UBYTE:
