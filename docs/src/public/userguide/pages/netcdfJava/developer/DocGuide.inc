@@ -158,6 +158,10 @@ Question block.
 Thinking ahead block
 " %}
 
+{%include warning.html content="
+Warning block
+" %}
+
 ```
 {%raw%}{%include troubleshooting.html content="
 Troubleshooting block.
@@ -177,6 +181,10 @@ Question block.
 
 {%raw%}{%include ahead.html content="
 Thinking ahead block
+" %}{%endraw%}
+
+{%raw%}{%include warning.html content="
+Warning block
 " %}{%endraw%}
 ```
 
