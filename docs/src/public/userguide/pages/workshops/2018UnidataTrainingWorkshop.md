@@ -55,13 +55,13 @@ permalink:  workshop2018.html
 ### 2:00 (15 minutes) Break
 
 ### 2:15 (30 minutes) Configuring TDS (Part 2) : service, metadata, datasetScan (Sean)
-* TDS Configuration Catalogs
+* [TDS Configuration Catalogs](/config_catalog.html)
 * Troubleshooting Configuration Catalogs
 
 ### 2:45 (15 minutes) Configuring TDS (Part 3) : threddsConfig.xml (Sean)
 * [Basic threddsConfig.xml](/basic_tds_configuration.html)
 * [threddsConfig Reference](/tds_config_ref.html)
-* Services
+* [Services](/services_ref.html)
 * enabling writing netCDF-4 files
 
 ### 3:00 (30 minutes) Docker (Julien)
@@ -78,7 +78,7 @@ permalink:  workshop2018.html
 ### 8:30 (30 minutes) Coffee and continental breakfast
 
 ### 9:00 (15 minutes) ToolsUI Demo (Sean)
-* Running ToolsUI
+* Running [ToolsUI](/toolsui_ref.html)
 * Viewer, CoordinateSystem, IOSP, and FeatureTypes
 
 ### 9:30 (30 minutes) Conventions (Ethan)
@@ -91,7 +91,7 @@ permalink:  workshop2018.html
 ### 10:30 (30 minutes) NcML aggregation (Sean)
 * [NcML Aggregation](/tds_ncml_aggregation.html)
 * [NcML Aggregation Example Problems](/ncml_aggregation_examples.html)
-* NcML Aggregations vs Feature Collections (pdf)
+* NcML Aggregations vs Feature Collections ([pdf](https://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/files/NcMLvsFeatureCollections.pdf){:target="_blank"})
 
 ### 11:00 (30 minutes) [Using NcML in the TDS](/using_ncml_in_the_tds.html)
 
@@ -99,27 +99,27 @@ permalink:  workshop2018.html
 
 ### 12:30 (30 minutes) Tour of Services (Sean)
 * Data Discovery
-  * Data discovery systems: (pdf)
-  * ncIso
+  * Data discovery systems: ([pdf](https://www.unidata.ucar.edu/software/thredds/current/tds/tutorial/files/metadata_ncISO.pdf){:target="_blank"})
+  * [ncIso](/iso_metadata.html)
   * exercise- how can we increase our ncISO score?
-  * Attribute Convention for Data Discovery
+  * [Attribute Convention for Data Discovery](http://wiki.esipfed.org/index.php/Attribute_Convention_for_Data_Discovery){:target="_blank"}
 * WMS
-  * WMS configure, reference (pdf)
+  * WMS configure, [reference](/wms_ref.html) (pdf)
 * NCSS
-  * Netcdf Subset Service configure, reference (pdf)
+  * Netcdf Subset Service [configure](/adding_ncss.html), [reference](/netcdf_subset_service_ref.html)
 
 ### 1:00 (45 minutes) Advanced TDS Configuration (Sean)
 * [FeatureCollections](/feature_collections_ref.html)
 * [FMRC Tutorial](/fmrc_tutorial.html)
-* Point Feature Collections
+* [Point Feature Collections](/pointfeature_ref.html)
 
 ### 1:45 (15 minutes) Break
 
 ### 2:00 (1 hour) GRIB Feature Collections (Sean)
-* GRIB Collection Examples
-* [GRIB Feature Collection Tutorial](/grib_feature_collections.html)
-* GRIB Index redirection
+* [GRIB Collection Examples](https://thredds-dev.unidata.ucar.edu/thredds/catalog/idd/forecastModels.html){:target="_blank"}
 * [TDM](/tdm_ref.html)
+* [GRIB Feature Collection Tutorial](/grib_feature_collections.html)
+* [GRIB Index redirection](/tds_config_ref.html#grib-index-redirection)
 
 ### 3:00 (30 minutes) Resources and Contributing (Sean)
 * [Source](https://github.com/unidata/thredds){:target="_blank"} on GitHub
