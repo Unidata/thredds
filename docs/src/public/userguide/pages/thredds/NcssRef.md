@@ -6,4 +6,6 @@ toc: false
 permalink: netcdf_subset_service_ref.html
 ---
 
+https://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html
+
 {% include image.html file="sl_website-under-construction.jpeg" alt="Under Construction" caption="Under Construction" %}

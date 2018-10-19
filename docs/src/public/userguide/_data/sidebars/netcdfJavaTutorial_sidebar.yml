@@ -193,3 +193,7 @@ entries:
     - title: CDMRemote Feature Datasets
       url: /ncj_cdmremote_feature_datasets.html
       output: web, pdf
+
+    - title: ToolsUI Reference
+      url: /toolsUI_ref.html
+      output: web, pdf
