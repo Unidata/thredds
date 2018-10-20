@@ -109,7 +109,7 @@ permalink:  workshop2018.html
   * Netcdf Subset Service [configure](/adding_ncss.html), [reference](/netcdf_subset_service_ref.html)
 
 ### 1:00 (45 minutes) Advanced TDS Configuration (Sean)
-* [FeatureCollections](/feature_collections_ref.html)
+* [Feature Collections](/feature_collections_ref.html)
 * [FMRC Tutorial](/fmrc_tutorial.html)
 * [Point Feature Collections](/pointfeature_ref.html)
 

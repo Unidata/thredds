@@ -197,3 +197,7 @@ entries:
     - title: ToolsUI Reference
       url: /toolsUI_ref.html
       output: web, pdf
+
+    - title: Feature Datasets Reference
+      url: /feature_datasets_ref.html
+      output: web, pd

@@ -301,3 +301,11 @@ entries:
     - title: PointFeature Reference
       url: /pointfeature_ref.html
       output: web, pdf
+
+    - title: GRIB Collection Cofig
+      url: /grib_collection_config_ref.html
+      output: web, pdf
+       
+    - title: Time Partitions
+      url: /partitions_ref.html
+      output: web, pdf
