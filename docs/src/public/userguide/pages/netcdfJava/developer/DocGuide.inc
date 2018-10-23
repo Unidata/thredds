@@ -215,7 +215,7 @@ A <a href=\"https://tomcat.apache.org/tomcat-8.0-doc/config/realm.html\" target=
 To include a link to download a file contained within the documentation, use:
 
 ~~~md
-{%raw%}{% include files.html file="<path to file starting directly under files/>" text="link text" %}{%endraw%}
+{%raw%}{% include link_file.html file="<path to file starting directly under files/>" text="my link text" %}{%endraw%}
 ~~~
 
 For example, to link the NcML file `$PATH_TO_GIT_REPO/docs/src/public/userguide/files/netcdfJava_tutorial/ncml/basic_ncml/exercise1.ncml `, like this:

@@ -197,3 +197,20 @@ entries:
     - title: ToolsUI Reference
       url: /toolsUI_ref.html
       output: web, pdf
+
+    - title: Feature Datasets Reference
+      url: /feature_datasets_ref.html
+      output: web, pdf
+
+    - title: PointFeature Reference
+      url: /pointfeature_ref.html
+      output: web, pdf      
+
+
+    - title: netCDF C Library
+      url: /netcdf4_c_library.html
+      output: web, pdf
+
+    - title: CDM Utility Programs
+      url: /cdm_utility_programs.html
+      output: web, pdf

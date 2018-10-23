@@ -69,7 +69,9 @@ permalink:  workshop2018.html
 ### 3:30 (30 minutes) DAP Protocol Services (Dennis)
 * OPeNDAP DAP2 and DAP4 Protocol Services (pdf)
  
-### 4:00 Discussion and Questions
+### 4:00 Hardware
+
+### 4:10 Discussion and Questions
 
 ### Day One Finish
 
@@ -109,14 +111,17 @@ permalink:  workshop2018.html
   * Netcdf Subset Service [configure](/adding_ncss.html), [reference](/netcdf_subset_service_ref.html)
 
 ### 1:00 (45 minutes) Advanced TDS Configuration (Sean)
-* [FeatureCollections](/feature_collections_ref.html)
+* [Feature Collections](/feature_collections_ref.html)
+* [Point Feature Examples](https://thredds.ucar.edu/thredds/catalog/nws/synoptic/ncdecoded/catalog.htmly){:target="_blank"}
+* [Point Feature Collections](/pointfeature_collection_ref.html)
 * [FMRC Tutorial](/fmrc_tutorial.html)
-* [Point Feature Collections](/pointfeature_ref.html)
 
 ### 1:45 (15 minutes) Break
 
 ### 2:00 (1 hour) GRIB Feature Collections (Sean)
 * [GRIB Collection Examples](https://thredds-dev.unidata.ucar.edu/thredds/catalog/idd/forecastModels.html){:target="_blank"}
+* [GRIB Feature Collection Reference](/grib_feature_collections_ref.html)
+* [GRIB Feature Collection Config Options](/grib_collection_config_ref.html)
 * [TDM](/tdm_ref.html)
 * [GRIB Feature Collection Tutorial](/grib_feature_collections.html)
 * [GRIB Index redirection](/tds_config_ref.html#grib-index-redirection)
