@@ -235,6 +235,10 @@ entries:
       url: /tds_faq.html
       output: web, pdf
 
+    - title: FAQ
+      url: /tds_grib_faq.html
+      output: web, pdf      
+
   - title: Reference Guide
     output: web, pdf
     folderitems:
@@ -298,8 +302,8 @@ entries:
       url: /services_ref.html
       output: web, pdf
     
-    - title: PointFeature Reference
-      url: /pointfeature_ref.html
+    - title: PointFeature Collection Reference
+      url: /pointfeature_collection_ref.html
       output: web, pdf
 
     - title: GRIB Collection Cofig
