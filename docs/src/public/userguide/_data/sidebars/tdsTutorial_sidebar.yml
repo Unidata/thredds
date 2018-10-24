@@ -235,7 +235,7 @@ entries:
       url: /tds_faq.html
       output: web, pdf
 
-    - title: FAQ
+    - title: GRIB FAQ
       url: /tds_grib_faq.html
       output: web, pdf      
 

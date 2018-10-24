@@ -19,9 +19,9 @@ Useful log files
 | `${tds.content.root.path}/logs/serverStartup.log` | This is where TDS logs messages about TDS startup. |
 | `${tds.content.root.path}/logs/catalogInit.log` | Errors and warnings in your catalog configuration files are shown here. Look at this closely every time you change your config catalogs. |
 | `${tomcat.home}/logs/access.{date}.log` | This is where Tomcat access logs are put, if you have enabled them. You need to manage these by removing them, say, once a month. |
-| `${tds.content.root.path}/logs/threddsServlet.log.{date}` | Each request that the TDS responds to gets logged here. Errors and warnings that are associated with a request are logged here. You need to manage these by removing them, say, once a month. |
-| `${tds.content.root.path}/logs/featureCollectionScan.log` | Log messages from feature collections. |
-| `${tds.content.root.path}/logs/fc.<collection_name>.log` | Log messages from feature collections. |
+| `${tds.content.root.path}/thredds/logs/threddsServlet.log.{date}` | Each request that the TDS responds to gets logged here. Errors and warnings that are associated with a request are logged here. You need to manage these by removing them, say, once a month. |
+| `${tds.content.root.path}/thredds/logs/featureCollectionScan.log` | Log messages from feature collections. |
+| `${tds.content.root.path}/thredds/logs/fc.<collection_name>.log` | Log messages from feature collections. |
 
 ## Common errors in the TDS Configuration Catalogs
 
@@ -35,7 +35,7 @@ If you use the same `path` in more than one data root:
              serviceName="dodsServer" />
 ~~~
 
-you will get an error message in `${tds.content.root.path}/logs/catalogInit.log`:
+you will get an error message in `${tds.content.root.path}/thredds/logs/catalogInit.log`:
 
 ~~~bash
 Error: already have dataRoot =<testdup> mapped to directory= <C:/data/> wanted to map to=</home/workshop/data/> in catalog
@@ -52,7 +52,7 @@ If you use the same `id` in more than one dataset:
          urlPath="test/testData3.grib3" dataType="Grid" />
 ~~~
 
-you will get an error message in `${tds.content.root.path}/logs/catalogInit.log`:
+you will get an error message in `${tds.content.root.path}/thredds/logs/catalogInit.log`:
 
 ~~~bash
 WARNING: Duplicate id on  'THREDDS Catalog Name/Test Single Dataset 3' id= 'testDataset2'
@@ -68,7 +68,7 @@ If you refer to a non-existant directory:
 <datasetScan path="sage" location="C:/data/notexist/" />
 ~~~
 
-you will get an error message in `${tds.content.root.path}/logs/catalogInit.log`:
+you will get an error message in `${tds.content.root.path}/thredds/logs/catalogInit.log`:
 
 ~~~bash
 Data Root =sage directory= <C:/data/notexist /> does not exist
@@ -90,7 +90,7 @@ If you refer to a non-existant `service`, or omit a `service`:
 <datasetScan name="no service name" path="tertiary" location="C:/data/" />
 ~~~
 
-you will get an error message in `${tds.content.root.path}/logs/catalogInit.log`:
+you will get an error message in `${tds.content.root.path}/thredds/logs/catalogInit.log`:
 
 ~~~bash
 **Error: DatasetScan (Top Dataset/bad service name ): must have a default service
