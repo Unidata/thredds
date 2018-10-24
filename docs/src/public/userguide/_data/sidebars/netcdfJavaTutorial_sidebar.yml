@@ -204,8 +204,15 @@ entries:
 
     - title: PointFeature Reference
       url: /pointfeature_ref.html
-      output: web, pdf      
+      output: web, pdf
 
+    - title: CF DSG Encoding Table
+      url: /cf_dsg_encoding_ref.html
+      output: web, pdf
+
+    - title: ArrayStructures
+      url: /arraystructures_ref.html
+      output: web, pdf
 
     - title: netCDF C Library
       url: /netcdf4_c_library.html
