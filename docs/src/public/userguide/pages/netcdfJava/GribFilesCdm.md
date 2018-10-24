@@ -17,7 +17,7 @@ A THREDDS Data Server (TDS) can make GRIB datasets remotely accessible, e.g. thr
 The CDM can only read GRIB files, it cannot write them.
 It can, however, rewrite GRIB into netCDF using CF Conventions.
 Before version 4.3.13, it can only write netCDF-3 format files, which are typically 4-20 times larger than GRIB.
-As of 4.3.13, the CDM can [write to netCDF-4](/netcdf4_c_library.html) format, with file sizes comparable to GRIB, typically within a factor of two.
+As of 4.3.13, the CDM can [write to netCDF-4](netcdf4_c_library.html) format, with file sizes comparable to GRIB, typically within a factor of two.
 
 A GRIB collection must follow these _homogeneity constraints_:
 
@@ -83,9 +83,9 @@ In particular, GRIB records may refer to local tables that are missing or incorr
 It is often necessary for users to contact the data producer to obtain the correct tables for the particular dataset they want to read.
 This is also necessary for other GRIB reading tools like [wgrib](http://www.cpc.ncep.noaa.gov/products/wesley/wgrib.html){:target="_blank"} (NCEP) and [ecCodes](https://confluence.ecmwf.int/display/ECC){:target="_blank"} (ECMWF).
 
-The CDM has a [number of ways](/grib_tables_cdm.html) to allow you to use new tables or override incorrect ones globally or by dataset.
+The CDM has a [number of ways](grib_tables_cdm.html) to allow you to use new tables or override incorrect ones globally or by dataset.
 The good news is that if users contribute these fixes back to the CDM, everyone can take advantage of them and the set of \"correct\" datasets will grow.
-The WMO has greatly improved the process of using the standard tables, and hopefully GRIB data producers will continue to [improve methods for writing GRIB](/grib_tables_cdm.html) and maintaining local tables.
+The WMO has greatly improved the process of using the standard tables, and hopefully GRIB data producers will continue to [improve methods for writing GRIB](grib_tables_cdm.html) and maintaining local tables.
 
 ## Opening a GRIB Collection in the CDM
 
@@ -112,7 +112,7 @@ If you do need to move the data files, its best to recreate the Collection index
 
 ### Creating a GRIB Collection Index
 
-You can use a [command line tool](/cdm_utility_programs.html#gribcdmindex) that uses a complete [GRIB `<featureCollection>` element](/grib_feature_collections_ref.html) to define the GRIB Collection, and generates the CDM index (ncx4) file.
+You can use a [command line tool](cdm_utility_programs.html#gribcdmindex) that uses a complete [GRIB `<featureCollection>` element](grib_feature_collections_ref.html) to define the GRIB Collection, and generates the CDM index (ncx4) file.
 
 For simple cases, you can create the ncx4 file based on a collection spec using ToolsUI: `IOSP/GRIB1(2)/GribCollection`.
 Enter the collection spec and hit Enter.
@@ -143,7 +143,7 @@ All of the configuration options that you can use inside the TDS `<gribConfig>` 
 </netcdf>
 ~~~
 
-See [GRIB Collection Configuration](/grib_collection_config_ref.html) for a description of all of the options.
+See [GRIB Collection Configuration](grib_collection_config_ref.html) for a description of all of the options.
 
 Note that you **cannot** use NcML to open a **collection** of GRIB files.
 You must generate the GRIB Collection index file in a [separate step](#creating-a-grib-collection-index).

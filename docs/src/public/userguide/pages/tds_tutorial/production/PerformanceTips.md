@@ -42,7 +42,7 @@ To check this value on a Unix based OS, use:
 ulimit -n 
 ~~~
 
-If you are using the default [TDS configuration values](/tds_config_ref.html#netcdffile-objects), this value should be 1024 or greater. 
+If you are using the default [TDS configuration values](tds_config_ref.html#netcdffile-objects), this value should be 1024 or greater. 
 Otherwise you can tune this number based on your own settings.
 For example, to set this value to 2048 in the tomcat `startup.sh` script:
 
@@ -131,5 +131,5 @@ Generally clients only request subsets of large files, but if you need to suppor
 If you are serving GRIB files through any service other than the `HTTPServer`, the CDM must write indices the first time it tries to read it.
 This can take several minutes for very large GRIB files.
 For large aggregations and collections, this can take hours or even days.
-By indexing GRIB files before they are accessed with the [TDM](/tdm_ref.html), users get much faster response time.
-As of TDS 4.6+, when these collections change, you _must use_ the [TDM](/tdm_ref.html) to detect those changes, as the TDS will **no longer update GRIB collections on the fly**.
+By indexing GRIB files before they are accessed with the [TDM](tdm_ref.html), users get much faster response time.
+As of TDS 4.6+, when these collections change, you _must use_ the [TDM](tdm_ref.html) to detect those changes, as the TDS will **no longer update GRIB collections on the fly**.

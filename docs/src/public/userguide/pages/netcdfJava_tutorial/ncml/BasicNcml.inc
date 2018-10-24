@@ -271,5 +271,5 @@ ncfileIn.close();
 
 
 {%include note.html content="
-For more details on NcML, see the [NcML Annotated Schema](/ncj_annotated_ncml_schema.html).
+For more details on NcML, see the [NcML Annotated Schema](ncj_annotated_ncml_schema.html).
 " %}

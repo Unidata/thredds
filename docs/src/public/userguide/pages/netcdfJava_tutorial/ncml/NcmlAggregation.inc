@@ -10,7 +10,7 @@ There are several types of aggregation:
 3. [JoinNew](#exercise-3-aggregation-on-a-new-dimension): Variables of the same name (in different files) are connected along a new outer dimension.
    Each file becomes one.
    A new coordinate variable is created for the dimension.
-4. [ForecastModelRunCollection (FMRC)](/fmrc_ref.html): A collection of forecast model runs with two time coordinates: a _run time_ and a _forecast time_.
+4. [ForecastModelRunCollection (FMRC)](fmrc_ref.html): A collection of forecast model runs with two time coordinates: a _run time_ and a _forecast time_.
 
 ### Exercise 1: Union of NetCDF files
 
@@ -543,7 +543,7 @@ Instead, the first time it is opened, the values are read, then subsequent opens
 
 If using a `scan` element on changing directories, be sure to specify the `recheckEvery` attribute to make sure that the cached information gets updated.
 
-For more information on controlling caching in the TDS, please see [here](/tds_config_ref.html#aggregation-cache).
+For more information on controlling caching in the TDS, please see [here](tds_config_ref.html#aggregation-cache).
 
 ### Nested Aggregation
 
@@ -569,5 +569,5 @@ One can nest netcdf elements in aggregation, for example:
 ~~~
 
 {%include note.html content="
-For more details on NcML, see the [NcML Annotated Schema](/ncj_annotated_ncml_schema.html).
+For more details on NcML, see the [NcML Annotated Schema](ncj_annotated_ncml_schema.html).
 " %}

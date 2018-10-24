@@ -10,10 +10,10 @@ permalink: production_server_overview.html
 
 This section covers Best practices and recommendations on securing a production TDS/Tomcat server.
 You should know:
- * how to do a basic installation of [Tomcat, Java](/install_java_tomcat.html) , and the [TDS](/deploying_the_tds.html)
- * be familiar with the [Tomcat directory structure](/tomcat_dir_structure_qt.html)
- * how to [configure Tomcat ](/tomcat_configuration_files.html)
- * how to use the [Tomcat manager application](/tomcat_manager_app.html)
+ * how to do a basic installation of [Tomcat, Java](install_java_tomcat.html) , and the [TDS](deploying_the_tds.html)
+ * be familiar with the [Tomcat directory structure](tomcat_dir_structure_qt.html)
+ * how to [configure Tomcat ](tomcat_configuration_files.html)
+ * how to use the [Tomcat manager application](tomcat_manager_app.html)
 
 ## Why Is Security Important?
 
@@ -444,7 +444,7 @@ Other than the compelling security reasons, you will want to enable TSL/SSL to t
 * The web application deployment descriptor, a.k.a. `web.xml`, specifies if all or parts of it need to be accessed via TSL/SSL.
 * Deployment descriptors are found in the WEB-INF directory of the web application: `${tomcat_home}/webapps/application_name/WEB-INF/web.xml`.
 * By convention, Tomcat and other servlet containers will read the web application deployment descriptors for initialization parameters and container-managed security constraints upon application deployment.
-* The TDS has been pre-configured to require that TSL/SSL encryption is enabled in order to access the both the [TDS Remote Management Tool](http://localhost:8080/thredds/admin/debug){:target="_blank"}, and the [TdsMonitor Tool](/using_the_tdsmonitor_tool.html){:target="_blank"}.
+* The TDS has been pre-configured to require that TSL/SSL encryption is enabled in order to access the both the [TDS Remote Management Tool](http://localhost:8080/thredds/admin/debug){:target="_blank"}, and the [TdsMonitor Tool](using_the_tdsmonitor_tool.html){:target="_blank"}.
 
 `web.xml` fom the TDS Remote Management Tool:
 
@@ -744,7 +744,7 @@ Other than the compelling security reasons, you will want to enable TSL/SSL to t
   
 #### Resources
 
-[Running The TDS Behind a Proxy Server](/tds_behind_proxy.html){:target="_blank"}
+[Running The TDS Behind a Proxy Server](tds_behind_proxy.html){:target="_blank"}
 How to set up a reverse proxy for the TDS using Tomcat and the Apache HTTP server.
 
 ## Running Tomcat with a Security Manager

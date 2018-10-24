@@ -25,7 +25,7 @@ When using a file location that has an embedded `:` char, eg `C:/share/data/mode
 
 ### Remote Files
 
-`NetcdfFile` can open HTTP remote files, [served over HTTP](/ncj_read_over_http.html
+`NetcdfFile` can open HTTP remote files, [served over HTTP](ncj_read_over_http.html
 ), for example:
 
 * http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc
@@ -39,13 +39,13 @@ To disambiguate HTTP remote files from OPeNDAP or other URLS, you can use `https
 
 ### File Types
 
-The local or remote file must be one of the [formats](/ncj_file_types.html) that the netCDF-Java library can read.
+The local or remote file must be one of the [formats](ncj_file_types.html) that the netCDF-Java library can read.
 We call this set of files Common Data Model files, or CDM files for short, to make clear that the NetCDF-Java library is not limited to netCDF files.
 
 If the URL ends with a with `.Z`, `.zip`, `.gzip`, `.gz`, or `.bz2`, the file is assumed to be compressed.
 The netCDF-Java library will uncompress/unzip and write a new file without the suffix, then read from the uncompressed file. 
 Generally it prefers to place the uncompressed file in the same directory as the original file.
-If it does not have write permission on that directory, it will use the [cache directory](/ncj_disk_caching.html) defined by `ucar.nc2.util.DiskCache`.
+If it does not have write permission on that directory, it will use the [cache directory](ncj_disk_caching.html) defined by `ucar.nc2.util.DiskCache`.
 
 ## `ucar.nc2.dataset.NetcdfDataset.openFile(String location)`
 
@@ -117,7 +117,7 @@ In this case, `https://thredds.ucar.edu/thredds/catalog/grib/NCEP/GFS/Global_0p2
 
 ### CdmRemote Datasets
 
-`NetcdfDataset` can open [CDM Remote](/ncj_cdmremote.html) datasets, with the form
+`NetcdfDataset` can open [CDM Remote](ncj_cdmremote.html) datasets, with the form
 
 `cdmremote:cdmRemoteURL`
 
@@ -142,14 +142,14 @@ Also note that when passing a DAP4 dataset URL to the netCDF-Java library, do no
 
 ## `ucar.nc2.ft.FeatureDatasetFactoryManager.open()`
 
-`FeatureDatasetFactory` creates [Feature Datasets](/ncj_feature_datasets.html) for Coverages (Grids), Discrete Sampling Geometry (Point) Datasets, Radial Datasets, etc.
+`FeatureDatasetFactory` creates [Feature Datasets](ncj_feature_datasets.html) for Coverages (Grids), Discrete Sampling Geometry (Point) Datasets, Radial Datasets, etc.
 These may be based on local files, or they may use remote access protocols.
 
 `FeatureDatasetFactoryManager` can open the same URLs that `NetcdfDataset` and `NetcdfFile` can open, plus the following:
 
 ### CdmrFeature Datasets
 
-`FeatureDatasetFactoryManager` can open [CdmRemote Feature Datasets](/ncj_cdmremote_feature_datasets.html), which have the form
+`FeatureDatasetFactoryManager` can open [CdmRemote Feature Datasets](ncj_cdmremote_feature_datasets.html), which have the form
 
 `cdmrFeature:cdmrFeatureURL`
 

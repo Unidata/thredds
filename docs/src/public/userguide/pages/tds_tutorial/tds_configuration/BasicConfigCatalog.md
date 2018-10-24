@@ -8,7 +8,7 @@ permalink: /basic_config_catalog.html
 
 ## Overview
 
-TDS configuration catalogs are like THREDDS [Client catalogs](/basic_client_catalog.html) with extensions.
+TDS configuration catalogs are like THREDDS [Client catalogs](basic_client_catalog.html) with extensions.
 They contain information detailing the datasets the TDS will serve and what services will be available for each dataset.
 For example,  The `datasetRoot` and `datasetScan` elements are extensions that:
  * provide mappings between incoming URL requests and directories on disk; and

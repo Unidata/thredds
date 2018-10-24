@@ -47,7 +47,7 @@ Using the NetCDF-Java library, you can also use NcML to create a new netCDF-3 fi
 Using the NetCDF-Java library, you can use NcML to modify an existing CDM file, and then write a new netCDF-3 format file with those modifications in it.
 
 * Using a text or XML editor, create the NcML file with an "xml" or "ncml" file extension. 
-  Reference the existing file using the location attribute, and add, change or delete metadata in the NcML as in this [example](/ncj_basic_ncml_tutorial.html#exercise-3-read-in-metadata-from-existing-netcdf-file-and-modify).
+  Reference the existing file using the location attribute, and add, change or delete metadata in the NcML as in this [example](ncj_basic_ncml_tutorial.html#exercise-3-read-in-metadata-from-existing-netcdf-file-and-modify).
 * Write the new file as a netCDF-3 format file:
   * Use the NetCDF-Java library nccopy application to write the new file, e.g.:
     ~~~java
@@ -60,10 +60,10 @@ Using the NetCDF-Java library, you can use NcML to modify an existing CDM file, 
 
 A more advanced use is to modify existing NetCDF files, as well as to create "virtual" NetCDF datasets, for example through aggregation. In that case, you'll have to read more:
 
-* [Tutorial](/ncj_basic_ncml_tutorial.html)
-* [Aggregation](/ncj_ncml_aggregation.html)
-* [Cookbook Examples](/ncj_ncml_cookbook.html)
-* [Annotated Schema for Netcdf-Java 4](/ncj_annotated_ncml_schema.html)
+* [Tutorial](ncj_basic_ncml_tutorial.html)
+* [Aggregation](ncj_ncml_aggregation.html)
+* [Cookbook Examples](ncj_ncml_cookbook.html)
+* [Annotated Schema for Netcdf-Java 4](ncj_annotated_ncml_schema.html)
 * [ncml-2.2.xsd](www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd)
 
 ### Acknowledgments and History

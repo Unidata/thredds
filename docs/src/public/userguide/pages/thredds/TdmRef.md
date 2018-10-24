@@ -60,7 +60,7 @@ Troubleshooting:
 * Make sure that the `<JVM Options>`, including `-Dtds.content.root.path`, come before the `-jar <TDM jar>`
 * The `<content directory>` does not include the `/thredds` subdirectory, e.g. `/opt/tds/content` not `/opt/tds/content/thredds`.
 * You must run the TDM as a user who has read and write permission into the data directories, so it can write the index files (OR)
-* If you are using [GRIB index redirection](/tds_config_ref.html#grib-index-redirection), the TDM must have read access to the data directories, and write access to the index directories.
+* If you are using [GRIB index redirection](tds_config_ref.html#grib-index-redirection), the TDM must have read access to the data directories, and write access to the index directories.
 
 ## Running the TDM:
 

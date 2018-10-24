@@ -18,12 +18,12 @@ Because of the complexity of how GRIB data is written and stored, the TDS has de
 
 Also see:
 
-* [Feature Collection overview](/feature_collections_ref.html)
-* [GRIB specific configuration](/grib_collection_config_ref.html)
-* [GRIB Collection FAQ](/tds_grib_faq.html)
-* [GRIB Feature Collection Tutorial](/grib_feature_collections.html)
-* [Partitions](/partitions_ref.html)
-* [CDM GRIB Collection Processing](/grib_files_cdm.html)
+* [Feature Collection overview](feature_collections_ref.html)
+* [GRIB specific configuration](grib_collection_config_ref.html)
+* [GRIB Collection FAQ](tds_grib_faq.html)
+* [GRIB Feature Collection Tutorial](grib_feature_collections.html)
+* [Partitions](partitions_ref.html)
+* [CDM GRIB Collection Processing](grib_files_cdm.html)
 
 ### Multiple Dataset Collections
 
@@ -87,7 +87,7 @@ Oh wait we already did that in 4.5.
 Sorry, it wasn\'t good enough.
 
 * `TimePartition` can now be set to `directory` (default), `file`, a time period, or `none`. 
-  Details [here](/partitions_ref.html).
+  Details [here](partitions_ref.html).
 * Multiple `reference` times are handled more efficiently, e.g. only one index file typically needs to be written.
 * Global attributes are promoted to dataset properties in the catalog
 * Internal changes:

@@ -100,7 +100,7 @@ Notes:
 ## TDS Requirements for the service Elements
 
 The TDS provides data access services at predefined URL base paths.
-Therefore, it is required that service base URLs must [exactly match the values given here](/services_ref.html#tdsServiceElemRequirements) according to service type, for example:
+Therefore, it is required that service base URLs must [exactly match the values given here](services_ref.html#tdsServiceElemRequirements) according to service type, for example:
 
 * OPeNDAP
 
