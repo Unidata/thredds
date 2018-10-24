@@ -25,20 +25,20 @@ One way to do this is to build each piece as a separate and logically-complete c
 </catalog>
 ~~~
 
-* <1> We declare the `xlink` `namespace` in the `catalog` element.
-* <2> The _collection_ (or _container_) dataset logically contains the `catalogRefs`, which are thought of as nested datasets whose contents are the contents of the external catalog.
-* <3> Here are several `catalogRef` elements, each with a link to an external catalog, using the xlink:href attribute. 
-  The `xlink:title` is used as the name of the dataset.
-  We need a `name` attribute (in order to validate, for obscure reasons), but it is ignored.
-  The `xlink:href` attributes are [relative URLs](http://www.webreference.com/html/tutorial2/3.html){:target="_blank"} and are resolved against the catalog URL. 
-  For example, if the URL of the client catalog, as shown above, is:
+1. We declare the `xlink` `namespace` in the `catalog` element.
+2. The _collection_ (or _container_) dataset logically contains the `catalogRefs`, which are thought of as nested datasets whose contents are the contents of the external catalog.
+3. Here are several `catalogRef` elements, each with a link to an external catalog, using the xlink:href attribute. 
+   The `xlink:title` is used as the name of the dataset.
+   We need a `name` attribute (in order to validate, for obscure reasons), but it is ignored.
+   The `xlink:href` attributes are [relative URLs](http://www.webreference.com/html/tutorial2/3.html){:target="_blank"} and are resolved against the catalog URL. 
+   For example, if the URL of the client catalog, as shown above, is:
 
-  <http://thredds.ucar.edu/thredds/catalog.xml>{:target="_blank"}
+   <http://thredds.ucar.edu/thredds/catalog.xml>{:target="_blank"}
 
-  then the resolved URL of the first `catalogRef` will be:
+   then the resolved URL of the first `catalogRef` will be:
 
-  <http://thredds.ucar.edu/thredds/idd/forecastModels.xml>{:target="_blank"}
+   <http://thredds.ucar.edu/thredds/idd/forecastModels.xml>{:target="_blank"}
 
-* <4> `catalogRefs` needn't point to local catalogs only; this one points to a remote one at Far Away University.
-* The `metadata` elements with `inherited="true"` are NOT not copied across `catalogRefs`.
-  The catalog that a `catalogRef` refers to is stand-alone in that sense.
+4. `catalogRefs` needn't point to local catalogs only; this one points to a remote one at Far Away University.
+   * The `metadata` elements with `inherited="true"` are NOT not copied across `catalogRefs`.
+     The catalog that a `catalogRef` refers to is stand-alone in that sense.

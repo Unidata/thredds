@@ -313,3 +313,7 @@ entries:
     - title: Time Partitions
       url: /partitions_ref.html
       output: web, pdf
+
+    - title: TDS Upgrade Procedure
+      url: /upgrade_tds_ref.html
+      output: web, pdf

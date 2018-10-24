@@ -27,7 +27,7 @@ Changes to these settings may happen at any time, without having to recreate the
 They will take affect the next time the TDS starts.
 
 These instructions are tailored for TDS users.
-To work with Grib Collections in client software using the CDM stack, see [CDM Grib Files](/grib_files_cdm.html).
+To work with Grib Collections in client software using the CDM stack, see [CDM Grib Files](grib_files_cdm.html).
 
 ## Stage One: GribCollection Creation
 
@@ -224,7 +224,7 @@ Here are examples using NcML:
 
 Note that GRIB-1 uses IDs of `center-subcenter-version-param`, e.g. `7-4-2-132`, while GRIB-2 uses IDs of `discipline-category-number`, e.g. `0-1-8`.
 
-Also see [CDM GRIB](/grib_files_cdm.html) docs.
+Also see [CDM GRIB](grib_files_cdm.html) docs.
 
 #### option: set miscellaneous values
 

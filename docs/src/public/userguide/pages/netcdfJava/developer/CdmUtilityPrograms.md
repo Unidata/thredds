@@ -11,7 +11,7 @@ The easiest way to use these is to grab the latest netcdfAll.jar file.
 
 * [ncdump](#ncdump): prints the textual representation of a dataset to standard output
 * [nccopy](#nccopy): copies a CDM dataset to a netCDF-3 (default) or netCDF-4 file
-* [nccompare](#nccompare): compares two [CDM files](/ncj_file_types.html) for semantic equivalence
+* [nccompare](#nccompare): compares two [CDM files](ncj_file_types.html) for semantic equivalence
 * [BufrSplitter](#bufrsplitter): copies a BUFR file’s messages into separate output files, depending on type
 * [CatalogCrawler](#catalogcrawler): crawl a catalog, optionally open datasets to look for problems
 * [CFPointWriter](#cfpointwriter): copies a CDM point feature dataset to CF/NetCDF format
@@ -23,7 +23,7 @@ The easiest way to use these is to grab the latest netcdfAll.jar file.
 Prints the textual representation of a dataset to standard output.
 Similar functionality to the [`ncdump`](https://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf/ncdump.html){:target="_blank"} utility program.
 By default, just the header (`ncdump -h`) is output.
-This application works on any [CDM file](/ncj_file_types.html), not just netCDF files.
+This application works on any [CDM file](ncj_file_types.html), not just netCDF files.
 
 ~~~bash
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.NCdumpW
@@ -82,7 +82,7 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.write.Nccopy [options]
 
 ## nccompare
 
-Compares two [CDM files](/ncj_file_types.html) for semantic equivalence.
+Compares two [CDM files](ncj_file_types.html) for semantic equivalence.
 
 ~~~bash
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.util.CompareNetcdf2
@@ -144,7 +144,7 @@ java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.point.writer.CFPointW
 
 ## GribCdmIndex
 
-Write GRIB Collection Indexes from an XML file containing a [GRIB `<featureCollection>`](/grib_feature_collections_ref.html) XML element.
+Write GRIB Collection Indexes from an XML file containing a [GRIB `<featureCollection>`](grib_feature_collections_ref.html) XML element.
 
 ~~~bash
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmIndex [options]
@@ -165,11 +165,11 @@ Example:
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.grib.collection.GribCdmIndex -fc /data/fc/gfs_example.xml
 ~~~
 
-Note that the output file is placed in the root directory of the collection, as specified by the [Collection Specification](/collection_spec_string_ref.html) of the GRIB [`<featureCollection>`](/feature_collections_ref.html).
+Note that the output file is placed in the root directory of the collection, as specified by the [Collection Specification](collection_spec_string_ref.html) of the GRIB [`<featureCollection>`](feature_collections_ref.html).
 
 ## FeatureScan
 
-Scans all the files in a directory to see if they are [CDM files](/ncj_file_types.html) and can be identified as a particular feature type.
+Scans all the files in a directory to see if they are [CDM files](ncj_file_types.html) and can be identified as a particular feature type.
 
 ~~~basj
 java -Xmx1g -classpath netcdfAll-<version>.jar ucar.nc2.ft.scan.FeatureScan directory [-subdirs]

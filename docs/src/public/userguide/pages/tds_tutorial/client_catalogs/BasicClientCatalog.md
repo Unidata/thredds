@@ -22,15 +22,15 @@ Here's an example of a very simple catalog:
 
 with this line-by-line explanation:
 
-* <1> The first line indicates that this is an XML document.
-* <2> This is the root element of the XML, the catalog element.
-      It must declare the thredds catalog namespace with the xmlns attribute exactly as shown.
-* <3> This declares a service named odap that will serve data via the OpenDAP protocol.
-      Many other data access services come bundled with THREDDS.
-* <4> This declares a dataset named SAGE III Ozone 2006-10-31. 
-      It references the odap service, meaning that it will be served via OpenDAP.
-      The URL to access the dataset is discussed next.
-* <5> This closes the catalog element.
+1. The first line indicates that this is an XML document.
+2. This is the root element of the XML, the catalog element.
+   It must declare the thredds catalog namespace with the xmlns attribute exactly as shown.
+3. This declares a service named odap that will serve data via the OpenDAP protocol.
+   Many other data access services come bundled with THREDDS.
+4. This declares a dataset named SAGE III Ozone 2006-10-31. 
+   It references the odap service, meaning that it will be served via OpenDAP.
+   The URL to access the dataset is discussed next.
+5. This closes the catalog element.
 
 ## Constructing an access URL
 

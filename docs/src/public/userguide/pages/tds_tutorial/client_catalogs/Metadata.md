@@ -88,10 +88,10 @@ Rather than declare the same information on each dataset, you can use the `metad
 </dataset>
 ~~~
 
-* <1> The `metadata` element with `inherited="true"` implies that all the information inside the `metadata` element applies to the current dataset and all nested datasets.
-* <2> The `serviceName`, `authority`, and `dataFormatType` are declared as elements.
-* <3> These datasets use all the metadata values declared in the parent dataset.
-* <4> This dataset overrides `authority`, but uses the other 2 metadata values
+1. The `metadata` element with `inherited="true"` implies that all the information inside the `metadata` element applies to the current dataset and all nested datasets.
+2. The `serviceName`, `authority`, and `dataFormatType` are declared as elements.
+3. These datasets use all the metadata values declared in the parent dataset.
+4. This dataset overrides `authority`, but uses the other 2 metadata values
 
 ## When should I use a metadata element?
 

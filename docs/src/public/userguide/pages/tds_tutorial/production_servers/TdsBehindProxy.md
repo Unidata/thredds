@@ -123,7 +123,7 @@ We **do not recommend** changing the TDS context path (the `/thredds` part of th
 
 Check that the catalog URL in the title of the HTML view of catalogs matches the requested URL.
 Check that the Data Access URL in the OPeNDAP Data Access Form matches the requested URL (minus the `.html` suffix).
-If you have [TDS Remote Management](/remote_management_ref.html) configured, go to the TDS debug page (e.g., [http://localhost:8080/thredds/admin/debug](http://localhost:8080/thredds/admin/debug){:target="_blank"}) and follow the \"Show HTTP Request info\" link.
+If you have [TDS Remote Management](remote_management_ref.html) configured, go to the TDS debug page (e.g., [http://localhost:8080/thredds/admin/debug](http://localhost:8080/thredds/admin/debug){:target="_blank"}) and follow the \"Show HTTP Request info\" link.
 Once there, check that the values listed for server name and port and the context path all match the appropriate values from the request URL, e.g., for the URL [http://localhost:8080/thredds/admin/debug?General/showRequest](http://localhost:8080/thredds/admin/debug?General/showRequest){:target="_blank"} , the values should be
 `req.getServerName():` `localhost`
 `req.getServerPort():` `8080`

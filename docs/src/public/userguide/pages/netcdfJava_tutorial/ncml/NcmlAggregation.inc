@@ -10,7 +10,7 @@ There are several types of aggregation:
 3. [JoinNew](#exercise-3-aggregation-on-a-new-dimension): Variables of the same name (in different files) are connected along a new outer dimension.
    Each file becomes one.
    A new coordinate variable is created for the dimension.
-4. [ForecastModelRunCollection (FMRC)](/fmrc_ref.html): A collection of forecast model runs with two time coordinates: a _run time_ and a _forecast time_.
+4. [ForecastModelRunCollection (FMRC)](fmrc_ref.html): A collection of forecast model runs with two time coordinates: a _run time_ and a _forecast time_.
 
 ### Exercise 1: Union of NetCDF files
 
@@ -311,12 +311,12 @@ Non-aggregation variables are treated as in a Union dataset, i.e. skipped if one
 A JoinNew aggregation has to create a new coordinate variable.
 In the above example, one was automatically created with type double, to match the coordValues specified on the netcdf elements.
 However, it has no units or other attributes.
-To specify attributes on the coordinate system, you can use the following (download aggNewCoord.ncml):
+To specify attributes on the coordinate system, you can use the following (download {% include link_file.html file="netcdfJava_tutorial/ncml/aggregation/aggNewCoord.ncml" text="aggNewCoord.ncml" %}):
 
 ~~~xml
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
   <variable name="time" type="int" >          <!-- 1 -->
-    <attribute name="units" value="months since 2000-6-16 6:00"/>
+    <attribute name="units" value="calendar months since 2000-6-16 6:00"/>
     <attribute name="_CoordinateAxisType" value="Time" />
     <values>0 1 2</values>
   </variable>
@@ -344,7 +344,7 @@ netcdf file:C:/dev/tds/thredds/docs/web/netcdf-java/ncml/examples/aggNew.ncml {
    float lat(lat=3);
    float lon(lon=4);
    int time(time=3;)
-     :units = "months since 2000-6-16 6:00";
+     :units = "calendar months since 2000-6-16 6:00";
      :_CoordinateAxisType = "Time";
    double T(time=3, lat=3, lon=4);
  data:
@@ -543,7 +543,7 @@ Instead, the first time it is opened, the values are read, then subsequent opens
 
 If using a `scan` element on changing directories, be sure to specify the `recheckEvery` attribute to make sure that the cached information gets updated.
 
-For more information on controlling caching in the TDS, please see [here](/tds_config_ref.html#aggregation-cache).
+For more information on controlling caching in the TDS, please see [here](tds_config_ref.html#aggregation-cache).
 
 ### Nested Aggregation
 
@@ -569,5 +569,5 @@ One can nest netcdf elements in aggregation, for example:
 ~~~
 
 {%include note.html content="
-For more details on NcML, see the [NcML Annotated Schema](/ncj_annotated_ncml_schema.html).
+For more details on NcML, see the [NcML Annotated Schema](ncj_annotated_ncml_schema.html).
 " %}

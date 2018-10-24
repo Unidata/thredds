@@ -18,14 +18,14 @@ However, you must decide this yourself, based on your organization's security po
 In what follows we try to explain what risks the various options have, as well as we understand them.
 A good compromise may be to do all the work to enable remote management, then turn it on only while actively configuring the server, and turn it off when in production mode.
 
-In any case, we strongly recommend that you also read and follow the [Tomcat/TDS Security](/production_server_overview.html) guidelines.
+In any case, we strongly recommend that you also read and follow the [Tomcat/TDS Security](production_server_overview.html) guidelines.
 
-Follow the [checklist](/installation_checklist.html) for more concise and up-to-date configuration instruction.
+Follow the [checklist](installation_checklist.html) for more concise and up-to-date configuration instruction.
 
 ## Configuring Tomcat Users
 
 Special permissions (like remote management) are done in Tomcat by creating users with special roles.
-As long as you also follow the [Tomcat/TDS Security](/production_server_overview.html) guidelines, using the simplest Tomcat mechanism to do this should be safe.
+As long as you also follow the [Tomcat/TDS Security](production_server_overview.html) guidelines, using the simplest Tomcat mechanism to do this should be safe.
 
 Edit `${tomcat_home}/conf/tomcat-users.xml`, adding roles `tdsConfig`, `manager`, `admin`, and users who have those roles, e.g.:
 
@@ -49,7 +49,7 @@ The easiest way to enable or disable remote administration is to change this fil
 
 The list of users, their names and passwords, are whatever you want them to be.
 Note that after you get this set up, you can manage users remotely through the administrator interface.
-Note also that before you go into production mode, you should change to using digest passwords by following the instructions [here](/production_server_overview.html).
+Note also that before you go into production mode, you should change to using digest passwords by following the instructions [here](production_server_overview.html).
 
 Note that any changes won't take effect until you restart Tomcat.
 

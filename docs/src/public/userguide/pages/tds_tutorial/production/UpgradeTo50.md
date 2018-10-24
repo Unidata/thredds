@@ -319,12 +319,12 @@ Schema version is now `1.2`.
 * User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
 * All services are enabled unless explicitly disabled
 ** Except for remote catalog services
-* Standard service details are [here](/services_ref.html))
+* Standard service details are [here](services_ref.html))
 
 ### FeatureCollections
 
-* The [update](/feature_collections_ref.html#update) element default is now `startup="never"`, meaning do not update collection on startup, and use existing indices when the collection is accessed.
-* The [fileSort](/tds_dataset_scan_ref.html#filesSort,filesSort) element is now inside the `featureCollection` itself, so it can be processed uniformly for all types of feature collections.
+* The [update](feature_collections_ref.html#update) element default is now `startup="never"`, meaning do not update collection on startup, and use existing indices when the collection is accessed.
+* The [fileSort](tds_dataset_scan_ref.html#filesSort,filesSort) element is now inside the `featureCollection` itself, so it can be processed uniformly for all types of feature collections.
   When a collection shows a list of files, the files will be sorted by increasing name.
   To use a decreasing sort, use the element `<filesSort increasing="false" />` inside the `featureCollection` element.
   This supersedes the old way of placing that element in the `<gribConfig>` element, or the older verbose `lexigraphicByName` element:
