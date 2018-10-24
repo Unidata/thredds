@@ -8,21 +8,25 @@ permalink: tomcat_log_files.html
 
 ## Tomcat `logs/`
 
+{%include note.html content="
+This section assumes you have successfully installed the JDK and Tomcat Servlet Container as outlined in the <a href=\"install_java_tomcat.html\" target=\"_blank\">Installation of Java and Tomcat</a> section.
+" %}
+
 1. Look at the different types of log files being generated in the Tomcat `logs/` directory.
    Move into the `logs/` directory to see the type of information being logged:
 
    ~~~bash
    $ pwd
-   /usr/local/tds/apache-tomcat-8.0.24/webapps
+   /usr/local/tds/tomcat/bin
    $ cd ../logs
 
    $ ls -l
-   -rw-r--r-- 1 tds workshop 5637 Jul 15 09:51 catalina.2013-07-15.log
-   -rw-r--r-- 1 tds workshop 5637 Jul 15 09:51 catalina.out
-   -rw-r--r-- 1 tds workshop    0 Jul 15 09:39 host-manager.2013-07-15.log
-   -rw-r--r-- 1 tds workshop 2811 Jul 15 09:52 localhost.2013-07-15.log
-   -rw-r--r-- 1 tds workshop    0 Jul 15 09:39 localhost_access_log.2013-07-15.txt
-   -rw-r--r-- 1 tds workshop    0 Jul 15 09:39 manager.2013-07-15.log
+   -rw-r----- 1 oxelson ustaff 23451 Oct 24 14:17 catalina.2018-10-24.log
+   -rw-r----- 1 oxelson ustaff 23451 Oct 24 14:17 catalina.out
+   -rw-r----- 1 oxelson ustaff     0 Oct 24 13:41 host-manager.2018-10-24.log
+   -rw-r----- 1 oxelson ustaff  1929 Oct 24 14:17 localhost.2018-10-24.log
+   -rw-r----- 1 oxelson ustaff   859 Oct 24 13:45 localhost_access_log.2018-10-24.txt
+   -rw-r----- 1 oxelson ustaff     0 Oct 24 13:41 manager.2018-10-24.log
    ~~~
 
    {% include question.html content="
@@ -38,10 +42,10 @@ permalink: tomcat_log_files.html
    " %}
 
 2. Examining `catalina.out`.
-   Open another terminal window (hereafter referred to as terminal #2) and run the following command in the new terminal:
+   Open another terminal window (here after referred to as terminal #2) and run the following command in the new terminal:
 
    ~~~bash
-   $ tail -f /usr/local/tds/apache-tomcat-8.0.24/logs/catalina.out
+   $ tail -f /usr/local/tds/tomcat/logs/catalina.out
    ~~~
 
    In your original terminal window, start/stop and start Tomcat and watch what is being logged to `catalina.out` in the terminal #2 window.
@@ -53,7 +57,7 @@ permalink: tomcat_log_files.html
 ## Things to know about `catalina.out`
 
 {% include note.html content="
-The [Tomcat Users mailing list](http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b){:target='_blank'} has seen a lot of traffic dedicated to `catalina.out` logging and rotation.
+The <a href=\"http://marc.info/?l=tomcat-user&w=2&r=1&s=catalina.out+rotate&q=b\" target=\"_blank\">Tomcat Users mailing list</a> has seen a lot of traffic dedicated to `catalina.out` logging and rotation.
 " %}
 
 * Tomcat `System.out` and `System.err` gets appended to `catalina.out`. `catalina.out` can quickly grow large if the hosted web applications are not specifically catching and logging `System.out` and `System.err` to designated files.
