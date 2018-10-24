@@ -8,13 +8,13 @@ permalink: pointfeature_collection_ref.html
 
 ## Overview
 
-A Point Feature Collection is a collection of files which the CDM can recognize as containing [Point Features](/pointfeature_ref.html).
+A Point Feature Collection is a collection of files which the CDM can recognize as containing [Point Features](pointfeature_ref.html).
 
 ### Constraints on Point Feature Collections
 
 * The component files of the collection must all be recognized as **Point** or **Station** Feature type by the CDM software.
 * The component files must be partitioned by time.
-  The starting time must be part of the filename, in a way that can be extracted with a [DateExtractor](/feature_collections_ref.html#date-extractor).
+  The starting time must be part of the filename, in a way that can be extracted with a [DateExtractor](feature_collections_ref.html#date-extractor).
 * The component files are assumed to be homogenous, that is, they contain the same collection of variables and attributes, and they must be on the same horizontal and vertical grid.
   The component files can differ only in their time coordinates and the actual data values.
 

@@ -8,7 +8,7 @@ permalink: feature_collections_ref.html
 
 ## Overview
 
-The `featureCollection` element is a way to tell the TDS to serve collections of [CDM Feature Datasets](/feature_datasets_ref.html).
+The `featureCollection` element is a way to tell the TDS to serve collections of [CDM Feature Datasets](feature_datasets_ref.html).
 Currently this is used for gridded and point datasets whose time and spatial coordinates are recognized by the CDM software stack.
 This allows the TDS to automatically create logical datasets composed of collections of files, and to allow subsetting in coordinate space on them, through the WMS, WCS, Netcdf Subset, and CDM Remote Feature services.
 
@@ -38,15 +38,15 @@ Specific topics covered here are:
 
 For Feature Type specific information, see:
 
-* [FMRC Collections](/fmrc_ref.html)
-* [Point Collections](/pointfeature_ref.html)
-* [GRIB Collections](/grib_feature_collections_ref.html)
-* [GRIB specific configuration](/grib_collection_config_ref.html)
-* [GRIB Collection FAQs](/grib_collection_config_ref.html)
+* [FMRC Collections](fmrc_ref.html)
+* [Point Collections](pointfeature_ref.html)
+* [GRIB Collections](grib_feature_collections_ref.html)
+* [GRIB specific configuration](grib_collection_config_ref.html)
+* [GRIB Collection FAQs](grib_collection_config_ref.html)
 
 Also see:
 
-* [THREDDS Data Manager](/tdm_ref.html)
+* [THREDDS Data Manager](tdm_ref.html)
 
 ## Example catalog elements
 
@@ -209,7 +209,7 @@ The XML Schema for the `collection` element:
 
 where
 
-1. `spec` (required): [collection specification string](/collection_spec_string_ref.html).
+1. `spec` (required): [collection specification string](collection_spec_string_ref.html).
     In this example, the collection contains all files in the directory `/data/ldm/pub/native/satellite/3.9/WEST-CONUS_4km/` whose filename matches the regular expression `WEST-CONUS_4km_3.9.gini$`, where `.` means \"match any number of characters\" and `gini$` means \"ends with the characters gini\". If you wanted to match \".gini\", you would need to escape the \".\", ie `\.gini$`.
 2. `name` (required): the collection name, which _must be unique for all collections served by your TDS_. 
    This is used for external triggers, for the CDM collection index files, and for logging and debugging messages.
@@ -222,7 +222,7 @@ where
    In this example, the string `WEST-CONUS_4km_3.9_` is located in each file path, then the [SimpleDateFormat](https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html){:target="_blank"} template `yyyyMMdd_HHmm` is applied to the next characters of the filename to create a date.
    A [DateExtractor](#date-extractor) can also be defined in the collection specification string, but in that case the date must be contained just in the file name, as opposed to the complete file path which includes all of the parent directory names.
    Use this _OR_ a date extractor in the specification string, but _not_ both.
-5. `timePartition` (optional): Currently only used by GRIB collections, see [here](/partitions_ref.html) for more info.
+5. `timePartition` (optional): Currently only used by GRIB collections, see [here](partitions_ref.html) for more info.
 
 ### `protoDataset` element
 
@@ -347,7 +347,7 @@ The XML Schema definition for the update element:
 ### tdm element (GRIB only)
 
 You must use the `tdm` element for GRIB collections that change.
-The [TDM](/tdm_ref.html) is a separate process that uses the same configuration catalogs as the TDS, and updates GRIB collections in the background.
+The [TDM](tdm_ref.html) is a separate process that uses the same configuration catalogs as the TDS, and updates GRIB collections in the background.
 Example:
 
 ~~~xml
@@ -395,7 +395,7 @@ To use a decreasing sort, use the `fileSort` element inside the `featureCollecti
 Feature Collections sometimes (Point, FMRC, and time partitioned GRIB) need to know how to sort the collection of files.
 In those cases you need to have a date in the filename and need to specify a date extractor in the specification string or include a `dateFormatMark` attribute.
 
-1. If the date is in the **filename only**, you can use the [collection specification string](/collection_spec_string_ref.html). 
+1. If the date is in the **filename only**, you can use the [collection specification string](collection_spec_string_ref.html). 
    A `spec` of:
 
    `/data/ldm/pub/native/grid/NCEP/GFS/Alaska_191km/GFS_Alaska_191km_#yyyyMMdd_HHmm#\.grib1$`
@@ -451,12 +451,12 @@ The URL for the trigger is
 where `name` is the collection name, and `type` is a [collectionUpdateType](#collectionupdatetype).
 
 * Typically the trigger is used by the TDM, but it can also be used manually or by another program.
-* Triggering is password protected and uses SSL (see [enabling Remote Management](/remote_management_ref.html#enable-secure-sockets-layer-ssl) to enable SSL).
-* You must give the role `tdsTrigger` to any [user](/remote_management_ref.html#configuring-tomcat-users) you want to have the right to send a trigger.
-* To enable the TDM trigger, create a [user](/remote_management_ref.html#configuring-tomcat-users) named `tdm` and give that user the `tdsTrigger` role.
+* Triggering is password protected and uses SSL (see [enabling Remote Management](remote_management_ref.html#enable-secure-sockets-layer-ssl) to enable SSL).
+* You must give the role `tdsTrigger` to any [user](remote_management_ref.html#configuring-tomcat-users) you want to have the right to send a trigger.
+* To enable the TDM trigger, create a [user](remote_management_ref.html#configuring-tomcat-users) named `tdm` and give that user the `tdsTrigger` role.
 
 You can see a list of the Feature Collection datasets (and manually send a `trigger=nocheck` to specific datasets) from the TDS admin page at `https://server/thredds/admin/debug?Collections/showCollection`.
-To have access to this page the user must have the role `tdsConfig` (see [enabling Remote Management](/remote_management_ref.html#configuring-tomcat-users)).
+To have access to this page the user must have the role `tdsConfig` (see [enabling Remote Management](remote_management_ref.html#configuring-tomcat-users)).
 
 ## Static vs. changing datasets (**Not GRIB**)
 

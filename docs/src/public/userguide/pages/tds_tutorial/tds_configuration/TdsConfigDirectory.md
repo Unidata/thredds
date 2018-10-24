@@ -11,7 +11,7 @@ permalink: tds_content_directory.html
 All THREDDS Data Server configuration information is stored under the TDS content directory.
 The location of the directory is controlled by the `tds.content.root.path` Java system property.
 There is no default location - `tds.content.root.path` must be set or the TDS will not start.
-Please see the [Running Tomcat](/running_tomcat.html#setting-javahome-javaopts-catalinabase-and-contentroot) page of this tutorial for information on how to set this location.
+Please see the [Running Tomcat](running_tomcat.html#setting-javahome-javaopts-catalinabase-and-contentroot) page of this tutorial for information on how to set this location.
 
 
 ## Layout
@@ -39,4 +39,4 @@ For now, we will focus on the following subset of the content directory:
      * `ncss/`
      * `wcs/`
    * `templates/`
-     * `tdsTemplateFragments.html` - user-supplied Thymeleaf HTML templates (see [Customizing TDS](/customizing_tds.html#thymeleaf-templates) for details).
+     * `tdsTemplateFragments.html` - user-supplied Thymeleaf HTML templates (see [Customizing TDS](customizing_tds.html#thymeleaf-templates) for details).

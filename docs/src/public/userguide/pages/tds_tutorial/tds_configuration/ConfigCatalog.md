@@ -100,7 +100,7 @@ Notes:
 ## TDS Requirements for the service Elements
 
 The TDS provides data access services at predefined URL base paths.
-Therefore, it is required that service base URLs must [exactly match the values given here](/services_ref.html#tdsServiceElemRequirements) according to service type, for example:
+Therefore, it is required that service base URLs must [exactly match the values given here](services_ref.html#tdsServiceElemRequirements) according to service type, for example:
 
 * OPeNDAP
 
@@ -224,7 +224,7 @@ The `dataType` of a `featureCollection` is always known, so there is no need to 
              urlPath="precip/nws_precip_conus_20130910.nc">
 
       <metadata>
-	    <serviceName>odap</serviceName>
+        <serviceName>odap</serviceName>
         <date type="created">2013-09-10</date>
       </metadata>
 
