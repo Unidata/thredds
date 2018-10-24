@@ -1,6 +1,6 @@
 ---
 title: netCDF C Library
-last_updated: 2018-04-02
+last_updated: 2018-10-24
 sidebar: netcdfJavaTutorial_sidebar
 toc: false
 permalink: netcdf4_c_library.html
@@ -16,9 +16,10 @@ Also, be sure to use the latest version, as security improvements are constantly
 
 ### Thread safety
 
-Any pre-built version of libnetcdf that you install—whether from a package manager or from a download page—is likely to not be thread-safe.
+Any pre-built version of libnetcdf that you install - whether from a package manager or from a download page - is likely to not be thread-safe.
+The same is also true for versions you build from source.
 Therefore, netCDF-Java will only allow one thread to write via the netCDF-C libary at a time.
-This may cause a performance hit.
+This may result in a performance hit.
 
 When might you do concurrent writes of NetCDF-4 files?
 For TDS administrators, this can often happen in the NetCDF Subset Service (NCSS). 

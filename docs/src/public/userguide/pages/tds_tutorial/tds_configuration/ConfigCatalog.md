@@ -224,7 +224,7 @@ The `dataType` of a `featureCollection` is always known, so there is no need to 
              urlPath="precip/nws_precip_conus_20130910.nc">
 
       <metadata>
-	    <serviceName>odap</serviceName>
+        <serviceName>odap</serviceName>
         <date type="created">2013-09-10</date>
       </metadata>
 

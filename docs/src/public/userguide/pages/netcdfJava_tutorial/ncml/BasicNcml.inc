@@ -152,7 +152,7 @@ This form is useful in aggregations but not for much else.
 
 In this example, we read in all of the metadata from the referenced dataset, and modify it through elements in the NcML.
 
-Download exercise3.ncml and place it in the same directory as example1.nc.
+Download {% include link_file.html file="netcdfJava_tutorial/ncml/basic_ncml/example1.nc" text="example1.nc" %} and {% include link_file.html file="netcdfJava_tutorial/ncml/basic_ncml/exercise3.ncml" text="exercise3.ncml" %} and place it in the same directory as example1.nc.
 Open exercise3.ncml in the ToolsUI Viewer tab, and in the NcML tab.
 
 ~~~xml
@@ -242,7 +242,7 @@ Try making different kinds of mistakes to see what error messages (if any) that 
 By switching between the Viewer tab and the NcML tab, you can quickly try out different things.
 
 * Create malformed XML by leaving off a closing element bracket
-* Misspell an element name, eg `<atribute>` instead of `<attribute>`
+* Misspell an element name, e.g. `<atribute>` instead of `<attribute>`
 * Change the _name_ of an existing attribute, and examine the resulting dataset to see what happens.
 
 The NcML tab offers no error checking, its really just a text editor.

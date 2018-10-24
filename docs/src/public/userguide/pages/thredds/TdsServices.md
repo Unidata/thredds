@@ -186,7 +186,7 @@ You can still define your own services, either globally in the root catalog, or 
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Disabled</td>
+          <td>Enabled</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -226,7 +226,7 @@ You can still define your own services, either globally in the root catalog, or 
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Disabled</td>
+          <td>Enabled</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -266,7 +266,7 @@ You can still define your own services, either globally in the root catalog, or 
         </tr>
         <tr>
           <td>Default&nbsp;Availability</td>
-          <td>Disabled</td>
+          <td>Enabled</td>
         </tr>
         <tr>
           <td>Access Point</td>
@@ -355,7 +355,7 @@ You can still define your own services, either globally in the root catalog, or 
       </tr>
       <tr>
         <td>Default&nbsp;Availability</td>
-        <td>Disabled</td>
+        <td>Enabled</td>
       </tr>
       <tr>
         <td>Access Point</td>
@@ -398,7 +398,7 @@ You can still define your own services, either globally in the root catalog, or 
       </tr>
       <tr>
         <td>Default&nbsp;Availability</td>
-        <td>Disabled</td>
+        <td>Enabled</td>
       </tr>
       <tr>
         <td>Access Point</td>
@@ -419,7 +419,7 @@ You can still define your own services, either globally in the root catalog, or 
       </tr>
     </tbody></table>
   </td>
-  <td>cdmremote/ncstream data access service. This service is disabled by
+  <td>cdmremote/ncstream data access service. This service is enabled by
     default. It is automatically enabled when an appropriate
     FeatureCollection is used.
     <ul>
@@ -438,7 +438,7 @@ You can still define your own services, either globally in the root catalog, or 
       </tr>
       <tr>
         <td>Default&nbsp;Availability</td>
-        <td>Disabled</td>
+        <td>Enabled</td>
       </tr>
       <tr>
         <td>Access Point</td>
@@ -482,7 +482,7 @@ You can still define your own services, either globally in the root catalog, or 
       </tr>
       <tr>
         <td>Default&nbsp;Availability</td>
-        <td>Disabled</td>
+        <td>Enabled</td>
       </tr>
       <tr>
         <td>Access Point</td>
@@ -528,7 +528,7 @@ You can still define your own services, either globally in the root catalog, or 
       </tr>
       <tr>
         <td>Default&nbsp;Availability</td>
-        <td>Disabled</td>
+        <td>Enabled</td>
       </tr>
       <tr>
         <td>Access Point</td>

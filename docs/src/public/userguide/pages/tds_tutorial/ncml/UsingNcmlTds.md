@@ -208,8 +208,6 @@ Start or restart your TDS and look at those datasets through the HTML interface 
 
 Here we show a brief example of modifying files with NcML in a `featureCollection` element.
 
-Download  {% include link_file.html file="tds_tutorial/ncml/ncmlTds/catalogFmrcNcml.xml" text="catalogFmrcNcml.xml" %}, place it in `${tomcat_home}/content/thredds` directory and add a `catalogRef` to it from your main catalog.
-
 ~~~xml
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"

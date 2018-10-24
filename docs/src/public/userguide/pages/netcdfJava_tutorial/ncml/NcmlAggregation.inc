@@ -311,12 +311,12 @@ Non-aggregation variables are treated as in a Union dataset, i.e. skipped if one
 A JoinNew aggregation has to create a new coordinate variable.
 In the above example, one was automatically created with type double, to match the coordValues specified on the netcdf elements.
 However, it has no units or other attributes.
-To specify attributes on the coordinate system, you can use the following (download aggNewCoord.ncml):
+To specify attributes on the coordinate system, you can use the following (download {% include link_file.html file="netcdfJava_tutorial/ncml/aggregation/aggNewCoord.ncml" text="aggNewCoord.ncml" %}):
 
 ~~~xml
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
   <variable name="time" type="int" >          <!-- 1 -->
-    <attribute name="units" value="months since 2000-6-16 6:00"/>
+    <attribute name="units" value="calendar months since 2000-6-16 6:00"/>
     <attribute name="_CoordinateAxisType" value="Time" />
     <values>0 1 2</values>
   </variable>
@@ -344,7 +344,7 @@ netcdf file:C:/dev/tds/thredds/docs/web/netcdf-java/ncml/examples/aggNew.ncml {
    float lat(lat=3);
    float lon(lon=4);
    int time(time=3;)
-     :units = "months since 2000-6-16 6:00";
+     :units = "calendar months since 2000-6-16 6:00";
      :_CoordinateAxisType = "Time";
    double T(time=3, lat=3, lon=4);
  data:
