@@ -181,7 +181,7 @@
 
   <!--
   <JupyterNotebookService>
-    <allow>false</allow>
+    <allow>true</allow>
     <maxAge>60</scour>
     <maxFiles>100</maxFiles>
   </JupyterNotebookService>
@@ -196,10 +196,10 @@
     -->
   
   <!--
-  The WCS Service is off by default.
+  The WCS Service is on by default.
   Also, off by default (and encouraged) is operating on a remote dataset.
   <WCS>
-    <allow>false</allow>
+    <allow>true</allow>
     <allowRemote>false</allowRemote>
     <scour>15 min</scour>
     <maxAge>30 min</maxAge>
@@ -208,7 +208,7 @@
 
   <!--
   <WMS>
-    <allow>false</allow>
+    <allow>true</allow>
     <allowRemote>false</allowRemote>
     <maxImageWidth>2048</maxImageWidth>
     <maxImageHeight>2048</maxImageHeight>
@@ -217,9 +217,9 @@
 
   <!--
   <NCISO>
-    <ncmlAllow>false</ncmlAllow>
-    <uddcAllow>false</uddcAllow>
-    <isoAllow>false</isoAllow>
+    <ncmlAllow>true</ncmlAllow>
+    <uddcAllow>true</uddcAllow>
+    <isoAllow>true</isoAllow>
   </NCISO>
   -->
 
