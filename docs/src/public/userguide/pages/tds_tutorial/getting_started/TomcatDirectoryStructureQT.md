@@ -8,23 +8,32 @@ permalink: tomcat_dir_structure_qt.html
 
 ## Exploring the Tomcat Directory Structure
 
+{%include note.html content="
+This section assumes you have successfully installed the Tomcat Servlet Container as outlined in the <a href=\"install_java_tomcat.html\" target=\"_blank\">Installation of Java and Tomcat</a> section.
+" %}
+
+
 1. Examine the Tomcat directory structure, a.k.a. `${tomcat_home}`.
    Move into `${tomcat_home}` and do a long listing:
     
    ~~~bash
-   $ cd apache-tomcat-8.0.24
+   $ cd /usr/local/tds/tomcat
    $ ls -l
-   drwxr-xr-x 2 tds workshop  4096 Jul 15 09:37 bin
-   drwxr-xr-x 2 tds workshop  4096 Jul  2 01:59 conf
-   drwxr-xr-x 2 tds workshop  4096 Jul 15 09:37 lib
-   -rw-r--r-- 1 tds workshop 56812 Jul  2 01:59 LICENSE
-   drwxr-xr-x 2 tds workshop  4096 Jul  2 01:57 logs
-   -rw-r--r-- 1 tds workshop  1192 Jul  2 01:59 NOTICE
-   -rw-r--r-- 1 tds workshop  8826 Jul  2 01:59 RELEASE-NOTES
-   -rw-r--r-- 1 tds workshop 16262 Jul  2 01:59 RUNNING.txt
-   drwxr-xr-x 2 tds workshop  4096 Jul 15 09:37 temp
-   drwxr-xr-x 7 tds workshop  4096 Jul  2 01:59 webapps
-   drwxr-xr-x 2 tds workshop  4096 Jul  2 01:57 work
+   total 144
+   drwxr-x--- 2 oxelson ustaff  4096 Oct 24 13:29 bin
+   -rw-r----- 1 oxelson ustaff 19539 Sep  4 16:30 BUILDING.txt
+   drwx------ 2 oxelson ustaff  4096 Sep  4 16:30 conf
+   -rw-r----- 1 oxelson ustaff  6090 Sep  4 16:30 CONTRIBUTING.md
+   drwxr-x--- 2 oxelson ustaff  4096 Oct 24 13:29 lib
+   -rw-r----- 1 oxelson ustaff 57092 Sep  4 16:30 LICENSE
+   drwxr-x--- 2 oxelson ustaff  4096 Sep  4 16:28 logs
+   -rw-r----- 1 oxelson ustaff  1726 Sep  4 16:30 NOTICE
+   -rw-r----- 1 oxelson ustaff  3255 Sep  4 16:30 README.md
+   -rw-r----- 1 oxelson ustaff  7142 Sep  4 16:30 RELEASE-NOTES
+   -rw-r----- 1 oxelson ustaff 16262 Sep  4 16:30 RUNNING.txt
+   drwxr-x--- 2 oxelson ustaff  4096 Oct 24 13:29 temp
+   drwxr-x--- 7 oxelson ustaff  4096 Sep  4 16:29 webapps
+   drwxr-x--- 2 oxelson ustaff  4096 Sep  4 16:28 work
    ~~~
 
 2. Familiarize yourself with the following important directories.
@@ -37,14 +46,14 @@ permalink: tomcat_dir_structure_qt.html
    `conf/`
 
    * _Server-wide_ Tomcat configuration.
-   * You will modify `server.xml` and `tomcat-users.xml` to adjust logging, authentication and access control, enable SSL, etc.
+   * You will modify `server.xml` and `tomcat-users.xml` to adjust logging, authentication and access control, enable TSL/SSL, etc.
    * Web applications can override some server-wide settings in their own configuration files (more about that later).
 
    `webapps/`
 
-   Contains web applications directories and WAR files.
-   This is where we will be putting the TDS web application.
-   You will also be using the `manager` application that comes with Tomcat during this workshop.
+   * Contains web applications directories and WAR files.
+   * This is where we will be putting the TDS web application.
+   * You will also be using the `manager` application that comes with Tomcat during this workshop.
 
    `logs/`
 
