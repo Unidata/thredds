@@ -19,13 +19,16 @@ permalink:  workshop2018.html
 ### 9:30 (30 minutes) Participant Introductions (Sean)
 * Name, organization, how you use TDS.
 
-### 10:00 (30 minutes) Getting Started With the TDS: Local Test Server Setup part 1 (Jen)
+### 10:00 (30 minutes) Getting Started With the TDS: Local Test Server Setup (Jen)
 * This section covers basic installation and configuration of Tomcat, JDK and the TDS for a local test server.
   * [Installing Java and Tomcat](/install_java_tomcat.html)
   * [Tomcat Directory Structure: Quick Tour](/tomcat_dir_structure_qt.html)
   * [Running Tomcat](/running_tomcat.html)
   * [Tomcat Log Files](/tomcat_log_files.html)
   * [Tomcat (Server-Level) Configuration Files](/tomcat_configuration_files.html)
+  * [Deploying the TDS](/deploying_the_tds.html)
+  * [Tomcat Manager Application](/tomcat_manager_app.html)
+  * [Next Steps: Where To Go From Here](/where_to_go_from_here.html)
 
 ### 10:30 (15 minutes) Break
 

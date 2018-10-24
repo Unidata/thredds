@@ -208,6 +208,14 @@ entries:
       url: /production_server_overview.html
       output: web, pdf
 
+    - title: Keep Software Up-To-Date
+      url: /keep_software_uptodate.html
+      output: web, pdf
+
+    - title: Restricting Tomcat Permissions
+      url: /tomcat_permissions.html
+      output: web, pdf
+
     - title: Running Behind a Proxy Server
       url: /tds_behind_proxy.html
       output: web, pdf
