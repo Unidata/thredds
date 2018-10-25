@@ -204,9 +204,6 @@ entries:
   - title: Production Servers
     output: web, pdf
     folderitems:
-    - title: Overview
-      url: /production_server_overview.html
-      output: web, pdf
 
     - title: Use Digested Passwords
       url: /digested_passwords.html
@@ -242,6 +239,10 @@ entries:
 
     - title: Running Behind a Proxy Server
       url: /tds_behind_proxy.html
+      output: web, pdf
+
+    - title: Tomcat With A Security Manager
+      url: tomcat_with_security_manager.html
       output: web, pdf
 
     - title: Troubleshooting Problems

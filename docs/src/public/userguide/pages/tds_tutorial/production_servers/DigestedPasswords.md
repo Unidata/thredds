@@ -17,13 +17,12 @@ Based on this dialog, the client will automatically digest the password entered 
 
 ## Configure Tomcat to use digested passwords
 
-1. First we need to enable digest passwords support in Tomcat by modifying a couple of Tomcat Realms in the `server.xml` file in the Tomcat `conf/` directory.
+1. First we need to enable digest passwords support in Tomcat by modifying the `UserDatabaseRealm` in the `server.xml` file in the Tomcat `conf/` directory.
    A Tomcat Realm represents a \"database\" of usernames, passwords, and roles assigned to tomcat users.
 
    | Realm Name | Purpose |
    | UserDatabaseRealm | The UserDatabaseRealm is enabled by default and reads clear text user password information stored in tomcat-users.xml. |
-   MemoryRealm | The MemoryRealm reads the user password information stored in the  tomcat-users.xml in a specified encrypted format.| 
-
+  
    Open the `server.xml` with your favorite editor:
    
    ~~~bash
@@ -67,6 +66,7 @@ Based on this dialog, the client will automatically digest the password entered 
    <Host name="localhost"  appBase="webapps"
          unpackWARs="true" autoDeploy="true">
    ~~~
+   <a name="digest.sh"></a>
 2. Create a SHA encrypted version of your password.
 
    Tomcat provides a script (`${tomcat_home}/bin/digest.sh`) that will encrypt a password string according to the algorithm specified.

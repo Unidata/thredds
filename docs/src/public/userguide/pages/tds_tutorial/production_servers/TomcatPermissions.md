@@ -21,7 +21,8 @@ The JVM is a virtual machine with many threads under the same process.
 We strongly discourage running Tomcat as the root user and recommend creating an unprivileged, dedicated user and group for running the Tomcat process.
 " %}
 
-## Create a dedicated user/group for running Tomcat
+<a name="dedicated"></a>
+## Create a Dedicated User/Group For Running Tomcat
 
 The following example shows creation of a dedicated user/group on a linux system.
 
