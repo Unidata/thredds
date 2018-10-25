@@ -9,7 +9,7 @@ permalink: where_to_go_from_here.html
 ## You're not finished yet
 
 {%include ahead.html content="
-You will need to enable <a href=\"/Production Server Overview\" target=\"_blank\">TSL/SSL Encryption</a> to access a couple of TDS monitoring and debugging tools.
+You will need to enable <a href=\"enable_tsl_encryption.html\" target=\"_blank\">TSL/SSL Encryption</a> to access a couple of TDS monitoring and debugging tools.
 " %}
 
 If you plan to deploy the TDS in a production environment you will need to follow the best practices outlined in the [Production Server Overview](production_server_overview.html){:target="_blank"} section of the tutorial to finish hardening your server environment.

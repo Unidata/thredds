@@ -17,7 +17,8 @@ Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to
 
 While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using _Oracle Java_ and the _Apache Tomcat_ servlet container.
 
-## Installing Java
+<a name="jdk"></a>
+## Installing Java JDK
 
 The following example shows installation on a linux system.
 
@@ -57,6 +58,7 @@ The following example shows installation on a linux system.
     But, we *really, really, really recommend* you use a 64-bit OS if you're planning to run the THREDDS Data Server.
     " %}
 
+<a name="tomcat"></a>
 ## Installing Tomcat
 
 {% include note.html content="

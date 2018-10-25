@@ -16,7 +16,7 @@ View the Wikipedia entry on [Reverse Proxies](https://en.wikipedia.org/wiki/Reve
    Requests are forwarded to one or more origin servers which handle the request.
    The response is returned as if it came directly from the proxy server.
 
-   {% include image.html file="tds/tutorial/production_servers/overview/tds_reverse_proxy.png" alt="reverse proxy" caption="" %}
+   {% include image.html file="tds/tutorial/production_servers/tds_reverse_proxy.png" alt="reverse proxy" caption="" %}
 
 * Reverse proxies can be used to hide the existence and characteristics of the origin server(s) and can be an additional layer of defense and can protect against some OS and WebServer specific attacks.
   However, it does not provide any protection to attacks against vulnerabilities in the web application or proxy service itself (e.g., Apache, Tomcat).
@@ -24,35 +24,37 @@ View the Wikipedia entry on [Reverse Proxies](https://en.wikipedia.org/wiki/Reve
 
 ## Setting Up A Reverse Proxy For The TDS
 
-### Using Tomcat and Apache HTTP Server
+#### Using Tomcat and Apache HTTP Server
 
 * Using Apache as a front-end proxy server for the TDS running on Tomcat is perhaps the easiest method for setting up a reverse proxy for the TDS. 
   There are two methods to accomplish this:
   * Apache's [mod_proxy](#mod_proxy) in combination with Tomcat's HTTP connector; or
   * the [mod_jk](#mod_jk) Apache module with the Tomcat AJP connector.
-* **Warning!**
-   It is important to carefully configure your proxy so that the existence of the proxy is transparent to the end-user/client.
-   For instance, when a web application (e.g., the TDS) on the backend server includes a [self-referential URL](#chgContextPath) in some response content, it should use the proxy server's name and port rather than those of the backend server.
+  
+  {%include warning.html content="
+  It is important to carefully configure your proxy so that the existence of the proxy is transparent to the end-user/client.
+     For instance, when a web application (e.g., the TDS) on the backend server includes a <a href=\"#chgContextPath\">self-referential URL</a> in some response content, it should use the proxy server’s name and port rather than those of the backend server.                                                                                                                                                           
+  " %}
 
-<a id="chgContextPath" />
-## Tomcat-Apache Proxy Documentation
+#### Tomcat-Apache Proxy Documentation
 
-* [Tomcat Connectors](https://tomcat.apache.org/tomcat-8.0-doc/connectors.html){:target="_blank"}
+* [Tomcat Connectors](https://tomcat.apache.org/tomcat-8.5-doc/connectors.html){:target="_blank"}
   Documentation describing the difference between the Tomcat HTTP and AJP connectors.
 <a id="mod_proxy" />
 * `mod_proxy`
-   * [Tomcat HTTP Connector](https://tomcat.apache.org/tomcat-8.0-doc/config/http.html)
+   * [Tomcat HTTP Connector](https://tomcat.apache.org/tomcat-8.5-doc/config/http.html){:target="_blank"}
      Configuration for the Tomcat HTTP connector (for use with Apache's mod_proxy).
-   * [Tomcat Proxy Support - How To](https://tomcat.apache.org/tomcat-8.0-doc/proxy-howto.html)
+   * [Tomcat Proxy Support - How To](https://tomcat.apache.org/tomcat-8.5-doc/proxy-howto.html){:target="_blank"}
      Tomcat documentation showing how to use the build-in Apache module mod_proxy for Apache versions 1.3X and 2.X.
 <a id="mod_jk" />
 * `mod_jk`
-  * [Tomcat AJP Connector](https://tomcat.apache.org/tomcat-8.0-doc/config/ajp.html)
+  * [Tomcat AJP Connector](https://tomcat.apache.org/tomcat-8.5-doc/config/ajp.html){:target="_blank"}
     Configuration for the Tomcat AJP connector (for use with Apache's mod_jk).
-  * [Tomcat Reverse Proxy - How To](https://tomcat.apache.org/tomcat-8.0-doc/proxy-howto.html)
+  * [Tomcat Reverse Proxy - How To](https://tomcat.apache.org/tomcat-8.5-doc/proxy-howto.html){:target="_blank"}
     Configurations and fine tuning of a reverse proxy set up using the mod_jk Apache module.
 
-### Changing the TDS Context Path (`/thredds`)
+<a id="chgContextPath" />
+## Changing the TDS Context Path (`/thredds`)
  
 We **do not recommend** changing the TDS context path (the `/thredds` part of the URL path). However, if your network configuration requires that you use a different context path (e.g., `/my/thredds`) or you are proxying two TDS installations and need to differentiate them with different context paths (e.g., `/thredds1` and `/thredds2` ), you will need to make the following changes:
 
@@ -66,7 +68,7 @@ We **do not recommend** changing the TDS context path (the `/thredds` part of th
    In this case, the `thredds.war` file would need to be renamed to `my#thredds.war`.
 
    {%include important.html content="
-     The deployment descriptor ( web.xml file) is overwritten during deployment which means this edit must be done every time the TDS is re-deployed.
+     The deployment descriptor (`web.xml` file) is overwritten during deployment which means this edit must be done every time the TDS is re-deployed.
    " %}
 
 2. Edit the TDS web.xml file and change the value of the `ContextPath` parameter to match the desired context path.
@@ -119,7 +121,7 @@ We **do not recommend** changing the TDS context path (the `/thredds` part of th
    <service name="odap" serviceType="OPeNDAP" base="/my/thredds/dodsC/"/>
    ~~~
 
-### Troubleshooting tips
+## Troubleshooting
 
 Check that the catalog URL in the title of the HTML view of catalogs matches the requested URL.
 Check that the Data Access URL in the OPeNDAP Data Access Form matches the requested URL (minus the `.html` suffix).
