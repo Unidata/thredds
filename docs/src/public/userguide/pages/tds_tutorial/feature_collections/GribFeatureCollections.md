@@ -62,15 +62,20 @@ There is:
   For example selecting the 2010 amd then the 2010.01 datasets:
 
 <!-- insert image of html catalog here -->
-<!-- insert image of descended html catalog here -->
+{% include image.html file="tds/tutorial/grib/gribfc_basic_top.png" alt="Collection Top Level Catalog" caption="" %}
 
+<!-- insert image of descended html catalog here -->
+{% include image.html file="tds/tutorial/grib/gribfc_basic_1.png" alt="Collection Second Level Catalog" caption="" %}
 
 For each separate reference time, there is a logical dataset, each with a \"Full\" (two time dimensions) and \"Best\" dataset.
 Drilling down to the bottom of one of these:
 
 You see that it has a \"Best Timeseries\" collection dataset as well as listing the individual files in the collection:
 
-<!-- insert image of access html catalog here -->
+<!-- insert image of descended html catalog here -->
+{% include image.html file="tds/tutorial/grib/gribfc_basic_raw.png" alt="Raw Access" caption="" %}
+
+{% include image.html file="tds/tutorial/grib/gribfc_basic_collection.png" alt="Collection Access" caption="" %}
 
 Here is listed all of the metadata for this dataset, as well as the possible access methods (OpenDAP, WMS, etc).
 This is the \"HTML view\" of the catalog, with URL:
