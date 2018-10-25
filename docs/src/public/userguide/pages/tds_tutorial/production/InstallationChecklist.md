@@ -23,7 +23,7 @@ permalink: installation_checklist.html
  * Enable [digested password support](digested_passwords.html#configure-tomcat-to-use-digested-passwords){:target="_blank"} by modifying the `UserDatabaseRealm`.
  * Enable [TSL/SSL in tomcat](enable_tsl_encryption.html#enabling-tslssl-in-tomcat){:target="_blank"} using you CA certificate.
  * Enable [Compression](performance_tips.html#compression){:target="_blank"} in the Tomcat connectors.
- * Modify the Tomcat [AccessLogValve](tds_monitoring_and_debugging.html#tomcat-access-logs){:target="_blank"} log format and changed the prefix and suffix and pattern attributes for the access log file.
+ * Modify the Tomcat [AccessLogValve](tomcat_access_log.html)){:target="_blank"} log format and changed the prefix and suffix and pattern attributes for the access log file.
 3. Create a [digested password](digested_passwords.html#digest.sh){:target="_blank"} using the algorithm specified in the `UserDatabaseRealm` of the `${tomcat_home}/conf/server.xml` file.
 4. Make the following modifications to `${tomcat_home}/conf/tomcat-users.xml`:
  * Create roles for [manager-gui](tomcat_manager_app.html#granting-access-to-the-manager-application){:target="_blank"}, [`tdsConfig`](digested_passwords.html#configure-tomcat-to-use-digested-passwords){:target="_blank"} and [tdsMonitor](digested_passwords.html#configure-tomcat-to-use-digested-passwords){:target="_blank"}.
@@ -44,8 +44,8 @@ permalink: installation_checklist.html
  
 #### Continued Maintenance
 1. Be sure to periodically check to make sure you are running the [latest versions of Java, Tomcat and the TDS](keep_software_uptodate.html){:target="_blank"}.
-2. If you have enabled [access logging](tds_monitoring_and_debugging.html){:target="_blank"} (and you should), zip up the unused access logs in `${tomcat_home}/logs/` and archive them off to another directory.
-3. Likewise, zip up the unused [TDS servlet logs](tds_monitoring_and_debugging.html#log-files-generated-by-the-tds){:target="_blank"} in `${tomcat_home}/content/thredds/logs` and archive them as well.
+2. If you have enabled [access logging](tomcat_access_log.html){:target="_blank"} (and you should), zip up the unused access logs in `${tomcat_home}/logs/` and archive them off to another directory.
+3. Likewise, zip up the unused [TDS servlet logs](tds_logs.html){:target="_blank"} in `${tomcat_home}/content/thredds/logs` and archive them as well.
 4. Manually rotate Tomcat's [`catalina.out`](tomcat_log_files.html#things-to-know-about-catalinaout){:target="_blank"} log file when it grows too large.
 
 #### Upgrading the TDS
