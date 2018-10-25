@@ -29,9 +29,9 @@ This section assumes you have successfully installed the JDK and Tomcat Servlet 
    total 274828
    -rw-r--r-- 1 oxelson ustaff   9625824 Sep 20 12:18 apache-tomcat-8.5.34.tar.gz
    -rw-r--r-- 1 oxelson ustaff 191757099 Oct 24 13:18 jdk-8u192-linux-x64.tar.gz
-   -rw-r--r-- 1 oxelson ustaff  80027070 Oct 24 14:42 tds-5.0.0-beta5.war
+   -rw-r--r-- 1 oxelson ustaff  80027070 Oct 24 14:42 tds-5.0.0-WORKSHOP.war
    
-   $ mv tds-5.0.0-beta5.war thredds.war
+   $ mv tds-5.0.0-WORKSHOP.war thredds.war
    
    $ ls -l  
    total 274828
