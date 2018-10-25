@@ -106,9 +106,9 @@ entries:
 #      url:
 #      output: web, pdf
 #
-#    - title: Grid Datasets
-#      url:
-#      output: web, pdf
+    - title: Grid Datasets
+      url: /ncj_grid_data_type.html
+      output: web, pdf
 #
 #    - title: Radial Datatype
 #      url:
@@ -221,3 +221,4 @@ entries:
     - title: CDM Utility Programs
       url: /cdm_utility_programs.html
       output: web, pdf
+
