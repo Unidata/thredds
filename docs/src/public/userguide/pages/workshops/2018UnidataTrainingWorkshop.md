@@ -32,12 +32,22 @@ permalink:  workshop2018.html
 
 ### 10:30 (15 minutes) Break
 
-### 10:45 (45 minutes) Getting Started With the TDS: Local Test Server Setup part 2 (Jen)
-* This section covers basic installation and configuration of Tomcat, JDK and the TDS for a local test server.
-  * [Deploying the TDS](deploying_the_tds.html)
-  * [Tomcat manager Application](tomcat_manager_app.html)
-  * [TDS Remote Management](remote_management_ref.html)
-  * [Next Steps: Where To Go From Here](where_to_go_from_here.html)
+### 10:45 (45 minutes) Putting the TDS Into Production (Jen)
+* This section covers Best practices and recommendations on securing a production TDS/Tomcat server.
+    * [Use Digested Passwords](digested_passwords.html)
+    * [Enable TSL/SSL Encryption](enable_tsl_encryption.html)
+    * [Secure Tomcat Manager App](secure_manager_app.html)
+    * [Restrict Tomcat Permissions](tomcat_permissions.html)
+    * [Remove Unused Web Applications](remove_unused_webapps.html)
+    * [Block Non-Essential Ports](block_nonessential_ports.html)
+    * [Restrict Access To The TDS](restict_access_to_tds.html)
+    * [Keep Software Up-To-Date](keep_software_uptodate.html)
+    * [Running Behind a Proxy Server](tds_behind_proxy.html)
+    * [Tomcat With A Security Manager](tomcat_with_security_manager.html)
+    * [Troubleshooting Problems](troubleshooting_problems.html)
+    * [Performance Tips](performance_tips.html)
+    * [Upgrading to 5.0](upgrade_to_5.html)
+    * [Installation Checklist](installation_checklist.html)
 
 ### 11:30 (1 hour) Lunch in FL-2 Cafeteria
 
