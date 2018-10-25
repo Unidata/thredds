@@ -69,6 +69,10 @@ Tomcat uses the keystore file for TSL/SSL transactions.
    </Connector>
    ~~~
    
+   {%include note.html content="
+     Tomcat also offers a `SSL/TLS HTTP/1.1 Connector` which utilizes `APR/native implementation`. Consult the <a href=\"http://tomcat.apache.org/tomcat-8.5-doc/config/http.html\" target=\"_blank\">documentation</a> to see if you should use this connector in lieu of the `NIO implementation SSL HTTP/1.1` connector.
+   " %}
+   
    Specify the keystore file in the `certificateKeystoreFile` attribute of the `Certificate` element to tell Tomcat where to find your keystore:
 
    ~~~xml
