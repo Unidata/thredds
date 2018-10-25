@@ -268,8 +268,8 @@ The choice of the protoDataset matters when the datasets are not homogenous:
 
 For collections that change, the `update` element provides options to update the collection, either synchronously (while a user request waits) or asynchronously (in a background task, so that requests do not wait).
 
-For `GRIB` collections, dynamic updating of the collection by the TDS is no longer supported (use the TDM for this).
-Therefore `recheckAfter` and `rescan` are ignored on an `update` element for a `GRIB` collection.
+For `GRIB` collections, updating of the collection by the TDS is no longer supported, for either static or dynamic collections (use the [TDM](tdm_ref.html) and the [`tdm`](#tdm-element-grib-only) element for this).
+However, even for `GRIB` collections, the `update` element can be used to control if collections can be re-read by the TDS using an external trigger.
 
 Examples:
 
@@ -346,9 +346,21 @@ The XML Schema definition for the update element:
 
 ### tdm element (GRIB only)
 
-You must use the `tdm` element for GRIB collections that change.
+You must use the `tdm` element for GRIB collections - the `update` element no longer applies.
 The [TDM](tdm_ref.html) is a separate process that uses the same configuration catalogs as the TDS, and updates GRIB collections in the background.
 Example:
+
+#### static datasets
+
+~~~xml
+<tdm rewrite="test"  />
+~~~
+
+* This example tells the TDM (**not** the TDS) to test if the dataset has changed (with respect to any existing indexes on disk), and if so update it.
+  If no indexes exists on disk at the time the TDM is run, then create them
+  Once the test is complete and any indexes are created, the TDM will not check again unless the process is stopped and a new session of the TDM is started.
+
+#### dynamic datasets
 
 ~~~xml
 <tdm rewrite="test" rescan="0 4,19,34,49 * * * ? *"  />
@@ -527,17 +539,26 @@ To externally control when a collection is updated, [enable remote triggers](#ex
 
 ## Static vs. changing GRIB datasets
 
-### Changing GRIB Collection
+### Changing GRIB Collection (small or large)
 
 You have a GRIB collection that changes.
-The TDS can only scan/write indices at startup time.
+The TDS can only scan indices at startup time.
 You must use the TDM to detect any changes.
 
 ~~~xml
 <tdm rewrite="test" rescan="0 0/15 * * * ? *" />
 ~~~
 
-The dataset will be read in at startup time by the TDS using the existing indexes, and will be scanned by the TDM every 15 minutes, which will send a trigger as needed.
+The dataset will be read in at startup time by the TDS using the existing indexes, and will be scanned by the TDM every 15 minutes, which can be configured to send a trigger as needed.
+For very large collections, the `rescan` schedule should be carefully considered.
+For example:
+
+~~~xml
+<tdm rewrite="test" rescan="0 0 3 * * ? *" />
+~~~
+
+The dataset will be read in at TDS startup time by using the existing indexes (they must already exist).
+The TDM will test if its changed \"once a day at 3 am\", and send a trigger to the TDS if needed.
 
 ### Very Large GRIB Collection that doesn\'t change
 
@@ -545,25 +566,14 @@ You have a very large collection, which takes a long time to scan.
 You must carefully control when/if it will be scanned.
 
 ~~~xml
-<update startup="never"/>
+<update trigger="false"/>
 <tdm rewrite="test"/>
 ~~~
 
 The TDS never scans the collection, it always uses existing indices (which must already exist). 
 Run the TDM first, then after the indices are made, you can stop the TDM and start the TDS.
-
-### Very Large GRIB Collection that changes
-
-You have a very large collection which changes, and takes a long time to scan.
-You must carefully control when/if it will be scanned.
-
-~~~xml
-<update startup="never" trigger="allow"/>
-<tdm rewrite="test" rescan="0 0 3 * * ? *" />
-~~~
-
-The dataset will be read in at TDS startup time by using the existing indexes (they must already exist).
-The TDM will test if its changed \"once a day at 3 am\", and send a trigger to the TDS if needed.
+Since the collection does not change, there is no need to tell the TDS to re-read the collection, so disable triggering.
+If the collection is updated, the TDM will need to be ran again, and the TDS will need to be restarted.
 
 ## NcML Modifications
 
