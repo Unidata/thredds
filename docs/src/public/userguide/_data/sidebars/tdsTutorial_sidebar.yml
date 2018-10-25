@@ -242,7 +242,7 @@ entries:
       output: web, pdf
 
     - title: Tomcat With A Security Manager
-      url: tomcat_with_security_manager.html
+      url: /tomcat_with_security_manager.html
       output: web, pdf
 
     - title: Troubleshooting Problems
