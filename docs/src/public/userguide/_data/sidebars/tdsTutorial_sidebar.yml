@@ -128,8 +128,12 @@ entries:
   - title: Monitoring and Debugging
     output: web, pdf
     folderitems:
-    - title: TDS Monitoring and Debugging
-      url: /tds_monitoring_and_debugging.html
+    - title: Modifying Tomcat Access Logs
+      url: tomcat_access_log.html
+      output: web, pdf
+
+    - title: TDS Log Files
+      url: tds_logs.html
       output: web, pdf
 
     - title: Using the TdsMonitor Tool
