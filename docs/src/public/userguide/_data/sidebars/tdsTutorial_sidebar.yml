@@ -208,12 +208,36 @@ entries:
       url: /production_server_overview.html
       output: web, pdf
 
-    - title: Keep Software Up-To-Date
-      url: /keep_software_uptodate.html
+    - title: Use Digested Passwords
+      url: /digested_passwords.html
       output: web, pdf
 
-    - title: Restricting Tomcat Permissions
+    - title: Enable TSL/SSL Encryption
+      url: /enable_tsl_encryption.html
+      output: web, pdf
+
+    - title: Secure Tomcat Manager App
+      url: /secure_manager_app.html
+      output: web, pdf
+
+    - title: Restrict Tomcat Permissions
       url: /tomcat_permissions.html
+      output: web, pdf
+
+    - title: Remove Unused Web Applications
+      url: /remove_unused_webapps.html
+      output: web, pdf
+
+    - title: Block Non-Essential Ports
+      url: /block_nonessential_ports.html
+      output: web, pdf
+
+    - title: Restrict Access To The TDS
+      url: /restict_access_to_tds.html
+      output: web, pdf
+
+    - title: Keep Software Up-To-Date
+      url: /keep_software_uptodate.html
       output: web, pdf
 
     - title: Running Behind a Proxy Server
