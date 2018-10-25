@@ -14,6 +14,7 @@ permalink:  workshop2018.html
 * Introduction of Unidata staff
 * Review of schedule
 * Why use TDS? ({% include link_file.html file="workshop_presentations/TDSOverview.pdf" text="pdf" %})
+* [Quick notes](https://docs.google.com/document/d/1mn-OgFPN4fN21ZnkmXNAI8iwFzE5qFJqJ91kdGoOJFI/edit?usp=sharing){:target="_blank"}
 
 ### 9:30 (30 minutes) Participant Introductions (Sean)
 * Name, organization, how you use TDS.
