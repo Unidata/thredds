@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Test GribCollections"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <dataset name="CMC Forecast Models">
+    <metadata inherited="true">
+      <authority>edu.ucar.unidata</authority>
+      <documentation xlink:href="https://www.canada.ca/en/environment-climate-change/services/science-technology/centres/quebec.html#cmc" xlink:title="CMC Home page"/>
+      <documentation type="rights">Freely available</documentation>
+      <documentation type="processing_level">Transmitted through Unidata Internet Data Distribution.</documentation>
+      <documentation type="processing_level">Read by CDM Grib Collection.</documentation>
+      <creator>
+        <name vocabulary="DIF">Environment Canada (EC) / Canadian Meteorological Centre (CMC)</name>
+        <contact url="http://gcmd.nasa.gov/Aboutus/software_docs/help_guide.html" email="http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso"/>
+      </creator>
+      <publisher>
+        <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
+        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+      </publisher>
+    </metadata>
+    <dataset name="Regional Deterministic Prediction System (RDPS)">
+      <metadata inherited="true">
+        <documentation xlink:href="https://weather.gc.ca/model_forecast/index_e.html"
+                       xlink:title="RDPS home page"/>
+      </metadata>
+
+      <featureCollection name="RDPS North America 15km"
+                         featureType="GRIB2"
+                         harvest="true"
+                         path="grib/CMC/RDPS/NA_15km">
+
+        <metadata inherited="true">
+          <documentation type="summary">Environment Canada (EC) / Canadian
+            Meteorological Centre (CMC) Regional Deterministic Prediction System
+            (RDPS) North America 15 km domain.
+          </documentation>
+        </metadata>
+
+        <collection spec="<path-to-workshop-data>/data/gribfc_tutorial/multiple_gds/RDPS/CMC_RDPS_ps15km_#yyyyMMdd_HHmm#.grib2.gbx9"
+                    name="CMC_RDPS_NA_15km"
+                    timePartition="file"
+                    olderThan="5 min"/>
+
+        <tdm rewrite="test"/>
+      </featureCollection>
+    </dataset>
+  </dataset>
+</catalog>
