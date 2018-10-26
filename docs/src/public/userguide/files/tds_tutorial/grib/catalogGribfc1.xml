@@ -14,43 +14,20 @@
     <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
     <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
   </service>
-  
-  <featureCollection name="FNL" featureType="GRIB" path="gribfc/LocalFNLCollection">
+
+  <featureCollection name="FNL" featureType="GRIB1" path="gribfc/LocalFNLCollection">
     <metadata inherited="true">
-      <dataFormat>GRIB-1</dataFormat>
       <serviceName>all</serviceName>
       <documentation type="summary">LOCAL FNL's TO TEST TIME PARTITION</documentation>
     </metadata>
 
     <collection name="LOCAL_FNL"
-                spec="<path-to-data>/data/gribfc_tutorial/basic/ds083.2/data/**/fnl_.*_00_c$"
+                spec="<path-to-workshop-data>/data/gribfc_tutorial/basic/ds083.2/data/**/fnl_.*_00.grib1.gbx9$"
                 timePartition="1 month"
                 dateFormatMark="#fnl_#yyyyMMdd_HH" />
 
-    <update startup="true"/>
+    <tdm rewrite="test" />
   </featureCollection>
 
-  <featureCollection name="ECMWF Data" featureType="GRIB" path="gribfc/ecmwf">
-    <metadata inherited="true">
-      <dataFormat>GRIB-1</dataFormat>
-      <serviceName>all</serviceName>
-    </metadata>
-    <collection name="ECMWF_GNERA" spec="/work/tds/tutorial/ecmwf/ECMWF_GNERA_d000..20121001" dateFormatMark="#.#yyyyMMdd"/>
-    <gribConfig datasetTypes="Best LatestFile Files">
-      <gdsName hash="1562665966" groupName="domain1"/>
-      <gdsName hash="-104750013" groupName="domain2"/>
-    </gribConfig>
-  </featureCollection>
 
-  <featureCollection name="NDFD-CONUS_5km_conduit" featureType="GRIB" path="gribfc/ndfd">
-    <metadata inherited="true">
-      <dataFormat>GRIB-2</dataFormat>
-    </metadata>
-    <collection spec="/work/tds/tutorial/ndfd/.*grib2$" dateFormatMark="#NDFD_CONUS_5km_conduit_#yyyyMMdd_HHmm" />
-    <gribConfig>
-      <gdsHash from="-2121584860" to="28944332"/>
-    </gribConfig>
-  </featureCollection>
-
-  
 </catalog>
