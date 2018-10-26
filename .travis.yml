@@ -33,6 +33,7 @@ addons:
     target_paths: Travis/$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER/$TRAVIS_JOB_NUMBER
 
 jdk:
+  - openjdk8
   - oraclejdk8
 
 # Skip the installation step entirely; we don't need it for Gradle builds.
