@@ -52,6 +52,72 @@ View the Wikipedia entry on [Reverse Proxies](https://en.wikipedia.org/wiki/Reve
     Configuration for the Tomcat AJP connector (for use with Apache's mod_jk).
   * [Tomcat Reverse Proxy - How To](https://tomcat.apache.org/tomcat-8.5-doc/proxy-howto.html){:target="_blank"}
     Configurations and fine tuning of a reverse proxy set up using the mod_jk Apache module.
+    
+    
+#### Implementing the Tomcat-Apache Proxy Using AJP
+
+    {%include note.html content="
+    The TDS reverse proxy using Apache and Tomcat's APJ connector has been tested and vetted by Unidata.  Other HTTPD servers (e.g., NGINX) and/or modules and connectors used for creating a reverse proxy have not yet been explored.
+    " %}
+
+1. [Download](https://tomcat.apache.org/download-connectors.cgi){:target="_blank"} the latest version of Tomcat's `mod_jk` module.
+
+2. Build and install the `mod_jk` module as per the installation instructions that come bundled with the download.  The build and installation will need to be done as either `root`, `sudo`, or as user with privileges to modify Apache.
+   
+    ~~~bash
+    # tar xvfz tomcat-connectors-1.2.xx-src.tar.gz
+    # cd tomcat-connectors-1.2.xx-src/native
+    # ./configure --with-apxs=/usr/bin/apxs  <--- path to your apache apxs
+    # make
+    # make install
+    ~~~ 
+
+    Confirm the module was added to the `${apache_home}/modules` directory:
+    
+    ~~~bash
+    # cd /usr/local/apache/modules
+    # ls -l  mod_jk.so
+    
+    -rwxr-xr-x 1 root root 1147204 Oct  8 12:34 mod_jk.so
+    ~~~
+
+3. `mod_jk` was built as a [DSO module](https://httpd.apache.org/docs/current/dso.html){:target="_blank"}, therefore you will need to update your Apache configurations to anble this 3rd-party module:
+
+    The following example shows adding `mod_jk` configurations to a 2.4 version of Apache HTTPD server built from source.  ()Regardless of how you installed Apache, modify the main server configuration file (usually `httpd.conf`) in the following manner).
+   
+    ~~~bash
+    # pwd
+    /usr/local/apache/modules
+    
+    # cd ../conf
+    # vi http.conf
+    ~~~
+    
+    Add the following configurations to enable the module and restrict access to the `WEB-INF` and `META-INF` directories.
+    
+    ~~~xml
+    # Third party modules
+    LoadModule jk_module    modules/mod_jk.so
+ 
+    <IfModule jk_module>
+        JkWorkersFile "conf/workers.properties"
+        JkShmFile "logs/mod_jk.shm"
+        JkLogFile "logs/mod_jk.log"
+        JkLogLevel warn
+        #Tomcat Security Section
+        <LocationMatch "/WEB-INF/">
+            Require all denied
+        </LocationMatch>
+    
+        <LocationMatch "/META-INF/">
+            Require all denied
+        </LocationMatch>
+    </IfModule>
+    ~~~
+
+4. Create a [`workers.properties`](https://tomcat.apache.org/connectors-doc/reference/workers.html){:target="_blank"} file to map requests for the TDS from Apache Tomcat to Tomcat via a `worker`:
+
+
 
 <a id="chgContextPath" />
 ## Changing the TDS Context Path (`/thredds`)
