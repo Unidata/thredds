@@ -254,7 +254,7 @@ This is a tale of what can happen, and how to fix it.
 
 The names of offenders have been masked to protect the not-so-innocent
 
-John \"data archive\" Doe notices an issue on his TDS with output GRIB messages from the...uhh...NDFDDDD model that comes across the, ummm, Schmonduit data feed from the LDM.
+John \"data archive\" Doe (we\'ll just call him Joe) notices an issue on his TDS with output GRIB messages from the...uhh...NDFDDDD model that comes across the, ummm, Schmonduit data feed from the LDM.
 He decides to investigate and opens the collection of NDFDDDD GRIB files with ToolsUI and notices...
 
 {% include image.html file="tds/tutorial/grib/gribfc20.png" alt="GRIB GDS ToolsUI" caption="" %}
@@ -271,7 +271,7 @@ Using ToolsUI, he select both GDSs, then right click on them and select \"compar
 {% include image.html file="tds/tutorial/grib/gribfc21.png" alt="compare GDS" caption="" %}
 
 These two grids are displaced by **.367** and **.300** km, respectively.
-Joe thinks to himself...\"wut?\"
+Joe thinks to himself...\"[wut](https://media.makeameme.org/created/wut-5a6943.jpg){:target="_blank}?\"
 He opens this dataset up in the coordinate system tab and sees that the `x,y` grid spacing is 2.5 km.
 Joe begins to ponder...
 \"It\'s possible that some of these variables are displaced 3/10 km, but that might be pretty dumb on a 2.5 km grid.
@@ -306,4 +306,4 @@ Unlike in our last example, Joe uses `<gdsHash from="-2121584860" to="28944332"/
 
 Now Joe is sad because this affects the generation of the CDM index (ncx4) files.
 To have this \"merging\" of GDSs take effect, Joe needs to delete all ncx4 files associated with the collection and regenerate them (TDM to the rescue!).
-Joe turns the crank, stops the TDS, removes the ncx4 files, regenerates the index files using the TDM, starts the TDS, and lives happily ever after...until the next model upgrade...TO BE CONTINUED
+Joe turns the crank, stops the TDS, removes the ncx4 files, regenerates the index files using the TDM, starts the TDS, and lives happily ever after...until the next model upgrade...[TO BE CONTINUED](https://i.chzbgr.com/full/9015886336/hDB9E1BC1/){:target="_blank"}
