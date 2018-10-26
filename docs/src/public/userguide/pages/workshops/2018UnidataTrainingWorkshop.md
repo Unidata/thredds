@@ -151,3 +151,12 @@ permalink:  workshop2018.html
 ### 4:00 Open Discussion / Participant Systems / Participant feedback (Sean)
 
 ### Day Two Finish
+
+## TDSs that have come up in discussion
+
+* [https://hycom.org/dataserver](https://hycom.org/dataserver)
+* [https://rda.ucar.edu/](https://rda.ucar.edu/){:target="_blank"}
+* [http://thredds.socib.es/thredds/catalog.html](http://thredds.socib.es/thredds/catalog.html){:target="_blank"}
+* [https://www.ncei.noaa.gov/thredds/catalog.html](https://www.ncei.noaa.gov/thredds/catalog.html){:target="_blank"}
+* [https://thredds.ucar.edu/thredds/catalog.html](https://thredds.ucar.edu/thredds/catalog.html){:target="_blank"}
+* [https://thredds-test.unidata.ucar.edu/thredds/catalog/catalog.html](https://thredds-test.unidata.ucar.edu/thredds/catalog/catalog.html){:target="_blank"}

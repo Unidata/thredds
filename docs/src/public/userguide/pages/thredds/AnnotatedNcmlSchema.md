@@ -6,5 +6,7 @@ toc: false
 permalink: tds_annotated_ncml_schema.html
 ---
 
+<https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/ncml/AnnotatedSchema4.html>
+
 {% capture rmd %}{% includefile pages/netcdfJava/AnnotatedNcmlSchema.inc %}{% endcapture %}
 {{ rmd | liquify | markdownify }}
