@@ -47,7 +47,7 @@ Download {% include link_file.html file="tds_tutorial/fmrc/catalogFmrc.xml" text
         <documentation type="summary">Example BOM</documentation>
       </metadata>
 
-      <collection spec="<path-to-data>/fmrc_tutorial/bom/**/ocean_fc_#yyyMMdd#.*\.nc$"/> <!-- 4 -->
+      <collection spec="<path-to-data>/fmrc_tutorial/bom/**/ocean_fc_#yyyyMMdd#.*\.nc$"/> <!-- 4 -->
     </featureCollection>
   </dataset>
 
@@ -80,7 +80,7 @@ Luckily the information is in the filename, which is a common practice.
 1. The recommended way to specify the run time is to specify a _date parsing template_ in the collection specification string, for example:
 
    ~~~xml
-   <collection spec="<path-to-data>/fmrc_tutorial/bom/**/ocean_fc_#yyyMMdd#.*\.nc$" />
+   <collection spec="<path-to-data>/fmrc_tutorial/bom/**/ocean_fc_#yyyyMMdd#.*\.nc$" />
    ~~~
 
    extracts the run date by applying the template `yyyyMMdd` to the portion of the filename after \"ocean_fc_\".
@@ -93,7 +93,7 @@ Luckily the information is in the filename, which is a common practice.
    If we wanted to extract the run time from the directory (pretending we couldn't do that from the filename), this is how we would do that:
 
    ~~~xml
-   <collection spec="/machine/tds/workshop/bom/**/ocean_fc_.*\.nc$" dateFormatMark="#workshop/bom/#yyyMMdd" />
+   <collection spec="/machine/tds/workshop/bom/**/ocean_fc_.*\.nc$" dateFormatMark="#workshop/bom/#yyyyyMMdd" />
    ~~~
 
    Note that we: 
