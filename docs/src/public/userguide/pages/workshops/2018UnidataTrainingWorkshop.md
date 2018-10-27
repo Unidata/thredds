@@ -1,6 +1,6 @@
 ---
 title: 2018 Training Workshop Schedule
-last_updated: 2018-10-23
+last_updated: 2018-10-27
 sidebar: tdsTutorial_sidebar
 toc: false
 permalink:  workshop2018.html
@@ -13,7 +13,7 @@ permalink:  workshop2018.html
 ### 9:00 (30 minutes) Welcome and Logistics / TDS Overview (Sean)
 * Introduction of Unidata staff
 * Review of schedule
-* Why use TDS? ({% include link_file.html file="workshop_presentations/TDSOverview.pdf" text="pdf" %})
+* Why use TDS? ({% include link_file.html file="workshop_presentations/2018/TDSOverview.pdf" text="pdf" %})
 * [Quick notes](https://docs.google.com/document/d/1mn-OgFPN4fN21ZnkmXNAI8iwFzE5qFJqJ91kdGoOJFI/edit?usp=sharing){:target="_blank"}
 
 ### 9:30 (30 minutes) Participant Introductions (Sean)
@@ -71,7 +71,7 @@ permalink:  workshop2018.html
 ### 3:00 (30 minutes) Docker (Julien)
 
 ### 3:30 (30 minutes) DAP Protocol Services (Dennis)
-* OPeNDAP DAP2 and DAP4 Protocol Services (pdf)
+* OPeNDAP DAP2 and DAP4 Protocol Services ({% include link_file.html file="workshop_presentations/2018/NetcdfWorkShop2018-ThreddsDap.pdf" text="pdf" %})
  
 ### 4:00 Hardware
 
@@ -87,6 +87,8 @@ permalink:  workshop2018.html
 * Viewer, CoordinateSystem, IOSP, and FeatureTypes
 
 ### 9:30 (30 minutes) Conventions (Ethan)
+ * Conventions Presentation ({% include link_file.html file="workshop_presentations/2018/2018-10-26_TdsTrainingWorkshop_Conventions_CF.pdf" text="pdf" %})
+ * [CF Conventions](http://cfconventions.org/){:target="_blank"}
 
 ### 10:00 (15 minutes) Break
 
