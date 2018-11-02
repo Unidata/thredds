@@ -231,7 +231,7 @@ See the <a href=\"http://tomcat.apache.org/migration.html\" target=\"_blank\">To
 
 ## Next Step
 
-If you plan to deploy the TDS in a production environment you will need to follow the best practices outlined in the [Production Server](digested_passwords.html){:target="_blank"} section of the tutorial to finish hardening your server environment.
+If you plan to deploy the TDS in a production environment you will need to follow the best practices outlined in the [Putting TDS Into Production](tomcat_permissions.html){:target="_blank"} section of the tutorial to finish hardening your server environment.
 
 {%include ahead.html content="
 <a href=\"enable_tsl_encryption.html\" target=\"_blank\">TSL/SSL Encryption</a> will need to be enabled in order to access a couple of TDS monitoring and debugging tools.

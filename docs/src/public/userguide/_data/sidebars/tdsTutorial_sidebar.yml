@@ -205,9 +205,13 @@ entries:
       url: /iso_metadata.html
       output: web, pdf
 
-  - title: Production Servers
+  - title: Putting TDS Into Production
     output: web, pdf
     folderitems:
+
+    - title: Restrict Tomcat Permissions
+      url: /tomcat_permissions.html
+      output: web, pdf
 
     - title: Use Digested Passwords
       url: /digested_passwords.html
@@ -219,10 +223,6 @@ entries:
 
     - title: Secure Tomcat Manager App
       url: /secure_manager_app.html
-      output: web, pdf
-
-    - title: Restrict Tomcat Permissions
-      url: /tomcat_permissions.html
       output: web, pdf
 
     - title: Remove Unused Web Applications
