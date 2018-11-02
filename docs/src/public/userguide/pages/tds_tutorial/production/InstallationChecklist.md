@@ -14,23 +14,24 @@ permalink: installation_checklist.html
 
 #### Java
 
-1. [Install the JDK](install_java_tomcat.html#jdk){:target="_blank"}
+1. [Install the JDK](install_java_tomcat.html#installing-java-jdk){:target="_blank"}
 
 #### Tomcat
 
-1. [Install Tomcat](install_java_tomcat.html#tomcat){:target="_blank"}
-2. Make the following modifications to `${tomcat_home}/conf/server.xml`:
+1. [Install Tomcat](install_java_tomcat.html#installing-the-tomcat-servlet-container){:target="_blank"}
+2. Create a [`setenv.sh` file](running_tomcat.html#setting-java_home-java_opts-catalina_base-and-content_root){:target="_blank"} in `$TOMCAT_HOME/bin` to set JVM options and the TDS `$CONTENT_ROOT`.
+3. Make the following modifications to `${tomcat_home}/conf/server.xml`:
  * Enable [digested password support](digested_passwords.html#configure-tomcat-to-use-digested-passwords){:target="_blank"} by modifying the `UserDatabaseRealm`.
  * Enable [TSL/SSL in tomcat](enable_tsl_encryption.html#enabling-tslssl-in-tomcat){:target="_blank"} using you CA certificate.
  * Enable [Compression](performance_tips.html#compression){:target="_blank"} in the Tomcat connectors.
  * Modify the Tomcat [AccessLogValve](tomcat_access_log.html)){:target="_blank"} log format and changed the prefix and suffix and pattern attributes for the access log file.
-3. Create a [digested password](digested_passwords.html#digest.sh){:target="_blank"} using the algorithm specified in the `UserDatabaseRealm` of the `${tomcat_home}/conf/server.xml` file.
-4. Make the following modifications to `${tomcat_home}/conf/tomcat-users.xml`:
+4. Create a [digested password](digested_passwords.html#digest.sh){:target="_blank"} using the algorithm specified in the `UserDatabaseRealm` of the `${tomcat_home}/conf/server.xml` file.
+5. Make the following modifications to `${tomcat_home}/conf/tomcat-users.xml`:
  * Create roles for [manager-gui](tomcat_manager_app.html#granting-access-to-the-manager-application){:target="_blank"}, [`tdsConfig`](digested_passwords.html#configure-tomcat-to-use-digested-passwords){:target="_blank"} and [tdsMonitor](digested_passwords.html#configure-tomcat-to-use-digested-passwords){:target="_blank"}.
  * Create a [user](tomcat_manager_app.html#granting-access-to-the-manager-application){:target="_blank"} with the [digested password](digested_passwords.html#configure-tomcat-to-use-digested-passwords){:target="_blank"} with access to the `manager-gui`, `tdsConfig`, and `tdsMonitor` roles.
-5. If you choose to use the Tomcat `manager` application, modify the [deployment descriptor](secure_manager_app.html){:target="_blank"} (`${tomcat_home}/webapps/manager/WEB-INF/web.xml`) to force access to occur only via HTTPS.
-6. Remove all [unused web applications](remove_unused_webapps.html){:target="_blank"} from the `${tomcat_home}/webapps` directory.
-7. Modify the [permissions of `${tomcat_home}`](tomcat_permissions.html){:target="_blank"} to restrict access.
+6. If you choose to use the Tomcat `manager` application, modify the [deployment descriptor](secure_manager_app.html){:target="_blank"} (`${tomcat_home}/webapps/manager/WEB-INF/web.xml`) to force access to occur only via HTTPS.
+7. Remove all [unused web applications](remove_unused_webapps.html){:target="_blank"} from the `${tomcat_home}/webapps` directory.
+8. Modify the [permissions of `${tomcat_home}`](tomcat_permissions.html){:target="_blank"} to restrict access.
 
 #### TDS
 1. [Download the TDS WAR](https://www.unidata.ucar.edu/downloads/thredds/index.jsp){:target="_blank"} file.

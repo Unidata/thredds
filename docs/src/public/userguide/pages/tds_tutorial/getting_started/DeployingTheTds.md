@@ -89,7 +89,7 @@ This section assumes you have successfully installed the JDK and Tomcat Servlet 
 
 5. Confirm the creation of the TDS `content/` directory.
 
-   Move into `${tomcat_home}` and do a long listing:
+   Move into `$TOMCAT_HOME` and do a long listing:
 
    ~~~bash
    $ pwd

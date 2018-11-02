@@ -40,7 +40,7 @@ Keep in mind: Changes to `tomcat-users.xml` do not take effect until Tomcat is r
 
 1. Modify `tomcat-users.xml` to add role and user elements.
 
-   Using your favorite editor, open `${tomcat_home}/conf/tomcat-users.xml`:
+   Using your favorite editor, open `$TOMCAT_HOME/conf/tomcat-users.xml`:
 
    ~~~bash
    $ vi tomcat-users.xml

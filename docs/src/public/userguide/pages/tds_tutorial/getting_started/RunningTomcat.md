@@ -1,26 +1,30 @@
 ---
 title: Running Tomcat
-last_updated: 2018-04-02
+last_updated: 2018-10-26
 sidebar: tdsTutorial_sidebar
 toc: false
 permalink: running_tomcat.html
 ---
 
-## Starting & stopping Tomcat
+This section examines the directory structure and files found in the Tomcat Servlet Container installation.
 
 {%include note.html content="
-This section assumes you have successfully installed the JDK and Tomcat Servlet Container as outlined in the <a href=\"install_java_tomcat.html\" target=\"_blank\">Installation of Java and Tomcat</a> section.
+This section assumes you have successfully installed the Tomcat Servlet Container as outlined in the <a href=\"install_java_tomcat.html\" target=\"_blank\">Installation of Java and Tomcat</a> section.
 " %}
+
+## Starting & Stopping Tomcat
+
+The following example shows stopping/starting Tomcat on a linux system, as the `root` user.
 
 1. Tomcat isn’t currently running so we need to start it up.
 
-   Run the startup.sh script in the Tomcat bin/ directory:
+   Run the `startup.sh` script in the `$TOMCAT_HOME/bin` directory (`$TOMCAT_HOME` is `/usr/local` in this example):
 
    ~~~ bash
-   $ pwd
-   /usr/local/tds/tomcat
+   # pwd
+   /usr/local/tomcat
 
-   $ bin/startup.sh
+   # bin/startup.sh
    ~~~
 
 2. Verify Tomcat is running.
@@ -28,9 +32,9 @@ This section assumes you have successfully installed the JDK and Tomcat Servlet 
    Look and see if you have a Tomcat process running:
 
    ~~~bash
-   $ ps -ef | grep tomcat
-   oxelson   4293     1 99 14:04 pts/2    00:00:06 /opt/jdk/bin/java -Djava.util.logging.config.file=/usr/local/tds/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -classpath /usr/local/tds/tomcat/bin/bootstrap.jar:/usr/local/tds/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/tomcat -Dcatalina.home=/usr/local/tds/tomcat -Djava.io.tmpdir=/usr/local/tds/tomcat/temp org.apache.catalina.startup.Bootstrap start
-   oxelson   4366 23720  0 14:04 pts/2    00:00:00 grep tomcat
+   # ps -ef | grep tomcat
+   root   4293     1 99 14:04 pts/2    00:00:06 /usr/local/jdk/bin/java -Djava.util.logging.config.file=/usr/local/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -classpath /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tomcat -Dcatalina.home=/usr/local/tomcat -Djava.io.tmpdir=/usr/local/tomcat/temp org.apache.catalina.startup.Bootstrap start
+   root   4366 23720  0 14:04 pts/2    00:00:00 grep tomcat
    ~~~
 
    Open a new browser window/tab and go to [http://localhost:8080/](http://localhost:8080/){:target="_blank"} to verify Tomcat is running:
@@ -40,10 +44,13 @@ This section assumes you have successfully installed the JDK and Tomcat Servlet 
 
 3. See if you can shutdown Tomcat.
 
-   Run the `shutdown.sh` script in the Tomcat `bin/` directory:
+   Run the `shutdown.sh` script in the `$TOMCAT_HOME/bin` directory (`$TOMCAT_HOME` is `/usr/local` in this example):
 
    ~~~bash
-   $ bin/shutdown.sh
+   # pwd
+   /usr/local/tomcat
+      
+   # bin/shutdown.sh
    ~~~
 
 
@@ -62,35 +69,38 @@ Pay particular attention to what is being reported in Tomcat's main log file: `c
 If you’re running Tomcat on an instance of Windows OS, you will want to create a `setenv.bat` file.
 " %}
 
-We are going to create a file called `setenv.sh` in the Tomcat `bin/` directory to:
+We are going to create a file called `setenv.sh` in the `$TOMCAT_HOME/bin` directory to:
 
 * allow Tomcat to reference/find the location of `$JAVA_HOME` and `$CATALINA_BASE`) during startup and shutdown;
 
 * increase the amount of memory allocated to the JVM to enhance performance by setting `$JAVA_OPTS`; and
 
-* add additional settings to the JVM via `$JAVA_OPTS` to enable more advanced services we will be learning about later on in this workshop.
+* add additional settings to the JVM via `$JAVA_OPTS` to enable more advanced services in the TDS (e.g, WMS, etc).
 
 1. Create the `setenv.sh` file.
 
-   Using your favorite text editor (gedit, vi, emacs, etc.), create a new file called setenv.sh in the Tomcat `bin/` directory:
+   Using your favorite text editor and create a new file called `setenv.sh` in the `$TOMCAT_HOME/bin` directory (`$TOMCAT_HOME` is `/usr/local` in this example):
 
    ~~~bash
-   $ pwd
-   /usr/local/tds/tomcat
+   # pwd
+   /usr/local/tomcat
 
-   $ cd bin
-   $ vi setenv.sh
-   Add the following information and save your setenv.sh file:
+   # cd bin
+   # vi setenv.sh
+   ~~~
+   
+   Add the following information and save your `setenv.sh` file:
 
+   ~~~bash
    #!/bin/sh
    #
    # ENVARS for Tomcat
    #
-   export CATALINA_HOME="/usr/local/tds/tomcat"
+   export CATALINA_HOME="/usr/local/tomcat"
 
-   export CATALINA_BASE="/usr/local/tds/tomcat"
+   export CATALINA_BASE="/usr/local/tomcat"
 
-   export JAVA_HOME="/usr/local/tds/jdk"
+   export JAVA_HOME="/usr/local/jdk"
 
    # TDS specific ENVARS
    #
@@ -98,11 +108,11 @@ We are going to create a file called `setenv.sh` in the Tomcat `bin/` directory 
    #   THIS IS CRITICAL and there is NO DEFAULT - the
    #   TDS will not start without this.
    #
-   CONTENT_ROOT=-Dtds.content.root.path=/usr/local/tds/tomcat/content
+   CONTENT_ROOT=-Dtds.content.root.path=$CATALINA_HOME/content
 
-   # set java prefs related variables (used by the wms service, for example)
-   JAVA_PREFS_ROOTS="-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs \
-                     -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
+   # Set java prefs related variables (used by the wms service, for example)
+   JAVA_PREFS_ROOTS="-Djava.util.prefs.systemRoot=$CONTENT_ROOT/thredds/javaUtilPrefs \
+                     -Djava.util.prefs.userRoot=$CONTENT_ROOT/thredds/javaUtilPrefs"
 
    #
    # Some commonly used JAVA_OPTS settings:
@@ -120,7 +130,7 @@ We are going to create a file called `setenv.sh` in the Tomcat `bin/` directory 
    ~~~
 
    {% include important.html content="
-   Whenever possible, Unidata recommends -Xmx4096m (or more) for 64-bit systems.
+   Whenever possible, Unidata recommends `-Xmx4096m` (or more) for 64-bit systems.
    " %}
 
    The parameters we pass to `$JAVA_OPTS`:
@@ -143,12 +153,12 @@ For more information about the possible options/arguments available for `$JAVA_O
    Restart Tomcat and examine the output generated to the terminal window by the startup script:
 
    ~~~bash
-   $ ./startup.sh
-    Using CATALINA_BASE:   /usr/local/tds/tomcat
-    Using CATALINA_HOME:   /usr/local/tds/tomcat
-    Using CATALINA_TMPDIR: /usr/local/tds/tomcat/temp
-    Using JRE_HOME:        /usr/local/tds/jdk
-    Using CLASSPATH:       /usr/local/tds/tomcat/bin/bootstrap.jar:/usr/local/tds/tomcat/bin/tomcat-juli.jar
+   # ./startup.sh
+    Using CATALINA_BASE:   /usr/local/tomcat
+    Using CATALINA_HOME:   /usr/local/tomcat
+    Using CATALINA_TMPDIR: /usr/local/tomcat/temp
+    Using JRE_HOME:        /usr/local/jdk
+    Using CLASSPATH:       /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar
     Tomcat started.
    ~~~
 
@@ -159,13 +169,13 @@ For more information about the possible options/arguments available for `$JAVA_O
    Take a look at the running Tomcat process to see the new `$JAVA_OPTS` settings:
 
    ~~~bash
-   $ ps -ef | grep tomcat
-   oxelson   7988     1 13 14:17 pts/2    00:00:05 /usr/local/tds/jdk/bin/java -Djava.util.logging.config.file=/usr/local/tds/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dtds.content.root.path=/usr/local/tds/tomcat/content -d64 -Xmx4096m -Xms512m -server -ea -XX:+HeapDumpOnOutOfMemoryError -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/usr/local/tds/tomcat/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=/usr/local/tds/tomcat/content/thredds/javaUtilPrefs -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -classpath /usr/local/tds/tomcat/bin/bootstrap.jar:/usr/local/tds/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tds/tomcat -Dcatalina.home=/usr/local/tds/tomcat -Djava.io.tmpdir=/usr/local/tds/tomcat/temp org.apache.catalina.startup.Bootstrap start
-   oxelson   8279 23720  0 14:18 pts/2    00:00:00 grep tomcat
+   # ps -ef | grep tomcat
+   root   7988     1 13 14:17 pts/2    00:00:05 /usr/local/jdk/bin/java -Djava.util.logging.config.file=/usr/local/tomcat/conf/logging.properties -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager -Dtds.content.root.path=/usr/local/tomcat/content -d64 -Xmx4096m -Xms512m -server -ea -XX:+HeapDumpOnOutOfMemoryError -Djava.awt.headless=true -Djava.util.prefs.systemRoot=/usr/local/tomcat/content/thredds/javaUtilPrefs -Djava.util.prefs.userRoot=/usr/local/tomcat/content/thredds/javaUtilPrefs -Djdk.tls.ephemeralDHKeySize=2048 -Djava.protocol.handler.pkgs=org.apache.catalina.webresources -Dorg.apache.catalina.security.SecurityListener.UMASK=0027 -Dignore.endorsed.dirs= -classpath /usr/local/tomcat/bin/bootstrap.jar:/usr/local/tomcat/bin/tomcat-juli.jar -Dcatalina.base=/usr/local/tomcat -Dcatalina.home=/usr/local/tomcat -Djava.io.tmpdir=/usr/local/tomcat/temp org.apache.catalina.startup.Bootstrap start
+   root   8279 23720  0 14:18 pts/2    00:00:00 grep tomcat
    ~~~
 
    {% include note.html content="
-   For more information on the environment variable prerequisites used by Tomcat, consult `${tomcat_home}/bin/catalina.sh (or catalina.bat)` file."
+   For more information on the environment variable prerequisites used by Tomcat, consult `$TOMCAT_HOME/bin/catalina.sh (or catalina.bat)` file."
    %}
 
    {% include question.html content="
@@ -200,7 +210,7 @@ For more information about the possible options/arguments available for `$JAVA_O
    You will need confirm `java.util.prefs.systemRoot` system property is set in `$JAVA_OPTS` to a location that is writable by the user that Tomcat, e.g.:
 
    ~~~bash
-   # set java prefs related variables (used by the wms service, for example)
-   JAVA_PREFS_ROOTS="-Djava.util.prefs.systemRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs \
-                     -Djava.util.prefs.userRoot=$CATALINA_HOME/content/thredds/javaUtilPrefs"
+   # Set java prefs related variables (used by the wms service, for example)
+   JAVA_PREFS_ROOTS="-Djava.util.prefs.systemRoot=$CONTENT_ROOT/thredds/javaUtilPrefs \
+                     -Djava.util.prefs.userRoot=$CONTENT_ROOT/thredds/javaUtilPrefs"
    ~~~
