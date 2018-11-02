@@ -48,7 +48,7 @@ For installation of the JDK on Windows or Mac OS, see the <a href=\"https://docs
     Unpack the archive file:
 
     ~~~bash
-    tar xvfz jdk-8u192-linux-x64.tar.gz 
+    # tar xvfz jdk-8u192-linux-x64.tar.gz 
     ~~~
 
     This will extract the JDK in the installation directory:
@@ -87,7 +87,7 @@ For installation of Tomcat on Windows, see the <a href=\"http://tomcat.apache.or
 
 2.  Install Tomcat as per the Apache Tomcat [installation instructions](http://tomcat.apache.org/tomcat-8.5-doc/setup.html){:target="_blank"}.
 
-    Copy the binary tar.gz file into the installation directory (/usr/local in this example):
+    Copy the binary tar.gz file into the installation directory (`/usr/local` in this example):
 
     ~~~bash
     # pwd
@@ -148,6 +148,11 @@ Windows users can consult the <a href=\"https://docs.microsoft.com/en-us/windows
     # ls -l 
     total 196684
     drwxr-xr-x 9 root root      4096 Oct 24 13:29 tomcat -> apache-tomcat-8.5.34
+    drwxr-xr-x 9 root root      4096 Oct 24 13:29 apache-tomcat-8.5.34
     lrwxrwxrwx 1 root root        12 Oct 24 13:59 jdk -> jdk1.8.0_192
     drwxr-xr-x 7 root root      4096 Oct  6 07:58 jdk1.8.0_192
-~~~
+    ~~~
+
+## Next Step
+
+Next, we'll do a quick tour of the relevant elements of the [Tomcat Directory Structure](tomcat_dir_structure_qt.html) and how these elements relate to the TDS.

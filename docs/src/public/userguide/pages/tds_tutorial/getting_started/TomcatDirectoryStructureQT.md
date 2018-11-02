@@ -6,19 +6,20 @@ toc: false
 permalink: tomcat_dir_structure_qt.html
 ---
 
-This section examines the directory structure and files found in the Tomcat Servlet Container installation.
+This section examines the directory structure and files found in the Tomcat Servlet Container installation and how they relate to the TDS.
 
 {%include note.html content="
 This section assumes you have successfully installed the Tomcat Servlet Container as outlined in the <a href=\"install_java_tomcat.html\" target=\"_blank\">Installation of Java and Tomcat</a> section.
 " %}
 
-## Exploring the Tomcat Directory Structure
+## Exploring The Tomcat Directory Structure
 
 Examine the Tomcat directory structure, a.k.a. `#TOMCAT_HOME`.  Move into `$TOMCAT_HOME` and do a long listing (`/usr/local` in this example):
     
 ~~~bash
 # cd /usr/local/tomcat
 # ls -l
+
 total 144
 drwxr-x--- 2 root root  4096 Oct 24 13:29 bin
 -rw-r----- 1 root root 19539 Sep  4 16:30 BUILDING.txt
@@ -53,7 +54,7 @@ Familiarize yourself with these important directories:
 
 * Contains web applications directories and WAR files.
 * This is where we will be putting the TDS web application.
-* You will also be using the `manager` application that comes with Tomcat during this tutorial.
+* You will also be using the `manager` application that comes with the Tomcat Servlet Container during this tutorial.
 
 #### `logs/`
 
@@ -61,4 +62,8 @@ Familiarize yourself with these important directories:
 * This is one of the directories you will be looking for log files (the TDS logs elsewhere by default).
 * The log files should be your first stop for troubleshooting Tomcat and TDS issues. (_Hint, hint_).
 * Logs files may contain useful information for assessing the security of your system.
-* You should become familiar with the Tomcat-generated `catalina.out`, `catalina.yyyy-mm-dd.log`, and `localhost_access_log.yyyy-mm-dd.log` files.
+* Make a point of becoming familiar with the Tomcat-generated `catalina.out`, `catalina.yyyy-mm-dd.log`, and `localhost_access_log.yyyy-mm-dd.log` files.
+
+## Next Step
+
+Next, we'll look at starting/stopping the Tomcat Servlet Container as well as [configuring the JVM](running_tomcat.html) for the TDS.
