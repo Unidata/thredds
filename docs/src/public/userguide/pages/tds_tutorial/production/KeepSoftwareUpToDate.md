@@ -1,14 +1,16 @@
 ---
 title: Keep Software Up-To-Date
-last_updated: 2018-10-24
+last_updated: 2018-11-02
 sidebar: tdsTutorial_sidebar
 toc: false
 permalink: keep_software_uptodate.html
 ---
 
+This section stresses the importance of keeping your software up-to-date.
+
 ## Rationale
 
-Running the most current versions of software keeps your environment protected against _known_ [security vulnerabilities](https://www.securityfocus.com/vulnerabilities){:target="_blank"}.
+Running the most current versions of software keeps your environment protected against _known_ security vulnerabilities.
 This includes the JDK, Tomcat, the TDS and any other third-party libraries or software you run.
 
 Stay Informed!
