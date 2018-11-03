@@ -16,7 +16,7 @@ This section assumes you have successfully performed the tasks as outlined in th
 * Communication between two servers can be intercepted (i.e., an http transaction between client and server).
 * An attacker can eavesdrop on the conversation and control the relay of messages between the victims, making them believe that they are talking directly to each other over a private connection.
 * The use of digital certificates adds a layer of security by allowing the receiver of the message to verify the sender is who he or she claims to be.
-* Any intercepted information that is encrypted also adds a layer of security (the attacker must take the extra step of unencrypting the data to view the message).
+* Any intercepted information that is encrypted also adds a layer of security (the attacker must take the extra step of un-encrypting the data to view the message).
 * Transport Layer Security (TLS), and formerly Secure Sockets Layer (SSL), is a cryptographic protocol that provides security and data integrity for communications over TCP/IP networks.
 * TSL/SSL allows applications to communicate across a network in a way designed to prevent eavesdropping, tampering, and message forgery.
 * TSL/SSL uses a cryptographic system that uses two keys to encrypt data: a public key known to everyone and a private or secret key known only to the recipient of the message.
@@ -47,7 +47,9 @@ A keystore file stores the details of the TSL/SSL certificate necessary to make 
 The Tomcat documentation includes a section on [importing your certificate](https://tomcat.apache.org/tomcat-8.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore){:target="_blank"} into a keystore file.
 Tomcat uses the keystore file for TSL/SSL transactions. 
 
-## Enabling TSL/SSL in Tomcat
+## Enabling TSL/SSL In Tomcat
+
+The following example demonstrates enabling TSL/SSL in the Tomcat Servlet Container on a linux system as the `root` user. 
 
 {%include note.html content="
 This section assumes you have already imported your CA-signed certificate into the <a href=\"https://tomcat.apache.org/tomcat-8.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore\" target=\"_blank\">keystore</a> file.
@@ -87,7 +89,9 @@ This section assumes you have already imported your CA-signed certificate into t
      Tomcat also offers a `SSL/TLS HTTP/1.1 Connector` which utilizes `APR/native implementation`. Consult the <a href=\"http://tomcat.apache.org/tomcat-8.5-doc/config/http.html\" target=\"_blank\">documentation</a> to see if you should use this connector in lieu of the `NIO implementation SSL HTTP/1.1` connector.
    " %}
    
-   Specify the keystore file in the `certificateKeystoreFile` attribute of the `Certificate` element to tell Tomcat where to find your keystore (the path will be relative to `$TOMCAT_HOME` directory)
+   Specify the keystore file in the `certificateKeystoreFile` attribute of the `Certificate` element to tell Tomcat where to find your keystore (the path will be relative to `$TOMCAT_HOME` directory).  
+   
+   In this example, the keystore file is `$TOMCAT_HOME/conf/tds-keystore`:
 
    ~~~~xml
    <Connector port="8443" 
@@ -142,7 +146,7 @@ This section assumes you have already imported your CA-signed certificate into t
    * routing tables
    * and a number of network interface statistics
 
-   Look for something like the following in the output:
+   Look for something like the following in the output (output may vary between operating systems):
 
    ~~~~bash
    tcp        0      0 0.0.0.0:8443                0.0.0.0:*                   LISTEN 
@@ -252,8 +256,3 @@ Other than the compelling security reasons, you will want to enable TSL/SSL to t
   A document detailing the various changes between Tomcat versions.
 * [When are self-signed certificates acceptable?](https://www.sslshopper.com/article-when-are-self-signed-certificates-acceptable.html){:target="_blank"}
   A compelling argument as to why self-signed certificates should not be used in a production environment
-  
-    
-## Next Step
-
-Next, we'll secure the [Tomcat Manager Application](secure_manager_app.html).

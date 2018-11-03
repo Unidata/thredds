@@ -29,7 +29,7 @@ First we need to enable digest passwords support in Tomcat by modifying the `Use
 A Tomcat Realm represents a \"database\" of usernames, passwords, and roles assigned to tomcat users.
 
 | Realm Name | Purpose |
-| UserDatabaseRealm | The UserDatabaseRealm is enabled by default and reads clear text user password information stored in tomcat-users.xml. |
+| UserDatabaseRealm | The UserDatabaseRealm is enabled by default and reads clear text user password information stored in `tomcat-users.xml`. |
   
 1. Open the `$TOMCAT_HOME/conf/server.xml` with your favorite text editor (`$TOMCAT_HOME` is `/usr/local` in this example):
    
@@ -138,7 +138,7 @@ A Tomcat Realm represents a \"database\" of usernames, passwords, and roles assi
 4. Restart Tomcat and verify digested passwords have been successfully enabled by logging into the Tomcat manager application using your password in clear text: [http://localhost:8080/manager/html/](http://localhost:8080/manager/html/){:target="_blank"}
 
     {% include note.html content="
-    Note: Since we are using BASIC authentication, you will need to clear any authenticated sessions in your browser to test whether digested passwords have been enabled.
+    Since we are using BASIC authentication, you will need to clear any authenticated sessions in your browser to test whether digested passwords have been enabled.
     " %}
 
 ## Troubleshooting
@@ -147,8 +147,3 @@ A Tomcat Realm represents a \"database\" of usernames, passwords, and roles assi
 * Did you restart Tomcat after you made your changes to `tomcat-users.xml` and `server.xml`?
 * Any errors will be reported in the `catalina.out` file in the `$TOMCAT_HOME/logs` directory.
 * You do **not** need to type the encrypted version of your password into the browser (the browser auto-magically encrypts your password for you before it transmits it to the server).
-
-
-## Next Step
-
-Next, we'll enable [TSL/SSL Encryption](enable_tsl_encryption.html) for the TDS and Tomcat Servlet Container.

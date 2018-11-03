@@ -187,8 +187,3 @@ We also recommend restricting the permissions of the Tomcat `user/group` within 
 
 * [Tomcat as root and security issues](https://marc.info/?t=104516038700003&r=1&w=2){:target="_blank"}
   A lengthy thread in the tomcat-users mailing list archives dedicated to the perils of running Tomcat as the root user.
-
-
-## Next Step
-
-Next, we'll enable [digested passwords](digested_passwords.html) for the TDS and Tomcat Servlet Container.
