@@ -68,7 +68,7 @@ permalink:  workshop2018.html
 * [Services](services_ref.html)
 * [enabling writing netCDF-4 files](netcdf4_c_library.html)
 
-### 3:00 (30 minutes) Docker (Julien)
+### 3:00 (30 minutes) [Docker](https://github.com/Unidata/thredds-docker){:target="_blank"} (Julien)
 
 ### 3:30 (30 minutes) DAP Protocol Services (Dennis)
 * OPeNDAP DAP2 and DAP4 Protocol Services ({% include link_file.html file="workshop_presentations/2018/NetcdfWorkShop2018-ThreddsDap.pdf" text="pdf" %})
