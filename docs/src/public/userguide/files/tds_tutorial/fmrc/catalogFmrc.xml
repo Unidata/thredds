@@ -22,7 +22,7 @@
         <documentation type="summary">Example BOM</documentation>
       </metadata>
 
-      <collection spec="<path-to-data>/fmrc_tutorial/bom/**/ocean_fc_#yyyMMdd#.*\.nc$"/>
+      <collection spec="<path-to-data>/fmrc_tutorial/bom/**/ocean_fc_#yyyyMMdd#.*\.nc$"/>
     </featureCollection>
   </dataset>
 
