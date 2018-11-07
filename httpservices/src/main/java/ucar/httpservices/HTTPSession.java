@@ -81,9 +81,12 @@ import java.util.zip.ZipInputStream;
  * along with the method.
  * <p>
  * Note that the term legalurl in the following code means that the url has
- * reserved characters within identifieers in escaped form. This is
- * particularly and issue for queries. Especially: ?x[0:5] is legal and the
- * square brackets need not be encoded.
+ * reserved characters within identifiers in escaped form. This is
+ * particularly an issue for queries. Especially square brackets
+ * (e.g. ?x[0:5]) are an issue. Recently (2018) Apache Tomcat stopped
+ * accepting square brackets (and maybe other characters) as ok
+ * when left unencoded. So, now we need to be aware of this
+ * and cause queries encoding to include square brackets.
  * <p>
  * As of the move to Apache Httpclient 4.4 and later, the underlying
  * HttpClient objects are generally immutable. This means that at least

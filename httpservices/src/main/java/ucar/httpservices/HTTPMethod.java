@@ -210,7 +210,7 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
         if(url == null)
             throw new HTTPException("HTTPMethod: cannot find usable url");
         try {
-            this.methodurl = HTTPUtil.parseToURI(url); /// validate
+            this.methodurl = new URI(Escape.escapeURL(url)); /// validate
         } catch (URISyntaxException mue) {
             throw new HTTPException("Malformed URL: " + url, mue);
         }
