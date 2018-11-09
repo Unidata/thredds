@@ -24,7 +24,12 @@ Some of the technology in the TDS:
   This software was developed by Jon Blower (University of Reading (UK) E-Science Center) as part of the [ESSC Web Map Service for environmental data](https://github.com/Reading-eScience-Centre/edal-java){:target="_blank"} (aka Godiva3).
 * The integrated [ncISO server](iso_metadata.html) provides automated metadata analysis and ISO metadata generation.
 * The integrated [NetCDF Subset Service](netcdf_subset_service_ref.html) allows subsetting certain CDM datasets in coordinate space, using a REST API.
-  Gridded data subsets can be returned in [CF-compliant](http://cfconventions.org/cf-conventions/v1.6.0/cf-conventions.html){:target="_blank"} netCDF-3 or netCDF-4. Point data subsets can be returned in CSV, XML, or [CF-DSG v1.6](http://cfconventions.org/cf-conventions/v1.6.0/cf-conventions.html#discrete-sampling-geometries){:target="_blank"} netCDF files.
+  Gridded data subsets can be returned in [CF-compliant](http://cfconventions.org/cf-conventions/v1.6.0/cf-conventions.html){:target="_blank"} netCDF-3 or netCDF-4.
+  Point data subsets can be returned in CSV, XML, WaterML (with [assistance](https://github.com/Unidata/thredds/tree/5.0.0/waterml#waterml){:target="_blank"}
+  from [ERDDAP](https://coastwatch.pfeg.noaa.gov/erddap/index.html){:target="_blank"} \[NOAA / Robert Simons/CoHort Software\], [license information](https://github.com/Unidata/thredds/tree/5.0.0/docs/src/private/licenses/third-party/erddap){:target="_blank"}), 
+  or [CF-DSG v1.6](http://cfconventions.org/cf-conventions/v1.6.0/cf-conventions.html#discrete-sampling-geometries){:target="_blank"} netCDF files.
+
+
 
 The THREDDS Data Server is implemented in 100% Java\*, and is contained in a single war file, which allows very easy installation into a servlet container such as the open-source Tomcat web server.
 Configuration is made as simple and as automatic as possible, and we have made the server as secure as possible.
