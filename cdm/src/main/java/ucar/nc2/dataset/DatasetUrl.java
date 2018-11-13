@@ -115,8 +115,7 @@ public class DatasetUrl {
     // 2. specific protocol in fragment
     // 3. leading protocol
     // 4. path extension
-    // 5. "/thredds/XXX" in path
-    // 6. contact the server (if defined)
+    // 5. contact the server (if defined)
 
     // temporarily remove any trailing query or fragment
     String fragment = null;
@@ -258,6 +257,7 @@ public class DatasetUrl {
    * @return The discovered ServiceType, or null
    */
   static private ServiceType searchPath(String url) {
+      if(false) { // Disable for now
       if(url == null || url.length() == 0)
         return null;
       url = url.toLowerCase(); // for matching purposes
@@ -266,6 +266,7 @@ public class DatasetUrl {
         if(url.indexOf("/thredds/"+p.toLowerCase()+"/")>= 0) {
           return FRAGPROTOSVCTYPE[i];
         }
+      }
       }
       return null;
     }
