@@ -14,6 +14,10 @@
 <p>The netCDF-Java library can read <em><strong>datasets</strong></em> from a variety of sources. The dataset is named using a Uniform Resource Location
   (<em><strong>URL</strong></em>). This page summarizes the netCDF-Java API use of URLs.</p>
 
+Note: When working with remote data services, it's important to note that not all servers handle encoded URLs.
+By default, netCDF-Java will encode illegal URI characters using percent encoding (e.g. <code>[</code> will become <code>%5B</code>).
+If you find you are having trouble accessing a remote dataset due to the encoding, set the java System Property <code>httpservices.urlencode</code> to <code>"false"</code> using, for example <code>System.setProperty("httpservices.urlencode", "false");</code>.
+
 <h2>ucar.nc2.NetcdfFile.open(String location) </h2>
 
 <h3>1. Local Files</h3>
