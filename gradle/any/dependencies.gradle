@@ -209,9 +209,9 @@ libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s
 }
 
 // replace the jackson.core libs that were excluded from aws-java-sdk-s3
-libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.6"
-libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.6"
-libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.6"
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.7"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.7"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.7"
 
 libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.15.1") {
     // the version of jna shipped with chronicle-map requires GLIBC 2.14
@@ -239,12 +239,18 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.6"
 
 libraries["oro"] = "oro:oro:2.0.8"
 
-// The latest version is 3.0.1.RELEASE. Can we update?
 libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
 
 versions["edal"] = "1.4.2-SNAPSHOT"
 
-libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
+
+// needed for edal-common but this pulls in a newer version.
+libraries["ehcache"] = "net.sf.ehcache:ehcache:2.10.6"
+
+libraries["edal-common"] = dependencies.create("uk.ac.rdg.resc:edal-common:${versions["edal"]}") {
+    // exclude ehcache from this dep and use the more recent version above
+    exclude group: 'net.sf.ehcache', module: 'net.sf.ehcache:ehcache'
+}
 
 libraries["edal-cdm"] = dependencies.create("uk.ac.rdg.resc:edal-cdm:${versions["edal"]}") {
     // These are dependencies that are included in edal-cdm, but are provided by

@@ -71,6 +71,7 @@ dependencies {
     testCompile libraries["jaxen"]
 
     // edal ncwms related libs
+    compile libraries["ehcache"]
     compile libraries["edal-common"]
     compile libraries["edal-cdm"]
     compile libraries["edal-graphics"]
