@@ -1181,7 +1181,7 @@ public abstract class Array {
    * double val = mdata.nextDouble();
    * ..
    * }
-   * <.pre>
+   * </pre>
    *
    * @return true if there are more elements in the iteration
    */
