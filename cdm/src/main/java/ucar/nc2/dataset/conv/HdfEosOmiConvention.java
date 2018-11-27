@@ -24,13 +24,16 @@ import java.io.IOException;
  */
 public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
 
-  public static boolean isMine(NetcdfFile ncfile) {
-    if (!ncfile.getFileTypeId().equals("HDF5-EOS")) return false;
+/**
+ *
+ */
+    public static boolean isMine(NetcdfFile ncfile) {
+        if (!ncfile.getFileTypeId().equals("HDF5-EOS")) { return false; }
 
-    String typeName = ncfile.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
-    if (typeName == null) return false;
-    if (!typeName.equals(FeatureType.GRID.toString()) &&
-            !typeName.equals(FeatureType.SWATH.toString())) return false;
+        final String typeName = ncfile.findAttValueIgnoreCase(null, CF.FEATURE_TYPE, null);
+        if (typeName == null) { return false; }
+        if (!typeName.equals(FeatureType.GRID.toString()) &&
+                !typeName.equals(FeatureType.SWATH.toString())) { return false; }
 
     /*
  group: HDFEOS {
@@ -52,18 +55,21 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
       }
     }
      */
-    Attribute instName = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@InstrumentName");
-    if (instName == null || !instName.getStringValue().equals("OMI"))  return false;
+        final Attribute instName = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@InstrumentName");
+        if (instName == null || !instName.getStringValue().equals("OMI"))  { return false; }
 
-    Attribute level = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
-    if (level == null)  return false;
-    return !(!level.getStringValue().startsWith("2") && !level.getStringValue().startsWith("3"));
+        final Attribute level = ncfile.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
+        if (level == null)  { return false; }
 
+        return !(!level.getStringValue().startsWith("2") && !level.getStringValue().startsWith("3"));
   }
 
-  public HdfEosOmiConvention() {
-    this.conventionName = "HDF5-EOS-OMI";
-  }
+/**
+ *
+ */
+    public HdfEosOmiConvention() {
+        this.conventionName = "HDF5-EOS-OMI";
+    }
 
   /*
 
@@ -123,57 +129,67 @@ public class HdfEosOmiConvention extends ucar.nc2.dataset.CoordSysBuilder {
     }
   }
    */
-  public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
-    Attribute levelAtt = ds.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
-    if (levelAtt == null)  return;
-    int level = levelAtt.getStringValue().startsWith("2") ? 2 : 3;
+    public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
+        final Attribute levelAtt = ds.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@ProcessLevel");
+        if (levelAtt == null)  { return; }
+        final int level = levelAtt.getStringValue().startsWith("2") ? 2 : 3;
 
-    //Attribute time = ds.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@TAI93At0zOfGranule");
+        //Attribute time = ds.findAttribute("/HDFEOS/ADDITIONAL/FILE_ATTRIBUTES/@TAI93At0zOfGranule");
 
-    if (level == 3) augmentDataset3(ds);
-
-  }
-
-  private void augmentDataset3(NetcdfDataset ds) throws IOException {
-
-    Group grids = ds.findGroup("/HDFEOS/GRIDS");
-    if (grids == null) return;
-    for (Group g2 : grids.getGroups()) {
-       Attribute gctp = g2.findAttribute("GCTPProjectionCode");
-       if (gctp == null || !gctp.getNumericValue().equals(0)) continue;
-
-       Attribute nlon = g2.findAttribute("NumberOfLongitudesInGrid");
-       Attribute nlat = g2.findAttribute("NumberOfLatitudesInGrid");
-       if (nlon == null || nlon.isString()) continue;
-       if (nlat == null || nlat.isString()) continue;
-
-       ds.addCoordinateAxis(makeLonCoordAxis(ds, g2, nlon.getNumericValue().intValue(), "XDim"));
-       ds.addCoordinateAxis(makeLatCoordAxis(ds, g2, nlat.getNumericValue().intValue(), "YDim"));
-
-      for (Group g3 : g2.getGroups()) {
-        for (Variable v : g3.getVariables()) {
-          v.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
-        }
-      }
+        if (level == 3) { augmentDataset3(ds); }
     }
 
-    ds.finish();
-  }
+/**
+ *
+ */
+    private void augmentDataset3(NetcdfDataset ds) throws IOException {
+        final Group grids = ds.findGroup("/HDFEOS/GRIDS");
+        if (grids == null) { return; }
+        for (final Group g2 : grids.getGroups()) {
+            final Attribute gctp = g2.findAttribute("GCTPProjectionCode");
 
-  private CoordinateAxis makeLatCoordAxis(NetcdfDataset ds, Group g, int n, String dimName) {
-    double incr = 180.0 / n;
-    CoordinateAxis v = new CoordinateAxis1D(ds, g, "lat", DataType.FLOAT, dimName, CDM.LAT_UNITS, "latitude");
-    v.setValues(n, -90.0, incr);
-    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
-    return v;
-  }
+            if (gctp == null || !gctp.getNumericValue().equals(0)) { continue; }
 
-  private CoordinateAxis makeLonCoordAxis(NetcdfDataset ds, Group g, int n, String dimName) {
-    double incr = 360.0 / n;
-    CoordinateAxis v = new CoordinateAxis1D(ds, g, "lon", DataType.FLOAT, dimName, CDM.LON_UNITS, "longitude");
-    v.setValues(n, -180.0, incr);
-    v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
-    return v;
-  }
+            final Attribute nlon = g2.findAttribute("NumberOfLongitudesInGrid");
+            final Attribute nlat = g2.findAttribute("NumberOfLatitudesInGrid");
 
+            if (nlon == null || nlon.isString()) { continue; }
+            if (nlat == null || nlat.isString()) { continue; }
+
+            ds.addCoordinateAxis(makeLonCoordAxis(ds, g2, nlon.getNumericValue().intValue(), "XDim"));
+            ds.addCoordinateAxis(makeLatCoordAxis(ds, g2, nlat.getNumericValue().intValue(), "YDim"));
+
+            for (final Group g3 : g2.getGroups()) {
+                for (final Variable v : g3.getVariables()) {
+                    v.addAttribute(new Attribute(_Coordinate.Axes, "lat lon"));
+                }
+            }
+        }
+
+        ds.finish();
+    }
+
+/**
+ *
+ */
+    private CoordinateAxis makeLatCoordAxis(NetcdfDataset ds, Group g, int n, String dimName) {
+        final double incr = 180.0 / n;
+        final CoordinateAxis v = new CoordinateAxis1D(ds, g, "lat", DataType.FLOAT, dimName,
+                                                                    CDM.LAT_UNITS, "latitude");
+        v.setValues(n, -90.0 + 0.5 * incr, incr);
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lat.toString()));
+        return v;
+    }
+
+/**
+ *
+ */
+    private CoordinateAxis makeLonCoordAxis(NetcdfDataset ds, Group g, int n, String dimName) {
+        final double incr = 360.0 / n;
+        final CoordinateAxis v = new CoordinateAxis1D(ds, g, "lon", DataType.FLOAT, dimName,
+                                                                    CDM.LON_UNITS, "longitude");
+        v.setValues(n, -180.0 + 0.5 * incr, incr);
+        v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Lon.toString()));
+        return v;
+    }
 }
