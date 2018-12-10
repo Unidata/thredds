@@ -199,7 +199,16 @@ public class Geostationary extends ProjectionImpl {
    */
   @Override
   public ProjectionImpl constructCopy() {
-    return new Geostationary(navigation.sub_lon_degrees, navigation.scan_geom, xScaleFactor, yScaleFactor);
+    // constructor takes sweep_angle_axis, so need to translate between
+    // scan geometry and sweep_angle_axis first
+    // GOES: x
+    // GEOS: y
+    String sweepAxisAngle = "x";
+    if (navigation.scan_geom == GEOSTransform.GEOS) {
+      sweepAxisAngle = "y";
+    }
+
+    return new Geostationary(navigation.sub_lon_degrees, sweepAxisAngle, xScaleFactor, yScaleFactor);
   }
 
   @Override
