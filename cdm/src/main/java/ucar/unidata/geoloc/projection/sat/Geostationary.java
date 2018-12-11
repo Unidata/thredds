@@ -79,9 +79,9 @@ public class Geostationary extends ProjectionImpl {
                        double geoCoordinateScaleFactor) {
     super(NAME, false);
 
-    String scanGeometry = GEOSTransform.GOES;
-    if (!isSweepX) {
-      scanGeometry = GEOSTransform.GEOS;
+    String sweepAngleAxis = "y";
+    if (isSweepX) {
+      sweepAngleAxis = "x";
     }
 
     /* Must assume incoming distances are SI units, so convert 'm' -> 'km' for GEOSTransform */
@@ -89,8 +89,7 @@ public class Geostationary extends ProjectionImpl {
     semi_minor_axis /= 1000.0;
     semi_major_axis /= 1000.0;
 
-    // double subLonDegrees, double perspective_point_height, double semi_minor_axis, double semi_major_axis, double inverse_flattening, String sweep_angle_axis
-    navigation = new GEOSTransform(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, scanGeometry);
+    navigation = new GEOSTransform(subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, sweepAngleAxis);
     makePP();
 
     if (geoCoordinateScaleFactor > 0) {
@@ -114,10 +113,12 @@ public class Geostationary extends ProjectionImpl {
   public Geostationary(double subLonDegrees, boolean isSweepX) {
     super(NAME, false);
 
-    String scanGeometry = GEOSTransform.GOES;
-    if (!isSweepX) {
-      scanGeometry = GEOSTransform.GEOS;
+    String sweepAngleAxis = "y";
+    if (isSweepX) {
+      sweepAngleAxis = "x";
     }
+
+    String scanGeometry = GEOSTransform.sweepAngleAxisToScanGeom(sweepAngleAxis);
 
     navigation = new GEOSTransform(subLonDegrees, scanGeometry);
     makePP();
@@ -125,14 +126,8 @@ public class Geostationary extends ProjectionImpl {
 
   public Geostationary(double subLonDegrees, String sweepAngleAxis, double geoCoordinateScaleFactor) {
     super(NAME, false);
-    String scanGeometry = GEOSTransform.GOES;
 
-    if (sweepAngleAxis.equals("x")) {
-       scanGeometry = GEOSTransform.GOES;
-    }
-    else if (sweepAngleAxis.equals("y")) {
-       scanGeometry = GEOSTransform.GEOS;
-    }
+    String scanGeometry = GEOSTransform.sweepAngleAxisToScanGeom(sweepAngleAxis);
 
     navigation = new GEOSTransform(subLonDegrees, scanGeometry);
 
@@ -149,7 +144,7 @@ public class Geostationary extends ProjectionImpl {
     addParameter(CF.LONGITUDE_OF_PROJECTION_ORIGIN, navigation.sub_lon_degrees);
     addParameter(CF.LATITUDE_OF_PROJECTION_ORIGIN, 0.0);
     addParameter(CF.PERSPECTIVE_POINT_HEIGHT, navigation.sat_height * 1000.0);
-    addParameter(CF.SWEEP_ANGLE_AXIS, navigation.scan_geom.equals(GEOSTransform.GOES) ? "x" : "y");
+    addParameter(CF.SWEEP_ANGLE_AXIS, GEOSTransform.scanGeomToSweepAngleAxis(navigation.scan_geom));
     addParameter(CF.SEMI_MAJOR_AXIS, navigation.r_eq * 1000.0);
     addParameter(CF.SEMI_MINOR_AXIS, navigation.r_pol * 1000.0);
   }
@@ -159,7 +154,13 @@ public class Geostationary extends ProjectionImpl {
    */
   @Override
   public ProjectionImpl constructCopy() {
-    return new Geostationary(navigation.sub_lon_degrees, navigation.scan_geom, geoCoordinateScaleFactor);
+    // constructor takes sweep_angle_axis, so need to translate between
+    // scan geometry and sweep_angle_axis first
+    // GOES: x
+    // GEOS: y
+    String sweepAxisAngle = GEOSTransform.scanGeomToSweepAngleAxis(navigation.scan_geom);
+
+    return new Geostationary(navigation.sub_lon_degrees, sweepAxisAngle, geoCoordinateScaleFactor);
   }
 
   @Override
