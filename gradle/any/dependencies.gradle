@@ -213,7 +213,7 @@ libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.7"
 libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.7"
 libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.7"
 
-libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.15.1") {
+libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.17.0") {
     // the version of jna shipped with chronicle-map requires GLIBC 2.14
     // which prevents the use of the TDS on several versions of linux, such
     // as CentOS and Hed Hat 6. We already include jna in netCDF-Java for
@@ -223,7 +223,7 @@ libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.15
     exclude group: 'net.java.dev.jna', module: 'jna'
     exclude group: 'net.java.dev.jna', module: 'jna-platform'
     // We do not need XStream for our use of chronicle-map.
-    // Nuke it.
+    // Nuke it. [SEC]
     exclude group: 'com.thoughtworks.xstream', module: 'xstream'
 }
 
