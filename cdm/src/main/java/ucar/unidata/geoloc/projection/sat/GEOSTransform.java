@@ -87,12 +87,15 @@ public class GEOSTransform {
                        double semi_major_axis,
                        double inverse_flattening,
                        String sweep_angle_axis) {
+
     Geoid geoid;
     if (Double.isNaN(inverse_flattening)) {
       geoid = new Geoid(semi_minor_axis, semi_major_axis);
     } else {
       geoid = new Geoid(semi_minor_axis, semi_major_axis, inverse_flattening);
     }
+
+    scan_geom = sweepAngleAxisToScanGeom(sweep_angle_axis);
 
     init(subLonDegrees, scan_geom, geoid, perspective_point_height);
   }
@@ -103,6 +106,9 @@ public class GEOSTransform {
                        double semi_major_axis,
                        String sweep_angle_axis) {
     Geoid geoid = new Geoid(semi_minor_axis, semi_major_axis);
+
+    scan_geom = sweepAngleAxisToScanGeom(sweep_angle_axis);
+
     init(subLonDegrees, scan_geom, geoid, perspective_point_height);
   }
 
@@ -333,6 +339,37 @@ public class GEOSTransform {
     return new double[]{fgf_x, fgf_y};
   }
 
+  /**
+   * Find sweep_angle_axis associated with a scan geometry
+   *
+   * @param scanGeometry scanning geometry (GOES or GEOS)
+   * @return sweep_angle_axis (x or y)
+   */
+  public static String scanGeomToSweepAngleAxis(String scanGeometry) {
+
+    String sweepAngleAxis = "y";
+    if (scanGeometry.equals(GOES)) {
+      sweepAngleAxis = "x";
+    }
+
+    return sweepAngleAxis;
+  }
+
+  /**
+   * Find scan geometry associated with sweep_angle_axis
+   *
+   * @param sweepAngleAxis sweep_angle_axis (x or y)
+   * @return scan_geom scanning geometry (GOES or GEOS)
+   */
+  public static String sweepAngleAxisToScanGeom(String sweepAngleAxis) {
+
+    String scanGeom = GOES;
+    if (sweepAngleAxis.equals("y")) {
+      scanGeom = GEOS;
+    }
+
+    return scanGeom;
+  }
 
   @Override
   public boolean equals(Object o) {
