@@ -103,7 +103,7 @@ libraries["52n-xml-sampling-v20"] = "org.n52.sensorweb:52n-xml-sampling-v20:${ve
 
 ////////////////////////////////////////// Logging //////////////////////////////////////////
 
-versions["slf4j"] = "1.7.25"
+versions["slf4j"] = "1.8.0-beta2"
 
 libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
@@ -336,13 +336,6 @@ configurations.all {
                 dep.useTarget libraries["jcl-over-slf4j"]
             }
         }
-
-        // Force the use of org.slf4j:slf4j-api:1.7.25 (over 1.8.0-alpha2) due to vulnerability.
-        // alpha2 is pulled in by org.apache.logging.log4j:log4j-slf4j-impl, which we pull in
-        // and is currently at the latest version. if we bump to 1.8.0-alpha2, many libraries that
-        // depend on slj4j break. See: https://github.com/gatling/gatling/issues/3290
-        // So, our only option is to override it with the latest 1.7.x version...for now...
-        force 'org.slf4j:slf4j-api:1.7.25'
     }
     
     // STAX is already included in Java 1.6+; no need for a third-party depenency.
