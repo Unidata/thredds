@@ -103,7 +103,7 @@ libraries["52n-xml-sampling-v20"] = "org.n52.sensorweb:52n-xml-sampling-v20:${ve
 
 ////////////////////////////////////////// Logging //////////////////////////////////////////
 
-versions["slf4j"] = "1.7.25"
+versions["slf4j"] = "1.8.0-beta2"
 
 libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
@@ -213,7 +213,7 @@ libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.7"
 libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.7"
 libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.7"
 
-libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.15.1") {
+libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.17.0") {
     // the version of jna shipped with chronicle-map requires GLIBC 2.14
     // which prevents the use of the TDS on several versions of linux, such
     // as CentOS and Hed Hat 6. We already include jna in netCDF-Java for
@@ -223,8 +223,11 @@ libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.15
     exclude group: 'net.java.dev.jna', module: 'jna'
     exclude group: 'net.java.dev.jna', module: 'jna-platform'
     // We do not need XStream for our use of chronicle-map.
-    // Nuke it.
+    // Nuke it. [SEC]
     exclude group: 'com.thoughtworks.xstream', module: 'xstream'
+    // We do not need pax-url-aether
+    // Nuke it. [SEC]
+    exclude group: 'org.ops4j.pax.url', module: 'pax-url-aether'
 }
 
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
@@ -333,13 +336,6 @@ configurations.all {
                 dep.useTarget libraries["jcl-over-slf4j"]
             }
         }
-
-        // Force the use of org.slf4j:slf4j-api:1.7.25 (over 1.8.0-alpha2) due to vulnerability.
-        // alpha2 is pulled in by org.apache.logging.log4j:log4j-slf4j-impl, which we pull in
-        // and is currently at the latest version. if we bump to 1.8.0-alpha2, many libraries that
-        // depend on slj4j break. See: https://github.com/gatling/gatling/issues/3290
-        // So, our only option is to override it with the latest 1.7.x version...for now...
-        force 'org.slf4j:slf4j-api:1.7.25'
     }
     
     // STAX is already included in Java 1.6+; no need for a third-party depenency.
