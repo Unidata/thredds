@@ -41,7 +41,7 @@ such as toolsUI.jar and netcdfAll.jar, will be found in `build/libs/`.
 
 NetCDF-Java is comprised of several modules, many of which you can use within your own projects, as described
 link:../reference/BuildDependencies.html[here]. At Unidata, we publish the artifacts that those modules generate to
-our link:https://artifacts.unidata.ucar.edu/index.html#view-repositories[Nexus repository].
+our link:https://artifacts.unidata.ucar.edu[Nexus repository].
 
 However, it may happen that you need artifacts for the in-development version of THREDDS, which we usually don't
 upload to Nexus. Never fear: you can build them yourself and publish them to your local Maven repository!

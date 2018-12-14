@@ -34,14 +34,19 @@
   <li>An integrated server provides bulk file access through the HTTP protocol.</li>
   <li>An integrated server provides data access through the <a href="http://www.opengeospatial.org/standards/wcs">OpenGIS Consortium (OGC) Web Coverage Service
     (WCS</a>) protocol, for any "gridded" dataset whose coordinate system information is complete.  </li>
-  <li>An integrated server provides data access through the <a href="http://www.opengeospatial.org/standards/wms">OpenGIS Consortium (OGC) Web Map Service
-    (WMS</a>)
-    protocol, for any "gridded" dataset whose coordinate system information
-    is complete. This software was developed by Jon Blower (University of
-    Reading (UK) E-Science Center) as part of the <a href="http://behemoth.nerc-essc.ac.uk/ncWMS/godiva2.html">ESSC Web Map Service for environmental data</a>
-    (aka Godiva2).  </li>
+  <li>An integrated server provides data access through the
+    <a href="http://www.opengeospatial.org/standards/wms">OpenGIS Consortium (OGC) Web Map Service (WMS)</a>
+    protocol, for any "gridded" dataset whose coordinate system information is complete. THREDDS integrates
+    a version of <a href="http://ncwms.sf.net/">ncWMS</a> and its companion
+    <a href="http://godiva.reading.ac.uk/">"Godiva" web application</a> for WMS access and online visualization, developed
+    at the <a href="http://www.met.reading.ac.uk/resc/home/">University of Reading</a>.
+  </li>
   <li>The integrated <a href="reference/ncISO.html">ncISO server</a> provides automated metadata analysis and ISO metadata generation.</li>
-  <li>The integrated <a href="reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service</a> allows subsetting certain CDM datasets in coordinate space, using a REST API. Gridded data subsets can be returned in <a href="http://cfconventions.org/">CF-compliant</a> netCDF-3 or netCDF-4. Point data subsets can be returned in CSV, XML, or <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries">CF-DSG</a> netCDF files.</li>
+  <li>The integrated <a href="reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service</a> allows subsetting certain CDM datasets
+    in coordinate space, using a REST API. Gridded data subsets can be returned in <a href="http://cfconventions.org/">CF-compliant</a> netCDF-3 or netCDF-4.
+    Point data subsets can be returned in CSV, XML, WaterML (with <a href="https://github.com/Unidata/thredds/tree/5.0.0/waterml#waterml">assistance</a>
+    from <a href="https://coastwatch.pfeg.noaa.gov/erddap/index.html">ERDDAP</a> [NOAA / Robert Simons/CoHort Software], <a href="https://github.com/Unidata/thredds/tree/5.0.0/docs/src/private/licenses/third-party/erddap">license information</a>),
+    or <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries">CF-DSG</a> netCDF files.</li>
 </ol>
 <p>The THREDDS Data Server is implemented in 100% Java*, and is
   contained in a single war file, which allows very easy installation
@@ -72,7 +77,7 @@
   <li>Download the latest release: [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war">thredds.war</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.md5">MD5</a>)]
     (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/thredds.war.sha1">SHA1</a>)]
     [<a href="https://github.com/Unidata/thredds">source on GitHub</a>]
-    [<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>] </li>
+    [<a href="https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>] </li>
   <li>The THREDDS Data Manager (TDM)  <a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.6/current/tdm-4.6.jar">tdm.jar</a></li>
   <li>Documentation:
     <ul>
@@ -88,7 +93,7 @@
 <p><strong>TDS 4.3 is the previous release. It requires Tomcat 6+ and Java 6+.</strong></p>
 <ul>
   <li>Download the latest  release: [<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war">thredds.war</a> (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war.md5">MD5</a>)] (<a href="ftp://ftp.unidata.ucar.edu/pub/thredds/4.3/current/thredds.war.sha1">SHA1</a>)]
-    [<a href="https://github.com/Unidata/thredds">source on GitHub</a>] [<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>]</li>
+    [<a href="https://github.com/Unidata/thredds">source on GitHub</a>] [<a href="https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tds/">artifacts in Unitdata's maven repository</a>]</li>
   <li>Documentation:
     <ul>
       <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/tds/tds4.3/reference/index.html">Reference</a></li>
@@ -136,13 +141,12 @@
 <ul>
   <li><a href="catalog/index.html">THREDDS Catalogs</a></li>
   <li> Fact Sheet
-    [<a href="http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.doc">Word Doc</a>]
-    [<a href="http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.pdf">PDF</a>]
+    [<a href="https://www.unidata.ucar.edu/publications/factsheets/current/factsheet_tds.pdf">PDF</a>]
   </li>
 </ul>
 <hr width="100%">
 <address>
-  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated May 2015
+  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated November 2018
 </address>
 </body>
 </html>

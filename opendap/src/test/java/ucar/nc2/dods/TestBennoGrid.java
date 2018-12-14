@@ -54,6 +54,9 @@ public class TestBennoGrid {
 
   @org.junit.Test
   public void testGrid() throws IOException, InvalidRangeException {
+
+    System.setProperty("httpservices.urlencode", "false");
+
     try (DODSNetcdfFile dodsfile = TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods")) {
 
       Variable dataV = null;
@@ -72,6 +75,9 @@ public class TestBennoGrid {
       Array data = dataV.read("0, 0:72:1, 0:143:1");
       assert null != data;
     }
+
+    System.setProperty("httpservices.urlencode", "true");
+
   }
 
 }

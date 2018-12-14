@@ -242,14 +242,14 @@ class PublishingUtilTest extends Specification {
         and: "Setup GradleRunner and execute it to get build result."
         BuildResult buildResult = GradleRunner.create()
                                               .withProjectDir(testProjectDir.root)
-                                              .withArguments(':generatePomFileForTestJavaPublication')
+                                              .withArguments(':generatePomFileForTestPublication')
                                               .build()
         
         expect: "Task succeeded."
-        buildResult.task(':generatePomFileForTestJavaPublication')?.outcome == TaskOutcome.SUCCESS
+        buildResult.task(':generatePomFileForTestPublication')?.outcome == TaskOutcome.SUCCESS
 
         and: "It created a POM file."
-        File pomFile = new File("${testProjectDir.root}/build/publications/testJava/pom-default.xml")
+        File pomFile = new File("${testProjectDir.root}/build/publications/test/pom-default.xml")
         pomFile.exists()
 
         and: "POM has 3 dependencies. junit and groovy-all were not included because they're test deps."
@@ -300,15 +300,15 @@ class PublishingUtilTest extends Specification {
         and: "Setup GradleRunner and execute it to get build result."
         BuildResult buildResult = GradleRunner.create()
                                               .withProjectDir(testProjectDir.root)
-                                              .withArguments(':generatePomFileForTestWebPublication')
+                                              .withArguments(':generatePomFileForTestPublication')
                                               .build()
         
         expect: "Task succeeded."
-        buildResult.task(':generatePomFileForTestWebPublication')?.outcome == TaskOutcome.SUCCESS
+        buildResult.task(':generatePomFileForTestPublication')?.outcome == TaskOutcome.SUCCESS
     
         /*
         Previously, build was failing with:
-            Execution failed for task ':generatePomFileForTestWebPublication'.
+            Execution failed for task ':generatePomFileForTestPublication'.
             > assert pomDependencyNodes*.name()*.localPart.toUnique() == ['dependency']
                      |                   |       |         |          |
                      []                  []      []        []         false

@@ -40,7 +40,7 @@ COPY tomcat-files/bash_logout /usr/local/tomcat/.bash_logout
 #
 # get the latest stable THREDDS Data Server (TDS)
 #
-#RUN wget -O /usr/local/tomcat/webapps/thredds##04.06.02.war https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/4.6.2/tds-4.6.2.war
+#RUN wget -O /usr/local/tomcat/webapps/thredds##04.06.02.war https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tds/4.6.2/tds-4.6.2.war
 
 #
 # Copy thredds.war

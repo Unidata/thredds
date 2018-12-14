@@ -146,10 +146,14 @@
 
   <!--
   Writing GRIB indexes.
-  <GribIndexing>
-    <setExtendIndex>false</setExtendIndex>
-    <alwaysUseCache>false</alwaysUseCache>
-  </GribIndexing>
+  <GribIndex>
+    <alwaysUse>false</alwaysUse>
+    <neverUse>false</neverUse>
+    <dir>/tomcat_home/content/thredds/cache/grib/</dir>
+    <policy>nestedDirectory</policy>
+    <scour>0 hours</scour>
+    <maxAge>90 days</maxAge>
+  </GribIndex>
   -->
 
   <!--
@@ -211,6 +215,12 @@
     <uddcAllow>false</uddcAllow>
     <isoAllow>false</isoAllow>
   </NCISO>
+  -->
+
+  <!--
+  <NCSOS>
+    <allow>false</allow>
+  </NCSOS>
   -->
 
   <!-- CatalogGen service is off by default.

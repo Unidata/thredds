@@ -78,4 +78,10 @@ public interface CDM {
   public static final String RLATLON_UNITS = "degrees";
   public static final String TIME_INTERVAL = "time_interval";
 
+  // Special Attribute Names
+  public static final String NCPROPERTIES = "_NCProperties";
+  public static final String ISNETCDF4 = "_IsNetcdf4";
+  public static final String SUPERBLOCKVERSION = "_SuperblockVersion";
+  public static final String DAP4_LITTLE_ENDIAN = "_DAP4_Little_Endian";
+  public static final String EDU_UCAR_PREFIX = "_edu.ucar";
 }

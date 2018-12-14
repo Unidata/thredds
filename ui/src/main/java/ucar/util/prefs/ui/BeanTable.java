@@ -293,6 +293,8 @@ public class BeanTable extends JPanel {
    */
   public Object getSelectedBean() {
     int viewRowIndex = jtable.getSelectedRow();
+    if(viewRowIndex < 0)
+      return null;
     int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
     return (modelRowIndex < 0) || (modelRowIndex >= beans.size()) ? null : beans.get(modelRowIndex);
   }

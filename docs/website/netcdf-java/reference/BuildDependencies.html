@@ -26,9 +26,9 @@ Releases repository:</p>
 <pre class="CodeRay highlight"><code data-lang="xml"><span class="comment">&lt;!-- In Maven --&gt;</span>
 <span class="tag">&lt;repositories&gt;</span>
     <span class="tag">&lt;repository&gt;</span>
-        <span class="tag">&lt;id&gt;</span>unidata-releases<span class="tag">&lt;/id&gt;</span>
-        <span class="tag">&lt;name&gt;</span>Unidata Releases<span class="tag">&lt;/name&gt;</span>
-        <span class="tag">&lt;url&gt;</span>https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/<span class="tag">&lt;/url&gt;</span>
+        <span class="tag">&lt;id&gt;</span>unidata-all<span class="tag">&lt;/id&gt;</span>
+        <span class="tag">&lt;name&gt;</span>Unidata All<span class="tag">&lt;/name&gt;</span>
+        <span class="tag">&lt;url&gt;</span>https://artifacts.unidata.ucar.edu/repository/unidata-all/<span class="tag">&lt;/url&gt;</span>
     <span class="tag">&lt;/repository&gt;</span>
 <span class="tag">&lt;/repositories&gt;</span></code></pre>
 </div>
@@ -38,7 +38,7 @@ Releases repository:</p>
 <pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// In Gradle</span>
 repositories {
     maven {
-        url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/</span><span class="delimiter">&quot;</span></span>
+        url <span class="string"><span class="delimiter">&quot;</span><span class="content">https://artifacts.unidata.ucar.edu/repository/unidata-all/</span><span class="delimiter">&quot;</span></span>
     }
 }</code></pre>
 </div>
@@ -172,7 +172,7 @@ dependencies {
 <div class="paragraph">
 <p>This is the appropriate option if you&#8217;re not using a dependency management tool like Maven or Gradle and you don&#8217;t
 care about jar size or compatibility with other libraries. Simply include
-<a href="https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/">netcdfAll-${netcdfJavaVersion}.jar</a>
+<a href="https://artifacts.unidata.ucar.edu/repository/unidata-all/edu/ucar/netcdfAll/">netcdfAll-${netcdfJavaVersion}.jar</a>
 on the classpath when you run your program. You&#8217;ll also need a <a href="#_logging">logger</a>.</p>
 </div>
 </div>

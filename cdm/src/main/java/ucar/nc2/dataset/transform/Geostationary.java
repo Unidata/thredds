@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -33,16 +33,21 @@
 
 package ucar.nc2.dataset.transform;
 
+import java.util.List;
+
 import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
- * Describe: https://cf-pcmdi.llnl.gov/trac/ticket/72
+ * Describe: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/cf-conventions.html#_geostationary_projection
  * Accepted for CF-1.7
  *
  * grid_mapping_name = geostationary
@@ -87,12 +92,27 @@ import ucar.unidata.geoloc.ProjectionImpl;
  */
 public class Geostationary extends AbstractCoordTransBuilder {
 
+    private static double defaultScaleFactor = -1.0;
+
     public String getTransformName() {
       return CF.GEOSTATIONARY;
     }
 
     public TransformType getTransformType() {
       return TransformType.Projection;
+    }
+
+    private double checkMapCoordinateUnits(CoordinateAxis ca) {
+      // default value of -1.0 interpreted as no scaling in the class
+      // ucar.unidata.geoloc.projection.sat.Geostationary
+      double scaleFactor = defaultScaleFactor;
+      String neededMapCoordinateUnit = "radian";
+      String mapCoordinateUnit = ca.getUnitsString();
+      if (SimpleUnit.isCompatible(mapCoordinateUnit, neededMapCoordinateUnit)) {
+        scaleFactor = SimpleUnit.getConversionFactor(mapCoordinateUnit, neededMapCoordinateUnit);
+      }
+
+      return scaleFactor;
     }
 
     public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
@@ -106,17 +126,38 @@ public class Geostationary extends AbstractCoordTransBuilder {
       if (Double.isNaN(perspective_point_height)) {
          throw new IllegalArgumentException("Must specify "+CF.PERSPECTIVE_POINT_HEIGHT);
       }
-      double semi_minor_axis = readAttributeDouble( ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
-      if (Double.isNaN(semi_minor_axis)) {
-         throw new IllegalArgumentException("Must specify "+CF.SEMI_MINOR_AXIS);
-      }
+
       double semi_major_axis = readAttributeDouble( ctv, CF.SEMI_MAJOR_AXIS, Double.NaN);
       if (Double.isNaN(semi_major_axis)) {
          throw new IllegalArgumentException("Must specify "+CF.SEMI_MAJOR_AXIS);
       }
 
-      double inv_flattening = readAttributeDouble( ctv, CF.INVERSE_FLATTENING, Double.NaN);
+      double semi_minor_axis = readAttributeDouble( ctv, CF.SEMI_MINOR_AXIS, Double.NaN);
+      double inv_flattening  = readAttributeDouble( ctv, CF.INVERSE_FLATTENING, Double.NaN);
 
+      if (Double.isNaN(semi_minor_axis) && Double.isNaN(inv_flattening)) {
+         throw new IllegalArgumentException("Must specify "+CF.SEMI_MINOR_AXIS+" and/or "+CF.INVERSE_FLATTENING);
+      }
+      else if (Double.isNaN(semi_minor_axis)) {
+          final double flattening = 1. / inv_flattening;
+          semi_minor_axis = semi_major_axis * (1. - flattening);
+      }
+      else if (Double.isNaN(inv_flattening))
+      {
+        if (semi_minor_axis != semi_major_axis) {
+          final double flattening = (semi_major_axis - semi_minor_axis) / semi_major_axis;
+          inv_flattening = 1. / flattening;
+        }
+        else {
+          // Do nothing. The calculations results in inv_flattening = 1. / 0., and it is already
+          // set to Double.NaN.
+        }
+      }
+      else {
+        // Both semi_minor_axis and inv_flattening are specified.
+        assert (! Double.isNaN(semi_minor_axis)) && (! Double.isNaN(inv_flattening));
+        // If we were obsessive, we could do a sanity test to verify the values are consistent.
+      }
 
       String sweep_angle = readAttribute( ctv, CF.SWEEP_ANGLE_AXIS, null);
       String fixed_angle = readAttribute( ctv, CF.FIXED_ANGLE_AXIS, null);
@@ -129,9 +170,25 @@ public class Geostationary extends AbstractCoordTransBuilder {
       else
         isSweepX =  fixed_angle.equals("y");
 
-      // double subLonDegrees, double perspective_point_height, double semi_minor_axis, double semi_major_axis, double inv_flattening, boolean isSweepX
+      // scales less than zero indicate no scaling of axis (i.e. map coords have units of radians)
+      double xScaleFactor = defaultScaleFactor;
+      double yScaleFactor = defaultScaleFactor;
+
+      List<CoordinateAxis> cas = ds.getCoordinateAxes();
+      for (CoordinateAxis ca : cas) {
+          AxisType axisType = ca.getAxisType();
+          if (axisType != null) {
+              if (ca.getAxisType().equals(AxisType.GeoX)) {
+                  xScaleFactor = checkMapCoordinateUnits(ca);
+              } else if (ca.getAxisType().equals(AxisType.GeoY)) {
+                  yScaleFactor = checkMapCoordinateUnits(ca);
+              }
+          }
+      }
+
       ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(
-              subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX);
+              subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis,
+              inv_flattening, isSweepX, xScaleFactor, yScaleFactor);
 
       return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
     }

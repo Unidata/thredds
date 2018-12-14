@@ -73,7 +73,7 @@ import java.util.Formatter;
 
 public class CoordinateAxis extends VariableDS {
   static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoordinateAxis.class);
-  static private final int axisSizeToCache = 100 * 1000; // bytes
+  static public int axisSizeToCache = 100 * 1000; // bytes
 
   protected NetcdfDataset ncd; // container dataset
   protected AxisType axisType = null;

@@ -28,7 +28,7 @@
    - You need the correct `nexus.username` and `nexus.password` properties defined in your
      `~/.gradle/gradle.properties` file. Ask Christian for those.
    - `./gradlew clean publish`
-   - Check artifacts at http://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/
+   - Check artifacts at http://artifacts.unidata.ucar.edu/repository/unidata-releases/
 
 8. On `www`, prepare environment variables for scripts that follow:
     ```bash
@@ -51,17 +51,17 @@
 
 10. Copy over the TDS war and its security hashes from Nexus, renaming them in the process.
     ```bash
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war -O ${releaseMinor}/thredds.war
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war.md5 -O ${releaseMinor}/thredds.war.md5
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war.sha1 -O ${releaseMinor}/thredds.war.sha1
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war -O ${releaseMinor}/thredds.war
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war.md5 -O ${releaseMinor}/thredds.war.md5
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tds/${releaseMinor}/tds-${releaseMinor}.war.sha1 -O ${releaseMinor}/thredds.war.sha1
     ```
 
 11. Copy over the TDM fat jar and its security hashes from Nexus, renaming them in the process.
    When renaming, "tdmFat" should become "tdm".
     ```bash
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar -O ${releaseMinor}/tdm-${releaseMajor}.jar
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar.sha1 -O ${releaseMinor}/tdm-${releaseMajor}.jar.sha1
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar.md5 -O ${releaseMinor}/tdm-${releaseMajor}.jar.md5
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar -O ${releaseMinor}/tdm-${releaseMajor}.jar
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar.sha1 -O ${releaseMinor}/tdm-${releaseMajor}.jar.sha1
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/tdmFat/${releaseMinor}/tdmFat-${releaseMinor}.jar.md5 -O ${releaseMinor}/tdm-${releaseMajor}.jar.md5
     ```
 
 12. Change permissions of the files you just copied.
@@ -75,15 +75,15 @@
 13. Copy over ncIdv, netcdfAll, toolsUI and their security hashes from Nexus
     ```bash
     cd /web/ftp/pub/netcdf-java/v${releaseMajor}
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/${releaseMinor}/ncIdv-${releaseMinor}.jar
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/${releaseMinor}/ncIdv-${releaseMinor}.jar.md5
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/ncIdv/${releaseMinor}/ncIdv-${releaseMinor}.jar.sha1
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/${releaseMinor}/netcdfAll-${releaseMinor}.jar
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/${releaseMinor}/netcdfAll-${releaseMinor}.jar.md5
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/netcdfAll/${releaseMinor}/netcdfAll-${releaseMinor}.jar.sha1
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/toolsUI/${releaseMinor}/toolsUI-${releaseMinor}.jar
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/toolsUI/${releaseMinor}/toolsUI-${releaseMinor}.jar.md5
-    wget https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/edu/ucar/toolsUI/${releaseMinor}/toolsUI-${releaseMinor}.jar.sha1
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/ncIdv/${releaseMinor}/ncIdv-${releaseMinor}.jar
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/ncIdv/${releaseMinor}/ncIdv-${releaseMinor}.jar.md5
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/ncIdv/${releaseMinor}/ncIdv-${releaseMinor}.jar.sha1
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/netcdfAll/${releaseMinor}/netcdfAll-${releaseMinor}.jar
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/netcdfAll/${releaseMinor}/netcdfAll-${releaseMinor}.jar.md5
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/netcdfAll/${releaseMinor}/netcdfAll-${releaseMinor}.jar.sha1
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/toolsUI/${releaseMinor}/toolsUI-${releaseMinor}.jar
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/toolsUI/${releaseMinor}/toolsUI-${releaseMinor}.jar.md5
+    wget https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/toolsUI/${releaseMinor}/toolsUI-${releaseMinor}.jar.sha1
     ```
 
 14. Remove symlinks to old versions and create ones to new versions

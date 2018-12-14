@@ -12,13 +12,13 @@ configure(publishedProjects) { Project project ->
             if (version.endsWith('SNAPSHOT')) {
                 maven {
                     name = 'snapshots'
-                    url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-snapshots/'
+                    url = 'https://artifacts.unidata.ucar.edu/repository/unidata-snapshots/'
                     // Set credentials in taskGraph.whenReady {}
                 }
             } else {
                 maven {
                     name = 'releases'
-                    url = 'https://artifacts.unidata.ucar.edu/content/repositories/unidata-releases/'
+                    url = 'https://artifacts.unidata.ucar.edu/repository/unidata-releases/'
                     // Set credentials in taskGraph.whenReady {}
                 }
             }

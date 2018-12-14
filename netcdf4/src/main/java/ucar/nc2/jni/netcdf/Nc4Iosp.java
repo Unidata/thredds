@@ -2737,6 +2737,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
     if (att.getShortName().equals(H5header.HDF5_DIMENSION_LABELS)) return;
     if (att.getShortName().equals(CDM.CHUNK_SIZES)) return;
     if (att.getShortName().equals(CDM.COMPRESS)) return;
+    if (att.getShortName().equals(CDM.NCPROPERTIES)) return;
+    if (att.getShortName().equals(CDM.ISNETCDF4)) return;
 
     int ret = 0;
     Array values = att.getValues();

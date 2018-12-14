@@ -4,7 +4,9 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.DependencySet
+import org.gradle.api.artifacts.PublishArtifact
 import org.gradle.api.component.SoftwareComponent
+import org.gradle.api.internal.component.UsageContext
 import org.gradle.api.publish.maven.MavenArtifact
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.internal.dependencies.MavenDependencyInternal
@@ -49,37 +51,42 @@ abstract class PublishingUtil {
             // plugin haven't been evaluated yet.
             publishing {
                 publications {
-                    SoftwareComponent webComponent = components.findByName('web')
-                    if (webComponent) {
-                        // Creates a Maven publication with the given name. It will also generate several tasks:
-                        //   generatePomFileFor${project.name}WebPublication
-                        //   publish${project.name}WebPublicationToMavenLocal
-                        //   publishToMavenLocal                          (depends on all instances of the above task)
-                        //   publish${project.name}WebPublicationTo${repoName}Repository
-                        //   publish                                      (depends on all instances of the above task)
-                        "${project.name}Web"(MavenPublication) {
+                    // Creates a Maven publication with the given name. It will also generate several tasks:
+                    //   generatePomFileFor${project.name}Publication
+                    //   publish${project.name}PublicationToMavenLocal
+                    //   publishToMavenLocal                          (depends on all instances of the above task)
+                    //   publish${project.name}PublicationTo${repoName}Repository
+                    //   publish                                      (depends on all instances of the above task)
+                    "${project.name}"(MavenPublication) {
+                        SoftwareComponent webComponent = components.findByName('web')
+                        SoftwareComponent javaComponent = components.findByName('java')
+    
+                        if (webComponent) {
                             from webComponent
-                        }
-                    }
-
-                    SoftwareComponent javaComponent = components.findByName('java')
-                    if (javaComponent) {
-                        "${project.name}Java"(MavenPublication) {
-                            from javaComponent
-
-                            // The project produces both a WAR and a JAR. Maven only permits one artifact in a project
-                            // to have an empty classifier, and we've given that to the WAR (e.g. tds-4.6.4.war).
-                            // Following the example of the maven-war-plugin when the "attachClasses" value is "true",
-                            // we're going to give the JAR a 'classes' classifier (e.g. tds-4.6.4-classes.jar).
-                            if (webComponent) {
-                                MavenArtifact primaryArtifact = artifacts.first()
-                                primaryArtifact.classifier = 'classes'
-
-                                // When the primary artifact has a classifier, maven-publish erroneously assigns it the
-                                // packaging 'pom' (see DefaultMavenPublication.determinePackagingFromArtifacts()).
-                                // So, we explicitly set it to 'jar'.
-                                pom.packaging = 'jar'
+                            assert javaComponent : "'war' plugin applies 'java' plugin, so any project that has a " +
+                                                   "'web' component should also have a 'java' component."
+                            
+                            // Add all artifacts to a set first, to nuke dupes.
+                            Set<PublishArtifact> javaComponentArtifacts = new LinkedHashSet<>()
+                            javaComponent.usages.each { UsageContext usageContext ->
+                                javaComponentArtifacts.addAll usageContext.artifacts
                             }
+    
+                            // Include all of the artifacts from the javaComponent in the publication
+                            javaComponentArtifacts.each {
+                                if (!it.classifier) {
+                                    // This is the primary artifact in javaComponent, e.g. "tds-<version>.jar".
+                                    // When we publish it along with the WAR, it is Maven convention to give it the
+                                    // 'classes' classifier. See https://goo.gl/CL1jyv
+                                    it.classifier = 'classes'
+                                }
+        
+                                artifact it  // Add artifact to publication
+                            }
+                        } else if (javaComponent) {
+                            from javaComponent
+                        } else {
+                            assert project.name == 'thredds' : "'${project.name}' doesn't produce a software component."
                         }
                     }
                 }
@@ -122,9 +129,7 @@ abstract class PublishingUtil {
                         }
                         
                         assert pomDependencyNodes*.name()*.localPart.toUnique() == ['dependency']
-
-                        // The compile-scoped dependencies of the project. The provided-scoped dependencies are
-                        // already being handled by gradle-extra-configurations-plugin: https://goo.gl/xzRuLu
+                        
                         DependencySet projCompileDeps = projCompileConfig.dependencies
 
                         List<Node> depNodesToFix = pomDependencyNodes.findAll { Node pomDependencyNode ->
@@ -159,19 +164,24 @@ abstract class PublishingUtil {
         pubs.each { MavenPublication pub ->
             MavenPomInternal pom = pub.pom
             MavenProjectIdentity projId = pom.projectIdentity
-
-            MavenCoordinates projMavenCoords = new MavenCoordinates(
-                    groupId: projId.groupId, artifactId: projId.artifactId, version: projId.version,
-                    packaging: pom.packaging)
-
-            String classifier
-            MavenArtifact primaryArtifact = pub.artifacts.empty ? null : pub.artifacts.first()
-            if (primaryArtifact) {
-                classifier = primaryArtifact.classifier
+            
+            pub.artifacts.each { MavenArtifact artifact ->
+                if (!artifact.classifier) {
+                    // This is the primary artifact, either a JAR or WAR. Obviously, we want to include it in the BOM.
+                    deps.add new MavenCoordinates(
+                            groupId: projId.groupId, artifactId: projId.artifactId, version: projId.version,
+                            packaging: pom.packaging, classifier: ''
+                    )
+                } else if (artifact.classifier == 'classes') {
+                    // This contains the classes associated with a webapp.
+                    // See https://maven.apache.org/plugins/maven-war-plugin/war-mojo.html#attachClasses
+                    deps.add new MavenCoordinates(
+                            groupId: projId.groupId, artifactId: projId.artifactId, version: projId.version,
+                            packaging: 'jar', classifier: 'classes'
+                    )
+                }
+                // Other possible classifiers include 'sources' and 'javadoc'. We don't want those artifacts in our BOM.
             }
-
-            projMavenCoords.classifier = classifier ?: ''
-            deps.add projMavenCoords
 
             // Add deps for the project's dependencies. They all have default packaging and classifier.
             pom.runtimeDependencies.each { MavenDependencyInternal dep ->

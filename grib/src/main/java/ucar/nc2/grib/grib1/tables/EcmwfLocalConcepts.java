@@ -42,7 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * The purpose of this class is to read in the files from ECMWFs gribapi software and
+ * The purpose of this class is to read in the files from ECMWFs ecCodes software and
  * create useful grib 1 tables for the CDM. Note that the intent is to process these
  * local concept files as minimally as possible. Only run this from the git directory.
  * This is run offline
@@ -81,7 +81,7 @@ public class EcmwfLocalConcepts {
             sourcesPath = classPath.split(split)[0];
             sourcesPath = classPath.split("/grib")[0];
         }
-        ecmwfLocalConceptsLoc = sourcesPath+sep+"grib"+sep+"src"+sep+"main"+sep+"sources"+sep+"ecmwfGribApi"+sep;
+        ecmwfLocalConceptsLoc = sourcesPath+sep+"grib"+sep+"src"+sep+"main"+sep+"sources"+sep+"ecmwfEcCodes"+sep;
         // initialize input streams for reading the localConcept files
         try {
           parseLocalConcept(ecmwfLocalConceptsLoc + "shortName.def", SHORTNAME_ID);

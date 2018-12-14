@@ -710,9 +710,21 @@ public class GribCdmIndex implements IndexReader {
   static public GribCollectionImmutable openGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
 
     // update if needed
-    updateGribCollection(config, updateType, logger);
+    boolean changed = updateGribCollection(config, updateType, logger);
 
     File idxFile = makeTopIndexFileFromConfig(config);
+
+    // If call to updateGribCollection shows a change happened, then collection changed.
+    // If updateType is never (tds is in charge of updating, not TDM or some other external application),
+    // then this is being called after receiving an outside trigger. Assume collection changed.
+    //
+    // At this point, there isn't a good way of invalidating the gribColectionCache entries associated with the
+    // particular collection being updated, so we have to clear the whole cache. Will revisit this in
+    // 5.0 if performance is an issue
+    if ((updateType == CollectionUpdateType.never) || changed) {
+      gribCollectionCache.clearCache(true);
+    }
+
     return openCdmIndex(idxFile.getPath(), config, true, logger);
   }
 

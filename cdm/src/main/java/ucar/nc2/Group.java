@@ -1,5 +1,5 @@
 /*
- * Copyright 1998-2014 University Corporation for Atmospheric Research/Unidata
+ * Copyright 1998-2017 University Corporation for Atmospheric Research/Unidata
  *
  *   Portions of this software were developed by the Unidata Program at the
  *   University Corporation for Atmospheric Research.
@@ -65,6 +65,7 @@ public class Group extends CDMNode implements AttributeContainer {
   protected List<Dimension> dimensions = new ArrayList<>();
   protected List<Group> groups = new ArrayList<>();
   protected List<Attribute> attributes = new ArrayList<>();
+  protected List<Attribute> specials = new ArrayList<>();
   protected List<EnumTypedef> enumTypedefs = new ArrayList<>();
   private int hashCode = 0;
 
@@ -286,10 +287,15 @@ public class Group extends CDMNode implements AttributeContainer {
   public Attribute findAttribute(String name) {
     if (name == null) return null;
     // name = NetcdfFile.makeNameUnescaped(name);
-
     for (Attribute a : attributes) {
       if (name.equals(a.getShortName()))
         return a;
+    }
+    if(name.startsWith(Attribute.SPECIALPREFIX)) {
+      for (Attribute a : specials) {
+        if (name.equals(a.getShortName()))
+          return a;
+      }
     }
     return null;
   }
@@ -377,6 +383,18 @@ public class Group extends CDMNode implements AttributeContainer {
       sbuff.append("\n");
     }
     return sbuff.toString();
+  }
+
+  /**
+   * CDL representation.
+   *
+   * @param strict if true, write in strict adherence to CDL definition.
+   * @return CDL representation.
+   */
+  public String writeCDL(boolean strict) {
+    Formatter buf = new Formatter();
+    writeCDL(buf, new Indent(2), strict);
+    return buf.toString();
   }
 
   protected void writeCDL(Formatter out, Indent indent, boolean strict) {
@@ -494,14 +512,17 @@ public class Group extends CDMNode implements AttributeContainer {
    */
   public Attribute addAttribute(Attribute att) {
     if (immutable) throw new IllegalStateException("Cant modify");
-    for (int i = 0; i < attributes.size(); i++) {
-      Attribute a = attributes.get(i);
+    List<Attribute> container = this.attributes;
+    if(Attribute.isspecial(att))
+	container = this.specials;
+    for (int i = 0; i < container.size(); i++) {
+      Attribute a = container.get(i);
       if (att.getShortName().equals(a.getShortName())) {
-        attributes.set(i, att); // replace
+        container.set(i, att); // replace
         return att;
       }
     }
-    attributes.add(att);
+    container.add(att);
     return att;
   }
 
@@ -672,7 +693,7 @@ public class Group extends CDMNode implements AttributeContainer {
 
   @Override
   public String toString() {
-    return getShortName();
+    return writeCDL(false);
   }
 
   /**
