@@ -1,5 +1,8 @@
 package thredds.server.catalogservice;
 
+import org.apache.commons.lang.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import thredds.client.catalog.*;
@@ -15,6 +18,7 @@ import thredds.server.viewer.ViewerService;
 import ucar.nc2.units.DateType;
 import ucar.nc2.units.DateRange;
 import ucar.nc2.units.TimeDuration;
+import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.Format;
 import ucar.unidata.util.StringUtil2;
 
@@ -22,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class CatalogViewContextParser {
@@ -55,6 +61,7 @@ public class CatalogViewContextParser {
     List<CatalogItemContext> catalogItems = new ArrayList<>();
     addCatalogItems(cat, catalogItems, isLocalCatalog, 0);
     model.put("items", catalogItems);
+
     return model;
   }
 
@@ -63,10 +70,19 @@ public class CatalogViewContextParser {
     Map<String, Object> model = new HashMap<>();
     addBaseContext(model);
 
-    DatasetContext context = new DatasetContext(ds, isLocalCatalog, tdsContext.getContentRootPathProperty());
+    DatasetContext context = new DatasetContext(ds, isLocalCatalog, tdsContext, req);
+
     populateDatasetContext(ds, context, req, isLocalCatalog);
 
     model.put("dataset", context);
+
+    if (htmlConfig.getGenerateDatasetJsonLD()) {
+      String jsonLD = JsonLD.makeDatasetJsonLD(ds, context, tdsContext);
+      if (!jsonLD.isEmpty()) {
+        model.put("jsonLD", jsonLD);
+      }
+    }
+
     return model;
   }
 
@@ -235,6 +251,7 @@ public class CatalogViewContextParser {
     }
     return href;
   }
+
   protected static String makeHrefResolve(Dataset ds, String href) {
     Catalog cat = ds.getParentCatalog();
     if (cat != null) {
@@ -367,14 +384,25 @@ class DatasetContext {
 
   private List<Map<String, String>> viewerLinks;
 
-  public DatasetContext (Dataset ds, boolean isLocalCatalog, String contentDir) {
-    this.contentDir = contentDir;
+  public DatasetContext (Dataset ds, boolean isLocalCatalog, TdsContext tdsContext, HttpServletRequest req) {
+    this.contentDir = tdsContext.getContentRootPathProperty();
     // Get display name and catalog url
     this.name = ds.getName();
     String catUrl = ds.getCatalogUrl();
     if (catUrl.indexOf('#') > 0)
       catUrl = catUrl.substring(0, catUrl.lastIndexOf('#'));
-    this.catUrl = catUrl.replace("xml", "html");
+    catUrl = catUrl.replace("xml", "html");
+    // for direct datasets generated directly off of the root catalog, and maybe others, the base uri is missing
+    // the full server path. Try to do what we can.
+    if (catUrl.startsWith("/")) {
+      String reqUri = req.getRequestURL().toString();
+      if (reqUri.contains(req.getContextPath())) {
+        String baseUriString = reqUri.split(req.getContextPath())[0];
+        catUrl = baseUriString + catUrl;
+      }
+    }
+
+    this.catUrl =  catUrl;
     this.catName = ds.getParentCatalog().getName();
 
     setContext(ds);
@@ -775,4 +803,82 @@ class DatasetContext {
     }
   }
 
+}
+
+class JsonLD {
+
+    static String makeDatasetJsonLD(Dataset ds, DatasetContext dsContext, TdsContext tdsContext) {
+
+    JSONObject jo = new JSONObject();
+
+    jo.put("@context", "https://schema.org/");
+    jo.put("@type", "Dataset");
+
+    // for the name attribute, try to find a title. If not, use the dataset name.
+    Optional<String> name = dsContext.getDocumentation().stream()
+            .filter(doc -> doc.containsValue("title"))
+            .findFirst()
+            .map(found -> found.get("inlineContent"));
+
+    jo.put("name", name.orElse(dsContext.getName()));
+
+    // for the description, find all "summary" attributes and concatenate them.
+    List<Map<String, String>> docs = dsContext.getDocumentation();
+    List<String> summary = dsContext.getDocumentation().stream()
+            .filter(doc -> doc.containsValue("summary"))
+            .map(found -> found.get("inlineContent"))
+            .collect(Collectors.toList());
+
+    if (!summary.isEmpty()) {
+      jo.put("description", StringUtils.join(summary, " "));
+    }
+
+    // set url to datasets catalog
+    jo.put("url", dsContext.getCatUrl());
+
+    // keywords
+    List<Map<String, String>> kws = dsContext.getKeywords();
+    if (kws.size() > 0) {
+      JSONArray ja = new JSONArray();
+      for (Map<String,String> kw : kws) {
+        if(kw.containsKey("text")) {
+          ja.put(kw.get("text"));
+        }
+      }
+      jo.put("keywords", ja);
+    }
+
+    // set time coverage for dataset
+    Map<String, Object> timeCoverage = dsContext.getTimeCoverage();
+    String start = timeCoverage.containsKey("start") ? timeCoverage.get("start").toString() : "";
+    String end = timeCoverage.containsKey("end") ? timeCoverage.get("end").toString() : "";
+
+    if (!start.isEmpty() && !end.isEmpty()) {
+      jo.put("temporalCoverage", String.format("%s/%s", start, end));
+    } else if (!start.isEmpty()) {
+      jo.put("temporalCoverage", String.format("%s", start));
+    } else if (!end.isEmpty()) {
+      jo.put("temporalCoverage", String.format("%s", end));
+    }
+
+    // set the spatial coverage
+    ThreddsMetadata.GeospatialCoverage gc = ds.getGeospatialCoverage();
+    if (gc != null) {
+      LatLonRect bbox = gc.getBoundingBox();
+      String box = String.format("%s %s %s %s", bbox.getLowerLeftPoint().getLatitude(),
+              bbox.getLowerLeftPoint().getLongitude(),
+              bbox.getUpperRightPoint().getLatitude(),
+              bbox.getUpperRightPoint().getLongitude());
+      JSONObject spatialCoverage = new JSONObject();
+      spatialCoverage.put("@type", "Place");
+      JSONObject geo = new JSONObject();
+      geo.put("@type", "GeoShape");
+      geo.put("box", box);
+      spatialCoverage.put("geo", geo);
+      jo.put("spatialCoverage", spatialCoverage);
+    }
+
+    // turn it into a string for use in the html template
+    return jo.toString(2);
+  }
 }

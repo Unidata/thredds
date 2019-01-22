@@ -46,6 +46,8 @@ public class HtmlConfigBean {
 
   private boolean useRemoteCatalogService;
 
+  private boolean generateDatasetJsonLD;
+
   public HtmlConfigBean() {
   }
 
@@ -394,6 +396,18 @@ public class HtmlConfigBean {
   }
 
   /**
+   * Return the config option that determines whether or not to DataSet JSON-LD elements are
+   * generated in the head of the html for direct datasets.
+   *
+   * @return true: generate json-ld, false: do not generate json-ld.
+   */
+  public Boolean getGenerateDatasetJsonLD() { return generateDatasetJsonLD; }
+
+  public void setGenerateDatasetJsonLD(Boolean generateDatasetJsonLD) {
+    this.generateDatasetJsonLD = generateDatasetJsonLD;
+  }
+
+  /**
    * Return a URL ready to use in a generated HTML page from a URL that
    * is either absolute or relative to the webapp context path. That is,
    * if relative, it is relative to "http://server:port/thredds/".
@@ -429,6 +443,7 @@ public class HtmlConfigBean {
     model.put("datasetIconUrl", this.getDatasetIconUrl());
     model.put("folderIconAlt", this.getFolderIconAlt());
     model.put("folderIconUrl", this.getFolderIconUrl());
+    model.put("generateDatasetJsonLD", this.getGenerateDatasetJsonLD());
 
     model.put("hostInstName", this.getHostInstName());
     model.put("hostInstUrl", this.prepareUrlStringForHtml(this.getHostInstUrl()));

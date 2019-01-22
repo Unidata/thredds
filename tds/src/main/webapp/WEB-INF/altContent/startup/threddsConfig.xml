@@ -61,6 +61,14 @@
     <googleTrackingCode></googleTrackingCode>
     -->
 
+    <!--
+     * Allow the TDS to generate JSON-LD in Dataset HTML pages following
+     * schema.org Dataset (https://schema.org/Dataset)
+     * The default is false, as this is experimental
+
+    <generateDatasetJsonLD>false</generateDatasetJsonLD>
+    -->
+
   </htmlSetup>
   
   <!-- 
