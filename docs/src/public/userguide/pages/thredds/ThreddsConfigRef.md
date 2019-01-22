@@ -76,17 +76,21 @@ Default CSS files are provided, and should not be modified. Instead, these can b
 
 ~~~xml
 <htmlSetup>
-  <standardCssUrl>tds.css</standardCssUrl>  <!--1-->
-  <catalogCssUrl>tdsCat.css</catalogCssUrl>  <!--2-->
-  <openDapCssUrl>tdsDap.css</openDapCssUrl>  <!--3-->
-  <googleTrackingCode>UA-54516992-1</googleTrackingCode>  <!--4-->
+    <standardCssUrl>standard.css</standardCssUrl> <!--1-->
+    <catalogCssUrl>catalog.css</catalogCssUrl>    <!--2-->
+    <datasetCssUrl>dataset.css</datasetCssUrl>    <!--3-->
+    <openDapCssUrl>tdsDap.css</openDapCssUrl>     <!--4-->
+    <googleTrackingCode>XX-XXXXXXXX-X</googleTrackingCode>  <!--5-->
+    <generateDatasetJsonLD>false</generateDatasetJsonLD>    <!--6-->
 </htmlSetup>
 ~~~
-* <1> The CSS used in TDS dataset pages.
+* <1> The CSS used in all TDS generate html pages (except the OPeNDAP form).
 * <2> The CSS used in TDS catalogs pages
-* <3> The CSS used in the OPeNDAP form.
-* <4> Google Analytics Tracking Code (GATC) enables tracking catalog use.
+* <3> The CSS used in TDS Dataset catalogs pages
+* <4> The CSS used in the OPeNDAP form.
+* <5> Google Analytics Tracking Code (GATC) enables tracking catalog use.
       Obtain the GATC from [Google](http://www.google.com/analytics/){:target="_blank"} and enter it here to enable this feature.
+* <6> If set to true, schema.org [`Dataset`](https://schema.org/Dataset){:target="_blank"} objects will be encoded using json-ld and embeded into the `<head>` element of the generated dataset HTML pages.
 
 ### Controlling THREDDS catalog output
 

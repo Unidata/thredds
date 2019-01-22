@@ -106,7 +106,7 @@ entries:
       output: web, pdf
 
     - title: Configuration Catalogs
-      url: config_catalog.html
+      url: /config_catalog.html
       output: web, pdf
 
     - title: Basic TDS Configuration
@@ -121,19 +121,19 @@ entries:
       url: /adding_ncss.html
       output: web, pdf
 
-    - title: Extending TDS Services
-      url: /extending_tds.html
+    - title: Customizing the TDS Look and Feel
+      url: /customizing_tds_look_and_feel.html
       output: web, pdf
 
   - title: Monitoring and Debugging
     output: web, pdf
     folderitems:
     - title: Modifying Tomcat Access Logs
-      url: tomcat_access_log.html
+      url: /tomcat_access_log.html
       output: web, pdf
 
     - title: TDS Log Files
-      url: tds_logs.html
+      url: /tds_logs.html
       output: web, pdf
 
     - title: Using the TdsMonitor Tool

@@ -1,9 +1,9 @@
 ---
-title: Extending TDS Services
-last_updated: 2018-06-30
+title: Customizing the TDS Look and Feel
+last_updated: 2019-01-22
 sidebar: tdsTutorial_sidebar
 toc: false
-permalink: /extending_tds.html
+permalink: customizing_tds_look_and_feel.html
 ---
 
 TDS provides a extensible and customizable user interface using [Thymeleaf](https://www.thymeleaf.org/) Java template engine.
@@ -26,11 +26,14 @@ There are three properties within the `htmlSetup` element used to define stylesh
    <standardCssUrl>standard.css</standardCssUrl>
    <catalogCssUrl>catalog.css</catalogCssUrl>
    <datasetCssUrl>dataset.css</datasetCssUrl>
+   <openDapCssUrl>tdsDap.css</openDapCssUrl>
 </htmlSetup>
 ~~~
 
 CSS documents given for `catalogCssUrl` and `datasetCssUrl` elements will be applied on the Catalog and Dataset
-access HTML pages, respectively. A CSS document supplied to `standardCssUrl` will be used in all generated HTML pages.
+access HTML pages, respectively.
+A CSS document supplied to `standardCssUrl` will be used in all generated HTML pages.
+The OPeNDAP HTML form is treated special - the only CSS document applied to this page is defined by the `openDapCssUrl` element.
 
 ## Thymeleaf Templates
 

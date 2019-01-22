@@ -44,6 +44,8 @@
      * The CSS document given in the "catalogCssUrl" element is used for HTML catalog views,
      * "datasetCssUrl" is used for the dataset access HTML view,
      * and the CSS document given in the "standardCssUrl"element is used in all other generated HTML pages.
+     * The OPeNDAP HTML form is treated special - the only CSS document applied to this page is
+     * defined by the `openDapCssUrl` element.
      *
      * NOTE: CSS documents should be placed inside tds.content.root.path/thredds/public
      *
@@ -51,6 +53,7 @@
      <standardCssUrl>standard.css</standardCssUrl>
      <catalogCssUrl>catalog.css</catalogCssUrl>
      <datasetCssUrl>dataset.css</datasetCssUrl>
+     <openDapCssUrl>tdsDap.css</openDapCssUrl>
      * -->
 
     <!--

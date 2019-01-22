@@ -3,7 +3,7 @@ title: Adding the NetCDF Subset Service
 last_updated: 2018-04-02
 sidebar: tdsTutorial_sidebar
 toc: false
-permalink: /adding_ncss.html
+permalink: adding_ncss.html
 ---
 
 The NetCDF Subset Service (`NCSS`) is one of the ways that the TDS can serve data.
