@@ -110,10 +110,43 @@ The following shows the default configuration of the htmlSetup element:
    * that are HTML catalog views. The CSS document given in the "standardCssUrl"
    * element is used in all other generated HTML pages.
    * -->
-  <standardCssUrl>tds.css</standard CssUrl>
-  <CatalogCssUrl>tdsCat.css</CatalogCssUrl>
-  <openDapCssUrl>tdsDap.css</openDapCssUrl>
+   <standardCssUrl>standard.css</standardCssUrl>
+   <catalogCssUrl>catalog.css</catalogCssUrl>
+   <datasetCssUrl>dataset.css</datasetCssUrl>
+   <openDapCssUrl>tdsDap.css</openDapCssUrl>
+   ...
+   ...
+   ...
 </htmlSetup>
 ~~~
 
-More details are given in the threddsConfig.xml Reference document.
+More details are given in the [threddsConfig.xml Reference document](/tds_config_ref.html#generated-html-pages).
+The Catalog and Dataset HTML pages are generated using the Thymeleaf templating library.
+This means you have full control over how these pages are generated.
+Please see the [customizing the tds look and feel](/customizing_tds_look_and_feel.html) for more information.
+
+
+## Include Generated JSON-LD in Dataset HTML Pages
+
+This experimental feature has the overall goal of exposing TDS datasets to [Google's Dataset search](https://developers.google.com/search/docs/data-types/dataset).
+
+~~~xml
+<htmlSetup>
+    ...
+    ...
+    ...
+    <!--
+     * Allow the TDS to generate JSON-LD in Dataset HTML pages following
+     * schema.org Dataset (https://schema.org/Dataset)
+     * The default is false, as this is experimental
+
+    <generateDatasetJsonLD>false</generateDatasetJsonLD>
+    -->
+</htmlSetup>
+~~~
+
+If set to true, schema.org [`Dataset`](https://schema.org/Dataset){:target="_blank"} objects will be encoded using json-ld and embeded into the `<head>` element of the generated dataset HTML pages.
+You can add individual datasets to a `sitemap.xml`, located in `tds.content.root.path/public` (you will need to create it the first time), and it will be avaliable at `<server>/thredds/sitemap.xml`.
+The sitemap can be submitted to Google following [these instructions](https://support.google.com/webmasters/answer/183668){:target="_blank"}. 
+
+Note that this will very likely change in the future to be less manual, and is 100% experimental!

@@ -242,7 +242,7 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.6"
 
 libraries["oro"] = "oro:oro:2.0.8"
 
-libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
+libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.11.RELEASE"
 
 versions["edal"] = "1.4.2-SNAPSHOT"
 
@@ -296,6 +296,10 @@ libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.3"
 libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
 
 libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
+
+// used for writing json-LD
+
+libraries["json"] = 'org.json:json:20180813'
 
 ////////////////////////////////////////// ToolsUI //////////////////////////////////////////
 

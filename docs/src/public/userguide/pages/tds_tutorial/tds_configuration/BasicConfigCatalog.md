@@ -3,7 +3,7 @@ title: Basics of Configuration Catalogs
 last_updated: 2018-10-23
 sidebar: tdsTutorial_sidebar
 toc: false
-permalink: /basic_config_catalog.html
+permalink: basic_config_catalog.html
 ---
 
 ## Overview

@@ -3,7 +3,7 @@ title: Default TDS Configuration Catalog
 last_updated: 2018-10-22
 sidebar: tdsTutorial_sidebar
 toc: false
-permalink: /default_config_catalog.html
+permalink: default_config_catalog.html
 ---
 
 ## Default TDS Root Catalog

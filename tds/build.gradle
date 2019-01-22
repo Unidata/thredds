@@ -84,6 +84,9 @@ dependencies {
     runtime libraries["Saxon-HE"]
     runtime libraries["jaxen"]
 
+    // json writing
+    libraries["json"]
+
     // JSR 303 with Hibernate Validator, which is dragging in jboss logging
     compile libraries["validation-api"]
     runtime libraries["hibernate-validator"]

@@ -105,7 +105,8 @@ class TdsConfigMapper {
     HTML_FOLDER_ICON_ALT("htmlSetup.folderIconAlt", null, "Folder"),
     HTML_DATASET_ICON_URL("htmlSetup.datasetIconUrl", null, ""),
     HTML_DATASET_ICON_ALT("htmlSetup.datasetIconAlt", null, ""),
-    HTML_USE_REMOTE_CAT_SERVICE("htmlSetup.useRemoteCatalogService", null, "true");
+    HTML_USE_REMOTE_CAT_SERVICE("htmlSetup.useRemoteCatalogService", null, "true"),
+    HTML_GENERATE_DATASET_JSON_LD("htmlSetup.generateDatasetJsonLD", null, "false");
 
     private String key;
     private String alternateKey;
@@ -148,6 +149,7 @@ class TdsConfigMapper {
       htmlConfig.setDatasetIconAlt(HTML_DATASET_ICON_ALT.getValueFromThreddsConfig());
 
       htmlConfig.setUseRemoteCatalogService(Boolean.parseBoolean(HTML_USE_REMOTE_CAT_SERVICE.getValueFromThreddsConfig()));
+      htmlConfig.setGenerateDatasetJsonLD(Boolean.parseBoolean(HTML_GENERATE_DATASET_JSON_LD.getValueFromThreddsConfig()));
     }
   }
 

@@ -45,6 +45,12 @@
             target.className += " active";
         }
     </script>
+
+    <script type="application/ld+json" th:inline="javascript" th:if="${!#strings.isEmpty(jsonLD)}" >
+
+        [(${jsonLD})]
+
+    </script>
 </head>
 
 <body onload="initTabs(['access', 'info'])">

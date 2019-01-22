@@ -3,7 +3,7 @@ title: Adding OGC/ISO Services
 last_updated: 2018-04-02
 sidebar: tdsTutorial_sidebar
 toc: false
-permalink: /adding_ogc_iso_services.html
+permalink: adding_ogc_iso_services.html
 ---
 
 ## Configure TDS to Allow WCS, WMS, and `ncISO` Access
