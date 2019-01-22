@@ -108,7 +108,7 @@
 </div>
 
 <div class="resetButtonContainer" th:fragment="resetButtonContainer(inputsMap)">
-    <button type="button" class="resetButton" th:onclick="|setInputValues(${inputsMap})|">
+    <button type="button" class="resetButton" th:attr="onclick=|setInputValues(${inputsMap})|">
         Reset to full extension
     </button>
 </div>
