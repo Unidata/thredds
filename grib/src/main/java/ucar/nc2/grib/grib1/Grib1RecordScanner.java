@@ -84,7 +84,14 @@ public class Grib1RecordScanner {
       int len = GribNumbers.uint3(raf);
       int edition = raf.read(); // read at byte 8
       if (edition != 1) return false;
-
+      
+      /* Due to a trick done by ECMWF's GRIBEX to support large GRIBs, we need a special treatment
+       * to fix the length of the GRIB message. See:
+       * https://software.ecmwf.int/wiki/display/EMOS/Changes+in+cycle+000281
+       * https://github.com/Unidata/thredds/issues/445
+      */
+      len = getFixedTotalLengthEcmwfLargeGrib(raf,len);
+      
       // check ending = 7777
       if (len > raf.length()) return false;
       if (allowBadIsLength) return true;
@@ -100,7 +107,40 @@ public class Grib1RecordScanner {
     }
   }
 
-  ////////////////////////////////////////////////////////////
+  static int getFixedTotalLengthEcmwfLargeGrib(RandomAccessFile raf, int len) throws IOException{
+    int lenActual=len;
+    //int lenS4Actual=0;
+    //int sizeSection4=0;
+	if ((len & 0x800000) == 0x800000) {
+	  long pos0 = raf.getFilePointer(); // remember the actual pos
+	  int lenS1 = GribNumbers.uint3(raf); // section1Length
+	  raf.skipBytes(1); // table2Version
+	  if (GribNumbers.uint(raf) == 98) { // center (if ECMWF make the black magic)
+	    raf.skipBytes(2); // generatingProcessIdentifier, gridDefinition
+	    int s1f = GribNumbers.uint(raf); // section1Flags
+	    raf.skipBytes(lenS1 - (3 + 5)); // skips to next section
+	    int lenS2 = 0;
+	    int lenS3 = 0;
+	    if ((s1f & 128) == 128) { // section2 GDS exists
+		  lenS2 = GribNumbers.uint3(raf); // section2Length
+		  raf.skipBytes(lenS2 - 3); // skips to next section
+	    }
+	    if ((s1f & 64) == 64) { // section3 BMS exists
+		  lenS3 = GribNumbers.uint3(raf); // section3Length
+		  raf.skipBytes(lenS3 - 3); // skips to next section
+		}
+		int lenS4 = GribNumbers.uint3(raf); // section4Length
+		if (lenS4 < 120) { // here we are!!!!
+		  lenActual = (len & 0x7FFFFF) * 120 - lenS4 + 4; // the actual totalLength
+		  //lenS4Actual = lenActual - 8 - lenS1 - lenS2 - lenS3 - 4; // the actual length for section4
+		}
+	  }
+	  raf.seek(pos0); // recall the pos
+	}
+	return lenActual;
+  }
+
+////////////////////////////////////////////////////////////
 
   private Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<>();
   private ucar.unidata.io.RandomAccessFile raf = null;
@@ -199,10 +239,10 @@ public class Grib1RecordScanner {
       if (debug) System.out.printf(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
               raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
 
-      if (!foundEnding && allowBadIsLength)
+      if (!foundEnding && (allowBadIsLength || is.isMessageLengthFixed))
         foundEnding = checkEnding(dataSection.getStartingPosition() + dataSection.getLength());
 
-      if (!foundEnding && allowBadDsLength) {
+      if (!foundEnding && (allowBadDsLength || is.isMessageLengthFixed)) {
         foundEnding = true;
       }
 
