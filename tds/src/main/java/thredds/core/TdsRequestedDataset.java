@@ -12,6 +12,7 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.CoverageCollection;
+import ucar.nc2.ft2.simpgeometry.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,7 +65,11 @@ public class TdsRequestedDataset {
     if (path != null) trd.path = path;
     return trd.openAsCoverageDataset(request, response);
   }
-
+  public static SimpleGeometryFeatureDataset getSimpleGeometryFeatureDataset(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+    TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
+    if (path != null) trd.path = path;
+    return trd.openAsSimpleGeometryDataset(request, response);
+  }
   // return null means request has been handled, and calling routine should exit without further processing
   public static NetcdfFile getNetcdfFile(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
     TdsRequestedDataset trd = new TdsRequestedDataset(request, null);
@@ -114,7 +119,9 @@ public class TdsRequestedDataset {
   public CoverageCollection openAsCoverageDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return datasetManager.openCoverageDataset(request, response, path);
   }
-
+  public SimpleGeometryFeatureDataset openAsSimpleGeometryDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    return isRemote? SimpleGeometryFeatureDataset.open(path) : datasetManager.openSimpleGeometryDataset(request, response, path);
+  }
   // return null means request has been handled, and calling routine should exit without further processing
   public GridDataset openAsGridDataset(HttpServletRequest request, HttpServletResponse response) throws IOException {
     return isRemote ? ucar.nc2.dt.grid.GridDataset.open(path) : datasetManager.openGridDataset(request, response, path);

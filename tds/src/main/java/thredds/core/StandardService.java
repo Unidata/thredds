@@ -26,6 +26,7 @@ public enum StandardService {
   opendap(ServiceType.OPENDAP, "/dodsC/"),
   wcs(ServiceType.WCS, "/wcs/"),
   wms(ServiceType.WMS, "/wms/"),
+  wfs(ServiceType.WFS, "/wfs/"),
 
   iso(ServiceType.ISO, "/iso/"),
   iso_ncml(ServiceType.NCML, "/ncml/"),

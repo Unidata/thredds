@@ -49,6 +49,8 @@ import ucar.nc2.ui.grib.*;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
+import ucar.nc2.ui.simplegeom.SimpleGeomTable;
+import ucar.nc2.ui.simplegeom.SimpleGeomUI;
 import ucar.nc2.ui.util.Resource;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.*;
@@ -140,6 +142,7 @@ public class ToolsUI extends JPanel {
   private NCdumpPanel ncdumpPanel;
   private NcmlEditorPanel ncmlEditorPanel;
   private PointFeaturePanel pointFeaturePanel;
+  private SimpleGeomPanel simpleGeomPanel;
   private StationRadialPanel stationRadialPanel;
   private RadialPanel radialPanel;
   private ThreddsUI threddsUI;
@@ -282,6 +285,7 @@ public class ToolsUI extends JPanel {
     // nested tab - features
     ftTabPane.addTab("Grids", new JLabel("Grids"));
     ftTabPane.addTab("Coverages", new JLabel("Coverages"));
+    ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
     ftTabPane.addTab("WMS", new JLabel("WMS"));
     ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
     ftTabPane.addTab("Images", new JLabel("Images"));
@@ -526,6 +530,11 @@ public class ToolsUI extends JPanel {
       case "Grids":
         gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
         c = gridPanel;
+        break;
+        
+      case "SimpleGeometry":
+    	simpleGeomPanel = new SimpleGeomPanel((PreferencesExt) mainPrefs.node("simpleGeom"));
+        c = simpleGeomPanel;
         break;
 
       case "Coverages":
@@ -4373,6 +4382,164 @@ public class ToolsUI extends JPanel {
   }
 
   /////////////////////////////////
+  
+  	private class SimpleGeomPanel extends OpPanel {
+	    SimpleGeomTable sgTable;
+	    JSplitPane split;
+	    IndependentWindow viewerWindow, imageWindow;
+	    SimpleGeomUI sgUI = null;
+	    ImageViewPanel imageViewer;
+
+	    NetcdfDataset ds = null;
+
+	    SimpleGeomPanel(PreferencesExt prefs) {
+	      super(prefs, "dataset:", true, false);
+	      sgTable = new SimpleGeomTable(prefs, true);
+	      add(sgTable, BorderLayout.CENTER);
+
+	      AbstractButton viewButton = BAMutil.makeButtcon("alien", "Grid Viewer", false);
+	      viewButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	          if (ds != null) {
+	            GridDataset gridDataset = sgTable.getGridDataset();
+	            if (sgUI == null) makeSimpleGeomUI();
+	            sgUI.setDataset(gridDataset);
+	            viewerWindow.show();
+	          }
+	        }
+	      });
+	      buttPanel.add(viewButton);
+
+	      AbstractButton imageButton = BAMutil.makeButtcon("VCRMovieLoop", "Image Viewer", false);
+	      imageButton.addActionListener(new ActionListener() {
+	        public void actionPerformed(ActionEvent e) {
+	          if (ds != null) {
+	            GridDatatype grid = sgTable.getGrid();
+	            if (grid == null) return;
+	            if (imageWindow == null) makeImageWindow();
+	            imageViewer.setImageFromGrid(grid);
+	            imageWindow.show();
+	          }
+	        }
+	      });
+	      buttPanel.add(imageButton);
+
+	      sgTable.addExtra(buttPanel, fileChooser);
+	    }
+
+	    private void makeSimpleGeomUI() {
+	      // a little tricky to get the parent right for GridUI
+	      viewerWindow = new IndependentWindow("Simple Geometry Viewer", BAMutil.getImage("netcdfUI"));
+
+	      sgUI = new SimpleGeomUI((PreferencesExt) prefs.node("SimpleGeomUI"), viewerWindow, fileChooser, 800);
+	      sgUI.addMapBean(new WorldMapBean());
+	      sgUI.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", WorldDetailMap));
+	      sgUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", USMap));
+
+	      viewerWindow.setComponent(sgUI);
+	      Rectangle bounds = (Rectangle) mainPrefs.getBean(GRIDVIEW_FRAME_SIZE, new Rectangle(77, 22, 700, 900));
+	      if (bounds.x < 0) bounds.x = 0;
+	      if (bounds.y < 0) bounds.x = 0;
+	      viewerWindow.setBounds(bounds);
+	    }
+
+	    private void makeImageWindow() {
+	      imageWindow = new IndependentWindow("Simple Geometry Image Viewer", BAMutil.getImage("netcdfUI"));
+	      imageViewer = new ImageViewPanel(null);
+	      imageWindow.setComponent(imageViewer);
+	      imageWindow.setBounds((Rectangle) mainPrefs.getBean(GRIDIMAGE_FRAME_SIZE, new Rectangle(77, 22, 700, 900)));
+	    }
+
+	    boolean process(Object o) {
+	      String command = (String) o;
+	      boolean err = false;
+
+	      NetcdfDataset newds;
+	      try {
+	        newds = NetcdfDataset.openDataset(command, true, null);
+	        if (newds == null) {
+	          JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command);
+	          return false;
+	        }
+	        setDataset(newds);
+
+	      } catch (FileNotFoundException ioe) {
+	        JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + ioe.getMessage());
+	        //ioe.printStackTrace();
+	        err = true;
+
+	      } catch (Throwable ioe) {
+	        ioe.printStackTrace();
+	        StringWriter sw = new StringWriter(5000);
+	        ioe.printStackTrace(new PrintWriter(sw));
+	        detailTA.setText(sw.toString());
+	        detailWindow.show();
+	        err = true;
+	      }
+
+	      return !err;
+	    }
+
+	    void closeOpenFiles() throws IOException {
+	      if (ds != null) ds.close();
+	      ds = null;
+	      sgTable.clear();
+	      if (sgUI != null) sgUI.clear();
+	    }
+
+	    void setDataset(NetcdfDataset newds) {
+	      if (newds == null) return;
+	      try {
+	        if (ds != null) ds.close();
+	      } catch (IOException ioe) {
+	        System.out.printf("close failed %n");
+	      }
+
+	      Formatter parseInfo = new Formatter();
+	      this.ds = newds;
+	      try {
+	        sgTable.setDataset(newds, parseInfo);
+	      } catch (IOException e) {
+	        String info = parseInfo.toString();
+	        if (info.length() > 0) {
+	          detailTA.setText(info);
+	          detailWindow.show();
+	        }
+	        e.printStackTrace();
+	        return;
+	      }
+	      setSelectedItem(newds.getLocation());
+	    }
+
+	    void setDataset(GridDataset gds) {
+	      if (gds == null) return;
+	      try {
+	        if (ds != null) ds.close();
+	      } catch (IOException ioe) {
+	        System.out.printf("close failed %n");
+	      }
+
+	      this.ds = (NetcdfDataset) gds.getNetcdfFile(); // ??
+	      try {
+	        sgTable.setDataset(gds);
+	      } catch (IOException e) {
+	        e.printStackTrace();
+	        return;
+	      }
+	      setSelectedItem(gds.getLocation());
+	    }
+
+	    void save() {
+	      super.save();
+	      sgTable.save();
+	      if (sgUI != null) sgUI.storePersistentData();
+	      if (viewerWindow != null) mainPrefs.putBeanObject(GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
+	      if (imageWindow != null) mainPrefs.putBeanObject(GRIDIMAGE_FRAME_SIZE, imageWindow.getBounds());
+	    }
+
+	  }
+
+	  /////////////////////////////////
 
   private class CoveragePanel extends OpPanel {
     ucar.nc2.ui.coverage2.CoverageTable dsTable;

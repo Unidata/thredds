@@ -230,7 +230,7 @@ public class GridRenderer {
     this.horizStride = horizStride;
   }
 
-  void makeStridedGrid() {
+  public void makeStridedGrid() {
 
     if (horizStride > 1) {
       try {

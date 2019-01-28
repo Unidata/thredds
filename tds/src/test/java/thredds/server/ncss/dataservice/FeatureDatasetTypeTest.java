@@ -27,6 +27,7 @@ import thredds.core.TdsRequestedDataset;
 import thredds.mock.web.MockTdsContextLoader;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft2.simpgeometry.SimpleGeometryFeatureDataset;
 import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
@@ -110,4 +111,5 @@ public class FeatureDatasetTypeTest {
 		assertNotNull(fd);
 		assertEquals(FeatureType.STATION, fd.getFeatureType());
 	}
+
 }
