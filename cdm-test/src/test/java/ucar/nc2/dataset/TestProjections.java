@@ -37,21 +37,37 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Formatter;
+import java.util.List;
+
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Variable;
 import ucar.nc2.constants.CF;
-import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
+import ucar.unidata.geoloc.LatLonPointImpl;
+import ucar.unidata.geoloc.Projection;
+import ucar.unidata.geoloc.ProjectionPoint;
+import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.projection.LambertAzimuthalEqualArea;
+import ucar.unidata.geoloc.projection.LambertConformal;
+import ucar.unidata.geoloc.projection.Mercator;
+import ucar.unidata.geoloc.projection.RotatedPole;
+import ucar.unidata.geoloc.projection.Sinusoidal;
+import ucar.unidata.geoloc.projection.Stereographic;
 import ucar.unidata.geoloc.projection.proj4.CylindricalEqualAreaProjection;
 import ucar.unidata.geoloc.projection.proj4.EquidistantAzimuthalProjection;
 import ucar.unidata.geoloc.projection.sat.Geostationary;
 import ucar.unidata.geoloc.projection.sat.MSGnavigation;
-import ucar.unidata.util.test.category.NeedsCdmUnitTest;
-import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.Parameter;
-
-import java.io.IOException;
-import java.util.*;
+import ucar.unidata.util.test.TestDir;
+import ucar.unidata.util.test.category.NeedsCdmUnitTest;
 
 /**
  * test projections
@@ -61,6 +77,9 @@ import java.util.*;
 @RunWith(Parameterized.class)
 @Category(NeedsCdmUnitTest.class)
 public class TestProjections {
+
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
   private static String testDir= TestDir.cdmUnitTestDir + "transforms/";
   private static LatLonPointImpl testPoint = new LatLonPointImpl(0, 145.0);
 
@@ -129,6 +148,12 @@ public class TestProjections {
                     "CMI",
                     Geostationary.class, new LatLonPointImpl(-37, -45.0)},
 
+            // check to make sure map coordinates in microradians handled
+            // https://github.com/Unidata/thredds/issues/1008
+            {testDir + "geostationary/GOES16_FullDisk_20180205_060047_0.47_6km_0.0S_75.0W.nc4",
+                    "fixedgrid_projection",
+                    "Sectorized_CMI", Geostationary.class,
+                    new LatLonPointImpl(40,-105)},
     };
 
     return Arrays.asList(data);
@@ -151,14 +176,14 @@ public class TestProjections {
 
   @Test
   public void testOneProjection() throws IOException, InvalidRangeException {
-    System.out.printf("Open= %s%n", filename);
+    logger.debug("Open= {}", filename);
     try (NetcdfDataset ncd = ucar.nc2.dataset.NetcdfDataset.openDataset(filename)) {
 
       Variable ctv = null;
       if (ctvName != null) {
         ctv = ncd.findVariable(ctvName);
         assert ctv != null;
-        System.out.println(" dump of ctv = \n" + ctv);
+        logger.debug(" dump of ctv = {}", ctv);
       }
 
       VariableDS v = (VariableDS) ncd.findVariable(varName);
@@ -187,11 +212,11 @@ public class TestProjections {
       assert projClass.isInstance(proj) : proj.getClass().getName();
 
       if (projClass != RotatedPole.class) {
-        System.out.printf("Projection Parameters%n");
+        logger.debug("Projection Parameters");
         boolean found = false;
         double radius = 0.0;
         for (Parameter p : proj.getProjectionParameters()) {
-          System.out.printf("%s%n", p);
+          logger.debug("{}", p);
           if (p.getName().equals(CF.EARTH_RADIUS)) {
             found = true;
             radius = p.getNumericValue();
@@ -201,18 +226,18 @@ public class TestProjections {
             radius = p.getNumericValue();
           }
         }
-        System.out.printf("%n");
 
         assert found;
         assert (radius > 10000) : radius; // meters
       }
 
       VariableDS ctvSyn = CoordTransBuilder.makeDummyTransformVariable(ncd, ct);
-      System.out.println(" dump of equivilent ctv = \n" + ctvSyn);
+      logger.debug(" dump of equivilent ctv = {}", ctvSyn);
 
       if (ctv != null) {
-        Formatter f = new Formatter(System.out);
+        Formatter f = new Formatter();
         ucar.unidata.util.test.CompareNetcdf.checkContains(ctv.getAttributes(), ctvSyn.getAttributes(), f);
+        logger.debug(f.toString());
       }
 
       if (testPt != null) {

@@ -33,16 +33,21 @@
 
 package ucar.nc2.dataset.transform;
 
+import java.util.List;
+
 import ucar.nc2.Variable;
+import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CF;
+import ucar.nc2.dataset.CoordinateAxis;
 import ucar.nc2.dataset.CoordinateTransform;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.ProjectionCT;
 import ucar.nc2.dataset.TransformType;
+import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.ProjectionImpl;
 
 /**
- * Describe: https://cf-pcmdi.llnl.gov/trac/ticket/72
+ * Describe: http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/cf-conventions.html#_geostationary_projection
  * Accepted for CF-1.7
  *
  * grid_mapping_name = geostationary
@@ -87,12 +92,27 @@ import ucar.unidata.geoloc.ProjectionImpl;
  */
 public class Geostationary extends AbstractCoordTransBuilder {
 
+    private static double defaultScaleFactor = -1.0;
+
     public String getTransformName() {
       return CF.GEOSTATIONARY;
     }
 
     public TransformType getTransformType() {
       return TransformType.Projection;
+    }
+
+    private double checkMapCoordinateUnits(CoordinateAxis ca) {
+      // default value of -1.0 interpreted as no scaling in the class
+      // ucar.unidata.geoloc.projection.sat.Geostationary
+      double scaleFactor = defaultScaleFactor;
+      String neededMapCoordinateUnit = "radian";
+      String mapCoordinateUnit = ca.getUnitsString();
+      if (SimpleUnit.isCompatible(mapCoordinateUnit, neededMapCoordinateUnit)) {
+        scaleFactor = SimpleUnit.getConversionFactor(mapCoordinateUnit, neededMapCoordinateUnit);
+      }
+
+      return scaleFactor;
     }
 
     public CoordinateTransform makeCoordinateTransform(NetcdfDataset ds, Variable ctv) {
@@ -150,9 +170,25 @@ public class Geostationary extends AbstractCoordTransBuilder {
       else
         isSweepX =  fixed_angle.equals("y");
 
-      // double subLonDegrees, double perspective_point_height, double semi_minor_axis, double semi_major_axis, double inv_flattening, boolean isSweepX
+      // scales less than zero indicate no scaling of axis (i.e. map coords have units of radians)
+      double xScaleFactor = defaultScaleFactor;
+      double yScaleFactor = defaultScaleFactor;
+
+      List<CoordinateAxis> cas = ds.getCoordinateAxes();
+      for (CoordinateAxis ca : cas) {
+          AxisType axisType = ca.getAxisType();
+          if (axisType != null) {
+              if (ca.getAxisType().equals(AxisType.GeoX)) {
+                  xScaleFactor = checkMapCoordinateUnits(ca);
+              } else if (ca.getAxisType().equals(AxisType.GeoY)) {
+                  yScaleFactor = checkMapCoordinateUnits(ca);
+              }
+          }
+      }
+
       ProjectionImpl proj = new ucar.unidata.geoloc.projection.sat.Geostationary(
-              subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis, inv_flattening, isSweepX);
+              subLonDegrees, perspective_point_height, semi_minor_axis, semi_major_axis,
+              inv_flattening, isSweepX, xScaleFactor, yScaleFactor);
 
       return new ProjectionCT(ctv.getShortName(), "FGDC", proj);
     }

@@ -61,7 +61,9 @@ public abstract class Grib2Pds {
       case 31:
         return new Grib2Pds31(input);
       case 48:
-        return new Grib2Pds48(input);
+          return new Grib2Pds48(input);
+      case 61:
+          return new Grib2Pds61(input);
       default:
         log.warn("Missing template " + template);
         return null;
@@ -606,6 +608,80 @@ public abstract class Grib2Pds {
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Product definition template 4.61 -
+   * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous
+   * or non-continuous time interval
+   */
+  static private class Grib2Pds61 extends Grib2Pds1 implements PdsInterval{
+
+    Grib2Pds61(byte[] input) {
+      super(input);
+    }
+
+    /**
+     * Model version date
+     *
+     * @return Model version date
+     */
+    public CalendarDate getModelVersionDate() {
+      return calcTime(38);
+    }
+
+    /**
+     * End of overall time interval
+     *
+     * @return End of overall time interval
+     */
+    public CalendarDate getIntervalTimeEnd() {
+      return calcTime(45);
+    }
+
+    /**
+     * number of time range specifications describing the time intervals used to calculate the statistically-processed field
+     *
+     * @return number of time range
+     */
+    public int getNumberTimeRanges() {
+      return getOctet(52);
+    }
+
+    /**
+     * Total number of data values missing in statistical process
+     *
+     * @return Total number of data values missing in statistical process
+     */
+    public final int getNumberMissing() {
+      return GribNumbers.int4(getOctet(53), getOctet(54), getOctet(55), getOctet(56));
+    }
+
+    public TimeInterval[] getTimeIntervals() {
+      return readTimeIntervals(getNumberTimeRanges(), 57);
+    }
+
+    @Override
+    public int templateLength() {
+      return 56 + getNumberTimeRanges() * 12;
+    }
+
+    public long getIntervalHash() {
+      CRC32 crc32 = new CRC32();
+      crc32.update(input, 56, getNumberTimeRanges() * 12);
+      return crc32.getValue();
+    }
+
+     public void show(Formatter f) {
+      super.show(f);
+      f.format("%n   Grib2Pds8: endInterval=%s%n", getIntervalTimeEnd());
+      for (TimeInterval ti : getTimeIntervals()) {
+        ti.show(f);
+      }
+    }
+  }
+
+  
   //////////////////////////////////////////////////////////////////////////////////////////////
 
   /**

@@ -272,9 +272,9 @@ class H5tiledLayoutBB implements LayoutBB {
       java.util.zip.Inflater inflater = new java.util.zip.Inflater();
       java.util.zip.InflaterInputStream inflatestream
         = new java.util.zip.InflaterInputStream(in, inflater, inflatebuffersize);
-      ByteArrayOutputStream out = new ByteArrayOutputStream(
-              Math.min(8 * compressed.length, MAX_ARRAY_LEN));  // Fixes KXL-349288
-      IO.copy(inflatestream, out);
+      int len = Math.min(8 * compressed.length, MAX_ARRAY_LEN);
+      ByteArrayOutputStream out = new ByteArrayOutputStream(len); // Fixes KXL-349288
+      IO.copyB(inflatestream, out, len);
 
       byte[] uncomp = out.toByteArray();
       if (debug || debugFilter)

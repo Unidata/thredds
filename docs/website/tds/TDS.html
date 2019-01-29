@@ -42,7 +42,11 @@
     at the <a href="http://www.met.reading.ac.uk/resc/home/">University of Reading</a>.
   </li>
   <li>The integrated <a href="reference/ncISO.html">ncISO server</a> provides automated metadata analysis and ISO metadata generation.</li>
-  <li>The integrated <a href="reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service</a> allows subsetting certain CDM datasets in coordinate space, using a REST API. Gridded data subsets can be returned in <a href="http://cfconventions.org/">CF-compliant</a> netCDF-3 or netCDF-4. Point data subsets can be returned in CSV, XML, or <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries">CF-DSG</a> netCDF files.</li>
+  <li>The integrated <a href="reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service</a> allows subsetting certain CDM datasets
+    in coordinate space, using a REST API. Gridded data subsets can be returned in <a href="http://cfconventions.org/">CF-compliant</a> netCDF-3 or netCDF-4.
+    Point data subsets can be returned in CSV, XML, WaterML (with <a href="https://github.com/Unidata/thredds/tree/5.0.0/waterml#waterml">assistance</a>
+    from <a href="https://coastwatch.pfeg.noaa.gov/erddap/index.html">ERDDAP</a> [NOAA / Robert Simons/CoHort Software], <a href="https://github.com/Unidata/thredds/tree/5.0.0/docs/src/private/licenses/third-party/erddap">license information</a>),
+    or <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.6/build/cf-conventions.html#discrete-sampling-geometries">CF-DSG</a> netCDF files.</li>
 </ol>
 <p>The THREDDS Data Server is implemented in 100% Java*, and is
   contained in a single war file, which allows very easy installation
@@ -137,13 +141,12 @@
 <ul>
   <li><a href="catalog/index.html">THREDDS Catalogs</a></li>
   <li> Fact Sheet
-    [<a href="http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.doc">Word Doc</a>]
-    [<a href="http://www.unidata.ucar.edu/publications/factsheets/2007sheets/threddsFactSheet-1.pdf">PDF</a>]
+    [<a href="https://www.unidata.ucar.edu/publications/factsheets/current/factsheet_tds.pdf">PDF</a>]
   </li>
 </ul>
 <hr width="100%">
 <address>
-  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated May 2015
+  <img src="thread.png" alt="THREDDS" height="101" width="101">This document was last updated November 2018
 </address>
 </body>
 </html>
