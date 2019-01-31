@@ -33,13 +33,16 @@
 package ucar.nc2.ui.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.filesystem.MFileOS;
 import thredds.inventory.CollectionAbstract;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
@@ -561,37 +564,16 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  public boolean writeIndex(Formatter f) throws IOException {
+  public boolean writeIndex(Formatter errlog) throws IOException {
+    // LOOK: can only handle single file.
+    if (spec != null) {
+      File dataFile = new File(spec);
+      MFile mfile = new MFileOS(dataFile);
+      return null != GribCdmIndex
+          .openGribCollectionFromDataFile(false, mfile, CollectionUpdateType.always,
+              new FeatureCollectionConfig(), errlog, logger);
+    }
     return false;
-    /* if (fileChooser == null)
-      fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
-
-    MCollection dcm = getCollection(spec, f);
-    String name = dcm.getCollectionName();
-    int pos = name.lastIndexOf('/');
-    if (pos < 0) pos = name.lastIndexOf('\\');
-    if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + CollectionAbstract.NCX_SUFFIX);
-
-    String filename = fileChooser.chooseFilename(def);
-    if (filename == null) return false;
-    if (!filename.endsWith(CollectionAbstract.NCX_SUFFIX))
-      filename += CollectionAbstract.NCX_SUFFIX;
-    File idxFile = new File(filename);
-
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test", FeatureCollectionType.GRIB2,
-            this.spec, null, null, null, null, null);
-    config.gribConfig.unionRuntimeCoord = true;
-
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-
-    boolean ok = GribCdmIndex.updateGribCollection(false, dcm, CollectionUpdateType.always, FeatureCollectionConfig.PartitionType.directory,
-       logger, f);
-
-
-    return ok;  */
   }
 
   public void showCollection(Formatter f) {
