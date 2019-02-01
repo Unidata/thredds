@@ -39,6 +39,16 @@ public class SimpleGeometryFeature implements VariableSimpleIF{
 
   private SimpleGeometryCS coordSys; // almost immutable use coordsys
 
+    /**
+     * @param name name of the feature
+     * @param dataType data type
+     * @param atts list of attriburtes
+     * @param coordSysName name of the coordinate system
+     * @param units units to be used
+     * @param description description of the feature
+     * @param user user responsible for feature
+     * @param geometryType type of geometry
+     */
   public SimpleGeometryFeature(String name, DataType dataType, List<Attribute> atts, String coordSysName, String units, String description, Object user, GeometryType geometryType) {
     this.name = name;
     this.dataType = dataType;
