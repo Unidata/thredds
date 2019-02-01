@@ -278,7 +278,7 @@ public class GribCdmIndex implements IndexReader {
   // used by Tdm (indirectly by InvDatasetFcGrib)
 
   /**
-   * update Grib Collection if needed
+   * Update Grib Collection if needed
    *
    * @return true if the collection was updated
    * @throws IOException
@@ -328,8 +328,9 @@ public class GribCdmIndex implements IndexReader {
   }
 
   // return true if changed, exception on failure
-  static private boolean updateGribCollection(boolean isGrib1, MCollection dcm, CollectionUpdateType updateType, FeatureCollectionConfig.PartitionType ptype,
-                                              Logger logger, Formatter errlog) throws IOException {
+  public static boolean updateGribCollection(boolean isGrib1, MCollection dcm,
+      CollectionUpdateType updateType, FeatureCollectionConfig.PartitionType ptype,
+      Logger logger, Formatter errlog) throws IOException {
 
     if (debug) System.out.printf("GribCdmIndex.updateGribCollection %s %s%n", dcm.getCollectionName(), updateType);
     if (!isUpdateNeeded(dcm.getIndexFilename(NCX_SUFFIX), updateType, (isGrib1 ? GribCollectionType.GRIB1 : GribCollectionType.GRIB2), logger)) return false;
@@ -685,7 +686,7 @@ public class GribCdmIndex implements IndexReader {
   }  */
 
   ///////////////////////////////////////////////////////
-  // used by InvDatasetFcGrib
+  // used by InvDatasetFcGrib, Grib2CollectionPanel
 
   /**
    * Open GribCollection from config.

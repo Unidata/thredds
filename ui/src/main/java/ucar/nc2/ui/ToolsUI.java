@@ -2727,6 +2727,7 @@ public class ToolsUI extends JPanel {
           Formatter f = new Formatter();
           try {
             if (!gribTable.writeIndex(f)) return;
+            f.format("WriteIndex was successful%n");
           }
           catch (IOException e1) {
             e1.printStackTrace();

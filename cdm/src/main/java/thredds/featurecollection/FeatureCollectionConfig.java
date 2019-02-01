@@ -781,7 +781,7 @@ public class FeatureCollectionConfig {
 
   static public class GribIntvFilter {
     public List<IntvFilter> filterList = new ArrayList<>();
-    public boolean isZeroExcluded = true; // default is true 3/2/2015
+    public boolean isZeroExcluded = false; // default is false 1/31/2019
 
     public boolean isZeroExcluded() {
       return isZeroExcluded;
@@ -794,7 +794,8 @@ public class FeatureCollectionConfig {
     // true means discard
     public boolean filter(int id, int intvStart, int intvEnd, int prob) {
       int intvLength = intvEnd - intvStart;
-      if (intvLength == 0 && isZeroExcluded()) return true;
+      if (intvLength == 0 && isZeroExcluded())
+        return true;
 
       for (IntvFilter filter : filterList) {
         if (filter.filter(id, intvStart, intvEnd, prob)) return true;
