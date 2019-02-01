@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
- */
 package ucar.nc2.ft;
 
 import ucar.nc2.constants.FeatureType;
@@ -16,7 +12,6 @@ import java.util.Formatter;
 /**
  * Standard factory for Simple Geometry datatypes. Forked from GridDatasetStandardFactory.java
  * 
- * @author caron
  * @author wchen@usgs.gov
  * @since 8/22/2018
  */

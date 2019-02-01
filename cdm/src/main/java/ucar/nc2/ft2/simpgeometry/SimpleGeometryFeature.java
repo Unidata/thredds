@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
- * See LICENSE for license information.
- */
 package ucar.nc2.ft2.simpgeometry;
 
 import ucar.ma2.DataType;
@@ -25,7 +21,6 @@ import java.util.List;
  * Immutable after setCoordSys() is called.
  *
  * @author Katie
- * @author Caron
  * @since 8/13/2018
  */
 // @Immutable
