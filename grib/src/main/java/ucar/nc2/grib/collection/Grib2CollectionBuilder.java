@@ -157,7 +157,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     if (intv == null) return false;   // not an interval
     int haveLength = intv[1] - intv[0];
 
-    // discard zero length intervals (default)
+    // discard zero length intervals if so configured
     if (haveLength == 0 && intvFilter != null && intvFilter.isZeroExcluded())
       return true;
 
