@@ -6,6 +6,7 @@ package ucar.nc2.ui.gis.shapefile;
 
 import ucar.nc2.ui.gis.AbstractGisFeature;
 import ucar.nc2.ui.gis.GisPart;
+import ucar.unidata.io.BeLeDataInputStream;
 
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedInputStream;
@@ -29,7 +30,6 @@ import java.util.zip.ZipInputStream;
  * @author Russ Rew
  */
 public class EsriShapefile {
-
   // these are only shape types handled by this package, so far
   enum Type {none, point, polyline, polygon, multipoint}
 
@@ -41,7 +41,7 @@ public class EsriShapefile {
   private int bytesSeen = 0;         // so far, in bytes.
   private int version;         // of shapefile format (currently 1000)
   private Type type;
-  private boolean debug;
+  private boolean debug = false;
 
   private List<EsriFeature> features;        // EsriFeatures in List
   private Rectangle2D listBounds;    // bounds from shapefile
@@ -239,7 +239,7 @@ public class EsriShapefile {
     features = new ArrayList<>();
     while (bytesSeen < fileBytes) {
       EsriFeature gf = nextFeature();
-      if (gf.getBounds2D().intersects(bBox))
+      if (gf != null && gf.getBounds2D().intersects(bBox))
         features.add(gf);
     }
   }
@@ -250,8 +250,7 @@ public class EsriShapefile {
       case 3 : return Type.polyline;
       case 5 : return Type.polygon;
       case 8 : return Type.multipoint;
-      default:
-        throw new RuntimeException("shapefile type "+type+" not supported");
+      default: return Type.none;
     }
   }
 
@@ -284,10 +283,10 @@ public class EsriShapefile {
   }
 
   private EsriFeature nextFeature() throws IOException {
-
+    int startAt = bytesSeen;
     int recordNumber = readInt(); // starts at 1, not 0
     int contentLength = readInt(); // in 16-bit words
-    if (debug) System.out.printf("recordNumber=%d contentLength=%d%n", recordNumber, contentLength);
+    if (debug) System.out.printf("Shapefile start=%d record=%d len=%d%n", startAt, recordNumber, contentLength);
     int type = readLEInt();
     Type featureType = assignType(type);
     switch (featureType) {
@@ -300,7 +299,9 @@ public class EsriShapefile {
       case polygon:
         return new EsriPolygon();
       default:
-        throw new IOException("can't handle shapefile shape type " + featureType);
+        System.out.printf("Skip shapefile record=%d pos =%d len=%d%n", recordNumber, startAt, contentLength);
+        skipBytes(2*(contentLength-2));
+        return null;
     }
   }
 
@@ -395,9 +396,9 @@ public class EsriShapefile {
    */
   public abstract class EsriFeature extends AbstractGisFeature {
     protected Rectangle2D bounds;
-    protected int numPoints;
-    protected int numParts;
-    protected List<GisPart> partsList = new ArrayList<>();
+    int numPoints;
+    int numParts;
+    List<GisPart> partsList = new ArrayList<>();
 
     // private DbaseFile dbfile;
     // private int recordNumber;
@@ -484,7 +485,7 @@ public class EsriShapefile {
    * @author Russ Rew
    */
   public class EsriPolygon extends EsriFeature {
-    public EsriPolygon()
+    EsriPolygon()
             throws java.io.IOException {
       bounds = readBoundingBox();
       numParts = readLEInt();
@@ -536,7 +537,7 @@ public class EsriShapefile {
    */
   public class EsriPolyline extends EsriFeature {
 
-    public EsriPolyline() throws java.io.IOException {
+    EsriPolyline() throws java.io.IOException {
       bounds = readBoundingBox();
       numParts = readLEInt();
       numPoints = readLEInt();
@@ -583,7 +584,7 @@ public class EsriShapefile {
    */
   public class EsriMultipoint extends EsriFeature {
 
-    public EsriMultipoint() throws java.io.IOException {
+    EsriMultipoint() throws java.io.IOException {
       bounds = readBoundingBox();
       int numPoints = readLEInt();
       if (xyPoints.length < 2 * numPoints)
@@ -605,7 +606,7 @@ public class EsriShapefile {
    */
   public class EsriPoint extends EsriFeature {
 
-    public EsriPoint() throws java.io.IOException {
+    EsriPoint() throws java.io.IOException {
 
       int numPoints = 1;
       readLEDoubles(xyPoints, 2 * numPoints);
@@ -628,7 +629,7 @@ public class EsriShapefile {
   }
 
   private static class EsriPart implements GisPart {
-    private int numPoints = 0;
+    private int numPoints;
     private double[] x;
     private double[] y;
 
@@ -641,7 +642,7 @@ public class EsriShapefile {
      *                 each point.
      * @param xyOffset index in array from which to start
      */
-    public EsriPart(int num, double[] xyPoints, int xyOffset) {
+    EsriPart(int num, double[] xyPoints, int xyOffset) {
       double xi, yi;
       /* In first pass over data, just count nonduplicated points */
       int ixy = xyOffset;
@@ -698,14 +699,11 @@ public class EsriShapefile {
   public String toString() {
     Formatter f = new Formatter();
     f.format("Type=%s version=%d bounds=%s resolution=%f%n", type, version, listBounds, resolution);
-    for (EsriFeature ft : features)
-      f.format(" %s%n", ft);
+    f.format("#Features = %d%n", features.size());
+    if (debug) {
+      for (EsriFeature ft : features)
+        f.format(" %s%n", ft);
+    }
     return f.toString();
-  }
-
-  static public void main(String args[]) throws IOException {
-    String fname = "C:\\data\\g4g/EcoAtlas_modern_baylands.shp";
-    EsriShapefile esri = new EsriShapefile(fname);
-    System.out.printf("%s%n",esri);
   }
 }
