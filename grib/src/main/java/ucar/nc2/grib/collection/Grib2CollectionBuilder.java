@@ -158,7 +158,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     int haveLength = intv[1] - intv[0];
 
     // discard zero length intervals (default)
-    if (haveLength == 0 && (intvFilter == null || intvFilter.isZeroExcluded()))
+    if (haveLength == 0 && intvFilter != null && intvFilter.isZeroExcluded())
       return true;
 
     // HACK
