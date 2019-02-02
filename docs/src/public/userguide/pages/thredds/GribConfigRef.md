@@ -1,6 +1,6 @@
 ---
 title: GRIB Collection Config
-last_updated: 2018-10-20
+last_updated: 2019-02-01
 sidebar: tdsTutorial_sidebar
 toc: false
 permalink: grib_collection_config_ref.html
@@ -184,14 +184,14 @@ NCEP GRIB2 model output, at least, has some issues that we are slowing learning 
 
 1. `excludeZero`
  
-   * GRIB-1: By default, intervals of length `0` are included.
-     You can choose to ignore zero length intervals by setting `excludeZero="false"`.
-   * GRIB-2: By default, intervals of length `0` are excluded. 
-     You can choose to include zero length intervals by setting `excludeZero="true"`.
+    In some NCEP models, we see time intervals with length 0. In some cases, the data arrays are
+    uniformly zero, in some cases, they seem to have valid data.
+    By default, intervals of length `0` are included. 
+    You can choose to exclude zero length intervals by setting `excludeZero="false"`.
 
 2. `intvLength`
 
-   By default, intervals of all lengths (except 0 for GRIB-2) are used.
+   By default, intervals of all lengths are used.
    You can choose that certain parameters use only selected intervals.
    This is helpful when the parameter has redundant mixed levels, which can be derived from the set of intervals of a fixed size.
 
