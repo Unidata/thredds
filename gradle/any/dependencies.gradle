@@ -103,7 +103,7 @@ libraries["52n-xml-sampling-v20"] = "org.n52.sensorweb:52n-xml-sampling-v20:${ve
 
 ////////////////////////////////////////// Logging //////////////////////////////////////////
 
-versions["slf4j"] = "1.8.0-beta2"
+versions["slf4j"] = "1.7.25"
 
 libraries["slf4j-api"] = "org.slf4j:slf4j-api:${versions["slf4j"]}"
 
