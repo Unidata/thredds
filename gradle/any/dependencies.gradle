@@ -153,7 +153,7 @@ libraries["mockito"] = "org.mockito:mockito-core:2.+"
 // See https://github.com/coverity/coverity-security-library
 libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 
-libraries["guava"] = "com.google.guava:guava:25.1-jre"
+libraries["guava"] = "com.google.guava:guava:27.0.1-jre"
 
 libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.2"
 
@@ -213,9 +213,9 @@ libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s
 }
 
 // replace the jackson.core libs that were excluded from aws-java-sdk-s3
-libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.7"
-libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.7"
-libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.7"
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.8"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.8"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.8"
 
 libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.17.0") {
     // the version of jna shipped with chronicle-map requires GLIBC 2.14
@@ -290,7 +290,15 @@ libraries["threddsIso"] = "EDS:threddsIso:2.3.0-SNAPSHOT"
 
 libraries["Saxon-HE"] = "net.sf.saxon:Saxon-HE:9.7.0-8"
 
-libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.3"
+libraries["quartz"] = dependencies.create("org.quartz-scheduler:quartz:2.2.3") {
+    // exclude c3p0 deps so that they can be overridden
+    // with 0.9.5.3 to address a potential security issue.
+    // See https://github.com/swaldman/c3p0/issues/123
+    exclude group: 'com.mchange', module: 'c3p0'
+}
+
+// replace the c3p0 lib that were excluded from quartz
+libraries["c3p0"] = "com.mchange:c3p0:0.9.5.3"
 
 // Version update note:
 // spring-context 4.x is limited to hibernate-validator 4.3.2.Final. We can't update to hibernate-validator 5.x
