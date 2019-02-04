@@ -13,12 +13,11 @@ import ucar.ma2.Array;
  */
 public interface SimpleGeometry {
 
-	
-	/**
-	 * Sets the data associated with this geometry
-	 * 
-	 * @param data
-	 */
+    /**
+     * Sets the data associated with this geometry
+     * 
+     * @param data
+     */
     public void setData(Array data);
     
     /**

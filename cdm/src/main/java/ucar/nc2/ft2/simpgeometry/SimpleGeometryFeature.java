@@ -230,10 +230,10 @@ public class SimpleGeometryFeature implements VariableSimpleIF{
 	return IDAxis;  
   }
 
-	/**
-	 * Get the data associated with the index
-	 * @param  index  number associated with the geometry 
-	 */
+  /**
+   * Get the data associated with the index
+   * @param  index  number associated with the geometry 
+   */
   public SimpleGeometry readGeometry(int index) throws IOException, InvalidRangeException {
 
 	  SimpleGeometry geom = null;
