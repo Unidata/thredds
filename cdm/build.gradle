@@ -13,6 +13,7 @@ dependencies {
     compile libraries["jdom2"]
     compile libraries["jcip-annotations"]
     compile libraries["quartz"]
+    compile libraries["c3p0"] // needed to replace the excluded version from quartz
     compile libraries["protobuf-java"]
     compile libraries["guava"]
     compile libraries["jcommander"]
