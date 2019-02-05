@@ -51,4 +51,23 @@
     <filePath regex="true">.*pax-url-aether-2.4.5.jar\/META-INF\/maven\/org.slf4j\/jcl-over-slf4j\/pom.xml</filePath>
     <cve>CVE-2018-8088</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: toolsUI-*.jar
+      reason: toolsUI isn't data-tools -> https://github.com/clarkgrubb/data-tools/
+      ]]></notes>
+    <filePath regex="true">.*\/toolsUI.*\.jar</filePath>
+    <cve>CVE-2018-18749</cve>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name: tds-*.war: ehcache-2.10.6.jar/rest-management-private-classpath/META-INF/maven/com.fasterxml.jackson.core/jackson-databind/pom.xml
+      reason: ehcache server not used, so safe to ignore (see https://groups.google.com/forum/#!category-topic/ehcache-users/pafTyMJIngI, https://github.com/jeremylong/DependencyCheck/issues/517)
+      ]]></notes>
+    <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:2.9.6.*$</gav>
+    <cve>CVE-2018-1000873</cve>
+    <cve>CVE-2018-14719</cve>
+    <cve>CVE-2018-14720</cve>
+    <cve>CVE-2018-14721</cve>
+  </suppress>
 </suppressions>
