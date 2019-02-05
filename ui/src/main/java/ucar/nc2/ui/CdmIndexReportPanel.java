@@ -35,7 +35,7 @@
 package ucar.nc2.ui;
 
 import com.google.common.base.*;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
@@ -102,7 +102,7 @@ public class CdmIndexReportPanel extends ReportPanel {
 
     @Override
     public String toString() {
-      return Objects.toStringHelper(this)
+      return MoreObjects.toStringHelper(this)
               .add("nrecords", nrecords)
               .add("ndups", ndups)
               .add("nmissing", nmissing)

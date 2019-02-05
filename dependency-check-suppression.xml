@@ -10,6 +10,14 @@
    </suppress>
    <suppress>
       <notes><![CDATA[
+      file name example: toolsUI-4.6.13-SNAPSHOT.jar
+      reason: toolsUI isn't data-tools -> https://github.com/clarkgrubb/data-tools/
+      ]]></notes>
+      <filePath regex="true">.*\/toolsUI.*\.jar</filePath>
+      <cve>CVE-2018-18749</cve>
+   </suppress>
+   <suppress>
+      <notes><![CDATA[
       file name example: ncwms-1.2.tds.4.6.11-SNAPSHOT.jar
       ]]></notes>
       <filePath regex="true">.*\/ncwms.*\.jar</filePath>
