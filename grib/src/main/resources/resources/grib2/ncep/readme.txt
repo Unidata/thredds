@@ -828,3 +828,9 @@ Conflicts=0 extra=3 udunits=0
     http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-216.shtml. Not sure how to interpret
     without an example file, so will leave out for now. Has been left out since 2015, when this
     table appeared.
+
+02/11/2019 sarms
+  - updated ncep grib2 tables to v21.0.0 using grib\src\test\java\ucar\nc2\grib\grib2\table\NcepHtmlScraper.java
+    of 5.0 branch.
+    URL of NCEP GRIB2 docs changed (to https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/),
+    so updated that as well

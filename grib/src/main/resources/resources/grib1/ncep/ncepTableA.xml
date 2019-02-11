@@ -12,7 +12,7 @@
     <description>NCEP/ARL Smoke Model</description>
   </parameter>
   <parameter code="5">
-    <description>Satellite Derived Precipitation and temperatures, from IR (See PDS Octet 41... for specific satellite ID)</description>
+    <description>Satellite Derived Precipitation and temperatures, from IR (See PDS Octet 41... dfor specific satellite ID)</description>
   </parameter>
   <parameter code="6">
     <description>NCEP/ARL Dust Model</description>
@@ -183,6 +183,9 @@
     <description>Climate Forecast System Model -- Atmospheric model (GFS) coupled to a multi level ocean model . Currently GFS spectral model at T62, 64 levels coupled to 40 level MOM3 ocean model.</description>
   </parameter>
   <parameter code="99">
+    <description>Miscellaneous Test ID</description>
+  </parameter>
+  <parameter code="100">
     <description>Miscellaneous Test ID</description>
   </parameter>
   <parameter code="104">
