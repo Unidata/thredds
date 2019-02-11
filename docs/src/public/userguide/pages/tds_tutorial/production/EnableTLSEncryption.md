@@ -18,8 +18,8 @@ This section assumes you have successfully performed the tasks as outlined in th
 * The use of digital certificates adds a layer of security by allowing the receiver of the message to verify the sender is who he or she claims to be.
 * Any intercepted information that is encrypted also adds a layer of security (the attacker must take the extra step of un-encrypting the data to view the message).
 * Transport Layer Security (TLS), and formerly Secure Sockets Layer (SSL), is a cryptographic protocol that provides security and data integrity for communications over TCP/IP networks.
-* tls/SSL allows applications to communicate across a network in a way designed to prevent eavesdropping, tampering, and message forgery.
-* tls/SSL uses a cryptographic system that uses two keys to encrypt data: a public key known to everyone and a private or secret key known only to the recipient of the message.
+* TLS/SSL allows applications to communicate across a network in a way designed to prevent eavesdropping, tampering, and message forgery.
+* TLS/SSL uses a cryptographic system that uses two keys to encrypt data: a public key known to everyone and a private or secret key known only to the recipient of the message.
 * By convention, URLs that require an TLS/SSL connection start with `https` instead of `http`.
 
 {%include note.html content="

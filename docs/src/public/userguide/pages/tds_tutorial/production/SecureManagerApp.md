@@ -6,10 +6,10 @@ toc: false
 permalink: secure_manager_app.html
 ---
 
-This section demonstrates how to secure the Tomcat Manager Application by enabling access via TSL/SSL Encryption.
+This section demonstrates how to secure the Tomcat Manager Application by enabling access via TLS/SSL Encryption.
 
 {%include note.html content="
-This section assumes you have successfully performed the tasks as outlined in the <a href=\"install_java_tomcat.html\" target=\"_blank\">Getting Started With The TDS</a> and <a href=\"enable_tsl_encryption.html\" target=\"_blank\">Enabling TSL/SSL</a> sections of this tutorial
+This section assumes you have successfully performed the tasks as outlined in the <a href=\"install_java_tomcat.html\" target=\"_blank\">Getting Started With The TDS</a> and <a href=\"enable_tls_encryption.html\" target=\"_blank\">Enabling TLS/SSL</a> sections of this tutorial
 " %}
 
 **If you do not intend to use the Tomcat Manager Application, you can skip this section and proceed to [removing unused web applications](remove_unused_webapps.html){:target="_blank"}.**
@@ -21,13 +21,13 @@ The Tomcat The Manager application:
 * Not enabled by default.
 * Allows Tomcat administrators to deploy, un-deploy, or reload web applications such as the TDS without having to shut down and restart Tomcat.
 * If exploited, an attacker can use the Manager application to install programs on your server willy-nilly.
-* If you choose to enable the Manager application, we _highly recommend_ [enabling digested passwords](digested_passwords.html){:target="_blank"} and [TSL/SSL encryption](enable_tsl_encryption.html){:target="_blank"} for the Manager application.
+* If you choose to enable the Manager application, we _highly recommend_ [enabling digested passwords](digested_passwords.html){:target="_blank"} and [TLS/SSL encryption](enable_tls_encryption.html){:target="_blank"} for the Manager application.
 * Restricting access to the Manager application to a small [subset of IP addresses or host names using a Tomcat valve](restict_access_to_tds.html){:target="_blank"} is also a good idea.
 * **Uninstall this application if you don't plan to use it.**
 
-## Enabling TSL/SSL For The Tomcat Manager Application
+## Enabling TLS/SSL For The Tomcat Manager Application
 
-The following example demonstrates enabling TSL/SSL for the Tomcat Manager Application on a linux system as the `root` user.
+The following example demonstrates enabling TLS/SSL for the Tomcat Manager Application on a linux system as the `root` user.
 
 1. Modify the deployment descriptor (`$TOMCAT_HOME/webapps/manager/WEB-INF/web.xml` )of the Tomcat Manager application.
 
@@ -146,9 +146,9 @@ The following example demonstrates enabling TSL/SSL for the Tomcat Manager Appli
    </security-constraint>
    ~~~~
 
-2. Verify TSL/SSL has been enabled for the Tomcat Manager application.
+2. Verify TLS/SSL has been enabled for the Tomcat Manager application.
 
-   Restart Tomcat and verify TSL/SSL has been enabled for the Tomcat Manager application: [http://localhost:8080/manager/html/](http://localhost:8080/manager/html/){:target="_blank"}
+   Restart Tomcat and verify TLS/SSL has been enabled for the Tomcat Manager application: [http://localhost:8080/manager/html/](http://localhost:8080/manager/html/){:target="_blank"}
    
    {% include image.html file="tds/tutorial/production_servers/managerssl.png" alt="manager ssl" caption="" %}
 

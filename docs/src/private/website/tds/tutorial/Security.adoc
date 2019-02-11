@@ -15,7 +15,7 @@ server:
 Permissions]
 * link:#unused[Removing Unused Web Applications]
 * link:#digested[Using Digested Passwords]
-* link:#ssl[Enabling TSL/SSL Encryption]
+* link:#ssl[Enabling TLS/SSL Encryption]
 * link:#manager[Securing the Tomcat `manager` Application]
 * link:#ports[Blocking Non-Essential Port Access At The Firewall]
 * link:#access[Restricting Access To The TDS By Remote IP Address Or
@@ -224,13 +224,13 @@ sure it is well-formed and without error.
 the browser (the browser auto-magically encrypts your password for you
 before it transmits it to the server).
 
-== Enabling TSL/SSL Encryption
+== Enabling TLS/SSL Encryption
 
-=== How TSL/SSL works
+=== How TLS/SSL works
 
 For more information on how SSL works, Wikipedia details the
 http://en.wikipedia.org/wiki/Transport_Layer_Security[steps involved]
-during an TSL/SSL transaction.
+during an TLS/SSL transaction.
 
 === Rationale
 
@@ -248,12 +248,12 @@ to view the message).
 * Transport Layer Security (TLS), and formerly Secure Sockets Layer
 (SSL), is a cryptographic protocol that provides security and data
 integrity for communications over TCP/IP networks.
-* TSL/SSL allows applications to communicate across a network in a way
+* TLS/SSL allows applications to communicate across a network in a way
 designed to prevent eavesdropping, tampering, and message forgery.
-* TSL/SSL uses a cryptographic system that uses two keys to encrypt
+* TLS/SSL uses a cryptographic system that uses two keys to encrypt
 data: a public key known to everyone and a private or secret key known
 only to the recipient of the message.
-* By convention, URLs that require an TSL/SSL connection start with
+* By convention, URLs that require an TLS/SSL connection start with
 `https` instead of `http`.
 
 ==== CA-signed Certificates
@@ -264,7 +264,7 @@ say I am.''_
 A certificate signed by a CA says, _``Trust me - the CA agrees I am who
 I say I am.''_
 
-=== TSL/SSL certificates
+=== TLS/SSL certificates
 
 * A public key certificate is an electronic document which incorporates
 a digital signature to bind together a public key with identity
@@ -289,12 +289,12 @@ compromised certificate, which prevents its further use.
 
 === Certificate `keystore` file
 
-* A `keystore` file stores the details of the TSL/SSL certificate
+* A `keystore` file stores the details of the TLS/SSL certificate
 necessary to make the protocol secured.
 * The Tomcat documentation includes a section on
 http://tomcat.apache.org/tomcat-8.0-doc/ssl-howto.html#Prepare_the_Certificate_Keystore[importing
 your certificate into a keystore] file.
-* Tomcat uses the `keystore` file for TSL/SSL transactions. Example:
+* Tomcat uses the `keystore` file for TLS/SSL transactions. Example:
 
 -------------------------------------------------------------
  <Connector protocol="HTTP/1.1" port="8443" maxThreads="200"
@@ -304,12 +304,12 @@ your certificate into a keystore] file.
     clientAuth="false" sslProtocol="TLS"/>
 -------------------------------------------------------------
 
-==== Enabling TSL/SSL in Tomcat
+==== Enabling TLS/SSL in Tomcat
 
-Modify the Tomcat configuration to enable TSL/SSL:
+Modify the Tomcat configuration to enable TLS/SSL:
 
 Based on what we know about Tomcat configuration, which file in
-`${tomcat_home}/conf` should we edit to to enable TSL/SSL?
+`${tomcat_home}/conf` should we edit to to enable TLS/SSL?
 
 Open `${tomcat_home}/conf/server.xml` with your favorite editor:
 
@@ -318,7 +318,7 @@ $ vi server.xml
 ---------------
 
 Locate the `Java HTTP/1.1 Connector` listening on port 8080 and verify
-it is redirecting TSL/SSL traffic to port 8443:
+it is redirecting TLS/SSL traffic to port 8443:
 
 ------------------------------------
 <Connector port="8080"
@@ -372,7 +372,7 @@ specify the new password so Tomcat can open the file:
            keystorePass="foobar" />
 ----------------------------------------------------------------------
 
-Verify TSL/SSL has been enabled.
+Verify TLS/SSL has been enabled.
 
 Restart Tomcat:
 
@@ -418,18 +418,18 @@ error: `java.io.IOException: Cannot recover key`.
 * Did you restart Tomcat after you made your changes to `server.xml`?
 * Did you specify the full path to the `keystore` file in `server.xml`?
 
-=== Configuring web applications for TSL/SSL
+=== Configuring web applications for TLS/SSL
 
 ==== Looking Ahead
 
 Other than the compelling security reasons, you will want to enable
-TSL/SSL to take advantage of a couple of monitoring and debugging tools:
+TLS/SSL to take advantage of a couple of monitoring and debugging tools:
 the http://localhost:8080/thredds/admin/debug[TDS Remote Management
 Tool], and the <<tdsMonitor#,TdsMonitor Tool>> – both of which
-(out-of-the-box) require TSL/SSL to access.
+(out-of-the-box) require TLS/SSL to access.
 
 The web application deployment descriptor, aka `web.xml`, specifies if
-all or parts of it need to be accessed via TSL/SSL.
+all or parts of it need to be accessed via TLS/SSL.
 
 Deployment descriptors are found in the `WEB-INF` directory of the web
 application: `${tomcat_home}/webapps/application_name/WEB-INF/web.xml`.
@@ -438,7 +438,7 @@ By convention, Tomcat and other servlet containers will read the web
 application deployment descriptors for initialization parameters and
 container-managed security constraints upon application deployment.
 
-_The TDS has been pre-configured to require that TSL/SSL encryption is
+_The TDS has been pre-configured to require that TLS/SSL encryption is
 enabled in order to access the both the
 http://localhost:8080/thredds/admin/debug[TDS Remote Management Tool],
 and the <<tdsMonitor#,TdsMonitor Tool>>._
@@ -484,7 +484,7 @@ client and server.
 
 1.  Specify `CONFIDENTIAL` when the application requires that data be
 transmitted so as to prevent other entities from observing the contents
-of the transmission. (E.g., via TSL/SSL.)
+of the transmission. (E.g., via TLS/SSL.)
 2.  Specify `INTEGRAL` when the application requires that the data be
 sent between client and server in such a way that it cannot be changed
 in transit.
@@ -494,15 +494,15 @@ constrained requests on any connection, including an unprotected one.
 ===== Accessing TDS Monitoring and Debugging Tools
 
 Other than the compelling security reasons, you will want to enable
-TSL/SSL to take advantage of a couple of monitoring and debugging tools:
+TLS/SSL to take advantage of a couple of monitoring and debugging tools:
 the http://localhost:8080/thredds/admin/debug[TDS Remote Management
 Tool], and the <<tdsMonitor#,TdsMonitor Tool>> – both of which
-(out-of-the-box) require TSL/SSL to access.
+(out-of-the-box) require TLS/SSL to access.
 
-Enable TSL/SSL in Tomcat
+Enable TLS/SSL in Tomcat
 
-If Tomcat has not already been configured to run via TSL/SSL, follow the
-tutorial in the previous section to link:#sslinTomcat[Enable TSL/SSL in
+If Tomcat has not already been configured to run via TLS/SSL, follow the
+tutorial in the previous section to link:#sslinTomcat[Enable TLS/SSL in
 Tomcat].
 
 Modify `${tomcat_home}/conf/tomcat-users.xml` to add the new `tdsConfig`
@@ -525,12 +525,12 @@ Restart Tomcat
 
 * https://www.ssllabs.com/ssltest/[Qualys SSL Server Test] +
  is a free online service that analyzes the configuration of any
-_public_ TSL/SSL web server. **Note**: be sure to check the _Do not show
+_public_ TLS/SSL web server. **Note**: be sure to check the _Do not show
 the results on the boards_ box if you do not want your results to be
 public.
-* http://tomcat.apache.org/tomcat-8.0-doc/ssl-howto.html[TSL/SSL
+* http://tomcat.apache.org/tomcat-8.0-doc/ssl-howto.html[TLS/SSL
 Configuration HOW-TO] +
- The Apache Tomcat document detailing how to enable TSL/SSL.
+ The Apache Tomcat document detailing how to enable TLS/SSL.
 * http://tomcat.apache.org/migration.html[Tomcat Migration Guide] +
  A document detailing the various changes between Tomcat versions.
 * http://www.sslshopper.com/article-when-are-self-signed-certificates-acceptable.html[When
@@ -558,18 +558,18 @@ Tomcat.
 * If exploited, an attacker can use the `manager` application to install
 programs on your server willy-nilly.
 * If you choose to enable the `manager` application, we _highly
-recommend_ enabling digested passwords and TSL/SSL encryption for the
+recommend_ enabling digested passwords and TLS/SSL encryption for the
 `manager`.
 * Restricting access to the `manager` application to a small subset of
 IP addressess or host names using a Tomcat valve, etc., is also a good
 idea.
 * Uninstall this application if you don’t plan to use it.
 
-=== Enabling TSL/SSL for the Tomcat `manager` application
+=== Enabling TLS/SSL for the Tomcat `manager` application
 
 1.  Modify the deployment descriptor of the Tomcat `manager`
 application.
-2.  Verify TSL/SSL has been enabled for the Tomcat `manager`
+2.  Verify TLS/SSL has been enabled for the Tomcat `manager`
 application.
 3.  NOTE: You will have to redo this every time you upgrade Tomcat.
 

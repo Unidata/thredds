@@ -22,7 +22,7 @@ permalink: installation_checklist.html
 2. Create a [`setenv.sh` file](running_tomcat.html#setting-java_home-java_opts-catalina_base-and-content_root){:target="_blank"} in `$TOMCAT_HOME/bin` to set JVM options and the TDS `$CONTENT_ROOT`.
 3. Make the following modifications to `${tomcat_home}/conf/server.xml`:
  * Enable [digested password support](digested_passwords.html#configure-tomcat-to-use-digested-passwords){:target="_blank"} by modifying the `UserDatabaseRealm`.
- * Enable [TSL/SSL in tomcat](enable_tsl_encryption.html#enabling-tslssl-in-tomcat){:target="_blank"} using you CA certificate.
+ * Enable [TLS/SSL in tomcat](enable_tls_encryption.html#enabling-tlsssl-in-tomcat){:target="_blank"} using you CA certificate.
  * Enable [Compression](performance_tips.html#compression){:target="_blank"} in the Tomcat connectors.
  * Modify the Tomcat [AccessLogValve](tomcat_access_log.html)){:target="_blank"} log format and changed the prefix and suffix and pattern attributes for the access log file.
 4. Create a [digested password](digested_passwords.html#digest.sh){:target="_blank"} using the algorithm specified in the `UserDatabaseRealm` of the `${tomcat_home}/conf/server.xml` file.
@@ -57,5 +57,5 @@ When installing a new `thredds.war`, everything in `${tomcat_home}/webapps/thred
 
 #### Upgrading Tomcat
 {%include important.html content="
-If you are using the Tomcat `manager` application, you will need to <a href=\"secure_manager_app.html#enabling-tslssl-for-the-tomcat-manager-application\" target=\"_blank\">modify the deployment descriptor</a> to enable access via HTTPS only.
+If you are using the Tomcat `manager` application, you will need to <a href=\"secure_manager_app.html#enabling-tlsssl-for-the-tomcat-manager-application\" target=\"_blank\">modify the deployment descriptor</a> to enable access via HTTPS only.
 " %}
