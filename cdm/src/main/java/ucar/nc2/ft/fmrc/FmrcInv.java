@@ -279,7 +279,7 @@ public class FmrcInv {
     double result =  diff / 1000.0 / 60.0 / 60.0;                // LOOK why convert to double? precision may be lost ??
     long testRoundoff = (long) ( result * 1000.0 * 60.0 * 60.0);
     if (diff != testRoundoff)
-      System.out.println("HEY");
+      log.debug("diff does not equal testRoundoff");
     return result;
   }
 

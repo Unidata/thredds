@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <table3>
   <title>NCEP GRIB-1 Table 3</title>
-  <source>http://www.nco.ncep.noaa.gov/pmb/docs/on388/table3.html</source>
+  <source>https://www.nco.ncep.noaa.gov/pmb/docs/on388/table3.html</source>
   <parameter code="1">
     <description>Ground or water surface</description>
     <abbrev>SFC</abbrev>

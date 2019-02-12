@@ -1050,7 +1050,7 @@ public abstract class Table {
       StructureMembers.Member m = members.findMember(nestedTableName);
 
       if (m == null) {
-        System.out.println("HEY");
+        log.debug("Member is null");
       } else if (m.getDataType() == DataType.SEQUENCE) {
         ArraySequence seq = parentStruct.getArraySequence(m);
         return seq.getStructureDataIterator();
