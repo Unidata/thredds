@@ -9,7 +9,6 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -19,7 +18,7 @@ import java.util.Formatter;
 import java.util.Map;
 
 /**
- * Describe
+ * Utilities to show Grib2 records.
  *
  * @author caron
  * @since 12/22/2015.

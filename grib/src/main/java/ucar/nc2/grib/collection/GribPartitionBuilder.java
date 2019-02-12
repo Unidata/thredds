@@ -32,19 +32,19 @@ import java.util.*;
  */
 abstract class GribPartitionBuilder {
 
-  protected final PartitionManager partitionManager; // defines the partition
+  private final PartitionManager partitionManager; // defines the partition
   protected String name;            // collection name
   protected org.slf4j.Logger logger;
   protected PartitionCollectionMutable result;  // build this object
 
-  protected GribPartitionBuilder(String name, PartitionManager tpc, org.slf4j.Logger logger) {
+  GribPartitionBuilder(String name, PartitionManager tpc, org.slf4j.Logger logger) {
     this.name = name;
     //this.directory = directory;
     this.partitionManager = tpc;
     this.logger = logger;
   }
 
-  public boolean updateNeeded(CollectionUpdateType ff) throws IOException {
+  boolean updateNeeded(CollectionUpdateType ff) throws IOException {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
@@ -97,7 +97,7 @@ abstract class GribPartitionBuilder {
   // build the index
 
   // return true if changed, exception on failure
-  public boolean createPartitionedIndex(CollectionUpdateType forcePartition, Formatter errlog) throws IOException {
+  boolean createPartitionedIndex(CollectionUpdateType forcePartition, Formatter errlog) throws IOException {
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 
     // create partitions from the partitionManager

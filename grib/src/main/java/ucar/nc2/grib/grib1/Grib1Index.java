@@ -55,12 +55,12 @@ import java.util.*;
  * @since 9/5/11
  */
 public class Grib1Index extends GribIndex {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
 
   public static final String MAGIC_START = "Grib1Index";
   private static final int version = 5;
   private static final boolean debug = false;
-  static public final int grib1index_proto_version = 3;
+  private static final int grib1index_proto_version = 3;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -80,11 +80,11 @@ public class Grib1Index extends GribIndex {
     return records.size();
   }
 
-  public boolean readIndex(String filename, long gribLastModified) throws IOException {
+  public boolean readIndex(String filename, long gribLastModified) {
     return readIndex(filename, gribLastModified, CollectionUpdateType.test);
   }
 
-  public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) throws IOException {
+  public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
     File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
@@ -133,14 +133,9 @@ public class Grib1Index extends GribIndex {
       }
       if (debug) System.out.printf(" read %d records%n", records.size());
 
-    } catch (java.lang.NegativeArraySizeException e) {
+    } catch (NegativeArraySizeException | IOException e) {
       logger.error("GribIndex failed on " + filename, e);
       return false;
-
-    } catch (IOException e) {
-      logger.error("GribIndex failed on " + filename, e);
-      return false;
-
     }
 
     return true;
@@ -234,7 +229,7 @@ public class Grib1Index extends GribIndex {
     }
   }
 
-  private ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record makeRecordProto(Grib1Record r, int gdsIndex) throws IOException {
+  private ucar.nc2.grib.grib1.Grib1IndexProto.Grib1Record makeRecordProto(Grib1Record r, int gdsIndex) {
     Grib1IndexProto.Grib1Record.Builder b = Grib1IndexProto.Grib1Record.newBuilder();
 
     b.setHeader(ByteString.copyFrom(r.getHeader()));
@@ -258,13 +253,13 @@ public class Grib1Index extends GribIndex {
     return b.build();
   }
 
-  private Grib1IndexProto.Grib1GdsSection makeGdsProto(Grib1SectionGridDefinition gds) throws IOException {
+  private Grib1IndexProto.Grib1GdsSection makeGdsProto(Grib1SectionGridDefinition gds) {
     Grib1IndexProto.Grib1GdsSection.Builder b = Grib1IndexProto.Grib1GdsSection.newBuilder();
     b.setGds(ByteString.copyFrom(gds.getRawBytes()));
     return b.build();
   }
 
-  static public void main(String args[]) throws IOException {
+  static public void main(String[] args) throws IOException {
    String gribName = args[0];
    new Grib1Index().makeIndex(gribName, null);
   }

@@ -127,7 +127,7 @@ public class CoordinateRuntime implements Coordinate {
   }
 
   @Override
-  public List<? extends Object> getValues() {
+  public List<?> getValues() {
     List<Long> result = new ArrayList<>(runtimes.length);
     for (long val : runtimes) result.add(val);
     return result;

@@ -101,7 +101,7 @@ public abstract class Grib2Pds {
     return GribNumbers.int2(getOctet(6), getOctet(7));
   }
 
-  public final float[] getExtraCoordinates() {
+  final float[] getExtraCoordinates() {
     int n =  getExtraCoordinatesCount();
     if (n == 0) return null;
     float[] result = new float[n];

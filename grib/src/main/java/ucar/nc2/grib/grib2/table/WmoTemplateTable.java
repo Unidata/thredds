@@ -46,7 +46,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     public List<WmoTemplateTable> list;
     public Map<String, WmoTemplateTable> map; // key is "disc.cat"
 
-    public GribTemplates(List<WmoTemplateTable> list, Map<String, WmoTemplateTable> map) {
+    GribTemplates(List<WmoTemplateTable> list, Map<String, WmoTemplateTable> map) {
       this.list = list;
       this.map = map;
     }
@@ -327,29 +327,12 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     }
   }
 
-  /*
-    private String convert(String table, int value) {
-    if (gribCodes == null) {
-      try {
-        gribCodes = GribCodeTableWmo.getWmoStandard().map;
-      } catch (IOException e) {
-        return "Read GridCodes failed";
-      }
-    }
-
-    GribCodeTableWmo gct = gribCodes.get(table);
-    if (gct == null) return table + " not found";
-    GribCodeTableWmo.TableEntry entry = gct.get(value);
-    if (entry != null) return entry.meaning;
-    return "Table " + table + " code " + value + " not found";
-  } */
-
   private String convert(Grib2Customizer tables, String table, int value) {
     String result = tables.getTableValue(table, value);
     return (result != null) ? result : "Table " + table + " code " + value + " not found";
   }
 
-  public static void main(String arg[]) throws IOException {
+  public static void main(String[] arg) throws IOException {
     List<WmoTemplateTable> tlist = readXml(standard).list;
 
     for (WmoTemplateTable t : tlist) {

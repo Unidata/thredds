@@ -20,12 +20,12 @@ import java.io.IOException;
  * @since 2/20/14
  */
 class GribCollectionWriter {
-  static public final int currentVersion = 1;
+  static final int currentVersion = 1;
 
   protected final MCollection dcm; // may be null, when read in from index
   protected final org.slf4j.Logger logger;
 
-  protected GribCollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
+  GribCollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
     this.logger = logger;
   }
@@ -40,7 +40,7 @@ class GribCollectionWriter {
       uint32 predefinedGridDefinition = 2;  // only grib1; instead of gds raw bytes; need center, subcenter to interpret
     }
    */
-  static GribCollectionProto.Gds writeGdsProto(byte[] rawGds, int predefinedGridDefinition) throws IOException {
+  static GribCollectionProto.Gds writeGdsProto(byte[] rawGds, int predefinedGridDefinition) {
     GribCollectionProto.Gds.Builder b = GribCollectionProto.Gds.newBuilder();
 
     if (predefinedGridDefinition >= 0)
@@ -61,7 +61,7 @@ class GribCollectionWriter {
     repeated float bound = 5; // only used if interval, then = (value, bound)
     repeated int64 msecs = 6; // calendar date
    */
-  protected GribCollectionProto.Coord writeCoordProto(CoordinateRuntime coord) throws IOException {
+    GribCollectionProto.Coord writeCoordProto(CoordinateRuntime coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType( convertAxisType (coord.getType()));
     b.setCode(coord.getCode());
@@ -75,7 +75,7 @@ class GribCollectionWriter {
     return b.build();
   }
 
-  protected GribCollectionProto.Coord writeCoordProto(CoordinateTime coord) throws IOException {
+  GribCollectionProto.Coord writeCoordProto(CoordinateTime coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -92,7 +92,7 @@ class GribCollectionWriter {
     return b.build();
   }
 
-  protected GribCollectionProto.Coord writeCoordProto(CoordinateTimeIntv coord) throws IOException {
+  GribCollectionProto.Coord writeCoordProto(CoordinateTimeIntv coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType( convertAxisType (coord.getType()));
     b.setCode(coord.getCode());
@@ -112,7 +112,7 @@ class GribCollectionWriter {
     return b.build();
   }
 
-  protected GribCollectionProto.Coord writeCoordProto(CoordinateVert coord) throws IOException {
+  GribCollectionProto.Coord writeCoordProto(CoordinateVert coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -129,7 +129,7 @@ class GribCollectionWriter {
     return b.build();
   }
 
-  protected GribCollectionProto.Coord writeCoordProto(CoordinateEns coord) throws IOException {
+  GribCollectionProto.Coord writeCoordProto(CoordinateEns coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());
@@ -142,7 +142,7 @@ class GribCollectionWriter {
     return b.build();
   }
 
-  protected GribCollectionProto.Coord writeCoordProto(CoordinateTime2D coord) throws IOException {
+  GribCollectionProto.Coord writeCoordProto(CoordinateTime2D coord) {
     GribCollectionProto.Coord.Builder b = GribCollectionProto.Coord.newBuilder();
     b.setAxisType(convertAxisType(coord.getType()));
     b.setCode(coord.getCode());

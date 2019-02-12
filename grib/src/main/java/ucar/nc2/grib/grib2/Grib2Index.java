@@ -55,14 +55,14 @@ import java.util.*;
  * @since 4/1/11
  */
 public class Grib2Index extends GribIndex {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
 
   public static final String MAGIC_START = "Grib2Index";
   public static final int ScanModeMissing = 9999;
 
   private static final boolean debug = false;
   private static final int version = 6; // index must be this version, or else rewrite.
-  static public final int grib2index_proto_version = 3;
+  private static final int grib2index_proto_version = 3;
 
   /*
     9/12/2012 version 6: replace bms indicator = 254 with previously defined.
@@ -71,7 +71,6 @@ public class Grib2Index extends GribIndex {
 
   private List<Grib2SectionGridDefinition> gdsList;
   private List<Grib2Record> records;
-  private boolean isProto3;
 
   public List<Grib2SectionGridDefinition> getGds() {
     return gdsList;
@@ -89,7 +88,7 @@ public class Grib2Index extends GribIndex {
     return readIndex(filename, gribLastModified, CollectionUpdateType.test);
   }
 
-  public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) throws IOException {
+  public boolean readIndex(String filename, long gribLastModified, CollectionUpdateType force) {
     String idxPath = filename;
     if (!idxPath.endsWith(GBX9_IDX)) idxPath += GBX9_IDX;
     File idxFile = GribIndexCache.getExistingFileOrCache(idxPath);
@@ -125,7 +124,7 @@ public class Grib2Index extends GribIndex {
       Grib2IndexProto.Grib2Index proto = Grib2IndexProto.Grib2Index.parseFrom(m);
       if (debug) System.out.printf("%s for %s%n", proto.getFilename(), filename);
       int version = proto.getProtoVersion();
-      isProto3 = version >= 3;
+      boolean isProto3 = version >= 3;
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib2IndexProto.GribGdsSection pgds : proto.getGdsListList()) {
@@ -140,11 +139,7 @@ public class Grib2Index extends GribIndex {
       }
       if (debug) System.out.printf(" read %d records%n", records.size());
 
-    } catch (java.lang.NegativeArraySizeException e) {
-      logger.error("GribIndex failed on " + filename, e);
-      return false;
-
-    } catch (IOException e) {
+    } catch (NegativeArraySizeException | IOException e) {
       logger.error("GribIndex failed on " + filename, e);
       return false;
     }
@@ -308,7 +303,7 @@ public class Grib2Index extends GribIndex {
     return b.build();
   }
 
-  private Grib2IndexProto.GribGdsSection makeGdsProto(Grib2SectionGridDefinition gds) throws IOException {
+  private Grib2IndexProto.GribGdsSection makeGdsProto(Grib2SectionGridDefinition gds) {
     Grib2IndexProto.GribGdsSection.Builder b = Grib2IndexProto.GribGdsSection.newBuilder();
     b.setGds(ByteString.copyFrom(gds.getRawBytes()));
     return b.build();
@@ -326,7 +321,7 @@ public class Grib2Index extends GribIndex {
   required uint32 processedDataType = 8;
 }
    */
-  private Grib2IndexProto.GribIdSection makeIdProto(Grib2SectionIdentification id) throws IOException {
+  private Grib2IndexProto.GribIdSection makeIdProto(Grib2SectionIdentification id) {
     Grib2IndexProto.GribIdSection.Builder b = Grib2IndexProto.GribIdSection.newBuilder();
 
     b.setCenterId(id.getCenter_id());
@@ -346,7 +341,7 @@ public class Grib2Index extends GribIndex {
     return b.build();
   }
 
-  static public void main(String args[]) throws IOException {
+  static public void main(String[] args) throws IOException {
     String gribName = args[0];
     new Grib2Index().makeIndex(gribName, null);
   }

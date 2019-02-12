@@ -58,7 +58,6 @@ public class GribCdmIndex implements IndexReader {
   static public FileCacheIF gribCollectionCache;
 
   static public void initDefaultCollectionCache(int minElementsInMemory, int maxElementsInMemory, int period) {
-    // gribCollectionCache = new ucar.nc2.util.cache.FileCache("DefaultGribCollectionCache", minElementsInMemory, maxElementsInMemory, -1, period);
     gribCollectionCache = new ucar.nc2.util.cache.FileCacheGuava("DefaultGribCollectionCache", maxElementsInMemory);
   }
 
@@ -73,7 +72,8 @@ public class GribCdmIndex implements IndexReader {
   }
 
   // open GribCollectionImmutable from an existing index file. return null on failure
-  static public GribCollectionImmutable acquireGribCollection(FileFactory factory, Object hashKey, String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
+  static GribCollectionImmutable acquireGribCollection(FileFactory factory, Object hashKey,
+      String location, int buffer_size, CancelTask cancelTask, Object spiObject) throws IOException {
     FileCacheable result;
     DatasetUrl durl = new DatasetUrl(null, location);
 
@@ -281,7 +281,6 @@ public class GribCdmIndex implements IndexReader {
    * Update Grib Collection if needed
    *
    * @return true if the collection was updated
-   * @throws IOException
    */
   static public boolean updateGribCollection(FeatureCollectionConfig config, CollectionUpdateType updateType, Logger logger) throws IOException {
     if (logger == null) logger = classLogger;
@@ -484,7 +483,6 @@ public class GribCdmIndex implements IndexReader {
    * @param config  FeatureCollectionConfig
    * @param dirPath directory path
    * @return true if collection was rewritten, exception on failure
-   * @throws IOException
    */
   static private boolean updateLeafCollection(boolean isGrib1, FeatureCollectionConfig config,
                                               CollectionUpdateType updateType, boolean isTop,
@@ -518,7 +516,6 @@ public class GribCdmIndex implements IndexReader {
    * @param config     FeatureCollectionConfig
    * @param updateType always, test, nocheck, never
    * @return true if partition was rewritten, exception on failure
-   * @throws IOException
    */
   static private boolean updateFilePartition(final boolean isGrib1, final FeatureCollectionConfig config,
                                              final CollectionUpdateType updateType, boolean isTop,

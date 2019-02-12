@@ -65,7 +65,7 @@ public class SparseArray<T> {
     return strides;
   }
 
-  public int calcIndex(int... index) {
+  private int calcIndex(int... index) {
     assert index.length == shape.length;
     int result = 0;
     for (int ii = 0; ii < index.length; ii++)
@@ -225,7 +225,7 @@ public class SparseArray<T> {
       track[where] = content.size();  // 1-based so that 0 = missing, so content at where = content.get(track[where]-1)
     }
 
-    public int calcIndex(int... index) {
+    int calcIndex(int... index) {
       assert index.length == shape.length;
       int result = 0;
       for (int ii = 0; ii < index.length; ii++)
@@ -241,7 +241,7 @@ public class SparseArray<T> {
       this.content = content;
     }
 
-    public int getTotalSize() {
+    int getTotalSize() {
       return totalSize;
     }
 

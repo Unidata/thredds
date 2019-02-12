@@ -93,10 +93,7 @@ public class Grib1Record {
     return gdss;
   }
 
-  //private Grib1Gds gds = null;
   public Grib1Gds getGDS() {
-    //if (gds == null)
-    //  gds = gdss.getGDS();
     return gdss.getGDS();
   }
 

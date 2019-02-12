@@ -5,15 +5,12 @@
 
 package ucar.nc2.grib;
 
-/**
- @deprecated
- */
-
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.grib.GribVariableRenamer;
 import java.io.IOException;
 import java.util.List;
 
+/** @deprecated */
 public class GribConverterUtility {
     public static void main(final String[] args) {
         String usage = "usage: ucar.nc2.dataset.GribConverterUtility -grib1|-grib2 <fileIn> <oldGribName> [-matchNCEP]";
@@ -69,11 +66,10 @@ public class GribConverterUtility {
             }
         } catch (IOException e) {
             System.out.println("oops...");
-//            System.out.println(e);
             System.out.println("Check filename " + grbFile);
         } catch (Exception e) {
             System.out.println("oops...");
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
 }

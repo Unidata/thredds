@@ -75,7 +75,7 @@ public class Grib1DataReader {
   /**
    * @param startPos starting offset of the binary data section
    */
-  public Grib1DataReader(int decimalScale, int scanMode, int nxRaw, int nyRaw, int nPts, long startPos) {
+  Grib1DataReader(int decimalScale, int scanMode, int nxRaw, int nyRaw, int nPts, long startPos) {
     this.decimalScale = decimalScale;
     this.scanMode = scanMode;
     this.nxRaw = nxRaw;
@@ -346,9 +346,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     int np = this.nPts;
     System.out.printf("need bitmap bytes=%d for npts=%d%n", np / 8, np);
 
-    float[] data = new float[1];
-
-    return data;
+    return new float[1]; // ?? fake
   }
 
   // raf will be at byte 12

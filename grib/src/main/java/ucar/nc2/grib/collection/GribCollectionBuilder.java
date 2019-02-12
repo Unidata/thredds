@@ -49,7 +49,7 @@ abstract class GribCollectionBuilder {
   protected abstract boolean writeIndex(String name, String indexFilepath, CoordinateRuntime masterRuntime,
                                         List<? extends Group> groups, List<MFile> files, CalendarDateRange dateRange) throws IOException;
 
-  public GribCollectionBuilder(boolean isGrib1, String name, MCollection dcm, org.slf4j.Logger logger) {
+  GribCollectionBuilder(boolean isGrib1, String name, MCollection dcm, org.slf4j.Logger logger) {
     this.dcm = dcm;
     this.logger = logger;
     this.isGrib1 = isGrib1;
@@ -58,7 +58,7 @@ abstract class GribCollectionBuilder {
     this.directory = new File(dcm.getRoot());
   }
 
-  public boolean updateNeeded(CollectionUpdateType ff) throws IOException {
+  boolean updateNeeded(CollectionUpdateType ff) throws IOException {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
@@ -106,15 +106,15 @@ abstract class GribCollectionBuilder {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-   // throw exception if failure
-  public boolean createIndex(FeatureCollectionConfig.PartitionType ptype, Formatter errlog) throws IOException {
+   // Throw exception if failure
+   boolean createIndex(FeatureCollectionConfig.PartitionType ptype, Formatter errlog) throws IOException {
     if (ptype == FeatureCollectionConfig.PartitionType.all)
       return createAllRuntimeCollections(errlog);
     else
       return createMultipleRuntimeCollections(errlog);
   }
 
-   // throw exception if failure
+   // Throw exception if failure
   private boolean createMultipleRuntimeCollections(Formatter errlog) throws IOException {
     long start = System.currentTimeMillis();
 
@@ -128,18 +128,16 @@ abstract class GribCollectionBuilder {
       throw new IllegalStateException("No records in this collection =" + name + " topdir=" + dcm.getRoot());
     }
 
-    // create the master runtimes, classify the result
+    // Create the master runtimes, classify the result
     CalendarDateRange calendarDateRangeAll = null;
     //boolean allTimesAreOne = true;
     boolean allTimesAreUnique = true;
     Set<Long> allRuntimes = new HashSet<>();
     for (Group g : groups) {
-      for (Long cd : g.getCoordinateRuntimes())
-        allRuntimes.add(cd);
+      allRuntimes.addAll(g.getCoordinateRuntimes());
       for (Coordinate coord : g.getCoordinates()) {
         if (coord instanceof CoordinateTime2D) {
           CoordinateTime2D coord2D = (CoordinateTime2D) coord;
-          //if (coord2D.getNtimes() > 1) allTimesAreOne = false;
           if (allTimesAreUnique) {
             allTimesAreUnique = coord2D.hasUniqueTimes();
           }
@@ -151,8 +149,7 @@ abstract class GribCollectionBuilder {
         }
       }
     }
-    List<Long> sortedList = new ArrayList<>();
-    for (Long cd : allRuntimes) sortedList.add(cd);
+    List<Long> sortedList = new ArrayList<>(allRuntimes);
     Collections.sort(sortedList);
     if (sortedList.size() == 0)
       throw new IllegalArgumentException("No runtimes in this collection ="+name);
@@ -163,10 +160,6 @@ abstract class GribCollectionBuilder {
       this.type =  GribCollectionImmutable.Type.MRUTC;
     else
       this.type =  GribCollectionImmutable.Type.MRC;
-
-    /* GribCollectionMutable result = new GribCollectionMutable(name, directory, config, isGrib1);
-    GribCollectionMutable.Dataset dataset2D = result.makeDataset(this.type);
-    dataset2D.groups = groups; */
 
     CoordinateRuntime masterRuntimes = new CoordinateRuntime(sortedList, null);
     MFile indexFileForRuntime = GribCollectionMutable.makeIndexMFile(this.name, directory);
@@ -195,11 +188,8 @@ abstract class GribCollectionBuilder {
     // gather into collections with a single runtime
     Map<Long, List<Group>> runGroups = new HashMap<>();
     for (Group g : groups) {
-      List<Group> runGroup = runGroups.get(g.getRuntime().getMillis());
-      if (runGroup == null) {
-        runGroup = new ArrayList<>();
-        runGroups.put(g.getRuntime().getMillis(), runGroup);
-      }
+      List<Group> runGroup = runGroups
+          .computeIfAbsent(g.getRuntime().getMillis(), k -> new ArrayList<>());
       runGroup.add(g);
     }
 

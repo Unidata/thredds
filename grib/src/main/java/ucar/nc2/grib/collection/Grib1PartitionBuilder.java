@@ -19,7 +19,7 @@ import java.io.File;
 class Grib1PartitionBuilder extends GribPartitionBuilder {
   public static final String MAGIC_START = "Grib1Partition2Index";  // was Grib1Partition0Index
 
-  public Grib1PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
+  Grib1PartitionBuilder(String name, File directory, PartitionManager tpc, org.slf4j.Logger logger) {
     super(name, tpc, logger);
 
     FeatureCollectionConfig config = null;

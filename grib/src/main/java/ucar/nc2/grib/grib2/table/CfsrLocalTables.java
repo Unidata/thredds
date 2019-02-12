@@ -6,7 +6,6 @@
 package ucar.nc2.grib.grib2.table;
 
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -54,12 +53,10 @@ public class CfsrLocalTables extends NcepLocalTables {
 
   @Override
   public String getGeneratingProcessName(int genProcess) {
-    switch (genProcess) {
-      case 197:
-        return "CFSR";
-      default:
-        return super.getGeneratingProcessName(genProcess);
+    if (genProcess == 197) {
+      return "CFSR";
     }
+    return super.getGeneratingProcessName(genProcess);
   }
 
   // 193
@@ -211,7 +208,7 @@ public class CfsrLocalTables extends NcepLocalTables {
   //////////////////////////////////////////////////////////////////////
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
-  protected void initLocalTable() {
+  private void initLocalTable() {
     ClassLoader cl = this.getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableName)) {
       if (is == null) throw new IllegalStateException("Cant find " + tableName);

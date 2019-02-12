@@ -88,12 +88,12 @@ public class CoordinateSharerBest {
 
    public List<Coordinate> finish() {
      unionCoords = new ArrayList<>(20);
-     for (Coordinate coord : runtimeBuilders.keySet()) unionCoords.add(coord);
-     for (Coordinate coord : time2DBuilders.keySet()) unionCoords.add(coord);
-     for (Coordinate coord : timeBuilders.keySet()) unionCoords.add(coord);
-     for (Coordinate coord : timeIntvBuilders.keySet()) unionCoords.add(coord);
-     for (Coordinate coord : vertBuilders.keySet()) unionCoords.add(coord);
-     for (Coordinate coord : ensBuilders.keySet()) unionCoords.add(coord);
+     unionCoords.addAll(runtimeBuilders.keySet());
+     unionCoords.addAll(time2DBuilders.keySet());
+     unionCoords.addAll(timeBuilders.keySet());
+     unionCoords.addAll(timeIntvBuilders.keySet());
+     unionCoords.addAll(vertBuilders.keySet());
+     unionCoords.addAll(ensBuilders.keySet());
 
      indexMap = new HashMap<>();
      for (int i = 0; i < unionCoords.size(); i++) {

@@ -52,7 +52,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   }
 
   @Override
-  public List<? extends Object> getValues() {
+  public List<?> getValues() {
     return timeIntervals;
   }
 
@@ -242,7 +242,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     private final CalendarPeriod timeUnit;
     private final CalendarDate refDate;
 
-    public Builder1(Grib1Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+    Builder1(Grib1Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
       this.cust = cust;
       this.code = code;
       this.timeUnit = timeUnit;

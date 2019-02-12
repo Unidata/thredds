@@ -33,7 +33,6 @@ public class Grib2Record {
   private Grib2SectionData dataSection;
 
   private Grib2Pds pds2 = null;
-  // private Grib2Gds gds2 = null;
 
   private final byte[] header; // anything in between the records - eg idd header
   private int file; // for multiple files in same dataset
@@ -295,9 +294,6 @@ public class Grib2Record {
     return data;
   }
 
-  //         float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
-
-
   /**
    * Read data array: use when you want to be independent of the GribRecord
    *
@@ -323,8 +319,6 @@ public class Grib2Record {
             scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drs.getDrs(raf);
-
-    //return reader.getData(raf, bitmap, gdrs);
 
     float[] data = reader.getData(raf, bms, gdrs);
 
