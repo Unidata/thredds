@@ -256,31 +256,33 @@ public class Grib1ParamTables {
         return false;
 
       File parent = new File(lookupFile).getParentFile();
-      InputStreamReader isr = new InputStreamReader(is, CDM.utf8Charset);
-      BufferedReader br = new BufferedReader(isr);
+      try (InputStreamReader isr = new InputStreamReader(is, CDM.utf8Charset);
+          BufferedReader br = new BufferedReader(isr)) {
 
-      String line;
-      while ((line = br.readLine()) != null) {
-        line = line.trim();
-        if ((line.length() == 0) || line.startsWith("#")) {
-          continue;
+        String line;
+        while ((line = br.readLine()) != null) {
+          line = line.trim();
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+          String[] tableDefArr = line.split(":");
+
+          int center = Integer.parseInt(tableDefArr[0].trim());
+          int subcenter = Integer.parseInt(tableDefArr[1].trim());
+          int version = Integer.parseInt(tableDefArr[2].trim());
+          String filename = tableDefArr[3].trim();
+          String path;
+          if (filename.startsWith("/") || filename.startsWith("\\") || filename.startsWith("file:")
+              || filename.startsWith("http://")) {
+            path = filename;
+          } else {
+            File tableFile = new File(parent, filename); // reletive file
+            path = tableFile.getPath();
+          }
+
+          Grib1ParamTableReader table = new Grib1ParamTableReader(center, subcenter, version, path);
+          tables.add(table);
         }
-        String[] tableDefArr = line.split(":");
-
-        int center = Integer.parseInt(tableDefArr[0].trim());
-        int subcenter = Integer.parseInt(tableDefArr[1].trim());
-        int version = Integer.parseInt(tableDefArr[2].trim());
-        String filename = tableDefArr[3].trim();
-        String path;
-        if (filename.startsWith("/") || filename.startsWith("\\") || filename.startsWith("file:") || filename.startsWith("http://")) {
-          path = filename;
-        } else {
-          File tableFile = new File(parent, filename); // reletive file
-          path = tableFile.getPath();
-        }
-
-        Grib1ParamTableReader table = new Grib1ParamTableReader(center, subcenter, version, path);
-        tables.add(table);
       }
 
       return true;
@@ -298,7 +300,7 @@ public class Grib1ParamTables {
 
     }
 
-    Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
+    public Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
       // look in hash table
       int key = makeKey(center, subcenter, tableVersion);
       Grib1ParamTableReader table = tableMap.get(key);

@@ -938,34 +938,37 @@ public abstract class Grib2Pds {
      */
     @Override
     public String getProbabilityName() {
-      Formatter f = new Formatter();
-      int scale1 = Math.max(1, getOctet(38));
-      int scale2 = Math.max(1, getOctet(43));
+      String result;
+      try (Formatter f = new Formatter()) {
+        int scale1 = Math.max(1, getOctet(38));
+        int scale2 = Math.max(1, getOctet(43));
 
-      switch (getProbabilityType()) {
-        case 0:
-          f.format("below_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
-          break;
-        case 1:
-          f.format("above_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
-          break;
-        case 2:
-          if (getProbabilityLowerLimit() == getProbabilityUpperLimit())
-            f.format("equals_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
-          else
-            f.format("between_%s_and_%s", Format.dfrac(getProbabilityLowerLimit(), scale1), Format.dfrac(getProbabilityUpperLimit(), scale2));
-          break;
-        case 3:
-          f.format("above_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
-          break;
-        case 4:
-          f.format("below_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
-          break;
-        default:
-          f.format("UknownProbType=%d", getProbabilityType());
+        switch (getProbabilityType()) {
+          case 0:
+            f.format("below_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
+            break;
+          case 1:
+            f.format("above_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
+            break;
+          case 2:
+            if (getProbabilityLowerLimit() == getProbabilityUpperLimit()) {
+              f.format("equals_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
+            } else {
+              f.format("between_%s_and_%s", Format.dfrac(getProbabilityLowerLimit(), scale1),
+                  Format.dfrac(getProbabilityUpperLimit(), scale2));
+            }
+            break;
+          case 3:
+            f.format("above_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
+            break;
+          case 4:
+            f.format("below_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
+            break;
+          default:
+            f.format("UknownProbType=%d", getProbabilityType());
+        }
+        result = StringUtil2.removeFromEnd(f.toString(), '0');
       }
-
-      String result = StringUtil2.removeFromEnd(f.toString(), '0');
       return StringUtil2.removeFromEnd(result, '.');
     }
 

@@ -73,8 +73,11 @@ public class NcepLocalTables extends LocalTables {
     if (dirURL.getProtocol().equals("jar")) {
             /* A JAR path */
       String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-      JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-      Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+      Enumeration<JarEntry> entries;
+      try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+        //gives ALL entries in jar
+        entries = jar.entries();
+      }
       Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
       while (entries.hasMoreElements()) {
         String name = entries.nextElement().getName();

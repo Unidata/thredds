@@ -115,26 +115,31 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   static String makeVariableId(int center, int subcenter, int tableVersion, int paramNo, int levelType, boolean isLayer, int intvType, String intvName) {
-    Formatter f = new Formatter();
+    try (Formatter f = new Formatter()) {
 
-    f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion, paramNo);  // "VAR_7-15--1-20_L1";
+      f.format("VAR_%d-%d-%d-%d", center, subcenter, tableVersion,
+          paramNo);  // "VAR_7-15--1-20_L1";
 
-    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_L%d", levelType); // code table 4.5
-      if (isLayer) f.format("_layer");
-    }
-
-    if (intvType >= 0) {
-      if (intvName != null) {
-        if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS))
-          f.format("_Imixed");
-        else
-          f.format("_I%s", intvName);
+      if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+        f.format("_L%d", levelType); // code table 4.5
+        if (isLayer) {
+          f.format("_layer");
+        }
       }
-      f.format("_S%s", intvType);
-    }
 
-    return f.toString();
+      if (intvType >= 0) {
+        if (intvName != null) {
+          if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS)) {
+            f.format("_Imixed");
+          } else {
+            f.format("_I%s", intvName);
+          }
+        }
+        f.format("_S%s", intvType);
+      }
+
+      return f.toString();
+    }
   }
 
   @Override

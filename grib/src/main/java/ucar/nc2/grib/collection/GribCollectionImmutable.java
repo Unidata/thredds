@@ -735,14 +735,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public String toStringFrom() {
-      Formatter sb = new Formatter();
-      sb.format("Variable {%d-%d-%d", info.discipline, info.category, info.parameter);
-      sb.format(", levelType=%d", info.levelType);
-      sb.format(", intvType=%d", info.intvType);
-      sb.format(", nrecords=%d", nrecords);
-      sb.format(", ndups=%d", ndups);
-      sb.format(", nmiss=%d}", nmissing);
-      return sb.toString();
+      try (Formatter sb = new Formatter()) {
+        sb.format("Variable {%d-%d-%d", info.discipline, info.category, info.parameter);
+        sb.format(", levelType=%d", info.levelType);
+        sb.format(", intvType=%d", info.intvType);
+        sb.format(", nrecords=%d", nrecords);
+        sb.format(", ndups=%d", ndups);
+        sb.format(", nmiss=%d}", nmissing);
+        return sb.toString();
+      }
     }
 
     @Override

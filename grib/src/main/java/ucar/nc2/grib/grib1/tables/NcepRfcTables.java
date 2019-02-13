@@ -97,28 +97,29 @@ public class NcepRfcTables extends NcepTables {
     Map<Integer, String> result = new HashMap<>();
 
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-
       if (is == null) return null;
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
+        // rdg - added the 0 line length check to cover the case of blank lines at
+        //       the end of the parameter table file.
+        while (true) {
+          String line = br.readLine();
+          if (line == null) {
+            break;
+          }
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
+          StringBuilder lineb = new StringBuilder(line);
+          StringUtil2.remove(lineb, "'+,/");
+          String[] flds = lineb.toString().split("[:]");
 
-      // rdg - added the 0 line length check to cover the case of blank lines at
-      //       the end of the parameter table file.
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break;
-        if ((line.length() == 0) || line.startsWith("#")) continue;
+          int val = Integer.parseInt(flds[0].trim()); // must have a number
+          String name = flds[1].trim() + ": " + flds[2].trim();
 
-        StringBuilder lineb =  new StringBuilder(line);
-        StringUtil2.remove(lineb, "'+,/");
-        String[] flds = lineb.toString().split("[:]");
-
-        int val = Integer.parseInt(flds[0].trim()); // must have a number
-        String name = flds[1].trim() + ": " + flds[2].trim();
-
-        result.put(val, name);
+          result.put(val, name);
+        }
       }
-
       return Collections.unmodifiableMap(result);  // all at once - thread safe
 
     } catch (IOException ioError) {

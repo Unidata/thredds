@@ -630,14 +630,19 @@ public class GribCollectionMutable implements Closeable {
     }
 
     public String toStringShort() {
-      Formatter sb = new Formatter();
-      sb.format("Variable {%d-%d-%d", discipline, category, parameter);
-      sb.format(", levelType=%d", levelType);
-      sb.format(", intvType=%d", intvType);
-      if (intvName != null && intvName.length() > 0) sb.format(" intv=%s", intvName);
-      if (probabilityName != null && probabilityName.length() > 0) sb.format(" prob=%s", probabilityName);
-      sb.format(" cdmHash=%d}", gribVariable.hashCode());
-      return sb.toString();
+      try (Formatter sb = new Formatter()) {
+        sb.format("Variable {%d-%d-%d", discipline, category, parameter);
+        sb.format(", levelType=%d", levelType);
+        sb.format(", intvType=%d", intvType);
+        if (intvName != null && intvName.length() > 0) {
+          sb.format(" intv=%s", intvName);
+        }
+        if (probabilityName != null && probabilityName.length() > 0) {
+          sb.format(" prob=%s", probabilityName);
+        }
+        sb.format(" cdmHash=%d}", gribVariable.hashCode());
+        return sb.toString();
+      }
     }
 
     @Override

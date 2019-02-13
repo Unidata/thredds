@@ -301,15 +301,17 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   private String makeTableNo() {
-    Formatter f = new Formatter();
-    f.format("%d.%d",m1, m2);
+    try (Formatter f = new Formatter()) {
+      f.format("%d.%d", m1, m2);
 
-    if (discipline >= 0)
-      f.format(".%d",discipline);
-    if (category >= 0)
-      f.format(".%d",category);
-
-    return f.toString();
+      if (discipline >= 0) {
+        f.format(".%d", discipline);
+      }
+      if (category >= 0) {
+        f.format(".%d", category);
+      }
+      return f.toString();
+    }
   }
 
   public String getTableName() {

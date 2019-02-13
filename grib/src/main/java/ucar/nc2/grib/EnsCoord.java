@@ -56,9 +56,12 @@ public class EnsCoord  {
 
   @Override
   public String toString() {
-    Formatter out = new Formatter();
-    for (Coord lev : coords) out.format("%s, ", lev.toString());
-    return out.toString();
+    try (Formatter out = new Formatter()) {
+      for (Coord lev : coords) {
+        out.format("%s, ", lev.toString());
+      }
+      return out.toString();
+    }
   }
 
   ///////////////////////////////////////////////////////
@@ -118,9 +121,10 @@ public class EnsCoord  {
     }
 
     public String toString() {
-      Formatter out = new Formatter();
-      out.format("(%d %d)", code, ensMember);
-      return out.toString();
+      try (Formatter out = new Formatter()) {
+        out.format("(%d %d)", code, ensMember);
+        return out.toString();
+      }
     }
   }
 

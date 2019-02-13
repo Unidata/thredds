@@ -20,12 +20,13 @@ public class GribRecordStats {
   public int vars;
 
   public String show() {
-    Formatter f = new Formatter();
-    float dupPercent = ((float) dups) / (recordsTotal);
-    float density = ((float) recordsUnique) / (recordsTotal);
-    f.format(" Counter: nvars=%d records %d/%d (%f) filtered=%d dups=%d (%f)%n",
-        vars, recordsUnique, recordsTotal, density, filter, dups, dupPercent);
-    return f.toString();
+    try (Formatter f = new Formatter()) {
+      float dupPercent = ((float) dups) / (recordsTotal);
+      float density = ((float) recordsUnique) / (recordsTotal);
+      f.format(" Counter: nvars=%d records %d/%d (%f) filtered=%d dups=%d (%f)%n",
+          vars, recordsUnique, recordsTotal, density, filter, dups, dupPercent);
+      return f.toString();
+    }
   }
 
   public void add(GribRecordStats c) {
