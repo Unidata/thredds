@@ -187,7 +187,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   ///////////////////////////////////////////////////////////
 
-  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     private final Grib2Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
@@ -236,7 +236,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     }
   }
 
-  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     private final Grib1Customizer cust;
     private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;

@@ -25,7 +25,7 @@ import java.util.Formatter;
  * @since 4/6/11
  */
 public class Grib1Iosp extends GribIosp {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
   @Override
   public String makeVariableName(GribCollectionImmutable.VariableIndex v) {

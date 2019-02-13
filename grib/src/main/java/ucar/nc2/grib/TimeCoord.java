@@ -281,7 +281,7 @@ public class TimeCoord {
    * @param want       find equivilent
    * @return return equivilent or make a new one and add to timeCoords
    */
-  static public int findCoord(List<TimeCoord> timeCoords, TimeCoord want) {
+  public static int findCoord(List<TimeCoord> timeCoords, TimeCoord want) {
     if (want == null) return -1;
 
     for (int i = 0; i < timeCoords.size(); i++) {

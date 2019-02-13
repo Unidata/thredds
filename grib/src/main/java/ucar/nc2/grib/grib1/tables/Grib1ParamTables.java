@@ -31,13 +31,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Immutable
 public class Grib1ParamTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTables.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTables.class);
 
-  static private final Object lock = new Object();
-  static private int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions can go first
+  private static final Object lock = new Object();
+  private static int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions can go first
 
-  static private Lookup standardLookup;
-  static private Grib1ParamTableReader defaultTable;
+  private static Lookup standardLookup;
+  private static Grib1ParamTableReader defaultTable;
 
   static {
     try {
@@ -99,7 +99,7 @@ public class Grib1ParamTables {
    * @return Grib1Tables
    * @throws IOException on read error
    */
-  static public Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
+  public static Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
     if (paramTablePath == null && lookupTablePath == null) return new Grib1ParamTables();
     Lookup lookup = null;
     Grib1ParamTableReader override = null;
@@ -129,7 +129,7 @@ public class Grib1ParamTables {
    * @param paramTableElem parameter table in XML
    * @return Grib1Tables
    */
-  static public Grib1ParamTables factory(org.jdom2.Element paramTableElem) {
+  public static Grib1ParamTables factory(org.jdom2.Element paramTableElem) {
     if (paramTableElem == null) return new Grib1ParamTables();
     return new Grib1ParamTables(null, new Grib1ParamTableReader(paramTableElem));
   }

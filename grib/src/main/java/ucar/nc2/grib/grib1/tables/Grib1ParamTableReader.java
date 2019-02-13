@@ -32,8 +32,8 @@ import java.util.regex.Pattern;
  * @since 11/16/11
  */
 public class Grib1ParamTableReader {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTableReader.class);
-  static private final boolean debug = false;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTableReader.class);
+  private static final boolean debug = false;
 
   private int center_id;
   private int subcenter_id;
@@ -214,7 +214,7 @@ TBLE2 cptec_254_params[] = {
 
    */
 
-  static private final Pattern nclPattern = Pattern.compile("\\{(\\d*),\\s*\"([^\"]*)\",\\s*\"([^\"]*)\",\\s*\"([^\"]*)\".*");
+  private static final Pattern nclPattern = Pattern.compile("\\{(\\d*),\\s*\"([^\"]*)\",\\s*\"([^\"]*)\",\\s*\"([^\"]*)\".*");
 
   private Map<Integer, Grib1Parameter> readParameterTableNcl() throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();

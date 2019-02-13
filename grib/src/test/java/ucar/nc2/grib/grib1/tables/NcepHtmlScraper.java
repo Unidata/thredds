@@ -33,8 +33,8 @@ import java.util.*;
 public class NcepHtmlScraper {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static private final boolean debug = false;
-  static private final boolean show = false;
+  private static final boolean debug = false;
+  private static final boolean show = false;
 
  //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html

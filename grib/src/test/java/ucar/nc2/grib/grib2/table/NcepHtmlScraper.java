@@ -38,9 +38,9 @@ public class NcepHtmlScraper  {
   //String dirOut = "C:\\dev\\github\\thredds\\grib\\src\\main\\sources\\ncep\\temp\\";
   private static final String dirOut = "C:/tmp/ncep/";
 
-  static private final boolean debugParam = false;
-  static private final boolean debug = false;
-  static private final boolean show = false;
+  private static final boolean debugParam = false;
+  private static final boolean debug = false;
+  private static final boolean show = false;
 
 
   //////////////////////////////////////////////////////////////////

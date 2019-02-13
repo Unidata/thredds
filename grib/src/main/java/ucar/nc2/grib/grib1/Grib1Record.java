@@ -192,14 +192,14 @@ public class Grib1Record {
    * @return data as float[] array
    * @throws IOException on read error
    */
-  static public float[] readData(RandomAccessFile raf, long startPos) throws IOException {
+  public static float[] readData(RandomAccessFile raf, long startPos) throws IOException {
     raf.seek(startPos);
     Grib1Record gr = new Grib1Record(raf);
     return gr.readData(raf);
   }
 
   // debugging, do not use
-  static public Grib1Record lastRecordRead;
+  public static Grib1Record lastRecordRead;
 
   /*
    * Read data array: use when you want to be independent of the GribRecord
@@ -213,7 +213,7 @@ public class Grib1Record {
    * @return data as float[] array
    * @throws IOException on read error
    *
-  static public float[] readData(RandomAccessFile raf, long bmPos, int decimalScale, int scanMode, int nx, int ny) throws IOException {
+  public static float[] readData(RandomAccessFile raf, long bmPos, int decimalScale, int scanMode, int nx, int ny) throws IOException {
     raf.seek(bmPos);
     Grib1SectionBitMap bms = new Grib1SectionBitMap(raf);
     Grib1DataReader reader = new Grib1DataReader(decimalScale, scanMode, nx, ny, raf.getFilePointer());

@@ -22,8 +22,8 @@ import java.util.Formatter;
  * @since 9/8/11
  */
 public class Grib1DataReader {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1DataReader.class);
-  static private final float staticMissingValue = Float.NaN;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1DataReader.class);
+  private static final float staticMissingValue = Float.NaN;
 
   ///////////////////////////////// Grib1Data
 

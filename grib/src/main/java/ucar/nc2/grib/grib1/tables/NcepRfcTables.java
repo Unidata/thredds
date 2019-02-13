@@ -24,8 +24,8 @@ import java.util.Map;
  * @since 1/13/12
  */
 public class NcepRfcTables extends NcepTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepRfcTables.class);
-  static private Map<Integer, String> nwsoSubCenter;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepRfcTables.class);
+  private static Map<Integer, String> nwsoSubCenter;
 
   NcepRfcTables(Grib1ParamTables tables) {
     super(8, tables);

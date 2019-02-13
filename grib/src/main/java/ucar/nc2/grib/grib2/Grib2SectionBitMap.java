@@ -19,12 +19,12 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib2SectionBitMap {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2SectionBitMap.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2SectionBitMap.class);
 
   private final long startingPosition;
   private final int bitMapIndicator;
 
-  static public Grib2SectionBitMap factory(RandomAccessFile raf, long startingPos) throws IOException {
+  public static Grib2SectionBitMap factory(RandomAccessFile raf, long startingPos) throws IOException {
     raf.seek(startingPos);
     return new Grib2SectionBitMap(raf);
   }

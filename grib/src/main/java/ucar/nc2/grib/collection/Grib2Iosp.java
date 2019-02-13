@@ -24,7 +24,7 @@ import java.util.Formatter;
  * @since 4/6/11
  */
 public class Grib2Iosp extends GribIosp {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
   static String makeVariableNameFromTable(Grib2Customizer cust,
       GribCollectionImmutable gribCollection,
@@ -178,7 +178,7 @@ public class Grib2Iosp extends GribIosp {
     return getVindexUnits(tables, vindex);
   }
 
-  static private String getVindexUnits(Grib2Customizer tables, GribCollectionImmutable.VariableIndex vindex) {
+  private static String getVindexUnits(Grib2Customizer tables, GribCollectionImmutable.VariableIndex vindex) {
     GribTables.Parameter gp = tables.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;

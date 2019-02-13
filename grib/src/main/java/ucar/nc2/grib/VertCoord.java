@@ -20,7 +20,7 @@ import java.util.*;
 @Immutable
 public class VertCoord {
 
-  static public void assignVertNames(List<VertCoord> vertCoords, GribTables tables) {
+  public static void assignVertNames(List<VertCoord> vertCoords, GribTables tables) {
     List<VertCoord> temp = new ArrayList<>(vertCoords); // dont change order of original !!!!!
 
     // assign name
@@ -142,7 +142,7 @@ public class VertCoord {
 
   ///////////////////////////////////////////////////////
 
-  static public int findCoord(List<VertCoord> vertCoords, VertCoord want) {
+  public static int findCoord(List<VertCoord> vertCoords, VertCoord want) {
     if (want == null) return -1;
 
     for (int i = 0; i < vertCoords.size(); i++) {
@@ -156,7 +156,7 @@ public class VertCoord {
   }
 
   @Immutable
-  static public class Level implements Comparable<Level> {
+  public static class Level implements Comparable<Level> {
     final double value1;
     final double value2;
     final double mid;

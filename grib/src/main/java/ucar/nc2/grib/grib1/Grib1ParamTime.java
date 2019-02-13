@@ -25,7 +25,7 @@ import javax.annotation.concurrent.Immutable;
 public class Grib1ParamTime {
 
     // code table 5 - 2010 edition of WMO manual on codes
-  static public String getTimeTypeName(int timeRangeIndicator) {
+  public static String getTimeTypeName(int timeRangeIndicator) {
     String timeRange;
 
     switch (timeRangeIndicator) {

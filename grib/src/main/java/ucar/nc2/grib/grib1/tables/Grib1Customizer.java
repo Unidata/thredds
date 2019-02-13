@@ -32,16 +32,16 @@ import java.util.Map;
  * @since 1/13/12
  */
 public class Grib1Customizer implements GribTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Customizer.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Customizer.class);
 
-  static public Grib1Customizer factory(Grib1Record proto, Grib1ParamTables tables) {
+  public static Grib1Customizer factory(Grib1Record proto, Grib1ParamTables tables) {
     int center = proto.getPDSsection().getCenter();
     int subcenter = proto.getPDSsection().getSubCenter();
     int version = proto.getPDSsection().getTableVersion();
     return factory(center, subcenter, version, tables);
   }
 
-  static public Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
+  public static Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
     if (center == 7) return new NcepTables(tables);
     else if (center == 9) return new NcepRfcTables(tables);
     else if (center == 34) return new JmaTables(tables);
@@ -51,7 +51,7 @@ public class Grib1Customizer implements GribTables {
     else return new Grib1Customizer(center, tables);
   }
 
-  static public String getSubCenterNameStatic(int center, int subcenter) {
+  public static String getSubCenterNameStatic(int center, int subcenter) {
     Grib1Customizer cust = Grib1Customizer.factory(center, subcenter, 0, null);
     return cust.getSubCenterName( subcenter);
   }
@@ -187,7 +187,7 @@ public class Grib1Customizer implements GribTables {
 
   ////////////////////////////////////////////////////////////////////////
 
-  static private Map<Integer, GribLevelType> wmoTable3;  // shared by all instances
+  private static Map<Integer, GribLevelType> wmoTable3;  // shared by all instances
 
   protected GribLevelType getLevelType(int code) {
     GribLevelType result = wmoTable3.get(code);

@@ -66,7 +66,7 @@ public class EnsCoord  {
 
   ///////////////////////////////////////////////////////
 
-  static public int findCoord(List<EnsCoord> ensCoords, EnsCoord want) {
+  public static int findCoord(List<EnsCoord> ensCoords, EnsCoord want) {
     if (want == null) return -1;
 
     for (int i = 0; i < ensCoords.size(); i++) {
@@ -80,7 +80,7 @@ public class EnsCoord  {
   }
 
   @Immutable
-  static public class Coord implements Comparable<Coord> {
+  public static class Coord implements Comparable<Coord> {
     final int code;
     final int ensMember;
 

@@ -28,17 +28,17 @@ import java.util.*;
  */
 @Immutable
 public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConverter {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Customizer.class);
-  static private Map<Grib2Table.Id, Grib2Customizer> tables = new HashMap<>();
-  static private Grib2Customizer wmoStandardTable = null;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Customizer.class);
+  private static Map<Grib2Table.Id, Grib2Customizer> tables = new HashMap<>();
+  private static Grib2Customizer wmoStandardTable = null;
 
-  static public Grib2Customizer factory(Grib2Record gr) throws IOException {
+  public static Grib2Customizer factory(Grib2Record gr) throws IOException {
     Grib2SectionIdentification ids = gr.getId();
     Grib2Pds pds = gr.getPDS();
     return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version(), pds.getGenProcessId());
   }
 
-  static public Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+  public static Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
     Grib2Table.Id id = new Grib2Table.Id(center, subCenter, masterVersion, localVersion, genProcessId);
     Grib2Customizer cust = tables.get(id);
     if (cust != null) return cust;
@@ -50,7 +50,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return cust;
   }
 
-  static public Grib2Customizer factory(Grib2Table grib2Table) {
+  public static Grib2Customizer factory(Grib2Table grib2Table) {
     switch (grib2Table.type) {
       case cfsr: return CfsrLocalTables.getCust(grib2Table);
       case gempak: return GempakLocalTables.getCust(grib2Table);
@@ -66,11 +66,11 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     }
   }
 
-  static public int makeParamId(int discipline, int category, int number) {
+  public static int makeParamId(int discipline, int category, int number) {
     return (discipline << 16) + (category << 8) + number;
   }
 
-  static public boolean isLocal(Parameter p) {
+  public static boolean isLocal(Parameter p) {
     return ((p.getCategory() > 191) || (p.getNumber() > 191));
   }
 
@@ -159,7 +159,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     4: Successive times processed have start time of forecast decremented and forecast time incremented so that valid time remains constant
     5: Floating subinterval of time between forecast time and end of overall time interval
 
-  static public class TimeInterval {
+  public static class TimeInterval {
     public int statProcessType; // (code table 4.10) Statistical process used to calculate the processed field from the field at each time increment during the time range
     public int timeIncrementType;  // (code table 4.11) Type of time increment between successive fields used in the statistical processing
     public int timeRangeUnit;  // (code table 4.4) Indicator of unit of time for time range over which statistical processing is done

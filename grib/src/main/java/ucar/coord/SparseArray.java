@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Immutable
 public class SparseArray<T> {
-  static private final Logger logger = LoggerFactory.getLogger(SparseArray.class);
+  private static final Logger logger = LoggerFactory.getLogger(SparseArray.class);
 
   private final int[] shape;    // multidim sizes
   private final int[] stride;  // for index calculation

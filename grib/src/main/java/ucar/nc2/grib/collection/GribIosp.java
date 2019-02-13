@@ -39,8 +39,8 @@ import java.util.List;
  */
 public abstract class GribIosp extends AbstractIOServiceProvider {
 
-  static private final boolean debug = false, debugTime = false, debugName = false;
-  static public int debugIndexOnlyCount = 0;  // count number of data accesses
+  private static final boolean debug = false, debugTime = false, debugName = false;
+  public static int debugIndexOnlyCount = 0;  // count number of data accesses
 
   // store custom tables in here
   protected FeatureCollectionConfig config = new FeatureCollectionConfig();
@@ -491,7 +491,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   private enum Time2DinfoType {off, offU, intv, intvU, bounds, boundsU, is1Dtime, isUniqueRuntime, reftime, timeAuxRef}
 
-  static private class Time2Dinfo {
+  private static class Time2Dinfo {
 
     Time2DinfoType which;
     CoordinateTime2D time2D;
@@ -1105,9 +1105,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   ///////////////////////////////////////
   // debugging back door
-  abstract public Object getLastRecordRead();
+  public abstract Object getLastRecordRead();
 
-  abstract public void clearLastRecordRead();
+  public abstract void clearLastRecordRead();
 
-  abstract public Object getGribCustomizer();
+  public abstract Object getGribCustomizer();
 }

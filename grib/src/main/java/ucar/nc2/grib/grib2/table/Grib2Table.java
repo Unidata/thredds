@@ -26,10 +26,10 @@ import java.util.List;
 public class Grib2Table {
   public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev}
   private static final String tableMapPath = "resources/grib2/standardTableMap.txt";
-  static public List<Grib2Table> tables = null;
-  static private Grib2Table standardTable = null;
+  public static List<Grib2Table> tables = null;
+  private static Grib2Table standardTable = null;
 
-  static private List<Grib2Table> init() {
+  private static List<Grib2Table> init() {
     List<Grib2Table> result = new ArrayList<>();
     ClassLoader cl = Grib2Table.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableMapPath)) {
@@ -95,7 +95,7 @@ public class Grib2Table {
     return standardTable;
   }
 
-  static public List<Grib2Table> getTables() {
+  public static List<Grib2Table> getTables() {
     if (tables == null)
       tables = init();
 
@@ -159,7 +159,7 @@ public class Grib2Table {
     return result;
   }
 
-  static public class Id {
+  public static class Id {
     public final int center, subCenter, masterVersion, localVersion, genProcessId;
 
     public Id(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {

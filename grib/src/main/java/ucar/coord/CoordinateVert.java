@@ -181,7 +181,7 @@ public class CoordinateVert implements Coordinate {
 
   //////////////////////////////////////////////////////////////
 
-  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
     VertCoord.VertUnit vunit;
 
@@ -208,7 +208,7 @@ public class CoordinateVert implements Coordinate {
     }
   }
 
-  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     int code;
     Grib1Customizer cust;
 

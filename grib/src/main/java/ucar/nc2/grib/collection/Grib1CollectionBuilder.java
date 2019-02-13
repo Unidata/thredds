@@ -32,7 +32,7 @@ import java.util.*;
  * @since 2/5/14
  */
 public class Grib1CollectionBuilder extends GribCollectionBuilder {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
 
   private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib1Customizer cust;

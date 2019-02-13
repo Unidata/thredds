@@ -41,7 +41,7 @@ public class FslLocalTables extends NcepLocalTables {
     return cust;
   }
 
-  static private String getPath(Grib2Table grib2Table) {
+  private static String getPath(Grib2Table grib2Table) {
     if (grib2Table.getId().genProcessId == 125)
       return fimTable;
     else

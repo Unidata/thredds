@@ -27,7 +27,7 @@ import java.util.*;
  * @since 12/10/13
  */
 public class CoordinatePartitionUnionizer {
-  static private final boolean debugPartitionErrors = true;
+  private static final boolean debugPartitionErrors = true;
 
   private final FeatureCollectionConfig.GribIntvFilter intvFilter;
   private final org.slf4j.Logger logger;
