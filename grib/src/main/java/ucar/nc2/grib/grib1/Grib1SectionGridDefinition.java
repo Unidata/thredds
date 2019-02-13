@@ -210,19 +210,23 @@ public class Grib1SectionGridDefinition {
 
   @Override
   public String toString() {
-    final Formatter sb = new Formatter();
-    sb.format("Grib1SectionGridDefinition");
-    sb.format("  gridTemplate=%d%n", gridTemplate);
-    if (predefinedGridDefinition >= 0)
-      sb.format("  predefinedGridDefinition=%d%n", predefinedGridDefinition);
-    double[] verts = getVerticalCoordinateParameters();
-    if (verts != null) {
-      sb.format("  verticalPressureLevels (%d)=", verts.length);
-      for (double d : verts) sb.format("%10.4f ", d);
+    try (Formatter sb = new Formatter()) {
+      sb.format("Grib1SectionGridDefinition");
+      sb.format("  gridTemplate=%d%n", gridTemplate);
+      if (predefinedGridDefinition >= 0) {
+        sb.format("  predefinedGridDefinition=%d%n", predefinedGridDefinition);
+      }
+      double[] verts = getVerticalCoordinateParameters();
+      if (verts != null) {
+        sb.format("  verticalPressureLevels (%d)=", verts.length);
+        for (double d : verts) {
+          sb.format("%10.4f ", d);
+        }
+        sb.format("%n");
+      }
       sb.format("%n");
+      return sb.toString();
     }
-    sb.format("%n");
-    return sb.toString();
   }
 }
 

@@ -171,39 +171,43 @@ public class Grib2Collection extends GribCollectionImmutable {
 
   private static String makeVariableId(GribCollectionImmutable.VariableIndex vindex,
       GribCollectionImmutable gc) {
-    Formatter f = new Formatter();
+    try (Formatter f = new Formatter()) {
 
-    f.format("VAR_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+      f.format("VAR_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
 
-    if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
-      f.format("_error");  // its an "error" type variable - add to name
+      if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
+        f.format("_error");  // its an "error" type variable - add to name
+      }
+
+      if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+        f.format("_L%d", vindex.getLevelType()); // code table 4.5
+        if (vindex.isLayer()) {
+          f.format("_layer");
+        }
+      }
+
+      String intvName = vindex.getIntvName();
+      if (intvName != null && !intvName.isEmpty()) {
+        if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS)) {
+          f.format("_Imixed");
+        } else {
+          f.format("_I%s", intvName);
+        }
+      }
+
+      if (vindex.getIntvType() >= 0) {
+        f.format("_S%s", vindex.getIntvType());
+      }
+
+      if (vindex.getEnsDerivedType() >= 0) {
+        f.format("_D%d", vindex.getEnsDerivedType());
+      } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+        String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
+        f.format("_Prob_%s", s);
+      }
+
+      return f.toString();
     }
-
-    if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_L%d", vindex.getLevelType()); // code table 4.5
-      if (vindex.isLayer()) f.format("_layer");
-    }
-
-    String intvName = vindex.getIntvName();
-    if (intvName != null && !intvName.isEmpty()) {
-      if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS))
-        f.format("_Imixed");
-      else
-        f.format("_I%s", intvName);
-    }
-
-    if (vindex.getIntvType() >= 0) {
-      f.format("_S%s", vindex.getIntvType());
-    }
-
-    if (vindex.getEnsDerivedType() >= 0) {
-      f.format("_D%d", vindex.getEnsDerivedType());
-    } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
-      String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
-      f.format("_Prob_%s", s);
-    }
-
-    return f.toString();
   }
 
   @Override

@@ -222,42 +222,57 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(is, StandardCharsets.UTF_8))) {
 
-      // Ignore header
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break; // done with the file
-        if (line.startsWith("TBLE2")) break;
+        // Ignore header
+        while (true) {
+          String line = br.readLine();
+          if (line == null) {
+            break; // done with the file
+          }
+          if (line.startsWith("TBLE2")) {
+            break;
+          }
 
-        if (line.contains("Center:"))
-          center_id = extract(line, "Center:");
-        else if (line.contains("Subcenter:"))
-          subcenter_id = extract(line, "Subcenter:");
-        else if (line.contains("version:"))
-          version = extract(line, "version:");
-      }
-
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break; // done with the file
-        if ((line.length() == 0) || line.startsWith("#")) continue;
-
-        Matcher m = nclPattern.matcher(line);
-        if (!m.matches()) continue;
-
-        int p1;
-        try {
-          p1 = Integer.parseInt(m.group(1));
-        } catch (Exception e) {
-          logger.warn("Cant parse " + m.group(1) + " in file " + path);
-          continue;
+          if (line.contains("Center:")) {
+            center_id = extract(line, "Center:");
+          } else if (line.contains("Subcenter:")) {
+            subcenter_id = extract(line, "Subcenter:");
+          } else if (line.contains("version:")) {
+            version = extract(line, "version:");
+          }
         }
-        Grib1Parameter parameter = new Grib1Parameter(this, p1, m.group(4), m.group(2), m.group(3));
-        result.put(parameter.getNumber(), parameter);
-        if (debug) System.out.printf(" %s%n", parameter);
-      }
 
+        while (true) {
+          String line = br.readLine();
+          if (line == null) {
+            break; // done with the file
+          }
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+
+          Matcher m = nclPattern.matcher(line);
+          if (!m.matches()) {
+            continue;
+          }
+
+          int p1;
+          try {
+            p1 = Integer.parseInt(m.group(1));
+          } catch (Exception e) {
+            logger.warn("Cant parse " + m.group(1) + " in file " + path);
+            continue;
+          }
+          Grib1Parameter parameter = new Grib1Parameter(this, p1, m.group(4), m.group(2),
+              m.group(3));
+          result.put(parameter.getNumber(), parameter);
+          if (debug) {
+            System.out.printf(" %s%n", parameter);
+          }
+        }
+      }
       return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
 
@@ -316,47 +331,63 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-      String line = br.readLine();
-      if (line == null) throw new FileNotFoundException(path+" is empty");
-      if (!line.startsWith("...")) this.desc = line; // maybe ??
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        String line = br.readLine();
+        if (line == null) {
+          throw new FileNotFoundException(path + " is empty");
+        }
+        if (!line.startsWith("...")) {
+          this.desc = line; // maybe ??
+        }
 
-      while (line != null && !line.startsWith("..."))
-        line = br.readLine(); // skip
+        while (line != null && !line.startsWith("...")) {
+          line = br.readLine(); // skip
+        }
 
-      while (true) {
-        line = br.readLine();
-        if (line == null) break; // done with the file
-        if ((line.length() == 0) || line.startsWith("#")) continue;
-        if (line.startsWith("...")) { // ...  may have already been read
+        while (true) {
           line = br.readLine();
-          if (line == null) break;
-        }
-        String num = line.trim();
-        line = br.readLine();
-        String name = (line != null) ? line.trim() : null;
-        line = br.readLine();
-        String desc = (line != null) ? line.trim() : null;
-        line = br.readLine();
-        String units1 = (line != null) ? line.trim() : null;
+          if (line == null) {
+            break; // done with the file
+          }
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+          if (line.startsWith("...")) { // ...  may have already been read
+            line = br.readLine();
+            if (line == null) {
+              break;
+            }
+          }
+          String num = line.trim();
+          line = br.readLine();
+          String name = (line != null) ? line.trim() : null;
+          line = br.readLine();
+          String desc = (line != null) ? line.trim() : null;
+          line = br.readLine();
+          String units1 = (line != null) ? line.trim() : null;
 
-        // optional notes
-        line = br.readLine();
-        String notes = (line == null || line.startsWith("...")) ? null : line.trim();
-        if (desc != null && desc.equalsIgnoreCase("undefined")) continue; // skip
+          // optional notes
+          line = br.readLine();
+          String notes = (line == null || line.startsWith("...")) ? null : line.trim();
+          if (desc != null && desc.equalsIgnoreCase("undefined")) {
+            continue; // skip
+          }
 
-        int p1;
-        try {
-          p1 = Integer.parseInt(num);
-        } catch (Exception e) {
-          logger.warn("Cant parse " + num + " in file " + path);
-          continue;
+          int p1;
+          try {
+            p1 = Integer.parseInt(num);
+          } catch (Exception e) {
+            logger.warn("Cant parse " + num + " in file " + path);
+            continue;
+          }
+          Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units1);
+          result.put(parameter.getNumber(), parameter);
+          if (debug) {
+            System.out.printf(" %s (%s)%n", parameter, notes);
+          }
         }
-        Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units1);
-        result.put(parameter.getNumber(), parameter);
-        if (debug) System.out.printf(" %s (%s)%n", parameter, notes);
       }
-
       return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
 
@@ -388,61 +419,71 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-      String line = br.readLine();
-      if (line == null) throw new FileNotFoundException(path+" is empty");
-
-      // create table name from file name
-      String[] splitPath = path.split("/");
-      String tableNum = splitPath[splitPath.length - 1].replace(".table", "");
-      this.desc = "ECMWF GRIB API TABLE " + tableNum;
-
-      // skip header
-      while (line != null && !line.startsWith("#"))
-        line = br.readLine(); // skip
-
-      // keep going until the end of the file is reached (line == null)
-      while (true) {
-        // exmaple: 251 atte [Adiabatic tendency of temperature] (K)
-        line = br.readLine();
-        if (line == null) break; // done with the file
-        if ((line.length() == 0) || line.startsWith("#")) continue;
-
-
-        // get unit - (K)
-        String[] tmpUnitArray = line.split("\\(");
-        String tmpUnit = tmpUnitArray[tmpUnitArray.length - 1];
-        int lastUnitIndex;
-        while ((lastUnitIndex = tmpUnit.lastIndexOf(")")) > 0) {
-          tmpUnit = tmpUnit.substring(0, lastUnitIndex).trim();
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        String line = br.readLine();
+        if (line == null) {
+          throw new FileNotFoundException(path + " is empty");
         }
-        String unit = tmpUnit.trim();
-        // unit = Util.cleanUnit(unit); // fixes some common unit mistakes  // jcaron - just use unit as it is
 
-        // get parameter number - 251
-        String[] lineArray = line.trim().split("\\s+"); // all and any white space
-        String num = lineArray[0];
+        // create table name from file name
+        String[] splitPath = path.split("/");
+        String tableNum = splitPath[splitPath.length - 1].replace(".table", "");
+        this.desc = "ECMWF GRIB API TABLE " + tableNum;
 
-        // get shortName - atte
-        String name = lineArray[1].trim();
-        //if (name.equals("~")) {}; - todo create name from long name(?)
-
-        // get description. bracketed by [] - [Adiabatic Tendency of temperature]
-        int startDesc = line.indexOf("[");
-        int endDesc = line.indexOf("]");
-        String desc = line.substring(startDesc, endDesc).trim();
-
-        // stuff information into a Grib1Parameter object
-        int p1;
-        try {
-          p1 = Integer.parseInt(num);
-        } catch (Exception e) {
-          logger.warn("Cant parse " + num + " in file " + path);
-          continue;
+        // skip header
+        while (line != null && !line.startsWith("#")) {
+          line = br.readLine(); // skip
         }
-        Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, unit);
-        result.put(parameter.getNumber(), parameter);
-        if (debug) System.out.printf(" %s%n", parameter);
+
+        // keep going until the end of the file is reached (line == null)
+        while (true) {
+          // exmaple: 251 atte [Adiabatic tendency of temperature] (K)
+          line = br.readLine();
+          if (line == null) {
+            break; // done with the file
+          }
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+
+          // get unit - (K)
+          String[] tmpUnitArray = line.split("\\(");
+          String tmpUnit = tmpUnitArray[tmpUnitArray.length - 1];
+          int lastUnitIndex;
+          while ((lastUnitIndex = tmpUnit.lastIndexOf(")")) > 0) {
+            tmpUnit = tmpUnit.substring(0, lastUnitIndex).trim();
+          }
+          String unit = tmpUnit.trim();
+          // unit = Util.cleanUnit(unit); // fixes some common unit mistakes  // jcaron - just use unit as it is
+
+          // get parameter number - 251
+          String[] lineArray = line.trim().split("\\s+"); // all and any white space
+          String num = lineArray[0];
+
+          // get shortName - atte
+          String name = lineArray[1].trim();
+          //if (name.equals("~")) {}; - todo create name from long name(?)
+
+          // get description. bracketed by [] - [Adiabatic Tendency of temperature]
+          int startDesc = line.indexOf("[");
+          int endDesc = line.indexOf("]");
+          String desc = line.substring(startDesc, endDesc).trim();
+
+          // stuff information into a Grib1Parameter object
+          int p1;
+          try {
+            p1 = Integer.parseInt(num);
+          } catch (Exception e) {
+            logger.warn("Cant parse " + num + " in file " + path);
+            continue;
+          }
+          Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, unit);
+          result.put(parameter.getNumber(), parameter);
+          if (debug) {
+            System.out.printf(" %s%n", parameter);
+          }
+        }
       }
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
@@ -556,28 +597,34 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(is, StandardCharsets.UTF_8))) {
 
-      // rdg - added the 0 line length check to cover the case of blank lines at
-      //       the end of the parameter table file.
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break;
-        if ((line.length() == 0) || line.startsWith("#")) continue;
-        String[] flds = line.split(regexp);
+        // rdg - added the 0 line length check to cover the case of blank lines at
+        //       the end of the parameter table file.
+        while (true) {
+          String line = br.readLine();
+          if (line == null) {
+            break;
+          }
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+          String[] flds = line.split(regexp);
 
-        int p1 = Integer.parseInt(flds[order[0]].trim()); // must have a number
-        String name = (order[1] >= 0) ? flds[order[1]].trim() : null;
-        String desc = flds[order[2]].trim();
-        String units = (flds.length > order[3]) ? flds[order[3]].trim() : "";
+          int p1 = Integer.parseInt(flds[order[0]].trim()); // must have a number
+          String name = (order[1] >= 0) ? flds[order[1]].trim() : null;
+          String desc = flds[order[2]].trim();
+          String units = (flds.length > order[3]) ? flds[order[3]].trim() : "";
 
-        Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units);
-        result.put(parameter.getNumber(), parameter);
-        if (debug) System.out.printf(" %s%n", parameter);
+          Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units);
+          result.put(parameter.getNumber(), parameter);
+          if (debug) {
+            System.out.printf(" %s%n", parameter);
+          }
+        }
       }
-
       return Collections.unmodifiableMap(result);  // all at once - thread safe
-
     }
 
   }
@@ -587,37 +634,48 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
-      br.readLine(); // skip a line
+      HashMap<Integer, Grib1Parameter> params;
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(is, StandardCharsets.UTF_8))) {
+        br.readLine(); // skip a line
 
-      HashMap<Integer, Grib1Parameter> params = new HashMap<>(); // thread safe - local var
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break;
-        if ((line.length() == 0) || line.startsWith("#")) continue;
-        String[] tableDefArr = line.split(":");
+        // thread safe - local var
+        params = new HashMap<>();
+        while (true) {
+          String line = br.readLine();
+          if (line == null) {
+            break;
+          }
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+          String[] tableDefArr = line.split(":");
 
-        int p1 = Integer.parseInt(tableDefArr[0].trim());
-        String name = tableDefArr[1].trim();
-        String desc, units;
-        // check to see if unit defined, if not, parameter is undefined
-        if (tableDefArr[2].indexOf('[') == -1) {
-          // Undefined unit
-          desc = tableDefArr[2].trim();
-          units = "";
-        } else {
-          String[] arr2 = tableDefArr[2].split("\\[");
-          desc = arr2[0].trim();
-          units = arr2[1].substring(0, arr2[1].lastIndexOf(']')).trim();
+          int p1 = Integer.parseInt(tableDefArr[0].trim());
+          String name = tableDefArr[1].trim();
+          String desc, units;
+          // check to see if unit defined, if not, parameter is undefined
+          if (tableDefArr[2].indexOf('[') == -1) {
+            // Undefined unit
+            desc = tableDefArr[2].trim();
+            units = "";
+          } else {
+            String[] arr2 = tableDefArr[2].split("\\[");
+            desc = arr2[0].trim();
+            units = arr2[1].substring(0, arr2[1].lastIndexOf(']')).trim();
+          }
+
+          Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units);
+          if (!parameter.getDescription().equalsIgnoreCase("undefined")) {
+            params.put(parameter.getNumber(), parameter);
+          }
+          if (debug) {
+            System.out.println(
+                parameter.getNumber() + " " + parameter.getDescription() + " " + parameter
+                    .getUnit());
+          }
         }
-
-        Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units);
-        if (!parameter.getDescription().equalsIgnoreCase("undefined"))
-          params.put(parameter.getNumber(), parameter);
-        if (debug)
-          System.out.println(parameter.getNumber() + " " + parameter.getDescription() + " " + parameter.getUnit());
       }
-
       return Collections.unmodifiableMap(params);  // all at once - thread safe
     }
 
