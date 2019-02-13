@@ -6,7 +6,6 @@
 package ucar.nc2.grib.collection;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import com.google.protobuf.ExtensionRegistry;
 import thredds.inventory.MFile;
 import ucar.coord.*;
 import ucar.nc2.constants.CDM;
@@ -21,14 +20,14 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Superclass to read GribCollection From ncx file.
+ * Superclass to read GribCollection from ncx file.
  *
  * @author caron
  * @since 2/20/14
  */
 abstract class GribCollectionBuilderFromIndex {
-  static protected final boolean debug = false;
-  static protected final boolean stackTrace = true;
+  protected static final boolean debug = false;
+  private static final boolean stackTrace = true;
 
   protected GribCollectionMutable gc;
   protected final org.slf4j.Logger logger;
@@ -41,7 +40,8 @@ abstract class GribCollectionBuilderFromIndex {
   protected abstract int getVersion();
   protected abstract int getMinVersion();
 
-  protected GribCollectionBuilderFromIndex(GribCollectionMutable gc, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+  GribCollectionBuilderFromIndex(GribCollectionMutable gc, FeatureCollectionConfig config,
+      org.slf4j.Logger logger) {
     this.logger = logger;
     this.config = config;
     this.gc = gc;
@@ -49,7 +49,7 @@ abstract class GribCollectionBuilderFromIndex {
 
   protected abstract String getMagicStart();
 
-  protected boolean readIndex(RandomAccessFile raf) throws IOException {
+  protected boolean readIndex(RandomAccessFile raf) {
 
     gc.setIndexRaf(raf);
     try {
@@ -125,7 +125,6 @@ abstract class GribCollectionBuilderFromIndex {
       gc.genProcessType = proto.getGenProcessType();
       gc.genProcessId = proto.getGenProcessId();
       gc.backProcessId = proto.getBackProcessId();
-      gc.local = proto.getLocal();
       this.tables = makeCustomizer();
       gc.cust = this.tables;
 
@@ -414,7 +413,8 @@ message Coord {
     return null;
   }
 
-  protected GribCollectionMutable.VariableIndex readVariable(GribCollectionMutable.GroupGC group, GribCollectionProto.Variable pv) {
+  private GribCollectionMutable.VariableIndex readVariable(GribCollectionMutable.GroupGC group,
+      GribCollectionProto.Variable pv) {
     int discipline = pv.getDiscipline();
 
     byte[] rawPds = pv.getPds().toByteArray();
@@ -436,7 +436,7 @@ message Coord {
     return readVariableExtensions(group, pv, result);
   }
 
-  static public Coordinate.Type convertAxisType(GribCollectionProto.GribAxisType type) {
+  private static Coordinate.Type convertAxisType(GribCollectionProto.GribAxisType type) {
     switch (type) {
       case runtime:
         return Coordinate.Type.runtime;
@@ -458,7 +458,7 @@ message Coord {
   // these objects are created from the ncx index. lame - should only be in the builder i think
   private Set<String> hcsNames = new HashSet<>(5);
 
-  protected String makeHorizCoordSysName(GdsHorizCoordSys hcs) {
+  String makeHorizCoordSysName(GdsHorizCoordSys hcs) {
     // default id
     String base = hcs.makeId();
     // ensure uniqueness

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import java.util.Objects;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.BufferedReader;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class Grib2Table {
   public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev}
-  static public final String tableMapPath = "resources/grib2/standardTableMap.txt";
+  private static final String tableMapPath = "resources/grib2/standardTableMap.txt";
   static public List<Grib2Table> tables = null;
   static private Grib2Table standardTable = null;
 
@@ -135,7 +136,7 @@ public class Grib2Table {
 
     if (!id.equals(that.id)) return false;
     if (!name.equals(that.name)) return false;
-    if (path != null ? !path.equals(that.path) : that.path != null) return false;
+    if (!Objects.equals(path, that.path)) return false;
     if (type != that.type) return false;
 
     return true;

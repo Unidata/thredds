@@ -53,7 +53,7 @@ public class Grib2Partition extends PartitionCollectionImmutable implements Clos
 
   @Override
   public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
-          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
+          FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) {
 
     GribCoverageDataset gribCov = new GribCoverageDataset(this, ds, group);
     return gribCov.createCoverageCollection();

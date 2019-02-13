@@ -11,7 +11,7 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
 import java.util.*;
 
 /**
- * superclass for local table implementations
+ * Superclass for local table implementations
  *
  * @author John
  * @since 6/22/11
@@ -33,9 +33,8 @@ public abstract class LocalTables extends Grib2Customizer {
 
   @Override
   public List<GribTables.Parameter> getParameters() {
-    List<GribTables.Parameter> result = new ArrayList<>();
-    for (Grib2Parameter p : local.values()) result.add(p);
-    Collections.sort(result, new ParameterSort());
+    List<Parameter> result = new ArrayList<>(local.values());
+    result.sort(new ParameterSort());
     return result;
   }
 

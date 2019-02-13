@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import java.util.Objects;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -393,8 +394,8 @@ public class TimeCoord {
       if (o == null || getClass() != o.getClass()) return false;
 
       TinvDate tinvDate = (TinvDate) o;
-      if (end != null ? !end.equals(tinvDate.end) : tinvDate.end != null) return false;
-      if (start != null ? !start.equals(tinvDate.start) : tinvDate.start != null) return false;
+      if (!Objects.equals(end, tinvDate.end)) return false;
+      if (!Objects.equals(start, tinvDate.start)) return false;
 
       return true;
     }

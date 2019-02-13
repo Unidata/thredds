@@ -217,7 +217,6 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
     info.format(" %s runtime=%s nruns=%d ntimes=%d isOrthogonal=%s isRegular=%s%n", name, runtime.getName(), nruns, ntimes, isOrthogonal, isRegular);
-    //runtime.showInfo(info, indent);
     indent.incr();
 
     info.format("%sAll time values=", indent);
@@ -269,7 +268,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     ucar.nc2.util.Counters counters = new Counters();
     counters.add("resol");
 
-    List<? extends Object> offsets = getOffsetsSorted();
+    List<?> offsets = getOffsetsSorted();
     if (isTimeInterval()) {
       counters.add("intv");
       for (int i = 0; i < offsets.size(); i++) {
@@ -293,7 +292,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   }
 
   @Override
-  public List<? extends Object> getValues() {
+  public List<?> getValues() {
     return vals;
   }
 
@@ -337,9 +336,9 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (!runtime.equals(that.runtime)) return false;
     if (isOrthogonal != that.isOrthogonal) return false;
     if (isRegular != that.isRegular) return false;
-    if (otime != null ? !otime.equals(that.otime) : that.otime != null) return false;
-    if (regTimes != null ? !regTimes.equals(that.regTimes) : that.regTimes != null) return false;
-    if (times != null ? !times.equals(that.times) : that.times != null) return false;
+    if (!Objects.equals(otime, that.otime)) return false;
+    if (!Objects.equals(regTimes, that.regTimes)) return false;
+    if (!Objects.equals(times, that.times)) return false;
 
     return true;
   }
@@ -449,12 +448,10 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CalendarDate runDate = runtime.getRuntimeDate(runIdx);
     if (isTimeInterval) {
       TimeCoord.Tinv valIntv = (TimeCoord.Tinv) time.getValue(timeIdx);
-      //if (debug) System.out.printf("    coordTime2D intv runDate=%s time.getValue(timeIdx)=%s%n", runDate, valIntv);
       if (valIntv == null) return null;
       return new Time2D(runDate, null, valIntv);
     } else {
       Integer val = (Integer) time.getValue(timeIdx);
-      //if (debug) System.out.printf("    coordTime2D int runDate=%s time.getValue(timeIdx)=%s%n", runDate, val);
       if (val == null) return null;
       return new Time2D(runDate, val, null);
     }
@@ -706,7 +703,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * Get a sorted list of the unique time coordinates
    * @return List<Integer> or List<TimeCoord.Tinv>
    */
-  public List<? extends Object> getOffsetsSorted() {
+  public List<?> getOffsetsSorted() {
     if (isOrthogonal)
       return otime.getValues();
 
@@ -723,8 +720,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       for (Object val : coord.getValues())
         set.add((Integer) val);
     }
-    List<Integer> result = new ArrayList<>();
-    for (Integer val : set) result.add(val);
+    List<Integer> result = new ArrayList<>(set);
     Collections.sort(result);
     return result;
   }
@@ -735,8 +731,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       for (Object val : coord.getValues())
         set.add((TimeCoord.Tinv) val);
     }
-    List<TimeCoord.Tinv> result = new ArrayList<>();
-    for (TimeCoord.Tinv val : set) result.add(val);
+    List<TimeCoord.Tinv> result = new ArrayList<>(set);
     Collections.sort(result);
     return result;
   }
@@ -754,7 +749,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       this.tinv = tinv;
     }
 
-    public Time2D(long refDate, Integer time, TimeCoord.Tinv tinv) {
+    Time2D(long refDate, Integer time, TimeCoord.Tinv tinv) {
       this.refDate = refDate;
       this.time = time;
       this.tinv = tinv;
@@ -777,8 +772,8 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       Time2D time2D = (Time2D) o;
 
       if (refDate != time2D.refDate) return false;
-      if (time != null ? !time.equals(time2D.time) : time2D.time != null) return false;
-      if (tinv != null ? !tinv.equals(time2D.tinv) : time2D.tinv != null) return false;
+      if (!Objects.equals(time, time2D.time)) return false;
+      if (!Objects.equals(tinv, time2D.tinv)) return false;
 
       return true;
     }

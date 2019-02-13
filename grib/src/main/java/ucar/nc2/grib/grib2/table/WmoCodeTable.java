@@ -104,7 +104,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return entry.meaning;
   }
 
-  public static TableEntry getTableEntry(String tableId, int value) {
+  private static TableEntry getTableEntry(String tableId, int value) {
     if (wmoTables == null)
       try {
         wmoTables = getWmoStandard();
@@ -121,7 +121,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
   private static WmoTables wmoTables = null;
 
-  static public WmoTables getWmoStandard() throws IOException {
+  static WmoTables getWmoStandard() throws IOException {
     if (wmoTables == null)
       wmoTables = readGribCodes(standard);
     return wmoTables;
@@ -223,10 +223,10 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   public boolean isParameter;
   public int discipline = -1;
   public int category = -1;
-  String id;
+  private String id;
 
   public List<TableEntry> entries = new ArrayList<>();
-  public Map<Integer, TableEntry> entryMap;
+  private Map<Integer, TableEntry> entryMap;
 
   WmoCodeTable() {
   }
@@ -457,11 +457,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       if (number != that.number) return false;
       if (start != that.start) return false;
       if (stop != that.stop) return false;
-      if (code != null ? !code.equals(that.code) : that.code != null) return false;
-      if (meaning != null ? !meaning.equals(that.meaning) : that.meaning != null) return false;
-      if (name != null ? !name.equals(that.name) : that.name != null) return false;
+      if (!Objects.equals(code, that.code)) return false;
+      if (!Objects.equals(meaning, that.meaning)) return false;
+      if (!Objects.equals(name, that.name)) return false;
       // if (status != null ? !status.equals(that.status) : that.status != null) return false;
-      if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+      if (!Objects.equals(unit, that.unit)) return false;
 
       return true;
     }

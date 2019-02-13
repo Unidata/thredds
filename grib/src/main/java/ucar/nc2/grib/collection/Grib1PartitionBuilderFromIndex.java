@@ -21,8 +21,8 @@ import java.util.List;
 class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
-  static public Grib1Partition createTimePartitionFromIndex(String name, RandomAccessFile raf,
-           FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+  static Grib1Partition createTimePartitionFromIndex(String name, RandomAccessFile raf,
+      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
     Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, logger);
     if (builder.readIndex(raf))
@@ -32,8 +32,8 @@ class Grib1PartitionBuilderFromIndex extends Grib1CollectionBuilderFromIndex {
   }
 
   // read in the index, index raf already open; return null on failure
-  static public PartitionCollectionMutable openMutablePCFromIndex(String name, RandomAccessFile raf,
-           FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+  static PartitionCollectionMutable openMutablePCFromIndex(String name, RandomAccessFile raf,
+      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
     Grib1PartitionBuilderFromIndex builder = new Grib1PartitionBuilderFromIndex(name, config, logger);
     if (builder.readIndex(raf))

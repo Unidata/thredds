@@ -25,7 +25,8 @@ import java.io.IOException;
 class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
-  static public Grib2Collection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+  static Grib2Collection readFromIndex(String name, RandomAccessFile raf,
+      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -41,7 +42,8 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
 
   // read in the index, index raf already open; return null on failure
-  static public GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf,
+      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -60,7 +62,8 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   protected Grib2Customizer cust; // gets created in readIndex, after center etc is read in
 
-  protected Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+  Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config,
+      org.slf4j.Logger logger) {
     super( new GribCollectionMutable(name, null, config, false), config, logger);  // directory will be set in readFromIndex
   }
 

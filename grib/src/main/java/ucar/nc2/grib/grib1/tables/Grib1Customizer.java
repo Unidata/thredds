@@ -83,7 +83,6 @@ public class Grib1Customizer implements GribTables {
     return null;
   }
 
-
   @Override
   public String getGeneratingProcessTypeName(int genProcess) {
     return null;
@@ -123,6 +122,7 @@ public class Grib1Customizer implements GribTables {
     return new Grib1ParamLevel(this, pds);
   }
 
+  @Override
   public VertCoord.VertUnit getVertUnit(int code) {
     return makeVertUnit(code);
   }
@@ -136,7 +136,6 @@ public class Grib1Customizer implements GribTables {
   protected VertCoord.VertUnit makeVertUnit(int code) {
     return getLevelType(code);
   }
-
 
   @Override
   public String getLevelNameShort(int levelType) {
@@ -153,13 +152,13 @@ public class Grib1Customizer implements GribTables {
 
   public boolean isLayer(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? false : lt.isLayer();
+    return (lt != null) && lt.isLayer();
   }
 
   // only for 3D
   public boolean isPositiveUp(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? false : lt.isPositiveUp();
+    return (lt != null) && lt.isPositiveUp();
   }
 
   // only for 3D
@@ -208,7 +207,7 @@ public class Grib1Customizer implements GribTables {
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      Map<Integer, GribLevelType> result = new HashMap<Integer, GribLevelType>(200);
+      Map<Integer, GribLevelType> result = new HashMap<>(200);
       List<Element> params = root.getChildren("parameter");
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));

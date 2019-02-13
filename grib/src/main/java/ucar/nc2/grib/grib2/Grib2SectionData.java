@@ -38,7 +38,7 @@ public class Grib2SectionData {
     raf.seek(startingPosition + msgLength);
   }
 
-  public Grib2SectionData(long startingPosition, int msgLength) {
+  Grib2SectionData(long startingPosition, int msgLength) {
     this.startingPosition = startingPosition;
     this.msgLength = msgLength;
   }

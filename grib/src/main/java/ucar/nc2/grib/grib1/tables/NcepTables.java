@@ -11,7 +11,6 @@ import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribStatType;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
@@ -78,10 +77,10 @@ public class NcepTables extends Grib1Customizer {
     int timeRangeIndicator = pds.getTimeRangeIndicator(); // octet 21
     int n = pds.getNincluded();
 
-    int start = 0;
-    int end = 0;
+    int start;
+    int end;
     int forecastTime = 0;
-    boolean isInterval = false;
+    boolean isInterval;
 
     switch (timeRangeIndicator) {
 

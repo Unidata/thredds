@@ -10,7 +10,7 @@ import ucar.nc2.grib.GdsHorizCoordSys;
 import java.util.Formatter;
 
 /**
- * Describe
+ * Fake implementation of Grib2Gds template 50, to prevent exception.
  *
  * @author caron
  * @since 9/15/2014

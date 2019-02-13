@@ -23,7 +23,8 @@ public class GribHorizCoordSystem {
   private final String id, description;
   private final int predefinedGridDefinition;  // grib1
 
-  public GribHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHash, String id, String description, int predefinedGridDefinition) {
+  GribHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHash, String id,
+      String description, int predefinedGridDefinition) {
     this.hcs = hcs;
     this.rawGds = rawGds;
     this.gdsHash = gdsHash;

@@ -10,7 +10,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribResourceReader;
-import ucar.nc2.grib.VertCoord;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -169,10 +168,10 @@ public class FnmocTables extends Grib1Customizer {
   }
 
   private String makeUnits(int code) {
-    switch (code) {
-      case 219: return "Pa";
-      default: return "";
+    if (code == 219) {
+      return "Pa";
     }
+    return "";
   }
 
 }

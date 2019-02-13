@@ -104,7 +104,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     return partitions;
   }
 
-  public Partition getPartition(int idx) {
+  private Partition getPartition(int idx) {
     return partitions.get(idx);
   }
 
@@ -131,7 +131,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     return c;
   }
 
-  public VariableIndexPartitioned getVariable2DByHash(GribHorizCoordSystem hcs, VariableIndex vi) {
+  private VariableIndexPartitioned getVariable2DByHash(GribHorizCoordSystem hcs, VariableIndex vi) {
     Dataset ds2d = getDatasetCanonical();
     if (ds2d == null) return null;
     for (GroupGC groupHcs : ds2d.getGroups())
@@ -152,7 +152,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
 
-  public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
+  RandomAccessFile getRaf(int partno, int fileno) throws IOException {
     Partition part = getPartition(partno);
     try (GribCollectionImmutable gc = part.getGribCollection()) {
       return gc.getDataRaf(fileno);
@@ -333,7 +333,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      *
      * @param indexWanted the source index request, excluding x and y
      * @return DataRecord pointing to where the data is, or null if missing
-     * @throws IOException
      */
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
@@ -416,7 +415,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      * @param indexWanted   index into this PoP
      * @param compVindex2Dp 2D variable from the desired partition; may be PofP or PofGC
      * @return desired record to be read, from the GC, or null if missing
-     * @throws IOException
      */
     private DataRecord getDataRecordPofP(int[] indexWanted, VariableIndexPartitioned compVindex2Dp) throws IOException {
       if (group.getType() == Type.Best) {
@@ -453,7 +451,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      *
      * @param partno master partition number
      * @return VariableIndex or null if not exists
-     * @throws IOException
      */
     private GribCollectionImmutable.VariableIndex getVindex2D(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
@@ -485,7 +482,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       }  // LOOK opening the file here, and then again to read the data. partition cache helps i guess but we could do better i think.
     }
 
-    /**
+    /*
      * MRUTP
      * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex (which will be 2D)
      * by matching coordinate values.
@@ -714,7 +711,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       return Misc.compare(record.pos, o.record.pos);
     }
 
-    public boolean usesSameFile(DataRecord o) {
+    boolean usesSameFile(DataRecord o) {
       if (o == null) return false;
       int rp = usePartition.getName().compareTo(o.usePartition.getName());
       if (rp != 0) return false;

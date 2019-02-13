@@ -20,7 +20,6 @@ import java.util.Map;
  * Read tables from https://github.com/Unidata/gempak/tree/master/gempak/tables/grid/g2*.tbl
  *
  * eg:
- *
  * https://raw.githubusercontent.com/Unidata/gempak/master/gempak/tables/grid/g2varsfsl1.tbl
  *
  * @author caron
@@ -36,7 +35,7 @@ public class GempakLocalTables extends LocalTables {
     return single;
   }
 
-  GempakLocalTables(Grib2Table grib2Table) {
+  private GempakLocalTables(Grib2Table grib2Table) {
     super(grib2Table);
     Formatter f = new Formatter();
     local = initLocalTable(grib2Table.getPath(), f);

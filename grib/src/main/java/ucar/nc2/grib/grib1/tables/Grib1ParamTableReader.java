@@ -5,12 +5,12 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import java.nio.charset.StandardCharsets;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.Namespace;
 import org.jdom2.input.SAXBuilder;
 import thredds.client.catalog.Catalog;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.*;
 import ucar.unidata.util.StringUtil2;
@@ -48,9 +48,8 @@ public class Grib1ParamTableReader {
    * Read a dataset-specific table from a file
    *
    * @param path read from this path, may be reletive
-   * @throws IOException on io error
    */
-  public Grib1ParamTableReader(String path) throws IOException {
+  public Grib1ParamTableReader(String path) {
     this.path = StringUtil2.replace(path, "\\", "/");
     File f = new File(path);
     this.name = f.getName();
@@ -66,7 +65,7 @@ public class Grib1ParamTableReader {
    * @param version      associate with this version
    * @param path         read from this path, may be reletive
    */
-  public Grib1ParamTableReader(int center_id, int subcenter_id, int version, String path) {
+  Grib1ParamTableReader(int center_id, int subcenter_id, int version, String path) {
     this.center_id = center_id;
     this.subcenter_id = subcenter_id;
     this.version = version;
@@ -79,9 +78,8 @@ public class Grib1ParamTableReader {
    * Create a dataset-specific table from a jdom tree using the DSS parser
    *
    * @param paramTableElem the jdom tree
-   * @throws IOException on io error
    */
-  public Grib1ParamTableReader(org.jdom2.Element paramTableElem) throws IOException {
+  Grib1ParamTableReader(org.jdom2.Element paramTableElem) {
     this.name = paramTableElem.getChildText("title");
     DssParser p = new DssParser(Catalog.ncmlNS);
     this.parameters = p.parseXml(paramTableElem);
@@ -216,7 +214,7 @@ TBLE2 cptec_254_params[] = {
 
    */
 
-  static private final Pattern nclPattern = Pattern.compile("\\{(\\d*)\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\"\\,\\s*\"([^\"]*)\".*");
+  static private final Pattern nclPattern = Pattern.compile("\\{(\\d*),\\s*\"([^\"]*)\",\\s*\"([^\"]*)\",\\s*\"([^\"]*)\".*");
 
   private Map<Integer, Grib1Parameter> readParameterTableNcl() throws IOException {
     HashMap<Integer, Grib1Parameter> result = new HashMap<>();
@@ -224,7 +222,7 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
       // Ignore header
       while (true) {
@@ -318,7 +316,7 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
       String line = br.readLine();
       if (line == null) throw new FileNotFoundException(path+" is empty");
       if (!line.startsWith("...")) this.desc = line; // maybe ??
@@ -390,7 +388,7 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
       String line = br.readLine();
       if (line == null) throw new FileNotFoundException(path+" is empty");
 
@@ -558,7 +556,7 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
 
       // rdg - added the 0 line length check to cover the case of blank lines at
       //       the end of the parameter table file.
@@ -589,7 +587,7 @@ TBLE2 cptec_254_params[] = {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) throw new FileNotFoundException(path);
 
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.UTF8));
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
       br.readLine(); // skip a line
 
       HashMap<Integer, Grib1Parameter> params = new HashMap<>(); // thread safe - local var

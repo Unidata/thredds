@@ -103,12 +103,8 @@ class NcepLocalParams {
         paramMap = parseXml(root);  // all at once - thread safe
         return true;
 
-      } catch (IOException ioe) {
+      } catch (IOException | JDOMException ioe) {
         ioe.printStackTrace();
-        return false;
-
-      } catch (JDOMException e) {
-        e.printStackTrace();
         return false;
       }
     }
@@ -127,12 +123,8 @@ class NcepLocalParams {
         paramMap = parseXml(root);  // all at once - thread safe
         return true;
 
-      } catch (IOException ioe) {
+      } catch (IOException | JDOMException ioe) {
         ioe.printStackTrace();
-        return false;
-
-      } catch (JDOMException e) {
-        e.printStackTrace();
         return false;
       }
     }
@@ -148,7 +140,7 @@ class NcepLocalParams {
       <units>K</units>
     </parameter>
      */
-    public HashMap<Integer, Grib2Parameter> parseXml(Element root) {
+    HashMap<Integer, Grib2Parameter> parseXml(Element root) {
       tableName = root.getChildText("table");
       title = root.getChildText("title");
       source = root.getChildText("source");

@@ -7,7 +7,6 @@ package ucar.nc2.grib.grib1.tables;
 
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribNumbers;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
@@ -22,8 +21,6 @@ import java.util.Map;
  * @since 7/31/13
  */
 public class AfwaTables extends Grib1Customizer {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AfwaTables.class);
-
   private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
   private static Map<Integer, String> genProcessMap;  // shared by all instances
   private static Map<Integer, String> subcenterMap;  // shared by all instances

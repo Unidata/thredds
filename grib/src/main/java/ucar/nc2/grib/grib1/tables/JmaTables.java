@@ -22,8 +22,6 @@ import java.util.Map;
  * @since 1/27/2015
  */
 public class JmaTables extends Grib1Customizer {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(JmaTables.class);
-
   private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
 
   JmaTables(Grib1ParamTables tables) {
@@ -38,10 +36,10 @@ public class JmaTables extends Grib1Customizer {
     int timeRangeIndicator = pds.getTimeRangeIndicator(); // octet 21
     int n = pds.getNincluded();
 
-    int start = 0;
-    int end = 0;
+    int start;
+    int end;
     int forecastTime = 0;
-    boolean isInterval = false;
+    boolean isInterval;
 
     switch (timeRangeIndicator) {
       /*

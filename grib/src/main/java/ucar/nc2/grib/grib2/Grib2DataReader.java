@@ -24,7 +24,7 @@ import java.io.IOException;
 public class Grib2DataReader {
   static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2DataReader.class);
 
-  private static final int bitsmv1[] = new int[31];
+  private static final int[] bitsmv1 = new int[31];
   static {
     for (int i = 0; i < 31; i++) {
       bitsmv1[i] = (int) java.lang.Math.pow((double) 2, (double) i) - 1;
