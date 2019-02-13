@@ -66,3 +66,7 @@
 
 12/01/2017 sarms
   - updated ncep grib1 tables using ucar/nc2/grib/grib1/tables/NcepHtmlScraper.java
+
+02/11/2019 sarms
+  - updated ncep grib1 tables using grib\src\test\java\ucar\nc2\grib\grib1\table\NcepHtmlScraper.java
+    of 5.0 branch.
