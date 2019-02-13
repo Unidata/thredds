@@ -202,14 +202,13 @@ public class Debug {
       super(menuName, val);
 
       fullname = foolName;
-      if (fullname.startsWith("/Debug/"))
+      if (fullname.startsWith("/Debug/")) {
         fullname = fullname.substring(7);
+      }
 
-      addChangeListener( new ChangeListener() {
-        public void stateChanged(ChangeEvent evt) {
-          if (debugEvents) System.out.println("DebugMenuItem "+getText()+" "+getState());
+      addChangeListener(e -> {
+          if (debugEvents) { System.out.println("DebugMenuItem "+getText()+" "+getState()); }
           Debug.set(fullname, getState());
-        }
       });
     }
   }

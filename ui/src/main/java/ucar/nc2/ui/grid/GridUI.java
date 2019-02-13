@@ -251,8 +251,7 @@ public class GridUI extends JPanel {
 
      OpenDatasetTask openTask = new OpenDatasetTask(ds);
      ProgressMonitor pm = new ProgressMonitor(openTask);
-     pm.addActionListener( new ActionListener() {
-       public void actionPerformed(ActionEvent e) {
+     pm.addActionListener(e -> {
          if (e.getActionCommand().equals("success")) {
            controller.showDataset();
            gridTable.setDataset(controller.getFields());
@@ -260,7 +259,6 @@ public class GridUI extends JPanel {
            setSelected(true);
            gtWindow.hide();
          }
-       }
      });
      pm.start( this, "Open Dataset "+ds.getName(), 100);
    }
@@ -737,10 +735,8 @@ public class GridUI extends JPanel {
     colorScalePanel = new ColorScale.Panel(this, controller.getColorScale());
     csDataMinMax = new JComboBox( ColorScale.MinMaxType.values());
     csDataMinMax.setToolTipText("ColorScale Min/Max setting");
-    csDataMinMax.addActionListener( new AbstractAction () {
-      public void actionPerformed(ActionEvent e) {
+    csDataMinMax.addActionListener(e -> {
         controller.setDataMinMaxType( ( ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
-      }
     });
     JPanel westPanel = new JPanel(new BorderLayout());
     westPanel.add( colorScalePanel, BorderLayout.CENTER);

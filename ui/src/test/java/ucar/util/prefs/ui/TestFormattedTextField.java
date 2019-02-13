@@ -83,29 +83,23 @@ public class TestFormattedTextField {
     p2.add(patternTF);
 
     intOnly = new JCheckBox("IntegerOnly", intOnlyValue);
-    intOnly.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    intOnly.addActionListener(e -> {
         boolean val = intOnly.getModel().isSelected();
         System.out.println("intOnly actionevent "+val);
         decFormatter.setParseIntegerOnly( val);
-      }
     });
 
     allowsInvalid = new JCheckBox("AllowsInvalid", allowsInvalidValue);
-    allowsInvalid.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    allowsInvalid.addActionListener(e -> {
         boolean val = allowsInvalid.getModel().isSelected();
         System.out.println("allowsInvalid actionevent "+val);
         nf.setAllowsInvalid( val);
-      }
     });
 
     JButton gv = new JButton("Get Value");
-    gv.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    gv.addActionListener(e -> {
         boolean val = intOnly.getModel().isSelected();
         System.out.println("value= "+d1.getValue()+" "+d1.getValue().getClass().getName());
-      }
     });
 
     main.add( p1);

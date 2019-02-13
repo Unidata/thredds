@@ -128,8 +128,7 @@ public class BufrTableDViewer extends JPanel {
     });
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to standard table", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compareButton.addActionListener(e -> {
         try {
           Formatter out = new Formatter();
           TableD wmoTable = BufrTables.getWmoTableD(13);
@@ -147,7 +146,6 @@ public class BufrTableDViewer extends JPanel {
           infoWindow.setVisible(true);
           ioe.printStackTrace();
         }
-      }
     });
     buttPanel.add(compareButton);
 

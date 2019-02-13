@@ -206,8 +206,7 @@ public class AccessLogTable extends JPanel {
     tabbedPanel.addTab("TimeSeries", timeSeriesPanel);
     tabbedPanel.setSelectedIndex(0);
 
-    tabbedPanel.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    tabbedPanel.addChangeListener(e -> {
         java.util.ArrayList<LogReader.Log> useBeans = (java.util.ArrayList<LogReader.Log>) logTable.getBeans();
 
         int idx = tabbedPanel.getSelectedIndex();
@@ -222,7 +221,6 @@ public class AccessLogTable extends JPanel {
           initClientLogs(useBeans);
         if (title.equals("TimeSeries"))
           showTimeSeriesAll(useBeans);
-      }
     });
 
     setLayout(new BorderLayout());

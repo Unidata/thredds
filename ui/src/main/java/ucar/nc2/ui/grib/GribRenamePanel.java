@@ -69,13 +69,11 @@ public class GribRenamePanel extends JPanel {
 
     kind = new JComboBox(new String[] {"GRIB-1", "GRIB-2"});
     buttPanel.add(kind);
-    kind.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    kind.addActionListener(e -> {
         renamer = new GribVariableRenamer();
         List<GribVariableRenamer.VariableRenamerBean> vbeans = renamer.readVariableRenamerBeans( (String) kind.getSelectedItem());
         varTable.setBeans(vbeans);
         makeMapBeans();
-      }
     });
 
   }

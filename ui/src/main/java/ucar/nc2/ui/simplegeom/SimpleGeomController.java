@@ -139,11 +139,9 @@ public class SimpleGeomController {
 
     // stride
     strideSpinner = new JSpinner( new SpinnerNumberModel(1, 1, 100, 1) );
-    strideSpinner.addChangeListener( new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    strideSpinner.addChangeListener(e -> {
         Integer val = (Integer) strideSpinner.getValue();
         renderGrid.setHorizStride(val);
-      }
     });
 
      // timer

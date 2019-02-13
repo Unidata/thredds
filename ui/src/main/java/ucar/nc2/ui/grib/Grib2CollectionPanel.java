@@ -92,14 +92,12 @@ public class Grib2CollectionPanel extends JPanel {
     PopupMenu varPopup;
 
     AbstractButton xmlButt = BAMutil.makeButtcon("Information", "generate gds xml", false);
-    xmlButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    xmlButt.addActionListener(e -> {
         Formatter f = new Formatter();
         generateGdsXml(f);
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.show();
-      }
     });
     buttPanel.add(xmlButt);
 
