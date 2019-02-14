@@ -195,6 +195,8 @@ abstract class GribPartitionBuilder {
     boolean rangeOverlaps = false;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
       try (GribCollectionMutable gc = tpp.makeGribCollection()) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
+        if (gc == null) continue; // skip if they dont exist
+
         // note its not recursive, maybe leave open, or cache; actually we keep a pointer to the partition's group in the GroupPartitions
         CoordinateRuntime partRuntime = gc.masterRuntime;
         runtimeAllBuilder.addAll(partRuntime);  // make a complete set of runtime Coordinates

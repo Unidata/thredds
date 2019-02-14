@@ -300,7 +300,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   @Override
   public Object getValue(int idx) {
-    return (vals == null) ? null : vals.get(idx);
+    return vals.get(idx);
   }
 
   @Override

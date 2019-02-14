@@ -281,6 +281,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     Grib2Pds pds = gr.getPDS();
     int unit = convertTimeUnit(pds.getTimeUnit());
     TimeCoord.Tinv tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
+    if (tinv == null) return null;
     int[] result = new int[2];
     result[0] = tinv.getBounds1();
     result[1] = tinv.getBounds2();

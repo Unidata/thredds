@@ -46,7 +46,6 @@ public class TimeCoord {
   protected List<Tinv> intervals;    // set by subclasses
 
   private final String units;
-  // private int index;
   private final int code; // GRIB1 timeRangeIndicator, GRIB2 statProcessType (4.10)
 
   // from reading ncx
@@ -93,16 +92,12 @@ public class TimeCoord {
       CalendarDate startDate = null; // earliest starting date
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
-        //if (!tinvd.getPeriod().equals(calendarPeriod))
-        //  throw new IllegalStateException("Mixed Periods in coordinate "+calendarPeriod+" != "+tinvd.getPeriod());
         if (startDate == null) startDate = tinvd.start;
         else if (startDate.isAfter(tinvd.start)) startDate = tinvd.start;
       }
-      //int count = 0;
       List<Tinv> offsets = new ArrayList<>(coords.size());
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
-        //tinvd.index = count++;
         offsets.add(tinvd.convertReferenceDate(startDate, timeUnit));
       }
       runDate = startDate;
@@ -120,11 +115,6 @@ public class TimeCoord {
 
     this.runDate = runDate;
   }
-
-  /* public TimeCoord setIndex(int index) {
-    this.index = index;
-    return this;
-  }  */
 
   public CalendarDate getRunDate() {
     return runDate;
@@ -387,6 +377,7 @@ public class TimeCoord {
     }
 
     // what is the offset in units of timeUnit from the given reference date
+    @Nullable
     public Tinv convertReferenceDate(CalendarDate refDate, CalendarPeriod timeUnit) {
       if (timeUnit == null) return null;
       int startOffset = timeUnit.getOffset(refDate, start);   // LOOK wrong - not dealing with value ??

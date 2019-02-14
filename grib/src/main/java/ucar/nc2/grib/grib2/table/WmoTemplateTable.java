@@ -331,9 +331,6 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
   public static void main(String[] arg) throws IOException {
     GribTemplates templates = readXml(standard);
-    if (templates == null) {
-      return;
-    }
     List<WmoTemplateTable> tlist = templates.list;
 
     for (WmoTemplateTable t : tlist) {

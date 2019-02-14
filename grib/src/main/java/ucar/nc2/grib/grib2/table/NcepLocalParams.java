@@ -47,6 +47,7 @@ class NcepLocalParams {
     return params.getParameter(number);
   }
 
+  @Nullable
   public String getCategory(int discipline, int category) {
     int key = (discipline << 8) + category;
     Table params = tableMap.get( key);

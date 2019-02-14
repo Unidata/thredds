@@ -1406,7 +1406,7 @@ Grid definition –   polar stereographic
 
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
-      return null;
+      return null; // LOOK not done yet
     }
 
     @Override
@@ -1428,8 +1428,6 @@ Grid definition –   polar stereographic
 
   public static class UnknownGds extends Grib1Gds {
 
-    int j, k, m, type, mode;
-
     UnknownGds(byte[] data, int template) {
       super(data, template);
     }
@@ -1446,7 +1444,7 @@ Grid definition –   polar stereographic
 
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
-      return null;
+      return null; // LOOK
     }
 
     @Override

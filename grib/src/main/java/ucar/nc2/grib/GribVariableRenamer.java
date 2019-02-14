@@ -54,6 +54,7 @@ public class GribVariableRenamer {
     map2 = makeMapBeans(beans);
   }
 
+  @Nullable
   public List<String> getMappedNamesGrib2(String oldName) {
     if (map2 == null) initMap2();
     List<String> result = new ArrayList<String>();
@@ -65,6 +66,7 @@ public class GribVariableRenamer {
     return result;
   }
 
+  @Nullable
   public List<String> getMappedNamesGrib1(String oldName) {
     if (map1 == null) initMap1();
     List<String> result = new ArrayList<String>();
@@ -75,15 +77,6 @@ public class GribVariableRenamer {
     }
     return result;
   }
-
-    /**
-   * Get unique list of old names associated with this new name
-   * @param newName the new name
-   * @return unique list of old names, or null if not exist
-   *
-  private List<String> getOldNames(String newName) {
-    return mapr.get(newName);
-  }  */
 
   /**
    * Look for possible matches of old (4.2) grib names in new (4.3) dataset.

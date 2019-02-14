@@ -143,37 +143,37 @@ public class Grib1Customizer implements GribTables {
   @Override
   public String getLevelNameShort(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    String result = (lt == null) ? null : lt.getAbbrev();
+    String result = lt.getAbbrev();
     if (result == null) result = "unknownLevel"+levelType;
     return result;
   }
 
   public String getLevelDescription(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getDesc();
+    return lt.getDesc();
   }
 
   public boolean isLayer(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt != null) && lt.isLayer();
+    return lt.isLayer();
   }
 
   // only for 3D
   public boolean isPositiveUp(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt != null) && lt.isPositiveUp();
+    return lt.isPositiveUp();
   }
 
   // only for 3D
   public String getLevelUnits(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getUnits();
+    return lt.getUnits();
   }
 
   // only for 3D
   public String getLevelDatum(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getDatum();
+    return lt.getDatum();
   }
 
   /////////////////////////////////////////////
