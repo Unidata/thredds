@@ -10,7 +10,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
-import ucar.nc2.*;
 import ucar.nc2.grib.*;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
@@ -19,7 +18,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Grib-2 Collection IOSP, ver2.
+ * Grib-1 Collection IOSP.
  * Handles both collections and single GRIB files.
  *
  * @author caron
@@ -27,134 +26,6 @@ import java.util.Formatter;
  */
 public class Grib1Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
-
-    ///////////////////////////////////////////////////
-
-   // use defaults
-  //public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr) {
-  //  return cdmVariableHash(cust, gr, 0, FeatureCollectionConfig.useTableVersionDef, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useCenterDef);
-  //}
-
-
-  /*
-   * A hash code to group records into a CDM variable
-   * Herein lies the semantics of a variable object identity.
-   * Read it and weep.
-   *
-   * @param cust     customizer
-   * @param gr       grib record
-   * @param gdsHash   can override the gdsHash
-   * @param useTableVersion  use pdss.getTableVersion(), default is false
-   * @param intvMerge        put all intervals together, default true
-   * @param useCenter        use center id when param no > 127, default is false
-   *
-   * @return this record's hash code, to group like records into a variable
-  public static int cdmVariableHash(Grib1Customizer cust, Grib1Record gr, int gdsHash, boolean useTableVersion, boolean intvMerge, boolean useCenter) {
-    int result = 17;
-
-    Grib1SectionProductDefinition pdss = gr.getPDSsection();
-    result += result * 31 + pdss.getParameterNumber();
-
-    Grib1SectionGridDefinition gdss = gr.getGDSsection();
-    if (gdsHash == 0)
-      gdsHash = gdss.getGDS().hashCode(); // the horizontal grid
-    result += result * 31 + gdsHash;
-
-    result += result * 31 + pdss.getLevelType();
-    if (cust.isLayer(pdss.getLevelType())) result += result * 31 + 1;
-
-    if (useTableVersion)
-      result += result * 31 + pdss.getTableVersion();
-
-    Grib1ParamTime ptime = gr.getParamTime(cust);
-    if (ptime.isInterval()) {
-      if (!intvMerge) result += result * 31 + ptime.getIntervalSize();  // create new variable for each interval size
-      if (ptime.getStatType() != null) result += result * 31 + ptime.getStatType().ordinal(); // create new variable for each stat type
-    }
-
-    // if useCenter, and this uses any local tables, then we have to add the center id, and subcenter if present
-    if (useCenter && pdss.getParameterNumber() > 127) {
-      result += result * 31 + pdss.getCenter();
-      if (pdss.getSubCenter() > 0)
-        result += result * 31 + pdss.getSubCenter();
-    }
-    return result;
-  }  */
-
-  ///////////////////////////////////////////////////
-  // create variable names
-
-  /*
-   http://www.ncl.ucar.edu/Document/Manuals/Ref_Manual/NclFormatSupport.shtml#GRIB
-   The following section gives the algorithm NCL uses to assign names to GRIB1 variables.
-
-   GRIB1 data variable name encoding:
-
-     if entry matching parameter table version and parameter number is found (either in built-in or user-supplied table)
-       and entry contains a short name for the parameter:
-         if recognized as probability product:
-           <probability_parameter_short_name>_<subject_variable_short_name> (ex: PROB_A_PCP)
-         else:
-           <parameter_short_name> (ex: TMP)
-     else:
-        VAR_<parameter_number> (ex: VAR_179)
-
-     if pre-defined grid:
-        _<pre-defined_grid_number> (ex: TMP_6)
-     else if grid defined in GDS (Grid Description Section):
-        _GDS<grid_type_number> (ex: TMP_GDS4)
-
-     _<level_type_abbreviation> (ex: TMP_GDS4_ISBL)
-
-     if not statistically processed variable and not duplicate name the name is complete at this point.
-
-     if statistically-processed variable with constant specified statistical processing duration:
-           _<statistical_processing_type_abbreviation><statistical_processing_duration><duration_units> (ex: ACPCP_44_SFC_acc6h)
-     else if statistically-processed variable with no specified processing duration
-        _<statistical_processing_type_abbreviation> (ex: A_PCP_192_SFC_acc)
-
-     if variable name is duplicate of existing variable name (this should not normally occur):
-        _n (where n begins with 1 for first duplicate) (ex: TMP_GDS4_ISBL_1)
-
- Notes:
-   * Probability products are properly recognized in version 4.3.0 or later.
-   * NCL uses the generic construction VAR_<parameter_number> in two situations:
-     - The entry in the applicable published table contains no short name suitable for use as a component of an NCL variable name.
-       Users should expect that later revisions to the table may result in the parameter receiving a short name, causing the name to change.
-     - There is no recognized entry for the parameter number. In this case, NCL outputs a warning message. The parameter index
-       could be unrecognized for several reasons:
-         > No parameter table has been supplied for the originating center and the index is greater than 127. (The default GRIB parameter table
-           properly applies only to indexes less than 128.)
-         > The index is not present in the applicable parameter table, perhaps because the table is out of date or is otherwise incorrect.
-         > The GRIB file has been generated incorrectly, perhaps specifying a wrong parameter table or a non-existent index.
-
-   * Pre-defined grids are enumerated in Table B of the NCEP GRIB1 documentation.
-   * GDS Grids types are listed in Table 6 of the NCEP GRIB1 documentation.
-   * Level type abbreviations are taken from Table 3 of the NCEP GRIB1 documentation.
-   * The abbreviations corresponding to the supported statistical processing methods are:
-       ave - average
-       acc - accumulation
-       dif - difference
-   * Note that the duration period and units abbreviation were added in NCL version 4.2.0.a028 in order to handle GRIB files with
-     more than one time duration for otherwise identical variables. This is an unavoidable incompatibility for GRIB file variable
-     names relative to earlier versions.
-
-   Variable name is:
-
-    VAR_%d-%d-%d-%d[_L%d][_layer][_I%s_S%d]
-
-    where:
-     %d-%d-%d-%d = center-subcenter-tableVersion-paramNo
-     L%d = level type  (octet 10 of PDS)
-     _layer = added if its a vertical layer
-     S%d = stat type (octet 21 of PDS)
-  */
-
- /*
-  public String makeVariableName(Grib1SectionProductDefinition pds) {
-    return makeVariableNameFromTables(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber(),
-             pds.getLevelType(), isLayer(pds.getLevelType()), pds.getTimeRangeIndicator(), null);
-  }*/
 
   @Override
   public String makeVariableName(GribCollectionImmutable.VariableIndex v) {
@@ -219,12 +90,14 @@ public class Grib1Iosp extends GribIosp {
   }
 
 
-  public String makeVariableLongName(int center, int subcenter, int version, int paramNo, int levelType, boolean isLayer, int intvType, String intvName, String probabilityName) {
+  private String makeVariableLongName(int center, int subcenter, int version, int paramNo,
+      int levelType, boolean isLayer, int intvType, String intvName, String probabilityName) {
     return makeVariableLongName(cust, center, subcenter, version, paramNo, levelType, isLayer, intvType, intvName, probabilityName);
   }
 
-  static public String makeVariableLongName(Grib1Customizer cust, int center, int subcenter, int version, int paramNo, int levelType,
-                                            boolean isLayer, int intvType, String intvName, String probabilityName) {
+  static String makeVariableLongName(Grib1Customizer cust, int center, int subcenter, int version,
+      int paramNo, int levelType,
+      boolean isLayer, int intvType, String intvName, String probabilityName) {
     Formatter f = new Formatter();
 
     boolean isProb = (probabilityName != null && probabilityName.length() > 0);
@@ -256,13 +129,14 @@ public class Grib1Iosp extends GribIosp {
     return makeVariableUnits(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
   }
 
-  public String makeVariableUnits(int center, int subcenter, int version, int paramNo) {
+  private String makeVariableUnits(int center, int subcenter, int version, int paramNo) {
     Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo);
     String val = (param == null) ? "" : param.getUnit();
     return (val == null) ? "" : val;
   }
 
-  static public String makeVariableUnits(Grib1Customizer cust, GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
+  static String makeVariableUnits(Grib1Customizer cust, GribCollectionImmutable gribCollection,
+      GribCollectionImmutable.VariableIndex vindex) {
     Grib1Parameter param = cust.getParameter(gribCollection.getCenter(), gribCollection.getSubcenter(), vindex.getTableVersion(), vindex.getParameter());
     String val = (param == null) ? "" : param.getUnit();
     return (val == null) ? "" : val;

@@ -19,9 +19,7 @@ import java.util.List;
  * @since 11/24/13
  */
 public interface Coordinate {
-  /**
-   * Enumerated list of coordinate types
-   */
+  /** Coordinate types */
   enum Type {
     runtime(0, AxisType.RunTime),
     time(1, AxisType.Time),
@@ -39,11 +37,10 @@ public interface Coordinate {
     }
   }
 
-  List<? extends Object> getValues(); // get sorted list of values
+  List<?> getValues(); // get sorted list of values
   Object getValue(int idx);  // get the ith value
   int getIndex(Object val);  // LOOK assumes the values are unique;
   int getSize();             // how many values ??
-  // int findIndexContaining(Object need);
 
   int getCode();
   Type getType();

@@ -81,7 +81,7 @@ public class Grib1ParamTables {
     return defaultTable;
   }
 
-  static public int makeKey(int center, int subcenter, int version) {
+  static int makeKey(int center, int subcenter, int version) {
     if (center < 0) center = 255;
     if (subcenter < 0) subcenter = 255;
     if (version < 0) version = 255;
@@ -128,9 +128,8 @@ public class Grib1ParamTables {
    *
    * @param paramTableElem parameter table in XML
    * @return Grib1Tables
-   * @throws IOException on read error
    */
-  static public Grib1ParamTables factory(org.jdom2.Element paramTableElem) throws IOException {
+  static public Grib1ParamTables factory(org.jdom2.Element paramTableElem) {
     if (paramTableElem == null) return new Grib1ParamTables();
     return new Grib1ParamTables(null, new Grib1ParamTableReader(paramTableElem));
   }
@@ -234,7 +233,7 @@ public class Grib1ParamTables {
      * @return true if successful
      * @throws IOException On badness
      */
-    public boolean readLookupTable(String resourceName) throws IOException {
+    boolean readLookupTable(String resourceName) throws IOException {
       try (InputStream inputStream = GribResourceReader.getInputStream(resourceName)) {
         if (inputStream == null) {
           logger.warn("Could not open table file:" + resourceName);
@@ -299,7 +298,7 @@ public class Grib1ParamTables {
 
     }
 
-    public Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
+    Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
       // look in hash table
       int key = makeKey(center, subcenter, tableVersion);
       Grib1ParamTableReader table = tableMap.get(key);

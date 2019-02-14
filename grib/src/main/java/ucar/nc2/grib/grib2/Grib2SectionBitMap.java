@@ -45,7 +45,7 @@ public class Grib2SectionBitMap {
     raf.seek(startingPosition + length);
   }
 
-  public Grib2SectionBitMap(long startingPosition, int bitMapIndicator) {
+  Grib2SectionBitMap(long startingPosition, int bitMapIndicator) {
     this.startingPosition = startingPosition;
     this.bitMapIndicator = bitMapIndicator;
   }

@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Grib-2 Collection IOSP, ver2.
+ * Grib-2 Collection IOSP.
  * Handles both collections and single GRIB files.
  *
  * @author caron
@@ -26,8 +26,9 @@ import java.util.Formatter;
 public class Grib2Iosp extends GribIosp {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
-  static public String makeVariableNameFromTable(Grib2Customizer cust, GribCollectionImmutable gribCollection,
-                                                 GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
+  static String makeVariableNameFromTable(Grib2Customizer cust,
+      GribCollectionImmutable gribCollection,
+      GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
     Formatter f = new Formatter();
 
     GribTables.Parameter param = cust.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
@@ -80,7 +81,8 @@ public class Grib2Iosp extends GribIosp {
     return f.toString();
   }
 
-  static public String makeVariableLongName(Grib2Customizer cust, GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
+  static String makeVariableLongName(Grib2Customizer cust,
+      GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
     Formatter f = new Formatter();
 
     boolean isProb = (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0);
@@ -145,7 +147,8 @@ public class Grib2Iosp extends GribIosp {
     return makeVariableUnits(cust, vindex);
   }
 
-  static public String makeVariableUnits(Grib2Customizer tables, GribCollectionImmutable.VariableIndex vindex) {
+  static String makeVariableUnits(Grib2Customizer tables,
+      GribCollectionImmutable.VariableIndex vindex) {
     if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) return "%";
     return getVindexUnits(tables, vindex);
   }
@@ -192,7 +195,7 @@ public class Grib2Iosp extends GribIosp {
     super(false, logger);
   }
 
-  public Grib2Iosp(GribCollectionImmutable.GroupGC gHcs, GribCollectionImmutable.Type gtype) {
+  Grib2Iosp(GribCollectionImmutable.GroupGC gHcs, GribCollectionImmutable.Type gtype) {
     super(false, logger);
     this.gHcs = gHcs;
     this.owned = true;
@@ -200,7 +203,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   // LOOK more likely we will set an individual dataset
-  public Grib2Iosp(GribCollectionImmutable gc) {
+  Grib2Iosp(GribCollectionImmutable gc) {
     super(false, logger);
     this.gribCollection = gc;
     this.owned = true;

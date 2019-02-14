@@ -11,7 +11,6 @@ import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.NcepTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-import ucar.nc2.grib.grib2.Grib2Pds;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +28,7 @@ import java.util.jar.JarFile;
  */
 public class NcepLocalTables extends LocalTables {
   static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  static private final String defaultResourcePath = "resources/grib2/ncep/v20.0.0/";
+  static private final String defaultResourcePath = "resources/grib2/ncep/v21.0.0/";
   private static NcepLocalTables single;
 
   public static Grib2Customizer getCust(Grib2Table table) {
@@ -53,22 +52,6 @@ public class NcepLocalTables extends LocalTables {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
     return params.getTablePath(discipline, category);
   }
-
-  // stuff Robb took from Jeff McW; I dont understand it  9/11/2014
-  //public  File[] getResourceListing(Class clazz, String path) {
-  // URL dirURL = clazz.getClassLoader().getResource(path);
-  //  try {
-  //    File fileDir = new File(dirURL.toURI());
-  //    if (fileDir != null) return fileDir.listFiles();
-  //  } catch (URISyntaxException exception) {
-  //      return null;
-  //  }
-
-  //if (dirURL != null && dirURL.getProtocol().equals("file")) {
-  //   /* A file path: easy enough */
-  //  return new File(dirURL.toURI()).list();
-  //  return null;
-  //}
 
   private String[] getResourceListing(String path) throws URISyntaxException, IOException {
     Class clazz = this.getClass();
@@ -105,7 +88,7 @@ public class NcepLocalTables extends LocalTables {
           result.add(entry);
         }
       }
-      return result.toArray(new String[result.size()]);
+      return result.toArray(new String[0]);
     }
 
     throw new UnsupportedOperationException("Cannot list files for URL " + dirURL);
@@ -148,28 +131,6 @@ public class NcepLocalTables extends LocalTables {
     else
       return te.getName();
   }
-
-  /* public GribTables.Parameter getParameterOld(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) {
-      GribTables.Parameter p = WmoCodeTable.getParameterEntry(discipline, category, number);
-      if (p != null) return p; // allow ncep to use values not already in use by WMO (!)
-    }
-
-    /* email from boi.vuong@noaa.gov 1/19/2012
-     "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
-      The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."
-    if (makeHash(discipline, category, number) == makeHash(2, 4, 3))
-      return getParameter(2, 4, 2);
-
-    /* email from boi.vuong@noaa.gov 1/26/2012
-     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
-     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
-     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242
-    if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
-      return getParameter(0, 1, 242);
-
-    return NcepLocalParams.getParameter(discipline, category, number);
-  } */
 
   @Override
   public GribTables.Parameter getParameter(int discipline, int category, int number) {

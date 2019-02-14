@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import java.util.Objects;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
@@ -154,10 +155,10 @@ public class Grib1Parameter implements GribTables.Parameter {
     Grib1Parameter that = (Grib1Parameter) o;
 
     if (number != that.number) return false;
-    if (cfName != null ? !cfName.equals(that.cfName) : that.cfName != null) return false;
-    if (description != null ? !description.equals(that.description) : that.description != null) return false;
-    if (name != null ? !name.equals(that.name) : that.name != null) return false;
-    if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+    if (!Objects.equals(cfName, that.cfName)) return false;
+    if (!Objects.equals(description, that.description)) return false;
+    if (!Objects.equals(name, that.name)) return false;
+    if (!Objects.equals(unit, that.unit)) return false;
 
     return true;
   }

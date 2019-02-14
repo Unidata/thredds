@@ -214,7 +214,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
 
   }
 
-  static boolean isUnitless(String unit) {
+  private static boolean isUnitless(String unit) {
     if (unit == null) return true;
     String munge = unit.toLowerCase().trim();
     munge = StringUtil2.remove(munge, '(');

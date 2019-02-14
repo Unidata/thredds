@@ -196,7 +196,7 @@ public class Grib1SectionGridDefinition {
     return (octet5 != 255) && (nv != 0 && nv != 255);
   }
 
-  public double[] getVerticalCoordinateParameters() {
+  private double[] getVerticalCoordinateParameters() {
     if (!hasVerticalCoordinateParameters()) return null;
 
     int offset = getOctet(5);
@@ -204,7 +204,6 @@ public class Grib1SectionGridDefinition {
     double[] vertCoords = new double[ n ];
     for (int i = 0; i < n; i++) {
       vertCoords[i] = GribNumbers.float4(getOctet(offset++), getOctet(offset++), getOctet(offset++), getOctet(offset++)) ;
-      //System.out.println( "a and b values [ " + i +" ] ="+ vertCoords[i] );
     }
     return vertCoords;
   }

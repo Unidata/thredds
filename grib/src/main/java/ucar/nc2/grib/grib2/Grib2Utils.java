@@ -11,7 +11,7 @@ import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
 
 /**
- * static utilities for Grib-2
+ * Static utilities for Grib-2
  *
  * @author caron
  * @since 3/29/11
@@ -86,9 +86,7 @@ public class Grib2Utils {
    * @return true if a layer
    */
   static public boolean isLayer(Grib2Pds pds) {
-    if (pds.getLevelType2() == 255 || pds.getLevelType2() == 0)
-      return false;
-    return true;
+    return pds.getLevelType2() != 255 && pds.getLevelType2() != 0;
   }
 
   static public boolean isLatLon(int gridTemplate, int center) {

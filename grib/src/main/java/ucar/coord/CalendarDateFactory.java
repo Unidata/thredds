@@ -10,13 +10,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A way to minimize memory by reusing immutable calendar date objects
+ * Reuse immutable calendar date objects.
  *
  * @author caron
  * @since 4/3/2015
  */
 public class CalendarDateFactory {
-  int miss = 0;
   Map<Long, CalendarDate> map;
 
   public CalendarDateFactory(CoordinateRuntime master) {
@@ -30,7 +29,6 @@ public class CalendarDateFactory {
   public CalendarDate get( CalendarDate cd) {
     CalendarDate cdc = map.get(cd.getMillis());
     if (cdc != null) return cdc;
-    miss++;
     map.put(cd.getMillis(), cd);
     return cd;
   }

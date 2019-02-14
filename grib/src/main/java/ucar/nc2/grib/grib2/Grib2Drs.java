@@ -14,6 +14,7 @@ import java.io.IOException;
 
 /**
  * Template-specific fields for Grib2SectionDataRepresentation
+ *
  * @author caron
  * @since 4/1/11
  */
@@ -33,14 +34,15 @@ public abstract class Grib2Drs {
       //case 51:    //
       //  return new Type51(raf);
       case 50002: // ECMWF's second order packing
-    	  return new Type50002(raf);
+        return new Type50002(raf);
       default:
         throw new UnsupportedOperationException("Unsupported DRS type = " + template);
     }
   }
 
-      // for debugging
+  // for debugging
   abstract GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException;
+
   public int getNGroups() {
     return 1;
   }
@@ -71,8 +73,9 @@ public abstract class Grib2Drs {
    */
 
   public static class Type0 extends Grib2Drs {
+
     public float referenceValue;
-    public int binaryScaleFactor, decimalScaleFactor, numberOfBits, originalType;
+    int binaryScaleFactor, decimalScaleFactor, numberOfBits, originalType;
 
     Type0(RandomAccessFile raf) throws IOException {
       this.referenceValue = raf.readFloat();
@@ -82,7 +85,7 @@ public abstract class Grib2Drs {
       this.originalType = raf.read();
     }
 
-    public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+    public GribData.Info getBinaryDataInfo(RandomAccessFile raf) {
 
       GribData.Info info = new GribData.Info();
       info.referenceValue = this.referenceValue;
@@ -91,7 +94,7 @@ public abstract class Grib2Drs {
       info.numberOfBits = this.numberOfBits;
       info.originalType = this.originalType;
 
-     return info;
+      return info;
     }
 
     @Override
@@ -109,16 +112,30 @@ public abstract class Grib2Drs {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
 
       Type0 type0 = (Type0) o;
 
-      if (binaryScaleFactor != type0.binaryScaleFactor) return false;
-      if (decimalScaleFactor != type0.decimalScaleFactor) return false;
-      if (numberOfBits != type0.numberOfBits) return false;
-      if (originalType != type0.originalType) return false;
-      if (Float.compare(type0.referenceValue, referenceValue) != 0) return false;
+      if (binaryScaleFactor != type0.binaryScaleFactor) {
+        return false;
+      }
+      if (decimalScaleFactor != type0.decimalScaleFactor) {
+        return false;
+      }
+      if (numberOfBits != type0.numberOfBits) {
+        return false;
+      }
+      if (originalType != type0.originalType) {
+        return false;
+      }
+      if (Float.compare(type0.referenceValue, referenceValue) != 0) {
+        return false;
+      }
 
       return true;
     }
@@ -193,9 +210,10 @@ public abstract class Grib2Drs {
    */
 
   public static class Type2 extends Type0 {
-    public float secondaryMissingValue, primaryMissingValue;
-    public int missingValueManagement, splittingMethod, numberOfGroups, referenceGroupWidths, bitsGroupWidths;
-    public int referenceGroupLength, lengthIncrement, lengthLastGroup, bitsScaledGroupLength;
+
+    float secondaryMissingValue, primaryMissingValue;
+    int missingValueManagement, splittingMethod, numberOfGroups, referenceGroupWidths, bitsGroupWidths;
+    int referenceGroupLength, lengthIncrement, lengthLastGroup, bitsScaledGroupLength;
 
     Type2(RandomAccessFile raf) throws IOException {
       super(raf);
@@ -239,23 +257,51 @@ public abstract class Grib2Drs {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
 
       Type2 type2 = (Type2) o;
 
-      if (bitsGroupWidths != type2.bitsGroupWidths) return false;
-      if (bitsScaledGroupLength != type2.bitsScaledGroupLength) return false;
-      if (lengthIncrement != type2.lengthIncrement) return false;
-      if (lengthLastGroup != type2.lengthLastGroup) return false;
-      if (missingValueManagement != type2.missingValueManagement) return false;
-      if (numberOfGroups != type2.numberOfGroups) return false;
-      if (Float.compare(type2.primaryMissingValue, primaryMissingValue) != 0) return false;
-      if (referenceGroupLength != type2.referenceGroupLength) return false;
-      if (referenceGroupWidths != type2.referenceGroupWidths) return false;
-      if (Float.compare(type2.secondaryMissingValue, secondaryMissingValue) != 0) return false;
-      if (splittingMethod != type2.splittingMethod) return false;
+      if (bitsGroupWidths != type2.bitsGroupWidths) {
+        return false;
+      }
+      if (bitsScaledGroupLength != type2.bitsScaledGroupLength) {
+        return false;
+      }
+      if (lengthIncrement != type2.lengthIncrement) {
+        return false;
+      }
+      if (lengthLastGroup != type2.lengthLastGroup) {
+        return false;
+      }
+      if (missingValueManagement != type2.missingValueManagement) {
+        return false;
+      }
+      if (numberOfGroups != type2.numberOfGroups) {
+        return false;
+      }
+      if (Float.compare(type2.primaryMissingValue, primaryMissingValue) != 0) {
+        return false;
+      }
+      if (referenceGroupLength != type2.referenceGroupLength) {
+        return false;
+      }
+      if (referenceGroupWidths != type2.referenceGroupWidths) {
+        return false;
+      }
+      if (Float.compare(type2.secondaryMissingValue, secondaryMissingValue) != 0) {
+        return false;
+      }
+      if (splittingMethod != type2.splittingMethod) {
+        return false;
+      }
 
       return true;
     }
@@ -263,8 +309,11 @@ public abstract class Grib2Drs {
     @Override
     public int hashCode() {
       int result = super.hashCode();
-      result = 31 * result + (secondaryMissingValue != +0.0f ? Float.floatToIntBits(secondaryMissingValue) : 0);
-      result = 31 * result + (primaryMissingValue != +0.0f ? Float.floatToIntBits(primaryMissingValue) : 0);
+      result = 31 * result + (secondaryMissingValue != +0.0f ? Float
+          .floatToIntBits(secondaryMissingValue) : 0);
+      result =
+          31 * result + (primaryMissingValue != +0.0f ? Float.floatToIntBits(primaryMissingValue)
+              : 0);
       result = 31 * result + missingValueManagement;
       result = 31 * result + splittingMethod;
       result = 31 * result + numberOfGroups;
@@ -299,7 +348,8 @@ public abstract class Grib2Drs {
    */
 
   public static class Type3 extends Type2 {
-    public int orderSpatial, descriptorSpatial;
+
+    int orderSpatial, descriptorSpatial;
 
     Type3(RandomAccessFile raf) throws IOException {
       super(raf);
@@ -320,14 +370,24 @@ public abstract class Grib2Drs {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
 
       Type3 type3 = (Type3) o;
 
-      if (descriptorSpatial != type3.descriptorSpatial) return false;
-      if (orderSpatial != type3.orderSpatial) return false;
+      if (descriptorSpatial != type3.descriptorSpatial) {
+        return false;
+      }
+      if (orderSpatial != type3.orderSpatial) {
+        return false;
+      }
 
       return true;
     }
@@ -342,7 +402,8 @@ public abstract class Grib2Drs {
   }
 
   public static class Type40 extends Type0 {
-    public int compressionMethod, compressionRatio;
+
+    int compressionMethod, compressionRatio;
     boolean hasSignedProblem = false;
 
     Type40(RandomAccessFile raf) throws IOException {
@@ -369,14 +430,24 @@ public abstract class Grib2Drs {
 
     @Override
     public boolean equals(Object o) {
-      if (this == o) return true;
-      if (o == null || getClass() != o.getClass()) return false;
-      if (!super.equals(o)) return false;
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      if (!super.equals(o)) {
+        return false;
+      }
 
       Type40 type40 = (Type40) o;
 
-      if (compressionMethod != type40.compressionMethod) return false;
-      if (compressionRatio != type40.compressionRatio) return false;
+      if (compressionMethod != type40.compressionMethod) {
+        return false;
+      }
+      if (compressionRatio != type40.compressionRatio) {
+        return false;
+      }
 
       return true;
     }
@@ -392,145 +463,180 @@ public abstract class Grib2Drs {
 
   // pull request #52 "lost-carrier" jkaehler@meteomatics.com
   public static class Type50002 extends Grib2Drs {
-	    public float referenceValue;
-	    public int binaryScaleFactor, decimalScaleFactor, numberOfBits;
-	    public int p1, p2;
-	    public int widthOfFirstOrderValues, widthOfWidth, widthOfLength;
-	    public int boustrophonic, orderOfSPD, widthOfSPD;
-	    public int[] spd;
-	    public int lengthOfSection6, section6;
-	    public int bitMapIndicator;
-	    public int lengthOfSection7, section7;
 
-	    Type50002(RandomAccessFile raf) throws IOException {
-	      // according to https://github.com/erdc-cm/grib_api/blob/master/definitions/grib2/template.5.50002.def
-	      this.referenceValue = raf.readFloat();
-	      this.binaryScaleFactor = GribNumbers.int2(raf);
-	      this.decimalScaleFactor = GribNumbers.int2(raf);
-	      this.numberOfBits = raf.read();
-	      this.widthOfFirstOrderValues = raf.read();
-	      this.p1 = GribNumbers.int4(raf);
-	      this.p2 = GribNumbers.int4(raf);
-	      this.widthOfWidth = raf.read();
-	      this.widthOfLength = raf.read();
-	      this.boustrophonic = raf.read();
-	      this.orderOfSPD = raf.read();
-	      this.widthOfSPD = raf.read();
-	      this.spd = new int[orderOfSPD+1];
-	      BitReader bitReader = new BitReader(raf, raf.getFilePointer());
-	      for (int i = 0; i < orderOfSPD; i++) {
-/*
- 	    	  int myInt = raf.read();
-	    	  System.out.println("spd["+i+"]="+myInt+" 0x"+Integer.toHexString(myInt)+" 0b"+Integer.toBinaryString(myInt)+" widthOfSPD="+widthOfSPD);
-	    	  myInt = raf.read();
-	    	  System.out.println("spd["+i+"]="+myInt+" 0x"+Integer.toHexString(myInt)+" 0b"+Integer.toBinaryString(myInt)+" widthOfSPD="+widthOfSPD);
-/**/
-		     this.spd[i] = (int) bitReader.bits2UInt(widthOfSPD);
-	      }
-	      this.spd[orderOfSPD] = (int) bitReader.bits2SInt(widthOfSPD);
-	      this.lengthOfSection6 = GribNumbers.int4(raf);
-	      this.section6 = raf.read();
-	      this.bitMapIndicator = raf.read();
-	      this.lengthOfSection7 = GribNumbers.int4(raf);
-	      this.section7 = raf.read();
-	    }
+    public float referenceValue;
+    public int binaryScaleFactor, decimalScaleFactor, numberOfBits;
+    public int p1, p2;
+    int widthOfFirstOrderValues, widthOfWidth, widthOfLength;
+    int boustrophonic, orderOfSPD, widthOfSPD;
+    int[] spd;
+    int lengthOfSection6, section6;
+    int bitMapIndicator;
+    int lengthOfSection7, section7;
 
-      @Override
-      public GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException {
+    Type50002(RandomAccessFile raf) throws IOException {
+      // according to https://github.com/erdc-cm/grib_api/blob/master/definitions/grib2/template.5.50002.def
+      this.referenceValue = raf.readFloat();
+      this.binaryScaleFactor = GribNumbers.int2(raf);
+      this.decimalScaleFactor = GribNumbers.int2(raf);
+      this.numberOfBits = raf.read();
+      this.widthOfFirstOrderValues = raf.read();
+      this.p1 = GribNumbers.int4(raf);
+      this.p2 = GribNumbers.int4(raf);
+      this.widthOfWidth = raf.read();
+      this.widthOfLength = raf.read();
+      this.boustrophonic = raf.read();
+      this.orderOfSPD = raf.read();
+      this.widthOfSPD = raf.read();
+      this.spd = new int[orderOfSPD + 1];
+      BitReader bitReader = new BitReader(raf, raf.getFilePointer());
+      for (int i = 0; i < orderOfSPD; i++) {
+        this.spd[i] = (int) bitReader.bits2UInt(widthOfSPD);
+      }
+      this.spd[orderOfSPD] = (int) bitReader.bits2SInt(widthOfSPD);
+      this.lengthOfSection6 = GribNumbers.int4(raf);
+      this.section6 = raf.read();
+      this.bitMapIndicator = raf.read();
+      this.lengthOfSection7 = GribNumbers.int4(raf);
+      this.section7 = raf.read();
+    }
 
-        GribData.Info info = new GribData.Info();
-        info.referenceValue = this.referenceValue;
-        info.binaryScaleFactor = this.binaryScaleFactor;
-        info.decimalScaleFactor = this.decimalScaleFactor;
-        info.numberOfBits = this.numberOfBits;
-        // info.originalType = this.originalType;  dunno
+    @Override
+    public GribData.Info getBinaryDataInfo(RandomAccessFile raf) {
 
-       return info;
+      GribData.Info info = new GribData.Info();
+      info.referenceValue = this.referenceValue;
+      info.binaryScaleFactor = this.binaryScaleFactor;
+      info.decimalScaleFactor = this.decimalScaleFactor;
+      info.numberOfBits = this.numberOfBits;
+      // info.originalType = this.originalType;  dunno
+
+      return info;
+    }
+
+    @Override
+    public String toString() {
+      final StringBuilder sb = new StringBuilder();
+      sb.append("Type50002");
+      sb.append("{\n\treferenceValue=").append(referenceValue);
+      sb.append(",\n\tbinaryScaleFactor=").append(binaryScaleFactor);
+      sb.append(",\n\tdecimalScaleFactor=").append(decimalScaleFactor);
+      sb.append(",\n\tnumberOfBits=").append(numberOfBits);
+      sb.append(",\n\twidthOfFirstOrderValues=").append(widthOfFirstOrderValues);
+      sb.append(",\n\tp1=").append(p1);
+      sb.append(",\n\tp2=").append(p2);
+      sb.append(",\n\twidthOfWidth=").append(widthOfWidth);
+      sb.append(",\n\twidthOfLength=").append(widthOfLength);
+      sb.append(",\n\tboustrophonic=").append(boustrophonic);
+      sb.append(",\n\torderOfSPD=").append(orderOfSPD);
+      sb.append(",\n\twidthOfSPD=").append(widthOfSPD);
+      sb.append(",\n\tspd=");
+      for (float i : spd) {
+        sb.append(i).append(",");
+      }
+      sb.deleteCharAt(sb.length() - 1);
+      sb.append(",\n\tlengthOfSection6=").append(lengthOfSection6);
+      sb.append(",\n\tsection6=").append(section6);
+      sb.append(",\n\tbitMapIndicator=").append(bitMapIndicator);
+      sb.append(",\n\tlengthOfSection7=").append(lengthOfSection7);
+      sb.append(",\n\tsection7=").append(section7);
+      sb.append("\n}");
+      return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
       }
 
-	    @Override
-	    public String toString() {
-	      final StringBuilder sb = new StringBuilder();
-	      sb.append("Type50002");
-	      sb.append("{\n\treferenceValue=").append(referenceValue);
-	      sb.append(",\n\tbinaryScaleFactor=").append(binaryScaleFactor);
-	      sb.append(",\n\tdecimalScaleFactor=").append(decimalScaleFactor);
-	      sb.append(",\n\tnumberOfBits=").append(numberOfBits);
-	      sb.append(",\n\twidthOfFirstOrderValues=").append(widthOfFirstOrderValues);
-	      sb.append(",\n\tp1=").append(p1);
-	      sb.append(",\n\tp2=").append(p2);
-	      sb.append(",\n\twidthOfWidth=").append(widthOfWidth);
-	      sb.append(",\n\twidthOfLength=").append(widthOfLength);
-	      sb.append(",\n\tboustrophonic=").append(boustrophonic);
-	      sb.append(",\n\torderOfSPD=").append(orderOfSPD);
-	      sb.append(",\n\twidthOfSPD=").append(widthOfSPD);
-	      sb.append(",\n\tspd=");
-	      for (float i : spd) {
-	    	  sb.append(i).append(",");
-	      }
-	      sb.deleteCharAt(sb.length()-1);
-	      sb.append(",\n\tlengthOfSection6=").append(lengthOfSection6);
-	      sb.append(",\n\tsection6=").append(section6);
-	      sb.append(",\n\tbitMapIndicator=").append(bitMapIndicator);
-	      sb.append(",\n\tlengthOfSection7=").append(lengthOfSection7);
-	      sb.append(",\n\tsection7=").append(section7);
-	      sb.append("\n}");
-	      return sb.toString();
-	    }
+      Type50002 type50002 = (Type50002) o;
 
-	    @Override
-	    public boolean equals(Object o) {
-	      if (this == o) return true;
-	      if (o == null || getClass() != o.getClass()) return false;
+      if (Float.compare(type50002.referenceValue, referenceValue) != 0) {
+        return false;
+      }
+      if (binaryScaleFactor != type50002.binaryScaleFactor) {
+        return false;
+      }
+      if (decimalScaleFactor != type50002.decimalScaleFactor) {
+        return false;
+      }
+      if (numberOfBits != type50002.numberOfBits) {
+        return false;
+      }
+      if (widthOfFirstOrderValues != type50002.widthOfFirstOrderValues) {
+        return false;
+      }
+      if (p1 != type50002.p1) {
+        return false;
+      }
+      if (p2 != type50002.p2) {
+        return false;
+      }
+      if (widthOfWidth != type50002.widthOfWidth) {
+        return false;
+      }
+      if (widthOfLength != type50002.widthOfLength) {
+        return false;
+      }
+      if (boustrophonic != type50002.boustrophonic) {
+        return false;
+      }
+      if (orderOfSPD != type50002.orderOfSPD) {
+        return false;
+      }
+      if (widthOfSPD != type50002.widthOfSPD) {
+        return false;
+      }
+      for (int i = 0; i < spd.length; i++) {
+        if (spd[i] != type50002.spd[i]) {
+          return false;
+        }
+      }
+      if (lengthOfSection6 != type50002.lengthOfSection6) {
+        return false;
+      }
+      if (section6 != type50002.section6) {
+        return false;
+      }
+      if (bitMapIndicator != type50002.bitMapIndicator) {
+        return false;
+      }
+      if (lengthOfSection7 != type50002.lengthOfSection7) {
+        return false;
+      }
+      if (section7 != type50002.section7) {
+        return false;
+      }
 
-	      Type50002 type50002 = (Type50002) o;
+      return true;
+    }
 
-	      if (Float.compare(type50002.referenceValue, referenceValue) != 0) return false;
-	      if (binaryScaleFactor != type50002.binaryScaleFactor) return false;
-	      if (decimalScaleFactor != type50002.decimalScaleFactor) return false;
-	      if (numberOfBits != type50002.numberOfBits) return false;
-	      if (widthOfFirstOrderValues != type50002.widthOfFirstOrderValues) return false;
-	      if (p1 != type50002.p1) return false;
-	      if (p2 != type50002.p2) return false;
-	      if (widthOfWidth != type50002.widthOfWidth) return false;
-	      if (widthOfLength != type50002.widthOfLength) return false;
-	      if (boustrophonic != type50002.boustrophonic) return false;
-	      if (orderOfSPD != type50002.orderOfSPD) return false;
-	      if (widthOfSPD != type50002.widthOfSPD) return false;
-	      for (int i = 0; i < spd.length; i++) {
-	    	  if (spd[i] != type50002.spd[i]) return false;
-	      }
-	      if (lengthOfSection6 != type50002.lengthOfSection6) return false;
-	      if (section6 != type50002.section6) return false;
-	      if (bitMapIndicator != type50002.bitMapIndicator) return false;
-	      if (lengthOfSection7 != type50002.lengthOfSection7) return false;
-	      if (section7 != type50002.section7) return false;
-
-	      return true;
-	    }
-
-	    @Override
-	    public int hashCode() {
-	      int result = (referenceValue != +0.0f ? Float.floatToIntBits(referenceValue) : 0);
-	      result = 31 * result + binaryScaleFactor;
-	      result = 31 * result + decimalScaleFactor;
-	      result = 31 * result + numberOfBits;
-	      result = 31 * result + widthOfFirstOrderValues;
-	      result = 31 * result + p1;
-	      result = 31 * result + p2;
-	      result = 31 * result + widthOfWidth;
-	      result = 31 * result + widthOfLength;
-	      result = 31 * result + boustrophonic;
-	      result = 31 * result + orderOfSPD;
-	      result = 31 * result + widthOfSPD;
-	      for (int i = 0; i < spd.length; i++) {
-	    	  result = 31 * result + spd[i];
-	      }
-	      result = 31 * result + lengthOfSection6;
-	      result = 31 * result + section6;
-	      result = 31 * result + section6;
-	      result = 31 * result + lengthOfSection7;
-	      result = 31 * result + section7;
+    @Override
+    public int hashCode() {
+      int result = (referenceValue != +0.0f ? Float.floatToIntBits(referenceValue) : 0);
+      result = 31 * result + binaryScaleFactor;
+      result = 31 * result + decimalScaleFactor;
+      result = 31 * result + numberOfBits;
+      result = 31 * result + widthOfFirstOrderValues;
+      result = 31 * result + p1;
+      result = 31 * result + p2;
+      result = 31 * result + widthOfWidth;
+      result = 31 * result + widthOfLength;
+      result = 31 * result + boustrophonic;
+      result = 31 * result + orderOfSPD;
+      result = 31 * result + widthOfSPD;
+      for (int i1 : spd) {
+        result = 31 * result + i1;
+      }
+      result = 31 * result + lengthOfSection6;
+      result = 31 * result + section6;
+      result = 31 * result + section6;
+      result = 31 * result + lengthOfSection7;
+      result = 31 * result + section7;
       return result;
     }
   }

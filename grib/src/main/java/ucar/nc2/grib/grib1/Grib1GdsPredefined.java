@@ -15,8 +15,6 @@ package ucar.nc2.grib.grib1;
 
 public class Grib1GdsPredefined {
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1GdsPredefined.class);
-
   /**
    * Constructs a Grib1Gds object from a pds and predefined tables.
    *

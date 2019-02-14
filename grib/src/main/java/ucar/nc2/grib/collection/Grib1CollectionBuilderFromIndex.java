@@ -17,7 +17,7 @@ import ucar.unidata.io.RandomAccessFile;
 import java.io.IOException;
 
 /**
- * Grib1 specific reading ncx2 Index file
+ * Grib1-specific reading of ncx files.
  *
  * @author caron
  * @since 2/20/14
@@ -25,7 +25,8 @@ import java.io.IOException;
 public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
-  static public Grib1Collection readFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+  static Grib1Collection readFromIndex(String name, RandomAccessFile raf,
+      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
     Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -58,7 +59,8 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
 
   protected Grib1Customizer cust; // gets created in readIndex, after center etc is read in
 
-  protected Grib1CollectionBuilderFromIndex(String name, FeatureCollectionConfig config, org.slf4j.Logger logger) {
+  Grib1CollectionBuilderFromIndex(String name, FeatureCollectionConfig config,
+      org.slf4j.Logger logger) {
     super( new GribCollectionMutable(name, null, config, true), config, logger);  // directory will be set in readFromIndex
   }
 

@@ -3,9 +3,6 @@
  * See LICENSE for license information.
  */
 
-/**
- */
-
 package ucar.nc2.grib.grib1;
 
 import ucar.nc2.grib.GribNumbers;

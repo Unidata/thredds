@@ -33,7 +33,7 @@ public class Grib1SectionIndicator {
    * @throws java.io.IOException on I/O error
    * @throws IllegalArgumentException if not a GRIB-2 record
    */
-  public Grib1SectionIndicator(RandomAccessFile raf) throws IOException {
+  Grib1SectionIndicator(RandomAccessFile raf) throws IOException {
     startPos = raf.getFilePointer();
     byte[] b = new byte[4];
     raf.readFully(b);
@@ -47,11 +47,11 @@ public class Grib1SectionIndicator {
       throw new IllegalArgumentException("Not a GRIB-1 record");
     messageLength = Grib1RecordScanner.getFixedTotalLengthEcmwfLargeGrib(raf, messageLengthNotFixed);
     if(messageLength!=messageLengthNotFixed) {
-    	isMessageLengthFixed = true;
+      isMessageLengthFixed = true;
     }
   }
 
-  public Grib1SectionIndicator(long startPos, long messageLength) {
+  Grib1SectionIndicator(long startPos, long messageLength) {
     this.startPos = startPos;
     this.messageLength = messageLength;
     this.messageLengthNotFixed = (int)messageLength;

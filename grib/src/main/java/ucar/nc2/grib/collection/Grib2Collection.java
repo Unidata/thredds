@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Grib2 specific part of GribCollection
+ * Grib2 specific subclass of GribCollection.
  *
  * @author John
  * @since 9/5/11
@@ -169,7 +169,8 @@ public class Grib2Collection extends GribCollectionImmutable {
     return makeVariableId(vindex, this);
   }
 
-  static String makeVariableId(GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable gc) {
+  private static String makeVariableId(GribCollectionImmutable.VariableIndex vindex,
+      GribCollectionImmutable gc) {
     Formatter f = new Formatter();
 
     f.format("VAR_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());

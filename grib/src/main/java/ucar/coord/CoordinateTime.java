@@ -56,7 +56,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
   }
 
   @Override
-  public List<? extends Object> getValues() {
+  public List<?> getValues() {
     return offsetSorted;
   }
 

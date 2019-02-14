@@ -519,11 +519,8 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   private void makeTimeCoordinate2D(NetcdfFile ncfile, Group g, CoordinateTime2D time2D, GribCollectionImmutable.Type gctype) {
     CoordinateRuntime runtime = time2D.getRuntimeCoordinate();
 
-    int nruns = time2D.getNruns();
     int ntimes = time2D.getNtimes();
     String tcName = time2D.getName();
-    //boolean singleRun = (nruns == 1);  // dont use reftime dimension if time(1, ntimes) or time(nruns, 1))
-    // boolean uniqueTime = gctype.isUniqueTime();
     String dims = runtime.getName() + " " + tcName;
     int dimLength = ntimes;
 
@@ -743,17 +740,12 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     double[] data = new double[ntimes];
     int count = 0;
 
-    // CalendarPeriod period = coordTime.getPeriod();
-
     // use upper bounds for coord value
     for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals())
       data[count++] = tinv.getBounds2();
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes}, data));
 
     // bounds
-    /* String intvName = getIntervalName(coordTime.getCode());
-    if (intvName != null)
-      v.addAttribute(new Attribute(CDM.LONG_NAME, intvName));  */
     String bounds_name = tcName + "_bounds";
     Variable bounds = ncfile.addVariable(g, new Variable(ncfile, g, null, bounds_name, DataType.DOUBLE, dims + " 2"));
     v.addAttribute(new Attribute(CF.BOUNDS, bounds_name));

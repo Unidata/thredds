@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -23,15 +22,15 @@ import java.util.*;
  */
 public class EcmwfLocalConcepts {
     // super hash map keys
-    private static String SHORTNAME_ID = "shortName";
-    private static String DESCRIPTION_ID = "description";
-    private static String UNIT_ID = "units";
+    private static final String SHORTNAME_ID = "shortName";
+    private static final String DESCRIPTION_ID = "description";
+    private static final String UNIT_ID = "units";
 
     // IDs used in localConcept files
-    private static String TABLE_VERSION_ID = "table2Version";
-    private static String PARAM_NUM_ID = "indicatorOfParameter";
+    private static final String TABLE_VERSION_ID = "table2Version";
+    private static final String PARAM_NUM_ID = "indicatorOfParameter";
 
-    private static Charset ENCODING = StandardCharsets.UTF_8;
+    private static final Charset ENCODING = StandardCharsets.UTF_8;
 
     // tableNumber -> paramNumber -> metadata from table
     private HashMap<String, HashMap<String, HashMap<String,String>>> localConcepts = new HashMap<>();
@@ -63,16 +62,11 @@ public class EcmwfLocalConcepts {
         }
     }
 
-    /**
-     * Parse the localConcept files needed to create grib1 tables for use by the CDM
-     * @throws IOException
-     */
+    /** Parse the localConcept files needed to create grib1 tables for use by the CDM. */
     private void parseLocalConcept(String filename, String conceptName) throws IOException {
-
       try (InputStream is = new FileInputStream(filename)) {
         addLocalConcept(is, conceptName);
       }
-
     }
 
     /**
@@ -80,7 +74,6 @@ public class EcmwfLocalConcepts {
      *
      * @param is InputStream of the localConcept file
      * @param conceptName "type" of localConcept being added
-     * @throws IOException
      */
     private void addLocalConcept(InputStream is, String conceptName) throws IOException {
         /*
@@ -91,7 +84,6 @@ public class EcmwfLocalConcepts {
              table2Version = 131 ;
              indicatorOfParameter = 61 ;
             }
-
          */
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(is, ENCODING))) {
@@ -178,11 +170,8 @@ public class EcmwfLocalConcepts {
     /**
      * Write out grib1 tables based on localConcepts files - these are the tables
      * that the CDM will read.
-     *
-     * @throws IOException
-     * @throws ParseException
      */
-    private void writeGrib1Tables() throws IOException, ParseException {
+    private void writeGrib1Tables() throws IOException {
         SimpleDateFormat dateFormat =
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
         Calendar cal = Calendar.getInstance();
@@ -226,8 +215,6 @@ public class EcmwfLocalConcepts {
      * @param tableNums List of Table Numbers
      * @param dir Directory where the tables live
      * @param writeDate Date on which the main method of this class was run, resulting in new tables
-     *
-     * @throws IOException
      */
     private void writeLookupTableFile(List<String> tableNums, Path dir, String writeDate) throws IOException {
 
@@ -272,7 +259,7 @@ public class EcmwfLocalConcepts {
         try {
             ec.writeGrib1Tables();
             System.out.println("Finished!");
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

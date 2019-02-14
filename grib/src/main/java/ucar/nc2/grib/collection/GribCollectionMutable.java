@@ -33,14 +33,15 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * A mutable class for writing indices or building GribCollectionImmutable
+ * A mutable class for writing indices or building GribCollectionImmutable.
+ * Better to use a Builder?
  *
  * @author John
  * @since 12/1/13
  */
 public class GribCollectionMutable implements Closeable {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollectionMutable.class);
-  static public final long MISSING_RECORD = -1;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribCollectionMutable.class);
+  static final long MISSING_RECORD = -1;
 
   //////////////////////////////////////////////////////////
 
@@ -51,7 +52,7 @@ public class GribCollectionMutable implements Closeable {
 
   private static CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
 
-  static public String makeName(String collectionName, CalendarDate runtime) {
+  static String makeName(String collectionName, CalendarDate runtime) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
     return nameNoBlanks + "-" + cf.toString(runtime);
   }
@@ -74,7 +75,7 @@ public class GribCollectionMutable implements Closeable {
   protected GribTables cust;
   protected int indexVersion;
 
-  public void setCalendarDateRange(long startMsecs, long endMsecs) {
+  void setCalendarDateRange(long startMsecs, long endMsecs) {
     this.dateRange = CalendarDateRange.of( CalendarDate.of(startMsecs), CalendarDate.of(endMsecs));
   }
 
@@ -86,7 +87,7 @@ public class GribCollectionMutable implements Closeable {
   protected long lastModified;
   protected long fileSize;
 
-  public static int countGC;
+  private static int countGC;
 
   protected GribCollectionMutable(String name, File directory, FeatureCollectionConfig config, boolean isGrib1) {
     countGC++;
@@ -101,7 +102,7 @@ public class GribCollectionMutable implements Closeable {
   }
 
   // for making partition collection
-  protected void copyInfo(GribCollectionMutable from) {
+  void copyInfo(GribCollectionMutable from) {
     this.center = from.center;
     this.subcenter = from.subcenter;
     this.master = from.master;
@@ -146,7 +147,7 @@ public class GribCollectionMutable implements Closeable {
     return result;
   }
 
-  public File getIndexParentFile() {
+  File getIndexParentFile() {
     if (indexRaf == null) return null;
     Path index = Paths.get(indexRaf.getLocation());
     Path parent = index.getParent();
@@ -161,56 +162,18 @@ public class GribCollectionMutable implements Closeable {
     return datasets;
   }
 
-  public Dataset makeDataset(GribCollectionImmutable.Type type) {
+  Dataset makeDataset(GribCollectionImmutable.Type type) {
     Dataset result = new Dataset(type);
     datasets.add(result);
     return result;
   }
 
-  public GribCollectionMutable.Dataset getDatasetCanonical() {
+  GribCollectionMutable.Dataset getDatasetCanonical() {
     for (GribCollectionMutable.Dataset ds : datasets) {
       if (ds.gctype != GribCollectionImmutable.Type.Best) return ds;
     }
     throw new IllegalStateException("GC.getDatasetCanonical failed on=" + name);
   }
-
-  /*
-  public GribHorizCoordSystem getHorizCS(int index) {
-    return horizCS.get(index);
-  }
-
-  protected void makeHorizCS() {
-    Map<Object, GribHorizCoordSystem> gdsMap = new HashMap<>();   // WTF ?? unique ???
-    for (Dataset ds : datasets) {
-      for (GroupGC hcs : ds.groups)
-        gdsMap.put(hcs.getGdsHash(), hcs.horizCoordSys);
-    }
-
-    horizCS = new ArrayList<>();
-    for (GribHorizCoordSystem hcs : gdsMap.values())
-      horizCS.add(hcs);
-  }
-
-  public int findHorizCS(GribHorizCoordSystem hcs) {
-    return horizCS.indexOf(hcs);
-  }
-
-  public void addHorizCoordSystem(GdsHorizCoordSys hcs, byte[] rawGds, Object gdsHashObject, int predefinedGridDefinition) {
-    if (hcs == null) {
-      logger.error("GribCollectionMutable: No hcs available");
-      return;
-    }
-
-    String hcsName = makeHorizCoordSysName(hcs);
-
-    // check for user defined group names
-    String desc = null;
-    if (config.gribConfig.gdsNamer != null)
-      desc = config.gribConfig.gdsNamer.get(gdsHashObject.hashCode());
-    if (desc == null) desc = hcs.makeDescription(); // default desc
-
-    horizCS.add(new GribHorizCoordSystem(hcs, rawGds, gdsHashObject, hcsName, desc, predefinedGridDefinition));
-  } */
 
   public void setFileMap(Map<Integer, MFile> fileMap) {
     this.fileMap = fileMap;
@@ -239,7 +202,7 @@ public class GribCollectionMutable implements Closeable {
   }
 
   // set from GribCollectionBuilderFromIndex.readFromIndex()
-  public File setOrgDirectory(String orgDirectory) {
+  File setOrgDirectory(String orgDirectory) {
     this.orgDirectory = orgDirectory;
     directory = new File(orgDirectory);
     if (!directory.exists()) {
@@ -278,7 +241,7 @@ public class GribCollectionMutable implements Closeable {
       groups = new ArrayList<>(from.groups.size());
     }
 
-    public GroupGC addGroupCopy(GroupGC from) {
+    GroupGC addGroupCopy(GroupGC from) {
       GroupGC g = new GroupGC(from);
       groups.add(g);
       return g;
@@ -377,11 +340,9 @@ public class GribCollectionMutable implements Closeable {
           if (old != null) {
             logger.error("GribCollectionMutable has duplicate variable hash {} == {}", vi, old);
           }
-          //System.out.printf("%s%n", vi.hashCode());
         }
       }
-      GribCollectionMutable.VariableIndex result = varMap.get(want);
-      return result;
+      return varMap.get(want);
     }
 
     private CalendarDateRange dateRange = null;
@@ -426,12 +387,13 @@ public class GribCollectionMutable implements Closeable {
     }
   }
 
-  public GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, GribTables customizer, int discipline, int center,
-                                    int subcenter, byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
+  GribCollectionMutable.VariableIndex makeVariableIndex(GroupGC g, GribTables customizer,
+      int discipline, int center,
+      int subcenter, byte[] rawPds, List<Integer> index, long recordsPos, int recordsLen) {
     return new VariableIndex(g, customizer, discipline, center, subcenter, rawPds, index, recordsPos, recordsLen);
   }
 
-  public VariableIndex makeVariableIndex(GroupGC group, GribCollectionMutable.VariableIndex from) {
+  VariableIndex makeVariableIndex(GroupGC group, GribCollectionMutable.VariableIndex from) {
     VariableIndex vip = new VariableIndex(group, from);
     group.addVariable(vip);
     return vip;
@@ -695,7 +657,7 @@ public class GribCollectionMutable implements Closeable {
     @Override
     public boolean equals(Object o) {
       if (this == o) return true;
-      if (o == null || !(o instanceof VariableIndex)) return false;
+      if (!(o instanceof VariableIndex)) return false;
 
       VariableIndex that = (VariableIndex) o;
       return gribVariable.equals(that.gribVariable);
@@ -737,10 +699,6 @@ public class GribCollectionMutable implements Closeable {
   public void showIndex(Formatter f) {
     f.format("Class (%s)%n", getClass().getName());
     f.format("%s%n%n", toString());
-
-    //f.format(" master runtime coordinate%n");
-    //masterRuntime.showCoords(f);
-    //f.format("%n");
 
     for (Dataset ds : datasets) {
       f.format("Dataset %s%n", ds.gctype);

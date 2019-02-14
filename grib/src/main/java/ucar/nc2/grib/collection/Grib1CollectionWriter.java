@@ -24,31 +24,33 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Grib1 specific ncx writer
+ * Grib1-specific ncx writer
  *
  * @author caron
  * @since 2/20/14
  */
 class Grib1CollectionWriter extends GribCollectionWriter {
+
   public static final String MAGIC_START = "Grib1Collectio2Index";  // was Grib1CollectionIndex
-  protected static final int minVersion = 1; // if less than this, force rewrite or at least do not read
+  static final int minVersion = 1; // if less than this, force rewrite or at least do not read
   protected static final int version = 3;    // increment this as needed, must be backwards compatible through minVersion
 
-  protected Grib1CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
-    super( dcm,  logger);
+  Grib1CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
+    super(dcm, logger);
   }
 
   static class Group implements GribCollectionBuilder.Group {
+
     final Grib1SectionGridDefinition gdss;
     final int hashCode;
     final CalendarDate runtime;
 
-    public List<Grib1CollectionBuilder.VariableBag> gribVars;
+    List<Grib1CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
 
     public Set<Long> runtimes = new HashSet<>();
     public List<Grib1Record> records = new ArrayList<>();
-    public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
+    Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
     Group(Grib1SectionGridDefinition gdss, int hashCode, CalendarDate runtime) {
       this.gdss = gdss;
@@ -82,15 +84,17 @@ class Grib1CollectionWriter extends GribCollectionWriter {
    */
 
   // indexFile is in the cache
-  boolean writeIndex(String name, File idxFile, CoordinateRuntime masterRuntime, List<Group> groups, List<MFile> files,
-                     GribCollectionImmutable.Type type, CalendarDateRange dateRange) throws IOException {
+  boolean writeIndex(String name, File idxFile, CoordinateRuntime masterRuntime, List<Group> groups,
+      List<MFile> files,
+      GribCollectionImmutable.Type type, CalendarDateRange dateRange) throws IOException {
     Grib1Record first = null; // take global metadata from here
     boolean deleteOnClose = false;
 
     if (idxFile.exists()) {
       RandomAccessFile.eject(idxFile.getPath());
-      if (!idxFile.delete())
+      if (!idxFile.delete()) {
         logger.warn(" gc1 cant delete index file {}", idxFile.getPath());
+      }
     }
     logger.debug(" createIndex for {}", idxFile.getPath());
 
@@ -109,7 +113,9 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       for (Group g : groups) {
         g.fileSet = new HashSet<>();
         for (Grib1CollectionBuilder.VariableBag vb : g.gribVars) {
-          if (first == null) first = vb.first;
+          if (first == null) {
+            first = vb.first;
+          }
           GribCollectionProto.SparseArray vr = writeSparseArray(vb, g.fileSet);
           byte[] b = vr.toByteArray();
           vb.pos = raf.getFilePointer();
@@ -118,11 +124,13 @@ class Grib1CollectionWriter extends GribCollectionWriter {
           countBytes += b.length;
           countRecords += vb.coordND.getSparseArray().countNotMissing();
         }
-        for (int index : g.fileSet) allFileSet.add(index);
+        allFileSet.addAll(g.fileSet);
       }
       long bytesPerRecord = countBytes / ((countRecords == 0) ? 1 : countRecords);
-      if (logger.isDebugEnabled())
-        logger.debug("  write RecordMaps: bytes = {} records = {} bytesPerRecord={}", countBytes, countRecords, bytesPerRecord);
+      if (logger.isDebugEnabled()) {
+        logger.debug("  write RecordMaps: bytes = {} records = {} bytesPerRecord={}", countBytes,
+            countRecords, bytesPerRecord);
+      }
 
       if (first == null) {
         deleteOnClose = true;
@@ -167,7 +175,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     }
      */
 
-      GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection.newBuilder();
+      GribCollectionProto.GribCollection.Builder indexBuilder = GribCollectionProto.GribCollection
+          .newBuilder();
       indexBuilder.setName(name);
       indexBuilder.setTopDir(dcm.getRoot());
       indexBuilder.setVersion(currentVersion);
@@ -186,12 +195,14 @@ class Grib1CollectionWriter extends GribCollectionWriter {
 
       indexBuilder.setMasterRuntime(writeCoordProto(masterRuntime));
 
-        //gds
-      for (Group g : groups)
-        indexBuilder.addGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
+      //gds
+      for (Group g : groups) {
+        indexBuilder
+            .addGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
+      }
 
       // the GC dataset
-      indexBuilder.addDataset( writeDatasetProto(type, groups));
+      indexBuilder.addDataset(writeDatasetProto(type, groups));
 
       // what about just storing first ??
       Grib1SectionProductDefinition pds = first.getPDSsection();
@@ -216,35 +227,39 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     } finally {
 
       // remove it on failure
-      if (deleteOnClose && !idxFile.delete())
+      if (deleteOnClose && !idxFile.delete()) {
         logger.error(" gc1 cant deleteOnClose index file {}", idxFile.getPath());
+      }
     }
   }
 
-    /*
-  message Record {
-    uint32 fileno = 1;               // which GRIB file ? key into GC.fileMap
-    uint64 pos = 2;                  // offset in GRIB file of the start of entire message
-    uint64 bmsPos = 3;               // use alternate bms if non-zero (grib2 only)
-    uint32 drsOffset = 4;            // offset of drs from pos (grib2 only)
-  }
+  /*
+message Record {
+  uint32 fileno = 1;               // which GRIB file ? key into GC.fileMap
+  uint64 pos = 2;                  // offset in GRIB file of the start of entire message
+  uint64 bmsPos = 3;               // use alternate bms if non-zero (grib2 only)
+  uint32 drsOffset = 4;            // offset of drs from pos (grib2 only)
+}
 
-  // SparseArray only at the GCs (MRC and SRC) not at the Partitions
-  // dont need SparseArray in memory until someone wants to read from the variable
-  message SparseArray {
-    repeated uint32 size = 2 [packed=true];     // multidim sizes = shape[]
-    repeated uint32 track = 3 [packed=true];    // 1-based index into record list, 0 == missing
-    repeated Record records = 4;                // List<Record>
-    uint32 ndups = 5;                           // duplicates found when creating
-  }
-   */
-  private GribCollectionProto.SparseArray writeSparseArray(Grib1CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
+// SparseArray only at the GCs (MRC and SRC) not at the Partitions
+// dont need SparseArray in memory until someone wants to read from the variable
+message SparseArray {
+  repeated uint32 size = 2 [packed=true];     // multidim sizes = shape[]
+  repeated uint32 track = 3 [packed=true];    // 1-based index into record list, 0 == missing
+  repeated Record records = 4;                // List<Record>
+  uint32 ndups = 5;                           // duplicates found when creating
+}
+ */
+  private GribCollectionProto.SparseArray writeSparseArray(Grib1CollectionBuilder.VariableBag vb,
+      Set<Integer> fileSet) {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
     SparseArray<Grib1Record> sa = vb.coordND.getSparseArray();
-    for (int size : sa.getShape())
+    for (int size : sa.getShape()) {
       b.addSize(size);
-    for (int track : sa.getTrack())
+    }
+    for (int track : sa.getTrack()) {
       b.addTrack(track);
+    }
 
     for (Grib1Record gr : sa.getContent()) {
       GribCollectionProto.Record.Builder br = GribCollectionProto.Record.newBuilder();
@@ -266,30 +281,33 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     Type type = 1;
     repeated Group groups = 2;
    */
-  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type, List<Group> groups) throws IOException {
+  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type,
+      List<Group> groups) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
-    GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
+    GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type
+        .valueOf(type.toString());
     b.setType(ptype);
 
-    for (Group group : groups)
-      b.addGroups( writeGroupProto(group));
+    for (Group group : groups) {
+      b.addGroups(writeGroupProto(group));
+    }
 
     return b.build();
   }
 
-    /*
-  message Group {
-    Gds gds = 1;                             // use this to build the HorizCoordSys
-    repeated Variable variables = 2;         // list of variables
-    repeated Coord coords = 3;               // list of coordinates
-    repeated int32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
-  }
-   */
-  protected GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
+  /*
+message Group {
+  Gds gds = 1;                             // use this to build the HorizCoordSys
+  repeated Variable variables = 2;         // list of variables
+  repeated Coord coords = 3;               // list of coordinates
+  repeated int32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
+}
+ */
+  private GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
-    b.setGds( writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
+    b.setGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));
 
     for (Grib1CollectionBuilder.VariableBag vbag : g.gribVars) {
       b.addVariables(writeVariableProto(vbag));
@@ -318,8 +336,9 @@ class Grib1CollectionWriter extends GribCollectionWriter {
       }
     }
 
-    for (Integer aFileSet : g.fileSet)
+    for (Integer aFileSet : g.fileSet) {
       b.addFileno(aFileSet);
+    }
 
     return b.build();
   }
@@ -345,7 +364,7 @@ class Grib1CollectionWriter extends GribCollectionWriter {
      repeated PartitionVariable partVariable = 100;
    }
    */
-  private GribCollectionProto.Variable writeVariableProto(Grib1CollectionBuilder.VariableBag vb) throws IOException {
+  private GribCollectionProto.Variable writeVariableProto(Grib1CollectionBuilder.VariableBag vb) {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
 
     b.setDiscipline(0);
@@ -354,8 +373,9 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     b.setRecordsPos(vb.pos);
     b.setRecordsLen(vb.length);
 
-    for (int idx : vb.coordIndex)
+    for (int idx : vb.coordIndex) {
       b.addCoordIdx(idx);
+    }
 
     // keep stats
     SparseArray sa = vb.coordND.getSparseArray();

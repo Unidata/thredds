@@ -21,7 +21,7 @@ import java.util.zip.Deflater;
  */
 public class GribData {
 
-  public static enum InterpolationMethod {none, cubic, linear}
+  public enum InterpolationMethod {none, cubic, linear}
 
 
   private static GribData.InterpolationMethod useInterpolationMethod = GribData.InterpolationMethod.linear; // default
@@ -37,23 +37,23 @@ public class GribData {
 
   public interface Bean {
 
-    public float[] readData() throws IOException;
+    float[] readData() throws IOException;
 
-    public int getNBits();
+    int getNBits();
 
-    public long getDataLength();
+    long getDataLength();
 
-    public long getMsgLength();
+    long getMsgLength();
 
-    public int getBinScale();
+    int getBinScale();
 
-    public int getDecScale();
+    int getDecScale();
 
-    public double getMinimum();
+    double getMinimum();
 
-    public double getMaximum();
+    double getMaximum();
 
-    public double getScale();
+    double getScale();
 
   }
 
@@ -320,11 +320,9 @@ public class GribData {
   }
 
   // only used by test code
-  private static byte[] buffer;  // LOOK optimize
   static public float[] uncompressScaled(byte[] bdata) throws IOException {
     throw new UnsupportedOperationException("bzip2 compression no longer supported.");
   }
-
 
   public static byte[] convertToBytes(float[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);

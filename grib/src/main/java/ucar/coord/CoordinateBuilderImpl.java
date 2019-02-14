@@ -14,8 +14,8 @@ import java.util.*;
  * @since 11/27/13
  */
 public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
-  protected Set<Object> valSet = new HashSet<>(100);
-  protected Map<Object, Integer> valMap;    // map of values to index in Coordinate
+  private Set<Object> valSet = new HashSet<>(100);
+  private Map<Object, Integer> valMap;    // map of values to index in Coordinate
   protected Coordinate coord;
 
   @Override
@@ -26,8 +26,7 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
 
   @Override
   public void addAll(Coordinate coord) {
-   for (Object val : coord.getValues())
-      valSet.add(val);
+    valSet.addAll(coord.getValues());
   }
 
   public void add(Object val) {
@@ -36,18 +35,17 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
 
   @Override
   public void addAll(List<Object> coords) {
-   for (Object val : coords)
-      valSet.add(val);
+    valSet.addAll(coords);
   }
 
   @Override
   public Coordinate finish() {
     List<Object> valList = new ArrayList<>(valSet.size());
-    for (Object off : valSet) valList.add(off);
+    valList.addAll(valSet);
     coord =  makeCoordinate(valList);
     valSet = null;
 
-    List<? extends Object> values = coord.getValues();
+    List<?> values = coord.getValues();
     if (values != null) {
       valMap = new HashMap<>(coord.getSize() * 2);
       for (int i = 0; i < values.size(); i++)
@@ -56,8 +54,7 @@ public abstract class CoordinateBuilderImpl<T> implements CoordinateBuilder<T> {
     return coord;
   }
 
-  // used by CoordinateND.makeSparseArray
-  // not used by CoordinateTime2D
+  // Used by CoordinateND.makeSparseArray; not used by CoordinateTime2D
   @Override
   public int getIndex(T gr) {
     Integer result =  valMap.get( extract(gr));

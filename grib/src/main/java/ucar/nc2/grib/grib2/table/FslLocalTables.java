@@ -63,9 +63,8 @@ public class FslLocalTables extends NcepLocalTables {
   // must override since we are subclassing NcepLocalTables
   @Override
   public List<GribTables.Parameter> getParameters() {
-    List<GribTables.Parameter> result = new ArrayList<>();
-    for (Grib2Parameter p : local.values()) result.add(p);
-    Collections.sort(result, new ParameterSort());
+    List<Parameter> result = new ArrayList<>(local.values());
+    result.sort(new ParameterSort());
     return result;
   }
 
@@ -111,34 +110,29 @@ public class FslLocalTables extends NcepLocalTables {
 
   @Override
   public String getLevelNameShort(int id) {
-    switch (id) {
-      case 200:
-        return "Entire_atmosphere";
-      default:
-        return super.getLevelNameShort(id);
+    if (id == 200) {
+      return "Entire_atmosphere";
     }
+    return super.getLevelNameShort(id);
   }
 
   @Override
 
   public String getLevelName(int id) {
-    switch (id) {
-      case 200:
-        return "Entire atmosphere layer";
-      default:
-        return super.getLevelName(id);
+    if (id == 200) {
+      return "Entire atmosphere layer";
     }
+    return super.getLevelName(id);
   }
 
   public String getStatisticNameShort(int id) {
-    switch (id) {
-      case 255:
-        return "Interval";
+    if (id == 255) {
+      return "Interval";
     }
     return super.getStatisticNameShort(id);
   }
 
-  protected void initLocalTable(Formatter f) {
+  private void initLocalTable(Formatter f) {
     if (grib2Table.getPath().equals(hrrrTable))
       local = readCsv(hrrrTable, f);
     else
@@ -173,13 +167,7 @@ public class FslLocalTables extends NcepLocalTables {
         if ((line.length() == 0) || line.startsWith("#")) continue;
         String[] flds = line.split(",");
 
-        /* System.out.printf("%d == ", flds.length);
-        for (String s : flds) System.out.printf("%s,", s.trim());
-        System.out.printf("%n"); */
-
-        // RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
         //RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
-
         String recordNumber = flds[0].trim();
         int tableNumber = Integer.parseInt(flds[1].trim());
         int disciplineNumber = Integer.parseInt(flds[2].trim());

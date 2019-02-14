@@ -31,7 +31,7 @@ public class VertCoord {
     }
 
     // sort by name
-    Collections.sort(temp, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+    temp.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
     // disambiguate names
     String lastName = null;
@@ -53,12 +53,6 @@ public class VertCoord {
   private final List<VertCoord.Level> coords;
   private final VertUnit unit;
   private final boolean isLayer;
-
-  /* public VertCoord(int code, List<VertCoord.Level> coords, boolean isLayer) {
-    this.coords = coords;
-    this.isLayer = isLayer;
-    this.unit = Grib2Utils.getLevelUnit(code);
-  }  */
 
   public VertCoord(List<VertCoord.Level> coords, VertUnit unit, boolean isLayer) {
     this.coords = coords;
@@ -162,12 +156,6 @@ public class VertCoord {
     final double mid;
     final boolean isLayer;
 
-    /* public Level(double value1, double value2) {
-      this.value1 = value1;
-      this.value2 = value2;
-      this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
-    } */
-
     public Level(double value1) {
       this.value1 = value1;
       this.value2 = GribNumbers.UNDEFINEDD;
@@ -196,11 +184,7 @@ public class VertCoord {
 
     @Override
     public int compareTo(Level o) {
-      if (mid < o.mid) return -1;
-      if (mid > o.mid) return 1;
-      return 0;
-      //int c1 = Double.compare(value2, o.value2);
-      //return (c1 == 0) ? Double.compare(value1, o.value1) : c1;
+      return Double.compare(mid, o.mid);
     }
 
     @Override

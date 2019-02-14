@@ -73,11 +73,11 @@ public class Grib2RecordScanner {
   //////////////////////////////////////////////////////////////////////////////
 
   private Map<Long, Grib2SectionGridDefinition> gdsMap = new HashMap<>();
-  private ucar.unidata.io.RandomAccessFile raf = null;
+  private ucar.unidata.io.RandomAccessFile raf;
 
   private byte[] header;
   private int badEndings = 0;
-  private long lastPos = 0;    // start scanning from here
+  private long lastPos;    // start scanning from here
 
   // deal with repeating sections - each becomes a Grib2Record
   private long repeatPos = -1;             // if > 0, we are in middle of repeating record
@@ -330,7 +330,7 @@ public class Grib2RecordScanner {
     return true;
   }
 
-  public static void main2(String[] args) throws IOException {
+  public static void main2(String[] args) {
     String filename = (args.length > 0 && args[0] != null) ? args[0] : "Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb";
     System.out.printf("Scan %s%n", filename);
 

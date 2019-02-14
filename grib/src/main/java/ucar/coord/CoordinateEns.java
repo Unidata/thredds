@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class CoordinateEns implements Coordinate {
-
   private final List<EnsCoord.Coord> ensSorted;
   private final int code;
   private String name ="ens";
@@ -45,7 +44,7 @@ public class CoordinateEns implements Coordinate {
   }
 
   @Override
-  public List<? extends Object> getValues() {
+  public List<?> getValues() {
     return ensSorted;
   }
 
@@ -58,21 +57,6 @@ public class CoordinateEns implements Coordinate {
   public Object getValue(int idx) {
     return ensSorted.get(idx);
   }
-
-  /*
-  public int getIndexByMember(double need) {
-    double bestDiff = Double.MAX_VALUE;
-    int bestIdx = 0;
-    for (int i = 0; i < ensSorted.size(); i++) {
-      EnsCoord.Coord coord = ensSorted.get(i);
-      double diff = Math.abs(need - coord.getEnsMember());
-      if (diff < bestDiff) {
-        bestDiff = diff;
-        bestIdx = i;
-      }
-    }
-    return bestIdx;
-  } */
 
   public int getIndexByMember(double need) {
     for (int i = 0; i < ensSorted.size(); i++) {
@@ -171,10 +155,6 @@ public class CoordinateEns implements Coordinate {
 
   //////////////////////////////////////////////////////////////
 
-  /* public CoordinateBuilder makeBuilder() {
-    return new Builder(code);
-  } */
-
   static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
 
@@ -215,8 +195,8 @@ public class CoordinateEns implements Coordinate {
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<EnsCoord.Coord> levelSorted = values.stream().map(val -> (EnsCoord.Coord) val).collect(Collectors.toList());
-      Collections.sort(levelSorted);
+      List<EnsCoord.Coord> levelSorted = values.stream().map(val -> (EnsCoord.Coord) val).sorted()
+          .collect(Collectors.toList());
       return new CoordinateEns(code, levelSorted);
     }
   }

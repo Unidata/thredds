@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Grib1 specific part of GribCollection
+ * Grib1-specific subclass of GribCollection.
  *
  * @author John
  * @since 9/5/11

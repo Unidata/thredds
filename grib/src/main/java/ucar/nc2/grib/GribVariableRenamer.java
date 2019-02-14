@@ -249,9 +249,7 @@ public class GribVariableRenamer {
   private List<VariableRenamerBean> readVariableRenameFile(String path) {
     java.util.List<VariableRenamerBean> beans = new ArrayList<VariableRenamerBean>(1000);
     if (debug) System.out.printf("reading table %s%n", path);
-    InputStream is = null;
-    try {
-      is = GribResourceReader.getInputStream(path);
+    try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.warn("Cant read file " + path);
         return null;
@@ -273,19 +271,9 @@ public class GribVariableRenamer {
       }
       return beans;
 
-    } catch (IOException ioe) {
+    } catch (IOException | JDOMException ioe) {
       ioe.printStackTrace();
       return null;
-
-    } catch (JDOMException e) {
-      e.printStackTrace();
-      return null;
-
-    } finally {
-      if (is != null) try {
-        is.close();
-      } catch (IOException e) {
-      }
     }
   }
 

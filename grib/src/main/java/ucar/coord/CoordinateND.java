@@ -11,7 +11,7 @@ import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**
- * N coordinates and a SparseArray that they track.
+ * N-dimensional coordinates and a SparseArray that tracks if data is available.
  *
  * @author caron
  * @since 11/27/13
@@ -22,7 +22,7 @@ public class CoordinateND<T> {
   private final List<Coordinate> coordinates; // result is orthogonal coordinates
   private final SparseArray<T> sa;            // indexes refer to coordinates
 
-  public CoordinateND( List<Coordinate> coordinates, SparseArray<T> sa) {
+  CoordinateND(List<Coordinate> coordinates, SparseArray<T> sa) {
     assert coordinates.size() == sa.getRank();
     this.coordinates = Collections.unmodifiableList(coordinates);
     this.sa = sa;
@@ -32,7 +32,7 @@ public class CoordinateND<T> {
     return coordinates;
   }
 
-  public int getNCoordinates() {
+  private int getNCoordinates() {
     return coordinates.size();
   }
 
@@ -50,7 +50,7 @@ public class CoordinateND<T> {
   ////////////////////
 
   public static class Builder<T> {
-    private List<CoordinateBuilder<T>> builders = new ArrayList<>();
+    private List<CoordinateBuilder<T>> builders;
     private List<Coordinate> coordb = new ArrayList<>();
 
     public Builder() {
@@ -78,7 +78,7 @@ public class CoordinateND<T> {
       return new CoordinateND<>(coordb, sa);
     }
 
-    public SparseArray<T> buildSparseArray(List<T> records, Formatter info) {
+    SparseArray<T> buildSparseArray(List<T> records, Formatter info) {
       int[] sizeArray = new int[coordb.size()];
       for (int i = 0; i < coordb.size(); i++) {
         Coordinate coord = coordb.get(i);
@@ -117,7 +117,7 @@ public class CoordinateND<T> {
      *
      * @param newCoords must have same list of Coordinates as prev, with possibly additional values.
      */
-    public CoordinateND<T> reindex(List<Coordinate> newCoords, CoordinateND<T> prev) {
+    CoordinateND<T> reindex(List<Coordinate> newCoords, CoordinateND<T> prev) {
       assert  newCoords.size() == prev.getNCoordinates();
 
       boolean has2Dcoord = false;
@@ -177,7 +177,7 @@ public class CoordinateND<T> {
 
     // every coord in prev must be in curr
     private static class IndexMap {
-      boolean identity = true;
+      boolean identity;
       int[] indexMap;
 
       IndexMap(Coordinate curr, Coordinate prev) {

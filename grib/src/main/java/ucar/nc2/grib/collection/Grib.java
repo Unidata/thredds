@@ -5,7 +5,7 @@
 package ucar.nc2.grib.collection;
 
 /**
- * Describe
+ * GRIB constants.
  *
  * @author caron
  * @since 2/23/2016.
@@ -30,7 +30,6 @@ public class Grib {
     debugIndexOnlyShow = debugFlag.isSet("Grib/indexOnlyShow");
     debugGbxIndexOnly = debugFlag.isSet("Grib/debugGbxIndexOnly");
   }
-
 
   // class not interface, per Bloch edition 2 item 19
   private Grib() {} // disable instantiation

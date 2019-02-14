@@ -25,7 +25,7 @@ public class Grib1SectionBitMap {
 
   private final long startingPosition;
 
-  public Grib1SectionBitMap(RandomAccessFile raf) throws IOException {
+  Grib1SectionBitMap(RandomAccessFile raf) throws IOException {
     startingPosition = raf.getFilePointer();
 
     // octets 1-3 (Length of section)
@@ -34,7 +34,7 @@ public class Grib1SectionBitMap {
     raf.seek(startingPosition + length);
   }
 
-  public Grib1SectionBitMap(long startingPosition) {
+  Grib1SectionBitMap(long startingPosition) {
     this.startingPosition = startingPosition;
   }
 
