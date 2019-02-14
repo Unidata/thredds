@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nullable;
 import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -32,7 +33,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   private static Map<Grib2Table.Id, Grib2Customizer> tables = new HashMap<>();
   private static Grib2Customizer wmoStandardTable = null;
 
-  public static Grib2Customizer factory(Grib2Record gr) throws IOException {
+  public static Grib2Customizer factory(Grib2Record gr) {
     Grib2SectionIdentification ids = gr.getId();
     Grib2Pds pds = gr.getPDS();
     return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version(), pds.getGenProcessId());
@@ -107,6 +108,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return CommonCodeTable.getSubCenterName(center_id, subcenter_id);
   }
 
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     return null;
   }
@@ -136,6 +138,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return timeUnitConverter.convertTimeUnit(timeUnit);
   }
 
+  @Nullable
   public CalendarDate getForecastDate(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     if (pds.isTimeInterval()) {
@@ -178,6 +181,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
    * @param gr Grib record
    * @return time interval in units of gr.getPDS().getTimeUnit()
    */
+  @Nullable
   public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
     // note  from Arthur Taylor (degrib):
     /* If there was a range I used:
@@ -269,6 +273,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
    * @param gr from this record
    * @return time interval in units of pds.getTimeUnit(), or null if not a time interval
    */
+  @Nullable
   public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
     TimeCoord.TinvDate tinvd = getForecastTimeInterval(gr);
     if (tinvd == null) return null;

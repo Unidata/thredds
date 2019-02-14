@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -245,16 +246,12 @@ public class GribVariableRenamer {
     else
       return readVariableRenameFile("resources/grib2/grib2VarMap.xml");
   }  
-  
+
+  @Nullable
   private List<VariableRenamerBean> readVariableRenameFile(String path) {
     java.util.List<VariableRenamerBean> beans = new ArrayList<VariableRenamerBean>(1000);
     if (debug) System.out.printf("reading table %s%n", path);
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.warn("Cant read file " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();

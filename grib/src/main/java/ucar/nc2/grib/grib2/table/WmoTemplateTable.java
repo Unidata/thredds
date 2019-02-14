@@ -4,6 +4,8 @@
  */
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -33,8 +35,8 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
       return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
     }
 
+    @Nullable
     String[] getElemNames() {
-
       if (this == GRIB2_20_0_0)
         return new String[]{"GRIB2_20_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
 
@@ -112,8 +114,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   public static GribTemplates readXml(Version version) throws IOException {
     try (InputStream ios = WmoCodeTable.class.getResourceAsStream(version.getResourceName())) {
       if (ios == null) {
-        System.out.printf("cant open %s%n", version.getResourceName());
-        return null;
+        throw new IOException("cant open WmoTemplateTable %s " + version.getResourceName());
       }
 
       org.jdom2.Document doc;
@@ -178,15 +179,11 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
 
-  // private static Map<String, WmoCodeTable> gribCodes;
-
   public static GribTemplates getWmoStandard() throws IOException {
     return readXml(standard);
   }
 
   ///////////////////////////////////////
-
-
   public String name, desc;
   public int m1, m2;
   public List<Field> flds = new ArrayList<>();
@@ -218,7 +215,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   @Override
-  public int compareTo(WmoTemplateTable o) {
+  public int compareTo(@Nonnull WmoTemplateTable o) {
     if (m1 == o.m1) return m2 - o.m2;
     else return m1 - o.m1;
   }
@@ -262,7 +259,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     }
 
     @Override
-    public int compareTo(Field o) {
+    public int compareTo(@Nonnull Field o) {
       return start - o.start;
     }
 
@@ -333,7 +330,11 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   public static void main(String[] arg) throws IOException {
-    List<WmoTemplateTable> tlist = readXml(standard).list;
+    GribTemplates templates = readXml(standard);
+    if (templates == null) {
+      return;
+    }
+    List<WmoTemplateTable> tlist = templates.list;
 
     for (WmoTemplateTable t : tlist) {
       System.out.printf("%n(%s) %s %n", t.name, t.desc);

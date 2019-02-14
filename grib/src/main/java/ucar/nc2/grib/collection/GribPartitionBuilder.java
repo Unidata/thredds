@@ -6,6 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
@@ -118,7 +119,6 @@ abstract class GribPartitionBuilder {
     PartitionCollectionMutable.Partition canon = result.getPartition(idx);
     logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
-    CalendarDateRange dateRangeAll = null;
     try (GribCollectionMutable gc = canon.makeGribCollection()) {  // LOOK open/close canonical partition
       if (gc == null)
         throw new IllegalStateException("canon.makeGribCollection failed on =" + result.showLocation() + " " + canon.getName() + "; errs=" + errlog);
@@ -127,10 +127,8 @@ abstract class GribPartitionBuilder {
       result.copyInfo(gc);
       result.isPartitionOfPartitions = (gc instanceof PartitionCollectionMutable);
 
-      if (dateRangeAll == null) dateRangeAll = gc.dateRange;
-      else dateRangeAll = dateRangeAll.extend(gc.dateRange);
+      result.dateRange = gc.dateRange;
     }
-    result.dateRange = dateRangeAll;
 
     // check consistency across vert and ens coords
     // create partitioned variables
@@ -180,6 +178,7 @@ abstract class GribPartitionBuilder {
     }
   }
 
+  @Nullable
   private PartitionCollectionMutable.Dataset makeDataset2D(Formatter f) throws IOException {
     FeatureCollectionConfig config = (FeatureCollectionConfig) partitionManager.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.gribConfig.intvFilter : null;

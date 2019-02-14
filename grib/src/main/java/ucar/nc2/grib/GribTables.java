@@ -5,6 +5,8 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
+
 /**
  * Abstraction of GribTable for Grib Collections.
  * Still figuring out what the minimal need is
@@ -14,16 +16,20 @@ package ucar.nc2.grib;
  */
 public interface GribTables {
 
+  @Nullable
   String getSubCenterName(int center, int subcenter);
 
   String getLevelNameShort(int code);
 
+  @Nullable
   GribStatType getStatType(int intvType);
 
   VertCoord.VertUnit getVertUnit(int code);
 
+  @Nullable
   String getGeneratingProcessName(int code);
 
+  @Nullable
   String getGeneratingProcessTypeName(int code);
 
   interface Parameter {
@@ -39,12 +45,14 @@ public interface GribTables {
 
     String getUnit();
 
+    @Nullable
     String getAbbrev();
 
     String getDescription();
 
     String getId();
 
+    @Nullable
     Float getFill();
 
     Float getMissing();

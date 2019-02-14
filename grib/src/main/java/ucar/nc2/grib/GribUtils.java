@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.unidata.util.StringUtil2;
@@ -67,6 +68,7 @@ public class GribUtils {
     return refDate.add(period.multiply(offset));
   }
 
+  @Nullable
   public static String cleanupUnits(String unit) {
     if (unit == null) return null;
     if (unit.equalsIgnoreCase("-")) unit = "";
@@ -84,6 +86,7 @@ public class GribUtils {
     return unit;
   }
 
+  @Nullable
   public static String cleanupDescription(String desc) {
     if (desc == null) return null;
     int pos = desc.indexOf("(see");
@@ -96,6 +99,7 @@ public class GribUtils {
     return sb.toString().trim();
   }
 
+  @Nullable
   public static String makeNameFromDescription(String desc) {
     if (desc == null) return null;
     int pos = desc.indexOf("(see");

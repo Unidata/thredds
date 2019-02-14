@@ -6,6 +6,8 @@
 package ucar.nc2.grib;
 
 import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -182,6 +184,7 @@ public class TimeCoord {
     return isInterval() ? intervals.size() : coords.size();
   }
 
+  @Nullable
   public String getTimeIntervalName() {
     if (!isInterval()) return null;
 
@@ -340,7 +343,7 @@ public class TimeCoord {
     }
 
     @Override
-    public int compareTo(Tinv o) {
+    public int compareTo(@Nonnull Tinv o) {
       int c1 = b2 - o.b2;
       return (c1 == 0) ? b1 - o.b1 : c1;
     }
@@ -410,7 +413,7 @@ public class TimeCoord {
       return result;
     }
 
-    public int compareTo(TinvDate that) {  // first compare start, then end
+    public int compareTo(@Nonnull TinvDate that) {  // first compare start, then end
       int c1 = start.compareTo(that.start);
       return (c1 == 0) ? end.compareTo(that.end) : c1;
     }

@@ -85,8 +85,6 @@ public class GempakLocalTables extends LocalTables {
     Map<Integer, Grib2Parameter> result = new HashMap<>(100);
 
     try (InputStream is = GribResourceReader.getInputStream(resourcePath)) {
-      if (is == null) throw new IllegalStateException("Cant find " + resourcePath);
-
       if (f != null) f.format("%s, %-20s, %-20s, %-20s%n", "id", "name", "units", "gname");
       TableParser parser = new TableParser("3i,7i,11i,15i,49,69,74,");
       parser.setComment("!");

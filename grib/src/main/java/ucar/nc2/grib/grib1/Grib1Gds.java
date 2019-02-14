@@ -51,9 +51,8 @@ import java.util.Formatter;
  */
 @Immutable
 public abstract class Grib1Gds {
-
   private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
-  public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
+  static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
 
   /*
   Code table 6 – Data representation type
@@ -582,8 +581,7 @@ public abstract class Grib1Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj
-          .latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 

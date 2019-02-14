@@ -38,7 +38,7 @@ public interface Coordinate {
   }
 
   List<?> getValues(); // get sorted list of values
-  Object getValue(int idx);  // get the ith value
+  Object getValue(int idx);  // get the ith value, throws IllegalArgumentExcpetion
   int getIndex(Object val);  // LOOK assumes the values are unique;
   int getSize();             // how many values ??
 

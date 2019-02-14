@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nonnull;
 import ucar.nc2.util.Misc;
 
 import javax.annotation.concurrent.Immutable;
@@ -98,7 +99,7 @@ public class EnsCoord  {
     }
 
     @Override
-    public int compareTo(Coord o) {
+    public int compareTo(@Nonnull Coord o) {
       int r = Misc.compare(code, o.code);
       if (r != 0) return r;
       return Misc.compare(ensMember, o.ensMember);

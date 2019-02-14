@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribStatType;
 
 /**
@@ -20,6 +21,7 @@ public class Grib1WmoTimeType {
    *
    * @return time unit statistical type
    */
+  @Nullable
   public static GribStatType getStatType(int timeRangeIndicator) {
     switch (timeRangeIndicator) {
       case 3:

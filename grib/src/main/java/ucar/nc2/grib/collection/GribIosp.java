@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import thredds.client.catalog.Catalog;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -58,6 +59,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   @Override
+  @Nullable
   public Object sendIospMessage(Object special) {
     if (special instanceof String) {
       String s = (String) special;
@@ -603,6 +605,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   // only for the 2d times
+  @Nullable
   private Array makeLazyTime1Darray(Variable v2, Time2Dinfo info) {
     int length = info.time1D.getSize();
     double[] data = new double[length];
@@ -911,6 +914,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));
   }
 
+  @Nullable
   private String searchCoord(Grib2Utils.LatLonCoordType type,
       List<GribCollectionImmutable.VariableIndex> list) {
     if (type == null) {
@@ -938,6 +942,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     return null;
   }
 
+  @Nullable
   private GribCollectionImmutable.VariableIndex searchCoord(
       List<GribCollectionImmutable.VariableIndex> list, int p) {
     for (GribCollectionImmutable.VariableIndex vindex : list) {

@@ -215,11 +215,12 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       int tuInRecord = pds.getTimeUnit();
       if (tuInRecord == code) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
+        if (intv == null) throw new IllegalStateException("CoordinateTimeIntv must have TimeIntervalOffset");
         tinv = new TimeCoord.Tinv(intv[0], intv[1]);
 
       } else {
-        // int unit = cust.convertTimeUnit(tu2);  // not used
         TimeCoord.TinvDate tinvd = cust.getForecastTimeInterval(gr); // converts to calendar date
+        if (tinvd == null) throw new IllegalStateException("CoordinateTimeIntv has no TinvDate");
         tinv = tinvd.convertReferenceDate(refDate, timeUnit);
       }
 

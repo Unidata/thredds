@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
@@ -239,6 +240,7 @@ public class Grib2Record {
   }
 
   // debugging - do not use
+  @Nullable
   public int[] readRawData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
@@ -251,6 +253,7 @@ public class Grib2Record {
   }
 
   // debugging - do not use
+  @Nullable
   public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 

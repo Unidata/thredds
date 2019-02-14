@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.unidata.util.StringUtil2;
@@ -93,32 +94,29 @@ public class NcepRfcTables extends NcepTables {
   }
 
     // order: num, name, desc, unit
+    @Nullable
   private static Map<Integer, String> readNwsoSubCenter(String path) {
     Map<Integer, String> result = new HashMap<>();
 
-    try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) return null;
-      try (BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
-        // rdg - added the 0 line length check to cover the case of blank lines at
-        //       the end of the parameter table file.
-        while (true) {
-          String line = br.readLine();
-          if (line == null) {
-            break;
-          }
-          if ((line.length() == 0) || line.startsWith("#")) {
-            continue;
-          }
-
-          StringBuilder lineb = new StringBuilder(line);
-          StringUtil2.remove(lineb, "'+,/");
-          String[] flds = lineb.toString().split("[:]");
-
-          int val = Integer.parseInt(flds[0].trim()); // must have a number
-          String name = flds[1].trim() + ": " + flds[2].trim();
-
-          result.put(val, name);
+    try (InputStream is = GribResourceReader.getInputStream(path);
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
+      while (true) {
+        String line = br.readLine();
+        if (line == null) {
+          break;
         }
+        if ((line.length() == 0) || line.startsWith("#")) {
+          continue;
+        }
+
+        StringBuilder lineb = new StringBuilder(line);
+        StringUtil2.remove(lineb, "'+,/");
+        String[] flds = lineb.toString().split("[:]");
+
+        int val = Integer.parseInt(flds[0].trim()); // must have a number
+        String name = flds[1].trim() + ": " + flds[2].trim();
+
+        result.put(val, name);
       }
       return Collections.unmodifiableMap(result);  // all at once - thread safe
 
@@ -126,6 +124,5 @@ public class NcepRfcTables extends NcepTables {
       logger.warn("An error occurred in Grib1Tables while trying to open the table " + path + " : " + ioError);
       return null;
     }
-
   }
 }

@@ -250,8 +250,7 @@ public class Grib1RecordScanner {
       // skip this record
       // lastPos = is.getEndPos() + 20;  cant use is.getEndPos(), may be bad
       lastPos += 20;  // skip over the "GRIB" of this message
-      if (hasNext()) // search forward for another one
-      {
+      if (hasNext()) { // search forward for another one
         return next();
       }
 
@@ -260,13 +259,12 @@ public class Grib1RecordScanner {
       log.warn("Bad Grib1 record in file {}, skipping pos={}", raf.getLocation(), pos);
       // t.printStackTrace();
       lastPos += 20; // skip over the "GRIB"
-      if (hasNext()) // search forward for another one
-      {
+      if (hasNext()) { // search forward for another one
         return next();
       }
     }
 
-    return null; // last record was incomplete
+    throw new IOException("last record was incomplete");
   }
 
   private boolean checkEnding(long ending) throws IOException {

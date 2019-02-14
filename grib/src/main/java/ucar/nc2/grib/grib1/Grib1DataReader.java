@@ -90,16 +90,12 @@ public class Grib1DataReader {
     boolean isGridPointData = !GribNumbers.testBitIsSet(info.flag, 1);
     boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
 
-    if (isGridPointData && isSimplePacking) {
-      return readSimplePacking(raf, bitmap, info);
+    if (!isGridPointData) {
+      logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing for {}", raf.getLocation());
+      throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
     }
 
-    if (isGridPointData && !isSimplePacking) {
-      return readExtendedComplexPacking(raf, bitmap, info);
-    }
-
-    logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing for {}", raf.getLocation());
-    throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
+    return isSimplePacking ? readSimplePacking(raf, bitmap, info) : readExtendedComplexPacking(raf, bitmap, info);
   }
 
     /*  From WMO Manual on Codes  I-2 bi - 5
@@ -117,8 +113,6 @@ public class Grib1DataReader {
 
     boolean isConstant = (info.numberOfBits == 0);
     int unusedbits = info.flag & 15;
-
-    // *** read values *******************************************************
 
     double pow10 = Math.pow(10.0, -decimalScale);
     float ref = (float) (pow10 * info.referenceValue);

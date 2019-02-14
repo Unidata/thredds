@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.util.Format;
@@ -17,10 +18,6 @@ import java.util.zip.CRC32;
 /**
  * Abstract superclass for GRIB2 PDS handling.
  * Inner classes are specific to each template.
- *
- * To add a new template:
- *  1) add Grib2PdsXX class
- *  2)
  *
  * @author caron
  * @since 3/28/11
@@ -37,6 +34,7 @@ public abstract class Grib2Pds {
    * @param input   raw bytes
    * @return Grib2Pds or null on error
    */
+  @Nullable
   public static Grib2Pds factory(int template, byte[] input) {
     switch (template) {
       case 0:
@@ -102,8 +100,8 @@ public abstract class Grib2Pds {
   }
 
   final float[] getExtraCoordinates() {
-    int n =  getExtraCoordinatesCount();
-    if (n == 0) return null;
+    int n = getExtraCoordinatesCount();
+    if (n == 0) return new float[0];
     float[] result = new float[n];
     int count = templateLength() + 1;
     for (int i=0; i<n; i++) {
@@ -1579,7 +1577,7 @@ public abstract class Grib2Pds {
 
   // translate 7 byte time into CalendarDate
   // null means use refTime
- protected CalendarDate calcTime(int startIndex) {
+  protected CalendarDate calcTime(int startIndex) {
 
     int year = GribNumbers.int2(getOctet(startIndex++), getOctet(startIndex++));
     int month = getOctet(startIndex++);
@@ -1589,8 +1587,8 @@ public abstract class Grib2Pds {
     int second = getOctet(startIndex++);
 
      // LOOK: is this cruft or official ?
-     if ((year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0))
-       return null;
+     //if ((year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0))
+     //  return null;
 
    // href.t00z.prob.f36.grib2
      if (hour > 23) {

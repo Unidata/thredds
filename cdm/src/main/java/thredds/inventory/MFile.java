@@ -6,6 +6,7 @@
 package thredds.inventory;
 
 import java.io.IOException;
+import javax.annotation.Nullable;
 
 /**
  * An abstraction for java.io.File / java.nio.file.Path
@@ -51,6 +52,6 @@ public interface MFile extends Comparable<MFile> {
   int compareTo(MFile o);
 
   // does not survive serialization ??
-  Object getAuxInfo();
+  @Nullable Object getAuxInfo();
   void setAuxInfo(Object info);
 }

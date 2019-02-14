@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
@@ -57,6 +58,7 @@ public class Grib2RecordScanner {
    * @param raf             from this RandomAccessFile
    * @param drsPos          Grib2SectionDataRepresentation starts here
    */
+  @Nullable
   public static Grib2Record findRecordByDrspos(RandomAccessFile raf, long drsPos) throws IOException {
     long pos = Math.max(0, drsPos- (20*1000)); // go back 20K
     Grib2RecordScanner scan = new Grib2RecordScanner(raf, pos);
@@ -229,7 +231,7 @@ public class Grib2RecordScanner {
         return next();
     }
 
-    return null; // last record was incomplete
+    throw new IOException("last record was incomplete");
   }
 
   // return true if got another repeat out of this record

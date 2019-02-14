@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.*;
 import ucar.nc2.constants.DataFormatType;
@@ -36,6 +37,7 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   @Override
+  @Nullable
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
                                                          Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
@@ -58,6 +60,7 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   @Override
+  @Nullable
   public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {
@@ -82,6 +85,7 @@ public class Grib1Collection extends GribCollectionImmutable {
   }
 
   @Override
+  @Nullable
   public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename, FeatureCollectionConfig gribConfig,
                                                      Formatter errlog, org.slf4j.Logger logger) throws IOException {
     if (filename == null) {

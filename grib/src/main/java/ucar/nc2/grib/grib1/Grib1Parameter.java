@@ -125,11 +125,12 @@ public class Grib1Parameter implements GribTables.Parameter {
   }
 
   private String setName(String name) {
-    if (name == null) return null;
+    if (name == null) name = "";
     return StringUtil2.replace(name, ' ', "_"); // replace blanks
   }
 
   private String setDescription(String description) {
+    if (description == null) description = "";
     return GribUtils.cleanupDescription(description);
   }
 

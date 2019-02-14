@@ -5,6 +5,7 @@
 package ucar.nc2.grib;
 
 import java.io.*;
+import javax.annotation.Nullable;
 /*
  * Static methods to read resource files.
  *
@@ -35,7 +36,7 @@ public class GribResourceReader {
       return new FileInputStream(f);
 
     // give up
-    return null;
+    throw new FileNotFoundException("Cant find resource "+resourceName);
   }
 
 }

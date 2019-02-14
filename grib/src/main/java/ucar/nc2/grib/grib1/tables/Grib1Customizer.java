@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -88,6 +89,7 @@ public class Grib1Customizer implements GribTables {
     return null;
   }
 
+  @Nullable
   public String getSubCenterName(int subcenter) {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
@@ -105,6 +107,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   // code table 5
+  @Nullable
   public String getTimeTypeName(int timeRangeIndicator) {
     if (timeRangeIndicator < 0) return null;
     return Grib1ParamTime.getTimeTypeName(timeRangeIndicator);
@@ -196,13 +199,9 @@ public class Grib1Customizer implements GribTables {
     return result;
   }
 
+  @Nullable
   protected synchronized Map<Integer, GribLevelType> readTable3(String path) {
     try (InputStream is =  GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find Table 3 = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -222,12 +221,7 @@ public class Grib1Customizer implements GribTables {
       }
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
-
-    } catch (IOException ioe) {
-      logger.error("Cant read NcepLevelTypes = " + path, ioe);
-      return null;
-
-    } catch (JDOMException e) {
+    } catch (IOException | JDOMException e) {
       logger.error("Cant parse NcepLevelTypes = " + path, e);
       return null;
     }

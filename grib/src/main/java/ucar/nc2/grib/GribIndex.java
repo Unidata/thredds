@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
@@ -57,6 +58,7 @@ public abstract class GribIndex {
     return gribCC;
   }
 
+  @Nullable
   public static GribIndex open(boolean isGrib1, MFile mfile) throws IOException {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();

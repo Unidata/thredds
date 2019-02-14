@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.Formatter;
 import java.util.zip.Deflater;
 
 /**
- * Abstraction for handling Grib data
+ * Abstraction for handling Grib 1 & 2 data in a uniform way.
  *
  * @author John
  * @since 9/1/2014
@@ -22,7 +23,6 @@ import java.util.zip.Deflater;
 public class GribData {
 
   public enum InterpolationMethod {none, cubic, linear}
-
 
   private static GribData.InterpolationMethod useInterpolationMethod = GribData.InterpolationMethod.linear; // default
 
@@ -33,7 +33,6 @@ public class GribData {
   public static void setInterpolationMethod(GribData.InterpolationMethod interpolationMethod) {
     useInterpolationMethod = interpolationMethod;
   }
-
 
   public interface Bean {
 
@@ -147,6 +146,7 @@ public class GribData {
     }
   }
 
+  @Nullable
   public static byte[] calcScaleOffset(GribData.Bean bean1, Formatter f) {
     float[] data;
     try {
@@ -271,6 +271,7 @@ public class GribData {
     return scaledData;
   }
 
+  @Nullable
   public static byte[] compressScaled(GribData.Bean bean) throws IOException {
     float[] data = bean.readData();
     int npoints = data.length;

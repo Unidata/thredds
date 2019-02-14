@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
@@ -242,7 +243,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     @Override
-    public int compareTo(Partition o) {
+    public int compareTo(@Nonnull Partition o) {
       if (partitionDate != null && o.partitionDate != null)
         return partitionDate.compareTo(o.partitionDate);
       return name.compareTo(o.name);

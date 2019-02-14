@@ -5,6 +5,8 @@
 
 package ucar.coord;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -360,6 +362,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
    * Only if isTimeInterval.
    * @return time interval name or MIXED_INTERVALS
    */
+  @Nullable
   public String getTimeIntervalName() {
     if (!isTimeInterval) return null;
 
@@ -448,11 +451,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CalendarDate runDate = runtime.getRuntimeDate(runIdx);
     if (isTimeInterval) {
       TimeCoord.Tinv valIntv = (TimeCoord.Tinv) time.getValue(timeIdx);
-      if (valIntv == null) return null;
+      if (valIntv == null) throw new IllegalArgumentException();
       return new Time2D(runDate, null, valIntv);
     } else {
       Integer val = (Integer) time.getValue(timeIdx);
-      if (val == null) return null;
+      if (val == null) throw new IllegalArgumentException();
       return new Time2D(runDate, val, null);
     }
   }
@@ -793,7 +796,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     }
 
     @Override
-    public int compareTo(Time2D o) {
+    public int compareTo(@Nonnull Time2D o) {
       int r = Long.compare(refDate, o.refDate);
       if (r == 0) {
         if (time != null) r = time.compareTo(o.time);

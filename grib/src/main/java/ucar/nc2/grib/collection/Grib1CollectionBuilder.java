@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
@@ -190,7 +191,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
 
     @Override
-    public int compareTo(VariableBag o) {
+    public int compareTo(@Nonnull VariableBag o) {
       return Grib1Utils.extractParameterCode(first).compareTo(Grib1Utils.extractParameterCode(o.first));
     }
 
