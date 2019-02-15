@@ -5,7 +5,6 @@
 package ucar.nc2.grib;
 
 import java.io.*;
-import javax.annotation.Nullable;
 /*
  * Static methods to read resource files.
  *

@@ -403,6 +403,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
 
   private static final char badDash = 173;
   private String filter(String s) {
+    if (s == null) return "";
     return StringUtil2.replace(s, badDash, "-");
   }
 
