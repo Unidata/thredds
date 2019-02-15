@@ -179,7 +179,7 @@ public class Grib1Index extends GribIndex {
 
       Grib1IndexProto.Grib1Index.Builder rootBuilder = Grib1IndexProto.Grib1Index.newBuilder();
       rootBuilder.setFilename(filename);
-      rootBuilder.setProtoVersion(grib1index_proto_version);
+      rootBuilder.setVersion(grib1index_proto_version);
 
       if (dataRaf == null)  { // open if dataRaf not already open
         raf = RandomAccessFile.acquire(filename);

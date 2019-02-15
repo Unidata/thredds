@@ -123,7 +123,7 @@ public class Grib2Index extends GribIndex {
 
       Grib2IndexProto.Grib2Index proto = Grib2IndexProto.Grib2Index.parseFrom(m);
       if (debug) System.out.printf("%s for %s%n", proto.getFilename(), filename);
-      int version = proto.getProtoVersion();
+      int version = proto.getVersion();
       boolean isProto3 = version >= 3;
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
@@ -211,7 +211,7 @@ public class Grib2Index extends GribIndex {
 
       Grib2IndexProto.Grib2Index.Builder rootBuilder = Grib2IndexProto.Grib2Index.newBuilder();
       rootBuilder.setFilename(filename);
-      rootBuilder.setProtoVersion(grib2index_proto_version);
+      rootBuilder.setVersion(grib2index_proto_version);
 
       if (dataRaf == null)  {
         raf = RandomAccessFile.acquire(filename);
