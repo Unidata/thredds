@@ -21,7 +21,7 @@ import java.util.*;
  */
 
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
 
   public static final Version standard = Version.GRIB2_20_0_0;
 
@@ -42,7 +42,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     }
   }
 
-  static public class GribTemplates {
+  public static class GribTemplates {
     public List<WmoTemplateTable> list;
     public Map<String, WmoTemplateTable> map; // key is "disc.cat"
 
@@ -109,7 +109,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
   */
 
-  static public GribTemplates readXml(Version version) throws IOException {
+  public static GribTemplates readXml(Version version) throws IOException {
     try (InputStream ios = WmoCodeTable.class.getResourceAsStream(version.getResourceName())) {
       if (ios == null) {
         System.out.printf("cant open %s%n", version.getResourceName());
@@ -178,7 +178,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
 
-  // static private Map<String, WmoCodeTable> gribCodes;
+  // private static Map<String, WmoCodeTable> gribCodes;
 
   public static GribTemplates getWmoStandard() throws IOException {
     return readXml(standard);
@@ -284,7 +284,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     }
   }
 
-  static private final Map<String, String> convertMap = new HashMap<>();
+  private static final Map<String, String> convertMap = new HashMap<>();
   static {
     // gds
     convertMap.put("Source of Grid Definition (see code table 3.0)", "3.0");

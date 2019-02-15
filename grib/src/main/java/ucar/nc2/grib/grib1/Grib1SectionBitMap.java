@@ -21,7 +21,7 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib1SectionBitMap {
-  static private final Logger logger = LoggerFactory.getLogger(Grib1SectionBitMap.class);
+  private static final Logger logger = LoggerFactory.getLogger(Grib1SectionBitMap.class);
 
   private final long startingPosition;
 

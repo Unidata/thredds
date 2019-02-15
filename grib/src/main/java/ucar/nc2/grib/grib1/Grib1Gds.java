@@ -52,7 +52,7 @@ import java.util.Formatter;
 @Immutable
 public abstract class Grib1Gds {
 
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
   public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
 
   /*
@@ -200,15 +200,15 @@ public abstract class Grib1Gds {
       1     Resolved u- and v-components of vector quantities relative to the defined grid in the direction of increasing x and y (or i and j) coordinates respectively
    6–8 0    Reserved – set to zero */
 
-  static private boolean getDirectionIncrementsGiven(int resolution) {
+  private static boolean getDirectionIncrementsGiven(int resolution) {
     return ((resolution & GribNumbers.bitmask[0]) != 0);
   }
 
-  static private boolean getEarthShapeIsSpherical(int resolution) {
+  private static boolean getEarthShapeIsSpherical(int resolution) {
     return ((resolution & GribNumbers.bitmask[1]) == 0);
   }
 
-  static private boolean getUVisReletive(int resolution) {
+  private static boolean getUVisReletive(int resolution) {
     return ((resolution & GribNumbers.bitmask[1]) != 0);
   }
 

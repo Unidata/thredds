@@ -34,8 +34,8 @@ import java.util.*;
  */
 @Deprecated
 public class GribVariableRenamer {
-  static private boolean debug = false;
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribVariableRenamer.class);
+  private static boolean debug = false;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribVariableRenamer.class);
 
   private static HashMap<String, Renamer> map1;
   private static HashMap<String, Renamer> map2;

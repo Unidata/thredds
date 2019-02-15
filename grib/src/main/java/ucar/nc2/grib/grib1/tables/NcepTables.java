@@ -29,7 +29,7 @@ import java.util.Map;
  * @since 1/13/12
  */
 public class NcepTables extends Grib1Customizer {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
   private static Map<Integer, String> genProcessMap;  // shared by all instances
   private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
@@ -199,7 +199,7 @@ public class NcepTables extends Grib1Customizer {
   }
 
   // public so can be called from Grib2
-  static public Map<Integer, String> getNcepGenProcess() {
+  public static Map<Integer, String> getNcepGenProcess() {
     if (genProcessMap != null) return genProcessMap;
     String path = "resources/grib1/ncep/ncepTableA.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {

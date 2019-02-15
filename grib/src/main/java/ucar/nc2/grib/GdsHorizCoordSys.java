@@ -22,7 +22,7 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public class GdsHorizCoordSys {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GdsHorizCoordSys.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GdsHorizCoordSys.class);
 
   private final String name;
   public final int template, gdsNumberPoints, scanMode;

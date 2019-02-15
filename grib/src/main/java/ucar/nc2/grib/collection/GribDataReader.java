@@ -38,7 +38,7 @@ import java.util.*;
  */
 @Immutable
 public abstract class GribDataReader {
-  static private final Logger logger = LoggerFactory.getLogger(GribDataReader.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribDataReader.class);
 
 
   public static GribDataReader factory(GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
@@ -52,9 +52,9 @@ public abstract class GribDataReader {
   protected abstract void show(RandomAccessFile rafData, long dataPos) throws IOException;
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  static public GribCollectionImmutable.Record currentDataRecord;
-  static public GribDataValidator validator;
-  static public String currentDataRafFilename;
+  public static GribCollectionImmutable.Record currentDataRecord;
+  public static GribDataValidator validator;
+  public static String currentDataRafFilename;
   static boolean show = false;   // debug
 
   protected final GribCollectionImmutable gribCollection;
@@ -309,7 +309,7 @@ public abstract class GribDataReader {
     }
   }
 
-  static public class DataRecord implements Comparable<DataRecord> {
+  public static class DataRecord implements Comparable<DataRecord> {
     int resultIndex; // index into the result array
     GribCollectionImmutable.Record record;
     GdsHorizCoordSys hcs;

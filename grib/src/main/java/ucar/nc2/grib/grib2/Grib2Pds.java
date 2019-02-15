@@ -37,7 +37,7 @@ public abstract class Grib2Pds {
    * @param input   raw bytes
    * @return Grib2Pds or null on error
    */
-  static public Grib2Pds factory(int template, byte[] input) {
+  public static Grib2Pds factory(int template, byte[] input) {
     switch (template) {
       case 0:
         return new Grib2Pds0(input);
@@ -376,7 +376,7 @@ public abstract class Grib2Pds {
    * Product definition template 4.0 - analysis or forecast at a horizontal level or in a horizontal layer at a point in time
    * Many other templates (1-14) have same fields in sameplaces, so can use this as the superclass.
    */
-  static private class Grib2Pds0 extends Grib2Pds {
+  private static class Grib2Pds0 extends Grib2Pds {
 
     Grib2Pds0(byte[] input) {
       super(input);
@@ -488,7 +488,7 @@ public abstract class Grib2Pds {
    * Product definition template 4.15 - average, accumulation, extreme values, or other statistically-processed
    * values over a spatial area at a horizontal level or in a horizontal layer at a point in time
    */
-  static private class Grib2Pds15 extends Grib2Pds0 implements PdsSpatialInterval {
+  private static class Grib2Pds15 extends Grib2Pds0 implements PdsSpatialInterval {
     Grib2Pds15(byte[] input) {
       super(input);
     }
@@ -516,7 +516,7 @@ public abstract class Grib2Pds {
    * Product definition template 4.1 -
    * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time
    */
-  static private class Grib2Pds1 extends Grib2Pds0 implements PdsEnsemble {
+  private static class Grib2Pds1 extends Grib2Pds0 implements PdsEnsemble {
     Grib2Pds1(byte[] input) {
       super(input);
     }
@@ -566,7 +566,7 @@ public abstract class Grib2Pds {
    * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous
    * or non-continuous time interval
    */
-  static private class Grib2Pds11 extends Grib2Pds1 implements PdsInterval {
+  private static class Grib2Pds11 extends Grib2Pds1 implements PdsInterval {
 
     Grib2Pds11(byte[] input) {
       super(input);
@@ -630,7 +630,7 @@ public abstract class Grib2Pds {
    * individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous
    * or non-continuous time interval
    */
-  static private class Grib2Pds61 extends Grib2Pds1 implements PdsInterval{
+  private static class Grib2Pds61 extends Grib2Pds1 implements PdsInterval{
 
     Grib2Pds61(byte[] input) {
       super(input);
@@ -703,7 +703,7 @@ public abstract class Grib2Pds {
    * Product definition template 4.2 -
    * derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer at a point in time
    */
-  static private class Grib2Pds2 extends Grib2Pds0 implements PdsEnsembleDerived {
+  private static class Grib2Pds2 extends Grib2Pds0 implements PdsEnsembleDerived {
 
     Grib2Pds2(byte[] input) {
       super(input);
@@ -745,7 +745,7 @@ public abstract class Grib2Pds {
    * derived forecasts based on all ensemble members at a horizontal level or in a horizontal layer in a
    * continuous or non-continuous time interval
    */
-  static private class Grib2Pds12 extends Grib2Pds2 implements PdsInterval {
+  private static class Grib2Pds12 extends Grib2Pds2 implements PdsInterval {
     //CalendarDate endInterval; // Date msecs
     //int ft;
 
@@ -835,7 +835,7 @@ public abstract class Grib2Pds {
    44–47 Scaled value of upper limit
    Note: Hours greater than 65534 will be coded as 65534
    */
-  static private class Grib2Pds5 extends Grib2Pds0 implements PdsProbability {
+  private static class Grib2Pds5 extends Grib2Pds0 implements PdsProbability {
 
     Grib2Pds5(byte[] input) {
       super(input);
@@ -938,34 +938,37 @@ public abstract class Grib2Pds {
      */
     @Override
     public String getProbabilityName() {
-      Formatter f = new Formatter();
-      int scale1 = Math.max(1, getOctet(38));
-      int scale2 = Math.max(1, getOctet(43));
+      String result;
+      try (Formatter f = new Formatter()) {
+        int scale1 = Math.max(1, getOctet(38));
+        int scale2 = Math.max(1, getOctet(43));
 
-      switch (getProbabilityType()) {
-        case 0:
-          f.format("below_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
-          break;
-        case 1:
-          f.format("above_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
-          break;
-        case 2:
-          if (getProbabilityLowerLimit() == getProbabilityUpperLimit())
-            f.format("equals_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
-          else
-            f.format("between_%s_and_%s", Format.dfrac(getProbabilityLowerLimit(), scale1), Format.dfrac(getProbabilityUpperLimit(), scale2));
-          break;
-        case 3:
-          f.format("above_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
-          break;
-        case 4:
-          f.format("below_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
-          break;
-        default:
-          f.format("UknownProbType=%d", getProbabilityType());
+        switch (getProbabilityType()) {
+          case 0:
+            f.format("below_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
+            break;
+          case 1:
+            f.format("above_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
+            break;
+          case 2:
+            if (getProbabilityLowerLimit() == getProbabilityUpperLimit()) {
+              f.format("equals_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
+            } else {
+              f.format("between_%s_and_%s", Format.dfrac(getProbabilityLowerLimit(), scale1),
+                  Format.dfrac(getProbabilityUpperLimit(), scale2));
+            }
+            break;
+          case 3:
+            f.format("above_%s", Format.dfrac(getProbabilityLowerLimit(), scale1));
+            break;
+          case 4:
+            f.format("below_%s", Format.dfrac(getProbabilityUpperLimit(), scale2));
+            break;
+          default:
+            f.format("UknownProbType=%d", getProbabilityType());
+        }
+        result = StringUtil2.removeFromEnd(f.toString(), '0');
       }
-
-      String result = StringUtil2.removeFromEnd(f.toString(), '0');
       return StringUtil2.removeFromEnd(result, '.');
     }
 
@@ -1031,7 +1034,7 @@ public abstract class Grib2Pds {
    the type of time increment (one of octets 46, 58, 70, ...). For all but the innermost (last) time range, the next inner range is
    then processed using these reference and forecast times as the initial reference and forecast times.
    */
-  static private class Grib2Pds9 extends Grib2Pds5 implements PdsInterval {
+  private static class Grib2Pds9 extends Grib2Pds5 implements PdsInterval {
     // CalendarDate endInterval; // Date msecs
     //int ft;
 
@@ -1105,7 +1108,7 @@ public abstract class Grib2Pds {
    * Average, accumulation, extreme values or other statistically processed values at a horizontal level or in a
    * horizontal layer in a continuous or non-continuous time interval
    */
-  static private class Grib2Pds8 extends Grib2Pds0 implements PdsInterval {
+  private static class Grib2Pds8 extends Grib2Pds0 implements PdsInterval {
     // CalendarDate endInterval; // Date msecs
 
     Grib2Pds8(byte[] input) {
@@ -1179,7 +1182,7 @@ public abstract class Grib2Pds {
    * Product definition template 4.6 -
    * percentile forecasts at a horizontal level or in a horizontal layer at a point in time
    */
-  static private class Grib2Pds6 extends Grib2Pds0 implements PdsPercentile {
+  private static class Grib2Pds6 extends Grib2Pds0 implements PdsPercentile {
 
     Grib2Pds6(byte[] input) {
       super(input);
@@ -1210,7 +1213,7 @@ public abstract class Grib2Pds {
    * Product definition template 4.10 -
    * percentile forecasts at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval
    */
-  static private class Grib2Pds10 extends Grib2Pds6 implements PdsInterval {
+  private static class Grib2Pds10 extends Grib2Pds6 implements PdsInterval {
     // CalendarDate endInterval;
 
     Grib2Pds10(byte[] input) {
@@ -1270,7 +1273,7 @@ public abstract class Grib2Pds {
    *
    * @deprecated  4.31 should be used
    */
-  static private class Grib2Pds30 extends Grib2Pds {
+  private static class Grib2Pds30 extends Grib2Pds {
 
     Grib2Pds30(byte[] input) {
       super(input);
@@ -1335,7 +1338,7 @@ public abstract class Grib2Pds {
     }
   }
 
-  static public class SatelliteBand {
+  public static class SatelliteBand {
     public int series; // Satellite series of band nb (code table defined by originating/generating centre)
     public int number; // Satellite numbers of band nb (code table defined by originating/generating centre)
     public int instrumentType; // Instrument types of band nb (code table defined by originating/generating centre)
@@ -1347,7 +1350,7 @@ public abstract class Grib2Pds {
     /**
      * Product definition template 4.31 - satellite product
      */
-    static private class Grib2Pds31 extends Grib2Pds {
+    private static class Grib2Pds31 extends Grib2Pds {
 
         static int octetsPerBand = 11;
 
@@ -1446,7 +1449,7 @@ public abstract class Grib2Pds {
   Note: Hours greater than 65534 will be coded as 65534.
   */
 
-  static private class Grib2Pds48 extends Grib2Pds implements PdsAerosol {
+  private static class Grib2Pds48 extends Grib2Pds implements PdsAerosol {
 
     Grib2Pds48(byte[] input) {
       super(input);
@@ -1624,7 +1627,7 @@ public abstract class Grib2Pds {
     return result;
   }
 
-  static public class TimeInterval {
+  public static class TimeInterval {
     public int statProcessType; // (code table 4.10) Statistical process used to calculate the processed field from the field at each time increment during the time range
     public int timeIncrementType;  // (code table 4.11) Type of time increment between successive fields used in the statistical processing<
     public int timeRangeUnit;  // (code table 4.4) Indicator of unit of time for time range over which statistical processing is done

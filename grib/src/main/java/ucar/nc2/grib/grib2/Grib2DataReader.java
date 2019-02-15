@@ -22,7 +22,7 @@ import java.io.IOException;
  * @since 4/2/11
  */
 public class Grib2DataReader {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2DataReader.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2DataReader.class);
 
   private static final int[] bitsmv1 = new int[31];
   static {
@@ -92,8 +92,8 @@ public class Grib2DataReader {
     return data;
   }
 
-  static private final boolean staticMissingValueInUse = true;
-  static private final float staticMissingValue = Float.NaN;
+  private static final boolean staticMissingValueInUse = true;
+  private static final float staticMissingValue = Float.NaN;
 
   float getMissingValue(Grib2Drs.Type2 gdrs) {
     int mvm = gdrs.missingValueManagement;

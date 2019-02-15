@@ -21,14 +21,14 @@ import java.util.Map;
  * @since 3/28/11
  */
 public class Grib2RecordScanner {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
-  static private final boolean debug = false;
-  static private final boolean debugRepeat = false;
-  static private final boolean debugEnding = false;
-  static private final int maxScan = 16000;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
+  private static final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
+  private static final boolean debug = false;
+  private static final boolean debugRepeat = false;
+  private static final boolean debugEnding = false;
+  private static final int maxScan = 16000;
 
-  static public boolean isValidFile(RandomAccessFile raf) {
+  public static boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
       boolean found = raf.searchForward(matcher, maxScan); // look in first 16K

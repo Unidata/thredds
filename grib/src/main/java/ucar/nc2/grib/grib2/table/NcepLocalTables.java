@@ -27,8 +27,8 @@ import java.util.jar.JarFile;
  * @since 4/3/11
  */
 public class NcepLocalTables extends LocalTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  static private final String defaultResourcePath = "resources/grib2/ncep/v21.0.0/";
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
+  private static final String defaultResourcePath = "resources/grib2/ncep/v21.0.0/";
   private static NcepLocalTables single;
 
   public static Grib2Customizer getCust(Grib2Table table) {
@@ -73,8 +73,11 @@ public class NcepLocalTables extends LocalTables {
     if (dirURL.getProtocol().equals("jar")) {
             /* A JAR path */
       String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-      JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-      Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+      Enumeration<JarEntry> entries;
+      try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+        //gives ALL entries in jar
+        entries = jar.entries();
+      }
       Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
       while (entries.hasMoreElements()) {
         String name = entries.nextElement().getName();

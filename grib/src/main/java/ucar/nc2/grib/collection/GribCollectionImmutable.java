@@ -51,7 +51,7 @@ import java.util.*;
  */
 @Immutable
 public abstract class GribCollectionImmutable implements Closeable, FileCacheable {
-  static private final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
   public static int countGC; // debug
 
   public enum Type {    // must match with GribCollectionProto.Dataset.Type
@@ -323,7 +323,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final List<VariableIndex> variList;
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
-    final private Map<VariableIndex, VariableIndex> varMap;
+    private final Map<VariableIndex, VariableIndex> varMap;
 
     public GroupGC(Dataset ds, GribCollectionMutable.GroupGC gc) {
       this.ds = ds;
@@ -735,14 +735,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public String toStringFrom() {
-      Formatter sb = new Formatter();
-      sb.format("Variable {%d-%d-%d", info.discipline, info.category, info.parameter);
-      sb.format(", levelType=%d", info.levelType);
-      sb.format(", intvType=%d", info.intvType);
-      sb.format(", nrecords=%d", nrecords);
-      sb.format(", ndups=%d", ndups);
-      sb.format(", nmiss=%d}", nmissing);
-      return sb.toString();
+      try (Formatter sb = new Formatter()) {
+        sb.format("Variable {%d-%d-%d", info.discipline, info.category, info.parameter);
+        sb.format(", levelType=%d", info.levelType);
+        sb.format(", intvType=%d", info.intvType);
+        sb.format(", nrecords=%d", nrecords);
+        sb.format(", ndups=%d", ndups);
+        sb.format(", nmiss=%d}", nmissing);
+        return sb.toString();
+      }
     }
 
     @Override

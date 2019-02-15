@@ -56,14 +56,17 @@ public class EnsCoord  {
 
   @Override
   public String toString() {
-    Formatter out = new Formatter();
-    for (Coord lev : coords) out.format("%s, ", lev.toString());
-    return out.toString();
+    try (Formatter out = new Formatter()) {
+      for (Coord lev : coords) {
+        out.format("%s, ", lev.toString());
+      }
+      return out.toString();
+    }
   }
 
   ///////////////////////////////////////////////////////
 
-  static public int findCoord(List<EnsCoord> ensCoords, EnsCoord want) {
+  public static int findCoord(List<EnsCoord> ensCoords, EnsCoord want) {
     if (want == null) return -1;
 
     for (int i = 0; i < ensCoords.size(); i++) {
@@ -77,7 +80,7 @@ public class EnsCoord  {
   }
 
   @Immutable
-  static public class Coord implements Comparable<Coord> {
+  public static class Coord implements Comparable<Coord> {
     final int code;
     final int ensMember;
 
@@ -118,9 +121,10 @@ public class EnsCoord  {
     }
 
     public String toString() {
-      Formatter out = new Formatter();
-      out.format("(%d %d)", code, ensMember);
-      return out.toString();
+      try (Formatter out = new Formatter()) {
+        out.format("(%d %d)", code, ensMember);
+        return out.toString();
+      }
     }
   }
 

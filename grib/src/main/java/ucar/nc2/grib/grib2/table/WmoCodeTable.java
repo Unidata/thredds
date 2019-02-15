@@ -24,8 +24,8 @@ import java.util.*;
  */
 
 public class WmoCodeTable implements Comparable<WmoCodeTable> {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
-  static public final Version standard = Version.GRIB2_20_0_0;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
+  public static final Version standard = Version.GRIB2_20_0_0;
 
   public enum Version {
     // GRIB2_10_0_1, GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0, GRIB2_13_0_1;
@@ -128,7 +128,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   @Immutable
-  static public class WmoTables {
+  public static class WmoTables {
     public final String name;
     public final List<WmoCodeTable> list;
     public final Map<String, WmoCodeTable> map;  // key is table.getTableId()
@@ -140,7 +140,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     }
   }
 
-  static public WmoTables readGribCodes(Version version) throws IOException {
+  public static WmoTables readGribCodes(Version version) throws IOException {
     String[] elems = version.getElemNames();
     if (elems == null)
       throw new IllegalStateException("unknown version = "+version);
@@ -301,15 +301,17 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   private String makeTableNo() {
-    Formatter f = new Formatter();
-    f.format("%d.%d",m1, m2);
+    try (Formatter f = new Formatter()) {
+      f.format("%d.%d", m1, m2);
 
-    if (discipline >= 0)
-      f.format(".%d",discipline);
-    if (category >= 0)
-      f.format(".%d",category);
-
-    return f.toString();
+      if (discipline >= 0) {
+        f.format(".%d", discipline);
+      }
+      if (category >= 0) {
+        f.format(".%d", category);
+      }
+      return f.toString();
+    }
   }
 
   public String getTableName() {

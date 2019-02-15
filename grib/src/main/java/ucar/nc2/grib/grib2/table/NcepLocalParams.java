@@ -23,7 +23,7 @@ import java.util.*;
  * @since 1/9/12
  */
 class NcepLocalParams {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepLocalParams.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepLocalParams.class);
   private static final boolean debugOpen = false;
   private static final boolean debug = false;
 

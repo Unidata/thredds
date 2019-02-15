@@ -149,7 +149,7 @@ public class TimeCoordUnion extends TimeCoord {
     return true;
   }
 
-  static public int findUnique(List<TimeCoordUnion> timeIndexList, TimeCoordUnion want) {
+  public static int findUnique(List<TimeCoordUnion> timeIndexList, TimeCoordUnion want) {
     if (want == null) return -1;
 
     for (int i = 0; i < timeIndexList.size(); i++) {
@@ -161,7 +161,7 @@ public class TimeCoordUnion extends TimeCoord {
     return timeIndexList.size() - 1;
   }
 
-  static public class Val implements Comparable<Val> {
+  public static class Val implements Comparable<Val> {
     TimeCoord.Tinv tinv; // not available on read
     CalendarDate val;// not available on read
 

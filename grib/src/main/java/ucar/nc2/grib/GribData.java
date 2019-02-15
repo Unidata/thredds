@@ -271,7 +271,7 @@ public class GribData {
     return scaledData;
   }
 
-  static public byte[] compressScaled(GribData.Bean bean) throws IOException {
+  public static byte[] compressScaled(GribData.Bean bean) throws IOException {
     float[] data = bean.readData();
     int npoints = data.length;
 
@@ -320,7 +320,7 @@ public class GribData {
   }
 
   // only used by test code
-  static public float[] uncompressScaled(byte[] bdata) throws IOException {
+  public static float[] uncompressScaled(byte[] bdata) throws IOException {
     throw new UnsupportedOperationException("bzip2 compression no longer supported.");
   }
 
@@ -330,13 +330,13 @@ public class GribData {
     return bb.array();
   }
 
-  static public byte[] convertToBytes(int[] data) {
+  public static byte[] convertToBytes(int[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
     for (int val : data) bb.putInt(val);
     return bb.array();
   }
 
-  static public double entropy(byte[] data) {
+  public static double entropy(byte[] data) {
     int[] p = new int[256];
 
     // count occurrences
@@ -357,7 +357,7 @@ public class GribData {
     return (sum == 0) ? 0.0 : -sum;
   }
 
-  static public double entropy(int nbits, int[] data) {
+  public static double entropy(int nbits, int[] data) {
     if (data == null) return 0.0;
 
     int n = (int) Math.pow(2, nbits);

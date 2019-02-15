@@ -31,7 +31,7 @@ import java.util.Arrays;
  */
 public class Grib2DataReader2 {
 
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
       .getLogger(Grib2DataReader2.class);
 
   private static final int[] bitsmv1 = new int[31];
@@ -151,8 +151,8 @@ public class Grib2DataReader2 {
     return getData40raw(raf, (Grib2Drs.Type40) gdrs);
   }
 
-  static private final boolean staticMissingValueInUse = true;
-  static private final float staticMissingValue = Float.NaN;
+  private static final boolean staticMissingValueInUse = true;
+  private static final float staticMissingValue = Float.NaN;
 
   private float getMissingValue(Grib2Drs.Type2 gdrs) {
     int mvm = gdrs.missingValueManagement;

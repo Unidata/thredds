@@ -306,7 +306,7 @@ public class Grib2Record {
    * @return data as float[] array
    * @throws IOException on read error
    */
-  static public float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine) throws IOException {
+  public static float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine) throws IOException {
     raf.seek(drsPos);
     Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(raf);
     Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);

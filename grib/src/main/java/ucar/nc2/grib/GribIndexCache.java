@@ -18,13 +18,13 @@ import java.io.File;
  */
 public class GribIndexCache {
 
-  static private DiskCache2 diskCache;
+  private static DiskCache2 diskCache;
 
-  static synchronized public void setDiskCache2(DiskCache2 dc) {
+  public static synchronized void setDiskCache2(DiskCache2 dc) {
     diskCache = dc;
   }
 
-  static synchronized public DiskCache2 getDiskCache2() {
+  public static synchronized DiskCache2 getDiskCache2() {
     if (diskCache == null)
       diskCache = DiskCache2.getDefault();
     return diskCache;
@@ -36,7 +36,7 @@ public class GribIndexCache {
    * @param fileLocation full path of original index filename
    * @return File, possibly in cache, may or may not exist
    */
-  static public File getFileOrCache(String fileLocation) {
+  public static File getFileOrCache(String fileLocation) {
     File result = getExistingFileOrCache(fileLocation);
     if (result != null) return result;
     return getDiskCache2().getFile(fileLocation);
@@ -48,7 +48,7 @@ public class GribIndexCache {
    * @param fileLocation full path of original index filename
    * @return existing file if you can find it, else null
    */
-  static public File getExistingFileOrCache(String fileLocation) {
+  public static File getExistingFileOrCache(String fileLocation) {
     File result =  getDiskCache2().getExistingFileOrCache(fileLocation);
     if (result == null && Grib.debugGbxIndexOnly && fileLocation.endsWith(".gbx9.ncx4")) { // might create only from gbx9 for debugging
       int length = fileLocation.length();

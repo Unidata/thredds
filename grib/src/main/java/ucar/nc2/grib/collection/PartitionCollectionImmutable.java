@@ -41,8 +41,8 @@ import java.util.List;
  * @since 11/10/2014
  */
 public abstract class PartitionCollectionImmutable extends GribCollectionImmutable {
-  static private final Logger logger = LoggerFactory.getLogger(PartitionCollectionImmutable.class);
-  static public int countPC;   // debug
+  private static final Logger logger = LoggerFactory.getLogger(PartitionCollectionImmutable.class);
+  public static int countPC;   // debug
 
   static final ucar.nc2.util.cache.FileFactory partitionCollectionFactory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {

@@ -204,16 +204,21 @@ public class TimeCoord {
 
   @Override
   public String toString() {
-    Formatter out = new Formatter();
-    out.format(" type=%-10s calendarPeriod=%s runDate= %-26s%n    ", getType(), calendarPeriod, runDate);
-    if (isInterval())
-      for (Tinv tinv : intervals) out.format("%s, ", tinv);
-    else {
-      for (Integer val : coords) out.format("%d, ", val);
-      out.format(" units (%s) since %s", calendarPeriod, runDate);
+    try (Formatter out = new Formatter()) {
+      out.format(" type=%-10s calendarPeriod=%s runDate= %-26s%n    ", getType(), calendarPeriod,
+          runDate);
+      if (isInterval()) {
+        for (Tinv tinv : intervals) {
+          out.format("%s, ", tinv);
+        }
+      } else {
+        for (Integer val : coords) {
+          out.format("%d, ", val);
+        }
+        out.format(" units (%s) since %s", calendarPeriod, runDate);
+      }
+      return out.toString();
     }
-
-    return out.toString();
   }
 
   /**
@@ -276,7 +281,7 @@ public class TimeCoord {
    * @param want       find equivilent
    * @return return equivilent or make a new one and add to timeCoords
    */
-  static public int findCoord(List<TimeCoord> timeCoords, TimeCoord want) {
+  public static int findCoord(List<TimeCoord> timeCoords, TimeCoord want) {
     if (want == null) return -1;
 
     for (int i = 0; i < timeCoords.size(); i++) {
@@ -342,9 +347,7 @@ public class TimeCoord {
 
     @Override
     public String toString() {
-      Formatter out = new Formatter();
-      out.format("(%d,%d)", b1, b2);
-      return out.toString();
+      return String.format("(%d,%d)", b1, b2);
     }
 
     public Tinv offset(double offset) {
@@ -414,9 +417,7 @@ public class TimeCoord {
 
     @Override
     public String toString() {
-      Formatter out = new Formatter();
-      out.format("(%s,%s)", start, end);
-      return out.toString();
+      return String.format("(%s,%s)", start, end);
     }
 
   }

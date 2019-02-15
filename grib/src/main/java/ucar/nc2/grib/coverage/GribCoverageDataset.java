@@ -46,9 +46,9 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
-  static private final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
 
-  static public Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
+  public static Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
     GribCollectionImmutable gc;
 
     if (endpoint.startsWith("file:"))
