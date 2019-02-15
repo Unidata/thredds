@@ -172,14 +172,6 @@ public class Grib2RecordScanner {
       else
         gdsMap.put(crc, gds);
 
-      // look for duplicate pds
-      /* crc = pds.calcCRC();
-      Grib2SectionProductDefinition pdsCached = pdsMap.get(crc);
-      if (pdsCached != null)
-        pds = pdsCached;
-      else
-        pdsMap.put(crc, pds); */
-
       // check to see if we have a repeating record
       long pos = raf.getFilePointer();
       long ending = is.getEndPos();

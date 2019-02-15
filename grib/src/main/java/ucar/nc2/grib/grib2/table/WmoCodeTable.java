@@ -78,6 +78,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   </GRIB2_14_0_0_CodeFlag_en>
   */
 
+  @Nullable
   public static TableEntry getParameterEntry(int discipline, int category, int value) {
     return getTableEntry(getId(discipline, category), value);
   }

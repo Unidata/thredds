@@ -95,15 +95,18 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return s;
   }
 
+  @Nullable
   public String getTableValue(String tableName, int code) {
     return WmoCodeTable.getTableValue(tableName, code);
   }
 
+  @Nullable
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }
 
   @Override
+  @Nullable
   public String getSubCenterName(int center_id, int subcenter_id) {
     return CommonCodeTable.getSubCenterName(center_id, subcenter_id);
   }
@@ -113,10 +116,12 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return null;
   }
 
+  @Nullable
   public String getGeneratingProcessTypeName(int genProcess) {
     return getTableValue("4.3", genProcess);
   }
 
+  @Nullable
   public String getCategory(int discipline, int category) {
     return getTableValue("4.1." + discipline, category);
   }
@@ -178,7 +183,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   /**
    * Get the time interval in units of gr.getPDS().getTimeUnit()
    *
-   * @param gr Grib record
+   * @param gr Grib record, must have pds that is a  time interval.
    * @return time interval in units of gr.getPDS().getTimeUnit()
    */
   @Nullable
@@ -289,7 +294,10 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   public String getStatisticName(int id) {
-    return getTableValue("4.10", id); // WMO
+    String result = getTableValue("4.10", id); // WMO
+    if (result == null)
+      result = getStatisticNameShort(id);
+    return result;
   }
 
   public String getStatisticNameShort(int id) {
@@ -298,6 +306,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   @Override
+  @Nullable
   public GribStatType getStatType(int grib2StatCode) {
     return GribStatType.getStatTypeFromGrib2(grib2StatCode);
   }
@@ -429,6 +438,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     return vunit.isVerticalCoordinate();
   }
 
+  @Nullable
   public String getLevelName(int id) {
     return getTableValue("4.5", id);
   }
@@ -511,6 +521,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
   /////////////////////////////////////////////////////
   // debugging
+  @Nullable
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }

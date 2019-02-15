@@ -91,8 +91,8 @@ public class Grib1DataReader {
     boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
 
     if (!isGridPointData) {
-      logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing for {}", raf.getLocation());
-      throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
+      logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data for {}", raf.getLocation());
+      throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data");
     }
 
     return isSimplePacking ? readSimplePacking(raf, bitmap, info) : readExtendedComplexPacking(raf, bitmap, info);

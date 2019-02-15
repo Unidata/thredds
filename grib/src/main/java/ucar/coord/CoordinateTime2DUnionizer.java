@@ -5,6 +5,7 @@
 package ucar.coord;
 
 import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
@@ -135,6 +136,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   // check if the coordinate with maximum # values includes all of the time in the collection
   // if so, we can store time2D as orthogonal
   // LOOK not right I think, consider one coordinate every 6 hours, and one every 24; should not be merged.
+  @Nullable
   static CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
     CoordinateTimeAbstract maxCoord = null;
     Set<Object> result = new HashSet<>(100);

@@ -281,7 +281,6 @@ public class Grib1ParamTables {
           tables.add(table);
         }
       }
-
       return true;
     }
 
@@ -297,7 +296,7 @@ public class Grib1ParamTables {
 
     }
 
-    public Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
+    Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
       // look in hash table
       int key = makeKey(center, subcenter, tableVersion);
       Grib1ParamTableReader table = tableMap.get(key);
@@ -338,7 +337,6 @@ public class Grib1ParamTables {
           return table;
         }
       }
-
       return null;
     }
 
@@ -366,7 +364,6 @@ public class Grib1ParamTables {
           }
         }
       }
-
       return null;
     }
 

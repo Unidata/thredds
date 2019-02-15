@@ -80,6 +80,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     return null;
   }
@@ -95,6 +96,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   @Override
+  @Nullable
   public String getSubCenterName(int center, int subcenter) {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
@@ -107,13 +109,12 @@ public class Grib1Customizer implements GribTables {
   }
 
   // code table 5
-  @Nullable
   public String getTimeTypeName(int timeRangeIndicator) {
-    if (timeRangeIndicator < 0) return null;
     return Grib1ParamTime.getTimeTypeName(timeRangeIndicator);
   }
 
   @Override
+  @Nullable
   public GribStatType getStatType(int timeRangeIndicator) {
     return Grib1WmoTimeType.getStatType(timeRangeIndicator);
   }

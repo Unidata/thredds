@@ -19,7 +19,7 @@ public class Grib1WmoTimeType {
   /**
    * The time unit statistical type, derived from code table 5)
    *
-   * @return time unit statistical type
+   * @return time unit statistical type, or null if unknown.
    */
   @Nullable
   public static GribStatType getStatType(int timeRangeIndicator) {

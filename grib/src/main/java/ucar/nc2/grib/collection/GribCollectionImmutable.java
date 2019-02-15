@@ -805,7 +805,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
       // derived from pds
       final int category, parameter, levelType, intvType, ensDerivedType, probType;
-      final String intvName;  // eg "mixed intervals, 3 Hour, etc"
+      final @Nullable String intvName;  // eg "mixed intervals, 3 Hour, etc"
       final String probabilityName;
       final boolean isLayer, isEnsemble;
       final int genProcessType;

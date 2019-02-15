@@ -33,6 +33,7 @@ public class NcepRfcTables extends NcepTables {
   }
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     switch (genProcess) {
       case 150:
@@ -85,6 +86,7 @@ public class NcepRfcTables extends NcepTables {
   * These are not in the WMO common tables like NCEP's are
   */
   @Override
+  @Nullable
   public String getSubCenterName(int subcenter) {
     if (nwsoSubCenter == null)
       nwsoSubCenter = readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
@@ -93,8 +95,8 @@ public class NcepRfcTables extends NcepTables {
     return nwsoSubCenter.get(subcenter);
   }
 
-    // order: num, name, desc, unit
-    @Nullable
+  // order: num, name, desc, unit
+  @Nullable
   private static Map<Integer, String> readNwsoSubCenter(String path) {
     Map<Integer, String> result = new HashMap<>();
 

@@ -605,7 +605,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   // only for the 2d times
-  @Nullable
   private Array makeLazyTime1Darray(Variable v2, Time2Dinfo info) {
     int length = info.time1D.getSize();
     double[] data = new double[length];
@@ -631,8 +630,10 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
           data[count++] = masterOffsets.get(masterIdx - 1);
         }
         return Array.factory(DataType.DOUBLE, v2.getShape(), data);
+
+      default:
+        throw new IllegalStateException("makeLazyTime1Darray must be reftime or timeAuxRef");
     }
-    return null;
   }
 
   // only for the 2d times
@@ -915,8 +916,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   @Nullable
-  private String searchCoord(Grib2Utils.LatLonCoordType type,
-      List<GribCollectionImmutable.VariableIndex> list) {
+  private String searchCoord(Grib2Utils.LatLonCoordType type, List<GribCollectionImmutable.VariableIndex> list) {
     if (type == null) {
       return null;
     }
@@ -924,18 +924,18 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     GribCollectionImmutable.VariableIndex lat, lon;
     switch (type) {
       case U:
-        lat = searchCoord(list, 198);
-        lon = searchCoord(list, 199);
+        lat = findParameter(list, 198);
+        lon = findParameter(list, 199);
         return (lat != null && lon != null) ? makeVariableName(lat) + " " + makeVariableName(lon)
             : null;
       case V:
-        lat = searchCoord(list, 200);
-        lon = searchCoord(list, 201);
+        lat = findParameter(list, 200);
+        lon = findParameter(list, 201);
         return (lat != null && lon != null) ? makeVariableName(lat) + " " + makeVariableName(lon)
             : null;
       case P:
-        lat = searchCoord(list, 202);
-        lon = searchCoord(list, 203);
+        lat = findParameter(list, 202);
+        lon = findParameter(list, 203);
         return (lat != null && lon != null) ? makeVariableName(lat) + "  " + makeVariableName(lon)
             : null;
     }
@@ -943,11 +943,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   }
 
   @Nullable
-  private GribCollectionImmutable.VariableIndex searchCoord(
-      List<GribCollectionImmutable.VariableIndex> list, int p) {
+  private GribCollectionImmutable.VariableIndex findParameter(List<GribCollectionImmutable.VariableIndex> list, int p) {
     for (GribCollectionImmutable.VariableIndex vindex : list) {
-      if ((vindex.getDiscipline() == 0) && (vindex.getCategory() == 2) && (vindex.getParameter()
-          == p)) {
+      if ((vindex.getDiscipline() == 0) && (vindex.getCategory() == 2) && (vindex.getParameter() == p)) {
         return vindex;
       }
     }
@@ -984,7 +982,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     if (v2.getSPobject() instanceof Time2Dinfo) {
       Time2Dinfo info = (Time2Dinfo) v2.getSPobject();
       Array data = makeLazyCoordinateData(v2, info);
-      assert data != null;
       Section sectionFilled = Section.fill(section, v2.getShape());
       return data.sectionNoReduce(sectionFilled.getRanges());
     }

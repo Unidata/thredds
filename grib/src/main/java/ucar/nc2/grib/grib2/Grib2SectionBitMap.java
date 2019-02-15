@@ -100,14 +100,6 @@ public class Grib2SectionBitMap {
     raf.readFully(data);
 
     return data;
-
-    /* create new bit map when it is first asked for
-    boolean[] bitmap = new boolean[numberOfPoints];
-    int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
-    for (int i = 0; i < bitmap.length; i++) {
-      bitmap[i] = (data[i / 8] & bitmask[i % 8]) != 0;
-    }
-    return bitmap; */
   }
 
   @Override

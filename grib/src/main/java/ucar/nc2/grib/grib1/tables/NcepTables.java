@@ -191,6 +191,7 @@ public class NcepTables extends Grib1Customizer {
   //////////////////////////////////////////// genProcess
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null)
         genProcessMap = getNcepGenProcess();

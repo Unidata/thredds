@@ -133,7 +133,6 @@ public class Grib2Utils {
     }
   }
 
-
   /**
    * This looks for snippets in the variable name/desc as to whether it wants U, V, or P 2D coordinates
    * @param desc variable name/desc

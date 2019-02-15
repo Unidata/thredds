@@ -7,7 +7,6 @@ package ucar.nc2.grib;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -174,9 +173,8 @@ public class TimeCoord {
     return isInterval() ? intervals.size() : coords.size();
   }
 
-  @Nullable
-  public String getTimeIntervalName() {
-    if (!isInterval()) return null;
+  public String makeTimeIntervalName() {
+    if (!isInterval()) return "not a time interval";
 
     // are they the same length ?
     int firstValue = -1;
@@ -376,10 +374,9 @@ public class TimeCoord {
       return end;
     }
 
-    // what is the offset in units of timeUnit from the given reference date
-    @Nullable
+    // Calculate the offset in units of timeUnit from the given reference date?
     public Tinv convertReferenceDate(CalendarDate refDate, CalendarPeriod timeUnit) {
-      if (timeUnit == null) return null;
+      if (timeUnit == null) throw new IllegalArgumentException("null time unit");
       int startOffset = timeUnit.getOffset(refDate, start);   // LOOK wrong - not dealing with value ??
       int endOffset = timeUnit.getOffset(refDate, end);
       return new TimeCoord.Tinv(startOffset, endOffset);

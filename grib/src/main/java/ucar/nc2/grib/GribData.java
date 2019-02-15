@@ -146,14 +146,15 @@ public class GribData {
     }
   }
 
-  @Nullable
-  public static byte[] calcScaleOffset(GribData.Bean bean1, Formatter f) {
+  /** This reports how well different compression schemes would work on the specific data.
+   * Should be renamed */
+  public static void calcScaleOffset(GribData.Bean bean1, Formatter f) {
     float[] data;
     try {
       data = bean1.readData();
     } catch (IOException e) {
       f.format("IOException %s", e.getMessage());
-      return null;
+      return;
     }
     int npoints = data.length;
 
@@ -265,10 +266,6 @@ public class GribData {
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
     f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
     f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
-
-    //////////////////////////////////////////////////////////////
-
-    return scaledData;
   }
 
   @Nullable
