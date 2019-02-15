@@ -8,6 +8,9 @@
        Pass on the "title" element we received from ncssGrid, along with the "script" element we define below. */-->
 <head th:fragment="head(title)" th:replace="templates/commonFragments :: head(~{::title}, ~{::script}, ~{::link})">
 
+  <!-- if webcrawler finds this page (say, from sitemap.xml), tell it to not follow the links -->
+  <meta name="robots" content="nofollow" />
+
   <link rel="stylesheet" type="text/css" href="https://necolas.github.io/normalize.css/8.0.0/normalize.css">
   <link rel="stylesheet" type="text/css" href="../../style/ncss/main.css" th:href="@{/style/ncss/main.css}">
   <link rel="stylesheet" type="text/css" href="../../style/ncss/layout.css" th:href="@{/style/ncss/layout.css}">
