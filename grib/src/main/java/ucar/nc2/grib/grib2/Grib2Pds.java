@@ -1586,9 +1586,8 @@ public abstract class Grib2Pds {
     int minute = getOctet(startIndex++);
     int second = getOctet(startIndex++);
 
-     // LOOK: is this cruft or official ?
-     //if ((year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0))
-     //  return null;
+    if ((year == 0) && (month == 0) && (day == 0) && (hour == 0) && (minute == 0) && (second == 0))
+      return CalendarDate.UNKNOWN;
 
    // href.t00z.prob.f36.grib2
      if (hour > 23) {

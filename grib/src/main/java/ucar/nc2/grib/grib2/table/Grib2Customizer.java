@@ -225,7 +225,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     // End of Interval as date
     CalendarDate EI = pdsIntv.getIntervalTimeEnd();
-    if (EI == null) {  // all values were set to zero   LOOK guessing!
+    if (EI == CalendarDate.UNKNOWN) {  // all values were set to zero   LOOK guessing!
       return new TimeCoord.TinvDate(gr.getReferenceDate(), period);
     } else {
       return new TimeCoord.TinvDate(period, EI);
