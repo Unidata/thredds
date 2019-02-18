@@ -17,6 +17,7 @@ import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.unidata.util.StringUtil2;
@@ -229,7 +230,7 @@ public class Grib2Collection extends GribCollectionImmutable {
     String cat = cust2.getCategory(vindex.getDiscipline(), vindex.getCategory());
     if (cat != null)
       v.addAttribute(new Attribute("Grib2_Parameter_Category", cat));
-    Grib2Customizer.Parameter entry = cust2.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+    GribTables.Parameter entry = cust2.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     if (entry != null) v.addAttribute(new Attribute("Grib2_Parameter_Name", entry.getName()));
 
     if (vindex.getLevelType() != GribNumbers.MISSING)

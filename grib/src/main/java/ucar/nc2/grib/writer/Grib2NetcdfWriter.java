@@ -28,7 +28,7 @@ public class Grib2NetcdfWriter implements Closeable {
   public Grib2NetcdfWriter(String fileIn, String fileOut) throws IOException {
     this.fileIn = fileIn;
 
-    Nc4Chunking chunker = Nc4ChunkingStrategy.factory(Nc4ChunkingStrategy.Strategy.grib, 9, true);
+    Nc4Chunking chunker = Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.grib, 9, true);
     writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf4, fileOut, chunker);
   }
 
@@ -76,10 +76,7 @@ public class Grib2NetcdfWriter implements Closeable {
 
     int bits = Float.floatToRawIntBits(value);
     int shave = bits & bitMask;
-    //System.out.printf("0x%s -> 0x%s : ", Integer.toBinaryString(bits), Integer.toBinaryString(shave));
-    float result = Float.intBitsToFloat(shave);
-    //System.out.printf("%f -> %f %n", value, result);
-    return result;
+    return Float.intBitsToFloat(shave);
   }
 
 

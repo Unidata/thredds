@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import com.google.common.base.MoreObjects;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.iosp.BitReader;
@@ -99,15 +100,13 @@ public abstract class Grib2Drs {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("Type0");
-      sb.append("{referenceValue=").append(referenceValue);
-      sb.append(", binaryScaleFactor=").append(binaryScaleFactor);
-      sb.append(", decimalScaleFactor=").append(decimalScaleFactor);
-      sb.append(", numberOfBits=").append(numberOfBits);
-      sb.append(", originalType=").append(originalType);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("referenceValue", referenceValue)
+          .add("binaryScaleFactor", binaryScaleFactor)
+          .add("decimalScaleFactor", decimalScaleFactor)
+          .add("numberOfBits", numberOfBits)
+          .add("originalType", originalType)
+          .toString();
     }
 
     @Override
@@ -237,22 +236,19 @@ public abstract class Grib2Drs {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nType2");
-      sb.append("{splittingMethod=").append(splittingMethod);
-      sb.append(", missingValueManagement=").append(missingValueManagement);
-      sb.append(", primaryMissingValue=").append(primaryMissingValue);
-      sb.append(", secondaryMissingValue=").append(secondaryMissingValue);
-      sb.append(", numberOfGroups=").append(numberOfGroups);
-      sb.append(", referenceGroupWidths=").append(referenceGroupWidths);
-      sb.append(", bitsGroupWidths=").append(bitsGroupWidths);
-      sb.append(", referenceGroupLength=").append(referenceGroupLength);
-      sb.append(", lengthIncrement=").append(lengthIncrement);
-      sb.append(", lengthLastGroup=").append(lengthLastGroup);
-      sb.append(", bitsScaledGroupLength=").append(bitsScaledGroupLength);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("secondaryMissingValue", secondaryMissingValue)
+          .add("primaryMissingValue", primaryMissingValue)
+          .add("missingValueManagement", missingValueManagement)
+          .add("splittingMethod", splittingMethod)
+          .add("numberOfGroups", numberOfGroups)
+          .add("referenceGroupWidths", referenceGroupWidths)
+          .add("bitsGroupWidths", bitsGroupWidths)
+          .add("referenceGroupLength", referenceGroupLength)
+          .add("lengthIncrement", lengthIncrement)
+          .add("lengthLastGroup", lengthLastGroup)
+          .add("bitsScaledGroupLength", bitsScaledGroupLength)
+          .toString();
     }
 
     @Override
@@ -359,13 +355,10 @@ public abstract class Grib2Drs {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nType3");
-      sb.append("{orderSpatial=").append(orderSpatial);
-      sb.append(", descriptorSpatial=").append(descriptorSpatial);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("orderSpatial", orderSpatial)
+          .add("descriptorSpatial", descriptorSpatial)
+          .toString();
     }
 
     @Override
@@ -418,14 +411,16 @@ public abstract class Grib2Drs {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nType40");
-      sb.append("{compressionMethod=").append(compressionMethod);
-      sb.append(", compressionRatio=").append(compressionRatio);
-      sb.append(", hasSignedProblem=").append(hasSignedProblem);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("referenceValue", referenceValue)
+          .add("binaryScaleFactor", binaryScaleFactor)
+          .add("decimalScaleFactor", decimalScaleFactor)
+          .add("numberOfBits", numberOfBits)
+          .add("originalType", originalType)
+          .add("compressionMethod", compressionMethod)
+          .add("compressionRatio", compressionRatio)
+          .add("hasSignedProblem", hasSignedProblem)
+          .toString();
     }
 
     @Override

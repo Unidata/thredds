@@ -4,6 +4,8 @@
  */
 package ucar.coord;
 
+import com.google.common.base.MoreObjects;
+import java.util.stream.Collectors;
 import ucar.ma2.Section;
 import ucar.nc2.util.Indent;
 
@@ -45,6 +47,16 @@ public class CoordinateND<T> {
        coord.showInfo(info, new Indent(2));
 
     sa.showInfo(info, all);
+  }
+
+  @Override
+  public String toString() {
+    try (Formatter f = new Formatter()) {
+      f.format("CoordinateND[");
+      coordinates.forEach(c -> f.format("%s,", c.getName()));
+      f.format("]");
+      return f.toString();
+    }
   }
 
   ////////////////////

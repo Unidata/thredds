@@ -155,7 +155,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     f.format("Table 1 : %s%n", name1);
     f.format("Table 2 : %s%n", name2);
     for (GribTables.Parameter p1 : test) {
-      Grib2Customizer.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      GribTables.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         if (p1.getCategory() < 192 && p1.getNumber() < 192) {
           extra++;
@@ -205,7 +205,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     f.format("Parameters in %s not in %s%n", name1, name2);
     int local = 0;
     for (GribTables.Parameter p1 : test) {
-      Grib2Customizer.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      GribTables.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p2 == null) {
         local++;
         f.format("  %s%n", p1);

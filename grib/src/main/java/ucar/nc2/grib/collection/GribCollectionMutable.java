@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import com.google.common.base.MoreObjects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -382,11 +383,15 @@ public class GribCollectionMutable implements Closeable {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder("GroupGC{");
-      sb.append(GribCollectionMutable.this.getName());
-      sb.append(" isTwoD=").append(isTwoD);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("horizCoordSys", horizCoordSys)
+          .add("variList", variList)
+          .add("coords", coords)
+          .add("filenose", filenose)
+          .add("varMap", varMap)
+          .add("isTwoD", isTwoD)
+          .add("dateRange", dateRange)
+          .toString();
     }
   }
 
@@ -584,54 +589,48 @@ public class GribCollectionMutable implements Closeable {
     }
 
     @Override
-    public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("VariableIndex");
-      sb.append("{tableVersion=").append(tableVersion);
-      sb.append(", discipline=").append(discipline);
-      sb.append(", category=").append(category);
-      sb.append(", parameter=").append(parameter);
-      sb.append(", levelType=").append(levelType);
-      sb.append(", intvType=").append(intvType);
-      sb.append(", ensDerivedType=").append(ensDerivedType);
-      sb.append(", probType=").append(probType);
-      sb.append(", intvName='").append(intvName).append('\'');
-      sb.append(", probabilityName='").append(probabilityName).append('\'');
-      sb.append(", isLayer=").append(isLayer);
-      sb.append(", genProcessType=").append(genProcessType);
-      sb.append(", cdmHash=").append(gribVariable.hashCode());
-      //sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
-      sb.append('}');
-      return sb.toString();
+     public String toString() {
+      return MoreObjects.toStringHelper(this)
+          .add("tableVersion", tableVersion)
+          .add("discipline", discipline)
+          .add("category", category)
+          .add("parameter", parameter)
+          .add("levelType", levelType)
+          .add("intvType", intvType)
+          .add("ensDerivedType", ensDerivedType)
+          .add("probType", probType)
+          .add("intvName", intvName)
+          .add("probabilityName", probabilityName)
+          .add("isLayer", isLayer)
+          .add("genProcessType", genProcessType)
+          .add("cdmHash", gribVariable.hashCode())
+          .toString();
     }
 
     public String toStringComplete() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("VariableIndex");
-      sb.append("{tableVersion=").append(tableVersion);
-      sb.append(", discipline=").append(discipline);
-      sb.append(", category=").append(category);
-      sb.append(", parameter=").append(parameter);
-      sb.append(", levelType=").append(levelType);
-      sb.append(", intvType=").append(intvType);
-      sb.append(", ensDerivedType=").append(ensDerivedType);
-      sb.append(", probType=").append(probType);
-      sb.append(", intvName='").append(intvName).append('\'');
-      sb.append(", probabilityName='").append(probabilityName).append('\'');
-      sb.append(", isLayer=").append(isLayer);
-      sb.append(", cdmHash=").append(gribVariable.hashCode());
-      sb.append(", recordsPos=").append(recordsPos);
-      sb.append(", recordsLen=").append(recordsLen);
-      sb.append(", group=").append(group.getId());
-      //sb.append(", partTimeCoordIdx=").append(partTimeCoordIdx);
-      sb.append("}\n");
-      /* if (time2runtime == null) sb.append("time2runtime is null");
-      else {
-        sb.append("time2runtime=");
-        for (int idx = 0; idx < time2runtime.getN(); idx++)
-          sb.append(time2runtime.get(idx)).append(",");
-      } */
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("group", group)
+          .add("tableVersion", tableVersion)
+          .add("discipline", discipline)
+          .add("center", center)
+          .add("subcenter", subcenter)
+          .add("recordsPos", recordsPos)
+          .add("recordsLen", recordsLen)
+          .add("gribVariable", gribVariable)
+          .add("coordIndex", coordIndex)
+          .add("category", category)
+          .add("parameter", parameter)
+          .add("levelType", levelType)
+          .add("intvType", intvType)
+          .add("ensDerivedType", ensDerivedType)
+          .add("probType", probType)
+          .add("intvName", intvName)
+          .add("probabilityName", probabilityName)
+          .add("isLayer", isLayer)
+          .add("isEnsemble", isEnsemble)
+          .add("genProcessType", genProcessType)
+          .add("spatialStatType", spatialStatType)
+          .toString();
     }
 
     public String toStringShort() {
@@ -696,13 +695,12 @@ public class GribCollectionMutable implements Closeable {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder("GribCollection.Record{");
-      sb.append("fileno=").append(fileno);
-      sb.append(", pos=").append(pos);
-      sb.append(", bmsPos=").append(bmsPos);
-      sb.append(", scanMode=").append(scanMode);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("fileno", fileno)
+          .add("pos", pos)
+          .add("bmsPos", bmsPos)
+          .add("scanMode", scanMode)
+          .toString();
     }
   }
 
@@ -732,21 +730,32 @@ public class GribCollectionMutable implements Closeable {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("GribCollectionMutable{");
-    sb.append("\nname='").append(name).append('\'');
-    sb.append("\n directory=").append(directory);
-    sb.append("\n config=").append(config);
-    sb.append("\n isGrib1=").append(isGrib1);
-    sb.append("\n version=").append(version);
-    sb.append("\n center=").append(center);
-    sb.append("\n subcenter=").append(subcenter);
-    sb.append("\n master=").append(master);
-    sb.append("\n local=").append(local);
-    sb.append("\n genProcessType=").append(genProcessType);
-    sb.append("\n genProcessId=").append(genProcessId);
-    sb.append("\n backProcessId=").append(backProcessId);
-    sb.append("\n}");
-    return sb.toString();
+    return MoreObjects.toStringHelper(this)
+        .add("name", name)
+        .add("config", config)
+        .add("isGrib1", isGrib1)
+        .add("directory", directory)
+        .add("orgDirectory", orgDirectory)
+        .add("version", version)
+        .add("center", center)
+        .add("subcenter", subcenter)
+        .add("master", master)
+        .add("local", local)
+        .add("genProcessType", genProcessType)
+        .add("genProcessId", genProcessId)
+        .add("backProcessId", backProcessId)
+        .add("params", params)
+        .add("fileMap", fileMap)
+        .add("datasets", datasets)
+        .add("masterRuntime", masterRuntime)
+        .add("cust", cust)
+        .add("indexVersion", indexVersion)
+        .add("dateRange", dateRange)
+        .add("indexRaf", indexRaf)
+        .add("indexFilename", indexFilename)
+        .add("lastModified", lastModified)
+        .add("fileSize", fileSize)
+        .toString();
   }
 
   public String showLocation() {
