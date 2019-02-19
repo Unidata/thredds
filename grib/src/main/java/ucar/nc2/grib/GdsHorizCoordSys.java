@@ -6,7 +6,6 @@
 package ucar.nc2.grib;
 
 import com.google.common.base.MoreObjects;
-import java.util.Arrays;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.*;

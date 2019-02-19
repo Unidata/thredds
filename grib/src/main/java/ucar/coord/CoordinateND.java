@@ -4,8 +4,6 @@
  */
 package ucar.coord;
 
-import com.google.common.base.MoreObjects;
-import java.util.stream.Collectors;
 import ucar.ma2.Section;
 import ucar.nc2.util.Indent;
 

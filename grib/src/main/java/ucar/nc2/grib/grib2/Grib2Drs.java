@@ -511,32 +511,26 @@ public abstract class Grib2Drs {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("Type50002");
-      sb.append("{\n\treferenceValue=").append(referenceValue);
-      sb.append(",\n\tbinaryScaleFactor=").append(binaryScaleFactor);
-      sb.append(",\n\tdecimalScaleFactor=").append(decimalScaleFactor);
-      sb.append(",\n\tnumberOfBits=").append(numberOfBits);
-      sb.append(",\n\twidthOfFirstOrderValues=").append(widthOfFirstOrderValues);
-      sb.append(",\n\tp1=").append(p1);
-      sb.append(",\n\tp2=").append(p2);
-      sb.append(",\n\twidthOfWidth=").append(widthOfWidth);
-      sb.append(",\n\twidthOfLength=").append(widthOfLength);
-      sb.append(",\n\tboustrophonic=").append(boustrophonic);
-      sb.append(",\n\torderOfSPD=").append(orderOfSPD);
-      sb.append(",\n\twidthOfSPD=").append(widthOfSPD);
-      sb.append(",\n\tspd=");
-      for (float i : spd) {
-        sb.append(i).append(",");
-      }
-      sb.deleteCharAt(sb.length() - 1);
-      sb.append(",\n\tlengthOfSection6=").append(lengthOfSection6);
-      sb.append(",\n\tsection6=").append(section6);
-      sb.append(",\n\tbitMapIndicator=").append(bitMapIndicator);
-      sb.append(",\n\tlengthOfSection7=").append(lengthOfSection7);
-      sb.append(",\n\tsection7=").append(section7);
-      sb.append("\n}");
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("referenceValue", referenceValue)
+          .add("binaryScaleFactor", binaryScaleFactor)
+          .add("decimalScaleFactor", decimalScaleFactor)
+          .add("numberOfBits", numberOfBits)
+          .add("p1", p1)
+          .add("p2", p2)
+          .add("widthOfFirstOrderValues", widthOfFirstOrderValues)
+          .add("widthOfWidth", widthOfWidth)
+          .add("widthOfLength", widthOfLength)
+          .add("boustrophonic", boustrophonic)
+          .add("orderOfSPD", orderOfSPD)
+          .add("widthOfSPD", widthOfSPD)
+          .add("spd", spd)
+          .add("lengthOfSection6", lengthOfSection6)
+          .add("section6", section6)
+          .add("bitMapIndicator", bitMapIndicator)
+          .add("lengthOfSection7", lengthOfSection7)
+          .add("section7", section7)
+          .toString();
     }
 
     @Override

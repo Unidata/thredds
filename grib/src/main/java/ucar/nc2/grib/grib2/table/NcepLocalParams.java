@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.MoreObjects;
 import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -179,15 +180,14 @@ class NcepLocalParams {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("NcepTable");
-      sb.append("{title='").append(title).append('\'');
-      sb.append(", source='").append(source).append('\'');
-      sb.append(", tableName='").append(tableName).append('\'');
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("title", title)
+          .add("source", source)
+          .add("tableName", tableName)
+          .add("discipline", discipline)
+          .add("category", category)
+          .toString();
     }
-
   }
 
   private static final String match = "Table4.2.";
