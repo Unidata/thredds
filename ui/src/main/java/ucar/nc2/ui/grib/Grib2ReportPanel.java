@@ -18,7 +18,6 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;

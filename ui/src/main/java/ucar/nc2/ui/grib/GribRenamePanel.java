@@ -1,6 +1,5 @@
 package ucar.nc2.ui.grib;
 
-import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
