@@ -379,11 +379,11 @@ public class Grib1ParamTime {
   }
 
   /**
-   * Get interval [start, end] since reference time in units of timeUnit, only if  an interval.
+   * Get interval [start, end] since reference time in units of timeUnit, must be an interval.
    * @return interval [start, end]
    */
   public int[] getInterval() {
-    return isInterval ? new int[]{start, end} : null;
+    return new int[]{start, end};
   }
 
   /**

@@ -6,6 +6,7 @@
 package ucar.nc2.grib;
 
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
@@ -44,7 +45,6 @@ public class TimeCoord {
   protected List<Tinv> intervals;    // set by subclasses
 
   private final String units;
-  // private int index;
   private final int code; // GRIB1 timeRangeIndicator, GRIB2 statProcessType (4.10)
 
   // from reading ncx
@@ -91,16 +91,12 @@ public class TimeCoord {
       CalendarDate startDate = null; // earliest starting date
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
-        //if (!tinvd.getPeriod().equals(calendarPeriod))
-        //  throw new IllegalStateException("Mixed Periods in coordinate "+calendarPeriod+" != "+tinvd.getPeriod());
         if (startDate == null) startDate = tinvd.start;
         else if (startDate.isAfter(tinvd.start)) startDate = tinvd.start;
       }
-      //int count = 0;
       List<Tinv> offsets = new ArrayList<>(coords.size());
       for (Object coord : coords) {
         TinvDate tinvd = (TinvDate) coord;
-        //tinvd.index = count++;
         offsets.add(tinvd.convertReferenceDate(startDate, timeUnit));
       }
       runDate = startDate;
@@ -118,11 +114,6 @@ public class TimeCoord {
 
     this.runDate = runDate;
   }
-
-  /* public TimeCoord setIndex(int index) {
-    this.index = index;
-    return this;
-  }  */
 
   public CalendarDate getRunDate() {
     return runDate;
@@ -182,8 +173,8 @@ public class TimeCoord {
     return isInterval() ? intervals.size() : coords.size();
   }
 
-  public String getTimeIntervalName() {
-    if (!isInterval()) return null;
+  public String makeTimeIntervalName() {
+    if (!isInterval()) return "not a time interval";
 
     // are they the same length ?
     int firstValue = -1;
@@ -340,7 +331,7 @@ public class TimeCoord {
     }
 
     @Override
-    public int compareTo(Tinv o) {
+    public int compareTo(@Nonnull Tinv o) {
       int c1 = b2 - o.b2;
       return (c1 == 0) ? b1 - o.b1 : c1;
     }
@@ -383,9 +374,9 @@ public class TimeCoord {
       return end;
     }
 
-    // what is the offset in units of timeUnit from the given reference date
+    // Calculate the offset in units of timeUnit from the given reference date?
     public Tinv convertReferenceDate(CalendarDate refDate, CalendarPeriod timeUnit) {
-      if (timeUnit == null) return null;
+      if (timeUnit == null) throw new IllegalArgumentException("null time unit");
       int startOffset = timeUnit.getOffset(refDate, start);   // LOOK wrong - not dealing with value ??
       int endOffset = timeUnit.getOffset(refDate, end);
       return new TimeCoord.Tinv(startOffset, endOffset);
@@ -410,7 +401,7 @@ public class TimeCoord {
       return result;
     }
 
-    public int compareTo(TinvDate that) {  // first compare start, then end
+    public int compareTo(@Nonnull TinvDate that) {  // first compare start, then end
       int c1 = start.compareTo(that.start);
       return (c1 == 0) ? end.compareTo(that.end) : c1;
     }

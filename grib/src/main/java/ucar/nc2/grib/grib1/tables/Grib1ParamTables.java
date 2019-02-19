@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1Parameter;
@@ -235,10 +236,6 @@ public class Grib1ParamTables {
      */
     boolean readLookupTable(String resourceName) throws IOException {
       try (InputStream inputStream = GribResourceReader.getInputStream(resourceName)) {
-        if (inputStream == null) {
-          logger.warn("Could not open table file:" + resourceName);
-          return false;
-        }
         return readLookupTable(inputStream, resourceName);
       }
     }
@@ -284,7 +281,6 @@ public class Grib1ParamTables {
           tables.add(table);
         }
       }
-
       return true;
     }
 
@@ -300,7 +296,7 @@ public class Grib1ParamTables {
 
     }
 
-    public Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
+    Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
       // look in hash table
       int key = makeKey(center, subcenter, tableVersion);
       Grib1ParamTableReader table = tableMap.get(key);
@@ -324,6 +320,7 @@ public class Grib1ParamTables {
       return table;
     }
 
+    @Nullable
     private Grib1ParamTableReader findParameterTableExact(int center, int subcenter, int version) {
       List<Grib1ParamTableReader> localCopy = tables; // thread safe
       for (Grib1ParamTableReader table : localCopy) {
@@ -340,11 +337,11 @@ public class Grib1ParamTables {
           return table;
         }
       }
-
       return null;
     }
 
     // wildcard match
+    @Nullable
     private Grib1ParamTableReader findParameterTable(int center, int subcenter, int version) {
       List<Grib1ParamTableReader> localCopy = tables; // thread safe
       for (Grib1ParamTableReader table : localCopy) {
@@ -367,7 +364,6 @@ public class Grib1ParamTables {
           }
         }
       }
-
       return null;
     }
 

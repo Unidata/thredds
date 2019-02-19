@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.time.CalendarPeriod;
@@ -47,6 +48,7 @@ public class Grib2Utils {
     return s;
   }
 
+  @Nullable
   public static CalendarPeriod getCalendarPeriod(int timeUnit) {
 
     switch (timeUnit) { // code table 4.4
@@ -76,7 +78,6 @@ public class Grib2Utils {
         return CalendarPeriod.of(1, CalendarPeriod.Field.Second);
       default:
         return null;
-        // throw new UnsupportedOperationException("Unknown time unit = "+timeUnit); // LOOK cant look at record with exception here
     }
   }
 
@@ -103,6 +104,7 @@ public class Grib2Utils {
   }
 
   // isLatLon2D is true, check parameter to see if its a 2D lat/lon coordinate
+  @Nullable
   public static LatLon2DCoord getLatLon2DcoordType(int discipline, int category, int parameter) {
     if ((discipline != 0) || (category != 2) || (parameter < 198 || parameter > 203)) return null;
     switch (parameter) {
@@ -130,7 +132,6 @@ public class Grib2Utils {
       return this.name().contains("Latitude") ? AxisType.Lat : AxisType.Lon;
     }
   }
-
 
   /**
    * This looks for snippets in the variable name/desc as to whether it wants U, V, or P 2D coordinates

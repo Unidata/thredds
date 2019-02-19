@@ -34,7 +34,7 @@ public class Grib1Parameter implements GribTables.Parameter {
     this.number = number;
     this.name = setName(name);
     this.description = setDescription(description);
-    this.unit = unit; // setUnit(unit);
+    this.unit = unit; // cleanupUnit(unit);
     this.cfName = null;
   }
 
@@ -43,7 +43,7 @@ public class Grib1Parameter implements GribTables.Parameter {
     this.number = number;
     this.name = setName(name);
     this.description = setDescription(description);
-    this.unit = unit; // setUnit(unit);
+    this.unit = unit; // cleanupUnit(unit);
     this.cfName = cf_name;
   }
 
@@ -80,12 +80,7 @@ public class Grib1Parameter implements GribTables.Parameter {
     return (name != null) && table.useParamName();
   }
 
-   /**
-   * description of parameter.
-   *
-   * @return description
-   */
-   @Override
+  @Override
   public final String getDescription() {
     return description;
   }
@@ -95,11 +90,6 @@ public class Grib1Parameter implements GribTables.Parameter {
     return table.getCenter_id() + "." + table.getSubcenter_id() + "." + number;
   }
 
-  /**
-   * unit of parameter.
-   *
-   * @return unit
-   */
   @Override
   public final String getUnit() {
     return unit;
@@ -125,7 +115,7 @@ public class Grib1Parameter implements GribTables.Parameter {
   }
 
   private String setName(String name) {
-    if (name == null) return null;
+    if (name == null) name = "";
     return StringUtil2.replace(name, ' ', "_"); // replace blanks
   }
 
@@ -133,7 +123,7 @@ public class Grib1Parameter implements GribTables.Parameter {
     return GribUtils.cleanupDescription(description);
   }
 
-  private String setUnit(String unit) {
+  private String cleanupUnit(String unit) {
     return GribUtils.cleanupUnits(unit);
   }
 

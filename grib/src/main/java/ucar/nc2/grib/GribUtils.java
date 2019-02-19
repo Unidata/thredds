@@ -68,7 +68,7 @@ public class GribUtils {
   }
 
   public static String cleanupUnits(String unit) {
-    if (unit == null) return null;
+    if (unit == null) return "";
     if (unit.equalsIgnoreCase("-")) unit = "";
     else {
       if (unit.startsWith("/")) unit = "1" + unit;
@@ -85,7 +85,7 @@ public class GribUtils {
   }
 
   public static String cleanupDescription(String desc) {
-    if (desc == null) return null;
+    if (desc == null) return "";
     int pos = desc.indexOf("(see");
     if (pos < 0) pos = desc.indexOf("(See");
     if (pos > 0) desc = desc.substring(0, pos);
@@ -97,7 +97,7 @@ public class GribUtils {
   }
 
   public static String makeNameFromDescription(String desc) {
-    if (desc == null) return null;
+    if (desc == null) return "";
     int pos = desc.indexOf("(see");
     if (pos < 0) pos = desc.indexOf("(See");
     if (pos > 0) desc = desc.substring(0, pos);

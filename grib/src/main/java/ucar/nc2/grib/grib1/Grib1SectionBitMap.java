@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribNumbers;
@@ -43,8 +44,9 @@ public class Grib1SectionBitMap {
   }
 
   /**
-   * Read the bitmap array when needed
+   * Read the bitmap array when needed, return null if none.
    */
+  @Nullable
   public byte[] getBitmap(RandomAccessFile raf) throws IOException {
     if (startingPosition <= 0) {
       throw new IllegalStateException("Grib1 Bit map has bad starting position");

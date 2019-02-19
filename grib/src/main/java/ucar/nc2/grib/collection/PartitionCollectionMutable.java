@@ -5,6 +5,8 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
@@ -191,7 +193,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       return extractor;
     }
 
-
+    @Nullable
     String getIndexFilenameInCache() {
       File file = new File(directory, filename);
       File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
@@ -200,7 +202,6 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
         File parent = getIndexParentFile();
         if (parent == null) return null;
         existingFile = new File(parent, filename);
-        //System.out.printf("try reletive file = %s%n", existingFile);
         if (!existingFile.exists()) return null;
       }
       return existingFile.getPath();
@@ -228,7 +229,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     // the children must already exist
-    public GribCollectionMutable makeGribCollection() throws IOException {
+    @Nullable
+    public GribCollectionMutable makeGribCollection() {
       GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), config, false, true, logger);
       if (result == null) {
         logger.error("Failed on openMutableGCFromIndex {}", dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
@@ -242,7 +244,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     @Override
-    public int compareTo(Partition o) {
+    public int compareTo(@Nonnull Partition o) {
       if (partitionDate != null && o.partitionDate != null)
         return partitionDate.compareTo(o.partitionDate);
       return name.compareTo(o.name);

@@ -99,10 +99,6 @@ public class Grib2JpegDecoder {
     // Create parameter list using defaults
     pl = new ParameterList(defpl);
 
-    if (argv.length == 0) {
-      throw new IllegalArgumentException("No arguments!");
-    }
-
     // Parse arguments from argv
     try {
       pl.parseArgs(argv);

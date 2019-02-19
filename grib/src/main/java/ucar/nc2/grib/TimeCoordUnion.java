@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nonnull;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 
@@ -201,7 +202,7 @@ public class TimeCoordUnion extends TimeCoord {
     }
 
     @Override
-    public int compareTo(Val o) {
+    public int compareTo(@Nonnull Val o) {
       if (val != null)
         return val.compareTo(o.val);
       else

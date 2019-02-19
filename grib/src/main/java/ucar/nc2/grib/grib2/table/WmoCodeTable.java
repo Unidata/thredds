@@ -4,6 +4,8 @@
  */
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -35,8 +37,8 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
     }
 
+    @Nullable
     String[] getElemNames() {
-
       if (this == GRIB2_20_0_0)
         return new String[]{"GRIB2_20_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
 
@@ -76,6 +78,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   </GRIB2_14_0_0_CodeFlag_en>
   */
 
+  @Nullable
   public static TableEntry getParameterEntry(int discipline, int category, int value) {
     return getTableEntry(getId(discipline, category), value);
   }
@@ -89,12 +92,13 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return "4.2." + discipline + "." + category;
   }
 
+  @Nullable
   public static String getTableValue(String tableId, int value) {
     if (wmoTables == null)
       try {
         wmoTables = getWmoStandard();
       } catch (IOException e) {
-        throw new IllegalStateException("cant open wmo tables");
+        throw new IllegalStateException("cant open WMO tables");
       }
 
     WmoCodeTable table = wmoTables.map.get(tableId);
@@ -104,6 +108,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return entry.meaning;
   }
 
+  @Nullable
   private static TableEntry getTableEntry(String tableId, int value) {
     if (wmoTables == null)
       try {
@@ -239,8 +244,9 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     if (slist2.length == 2) {
       m1 = Integer.parseInt(slist2[0]);
       m2 = Integer.parseInt(slist2[1]);
-    } else
+    } else {
       logger.warn("WmoCodeTable bad= %s%n" + name);
+    }
   }
 
   WmoCodeTable(String tableName, String subtableName) {
@@ -288,7 +294,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   @Override
-  public int compareTo(WmoCodeTable o) {
+  public int compareTo(@Nonnull WmoCodeTable o) {
     if (m1 != o.m1) return m1 - o.m1;
     if (m2 != o.m2) return m2 - o.m2;
     if (discipline != o.discipline) return discipline - o.discipline;
@@ -427,7 +433,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     }
 
     @Override
-    public int compareTo(TableEntry o) {
+    public int compareTo(@Nonnull TableEntry o) {
       return start - o.start;
     }
 

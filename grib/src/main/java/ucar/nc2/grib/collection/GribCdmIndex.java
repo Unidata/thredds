@@ -6,6 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import com.beust.jcommander.*;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -167,6 +168,7 @@ public class GribCdmIndex implements IndexReader {
   } */
 
   // open GribCollectionImmutable from an existing index file. return null on failure
+  @Nullable
   public static GribCollectionImmutable openCdmIndex(String indexFilename, FeatureCollectionConfig config, boolean useCache, Logger logger) throws IOException {
     File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
     if (indexFileInCache == null)
@@ -209,6 +211,7 @@ public class GribCdmIndex implements IndexReader {
 
   // used by PartitionCollectionMutable.Partition
   // open GribCollectionImmutable from an existing index file. return null on failure
+  @Nullable
   public static GribCollectionMutable openMutableGCFromIndex(String indexFilename, FeatureCollectionConfig config, boolean dataOnly, boolean useCache, Logger logger) {
     File indexFileInCache = useCache ? GribIndexCache.getExistingFileOrCache(indexFilename) : new File(indexFilename);
     if (indexFileInCache == null) {
@@ -759,6 +762,7 @@ public class GribCdmIndex implements IndexReader {
   // for InvDatasetFeatureCollection.getNetcdfDataset() and getGridDataset()
 
   // from a single file, read in the index, create if it doesnt exist; return null on failure
+  @Nullable
   public static GribCollectionImmutable openGribCollectionFromDataFile(boolean isGrib1, MFile mfile, CollectionUpdateType updateType,
                                                                        FeatureCollectionConfig config, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
@@ -791,6 +795,7 @@ public class GribCdmIndex implements IndexReader {
    * @return the resulting GribCollection, or null on failure
    * @throws IOException on io error
    */
+  @Nullable
   public static GribCollectionImmutable openGribCollectionFromIndexFile(RandomAccessFile indexRaf, FeatureCollectionConfig config,
                                                                         org.slf4j.Logger logger) throws IOException {
 

@@ -6,6 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import com.google.common.base.Throwables;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.coord.CoordinateTime2D;
@@ -322,7 +323,7 @@ public abstract class GribDataReader {
     }
 
     @Override
-    public int compareTo(DataRecord o) {
+    public int compareTo(@Nonnull DataRecord o) {
       int r = Misc.compare(record.fileno, o.record.fileno);
       if (r != 0) return r;
       return Misc.compare(record.pos, o.record.pos);

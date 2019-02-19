@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.iosp.BitReader;
@@ -128,6 +129,7 @@ public class Grib2DataReader2 {
     return data;
   }
 
+  @Nullable
   int[] getRawData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs)
       throws IOException {
     this.bitmap = bitmapSection.getBitmap(raf);
@@ -810,6 +812,7 @@ public class Grib2DataReader2 {
   }
 
   // Grid point data - JPEG 2000 code stream format
+  @Nullable
   private int[] getData40raw(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
     int nb = gdrs.numberOfBits;
     if (nb == 0) {

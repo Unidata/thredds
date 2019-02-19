@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -190,6 +191,7 @@ public class NcepTables extends Grib1Customizer {
   //////////////////////////////////////////// genProcess
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null)
         genProcessMap = getNcepGenProcess();
@@ -199,16 +201,11 @@ public class NcepTables extends Grib1Customizer {
   }
 
   // public so can be called from Grib2
+  @Nullable
   public static Map<Integer, String> getNcepGenProcess() {
     if (genProcessMap != null) return genProcessMap;
     String path = "resources/grib1/ncep/ncepTableA.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-
-      if (is == null) {
-        logger.error("Cant find NCEP Table 1 = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -220,14 +217,10 @@ public class NcepTables extends Grib1Customizer {
         String desc = elem1.getChildText("description");
         result.put(code, desc);
       }
-
       return Collections.unmodifiableMap(result);  // all at once - thread safe
 
-    } catch (IOException ioe) {
+    } catch (IOException | JDOMException ioe) {
       logger.error("Cant read NCEP Table 1 = " + path, ioe);
-      return null;
-    } catch (JDOMException e) {
-      logger.error("Cant parse NCEP Table 1 = " + path, e);
       return null;
     }
   }

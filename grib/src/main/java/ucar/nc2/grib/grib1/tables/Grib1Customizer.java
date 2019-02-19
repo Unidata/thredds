@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -79,6 +80,7 @@ public class Grib1Customizer implements GribTables {
   }
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     return null;
   }
@@ -88,11 +90,13 @@ public class Grib1Customizer implements GribTables {
     return null;
   }
 
+  @Nullable
   public String getSubCenterName(int subcenter) {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
 
   @Override
+  @Nullable
   public String getSubCenterName(int center, int subcenter) {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
@@ -106,11 +110,11 @@ public class Grib1Customizer implements GribTables {
 
   // code table 5
   public String getTimeTypeName(int timeRangeIndicator) {
-    if (timeRangeIndicator < 0) return null;
     return Grib1ParamTime.getTimeTypeName(timeRangeIndicator);
   }
 
   @Override
+  @Nullable
   public GribStatType getStatType(int timeRangeIndicator) {
     return Grib1WmoTimeType.getStatType(timeRangeIndicator);
   }
@@ -140,37 +144,37 @@ public class Grib1Customizer implements GribTables {
   @Override
   public String getLevelNameShort(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    String result = (lt == null) ? null : lt.getAbbrev();
+    String result = lt.getAbbrev();
     if (result == null) result = "unknownLevel"+levelType;
     return result;
   }
 
   public String getLevelDescription(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getDesc();
+    return lt.getDesc();
   }
 
   public boolean isLayer(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt != null) && lt.isLayer();
+    return lt.isLayer();
   }
 
   // only for 3D
   public boolean isPositiveUp(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt != null) && lt.isPositiveUp();
+    return lt.isPositiveUp();
   }
 
   // only for 3D
   public String getLevelUnits(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getUnits();
+    return lt.getUnits();
   }
 
   // only for 3D
   public String getLevelDatum(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getDatum();
+    return lt.getDatum();
   }
 
   /////////////////////////////////////////////
@@ -196,13 +200,9 @@ public class Grib1Customizer implements GribTables {
     return result;
   }
 
+  @Nullable
   protected synchronized Map<Integer, GribLevelType> readTable3(String path) {
     try (InputStream is =  GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find Table 3 = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -222,12 +222,7 @@ public class Grib1Customizer implements GribTables {
       }
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
-
-    } catch (IOException ioe) {
-      logger.error("Cant read NcepLevelTypes = " + path, ioe);
-      return null;
-
-    } catch (JDOMException e) {
+    } catch (IOException | JDOMException e) {
       logger.error("Cant parse NcepLevelTypes = " + path, e);
       return null;
     }

@@ -5,6 +5,7 @@
 package ucar.nc2.grib.coverage;
 
 import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -786,6 +787,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   // create a dependent runtime axis for this time, using the index into the master runtimes array
+  @Nullable
   private CoverageCoordAxis makeRuntimeAuxCoord(CoordinateTimeAbstract time) {
     if (time.getTime2runtime() == null) return null;
     String refName = "ref" + time.getName();

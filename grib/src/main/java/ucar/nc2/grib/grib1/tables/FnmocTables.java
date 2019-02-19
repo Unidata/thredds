@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -37,6 +38,7 @@ public class FnmocTables extends Grib1Customizer {
   // genProcess
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null)
       genProcessMap = readGenProcess("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml");
@@ -63,13 +65,9 @@ public class FnmocTables extends Grib1Customizer {
       <status>current</status>
     </entry>
    */
+  @Nullable
   private Map<Integer, String> readGenProcess(String path) {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find FNMOC gen process table = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -85,14 +83,10 @@ public class FnmocTables extends Grib1Customizer {
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
 
-    } catch (IOException ioe) {
-      logger.error("Cant read FNMOC Table 1 = " + path, ioe);
-
-    } catch (JDOMException e) {
-      logger.error("Cant parse FNMOC Table 1 = " + path, e);
+    } catch (IOException | JDOMException e) {
+      logger.error("Cant read FNMOC Table 1 = " + path, e);
+      return null;
     }
-
-    return null;
   }
 
 
@@ -127,13 +121,9 @@ public class FnmocTables extends Grib1Customizer {
       <status>current</status>
     </entry>
    */
+  @Nullable
   private HashMap<Integer, GribLevelType> readFnmocTable3(String path) {
-    try (InputStream is =  GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find FnmocTable3 = " + path);
-        return null;
-      }
-
+    try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -157,12 +147,8 @@ public class FnmocTables extends Grib1Customizer {
 
       return result;  // all at once - thread safe
 
-    } catch (IOException ioe) {
-      logger.error("Cant read FnmocTable3 = " + path, ioe);
-      return null;
-
-    } catch (JDOMException e) {
-      logger.error("Cant parse FnmocTable3 = " + path, e);
+    } catch (IOException | JDOMException e) {
+      logger.error("Cant read FnmocTable3 = " + path, e);
       return null;
     }
   }

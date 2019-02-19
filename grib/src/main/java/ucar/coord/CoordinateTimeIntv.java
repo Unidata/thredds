@@ -215,12 +215,14 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       int tuInRecord = pds.getTimeUnit();
       if (tuInRecord == code) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
+        if (intv == null) throw new IllegalStateException("CoordinateTimeIntv must have TimeIntervalOffset");
         tinv = new TimeCoord.Tinv(intv[0], intv[1]);
 
       } else {
-        // int unit = cust.convertTimeUnit(tu2);  // not used
         TimeCoord.TinvDate tinvd = cust.getForecastTimeInterval(gr); // converts to calendar date
+        if (tinvd == null) throw new IllegalStateException("CoordinateTimeIntv has no ForecastTime");
         tinv = tinvd.convertReferenceDate(refDate, timeUnit);
+        if (tinv == null) throw new IllegalStateException("CoordinateTimeIntv has no ReferenceTime");
       }
 
       return tinv;
@@ -251,18 +253,17 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
     @Override
     public Object extract(Grib1Record gr) {
-
       Grib1SectionProductDefinition pds = gr.getPDSsection();
       Grib1ParamTime ptime = gr.getParamTime(cust);
-      int tuInRecord = pds.getTimeUnit();
       int[] intv = ptime.getInterval();
       TimeCoord.Tinv  tinv = new TimeCoord.Tinv(intv[0], intv[1]);
 
+      // If its a different time unit, we have to adjust the interval.
+      int tuInRecord = pds.getTimeUnit();
       if (tuInRecord != code) {
         CalendarPeriod unitInRecord = GribUtils.getCalendarPeriod(tuInRecord);
         tinv = tinv.convertReferenceDate(gr.getReferenceDate(), unitInRecord, refDate, timeUnit);
       }
-
       return tinv;
     }
 

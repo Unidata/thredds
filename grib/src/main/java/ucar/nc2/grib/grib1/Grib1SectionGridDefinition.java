@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -196,6 +197,7 @@ public class Grib1SectionGridDefinition {
     return (octet5 != 255) && (nv != 0 && nv != 255);
   }
 
+  @Nullable
   private double[] getVerticalCoordinateParameters() {
     if (!hasVerticalCoordinateParameters()) return null;
 

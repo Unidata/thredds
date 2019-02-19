@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nonnull;
 import ucar.nc2.util.Misc;
 
 import javax.annotation.concurrent.Immutable;
@@ -189,7 +190,7 @@ public class VertCoord {
     }
 
     @Override
-    public int compareTo(Level o) {
+    public int compareTo(@Nonnull Level o) {
       return Double.compare(mid, o.mid);
     }
 
