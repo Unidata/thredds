@@ -62,7 +62,6 @@ public class Grib2Index extends GribIndex {
 
   private static final boolean debug = false;
   private static final int version = 6; // index must be this version, or else rewrite.
-  private static final int grib2index_proto_version = 3;
 
   /*
     9/12/2012 version 6: replace bms indicator = 254 with previously defined.
@@ -211,7 +210,6 @@ public class Grib2Index extends GribIndex {
 
       Grib2IndexProto.Grib2Index.Builder rootBuilder = Grib2IndexProto.Grib2Index.newBuilder();
       rootBuilder.setFilename(filename);
-      rootBuilder.setVersion(grib2index_proto_version);
 
       if (dataRaf == null)  {
         raf = RandomAccessFile.acquire(filename);
