@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.grib;
+package ucar.nc2.grib;
 
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -12,7 +12,6 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.grib.GribResourceReader;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;

@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.grib;
+package ucar.nc2.grib;
 
 import ucar.nc2.dt.GridDataset;
 import java.io.IOException;
