@@ -3,10 +3,9 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.grib;
+package ucar.nc2.ui.grib;
 
 import ucar.nc2.dt.GridDataset;
-import ucar.nc2.grib.GribVariableRenamer;
 import java.io.IOException;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class GribConverterUtility {
         String grbFile = null;      // declare a grbFile filename
         String grbType = null;      // declare a grbFile type - should be grib1 or grib2
         String oldGribName = null;  // declare the old Grib Variable Name
-        Boolean matchNCEP = false;  // don't default to matching NCEP
+        boolean matchNCEP = false;  // don't default to matching NCEP
 
         if (args.length == 3 || args.length == 4) {
             String s = args[0];
@@ -41,10 +40,10 @@ public class GribConverterUtility {
         }
 
         try {
-            GribVariableRenamer r = null;
+            GribVariableRenamer r;
             GridDataset gds = ucar.nc2.dt.grid.GridDataset.open(grbFile);
             r = new GribVariableRenamer();
-            List result = null;
+            List result;
             if (grbType.equalsIgnoreCase("grib1")) {
                 if (matchNCEP) {
                     result = r.matchNcepNames(gds, oldGribName);

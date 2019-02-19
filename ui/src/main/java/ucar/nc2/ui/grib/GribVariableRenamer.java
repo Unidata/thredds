@@ -3,9 +3,8 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.grib;
+package ucar.nc2.ui.grib;
 
-import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -13,6 +12,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
+import ucar.nc2.grib.GribResourceReader;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -54,10 +54,9 @@ public class GribVariableRenamer {
     map2 = makeMapBeans(beans);
   }
 
-  @Nullable
-  public List<String> getMappedNamesGrib2(String oldName) {
+  List<String> getMappedNamesGrib2(String oldName) {
     if (map2 == null) initMap2();
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     Renamer mbean = map2.get(oldName);
     if (mbean == null) return null;
     for (VariableRenamerBean r : mbean.newVars) {
@@ -66,10 +65,9 @@ public class GribVariableRenamer {
     return result;
   }
 
-  @Nullable
-  public List<String> getMappedNamesGrib1(String oldName) {
+  List<String> getMappedNamesGrib1(String oldName) {
     if (map1 == null) initMap1();
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     Renamer mbean = map1.get(oldName);
     if (mbean == null) return null;
     for (VariableRenamerBean r : mbean.newVars) {
@@ -85,8 +83,8 @@ public class GribVariableRenamer {
    * @param oldName old name from 4.2 dataset
    * @return list of possible matches (as grid short name), each exists in the dataset
    */
-  public List<String> matchNcepNames(GridDataset gds, String oldName) {
-    List<String> result = new ArrayList<String>();
+  List<String> matchNcepNames(GridDataset gds, String oldName) {
+    List<String> result = new ArrayList<>();
     
     // look for exact match
     if (contains(gds, oldName))  {
@@ -120,12 +118,10 @@ public class GribVariableRenamer {
     // not unique - match against NCEP dataset
     if (mbean != null) {
       String dataset = extractDatasetFromLocation(gds.getLocation());
-      if (dataset != null) {
-        for (VariableRenamerBean r : mbean.newVars) {
-          if (r.getDatasetType().equals(dataset) && contains(gds, r.newName)) result.add(r.newName);
-        }
-        if (result.size() == 1) return result; // return if unique
+      for (VariableRenamerBean r : mbean.newVars) {
+        if (r.getDatasetType().equals(dataset) && contains(gds, r.newName)) result.add(r.newName);
       }
+      if (result.size() == 1) return result; // return if unique
     }
 
     // not unique, no unique match against dataset - check existence in the dataset
@@ -151,9 +147,9 @@ public class GribVariableRenamer {
     return result;
   }
 
-  public List<String> matchNcepNames(String datasetType, String oldName) {
+  List<String> matchNcepNames(String datasetType, String oldName) {
     boolean isGrib1 = datasetType.endsWith("grib1");
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
 
     HashMap<String, Renamer> map;
     if (isGrib1) {
@@ -204,8 +200,7 @@ public class GribVariableRenamer {
     return null; // ??
   }
 
-
-  public static String extractDatasetFromLocation(String location) {
+  private static String extractDatasetFromLocation(String location) {
     // check if location is from 4.5 server, and if so, remove the trailing /GC
     // This is only a temporary fix, as this renaming was only supposed to be applied
     // for the 4.2 to 4.3 transition. Thus, I plan on marking this class as deprecated
@@ -233,18 +228,22 @@ public class GribVariableRenamer {
   */
 
   // debugging only
-  public List<VariableRenamerBean> readVariableRenamerBeans(String which) {
+  List<VariableRenamerBean> readVariableRenamerBeans(String which) {
     if (which.equals("GRIB-1"))
       return readVariableRenameFile("resources/grib1/grib1VarMap.xml");
     else
       return readVariableRenameFile("resources/grib2/grib2VarMap.xml");
   }  
-
-  @Nullable
+  
   private List<VariableRenamerBean> readVariableRenameFile(String path) {
-    java.util.List<VariableRenamerBean> beans = new ArrayList<VariableRenamerBean>(1000);
+    java.util.List<VariableRenamerBean> beans = new ArrayList<>(1000);
     if (debug) System.out.printf("reading table %s%n", path);
     try (InputStream is = GribResourceReader.getInputStream(path)) {
+      if (is == null) {
+        logger.warn("Cant read file " + path);
+        return null;
+      }
+
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -328,17 +327,6 @@ public class GribVariableRenamer {
         map.put(vbean.getOldName(), mbean);
       }
       mbean.add(vbean);
-
-      /* construct the new -> old  mapping
-      String newName = vbean.getNewName();
-      String oldName = vbean.getOldName();
-      List<String> maprList = mapr.get(newName);
-      if (maprList == null) {
-        maprList = new ArrayList<String>();
-        mapr.put(newName, maprList);
-      }
-      if (!maprList.contains(oldName))
-        maprList.add(oldName);  */
     }
     
     for (Renamer rmap : map.values()) {
@@ -350,8 +338,8 @@ public class GribVariableRenamer {
   @Deprecated
   private static class Renamer {
     String oldName, newName; // newName exists when theres only one
-    List<VariableRenamerBean> newVars = new ArrayList<VariableRenamerBean>();
-    HashMap<String, VariableRenamerBean> newVarsMap = new HashMap<String, VariableRenamerBean>();
+    List<VariableRenamerBean> newVars = new ArrayList<>();
+    HashMap<String, VariableRenamerBean> newVarsMap = new HashMap<>();
 
     // no-arg constructor
     public Renamer() {
