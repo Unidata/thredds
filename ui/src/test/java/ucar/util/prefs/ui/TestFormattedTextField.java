@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -46,26 +46,25 @@ public class TestFormattedTextField {
     p1.add(d1);
 
     JFormattedTextField.AbstractFormatter ff = d1.getFormatter();
-    System.out.println("AbstractFormatter  = "+ff.getClass().getName());
-    {
-        Object val = d1.getValue();
-        System.out.println(" Value  = "+val.getClass().getName());
-    }
+    logger.info("AbstractFormatter  = {}", ff.getClass().getName());
+    Object d1val = d1.getValue();
+    logger.info(" Value  = {}", d1val.getClass().getName());
+
     if (ff instanceof NumberFormatter) {
       nf = (NumberFormatter) ff;
       allowsInvalidValue = nf.getAllowsInvalid();
       Format f = nf.getFormat();
-      System.out.println(" Format for = "+f.getClass().getName());
+      logger.info(" Format for = {}", f.getClass().getName());
       if (f instanceof NumberFormat) {
         NumberFormat nfat = (NumberFormat) f;
-        System.out.println(" getMinimumIntegerDigits="+nfat.getMinimumIntegerDigits());
-        System.out.println(" getMaximumIntegerDigits="+nfat.getMaximumIntegerDigits());
-        System.out.println(" getMinimumFractionDigits="+nfat.getMinimumFractionDigits());
-        System.out.println(" getMaximumFractionDigits="+nfat.getMaximumFractionDigits());
+        logger.info(" getMinimumIntegerDigits={}", nfat.getMinimumIntegerDigits());
+        logger.info(" getMaximumIntegerDigits={}", nfat.getMaximumIntegerDigits());
+        logger.info(" getMinimumFractionDigits={}", nfat.getMinimumFractionDigits());
+        logger.info(" getMaximumFractionDigits={}", nfat.getMaximumFractionDigits());
       }
       if (f instanceof DecimalFormat) {
         decFormatter = (DecimalFormat) f;
-        System.out.println(" Pattern = "+decFormatter.toPattern());
+        logger.info(" Pattern = {}". decFormatter.toPattern());
         pattern = decFormatter.toPattern();
         intOnlyValue = decFormatter.isParseIntegerOnly();
       }
@@ -78,7 +77,7 @@ public class TestFormattedTextField {
     patternTF.setColumns( 20);
     patternTF.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        System.out.println("pattern actionevent "+patternTF.getText());
+        logger.info("pattern actionevent {}", patternTF.getText());
         decFormatter.applyPattern( patternTF.getText());
       }
     });
@@ -87,21 +86,21 @@ public class TestFormattedTextField {
     intOnly = new JCheckBox("IntegerOnly", intOnlyValue);
     intOnly.addActionListener(e -> {
         boolean val = intOnly.getModel().isSelected();
-        System.out.println("intOnly actionevent "+val);
+        logger.info("intOnly actionevent {}", val);
         decFormatter.setParseIntegerOnly( val);
     });
 
     allowsInvalid = new JCheckBox("AllowsInvalid", allowsInvalidValue);
     allowsInvalid.addActionListener(e -> {
         boolean val = allowsInvalid.getModel().isSelected();
-        System.out.println("allowsInvalid actionevent "+val);
+        logger.info("allowsInvalid actionevent {}", val);
         nf.setAllowsInvalid( val);
     });
 
     JButton gv = new JButton("Get Value");
     gv.addActionListener(e -> {
         boolean val = intOnly.getModel().isSelected();
-        System.out.println("value= "+d1.getValue()+" "+d1.getValue().getClass().getName());
+        logger.info("value= {} {}", d1.getValue(), d1.getValue().getClass().getName());
     });
 
     main.add( p1);
