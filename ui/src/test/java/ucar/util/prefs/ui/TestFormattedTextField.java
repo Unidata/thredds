@@ -47,8 +47,10 @@ public class TestFormattedTextField {
 
     JFormattedTextField.AbstractFormatter ff = d1.getFormatter();
     System.out.println("AbstractFormatter  = "+ff.getClass().getName());
-    Object val = d1.getValue();
-    System.out.println(" Value  = "+val.getClass().getName());
+    {
+        Object val = d1.getValue();
+        System.out.println(" Value  = "+val.getClass().getName());
+    }
     if (ff instanceof NumberFormatter) {
       nf = (NumberFormatter) ff;
       allowsInvalidValue = nf.getAllowsInvalid();
