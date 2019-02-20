@@ -23,4 +23,12 @@
       <filePath regex="true">.*\/ncwms.*\.jar</filePath>
       <cpe>cpe:/a:trac:trac:-</cpe>
    </suppress>
+  <suppress>
+      <notes><![CDATA[
+      file name example: quartz-2.2.3.jar
+      reason: quartz is being misidentified as jenkins -> https://github.com/jeremylong/DependencyCheck/issues/1637#issuecomment-451115272
+      ]]></notes>
+    <gav regex="true">^org\.quartz-scheduler:quartz:.*$</gav>
+    <cpe>cpe:/a:jenkins:jenkins</cpe>
+  </suppress>
 </suppressions>
