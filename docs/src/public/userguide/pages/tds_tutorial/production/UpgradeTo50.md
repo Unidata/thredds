@@ -228,7 +228,7 @@ shared and allowing them to be private is confusing and error-prone.
 
 * All uses of classes in `thredds.catalog` are deprecated. If you still need these, you must add `legacy.jar` to your path.
 * TDS and CDM now use `thredds.server.catalog` and `thredds.client.catalog`. The APIs are different, but with equivalent functionality to thredds.catalog.
-* `thredds.client.DatasetNode` now has `getDatasetlsogical()` and `getDatasetsLocal()` that does or does not dereference a `CatalogRef`, respectively.
+* `thredds.client.DatasetNode` now has `getDatasetsLogical()` and `getDatasetsLocal()` that does or does not dereference a `CatalogRef`, respectively.
   You can also use `getDatasets()` which includes a dereferenced catalog if it has already been read.
 
 
