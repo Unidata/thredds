@@ -112,11 +112,9 @@ public class CatalogChooser extends JPanel {
       // top panel buttons
       JButton connectButton = new JButton("Connect");
       connectButton.setToolTipText("read this catalog");
-      connectButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
+      connectButton.addActionListener(e -> {
           String catalogURL = (String) catListBox.getSelectedItem();
           tree.setCatalog(catalogURL.trim()); // will get "Catalog" property change event if ok
-        }
       });
 
       JPanel topButtons = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
@@ -246,8 +244,7 @@ public class CatalogChooser extends JPanel {
     buttPanel = new JPanel();
     JButton openfileButton = new JButton("Open File");
     buttPanel.add(openfileButton, null);
-    openfileButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
+    openfileButton.addActionListener(e -> {
         eventType = "File";
         try {
           tree.acceptSelected();
@@ -257,13 +254,11 @@ public class CatalogChooser extends JPanel {
         } finally {
           eventType = null;
         }
-      }
     });
 
     JButton openCoordButton = new JButton("Open CoordSys");
     buttPanel.add(openCoordButton, null);
-    openCoordButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
+    openCoordButton.addActionListener(e -> {
         eventType = "CoordSys";
         try {
           tree.acceptSelected();
@@ -273,13 +268,11 @@ public class CatalogChooser extends JPanel {
         } finally {
           eventType = null;
         }
-      }
     });
 
     JButton acceptButton = new JButton("Open dataset");
     buttPanel.add(acceptButton, null);
-    acceptButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
+    acceptButton.addActionListener(e -> {
         eventType = "Dataset";
         try {
           tree.acceptSelected();
@@ -289,7 +282,6 @@ public class CatalogChooser extends JPanel {
         } finally {
           eventType = null;
         }
-      }
     });
 
     // put it all together
@@ -475,10 +467,8 @@ public class CatalogChooser extends JPanel {
       JButton dismissButton = new JButton("Dismiss");
       buttPanel.add(dismissButton, null);
 
-      dismissButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
+      dismissButton.addActionListener(e -> {
           setVisible(false);
-        }
       });
 
      // add it to contentPane

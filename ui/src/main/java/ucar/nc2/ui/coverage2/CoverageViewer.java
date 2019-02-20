@@ -178,11 +178,9 @@ public class CoverageViewer extends JPanel {
       colorScalePanel = new ColorScale.Panel(this, colorScale);
       csDataMinMax = new JComboBox(ColorScale.MinMaxType.values());
       csDataMinMax.setToolTipText("ColorScale Min/Max setting");
-      csDataMinMax.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
+      csDataMinMax.addActionListener(e -> {
           coverageRenderer.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
           redrawLater();
-        }
       });
 
       // renderer
@@ -191,11 +189,9 @@ public class CoverageViewer extends JPanel {
       coverageRenderer.setColorScale(colorScale);
 
       strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-      strideSpinner.addChangeListener(new ChangeListener() {
-        public void stateChanged(ChangeEvent e) {
+      strideSpinner.addChangeListener(e -> {
           Integer val = (Integer) strideSpinner.getValue();
           coverageRenderer.setHorizStride(val.intValue());
-        }
       });
 
       makeActionsDataset();

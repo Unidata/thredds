@@ -70,21 +70,18 @@ public class BufrCdmIndexPanel extends JPanel {
     this.prefs = prefs;
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (index == null) return;
+    infoButton.addActionListener(e -> {
+        if (index == null) { return; }
         Formatter f = new Formatter();
         index.showIndex(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
-      }
     });
     buttPanel.add(infoButton);
 
     AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
-    writeButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    writeButton.addActionListener(e -> {
         Formatter f = new Formatter();
         try {
           if (writeIndex(f)) {
@@ -100,7 +97,6 @@ public class BufrCdmIndexPanel extends JPanel {
         }
         detailTA.gotoTop();
         detailWindow.show();
-      }
     });
     buttPanel.add(writeButton);
 

@@ -58,48 +58,40 @@ public class CdmIndexPanel extends JPanel {
 
     if (buttPanel != null) {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           showInfo(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
       AbstractButton filesButton = BAMutil.makeButtcon("catalog", "Show Files", false);
-      filesButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      filesButton.addActionListener(e -> {
           if (gc != null)
             showFileTable(gc, null);
-        }
       });
       buttPanel.add(filesButton);
 
       AbstractButton rawButton = BAMutil.makeButtcon("TableAppearence", "Estimate memory use", false);
-      rawButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      rawButton.addActionListener(e -> {
           Formatter f = new Formatter();
           showMemoryEst(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
-        }
       });
       buttPanel.add(rawButton);
 
 
       AbstractButton checkAllButton = BAMutil.makeButtcon("Select", "Check entire file", false);
-      rawButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      rawButton.addActionListener(e -> {
           Formatter f = new Formatter();
           checkAll(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
-        }
       });
       buttPanel.add(checkAllButton);
 

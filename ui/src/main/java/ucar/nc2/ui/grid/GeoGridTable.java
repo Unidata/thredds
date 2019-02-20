@@ -140,8 +140,7 @@ public class GeoGridTable extends JPanel {
   public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    infoButton.addActionListener(e -> {
         if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
           ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
           infoTA.clear();
@@ -149,7 +148,6 @@ public class GeoGridTable extends JPanel {
           infoTA.gotoTop();
           infoWindow.show();
         }
-      }
     });
     buttPanel.add(infoButton);
 
@@ -187,8 +185,7 @@ public class GeoGridTable extends JPanel {
     buttPanel.add(wcsButton);  */
 
     JButton invButton = new JButton("GridInv");
-    invButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    invButton.addActionListener(e -> {
         if (gridDataset == null) return;
         GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
         try {
@@ -198,7 +195,6 @@ public class GeoGridTable extends JPanel {
         } catch (Exception e1) {
           e1.printStackTrace();
         }
-      }
     });
     buttPanel.add(invButton);
 

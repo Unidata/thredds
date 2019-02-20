@@ -189,17 +189,18 @@ public class ServletLogTable extends JPanel {
     tabbedPanel.addTab("Misc", miscTable);
     tabbedPanel.setSelectedIndex(0);
 
-    tabbedPanel.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    tabbedPanel.addChangeListener(e -> {
         int idx = tabbedPanel.getSelectedIndex();
         String title = tabbedPanel.getTitleAt(idx);
-        if (title.equals("Merge"))
+        if (title.equals("Merge")) {
           calcMergeLogs(completeLogs);
-        if (title.equals("Undone"))
+        }
+        else if (title.equals("Undone")) {
           calcMergeLogs(completeLogs);
-        if (title.equals("Misc"))
+        }
+        else if (title.equals("Misc")) {
           calcMergeLogs(completeLogs);
-      }
+        }
     });
 
     setLayout(new BorderLayout());

@@ -151,14 +151,12 @@ public class Grib1TablesViewer extends JPanel {
     add(split, BorderLayout.CENTER);
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Table Used", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    infoButton.addActionListener(e -> {
         if (showTableDialog == null) {
           showTableDialog = new Grib1TableDialog((Frame) null);
           showTableDialog.pack();
         }
         showTableDialog.setVisible(true);
-      }
     });
     buttPanel.add(infoButton);
 

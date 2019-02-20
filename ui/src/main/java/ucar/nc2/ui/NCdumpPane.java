@@ -48,34 +48,27 @@ public class NCdumpPane extends TextHistoryPane {
 
     JButton getButton = new JButton("NCdump");
     getButton.setToolTipText("show selected data values");
-    getButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    getButton.addActionListener(e -> {
         ncdump( (String) cb.getSelectedItem());
-      }
     });
 
     JButton imageButton = new JButton("Image");
     imageButton.setToolTipText("view selected data as Image");
-    imageButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    imageButton.addActionListener(e -> {
         showImage((String) cb.getSelectedItem());
-      }
     });
 
     JButton binButton = new JButton("Write");
     binButton.setToolTipText("write binary data to file");
-    binButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    binButton.addActionListener(e -> {
         String binaryFilePath = fileChooser.chooseFilenameToSave("data.bin");
         if (binaryFilePath != null) {
           writeBinaryData((String) cb.getSelectedItem(), new File(binaryFilePath));
         }
-      }
     });
 
     stopButton = new StopButton("stop NCdump");
-    stopButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    stopButton.addActionListener(e -> {
         // System.out.println(" ncdump event="+e.getActionCommand());
         ta.setText( task.v.toString());
         ta.append("\n data:\n");
@@ -84,7 +77,6 @@ public class NCdumpPane extends TextHistoryPane {
         if (e.getActionCommand().equals("success")) {
           cb.setSelectedItem(task.command); // add to combobox
         }
-      }
     });
 
     JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));

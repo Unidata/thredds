@@ -82,8 +82,7 @@ public class AggTable extends JPanel {
     });
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check files", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compareButton.addActionListener(e -> {
         Formatter f = new Formatter();
         compare(f);
         checkAggCoordinate(f);
@@ -91,7 +90,6 @@ public class AggTable extends JPanel {
         infoTA.setText(f.toString());
         infoTA.gotoTop();
         infoWindow.show();
-      }
     });
     buttPanel.add(compareButton);
 

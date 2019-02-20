@@ -58,8 +58,7 @@ public class NewProjectionDialog extends JDialog {
     });
 
     // projection class was chosen
-    cbProjectionType.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    cbProjectionType.addActionListener(e -> {
         ProjectionManager.ProjectionClass pc = (ProjectionManager.ProjectionClass) cbProjectionType.getSelectedItem();
         projectionParamPanel1.setProjection(pc);
         pc.makeDefaultProjection();
@@ -67,12 +66,10 @@ public class NewProjectionDialog extends JDialog {
         navPanel.setProjection(pc.projInstance);
         invalidate();
         validate();
-      }
     });
 
     // apply button was pressed
-    applyButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    applyButton.addActionListener(e -> {
         ProjectionManager.ProjectionClass pc = (ProjectionManager.ProjectionClass) cbProjectionType.getSelectedItem();
         pc.setProjFromDialog(pc.projInstance);
         System.out.printf("Projection = %s%n", pc.projInstance);
@@ -91,7 +88,6 @@ public class NewProjectionDialog extends JDialog {
 
         invalidate();
         validate();
-      }
     });
 
   }
@@ -243,11 +239,8 @@ public class NewProjectionDialog extends JDialog {
             ProjPanel.setLayout(new BoxLayout(ProjPanel, BoxLayout.X_AXIS));
 
             //---- cbProjectionType ----
-            cbProjectionType.addItemListener(new ItemListener() {
-              @Override
-              public void itemStateChanged(ItemEvent e) {
+            cbProjectionType.addItemListener(e -> {
                 comboBox1ItemStateChanged(e);
-              }
             });
             ProjPanel.add(cbProjectionType);
           }

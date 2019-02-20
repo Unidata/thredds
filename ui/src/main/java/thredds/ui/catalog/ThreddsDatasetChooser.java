@@ -257,10 +257,8 @@ public class ThreddsDatasetChooser extends JPanel {
       JButton dismissButton = new JButton("Dismiss");
       //buttPanel.add(dismissButton, null);
 
-      dismissButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
+      dismissButton.addActionListener(e -> {
           setVisible(false);
-        }
       });
 
       // add it to contentPane

@@ -45,14 +45,12 @@ public class GribIndexPanel extends JPanel {
     this.prefs = prefs;
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    infoButton.addActionListener(e -> {
         Formatter f = new Formatter();
         showIndex(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
-      }
     });
     buttPanel.add(infoButton);
 
