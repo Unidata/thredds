@@ -64,7 +64,7 @@ public class TestFormattedTextField {
       }
       if (f instanceof DecimalFormat) {
         decFormatter = (DecimalFormat) f;
-        logger.info(" Pattern = {}". decFormatter.toPattern());
+        logger.info(" Pattern = {}", decFormatter.toPattern());
         pattern = decFormatter.toPattern();
         intOnlyValue = decFormatter.isParseIntegerOnly();
       }
