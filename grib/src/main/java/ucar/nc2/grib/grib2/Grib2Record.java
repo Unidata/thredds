@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
@@ -239,6 +240,7 @@ public class Grib2Record {
   }
 
   // debugging - do not use
+  @Nullable
   public int[] readRawData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
@@ -251,6 +253,7 @@ public class Grib2Record {
   }
 
   // debugging - do not use
+  @Nullable
   public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
@@ -306,7 +309,7 @@ public class Grib2Record {
    * @return data as float[] array
    * @throws IOException on read error
    */
-  static public float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine) throws IOException {
+  public static float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine) throws IOException {
     raf.seek(drsPos);
     Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(raf);
     Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);

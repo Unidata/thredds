@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.unidata.util.StringUtil2;
@@ -24,14 +25,15 @@ import java.util.Map;
  * @since 1/13/12
  */
 public class NcepRfcTables extends NcepTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepRfcTables.class);
-  static private Map<Integer, String> nwsoSubCenter;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepRfcTables.class);
+  private static Map<Integer, String> nwsoSubCenter;
 
   NcepRfcTables(Grib1ParamTables tables) {
     super(8, tables);
   }
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     switch (genProcess) {
       case 150:
@@ -84,6 +86,7 @@ public class NcepRfcTables extends NcepTables {
   * These are not in the WMO common tables like NCEP's are
   */
   @Override
+  @Nullable
   public String getSubCenterName(int subcenter) {
     if (nwsoSubCenter == null)
       nwsoSubCenter = readNwsoSubCenter("resources/grib1/noaa_rfc/tableC.txt");
@@ -92,24 +95,23 @@ public class NcepRfcTables extends NcepTables {
     return nwsoSubCenter.get(subcenter);
   }
 
-    // order: num, name, desc, unit
+  // order: num, name, desc, unit
+  @Nullable
   private static Map<Integer, String> readNwsoSubCenter(String path) {
     Map<Integer, String> result = new HashMap<>();
 
-    try (InputStream is = GribResourceReader.getInputStream(path)) {
-
-      if (is == null) return null;
-
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
-
-      // rdg - added the 0 line length check to cover the case of blank lines at
-      //       the end of the parameter table file.
+    try (InputStream is = GribResourceReader.getInputStream(path);
+      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
       while (true) {
         String line = br.readLine();
-        if (line == null) break;
-        if ((line.length() == 0) || line.startsWith("#")) continue;
+        if (line == null) {
+          break;
+        }
+        if ((line.length() == 0) || line.startsWith("#")) {
+          continue;
+        }
 
-        StringBuilder lineb =  new StringBuilder(line);
+        StringBuilder lineb = new StringBuilder(line);
         StringUtil2.remove(lineb, "'+,/");
         String[] flds = lineb.toString().split("[:]");
 
@@ -118,13 +120,11 @@ public class NcepRfcTables extends NcepTables {
 
         result.put(val, name);
       }
-
       return Collections.unmodifiableMap(result);  // all at once - thread safe
 
     } catch (IOException ioError) {
       logger.warn("An error occurred in Grib1Tables while trying to open the table " + path + " : " + ioError);
       return null;
     }
-
   }
 }

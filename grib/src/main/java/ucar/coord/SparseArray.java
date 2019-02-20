@@ -4,6 +4,7 @@
  */
 package ucar.coord;
 
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.util.Misc;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Immutable
 public class SparseArray<T> {
-  static private final Logger logger = LoggerFactory.getLogger(SparseArray.class);
+  private static final Logger logger = LoggerFactory.getLogger(SparseArray.class);
 
   private final int[] shape;    // multidim sizes
   private final int[] stride;  // for index calculation
@@ -73,6 +74,7 @@ public class SparseArray<T> {
     return result;
   }
 
+  @Nullable
   public T getContent(int idx) {
     if (idx >= track.length || idx < 0)
       logger.error("BAD index get="+ idx+" max= "+track.length, new Throwable());

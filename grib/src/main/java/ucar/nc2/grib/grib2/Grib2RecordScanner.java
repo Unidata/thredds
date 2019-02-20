@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
@@ -21,14 +22,14 @@ import java.util.Map;
  * @since 3/28/11
  */
 public class Grib2RecordScanner {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
-  static private final boolean debug = false;
-  static private final boolean debugRepeat = false;
-  static private final boolean debugEnding = false;
-  static private final int maxScan = 16000;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
+  private static final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
+  private static final boolean debug = false;
+  private static final boolean debugRepeat = false;
+  private static final boolean debugEnding = false;
+  private static final int maxScan = 16000;
 
-  static public boolean isValidFile(RandomAccessFile raf) {
+  public static boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
       boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
@@ -57,6 +58,7 @@ public class Grib2RecordScanner {
    * @param raf             from this RandomAccessFile
    * @param drsPos          Grib2SectionDataRepresentation starts here
    */
+  @Nullable
   public static Grib2Record findRecordByDrspos(RandomAccessFile raf, long drsPos) throws IOException {
     long pos = Math.max(0, drsPos- (20*1000)); // go back 20K
     Grib2RecordScanner scan = new Grib2RecordScanner(raf, pos);
@@ -170,14 +172,6 @@ public class Grib2RecordScanner {
       else
         gdsMap.put(crc, gds);
 
-      // look for duplicate pds
-      /* crc = pds.calcCRC();
-      Grib2SectionProductDefinition pdsCached = pdsMap.get(crc);
-      if (pdsCached != null)
-        pds = pdsCached;
-      else
-        pdsMap.put(crc, pds); */
-
       // check to see if we have a repeating record
       long pos = raf.getFilePointer();
       long ending = is.getEndPos();
@@ -229,7 +223,7 @@ public class Grib2RecordScanner {
         return next();
     }
 
-    return null; // last record was incomplete
+    throw new IOException("last record was incomplete");
   }
 
   // return true if got another repeat out of this record

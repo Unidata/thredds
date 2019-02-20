@@ -6,6 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import com.google.common.base.Throwables;
+import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.coord.CoordinateTime2D;
@@ -38,7 +39,7 @@ import java.util.*;
  */
 @Immutable
 public abstract class GribDataReader {
-  static private final Logger logger = LoggerFactory.getLogger(GribDataReader.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribDataReader.class);
 
 
   public static GribDataReader factory(GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
@@ -52,9 +53,9 @@ public abstract class GribDataReader {
   protected abstract void show(RandomAccessFile rafData, long dataPos) throws IOException;
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  static public GribCollectionImmutable.Record currentDataRecord;
-  static public GribDataValidator validator;
-  static public String currentDataRafFilename;
+  public static GribCollectionImmutable.Record currentDataRecord;
+  public static GribDataValidator validator;
+  public static String currentDataRafFilename;
   static boolean show = false;   // debug
 
   protected final GribCollectionImmutable gribCollection;
@@ -309,7 +310,7 @@ public abstract class GribDataReader {
     }
   }
 
-  static public class DataRecord implements Comparable<DataRecord> {
+  public static class DataRecord implements Comparable<DataRecord> {
     int resultIndex; // index into the result array
     GribCollectionImmutable.Record record;
     GdsHorizCoordSys hcs;
@@ -322,7 +323,7 @@ public abstract class GribDataReader {
     }
 
     @Override
-    public int compareTo(DataRecord o) {
+    public int compareTo(@Nonnull DataRecord o) {
       int r = Misc.compare(record.fileno, o.record.fileno);
       if (r != 0) return r;
       return Misc.compare(record.pos, o.record.pos);

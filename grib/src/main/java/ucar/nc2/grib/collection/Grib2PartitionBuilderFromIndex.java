@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
@@ -22,6 +23,7 @@ import java.util.List;
 public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
+  @Nullable
   static Grib2Partition createTimePartitionFromIndex(String name, RandomAccessFile raf,
       FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
@@ -33,6 +35,7 @@ public class Grib2PartitionBuilderFromIndex extends Grib2CollectionBuilderFromIn
   }
 
   // read in the index, index raf already open; return null on failure
+  @Nullable
   static PartitionCollectionMutable openMutablePCFromIndex(String name, RandomAccessFile raf,
       FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 

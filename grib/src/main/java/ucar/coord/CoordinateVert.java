@@ -4,6 +4,7 @@
  */
 package ucar.coord;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -61,8 +62,6 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public Object getValue(int idx) {
-    if (idx >= levelSorted.size())
-      return null;
     return levelSorted.get(idx);
   }
 
@@ -87,6 +86,7 @@ public class CoordinateVert implements Coordinate {
   }
 
   @Override
+  @Nullable
   public String getUnit() {
     return vunit == null ? null : vunit.getUnits();
   }
@@ -181,7 +181,7 @@ public class CoordinateVert implements Coordinate {
 
   //////////////////////////////////////////////////////////////
 
-  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
     VertCoord.VertUnit vunit;
 
@@ -208,7 +208,7 @@ public class CoordinateVert implements Coordinate {
     }
   }
 
-  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     int code;
     Grib1Customizer cust;
 

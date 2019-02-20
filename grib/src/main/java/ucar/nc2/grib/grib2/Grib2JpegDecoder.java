@@ -35,7 +35,7 @@ import java.io.ByteArrayInputStream;
  * @author caron  rewritten Aug 2014
  */
 public class Grib2JpegDecoder {
-  static private final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
+  private static final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
 
   private boolean debug;
   private int rate;
@@ -98,10 +98,6 @@ public class Grib2JpegDecoder {
 
     // Create parameter list using defaults
     pl = new ParameterList(defpl);
-
-    if (argv.length == 0) {
-      throw new IllegalArgumentException("No arguments!");
-    }
 
     // Parse arguments from argv
     try {

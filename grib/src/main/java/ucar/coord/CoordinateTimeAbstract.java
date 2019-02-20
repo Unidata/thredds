@@ -20,8 +20,8 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public abstract class CoordinateTimeAbstract implements Coordinate {
-  static public final String MIXED_INTERVALS = "Mixed_intervals";
-  static public CalendarDateFactory cdf;
+  public static final String MIXED_INTERVALS = "Mixed_intervals";
+  public static CalendarDateFactory cdf;
 
   final String periodName;                   // used to create the udunit
   protected final int code;                  // unit of time (Grib1 table 4, Grib2 table 4.4), eg hour, day, month

@@ -5,6 +5,7 @@
 package ucar.nc2.grib.coverage;
 
 import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -46,9 +47,9 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
-  static private final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
 
-  static public Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
+  public static Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
     GribCollectionImmutable gc;
 
     if (endpoint.startsWith("file:"))
@@ -786,6 +787,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   // create a dependent runtime axis for this time, using the index into the master runtimes array
+  @Nullable
   private CoverageCoordAxis makeRuntimeAuxCoord(CoordinateTimeAbstract time) {
     if (time.getTime2runtime() == null) return null;
     String refName = "ref" + time.getName();

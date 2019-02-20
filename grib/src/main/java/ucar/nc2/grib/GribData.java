@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
@@ -14,7 +15,7 @@ import java.util.Formatter;
 import java.util.zip.Deflater;
 
 /**
- * Abstraction for handling Grib data
+ * Abstraction for handling Grib 1 & 2 data in a uniform way.
  *
  * @author John
  * @since 9/1/2014
@@ -22,7 +23,6 @@ import java.util.zip.Deflater;
 public class GribData {
 
   public enum InterpolationMethod {none, cubic, linear}
-
 
   private static GribData.InterpolationMethod useInterpolationMethod = GribData.InterpolationMethod.linear; // default
 
@@ -33,7 +33,6 @@ public class GribData {
   public static void setInterpolationMethod(GribData.InterpolationMethod interpolationMethod) {
     useInterpolationMethod = interpolationMethod;
   }
-
 
   public interface Bean {
 
@@ -147,13 +146,15 @@ public class GribData {
     }
   }
 
-  public static byte[] calcScaleOffset(GribData.Bean bean1, Formatter f) {
+  /** This reports how well different compression schemes would work on the specific data.
+   * Should be renamed */
+  public static void calcScaleOffset(GribData.Bean bean1, Formatter f) {
     float[] data;
     try {
       data = bean1.readData();
     } catch (IOException e) {
       f.format("IOException %s", e.getMessage());
-      return null;
+      return;
     }
     int npoints = data.length;
 
@@ -265,13 +266,10 @@ public class GribData {
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
     f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
     f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
-
-    //////////////////////////////////////////////////////////////
-
-    return scaledData;
   }
 
-  static public byte[] compressScaled(GribData.Bean bean) throws IOException {
+  @Nullable
+  public static byte[] compressScaled(GribData.Bean bean) throws IOException {
     float[] data = bean.readData();
     int npoints = data.length;
 
@@ -320,7 +318,7 @@ public class GribData {
   }
 
   // only used by test code
-  static public float[] uncompressScaled(byte[] bdata) throws IOException {
+  public static float[] uncompressScaled(byte[] bdata) throws IOException {
     throw new UnsupportedOperationException("bzip2 compression no longer supported.");
   }
 
@@ -330,13 +328,13 @@ public class GribData {
     return bb.array();
   }
 
-  static public byte[] convertToBytes(int[] data) {
+  public static byte[] convertToBytes(int[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
     for (int val : data) bb.putInt(val);
     return bb.array();
   }
 
-  static public double entropy(byte[] data) {
+  public static double entropy(byte[] data) {
     int[] p = new int[256];
 
     // count occurrences
@@ -357,7 +355,7 @@ public class GribData {
     return (sum == 0) ? 0.0 : -sum;
   }
 
-  static public double entropy(int nbits, int[] data) {
+  public static double entropy(int nbits, int[] data) {
     if (data == null) return 0.0;
 
     int n = (int) Math.pow(2, nbits);

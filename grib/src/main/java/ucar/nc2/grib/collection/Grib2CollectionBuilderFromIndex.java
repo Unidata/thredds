@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribTables;
@@ -25,6 +26,7 @@ import java.io.IOException;
 class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
+  @Nullable
   static Grib2Collection readFromIndex(String name, RandomAccessFile raf,
       FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 
@@ -42,6 +44,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
 
   // read in the index, index raf already open; return null on failure
+  @Nullable
   static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf,
       FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
 

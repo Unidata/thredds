@@ -4,6 +4,7 @@
  */
 package ucar.nc2.wmo;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -152,6 +153,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    * @param subcenter_id subcenter id
    * @return subcenter name, or null if not found
    */
+  @Nullable
   static public String getSubCenterName(int center_id, int subcenter_id) {
     return getTableValue(12, center_id, subcenter_id);
   }
@@ -163,6 +165,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
    * @param subcat data subcategory
    * @return subcategory name, or null if not found
    */
+  @Nullable
   static public String getDataSubcategoy(int cat, int subcat) {
     return getTableValue(13, cat, subcat);
   }
@@ -191,6 +194,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     return cct;
   }
 
+  @Nullable
   public static String getTableValue(int tableNo, int code) {
     CommonCodeTable cct = getTable(tableNo);
     if (cct == null) {
@@ -202,6 +206,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     return te.value;
   }
 
+  @Nullable
   public static String getTableValue(int tableNo, int code, int code2) {
     CommonCodeTable cct = getTable(tableNo);
     TableEntry te =  cct.get(code, code2);
@@ -286,6 +291,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
   }
 
   // look replace with hash or array
+  @Nullable
   TableEntry get(int code) {
     for (TableEntry p : entries) {
       if (p.code == code) return p;
@@ -293,6 +299,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
     return null;
   }
 
+  @Nullable
   TableEntry get(int code, int code2) {
     for (TableEntry p : entries) {
       if ((p.code == code) && (p.code2 == code2))return p;
@@ -396,7 +403,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
 
   private static final char badDash = 173;
   private String filter(String s) {
-    if (s == null) return null;
+    if (s == null) return "";
     return StringUtil2.replace(s, badDash, "-");
   }
 

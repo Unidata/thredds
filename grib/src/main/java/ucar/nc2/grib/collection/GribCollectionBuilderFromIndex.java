@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
@@ -403,6 +404,7 @@ message Coord {
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }
 
+  @Nullable
   private int[] readTime2Runtime(GribCollectionProto.Coord pc) {
     if (pc.getTime2RuntimeCount() > 0) {
       int[] time2runtime = new int[pc.getTime2RuntimeCount()];

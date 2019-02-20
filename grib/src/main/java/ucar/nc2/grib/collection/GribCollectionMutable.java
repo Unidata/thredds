@@ -5,6 +5,8 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
 import ucar.coord.*;
@@ -147,6 +149,7 @@ public class GribCollectionMutable implements Closeable {
     return result;
   }
 
+  @Nullable
   File getIndexParentFile() {
     if (indexRaf == null) return null;
     Path index = Paths.get(indexRaf.getLocation());
@@ -309,7 +312,7 @@ public class GribCollectionMutable implements Closeable {
      }
 
     @Override
-    public int compareTo(GroupGC o) {
+    public int compareTo(@Nonnull GroupGC o) {
       return getDescription().compareTo(o.getDescription());
     }
 
@@ -541,6 +544,7 @@ public class GribCollectionMutable implements Closeable {
       return result;
     }
 
+    @Nullable
     public Coordinate getCoordinate(Coordinate.Type want) {
       for (int idx : coordIndex)
         if (group.coords.get(idx).getType() == want)
@@ -555,6 +559,7 @@ public class GribCollectionMutable implements Closeable {
       return -1;
     }
 
+    @Nullable
     public String getTimeIntvName() {
       if (intvName != null) return intvName;
       CoordinateTimeIntv timeiCoord = (CoordinateTimeIntv) getCoordinate(Coordinate.Type.timeIntv);
@@ -630,18 +635,23 @@ public class GribCollectionMutable implements Closeable {
     }
 
     public String toStringShort() {
-      Formatter sb = new Formatter();
-      sb.format("Variable {%d-%d-%d", discipline, category, parameter);
-      sb.format(", levelType=%d", levelType);
-      sb.format(", intvType=%d", intvType);
-      if (intvName != null && intvName.length() > 0) sb.format(" intv=%s", intvName);
-      if (probabilityName != null && probabilityName.length() > 0) sb.format(" prob=%s", probabilityName);
-      sb.format(" cdmHash=%d}", gribVariable.hashCode());
-      return sb.toString();
+      try (Formatter sb = new Formatter()) {
+        sb.format("Variable {%d-%d-%d", discipline, category, parameter);
+        sb.format(", levelType=%d", levelType);
+        sb.format(", intvType=%d", intvType);
+        if (intvName != null && intvName.length() > 0) {
+          sb.format(" intv=%s", intvName);
+        }
+        if (probabilityName != null && probabilityName.length() > 0) {
+          sb.format(" prob=%s", probabilityName);
+        }
+        sb.format(" cdmHash=%d}", gribVariable.hashCode());
+        return sb.toString();
+      }
     }
 
     @Override
-    public int compareTo(VariableIndex o) {
+    public int compareTo(@Nonnull VariableIndex o) {
       int r = discipline - o.discipline;  // LOOK add center, subcenter, version?
       if (r != 0) return r;
       r = category - o.category;

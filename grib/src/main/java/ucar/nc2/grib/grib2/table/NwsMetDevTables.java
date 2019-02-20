@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -33,6 +34,7 @@ public class NwsMetDevTables extends NcepLocalTables {
   }
 
   @Override
+  @Nullable
   public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     if (!pds.isTimeInterval()) return null;

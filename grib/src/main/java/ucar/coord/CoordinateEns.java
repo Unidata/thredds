@@ -155,7 +155,7 @@ public class CoordinateEns implements Coordinate {
 
   //////////////////////////////////////////////////////////////
 
-  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
 
     public Builder2(int code) {
@@ -178,7 +178,7 @@ public class CoordinateEns implements Coordinate {
     }
   }
 
-  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     int code;
     Grib1Customizer cust;
 

@@ -26,44 +26,52 @@ import java.util.List;
 public class Grib2Table {
   public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev}
   private static final String tableMapPath = "resources/grib2/standardTableMap.txt";
-  static public List<Grib2Table> tables = null;
-  static private Grib2Table standardTable = null;
+  public static List<Grib2Table> tables = null;
+  private static Grib2Table standardTable = null;
 
-  static private List<Grib2Table> init() {
+  private static List<Grib2Table> init() {
     List<Grib2Table> result = new ArrayList<>();
     ClassLoader cl = Grib2Table.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableMapPath)) {
       if (is == null) throw new IllegalStateException("Cant find " + tableMapPath);
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF8")));
-      int count = 0;
-      while (true) {
-        String line = dataIS.readLine();
-        if (line == null) break;
-        if (line.startsWith("#")) continue;
-        count++;
+      try (BufferedReader dataIS = new BufferedReader(
+          new InputStreamReader(is, Charset.forName("UTF8")))) {
+        int count = 0;
+        while (true) {
+          String line = dataIS.readLine();
+          if (line == null) {
+            break;
+          }
+          if (line.startsWith("#")) {
+            continue;
+          }
+          count++;
 
-        String[] flds = line.split(";");
-        if (flds.length < 7) {
-          System.out.printf("%d BAD format == %s%n", count, line);
-          continue;
-        }
+          String[] flds = line.split(";");
+          if (flds.length < 7) {
+            System.out.printf("%d BAD format == %s%n", count, line);
+            continue;
+          }
 
-        int fldidx = 0;
-        try {
-          int center = Integer.parseInt(flds[fldidx++].trim());
-          int subcenter = Integer.parseInt(flds[fldidx++].trim());
-          int master = Integer.parseInt(flds[fldidx++].trim());
-          int local = Integer.parseInt(flds[fldidx++].trim());
-          int genProcess = Integer.parseInt(flds[fldidx++].trim());
-          String typeName = StringUtil2.remove(flds[fldidx++].trim(), '"');
-          String name = StringUtil2.remove(flds[fldidx++].trim(), '"');
-          String resource = (flds.length > 7) ? StringUtil2.remove(flds[fldidx++].trim(), '"') : null;
-          Type type = Type.valueOf(typeName);
-          Grib2Table table = new Grib2Table(name, center, subcenter, master, local, genProcess, resource, type);
-          result.add(table);
+          int fldidx = 0;
+          try {
+            int center = Integer.parseInt(flds[fldidx++].trim());
+            int subcenter = Integer.parseInt(flds[fldidx++].trim());
+            int master = Integer.parseInt(flds[fldidx++].trim());
+            int local = Integer.parseInt(flds[fldidx++].trim());
+            int genProcess = Integer.parseInt(flds[fldidx++].trim());
+            String typeName = StringUtil2.remove(flds[fldidx++].trim(), '"');
+            String name = StringUtil2.remove(flds[fldidx++].trim(), '"');
+            String resource =
+                (flds.length > 7) ? StringUtil2.remove(flds[fldidx++].trim(), '"') : null;
+            Type type = Type.valueOf(typeName);
+            Grib2Table table = new Grib2Table(name, center, subcenter, master, local, genProcess,
+                resource, type);
+            result.add(table);
 
-        } catch (Exception e) {
-          System.out.printf("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
+          } catch (Exception e) {
+            System.out.printf("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
+          }
         }
       }
     } catch (IOException e) {
@@ -87,7 +95,7 @@ public class Grib2Table {
     return standardTable;
   }
 
-  static public List<Grib2Table> getTables() {
+  public static List<Grib2Table> getTables() {
     if (tables == null)
       tables = init();
 
@@ -151,7 +159,7 @@ public class Grib2Table {
     return result;
   }
 
-  static public class Id {
+  public static class Id {
     public final int center, subCenter, masterVersion, localVersion, genProcessId;
 
     public Id(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {

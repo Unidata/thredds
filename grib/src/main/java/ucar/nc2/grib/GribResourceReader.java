@@ -35,7 +35,7 @@ public class GribResourceReader {
       return new FileInputStream(f);
 
     // give up
-    return null;
+    throw new FileNotFoundException("Cant find resource "+resourceName);
   }
 
 }

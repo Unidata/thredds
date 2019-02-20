@@ -5,7 +5,9 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig.GribConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -32,7 +34,7 @@ import java.util.*;
  * @since 2/5/14
  */
 public class Grib1CollectionBuilder extends GribCollectionBuilder {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
 
   private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib1Customizer cust;
@@ -190,16 +192,14 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
 
     @Override
-    public int compareTo(VariableBag o) {
+    public int compareTo(@Nonnull VariableBag o) {
       return Grib1Utils.extractParameterCode(first).compareTo(Grib1Utils.extractParameterCode(o.first));
     }
 
     @Override
     public String toString() {
       return "VariableBag{" +
-              "first=" + first +
-              ", gv=" + gv +
-              ", atomList=" + atomList +
+              ", variable=" + gv.makeVariableName(new GribConfig()) +
               ", coordND=" + coordND +
               ", timeUnit=" + timeUnit +
               ", coordIndex=" + coordIndex +

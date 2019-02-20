@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nullable;
 import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -28,17 +29,17 @@ import java.util.*;
  */
 @Immutable
 public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConverter {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Customizer.class);
-  static private Map<Grib2Table.Id, Grib2Customizer> tables = new HashMap<>();
-  static private Grib2Customizer wmoStandardTable = null;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Customizer.class);
+  private static Map<Grib2Table.Id, Grib2Customizer> tables = new HashMap<>();
+  private static Grib2Customizer wmoStandardTable = null;
 
-  static public Grib2Customizer factory(Grib2Record gr) throws IOException {
+  public static Grib2Customizer factory(Grib2Record gr) {
     Grib2SectionIdentification ids = gr.getId();
     Grib2Pds pds = gr.getPDS();
     return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version(), pds.getGenProcessId());
   }
 
-  static public Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+  public static Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
     Grib2Table.Id id = new Grib2Table.Id(center, subCenter, masterVersion, localVersion, genProcessId);
     Grib2Customizer cust = tables.get(id);
     if (cust != null) return cust;
@@ -50,7 +51,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return cust;
   }
 
-  static public Grib2Customizer factory(Grib2Table grib2Table) {
+  public static Grib2Customizer factory(Grib2Table grib2Table) {
     switch (grib2Table.type) {
       case cfsr: return CfsrLocalTables.getCust(grib2Table);
       case gempak: return GempakLocalTables.getCust(grib2Table);
@@ -66,11 +67,11 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     }
   }
 
-  static public int makeParamId(int discipline, int category, int number) {
+  public static int makeParamId(int discipline, int category, int number) {
     return (discipline << 16) + (category << 8) + number;
   }
 
-  static public boolean isLocal(Parameter p) {
+  public static boolean isLocal(Parameter p) {
     return ((p.getCategory() > 191) || (p.getNumber() > 191));
   }
 
@@ -94,27 +95,33 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return s;
   }
 
+  @Nullable
   public String getTableValue(String tableName, int code) {
     return WmoCodeTable.getTableValue(tableName, code);
   }
 
+  @Nullable
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }
 
   @Override
+  @Nullable
   public String getSubCenterName(int center_id, int subcenter_id) {
     return CommonCodeTable.getSubCenterName(center_id, subcenter_id);
   }
 
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     return null;
   }
 
+  @Nullable
   public String getGeneratingProcessTypeName(int genProcess) {
     return getTableValue("4.3", genProcess);
   }
 
+  @Nullable
   public String getCategory(int discipline, int category) {
     return getTableValue("4.1." + discipline, category);
   }
@@ -136,6 +143,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return timeUnitConverter.convertTimeUnit(timeUnit);
   }
 
+  @Nullable
   public CalendarDate getForecastDate(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     if (pds.isTimeInterval()) {
@@ -159,7 +167,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     4: Successive times processed have start time of forecast decremented and forecast time incremented so that valid time remains constant
     5: Floating subinterval of time between forecast time and end of overall time interval
 
-  static public class TimeInterval {
+  public static class TimeInterval {
     public int statProcessType; // (code table 4.10) Statistical process used to calculate the processed field from the field at each time increment during the time range
     public int timeIncrementType;  // (code table 4.11) Type of time increment between successive fields used in the statistical processing
     public int timeRangeUnit;  // (code table 4.4) Indicator of unit of time for time range over which statistical processing is done
@@ -175,9 +183,10 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   /**
    * Get the time interval in units of gr.getPDS().getTimeUnit()
    *
-   * @param gr Grib record
+   * @param gr Grib record, must have pds that is a  time interval.
    * @return time interval in units of gr.getPDS().getTimeUnit()
    */
+  @Nullable
   public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
     // note  from Arthur Taylor (degrib):
     /* If there was a range I used:
@@ -216,7 +225,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
     // End of Interval as date
     CalendarDate EI = pdsIntv.getIntervalTimeEnd();
-    if (EI == null) {  // all values were set to zero   LOOK guessing!
+    if (EI == CalendarDate.UNKNOWN) {  // all values were set to zero   LOOK guessing!
       return new TimeCoord.TinvDate(gr.getReferenceDate(), period);
     } else {
       return new TimeCoord.TinvDate(period, EI);
@@ -269,6 +278,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
    * @param gr from this record
    * @return time interval in units of pds.getTimeUnit(), or null if not a time interval
    */
+  @Nullable
   public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
     TimeCoord.TinvDate tinvd = getForecastTimeInterval(gr);
     if (tinvd == null) return null;
@@ -276,6 +286,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     Grib2Pds pds = gr.getPDS();
     int unit = convertTimeUnit(pds.getTimeUnit());
     TimeCoord.Tinv tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
+    if (tinv == null) return null;
     int[] result = new int[2];
     result[0] = tinv.getBounds1();
     result[1] = tinv.getBounds2();
@@ -283,7 +294,10 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   public String getStatisticName(int id) {
-    return getTableValue("4.10", id); // WMO
+    String result = getTableValue("4.10", id); // WMO
+    if (result == null)
+      result = getStatisticNameShort(id);
+    return result;
   }
 
   public String getStatisticNameShort(int id) {
@@ -292,6 +306,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   @Override
+  @Nullable
   public GribStatType getStatType(int grib2StatCode) {
     return GribStatType.getStatTypeFromGrib2(grib2StatCode);
   }
@@ -423,6 +438,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
     return vunit.isVerticalCoordinate();
   }
 
+  @Nullable
   public String getLevelName(int id) {
     return getTableValue("4.5", id);
   }
@@ -505,6 +521,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
   /////////////////////////////////////////////////////
   // debugging
+  @Nullable
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
     return WmoCodeTable.getParameterEntry(discipline, category, number);
   }

@@ -51,9 +51,8 @@ import java.util.Formatter;
  */
 @Immutable
 public abstract class Grib1Gds {
-
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
-  public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
+  static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
 
   /*
   Code table 6 – Data representation type
@@ -200,15 +199,15 @@ public abstract class Grib1Gds {
       1     Resolved u- and v-components of vector quantities relative to the defined grid in the direction of increasing x and y (or i and j) coordinates respectively
    6–8 0    Reserved – set to zero */
 
-  static private boolean getDirectionIncrementsGiven(int resolution) {
+  private static boolean getDirectionIncrementsGiven(int resolution) {
     return ((resolution & GribNumbers.bitmask[0]) != 0);
   }
 
-  static private boolean getEarthShapeIsSpherical(int resolution) {
+  private static boolean getEarthShapeIsSpherical(int resolution) {
     return ((resolution & GribNumbers.bitmask[1]) == 0);
   }
 
-  static private boolean getUVisReletive(int resolution) {
+  private static boolean getUVisReletive(int resolution) {
     return ((resolution & GribNumbers.bitmask[1]) != 0);
   }
 
@@ -582,8 +581,7 @@ public abstract class Grib1Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj
-          .latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
@@ -1408,7 +1406,7 @@ Grid definition –   polar stereographic
 
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
-      return null;
+      return null; // LOOK not done yet
     }
 
     @Override
@@ -1430,8 +1428,6 @@ Grid definition –   polar stereographic
 
   public static class UnknownGds extends Grib1Gds {
 
-    int j, k, m, type, mode;
-
     UnknownGds(byte[] data, int template) {
       super(data, template);
     }
@@ -1448,7 +1444,7 @@ Grid definition –   polar stereographic
 
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
-      return null;
+      return null; // LOOK
     }
 
     @Override

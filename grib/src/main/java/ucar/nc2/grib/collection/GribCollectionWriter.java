@@ -270,7 +270,7 @@ class GribCollectionWriter {
     return config;
   } */
 
-  static public GribCollectionProto.GribAxisType convertAxisType(Coordinate.Type type) {
+  public static GribCollectionProto.GribAxisType convertAxisType(Coordinate.Type type) {
     switch (type) {
       case runtime:
         return GribCollectionProto.GribAxisType.runtime;

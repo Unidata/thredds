@@ -37,7 +37,7 @@ import java.util.List;
  */
 @Immutable
 public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate {
-  static private final Logger logger = LoggerFactory.getLogger(CoordinateTime.class);
+  private static final Logger logger = LoggerFactory.getLogger(CoordinateTime.class);
 
   private final List<Integer> offsetSorted;
 
@@ -67,8 +67,6 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   @Override
   public Object getValue(int idx) {
-    if (idx < 0 || idx >= offsetSorted.size())
-      return null;
     return offsetSorted.get(idx);
   }
 
@@ -166,7 +164,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
   //////////////////////////////////////////////////////
 
-  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     private final int code;  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
     private final CalendarDate refDate;
@@ -211,7 +209,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     }
   }
 
-  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     final Grib1Customizer cust;
     final int code;  // pdsFirst.getTimeUnit()
     final CalendarPeriod timeUnit;

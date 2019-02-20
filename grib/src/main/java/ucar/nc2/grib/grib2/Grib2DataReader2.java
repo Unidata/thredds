@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.iosp.BitReader;
@@ -31,7 +32,7 @@ import java.util.Arrays;
  */
 public class Grib2DataReader2 {
 
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
       .getLogger(Grib2DataReader2.class);
 
   private static final int[] bitsmv1 = new int[31];
@@ -128,6 +129,7 @@ public class Grib2DataReader2 {
     return data;
   }
 
+  @Nullable
   int[] getRawData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs)
       throws IOException {
     this.bitmap = bitmapSection.getBitmap(raf);
@@ -151,8 +153,8 @@ public class Grib2DataReader2 {
     return getData40raw(raf, (Grib2Drs.Type40) gdrs);
   }
 
-  static private final boolean staticMissingValueInUse = true;
-  static private final float staticMissingValue = Float.NaN;
+  private static final boolean staticMissingValueInUse = true;
+  private static final float staticMissingValue = Float.NaN;
 
   private float getMissingValue(Grib2Drs.Type2 gdrs) {
     int mvm = gdrs.missingValueManagement;
@@ -810,6 +812,7 @@ public class Grib2DataReader2 {
   }
 
   // Grid point data - JPEG 2000 code stream format
+  @Nullable
   private int[] getData40raw(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
     int nb = gdrs.numberOfBits;
     if (nb == 0) {

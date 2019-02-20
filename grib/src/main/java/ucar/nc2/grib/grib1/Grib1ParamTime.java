@@ -25,7 +25,7 @@ import javax.annotation.concurrent.Immutable;
 public class Grib1ParamTime {
 
     // code table 5 - 2010 edition of WMO manual on codes
-  static public String getTimeTypeName(int timeRangeIndicator) {
+  public static String getTimeTypeName(int timeRangeIndicator) {
     String timeRange;
 
     switch (timeRangeIndicator) {
@@ -379,11 +379,11 @@ public class Grib1ParamTime {
   }
 
   /**
-   * Get interval [start, end] since reference time in units of timeUnit, only if  an interval.
+   * Get interval [start, end] since reference time in units of timeUnit, must be an interval.
    * @return interval [start, end]
    */
   public int[] getInterval() {
-    return isInterval ? new int[]{start, end} : null;
+    return new int[]{start, end};
   }
 
   /**

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -27,8 +28,8 @@ import java.util.jar.JarFile;
  * @since 4/3/11
  */
 public class NcepLocalTables extends LocalTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  static private final String defaultResourcePath = "resources/grib2/ncep/v21.0.0/";
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
+  private static final String defaultResourcePath = "resources/grib2/ncep/v21.0.0/";
   private static NcepLocalTables single;
 
   public static Grib2Customizer getCust(Grib2Table table) {
@@ -73,8 +74,11 @@ public class NcepLocalTables extends LocalTables {
     if (dirURL.getProtocol().equals("jar")) {
             /* A JAR path */
       String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-      JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-      Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+      Enumeration<JarEntry> entries;
+      try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+        //gives ALL entries in jar
+        entries = jar.entries();
+      }
       Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
       while (entries.hasMoreElements()) {
         String name = entries.nextElement().getName();
@@ -113,11 +117,10 @@ public class NcepLocalTables extends LocalTables {
           logger.error("Error reading wmo tables", e);
         }
       }
-      return allParams;
     } catch (URISyntaxException | IOException e) {
       logger.error("NcepLocalTables failed", e);
     }
-    return null;
+    return allParams;
   }
 
   @Override
@@ -340,6 +343,7 @@ public class NcepLocalTables extends LocalTables {
   }
 
   @Override
+  @Nullable
   public GribStatType getStatType(int id) {
     if (id < 192) return super.getStatType(id);
     switch (id) {  // LOOK not correct
@@ -370,6 +374,7 @@ public class NcepLocalTables extends LocalTables {
   private static Map<Integer, String> statName;  // shared by all instances
 
   @Override
+  @Nullable
   public String getStatisticName(int id) {
     if (id < 192) return super.getStatisticName(id);
     if (statName == null) statName = initTable410();
@@ -377,15 +382,10 @@ public class NcepLocalTables extends LocalTables {
     return statName.get(id);
   }
 
-  // public so can be called from Grib2
+  @Nullable
   private Map<Integer, String> initTable410() {
     String path = grib2Table.getPath() + "Table4.10.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -397,15 +397,10 @@ public class NcepLocalTables extends LocalTables {
         String desc = elem1.getChildText("description");
         result.put(code, desc);
       }
-
       return result;  // all at once - thread safe
 
-    } catch (IOException ioe) {
+    } catch (IOException | JDOMException ioe) {
       logger.error("Cant read  " + path, ioe);
-      return null;
-
-    } catch (JDOMException e) {
-      logger.error("Cant parse = " + path, e);
       return null;
     }
   }
@@ -416,6 +411,7 @@ public class NcepLocalTables extends LocalTables {
   private static Map<Integer, String> genProcessMap;  // shared by all instances
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null) genProcessMap = NcepTables.getNcepGenProcess();
     if (genProcessMap == null) return null;
@@ -423,6 +419,7 @@ public class NcepLocalTables extends LocalTables {
   }
 
   @Override
+  @Nullable
   public String getCategory(int discipline, int category) {
     String catName = params.getCategory(discipline, category);
     if (catName != null) return catName;

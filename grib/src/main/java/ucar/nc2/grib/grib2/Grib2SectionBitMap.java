@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -19,12 +20,12 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib2SectionBitMap {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2SectionBitMap.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2SectionBitMap.class);
 
   private final long startingPosition;
   private final int bitMapIndicator;
 
-  static public Grib2SectionBitMap factory(RandomAccessFile raf, long startingPos) throws IOException {
+  public static Grib2SectionBitMap factory(RandomAccessFile raf, long startingPos) throws IOException {
     raf.seek(startingPos);
     return new Grib2SectionBitMap(raf);
   }
@@ -74,9 +75,10 @@ public class Grib2SectionBitMap {
    * Read the bit map array.
    *
    * @param raf read from here
-   * @return bit map as array of byte values
+   * @return bit map as array of byte values, or null if none.
    * @throws java.io.IOException on read error
    */
+  @Nullable
   public byte[] getBitmap(RandomAccessFile raf) throws IOException {
     // no bitMap
     if (bitMapIndicator == 255)
@@ -98,14 +100,6 @@ public class Grib2SectionBitMap {
     raf.readFully(data);
 
     return data;
-
-    /* create new bit map when it is first asked for
-    boolean[] bitmap = new boolean[numberOfPoints];
-    int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
-    for (int i = 0; i < bitmap.length; i++) {
-      bitmap[i] = (data[i / 8] & bitmask[i % 8]) != 0;
-    }
-    return bitmap; */
   }
 
   @Override

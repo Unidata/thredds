@@ -32,11 +32,11 @@ import java.util.Map;
  */
 public class Grib1RecordScanner {
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch(new byte[]{'G', 'R', 'I', 'B'});
-  static private final boolean debug = false;
-  static private final boolean debugGds = false;
-  static private final int maxScan = 16000;
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
+  private static final KMPMatch matcher = new KMPMatch(new byte[]{'G', 'R', 'I', 'B'});
+  private static final boolean debug = false;
+  private static final boolean debugGds = false;
+  private static final int maxScan = 16000;
 
   static boolean allowBadIsLength = false;
   static boolean allowBadDsLength = false; // ECMWF workaround
@@ -49,7 +49,7 @@ public class Grib1RecordScanner {
     Grib1RecordScanner.allowBadDsLength = allowBadDsLength;
   }
 
-  static public boolean isValidFile(RandomAccessFile raf) {
+  public static boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
       boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
@@ -250,8 +250,7 @@ public class Grib1RecordScanner {
       // skip this record
       // lastPos = is.getEndPos() + 20;  cant use is.getEndPos(), may be bad
       lastPos += 20;  // skip over the "GRIB" of this message
-      if (hasNext()) // search forward for another one
-      {
+      if (hasNext()) { // search forward for another one
         return next();
       }
 
@@ -260,13 +259,12 @@ public class Grib1RecordScanner {
       log.warn("Bad Grib1 record in file {}, skipping pos={}", raf.getLocation(), pos);
       // t.printStackTrace();
       lastPos += 20; // skip over the "GRIB"
-      if (hasNext()) // search forward for another one
-      {
+      if (hasNext()) { // search forward for another one
         return next();
       }
     }
 
-    return null; // last record was incomplete
+    throw new IOException("last record was incomplete");
   }
 
   private boolean checkEnding(long ending) throws IOException {

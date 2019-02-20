@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.time.CalendarPeriod;
@@ -18,7 +19,7 @@ import ucar.unidata.util.StringUtil2;
  */
 public class Grib2Utils {
 
-  static public String clean(String s) {
+  public static String clean(String s) {
     StringBuilder sb = new StringBuilder(s);
     StringUtil2.replace(sb, "/. ", "-p_");
     StringUtil2.remove(sb, "(),;");
@@ -33,21 +34,22 @@ public class Grib2Utils {
     return sb.toString().trim();
   }
 
-  static public String cleanupHeader(byte[] raw) {
+  public static String cleanupHeader(byte[] raw) {
     String result = StringUtil2.cleanup(raw);
     int pos = result.indexOf("data");
     if (pos > 0) result = result.substring(pos);
     return result;
   }
 
-  static public String getVariableName(Grib2Record gr) {
+  public static String getVariableName(Grib2Record gr) {
     String s =  WmoCodeTable.getParameterName(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
     if (s == null)
       s = "U"+ gr.getDiscipline()+"-"+gr.getPDS().getParameterCategory()+"-" + gr.getPDS().getParameterNumber();
     return s;
   }
 
-  static public CalendarPeriod getCalendarPeriod(int timeUnit) {
+  @Nullable
+  public static CalendarPeriod getCalendarPeriod(int timeUnit) {
 
     switch (timeUnit) { // code table 4.4
       case 0:
@@ -76,7 +78,6 @@ public class Grib2Utils {
         return CalendarPeriod.of(1, CalendarPeriod.Field.Second);
       default:
         return null;
-        // throw new UnsupportedOperationException("Unknown time unit = "+timeUnit); // LOOK cant look at record with exception here
     }
   }
 
@@ -85,11 +86,11 @@ public class Grib2Utils {
    * @param pds record to check
    * @return true if a layer
    */
-  static public boolean isLayer(Grib2Pds pds) {
+  public static boolean isLayer(Grib2Pds pds) {
     return pds.getLevelType2() != 255 && pds.getLevelType2() != 0;
   }
 
-  static public boolean isLatLon(int gridTemplate, int center) {
+  public static boolean isLatLon(int gridTemplate, int center) {
     return ((gridTemplate < 4) || ((gridTemplate >= 40) && (gridTemplate < 44)));
   }
 
@@ -98,12 +99,13 @@ public class Grib2Utils {
   // possibly move to Customizer
 
   // check if grid template is "Curvilinear Orthogonal", (NCEP 204) methods below only used when thats true
-  static public boolean isCurvilinearOrthogonal(int gridTemplate, int center) {
+  public static boolean isCurvilinearOrthogonal(int gridTemplate, int center) {
     return ((center == 7) && (gridTemplate == 204));
   }
 
   // isLatLon2D is true, check parameter to see if its a 2D lat/lon coordinate
-  static public LatLon2DCoord getLatLon2DcoordType(int discipline, int category, int parameter) {
+  @Nullable
+  public static LatLon2DCoord getLatLon2DcoordType(int discipline, int category, int parameter) {
     if ((discipline != 0) || (category != 2) || (parameter < 198 || parameter > 203)) return null;
     switch (parameter) {
       case 198:
@@ -131,13 +133,12 @@ public class Grib2Utils {
     }
   }
 
-
   /**
    * This looks for snippets in the variable name/desc as to whether it wants U, V, or P 2D coordinates
    * @param desc variable name/desc
    * @return  U, V, or P for normal variables, null for the coordinates themselves
    */
-  static public LatLonCoordType getLatLon2DcoordType(String desc) {
+  public static LatLonCoordType getLatLon2DcoordType(String desc) {
     LatLonCoordType type;
     if (desc.contains("u-component")) type = LatLonCoordType.U;
     else if (desc.contains("v-component")) type = LatLonCoordType.V;

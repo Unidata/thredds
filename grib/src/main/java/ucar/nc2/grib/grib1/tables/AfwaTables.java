@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
@@ -38,7 +39,7 @@ public class AfwaTables extends Grib1Customizer {
     return subcenterMap.get(subcenter);
   }
 
-  static private Map<Integer, String> makeSubcenterMap() {
+  private static Map<Integer, String> makeSubcenterMap() {
     Map<Integer, String> result = new HashMap<>(100);
 
     result.put(0, "AFWA Primary Table");
@@ -74,12 +75,13 @@ public class AfwaTables extends Grib1Customizer {
 
   // gen process
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null) makeGenProcessMap();
     return genProcessMap.get(genProcess);
   }
 
-  static private void makeGenProcessMap() {
+  private static void makeGenProcessMap() {
     genProcessMap = new HashMap<>(100);
     genProcessMap.put(10, "Mesoscale Model 5 (MM5)");
     genProcessMap.put(11, "Weather Research and Forecasting Model (WRF)");
@@ -149,7 +151,7 @@ public class AfwaTables extends Grib1Customizer {
     return super.getLevelType(code);
   }
   
-  static private void makeLevelTypesMap() {
+  private static void makeLevelTypesMap() {
     levelTypesMap = new HashMap<>(100);
     // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
     levelTypesMap.put(21,  new GribLevelType(21,  "RTNEPH cloud layer", "RTNEPH", "", null, true, true));

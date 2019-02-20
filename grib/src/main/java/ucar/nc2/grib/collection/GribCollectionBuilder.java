@@ -243,7 +243,7 @@ abstract class GribCollectionBuilder {
   }
 
   @Immutable
-  static protected class GroupAndRuntime {
+  protected static class GroupAndRuntime {
     private final int hashCode;
     private final long runtime;
 

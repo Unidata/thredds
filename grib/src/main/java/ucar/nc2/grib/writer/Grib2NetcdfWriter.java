@@ -49,19 +49,19 @@ public class Grib2NetcdfWriter implements Closeable {
     }
   }
 
-  static public int getBitMask(int bitN) {
+  public static int getBitMask(int bitN) {
     if (bitN >= 23) return allOnes;
     return allOnes << 23-bitN;
   }
 
-  static private final int allOnes = 0xffffffff;
-  static private final int mask23 = 0xffffffff;
-  static private final int mask19 = 0xfffffff0;
-  static private final int mask15 = 0xffffff00;
-  static private final int mask11 = 0xfffff000;
-  static private final int mask07 = 0xffff0000;
-  static private final int mask03 = 0xfff00000;
-  static private final int mask00 = 0xff800000;
+  private static final int allOnes = 0xffffffff;
+  private static final int mask23 = 0xffffffff;
+  private static final int mask19 = 0xfffffff0;
+  private static final int mask15 = 0xffffff00;
+  private static final int mask11 = 0xfffff000;
+  private static final int mask07 = 0xffff0000;
+  private static final int mask03 = 0xfff00000;
+  private static final int mask00 = 0xff800000;
 
   // set all the bits=0 in bitMask to 0,
 
@@ -71,7 +71,7 @@ public class Grib2NetcdfWriter implements Closeable {
    * @param bitMask  bitMask from getBitMask()
    * @return modified float
    */
-  static public float bitShave(float value, int bitMask) {
+  public static float bitShave(float value, int bitMask) {
     if (Float.isNaN(value)) return value;   // ??
 
     int bits = Float.floatToRawIntBits(value);

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -51,7 +52,7 @@ import java.util.*;
  */
 @Immutable
 public abstract class GribCollectionImmutable implements Closeable, FileCacheable {
-  static private final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribCollectionImmutable.class);
   public static int countGC; // debug
 
   public enum Type {    // must match with GribCollectionProto.Dataset.Type
@@ -307,6 +308,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return groups.get(index);
     }
 
+    @Nullable
     public GroupGC findGroupById(String id) {
       for (GroupGC g : getGroups()) {
         if (g.getId().equals(id))
@@ -323,7 +325,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     final List<VariableIndex> variList;
     final List<Coordinate> coords;      // shared coordinates
     final int[] filenose;               // key for GC.fileMap
-    final private Map<VariableIndex, VariableIndex> varMap;
+    private final Map<VariableIndex, VariableIndex> varMap;
 
     public GroupGC(Dataset ds, GribCollectionMutable.GroupGC gc) {
       this.ds = ds;
@@ -528,6 +530,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // coord based record finding. note only one record at a time
+    @Nullable
     synchronized Record getRecordAt(SubsetParams coords) {
       int[] want = new int[getRank()];
       int count = 0;
@@ -614,6 +617,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return result;
     }
 
+    @Nullable
     public Coordinate getCoordinate(Coordinate.Type want) {
       for (int idx : coordIndex)
         if (group.coords.get(idx).getType() == want)
@@ -621,6 +625,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return null;
     }
 
+    @Nullable
     CoordinateTimeAbstract getCoordinateTime() {
       for (int idx : coordIndex)
         if (group.coords.get(idx) instanceof CoordinateTimeAbstract)
@@ -735,14 +740,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     }
 
     public String toStringFrom() {
-      Formatter sb = new Formatter();
-      sb.format("Variable {%d-%d-%d", info.discipline, info.category, info.parameter);
-      sb.format(", levelType=%d", info.levelType);
-      sb.format(", intvType=%d", info.intvType);
-      sb.format(", nrecords=%d", nrecords);
-      sb.format(", ndups=%d", ndups);
-      sb.format(", nmiss=%d}", nmissing);
-      return sb.toString();
+      try (Formatter sb = new Formatter()) {
+        sb.format("Variable {%d-%d-%d", info.discipline, info.category, info.parameter);
+        sb.format(", levelType=%d", info.levelType);
+        sb.format(", intvType=%d", info.intvType);
+        sb.format(", nrecords=%d", nrecords);
+        sb.format(", ndups=%d", ndups);
+        sb.format(", nmiss=%d}", nmissing);
+        return sb.toString();
+      }
     }
 
     @Override
@@ -799,7 +805,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
       // derived from pds
       final int category, parameter, levelType, intvType, ensDerivedType, probType;
-      final String intvName;  // eg "mixed intervals, 3 Hour, etc"
+      @Nullable final String intvName;  // eg "mixed intervals, 3 Hour, etc"
       final String probabilityName;
       final boolean isLayer, isEnsemble;
       final int genProcessType;
@@ -1032,14 +1038,11 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
     return fileMap.get(fileno).getPath();
   }
 
-  public String getFirstFilename() {
-    return null; // fileMap.get(fileno).getPath(); LOOK
-  }
-
   public Collection<MFile> getFiles() {
     return fileMap.values();
   }
 
+  @Nullable
   public MFile findMFileByName(String filename) {
     for (MFile file : fileMap.values())
       if (file.getName().equals(filename))
@@ -1080,12 +1083,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   ///////////////////////
 
   // stuff needed by InvDatasetFcGrib
+  @Nullable
   public abstract ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
                                                                   FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
+  @Nullable
   public abstract ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
                                                               FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
+  @Nullable
   public abstract CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
                                                      FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException;
 
