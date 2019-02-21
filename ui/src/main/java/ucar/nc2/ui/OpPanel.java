@@ -27,7 +27,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 /**
+ *  Abstract superclass for ToolsUI panel contents.
  *
+ *  Subclasses must implement process()
  */
 abstract class OpPanel extends JPanel {
     final static org.slf4j.Logger logger
