@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -14,7 +14,6 @@ import thredds.ui.catalog.ThreddsUI;
 import ucar.httpservices.HTTPException;
 import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
 import ucar.nc2.dt.GridDataset;
@@ -51,7 +50,6 @@ import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.simplegeom.SimpleGeomTable;
 import ucar.nc2.ui.simplegeom.SimpleGeomUI;
-import ucar.nc2.ui.util.Resource;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.ProgressMonitor;
@@ -64,19 +62,19 @@ import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.ui.Debug;
 
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Netcdf Tools user interface.
@@ -84,16 +82,17 @@ import java.util.List;
  * @author caron
  */
 public class ToolsUI extends JPanel {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ToolsUI.class);
+  private final static org.slf4j.Logger log
+                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static private final String WorldDetailMap = "/resources/nj22/ui/maps/Countries.shp";
-  static private final String USMap = "/resources/nj22/ui/maps/us_state.shp";
+  private final static String WorldDetailMap = "/resources/nj22/ui/maps/Countries.shp";
+  private final static String USMap = "/resources/nj22/ui/maps/us_state.shp";
 
-  static private final String FRAME_SIZE = "FrameSize";
-  static private final String DIALOG_VERSION = "5.0";
-  static private final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
-  static private final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
-  static private boolean debugListen = false;
+  final static String FRAME_SIZE = "FrameSize";
+  private final static String DIALOG_VERSION = "5.0";
+  private final static String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
+  private final static String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
+  private static boolean debugListen = false;
 
   private PreferencesExt mainPrefs;
 
@@ -159,7 +158,7 @@ public class ToolsUI extends JPanel {
 
   private JFrame parentFrame;
   private FileManager fileChooser;
-  private AboutWindow aboutWindow = null;
+  private ToolsAboutWindow aboutWindow;
 
   // data
   private DataFactory threddsDataFactory = new DataFactory();
@@ -173,18 +172,20 @@ public class ToolsUI extends JPanel {
   private boolean debug = false, debugTab = false, debugCB = false;
 
   // Check if on a mac
-  static private final String osName = System.getProperty("os.name").toLowerCase();
-  static private final boolean isMacOs = osName.startsWith("mac os x");
+  private final static String osName = System.getProperty("os.name").toLowerCase();
+  private final static boolean isMacOs = osName.startsWith("mac os x");
 
   public ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
     // FileChooser is shared
-    javax.swing.filechooser.FileFilter[] filters = new javax.swing.filechooser.FileFilter[2];
-    filters[0] = new FileManager.HDF5ExtFilter();
-    filters[1] = new FileManager.NetcdfExtFilter();
+    FileFilter[] filters = new FileFilter[]{
+                            new FileManager.HDF5ExtFilter(),
+                            new FileManager.NetcdfExtFilter() };
     fileChooser = new FileManager(parentFrame, null, filters, (PreferencesExt) prefs.node("FileManager"));
+
+    OpPanel.setFileChooser(fileChooser);
 
     // all the tabbed panes
     tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -193,8 +194,8 @@ public class ToolsUI extends JPanel {
     grib2TabPane = new JTabbedPane(JTabbedPane.TOP);
     grib1TabPane = new JTabbedPane(JTabbedPane.TOP);
     bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
-    ftTabPane = new JTabbedPane(JTabbedPane.TOP);
-    fcTabPane = new JTabbedPane(JTabbedPane.TOP);
+    ftTabPane   = new JTabbedPane(JTabbedPane.TOP);
+    fcTabPane   = new JTabbedPane(JTabbedPane.TOP);
     fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
     hdf5TabPane = new JTabbedPane(JTabbedPane.TOP);
     ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
@@ -855,8 +856,9 @@ public class ToolsUI extends JPanel {
     // "about" this application
     AbstractAction aboutAction = new AbstractAction() {
       public void actionPerformed(ActionEvent evt) {
-        if (aboutWindow == null)
-          aboutWindow = new AboutWindow();
+        if (aboutWindow == null) {
+          aboutWindow = new ToolsAboutWindow(parentFrame);
+        }
         aboutWindow.setVisible(true);
       }
     };
@@ -865,7 +867,7 @@ public class ToolsUI extends JPanel {
 
     AbstractAction logoAction = new AbstractAction() {
       public void actionPerformed(ActionEvent evt) {
-        new MySplashScreen();
+        ToolsSplashScreen.getSharedInstance().setVisible(true);
       }
     };
     BAMutil.setActionProperties(logoAction, null, "Logo", false, 'L', 0);
@@ -1510,7 +1512,7 @@ public class ToolsUI extends JPanel {
   // abstract superclass
   // subclasses must implement process()
 
-  private abstract class OpPanel extends JPanel {
+  private abstract class OpPanelXXX extends JPanel {
     PreferencesExt prefs;
     ComboBox cb;
     JPanel buttPanel, topPanel;
@@ -1524,22 +1526,22 @@ public class ToolsUI extends JPanel {
     IndependentWindow detailWindow;
     TextHistoryPane detailTA;
 
-    OpPanel(PreferencesExt prefs, String command) {
+    OpPanelXXX(PreferencesExt prefs, String command) {
       this(prefs, command, true, true);
     }
 
-    OpPanel(PreferencesExt prefs, String command, boolean addFileButton, boolean addCoordButton) {
+    OpPanelXXX(PreferencesExt prefs, String command, boolean addFileButton, boolean addCoordButton) {
       this(prefs, command, true, addFileButton, addCoordButton);
     }
 
-    OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton, boolean addCoordButton) {
+    OpPanelXXX(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton, boolean addCoordButton) {
       this.prefs = prefs;
       buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
       cb = new ComboBox(prefs);
       cb.addActionListener(e -> {
           if (debugCB) {
-            System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " when=" + e.getWhen() + " class=" + OpPanel.this.getClass().getName());
+            System.out.println(" doit " + cb.getSelectedItem() + " cmd=" + e.getActionCommand() + " when=" + e.getWhen() + " class=" + OpPanelXXX.this.getClass().getName());
           }
 
           // eliminate multiple events from same selection by ignoring events occurring within 100ms of last one.
@@ -2217,8 +2219,8 @@ public class ToolsUI extends JPanel {
     AggPanel(PreferencesExt p) {
       super(p, "file:", true, false);
       aggTable = new AggTable(prefs, buttPanel);
-      aggTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      aggTable.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
 
           if (e.getPropertyName().equals("openNetcdfFile")) {
             NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
@@ -2628,8 +2630,8 @@ public class ToolsUI extends JPanel {
       super(p, "collection:", true, false);
       gribTable = new ucar.nc2.ui.grib.GribFilesPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
-      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib1Collection")) {
             String filename = (String) e.getNewValue();
             openGrib1Collection(filename);
@@ -2692,8 +2694,8 @@ public class ToolsUI extends JPanel {
       gribTable = new ucar.nc2.ui.grib.Grib2CollectionPanel(prefs, buttPanel);
       add(gribTable, BorderLayout.CENTER);
 
-      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib2Collection")) {
             String collectionName = (String) e.getNewValue();
             openGrib2Collection(collectionName);
@@ -2796,8 +2798,8 @@ public class ToolsUI extends JPanel {
       gribTable = new ucar.nc2.ui.grib.Grib2DataPanel(prefs);
       add(gribTable, BorderLayout.CENTER);
 
-      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib2Collection")) {
             String collectionName = (String) e.getNewValue();
             openGrib2Collection(collectionName);
@@ -2874,8 +2876,8 @@ public class ToolsUI extends JPanel {
       gribTable = new Grib1DataTable(prefs);
       add(gribTable, BorderLayout.CENTER);
 
-      gribTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib1Collection")) {
             String collectionName = (String) e.getNewValue();
             openGrib1Collection(collectionName);
@@ -3605,8 +3607,8 @@ public class ToolsUI extends JPanel {
       ftTable = new ucar.nc2.ui.grib.GribRewritePanel(prefs, buttPanel);
       add(ftTable, BorderLayout.CENTER);
 
-      ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      ftTable.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openNetcdfFile")) {
             String datasetName = (String) e.getNewValue();
             openNetcdfFile(datasetName);
@@ -4050,8 +4052,8 @@ public class ToolsUI extends JPanel {
     FmrcPanel(PreferencesExt dbPrefs) {
       super(dbPrefs, "collection:", true, false);
       table = new Fmrc2Panel(prefs);
-      table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      table.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
 
           if (e.getPropertyName().equals("openNetcdfFile")) {
             if (e.getNewValue() instanceof String)
@@ -4932,8 +4934,8 @@ public class ToolsUI extends JPanel {
       dirChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
       ftTable = new ucar.nc2.ui.FeatureScanPanel(prefs);
       add(ftTable, BorderLayout.CENTER);
-      ftTable.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      ftTable.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openPointFeatureDataset")) {
             String datasetName = (String) e.getNewValue();
             openPointFeatureDataset(datasetName);
@@ -5064,8 +5066,8 @@ public class ToolsUI extends JPanel {
       table = new DirectoryPartitionViewer(prefs, topPanel, buttPanel);
       add(table, BorderLayout.CENTER);
 
-      table.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-        public void propertyChange(java.beans.PropertyChangeEvent e) {
+      table.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent e) {
           if (e.getPropertyName().equals("openGrib2Collection")) {
             String collectionName = (String) e.getNewValue();
             openGrib2Collection(collectionName);
@@ -5464,7 +5466,7 @@ public class ToolsUI extends JPanel {
       GridDataset gridDs = null;
       try {
         gridDs = ucar.nc2.dt.grid.GridDataset.open(filename);
-        java.util.List grids = gridDs.getGrids();
+        List grids = gridDs.getGrids();
         if (grids.size() == 0) {
           log.warn("No grids found.");
           return false;
@@ -5523,7 +5525,7 @@ public class ToolsUI extends JPanel {
 
   }
 
-  private interface GetDataRunnable {
+  private interface GetDataRunnableXXX {
     void run(Object o) throws IOException;
   }
 
@@ -5580,120 +5582,6 @@ public class ToolsUI extends JPanel {
         return null;
       }
       return Boolean.FALSE;
-    }
-  }
-
-/////////////////////////////////////////////////////////////////////////////
-
-  // About Window
-
-  private class AboutWindow extends javax.swing.JWindow {
-    public AboutWindow() {
-      super(parentFrame);
-
-      JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
-              "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
-              "<b>" + getVersion() + "</b>" +
-              "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
-              "<br><b><i>Developers:</b>John Caron, Sean Arms, Dennis Heimbinger, Ryan May, Christian Ward-Garrison</i></b>" +
-              "</center>" +
-              "<br><br>With thanks to these <b>Open Source</b> contributors:" +
-              "<ul>" +
-              "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
-              "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>" +
-              "<li><b>Apache Jakarta Commons</b> libraries: (http://jakarta.apache.org/commons/)</li>" +
-              "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (http://www.unidata.ucar.edu/software/IDV/)</li>" +
-              "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>" +
-              "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
-              "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +
-              "<li><b>JPEG-2000</b> Java library: (http://www.jpeg.org/jpeg2000/)</li>" +
-              "<li><b>JUnit</b> library: Erich Gamma, Kent Beck, Erik Meade, et al (http://sourceforge.net/projects/junit/)</li>" +
-              "<li><b>NetCDF C Library</b> library: Russ Rew, Ward Fisher, Dennis Heimbinger</li>" +
-              "<li><b>OPeNDAP Java</b> library: Dennis Heimbinger, James Gallagher, Nathan Potter, Don Denbo, et. al.(http://opendap.org)</li>" +
-              "<li><b>Protobuf serialization</b> library: Google (http://code.google.com/p/protobuf/)</li>" +
-              "<li><b>Simple Logging Facade for Java</b> library: Ceki Gulcu (http://www.slf4j.org/)</li>" +
-              "<li><b>Spring lightweight framework</b> library: Rod Johnson, et. al.(http://www.springsource.org/)</li>" +
-              "<li><b>Imaging utilities:</b>: Richard Eigenmann</li>" +
-              "<li><b>Udunits:</b>: Steve Emmerson</li>" +
-              "</ul><center>Special thanks to <b>Sun/Oracle</b> (java.oracle.com) for the platform on which we stand." +
-              "</center></body></html> ");
-
-      JPanel main = new JPanel(new BorderLayout());
-      main.setBorder(new javax.swing.border.LineBorder(Color.BLACK));
-      main.setBackground(new Color(0xFFECEC));
-
-      JLabel ring = new JLabel(new ImageIcon(BAMutil.getImage("netcdfUI")));
-      ring.setOpaque(true);
-      ring.setBackground(new Color(0xFFECEC));
-
-      JLabel threddsLogo = new JLabel(Resource.getIcon(BAMutil.getResourcePath() + "cdm.png", false));
-      threddsLogo.setBackground(new Color(0xFFECEC));
-      threddsLogo.setOpaque(true);
-
-      main.add(threddsLogo, BorderLayout.NORTH);
-      main.add(lab1, BorderLayout.CENTER);
-      main.add(ring, BorderLayout.SOUTH);
-      getContentPane().add(main);
-      pack();
-
-      //show();
-      java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-      java.awt.Dimension labelSize = this.getPreferredSize();
-      setLocation(screenSize.width / 2 - (labelSize.width / 2), screenSize.height / 2 - (labelSize.height / 2));
-      addMouseListener(new MouseAdapter() {
-        public void mousePressed(MouseEvent e) {
-          setVisible(false);
-        }
-      });
-      setVisible(true);
-      //System.out.println("AW ok getPreferredSize="+getPreferredSize()+" screenSize="+screenSize);
-    }
-  }
-
-  private String getVersion() {
-
-    String version;
-    try (InputStream is = ucar.nc2.ui.util.Resource.getFileResource("/README")) {
-      if (is == null) {
-        return "5.0";
-      }
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
-      StringBuilder sbuff = new StringBuilder();
-      for (int i = 0; i < 3; i++) {
-        sbuff.append(dataIS.readLine());
-        sbuff.append("<br>");
-      }
-      version = sbuff.toString();
-    }
-    catch (IOException ioe) {
-      ioe.printStackTrace();
-      version = "version unknown";
-    }
-
-    return version;
-  }
-
-  // Splash Window
-  private static class MySplashScreen extends javax.swing.JWindow {
-    public MySplashScreen() {
-      Image image = Resource.getImage("/resources/nj22/ui/pix/ring2.jpg");
-      if (image != null) {
-        ImageIcon icon = new ImageIcon(image);
-        JLabel lab = new JLabel(icon);
-        getContentPane().add(lab);
-        pack();
-        //show();
-        java.awt.Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int width = image.getWidth(null);
-        int height = image.getHeight(null);
-        setLocation(screenSize.width / 2 - (width / 2), screenSize.height / 2 - (height / 2));
-        addMouseListener(new MouseAdapter() {
-          public void mousePressed(MouseEvent e) {
-            setVisible(false);
-          }
-        });
-        setVisible(true);
-      }
     }
   }
 
@@ -5786,7 +5674,8 @@ public class ToolsUI extends JPanel {
     }
 
     // get a splash screen up right away
-    final MySplashScreen splash = new MySplashScreen();
+    final ToolsSplashScreen splash = ToolsSplashScreen.getSharedInstance();
+    splash.setVisible(true);
 
     // misc initializations
     BAMutil.setResourcePath("/resources/nj22/ui/icons/");
@@ -5803,7 +5692,7 @@ public class ToolsUI extends JPanel {
     frame.addWindowListener(new WindowAdapter() {
       public void windowActivated(WindowEvent e) {
         splash.setVisible(false);
-        splash.dispose();
+        // splash.dispose();
       }
 
       public void windowClosing(WindowEvent e) {
