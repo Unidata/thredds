@@ -31,4 +31,14 @@
     <gav regex="true">^org\.quartz-scheduler:quartz:.*$</gav>
     <cpe>cpe:/a:jenkins:jenkins</cpe>
   </suppress>
+   <suppress>
+      <notes><![CDATA[
+      file name example: godiva2/js/yui/treeview-min.js
+      reason: These CVEs only impact the Flash component of YUI.
+      ]]></notes>
+      <filePath regex="true">.*\/godiva2\/js\/yui\/.*\.js</filePath>
+      <cve>CVE-2012-5881</cve>
+      <cve>CVE-2012-5882</cve>
+      <cve>CVE-2012-5883</cve>
+   </suppress>
 </suppressions>
