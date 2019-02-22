@@ -4,6 +4,7 @@
  */
 package ucar.coord;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -49,64 +50,8 @@ public class CoordinateVert implements Coordinate {
     return levelSorted;
   }
 
-  /* @Override
-  public int findIndexContaining(double need) {
-    if (isLayer()) {
-      int idx = findSingleHit(need);
-      if (idx >= 0) return idx;
-      if (idx == -1) return -1;
-
-      // multiple hits = choose closest to the midpoint
-      return findClosest(need);
-
-    } else {
-      for (int i=0; i<levelSorted.size(); i++) {
-        VertCoord.Level level = levelSorted.get(i);
-        if (Misc.nearlyEquals(need, level.getValue1())) return i;
-      }
-      return -1;
-    }
-  }
-
-  // return index if only one match, if no matches return -1, if > 1 match return -nhits
-  private int findSingleHit(double target) {
-    int hits = 0;
-    int idxFound = -1;
-    for (int i = 0; i < levelSorted.size(); i++) {
-      VertCoord.Level level = levelSorted.get(i);
-      if (contains(target, level)) {
-        hits++;
-        idxFound = i;
-      }
-    }
-    if (hits == 1) return idxFound;
-    if (hits == 0) return -1;
-    return -hits;
-  }
-
-  // return index of closest value to target
-  private int findClosest(double target) {
-    double minDiff =  Double.MAX_VALUE;
-    int idxFound = -1;
-    for (int i = 0; i < levelSorted.size(); i++) {
-      VertCoord.Level level = levelSorted.get(i);
-      double midpoint = (level.getValue1()+level.getValue2()) /2;
-      double diff =  Math.abs(midpoint - target);
-      if (diff < minDiff) {
-        minDiff = diff;
-        idxFound = i;
-      }
-    }
-    return idxFound;
-  }
-
-  private boolean contains(double target, VertCoord.Level level) {
-    if (level.getValue1() <= target && target <= level.getValue2()) return true;
-    return level.getValue1() >= target && target >= level.getValue2();
-  } */
-
   @Override
-  public List<? extends Object> getValues() {
+  public List<?> getValues() {
     return levelSorted;
   }
 
@@ -117,8 +62,6 @@ public class CoordinateVert implements Coordinate {
 
   @Override
   public Object getValue(int idx) {
-    if (idx >= levelSorted.size())
-      return null;
     return levelSorted.get(idx);
   }
 
@@ -143,6 +86,7 @@ public class CoordinateVert implements Coordinate {
   }
 
   @Override
+  @Nullable
   public String getUnit() {
     return vunit == null ? null : vunit.getUnits();
   }
@@ -237,11 +181,7 @@ public class CoordinateVert implements Coordinate {
 
   //////////////////////////////////////////////////////////////
 
-  /* public CoordinateBuilder makeBuilder() {
-    return new Builder(code);
-  } */
-
-  static public class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
+  public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
     VertCoord.VertUnit vunit;
 
@@ -268,7 +208,7 @@ public class CoordinateVert implements Coordinate {
     }
   }
 
-  static public class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
+  public static class Builder1 extends CoordinateBuilderImpl<Grib1Record> {
     int code;
     Grib1Customizer cust;
 

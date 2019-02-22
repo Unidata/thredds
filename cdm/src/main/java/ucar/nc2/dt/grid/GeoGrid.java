@@ -43,7 +43,6 @@ public class GeoGrid implements NamedObject, ucar.nc2.dt.GridDatatype {
 
   /**
    * Constructor.
-   *
    * @param dataset belongs to this dataset
    * @param dsvar   wraps this Variable
    * @param gcs     has this grid coordinate system

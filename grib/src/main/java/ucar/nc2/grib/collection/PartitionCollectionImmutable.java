@@ -5,6 +5,8 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -41,8 +43,8 @@ import java.util.List;
  * @since 11/10/2014
  */
 public abstract class PartitionCollectionImmutable extends GribCollectionImmutable {
-  static private final Logger logger = LoggerFactory.getLogger(PartitionCollectionImmutable.class);
-  static public int countPC;   // debug
+  private static final Logger logger = LoggerFactory.getLogger(PartitionCollectionImmutable.class);
+  public static int countPC;   // debug
 
   static final ucar.nc2.util.cache.FileFactory partitionCollectionFactory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
@@ -104,10 +106,11 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     return partitions;
   }
 
-  public Partition getPartition(int idx) {
+  private Partition getPartition(int idx) {
     return partitions.get(idx);
   }
 
+  @Nullable
   public Partition getPartitionByName(String name) {
     for (Partition p : partitions)
       if (p.name.equalsIgnoreCase(name)) return p;
@@ -131,7 +134,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     return c;
   }
 
-  public VariableIndexPartitioned getVariable2DByHash(GribHorizCoordSystem hcs, VariableIndex vi) {
+  @Nullable
+  private VariableIndexPartitioned getVariable2DByHash(GribHorizCoordSystem hcs, VariableIndex vi) {
     Dataset ds2d = getDatasetCanonical();
     if (ds2d == null) return null;
     for (GroupGC groupHcs : ds2d.getGroups())
@@ -152,7 +156,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // stuff for Iosp
 
-  public RandomAccessFile getRaf(int partno, int fileno) throws IOException {
+  RandomAccessFile getRaf(int partno, int fileno) throws IOException {
     Partition part = getPartition(partno);
     try (GribCollectionImmutable gc = part.getGribCollection()) {
       return gc.getDataRaf(fileno);
@@ -247,7 +251,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
 
     @Override
-    public int compareTo(Partition o) {
+    public int compareTo(@Nonnull Partition o) {
       return name.compareTo(o.name);
     }
 
@@ -333,8 +337,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      *
      * @param indexWanted the source index request, excluding x and y
      * @return DataRecord pointing to where the data is, or null if missing
-     * @throws IOException
      */
+    @Nullable
     DataRecord getDataRecord(int[] indexWanted) throws IOException {
 
       if (Grib.debugRead)
@@ -347,6 +351,9 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       if (group.ds.gctype == Type.TwoD) {
         // find the partition by matching run coordinate with master runtime
         CoordinateRuntime runtime = (CoordinateRuntime) getCoordinate(Coordinate.Type.runtime);
+        if (runtime == null) {
+          throw new IllegalStateException("Type.TwoD must have runtime coordinate");
+        }
         Object val = runtime.getValue(firstIndex);
         masterIdx = masterRuntime.getIndex(val);
         if (Grib.debugRead)
@@ -355,20 +362,17 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       } else if (group.ds.gctype == Type.Best) {
         // find the partition from the "time2runtime" array in the time coordinate
         CoordinateTimeAbstract time = getCoordinateTime();
+        if (time == null) {
+          throw new IllegalStateException("Type.Best must have time coordinate");
+        }
         masterIdx = time.getMasterRuntimeIndex(firstIndex) - 1;
         if (Grib.debugRead) System.out.printf("  Best firstIndex = %d masterIdx=%d %n", firstIndex, masterIdx);
 
       } else if (group.ds.gctype == Type.MRUTP) {
-        /* find the partition from getRuntimeIdxFromMrutpTimeIndex
-        int[] timeIndices = time2D.getTimeIndicesFromMrutp(firstIndex);
-
-        int[] indexReallyWanted = new int[indexWanted.length+1];
-        indexReallyWanted[0] = timeIndices[0];
-        indexReallyWanted[1] = timeIndices[1];
-        System.arraycopy(indexWanted, 1, indexReallyWanted, 2, indexWanted.length-1);
-        useIndex = indexReallyWanted; */
-
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinateTime();
+        if (time2D == null) {
+          throw new IllegalStateException("Type.MRUTP must have time coordinate");
+        }
         Object val = time2D.getRefDate(firstIndex);
         masterIdx = masterRuntime.getIndex(val);
 
@@ -416,8 +420,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      * @param indexWanted   index into this PoP
      * @param compVindex2Dp 2D variable from the desired partition; may be PofP or PofGC
      * @return desired record to be read, from the GC, or null if missing
-     * @throws IOException
      */
+    @Nullable
     private DataRecord getDataRecordPofP(int[] indexWanted, VariableIndexPartitioned compVindex2Dp) throws IOException {
       if (group.getType() == Type.Best) {
         int[] indexWantedP = translateIndexBest(indexWanted, compVindex2Dp);
@@ -453,8 +457,8 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      *
      * @param partno master partition number
      * @return VariableIndex or null if not exists
-     * @throws IOException
      */
+    @Nullable
     private GribCollectionImmutable.VariableIndex getVindex2D(int partno) throws IOException {
       // at this point, we need to instantiate the Partition and the vindex.records
 
@@ -485,7 +489,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       }  // LOOK opening the file here, and then again to read the data. partition cache helps i guess but we could do better i think.
     }
 
-    /**
+    /*
      * MRUTP
      * translate index in VariableIndexPartitioned to corresponding index in one of its component VariableIndex (which will be 2D)
      * by matching coordinate values.
@@ -547,6 +551,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      * @param compVindex2D component 2D VariableIndex
      * @return corresponding index in compVindex2D, or null if missing
      */
+    @Nullable
     private int[] translateIndexBest(int[] wholeIndex, GribCollectionImmutable.VariableIndex compVindex2D) {
       int[] result = new int[wholeIndex.length + 1];
 
@@ -605,6 +610,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
      * @param compVindex2D want index in here
      * @return index into  compVindex2D, or null if missing
      */
+    @Nullable
     private int[] translateIndex2D(int[] wholeIndex, GribCollectionImmutable.VariableIndex compVindex2D) {
       int[] result = new int[wholeIndex.length];
       int countDim = 0;
@@ -613,6 +619,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       CoordinateTime2D compTime2D = (CoordinateTime2D) compVindex2D.getCoordinate(Coordinate.Type.time2D);
       if (compTime2D != null) {
         CoordinateTime2D time2D = (CoordinateTime2D) getCoordinate(Coordinate.Type.time2D);
+        if (time2D == null) throw new IllegalStateException("CoordinateTime2D has no time2D");
         CoordinateTime2D.Time2D want = time2D.getOrgValue(wholeIndex[0], wholeIndex[1]);
         if (Grib.debugRead)
           System.out.printf("  translateIndex2D[runIdx=%d, timeIdx=%d] in componentVar coords = (%s,%s) %n",
@@ -652,6 +659,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // experimental coord based
+    @Nullable
     DataRecord getDataRecord(SubsetParams coords) throws IOException {
 
       // identify the master index for this runtime
@@ -703,7 +711,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
     }
 
     @Override
-    public int compareTo(GribDataReader.DataRecord o) {
+    public int compareTo(@Nonnull GribDataReader.DataRecord o) {
       DataRecord op = (DataRecord) o;
       int rp = usePartition.getName().compareTo(op.usePartition.getName());
       if (rp != 0) return rp;
@@ -714,7 +722,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
       return Misc.compare(record.pos, o.record.pos);
     }
 
-    public boolean usesSameFile(DataRecord o) {
+    boolean usesSameFile(DataRecord o) {
       if (o == null) return false;
       int rp = usePartition.getName().compareTo(o.usePartition.getName());
       if (rp != 0) return false;

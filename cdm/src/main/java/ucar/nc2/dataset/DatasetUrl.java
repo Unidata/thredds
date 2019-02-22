@@ -29,7 +29,12 @@ import java.util.*;
 public class DatasetUrl {
   static final protected String alpha = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   static final protected String slashalpha = "\\/" + alpha;
-  static final String[] FRAGPROTOCOLS = {"dap4", "dap2"};
+
+  static final String[] FRAGPROTOCOLS =
+          {"dap4", "dap2", "dods", "cdmremote", "thredds", "ncml"};
+  static final ServiceType[] FRAGPROTOSVCTYPE =
+          {ServiceType.DAP4, ServiceType.OPENDAP, ServiceType.OPENDAP, ServiceType.THREDDS, ServiceType.THREDDS, ServiceType.NCML};
+
 
   /**
    * Return the set of leading protocols for a url; may be more than one.
@@ -107,9 +112,10 @@ public class DatasetUrl {
     // Priority in deciding
     // the service type is as follows.
     // 1. "protocol" tag in fragment
-    // 2. leading protocol
-    // 3. path extension
-    // 4. contact the server (if defined)
+    // 2. specific protocol in fragment
+    // 3. leading protocol
+    // 4. path extension
+    // 5. contact the server (if defined)
 
     // temporarily remove any trailing query or fragment
     String fragment = null;
@@ -130,6 +136,9 @@ public class DatasetUrl {
     if (svctype == null) // See if leading protocol tells us how to interpret
       svctype = decodeLeadProtocol(leadprotocol);
 
+    if (svctype == null) // See if path tells us how to interpret
+      svctype = searchPath(trueurl);
+
     if (svctype == null) {
       //There are several possibilities at this point; all of which
       // require further info to disambiguate
@@ -138,7 +147,7 @@ public class DatasetUrl {
       //  - we have a simple url: e.g. http://... ; contact the server
       if (leadprotocol.equals("file")) {
         svctype = decodePathExtension(trueurl); // look at the path extension
-        if (svctype == null && checkIfNcml(new File(location))) {
+        if(svctype == null && checkIfNcml(new File(location))) {
           svctype = ServiceType.NCML;
         }
       } else {
@@ -242,11 +251,32 @@ public class DatasetUrl {
   }
 
   /**
-   * Check path extension; assumes no query or fragment
+   * Given a url, search the path to look for protocol indicators
    *
-   * @param path the path to examine for extension
-   * @return ServiceType inferred from the extension or null
+   * @param url the url is to be examined
+   * @return The discovered ServiceType, or null
    */
+  static private ServiceType searchPath(String url) {
+      if(false) { // Disable for now
+      if(url == null || url.length() == 0)
+        return null;
+      url = url.toLowerCase(); // for matching purposes
+      for(int i=0; i<FRAGPROTOCOLS.length;i++) {
+        String p = FRAGPROTOCOLS[i];
+        if(url.indexOf("/thredds/"+p.toLowerCase()+"/")>= 0) {
+          return FRAGPROTOSVCTYPE[i];
+        }
+      }
+      }
+      return null;
+    }
+
+    /**
+     * Check path extension; assumes no query or fragment
+     *
+     * @param path the path to examine for extension
+     * @return ServiceType inferred from the extension or null
+     */
   static private ServiceType decodePathExtension(String path) {
     // Look at the path extensions
     if (path.endsWith(".dds") || path.endsWith(".das") || path.endsWith(".dods"))
@@ -413,10 +443,11 @@ public class DatasetUrl {
       location = location.substring(0, location.length() - ".dap".length());
     else if (location.endsWith(".dmr"))
       location = location.substring(0, location.length() - ".dmr".length());
+    else if (location.endsWith(".dmr.xml"))
+      location = location.substring(0, location.length() - ".dmr.xml".length());
     else if (location.endsWith(".dsr"))
       location = location.substring(0, location.length() - ".dsr".length());
-
-    try (HTTPMethod method = HTTPFactory.Get(location + ".dmr")) {
+    try (HTTPMethod method = HTTPFactory.Get(location + ".dmr.xml")) {
       int status = method.execute();
       if (status == 200) {
         Header h = method.getResponseHeader("Content-Type");

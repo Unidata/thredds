@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import ucar.coord.CoordinateTimeAbstract;
 import ucar.ma2.Array;
 import ucar.nc2.*;
@@ -24,7 +25,7 @@ import java.io.IOException;
 import java.util.Formatter;
 
 /**
- * Grib2 specific part of GribCollection
+ * Grib2 specific subclass of GribCollection.
  *
  * @author John
  * @since 9/5/11
@@ -35,8 +36,8 @@ public class Grib2Collection extends GribCollectionImmutable {
     super(gc);
   }
 
-
   @Override
+  @Nullable
   public ucar.nc2.dataset.NetcdfDataset getNetcdfDataset(Dataset ds, GroupGC group, String filename,
                            FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
@@ -60,6 +61,7 @@ public class Grib2Collection extends GribCollectionImmutable {
   }
 
   @Override
+  @Nullable
   public ucar.nc2.dt.grid.GridDataset getGridDataset(Dataset ds, GroupGC group, String filename,
                FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
@@ -85,6 +87,7 @@ public class Grib2Collection extends GribCollectionImmutable {
   }
 
   @Override
+  @Nullable
   public CoverageCollection getGridCoverage(Dataset ds, GroupGC group, String filename,
                FeatureCollectionConfig gribConfig, Formatter errlog, org.slf4j.Logger logger) throws IOException {
 
@@ -169,40 +172,45 @@ public class Grib2Collection extends GribCollectionImmutable {
     return makeVariableId(vindex, this);
   }
 
-  static String makeVariableId(GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable gc) {
-    Formatter f = new Formatter();
+  private static String makeVariableId(GribCollectionImmutable.VariableIndex vindex,
+      GribCollectionImmutable gc) {
+    try (Formatter f = new Formatter()) {
 
-    f.format("VAR_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+      f.format("VAR_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
 
-    if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
-      f.format("_error");  // its an "error" type variable - add to name
+      if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
+        f.format("_error");  // its an "error" type variable - add to name
+      }
+
+      if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+        f.format("_L%d", vindex.getLevelType()); // code table 4.5
+        if (vindex.isLayer()) {
+          f.format("_layer");
+        }
+      }
+
+      String intvName = vindex.getIntvName();
+      if (intvName != null && !intvName.isEmpty()) {
+        if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS)) {
+          f.format("_Imixed");
+        } else {
+          f.format("_I%s", intvName);
+        }
+      }
+
+      if (vindex.getIntvType() >= 0) {
+        f.format("_S%s", vindex.getIntvType());
+      }
+
+      if (vindex.getEnsDerivedType() >= 0) {
+        f.format("_D%d", vindex.getEnsDerivedType());
+      } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+        String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
+        f.format("_Prob_%s", s);
+      }
+
+      return f.toString();
     }
-
-    if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_L%d", vindex.getLevelType()); // code table 4.5
-      if (vindex.isLayer()) f.format("_layer");
-    }
-
-    String intvName = vindex.getIntvName();
-    if (intvName != null && !intvName.isEmpty()) {
-      if (intvName.equals(CoordinateTimeAbstract.MIXED_INTERVALS))
-        f.format("_Imixed");
-      else
-        f.format("_I%s", intvName);
-    }
-
-    if (vindex.getIntvType() >= 0) {
-      f.format("_S%s", vindex.getIntvType());
-    }
-
-    if (vindex.getEnsDerivedType() >= 0) {
-      f.format("_D%d", vindex.getEnsDerivedType());
-    } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
-      String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
-      f.format("_Prob_%s", s);
-    }
-
-    return f.toString();
   }
 
   @Override

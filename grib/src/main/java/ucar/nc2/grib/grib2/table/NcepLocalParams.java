@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -23,7 +24,7 @@ import java.util.*;
  * @since 1/9/12
  */
 class NcepLocalParams {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepLocalParams.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepLocalParams.class);
   private static final boolean debugOpen = false;
   private static final boolean debug = false;
 
@@ -34,6 +35,7 @@ class NcepLocalParams {
     this.resourcePath = resourcePath;
   }
 
+  @Nullable
   public Grib2Parameter getParameter(int discipline, int category, int number) {
     int key = (discipline << 8) + category;
     Table params = tableMap.get( key);
@@ -45,6 +47,7 @@ class NcepLocalParams {
     return params.getParameter(number);
   }
 
+  @Nullable
   public String getCategory(int discipline, int category) {
     int key = (discipline << 8) + category;
     Table params = tableMap.get( key);
@@ -52,12 +55,14 @@ class NcepLocalParams {
   }
 
 
+  @Nullable
   Table factory(String path) {
     Table params = new Table();
     if (!params.readParameterTableXml(path)) return null;
     return params;
   }
 
+  @Nullable
   private Table factory(int discipline, int category) {
     Table params = new Table();
     if (!params.readParameterTableFromResource(getTablePath(discipline, category))) return null;
@@ -84,31 +89,22 @@ class NcepLocalParams {
       return result;
     }
 
+    @Nullable
     public Grib2Parameter getParameter(int code) {
-      if (paramMap == null) return null;
       return paramMap.get(code);
     }
 
     private boolean readParameterTableXml(String path) {
       if (debugOpen) System.out.printf("readParameterTableXml table %s%n", path);
       try (InputStream is = GribResourceReader.getInputStream(path)) {
-        if (is == null) {
-          log.warn("Cant read file " + path);
-          return false;
-        }
-
         SAXBuilder builder = new SAXBuilder();
         org.jdom2.Document doc = builder.build(is);
         Element root = doc.getRootElement();
         paramMap = parseXml(root);  // all at once - thread safe
         return true;
 
-      } catch (IOException ioe) {
+      } catch (IOException | JDOMException ioe) {
         ioe.printStackTrace();
-        return false;
-
-      } catch (JDOMException e) {
-        e.printStackTrace();
         return false;
       }
     }
@@ -127,12 +123,8 @@ class NcepLocalParams {
         paramMap = parseXml(root);  // all at once - thread safe
         return true;
 
-      } catch (IOException ioe) {
+      } catch (IOException | JDOMException ioe) {
         ioe.printStackTrace();
-        return false;
-
-      } catch (JDOMException e) {
-        e.printStackTrace();
         return false;
       }
     }
@@ -148,7 +140,7 @@ class NcepLocalParams {
       <units>K</units>
     </parameter>
      */
-    public HashMap<Integer, Grib2Parameter> parseXml(Element root) {
+    HashMap<Integer, Grib2Parameter> parseXml(Element root) {
       tableName = root.getChildText("table");
       title = root.getChildText("title");
       source = root.getChildText("source");
@@ -284,58 +276,4 @@ class NcepLocalParams {
             munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") ||
             munge.equals("1") ;
   }
-
-
-  /*
-  public static void main2(String[] args) {
-
-    //Grib2Customizer current = Grib2Customizer.factory(7, -1, -1, -1);
-    Grib2Customizer wmo = Grib2Customizer.factory(0, 0, 0, 0, 0);
-
-    File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
-    for (File f : dir.listFiles()) {
-      if (f.getName().startsWith(match)) {
-        NcepLocalParams nt = factory(f.getPath());
-        System.out.printf("%s%n", nt);
-        compareTables(nt, wmo);
-      }
-    }
-  }
-
-  public static void main3(String[] args) {
-    GribTables.Parameter p = getParameter(0, 16, 195);
-    System.out.printf("%s%n", p);
-
-    Grib2Customizer tables = Grib2Customizer.factory(7, 0, 0, 0, 0);
-    GribTables.Parameter p2 = tables.getParameter(0, 16, 195);
-    System.out.printf("%s%n", p2);
-  }
-
-  public static void main(String[] args) {
-    Map<String, Grib2Parameter> abbrevSet = new HashMap<>(5000);
-     File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
-     for (File f : dir.listFiles()) {
-       if (f.getName().startsWith(match)) {
-         NcepLocalParams nt = factory(f.getPath());
-         System.out.printf("%s%n", nt);
-         for (Grib2Parameter p : nt.getParameters()) {
-           if (p.getCategory() < 192 && p.getNumber() < 192) continue;
-
-           if (p.getAbbrev() != null && !p.getAbbrev().equals("Validation")) {
-             Grib2Parameter dup = abbrevSet.get(p.getAbbrev());
-             if (dup != null) System.out.printf("DUPLICATE %s and %s%n", dup.getId(), p.getId());
-             abbrevSet.put(p.getAbbrev(), p);
-           }
-
-           if (p.getDescription().length() > 60) System.out.printf("  %d %s = '%s' %s%n", p.getDescription().length(), p.getId(), p.getDescription(), p.getAbbrev());
-           else if (p.getDescription().length() > 50) System.out.printf("  50 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
-           else if (p.getDescription().length() > 40) System.out.printf("  40 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
-           else if (p.getDescription().length() > 30) System.out.printf("  30 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
-         }
-       }
-     }
-   }
-
-   */
-
 }

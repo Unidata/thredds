@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib1.Grib1Parameter;
@@ -31,13 +32,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @Immutable
 public class Grib1ParamTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTables.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1ParamTables.class);
 
-  static private final Object lock = new Object();
-  static private int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions can go first
+  private static final Object lock = new Object();
+  private static int standardTablesStart = 0; // heres where the standard tables start - keep track so user additions can go first
 
-  static private Lookup standardLookup;
-  static private Grib1ParamTableReader defaultTable;
+  private static Lookup standardLookup;
+  private static Grib1ParamTableReader defaultTable;
 
   static {
     try {
@@ -81,7 +82,7 @@ public class Grib1ParamTables {
     return defaultTable;
   }
 
-  static public int makeKey(int center, int subcenter, int version) {
+  static int makeKey(int center, int subcenter, int version) {
     if (center < 0) center = 255;
     if (subcenter < 0) subcenter = 255;
     if (version < 0) version = 255;
@@ -99,7 +100,7 @@ public class Grib1ParamTables {
    * @return Grib1Tables
    * @throws IOException on read error
    */
-  static public Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
+  public static Grib1ParamTables factory(String paramTablePath, String lookupTablePath) throws IOException {
     if (paramTablePath == null && lookupTablePath == null) return new Grib1ParamTables();
     Lookup lookup = null;
     Grib1ParamTableReader override = null;
@@ -128,9 +129,8 @@ public class Grib1ParamTables {
    *
    * @param paramTableElem parameter table in XML
    * @return Grib1Tables
-   * @throws IOException on read error
    */
-  static public Grib1ParamTables factory(org.jdom2.Element paramTableElem) throws IOException {
+  public static Grib1ParamTables factory(org.jdom2.Element paramTableElem) {
     if (paramTableElem == null) return new Grib1ParamTables();
     return new Grib1ParamTables(null, new Grib1ParamTableReader(paramTableElem));
   }
@@ -234,12 +234,8 @@ public class Grib1ParamTables {
      * @return true if successful
      * @throws IOException On badness
      */
-    public boolean readLookupTable(String resourceName) throws IOException {
+    boolean readLookupTable(String resourceName) throws IOException {
       try (InputStream inputStream = GribResourceReader.getInputStream(resourceName)) {
-        if (inputStream == null) {
-          logger.warn("Could not open table file:" + resourceName);
-          return false;
-        }
         return readLookupTable(inputStream, resourceName);
       }
     }
@@ -257,33 +253,34 @@ public class Grib1ParamTables {
         return false;
 
       File parent = new File(lookupFile).getParentFile();
-      InputStreamReader isr = new InputStreamReader(is, CDM.utf8Charset);
-      BufferedReader br = new BufferedReader(isr);
+      try (InputStreamReader isr = new InputStreamReader(is, CDM.utf8Charset);
+          BufferedReader br = new BufferedReader(isr)) {
 
-      String line;
-      while ((line = br.readLine()) != null) {
-        line = line.trim();
-        if ((line.length() == 0) || line.startsWith("#")) {
-          continue;
+        String line;
+        while ((line = br.readLine()) != null) {
+          line = line.trim();
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+          String[] tableDefArr = line.split(":");
+
+          int center = Integer.parseInt(tableDefArr[0].trim());
+          int subcenter = Integer.parseInt(tableDefArr[1].trim());
+          int version = Integer.parseInt(tableDefArr[2].trim());
+          String filename = tableDefArr[3].trim();
+          String path;
+          if (filename.startsWith("/") || filename.startsWith("\\") || filename.startsWith("file:")
+              || filename.startsWith("http://")) {
+            path = filename;
+          } else {
+            File tableFile = new File(parent, filename); // reletive file
+            path = tableFile.getPath();
+          }
+
+          Grib1ParamTableReader table = new Grib1ParamTableReader(center, subcenter, version, path);
+          tables.add(table);
         }
-        String[] tableDefArr = line.split(":");
-
-        int center = Integer.parseInt(tableDefArr[0].trim());
-        int subcenter = Integer.parseInt(tableDefArr[1].trim());
-        int version = Integer.parseInt(tableDefArr[2].trim());
-        String filename = tableDefArr[3].trim();
-        String path;
-        if (filename.startsWith("/") || filename.startsWith("\\") || filename.startsWith("file:") || filename.startsWith("http://")) {
-          path = filename;
-        } else {
-          File tableFile = new File(parent, filename); // reletive file
-          path = tableFile.getPath();
-        }
-
-        Grib1ParamTableReader table = new Grib1ParamTableReader(center, subcenter, version, path);
-        tables.add(table);
       }
-
       return true;
     }
 
@@ -299,7 +296,7 @@ public class Grib1ParamTables {
 
     }
 
-    public Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
+    Grib1ParamTableReader getParameterTable(int center, int subcenter, int tableVersion) {
       // look in hash table
       int key = makeKey(center, subcenter, tableVersion);
       Grib1ParamTableReader table = tableMap.get(key);
@@ -323,6 +320,7 @@ public class Grib1ParamTables {
       return table;
     }
 
+    @Nullable
     private Grib1ParamTableReader findParameterTableExact(int center, int subcenter, int version) {
       List<Grib1ParamTableReader> localCopy = tables; // thread safe
       for (Grib1ParamTableReader table : localCopy) {
@@ -339,11 +337,11 @@ public class Grib1ParamTables {
           return table;
         }
       }
-
       return null;
     }
 
     // wildcard match
+    @Nullable
     private Grib1ParamTableReader findParameterTable(int center, int subcenter, int version) {
       List<Grib1ParamTableReader> localCopy = tables; // thread safe
       for (Grib1ParamTableReader table : localCopy) {
@@ -366,7 +364,6 @@ public class Grib1ParamTables {
           }
         }
       }
-
       return null;
     }
 

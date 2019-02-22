@@ -4,6 +4,8 @@
  */
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -21,7 +23,7 @@ import java.util.*;
  */
 
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
-  static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
+  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
 
   public static final Version standard = Version.GRIB2_20_0_0;
 
@@ -33,8 +35,8 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
       return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
     }
 
+    @Nullable
     String[] getElemNames() {
-
       if (this == GRIB2_20_0_0)
         return new String[]{"GRIB2_20_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
 
@@ -42,11 +44,11 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     }
   }
 
-  static public class GribTemplates {
+  public static class GribTemplates {
     public List<WmoTemplateTable> list;
     public Map<String, WmoTemplateTable> map; // key is "disc.cat"
 
-    public GribTemplates(List<WmoTemplateTable> list, Map<String, WmoTemplateTable> map) {
+    GribTemplates(List<WmoTemplateTable> list, Map<String, WmoTemplateTable> map) {
       this.list = list;
       this.map = map;
     }
@@ -109,11 +111,10 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
   */
 
-  static public GribTemplates readXml(Version version) throws IOException {
+  public static GribTemplates readXml(Version version) throws IOException {
     try (InputStream ios = WmoCodeTable.class.getResourceAsStream(version.getResourceName())) {
       if (ios == null) {
-        System.out.printf("cant open %s%n", version.getResourceName());
-        return null;
+        throw new IOException("cant open WmoTemplateTable %s " + version.getResourceName());
       }
 
       org.jdom2.Document doc;
@@ -178,15 +179,11 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
 
-  // static private Map<String, WmoCodeTable> gribCodes;
-
   public static GribTemplates getWmoStandard() throws IOException {
     return readXml(standard);
   }
 
   ///////////////////////////////////////
-
-
   public String name, desc;
   public int m1, m2;
   public List<Field> flds = new ArrayList<>();
@@ -218,7 +215,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   @Override
-  public int compareTo(WmoTemplateTable o) {
+  public int compareTo(@Nonnull WmoTemplateTable o) {
     if (m1 == o.m1) return m2 - o.m2;
     else return m1 - o.m1;
   }
@@ -262,7 +259,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     }
 
     @Override
-    public int compareTo(Field o) {
+    public int compareTo(@Nonnull Field o) {
       return start - o.start;
     }
 
@@ -284,7 +281,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     }
   }
 
-  static private final Map<String, String> convertMap = new HashMap<>();
+  private static final Map<String, String> convertMap = new HashMap<>();
   static {
     // gds
     convertMap.put("Source of Grid Definition (see code table 3.0)", "3.0");
@@ -327,30 +324,14 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
     }
   }
 
-  /*
-    private String convert(String table, int value) {
-    if (gribCodes == null) {
-      try {
-        gribCodes = GribCodeTableWmo.getWmoStandard().map;
-      } catch (IOException e) {
-        return "Read GridCodes failed";
-      }
-    }
-
-    GribCodeTableWmo gct = gribCodes.get(table);
-    if (gct == null) return table + " not found";
-    GribCodeTableWmo.TableEntry entry = gct.get(value);
-    if (entry != null) return entry.meaning;
-    return "Table " + table + " code " + value + " not found";
-  } */
-
   private String convert(Grib2Customizer tables, String table, int value) {
     String result = tables.getTableValue(table, value);
     return (result != null) ? result : "Table " + table + " code " + value + " not found";
   }
 
-  public static void main(String arg[]) throws IOException {
-    List<WmoTemplateTable> tlist = readXml(standard).list;
+  public static void main(String[] arg) throws IOException {
+    GribTemplates templates = readXml(standard);
+    List<WmoTemplateTable> tlist = templates.list;
 
     for (WmoTemplateTable t : tlist) {
       System.out.printf("%n(%s) %s %n", t.name, t.desc);

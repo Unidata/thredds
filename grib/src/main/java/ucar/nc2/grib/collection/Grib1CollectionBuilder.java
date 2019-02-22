@@ -5,7 +5,9 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionConfig.GribConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -32,12 +34,12 @@ import java.util.*;
  * @since 2/5/14
  */
 public class Grib1CollectionBuilder extends GribCollectionBuilder {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
 
   private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib1Customizer cust;
 
-  public Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
+  Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     super(true, name, dcm, logger);
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
@@ -59,7 +61,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     logger.debug(" dcm={}", dcm);
 
     // place each record into its group
-    int totalRecords = 0;
     try (CloseableIterator<MFile> iter = dcm.getFileIterator()) { // not sorted
       if (iter == null)
         return new ArrayList<>(); // empty
@@ -85,15 +86,6 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed");
           continue;
         }
-
-        /* add all gcs to tracker
-        for (Grib1SectionGridDefinition gds : index.getGds()) {
-          long crc = gds.calcCRC();
-          if (gdsTrack.get(crc) == null) gdsTrack.put(crc, 0);
-        } */
-
-        int n = index.getNRecords();
-        totalRecords += n;
 
         for (Grib1Record gr : index.getRecords()) { // we are using entire Grib1Record - likely this is the memory bottleneck for how big a collection can handle
           if (this.cust == null) {
@@ -186,11 +178,11 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     Grib1Record first;
     Grib1Variable gv;
 
-    public List<Grib1Record> atomList = new ArrayList<>(100); // not sorted
-    public CoordinateND<Grib1Record> coordND;
+    List<Grib1Record> atomList = new ArrayList<>(100); // not sorted
+    CoordinateND<Grib1Record> coordND;
     CalendarPeriod timeUnit;
 
-    public List<Integer> coordIndex; // index into List<Coordinate>
+    List<Integer> coordIndex; // index into List<Coordinate>
     long pos;
     int length;
 
@@ -200,16 +192,14 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
     }
 
     @Override
-    public int compareTo(VariableBag o) {
+    public int compareTo(@Nonnull VariableBag o) {
       return Grib1Utils.extractParameterCode(first).compareTo(Grib1Utils.extractParameterCode(o.first));
     }
 
     @Override
     public String toString() {
       return "VariableBag{" +
-              "first=" + first +
-              ", gv=" + gv +
-              ", atomList=" + atomList +
+              ", variable=" + gv.makeVariableName(new GribConfig()) +
               ", coordND=" + coordND +
               ", timeUnit=" + timeUnit +
               ", coordIndex=" + coordIndex +
@@ -233,7 +223,7 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
       //gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash;
     }
 
-    public void make(FeatureCollectionConfig.GribConfig config, GribRecordStats counter, Formatter info) throws IOException {
+    public void make(FeatureCollectionConfig.GribConfig config, GribRecordStats counter, Formatter info) {
       CalendarPeriod userTimeUnit = config.userTimeUnit;
 
       // assign each record to unique variable using cdmVariableHash()

@@ -50,16 +50,16 @@ entries:
 #      url:
 #      output: web, pdf
 #
-#  - title: NcML
-#    output: web, pdf
-#    folderitems:
-#    - title: Modifying existing files
-#      url:
-#      output: web, pdf
-#
-#    - title: Aggregation
-#      url:
-#      output: web, pdf
+  - title: NcML
+    output: web, pdf
+    folderitems:
+    - title: Modifying existing files
+      url: /ncj_basic_ncml_tutorial.html
+      output: web, pdf
+
+    - title: Aggregation
+      url: /ncj_ncml_aggregation.html
+      output: web, pdf
 #
 #  - title: Writing an I/O Service Provider
 #    output: web, pdf
@@ -106,9 +106,9 @@ entries:
 #      url:
 #      output: web, pdf
 #
-#    - title: Grid Datasets
-#      url:
-#      output: web, pdf
+    - title: Grid Datasets
+      url: /ncj_grid_data_type.html
+      output: web, pdf
 #
 #    - title: Radial Datatype
 #      url:
@@ -153,3 +153,72 @@ entries:
     - title: netCDF-Java and TDS Doc Guide
       url: /ncj_doc_guide.html
       output: web, pdf
+      
+    - title: NcML Overview
+      url: /ncml_overview.html
+      output: web, pdf
+      
+    - title: Annotated Schema for NcML
+      url: /ncj_annotated_ncml_schema.html
+      output: web, pdf
+
+    - title: NcML Cookbook
+      url: /ncj_ncml_cookbook.html
+      output: web, pdf
+
+    - title: Dataset URLs
+      url: /ncj_dataset_urls.html
+      output: web, pdf
+
+    - title: Read over HTTP
+      url: /ncj_read_over_http.html
+      output: web, pdf
+
+    - title: CDM File Types
+      url: /ncj_file_types.html
+      output: web, pdf
+
+    - title: CDM Disk Caching
+      url: /ncj_disk_caching.html
+      output: web, pdf
+
+    - title: CDMRemote
+      url: /ncj_cdmremote.html
+      output: web, pdf
+
+    - title: CDM Feature Datasets
+      url: /ncj_feature_datasets.html
+      output: web, pdf
+
+    - title: CDMRemote Feature Datasets
+      url: /ncj_cdmremote_feature_datasets.html
+      output: web, pdf
+
+    - title: ToolsUI Reference
+      url: /toolsUI_ref.html
+      output: web, pdf
+
+    - title: Feature Datasets Reference
+      url: /feature_datasets_ref.html
+      output: web, pdf
+
+    - title: PointFeature Reference
+      url: /pointfeature_ref.html
+      output: web, pdf
+
+    - title: CF DSG Encoding Table
+      url: /cf_dsg_encoding_ref.html
+      output: web, pdf
+
+    - title: ArrayStructures
+      url: /arraystructures_ref.html
+      output: web, pdf
+
+    - title: netCDF C Library
+      url: /netcdf4_c_library.html
+      output: web, pdf
+
+    - title: CDM Utility Programs
+      url: /cdm_utility_programs.html
+      output: web, pdf
+

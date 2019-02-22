@@ -33,6 +33,11 @@ repositories {
     maven {
         url "https://dl.bintray.com/cwardgar/maven/"  // For "gretty".
     }
+
+    // edal-java SNAPSHOTS
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
 }
 
 //================================================ Dependencies ================================================//
@@ -52,7 +57,7 @@ libraries["shadow"] = "com.github.jengelman.gradle.plugins:shadow:1.2.3"
 
 libraries["coveralls-gradle-plugin"] = "org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3"
 
-libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.1"
+libraries["sonarqube-gradle-plugin"] = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7"
 
 libraries["license-gradle-plugin"] = "gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.13.1"
 
@@ -60,7 +65,7 @@ libraries["jruby-gradle-plugin"] = "com.github.jruby-gradle:jruby-gradle-plugin:
 
 ////////////////////////////////////////// Spring //////////////////////////////////////////
 
-versions["spring"] = "4.3.18.RELEASE"
+versions["spring"] = "4.3.20.RELEASE"
 
 libraries["spring-core"] = "org.springframework:spring-core:${versions["spring"]}"
 
@@ -139,12 +144,16 @@ libraries["cglib-nodep"] = "cglib:cglib-nodep:3.2.4"
 // In Spock, allows mocking of classes without default constructor (together with CGLIB).
 libraries["objenesis"] = "org.objenesis:objenesis:2.4"
 
+//mockito
+libraries["mockito"] = "org.mockito:mockito-core:2.+"
+
+
 ////////////////////////////////////////// Other //////////////////////////////////////////
 
 // See https://github.com/coverity/coverity-security-library
 libraries["coverity-escapers"] = "com.coverity.security:coverity-escapers:1.1.1"
 
-libraries["guava"] = "com.google.guava:guava:25.1-jre"
+libraries["guava"] = "com.google.guava:guava:27.0.1-jre"
 
 libraries["httpclient"] = "org.apache.httpcomponents:httpclient:4.5.2"
 
@@ -163,6 +172,9 @@ libraries["je"] = "com.sleepycat:je:4.0.92"
 
 libraries["jna"] = "net.java.dev.jna:jna:4.2.2"
 
+// replaces the one that we exclude from chronicle-map
+libraries["jna-platform"] = "net.java.dev.jna:jna-platform:4.2.2"
+
 // replace by javax.time
 libraries["joda-time"] = "joda-time:joda-time:2.9.4"
 
@@ -170,7 +182,7 @@ libraries["joda-time"] = "joda-time:joda-time:2.9.4"
 libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
 
 // Annotations
-libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.1"
+libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.2"
 
 libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.5.1"
 
@@ -201,14 +213,25 @@ libraries["aws-java-sdk-s3"] = dependencies.create("com.amazonaws:aws-java-sdk-s
 }
 
 // replace the jackson.core libs that were excluded from aws-java-sdk-s3
-libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.6"
-libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.6"
-libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.6"
+libraries["jackson-core"] = "com.fasterxml.jackson.core:jackson-core:2.9.8"
+libraries["jackson-annotations"] = "com.fasterxml.jackson.core:jackson-annotations:2.9.8"
+libraries["jackson-databind"] = "com.fasterxml.jackson.core:jackson-databind:2.9.8"
 
-libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.15.1") {
+libraries["chronicle-map"] = dependencies.create("net.openhft:chronicle-map:3.17.0") {
+    // the version of jna shipped with chronicle-map requires GLIBC 2.14
+    // which prevents the use of the TDS on several versions of linux, such
+    // as CentOS and Hed Hat 6. We already include jna in netCDF-Java for
+    // netCDF-C support, so we will rely on that version instead.
+    // We should be able to get rid of this on the next release of chronicle-map,
+    // as their snapshot BOM pom shows that they pulled back on jna.
+    exclude group: 'net.java.dev.jna', module: 'jna'
+    exclude group: 'net.java.dev.jna', module: 'jna-platform'
     // We do not need XStream for our use of chronicle-map.
-    // Nuke it.
+    // Nuke it. [SEC]
     exclude group: 'com.thoughtworks.xstream', module: 'xstream'
+    // We do not need pax-url-aether
+    // Nuke it. [SEC]
+    exclude group: 'org.ops4j.pax.url', module: 'pax-url-aether'
 }
 
 libraries["javax.servlet-api"] = "javax.servlet:javax.servlet-api:3.1.0"
@@ -223,12 +246,17 @@ libraries["jaxen"] = "jaxen:jaxen:1.1.6"
 
 libraries["oro"] = "oro:oro:2.0.8"
 
-// The latest version is 3.0.1.RELEASE. Can we update?
-libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.2.RELEASE"
+libraries["thymeleaf-spring4"] = "org.thymeleaf:thymeleaf-spring4:3.0.11.RELEASE"
 
-versions["edal"] = "1.4.0"
+versions["edal"] = "1.4.2-SNAPSHOT"
 
-libraries["edal-common"] = "uk.ac.rdg.resc:edal-common:${versions["edal"]}"
+// needed for edal-common but this pulls in a newer version.
+libraries["ehcache"] = "net.sf.ehcache:ehcache:2.10.6"
+
+libraries["edal-common"] = dependencies.create("uk.ac.rdg.resc:edal-common:${versions["edal"]}") {
+    // exclude ehcache from this dep and use the more recent version above
+    exclude group: 'net.sf.ehcache', module: 'net.sf.ehcache:ehcache'
+}
 
 libraries["edal-cdm"] = dependencies.create("uk.ac.rdg.resc:edal-cdm:${versions["edal"]}") {
     // These are dependencies that are included in edal-cdm, but are provided by
@@ -262,7 +290,15 @@ libraries["threddsIso"] = "EDS:threddsIso:2.3.0-SNAPSHOT"
 
 libraries["Saxon-HE"] = "net.sf.saxon:Saxon-HE:9.7.0-8"
 
-libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.3"
+libraries["quartz"] = dependencies.create("org.quartz-scheduler:quartz:2.2.3") {
+    // exclude c3p0 deps so that they can be overridden
+    // with 0.9.5.3 to address a potential security issue.
+    // See https://github.com/swaldman/c3p0/issues/123
+    exclude group: 'com.mchange', module: 'c3p0'
+}
+
+// replace the c3p0 lib that were excluded from quartz
+libraries["c3p0"] = "com.mchange:c3p0:0.9.5.3"
 
 // Version update note:
 // spring-context 4.x is limited to hibernate-validator 4.3.2.Final. We can't update to hibernate-validator 5.x
@@ -271,6 +307,10 @@ libraries["quartz"] = "org.quartz-scheduler:quartz:2.2.3"
 libraries["hibernate-validator"] = "org.hibernate:hibernate-validator:4.3.2.Final"
 
 libraries["validation-api"] = "javax.validation:validation-api:1.0.0.GA"
+
+// used for writing json-LD
+
+libraries["json"] = 'org.json:json:20180813'
 
 ////////////////////////////////////////// ToolsUI //////////////////////////////////////////
 
@@ -311,13 +351,6 @@ configurations.all {
                 dep.useTarget libraries["jcl-over-slf4j"]
             }
         }
-
-        // Force the use of org.slf4j:slf4j-api:1.7.25 (over 1.8.0-alpha2) due to vulnerability.
-        // alpha2 is pulled in by org.apache.logging.log4j:log4j-slf4j-impl, which we pull in
-        // and is currently at the latest version. if we bump to 1.8.0-alpha2, many libraries that
-        // depend on slj4j break. See: https://github.com/gatling/gatling/issues/3290
-        // So, our only option is to override it with the latest 1.7.x version...for now...
-        force 'org.slf4j:slf4j-api:1.7.25'
     }
     
     // STAX is already included in Java 1.6+; no need for a third-party depenency.

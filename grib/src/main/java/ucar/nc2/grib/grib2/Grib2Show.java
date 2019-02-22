@@ -9,7 +9,6 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.NcepLocalTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -19,14 +18,14 @@ import java.util.Formatter;
 import java.util.Map;
 
 /**
- * Describe
+ * Utilities to show Grib2 records.
  *
  * @author caron
  * @since 12/22/2015.
  */
 public class Grib2Show {
 
-  static public void showBytes(Formatter f, byte[] buff, int max) {
+  public static void showBytes(Formatter f, byte[] buff, int max) {
     int count = 0;
     for (byte b : buff) {
       int ub = (b < 0) ? b + 256 : b;
@@ -38,7 +37,7 @@ public class Grib2Show {
     }
   }
 
-  static public void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) throws IOException {
+  public static void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) throws IOException {
     f.format("File=%d %s offset=%d%n", gr.getFile(), path, gr.getIs().getStartPos());
     f.format("Header=\"");
     showBytes(f, gr.getHeader(), 100);
@@ -114,21 +113,21 @@ public class Grib2Show {
     f.format("  Data Length        = %d%n", ds.getMsgLength());
   }
 
-  static public void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Customizer cust) {
+  public static void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Customizer cust) {
     int template = gds.getGDSTemplateNumber();
     byte[] raw = gds.getRawBytes();
     showRawWithTemplate("3." + template, raw, f, cust);
   }
 
-  static public void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Customizer cust) {
+  public static void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Customizer cust) {
     int template = pdss.getPDSTemplateNumber();
     byte[] raw = pdss.getRawBytes();
     showRawWithTemplate("4." + template, raw, f, cust);
   }
 
-  static private Map<String, WmoTemplateTable> gribTemplates = null; // LOOK move to WmoTemplateTable
+  private static Map<String, WmoTemplateTable> gribTemplates = null; // LOOK move to WmoTemplateTable
 
-  static private void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Customizer cust) {
+  private static void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Customizer cust) {
     if (gribTemplates == null)
       try {
         gribTemplates = WmoTemplateTable.getWmoStandard().map;
@@ -144,7 +143,7 @@ public class Grib2Show {
       gt.showInfo(cust, raw, f);
   }
 
-  static public void showProcessedPds(Grib2Customizer cust, Grib2Pds pds, int discipline, Formatter f) {
+  public static void showProcessedPds(Grib2Customizer cust, Grib2Pds pds, int discipline, Formatter f) {
     int template = pds.getTemplateNumber();
     f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));
     f.format(" Discipline %3d     = %s%n", discipline, cust.getTableValue("0.0", discipline));

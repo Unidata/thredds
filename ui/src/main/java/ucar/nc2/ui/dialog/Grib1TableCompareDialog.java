@@ -162,20 +162,14 @@ public class Grib1TableCompareDialog extends JDialog {
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        cancelButton.addActionListener(e -> {
             cancelButtonActionPerformed(e);
-          }
         });
 
         //---- okButton ----
         okButton.setText("OK");
-        okButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        okButton.addActionListener(e -> {
             okButtonActionPerformed(e);
-          }
         });
 
         //---- table1 ----

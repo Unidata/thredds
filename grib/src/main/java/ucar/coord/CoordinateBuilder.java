@@ -7,8 +7,7 @@ package ucar.coord;
 import java.util.List;
 
 /**
- * Builds Coordinates
- * Finds distinct values
+ * Builds Coordinates by finding distinct values.
  *
  * @author caron
  * @since 11/27/13

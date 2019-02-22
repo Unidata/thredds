@@ -132,7 +132,7 @@ public final class GribCollectionProto {
     private final int index;
     private final int value;
 
-    private GribAxisType(int index, int value) {
+    GribAxisType(int index, int value) {
       this.index = index;
       this.value = value;
     }
@@ -4591,11 +4591,11 @@ public final class GribCollectionProto {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(7, times_.get(i));
       }
-      if (isOrthogonal_ != false) {
+      if (isOrthogonal_) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(8, isOrthogonal_);
       }
-      if (isRegular_ != false) {
+      if (isRegular_) {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(9, isRegular_);
       }
@@ -9204,7 +9204,7 @@ public final class GribCollectionProto {
       private final int index;
       private final int value;
 
-      private Type(int index, int value) {
+      Type(int index, int value) {
         this.index = index;
         this.value = value;
       }

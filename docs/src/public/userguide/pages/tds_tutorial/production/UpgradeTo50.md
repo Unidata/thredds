@@ -312,14 +312,14 @@ Schema version is now `1.2`.
 `crawlableDatasetSorterImpl`) are no longer supported. (This was never officially released or documented).
 * `DatasetScan` details are [here](server_side_catalog_specification.html)
 
-=== Standard Services
+### Standard Services
 
 * The TDS provides standard service elements, which know which services are appropriate for each Feature Type.
 * User defined services in the root catalog are global and can be referenced by name in any other config catalog.
 * User defined services in non-root catalogs are local to that catalog and override (by name) any global services.
 * All services are enabled unless explicitly disabled
 ** Except for remote catalog services
-* Standard service details are <<reference/Services#,here>>
+* Standard service details are [here](services_ref.html))
 
 ### FeatureCollections
 

@@ -11,9 +11,11 @@ dependencies {
     compile project(':dap4:d4lib')
     compile project(':dap4:d4servlet')
     compileOnly libraries["javax.servlet-api"]
+
     compile libraries["slf4j-api"]
     runtime libraries["log4j-slf4j-impl"]
     runtime libraries["log4j-web"]
+    testRuntime libraries["logback-classic"]
 }
 
 // This specifies the resources from ":dap4:d4tests" that we need to include in the d4ts war and inplaceWebapp.

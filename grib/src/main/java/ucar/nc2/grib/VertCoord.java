@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nonnull;
 import ucar.nc2.util.Misc;
 
 import javax.annotation.concurrent.Immutable;
@@ -20,7 +21,7 @@ import java.util.*;
 @Immutable
 public class VertCoord {
 
-  static public void assignVertNames(List<VertCoord> vertCoords, GribTables tables) {
+  public static void assignVertNames(List<VertCoord> vertCoords, GribTables tables) {
     List<VertCoord> temp = new ArrayList<>(vertCoords); // dont change order of original !!!!!
 
     // assign name
@@ -31,7 +32,7 @@ public class VertCoord {
     }
 
     // sort by name
-    Collections.sort(temp, (o1, o2) -> o1.getName().compareTo(o2.getName()));
+    temp.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
 
     // disambiguate names
     String lastName = null;
@@ -53,12 +54,6 @@ public class VertCoord {
   private final List<VertCoord.Level> coords;
   private final VertUnit unit;
   private final boolean isLayer;
-
-  /* public VertCoord(int code, List<VertCoord.Level> coords, boolean isLayer) {
-    this.coords = coords;
-    this.isLayer = isLayer;
-    this.unit = Grib2Utils.getLevelUnit(code);
-  }  */
 
   public VertCoord(List<VertCoord.Level> coords, VertUnit unit, boolean isLayer) {
     this.coords = coords;
@@ -127,22 +122,28 @@ public class VertCoord {
 
   @Override
   public String toString() {
-    Formatter out = new Formatter();
-    out.format("(3D=%s) code=%d = ", isVertDimensionUsed(), getCode());
-    for (Level lev : coords) out.format("%s, ", lev.toString(isLayer));
-    out.format("units='%s' isLayer=%s", getUnits(), isLayer);
-    return out.toString();
+    try (Formatter out = new Formatter()) {
+      out.format("(3D=%s) code=%d = ", isVertDimensionUsed(), getCode());
+      for (Level lev : coords) {
+        out.format("%s, ", lev.toString(isLayer));
+      }
+      out.format("units='%s' isLayer=%s", getUnits(), isLayer);
+      return out.toString();
+    }
   }
 
   public String showCoords() {
-    Formatter out = new Formatter();
-    for (Level lev : coords) out.format("%s, ", lev.toString(isLayer));
-    return out.toString();
+    try (Formatter out = new Formatter()) {
+      for (Level lev : coords) {
+        out.format("%s, ", lev.toString(isLayer));
+      }
+      return out.toString();
+    }
   }
 
   ///////////////////////////////////////////////////////
 
-  static public int findCoord(List<VertCoord> vertCoords, VertCoord want) {
+  public static int findCoord(List<VertCoord> vertCoords, VertCoord want) {
     if (want == null) return -1;
 
     for (int i = 0; i < vertCoords.size(); i++) {
@@ -156,17 +157,11 @@ public class VertCoord {
   }
 
   @Immutable
-  static public class Level implements Comparable<Level> {
+  public static class Level implements Comparable<Level> {
     final double value1;
     final double value2;
     final double mid;
     final boolean isLayer;
-
-    /* public Level(double value1, double value2) {
-      this.value1 = value1;
-      this.value2 = value2;
-      this.mid = (value2 == 0 || value2 == GribNumbers.UNDEFINEDD) ? value1 : (value1 + value2) / 2;
-    } */
 
     public Level(double value1) {
       this.value1 = value1;
@@ -195,12 +190,8 @@ public class VertCoord {
     }
 
     @Override
-    public int compareTo(Level o) {
-      if (mid < o.mid) return -1;
-      if (mid > o.mid) return 1;
-      return 0;
-      //int c1 = Double.compare(value2, o.value2);
-      //return (c1 == 0) ? Double.compare(value1, o.value1) : c1;
+    public int compareTo(@Nonnull Level o) {
+      return Double.compare(mid, o.mid);
     }
 
     @Override
@@ -231,21 +222,25 @@ public class VertCoord {
     }
 
     public String toString() {
-      Formatter out = new Formatter();
-      if (isLayer)
-        out.format("(%f,%f)", value1, value2);
-      else
-        out.format("%f", value1);
-      return out.toString();
+      try (Formatter out = new Formatter()) {
+        if (isLayer) {
+          out.format("(%f,%f)", value1, value2);
+        } else {
+          out.format("%f", value1);
+        }
+        return out.toString();
+      }
     }
 
     public String toString(boolean isLayer) {
-      Formatter out = new Formatter();
-      if (isLayer)
-        out.format("(%f,%f)", value1, value2);
-      else
-        out.format("%f", value1);
-      return out.toString();
+      try (Formatter out = new Formatter()) {
+        if (isLayer) {
+          out.format("(%f,%f)", value1, value2);
+        } else {
+          out.format("%f", value1);
+        }
+        return out.toString();
+      }
     }
   }
 

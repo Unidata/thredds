@@ -21,10 +21,10 @@ When you have many datasets to declare in each catalog, you can use _nested_ dat
 </catalog>
 ~~~
 
-* <1> This declares a _collection_ dataset which acts as a container for the other datasets.
-  Note that it ends in a `>` instead of `/>`, and does not have a `urlPath` attribute.
-* <2> These are the datasets that directly point to data, called _direct_ datasets.
-* <3> This closes the collection `dataset` element on line 1.
+1. This declares a _collection_ dataset which acts as a container for the other datasets.
+   Note that it ends in a `>` instead of `/>`, and does not have a `urlPath` attribute.
+2. These are the datasets that directly point to data, called _direct_ datasets.
+3. This closes the collection `dataset` element on line 1.
 
 You can add any level of nesting you want, e.g.:
 

@@ -87,8 +87,7 @@ public class DirectoryPartitionViewer extends JPanel {
     if (topPanel != null && buttPanel != null) {
 
       cb = new ComboBox(prefs);
-      cb.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      cb.addActionListener(e -> {
           String filename = (String) cb.getSelectedItem();
           if (filename == null) return;
           File d = new File( filename);
@@ -100,7 +99,6 @@ public class DirectoryPartitionViewer extends JPanel {
             setCollectionFromIndex(d.getPath());
           }
           cb.addItem(filename);
-        }
       });
       topPanel.add(new JLabel("dir,ncx3,or config:"), BorderLayout.WEST);
       topPanel.add(cb, BorderLayout.CENTER);

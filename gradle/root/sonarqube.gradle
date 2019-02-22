@@ -94,6 +94,7 @@ gradle.projectsEvaluated {
                                       properties["sonar.java.test.libraries"] ?: []).flatten()
                 properties["sonar.java.libraries"] = nukeDupesAndNonExistent(libraries)
                 properties["sonar.java.test.libraries"] = ""
+                properties["sonar.branch.name"] = "5.0.0"
             }
         }
     }

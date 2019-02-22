@@ -41,7 +41,7 @@ public class FslLocalTables extends NcepLocalTables {
     return cust;
   }
 
-  static private String getPath(Grib2Table grib2Table) {
+  private static String getPath(Grib2Table grib2Table) {
     if (grib2Table.getId().genProcessId == 125)
       return fimTable;
     else
@@ -63,9 +63,8 @@ public class FslLocalTables extends NcepLocalTables {
   // must override since we are subclassing NcepLocalTables
   @Override
   public List<GribTables.Parameter> getParameters() {
-    List<GribTables.Parameter> result = new ArrayList<>();
-    for (Grib2Parameter p : local.values()) result.add(p);
-    Collections.sort(result, new ParameterSort());
+    List<Parameter> result = new ArrayList<>(local.values());
+    result.sort(new ParameterSort());
     return result;
   }
 
@@ -111,34 +110,29 @@ public class FslLocalTables extends NcepLocalTables {
 
   @Override
   public String getLevelNameShort(int id) {
-    switch (id) {
-      case 200:
-        return "Entire_atmosphere";
-      default:
-        return super.getLevelNameShort(id);
+    if (id == 200) {
+      return "Entire_atmosphere";
     }
+    return super.getLevelNameShort(id);
   }
 
   @Override
 
   public String getLevelName(int id) {
-    switch (id) {
-      case 200:
-        return "Entire atmosphere layer";
-      default:
-        return super.getLevelName(id);
+    if (id == 200) {
+      return "Entire atmosphere layer";
     }
+    return super.getLevelName(id);
   }
 
   public String getStatisticNameShort(int id) {
-    switch (id) {
-      case 255:
-        return "Interval";
+    if (id == 255) {
+      return "Interval";
     }
     return super.getStatisticNameShort(id);
   }
 
-  protected void initLocalTable(Formatter f) {
+  private void initLocalTable(Formatter f) {
     if (grib2Table.getPath().equals(hrrrTable))
       local = readCsv(hrrrTable, f);
     else
@@ -158,57 +152,67 @@ public class FslLocalTables extends NcepLocalTables {
     ClassLoader cl = getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(resourcePath)) {
       if (is == null) throw new IllegalStateException("Cant find " + resourcePath);
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
-      HashMap<String, Grib2Parameter> names = new HashMap<>(200);
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
+        HashMap<String, Grib2Parameter> names = new HashMap<>(200);
 
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break;
-        if (line.startsWith("Record")) break;
-      }
-
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break;
-        if ((line.length() == 0) || line.startsWith("#")) continue;
-        String[] flds = line.split(",");
-
-        /* System.out.printf("%d == ", flds.length);
-        for (String s : flds) System.out.printf("%s,", s.trim());
-        System.out.printf("%n"); */
-
-        // RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
-        //RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
-
-        String recordNumber = flds[0].trim();
-        int tableNumber = Integer.parseInt(flds[1].trim());
-        int disciplineNumber = Integer.parseInt(flds[2].trim());
-        int categoryNumber = Integer.parseInt(flds[3].trim());
-        int parameterNumber = Integer.parseInt(flds[4].trim());
-
-        String WGrib2Name = flds[5].trim();
-        String NCLName = flds[6].trim();
-        String FieldType = flds[7].trim();
-        String Description = flds[8].trim();
-        String Units = flds[9].trim();
-        if (f != null)
-          f.format("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber, tableNumber, disciplineNumber, categoryNumber, parameterNumber,
-                  WGrib2Name, NCLName, FieldType, Description, Units);
-
-        String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
-        Grib2Parameter s = new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber, name, Units, null, Description);
-        // s.desc = Description;
-        result.put(makeParamId(disciplineNumber, categoryNumber, parameterNumber), s);
-        if (f != null) f.format(" %s%n", s);
-        if (categoryNumber > 191 || parameterNumber > 191) {
-          Grib2Parameter dup = names.get(s.getName());
-          if (dup != null && f != null) {
-            if (header) f.format("Problems in table %s %n", resourcePath);
-            header = false;
-            f.format(" DUPLICATE NAME %s and %s (%s)%n", s.getId(), dup.getId(), s.getName());
+        while (true) {
+          String line = br.readLine();
+          if (line == null) {
+            break;
+          }
+          if (line.startsWith("Record")) {
+            break;
           }
         }
-        names.put(s.getName(), s);
+
+        while (true) {
+          String line = br.readLine();
+          if (line == null) {
+            break;
+          }
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+          String[] flds = line.split(",");
+
+          //RecordNumber,	TableNumber,	DisciplineNumber,	CategoryNumber,	ParameterNumber,	WGrib2Name,	NCLName,				FieldType,			Description,													Units,
+          String recordNumber = flds[0].trim();
+          int tableNumber = Integer.parseInt(flds[1].trim());
+          int disciplineNumber = Integer.parseInt(flds[2].trim());
+          int categoryNumber = Integer.parseInt(flds[3].trim());
+          int parameterNumber = Integer.parseInt(flds[4].trim());
+
+          String WGrib2Name = flds[5].trim();
+          String NCLName = flds[6].trim();
+          String FieldType = flds[7].trim();
+          String Description = flds[8].trim();
+          String Units = flds[9].trim();
+          if (f != null) {
+            f.format("%3s %3d %3d %3d %3d %-10s %-25s %-30s %-100s %-20s%n", recordNumber,
+                tableNumber, disciplineNumber, categoryNumber, parameterNumber,
+                WGrib2Name, NCLName, FieldType, Description, Units);
+          }
+
+          String name = !WGrib2Name.equals("var") ? WGrib2Name : FieldType;
+          Grib2Parameter s = new Grib2Parameter(disciplineNumber, categoryNumber, parameterNumber,
+              name, Units, null, Description);
+          // s.desc = Description;
+          result.put(makeParamId(disciplineNumber, categoryNumber, parameterNumber), s);
+          if (f != null) {
+            f.format(" %s%n", s);
+          }
+          if (categoryNumber > 191 || parameterNumber > 191) {
+            Grib2Parameter dup = names.get(s.getName());
+            if (dup != null && f != null) {
+              if (header) {
+                f.format("Problems in table %s %n", resourcePath);
+              }
+              header = false;
+              f.format(" DUPLICATE NAME %s and %s (%s)%n", s.getId(), dup.getId(), s.getName());
+            }
+          }
+          names.put(s.getName(), s);
+        }
       }
 
     } catch (IOException ioe) {

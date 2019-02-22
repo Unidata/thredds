@@ -46,6 +46,7 @@ dependencies {
     compile libraries["coverity-escapers"]
     compile libraries["jdom2"]
     compile libraries["quartz"]
+    compile libraries["c3p0"] // needed to replace the excluded version from quartz
     compile libraries["jsr305"]
     compile libraries["guava"]
     compile libraries["joda-time"]
@@ -71,6 +72,7 @@ dependencies {
     testCompile libraries["jaxen"]
 
     // edal ncwms related libs
+    compile libraries["ehcache"]
     compile libraries["edal-common"]
     compile libraries["edal-cdm"]
     compile libraries["edal-graphics"]
@@ -82,6 +84,9 @@ dependencies {
 
     runtime libraries["Saxon-HE"]
     runtime libraries["jaxen"]
+
+    // json writing
+    libraries["json"]
 
     // JSR 303 with Hibernate Validator, which is dragging in jboss logging
     compile libraries["validation-api"]

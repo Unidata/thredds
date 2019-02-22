@@ -76,10 +76,8 @@ public class Grib2TableViewer2 extends JPanel {
     }); */
 
     AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in this table", false);
-    dupButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    dupButton.addActionListener(e -> {
         lookForProblems();
-      }
     });
     buttPanel.add(dupButton);
 

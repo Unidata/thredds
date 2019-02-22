@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribResourceReader;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.util.TableParser;
@@ -20,7 +21,6 @@ import java.util.Map;
  * Read tables from https://github.com/Unidata/gempak/tree/master/gempak/tables/grid/g2*.tbl
  *
  * eg:
- *
  * https://raw.githubusercontent.com/Unidata/gempak/master/gempak/tables/grid/g2varsfsl1.tbl
  *
  * @author caron
@@ -36,7 +36,7 @@ public class GempakLocalTables extends LocalTables {
     return single;
   }
 
-  GempakLocalTables(Grib2Table grib2Table) {
+  private GempakLocalTables(Grib2Table grib2Table) {
     super(grib2Table);
     Formatter f = new Formatter();
     local = initLocalTable(grib2Table.getPath(), f);
@@ -82,12 +82,10 @@ public class GempakLocalTables extends LocalTables {
 
    */
 
-  private Map<Integer, Grib2Parameter> initLocalTable(String resourcePath, Formatter f) {
+  private Map<Integer, Grib2Parameter> initLocalTable(String resourcePath, @Nullable Formatter f) {
     Map<Integer, Grib2Parameter> result = new HashMap<>(100);
 
     try (InputStream is = GribResourceReader.getInputStream(resourcePath)) {
-      if (is == null) throw new IllegalStateException("Cant find " + resourcePath);
-
       if (f != null) f.format("%s, %-20s, %-20s, %-20s%n", "id", "name", "units", "gname");
       TableParser parser = new TableParser("3i,7i,11i,15i,49,69,74,");
       parser.setComment("!");

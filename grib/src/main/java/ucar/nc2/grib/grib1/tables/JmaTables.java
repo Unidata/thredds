@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribStatType;
@@ -22,8 +23,6 @@ import java.util.Map;
  * @since 1/27/2015
  */
 public class JmaTables extends Grib1Customizer {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(JmaTables.class);
-
   private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
 
   JmaTables(Grib1ParamTables tables) {
@@ -38,10 +37,10 @@ public class JmaTables extends Grib1Customizer {
     int timeRangeIndicator = pds.getTimeRangeIndicator(); // octet 21
     int n = pds.getNincluded();
 
-    int start = 0;
-    int end = 0;
+    int start;
+    int end;
     int forecastTime = 0;
-    boolean isInterval = false;
+    boolean isInterval;
 
     switch (timeRangeIndicator) {
       /*
@@ -168,7 +167,7 @@ public class JmaTables extends Grib1Customizer {
     return super.getLevelType(code);
   }
 
-  static private void makeLevelTypesMap() {
+  private static void makeLevelTypesMap() {
     levelTypesMap = new HashMap<>(10);
     // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
     levelTypesMap.put(100, new GribLevelType(100, "Isobaric Surface", "isobaric_surface_low", "hPa", null, false, false));   // 3D
@@ -181,12 +180,13 @@ public class JmaTables extends Grib1Customizer {
   private static Map<Integer, String> genProcessMap;
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null) makeGenProcessMap();
     return genProcessMap.get(genProcess);
   }
 
-  static private void makeGenProcessMap() {
+  private static void makeGenProcessMap() {
     genProcessMap = new HashMap<>(100);
     genProcessMap.put(0, "Undefined (not to specify generating process)");
     genProcessMap.put(1, "Global Spectral Model (GSM8803_T63L16)");

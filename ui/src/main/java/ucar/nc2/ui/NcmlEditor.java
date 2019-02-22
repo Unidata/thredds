@@ -84,14 +84,12 @@ public class NcmlEditor extends JPanel {
     protoChooser = new ComboBox((PreferencesExt) prefs.node("protoChooser"));
     addProtoChoices();
     buttPanel.add(protoChooser);
-    protoChooser.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    protoChooser.addActionListener(e -> {
         String ptype = (String) protoChooser.getSelectedItem();
         String proto = protoMap.get(ptype);
         if (proto != null) {
           editor.setText(proto);
         }
-      }
     });
 
     editor = new JEditorPane();
@@ -189,15 +187,13 @@ public class NcmlEditor extends JPanel {
     BAMutil.addActionToContainer(buttPanel, transAction);
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Check NcML", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compareButton.addActionListener(e -> {
         Formatter f = new Formatter();
         checkNcml(f);
 
         infoTA.setText(f.toString());
         infoTA.gotoTop();
         infoWindow.show();
-      }
     });
     buttPanel.add(compareButton);
 

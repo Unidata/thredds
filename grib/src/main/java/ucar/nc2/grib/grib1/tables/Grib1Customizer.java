@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -32,16 +33,16 @@ import java.util.Map;
  * @since 1/13/12
  */
 public class Grib1Customizer implements GribTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Customizer.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Customizer.class);
 
-  static public Grib1Customizer factory(Grib1Record proto, Grib1ParamTables tables) {
+  public static Grib1Customizer factory(Grib1Record proto, Grib1ParamTables tables) {
     int center = proto.getPDSsection().getCenter();
     int subcenter = proto.getPDSsection().getSubCenter();
     int version = proto.getPDSsection().getTableVersion();
     return factory(center, subcenter, version, tables);
   }
 
-  static public Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
+  public static Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
     if (center == 7) return new NcepTables(tables);
     else if (center == 9) return new NcepRfcTables(tables);
     else if (center == 34) return new JmaTables(tables);
@@ -51,7 +52,7 @@ public class Grib1Customizer implements GribTables {
     else return new Grib1Customizer(center, tables);
   }
 
-  static public String getSubCenterNameStatic(int center, int subcenter) {
+  public static String getSubCenterNameStatic(int center, int subcenter) {
     Grib1Customizer cust = Grib1Customizer.factory(center, subcenter, 0, null);
     return cust.getSubCenterName( subcenter);
   }
@@ -79,21 +80,23 @@ public class Grib1Customizer implements GribTables {
   }
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     return null;
   }
-
 
   @Override
   public String getGeneratingProcessTypeName(int genProcess) {
     return null;
   }
 
+  @Nullable
   public String getSubCenterName(int subcenter) {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
 
   @Override
+  @Nullable
   public String getSubCenterName(int center, int subcenter) {
     return CommonCodeTable.getSubCenterName(center, subcenter);
   }
@@ -107,11 +110,11 @@ public class Grib1Customizer implements GribTables {
 
   // code table 5
   public String getTimeTypeName(int timeRangeIndicator) {
-    if (timeRangeIndicator < 0) return null;
     return Grib1ParamTime.getTimeTypeName(timeRangeIndicator);
   }
 
   @Override
+  @Nullable
   public GribStatType getStatType(int timeRangeIndicator) {
     return Grib1WmoTimeType.getStatType(timeRangeIndicator);
   }
@@ -123,6 +126,7 @@ public class Grib1Customizer implements GribTables {
     return new Grib1ParamLevel(this, pds);
   }
 
+  @Override
   public VertCoord.VertUnit getVertUnit(int code) {
     return makeVertUnit(code);
   }
@@ -137,41 +141,40 @@ public class Grib1Customizer implements GribTables {
     return getLevelType(code);
   }
 
-
   @Override
   public String getLevelNameShort(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    String result = (lt == null) ? null : lt.getAbbrev();
+    String result = lt.getAbbrev();
     if (result == null) result = "unknownLevel"+levelType;
     return result;
   }
 
   public String getLevelDescription(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getDesc();
+    return lt.getDesc();
   }
 
   public boolean isLayer(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? false : lt.isLayer();
+    return lt.isLayer();
   }
 
   // only for 3D
   public boolean isPositiveUp(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? false : lt.isPositiveUp();
+    return lt.isPositiveUp();
   }
 
   // only for 3D
   public String getLevelUnits(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getUnits();
+    return lt.getUnits();
   }
 
   // only for 3D
   public String getLevelDatum(int levelType) {
     GribLevelType lt = getLevelType(levelType);
-    return (lt == null) ? null : lt.getDatum();
+    return lt.getDatum();
   }
 
   /////////////////////////////////////////////
@@ -188,7 +191,7 @@ public class Grib1Customizer implements GribTables {
 
   ////////////////////////////////////////////////////////////////////////
 
-  static private Map<Integer, GribLevelType> wmoTable3;  // shared by all instances
+  private static Map<Integer, GribLevelType> wmoTable3;  // shared by all instances
 
   protected GribLevelType getLevelType(int code) {
     GribLevelType result = wmoTable3.get(code);
@@ -197,18 +200,14 @@ public class Grib1Customizer implements GribTables {
     return result;
   }
 
+  @Nullable
   protected synchronized Map<Integer, GribLevelType> readTable3(String path) {
     try (InputStream is =  GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find Table 3 = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      Map<Integer, GribLevelType> result = new HashMap<Integer, GribLevelType>(200);
+      Map<Integer, GribLevelType> result = new HashMap<>(200);
       List<Element> params = root.getChildren("parameter");
       for (Element elem1 : params) {
         int code = Integer.parseInt(elem1.getAttributeValue("code"));
@@ -223,12 +222,7 @@ public class Grib1Customizer implements GribTables {
       }
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
-
-    } catch (IOException ioe) {
-      logger.error("Cant read NcepLevelTypes = " + path, ioe);
-      return null;
-
-    } catch (JDOMException e) {
+    } catch (IOException | JDOMException e) {
       logger.error("Cant parse NcepLevelTypes = " + path, e);
       return null;
     }

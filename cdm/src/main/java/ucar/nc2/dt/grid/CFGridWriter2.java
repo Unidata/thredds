@@ -5,6 +5,8 @@
 
 package ucar.nc2.dt.grid;
 
+import org.w3c.dom.Attr;
+
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.ma2.InvalidRangeException;
@@ -481,14 +483,36 @@ public class CFGridWriter2 {
 
   private void addCoordinateTransform(GridCoordSystem gcs, NetcdfFile ncd, List<String> varNameList, List<Variable> varList) {
 
+    List<String> coordTransformNames = new ArrayList<>();
+
+    // look for variables detected as coordinate transforms
     for (CoordinateTransform ct : gcs.getCoordinateTransforms()) {
-      Variable v = ncd.findVariable(ct.getName());
-      if (!varNameList.contains(ct.getName()) && (null != v)) {
-        varNameList.add(ct.getName());
-        varList.add(v);
+      coordTransformNames.add(ct.getName());
+    }
+
+    // At the very least, LatLon_Projection will not show up in the coordinate transforms,
+    // so inspect the variables in varNameList for a grid_mapping attribute, and make sure it
+    // gets picked up as well
+    // see https://github.com/Unidata/python-workshop/issues/372
+    for (String varName : varNameList) {
+      Variable v = ncd.findVariable(varName);
+      Attribute gridMapping = v.findAttributeIgnoreCase(CF.GRID_MAPPING);
+      if (gridMapping != null) {
+        String gridMappingName = gridMapping.getStringValue();
+        if ((gridMappingName != null) && (!coordTransformNames.contains(gridMappingName))) {
+          coordTransformNames.add(gridMappingName);
+        }
       }
     }
 
+    // add the coordinate transforms that we found
+    for (String ctVarName : coordTransformNames) {
+      Variable v = ncd.findVariable(ctVarName);
+      if (!varNameList.contains(ctVarName) && (null != v)) {
+        varNameList.add(ctVarName);
+        varList.add(v);
+      }
+    }
   }
 
 

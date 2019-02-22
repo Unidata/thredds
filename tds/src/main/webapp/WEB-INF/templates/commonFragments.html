@@ -10,12 +10,14 @@
   <!-- Common metadata and styles. -->
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
+  <!-- if webcrawler finds this page (say, from sitemap.xml), tell it to not follow the links -->
+  <meta name="robots" content="nofollow" />
+
   <!--/* This is a placeholder where our page-specific stylesheet  can be inserted. */-->
   <th:block th:replace="${style}" />
 
   <!--/* This is a placeholder where our "script" block containing inline Javascript will be inserted. */-->
   <th:block th:replace="${scripts}" />
-
 </head>
 
 <body>

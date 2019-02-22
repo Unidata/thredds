@@ -22,8 +22,8 @@ import java.util.Formatter;
  * @since 9/8/11
  */
 public class Grib1DataReader {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1DataReader.class);
-  static private final float staticMissingValue = Float.NaN;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1DataReader.class);
+  private static final float staticMissingValue = Float.NaN;
 
   ///////////////////////////////// Grib1Data
 
@@ -75,7 +75,7 @@ public class Grib1DataReader {
   /**
    * @param startPos starting offset of the binary data section
    */
-  public Grib1DataReader(int decimalScale, int scanMode, int nxRaw, int nyRaw, int nPts, long startPos) {
+  Grib1DataReader(int decimalScale, int scanMode, int nxRaw, int nyRaw, int nPts, long startPos) {
     this.decimalScale = decimalScale;
     this.scanMode = scanMode;
     this.nxRaw = nxRaw;
@@ -90,16 +90,12 @@ public class Grib1DataReader {
     boolean isGridPointData = !GribNumbers.testBitIsSet(info.flag, 1);
     boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
 
-    if (isGridPointData && isSimplePacking) {
-      return readSimplePacking(raf, bitmap, info);
+    if (!isGridPointData) {
+      logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data for {}", raf.getLocation());
+      throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data");
     }
 
-    if (isGridPointData && !isSimplePacking) {
-      return readExtendedComplexPacking(raf, bitmap, info);
-    }
-
-    logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing for {}", raf.getLocation());
-    throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
+    return isSimplePacking ? readSimplePacking(raf, bitmap, info) : readExtendedComplexPacking(raf, bitmap, info);
   }
 
     /*  From WMO Manual on Codes  I-2 bi - 5
@@ -117,8 +113,6 @@ public class Grib1DataReader {
 
     boolean isConstant = (info.numberOfBits == 0);
     int unusedbits = info.flag & 15;
-
-    // *** read values *******************************************************
 
     double pow10 = Math.pow(10.0, -decimalScale);
     float ref = (float) (pow10 * info.referenceValue);
@@ -346,9 +340,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     int np = this.nPts;
     System.out.printf("need bitmap bytes=%d for npts=%d%n", np / 8, np);
 
-    float[] data = new float[1];
-
-    return data;
+    return new float[1]; // ?? fake
   }
 
   // raf will be at byte 12

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nonnull;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.units.SimpleUnit;
@@ -70,7 +71,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
     return discipline + "." + category + "." + number;
   }
 
-  public int compareTo(Grib2Parameter o) {
+  public int compareTo(@Nonnull Grib2Parameter o) {
     int c = discipline - o.discipline;
     if (c != 0) return c;
     c = category - o.category;
@@ -214,7 +215,7 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
 
   }
 
-  static boolean isUnitless(String unit) {
+  private static boolean isUnitless(String unit) {
     if (unit == null) return true;
     String munge = unit.toLowerCase().trim();
     munge = StringUtil2.remove(munge, '(');

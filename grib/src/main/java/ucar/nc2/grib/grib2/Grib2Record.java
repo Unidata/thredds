@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
 import ucar.nc2.time.CalendarDate;
@@ -33,7 +34,6 @@ public class Grib2Record {
   private Grib2SectionData dataSection;
 
   private Grib2Pds pds2 = null;
-  // private Grib2Gds gds2 = null;
 
   private final byte[] header; // anything in between the records - eg idd header
   private int file; // for multiple files in same dataset
@@ -240,6 +240,7 @@ public class Grib2Record {
   }
 
   // debugging - do not use
+  @Nullable
   public int[] readRawData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
@@ -252,6 +253,7 @@ public class Grib2Record {
   }
 
   // debugging - do not use
+  @Nullable
   public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
@@ -295,9 +297,6 @@ public class Grib2Record {
     return data;
   }
 
-  //         float[] data = Grib2Record.readData(rafData, dr.drsPos, vindex.group.hcs.gdsNumberPoints, vindex.group.hcs.scanMode, vindex.group.hcs.nx);
-
-
   /**
    * Read data array: use when you want to be independent of the GribRecord
    *
@@ -310,7 +309,7 @@ public class Grib2Record {
    * @return data as float[] array
    * @throws IOException on read error
    */
-  static public float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine) throws IOException {
+  public static float[] readData(RandomAccessFile raf, long drsPos, long bmsPos, int gdsNumberPoints, int scanMode, int nx, int ny, int[] nptsInLine) throws IOException {
     raf.seek(drsPos);
     Grib2SectionDataRepresentation drs = new Grib2SectionDataRepresentation(raf);
     Grib2SectionBitMap bms = new Grib2SectionBitMap(raf);
@@ -323,8 +322,6 @@ public class Grib2Record {
             scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drs.getDrs(raf);
-
-    //return reader.getData(raf, bitmap, gdrs);
 
     float[] data = reader.getData(raf, bms, gdrs);
 

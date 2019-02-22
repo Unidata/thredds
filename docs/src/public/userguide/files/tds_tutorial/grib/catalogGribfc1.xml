@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog name="Test GribCollections"
+         xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+         xmlns:xlink="http://www.w3.org/1999/xlink">
+
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/"/>
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/"/>
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/"/>
+    <service name="wms" serviceType="WMS" base="/thredds/wms/"/>
+    <service name="ncss" serviceType="NetcdfSubset" base="/thredds/ncss/grid/"/>
+    <service name="cdmremote" serviceType="CdmRemote" base="/thredds/cdmremote/"/>
+    <service name="ncml" serviceType="NCML" base="/thredds/ncml/"/>
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/"/>
+    <service name="iso" serviceType="ISO" base="/thredds/iso/"/>
+  </service>
+
+  <featureCollection name="FNL" featureType="GRIB1" path="gribfc/LocalFNLCollection">
+    <metadata inherited="true">
+      <serviceName>all</serviceName>
+      <documentation type="summary">LOCAL FNL's TO TEST TIME PARTITION</documentation>
+    </metadata>
+
+    <collection name="LOCAL_FNL"
+                spec="<path-to-workshop-data>/data/gribfc_tutorial/basic/ds083.2/data/**/fnl_.*_00.grib1.gbx9$"
+                timePartition="1 month"
+                dateFormatMark="#fnl_#yyyyMMdd_HH" />
+
+    <tdm rewrite="test" />
+  </featureCollection>
+
+
+</catalog>

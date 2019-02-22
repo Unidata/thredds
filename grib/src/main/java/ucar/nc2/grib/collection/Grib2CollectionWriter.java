@@ -27,10 +27,10 @@ import java.util.*;
  */
 class Grib2CollectionWriter extends GribCollectionWriter {
   public static final String MAGIC_START = "Grib2Collectio2Index";  // was Grib2CollectionIndex
-  protected static final int minVersion = 1;  // increment this when you want to force index rebuild
+  static final int minVersion = 1;  // increment this when you want to force index rebuild
   protected static final int version = 3;     // increment this as needed, must be backwards compatible through minVersion
 
-  protected Grib2CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
+  Grib2CollectionWriter(MCollection dcm, org.slf4j.Logger logger) {
     super(dcm, logger);
   }
 
@@ -39,10 +39,10 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     public int hashCode;       // may have been modified
     public CalendarDate runtime;
 
-    public List<Grib2CollectionBuilder.VariableBag> gribVars;
+    List<Grib2CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
     public List<Grib2Record> records = new ArrayList<>();
-    public Set<Integer> fileSet; // this is so we can show just the component files that are in this group
+    Set<Integer> fileSet; // this is so we can show just the component files that are in this group
     public Set<Long> runtimes = new HashSet<>();
 
     Group(Grib2SectionGridDefinition gdss, int hashCode) {
@@ -120,7 +120,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
           countBytes += b.length;
           countRecords += vb.coordND.getSparseArray().countNotMissing();
         }
-        for (int index : g.fileSet) allFileSet.add(index);
+        allFileSet.addAll(g.fileSet);
       }
 
       if (logger.isDebugEnabled()) {
@@ -241,7 +241,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     uint32 ndups = 5;                           // duplicates found when creating
   }
    */
-  private GribCollectionProto.SparseArray writeSparseArray(Grib2CollectionBuilder.VariableBag vb, Set<Integer> fileSet) throws IOException {
+  private GribCollectionProto.SparseArray writeSparseArray(Grib2CollectionBuilder.VariableBag vb, Set<Integer> fileSet) {
     GribCollectionProto.SparseArray.Builder b = GribCollectionProto.SparseArray.newBuilder();
     SparseArray<Grib2Record> sa = vb.coordND.getSparseArray();
     for (int size : sa.getShape())
@@ -296,7 +296,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     repeated uint32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
   }
    */
-  protected GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
+  private GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGds( writeGdsProto(g.gdss.getRawBytes(), -1));
@@ -355,7 +355,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
    repeated PartitionVariable partVariable = 100;
    }
    */
-  private GribCollectionProto.Variable writeVariableProto(Grib2CollectionBuilder.VariableBag vb) throws IOException {
+  private GribCollectionProto.Variable writeVariableProto(Grib2CollectionBuilder.VariableBag vb) {
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
 
     b.setDiscipline(vb.first.getDiscipline());

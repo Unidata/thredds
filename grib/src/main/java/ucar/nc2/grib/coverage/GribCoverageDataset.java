@@ -5,6 +5,7 @@
 package ucar.nc2.grib.coverage;
 
 import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -46,9 +47,9 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
-  static private final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribCoverageDataset.class);
 
-  static public Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
+  public static Optional<FeatureDatasetCoverage> open(String endpoint) throws IOException {
     GribCollectionImmutable gc;
 
     if (endpoint.startsWith("file:"))
@@ -224,7 +225,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   /////////////
-  CalendarDateRange dateRange;
+  private CalendarDateRange dateRange;
 
   private void trackDateRange(CalendarDateRange cdr) {
     if (dateRange == null) dateRange = cdr;
@@ -671,7 +672,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
 
   // orthogonal runtime, offset; both independent
   private TimeOffsetAxis makeTimeOffsetAxis(CoordinateTime2D time2D) {
-    List<? extends Object> offsets = time2D.getOffsetsSorted();
+    List<?> offsets = time2D.getOffsetsSorted();
     int n = offsets.size();
 
     double[] values;
@@ -786,6 +787,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   // create a dependent runtime axis for this time, using the index into the master runtimes array
+  @Nullable
   private CoverageCoordAxis makeRuntimeAuxCoord(CoordinateTimeAbstract time) {
     if (time.getTime2runtime() == null) return null;
     String refName = "ref" + time.getName();
@@ -930,7 +932,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     String name;
     AxisType type;
 
-    public NameAndType(String name, AxisType type) {
+    NameAndType(String name, AxisType type) {
       this.name = name;
       this.type = type;
     }
@@ -953,7 +955,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       } */
     }
 
-    Collections.sort(names, (o1, o2) -> o1.type.axisOrder() - o2.type.axisOrder());
+    names.sort(Comparator.comparingInt(o -> o.type.axisOrder()));
     List<String> axisNames = names.stream().map(o -> o.name).collect(Collectors.toList());
     if (isCurvilinearOrthogonal) {
       Grib2Utils.LatLonCoordType type = Grib2Utils.getLatLon2DcoordType(gribVar.makeVariableDescription());
@@ -1079,7 +1081,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     throw new IllegalStateException();
   }
 
-  public double[] readLatLonAxis2DCoordValues(LatLonAxis2D coordAxis) throws IOException {
+  private double[] readLatLonAxis2DCoordValues(LatLonAxis2D coordAxis) throws IOException {
     GribCollectionImmutable.VariableIndex vindex = (GribCollectionImmutable.VariableIndex) coordAxis.getUserObject();
     int[] shape = coordAxis.getShape();
     List<RangeIterator> ranges = new ArrayList<>();
@@ -1157,13 +1159,6 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       }
     }
 
-    /* debugging
-    boolean hasruntime = false;
-    for (CoverageCoordAxis axis : coordsSetAxes)
-      if (axis.getAxisType() == AxisType.RunTime) hasruntime = true;
-    if (!hasruntime)
-      logger.warn("HEYA no runtime " + gribCollection.getName()); */
-
     List<CoverageCoordAxis> geoArrayAxes = new ArrayList<>(coordsSetAxes);  // for GeoReferencedArray
     geoArrayAxes.add(subsetCoordSys.getYAxis());
     geoArrayAxes.add(subsetCoordSys.getXAxis());
@@ -1183,8 +1178,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     List<CoverageCoordAxis> result = new ArrayList<>();
     if (axis.getDependenceType() != CoverageCoordAxis.DependenceType.dependent)
       result.add(axis);
-    for (CoverageCoordAxis dependent : csys.getDependentAxes(axis))
-      result.add(dependent);
+    result.addAll(csys.getDependentAxes(axis));
     return result;
   }
 }

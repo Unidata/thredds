@@ -157,10 +157,8 @@ public class DatasetViewer extends JPanel {
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to another file", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compareButton.addActionListener(e -> {
         compareDataset();
-      }
     });
     buttPanel.add(compareButton);
 

@@ -76,30 +76,24 @@ public class GribWmoCodesPanel extends JPanel {
     buttPanel.add(compareButton);  */
 
     AbstractButton compare2Button = BAMutil.makeButtcon("Select", "Compare to standard WMO table", false);
-    compare2Button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compare2Button.addActionListener(e -> {
         compareToStandardWMO();
-      }
     });
     buttPanel.add(compare2Button);
 
     AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in this table", false);
-    dupButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    dupButton.addActionListener(e -> {
         lookForProblems();
-      }
     });
     buttPanel.add(dupButton);
 
     AbstractButton modelsButton = BAMutil.makeButtcon("Select", "Check current models", false);
-    modelsButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    modelsButton.addActionListener(e -> {
         try {
           checkCurrentModels();
         } catch (IOException e1) {
           e1.printStackTrace();
         }
-      }
     });
     buttPanel.add(modelsButton);
 

@@ -33,7 +33,7 @@ public class Grib1SectionBinaryData {
   12–     depending on the flag value in octet 4
    */
 
-  public Grib1SectionBinaryData(RandomAccessFile raf) throws IOException {
+  Grib1SectionBinaryData(RandomAccessFile raf) throws IOException {
     startingPosition = raf.getFilePointer();
 
     // octets 1-3 (Length of section)
@@ -43,7 +43,7 @@ public class Grib1SectionBinaryData {
     raf.seek(startingPosition + length);
   }
 
-  public Grib1SectionBinaryData(long startingPosition, int length) {
+  Grib1SectionBinaryData(long startingPosition, int length) {
     this.startingPosition = startingPosition;
     this.length = length;
   }

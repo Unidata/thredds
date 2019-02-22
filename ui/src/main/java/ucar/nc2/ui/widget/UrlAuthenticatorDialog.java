@@ -122,7 +122,11 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
  public Credentials getCredentials(AuthScope scope)
  {
     serverF.setText(scope.getHost()+":"+scope.getPort());
-    realmF.setText(scope.getRealm());
+    String realmName = scope.getRealm();
+    if (realmName == null) {
+      realmName = "THREDDS Data Server";
+    }
+    realmF.setText(realmName);
     dialog.setVisible( true);
     if (pwa == null) throw new IllegalStateException();
     if (debug) {

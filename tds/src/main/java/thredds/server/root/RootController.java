@@ -40,7 +40,7 @@ public class RootController {
     return "redirect:/catalog/catalog.xml";
   }
 
-  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png", "*.jsp"}, method = RequestMethod.GET)
+  @RequestMapping(value = {"*.css", "*.gif", "*.jpg", "*.png", "*.jsp", "sitemap.xml"}, method = RequestMethod.GET)
   public ModelAndView serveFromPublicDirectory(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
     String path = TdsPathUtils.extractPath(req, null);
     File file = tdsContext.getPublicContentDirSource().getFile(path);

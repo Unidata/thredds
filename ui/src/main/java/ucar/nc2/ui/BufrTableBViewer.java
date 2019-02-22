@@ -120,26 +120,20 @@ public class BufrTableBViewer extends JPanel {
     });
 
     AbstractButton standardButton = BAMutil.makeButtcon("FontIncr", "Show union of tables", false);
-    standardButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    standardButton.addActionListener(e -> {
         showAll();
-      }
     });
     buttPanel.add(standardButton);
 
     AbstractButton diffButton = BAMutil.makeButtcon("Select", "Diff all variants", false);
-    diffButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    diffButton.addActionListener(e -> {
         diffVariants();
-      }
     });
     buttPanel.add(diffButton);
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to standard table", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compareButton.addActionListener(e -> {
         compareToStandard();
-      }
     });
     buttPanel.add(compareButton);
 

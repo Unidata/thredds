@@ -13,7 +13,7 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Description
+ * LocalTables from KMA (Japan)
  *
  * @author John
  * @since 6/22/11
@@ -34,7 +34,7 @@ public class KmaLocalTables extends LocalTables {
   }
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
-  protected void initLocalTable() {
+  private void initLocalTable() {
     ClassLoader cl = KmaLocalTables.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tablePath)) {
     if (is == null) throw new IllegalStateException("Cant find "+tablePath);

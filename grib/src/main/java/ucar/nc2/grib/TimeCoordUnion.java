@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nonnull;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
 
@@ -34,14 +35,14 @@ public class TimeCoordUnion extends TimeCoord {
     super(code, canon.getRunDate(), canon.getTimeUnit(), null);
     if (canon.isInterval()) {
       this.values =  makeUnionIntv(timeCoords);
-      this.intervals = new ArrayList<Tinv>(this.values.size());
+      this.intervals = new ArrayList<>(this.values.size());
       for (Val val : values) {
         this.intervals.add(val.tinv);
       }
 
     } else {
       this.values =  makeUnionReg(timeCoords);
-      this.coords = new ArrayList<Integer>(this.values.size());
+      this.coords = new ArrayList<>(this.values.size());
       for (Val val : values) {
         int offset = TimeCoord.getOffset(getRunDate(), val.val, getTimeUnit());
         this.coords.add(offset);
@@ -54,7 +55,7 @@ public class TimeCoordUnion extends TimeCoord {
   public TimeCoordUnion(int code, String units, List coords, int[] partition, int[] index){
     super(code, units, coords);
 
-    values = new ArrayList<Val>(partition.length);
+    values = new ArrayList<>(partition.length);
     for (int i=0; i<partition.length; i++) {
       values.add( new Val((CalendarDate) null, partition[i], index[i])); // LOOK null coord
     }
@@ -69,7 +70,7 @@ public class TimeCoordUnion extends TimeCoord {
   }
 
   private List<Val> makeUnionReg(List<TimeCoord> timeCoords) {
-    Map<CalendarDate, Val> values = new HashMap<CalendarDate, Val>();
+    Map<CalendarDate, Val> values = new HashMap<>();
 
     // loop over partitions
     for (int partno = 0; partno < timeCoords.size(); partno++) {
@@ -95,14 +96,14 @@ public class TimeCoordUnion extends TimeCoord {
     }
 
     // extract into a List and sort
-    List<Val> valuesList = new ArrayList<Val>(values.values());
+    List<Val> valuesList = new ArrayList<>(values.values());
     Collections.sort(valuesList);  // sort by CalendarDate
 
     return valuesList;
   }
 
   private List<Val> makeUnionIntv(List<TimeCoord> timeCoords) {
-    Map<TimeCoord.Tinv, Val> values = new HashMap<TimeCoord.Tinv, Val>();
+    Map<TimeCoord.Tinv, Val> values = new HashMap<>();
 
     // loop over partitions
     for (int partno = 0; partno < timeCoords.size(); partno++) {
@@ -130,7 +131,7 @@ public class TimeCoordUnion extends TimeCoord {
     }
 
     // extract into a List and sort
-    List<Val> valuesList = new ArrayList<Val>(values.values());
+    List<Val> valuesList = new ArrayList<>(values.values());
     Collections.sort(valuesList);  // sort by Tinv
 
     return valuesList;
@@ -149,7 +150,7 @@ public class TimeCoordUnion extends TimeCoord {
     return true;
   }
 
-  static public int findUnique(List<TimeCoordUnion> timeIndexList, TimeCoordUnion want) {
+  public static int findUnique(List<TimeCoordUnion> timeIndexList, TimeCoordUnion want) {
     if (want == null) return -1;
 
     for (int i = 0; i < timeIndexList.size(); i++) {
@@ -161,7 +162,7 @@ public class TimeCoordUnion extends TimeCoord {
     return timeIndexList.size() - 1;
   }
 
-  static public class Val implements Comparable<Val> {
+  public static class Val implements Comparable<Val> {
     TimeCoord.Tinv tinv; // not available on read
     CalendarDate val;// not available on read
 
@@ -201,7 +202,7 @@ public class TimeCoordUnion extends TimeCoord {
     }
 
     @Override
-    public int compareTo(Val o) {
+    public int compareTo(@Nonnull Val o) {
       if (val != null)
         return val.compareTo(o.val);
       else

@@ -204,13 +204,17 @@ public class HTTPMethod implements Closeable, Comparable<HTTPMethod>
             throws HTTPException
     {
         if(HTTPSession.TESTING) HTTPMethod.TESTING = true;
+
+        boolean escapeUrl = Boolean.valueOf(System.getProperty("httpservices.urlencode", "true"));
+
         url = HTTPUtil.nullify(url);
         if(url == null && session != null)
             url = session.getSessionURI();
         if(url == null)
             throw new HTTPException("HTTPMethod: cannot find usable url");
+
         try {
-            this.methodurl = HTTPUtil.parseToURI(url); /// validate
+            this.methodurl = escapeUrl ? new URI(Escape.escapeURL(url)) : new URI(url); /// validate
         } catch (URISyntaxException mue) {
             throw new HTTPException("Malformed URL: " + url, mue);
         }

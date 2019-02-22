@@ -5,13 +5,6 @@
 package ucar.nc2.grib;
 
 import java.io.*;
-
-import java.net.URL;
-import java.net.URLConnection;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.regex.*;
 /*
  * Static methods to read resource files.
  *
@@ -42,7 +35,7 @@ public class GribResourceReader {
       return new FileInputStream(f);
 
     // give up
-    return null;
+    throw new FileNotFoundException("Cant find resource "+resourceName);
   }
 
 }

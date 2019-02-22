@@ -5,14 +5,13 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +23,7 @@ import java.util.Set;
  */
 public class GcMFile implements thredds.inventory.MFile {
 
-  public static List<GcMFile> makeFiles(File directory, List<MFile> files, Set<Integer> allFileSet) {
+  static List<GcMFile> makeFiles(File directory, List<MFile> files, Set<Integer> allFileSet) {
     List<GcMFile> result = new ArrayList<>(files.size());
     String dirPath = StringUtil2.replace(directory.getPath(), '\\', "/");
 
@@ -47,7 +46,7 @@ public class GcMFile implements thredds.inventory.MFile {
   public final long lastModified, length;
   public final int index;
 
-  public GcMFile(File directory, String name, long lastModified, long length, int index) {
+  GcMFile(File directory, String name, long lastModified, long length, int index) {
     this.directory = directory;
     this.name = name;
     this.lastModified = lastModified;
@@ -82,7 +81,7 @@ public class GcMFile implements thredds.inventory.MFile {
   }
 
   @Override
-   public MFile getParent() throws IOException {
+   public MFile getParent() {
      return new MFileOS(directory);
    }
 
@@ -92,6 +91,7 @@ public class GcMFile implements thredds.inventory.MFile {
   }
 
   @Override
+  @Nullable
   public Object getAuxInfo() {
     return null;
   }
@@ -107,13 +107,12 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("GcMFile");
-    sb.append("{directory=").append(directory);
-    sb.append(", name='").append(name).append('\'');
-    sb.append(", lastModified=").append( new Date(lastModified));
-    sb.append(", size=").append( length);
-    sb.append('}');
-    return sb.toString();
+    return "GcMFile{" +
+        "directory=" + directory +
+        ", name='" + name + '\'' +
+        ", lastModified=" + lastModified +
+        ", length=" + length +
+        ", index=" + index +
+        '}';
   }
 }

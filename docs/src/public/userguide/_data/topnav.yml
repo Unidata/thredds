@@ -24,10 +24,15 @@ topnav_dropdowns:
           url: tds_tutorial_index.html
         - title: netCDF-Java Tutorial
           url: /netcdf_java_tutorial_index.html
+    - title: Workshops
+      folderitems:
+        - title: 2018 Unidata Workshop
+          url: workshop2018.html
     - title: External Docs
       folderitems:
+        - title: netCDF-Java public javadocs
+          external_url: https://docs.unidata.ucar.edu/thredds/5.0.0-SNAPSHOT/javadoc/
         - title: Rosetta
           external_url: https://www.unidata.ucar.edu/software/rosetta/docs/
         - title: Siphon
-          external_url: https://siphon.readthedocs.io/en/latest/#
-
+          external_url: https://unidata.github.io/siphon/latest/

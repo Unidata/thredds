@@ -1,14 +1,14 @@
 ---
 title: Basics of Configuration Catalogs
-last_updated: 2018-04-02
+last_updated: 2018-10-23
 sidebar: tdsTutorial_sidebar
 toc: false
-permalink: /basic_config_catalog.html
+permalink: basic_config_catalog.html
 ---
 
 ## Overview
 
-TDS configuration catalogs are like THREDDS [Client catalogs](/basic_client_catalog.html) with extensions.
+TDS configuration catalogs are like THREDDS [Client catalogs](basic_client_catalog.html) with extensions.
 They contain information detailing the datasets the TDS will serve and what services will be available for each dataset.
 For example,  The `datasetRoot` and `datasetScan` elements are extensions that:
  * provide mappings between incoming URL requests and directories on disk; and
@@ -121,16 +121,16 @@ We will go into more detail on this later.
 
 ## Exercise: Add NCEP NAM model data
 
-Modify the main TDS configuration catalog to include some model data.
+Modify the default TDS configuration catalog to include some model data.
 
 1. Take a look at the data (note: the filenames may be different):
 
    ~~~bash
-   $ ls /machine/tds/data
-   fc  gfs  grib  my  nam_12km  ncmlExamples  ncss  ocean  precip  sage
-   $ ls /machine/tds/data/nam_12km/
-   NAM_CONUS_12km_20141010_0000.nc4
-   NAM_CONUS_12km_20141010_0600.nc4
+   $ ls <path-to-workshop-data>data/basic_catalog/nam_12km
+   NAM_CONUS_12km_20181022_1800.nc4
+   NAM_CONUS_12km_20181023_0000.nc4
+   NAM_CONUS_12km_20181023_0600.nc4
+   NAM_CONUS_12km_20181023_1200.nc4
    ~~~
 
 2. Edit the main TDS configuration catalog, using the editor of your choice (here we use `vim`):
@@ -143,7 +143,7 @@ Modify the main TDS configuration catalog to include some model data.
 3. add a `datasetScan` element for the NAM data:
    ~~~xml
    <datasetScan name="NCEP NAM 12km" ID="NAM_12km"
-                path="nam_12km" location="/machine/tds/data/nam_12km">
+                path="nam_12km" location="<path-to-workshop-data>/data/basic_catalog/nam_12km">
      <metadata inherited="true">
        <serviceName>odap</serviceName>
      </metadata>

@@ -9,6 +9,7 @@ package ucar.nc2.constants;
  * Enumeration of CDM Feature types, aka "Scientific Data Types".
  *
  * @author john caron
+ * @author wchen@usgs.gov
  * @see <a href="http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Types</a>
  */
 /*
@@ -61,6 +62,8 @@ public enum FeatureType {
   RADIAL,     // polar coordinates
   STATION_RADIAL, // time series of radial data
 
+  SIMPLE_GEOMETRY, // geospatial associations with data
+  
   // experimental
   IMAGE,    // pixels, may not be geolocatable
   UGRID;    // unstructured grids
@@ -94,4 +97,7 @@ public enum FeatureType {
     return this == FeatureType.UGRID;
   }
 
+  public boolean isSimpleGeometry() {
+	return this == FeatureType.SIMPLE_GEOMETRY;
+  }
 }

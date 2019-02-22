@@ -107,7 +107,7 @@ public class CF1Convention extends CSMConvention {
 
   public void augmentDataset(NetcdfDataset ds, CancelTask cancelTask) throws IOException {
     boolean got_grid_mapping = false;
-
+    
     // look for transforms
     List<Variable> vars = ds.getVariables();
     for (Variable v : vars) {
@@ -129,6 +129,10 @@ public class CF1Convention extends CSMConvention {
         if (sname.equalsIgnoreCase(CF.TIME_OFFSET)) {
           v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.TimeOffset.toString()));
           continue;
+        }
+        
+        if (sname.equalsIgnoreCase(CF.TIME)) {
+          v.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.Time.toString()));
         }
 
         if (sname.equalsIgnoreCase("ensemble") || sname.equalsIgnoreCase("realization")) {
@@ -169,6 +173,83 @@ public class CF1Convention extends CSMConvention {
 
           got_grid_mapping = true;
         }
+      }
+      
+    	  
+      // simple geometry
+
+      if(ds.findGlobalAttribute(CF.CONVENTIONS) != null)
+      if(getVersion(ds.findGlobalAttribute(CF.CONVENTIONS).getStringValue()) >= 8) // only acknowledge simple geometry standard extension if CF-1.8 or higher
+      if (v.findAttribute(CF.GEOMETRY) != null) {
+    	  
+    	Attribute container = v.findAttribute(CF.GEOMETRY);
+    	Variable coordsvar = ds.findVariable(container.getStringValue());
+    	  
+      	v.addAttribute(new Attribute(CF.GEOMETRY_TYPE, ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, "")));
+      	
+      	// Only add attribute if present, sometimes optional
+      	if(ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "").equals("") == false) {
+      		v.addAttribute(new Attribute(CF.NODES, ds.findAttValueIgnoreCase(coordsvar, CF.NODES, "")));
+      	}
+      	
+      	// Only add attribute if present, sometimes optional
+      	if(ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "").equals("") == false) {
+      		v.addAttribute(new Attribute(CF.NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COUNT, "")));
+      	}
+      		
+      	v.addAttribute(new Attribute(CF.NODE_COORDINATES, ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "")));
+      	v.addAttribute(new Attribute(CF.PART_NODE_COUNT, ds.findAttValueIgnoreCase(coordsvar, CF.PART_NODE_COUNT, "")));
+      	if (CF.POLYGON.equalsIgnoreCase(ds.findAttValueIgnoreCase(coordsvar, CF.GEOMETRY_TYPE, ""))) {
+
+      		// Again, interior ring is not always required, but add it if it is present
+      		if(ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "").equals("") == false)
+      			v.addAttribute(new Attribute(CF.INTERIOR_RING, ds.findAttValueIgnoreCase(coordsvar, CF.INTERIOR_RING, "")));
+      	}
+      	
+      	if (v.findAttribute(CF.NODE_COORDINATES) != null) {
+
+      		String[] coords = ds.findAttValueIgnoreCase(coordsvar, CF.NODE_COORDINATES, "").split(" ");
+      
+  			String cds = "";
+      		for (int i = 0; i < coords.length; i++) {
+      			Variable temp = ds.findVariable(coords[i]);
+      			if (temp != null) {
+      				Attribute axis = temp.findAttribute(CF.AXIS);
+      				if (axis != null) {
+      					if ("x".equalsIgnoreCase(axis.getStringValue())) {
+      						temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryX.toString()));
+      					}
+      					if ("y".equalsIgnoreCase(axis.getStringValue())) {
+      						temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryY.toString()));
+      					}
+      					if ("z".equalsIgnoreCase(axis.getStringValue())) {
+      						temp.addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryZ.toString()));
+      					}
+      				
+      					cds += coords[i] + " ";
+      				
+      				}
+      			}
+      		}
+  
+      		List<Dimension> dims = v.getDimensions();
+      		
+      		// Append any geometry dimensions as axis
+      		String pre = "";
+      		
+      		for(Dimension di: dims) {
+      			
+      			if(!di.getShortName().equals("time")) {
+      				if(ds.findVariable(di.getFullNameEscaped()) != null)
+      					ds.findVariable(di.getFullNameEscaped()).addAttribute(new Attribute(_Coordinate.AxisType, AxisType.SimpleGeometryID.toString()));
+      				// handle else case as malformed CF NetCDF
+      			}
+      			
+      			pre = di.getShortName() + " " + pre;
+      		}
+      		
+      		v.addAttribute(new Attribute(_Coordinate.Axes, pre + cds.trim()));
+      	}
       }
     }
 
@@ -314,10 +395,10 @@ public class CF1Convention extends CSMConvention {
       if (sname.equalsIgnoreCase(CF.PROJECTION_Y_COORDINATE) || sname.equalsIgnoreCase(CF.GRID_LATITUDE) || sname.equalsIgnoreCase("rotated_latitude"))
         return AxisType.GeoY;
 
-      if (sname.equalsIgnoreCase( CF.TIME_REFERENCE))
+      if (sname.equalsIgnoreCase(CF.TIME_REFERENCE))
         return AxisType.RunTime;
 
-      if (sname.equalsIgnoreCase( CF.TIME_OFFSET))
+      if (sname.equalsIgnoreCase(CF.TIME_OFFSET))
         return AxisType.TimeOffset;
     }
 

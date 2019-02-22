@@ -4,6 +4,8 @@
  */
 package ucar.coord;
 
+import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
@@ -27,15 +29,15 @@ import java.util.*;
  */
 class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
 
-  boolean isTimeInterval;
-  boolean makeVals;
-  CalendarPeriod timeUnit;
-  int code;
+  private boolean isTimeInterval;
+  private boolean makeVals;
+  private CalendarPeriod timeUnit;
+  private int code;
   org.slf4j.Logger logger;
+  private SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
 
-  SortedMap<Long, CoordinateTimeAbstract> timeMap = new TreeMap<>();
-
-  public CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code,  boolean makeVals, org.slf4j.Logger logger) {
+  CoordinateTime2DUnionizer(boolean isTimeInterval, CalendarPeriod timeUnit, int code,
+      boolean makeVals, org.slf4j.Logger logger) {
     this.isTimeInterval = isTimeInterval;
     this.timeUnit = timeUnit;
     this.code = code;
@@ -61,7 +63,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
 
   // used when isRuntimeUnion=true
   // set the list of runtime coordinates; add any that are not already present, and make an empty CoordinateTimeAbstract for it
-  public void setRuntimeCoords(CoordinateRuntime runtimes) {
+  void setRuntimeCoords(CoordinateRuntime runtimes) {
     for (int idx=0; idx<runtimes.getSize(); idx++) {
       CalendarDate cd = runtimes.getRuntimeDate(idx);
       long runtime = runtimes.getRuntime(idx);
@@ -102,7 +104,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
       return new CoordinateTime2D(code, timeUnit, allVals, runtime, maxCoord, times, null);
 
     List<Coordinate> regCoords = testIsRegular();
-    if (regCoords != null)
+    if (regCoords.isEmpty())
       return new CoordinateTime2D(code, timeUnit, allVals, runtime, regCoords, times, null);
 
     return new CoordinateTime2D(code, timeUnit, allVals, runtime, times, null);
@@ -116,11 +118,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     for (CoordinateTimeAbstract coord : timeMap.values()) {
       CalendarDate runDate = coord.getRefDate();
       int hour = runDate.getHourOfDay();
-      List<CoordinateTimeAbstract> hg = hourMap.get(hour);
-      if (hg == null) {
-        hg = new ArrayList<>();
-        hourMap.put(hour, hg);
-      }
+      List<CoordinateTimeAbstract> hg = hourMap.computeIfAbsent(hour, k -> new ArrayList<>());
       hg.add(coord);
     }
 
@@ -129,7 +127,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     for (int hour : hourMap.keySet()) {
       List<CoordinateTimeAbstract> hg = hourMap.get(hour);
       Coordinate maxCoord = testOrthogonal(hg);
-      if (maxCoord == null) return null;
+      if (maxCoord == null) return ImmutableList.of();
       result.add(maxCoord);
     }
     return result;
@@ -138,7 +136,8 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
   // check if the coordinate with maximum # values includes all of the time in the collection
   // if so, we can store time2D as orthogonal
   // LOOK not right I think, consider one coordinate every 6 hours, and one every 24; should not be merged.
-  static public CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
+  @Nullable
+  static CoordinateTimeAbstract testOrthogonal(Collection<CoordinateTimeAbstract> times) {
     CoordinateTimeAbstract maxCoord = null;
     Set<Object> result = new HashSet<>(100);
 
@@ -149,8 +148,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
         max = coord.getSize();
       }
 
-      for (Object val : coord.getValues())
-        result.add(val);
+      result.addAll(coord.getValues());
     }
 
     // is the set of all values the same as the component times?
@@ -158,6 +156,5 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
     int totalMax = result.size();
     return totalMax == max ? maxCoord : null;
   }
-
 
 }  // Time2DUnionBuilder

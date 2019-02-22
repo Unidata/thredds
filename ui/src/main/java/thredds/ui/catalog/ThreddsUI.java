@@ -147,8 +147,7 @@ public class ThreddsUI extends JPanel {
 
     // add a show source button to catalog chooser
     JButton catSource = new JButton("Source");
-    catSource.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
+    catSource.addActionListener(e -> {
         CatalogChooser cc = datasetChooser.getCatalogChooser();
         String catURL = cc.getCurrentURL();
         //InvCatalogImpl cat = (InvCatalogImpl) datasetChooser.getCatalogChooser().getCurrentCatalog();
@@ -157,7 +156,6 @@ public class ThreddsUI extends JPanel {
         sourcePane.setURL(catURL);
         sourcePane.gotoTop();
         sourceWindow.show();
-      }
     });
     datasetChooser.getCatalogChooser().addButton(catSource);
 

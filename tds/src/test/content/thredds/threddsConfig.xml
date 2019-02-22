@@ -23,6 +23,12 @@
     </hostInstitution>
   </serverInformation>
 
+
+  <htmlSetup>
+    <generateDatasetJsonLD>true</generateDatasetJsonLD>
+  </htmlSetup>
+
+
   <!--
    The <CatalogServices> element:
    -->

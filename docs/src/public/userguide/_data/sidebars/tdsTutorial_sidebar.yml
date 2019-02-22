@@ -105,6 +105,10 @@ entries:
       url: /basic_config_catalog.html
       output: web, pdf
 
+    - title: Configuration Catalogs
+      url: /config_catalog.html
+      output: web, pdf
+
     - title: Basic TDS Configuration
       url: /basic_tds_configuration.html
       output: web, pdf
@@ -117,27 +121,23 @@ entries:
       url: /adding_ncss.html
       output: web, pdf
 
-    - title: Customizing TDS
-      url: /customizing_tds.html
+    - title: Customizing the TDS Look and Feel
+      url: /customizing_tds_look_and_feel.html
       output: web, pdf
 
   - title: Monitoring and Debugging
     output: web, pdf
     folderitems:
-    - title: TDS Monitoring and Debugging
-      url: /tds_monitoring_and_debugging.html
+    - title: Modifying Tomcat Access Logs
+      url: /tomcat_access_log.html
       output: web, pdf
 
-    - title: Tomcat and TDS Logs
-      url: /tomcat_and_tds_logs.html
+    - title: TDS Log Files
+      url: /tds_logs.html
       output: web, pdf
 
     - title: Using the TdsMonitor Tool
       url: /using_the_tdsmonitor_tool.html
-      output: web, pdf
-
-    - title: 3rd Party Tools
-      url: /third_party_tools.html
       output: web, pdf
 
   - title: netCDF Markup Language (NcML)
@@ -205,11 +205,48 @@ entries:
       url: /iso_metadata.html
       output: web, pdf
 
-  - title: Production Servers
+  - title: Putting TDS Into Production
     output: web, pdf
     folderitems:
-    - title: Overview
-      url: /production_server_overview.html
+
+    - title: Restrict Tomcat Permissions
+      url: /tomcat_permissions.html
+      output: web, pdf
+
+    - title: Use Digested Passwords
+      url: /digested_passwords.html
+      output: web, pdf
+
+    - title: Enable TLS/SSL Encryption
+      url: /enable_TLS_encryption.html
+      output: web, pdf
+
+    - title: Secure Tomcat Manager App
+      url: /secure_manager_app.html
+      output: web, pdf
+
+    - title: Remove Unused Web Applications
+      url: /remove_unused_webapps.html
+      output: web, pdf
+
+    - title: Block Non-Essential Ports
+      url: /block_nonessential_ports.html
+      output: web, pdf
+
+    - title: Restrict Access To The TDS
+      url: /restict_access_to_tds.html
+      output: web, pdf
+
+    - title: Keep Software Up-To-Date
+      url: /keep_software_uptodate.html
+      output: web, pdf
+
+    - title: Running Behind a Proxy Server
+      url: /tds_behind_proxy.html
+      output: web, pdf
+
+    - title: Tomcat With A Security Manager
+      url: /tomcat_with_security_manager.html
       output: web, pdf
 
     - title: Troubleshooting Problems
@@ -235,6 +272,10 @@ entries:
       url: /tds_faq.html
       output: web, pdf
 
+    - title: GRIB FAQ
+      url: /tds_grib_faq.html
+      output: web, pdf      
+
   - title: Reference Guide
     output: web, pdf
     folderitems:
@@ -258,10 +299,6 @@ entries:
       url: /wms_ref.html
       output: web, pdf
 
-    - title: Remote Management Reference
-      url: /remote_management_ref.html
-      output: web, pdf
-
     - title: Netcdf Subset Service Reference
       url: /netcdf_subset_service_ref.html
       output: web, pdf
@@ -280,4 +317,40 @@ entries:
 
     - title: Coverage Datasets
       url: /coverage_datasets.html
+      output: web, pdf
+
+    - title: Annotated Schema for NcML
+      url: /tds_annotated_ncml_schema.html
+      output: web, pdf
+
+    - title: Collection Specification String
+      url: /collection_spec_string_ref.html
+      output: web, pdf
+
+    - title: Remote Management Reference
+      url: /remote_management_ref.html
+      output: web, pdf
+
+    - title: TDM Reference
+      url: /tdm_ref.html
+      output: web, pdf
+
+    - title: TDS Services
+      url: /services_ref.html
+      output: web, pdf
+    
+    - title: PointFeature Collection Reference
+      url: /pointfeature_collection_ref.html
+      output: web, pdf
+
+    - title: GRIB Collection Cofig
+      url: /grib_collection_config_ref.html
+      output: web, pdf
+       
+    - title: Time Partitions
+      url: /partitions_ref.html
+      output: web, pdf
+
+    - title: TDS Upgrade Procedure
+      url: /upgrade_tds_ref.html
       output: web, pdf

@@ -143,11 +143,8 @@ public class CompareDialog extends JDialog {
         //---- fileBrowser ----
         fileBrowser.setIcon(UIManager.getIcon("FileView.directoryIcon"));
         fileBrowser.setToolTipText("open Local dataset");
-        fileBrowser.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        fileBrowser.addActionListener(e -> {
             fileBrowserActionPerformed(e);
-          }
         });
 
         //---- label1 ----
@@ -181,29 +178,20 @@ public class CompareDialog extends JDialog {
 
         //---- datasetCombo ----
         datasetCombo.setEditable(true);
-        datasetCombo.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        datasetCombo.addActionListener(e -> {
             datasetComboActionPerformed(e);
-          }
         });
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        cancelButton.addActionListener(e -> {
             cancelButtonActionPerformed(e);
-          }
         });
 
         //---- okButton ----
         okButton.setText("OK");
-        okButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        okButton.addActionListener(e -> {
             okButtonActionPerformed(e);
-          }
         });
 
         //---- varNameOnly ----

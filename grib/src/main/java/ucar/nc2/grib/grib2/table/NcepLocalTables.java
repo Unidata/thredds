@@ -5,13 +5,13 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.tables.NcepTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-import ucar.nc2.grib.grib2.Grib2Pds;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +28,8 @@ import java.util.jar.JarFile;
  * @since 4/3/11
  */
 public class NcepLocalTables extends LocalTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  static private final String defaultResourcePath = "resources/grib2/ncep/v20.0.0/";
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
+  private static final String defaultResourcePath = "resources/grib2/ncep/v21.0.0/";
   private static NcepLocalTables single;
 
   public static Grib2Customizer getCust(Grib2Table table) {
@@ -54,22 +54,6 @@ public class NcepLocalTables extends LocalTables {
     return params.getTablePath(discipline, category);
   }
 
-  // stuff Robb took from Jeff McW; I dont understand it  9/11/2014
-  //public  File[] getResourceListing(Class clazz, String path) {
-  // URL dirURL = clazz.getClassLoader().getResource(path);
-  //  try {
-  //    File fileDir = new File(dirURL.toURI());
-  //    if (fileDir != null) return fileDir.listFiles();
-  //  } catch (URISyntaxException exception) {
-  //      return null;
-  //  }
-
-  //if (dirURL != null && dirURL.getProtocol().equals("file")) {
-  //   /* A file path: easy enough */
-  //  return new File(dirURL.toURI()).list();
-  //  return null;
-  //}
-
   private String[] getResourceListing(String path) throws URISyntaxException, IOException {
     Class clazz = this.getClass();
     URL dirURL = clazz.getClassLoader().getResource(path);
@@ -90,8 +74,11 @@ public class NcepLocalTables extends LocalTables {
     if (dirURL.getProtocol().equals("jar")) {
             /* A JAR path */
       String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-      JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-      Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+      Enumeration<JarEntry> entries;
+      try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+        //gives ALL entries in jar
+        entries = jar.entries();
+      }
       Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
       while (entries.hasMoreElements()) {
         String name = entries.nextElement().getName();
@@ -105,7 +92,7 @@ public class NcepLocalTables extends LocalTables {
           result.add(entry);
         }
       }
-      return result.toArray(new String[result.size()]);
+      return result.toArray(new String[0]);
     }
 
     throw new UnsupportedOperationException("Cannot list files for URL " + dirURL);
@@ -130,11 +117,10 @@ public class NcepLocalTables extends LocalTables {
           logger.error("Error reading wmo tables", e);
         }
       }
-      return allParams;
     } catch (URISyntaxException | IOException e) {
       logger.error("NcepLocalTables failed", e);
     }
-    return null;
+    return allParams;
   }
 
   @Override
@@ -148,28 +134,6 @@ public class NcepLocalTables extends LocalTables {
     else
       return te.getName();
   }
-
-  /* public GribTables.Parameter getParameterOld(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) {
-      GribTables.Parameter p = WmoCodeTable.getParameterEntry(discipline, category, number);
-      if (p != null) return p; // allow ncep to use values not already in use by WMO (!)
-    }
-
-    /* email from boi.vuong@noaa.gov 1/19/2012
-     "I find that the parameter 2-4-3 (Haines Index) now is parameter 2 in WMO version 8.
-      The NAM fire weather nested  will take change in next implementation of cnvgrib (NCEP conversion program)."
-    if (makeHash(discipline, category, number) == makeHash(2, 4, 3))
-      return getParameter(2, 4, 2);
-
-    /* email from boi.vuong@noaa.gov 1/26/2012
-     The parameter 0-19-242 (Relative Humidity with Respect to Precipitable Water)  was in http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_table4-2-0-1.shtml
-     It was a mistake in table conversion (from grib1 to grib2) in cnvgrib. It will be fixed in next implementation of cnvgrib in June or July, 2012.
-     RHPW  in grib1 in table 129 parameter 230  and in grib2 in 0-1-242
-    if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
-      return getParameter(0, 1, 242);
-
-    return NcepLocalParams.getParameter(discipline, category, number);
-  } */
 
   @Override
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
@@ -379,6 +343,7 @@ public class NcepLocalTables extends LocalTables {
   }
 
   @Override
+  @Nullable
   public GribStatType getStatType(int id) {
     if (id < 192) return super.getStatType(id);
     switch (id) {  // LOOK not correct
@@ -409,6 +374,7 @@ public class NcepLocalTables extends LocalTables {
   private static Map<Integer, String> statName;  // shared by all instances
 
   @Override
+  @Nullable
   public String getStatisticName(int id) {
     if (id < 192) return super.getStatisticName(id);
     if (statName == null) statName = initTable410();
@@ -416,15 +382,10 @@ public class NcepLocalTables extends LocalTables {
     return statName.get(id);
   }
 
-  // public so can be called from Grib2
+  @Nullable
   private Map<Integer, String> initTable410() {
     String path = grib2Table.getPath() + "Table4.10.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -436,15 +397,10 @@ public class NcepLocalTables extends LocalTables {
         String desc = elem1.getChildText("description");
         result.put(code, desc);
       }
-
       return result;  // all at once - thread safe
 
-    } catch (IOException ioe) {
+    } catch (IOException | JDOMException ioe) {
       logger.error("Cant read  " + path, ioe);
-      return null;
-
-    } catch (JDOMException e) {
-      logger.error("Cant parse = " + path, e);
       return null;
     }
   }
@@ -455,6 +411,7 @@ public class NcepLocalTables extends LocalTables {
   private static Map<Integer, String> genProcessMap;  // shared by all instances
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null) genProcessMap = NcepTables.getNcepGenProcess();
     if (genProcessMap == null) return null;
@@ -462,6 +419,7 @@ public class NcepLocalTables extends LocalTables {
   }
 
   @Override
+  @Nullable
   public String getCategory(int discipline, int category) {
     String catName = params.getCategory(discipline, category);
     if (catName != null) return catName;

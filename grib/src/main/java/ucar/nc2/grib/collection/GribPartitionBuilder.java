@@ -6,6 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
@@ -32,19 +33,19 @@ import java.util.*;
  */
 abstract class GribPartitionBuilder {
 
-  protected final PartitionManager partitionManager; // defines the partition
+  private final PartitionManager partitionManager; // defines the partition
   protected String name;            // collection name
   protected org.slf4j.Logger logger;
   protected PartitionCollectionMutable result;  // build this object
 
-  protected GribPartitionBuilder(String name, PartitionManager tpc, org.slf4j.Logger logger) {
+  GribPartitionBuilder(String name, PartitionManager tpc, org.slf4j.Logger logger) {
     this.name = name;
     //this.directory = directory;
     this.partitionManager = tpc;
     this.logger = logger;
   }
 
-  public boolean updateNeeded(CollectionUpdateType ff) throws IOException {
+  boolean updateNeeded(CollectionUpdateType ff) throws IOException {
     if (ff == CollectionUpdateType.never) return false;
     if (ff == CollectionUpdateType.always) return true;
 
@@ -97,7 +98,7 @@ abstract class GribPartitionBuilder {
   // build the index
 
   // return true if changed, exception on failure
-  public boolean createPartitionedIndex(CollectionUpdateType forcePartition, Formatter errlog) throws IOException {
+  boolean createPartitionedIndex(CollectionUpdateType forcePartition, Formatter errlog) throws IOException {
     if (errlog == null) errlog = new Formatter(); // info will be discarded
 
     // create partitions from the partitionManager
@@ -118,7 +119,6 @@ abstract class GribPartitionBuilder {
     PartitionCollectionMutable.Partition canon = result.getPartition(idx);
     logger.debug("     Using canonical partition {}", canon.getDcm().getCollectionName());
 
-    CalendarDateRange dateRangeAll = null;
     try (GribCollectionMutable gc = canon.makeGribCollection()) {  // LOOK open/close canonical partition
       if (gc == null)
         throw new IllegalStateException("canon.makeGribCollection failed on =" + result.showLocation() + " " + canon.getName() + "; errs=" + errlog);
@@ -127,10 +127,8 @@ abstract class GribPartitionBuilder {
       result.copyInfo(gc);
       result.isPartitionOfPartitions = (gc instanceof PartitionCollectionMutable);
 
-      if (dateRangeAll == null) dateRangeAll = gc.dateRange;
-      else dateRangeAll = dateRangeAll.extend(gc.dateRange);
+      result.dateRange = gc.dateRange;
     }
-    result.dateRange = dateRangeAll;
 
     // check consistency across vert and ens coords
     // create partitioned variables
@@ -180,6 +178,7 @@ abstract class GribPartitionBuilder {
     }
   }
 
+  @Nullable
   private PartitionCollectionMutable.Dataset makeDataset2D(Formatter f) throws IOException {
     FeatureCollectionConfig config = (FeatureCollectionConfig) partitionManager.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.gribConfig.intvFilter : null;
@@ -196,6 +195,8 @@ abstract class GribPartitionBuilder {
     boolean rangeOverlaps = false;
     for (PartitionCollectionMutable.Partition tpp : result.getPartitions()) {
       try (GribCollectionMutable gc = tpp.makeGribCollection()) {  // LOOK open/close each child partition. could leave open ? they are NOT in cache
+        if (gc == null) continue; // skip if they dont exist
+
         // note its not recursive, maybe leave open, or cache; actually we keep a pointer to the partition's group in the GroupPartitions
         CoordinateRuntime partRuntime = gc.masterRuntime;
         runtimeAllBuilder.addAll(partRuntime);  // make a complete set of runtime Coordinates

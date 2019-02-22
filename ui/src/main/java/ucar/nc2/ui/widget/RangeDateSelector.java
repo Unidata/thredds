@@ -229,8 +229,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     /// event management
 
     // listen for changes from user manupulation
-    maxSlider.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    maxSlider.addChangeListener(e -> {
         if (debugEvent2) System.out.println("maxSlider event= " + maxSlider.getValue());
         if (!eventOK) return;
 
@@ -240,11 +239,9 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
 
         if (dateRange.isPoint())
           minSlider.setValue(pos); // drag min along */
-      }
     });
 
-    minSlider.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    minSlider.addChangeListener(e -> {
         if (debugEvent2) System.out.println("minSlider event= " + minSlider.getValue());
         if (!eventOK) return;
 
@@ -254,7 +251,6 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
 
         if (dateRange.isPoint() && !isPointOnly)
           maxSlider.setValue(pos); // drag max along
-      }
     });
 
     minField.addPropertyChangeListener(new PropertyChangeListener() {

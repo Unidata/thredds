@@ -150,7 +150,7 @@ public class CoordinateSharer<T> {
 
     } else {  // not runtimeUnion
 
-      for (Coordinate coord : runtimeSet) unionCoords.add(coord);
+      unionCoords.addAll(runtimeSet);
 
       // CoordinateTime2D.Builder uses general ctor, CoordinateTime2DUnionizer will build orthogonal / regular variants
       HashSet<CoordinateTime2D> coord2Dset = new HashSet<>();
@@ -174,10 +174,10 @@ public class CoordinateSharer<T> {
       }
     }
 
-    for (Coordinate coord : timeSet) unionCoords.add(coord);
-    for (Coordinate coord : timeIntvSet) unionCoords.add(coord);
-    for (Coordinate coord : vertSet) unionCoords.add(coord);
-    for (Coordinate coord : ensSet) unionCoords.add(coord);
+    unionCoords.addAll(timeSet);
+    unionCoords.addAll(timeIntvSet);
+    unionCoords.addAll(vertSet);
+    unionCoords.addAll(ensSet);
 
     // fast lookup
     coordMap = new HashMap<>();

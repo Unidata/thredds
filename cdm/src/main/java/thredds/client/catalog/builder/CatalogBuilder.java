@@ -51,8 +51,10 @@ public class CatalogBuilder {
     if (baseURI == null) {
       try {
         baseURI = new URI(location);
-      } catch (URISyntaxException e) {
+      }
+      catch (URISyntaxException e) {
         errlog.format("Bad location = '%s' err='%s'%n", location, e.getMessage());
+        logger.error("Bad location = '{}' err='{}}'", location, e.getMessage());
         fatalError = true;
         return null;
       }
@@ -73,6 +75,7 @@ public class CatalogBuilder {
     URI catrefURI = catref.getURI();
     if (catrefURI == null) {
       errlog.format("Catref doesnt have valid UrlPath=%s%n", catref.getUrlPath());
+      logger.error("Catref doesnt have valid UrlPath={}", catref.getUrlPath());
       fatalError = true;
       return null;
     }
@@ -123,11 +126,11 @@ public class CatalogBuilder {
   public CatalogBuilder() {}
 
   public CatalogBuilder(Catalog from) {
-    this.name = from.getName();
-    this.expires = from.getExpires();
-    this.baseURI = from.getBaseURI();
+    this.name       = from.getName();
+    this.expires    = from.getExpires();
+    this.baseURI    = from.getBaseURI();
     this.properties = from.getProperties();
-    this.services = from.getServices();  // ??
+    this.services   = from.getServices();  // ??
   }
 
   public void setName(String name) {
@@ -147,25 +150,41 @@ public class CatalogBuilder {
   }
 
   public void addProperty(Property p) {
-    if (p == null) return;
-    if (properties == null) properties = new ArrayList<>();
-    if (!properties.contains(p))  // O(n^2) but only done once
+    if (p == null) {
+      return;
+    }
+    if (properties == null) {
+      properties = new ArrayList<>();
+    }
+    if (!properties.contains(p)) {
+      // O(n^2) but only done once
       properties.add(p);
+    }
   }
 
   public void addService(Service s) {
-    if (s == null) return;
-    if (services == null) services = new ArrayList<>();
-    if (!services.contains(s) && !containsService(s.getName()))
+    if (s == null) {
+      return;
+    }
+    if (services == null) {
+      services = new ArrayList<>();
+      }
+    if (!services.contains(s) && !containsService(s.getName())) {
       services.add(s);
+    }
   }
 
   private boolean containsService(String name) {
-    if (name == null) return false;
-    if (services == null) return false;
+    if (name == null) {
+      return false;
+    }
+    if (services == null) {
+      return false;
+    }
     for (Service s : services) {
-      if (name.equals(s.getName()))
+      if (name.equals(s.getName())) {
         return true;
+      }
     }
     return false;
   }
@@ -175,8 +194,12 @@ public class CatalogBuilder {
   }
 
   public void addDataset(DatasetBuilder d) {
-    if (d == null) return;
-    if (datasetBuilders == null) datasetBuilders = new ArrayList<>();
+    if (d == null) {
+      return;
+    }
+    if (datasetBuilders == null) {
+      datasetBuilders = new ArrayList<>();
+    }
     datasetBuilders.add(d);
   }
 
@@ -191,8 +214,9 @@ public class CatalogBuilder {
   // pull services out of the datasets and into the catalog
   private void setServices(Iterable<DatasetBuilder> dsIter) {
     for (DatasetBuilder dsb : dsIter) {
-      for (Service s : dsb.getServices())
+      for (Service s : dsb.getServices()) {
         addService(s);
+      }
       setServices(dsb.getDatasets()); // recurse
     }
   }
@@ -200,10 +224,10 @@ public class CatalogBuilder {
   protected Map<String, Object> setFields() {
     Map<String, Object> flds = new HashMap<>(10);
 
-    if (expires != null) flds.put(Catalog.Expires, expires);
-    if (version != null) flds.put(Catalog.Version, version);
-    if (services != null) flds.put(Catalog.Services, services);
-    if (properties != null) flds.put(Dataset.Properties, properties);
+    if (expires    != null) { flds.put(Catalog.Expires,    expires); }
+    if (version    != null) { flds.put(Catalog.Version,    version); }
+    if (services   != null) { flds.put(Catalog.Services,   services); }
+    if (properties != null) { flds.put(Dataset.Properties, properties); }
 
     return flds;
   }
@@ -213,26 +237,38 @@ public class CatalogBuilder {
 
   @Nullable
   public DatasetBuilder getTopDataset() {
-    if (datasetBuilders == null) return null;
+    if (datasetBuilders == null) {
+      return null;
+    }
     return datasetBuilders.get(0);
   }
 
   public Iterable<DatasetBuilder> getDatasets() {
-    if (datasetBuilders != null) return datasetBuilders;
+    if (datasetBuilders != null) {
+      return datasetBuilders;
+    }
     return new ArrayList<>(0);
   }
 
   public boolean hasService(String name) {
-    if (services == null) return false;
-    for (Service s : services)
-      if (s.getName().equalsIgnoreCase(name)) return true;
+    if (services == null) {
+      return false;
+    }
+    for (Service s : services) {
+      if (s.getName().equalsIgnoreCase(name)) {
+        return true;
+      }
+    }
     return false;
   }
 
   public boolean hasServiceInDataset(String name) {
     for (DatasetBuilder dsb : datasetBuilders) {
-      for (Service s : dsb.getServices())
-        if (s.getName().equalsIgnoreCase(name)) return true;
+      for (Service s : dsb.getServices()) {
+        if (s.getName().equalsIgnoreCase(name)) {
+          return true;
+        }
+      }
     }
     return false;
   }
@@ -247,7 +283,7 @@ public class CatalogBuilder {
       StAXStreamBuilder staxBuilder = new StAXStreamBuilder();
       XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
       XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(new FileInputStream(fileName));
-      org.jdom2.Document jdomDoc = staxBuilder.build(xmlStreamReader);
+      Document jdomDoc = staxBuilder.build(xmlStreamReader);
       readCatalog(jdomDoc.getRootElement());
 
     } catch (Exception e) {
@@ -261,13 +297,15 @@ public class CatalogBuilder {
   private void readXML(String location) throws IOException {
      try {
        SAXBuilder saxBuilder = new SAXBuilder();
-       org.jdom2.Document jdomDoc = saxBuilder.build(location);
+       Document jdomDoc = saxBuilder.build(location);
        readCatalog(jdomDoc.getRootElement());
-
-     } catch (Exception e) {
+     }
+     catch (Exception e) {
        errlog.format("failed to read catalog at '%s' err='%s'%n", location, e);
-       logger.error("failed to read catalog at " + location, e);
-       // e.printStackTrace();
+       logger.error("failed to read catalog at {}, {}", location, e.toString());
+       if (logger.isTraceEnabled()) {
+         e.printStackTrace();
+       }
        fatalError = true;
      }
    }
@@ -275,13 +313,15 @@ public class CatalogBuilder {
   private void readXML(URI uri) throws IOException {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
-      org.jdom2.Document jdomDoc = saxBuilder.build(uri.toURL());
+      Document jdomDoc = saxBuilder.build(uri.toURL());
       readCatalog(jdomDoc.getRootElement());
-
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       errlog.format("failed to read catalog at '%s' err='%s'%n", uri.toString(), e);
-      logger.error("failed to read catalog at " + uri.toString(), e);
-      // e.printStackTrace();
+      logger.error("failed to read catalog at {}, {}", uri.toString(), e.toString());
+       if (logger.isTraceEnabled()) {
+         e.printStackTrace();
+       }
       fatalError = true;
     }
   }
@@ -290,13 +330,15 @@ public class CatalogBuilder {
     try {
       StringReader in = new StringReader(catalogAsString);
       SAXBuilder saxBuilder = new SAXBuilder();    // LOOK non-validating
-      org.jdom2.Document jdomDoc = saxBuilder.build(in);
+      Document jdomDoc = saxBuilder.build(in);
       readCatalog(jdomDoc.getRootElement());
-
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       errlog.format("failed to read catalogAsString err='%s'%n", e);
-      logger.error("failed to read catalogAsString at" + baseURI.toString(), e);
-      e.printStackTrace();
+      logger.error("failed to read catalogAsString at {}, {}", baseURI.toString(), e.toString());
+       if (logger.isTraceEnabled()) {
+         e.printStackTrace();
+       }
       fatalError = true;
     }
   }
@@ -304,13 +346,15 @@ public class CatalogBuilder {
   private void readXML(InputStream stream) throws IOException {
     try {
       SAXBuilder saxBuilder = new SAXBuilder();
-      org.jdom2.Document jdomDoc = saxBuilder.build(stream);
+      Document jdomDoc = saxBuilder.build(stream);
       readCatalog(jdomDoc.getRootElement());
-
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       errlog.format("failed to read catalogAsString err='%s'%n", e);
-      logger.error("failed to read catalogAsString at" + baseURI.toString(), e);
-      e.printStackTrace();
+      logger.error("failed to read catalogAsString at {}, {}", baseURI.toString(), e.toString());
+       if (logger.isTraceEnabled()) {
+         e.printStackTrace();
+       }
       fatalError = true;
     }
   }
@@ -340,8 +384,10 @@ public class CatalogBuilder {
     if (expiresS != null) {
       try {
         expires = CalendarDateFormatter.isoStringToCalendarDate(null, expiresS);
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         errlog.format("bad expires date '%s' err='%s'%n", expiresS, e.getMessage());
+        logger.debug("bad expires date '{}' err='{}'%n", expiresS, e.getMessage());
       }
     }
 
@@ -349,8 +395,10 @@ public class CatalogBuilder {
       try {
         URI userSpecifiedBaseUri = new URI(catSpecifiedBaseURL);
         this.baseURI = userSpecifiedBaseUri;
-      } catch (URISyntaxException e) {
+      }
+      catch (URISyntaxException e) {
         errlog.format("readCatalog(): bad catalog specified base URI='%s' %n", catSpecifiedBaseURL);
+        logger.debug("bad catalog specified base URI='{}'");
       }
     }
 
@@ -375,11 +423,11 @@ public class CatalogBuilder {
     for (Element e : allChildren) {
       if (e.getName().equals("dataset")) {
         addDataset(readDataset(null, e));
-
-      } else if (e.getName().equals("catalogRef")) {
+      }
+      else if (e.getName().equals("catalogRef")) {
         addDataset(readCatalogRef(null, e));
-
-      } else {
+      }
+      else {
         addDataset(buildOtherDataset(null, e));
       }
     }
@@ -409,6 +457,7 @@ public class CatalogBuilder {
     Service s = serviceMap.get(serviceName);
     if (s == null) {
       errlog.format("Cant find service name='%s'%n", serviceName);
+      logger.debug("Can't find service name='{}'", serviceName);
     }
     return new AccessBuilder(dataset, urlPath, s, dataFormat, readDataSize(accessElem));
   }
@@ -446,16 +495,23 @@ public class CatalogBuilder {
     ServiceType type = ServiceType.getServiceTypeIgnoreCase(typeS);
     if (type == null) {
       errlog.format(" non-standard service type = '%s'%n", typeS);
+      logger.debug(" non-standard service type = '{}'", typeS);
     }
     else {
-      if (desc == null) desc = type.getDescription();
-      if (accessType == null) accessType = type.getAccessType();
+      if (desc == null) {
+        desc = type.getDescription();
+      }
+      if (accessType == null) {
+        accessType = type.getAccessType();
+      }
     }
 
     List<Property> properties = null;
     List<Element> propertyList = s.getChildren("property", Catalog.defNS);
     for (Element e : propertyList) {
-      if (properties == null) properties = new ArrayList<>();
+      if (properties == null) {
+        properties = new ArrayList<>();
+      }
       properties.add(readProperty(e));
     }
 
@@ -463,7 +519,9 @@ public class CatalogBuilder {
     List<Service> services = null;
     java.util.List<Element> serviceList = s.getChildren("service", Catalog.defNS);
     for (Element e : serviceList) {
-      if (services == null) services = new ArrayList<>();
+      if (services == null) {
+        services = new ArrayList<>();
+      }
       services.add(readService(e));
     }
 
@@ -487,7 +545,9 @@ public class CatalogBuilder {
    */
   protected DatasetBuilder readCatalogRef(DatasetBuilder parent, Element catRefElem) {
     String title = catRefElem.getAttributeValue("title", Catalog.xlinkNS);
-    if (title == null) title = catRefElem.getAttributeValue("name");
+    if (title == null) {
+      title = catRefElem.getAttributeValue("name");
+    }
     String href = catRefElem.getAttributeValue("href", Catalog.xlinkNS);
     CatalogRefBuilder catRef = new CatalogRefBuilder(parent);
     readDatasetInfo( catRef, catRefElem);
@@ -533,11 +593,11 @@ public class CatalogBuilder {
     for (Element e : allChildren) {
       if (e.getName().equals("dataset")) {
         dataset.addDataset(readDataset(dataset, e));
-
-      } else if (e.getName().equals("catalogRef")) {
+      }
+      else if (e.getName().equals("catalogRef")) {
         dataset.addDataset(readCatalogRef(dataset, e));
-
-      } else {
+      }
+      else {
         dataset.addDataset( buildOtherDataset(dataset, e));
       }
     }
@@ -549,11 +609,15 @@ public class CatalogBuilder {
     // read attributes
     String name = dsElem.getAttributeValue("name");
     if (name == null) {
-      if (dsElem.getName().equals("catalogRef"))
+      if (dsElem.getName().equals("catalogRef")) {
         dataset.setName("");
-      else
+      }
+      else {
         errlog.format(" ** warning: dataset must have a name = '%s'%n", dsElem);
-    } else {
+        logger.debug(" ** warning: dataset must have a name = '{}'", dsElem);
+      }
+    }
+    else {
       dataset.setName(name);
     }
 
@@ -571,11 +635,14 @@ public class CatalogBuilder {
       FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
       if (dataType == null) {
         errlog.format(" ** warning: non-standard data type = '%s'%n", dataTypeName);
+        logger.debug(" ** warning: non-standard data type = '{}'", dataTypeName);
       }
     }
 
     String harvest = dsElem.getAttributeValue("harvest");
-    if (harvest != null && harvest.equalsIgnoreCase("true")) dataset.put(Dataset.Harvest, Boolean.TRUE);
+    if (harvest != null && harvest.equalsIgnoreCase("true")) {
+      dataset.put(Dataset.Harvest, Boolean.TRUE);
+    }
 
     // catalog.addDatasetByID(dataset); // LOOK need to do immed for alias processing
 
@@ -676,16 +743,24 @@ public class CatalogBuilder {
 
     // can only be one each of these kinds
     ThreddsMetadata.GeospatialCoverage gc = readGeospatialCoverage(parent.getChild("geospatialCoverage", Catalog.defNS));
-    if (gc != null) flds.put(Dataset.GeospatialCoverage, gc);
+    if (gc != null) {
+      flds.put(Dataset.GeospatialCoverage, gc);
+    }
 
     DateRange tc = readTimeCoverage(parent.getChild("timeCoverage", Catalog.defNS));
-    if (tc != null) flds.put(Dataset.TimeCoverage, tc);
+    if (tc != null) {
+      flds.put(Dataset.TimeCoverage, tc);
+    }
 
     Element serviceNameElem = parent.getChild("serviceName", Catalog.defNS);
-    if (serviceNameElem != null) flds.put(Dataset.ServiceName, serviceNameElem.getText());
+    if (serviceNameElem != null) {
+      flds.put(Dataset.ServiceName, serviceNameElem.getText());
+    }
 
     Element authElem = parent.getChild("authority", Catalog.defNS);
-    if (authElem != null) flds.put(Dataset.Authority, authElem.getText());
+    if (authElem != null) {
+      flds.put(Dataset.Authority, authElem.getText());
+    }
 
     Element dataTypeElem = parent.getChild("dataType", Catalog.defNS);
     if (dataTypeElem != null) {
@@ -695,6 +770,7 @@ public class CatalogBuilder {
         FeatureType dataType = FeatureType.getType(dataTypeName.toUpperCase());
         if (dataType == null) {
           errlog.format(" ** warning: non-standard feature type = '%s'%n", dataTypeName);
+          logger.debug(" ** warning: non-standard feature type = '{}'", dataTypeName);
         }
       }
     }
@@ -706,47 +782,66 @@ public class CatalogBuilder {
         DataFormatType dataFormatType = DataFormatType.getType(dataFormatTypeName);
         if (dataFormatType == null) {
           errlog.format(" ** warning: non-standard dataFormat type = '%s'%n", dataFormatTypeName);
+          logger.debug(" ** warning: non-standard dataFormat type = '{}'", dataFormatTypeName);
         }
         flds.put(Dataset.DataFormatType, dataFormatTypeName);
       }
     }
 
     long size = readDataSize(parent);
-    if (size > 0)
+    if (size > 0) {
       flds.put(Dataset.DataSize, size);
+    }
 
     // LOOK: we seem to have put a variableMap element not contained by <variables>
     ThreddsMetadata.UriResolved mapUri = readUri(parent.getChild("variableMap", Catalog.defNS), "variableMap");
-    if (mapUri != null)
+    if (mapUri != null) {
       flds.put(Dataset.VariableMapLinkURI, mapUri);
+    }
   }
 
 
   protected ThreddsMetadata.Contributor readContributor(Element elem) {
-    if (elem == null) return null;
+    if (elem == null) {
+      return null;
+    }
     return new ThreddsMetadata.Contributor(elem.getText(), elem.getAttributeValue("role"));
   }
 
   protected long readDataSize(Element parent) {
     Element elem = parent.getChild("dataSize", Catalog.defNS);
-    if (elem == null) return -1;
+    if (elem == null) {
+      return -1;
+    }
 
     double size;
     String sizeS = elem.getText();
     try {
       size = Double.parseDouble(sizeS);
-    } catch (NumberFormatException e) {
+    }
+    catch (NumberFormatException e) {
       errlog.format(" ** Parse error: Bad double format in size element = '%s'%n", sizeS);
+      logger.debug(" ** Parse error: Bad double format in size element = '{}'", sizeS);
       return -1;
     }
 
     String units = elem.getAttributeValue("units");
     char c = Character.toUpperCase(units.charAt(0));
-    if (c == 'K') size *= 1000;
-    else if (c == 'M') size *= 1000 * 1000;
-    else if (c == 'G') size *= 1000 * 1000 * 1000;
-    else if (c == 'T') size *= 1000.0 * 1000 * 1000 * 1000;
-    else if (c == 'P') size *= 1000.0 * 1000 * 1000 * 1000 * 1000;
+    if (c == 'K') {
+      size *= 1000;
+    }
+    else if (c == 'M') {
+      size *= 1000 * 1000;
+    }
+    else if (c == 'G') {
+      size *= 1000 * 1000 * 1000;
+    }
+    else if (c == 'T') {
+      size *= 1000.0 * 1000 * 1000 * 1000;
+    }
+    else if (c == 'P') {
+      size *= 1000.0 * 1000 * 1000 * 1000 * 1000;
+    }
     return (long) size;
   }
 
@@ -763,8 +858,10 @@ public class CatalogBuilder {
     if (href != null) {
       try {
         uri = Catalog.resolveUri(baseURI, href);
-      } catch (Exception e) {
+      }
+      catch (Exception e) {
         errlog.format(" ** Invalid documentation href = '%s' err='%s'%n", href, e.getMessage());
+        logger.debug(" ** Invalid documentation href = '{}' err='{}'", href, e.getMessage());
       }
     }
 
@@ -772,12 +869,16 @@ public class CatalogBuilder {
   }
 
   protected double readDouble(Element elem) {
-    if (elem == null) return Double.NaN;
+    if (elem == null) {
+      return Double.NaN;
+    }
     String text = elem.getText();
     try {
       return Double.parseDouble(text);
-    } catch (NumberFormatException e) {
+    }
+    catch (NumberFormatException e) {
       errlog.format(" ** Parse error: Bad double format = '%s'%n", text);
+      logger.debug(" ** Parse error: Bad double format = '{}'", text);
       return Double.NaN;
     }
   }
@@ -813,7 +914,9 @@ public class CatalogBuilder {
   </xsd:simpleType>
    */
   protected ThreddsMetadata.GeospatialCoverage readGeospatialCoverage(Element gcElem) {
-    if (gcElem == null) return null;
+    if (gcElem == null) {
+      return null;
+    }
 
     String zpositive = gcElem.getAttributeValue("zpositive");
 
@@ -833,14 +936,18 @@ public class CatalogBuilder {
   }
 
   protected ThreddsMetadata.GeospatialRange readGeospatialRange(Element spElem, String defUnits) {
-    if (spElem == null) return null;
+    if (spElem == null) {
+      return null;
+    }
 
     double start = readDouble(spElem.getChild("start", Catalog.defNS));
     double size = readDouble(spElem.getChild("size", Catalog.defNS));
     double resolution = readDouble(spElem.getChild("resolution", Catalog.defNS));
 
     String units = spElem.getChildText("units", Catalog.defNS);
-    if (units == null) units = defUnits;
+    if (units == null) {
+      units = defUnits;
+    }
 
     return new ThreddsMetadata.GeospatialRange(start, size, resolution, units);
   }
@@ -863,10 +970,13 @@ public class CatalogBuilder {
     // there are 6 cases to deal with: threddsNamespace vs not & inline vs Xlink & (if thredds) inherited or not
     Namespace namespace;
     List inlineElements = mdataElement.getChildren();
-    if (inlineElements.size() > 0) // look at the namespace of the children, if they exist
+    if (inlineElements.size() > 0) {
+      // look at the namespace of the children, if they exist
       namespace = ((Element) inlineElements.get(0)).getNamespace();
-    else
+    }
+    else {
       namespace = mdataElement.getNamespace(); // will be thredds
+    }
 
     String mtype = mdataElement.getAttributeValue("metadataType");
     String href = mdataElement.getAttributeValue("href", Catalog.xlinkNS);
@@ -882,7 +992,9 @@ public class CatalogBuilder {
         // just hold onto the jdom elements as the "content"
          return new ThreddsMetadata.MetadataOther( mtype, namespace.getURI(), namespace.getPrefix(), inherited, mdataElement);
 
-      } else { // otherwise it must be an Xlink
+      }
+      else {
+        // otherwise it must be an Xlink
         return new ThreddsMetadata.MetadataOther(href, title, mtype, namespace.getURI(), namespace.getPrefix(), inherited);
       }
     }
@@ -898,7 +1010,8 @@ public class CatalogBuilder {
       }
       useFlds = tmi.getFlds();
 
-    } else {
+    }
+    else {
       // the case where its non-inherited ThreddsMetadata: gonna put stuff directly into the dataset
       useFlds = flds;
     }
@@ -911,8 +1024,10 @@ public class CatalogBuilder {
         URI xlinkUri = Catalog.resolveUri(baseURI, href);
         Element remoteMdata = readMetadataFromUrl(xlinkUri);
         return readMetadata(useFlds, dataset, remoteMdata);
-      } catch (Exception ioe) {
+      }
+      catch (Exception ioe) {
         errlog.format("Cant read in referenced metadata %s err=%s%n", href, ioe.getMessage());
+        logger.debug("Can't read in referenced metadata {} err={}}", href, ioe.getMessage());
       }
 
     }
@@ -924,7 +1039,8 @@ public class CatalogBuilder {
     Document doc;
     try {
       doc = saxBuilder.build(uri.toURL());
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       throw new IOException(e.getMessage());
     }
     return doc.getRootElement();
@@ -946,11 +1062,14 @@ public class CatalogBuilder {
   </xsd:complexType>
    */
   protected ThreddsMetadata.Source readSource(Element elem) {
-    if (elem == null) return null;
+    if (elem == null) {
+      return null;
+    }
     ThreddsMetadata.Vocab name = readControlledVocabulary(elem.getChild("name", Catalog.defNS));
     Element contact = elem.getChild("contact", Catalog.defNS);
     if (contact == null) {
       errlog.format(" ** Parse error: Missing contact element in = '%s'%n", elem.getName());
+      logger.debug(" ** Parse error: Missing contact element in = '{}'", elem.getName());
       return null;
     }
     return new ThreddsMetadata.Source(name, contact.getAttributeValue("url"), contact.getAttributeValue("email"));
@@ -1012,7 +1131,9 @@ public class CatalogBuilder {
   </xsd:simpleType>
    */
   protected DateRange readTimeCoverage(Element tElem) {
-    if (tElem == null) return null;
+    if (tElem == null) {
+      return null;
+    }
     
     Calendar calendar = readCalendar(tElem.getAttributeValue("calendar"));
     DateType start = readDate(tElem.getChild("start", Catalog.defNS), calendar);
@@ -1023,8 +1144,10 @@ public class CatalogBuilder {
 
     try {
       return new DateRange(start, end, duration, resolution);
-    } catch (java.lang.IllegalArgumentException e) {
+    }
+    catch (java.lang.IllegalArgumentException e) {
       errlog.format(" ** warning: TimeCoverage error ='%s'%n", e.getMessage());
+      logger.debug(" ** warning: TimeCoverage error ='{}'", e.getMessage());
       return null;
     }
   }
@@ -1037,6 +1160,7 @@ public class CatalogBuilder {
     Calendar calendar = Calendar.get(calendarAttribValue);
     if (calendar == null) {
       errlog.format(" ** Parse error: Bad calendar name = '%s'%n", calendarAttribValue);
+      logger.debug(" ** Parse error: Bad calendar name = '{}}'", calendarAttribValue);
       return Calendar.getDefault();
     }
 
@@ -1044,29 +1168,37 @@ public class CatalogBuilder {
   }
 
   protected DateType readDate(Element elem, Calendar calendar) {
-    if (elem == null) return null;
+    if (elem == null) {
+      return null;
+    }
     String format = elem.getAttributeValue("format");
     String type = elem.getAttributeValue("type");
     return makeDateType(elem.getText(), format, type, calendar);
   }
 
   protected DateType makeDateType(String text, String format, String type, Calendar calendar) {
-    if (text == null) return null;
+    if (text == null) {
+      return null;
+    }
     try {
       return new DateType(text, format, type, calendar);
-    } catch (java.text.ParseException e) {
+    }
+    catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad date format = '%s'%n", text);
       return null;
     }
   }
 
   protected TimeDuration readDuration(Element elem) {
-    if (elem == null) return null;
+    if (elem == null) {
+      return null;
+    }
     String text = null;
     try {
       text = elem.getText();
       return new TimeDuration(text);
-    } catch (java.text.ParseException e) {
+    }
+    catch (java.text.ParseException e) {
       errlog.format(" ** Parse error: Bad duration format = '%s'%n", text);
       return null;
     }
@@ -1113,7 +1245,9 @@ public class CatalogBuilder {
   </xsd:simpleType>
    */
   protected ThreddsMetadata.VariableGroup readVariables( Element varsElem) {
-    if (varsElem == null) return null;
+    if (varsElem == null) {
+      return null;
+    }
 
     String vocab = varsElem.getAttributeValue("vocabulary");
     ThreddsMetadata.UriResolved variableVocabUri = readUri(varsElem, "Variables vocabulary");
@@ -1133,7 +1267,9 @@ public class CatalogBuilder {
   }
 
   static public ThreddsMetadata.Variable readVariable(Element varElem) {
-     if (varElem == null) return null;
+     if (varElem == null) {
+       return null;
+     }
 
      String name = varElem.getAttributeValue("name");
      String desc = varElem.getText();
@@ -1145,23 +1281,28 @@ public class CatalogBuilder {
    }
 
   protected ThreddsMetadata.Vocab readControlledVocabulary(Element elem) {
-    if (elem == null) return null;
+    if (elem == null) {
+      return null;
+    }
     return new ThreddsMetadata.Vocab(elem.getText(), elem.getAttributeValue("vocabulary"));
   }
 
   private ThreddsMetadata.UriResolved readUri(Element elemWithHref, String what) {
-    if (elemWithHref == null) return null;
+    if (elemWithHref == null) {
+      return null;
+    }
     String mapHref = elemWithHref.getAttributeValue("href", Catalog.xlinkNS);
-    if (mapHref == null) return null;
+    if (mapHref == null) {
+      return null;
+    }
 
     try {
       String mapUri = URLnaming.resolve(baseURI.toString(), mapHref);
       return new ThreddsMetadata.UriResolved(mapHref, new URI(mapUri));
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       errlog.format(" ** Invalid %s URI= '%s' err='%s'%n", what, mapHref, e.getMessage());
       return null;
     }
   }
-
-
 }

@@ -1,71 +1,72 @@
 ---
 title: Installation of Java and Tomcat
-last_updated: 2018-04-02
+last_updated: 2018-10-26
 sidebar: tdsTutorial_sidebar
 toc: false
 permalink: install_java_tomcat.html
 ---
 
-## System requirements
+This section demonstrates the installation of the Java JDK and the Tomcat Servlet Container binaries.  
 
 {% include note.html content="
-Users of GCJ and OS-provided packages (linux) for Java and/or Tomcat may want to reference the [THREDDS mailing list](http://www.unidata.ucar.edu/mailing_lists/archives/thredds/) for installation help."
+Users of OS-provided packages via package management systems for Java and/or Tomcat may want to reference the <a href=\"https://www.unidata.ucar.edu/mailing_lists/archives/thredds/\" target=\"_blank\">THREDDS mailing list</a> for installation help."
 %}
+
+## System Requirements
 
 * Oracle Java 8 (latest version)
 * Apache Tomcat 8.x
 
 While there are different distributors of Java and servlet containers, Unidata develops, uses and tests the THREDDS Data Server using _Oracle Java_ and the _Apache Tomcat_ servlet container.
 
-## Installing Java
 
-1.  http://www.oracle.com/technetwork/java/javase/downloads/[Download] current Java SE Developer Kit (JDK) from Oracle. Use the latest 1.8 version of the JDK.
+## Installing Java JDK
+
+The following example shows the JDK installation on a linux system.  The installation is being performed as the `root` user.
+
+{% include note.html content="
+For installation of the JDK on Windows or Mac OS, see the <a href=\"https://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html\" target=\"_blank\">JDK Installation Guide</a>.
+" %}
+
+1.  [Download](http://www.oracle.com/technetwork/java/javase/downloads/){:target="_blank"} current Java SE Developer Kit (JDK) from Oracle. Use the latest 1.8 version of the JDK.
 
 2.  Install the JDK as per the Oracle [installation instructions](http://docs.oracle.com/javase/8/docs/technotes/guides/install/install_overview.html){:target="_blank"}.
 
-    Copy the binary tar.gz file into the installation directory (/usr/local/tds/ in this example):
+    Copy the binary `tar.gz` file into the installation directory (`/usr/local` in this example):
 
-    ~~~ bash
-    $ pwd
-    /usr/local/tds
-    $ cp Downloads/jdk-8u51-linux-x64.tar.gz .
+    ~~~bash
+    # pwd
+    /usr/local
+    
+    # cp /tmp/jdk-8u192-linux-x64.tar.gz .
 
-    $ ls -l
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
-    drwxr-xr-x  2 tds workshop     4096 Jul 22 17:29 Downloads
-    -rw-r--r-- 1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
-    drwxr-xr-x  3 tds workshop     4096 Jul 15 10:45 tdsMonitor
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Templates
-    -rwxrwxr-x  1 tds workshop 27866303 Jul 15 10:02 toolsUI-4.3.18.jar
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
+    # ls -l
+    total 187268
+    -rw-r--r-- 1 root root 191757099 Oct 24 13:19 jdk-8u192-linux-x64.tar.gz
     ~~~
 
     Unpack the archive file:
 
-    ~~~ bash
-    tar zxvf jdk-8u51-linux-x64.tar.gz
+    ~~~bash
+    # tar xvfz jdk-8u192-linux-x64.tar.gz 
     ~~~
 
     This will extract the JDK in the installation directory:
 
-    ~~~ bash
-    $ ls -l
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
-    drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-    drwxr-xr-x 8 tds workshop 4096 Jun 5 22:07 jdk1.8u51
-    -rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
-    drwxr-xr-x  3 tds workshop     4096 Jul 15 10:45 tdsMonitor
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Templates
-    -rwxrwxr-x  1 tds workshop 27866303 Jul 15 10:02 toolsUI-4.3.18.jar
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
+    ~~~bash
+    # ls -l
+    total 187272
+    drwxr-xr-x 7 root root      4096 Oct  6 07:58 jdk1.8.0_192
+    -rw-r--r-- 1 root root 191757099 Oct 24 13:19 jdk-8u192-linux-x64.tar.gz
+    ~~~
+
+    Remove the remaining binary `tar.gz` file when the installation is complete.
+   
+    ~~~bash
+    # rm jdk-8u192-linux-x64.tar.gz
+    # ls -l
+    total 187279
+    drwxr-xr-x 7 root root      4096 Oct  6 07:58 jdk1.8.0_192
     ~~~
 
     {% include important.html content="
@@ -73,56 +74,85 @@ While there are different distributors of Java and servlet containers, Unidata d
     But, we *really, really, really recommend* you use a 64-bit OS if you're planning to run the THREDDS Data Server.
     " %}
 
-## Installing Tomcat
+<a name="tomcat"></a>
+## Installing the Tomcat Servlet Container
+
+The following example shows Tomcat installation on a linux system. (This type of installation will work on Mac OS systems as well.) The installation is being performed as the `root` user.
 
 {% include note.html content="
-For more information about installing Tomcat on Windows OS, see the [Tomcat setup guide](http://tomcat.apache.org/tomcat-8.0-doc/setup.html#Windows) for installation on different platforms.
+For installation of Tomcat on Windows, see the <a href=\"http://tomcat.apache.org/tomcat-8.5-doc/setup.html#Windows\" target=\"_blank\">Tomcat Setup Guide</a>.
 " %}
 
-1.  [Download](http://tomcat.apache.org/download-80.cgi){:target="_blank"} current version of the Tomcat 8 servlet container.
-2.  Install Tomcat as per the Apache Tomcat [installation instructions](http://tomcat.apache.org/tomcat-8.0-doc/setup.html){:target="_blank"}.
+1.  [Download](http://tomcat.apache.org/download-80.cgi){:target="_blank"} current version of the Tomcat 8.5 servlet container.
 
-    Copy the binary tar.gz file into the installation directory (/usr/local/tds/ in this example):
+2.  Install Tomcat as per the Apache Tomcat [installation instructions](http://tomcat.apache.org/tomcat-8.5-doc/setup.html){:target="_blank"}.
 
-    ~~~ bash
-    $ pwd
-    /usr/local/tds
+    Copy the binary tar.gz file into the installation directory (`/usr/local` in this example):
 
-    $ ls -l
-    -rw-r--r-- 1 tds workshop 7955948 Jul 15 09:35 apache-tomcat-8.0.24.tar.gz
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
-    drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-    drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.8u51
-    -rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
-    drwxr-xr-x  3 tds workshop     4096 Jul 15 10:45 tdsMonitor
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Templates
-    -rwxrwxr-x  1 tds workshop 27866303 Jul 15 10:02 toolsUI-4.3.18.jar
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
+    ~~~bash
+    # pwd
+    /usr/local
+    
+    # cp /tmp/apache-tomcat-8.5.34.tar.gz .
+
+    # ls -l
+    total 196676
+    -rw-r--r-- 1 root root   9625824 Oct 24 13:27 apache-tomcat-8.5.34.tar.gz
+    drwxr-xr-x 7 root root      4096 Oct  6 07:58 jdk1.8.0_192
     ~~~
 
     Unpack the archive file:
 
-    $ tar xvzf apache-tomcat-8.0.24.tar.gz
+    ~~~bash
+    # tar xvfz apache-tomcat-8.5.34.tar.gz
+    ~~~
+
     This will create a Tomcat directory:
 
-    ~~~ bash
-    $ ls -l
-    drwxr-xr-x 9 tds workshop 4096 Jul 15 09:37 apache-tomcat-8.0.24
-    -rw-r--r-- 1 tds workshop  7955948 Jul 15 09:35 apache-tomcat-8.0.24.tar.gz
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Desktop
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Documents
-    drwxr-xr-x  2 tds workshop     4096 Jul 23 14:40 Downloads
-    drwxr-xr-x  8 tds workshop     4096 Jun  5 22:07 jdk1.8u51
-    -rw-r--r--  1 tds workshop 96316511 Jul 15 09:30 jdk-8u51-linux-x64.tar.gz
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Music
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Pictures
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Public
-    drwxr-xr-x  3 tds workshop     4096 Jul 15 10:45 tdsMonitor
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Templates
-    -rwxrwxr-x  1 tds workshop 27866303 Jul 15 10:02 toolsUI-4.3.18.jar
-    drwxr-xr-x  2 tds workshop     4096 Jul 15 10:33 Videos
+    ~~~bash
+    # ls -l
+    total 196680
+    drwxr-xr-x 9 root root      4096 Oct 24 13:29 apache-tomcat-8.5.34
+    -rw-r--r-- 1 root root   9625824 Oct 24 13:27 apache-tomcat-8.5.34.tar.gz
+    drwxr-xr-x 7 root root      4096 Oct  6 07:58 jdk1.8.0_192
     ~~~
+
+    Remove the remaining binary `tar.gz` file when the installation is complete.
+   
+    ~~~bash
+    # rm apache-tomcat-8.5.34.tar.gz
+    # ls -l
+    total 187282
+    drwxr-xr-x 9 root root      4096 Oct 24 13:29 apache-tomcat-8.5.34
+    drwxr-xr-x 7 root root      4096 Oct  6 07:58 jdk1.8.0_192
+    ~~~
+
+## Create Symbolic Links
+
+Adding symbolic links for both the Tomcat and the JDK installations will allow for upgrades of both packages without having to change to configuration files and server startup/shutdown scripts.
+
+The following example shows creating symbolic links for the Tomcat and JDK installation on a linux system. (This type of installation will work on Mac OS systems as well.) The installation is being performed as the `root` user.
+
+{%include note.html content="
+Windows users can consult the <a href=\"https://docs.microsoft.com/en-us/windows/desktop/fileio/symbolic-links\" target=\"_blank\">Microsoft Documentation</a> for creating symbolic links on Windows systems.
+" %}
+
+1. Create symbolic links for the Tomcat and the JDK installations:
+
+    ~~~ bash
+    # pwd
+    /usr/local
+    
+    # ln -s apache-tomcat-8.5.34 tomcat 
+    # ln -s jdk1.8.0_192 jdk
+    # ls -l 
+    total 196684
+    drwxr-xr-x 9 root root      4096 Oct 24 13:29 tomcat -> apache-tomcat-8.5.34
+    drwxr-xr-x 9 root root      4096 Oct 24 13:29 apache-tomcat-8.5.34
+    lrwxrwxrwx 1 root root        12 Oct 24 13:59 jdk -> jdk1.8.0_192
+    drwxr-xr-x 7 root root      4096 Oct  6 07:58 jdk1.8.0_192
+    ~~~
+
+## Next Step
+
+Next, we'll do a quick tour of the relevant elements of the [Tomcat Directory Structure](tomcat_dir_structure_qt.html) and how these elements relate to the TDS.

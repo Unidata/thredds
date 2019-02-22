@@ -260,8 +260,8 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
   
   /**
    * Returns a distinct integer for each of the {@link DataType#isNumeric() numeric} data types that can be used to
-   * (roughly) order them by {@link DataType#getSize() size}. {@code BYTE < UBYTE < SHORT < USHORT < INT < UINT <
-   * FLOAT < LONG < ULONG < DOUBLE}. {@code -1} will be returned for all non-numeric data types.
+   * (roughly) order them by the range of the DataType. {@code BYTE < UBYTE < SHORT < USHORT < INT < UINT <
+   * LONG < ULONG < FLOAT < DOUBLE}. {@code -1} will be returned for all non-numeric data types.
    *
    * @param dataType  a numeric data type.
    * @return  a distinct integer for each of the numeric data types that can be used to (roughly) order them by size.
@@ -278,9 +278,9 @@ class EnhanceScaleMissingUnsignedImpl implements EnhanceScaleMissingUnsigned {
       case USHORT: return 3;
       case INT:    return 4;
       case UINT:   return 5;
-      case FLOAT:  return 6;
-      case LONG:   return 7;
-      case ULONG:  return 8;
+      case LONG:   return 6;
+      case ULONG:  return 7;
+      case FLOAT:  return 8;
       case DOUBLE: return 9;
       default:     return -1;
     }

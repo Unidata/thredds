@@ -33,6 +33,7 @@ dependencies {
     testCompile libraries["spock-core"]
 
     testCompile libraries["commons-io"]
+    testCompile libraries["mockito"]
 }
 
 jar.manifest.attributes 'Main-Class': 'ucar.nc2.NCdumpW'

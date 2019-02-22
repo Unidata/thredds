@@ -252,11 +252,9 @@ public class TdsMonitor extends JPanel {
       // which server
       serverCB = new JComboBox();
       serverCB.setModel(manage.getServersCB().getModel());
-      serverCB.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      serverCB.addActionListener(e -> {
           String server = (String) serverCB.getSelectedItem();
           setServer(server);
-        }
       });
 
       // serverCB.setModel(manage.getServers().getModel());

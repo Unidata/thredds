@@ -69,8 +69,7 @@ public class BufrMessageViewer extends JPanel {
     this.prefs = prefs;
 
     AbstractButton tableButt = BAMutil.makeButtcon("Structure", "Data Table", false);
-    tableButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    tableButt.addActionListener(e -> {
         try {
           NetcdfFile ncd = makeBufrDataset() ;
           Variable v = ncd.findVariable(BufrIosp2.obsRecord);
@@ -83,19 +82,16 @@ public class BufrMessageViewer extends JPanel {
           JOptionPane.showMessageDialog(BufrMessageViewer.this, ex.getMessage());
           ex.printStackTrace();
         }
-      }
     });
     buttPanel.add(tableButt);
 
     AbstractButton showButt = BAMutil.makeButtcon("GetAll", "Read All Data", false);
-    showButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    showButt.addActionListener(e -> {
         Formatter f = new Formatter();
         readData(f);
         infoTA2.setText(f.toString());
         infoTA2.gotoTop();
         infoWindow2.show();
-      }
     });
     buttPanel.add(showButt);
 
@@ -109,24 +105,19 @@ public class BufrMessageViewer extends JPanel {
     BAMutil.addActionToContainer(buttPanel, seperateWindowAction);
 
     AbstractButton distinctDdsButt = BAMutil.makeButtcon("dd", "Dump distinct DDS", false);
-    distinctDdsButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    distinctDdsButt.addActionListener(e -> {
         dumpDDS();
-      }
     });
     buttPanel.add(distinctDdsButt);
 
     AbstractButton distinctMessButt = BAMutil.makeButtcon("Import", "Write distinct messages", false);
-    distinctMessButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    distinctMessButt.addActionListener(e -> {
         writeAll();
-      }
     });
     buttPanel.add(distinctMessButt);
 
     AbstractButton configButt = BAMutil.makeButtcon("Dump", "Make BufrConfig", false);
-    configButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    configButt.addActionListener(e -> {
         if (raf == null) return;
         try {
           BufrConfig config = BufrConfig.scanEntireFile(raf);
@@ -142,13 +133,11 @@ public class BufrMessageViewer extends JPanel {
         }
         infoTA2.gotoTop();
         infoWindow2.show();
-      }
     });
     buttPanel.add(configButt);
 
     AbstractButton writeButton = BAMutil.makeButtcon("V3", "Write index", false);
-    writeButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    writeButton.addActionListener(e -> {
         Formatter f = new Formatter();
         try {
           if (writeIndex(f)) {
@@ -164,7 +153,6 @@ public class BufrMessageViewer extends JPanel {
         }
         infoTA2.gotoTop();
         infoWindow2.show();
-      }
     });
     buttPanel.add(writeButton);
 

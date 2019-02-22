@@ -38,7 +38,7 @@ public enum ServiceType {
           " conforms to the NetCDF Attribute Convention for Data Discovery (NACDD)", AccessType.Metadata),              //
   WebForm,        //    ??
   WCS("Supports access to geospatial data as 'coverages'.", AccessType.DataAccess),                                     //
-  WFS,            //
+  WFS("Supports access to geospatial data as simple geometry objects (such as polygons and lines).", AccessType.DataAccess),            //
   WMS("Supports access to georegistered map images from geoscience datasets.", AccessType.DataAccess),                  //
   WSDL,           //
   ;
@@ -67,7 +67,7 @@ public enum ServiceType {
   public boolean isStandardTdsService() {
     return this == Catalog || this == CdmRemote || this == CdmrFeature || this == DAP4 ||
       this == DODS || this == File || this == HTTPServer || this == ISO || this == NCML ||
-      this == NetcdfSubset || this == OPENDAP || this == UDDC || this == WCS || this == WMS;
+      this == NetcdfSubset || this == OPENDAP || this == UDDC || this == WCS || this == WMS || this == WFS;
   }
 
   public String getDescription() { return this.desc; }

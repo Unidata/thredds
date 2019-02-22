@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.iosp.BitReader;
@@ -20,18 +21,22 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
 /**
- * Reads the data from one grib2 record.
- * Original code almost for sure came from GEMPAK, but the lineage is unknown.
+ * Reads the data from one grib2 record. Original code almost for sure came from GEMPAK, but the
+ * lineage is unknown.
+ *
+ * @author caron
  * @see "https://raw.githubusercontent.com/Unidata/gempak/master/extlibs/NDFD/mdlg2dec/unpk_cmplx.f"
  * @see "http://slosh.nws.noaa.gov/svn/degrib/vendor/grib2_unpacker/current/unpksecdif.f"
  * @see "unpk_complex in wgrib2 code"
- * @author caron
  * @since 4/2/11
  */
 public class Grib2DataReader2 {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2DataReader2.class);
 
-  private static final int bitsmv1[] = new int[31];
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
+      .getLogger(Grib2DataReader2.class);
+
+  private static final int[] bitsmv1 = new int[31];
+
   static {
     for (int i = 0; i < 31; i++) {
       bitsmv1[i] = (int) java.lang.Math.pow((double) 2, (double) i) - 1;
@@ -51,7 +56,8 @@ public class Grib2DataReader2 {
   private int bitmapIndicator;
   private byte[] bitmap;
 
-  public Grib2DataReader2(int dataTemplate, int totalNPoints, int dataNPoints, int scanMode, int nx, long startPos, int dataLength) {
+  Grib2DataReader2(int dataTemplate, int totalNPoints, int dataNPoints, int scanMode, int nx,
+      long startPos, int dataLength) {
     this.dataTemplate = dataTemplate;
     this.totalNPoints = totalNPoints;
     this.dataNPoints = dataNPoints;
@@ -77,18 +83,20 @@ public class Grib2DataReader2 {
   65535: Missing
    */
 
-  public float[] getData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs) throws IOException {
+  public float[] getData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs)
+      throws IOException {
     this.bitmap = bitmapSection.getBitmap(raf);
     this.bitmapIndicator = bitmapSection.getBitMapIndicator();
 
     if (bitmap != null) { // is bitmap ok ?
       if (bitmap.length * 8 < totalNPoints) { // gdsNumberPoints == nx * ny ??
-        log.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length, totalNPoints, nx, totalNPoints/nx);
+        log.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length,
+            totalNPoints, nx, totalNPoints / nx);
         throw new IllegalStateException("Bitmap section length!= grid length");
       }
     }
 
-    raf.seek(startPos+5); // skip past first 5 bytes in data section, now ready to read
+    raf.seek(startPos + 5); // skip past first 5 bytes in data section, now ready to read
 
     float[] data;
     switch (dataTemplate) {
@@ -121,29 +129,34 @@ public class Grib2DataReader2 {
     return data;
   }
 
-  public int[] getRawData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs) throws IOException {
+  @Nullable
+  int[] getRawData(RandomAccessFile raf, Grib2SectionBitMap bitmapSection, Grib2Drs gdrs)
+      throws IOException {
     this.bitmap = bitmapSection.getBitmap(raf);
     this.bitmapIndicator = bitmapSection.getBitMapIndicator();
 
     if (bitmap != null) { // is bitmap ok ?
       if (bitmap.length * 8 < totalNPoints) { // gdsNumberPoints == nx * ny ??
-        log.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length, totalNPoints, nx, totalNPoints/nx);
+        log.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length,
+            totalNPoints, nx, totalNPoints / nx);
         throw new IllegalStateException("Bitmap section length!= grid length");
       }
     }
 
-    raf.seek(startPos+5); // skip past first 5 bytes in data section, now ready to read
+    raf.seek(startPos + 5); // skip past first 5 bytes in data section, now ready to read
 
-    if (dataTemplate != 40) return null;
+    if (dataTemplate != 40) {
+      return null;
+    }
 
     // LOOK jpeg2k only
     return getData40raw(raf, (Grib2Drs.Type40) gdrs);
   }
 
-  static private final boolean staticMissingValueInUse = true;
-  static private final float staticMissingValue = Float.NaN;
+  private static final boolean staticMissingValueInUse = true;
+  private static final float staticMissingValue = Float.NaN;
 
-  float getMissingValue(Grib2Drs.Type2 gdrs) {
+  private float getMissingValue(Grib2Drs.Type2 gdrs) {
     int mvm = gdrs.missingValueManagement;
 
     float mv;
@@ -198,7 +211,7 @@ public class Grib2DataReader2 {
     float DD = (float) java.lang.Math.pow((double) 10, (double) D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow( 2.0, (double) E);
+    float EE = (float) java.lang.Math.pow(2.0, (double) E);
 
     // LOOK: can # datapoints differ from bitmap and data ?
     // dataPoints are number of points encoded, it could be less than the
@@ -213,7 +226,7 @@ public class Grib2DataReader2 {
     //   X2 = scaled encoded value
     //   data[ i ] = (R + ( X1 + X2) * EE)/DD ;
 
-    BitReader reader = new BitReader(raf, startPos+5);
+    BitReader reader = new BitReader(raf, startPos + 5);
     if (bitmap == null) {
       for (int i = 0; i < totalNPoints; i++) {
         //data[ i ] = (R + ( X1 + X2) * EE)/DD ;
@@ -265,7 +278,7 @@ public class Grib2DataReader2 {
 
     float DD = (float) java.lang.Math.pow((double) 10, (double) gdrs.decimalScaleFactor);
     float R = gdrs.referenceValue;
-    float EE = (float) java.lang.Math.pow( 2.0, (double) gdrs.binaryScaleFactor);
+    float EE = (float) java.lang.Math.pow(2.0, (double) gdrs.binaryScaleFactor);
     float ref_val = R / DD;
 
     int NG = gdrs.numberOfGroups;
@@ -273,14 +286,15 @@ public class Grib2DataReader2 {
       return nGroups0(bitmapIndicator, ref_val, mv);
     }
 
-    BitReader reader = new BitReader(raf, startPos+5);
+    BitReader reader = new BitReader(raf, startPos + 5);
 
     // 6-xx  Get reference values for groups (X1's)
     int[] X1 = new int[NG];
     int nb = gdrs.numberOfBits;
     if (nb != 0) {
-      for (int i = 0; i < NG; i++)
+      for (int i = 0; i < NG; i++) {
         X1[i] = (int) reader.bits2UInt(nb);
+      }
     }
 
     // [xx +1 ]-yy Get number of bits used to encode each group
@@ -288,8 +302,9 @@ public class Grib2DataReader2 {
     nb = gdrs.bitsGroupWidths;
     if (nb != 0) {
       reader.incrByte();
-      for (int i = 0; i < NG; i++)
+      for (int i = 0; i < NG; i++) {
         NB[i] = (int) reader.bits2UInt(nb);
+      }
     }
 
     // [yy +1 ]-zz Get the scaled group lengths using formula
@@ -302,10 +317,10 @@ public class Grib2DataReader2 {
     nb = gdrs.bitsScaledGroupLength;
 
     reader.incrByte();
-    for (int i = 0; i < NG; i++)
+    for (int i = 0; i < NG; i++) {
       L[i] = ref + (int) reader.bits2UInt(nb) * len_inc;
+    }
     L[NG - 1] = gdrs.lengthLastGroup; // enter Length of Last Group
-
 
     float[] data = new float[totalNPoints];
 
@@ -377,7 +392,7 @@ public class Grib2DataReader2 {
 
     bitmap_flag = code_table_6_0(sec); // == gr.getBitmapSection().getBitMapIndicator();
     if (ngroups == 0) {
-	      if (bitmap_flag == 255) {
+        if (bitmap_flag == 255) {
             for (i = 0; i < ndata; i++) data[i] = ref_val;
             return 0;
         }
@@ -397,22 +412,24 @@ public class Grib2DataReader2 {
   private float[] nGroups0(int bitmap_flag, float ref, float mv1) {
     float[] data = new float[totalNPoints];
     if (bitmap_flag == 255) {
-      for (int i = 0; i < totalNPoints; i++) data[i] = ref;
+      for (int i = 0; i < totalNPoints; i++) {
+        data[i] = ref;
+      }
 
     } else if (bitmap_flag == 0 || bitmap_flag == 254) {
       int mask = 0;
-      int mask_pointer  = 0;
+      int mask_pointer = 0;
       for (int i = 0; i < totalNPoints; i++) {
         if ((i & 7) == 0) {
           mask = bitmap[mask_pointer];
           mask_pointer++;
         }
-        data[i] = ((mask & 128) == 0) ?  ref : mv1;
+        data[i] = ((mask & 128) == 0) ? ref : mv1;
         mask <<= 1;
       }
 
     } else {
-      throw new IllegalArgumentException("unknown bitmap type ="+bitmap_flag);
+      throw new IllegalArgumentException("unknown bitmap type =" + bitmap_flag);
     }
     return data;
   }
@@ -443,7 +460,7 @@ public class Grib2DataReader2 {
 
     float DD = (float) java.lang.Math.pow((double) 10, (double) gdrs.decimalScaleFactor);
     float R = gdrs.referenceValue;
-    float EE = (float) java.lang.Math.pow( 2.0, (double) gdrs.binaryScaleFactor);
+    float EE = (float) java.lang.Math.pow(2.0, (double) gdrs.binaryScaleFactor);
     float ref_val = R / DD;
 
     int NG = gdrs.numberOfGroups;
@@ -451,11 +468,11 @@ public class Grib2DataReader2 {
       return nGroups0(bitmapIndicator, ref_val, mv);
     }
 
-    BitReader reader = new BitReader(raf, startPos+5);
+    BitReader reader = new BitReader(raf, startPos + 5);
 
-    int ival1 = 0;
+    int ival1;
     int ival2 = 0;
-    int minsd = 0;
+    int minsd;
 
     // [6-ww]   1st values of undifferenced scaled values and minimums
     int os = gdrs.orderSpatial;
@@ -484,7 +501,9 @@ public class Grib2DataReader2 {
 
     } else {
       float[] data = new float[totalNPoints];
-      for (int i = 0; i < totalNPoints; i++) data[i] = mv;
+      for (int i = 0; i < totalNPoints; i++) {
+        data[i] = mv;
+      }
       return data;
     }
 
@@ -545,23 +564,25 @@ public class Grib2DataReader2 {
     // test
     if (mvm != 0) {
       if (totalL != totalNPoints) {
-        log.warn("NPoints != gds.nPts: " + totalL +"!="+ totalNPoints);
+        log.warn("NPoints != gds.nPts: " + totalL + "!=" + totalNPoints);
         float[] data = new float[totalNPoints];
-        for (int i = 0; i < totalNPoints; i++)
+        for (int i = 0; i < totalNPoints; i++) {
           data[i] = mv;
+        }
         return data;
       }
     } else {
       if (totalL != dataNPoints) {
-        log.warn("NPoints != drs.nPts: " + totalL +"!="+ totalNPoints);
+        log.warn("NPoints != drs.nPts: " + totalL + "!=" + totalNPoints);
         float[] data = new float[totalNPoints];
-        for (int i = 0; i < totalNPoints; i++)
+        for (int i = 0; i < totalNPoints; i++) {
           data[i] = mv;
+        }
         return data;
       }
     }
 
-   float[] data = new float[totalNPoints];
+    float[] data = new float[totalNPoints];
 
     // [zz +1 ]-nn get X2 values and calculate the results Y using formula
 //      formula used to create values,  Y * 10**D = R + (X1 + X2) * 2**E
@@ -581,11 +602,13 @@ public class Grib2DataReader2 {
     if (mvm == 0) {
       for (int i = 0; i < NG; i++) {
         if (NB[i] != 0) {
-          for (int j = 0; j < L[i]; j++)
+          for (int j = 0; j < L[i]; j++) {
             data[count++] = (int) reader.bits2UInt(NB[i]) + X1[i];
+          }
         } else {
-          for (int j = 0; j < L[i]; j++)
+          for (int j = 0; j < L[i]; j++) {
             data[count++] = X1[i];
+          }
         }
       }  // end for i
 
@@ -611,12 +634,14 @@ public class Grib2DataReader2 {
           int msng1 = bitsmv1[gdrs.numberOfBits];
           int msng2 = msng1 - 1;
           if (X1[i] == msng1) {
-            for (int j = 0; j < L[i]; j++)
+            for (int j = 0; j < L[i]; j++) {
               dataBitMap[count++] = false;
+            }
             //data[count++] = X1[i];
           } else if (mvm == 2 && X1[i] == msng2) {
-            for (int j = 0; j < L[i]; j++)
+            for (int j = 0; j < L[i]; j++) {
               dataBitMap[count++] = false;
+            }
           } else {
             for (int j = 0; j < L[i]; j++) {
               dataBitMap[count] = true;
@@ -705,7 +730,7 @@ public class Grib2DataReader2 {
   }
 
   // Grid point data - JPEG 2000 code stream format
-  public float[] getData40(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
+  private float[] getData40(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
     // 6-xx  jpeg2000 data block to decode
 
     // dataPoints are number of points encoded, it could be less than the
@@ -717,58 +742,63 @@ public class Grib2DataReader2 {
     float DD = (float) java.lang.Math.pow((double) 10, (double) D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow( 2.0, (double) E);
+    float EE = (float) java.lang.Math.pow(2.0, (double) E);
     float ref_val = R / DD;
 
     Grib2JpegDecoder g2j = null;
     // try {
-      if (nb != 0) {  // there's data to decode
-        g2j = new Grib2JpegDecoder(nb, false);
-        byte[] buf = new byte[dataLength - 5];
-        raf.readFully(buf);
-        g2j.decode(buf);
-        gdrs.hasSignedProblem = g2j.hasSignedProblem();
-      }
+    if (nb != 0) {  // there's data to decode
+      g2j = new Grib2JpegDecoder(nb, false);
+      byte[] buf = new byte[dataLength - 5];
+      raf.readFully(buf);
+      g2j.decode(buf);
+      gdrs.hasSignedProblem = g2j.hasSignedProblem();
+    }
 
-      float[] result = new float[totalNPoints];
+    float[] result = new float[totalNPoints];
 
-      // no data to decode, set to reference value
-      if (nb == 0) {
-        for (int i = 0; i < dataNPoints; i++)
-          result[i] = ref_val;
-        return result;
-      }
-
-      int[] idata = g2j.getGdata();
-      if (bitmap == null) { // must be one decoded value in idata for every expected data point
-        if (idata.length != dataNPoints) {
-          log.debug("Number of points in the data record {} != {} expected from GDS", idata.length, dataNPoints);
-          throw new IllegalStateException("Number of points in the data record {} != expected from GDS");
-        }
-
-        for (int i = 0; i < dataNPoints; i++) {
-          // Y * 10^D = R + (X1 + X2) * 2^E ; // regulation 92.9.4
-          // Y = (R + ( 0 + X2) * EE)/DD ;
-          result[i] = (R + idata[i] * EE) / DD;
-        }
-        return result;
-
-      } else {  // use bitmap to skip missing values
-        for (int i = 0, j = 0; i < totalNPoints; i++) {
-          if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
-            if (j >= idata.length) {
-              System.out.printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n", idata.length, j, i, totalNPoints);
-              break;
-            }
-            int indata = idata[j];
-            result[i] = (R + indata * EE) / DD;
-            j++;
-          } else {
-            result[i] = staticMissingValue;
-          }
-        }
+    // no data to decode, set to reference value
+    if (nb == 0) {
+      for (int i = 0; i < dataNPoints; i++) {
+        result[i] = ref_val;
       }
       return result;
+    }
+
+    int[] idata = g2j.getGdata();
+    if (bitmap == null) { // must be one decoded value in idata for every expected data point
+      if (idata.length != dataNPoints) {
+        log.debug("Number of points in the data record {} != {} expected from GDS", idata.length,
+            dataNPoints);
+        throw new IllegalStateException(
+            "Number of points in the data record {} != expected from GDS");
+      }
+
+      for (int i = 0; i < dataNPoints; i++) {
+        // Y * 10^D = R + (X1 + X2) * 2^E ; // regulation 92.9.4
+        // Y = (R + ( 0 + X2) * EE)/DD ;
+        result[i] = (R + idata[i] * EE) / DD;
+      }
+      return result;
+
+    } else {  // use bitmap to skip missing values
+      for (int i = 0, j = 0; i < totalNPoints; i++) {
+        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+          if (j >= idata.length) {
+            System.out
+                .printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
+                    idata.length, j, i, totalNPoints);
+            break;
+          }
+          int indata = idata[j];
+          result[i] = (R + indata * EE) / DD;
+          j++;
+        } else {
+          result[i] = staticMissingValue;
+        }
+      }
+    }
+    return result;
 
     /* } catch (NullPointerException npe) {
 
@@ -781,10 +811,13 @@ public class Grib2DataReader2 {
     } */
   }
 
-    // Grid point data - JPEG 2000 code stream format
-  public int[] getData40raw(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
+  // Grid point data - JPEG 2000 code stream format
+  @Nullable
+  private int[] getData40raw(RandomAccessFile raf, Grib2Drs.Type40 gdrs) throws IOException {
     int nb = gdrs.numberOfBits;
-    if (nb == 0) return null;
+    if (nb == 0) {
+      return null;
+    }
     int missing_value = (2 << nb - 1) - 1;       // all ones - reserved for missing value
 
     Grib2JpegDecoder g2j;
@@ -798,7 +831,8 @@ public class Grib2DataReader2 {
 
     if (bitmap == null) { // must be one decoded value in idata for every expected data point
       if (idata.length != totalNPoints) {
-        log.debug("Number of points in the data record {} != {} expected from GDS", idata.length, totalNPoints);
+        log.debug("Number of points in the data record {} != {} expected from GDS", idata.length,
+            totalNPoints);
         return null;
       }
       return idata;
@@ -809,7 +843,9 @@ public class Grib2DataReader2 {
       for (int i = 0, j = 0; i < totalNPoints; i++) {
         if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           if (j >= idata.length) {
-            System.out.printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n", idata.length, j, i, totalNPoints);
+            System.out
+                .printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
+                    idata.length, j, i, totalNPoints);
             break;
           }
           result[i] = idata[j];
@@ -826,13 +862,13 @@ public class Grib2DataReader2 {
   // Loosely based on code by earl.barker.ctr AT us.af.mil, but moved from
   // anceient version of Grib support.
   // Code taken from esupport ticket ZVT-415274
-  public float[] getData41(RandomAccessFile raf, Grib2Drs.Type0 gdrs) throws IOException {
+  private float[] getData41(RandomAccessFile raf, Grib2Drs.Type0 gdrs) throws IOException {
     int nb = gdrs.numberOfBits;
     int D = gdrs.decimalScaleFactor;
     float DD = (float) java.lang.Math.pow((double) 10, (double) D);
     float R = gdrs.referenceValue;
     int E = gdrs.binaryScaleFactor;
-    float EE = (float) java.lang.Math.pow( 2.0, (double) E);
+    float EE = (float) java.lang.Math.pow(2.0, (double) E);
 
     // LOOK: can # datapoints differ from bitmap and data ?
     // dataPoints are number of points encoded, it could be less than the
@@ -858,9 +894,10 @@ public class Grib2DataReader2 {
     InputStream in = new ByteArrayInputStream(buf);
     BufferedImage image = ImageIO.read(in);
 
-    if (nb != image.getColorModel().getPixelSize())
+    if (nb != image.getColorModel().getPixelSize()) {
       log.debug("PNG pixel size disagrees with grib number of bits: ",
-              image.getColorModel().getPixelSize(), nb);
+          image.getColorModel().getPixelSize(), nb);
+    }
 
     DataBuffer db = image.getRaster().getDataBuffer();
     if (bitmap == null) {
@@ -884,117 +921,106 @@ public class Grib2DataReader2 {
 
   // by jkaehler@meteomatics.com
   // ported from https://github.com/erdc-cm/grib_api/blob/master/src/grib_accessor_class_data_g1second_order_general_extended_packing.c
-  public float[] getData50002(RandomAccessFile raf, Grib2Drs.Type50002 gdrs) throws IOException {
+  private float[] getData50002(RandomAccessFile raf, Grib2Drs.Type50002 gdrs) throws IOException {
 
-		BitReader reader;
+    BitReader reader;
 
-		reader = new BitReader(raf, startPos+5);
-		int[] groupWidth = new int[gdrs.p1];
-		for (int i = 0; i < gdrs.p1; i++) {
-			groupWidth[i] = (int) reader.bits2UInt(gdrs.widthOfWidth);
-//			System.out.println("groupWidths["+i+"]="+groupWidth[i]);
-		}
+    reader = new BitReader(raf, startPos + 5);
+    int[] groupWidth = new int[gdrs.p1];
+    for (int i = 0; i < gdrs.p1; i++) {
+      groupWidth[i] = (int) reader.bits2UInt(gdrs.widthOfWidth);
+    }
 
-		reader = new BitReader(raf, raf.getFilePointer());
-		int[] groupLength = new int[gdrs.p1];
-		for (int i = 0; i < gdrs.p1; i++) {
-			groupLength[i] = (int) reader.bits2UInt(gdrs.widthOfLength);
-//			System.out.println("groupLengths["+i+"]="+groupLength[i]);
-		}
+    reader = new BitReader(raf, raf.getFilePointer());
+    int[] groupLength = new int[gdrs.p1];
+    for (int i = 0; i < gdrs.p1; i++) {
+      groupLength[i] = (int) reader.bits2UInt(gdrs.widthOfLength);
+    }
 
-		reader = new BitReader(raf, raf.getFilePointer());
-		int[] firstOrderValues = new int[gdrs.p1];
-		for (int i = 0; i < gdrs.p1; i++) {
-			firstOrderValues[i] = (int) reader.bits2UInt(gdrs.widthOfFirstOrderValues);
-//			System.out.println("firstOrderValues["+i+"]="+firstOrderValues[i]);
-		}
+    reader = new BitReader(raf, raf.getFilePointer());
+    int[] firstOrderValues = new int[gdrs.p1];
+    for (int i = 0; i < gdrs.p1; i++) {
+      firstOrderValues[i] = (int) reader.bits2UInt(gdrs.widthOfFirstOrderValues);
+    }
 
-//		System.out.println(gdrs);
+    int bias = 0;
+    if (gdrs.orderOfSPD > 0) {
+      bias = gdrs.spd[gdrs.orderOfSPD];
+    }
 
-		int bias = 0;
-		if (gdrs.orderOfSPD > 0) {
-			  bias=gdrs.spd[gdrs.orderOfSPD];
-		}
+    reader = new BitReader(raf, raf.getFilePointer());
+    int cnt = gdrs.orderOfSPD;
+    int[] data = new int[totalNPoints];
+    for (int i = 0; i < gdrs.p1; i++) {
+      if (groupWidth[i] > 0) {
 
-		reader = new BitReader(raf, raf.getFilePointer());
-		int cnt = gdrs.orderOfSPD;
-		int[] data = new int[totalNPoints];
-		for (int i=0; i < gdrs.p1; i++) {
-			if (groupWidth[i] > 0) {
+        for (int j = 0; j < groupLength[i]; j++) {
+          data[cnt] = (int) reader.bits2UInt(groupWidth[i]);
+          data[cnt] += firstOrderValues[i];
+          cnt++;
+        }
 
-				for (int j=0; j < groupLength[i]; j++) {
-					data[cnt]=(int) reader.bits2UInt(groupWidth[i]);
-//					System.out.println("secondOrderValues["+cnt+"]="+data[cnt]);
-					data[cnt]+=firstOrderValues[i];
-					cnt++;
-				}
+      } else {
 
-			} else {
+        for (int j = 0; j < groupLength[i]; j++) {
+          data[cnt] = firstOrderValues[i];
+          cnt++;
+        }
 
-				for (int j=0; j < groupLength[i]; j++) {
-					data[cnt]=firstOrderValues[i];
-					cnt++;
-				}
+      }
 
-			}
+    }
 
-		}
+    if (gdrs.orderOfSPD >= 0) {
+      System.arraycopy(gdrs.spd, 0, data, 0, gdrs.orderOfSPD);
+    }
 
-		for (int i=0; i < gdrs.orderOfSPD; i++) {
-			data[i]=gdrs.spd[i];
-		}
+    int y, z, w;
+    switch (gdrs.orderOfSPD) {
+      case 1:
+        y = data[0];
+        for (int i = 1; i < totalNPoints; i++) {
+          y += data[i] + bias;
+          data[i] = y;
+        }
 
-		int y, z, w;
-		switch (gdrs.orderOfSPD) {
-		case 1:
-			y=data[0];
-			for (int i = 1; i < totalNPoints; i++) {
-				y+=data[i]+bias;
-				data[i]=y;
-			}
+        break;
+      case 2:
+        y = data[1] - data[0];
+        z = data[1];
+        for (int i = 2; i < totalNPoints; i++) {
+          y += data[i] + bias;
+          z += y;
+          data[i] = z;
+        }
 
-			break;
-		case 2:
-			y=data[1]-data[0];
-			z=data[1];
-			for (int i = 2; i < totalNPoints; i++) {
-				y+=data[i]+bias;
-				z+=y;
-				data[i]=z;
-//                System.out.println("i="+i+" X[i]="+data[i]+" y="+y+" z="+z+" bias="+bias);
-			}
+        break;
+      case 3:
+        y = data[2] - data[1];
+        z = y - (data[1] - data[0]);
+        w = data[2];
+        for (int i = 3; i < totalNPoints; i++) {
+          z += data[i] + bias;
+          y += z;
+          w += y;
+          data[i] = w;
+        }
 
-			break;
-		case 3:
-			y=data[2]-data[1];
-			z=y-(data[1]-data[0]);
-			w=data[2];
-			for (int i = 3; i < totalNPoints; i++) {
-				z+=data[i]+bias;
-				y+=z;
-				w+=y;
-				data[i]=w;
-			}
+        break;
+    }
 
-			break;
-		}
+    int D = gdrs.decimalScaleFactor;
+    float DD = (float) java.lang.Math.pow((double) 10, (double) D);
+    float R = gdrs.referenceValue;
+    int E = gdrs.binaryScaleFactor;
+    float EE = (float) java.lang.Math.pow(2.0, (double) E);
 
-		int D = gdrs.decimalScaleFactor;
-		float DD = (float) java.lang.Math.pow((double) 10, (double) D);
-		float R = gdrs.referenceValue;
-		int E = gdrs.binaryScaleFactor;
-		float EE = (float) java.lang.Math.pow( 2.0, (double) E);
+    float[] ret = new float[totalNPoints];
+    for (int i = 0; i < totalNPoints; i++) {
+      ret[i] = (((data[i] * EE) + R) * DD);
+    }
 
-//	    for (int i = 0; i < totalNPoints; i++) {
-//	        System.out.println(i+"="+data[i]);
-//	    }
-
-		float[] ret = new float[totalNPoints];
-		for (int i=0; i < totalNPoints; i++) {
-			ret[i] = (((data[i]*EE)+R)*DD);
-		}
-
-		return ret;
+    return ret;
 
   }
 
@@ -1059,7 +1085,9 @@ public class Grib2DataReader2 {
     // Mode  0  +x, -y, adjacent x, adjacent rows same dir
     // Mode  64 +x, +y, adjacent x, adjacent rows same dir
     if ((scanMode == 0) || (scanMode == 64))  // dont flip Y - handle it in the HorizCoordSys
+    {
       return;
+    }
 
     // change -x to +x ie east to west -> west to east
     if (!GribUtils.scanModeXisPositive(scanMode)) {
@@ -1217,12 +1245,12 @@ int unpk_complex(unsigned char **sec, float *data, unsigned int ndata) {
     ctable_5_6 = code_table_5_6(sec);
 
     if (pack == 3 && (ctable_5_6 != 1 && ctable_5_6 != 2))
-	fatal_error_i("unsupported: code table 5.6=%d", ctable_5_6);
+  fatal_error_i("unsupported: code table 5.6=%d", ctable_5_6);
 
     extra_octets = (pack == 2) ? 0 : sec[5][48];
 
     if (ngroups == 0) {
-	if (bitmap_flag == 255) {
+  if (bitmap_flag == 255) {
             for (i = 0; i < ndata; i++) data[i] = ref_val;
             return 0;
         }
@@ -1247,7 +1275,7 @@ int unpk_complex(unsigned char **sec, float *data, unsigned int ndata) {
     len_last = uint4(p+42);
     nbits_group_len = p[46];
 
-    npnts =  GB2_Sec5_nval(sec); 	// number of defined points
+    npnts =  GB2_Sec5_nval(sec);   // number of defined points
     n_sub_missing = sub_missing_values(sec, &missing1, &missing2);
 
     // allocate group widths and group lengths
@@ -1259,24 +1287,24 @@ int unpk_complex(unsigned char **sec, float *data, unsigned int ndata) {
     group_offset = (int *) malloc(ngroups * sizeof (unsigned int));
     udata = (int *) malloc(npnts * sizeof (unsigned int));
     if (group_refs == NULL || group_widths == NULL || group_lengths ==
-		NULL || udata == NULL) fatal_error("com unpack error","");
+    NULL || udata == NULL) fatal_error("com unpack error","");
 
     // read any extra values
     d = sec[7]+5;
     min_val = 0;
     if (extra_octets) {
-	extra_vals[0] = uint_n(d,extra_octets);
-	d += extra_octets;
-	if (ctable_5_6 == 2) {
-	    extra_vals[1] = uint_n(d,extra_octets);
-	    d += extra_octets;
-	}
-	min_val = int_n(d,extra_octets);
-	d += extra_octets;
+  extra_vals[0] = uint_n(d,extra_octets);
+  d += extra_octets;
+  if (ctable_5_6 == 2) {
+      extra_vals[1] = uint_n(d,extra_octets);
+      d += extra_octets;
+  }
+  min_val = int_n(d,extra_octets);
+  d += extra_octets;
     }
 
     if (ctable_5_4 != 1) fatal_error_i("internal decode does not support code table 5.4=%d",
-		ctable_5_4);
+    ctable_5_4);
 
 #pragma omp parallel
 {
@@ -1287,35 +1315,35 @@ int unpk_complex(unsigned char **sec, float *data, unsigned int ndata) {
 #pragma omp section
         {
            // read the group reference values
-   	   rd_bitstream(d, 0, group_refs, nbits, ngroups);
-	}
+        rd_bitstream(d, 0, group_refs, nbits, ngroups);
+  }
 
 
 #pragma omp section
-	{
-	    int i;
-	    // read the group widths
+  {
+      int i;
+      // read the group widths
 
-	    rd_bitstream(d+(nbits*ngroups+7)/8,0,group_widths,nbit_group_width,ngroups);
-	    for (i = 0; i < ngroups; i++) group_widths[i] += ref_group_width;
-	}
+      rd_bitstream(d+(nbits*ngroups+7)/8,0,group_widths,nbit_group_width,ngroups);
+      for (i = 0; i < ngroups; i++) group_widths[i] += ref_group_width;
+  }
 
 
 #pragma omp section
-	{
-	    int i;
-	    // read the group lengths
+  {
+      int i;
+      // read the group lengths
 
-	    if (ctable_5_4 == 1) {
-		rd_bitstream(d+(nbits*ngroups+7)/8+(ngroups*nbit_group_width+7)/8,
-		0,group_lengths, nbits_group_len, ngroups-1);
+      if (ctable_5_4 == 1) {
+    rd_bitstream(d+(nbits*ngroups+7)/8+(ngroups*nbit_group_width+7)/8,
+    0,group_lengths, nbits_group_len, ngroups-1);
 
-		for (i = 0; i < ngroups-1; i++) {
-		    group_lengths[i] = group_lengths[i] * group_length_factor + ref_group_length;
-		}
-		group_lengths[ngroups-1] = len_last;
-	    }
-	}
+    for (i = 0; i < ngroups-1; i++) {
+        group_lengths[i] = group_lengths[i] * group_length_factor + ref_group_length;
+    }
+    group_lengths[ngroups-1] = len_last;
+      }
+  }
 
     }
 
@@ -1326,8 +1354,8 @@ int unpk_complex(unsigned char **sec, float *data, unsigned int ndata) {
              (ngroups * nbit_group_width + 7) / 8 +
              (ngroups * nbits_group_len + 7) / 8;
 
-	// do a check for number of grid points and size
-	clocation = offset = n = j = 0;
+  // do a check for number of grid points and size
+  clocation = offset = n = j = 0;
     }
 
 #pragma omp sections
@@ -1336,31 +1364,31 @@ int unpk_complex(unsigned char **sec, float *data, unsigned int ndata) {
 
 #pragma omp section
         {
-	    int i;
+      int i;
             for (i = 0; i < ngroups; i++) {
-	        group_location[i] = j;
-	        j += group_lengths[i];
-	        n += group_lengths[i]*group_widths[i];
+          group_location[i] = j;
+          j += group_lengths[i];
+          n += group_lengths[i]*group_widths[i];
             }
         }
 
 #pragma omp section
-	{
-	    int i;
+  {
+      int i;
             for (i = 0; i < ngroups; i++) {
-	        group_clocation[i] = clocation;
-	        clocation = clocation + group_lengths[i]*(group_widths[i]/8) +
-	              (group_lengths[i]/8)*(group_widths[i] % 8);
+          group_clocation[i] = clocation;
+          clocation = clocation + group_lengths[i]*(group_widths[i]/8) +
+                (group_lengths[i]/8)*(group_widths[i] % 8);
             }
         }
 
 #pragma omp section
         {
-	    int i;
+      int i;
             for (i = 0; i < ngroups; i++) {
-	        group_offset[i] = offset;
-	        offset += (group_lengths[i] % 8)*(group_widths[i] % 8);
-	    }
+          group_offset[i] = offset;
+          offset += (group_lengths[i] % 8)*(group_widths[i] % 8);
+      }
         }
     }
 }
@@ -1374,157 +1402,157 @@ int unpk_complex(unsigned char **sec, float *data, unsigned int ndata) {
 
 #pragma omp parallel for private(i) schedule(static)
     for (i = 0; i < ngroups; i++) {
-	group_clocation[i] += (group_offset[i] / 8);
-	group_offset[i] = (group_offset[i] % 8);
+  group_clocation[i] += (group_offset[i] / 8);
+  group_offset[i] = (group_offset[i] % 8);
 
-	rd_bitstream(d + group_clocation[i], group_offset[i], udata+group_location[i],
-		group_widths[i], group_lengths[i]);
+  rd_bitstream(d + group_clocation[i], group_offset[i], udata+group_location[i],
+    group_widths[i], group_lengths[i]);
     }
 
     // handle substitute, missing values and reference value
     if (n_sub_missing == 0) {
 #pragma omp parallel for private(i,k,j)
-	for (i = 0; i < ngroups; i++) {
-	    j = group_location[i];
-	    for (k = 0; k < group_lengths[i]; k++) {
-		udata[j++] += group_refs[i];
-	    }
-	}
+  for (i = 0; i < ngroups; i++) {
+      j = group_location[i];
+      for (k = 0; k < group_lengths[i]; k++) {
+    udata[j++] += group_refs[i];
+      }
+  }
     }
     else if (n_sub_missing == 1) {
 
 #pragma omp parallel for private(i,m1,k,j)
-	for (i = 0; i < ngroups; i++) {
-	    j = group_location[i];
-	    if (group_widths[i] == 0) {
-	        m1 = (1 << nbits) - 1;
-		if (m1 == group_refs[i]) {
-		    for (k = 0; k < group_lengths[i]; k++) udata[j++] = INT_MAX;
-		}
-		else {
-		    for (k = 0; k < group_lengths[i]; k++) udata[j++] += group_refs[i];
-		}
-	    }
-	    else {
-	        m1 = (1 << group_widths[i]) - 1;
-	        for (k = 0; k < group_lengths[i]; k++) {
-		    if (udata[j] == m1) udata[j] = INT_MAX;
-		    else udata[j] += group_refs[i];
-		    j++;
-		}
-	    }
-	}
+  for (i = 0; i < ngroups; i++) {
+      j = group_location[i];
+      if (group_widths[i] == 0) {
+          m1 = (1 << nbits) - 1;
+    if (m1 == group_refs[i]) {
+        for (k = 0; k < group_lengths[i]; k++) udata[j++] = INT_MAX;
+    }
+    else {
+        for (k = 0; k < group_lengths[i]; k++) udata[j++] += group_refs[i];
+    }
+      }
+      else {
+          m1 = (1 << group_widths[i]) - 1;
+          for (k = 0; k < group_lengths[i]; k++) {
+        if (udata[j] == m1) udata[j] = INT_MAX;
+        else udata[j] += group_refs[i];
+        j++;
+    }
+      }
+  }
     }
     else if (n_sub_missing == 2) {
 #pragma omp parallel for private(i,j,k,m1,m2)
-	for (i = 0; i < ngroups; i++) {
-	    j = group_location[i];
-	    if (group_widths[i] == 0) {
-	        m1 = (1 << nbits) - 1;
-	        m2 = m1 - 1;
-		if (m1 == group_refs[i] || m2 == group_refs[i]) {
-		    for (k = 0; k < group_lengths[i]; k++) udata[j++] = INT_MAX;
-		}
-		else {
-		    for (k = 0; k < group_lengths[i]; k++) udata[j++] += group_refs[i];
-		}
-	    }
-	    else {
-	        m1 = (1 << group_widths[i]) - 1;
-	        m2 = m1 - 1;
-	        for (k = 0; k < group_lengths[i]; k++) {
-		    if (udata[j] == m1 || udata[j] == m2) udata[j] = INT_MAX;
-		    else udata[j] += group_refs[i];
-		    j++;
-		}
-	    }
-	}
+  for (i = 0; i < ngroups; i++) {
+      j = group_location[i];
+      if (group_widths[i] == 0) {
+          m1 = (1 << nbits) - 1;
+          m2 = m1 - 1;
+    if (m1 == group_refs[i] || m2 == group_refs[i]) {
+        for (k = 0; k < group_lengths[i]; k++) udata[j++] = INT_MAX;
+    }
+    else {
+        for (k = 0; k < group_lengths[i]; k++) udata[j++] += group_refs[i];
+    }
+      }
+      else {
+          m1 = (1 << group_widths[i]) - 1;
+          m2 = m1 - 1;
+          for (k = 0; k < group_lengths[i]; k++) {
+        if (udata[j] == m1 || udata[j] == m2) udata[j] = INT_MAX;
+        else udata[j] += group_refs[i];
+        j++;
+    }
+      }
+  }
     }
 
     // post processing
 
-	if (pack == 3) {
-	    if (ctable_5_6 == 1) {
-		last = extra_vals[0];
-		i = 0;
-		while (i < npnts) {
-		    if (udata[i] == INT_MAX) i++;
-		    else {
-			udata[i++] = extra_vals[0];
-			break;
-		    }
-		}
-		while (i < npnts) {
-		    if (udata[i] == INT_MAX) i++;
-		    else {
-			udata[i] += last + min_val;
-			last = udata[i++];
-		    }
-		}
-	    }
-	    else if (ctable_5_6 == 2) {
-		penultimate = extra_vals[0];
-		last = extra_vals[1];
+  if (pack == 3) {
+      if (ctable_5_6 == 1) {
+    last = extra_vals[0];
+    i = 0;
+    while (i < npnts) {
+        if (udata[i] == INT_MAX) i++;
+        else {
+      udata[i++] = extra_vals[0];
+      break;
+        }
+    }
+    while (i < npnts) {
+        if (udata[i] == INT_MAX) i++;
+        else {
+      udata[i] += last + min_val;
+      last = udata[i++];
+        }
+    }
+      }
+      else if (ctable_5_6 == 2) {
+    penultimate = extra_vals[0];
+    last = extra_vals[1];
 
-		i = 0;
-		while (i < npnts) {
-		    if (udata[i] == INT_MAX) i++;
-		    else {
-			udata[i++] = extra_vals[0];
-			break;
-		    }
-		}
-		while (i < npnts) {
-		    if (udata[i] == INT_MAX) i++;
-		    else {
-			udata[i++] = extra_vals[1];
-			break;
-		    }
-		}
-	        for (; i < npnts; i++) {
-		    if (udata[i] != INT_MAX) {
-			udata[i] =  udata[i] + min_val + last + last - penultimate;
-			penultimate = last;
-			last = udata[i];
-		    }
-		}
-	    }
-	    else fatal_error_i("Unsupported: code table 5.6=%d", ctable_5_6);
-	}
+    i = 0;
+    while (i < npnts) {
+        if (udata[i] == INT_MAX) i++;
+        else {
+      udata[i++] = extra_vals[0];
+      break;
+        }
+    }
+    while (i < npnts) {
+        if (udata[i] == INT_MAX) i++;
+        else {
+      udata[i++] = extra_vals[1];
+      break;
+        }
+    }
+          for (; i < npnts; i++) {
+        if (udata[i] != INT_MAX) {
+      udata[i] =  udata[i] + min_val + last + last - penultimate;
+      penultimate = last;
+      last = udata[i];
+        }
+    }
+      }
+      else fatal_error_i("Unsupported: code table 5.6=%d", ctable_5_6);
+  }
 
-	// convert to float
+  // convert to float
 
-	if (bitmap_flag == 255) {
+  if (bitmap_flag == 255) {
 #pragma omp parallel for schedule(static) private(i)
-	    for (i = 0; i < (int) ndata; i++) {
-		data[i] = (udata[i] == INT_MAX) ? UNDEFINED :
-			ref_val + udata[i] * factor;
-	    }
-	}
+      for (i = 0; i < (int) ndata; i++) {
+    data[i] = (udata[i] == INT_MAX) ? UNDEFINED :
+      ref_val + udata[i] * factor;
+      }
+  }
         else if (bitmap_flag == 0 || bitmap_flag == 254) {
-	    n = 0;
-	    mask = 0;
+      n = 0;
+      mask = 0;
             mask_pointer = sec[6] + 6;
             for (i = 0; i < ndata; i++) {
                 if ((i & 7) == 0) mask = *mask_pointer++;
-		if (mask & 128) {
-		    if (udata[n] == INT_MAX) data[i] = UNDEFINED;
-		    else data[i] = ref_val + udata[n] * factor;
-		    n++;
-		}
-		else data[i] = UNDEFINED;
-		mask <<= 1;
+    if (mask & 128) {
+        if (udata[n] == INT_MAX) data[i] = UNDEFINED;
+        else data[i] = ref_val + udata[n] * factor;
+        n++;
+    }
+    else data[i] = UNDEFINED;
+    mask <<= 1;
             }
         }
         else fatal_error_i("unknown bitmap: %d", bitmap_flag);
 
-	free(group_refs);
-	free(group_widths);
-	free(group_lengths);
-	free(group_location);
-	free(group_clocation);
-	free(group_offset);
-	free(udata);
+  free(group_refs);
+  free(group_widths);
+  free(group_lengths);
+  free(group_location);
+  free(group_clocation);
+  free(group_offset);
+  free(udata);
 
     return 0;
 }

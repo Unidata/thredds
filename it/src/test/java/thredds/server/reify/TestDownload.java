@@ -174,7 +174,7 @@ public class TestDownload extends TestReify
             throws Exception
     {
         TestCase test = (TestCase) tc;
-        stdout.println("Testcase: " + test.toString());
+        System.err.println("Testcase: " + test.toString());
         String url = test.makeURL();
         String s = null;
         try (HTTPMethod m = HTTPFactory.Get(url)) {
@@ -201,7 +201,7 @@ public class TestDownload extends TestReify
             Assert.assertTrue("***Fail: No download file returned", filename != null);
             File f = new File(filename);
             Assert.assertTrue("***Fail: Download file does not exist: " + filename, f.exists());
-            stdout.println("***Pass: Reply is identical and download file exists");
+            System.err.println("***Pass: Reply is identical and download file exists");
         }
     }
 

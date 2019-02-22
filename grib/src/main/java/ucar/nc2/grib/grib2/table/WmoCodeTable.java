@@ -4,6 +4,8 @@
  */
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
@@ -24,8 +26,8 @@ import java.util.*;
  */
 
 public class WmoCodeTable implements Comparable<WmoCodeTable> {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
-  static public final Version standard = Version.GRIB2_20_0_0;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
+  public static final Version standard = Version.GRIB2_20_0_0;
 
   public enum Version {
     // GRIB2_10_0_1, GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0, GRIB2_13_0_1;
@@ -35,8 +37,8 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
     }
 
+    @Nullable
     String[] getElemNames() {
-
       if (this == GRIB2_20_0_0)
         return new String[]{"GRIB2_20_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
 
@@ -76,6 +78,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   </GRIB2_14_0_0_CodeFlag_en>
   */
 
+  @Nullable
   public static TableEntry getParameterEntry(int discipline, int category, int value) {
     return getTableEntry(getId(discipline, category), value);
   }
@@ -89,12 +92,13 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return "4.2." + discipline + "." + category;
   }
 
+  @Nullable
   public static String getTableValue(String tableId, int value) {
     if (wmoTables == null)
       try {
         wmoTables = getWmoStandard();
       } catch (IOException e) {
-        throw new IllegalStateException("cant open wmo tables");
+        throw new IllegalStateException("cant open WMO tables");
       }
 
     WmoCodeTable table = wmoTables.map.get(tableId);
@@ -104,7 +108,8 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return entry.meaning;
   }
 
-  public static TableEntry getTableEntry(String tableId, int value) {
+  @Nullable
+  private static TableEntry getTableEntry(String tableId, int value) {
     if (wmoTables == null)
       try {
         wmoTables = getWmoStandard();
@@ -121,14 +126,14 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
   private static WmoTables wmoTables = null;
 
-  static public WmoTables getWmoStandard() throws IOException {
+  static WmoTables getWmoStandard() throws IOException {
     if (wmoTables == null)
       wmoTables = readGribCodes(standard);
     return wmoTables;
   }
 
   @Immutable
-  static public class WmoTables {
+  public static class WmoTables {
     public final String name;
     public final List<WmoCodeTable> list;
     public final Map<String, WmoCodeTable> map;  // key is table.getTableId()
@@ -140,7 +145,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     }
   }
 
-  static public WmoTables readGribCodes(Version version) throws IOException {
+  public static WmoTables readGribCodes(Version version) throws IOException {
     String[] elems = version.getElemNames();
     if (elems == null)
       throw new IllegalStateException("unknown version = "+version);
@@ -223,10 +228,10 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   public boolean isParameter;
   public int discipline = -1;
   public int category = -1;
-  String id;
+  private String id;
 
   public List<TableEntry> entries = new ArrayList<>();
-  public Map<Integer, TableEntry> entryMap;
+  private Map<Integer, TableEntry> entryMap;
 
   WmoCodeTable() {
   }
@@ -239,8 +244,9 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     if (slist2.length == 2) {
       m1 = Integer.parseInt(slist2[0]);
       m2 = Integer.parseInt(slist2[1]);
-    } else
+    } else {
       logger.warn("WmoCodeTable bad= %s%n" + name);
+    }
   }
 
   WmoCodeTable(String tableName, String subtableName) {
@@ -288,7 +294,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   @Override
-  public int compareTo(WmoCodeTable o) {
+  public int compareTo(@Nonnull WmoCodeTable o) {
     if (m1 != o.m1) return m1 - o.m1;
     if (m2 != o.m2) return m2 - o.m2;
     if (discipline != o.discipline) return discipline - o.discipline;
@@ -301,15 +307,17 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   private String makeTableNo() {
-    Formatter f = new Formatter();
-    f.format("%d.%d",m1, m2);
+    try (Formatter f = new Formatter()) {
+      f.format("%d.%d", m1, m2);
 
-    if (discipline >= 0)
-      f.format(".%d",discipline);
-    if (category >= 0)
-      f.format(".%d",category);
-
-    return f.toString();
+      if (discipline >= 0) {
+        f.format(".%d", discipline);
+      }
+      if (category >= 0) {
+        f.format(".%d", category);
+      }
+      return f.toString();
+    }
   }
 
   public String getTableName() {
@@ -425,7 +433,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     }
 
     @Override
-    public int compareTo(TableEntry o) {
+    public int compareTo(@Nonnull TableEntry o) {
       return start - o.start;
     }
 
@@ -457,11 +465,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
       if (number != that.number) return false;
       if (start != that.start) return false;
       if (stop != that.stop) return false;
-      if (code != null ? !code.equals(that.code) : that.code != null) return false;
-      if (meaning != null ? !meaning.equals(that.meaning) : that.meaning != null) return false;
-      if (name != null ? !name.equals(that.name) : that.name != null) return false;
+      if (!Objects.equals(code, that.code)) return false;
+      if (!Objects.equals(meaning, that.meaning)) return false;
+      if (!Objects.equals(name, that.name)) return false;
       // if (status != null ? !status.equals(that.status) : that.status != null) return false;
-      if (unit != null ? !unit.equals(that.unit) : that.unit != null) return false;
+      if (!Objects.equals(unit, that.unit)) return false;
 
       return true;
     }

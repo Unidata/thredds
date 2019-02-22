@@ -1,6 +1,7 @@
-/* Copyright 2012, UCAR/Unidata.
-   See the LICENSE file for more information.
-*/
+/*
+ * Copyright (c) 2012-2018 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
 
 package thredds.server.dap4;
 
@@ -71,25 +72,6 @@ public class Dap4Controller extends DapController
             throws IOException
     {
         super.handleRequest(req, res);
-    }
-
-    /**
-     * Initialize servlet/controller
-     */
-    @Override
-    public void
-    initialize()
-    {
-        super.initialize();
-        try {
-            // Always prefer Nc4Iosp over HDF5
-            NetcdfFile.iospDeRegister(ucar.nc2.jni.netcdf.Nc4Iosp.class);
-            NetcdfFile.registerIOProviderPreferred(ucar.nc2.jni.netcdf.Nc4Iosp.class,
-                    ucar.nc2.iosp.hdf5.H5iosp.class
-            );
-        } catch (Exception e) {
-            DapLog.warn("Cannot load ucar.nc2.jni.netcdf.Nc4Iosp");
-        }
     }
 
     //////////////////////////////////////////////////

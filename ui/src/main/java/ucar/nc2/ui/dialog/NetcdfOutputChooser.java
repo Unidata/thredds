@@ -149,11 +149,8 @@ public class NetcdfOutputChooser extends JDialog {
             new Insets(0, 0, 0, 0), 0, 0));
 
           //---- chunking ----
-          chunking.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
+          chunking.addItemListener(e -> {
               chunkingItemStateChanged(e);
-            }
           });
           panel1.add(chunking, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.BOTH,
@@ -220,21 +217,15 @@ public class NetcdfOutputChooser extends JDialog {
 
         //---- okButton ----
         okButton.setText("Write File");
-        okButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        okButton.addActionListener(e -> {
             okButtonActionPerformed(e);
-          }
         });
         buttonBar.add(okButton);
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        cancelButton.addActionListener(e -> {
             cancelButtonActionPerformed(e);
-          }
         });
         buttonBar.add(cancelButton);
       }

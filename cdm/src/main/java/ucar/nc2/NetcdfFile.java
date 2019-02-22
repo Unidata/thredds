@@ -68,23 +68,37 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * Read-only scientific datasets that are accessible through the netCDF API.
- * Immutable after setImmutable() is called. However, reading data is not thread-safe.
- * <p> Be sure to close the file when done, best practice is to enclose in a try/finally block:
+ * <p>Read-only scientific datasets that are accessible through the netCDF API.
+ * Immutable after {@code setImmutable()} is called. However, reading data is not
+ * thread-safe.</p>
+ *
+ * <p>Be sure to close the file when done. Either enclose in a try/finally block:</p>
+ *
  * <pre>
  * NetcdfFile ncfile = null;
  * try {
  *  ncfile = NetcdfFile.open(fileName);
- *  ...
+ *  // do stuff
  * } finally {
- *  ncfile.close();
+ *  if(ncfile != null) { ncfile.close(); }
  * }
  * </pre>
- * <p/>
+ *
+ * <p>Or better yet, use try-with-resources:</p>
+ *
+ * <pre>
+ * try (NetcdfFile ncfile = NetcdfFile.open(fileName)) {
+ *  // do stuff
+ * }
+ * </pre>
+ *
  * <h3>Naming</h3>
+ * <p>
  * Each object has a name (aka "full name") that is unique within the entire netcdf file, and
  * a "short name" that is unique within the parent group.
- * These coincide for objects in the root group, and so are backwards compatible with version 3 files.
+ * These coincide for objects in the root group, and so are backwards compatible with version
+ * 3 files.</p>
+ *
  * <ol>
  * <li>Variable: group1/group2/varname
  * <li>Structure member Variable: group1/group2/varname.s1.s2
@@ -110,6 +124,8 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
   static boolean loadWarnings = false;
 
   static private boolean userLoads = false;
+
+  static private StringLocker stringLocker = new StringLocker();
 
   // IOSPs are loaded by reflection
   static {
@@ -613,10 +629,13 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
 
       String uncompressedFileName = null;
       try {
+        stringLocker.control(uriString);  // Avoid race condition where the decompressed file is trying to be read by one thread while another is decompressing it
         uncompressedFileName = makeUncompressed(uriString);
       } catch (Exception e) {
         log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
         //allow to fall through to open the "compressed" file directly - may be a misnamed suffix
+      } finally {
+        stringLocker.release(uriString);
       }
 
       if (uncompressedFileName != null) {
@@ -682,8 +701,9 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
     // ok gonna write it
     // make sure compressed file exists
     File file = new File(filename);
-    if (!file.exists())
+    if (!file.exists()) {
       return null; // bail out  */
+    }
 
     try (FileOutputStream fout = new FileOutputStream(uncompressedFile)) {
 

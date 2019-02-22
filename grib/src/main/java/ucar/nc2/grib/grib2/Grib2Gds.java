@@ -29,8 +29,8 @@ import java.util.Formatter;
  */
 @Immutable
 public abstract class Grib2Gds {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
-  public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometimes miscoded
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Gds.class);
+  static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometimes miscoded
 
   public static Grib2Gds factory(int template, byte[] data) {
     Grib2Gds result;
@@ -223,7 +223,7 @@ public abstract class Grib2Gds {
     return isThin;
   }
 
-  protected void readNptsInLine() {
+  private void readNptsInLine() {
     int numOctetsPerNumber = getOctet(11);
     int octet12 = getOctet(12);
     if (octet12 != 1)
@@ -256,15 +256,15 @@ public abstract class Grib2Gds {
     return data[index - 1] & 0xff;
   }
 
-  protected int getOctetSigned(int index) {
+  private int getOctetSigned(int index) {
     return GribNumbers.convertSignedByte(data[index - 1]);
   }
 
-  protected int getOctet4(int start) {
+  int getOctet4(int start) {
     return GribNumbers.int4(getOctet(start), getOctet(start + 1), getOctet(start + 2), getOctet(start + 3));
   }
 
-  protected float getScaledValue(int start) {
+  private float getScaledValue(int start) {
     int scaleFactor = getOctetSigned(start);
     int scaleValue = getOctet4(start + 1);
     if (scaleFactor != 0)
@@ -756,8 +756,8 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
         int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
         int useLad = (int) Math.round(lad / (maxReletiveErrorPos * dY));
-        int useDeltaLon = (int) Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
-        int useDeltaLat = (int) Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLon = Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -837,8 +837,8 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       65 (1): Scanning mode - (see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
    */
   public static class PolarStereographic extends Grib2Gds {
-    public float la1, lo1, lov, lad, dX, dY;
-    public int flags, projCenterFlag;
+    float la1, lo1, lov, lad, dX, dY;
+    int flags, projCenterFlag;
 
     PolarStereographic(byte[] data) {
       super(data, 20);
@@ -857,8 +857,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
     }
 
     public void testScanMode(Formatter f) {
-      float scale = scale6;
-      float dY = getOctet4(60) * scale;       // may be pos or neg
+      float dY = getOctet4(60) * scale6;       // may be pos or neg
       if (GribUtils.scanModeYisPositive(scanMode)) {
         if (dY < 0) f.format("  **PS scan mode=%d dY=%f%n", scanMode, dY);
       } else {
@@ -892,10 +891,10 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       if (hashCode == 0) {
         int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) Math.round(lad / Misc.defaultMaxRelativeDiffFloat);
-        int useLov = (int) Math.round(lov / Misc.defaultMaxRelativeDiffFloat);
-        int useDeltaLon = (int) Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
-        int useDeltaLat = (int) Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
+        int useLad = Math.round(lad / Misc.defaultMaxRelativeDiffFloat);
+        int useLov = Math.round(lov / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLon = Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -992,8 +991,8 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
    78-81 (4): Longitude of the southern pole of projection
    */
   public static class LambertConformal extends Grib2Gds {
-    public float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
-    public int flags, projCenterFlag;
+    float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
+    int flags, projCenterFlag;
 
     LambertConformal(byte[] data, int template) {
       super(data, template);
@@ -1018,8 +1017,7 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
     }
 
     public void testScanMode(Formatter f) {
-      float scale = scale6;
-      float dY = getOctet4(60) * scale;       // may be pos or neg
+      float dY = getOctet4(60) * scale6;       // may be pos or neg
       if (GribUtils.scanModeYisPositive(scanMode)) {
         if (dY < 0) f.format("  **LC scan mode=%d dY=%f%n", scanMode, dY);
       } else {
@@ -1053,12 +1051,12 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
       if (hashCode == 0) {
         int useLat = (int) Math.round(la1 / (maxReletiveErrorPos * dY));  //  Two equal objects must have the same hashCode() value
         int useLon = (int) Math.round(lo1 / (maxReletiveErrorPos * dX));
-        int useLad = (int) Math.round(lad / Misc.defaultMaxRelativeDiffFloat);
-        int useLov = (int) Math.round(lov / Misc.defaultMaxRelativeDiffFloat);
-        int useDeltaLon = (int) Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
-        int useDeltaLat = (int) Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
-        int useLatin1 = (int) Math.round(latin1 / Misc.defaultMaxRelativeDiffFloat);
-        int useLatin2 = (int) Math.round(latin2 / Misc.defaultMaxRelativeDiffFloat);
+        int useLad = Math.round(lad / Misc.defaultMaxRelativeDiffFloat);
+        int useLov = Math.round(lov / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLon = Math.round(dX / Misc.defaultMaxRelativeDiffFloat);
+        int useDeltaLat = Math.round(dY / Misc.defaultMaxRelativeDiffFloat);
+        int useLatin1 = Math.round(latin1 / Misc.defaultMaxRelativeDiffFloat);
+        int useLatin2 = Math.round(latin2 / Misc.defaultMaxRelativeDiffFloat);
 
         int result = super.hashCode();
         result = 31 * result + useLat;
@@ -1227,7 +1225,7 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
    73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Note 4)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
    */
   public static class GaussLatLon extends LatLon {
-    public int Nparellels;
+    int Nparellels;
 
     GaussLatLon(byte[] data) {
       super(data);
@@ -1388,7 +1386,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
         Ry = 2 * Arcsin (106 )/Nr)/ dy
   */
   public static class SpaceViewPerspective extends Grib2Gds {
-    public float LaP, LoP, dX, dY, Xp, Yp, Nr, Xo, Yo;
+    float LaP, LoP, dX, dY, Xp, Yp, Nr, Xo, Yo;
     public int flags;
 
     SpaceViewPerspective(byte[] data) {

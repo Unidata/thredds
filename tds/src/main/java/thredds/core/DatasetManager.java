@@ -29,6 +29,7 @@ import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
 import ucar.nc2.ft2.coverage.FeatureDatasetCoverage;
+import ucar.nc2.ft2.simpgeometry.SimpleGeometryFeatureDataset;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.util.Optional;
@@ -341,7 +342,48 @@ public class DatasetManager implements InitializingBean {
 
     return null;
   }
+  public SimpleGeometryFeatureDataset openSimpleGeometryDataset(HttpServletRequest req, HttpServletResponse res, String reqPath) throws IOException {
+    // first look for a feature collection
+    DataRootManager.DataRootMatch match = dataRootManager.findDataRootMatch(reqPath);
+    if ((match != null) && (match.dataRoot.getFeatureCollection() != null)) {
+      // see if its under resource control
+      if (!resourceAuthorized(req, res, match.dataRoot.getRestrict()))
+        return null;
 
+      FeatureCollectionRef featCollection = match.dataRoot.getFeatureCollection();
+      if (log.isDebugEnabled()) log.debug("  -- DatasetHandler found FeatureCollection= " + featCollection);
+
+      InvDatasetFeatureCollection fc = featureCollectionCache.get(featCollection);
+      SimpleGeometryFeatureDataset fd = fc.getSimpleGeometryDataset(match.remaining);
+      if (fd == null) throw new IllegalArgumentException("Not a Simple Geometry Dataset " + fc.getName());
+      return fd;
+    }
+
+    // fetch it as a NetcdfFile; this deals with possible NcML
+    NetcdfFile ncfile = openNetcdfFile(req, res, reqPath);
+    if (ncfile == null) return null;
+
+    Formatter errlog = new Formatter();
+    NetcdfDataset ncd = null;
+    try {
+      ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+      return (SimpleGeometryFeatureDataset) FeatureDatasetFactoryManager.wrap(FeatureType.SIMPLE_GEOMETRY, ncd, null, errlog);
+
+    } catch (Throwable t) {
+      if (ncd == null)
+        ncfile.close();
+      else
+        ncd.close();
+
+      if (t instanceof IOException)
+        throw (IOException) t;
+
+      String msg = ncd == null ? "Problem wrapping NetcdfFile in NetcdfDataset; " : "Problem calling FeatureDatasetFactoryManager; ";
+      msg += errlog.toString();
+      log.error("openSimpleGeometryDataset(): " + msg, t);
+      throw new IOException(msg + t.getMessage());
+    }
+  }
   /////////////////////////////////////////////////////////////////
   // Resource control
 

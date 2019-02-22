@@ -33,13 +33,17 @@
 package ucar.nc2.ui.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
+import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionAbstract;
+import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.collection.GribCdmIndex;
+import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.time.CalendarDate;
@@ -65,7 +69,7 @@ import java.util.*;
 import java.util.List;
 
 /**
- * Grib2 refactor
+ * A widget to show collections of GRIB2 files.
  *
  * @author caron
  * @since Aug 15, 2008
@@ -88,14 +92,12 @@ public class Grib2CollectionPanel extends JPanel {
     PopupMenu varPopup;
 
     AbstractButton xmlButt = BAMutil.makeButtcon("Information", "generate gds xml", false);
-    xmlButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    xmlButt.addActionListener(e -> {
         Formatter f = new Formatter();
         generateGdsXml(f);
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.show();
-      }
     });
     buttPanel.add(xmlButt);
 
@@ -456,7 +458,6 @@ public class Grib2CollectionPanel extends JPanel {
   private MCollection dcm;
   private List<MFile> fileList;
   private Grib2Customizer cust;
-  // private Grib2Rectilyser rect2;
 
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
@@ -548,7 +549,7 @@ public class Grib2CollectionPanel extends JPanel {
   private MCollection getCollection(String spec, Formatter f) {
     MCollection dc = null;
     try {
-      dc = CollectionAbstract.open("Grib2CollectionPanel", spec, null, f);
+      dc = CollectionAbstract.open("Grib2Collection", spec, null, f);
       fileList = (List<MFile>) Misc.getList(dc.getFilesSorted());
       return dc;
 
@@ -561,37 +562,30 @@ public class Grib2CollectionPanel extends JPanel {
     }
   }
 
-  public boolean writeIndex(Formatter f) throws IOException {
-    return false;
-    /* if (fileChooser == null)
+  public boolean writeIndex(Formatter errlog) throws IOException {
+    if (fileChooser == null)
       fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
 
-    MCollection dcm = getCollection(spec, f);
+    // Create a reasonable name for the index
+    MCollection dcm = getCollection(spec, errlog);
     String name = dcm.getCollectionName();
     int pos = name.lastIndexOf('/');
     if (pos < 0) pos = name.lastIndexOf('\\');
     if (pos > 0) name = name.substring(pos + 1);
-    File def = new File(dcm.getRoot(), name + CollectionAbstract.NCX_SUFFIX);
+    File def = new File(dcm.getRoot(), name + GribCdmIndex.NCX_SUFFIX);
 
     String filename = fileChooser.chooseFilename(def);
     if (filename == null) return false;
-    if (!filename.endsWith(CollectionAbstract.NCX_SUFFIX))
-      filename += CollectionAbstract.NCX_SUFFIX;
+    if (!filename.endsWith(GribCdmIndex.NCX_SUFFIX))
+      filename += GribCdmIndex.NCX_SUFFIX;
     File idxFile = new File(filename);
 
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds093.1", "test", FeatureCollectionType.GRIB2,
+    FeatureCollectionConfig config = new FeatureCollectionConfig(name, idxFile.getPath(), FeatureCollectionType.GRIB2,
             this.spec, null, null, null, null, null);
-    config.gribConfig.unionRuntimeCoord = true;
 
-    org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger("test");
-    boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);
-    System.out.printf("changed = %s%n", changed);
-
-    boolean ok = GribCdmIndex.updateGribCollection(false, dcm, CollectionUpdateType.always, FeatureCollectionConfig.PartitionType.directory,
-       logger, f);
-
-
-    return ok;  */
+    GribCollectionImmutable collection = GribCdmIndex.openGribCollection(config, CollectionUpdateType.always, logger);
+    if (collection != null) collection.close();
+    return collection != null;
   }
 
   public void showCollection(Formatter f) {

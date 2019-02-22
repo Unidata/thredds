@@ -35,6 +35,7 @@ public class TestUserProblems {
 
   @org.junit.Test
   public void testGrid() throws IOException, InvalidRangeException {
+    System.setProperty("httpservices.urlencode", "false");
     try (DODSNetcdfFile dodsfile = TestDODSRead.openAbs("http://iridl.ldeo.columbia.edu/SOURCES/.NOAA/.NCEP/.CPC/.GLOBAL/.daily/dods")) {
 
       Variable dataV = null;
@@ -53,10 +54,13 @@ public class TestUserProblems {
       Array data = dataV.read("0, 0:72:1, 0:143:1");
       assert null != data;
     }
+    System.setProperty("httpservices.urlencode", "true");
   }
 
   @org.junit.Test
   public void testNomads() throws InvalidRangeException {
+    // This server is running TDS v4.2, and there appears to be an issue with encoded urls?
+    System.setProperty("httpservices.urlencode", "false");
     DODSNetcdfFile.setDebugFlags(new DebugFlagsImpl("DODS/serverCall"));
   		/* The temperature is recorded */
     String testfile = "http://nomads.ncdc.noaa.gov/thredds/dodsC/cfsr1hr/200912/tmp2m.gdas.200912.grb2";
@@ -84,10 +88,12 @@ public class TestUserProblems {
       ArrayFloat.D4 Temperature = (ArrayFloat.D4) V2.read(origin, shape).reduce();
 
     } catch (IOException ioe) {
+      System.setProperty("httpservices.urlencode", "true");
       System.out.println("trying to open " + testfile + " " + ioe);
       // getting 403 on 2 GB request
       assert true;
     }
+    System.setProperty("httpservices.urlencode", "true");
     System.out.println("---- End of File ----");
   }
 }

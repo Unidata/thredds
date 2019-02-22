@@ -4,7 +4,6 @@
 
   <dataset name="NCEP Model Data">
     <metadata inherited="true">
-      <serviceName>all</serviceName>
       <authority>edu.ucar.unidata</authority>
       <dataType>Grid</dataType>
       <dataFormat>NetCDF</dataFormat>
@@ -46,21 +45,17 @@
             <units>km</units>
           </updown>
         </geospatialCoverage>
-        <variables vocabulary="GRIB-1" />
-        <variables vocabulary="">
-          <variable name="Z_sfc" vocabulary_name="" units="gp m">Geopotential height, gpm</variable>
-        </variables>
       </metadata>
 
       <filter>
         <include wildcard="*eta_211.nc" />
       </filter>
-      <addID/>
+
       <sort>
         <lexigraphicByName increasing="false"/>
       </sort>
       <addLatest/>
-      <addDatasetSize/>
+
       <addTimeCoverage datasetNameMatchPattern="([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})_eta_211.nc$"
                        startTimeSubstitutionPattern="$1-$2-$3T$4:00:00"
                        duration="60 hours" />

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
@@ -32,13 +33,11 @@ import java.util.*;
  * @since 2/5/14
  */
 class Grib2CollectionBuilder extends GribCollectionBuilder {
-  // static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionBuilder.class);
-
   private FeatureCollectionConfig.GribConfig gribConfig;
   private Grib2Customizer cust;
 
   // LOOK prob name could be dcm.getCollectionName()
-  public Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
+  Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
     super(false, name, dcm, logger);
 
     FeatureCollectionConfig config = (FeatureCollectionConfig) dcm.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
@@ -157,8 +156,8 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     if (intv == null) return false;   // not an interval
     int haveLength = intv[1] - intv[0];
 
-    // discard zero length intervals (default)
-    if (haveLength == 0 && (intvFilter == null || intvFilter.isZeroExcluded()))
+    // discard zero length intervals if so configured
+    if (haveLength == 0 && intvFilter != null && intvFilter.isZeroExcluded())
       return true;
 
     // HACK
@@ -196,11 +195,11 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     public Grib2Record first;
     public Grib2Variable gv;
 
-    public List<Grib2Record> atomList = new ArrayList<>(100); // not sorted
-    public CoordinateND<Grib2Record> coordND;
+    List<Grib2Record> atomList = new ArrayList<>(100); // not sorted
+    CoordinateND<Grib2Record> coordND;
     CalendarPeriod timeUnit;
 
-    public List<Integer> coordIndex;
+    List<Integer> coordIndex;
     long pos;
     int length;
 
@@ -210,7 +209,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     @Override
-    public int compareTo(VariableBag o) {
+    public int compareTo(@Nonnull VariableBag o) {
       return Grib2Utils.getVariableName(first).compareTo(Grib2Utils.getVariableName(o.first));
     }
   }
@@ -228,7 +227,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       gdsHashOverride = (gdsHash == gdsHashObject.hashCode()) ? 0 : gdsHash; */
     }
 
-    public void make(FeatureCollectionConfig.GribConfig config, GribRecordStats counter, Formatter info) throws IOException {
+    public void make(FeatureCollectionConfig.GribConfig config, GribRecordStats counter, Formatter info) {
       CalendarPeriod userTimeUnit = config.userTimeUnit;
 
       // assign each record to unique variable using cdmVariableHash()
@@ -260,20 +259,8 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         CoordinateND.Builder<Grib2Record> coordNBuilder = new CoordinateND.Builder<>();
 
         boolean isTimeInterval = vb.first.getPDS().isTimeInterval();
-        /* if (isDense) { // time is runtime X time coord
-          coordNBuilder.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));
-          if (isTimeInterval)
-            coordNBuilder.addBuilder(new CoordinateTimeIntv.Builder2(cust, code, vb.timeUnit, null)); // null refdate not ok
-          else
-            coordNBuilder.addBuilder(new CoordinateTime.Builder2(code, vb.timeUnit, null)); // null refdate not ok
-
-        } else { */
-         // time is kept as 2D coordinate, separate list of times for each runtime
-         // coordNBuilder.addBuilder(new CoordinateRuntime.Builder2(vb.timeUnit));  LOOK removed - does it mess with SRC case ??
           CoordinateTime2D.Builder2 builder2D = new CoordinateTime2D.Builder2(isTimeInterval, cust, vb.timeUnit, code);
           coordNBuilder.addBuilder(builder2D);
-          //coordNBuilder.addBuilder(builder2D.getTimeBuilder());
-        //}
 
         if (vb.first.getPDS().isEnsemble())
           coordNBuilder.addBuilder(new CoordinateEns.Builder2(0));
@@ -318,15 +305,11 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     public void showInfo(Formatter f, Grib2Customizer tables) {
-      //f.format("%nVariables%n");
-      //f.format("%n  %3s %3s %3s%n", "time", "vert", "ens");
       GribRecordStats all = new GribRecordStats();
 
       for (VariableBag vb : gribvars) {
         f.format("Variable %s (%d)%n", tables.getVariableName(vb.first), vb.gv.hashCode());
         vb.coordND.showInfo(f, all);
-        //f.format("  %3d %3d %3d %s records = %d density = %f hash=%d", vb.timeCoordIndex, vb.vertCoordIndex, vb.ensCoordIndex,
-        //        vname, vb.atomList.size(), vb.recordMap.density(), vb.cdmHash);
         f.format("%n");
       }
       f.format("%n all= %s", all.show());

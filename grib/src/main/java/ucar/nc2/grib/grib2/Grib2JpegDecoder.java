@@ -35,7 +35,7 @@ import java.io.ByteArrayInputStream;
  * @author caron  rewritten Aug 2014
  */
 public class Grib2JpegDecoder {
-  static private final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
+  private static final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
 
   private boolean debug;
   private int rate;
@@ -70,7 +70,7 @@ public class Grib2JpegDecoder {
    * @throws IllegalArgumentException If 'argv' is empty
    * @see Grib2JpegDecoder#getExitCode
    */
-  public Grib2JpegDecoder(int nbits, boolean debug) {
+  Grib2JpegDecoder(int nbits, boolean debug) {
     this.rate = nbits;
     this.debug = debug;
 
@@ -98,10 +98,6 @@ public class Grib2JpegDecoder {
 
     // Create parameter list using defaults
     pl = new ParameterList(defpl);
-
-    if (argv.length == 0) {
-      throw new IllegalArgumentException("No arguments!");
-    }
 
     // Parse arguments from argv
     try {
@@ -132,7 +128,7 @@ public class Grib2JpegDecoder {
    *
    * @see #getExitCode
    */
-  public void decode(byte buf[]) throws IOException {
+  public void decode(byte[] buf) throws IOException {
     // int dataSize = buf.length;
     final boolean verbose = false;
     int res; // resolution level to reconstruct
@@ -151,7 +147,7 @@ public class Grib2JpegDecoder {
     BlkImgDataSrc resampled;
     BlkImgDataSrc color;
     int i;
-    int depth[];
+    int[] depth;
 
     try {
 
@@ -463,8 +459,8 @@ public class Grib2JpegDecoder {
          */
         private DataBlkInt db = new DataBlkInt();
 
-        /** The number of fractional bits in the source data */
-        //private int fb;
+        // The number of fractional bits in the source data */
+        // private int fb;
 
         /**
          * The index of the component from where to get the data
