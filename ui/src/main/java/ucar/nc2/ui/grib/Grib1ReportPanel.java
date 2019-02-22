@@ -189,6 +189,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   /////////////////////////////////////////////////////////////////
 
+  // Look through the collection and find what GDS templates are used.
   private void doCheckTables(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     Counters counters = new Counters();
 
@@ -236,16 +237,16 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doCheckTables(ucar.nc2.grib.grib1.Grib1Record gr, Counters counters) throws IOException {
     Grib1SectionProductDefinition pds = gr.getPDSsection();
-    String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
+    String key = Grib1Utils.extractParameterCode(gr);
+    counters.count("center", pds.getCenter());
     counters.count("tableVersion", key);
 
     if (pds.getParameterNumber() > 127)
-      counters.count("local", pds.getParameterNumber());
+      counters.count("local", key);
 
     Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
-    // if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
     if (table == null || null == table.getParameter(pds.getParameterNumber()))
-      counters.count("missing", pds.getParameterNumber());
+      counters.count("missing", key);
   }
 
   /////////////////////////////////////////////////////////////////
@@ -782,6 +783,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
     ///////////////////////////////////////////////
 
+    // Look through the collection and find what GDS templates are used.
     private void doUniqueGds(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
       f.format("Show Unique GDS%n");
 

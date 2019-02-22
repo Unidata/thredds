@@ -27,6 +27,9 @@ import java.util.Map;
  */
 public class FnmocTables extends Grib1Customizer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FnmocTables.class);
+  private static final String fnmocTableA = "resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml";
+  private static final String fnmocTable2 = "resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterParameterTableOrdered.GRIB1.Tbl2.xml";
+  private static final String fnmocTable3 = "resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml";
 
   private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
   private static Map<Integer, String> genProcessMap;  // shared by all instances
@@ -41,7 +44,7 @@ public class FnmocTables extends Grib1Customizer {
   @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null)
-      genProcessMap = readGenProcess("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml");
+      genProcessMap = readGenProcess(fnmocTableA);
     if (genProcessMap == null) return null;
     return genProcessMap.get(genProcess);
   }
@@ -92,9 +95,8 @@ public class FnmocTables extends Grib1Customizer {
 
   /// levels
   protected GribLevelType getLevelType(int code) {
-    if (code < 199) return super.getLevelType(code);   // WTF ??
     if (levelTypesMap == null)
-      levelTypesMap = readFnmocTable3("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml");
+      levelTypesMap = readFnmocTable3(fnmocTable3);
     if (levelTypesMap == null)
       return super.getLevelType(code);
 
@@ -137,7 +139,7 @@ public class FnmocTables extends Grib1Customizer {
         String desc = elem1.getChildText("description");
         String abbrev = elem1.getChildText("name");
         String units = elem1.getChildText("units");
-        if (units == null) units = makeUnits(code);
+        if (units == null) units = (code == 219) ? "Pa" : "";
         String datum = elem1.getChildText("datum");
         boolean isLayer = elem1.getChild("isLayer") != null;
         boolean isPositiveUp = elem1.getChild("isPositiveUp")  != null;
@@ -151,13 +153,6 @@ public class FnmocTables extends Grib1Customizer {
       logger.error("Cant read FnmocTable3 = " + path, e);
       return null;
     }
-  }
-
-  private String makeUnits(int code) {
-    if (code == 219) {
-      return "Pa";
-    }
-    return "";
   }
 
 }

@@ -43,13 +43,15 @@ public class Grib1Customizer implements GribTables {
   }
 
   public static Grib1Customizer factory(int center, int subcenter, int version, Grib1ParamTables tables) {
-    if (center == 7) return new NcepTables(tables);
-    else if (center == 9) return new NcepRfcTables(tables);
-    else if (center == 34) return new JmaTables(tables);
-    else if (center == 57) return new AfwaTables(tables);
-    else if (center == 58) return new FnmocTables(tables);
-    else if (center == 60) return new NcarTables(tables);
-    else return new Grib1Customizer(center, tables);
+    switch (center) {
+      case 7: return new NcepTables(tables);
+      case 9: return new NcepRfcTables(tables);
+      case 34: return new JmaTables(tables);
+      case 57: return new AfwaTables(tables);
+      case 58: return new FnmocTables(tables);
+      case 60: return new NcarTables(tables);
+      default: return new Grib1Customizer(center, tables);
+    }
   }
 
   public static String getSubCenterNameStatic(int center, int subcenter) {
