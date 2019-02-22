@@ -13,6 +13,7 @@ apply plugin: 'groovy'  // For Spock tests.
 
 dependencies {
     compile project(":cdm")
+    compile project(":grib")
     compile project(":opendap")
     
     compile libraries["guava"]

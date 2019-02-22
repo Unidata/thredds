@@ -35,7 +35,6 @@ import java.util.*;
  */
 @Deprecated
 public class GribVariableRenamer {
-  private static boolean debug = false;
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GribVariableRenamer.class);
 
   private static HashMap<String, Renamer> map1;
@@ -237,7 +236,6 @@ public class GribVariableRenamer {
   
   private List<VariableRenamerBean> readVariableRenameFile(String path) {
     java.util.List<VariableRenamerBean> beans = new ArrayList<>(1000);
-    if (debug) System.out.printf("reading table %s%n", path);
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       if (is == null) {
         logger.warn("Cant read file " + path);
@@ -317,7 +315,7 @@ public class GribVariableRenamer {
   //////////////////////////////////////////////////
 
   private HashMap<String, Renamer> makeMapBeans(List<VariableRenamerBean> vbeans) {
-    HashMap<String, Renamer> map = new HashMap<String, Renamer>(3000);
+    HashMap<String, Renamer> map = new HashMap<>(3000);
     for (VariableRenamerBean vbean : vbeans) {
 
       // construct the old -> new mapping
@@ -357,7 +355,6 @@ public class GribVariableRenamer {
     void finish() {
       if (newVarsMap.values().size() == 1) {
         newName = newVars.get(0).getNewName();
-        // newVars = null; // GC
       }
     }
 
