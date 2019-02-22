@@ -791,10 +791,14 @@ public class Grib1ReportPanel extends ReportPanel {
         doUniqueGds(mfile, gdsSet, f);
       }
 
-      for (GdsList gdsl : gdsSet.values()) {
-        f.format("%nGDS = %d x %d (%d) %n", gdsl.gds.getNy(), gdsl.gds.getNx(), gdsl.gds.template);
-        for (FileCount fc : gdsl.fileList)
-          f.format("  %5d %s (%d)%n", fc.count, fc.f.getPath(), fc.countGds);
+      List<GdsList> sorted = new ArrayList<>(gdsSet.values());
+      Collections.sort(sorted);
+
+      for (GdsList gdsl : sorted) {
+        f.format("%nGDS %s template= %d %n", gdsl.gds.getNameShort(), gdsl.gds.template);
+        for (FileCount fc : gdsl.fileList) {
+          f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
+        }
       }
     }
 
@@ -807,21 +811,16 @@ public class Grib1ReportPanel extends ReportPanel {
         return;
       }
 
-      int countGds = g1idx.getGds().size();
       for (Grib1Record gr : g1idx.getRecords()) {
-        int hash = gr.getGDSsection().getGDS().hashCode();
-        gdsSet.computeIfAbsent(hash, k -> new GdsList(gr.getGDSsection().getGDS()));
-        GdsList gdsList = gdsSet.get(hash);
-        FileCount fc = gdsList.contains(mf);
-        if (fc == null) {
-          fc = new FileCount(mf, countGds);
-          gdsList.fileList.add(fc);
-        }
-        fc.count++;
+        int template = gr.getGDSsection().getGDS().template;
+        gdsSet.computeIfAbsent(template, k -> new GdsList(gr.getGDSsection().getGDS()));
+        GdsList gdsList = gdsSet.get(template);
+        FileCount fc = gdsList.findOrAdd(mf);
+        fc.countRecords++;
       }
     }
 
-    private class GdsList {
+    private class GdsList implements Comparable<GdsList> {
       Grib1Gds gds;
       java.util.List<FileCount> fileList = new ArrayList<>();
 
@@ -829,23 +828,30 @@ public class Grib1ReportPanel extends ReportPanel {
         this.gds = gds;
       }
 
-      FileCount contains(MFile f) {
-        for (FileCount fc : fileList)
-          if (fc.f.getPath().equals(f.getPath())) return fc;
-        return null;
+      FileCount findOrAdd(MFile f) {
+        for (FileCount fc : fileList) {
+          if (fc.f.getPath().equals(f.getPath()))
+            return fc;
+        }
+
+        FileCount fc = new FileCount(f);
+        fileList.add(fc);
+        return fc;
       }
 
+      @Override
+      public int compareTo(GdsList o) {
+        return gds.template - o.gds.template;
+      }
     }
 
     private class FileCount {
-      private FileCount(MFile f, int countGds) {
+      private FileCount(MFile f) {
         this.f = f;
-        this.countGds = countGds;
       }
 
       MFile f;
-      int count = 0;
-      int countGds;
+      int countRecords = 0;
     }
 
     ///////////////////////////////////////////////

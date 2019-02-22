@@ -81,7 +81,7 @@ public class TestGrib1Unpack {
   // cubic:
   @Test
   public void testThisGridInterpolation() throws IOException {
-    final String testfile = "../grib/src/test/data/HPPI89_KWBC.grb";
+    final String testfile = "../grib/src/test/data/HPPI89_KWBC.grib1";
 
     Grib1Index index = new Grib1Index();
     if (!index.readIndex(testfile, -1)) {
