@@ -40,8 +40,8 @@ import java.util.*;
  */
 public class Grib1ReportPanel extends ReportPanel {
 
-  public static enum Report {
-    checkTables, showLocalParams, summary, rename, checkRename, showEncoding, gribIndex
+  public enum Report {
+    checkTables, showLocalParams, summary, rename, showEncoding, gribIndex
   }
 
   private Grib1Customizer cust = null;
@@ -71,9 +71,6 @@ public class Grib1ReportPanel extends ReportPanel {
         break;
       case rename:
         doRename(f, dcm, useIndex);
-        break;
-      case checkRename:
-        doCheckRename(f, dcm, useIndex);
         break;
       case showEncoding:
         doShowEncoding(f, dcm);
@@ -332,7 +329,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
     if (cust == null) cust = Grib1Customizer.factory(gr, null);
 
-    Grib1ParamTime ptime = cust.getParamTime(pds);;
+    Grib1ParamTime ptime = cust.getParamTime(pds);
     counters.count("timeCoord", ptime.getTimeCoord());
     counters.count("earthShape", gds.getEarthShape());
     counters.count("uvIsReletive", gds.getUVisReletive() ? "true" : "false");
@@ -407,64 +404,6 @@ public class Grib1ReportPanel extends ReportPanel {
       System.out.printf("Failed on %s%n", path);
       ioe.printStackTrace();
     }
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////
-
-  private void doCheckRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    f.format("CHECK Renaming uniqueness %s%n", dcm.getCollectionName());
-
-    GribVariableRenamer renamer = new GribVariableRenamer();
-    int fail = 0;
-    int multiple = 0;
-    int ok = 0;
-
-    for (MFile mfile : dcm.getFilesSorted()) {
-      f.format("%n%s%n", mfile.getPath());
-
-      try (NetcdfFile ncfileOld = NetcdfFile.open(mfile.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null)) {
-        NetcdfDataset ncdOld = new NetcdfDataset(ncfileOld);
-        GridDataset gridOld = new GridDataset(ncdOld);
-
-        try (GridDataset gdsNew = GridDataset.open(mfile.getPath())) {
-
-          for (GridDatatype grid : gridOld.getGrids()) {
-            // if (useIndex) {
-            List<String> newNames = renamer.matchNcepNames(gdsNew, grid.getShortName());
-            if (newNames.size() == 0) {
-              f.format(" ***FAIL %s%n", grid.getShortName());
-              fail++;
-            } else if (newNames.size() != 1) {
-              f.format(" *** %s multiple matches on %n", grid.getShortName());
-              for (String newName : newNames)
-                f.format("    %s%n", newName);
-              f.format("%n");
-              multiple++;
-            } else if (useIndex) {
-              f.format(" %s%n %s%n%n", grid.getShortName(), newNames.get(0));
-              ok++;
-            }
-
-          /* } else {
-            String newName = renamer.getNewName(mfile.getName(), grid.getShortName());
-            if (newName == null) {
-              f.format(" ***Grid %s renamer failed%n", grid.getShortName());
-              continue;
-            }
-
-            // test it really exists
-            GridDatatype ggrid = gdsNew.findGridByName(newName);
-            if (ggrid == null) f.format(" ***Grid %s new name = %s not found%n", grid.getShortName(), newName);
-          } */
-          }
-        }
-
-      } catch (Throwable t) {
-        t.printStackTrace();
-      }
-    }
-
-    f.format("Fail=%d multiple=%d ok=%d%n", fail, multiple, ok);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////

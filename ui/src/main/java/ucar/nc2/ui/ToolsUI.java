@@ -123,7 +123,6 @@ public class ToolsUI extends JPanel {
   private GribCodePanel gribCodePanel;
   private GribFilesPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
-  private GribRenamePanel gribVariableRenamePanel;
   private GribRewritePanel gribRewritePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1CollectionPanel grib1CollectionPanel;
@@ -500,11 +499,6 @@ public class ToolsUI extends JPanel {
       case "GRIB2-TABLES":
         grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
         c = grib2TablePanel;
-        break;
-
-      case "GRIB-Rename":
-        gribVariableRenamePanel = new GribRenamePanel((PreferencesExt) mainPrefs.node("grib-rename"));
-        c = gribVariableRenamePanel;
         break;
 
       case "GRIB-Rewrite":
@@ -1124,7 +1118,6 @@ public class ToolsUI extends JPanel {
     if (grib2ReportPanel != null) grib2ReportPanel.save();
     if (grib1TablePanel != null) grib1TablePanel.save();
     if (grib2TablePanel != null) grib2TablePanel.save();
-    if (gribVariableRenamePanel != null) gribVariableRenamePanel.save();
     if (gribRewritePanel != null) gribRewritePanel.save();
     if (gridPanel != null) gridPanel.save();
     if (hdf5ObjectPanel != null) hdf5ObjectPanel.save();
@@ -3567,31 +3560,6 @@ public class ToolsUI extends JPanel {
 
     void closeOpenFiles() {
     }
-  }
-
-  /////////////////////////////////////////////////////////////////////
-
-  private class GribRenamePanel extends OpPanel {
-    ucar.nc2.ui.grib.GribRenamePanel panel;
-
-    GribRenamePanel(PreferencesExt p) {
-      super(p, "matchNcepName: ", true, false, false);
-      panel = new ucar.nc2.ui.grib.GribRenamePanel(prefs, buttPanel);
-      add(panel, BorderLayout.CENTER);
-    }
-
-    boolean process(Object o) {
-      return panel.matchNcepName((String) o);
-    }
-
-    void save() {
-      panel.save();
-      super.save();
-    }
-
-    void closeOpenFiles() {
-    }
-
   }
 
   /////////////////////////////////////////////////////////////////////
