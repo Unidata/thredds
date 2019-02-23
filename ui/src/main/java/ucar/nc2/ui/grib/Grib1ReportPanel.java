@@ -356,15 +356,6 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doShowEncoding(Formatter f, MCollection dcm) throws IOException {
     Counters countersAll = new Counters();
-    countersAll.add("decimalScale");
-    countersAll.add("binScale");
-    countersAll.add("nbits");
-    countersAll.add("gridType");
-    countersAll.add("packing");
-    countersAll.add("dataType");
-    countersAll.add("hasMore");
-    countersAll.add("mixed scaling");
-
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       // need dataRaf, so cant useIndex
@@ -384,7 +375,7 @@ public class Grib1ReportPanel extends ReportPanel {
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
         GribData.Info info = gr.getBinaryDataInfo(raf);
-        counters.count("decimals", info.decimalScaleFactor);
+        counters.count("decimalScale", info.decimalScaleFactor);
         counters.count("binScale", info.binaryScaleFactor);
         counters.count("nbits", info.numberOfBits);
         counters.count("gridType", info.getGridPoint());
@@ -469,11 +460,7 @@ public class Grib1ReportPanel extends ReportPanel {
       // add to gridsAll
       for (GridMatch gmOld : listOld) {
         String key = gmOld.grid.getFullName();
-        List<String> newGrids = gridsAll.get(key);
-        if (newGrids == null) {
-          newGrids = new ArrayList<>();
-          gridsAll.put(key, newGrids);
-        }
+        List<String> newGrids = gridsAll.computeIfAbsent(key, k -> new ArrayList<>());
         if (gmOld.match != null) {
           String keyNew = gmOld.match.grid.getFullName() + " == " + gmOld.match.grid.getDescription();
           if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
@@ -741,9 +728,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private Map<Integer, GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
     Map<Integer, GridMatch> grids = new HashMap<>(100);
-    GridDataset ncfile = null;
-    try {
-      ncfile = GridDataset.open(ff.getPath());
+    try (GridDataset ncfile = GridDataset.open(ff.getPath())) {
       for (GridDatatype dt : ncfile.getGrids()) {
         GridMatch gm = new GridMatch(ncfile, dt, true);
         GridMatch dup = grids.get(gm.hashCode());
@@ -752,31 +737,26 @@ public class Grib1ReportPanel extends ReportPanel {
         else
           grids.put(gm.hashCode(), gm);
       }
-    } finally {
-      if (ncfile != null) ncfile.close();
     }
     return grids;
   }
 
   private Map<Integer, GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
     Map<Integer, GridMatch> grids = new HashMap<>(100);
-    NetcdfFile ncfile = null;
-    try {
-      ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);
+    try (NetcdfFile ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null)) {
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       GridDataset grid = new GridDataset(ncd);
       for (GridDatatype dt : grid.getGrids()) {
         GridMatch gm = new GridMatch(grid, dt, false);
         GridMatch dup = grids.get(gm.hashCode());
         if (dup != null)
-          f.format(" DUP OLD (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(), gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
+          f.format(" DUP OLD (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(),
+              gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
         else
           grids.put(gm.hashCode(), gm);
       }
     } catch (Throwable t) {
       t.printStackTrace();
-    } finally {
-      if (ncfile != null) ncfile.close();
     }
     return grids;
   }

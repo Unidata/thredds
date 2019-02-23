@@ -119,7 +119,7 @@ public class TestGrib1Unpack {
       Array lineA = dataA.slice(0, lineno);
       logger.debug("{}", NCdumpW.toString(lineA));
     }
-    System.out.printf("%n", method);
+    System.out.printf("%s%n", method);
 
     return data;
   }

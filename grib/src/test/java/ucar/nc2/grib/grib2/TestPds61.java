@@ -30,7 +30,7 @@ public class TestPds61 {
 
     @Before
     public void openTestFile() throws IOException {
-        String testfile = "../grib/src/test/data/index/example_pds_61.grib2.gbx9";
+        String testfile = "../grib/src/test/data/example_pds_61.grib2.gbx9";
 
         Grib2Index gi = new Grib2Index();
         boolean success = gi.readIndex(testfile, -1);
