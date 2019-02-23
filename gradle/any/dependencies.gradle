@@ -184,7 +184,7 @@ libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
 // Annotations
 libraries["jsr305"] = "com.google.code.findbugs:jsr305:3.0.2"
 
-libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.5.1"
+libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.6.1"
 
 libraries["visad"] = "edu.wisc.ssec:visad:2.0-20130124"
 
