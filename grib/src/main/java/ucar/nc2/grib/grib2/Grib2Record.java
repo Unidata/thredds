@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import com.google.common.base.MoreObjects;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.QuasiRegular;
@@ -213,12 +214,22 @@ public class Grib2Record {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("Grib2Record{");
-    sb.append("file=").append(file);
-    sb.append(", ref=").append(getReferenceDate());
-    sb.append(", dataPos=").append(dataSection.getStartingPosition());
-    sb.append('}');
-    return sb.toString();
+    return MoreObjects.toStringHelper(this)
+        .add("is", is)
+        .add("id", id)
+        .add("lus", lus)
+        .add("gdss", gdss)
+        .add("pdss", pdss)
+        .add("drss", drss)
+        .add("bms", bms)
+        .add("dataSection", dataSection)
+        .add("pds2", pds2)
+        .add("header", header)
+        .add("file", file)
+        .add("bmsReplaced", bmsReplaced)
+        .add("scanMode", scanMode)
+        .add("repeat", repeat)
+        .toString();
   }
 
   // isolate dependencies here - in case we have a "minimal I/O" mode where not all fields are available

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import com.google.common.base.MoreObjects;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
 import ucar.unidata.geoloc.*;
@@ -197,20 +198,23 @@ public class GdsHorizCoordSys {
 
   @Override
   public String toString() {
-    return "GdsHorizCoordSys" +
-            "\n name='" + name + '\'' +
-            "\n  template=" + template +
-            "\n  gdsNumberPoints=" + gdsNumberPoints +
-            "\n  scanMode=" + scanMode +
-            "\n  proj=" + proj +
-            "\n  startx=" + startx +
-            "\n  dx=" + dx +
-            "\n  starty=" + starty +
-            "\n  dy=" + dy +
-            "\n  nx=" + nx +
-            "\n  ny=" + ny +
-            "\n  gaussLats=" + gaussLats +
-            "\n  gaussw=" + gaussw +
-            '\n';
+    return MoreObjects.toStringHelper(this)
+        .add("name", name)
+        .add("template", template)
+        .add("gdsNumberPoints", gdsNumberPoints)
+        .add("scanMode", scanMode)
+        .add("proj", proj)
+        .add("startx", startx)
+        .add("dx", dx)
+        .add("starty", starty)
+        .add("dy", dy)
+        .add("nx", nx)
+        .add("ny", ny)
+        .add("nxRaw", nxRaw)
+        .add("nyRaw", nyRaw)
+        .add("nptsInLine", nptsInLine)
+        .add("gaussLats", gaussLats)
+        .add("gaussw", gaussw)
+        .toString();
   }
 }

@@ -546,16 +546,22 @@ public abstract class Grib1Gds {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nLatLon{ la1=").append(la1);
-      sb.append(", lo1=").append(lo1);
-      sb.append(", la2=").append(la2);
-      sb.append(", lo2=").append(lo2);
-      sb.append(", deltaLon=").append(deltaLon);
-      sb.append(", deltaLat=").append(deltaLat);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("nptsInLine", nptsInLine)
+          .add("template", template)
+          .add("nx", nx)
+          .add("ny", ny)
+          .add("scanMode", scanMode)
+          .add("resolution", resolution)
+          .add("lastOctet", lastOctet)
+          .add("hashCode", hashCode)
+          .add("la1", la1)
+          .add("lo1", lo1)
+          .add("la2", la2)
+          .add("lo2", lo2)
+          .add("deltaLon", deltaLon)
+          .add("deltaLat", deltaLat)
+          .toString();
     }
 
     @Override
@@ -726,18 +732,15 @@ public abstract class Grib1Gds {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nGaussianLatLon");
-      sb.append("{nparellels=").append(nparellels);
-      sb.append(", latSouthPole=").append(latSouthPole);
-      sb.append(", lonSouthPole=").append(lonSouthPole);
-      sb.append(", rotAngle=").append(rotAngle);
-      sb.append(", latPole=").append(latPole);
-      sb.append(", lonPole=").append(lonPole);
-      sb.append(", stretchFactor=").append(stretchFactor);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("nparellels", nparellels)
+          .add("latSouthPole", latSouthPole)
+          .add("lonSouthPole", lonSouthPole)
+          .add("rotAngle", rotAngle)
+          .add("latPole", latPole)
+          .add("lonPole", lonPole)
+          .add("stretchFactor", stretchFactor)
+          .toString();
     }
   }
 
@@ -786,18 +789,15 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nPolarStereographic{");
-      sb.append("la1=").append(la1);
-      sb.append(", lo1=").append(lo1);
-      sb.append(", lov=").append(lov);
-      sb.append(", dX=").append(dX);
-      sb.append(", dY=").append(dY);
-      sb.append(", projCenterFlag=").append(projCenterFlag);
-      sb.append(", lad=").append(lad);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("la1", la1)
+          .add("lo1", lo1)
+          .add("lov", lov)
+          .add("dX", dX)
+          .add("dY", dY)
+          .add("projCenterFlag", projCenterFlag)
+          .add("lad", lad)
+          .toString();
     }
 
     @Override
@@ -982,22 +982,19 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nLambertConformal{");
-      sb.append("la1=").append(la1);
-      sb.append(", lo1=").append(lo1);
-      sb.append(", lov=").append(lov);
-      sb.append(", lad=").append(lad);
-      sb.append(", dX=").append(dX);
-      sb.append(", dY=").append(dY);
-      sb.append(", latin1=").append(latin1);
-      sb.append(", latin2=").append(latin2);
-      sb.append(", latSouthPole=").append(latSouthPole);
-      sb.append(", lonSouthPole=").append(lonSouthPole);
-      sb.append(", projCenterFlag=").append(projCenterFlag);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("la1", la1)
+          .add("lo1", lo1)
+          .add("lov", lov)
+          .add("lad", lad)
+          .add("dX", dX)
+          .add("dY", dY)
+          .add("latin1", latin1)
+          .add("latin2", latin2)
+          .add("latSouthPole", latSouthPole)
+          .add("lonSouthPole", lonSouthPole)
+          .add("projCenterFlag", projCenterFlag)
+          .toString();
     }
 
     @Override
@@ -1160,18 +1157,15 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nMercator{ ");
-      sb.append("la1=").append(la1);
-      sb.append(", lo1=").append(lo1);
-      sb.append(", la2=").append(la2);
-      sb.append(", lo2=").append(lo2);
-      sb.append(", latin=").append(latin);
-      sb.append(", dX=").append(dX);
-      sb.append(", dY=").append(dY);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("la1", la1)
+          .add("lo1", lo1)
+          .add("la2", la2)
+          .add("lo2", lo2)
+          .add("latin", latin)
+          .add("dX", dX)
+          .add("dY", dY)
+          .toString();
     }
 
     @Override
@@ -1292,14 +1286,11 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nRotLatLon");
-      sb.append("{angleRotation=").append(angleRotation);
-      sb.append(", latSouthPole=").append(latSouthPole);
-      sb.append(", lonSouthPole=").append(lonSouthPole);
-      sb.append('}');
-      return sb.toString();
+      return MoreObjects.toStringHelper(this)
+          .add("angleRotation", angleRotation)
+          .add("latSouthPole", latSouthPole)
+          .add("lonSouthPole", lonSouthPole)
+          .toString();
     }
 
     @Override

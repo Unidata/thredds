@@ -824,8 +824,6 @@ public class GribCdmIndex implements IndexReader {
   /////////////////////////////////////////////////////////////////////////////////////
   // manipulate the ncx without building a gc
   private static final boolean debug = false;
-  private byte[] magic;
-  private int version;
   private GribCollectionProto.GribCollection gribCollectionIndex;
   private final Logger logger;
 
@@ -889,10 +887,11 @@ public class GribCdmIndex implements IndexReader {
       indexRaf.seek(0);
 
       //// header message
-      magic = new byte[Grib2CollectionWriter.MAGIC_START.getBytes(CDM.utf8Charset).length];   // they are all the same
+      byte[] magic = new byte[Grib2CollectionWriter.MAGIC_START
+          .getBytes(CDM.utf8Charset).length];   // they are all the same
       indexRaf.readFully(magic);
 
-      version = indexRaf.readInt();
+      int version = indexRaf.readInt();
 
       long recordLength = indexRaf.readLong();
       if (recordLength > Integer.MAX_VALUE) {

@@ -47,6 +47,16 @@ public class CoordinateND<T> {
     sa.showInfo(info, all);
   }
 
+  @Override
+  public String toString() {
+    try (Formatter f = new Formatter()) {
+      f.format("CoordinateND[");
+      coordinates.forEach(c -> f.format("%s,", c.getName()));
+      f.format("]");
+      return f.toString();
+    }
+  }
+
   ////////////////////
 
   public static class Builder<T> {

@@ -186,7 +186,7 @@ message Dataset {
   repeated Group groups = 2;      // separate group for each GDS
 }
  */
-  private PartitionCollectionMutable.Dataset readDataset(GribCollectionProto.Dataset p) {
+  private GribCollectionMutable.Dataset readDataset(GribCollectionProto.Dataset p) {
     GribCollectionImmutable.Type type = GribCollectionImmutable.Type.valueOf(p.getType().toString());
     GribCollectionMutable.Dataset ds = gc.makeDataset(type);
 
@@ -398,8 +398,6 @@ message Coord {
           ecoords.add(new EnsCoord.Coord((int)val1, (int)val2));
         }
         return new CoordinateEns(code, ecoords);
-
-
     }
     throw new IllegalStateException("Unknown Coordinate type = " + type);
   }

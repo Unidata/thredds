@@ -30,7 +30,6 @@ import java.util.Formatter;
 public class CfsrLocalTables extends NcepLocalTables {
 
   private static final String tableName = "resources/grib2/local/cfsr.txt";
-  private static boolean debug = false;
   private static CfsrLocalTables single;
 
   public static CfsrLocalTables getCust(Grib2Table table) {
@@ -271,9 +270,6 @@ public class CfsrLocalTables extends NcepLocalTables {
 
           Grib2Parameter s = new Grib2Parameter(p1, p2, p3, name, unit, abbrev, null);
           local.put(makeParamId(p1, p2, p3), s);
-          if (debug) {
-            System.out.printf(" %s%n", s);
-          }
         }
       }
 

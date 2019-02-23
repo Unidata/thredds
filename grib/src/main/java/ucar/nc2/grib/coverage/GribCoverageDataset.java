@@ -94,13 +94,14 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   private final GribCollectionImmutable.Dataset ds;
   private final GribCollectionImmutable.GroupGC group;
   private final FeatureType coverageType;
-  private final boolean isGrib1, isLatLon, isCurvilinearOrthogonal;
+  private final boolean isLatLon;
+  private final boolean isCurvilinearOrthogonal;
 
   public GribCoverageDataset(GribCollectionImmutable gribCollection, GribCollectionImmutable.Dataset ds, GribCollectionImmutable.GroupGC group) {
     this.gribCollection = gribCollection;
     this.ds = (ds != null) ? ds : gribCollection.getDataset(0);
     this.group = (group != null) ? group : this.ds.getGroup(0);
-    this.isGrib1 = gribCollection.isGrib1;
+    boolean isGrib1 = gribCollection.isGrib1;
 
     GdsHorizCoordSys hcs = this.group.getGdsHorizCoordSys();
     this.isLatLon = hcs.isLatLon(); // isGrib1 ? hcs.isLatLon() : Grib2Utils.isLatLon(hcs.template, gribCollection.getCenter());

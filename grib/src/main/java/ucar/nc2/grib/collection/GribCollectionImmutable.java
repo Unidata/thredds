@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import com.google.common.base.MoreObjects;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -426,14 +427,9 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
     @Override
     public String toString() {
-      return "GroupGC{" +
-          "ds=" + ds +
-          ", horizCoordSys=" + horizCoordSys +
-          ", variList=" + variList +
-          ", coords=" + coords +
-          ", filenose=" + Arrays.toString(filenose) +
-          ", varMap=" + varMap +
-          '}';
+      return MoreObjects.toStringHelper(this)
+          .add("horizCoordSys", horizCoordSys.getDescription())
+          .toString();
     }
 
     public void show(Formatter f) {
@@ -735,6 +731,14 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       return size;
     }
 
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this)
+          .add("info", info)
+          .toString();
+    }
+
     public int getRank() {
       return coordIndex.size();
     }
@@ -826,6 +830,15 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         this.isEnsemble = gcVar.isEnsemble;
         this.genProcessType = gcVar.genProcessType;
         this.spatialStatType = gcVar.spatialStatType;
+      }
+
+      @Override
+      public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("discipline", discipline)
+            .add("category", category)
+            .add("parameter", parameter)
+            .toString();
       }
     }
 
@@ -1017,7 +1030,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         ", config=" + config +
         ", isGrib1=" + isGrib1 +
         ", info=" + info +
-        ", masterRuntime=" + masterRuntime +
+        ", masterRuntime=" + masterRuntime.getName() +
         ", dateRange=" + dateRange +
         ", indexFilename='" + indexFilename + '\'' +
         '}';

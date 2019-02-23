@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import com.google.common.base.MoreObjects;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.RandomAccessFile;
@@ -104,11 +105,9 @@ public class Grib2SectionBitMap {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("Grib2SectionBitMap");
-    sb.append("{startingPosition=").append(startingPosition);
-    sb.append(", bitMapIndicator=").append(bitMapIndicator);
-    sb.append('}');
-    return sb.toString();
+    return MoreObjects.toStringHelper(this)
+        .add("startingPosition", startingPosition)
+        .add("bitMapIndicator", bitMapIndicator)
+        .toString();
   }
 }

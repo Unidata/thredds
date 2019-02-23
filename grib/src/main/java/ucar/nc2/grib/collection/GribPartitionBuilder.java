@@ -179,10 +179,10 @@ abstract class GribPartitionBuilder {
   }
 
   @Nullable
-  private PartitionCollectionMutable.Dataset makeDataset2D(Formatter f) throws IOException {
+  private GribCollectionMutable.Dataset makeDataset2D(Formatter f) throws IOException {
     FeatureCollectionConfig config = (FeatureCollectionConfig) partitionManager.getAuxInfo(FeatureCollectionConfig.AUX_CONFIG);
     FeatureCollectionConfig.GribIntvFilter intvMap = (config != null) ? config.gribConfig.intvFilter : null;
-    PartitionCollectionMutable.Dataset ds2D = result.makeDataset(GribCollectionImmutable.Type.TwoD);
+    GribCollectionMutable.Dataset ds2D = result.makeDataset(GribCollectionImmutable.Type.TwoD);
     int npart = result.getPartitionSize();
 
     // make a list of unique groups across all partitions as well as component groups for each group
@@ -564,7 +564,7 @@ abstract class GribPartitionBuilder {
     repeated Group groups = 2;
   }
    */
-  private GribCollectionProto.Dataset writeDatasetProto(PartitionCollectionMutable pc, PartitionCollectionMutable.Dataset ds) throws IOException {
+  private GribCollectionProto.Dataset writeDatasetProto(PartitionCollectionMutable pc, GribCollectionMutable.Dataset ds) throws IOException {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
     GribCollectionProto.Dataset.Type type = GribCollectionProto.Dataset.Type.valueOf(ds.gctype.toString());

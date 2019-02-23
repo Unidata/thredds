@@ -25,8 +25,6 @@ public class CoordinateSharerBest {
   private Map<Coordinate, Coordinate> time2DBuilders = new HashMap<>();
   private Map<Coordinate, Coordinate> swap = new HashMap<>();
 
-  // results
-  private List<Coordinate> unionCoords;
   private Map<Coordinate, Integer> indexMap;
 
   public void addCoordinates(List<Coordinate> coords) {
@@ -87,7 +85,8 @@ public class CoordinateSharerBest {
   }
 
    public List<Coordinate> finish() {
-     unionCoords = new ArrayList<>(20);
+     // results
+     List<Coordinate> unionCoords = new ArrayList<>(20);
      unionCoords.addAll(runtimeBuilders.keySet());
      unionCoords.addAll(time2DBuilders.keySet());
      unionCoords.addAll(timeBuilders.keySet());
@@ -97,7 +96,7 @@ public class CoordinateSharerBest {
 
      indexMap = new HashMap<>();
      for (int i = 0; i < unionCoords.size(); i++) {
-       indexMap.put(this.unionCoords.get(i), i);
+       indexMap.put(unionCoords.get(i), i);
      }
 
      return unionCoords;
