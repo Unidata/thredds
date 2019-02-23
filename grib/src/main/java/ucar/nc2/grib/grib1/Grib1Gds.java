@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib.grib1;
 
-import com.google.common.base.MoreObjects;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.QuasiRegular;
@@ -546,22 +545,14 @@ public abstract class Grib1Gds {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("nptsInLine", nptsInLine)
-          .add("template", template)
-          .add("nx", nx)
-          .add("ny", ny)
-          .add("scanMode", scanMode)
-          .add("resolution", resolution)
-          .add("lastOctet", lastOctet)
-          .add("hashCode", hashCode)
-          .add("la1", la1)
-          .add("lo1", lo1)
-          .add("la2", la2)
-          .add("lo2", lo2)
-          .add("deltaLon", deltaLon)
-          .add("deltaLat", deltaLat)
-          .toString();
+      return "LatLon{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", la2=" + la2 +
+              ", lo2=" + lo2 +
+              ", deltaLon=" + deltaLon +
+              ", deltaLat=" + deltaLat +
+              "} " + super.toString();
     }
 
     @Override
@@ -732,34 +723,34 @@ public abstract class Grib1Gds {
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("nparellels", nparellels)
-          .add("latSouthPole", latSouthPole)
-          .add("lonSouthPole", lonSouthPole)
-          .add("rotAngle", rotAngle)
-          .add("latPole", latPole)
-          .add("lonPole", lonPole)
-          .add("stretchFactor", stretchFactor)
-          .toString();
+      return "GaussianLatLon{" +
+              "nparellels=" + nparellels +
+              ", latSouthPole=" + latSouthPole +
+              ", lonSouthPole=" + lonSouthPole +
+              ", rotAngle=" + rotAngle +
+              ", latPole=" + latPole +
+              ", lonPole=" + lonPole +
+              ", stretchFactor=" + stretchFactor +
+              "} " + super.toString();
     }
   }
 
   /*
-Grid definition –   polar stereographic
- Octet No. Contents
- 7–8    Nx – number of points along x-axis
- 9–10   Ny – number of points along y-axis
- 11–13  La1 – latitude of first grid point
- 14–16  Lo1 – longitude of first grid point
- 17     Resolution and component flags (see Code table 7)
- 18–20  LoV – orientation of the grid; i.e. the longitude value of the meridian which is parallel to the y-axis (or columns
-              of the grid) along which latitude increases as the Y-coordinate increases (the orientation longitude may or may not appear on a particular grid)
- 21–23  Dx – X-direction grid length (see Note 2)
- 24–26  Dy – Y-direction grid length (see Note 2)
- 27     Projection centre flag (see Note 5)
- 28     Scanning mode (flags – see Flag/Code table 8)
- 29–32  Set to zero (reserved)
-  */
+  Grid definition –   polar stereographic
+   Octet No. Contents
+   7–8    Nx – number of points along x-axis
+   9–10   Ny – number of points along y-axis
+   11–13  La1 – latitude of first grid point
+   14–16  Lo1 – longitude of first grid point
+   17     Resolution and component flags (see Code table 7)
+   18–20  LoV – orientation of the grid; i.e. the longitude value of the meridian which is parallel to the y-axis (or columns
+                of the grid) along which latitude increases as the Y-coordinate increases (the orientation longitude may or may not appear on a particular grid)
+   21–23  Dx – X-direction grid length (see Note 2)
+   24–26  Dy – Y-direction grid length (see Note 2)
+   27     Projection centre flag (see Note 5)
+   28     Scanning mode (flags – see Flag/Code table 8)
+   29–32  Set to zero (reserved)
+    */
   public static class PolarStereographic extends Grib1Gds {
 
     protected float la1, lo1, lov, dX, dY;
@@ -789,15 +780,15 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("la1", la1)
-          .add("lo1", lo1)
-          .add("lov", lov)
-          .add("dX", dX)
-          .add("dY", dY)
-          .add("projCenterFlag", projCenterFlag)
-          .add("lad", lad)
-          .toString();
+      return "PolarStereographic{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", lov=" + lov +
+              ", dX=" + dX +
+              ", dY=" + dY +
+              ", projCenterFlag=" + projCenterFlag +
+              ", lad=" + lad +
+              "} " + super.toString();
     }
 
     @Override
@@ -982,19 +973,19 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("la1", la1)
-          .add("lo1", lo1)
-          .add("lov", lov)
-          .add("lad", lad)
-          .add("dX", dX)
-          .add("dY", dY)
-          .add("latin1", latin1)
-          .add("latin2", latin2)
-          .add("latSouthPole", latSouthPole)
-          .add("lonSouthPole", lonSouthPole)
-          .add("projCenterFlag", projCenterFlag)
-          .toString();
+      return "LambertConformal{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", lov=" + lov +
+              ", lad=" + lad +
+              ", dX=" + dX +
+              ", dY=" + dY +
+              ", latin1=" + latin1 +
+              ", latin2=" + latin2 +
+              ", latSouthPole=" + latSouthPole +
+              ", lonSouthPole=" + lonSouthPole +
+              ", projCenterFlag=" + projCenterFlag +
+              "} " + super.toString();
     }
 
     @Override
@@ -1157,15 +1148,15 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("la1", la1)
-          .add("lo1", lo1)
-          .add("la2", la2)
-          .add("lo2", lo2)
-          .add("latin", latin)
-          .add("dX", dX)
-          .add("dY", dY)
-          .toString();
+      return "Mercator{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", la2=" + la2 +
+              ", lo2=" + lo2 +
+              ", latin=" + latin +
+              ", dX=" + dX +
+              ", dY=" + dY +
+              "} " + super.toString();
     }
 
     @Override
@@ -1286,11 +1277,11 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("angleRotation", angleRotation)
-          .add("latSouthPole", latSouthPole)
-          .add("lonSouthPole", lonSouthPole)
-          .toString();
+      return "RotatedLatLon{" +
+              "angleRotation=" + angleRotation +
+              ", latSouthPole=" + latSouthPole +
+              ", lonSouthPole=" + lonSouthPole +
+              "} " + super.toString();
     }
 
     @Override
@@ -1406,14 +1397,13 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-
-      return MoreObjects.toStringHelper(this)
-          .add("j", j)
-          .add("k", k)
-          .add("m", m)
-          .add("type", type)
-          .add("mode", mode)
-          .toString();
+      return "SphericalHarmonicCoefficients{" +
+              "j=" + j +
+              ", k=" + k +
+              ", m=" + m +
+              ", type=" + type +
+              ", mode=" + mode +
+              "} " + super.toString();
     }
   }
 
@@ -1441,6 +1431,11 @@ Grid definition –   polar stereographic
     @Override
     public void testHorizCoordSys(Formatter f) {
 
+    }
+
+    @Override
+    public String toString() {
+      return "UnknownGds{} " + super.toString();
     }
   }
 
