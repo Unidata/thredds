@@ -28,7 +28,7 @@ message Grib1Index {
   required string filename = 1;
   repeated Grib1GdsSection gdsList = 2;  // GDS factored out
   repeated Grib1Record records = 3;
-  optional uint32 version = 4; // added for proto3 in 5.0
+  reserved 4; // version / proto_version, do not use again
 }
 
 //  cd c:/dev/github/thredds/grib/src/main/java
