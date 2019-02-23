@@ -50,13 +50,6 @@ gradle.projectsEvaluated {
                 properties["sonar.inclusions"] = "**/*.java, **/*.groovy"  // Only scan Java and Groovy files.
                 properties["sonar.exclusions"] = "**/*Proto.java"          // Don't analyze protobuf-generated code.
     
-                // We're already reporting test failures and code coverage in Jenkins; we don't need to do it in Sonar
-                // too. Setting these properties to the empty string effectively disables the associated functionality.
-                properties["sonar.junit.reportsPath"] = ""
-                properties["sonar.surefire.reportsPath"] = ""
-                properties["sonar.jacoco.reportPath"] = ""
-                properties["sonar.groovy.jacoco.reportPath"] = ""
-    
                 // These properties are deprecated, so go ahead and empty them as well.
                 properties["sonar.binaries"] = ""
                 properties["sonar.libraries"] = ""
