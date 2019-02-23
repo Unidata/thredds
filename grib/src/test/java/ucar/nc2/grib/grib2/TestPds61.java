@@ -9,6 +9,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import ucar.nc2.time.CalendarDate;
 
 import static org.junit.Assert.assertEquals;
@@ -24,6 +26,7 @@ import static org.junit.Assert.assertTrue;
  * use policy, we are only testing the gbx9 file (which is the GRIB record, minus the
  * data block)
  */
+@RunWith(JUnit4.class)
 public class TestPds61 {
 
     private Grib2Pds pds;

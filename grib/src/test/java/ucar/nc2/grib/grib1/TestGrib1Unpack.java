@@ -3,6 +3,8 @@ package ucar.nc2.grib.grib1;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -21,6 +23,7 @@ import java.lang.invoke.MethodHandles;
  * @author caron
  * @since 11/23/2015.
  */
+@RunWith(JUnit4.class)
 public class TestGrib1Unpack {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

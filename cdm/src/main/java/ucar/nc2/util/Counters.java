@@ -63,6 +63,9 @@ public class Counters {
   public void addTo(Counters sub) {
     for (Counter subC : sub.counters) {
       Counter all = map.get(subC.getName());
+      if (all == null) {
+        all = add(subC.getName());
+      }
       all.addTo(subC);
     }
   }

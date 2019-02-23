@@ -384,12 +384,13 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 #         ------11 3rd-order    "         "         " .
 
    */
-    System.out.printf("%n=====================%nflagExt=%s%n", Long.toBinaryString(flagExt));
+    Formatter f = new Formatter();
+    f.format("%n=====================%nGrib1DataReader.readExtendedComplexPacking flagExt=%s%n", Long.toBinaryString(flagExt));
     boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
     boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
     boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
     boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt, 6);
-    System.out.printf(" hasBitmap2=%s, hasDifferentWidths=%s, useGeneralExtended=%s, useBoustOrdering=%s%n%n", hasBitmap2, hasDifferentWidths, useGeneralExtended, useBoustOrdering);
+    f.format(" hasBitmap2=%s, hasDifferentWidths=%s, useGeneralExtended=%s, useBoustOrdering=%s%n%n", hasBitmap2, hasDifferentWidths, useGeneralExtended, useBoustOrdering);
 
          /* Octet     Contents
       12–13     N1 – octet number at which first-order packed data begin
@@ -423,7 +424,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     }
      */
 
-    showOffset("N2", raf, 14, 672);
+    showOffset(f, "N2", raf, 14, 672);
     int N2 = GribNumbers.uint2(raf);
     int codedNumberOfGroups = GribNumbers.uint2(raf);
     int numberOfSecondOrderPackedValues = GribNumbers.uint2(raf);
@@ -432,13 +433,13 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     int widthOfWidths = raf.read();
     int widthOfLengths = raf.read();
     int NL = GribNumbers.uint2(raf);
-    System.out.printf("NG=%d NL=%d%n", NG, NL);
+    f.format("NG=%d NL=%d%n", NG, NL);
 
     // heres how many bits groupWidths should take
     int groupWidthsSizeBits = widthOfWidths * NG;
     int groupWidthsSizeBytes = (groupWidthsSizeBits + 7) / 8;
     int skipBytes = NL - groupWidthsSizeBytes - 26;
-    System.out.printf("groupWidthsSizeBytes=%d, skipBytes=%d%n", groupWidthsSizeBytes, skipBytes);
+    f.format("groupWidthsSizeBytes=%d, skipBytes=%d%n", groupWidthsSizeBytes, skipBytes);
 
     raf.skipBytes(skipBytes);
 
@@ -449,7 +450,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     //int SPD = GribNumbers.int4(raf);
     //raf.read();
     //raf.read();
-    showOffset("GroupWidth", raf, 31, 689);
+    showOffset(f, "GroupWidth", raf, 31, 689);
 
     BitReader reader = new BitReader(raf, raf.getFilePointer());
 
@@ -460,7 +461,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     }
 
     reader.incrByte(); // assume on byte boundary
-    showOffset("GroupLength", raf, NL - 1, 2723);
+    showOffset(f, "GroupLength", raf, NL - 1, 2723);
 
     // try forcing to NL
     // reader = new BitReader(raf, this.startPos + NL - 1);
@@ -469,14 +470,14 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     int[] groupLength = new int[NG];
     for (int group = 0; group < NG; group++)
       groupLength[group] = (int) reader.bits2UInt(widthOfLengths);
-    showOffset("FirstOrderValues", raf, N1 - 1, 5774);
+    showOffset(f, "FirstOrderValues", raf, N1 - 1, 5774);
 
     // meta countOfGroupLengths sum(groupLengths);
     int countOfGroupLengths = 0;
     for (int group = 0; group < NG; group++)
       countOfGroupLengths += groupLength[group];
-    System.out.printf("countOfGroupLengths = %d%n", countOfGroupLengths);
-    System.out.printf("nPts = %d%n%n", nPts);
+    f.format("countOfGroupLengths = %d%n", countOfGroupLengths);
+    f.format("nPts = %d%n%n", nPts);
 
     // try forcing to N1
     // reader = new BitReader(raf, this.startPos + N1 - 1);
@@ -490,8 +491,8 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     for (int group = 0; group < NG; group++)
       firstOrderValues[group] = (int) reader.bits2UInt(foWidth);
     int offset3 = (int) (raf.getFilePointer() - this.startPos);
-    System.out.printf("nbytes=%d%n", (foWidth * NG + 7) / 8);
-    showOffset("SecondOrderValues", raf, N2 - 1, 11367);
+    f.format("nbytes=%d%n", (foWidth * NG + 7) / 8);
+    showOffset(f, "SecondOrderValues", raf, N2 - 1, 11367);
 
 
     int total_nbits = 0;
@@ -500,11 +501,11 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       total_nbits += nbits;
     }
     int data_bytes = (total_nbits + 7) / 8;
-    System.out.printf(" total_nbits=%d, nbytes=%d%n", total_nbits, data_bytes);
-    System.out.printf(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataLength);
+    f.format(" total_nbits=%d, nbytes=%d%n", total_nbits, data_bytes);
+    f.format(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataLength);
     int simplepackSizeInBits = nPts * info.numberOfBits;
     int simplepackSizeInBytes = (simplepackSizeInBits + 7) / 8;
-    System.out.printf(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
+    f.format(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
 
     // meta bitsPerValue second_order_bits_per_value(codedValues,binaryScaleFactor,decimalScaleFactor);
     reader.incrByte(); // assume on byte boundary
@@ -529,10 +530,10 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     }
 
     int offset4 = (int) (raf.getFilePointer() - this.startPos);
-    showOffset("MessageEnd", raf, (int) info.dataLength, 82091);
+    showOffset(f, "MessageEnd", raf, (int) info.dataLength, 82091);
 
-    System.out.printf("nbytes= %d%n", (total_nbits + 7) / 8);
-    System.out.printf("actual= %d%n", offset4 - offset3);
+    f.format("nbytes= %d%n", (total_nbits + 7) / 8);
+    f.format("actual= %d%n", offset4 - offset3);
 
     double pow10 = Math.pow(10.0, -decimalScale);
     float ref = (float) (pow10 * info.referenceValue);
@@ -557,9 +558,9 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     return values;
   }
 
-  private void showOffset(String what, RandomAccessFile raf, int expectOffset, int expectDump) throws IOException {
+  private void showOffset(Formatter f, String what, RandomAccessFile raf, int expectOffset, int expectDump) throws IOException {
     int offset = (int) (raf.getFilePointer() - this.startPos);
-    System.out.printf("%s: filePos=%d, expectDump=%d, offset=%d expect=%d%n", what, raf.getFilePointer(), expectDump, offset, expectOffset);
+    f.format("%s: filePos=%d, expectDump=%d, offset=%d expect=%d%n", what, raf.getFilePointer(), expectDump, offset, expectOffset);
   }
 
   private static void showOffset(Formatter f, String what, RandomAccessFile raf, long startPos, int expectOffset) throws IOException {
@@ -658,6 +659,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     //int simplepackSizeInBits = nPts * info.numberOfBits;
     //int simplepackSizeInBytes = (simplepackSizeInBits +7) / 8;
     //f.format(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
+    logger.debug("%s", f);
   }
 
   /*
