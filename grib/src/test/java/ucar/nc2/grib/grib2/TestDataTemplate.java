@@ -37,7 +37,7 @@ public class TestDataTemplate {
     // Tests reading data using template 5.41 with a bitmap
     @Test
     public void testPngBitmap() throws IOException {
-        final String testfile = "../grib/src/test/data/HLYA10";
+        final String testfile = "../grib/src/test/data/HLYA10.grib2";
         try (NetcdfFile nc = NetcdfFile.open(testfile)) {
             Variable var = nc.findVariable("VAR0-19-223_FROM_7-212--1_isobaric");
             float[] data = (float[]) var.read().get1DJavaArray(DataType.FLOAT);
