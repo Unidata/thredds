@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
@@ -177,6 +178,7 @@ public class Grib1RecordScanner {
     return more;
   }
 
+  @Nullable
   public Grib1Record next() throws IOException {
 
     Grib1SectionIndicator is = null;
@@ -264,7 +266,8 @@ public class Grib1RecordScanner {
       }
     }
 
-    throw new IOException("last record was incomplete");
+    // EOF that hasNext() couldnt detect
+    return null;
   }
 
   private boolean checkEnding(long ending) throws IOException {

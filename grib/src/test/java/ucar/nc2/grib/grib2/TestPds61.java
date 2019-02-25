@@ -9,6 +9,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import ucar.nc2.time.CalendarDate;
 
 import static org.junit.Assert.assertEquals;
@@ -17,56 +19,57 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test data provided by github issue https://github.com/Unidata/thredds/issues/834
  * Only the first record was used to create a .gbx9 file.
- *
+ * <p>
  * Full output from ecCodes v2.6.0 grib_dump at the end of the file, with data values
  * removed (as required by ECMWF data use policy for redistribution without the need
  * for netCDF-java / TDS users to register with them). Note also because of the data
  * use policy, we are only testing the gbx9 file (which is the GRIB record, minus the
  * data block)
  */
+@RunWith(JUnit4.class)
 public class TestPds61 {
 
-    private Grib2Pds pds;
+  private Grib2Pds pds;
 
-    @Before
-    public void openTestFile() throws IOException {
-        String testfile = "../grib/src/test/data/index/example_pds_61.grib2.gbx9";
+  @Before
+  public void openTestFile() throws IOException {
+    String testfile = "../grib/src/test/data/index/example_pds_61.grib2.gbx9";
 
-        Grib2Index gi = new Grib2Index();
-        boolean success = gi.readIndex(testfile, -1);
-        assertTrue(success);
-        List<Grib2Record> records = gi.getRecords();
-        Grib2Record record = records.get(0);
-        pds = record.getPDS();
-    }
+    Grib2Index gi = new Grib2Index();
+    boolean success = gi.readIndex(testfile, -1);
+    assertTrue(success);
+    List<Grib2Record> records = gi.getRecords();
+    Grib2Record record = records.get(0);
+    pds = record.getPDS();
+  }
 
-    @Test
-    public void checkPdsBasic() {
-        assertEquals(pds.getRawLength(), 68);
-        assertEquals(pds.getTemplateNumber(), 61);
-    }
+  @Test
+  public void checkPdsBasic() {
+    assertEquals(pds.getRawLength(), 68);
+    assertEquals(pds.getTemplateNumber(), 61);
+  }
 
-    @Test
-    public void checkModelVersionDate() {
-        assertEquals(pds.calcTime(38),
-                CalendarDate.parseISOformat("proleptic_gregorian", "2011-03-01T00:00:00"));
-    }
+  @Test
+  public void checkModelVersionDate() {
+    assertEquals(pds.calcTime(38),
+            CalendarDate.parseISOformat("proleptic_gregorian", "2011-03-01T00:00:00"));
+  }
 
-    @Test
-    public void checkEndOfOverallIntervalDate() {
-        assertEquals(pds.calcTime(45),
-                CalendarDate.parseISOformat("proleptic_gregorian", "2010-12-29T06:00:00"));
-    }
+  @Test
+  public void checkEndOfOverallIntervalDate() {
+    assertEquals(pds.calcTime(45),
+            CalendarDate.parseISOformat("proleptic_gregorian", "2010-12-29T06:00:00"));
+  }
 
-    @Test
-    public void checkTypeOfGeneratingProcess() {
-        assertEquals(pds.getGenProcessType(), 4);
-    }
+  @Test
+  public void checkTypeOfGeneratingProcess() {
+    assertEquals(pds.getGenProcessType(), 4);
+  }
 
-    @Test
-    public void checkNumberOfTimeRanges() {
-        assertEquals(pds.getOctet(52), 1);
-    }
+  @Test
+  public void checkNumberOfTimeRanges() {
+    assertEquals(pds.getOctet(52), 1);
+  }
 
 }
 

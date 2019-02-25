@@ -583,6 +583,7 @@ public class Grib1CollectionPanel extends JPanel {
     Grib1RecordScanner reader = new Grib1RecordScanner(raf);
     while (reader.hasNext()) {
       ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+      if (gr == null) break;
 
       if (cust == null) { // first record
         cust = Grib1Customizer.factory(gr, null);

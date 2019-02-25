@@ -6,6 +6,7 @@
 package ucar.nc2.util;
 
 import java.util.*;
+import javax.annotation.Nullable;
 
 /**
  * Count number of times a value appears.
@@ -46,15 +47,25 @@ public class Counters {
     return map.get(name);
   }
 
-  // return true if its a new value, not seen before
+  /**
+   * Add value to the named counter.
+   * Add counter if it doesnt already exist.
+   * @return true if its a new value, not seen before.
+   */
   public boolean count(String name, Comparable value) {
     Counter counter = map.get(name);
+    if (counter == null) {
+      counter = add(name);
+    }
     return counter.count(value);
   }
 
   public void addTo(Counters sub) {
     for (Counter subC : sub.counters) {
       Counter all = map.get(subC.getName());
+      if (all == null) {
+        all = add(subC.getName());
+      }
       all.addTo(subC);
     }
   }
@@ -67,36 +78,7 @@ public class Counters {
     return result;
   }
 
-  /* public interface Counter {
-    void show(Formatter f);
-
-    String showRange();
-
-    String getName();
-
-    void addTo(Counter sub);
-
-    // number of unique values
-    int getUnique();
-
-    // lowest value
-    Comparable getFirst();
-
-    // highest value
-    Comparable getLast();
-
-    // mode of the dist: value with highest count
-    Comparable getMode();
-
-    // total number of values
-    int getTotal();
-
-    Counter setShowRange(boolean showRange);
-
-    void reset();
-  } */
-
-  static public class Counter {
+  public static class Counter {
     private String name;
     private boolean showRange;
     private Comparable first, last;
@@ -162,6 +144,7 @@ public class Counters {
 
     // get the value with greatest number of values.
     // if more than one, but all have same number, return null
+    @Nullable
     public Comparable getMode() {
       if (set.size() == 1)
         return set.keySet().iterator().next(); // if only one, return it
