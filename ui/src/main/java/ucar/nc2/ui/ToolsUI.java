@@ -92,9 +92,19 @@ public class ToolsUI extends JPanel {
   private final static String DIALOG_VERSION = "5.0";
   private final static String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
   private final static String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
-  private static boolean debugListen = false;
+  private static boolean debugListen;
 
   private PreferencesExt mainPrefs;
+
+  static boolean isCacheInit;
+
+  private static ToolsUI ui;
+  private static JFrame frame;
+  private static PreferencesExt prefs;
+  private static XMLStore store;
+  private static boolean done;
+
+  private static String wantDataset;
 
   // UI
   private AggPanel aggPanel;
@@ -5217,6 +5227,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
+/**
+ *
+ */
   private class WmsPanel extends OpPanel {
     WmsViewer wmsViewer;
     JSplitPane split;
@@ -5259,6 +5272,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
+/**
+ *
+ */
   private class StationRadialPanel extends OpPanel {
     StationRadialViewer radialViewer;
     JSplitPane split;
@@ -5359,6 +5375,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
+/**
+ *
+ */
   private class ImagePanel extends OpPanel {
     ImageViewPanel imagePanel;
     JSplitPane split;
@@ -5398,6 +5417,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
+/**
+ *
+ */
   private class GeotiffPanel extends OpPanel {
     TextHistoryPane ta;
 
@@ -5481,9 +5503,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-///////////////////////////////////////////////////////////////////////////////
-// Dynamic proxy for Debug
-
+/**
+ * Dynamic proxy for Debug
+ */
   private static class DebugProxyHandler implements java.lang.reflect.InvocationHandler {
     @Override
     public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Throwable {
@@ -5501,13 +5523,17 @@ public class ToolsUI extends JPanel {
     }
   }
 
-
-  //////////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   static private void exit() {
     doSavePrefsAndUI();
     System.exit(0);
   }
 
+/**
+ *
+ */
   static private void doSavePrefsAndUI()  {
     ui.save();
     Rectangle bounds = frame.getBounds();
@@ -5529,15 +5555,9 @@ public class ToolsUI extends JPanel {
     MetadataManager.closeAll(); // shutdown bdb
   }
 
-  // handle messages
-  private static ToolsUI ui;
-  private static JFrame frame;
-  private static PreferencesExt prefs;
-  private static XMLStore store;
-  private static boolean done = false;
-
-  private static String wantDataset = null;
-
+/**
+ * Handle messages.
+ */
   private static void setDataset() {
     SwingUtilities.invokeLater(( ) -> {
         // do it in the swing event thread
@@ -5617,9 +5637,11 @@ public class ToolsUI extends JPanel {
     });
 
     frame.getContentPane().add(ui);
+
     Rectangle have = frame.getGraphicsConfiguration().getBounds();
     Rectangle def = new Rectangle(50, 50, 800, 800);
     Rectangle want = (Rectangle) prefs.getBean(FRAME_SIZE, def);
+
     if (want.getX() > have.getWidth() - 25) {
       // may be off screen when switcing between 2 monitor system
       want = def;
@@ -5637,8 +5659,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  static boolean isCacheInit = false;
-
+/**
+ *
+ */
   public static void main(String args[]) {
     if (debugListen) {
       System.out.println("Arguments:");
@@ -5670,7 +5693,8 @@ public class ToolsUI extends JPanel {
         System.exit(0);
       }
 
-    } else { // no arguments were passed
+    }
+    else { // no arguments were passed
 
       // look for messages from another ToolsUI
       sm = new SocketMessage(14444, null);
