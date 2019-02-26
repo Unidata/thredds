@@ -135,7 +135,7 @@ permalink:  workshop2018.html
     * [GRIB-1 / GRIB-2](https://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html){:target="_blank"}
     * [GRIB-2](https://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf){:target="_blank"}
   * [NCEP](http://www.nco.ncep.noaa.gov/pmb/docs/on388/){:target="_blank"}
-  * {% include link_file.html file="papers/GRIBarchivals.pdf" text="On the suitability of BUFR and GRIB for archiving data" %} ([tl;dr;](https://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib){:target="_blank"})
+  * {% include link_file.html file="https://doi.org/10.5065/vkan-dp10" text="On the suitability of BUFR and GRIB for archiving data" %} ([tl;dr;](https://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib){:target="_blank"})
 
 ### 3:00 (30 minutes) Resources and Contributing (Sean)
 * [Source](https://github.com/unidata/thredds){:target="_blank"} on GitHub

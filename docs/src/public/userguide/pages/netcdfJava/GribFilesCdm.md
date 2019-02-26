@@ -73,7 +73,7 @@ The use of external tables in GRIB is quite problematic (read here for more deta
 
 ## GRIB Tables
 
-The use of external tables in GRIB is quite problematic (read {% include link_file.html file="papers/GRIBarchivals.pdf" text="here" %} for more details).
+The use of external tables in GRIB is quite problematic (read {% include link_file.html file="https://doi.org/10.5065/vkan-dp10" text="here" %} for more details).
 Nonetheless, GRIB files are in wide use internationally and contain invaluable data.
 The CDM is a general-purpose GRIB reading library that makes GRIB data available through the CDM/NetCDF API, that is, as multidimensional data arrays and [CF](http://cfconventions.org/){:target="_blank"}-compliant metadata and coordinates.
 
