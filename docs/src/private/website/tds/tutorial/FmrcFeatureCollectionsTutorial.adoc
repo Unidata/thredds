@@ -12,7 +12,7 @@
 specification>>
 * <<../reference/collections/FeatureCollections#,Feature
 Collections Reference>>
-* http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[FMRC
+* https://www.unidata.ucar.edu/presentations/caron/FmrcPoster.pdf[FMRC
 poster]
 
 The `featureCollection` element is a way to tell the TDS to serve
@@ -30,7 +30,7 @@ output. A special kind of aggregation, called an **FMRC Aggregation**,
 creates a dataset that has two time coordinates, called the *run time*
 and the **forecast time**. This dataset can then be sliced up in various
 ways to create 1D time views of the model output. See this
-http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[poster]
+https://www.unidata.ucar.edu/presentations/caron/FmrcPoster.pdf[poster]
 for a detailed example. As of TDS 4.2, you should use the
 `featureCollection` element in your configuration catalog. (The previous
 way of doing this was with a `datasetFmrc` element, which is now
