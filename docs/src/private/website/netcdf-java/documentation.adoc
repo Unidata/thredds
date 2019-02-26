@@ -173,7 +173,7 @@ http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_
 * http://www.unidata.ucar.edu/blogs/developer/en/category/NetCDF+Java[Netcdf-Java Blog]
 * Talk at netCDF workshop 2012 (https://www.unidata.ucar.edu/presentations/caron/NetCDFworkshop2012.pptx[pptx])
 * __On the suitability of BUFR and GRIB for archiving data__ (short paper Dec
-2011 http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.docx[docx] http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[pdf])
+2011 https://www.unidata.ucar.edu/papers/caron/GRIBarchivals.docx[docx] https://www.unidata.ucar.edu/papers/caron/GRIBarchivals.pdf[pdf])
 * Streaming NetCDF (netCDF workshop 2011)
 (https://www.unidata.ucar.edu/presentations/caron/Streaming_NetCDF.pptx[pptx])
 * Talk at netCDF workshop 2010

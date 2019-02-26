@@ -300,7 +300,7 @@ To be invertible, each CoordinateAxis should be invertible.
 For a 1-dimensional CoordinateAxis this simply means the coordinate values are strictly monotonic.
 For a 2 dimensional CoordinateAxis, it means that the lines connecting adjacent coordinates do not cross each other.
 For > 2 dimensional CoordinateAxis, it means that the surfaces connecting adjacent coordinates do not intersect
-each other. https://www.unidata.ucar.edu/staff/caron/papers/CoordMath.htm[Details]
+each other. https://www.unidata.ucar.edu/papers/caron/CoordMath.htm[Details]
 
 === Current Encodings
 

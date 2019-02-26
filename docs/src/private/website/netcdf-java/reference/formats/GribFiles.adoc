@@ -67,7 +67,7 @@ move, best to delete the ncx4 files and recreate.
 == GRIB Tables
 
 The use of external tables in GRIB is quite problematic (read
-http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[here]
+https://www.unidata.ucar.edu/papers/caron/GRIBarchivals.pdf[here]
 for more details). Nonetheless, GRIB files are in wide use
 internationally and contain invaluable data. The CDM is a
 general-purpose GRIB reading library that makes GRIB data available
