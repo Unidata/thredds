@@ -171,15 +171,15 @@ http://cloud.github.com/downloads/asascience/UGRID-Java/UGRID_implementation_in_
 === Miscellaneous Resources
 
 * http://www.unidata.ucar.edu/blogs/developer/en/category/NetCDF+Java[Netcdf-Java Blog]
-* Talk at netCDF workshop 2012 (http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2012.pptx[pptx])
+* Talk at netCDF workshop 2012 (https://www.unidata.ucar.edu/presentations/caron/NetCDFworkshop2012.pptx[pptx])
 * __On the suitability of BUFR and GRIB for archiving data__ (short paper Dec
-2011 http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.docx[docx] http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[pdf])
+2011 https://doi.org/10.5065/vkan-dp10[pdf])
 * Streaming NetCDF (netCDF workshop 2011)
-(http://www.unidata.ucar.edu/staff/caron/presentations/Streaming_NetCDF.pptx[pptx])
+(https://www.unidata.ucar.edu/presentations/caron/Streaming_NetCDF.pptx[pptx])
 * Talk at netCDF workshop 2010
-(http://www.unidata.ucar.edu/staff/caron/presentations/DataSummit2010.pptx[pptx])
+(https://www.unidata.ucar.edu/presentations/caron/DataSummit2010.pptx[pptx])
 * Talk at netCDF workshop 2009
-(http://www.unidata.ucar.edu/staff/caron/presentations/NetCDFworkshop2009.ppt[ppt])
+(https://www.unidata.ucar.edu/presentations/caron/NetCDFworkshop2009.ppt[ppt])
 * http://coast-enviro.er.usgs.gov/models/share/toolsUI.wrf[ToolsUI] demo
 (You may need to download the http://www.webex.com/downloadplayer.html[free WebEx Player])
 

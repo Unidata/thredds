@@ -86,8 +86,8 @@ elements.
 
 === Also see:
 
-* http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[FMRC Aggregation] and
-http://www.unidata.ucar.edu/staff/caron/presentations/FmrcPoster.pdf[poster]
+* https://www.unidata.ucar.edu/presentations/caron/FmrcPoster.pdf[FMRC Aggregation] and
+https://www.unidata.ucar.edu/presentations/caron/FmrcPoster.pdf[poster]
 * <<../../../tds/reference/collections/FeatureCollections#,Configuring TDS with the FeatureCollection element>>
 
 '''''

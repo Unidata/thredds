@@ -144,7 +144,7 @@ to explore/discuss during this time. Potential topics include:
  ** link:http://www.wmo.int/pages/prog/www/WMOCodes.html[WMO]
  *** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB1-Contents.html[WMO GRIB-1]
  *** link:http://www.wmo.int/pages/prog/www/WMOCodes/Guides/GRIB/GRIB2_062006.pdf[WMO GRIB-2]
- * link:http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[On the suitability of BUFR and GRIB for archiving data] (link:http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib[tl;dr;])
+ * link:https://doi.org/10.5065/vkan-dp10[On the suitability of BUFR and GRIB for archiving data] (link:http://www.unidata.ucar.edu/blogs/developer/en/entry/on_the_suitability_of_grib[tl;dr;])
 
 === 2:00 - 2:30 Reading GRIB data with the CDM (Sean)
  * General overview of tools for GRIB
