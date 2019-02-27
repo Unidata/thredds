@@ -30,9 +30,7 @@ class ToolsModesMenu extends JMenu {
 /**
  *
  */
-    ToolsModesMenu(
-        final ToolsUI tui)
-    {
+    ToolsModesMenu(final ToolsUI tui) {
         super("Modes");
         setMnemonic('M');
 

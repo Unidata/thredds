@@ -170,7 +170,6 @@ public class ToolsUI extends JPanel {
 
   private JFrame parentFrame;
   private FileManager fileChooser;
-  private ToolsAboutWindow aboutWindow;
 
   // data
   private DataFactory threddsDataFactory = new DataFactory();
@@ -818,14 +817,9 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionProperties(exitAction, "Exit", "Exit", false, 'X', -1);
     BAMutil.addActionToMenu(sysMenu, exitAction);
 
-    // Modes Menu
-    JMenu modeMenu = new ToolsModesMenu(ToolsUI.this);
+    // Add modes Menu
+    final JMenu modeMenu = new ToolsModesMenu(ToolsUI.this);
     mb.add(modeMenu);
-
-//    JMenu modeMenu = new JMenu("Modes");
-//    modeMenu.setMnemonic('M');
-//    mb.add(modeMenu);
-//    makeModesMenu(modeMenu);
 
     // Debug Menu
     JMenu debugMenu = new JMenu("Debug");
@@ -858,29 +852,9 @@ public class ToolsUI extends JPanel {
     BAMutil.setActionProperties(clearDebugFlagsAction, null, "Delete All Debug Flags", false, 'C', -1);
     BAMutil.addActionToMenu(debugMenu, clearDebugFlagsAction);
 
-    JMenu helpMenu = new JMenu("Help");
-    helpMenu.setMnemonic('H');
+    // Add help/about Menu
+    final JMenu helpMenu = new ToolsHelpMenu(ToolsUI.this);
     mb.add(helpMenu);
-
-    // "about" this application
-    AbstractAction aboutAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent evt) {
-        if (aboutWindow == null) {
-          aboutWindow = new ToolsAboutWindow(parentFrame);
-        }
-        aboutWindow.setVisible(true);
-      }
-    };
-    BAMutil.setActionProperties(aboutAction, null, "About", false, 'A', 0);
-    BAMutil.addActionToMenu(helpMenu, aboutAction);
-
-    AbstractAction logoAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent evt) {
-        ToolsSplashScreen.getSharedInstance().setVisible(true);
-      }
-    };
-    BAMutil.setActionProperties(logoAction, null, "Logo", false, 'L', 0);
-    BAMutil.addActionToMenu(helpMenu, logoAction);
   }
 
   public void setDebugFlags() {
