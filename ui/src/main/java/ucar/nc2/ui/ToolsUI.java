@@ -75,8 +75,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import javax.swing.*;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -176,9 +174,9 @@ public class ToolsUI extends JPanel {
   private DateFormatter formatter = new DateFormatter();
 
   private boolean useRecordStructure;
+  private DiskCache2Form diskCache2Form;
 
   // debugging
-  private JMenu debugFlagMenu;
   private DebugFlags debugFlags;
   private boolean debug = false, debugTab = false, debugCB = false;
 
@@ -821,46 +819,21 @@ public class ToolsUI extends JPanel {
     final JMenu modeMenu = new ToolsModesMenu(ToolsUI.this);
     mb.add(modeMenu);
 
-    // Debug Menu
-    JMenu debugMenu = new JMenu("Debug");
-    debugMenu.setMnemonic('D');
+    // Add debug Menu
+    final JMenu debugMenu = new ToolsDebugMenu(ToolsUI.this);
     mb.add(debugMenu);
-
-    // the list of debug flags are in a pull-aside menu
-    // they are dynamically discovered, and persisted
-    debugFlagMenu = (JMenu) debugMenu.add(new JMenu("Debug Flags"));
-    debugFlagMenu.addMenuListener(new MenuListener() {
-      public void menuSelected(MenuEvent e) {
-        setDebugFlags(); // let Debug know about the flag names
-        Debug.constructMenu(debugFlagMenu); // now construct the menu
-      }
-
-      public void menuDeselected(MenuEvent e) {
-        setDebugFlags(); // transfer menu values
-      }
-
-      public void menuCanceled(MenuEvent e) {
-      }
-    });
-
-    // this deletes all the flags, then they start accumulating again
-    AbstractAction clearDebugFlagsAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Debug.removeAll();
-      }
-    };
-    BAMutil.setActionProperties(clearDebugFlagsAction, null, "Delete All Debug Flags", false, 'C', -1);
-    BAMutil.addActionToMenu(debugMenu, clearDebugFlagsAction);
 
     // Add help/about Menu
     final JMenu helpMenu = new ToolsHelpMenu(ToolsUI.this);
     mb.add(helpMenu);
   }
 
+/**
+ *
+ */
   public void setDebugFlags() {
-    if (debug) {
-      System.out.println("checkDebugFlags ");
-    }
+    log.debug("setDebugFlags");
+
     NetcdfFile.setDebugFlags(debugFlags);
     H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
@@ -880,8 +853,6 @@ public class ToolsUI extends JPanel {
     void setUseRecordStructure(final boolean use) {
         useRecordStructure = use;
     }
-
-  DiskCache2Form diskCache2Form = null;
 
 /**
  *
