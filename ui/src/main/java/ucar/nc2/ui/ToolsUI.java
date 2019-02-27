@@ -26,14 +26,11 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.geotiff.GeoTiff;
-import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
-import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
@@ -69,8 +66,14 @@ import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Formatter;
 import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
@@ -173,7 +176,7 @@ public class ToolsUI extends JPanel {
   private DataFactory threddsDataFactory = new DataFactory();
   private DateFormatter formatter = new DateFormatter();
 
-  private boolean setUseRecordStructure = false;
+  private boolean useRecordStructure;
 
   // debugging
   private JMenu debugFlagMenu;
@@ -748,7 +751,7 @@ public class ToolsUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         viewerPanel.detailTA.setText("System Properties\n");
         Properties sysp = System.getProperties();
-        java.util.Enumeration eprops = sysp.propertyNames();
+        Enumeration eprops = sysp.propertyNames();
         ArrayList<String> list = Collections.list(eprops);
         Collections.sort(list);
 
@@ -816,10 +819,13 @@ public class ToolsUI extends JPanel {
     BAMutil.addActionToMenu(sysMenu, exitAction);
 
     // Modes Menu
-    JMenu modeMenu = new JMenu("Modes");
-    modeMenu.setMnemonic('M');
+    JMenu modeMenu = new ToolsModesMenu(ToolsUI.this);
     mb.add(modeMenu);
-    makeModesMenu(modeMenu);
+
+//    JMenu modeMenu = new JMenu("Modes");
+//    modeMenu.setMnemonic('M');
+//    mb.add(modeMenu);
+//    makeModesMenu(modeMenu);
 
     // Debug Menu
     JMenu debugMenu = new JMenu("Debug");
@@ -832,7 +838,7 @@ public class ToolsUI extends JPanel {
     debugFlagMenu.addMenuListener(new MenuListener() {
       public void menuSelected(MenuEvent e) {
         setDebugFlags(); // let Debug know about the flag names
-        ucar.util.prefs.ui.Debug.constructMenu(debugFlagMenu); // now construct the menu
+        Debug.constructMenu(debugFlagMenu); // now construct the menu
       }
 
       public void menuDeselected(MenuEvent e) {
@@ -846,7 +852,7 @@ public class ToolsUI extends JPanel {
     // this deletes all the flags, then they start accumulating again
     AbstractAction clearDebugFlagsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
-        ucar.util.prefs.ui.Debug.removeAll();
+        Debug.removeAll();
       }
     };
     BAMutil.setActionProperties(clearDebugFlagsAction, null, "Delete All Debug Flags", false, 'C', -1);
@@ -882,7 +888,7 @@ public class ToolsUI extends JPanel {
       System.out.println("checkDebugFlags ");
     }
     NetcdfFile.setDebugFlags(debugFlags);
-    ucar.nc2.iosp.hdf5.H5iosp.setDebugFlags(debugFlags);
+    H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
@@ -894,205 +900,24 @@ public class ToolsUI extends JPanel {
     ucar.nc2.grib.collection.Grib.setDebugFlags(debugFlags);
   }
 
-  private void makeModesMenu(JMenu modeMenu) {
-    AbstractAction a;
-
-    JMenu ncMenu = new JMenu("NetcdfFile");
-    modeMenu.add(ncMenu);
-
-    /////////////////////////////////////
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        setUseRecordStructure = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "nc3UseRecords", setUseRecordStructure, 'V', -1);
-    BAMutil.addActionToMenu(ncMenu, a);
-
-    /////////////////////////////////////
-    JMenu dsMenu = new JMenu("NetcdfDataset");
-    modeMenu.add(dsMenu);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        CoordSysBuilder.setUseMaximalCoordSys(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "set Use Maximal CoordSystem", CoordSysBuilder.getUseMaximalCoordSys(), 'N', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setFillValueIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "use _FillValue attribute for missing values",
-            NetcdfDataset.getFillValueIsMissing(), 'F', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setInvalidDataIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "use valid_range attribute for missing values",
-            NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setMissingDataIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "use missing_value attribute for missing values",
-            NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    /////////////////////////////////////
-    JMenu subMenu = new JMenu("HDF-EOS");
-    modeMenu.add(subMenu);
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        H5iosp.useHdfEos(state);
-      }
-    };
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment HDF5", true, '5', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        H4header.useHdfEos(state);
-      }
-    };
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment HDF4", true, '4', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        Nc4Iosp.useHdfEos(state);
-      }
-    };
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment netcdf4 (JNI)", true, 'N', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    /////////////////////////////////////
-    subMenu = new JMenu("GRIB");
-    modeMenu.add(subMenu);
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        setGribDiskCache();
-      }
-    };
-    BAMutil.setActionProperties(a, null, "set Grib disk cache...", false, 'G', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        Grib1ParamTables.setStrict(state);
-      }
-    };
-    boolean strictMode = Grib1ParamTables.isStrict();
-    a.putValue(BAMutil.STATE, strictMode);
-    BAMutil.setActionPropertiesToggle(a, null, "GRIB1 strict", strictMode, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        GribData.setInterpolationMethod(state ? GribData.InterpolationMethod.cubic : GribData.InterpolationMethod.linear);
-      }
-    };
-    boolean useCubic = GribData.getInterpolationMethod() == GribData.InterpolationMethod.cubic;
-    a.putValue(BAMutil.STATE, useCubic);
-    BAMutil.setActionPropertiesToggle(a, null, "Use Cubic Interpolation on Thin Grids", useCubic, 'I', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    //static public boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureCollectionConfig.useGenTypeDef = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useGenTypeDef);
-    BAMutil.setActionPropertiesToggle(a, null, "useGenType", FeatureCollectionConfig.useGenTypeDef, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureCollectionConfig.useTableVersionDef = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useTableVersionDef);
-    BAMutil.setActionPropertiesToggle(a, null, "useTableVersion", FeatureCollectionConfig.useTableVersionDef, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureCollectionConfig.intvMergeDef = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    a.putValue(BAMutil.STATE, FeatureCollectionConfig.intvMergeDef);
-    BAMutil.setActionPropertiesToggle(a, null, "intvMerge", FeatureCollectionConfig.intvMergeDef, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureCollectionConfig.useCenterDef = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useCenterDef);
-    BAMutil.setActionPropertiesToggle(a, null, "useCenter", FeatureCollectionConfig.useCenterDef, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    /////////////////////////////////////
-    subMenu = new JMenu("FMRC");
-    modeMenu.add(subMenu);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        FeatureCollectionConfig.setRegularizeDefault(state);
-      }
-    };
-    // ToolsUI default is to regularize the FMRC
-    FeatureCollectionConfig.setRegularizeDefault(true);
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionPropertiesToggle(a, null, "regularize", true, 'R', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        DataFactory.setPreferCdm(state);
-      }
-    };
-    // ToolsUI default is to use cdmRemote access
-    DataFactory.setPreferCdm(true);
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionPropertiesToggle(a, null, "preferCdm", true, 'P', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-  }
+/**
+ *
+ */
+    void setUseRecordStructure(final boolean use) {
+        useRecordStructure = use;
+    }
 
   DiskCache2Form diskCache2Form = null;
 
-  private void setGribDiskCache() {
-    if (diskCache2Form == null) {
-      diskCache2Form = new DiskCache2Form(parentFrame, GribIndexCache.getDiskCache2());
+/**
+ *
+ */
+    void setGribDiskCache() {
+        if (diskCache2Form == null) {
+            diskCache2Form = new DiskCache2Form(parentFrame, GribIndexCache.getDiskCache2());
+        }
+        diskCache2Form.setVisible(true);
     }
-    diskCache2Form.setVisible(true);
-  }
 
   public void save() {
     fileChooser.save();
@@ -1313,12 +1138,12 @@ public class ToolsUI extends JPanel {
     }
 
     thredds.client.catalog.Service s = invAccess.getService();
-    if (s.getType() == thredds.client.catalog.ServiceType.HTTPServer) {
+    if (s.getType() == ServiceType.HTTPServer) {
       downloadFile(invAccess.getStandardUrlName());
       return;
     }
 
-    if (s.getType() == thredds.client.catalog.ServiceType.WMS) {
+    if (s.getType() == ServiceType.WMS) {
       openWMSDataset(invAccess.getStandardUrlName());
       return;
     }
@@ -1435,7 +1260,7 @@ public class ToolsUI extends JPanel {
       if (ncfile == null) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location);
       }
-      else if (setUseRecordStructure) {
+      else if (useRecordStructure) {
         ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       }
 
@@ -4525,7 +4350,7 @@ public class ToolsUI extends JPanel {
       }
 
       try {
-        ucar.nc2.util.Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(command);
+        Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(command);
         if (!opt.isPresent()) {
           JOptionPane.showMessageDialog(null, opt.getErrorMessage());
           return false;
@@ -4642,7 +4467,7 @@ public class ToolsUI extends JPanel {
       return !err;
     }
 
-    void setDataset(ucar.nc2.dt.RadialDatasetSweep newds) {
+    void setDataset(RadialDatasetSweep newds) {
       if (newds == null) return;
       try {
         if (ds != null) ds.close();
@@ -5482,7 +5307,7 @@ public class ToolsUI extends JPanel {
         return Debug.isSet((String) args[0]);
       }
       if (method.getName().equals("set")) {
-        ucar.util.prefs.ui.Debug.set((String) args[0], (Boolean) args[1]);
+        Debug.set((String) args[0], (Boolean) args[1]);
         return null;
       }
       return Boolean.FALSE;
@@ -5758,8 +5583,8 @@ public class ToolsUI extends JPanel {
       Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
 
       try {
-        // thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
-        thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
+        // MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
+        thredds.inventory.CollectionManagerAbstract.setMetadataStore(MetadataManager.getFactory());
       }
       catch (Exception e) {
         log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
