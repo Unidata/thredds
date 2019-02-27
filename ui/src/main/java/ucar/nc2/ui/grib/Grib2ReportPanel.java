@@ -382,9 +382,10 @@ public class Grib2ReportPanel extends ReportPanel {
 
     Map<Integer, FileList> gdsSet = new HashMap<>();
     Map<Integer, FileList> pdsSet = new HashMap<>();
+    Map<Integer, FileList> drsSet = new HashMap<>();
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
-      doUniqueTemplates(mfile, gdsSet, pdsSet, f);
+      doUniqueTemplates(mfile, gdsSet, pdsSet, drsSet, f);
     }
 
     List<FileList> sorted = new ArrayList<>(gdsSet.values());
@@ -405,10 +406,20 @@ public class Grib2ReportPanel extends ReportPanel {
         f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
       }
     }
+
+    List<FileList> sortedDrs = new ArrayList<>(drsSet.values());
+    Collections.sort(sortedDrs);
+    for (FileList pdsl : sortedDrs) {
+      f.format("%n===================================================%n");
+      f.format("%nDRS %s template= %d %n", pdsl.name, pdsl.template);
+      for (FileCount fc : pdsl.fileList) {
+        f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
+      }
+    }
   }
 
   private void doUniqueTemplates(MFile mf, Map<Integer, FileList> gdsSet, Map<Integer, FileList> pdsSet,
-                                Formatter f) {
+                                 Map<Integer, FileList> drsSet, Formatter f) {
     String path = mf.getPath();
     Grib2Index g1idx = new Grib2Index();
     boolean ok = g1idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
@@ -425,6 +436,11 @@ public class Grib2ReportPanel extends ReportPanel {
       int pdsTemplate = gr.getPDSsection().getPDSTemplateNumber();
       pdsSet.computeIfAbsent(pdsTemplate, k -> new FileList(k, gr.getPDSsection().getPDS().getClass().getName()));
       pdsSet.get(pdsTemplate).findAndAdd(mf);
+
+      int drsTemplate = gr.getDataRepresentationSection().getDataTemplate();
+      drsSet.computeIfAbsent(drsTemplate, k -> new FileList(k, "DRS"+k));
+      drsSet.get(drsTemplate).findAndAdd(mf);
+
     }
   }
 

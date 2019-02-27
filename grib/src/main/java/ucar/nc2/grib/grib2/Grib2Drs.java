@@ -32,8 +32,6 @@ public abstract class Grib2Drs {
         return new Type3(raf);
       case 40:
         return new Type40(raf);
-      //case 51:    //
-      //  return new Type51(raf);
       case 50002: // ECMWF's second order packing
         return new Type50002(raf);
       default:

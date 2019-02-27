@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib2SectionIndicator {
-  static final byte[] MAGIC = new byte[]{'G','R','I','B'};
+  private static final byte[] MAGIC = new byte[]{'G','R','I','B'};
 
   private final long messageLength;
   private final int discipline;
