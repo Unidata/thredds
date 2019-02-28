@@ -31,7 +31,7 @@ import javax.swing.JScrollPane;
  *
  *  Subclasses must implement process()
  */
-abstract class OpPanel extends JPanel {
+public abstract class OpPanel extends JPanel {
     final static org.slf4j.Logger logger
                             = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -215,5 +215,12 @@ abstract class OpPanel extends JPanel {
  */
     static void setFileChooser(FileManager chooser) {
             fileChooser = chooser;
+    }
+
+/**
+ *
+ */
+    public IndependentWindow getDetailWindow() {
+        return detailWindow;
     }
 }

@@ -26,14 +26,11 @@ import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.geotiff.GeoTiff;
-import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
-import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
@@ -48,6 +45,7 @@ import ucar.nc2.ui.grib.*;
 import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
+import ucar.nc2.ui.menu.*;
 import ucar.nc2.ui.simplegeom.SimpleGeomTable;
 import ucar.nc2.ui.simplegeom.SimpleGeomUI;
 import ucar.nc2.ui.util.SocketMessage;
@@ -69,11 +67,12 @@ import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
+import java.util.StringTokenizer;
 import javax.swing.*;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -95,8 +94,6 @@ public class ToolsUI extends JPanel {
   private static boolean debugListen;
 
   private PreferencesExt mainPrefs;
-
-  static boolean isCacheInit;
 
   private static ToolsUI ui;
   private static JFrame frame;
@@ -167,18 +164,16 @@ public class ToolsUI extends JPanel {
 
   private JFrame parentFrame;
   private FileManager fileChooser;
-  private ToolsAboutWindow aboutWindow;
 
   // data
   private DataFactory threddsDataFactory = new DataFactory();
   private DateFormatter formatter = new DateFormatter();
 
-  private boolean setUseRecordStructure = false;
+  private boolean useRecordStructure;
+  private DiskCache2Form diskCache2Form;
 
   // debugging
-  private JMenu debugFlagMenu;
   private DebugFlags debugFlags;
-  private boolean debug = false, debugTab = false, debugCB = false;
 
   // Check if on a mac
   private final static String osName = System.getProperty("os.name").toLowerCase();
@@ -359,9 +354,7 @@ public class ToolsUI extends JPanel {
       if (cTitle.equals(title)) break;
     }
     if (idx >= n) {
-      if (debugTab) {
-        System.out.println("Cant find " + title + " in " + parent);
-      }
+      log.debug("Cant find {} in {}", title, parent);
       return;
     }
 
@@ -654,235 +647,48 @@ public class ToolsUI extends JPanel {
     }
 
     parent.setComponentAt(idx, c);
-    if (debugTab) {
-      System.out.println("tabbedPane changed " + title + " added ");
-    }
+    log.trace("tabbedPane changed {} added ", title);
   }
 
+/**
+ *
+ */
   private void makeMenuBar() {
     JMenuBar mb = new JMenuBar();
-    JRootPane rootPane = parentFrame.getRootPane();
-    rootPane.setJMenuBar(mb);
+
+    parentFrame.setJMenuBar(mb);
 
     /// System menu
-    JMenu sysMenu = new JMenu("System");
-    sysMenu.setMnemonic('S');
+    final JMenu sysMenu = new SystemMenu(ToolsUI.this);
     mb.add(sysMenu);
-    //BAMutil.addActionToMenu( sysMenu, printAction);
 
-    AbstractAction act = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        MetadataManager.closeAll(); // shutdown bdb
-      }
-    };
-    BAMutil.setActionProperties(act, null, "Close BDB database", false, 'S', -1);
-    BAMutil.addActionToMenu(sysMenu, act);
-
-    AbstractAction clearHttpStateAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        // IGNORE HttpClientManager.clearState();
-      }
-    };
-    BAMutil.setActionProperties(clearHttpStateAction, null, "Clear Http State", false, 'S', -1);
-    BAMutil.addActionToMenu(sysMenu, clearHttpStateAction);
-
-    AbstractAction showCacheAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Formatter f = new Formatter();
-        f.format("RandomAccessFileCache contents%n");
-        ucar.nc2.util.cache.FileCacheIF rafCache = ucar.unidata.io.RandomAccessFile.getGlobalFileCache();
-        if (null != rafCache)
-          rafCache.showCache(f);
-        f.format("%nNetcdfFileCache contents%n");
-        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-        if (null != cache)
-          cache.showCache(f);
-        viewerPanel.detailTA.setText(f.toString());
-        viewerPanel.detailWindow.show();
-      }
-    };
-    BAMutil.setActionProperties(showCacheAction, null, "Show Caches", false, 'S', -1);
-    BAMutil.addActionToMenu(sysMenu, showCacheAction);
-
-    AbstractAction clearRafCacheAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        ucar.nc2.util.cache.FileCacheIF rafCache = ucar.unidata.io.RandomAccessFile.getGlobalFileCache();
-        if (rafCache != null)
-          rafCache.clearCache(true);
-      }
-    };
-    BAMutil.setActionProperties(clearRafCacheAction, null, "Clear RandomAccessFileCache", false, 'C', -1);
-    BAMutil.addActionToMenu(sysMenu, clearRafCacheAction);
-
-    AbstractAction clearCacheAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-        if (cache != null)
-          cache.clearCache(true);
-      }
-    };
-    BAMutil.setActionProperties(clearCacheAction, null, "Clear NetcdfDatasetCache", false, 'C', -1);
-    BAMutil.addActionToMenu(sysMenu, clearCacheAction);
-
-    AbstractAction enableCache = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        if (state == isCacheInit) return;
-        isCacheInit = state;
-        if (isCacheInit) {
-          ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-          if (cache != null)
-            cache.enable();
-          else
-            NetcdfDataset.initNetcdfFileCache(10, 20, 10 * 60);
-        } else {
-          ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-          if (cache != null) cache.disable();
-        }
-      }
-    };
-    BAMutil.setActionPropertiesToggle(enableCache, null, "enable NetcdfDatasetCache", isCacheInit, 'N', -1);
-    BAMutil.addActionToMenu(sysMenu, enableCache);
-
-    AbstractAction showPropertiesAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        viewerPanel.detailTA.setText("System Properties\n");
-        Properties sysp = System.getProperties();
-        java.util.Enumeration eprops = sysp.propertyNames();
-        ArrayList<String> list = Collections.list(eprops);
-        Collections.sort(list);
-
-        for (Object aList : list) {
-          String name = (String) aList;
-          String value = System.getProperty(name);
-          viewerPanel.detailTA.appendLine("  " + name + " = " + value);
-        }
-        viewerPanel.detailWindow.show();
-      }
-    };
-    BAMutil.setActionProperties(showPropertiesAction, null, "System Properties", false, 'P', -1);
-    BAMutil.addActionToMenu(sysMenu, showPropertiesAction);
-
-    /* AbstractAction enableDiskCache = new AbstractAction() {
-    public void actionPerformed(ActionEvent e) {
-      Boolean state = (Boolean) getValue(BAMutil.STATE);
-      if (state == isDiskCacheInit) return;
-      isDiskCacheInit = state;
-      if (isDiskCacheInit) {
-        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
-        if (cache != null)
-          cache.enable();
-        else
-          NetcdfDataset.initNetcdfFileCache(10,20,10*60);
-      } else {
-        ucar.nc2.util.cache.FileCache cache = NetcdfDataset.getNetcdfFileCache();
-        if (cache != null) cache.disable();
-      }
-    }
-  };
-  BAMutil.setActionPropertiesToggle(enableDiskCache, null, "enable Aggregation DiskCache", isDiskCacheInit, 'N', -1);
-  BAMutil.addActionToMenu(sysMenu, enableDiskCache); */
-
-    /* AbstractAction showLoggingAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        viewerPanel.detailTA.setText("Logging Information\n");
-        static private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Level2VolumeScan.class);
-        org.apache.commons.logging.LogFactory logf = org.apache.commons.logging.LogFactory.getFactory();
-        org.apache.commons.logging.Log log = logf.getInstance(this.getClass());
-        viewerPanel.detailTA.appendLine(" Log implementation class= " + log.getClass().getName());
-        viewerPanel.detailTA.appendLine(" Log Attributes= ");
-        String[] atts = logf.getAttributeNames();
-        for (int i = 0; i < atts.length; i++) {
-          viewerPanel.detailTA.appendLine("  " + atts[i]);
-        }
-        viewerPanel.detailWindow.show();
-      }
-    };
-    BAMutil.setActionProperties(showLoggingAction, null, "Logging Information", false, 'L', -1);
-    BAMutil.addActionToMenu(sysMenu, showLoggingAction);  */
-
-    JMenu plafMenu = new JMenu("Look and Feel");
-    plafMenu.setMnemonic('L');
-    sysMenu.add(plafMenu);
-    PLAF plaf = new PLAF(rootPane);
-    plaf.addToMenu(plafMenu);
-
-    AbstractAction exitAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        exit();
-      }
-    };
-    BAMutil.setActionProperties(exitAction, "Exit", "Exit", false, 'X', -1);
-    BAMutil.addActionToMenu(sysMenu, exitAction);
-
-    // Modes Menu
-    JMenu modeMenu = new JMenu("Modes");
-    modeMenu.setMnemonic('M');
+    // Add modes Menu
+    final JMenu modeMenu = new ModesMenu(ToolsUI.this);
     mb.add(modeMenu);
-    makeModesMenu(modeMenu);
 
-    // Debug Menu
-    JMenu debugMenu = new JMenu("Debug");
-    debugMenu.setMnemonic('D');
+    // Add debug Menu
+    final JMenu debugMenu = new DebugMenu(ToolsUI.this);
     mb.add(debugMenu);
 
-    // the list of debug flags are in a pull-aside menu
-    // they are dynamically discovered, and persisted
-    debugFlagMenu = (JMenu) debugMenu.add(new JMenu("Debug Flags"));
-    debugFlagMenu.addMenuListener(new MenuListener() {
-      public void menuSelected(MenuEvent e) {
-        setDebugFlags(); // let Debug know about the flag names
-        ucar.util.prefs.ui.Debug.constructMenu(debugFlagMenu); // now construct the menu
-      }
-
-      public void menuDeselected(MenuEvent e) {
-        setDebugFlags(); // transfer menu values
-      }
-
-      public void menuCanceled(MenuEvent e) {
-      }
-    });
-
-    // this deletes all the flags, then they start accumulating again
-    AbstractAction clearDebugFlagsAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        ucar.util.prefs.ui.Debug.removeAll();
-      }
-    };
-    BAMutil.setActionProperties(clearDebugFlagsAction, null, "Delete All Debug Flags", false, 'C', -1);
-    BAMutil.addActionToMenu(debugMenu, clearDebugFlagsAction);
-
-    JMenu helpMenu = new JMenu("Help");
-    helpMenu.setMnemonic('H');
+    // Add help/about Menu
+    final JMenu helpMenu = new HelpMenu(ToolsUI.this);
     mb.add(helpMenu);
-
-    // "about" this application
-    AbstractAction aboutAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent evt) {
-        if (aboutWindow == null) {
-          aboutWindow = new ToolsAboutWindow(parentFrame);
-        }
-        aboutWindow.setVisible(true);
-      }
-    };
-    BAMutil.setActionProperties(aboutAction, null, "About", false, 'A', 0);
-    BAMutil.addActionToMenu(helpMenu, aboutAction);
-
-    AbstractAction logoAction = new AbstractAction() {
-      public void actionPerformed(ActionEvent evt) {
-        ToolsSplashScreen.getSharedInstance().setVisible(true);
-      }
-    };
-    BAMutil.setActionProperties(logoAction, null, "Logo", false, 'L', 0);
-    BAMutil.addActionToMenu(helpMenu, logoAction);
   }
 
-  public void setDebugFlags() {
-    if (debug) {
-      System.out.println("checkDebugFlags ");
+/**
+ *
+ */
+    public DatasetViewerPanel getDatasetViewerPanel() {
+        return viewerPanel;
     }
+/**
+ *
+ */
+  public void setDebugFlags() {
+    log.debug("setDebugFlags");
+
     NetcdfFile.setDebugFlags(debugFlags);
-    ucar.nc2.iosp.hdf5.H5iosp.setDebugFlags(debugFlags);
+    H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
     ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
@@ -894,206 +700,26 @@ public class ToolsUI extends JPanel {
     ucar.nc2.grib.collection.Grib.setDebugFlags(debugFlags);
   }
 
-  private void makeModesMenu(JMenu modeMenu) {
-    AbstractAction a;
-
-    JMenu ncMenu = new JMenu("NetcdfFile");
-    modeMenu.add(ncMenu);
-
-    /////////////////////////////////////
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        setUseRecordStructure = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "nc3UseRecords", setUseRecordStructure, 'V', -1);
-    BAMutil.addActionToMenu(ncMenu, a);
-
-    /////////////////////////////////////
-    JMenu dsMenu = new JMenu("NetcdfDataset");
-    modeMenu.add(dsMenu);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        CoordSysBuilder.setUseMaximalCoordSys(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "set Use Maximal CoordSystem", CoordSysBuilder.getUseMaximalCoordSys(), 'N', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setFillValueIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "use _FillValue attribute for missing values",
-            NetcdfDataset.getFillValueIsMissing(), 'F', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setInvalidDataIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "use valid_range attribute for missing values",
-            NetcdfDataset.getInvalidDataIsMissing(), 'V', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        NetcdfDataset.setMissingDataIsMissing(state);
-      }
-    };
-    BAMutil.setActionPropertiesToggle(a, null, "use missing_value attribute for missing values",
-            NetcdfDataset.getMissingDataIsMissing(), 'M', -1);
-    BAMutil.addActionToMenu(dsMenu, a);
-
-    /////////////////////////////////////
-    JMenu subMenu = new JMenu("HDF-EOS");
-    modeMenu.add(subMenu);
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        H5iosp.useHdfEos(state);
-      }
-    };
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment HDF5", true, '5', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        H4header.useHdfEos(state);
-      }
-    };
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment HDF4", true, '4', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        Nc4Iosp.useHdfEos(state);
-      }
-    };
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionProperties(a, null, "use HDF-EOS StructMetadata to augment netcdf4 (JNI)", true, 'N', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    /////////////////////////////////////
-    subMenu = new JMenu("GRIB");
-    modeMenu.add(subMenu);
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        setGribDiskCache();
-      }
-    };
-    BAMutil.setActionProperties(a, null, "set Grib disk cache...", false, 'G', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        Grib1ParamTables.setStrict(state);
-      }
-    };
-    boolean strictMode = Grib1ParamTables.isStrict();
-    a.putValue(BAMutil.STATE, strictMode);
-    BAMutil.setActionPropertiesToggle(a, null, "GRIB1 strict", strictMode, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        GribData.setInterpolationMethod(state ? GribData.InterpolationMethod.cubic : GribData.InterpolationMethod.linear);
-      }
-    };
-    boolean useCubic = GribData.getInterpolationMethod() == GribData.InterpolationMethod.cubic;
-    a.putValue(BAMutil.STATE, useCubic);
-    BAMutil.setActionPropertiesToggle(a, null, "Use Cubic Interpolation on Thin Grids", useCubic, 'I', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    //static public boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureCollectionConfig.useGenTypeDef = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useGenTypeDef);
-    BAMutil.setActionPropertiesToggle(a, null, "useGenType", FeatureCollectionConfig.useGenTypeDef, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureCollectionConfig.useTableVersionDef = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useTableVersionDef);
-    BAMutil.setActionPropertiesToggle(a, null, "useTableVersion", FeatureCollectionConfig.useTableVersionDef, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureCollectionConfig.intvMergeDef = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    a.putValue(BAMutil.STATE, FeatureCollectionConfig.intvMergeDef);
-    BAMutil.setActionPropertiesToggle(a, null, "intvMerge", FeatureCollectionConfig.intvMergeDef, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        FeatureCollectionConfig.useCenterDef = (Boolean) getValue(BAMutil.STATE);
-      }
-    };
-    a.putValue(BAMutil.STATE, FeatureCollectionConfig.useCenterDef);
-    BAMutil.setActionPropertiesToggle(a, null, "useCenter", FeatureCollectionConfig.useCenterDef, 'S', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    /////////////////////////////////////
-    subMenu = new JMenu("FMRC");
-    modeMenu.add(subMenu);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        FeatureCollectionConfig.setRegularizeDefault(state);
-      }
-    };
-    // ToolsUI default is to regularize the FMRC
-    FeatureCollectionConfig.setRegularizeDefault(true);
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionPropertiesToggle(a, null, "regularize", true, 'R', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-
-    a = new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        Boolean state = (Boolean) getValue(BAMutil.STATE);
-        DataFactory.setPreferCdm(state);
-      }
-    };
-    // ToolsUI default is to use cdmRemote access
-    DataFactory.setPreferCdm(true);
-    a.putValue(BAMutil.STATE, true);
-    BAMutil.setActionPropertiesToggle(a, null, "preferCdm", true, 'P', -1);
-    BAMutil.addActionToMenu(subMenu, a);
-  }
-
-  DiskCache2Form diskCache2Form = null;
-
-  private void setGribDiskCache() {
-    if (diskCache2Form == null) {
-      diskCache2Form = new DiskCache2Form(parentFrame, GribIndexCache.getDiskCache2());
+/**
+ *
+ */
+    public void setUseRecordStructure(final boolean use) {
+        useRecordStructure = use;
     }
-    diskCache2Form.setVisible(true);
-  }
 
+/**
+ *
+ */
+    public void setGribDiskCache() {
+        if (diskCache2Form == null) {
+            diskCache2Form = new DiskCache2Form(parentFrame, GribIndexCache.getDiskCache2());
+        }
+        diskCache2Form.setVisible(true);
+    }
+
+/**
+ *
+ */
   public void save() {
     fileChooser.save();
     if (aggPanel != null) aggPanel.save();
@@ -1313,12 +939,12 @@ public class ToolsUI extends JPanel {
     }
 
     thredds.client.catalog.Service s = invAccess.getService();
-    if (s.getType() == thredds.client.catalog.ServiceType.HTTPServer) {
+    if (s.getType() == ServiceType.HTTPServer) {
       downloadFile(invAccess.getStandardUrlName());
       return;
     }
 
-    if (s.getType() == thredds.client.catalog.ServiceType.WMS) {
+    if (s.getType() == ServiceType.WMS) {
       openWMSDataset(invAccess.getStandardUrlName());
       return;
     }
@@ -1435,7 +1061,7 @@ public class ToolsUI extends JPanel {
       if (ncfile == null) {
         JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + location);
       }
-      else if (setUseRecordStructure) {
+      else if (useRecordStructure) {
         ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
       }
 
@@ -4525,7 +4151,7 @@ public class ToolsUI extends JPanel {
       }
 
       try {
-        ucar.nc2.util.Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(command);
+        Optional<FeatureDatasetCoverage> opt = CoverageDatasetFactory.openCoverageDataset(command);
         if (!opt.isPresent()) {
           JOptionPane.showMessageDialog(null, opt.getErrorMessage());
           return false;
@@ -4642,7 +4268,7 @@ public class ToolsUI extends JPanel {
       return !err;
     }
 
-    void setDataset(ucar.nc2.dt.RadialDatasetSweep newds) {
+    void setDataset(RadialDatasetSweep newds) {
       if (newds == null) return;
       try {
         if (ds != null) ds.close();
@@ -4669,7 +4295,7 @@ public class ToolsUI extends JPanel {
   }
 
   ///////////////////////////////////////////////////////////
-  private class DatasetViewerPanel extends OpPanel {
+  public class DatasetViewerPanel extends OpPanel {
     DatasetViewer dsViewer;
     JSplitPane split;
     NetcdfFile ncfile = null;
@@ -4770,6 +4396,14 @@ public class ToolsUI extends JPanel {
     void save() {
       super.save();
       dsViewer.save();
+    }
+
+    public void setText(String text) {
+        detailTA.setText(text);
+    }
+
+    public void appendLine(String text) {
+        detailTA.appendLine(text);
     }
   }
 
@@ -5482,7 +5116,7 @@ public class ToolsUI extends JPanel {
         return Debug.isSet((String) args[0]);
       }
       if (method.getName().equals("set")) {
-        ucar.util.prefs.ui.Debug.set((String) args[0], (Boolean) args[1]);
+        Debug.set((String) args[0], (Boolean) args[1]);
         return null;
       }
       return Boolean.FALSE;
@@ -5492,7 +5126,7 @@ public class ToolsUI extends JPanel {
 /**
  *
  */
-  static private void exit() {
+  public static void exit() {
     doSavePrefsAndUI();
     System.exit(0);
   }
@@ -5758,8 +5392,8 @@ public class ToolsUI extends JPanel {
       Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
 
       try {
-        // thredds.inventory.bdb.MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
-        thredds.inventory.CollectionManagerAbstract.setMetadataStore(thredds.inventory.bdb.MetadataManager.getFactory());
+        // MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
+        thredds.inventory.CollectionManagerAbstract.setMetadataStore(MetadataManager.getFactory());
       }
       catch (Exception e) {
         log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);

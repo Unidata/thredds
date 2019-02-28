@@ -12,11 +12,9 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.MediaTracker;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.invoke.MethodHandles;
@@ -27,7 +25,7 @@ import javax.swing.JWindow;
 /**
  *
  */
-class ToolsSplashScreen extends JWindow {
+public class ToolsSplashScreen extends JWindow {
     private final static org.slf4j.Logger logger
                             = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static ToolsSplashScreen instance;

@@ -51,9 +51,8 @@ import ucar.util.prefs.ui.Debug;
 /**
  * A Swing widget to view the content of a netcdf dataset.
  * It uses a DatasetTree widget and nested BeanTable widget, by
- *  wrapping the Variables in a VariableBean.
+ * wrapping the Variables in a VariableBean.
  * A pop-up menu allows to view a Structure in a StructureTable.
- *
  *
  * @author caron
  */

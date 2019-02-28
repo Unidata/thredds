@@ -30,16 +30,16 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JWindow;
-import javax.swing.border.Border;
 
 /**
  *
  */
-class ToolsAboutWindow extends JWindow {
+public class ToolsAboutWindow extends JWindow {
+
 /**
  *
  */
-    ToolsAboutWindow(final JFrame parent) {
+    public ToolsAboutWindow(final JFrame parent) {
         super(parent);
 
         JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
