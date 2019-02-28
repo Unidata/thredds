@@ -3,8 +3,11 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.menu;
 
+import ucar.nc2.ui.ToolsAboutWindow;
+import ucar.nc2.ui.ToolsSplashScreen;
+import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.event.ActionEvent;
@@ -15,7 +18,7 @@ import javax.swing.JMenu;
 /**
  *
  */
-class ToolsHelpMenu extends JMenu {
+public class HelpMenu extends JMenu {
 
     private ToolsUI toolsui;
     private ToolsAboutWindow aboutWindow;
@@ -23,7 +26,7 @@ class ToolsHelpMenu extends JMenu {
 /**
  *
  */
-    ToolsHelpMenu(final ToolsUI tui) {
+    public HelpMenu(final ToolsUI tui) {
         super("Help");
         setMnemonic('H');
 

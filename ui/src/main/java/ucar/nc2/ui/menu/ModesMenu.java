@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.menu;
 
 import thredds.client.catalog.tools.DataFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -14,6 +14,7 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.iosp.hdf4.H4header;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
+import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.event.ActionEvent;
@@ -23,14 +24,14 @@ import javax.swing.JMenu;
 /**
  *
  */
-class ToolsModesMenu extends JMenu {
+public class ModesMenu extends JMenu {
 
     private ToolsUI toolsui;
 
 /**
  *
  */
-    ToolsModesMenu(final ToolsUI tui) {
+    public ModesMenu(final ToolsUI tui) {
         super("Modes");
         setMnemonic('M');
 

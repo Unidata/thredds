@@ -3,8 +3,9 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.menu;
 
+import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.util.prefs.ui.Debug;
 
@@ -17,14 +18,14 @@ import javax.swing.event.MenuListener;
 /**
  *
  */
-class ToolsDebugMenu extends JMenu {
+public class DebugMenu extends JMenu {
 
     private ToolsUI toolsui;
 
 /**
  *
  */
-    ToolsDebugMenu(final ToolsUI tui) {
+    public DebugMenu(final ToolsUI tui) {
         super("Debug");
         setMnemonic('D');
 

@@ -34,11 +34,12 @@ import javax.swing.JWindow;
 /**
  *
  */
-class ToolsAboutWindow extends JWindow {
+public class ToolsAboutWindow extends JWindow {
+
 /**
  *
  */
-    ToolsAboutWindow(final JFrame parent) {
+    public ToolsAboutWindow(final JFrame parent) {
         super(parent);
 
         JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
