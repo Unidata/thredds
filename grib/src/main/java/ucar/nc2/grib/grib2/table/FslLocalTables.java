@@ -8,6 +8,7 @@ package ucar.nc2.grib.grib2.table;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
+import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.util.TableParser;
 
 import java.io.BufferedReader;
@@ -276,11 +277,11 @@ ozone mixing ratio - b                                      154   109           
     FslLocalTables hrrr = new FslLocalTables(new Grib2Table("GSD_HRRR", 59, -1, -1, -1, 125, null, Grib2Table.Type.gsd));
     // FslLocalTables fim = new FslLocalTables(0,0,1,116);
     Formatter f = new Formatter();
-    Grib2Parameter.compareTables("FSL-HRRR", "Standard WMO version", hrrr.getParameters(), Grib2Customizer.factory(0, 0, 0, 0, 0), f);
+    Grib2Utils.compareTables("FSL-HRRR", "Standard WMO version", hrrr.getParameters(), Grib2Customizer.factory(0, 0, 0, 0, 0), f);
     System.out.printf("%s%n", f);
 
     Formatter f2 = new Formatter();
-    Grib2Parameter.compareTables("FSL-HRRR", "NCEP Table", hrrr.getParameters(), Grib2Customizer.factory(7, 0, 0, 0, 0), f2);
+    Grib2Utils.compareTables("FSL-HRRR", "NCEP Table", hrrr.getParameters(), Grib2Customizer.factory(7, 0, 0, 0, 0), f2);
     System.out.printf("%s%n", f2);
 
   }
