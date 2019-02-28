@@ -68,12 +68,9 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.List;
-import java.util.Properties;
 import java.util.StringTokenizer;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -177,7 +174,6 @@ public class ToolsUI extends JPanel {
 
   // debugging
   private DebugFlags debugFlags;
-  private boolean debug = false, debugTab = false, debugCB = false;
 
   // Check if on a mac
   private final static String osName = System.getProperty("os.name").toLowerCase();
@@ -358,9 +354,7 @@ public class ToolsUI extends JPanel {
       if (cTitle.equals(title)) break;
     }
     if (idx >= n) {
-      if (debugTab) {
-        System.out.println("Cant find " + title + " in " + parent);
-      }
+      log.debug("Cant find {} in {}", title, parent);
       return;
     }
 
@@ -653,11 +647,12 @@ public class ToolsUI extends JPanel {
     }
 
     parent.setComponentAt(idx, c);
-    if (debugTab) {
-      System.out.println("tabbedPane changed " + title + " added ");
-    }
+    log.trace("tabbedPane changed {} added ", title);
   }
 
+/**
+ *
+ */
   private void makeMenuBar() {
     JMenuBar mb = new JMenuBar();
 
@@ -722,6 +717,9 @@ public class ToolsUI extends JPanel {
         diskCache2Form.setVisible(true);
     }
 
+/**
+ *
+ */
   public void save() {
     fileChooser.save();
     if (aggPanel != null) aggPanel.save();
