@@ -20,7 +20,6 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib2SectionIdentification {
-
   private final int center_id;
   private final int subcenter_id;
   private final int master_table_version;
