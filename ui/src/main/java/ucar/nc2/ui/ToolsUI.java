@@ -5106,26 +5106,6 @@ public class ToolsUI extends JPanel {
   }
 
 /**
- * Dynamic proxy for Debug
- */
-  private static class DebugProxyHandler implements java.lang.reflect.InvocationHandler {
-    @Override
-    public Object invoke(Object proxy, java.lang.reflect.Method method, Object[] args) throws Throwable {
-      if (method.getName().equals("toString"))
-        return super.toString();
-      // System.out.println("proxy= "+proxy+" method = "+method+" args="+args);
-      if (method.getName().equals("isSet")) {
-        return Debug.isSet((String) args[0]);
-      }
-      if (method.getName().equals("set")) {
-        Debug.set((String) args[0], (Boolean) args[1]);
-        return null;
-      }
-      return Boolean.FALSE;
-    }
-  }
-
-/**
  *
  */
   public static void exit() {
