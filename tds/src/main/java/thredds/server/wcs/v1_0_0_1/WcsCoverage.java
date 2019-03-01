@@ -10,6 +10,7 @@ import ucar.nc2.NetcdfFileWriter;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
 import ucar.nc2.geotiff.GeotiffWriter;
+import ucar.nc2.iosp.netcdf3.N3iosp;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.DiskCache2;
 import ucar.nc2.util.NamedObject;
@@ -188,14 +189,28 @@ public class WcsCoverage {
         if (log.isDebugEnabled())
           log.debug("writeCoverageDataToFile(): ncFile=" + outFile.getPath());
 
-        NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath());
-        // LOOK could test file size
-        Optional<Long> opt = CFGridCoverageWriter2.writeOrTestSize(this.wcsDataset.getDataset(),
+        // netCDF File Checks
+        // this will estimate the size of a single coverage.
+        Optional<Long> estimatedSize = CFGridCoverageWriter2.writeOrTestSize(this.wcsDataset.getDataset(),
                 Collections.singletonList(this.coverage.getName()),
-                params, true, false, writer);
+                params, true, true, null);
 
-        if (!opt.isPresent())
-          throw new InvalidRangeException("Request contains no data: " + opt.getErrorMessage());
+        if (estimatedSize.isPresent()) {
+          // check to make sure estimated size isn't greater than the netCDf-3 limit, otherwise
+          // we will unhelpfully bomb and return a 400 with no helpful message to the user
+          long estimatedSizeValue = estimatedSize.get();
+          if (estimatedSizeValue > N3iosp.MAX_VARSIZE) {
+            throw new IllegalArgumentException("Variable size in bytes " + estimatedSizeValue + " may not exceed " + N3iosp.MAX_VARSIZE);
+          }
+        } else {
+          throw new InvalidRangeException("Request contains no data: " + estimatedSize.getErrorMessage());
+        }
+
+        try (NetcdfFileWriter writer = NetcdfFileWriter.createNew(NetcdfFileWriter.Version.netcdf3, outFile.getAbsolutePath())) {
+          estimatedSize = CFGridCoverageWriter2.writeOrTestSize(this.wcsDataset.getDataset(),
+                  Collections.singletonList(this.coverage.getName()),
+                  params, true, false, writer);
+        }
 
         return outFile;
 

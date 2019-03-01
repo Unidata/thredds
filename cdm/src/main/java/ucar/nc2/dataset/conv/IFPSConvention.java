@@ -5,20 +5,33 @@
 
 package ucar.nc2.dataset.conv;
 
-import ucar.ma2.*;
-import ucar.nc2.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import ucar.ma2.Array;
+import ucar.ma2.DataType;
+import ucar.ma2.Index;
+import ucar.ma2.InvalidRangeException;
+import ucar.ma2.Range;
+import ucar.nc2.Attribute;
+import ucar.nc2.Dimension;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.constants._Coordinate;
-import ucar.nc2.dataset.*;
+import ucar.nc2.dataset.CoordSysBuilder;
+import ucar.nc2.dataset.CoordinateAxis;
+import ucar.nc2.dataset.CoordinateAxis1D;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.dataset.ProjectionCT;
+import ucar.nc2.dataset.VariableDS;
 import ucar.nc2.util.CancelTask;
-import ucar.unidata.geoloc.projection.LambertConformal;
-import ucar.unidata.geoloc.ProjectionPointImpl;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.Projection;
-
-import java.io.IOException;
-import java.util.*;
+import ucar.unidata.geoloc.ProjectionPointImpl;
+import ucar.unidata.geoloc.projection.LambertConformal;
 
 /**
  * IFPS Convention Allows Local NWS forecast office generated forecast datasets to be brought into IDV.
@@ -32,10 +45,32 @@ public class IFPSConvention extends CoordSysBuilder {
    * @return true if we think this is a IFPSConvention file.
    */
   public static boolean isMine( NetcdfFile ncfile) {
+    // check that file has a latitude and longitude variable, and that latitude has an attribute called
+    // projectionType
+    boolean geoVarsCheck;
     Variable v = ncfile.findVariable("latitude");
+    if (null != ncfile.findVariable("longitude") && (null != v)) {
+            geoVarsCheck = null != ncfile.findAttValueIgnoreCase(v, "projectionType", null);
+    } else {
+      // bail early
+      return false;
+    }
 
-    return (null != ncfile.findDimension("DIM_0")) && (null != ncfile.findVariable("longitude"))
-            && (null != v) && (null != ncfile.findAttValueIgnoreCase(v, "projectionType", null));
+    // check that there is a global attribute called fileFormatVersion, and that it has one
+    // of two known values
+    boolean fileFormatCheck;
+    Attribute ff = ncfile.findGlobalAttributeIgnoreCase("fileFormatVersion");
+    if (ff != null) {
+      String ffValue = ff.getStringValue();
+      // two possible values (as of now)
+      fileFormatCheck = (ffValue.equalsIgnoreCase("20030117") || ffValue.equalsIgnoreCase("20010816"));
+    } else {
+      // bail
+      return false;
+    }
+
+    // both must be true
+    return (geoVarsCheck && fileFormatCheck);
   }
 
   private Variable projVar = null; // use this to get projection info
