@@ -233,7 +233,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     else dateRange = dateRange.extend(cdr);
   }
 
-  CalendarDateRange getCalendarDateRange() {
+  private CalendarDateRange getCalendarDateRange() {
     return dateRange;
   }
   /////////////////
@@ -490,7 +490,6 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     if (ds.getType() == GribCollectionImmutable.Type.SRC) {
       covTime = makeUniqueTimeAxis(time2D);
       CoordinateRuntime rt = time2D.getRuntimeCoordinate();
-      //if (!alreadyHave(result, rt.getName()))
       result.add(makeRuntimeCoord(rt));
 
     } else if (ds.getType().isUniqueTime()) {
@@ -500,13 +499,11 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     } else if (time2D.isOrthogonal()) {
       covTime = makeTimeOffsetAxis(time2D);
       CoordinateRuntime rt = time2D.getRuntimeCoordinate();
-      //if (!alreadyHave(result, rt.getName()))
       result.add(makeRuntimeCoord(rt));
 
     } else if (time2D.isRegular()) {
       covTime = makeFmrcRegTimeAxis(time2D);
       CoordinateRuntime rt = time2D.getRuntimeCoordinate();
-      //if (!alreadyHave(result, rt.getName()))
       result.add(makeRuntimeCoord(rt)); // LOOK ?
 
     } else
