@@ -317,7 +317,9 @@ public class ToolsUI extends JPanel {
     // dynamic proxy for DebugFlags
     debugFlags = (DebugFlags) java.lang.reflect.Proxy.newProxyInstance(DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
 
-    makeMenuBar();
+    final JMenuBar mb = makeMenuBar();
+    parentFrame.setJMenuBar(mb);
+
     setDebugFlags();
   }
 
@@ -600,7 +602,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "THREDDS":
-        threddsUI = new ThreddsUI(ToolsUI.this.parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
+        threddsUI = new ThreddsUI(parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
         threddsUI.addPropertyChangeListener(new PropertyChangeListener() {
           public void propertyChange(PropertyChangeEvent e) {
             if (e.getPropertyName().equals("InvAccess")) {
@@ -653,10 +655,8 @@ public class ToolsUI extends JPanel {
 /**
  *
  */
-  private void makeMenuBar() {
-    JMenuBar mb = new JMenuBar();
-
-    parentFrame.setJMenuBar(mb);
+  private JMenuBar makeMenuBar() {
+    final JMenuBar mb = new JMenuBar();
 
     /// System menu
     final JMenu sysMenu = new SystemMenu(ToolsUI.this);
@@ -673,6 +673,8 @@ public class ToolsUI extends JPanel {
     // Add help/about Menu
     final JMenu helpMenu = new HelpMenu(ToolsUI.this);
     mb.add(helpMenu);
+
+    return mb;
   }
 
 /**
