@@ -49,12 +49,12 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   // read all records in all files,
   // divide into groups based on GDS hash and optionally the runtime
   // each group has an arraylist of all records that belong to it.
-  // for each group, call rectlizer to derive the coordinates and variables
+  // for each group, call rectilizer to derive the coordinates and variables
   @Override
   public List<Grib1CollectionWriter.Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException {
     Map<GroupAndRuntime, Grib1CollectionWriter.Group> gdsMap = new HashMap<>();
 
-    logger.debug("Grib2CollectionBuilder {}: makeGroups", name);
+    logger.debug("Grib1CollectionBuilder {}: makeGroups", name);
     int fileno = 0;
     GribRecordStats statsAll = new GribRecordStats(); // debugging
 
@@ -79,11 +79,11 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
           allFiles.add(mfile);  // add on success
 
         } catch (IOException ioe) {
-          logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
+          logger.error("Grib1CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed", ioe);
           continue;
         }
         if (index == null) {
-          logger.error("Grib2CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed");
+          logger.error("Grib1CollectionBuilder " + name + " : reading/Creating gbx9 index for file " + mfile.getPath() + " failed");
           continue;
         }
 
