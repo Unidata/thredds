@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -20,11 +20,8 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -56,7 +53,7 @@ public class AggTable extends JPanel {
       }
     }); */
 
-    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(datasetTable.getJTable(), "Options");
+    PopupMenu varPopup = new PopupMenu(datasetTable.getJTable(), "Options");
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         DatasetBean dsb = (DatasetBean) datasetTable.getSelectedBean();

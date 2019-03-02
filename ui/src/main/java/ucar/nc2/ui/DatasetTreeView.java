@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.tree.TreeNode;
 
 /**
  * A Tree View of the groups and variables inside a NetcdfFile.
@@ -160,7 +161,7 @@ public class DatasetTreeView extends JPanel {
     }
   }
 
-  private class GroupNode implements javax.swing.tree.TreeNode {
+  private class GroupNode implements TreeNode {
     private Group group;
     private GroupNode parent;
     private List<Object> children = null;
@@ -246,7 +247,7 @@ public class DatasetTreeView extends JPanel {
 
   }
 
-  private class VariableNode implements javax.swing.tree.TreeNode {
+  private class VariableNode implements TreeNode {
     private VariableIF var;
     private TreeNode parent;
     private List<Object> children = null;
@@ -254,7 +255,9 @@ public class DatasetTreeView extends JPanel {
     VariableNode( TreeNode parent, VariableIF var) {
       this.parent = parent;
       this.var = var;
-      if (debugTree) System.out.println("new var="+var.getShortName()+" ");
+      if (debugTree) {
+        System.out.println("new var="+var.getShortName()+" ");
+      }
       //firePropertyChangeEvent(new PropertyChangeEvent(this, "TreeNode", null, var));
     }
 
@@ -307,7 +310,7 @@ public class DatasetTreeView extends JPanel {
     }
   }
 
-  private static class DimensionNode implements javax.swing.tree.TreeNode {
+  private static class DimensionNode implements TreeNode {
     private Dimension d;
     private TreeNode parent;
 

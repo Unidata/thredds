@@ -37,8 +37,9 @@ public abstract class OpPanel extends JPanel {
 
     protected PreferencesExt prefs;
     protected ComboBox cb;
-    protected JPanel buttPanel, topPanel;
-    protected AbstractButton coordButt = null;
+    protected JPanel buttPanel;
+    protected JPanel topPanel;
+    protected AbstractButton coordButt;
     protected StopButton stopButton;
 
     protected boolean addCoords;
@@ -50,27 +51,25 @@ public abstract class OpPanel extends JPanel {
     protected TextHistoryPane detailTA;
 
     protected static FileManager fileChooser;
-//    protected boolean debug = false;
-//    protected boolean debugCB = false;
 
 /**
  *
  */
-    OpPanel(PreferencesExt prefs, String command) {
+    public OpPanel(PreferencesExt prefs, String command) {
         this(prefs, command, true, true);
     }
 
 /**
  *
  */
-    OpPanel(PreferencesExt prefs, String command, boolean addFileButton, boolean addCoordButton) {
+    public OpPanel(PreferencesExt prefs, String command, boolean addFileButton, boolean addCoordButton) {
         this(prefs, command, true, addFileButton, addCoordButton);
     }
 
 /**
  *
  */
-    OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton, boolean addCoordButton) {
+    public OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton, boolean addCoordButton) {
         this.prefs = prefs;
         buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
@@ -158,7 +157,7 @@ public abstract class OpPanel extends JPanel {
 /**
  *
  */
-    void doit(Object command) {
+    public void doit(Object command) {
         if (busy) {
           return;
         }
@@ -180,18 +179,18 @@ public abstract class OpPanel extends JPanel {
 /**
  *
  */
-    abstract boolean process(Object command);
+    public abstract boolean process(Object command);
 
 /**
  *
  */
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
     }
 
 /**
  *
  */
-    void save() {
+    public void save() {
         cb.save();
         if (coordButt != null) {
             prefs.putBoolean("coordState", coordButt.getModel().isSelected());
@@ -204,7 +203,7 @@ public abstract class OpPanel extends JPanel {
 /**
  *
  */
-    void setSelectedItem(Object item) {
+    public void setSelectedItem(Object item) {
         eventOK = false;
         cb.addItem(item);
         eventOK = true;
@@ -213,8 +212,8 @@ public abstract class OpPanel extends JPanel {
 /**
  *
  */
-    static void setFileChooser(FileManager chooser) {
-            fileChooser = chooser;
+    public static void setFileChooser(FileManager chooser) {
+        fileChooser = chooser;
     }
 
 /**

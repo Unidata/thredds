@@ -275,7 +275,7 @@ public class Fmrc2Panel extends JPanel {
     fmrcInv = fmrc.getFmrcInv( debug);
     lite = new FmrcInvLite(fmrcInv);
 
-    java.util.List<FmrBean> beanList = new ArrayList<>();
+    List<FmrBean> beanList = new ArrayList<>();
     for (FmrInv fmr : fmrcInv.getFmrList()) {
       beanList.add(new FmrBean(fmr));
     }
@@ -400,7 +400,7 @@ public class Fmrc2Panel extends JPanel {
 
   private void setFmr(FmrInv fmr) {
     if (fmr == null) return;
-    java.util.List<InvBean> beanList = new ArrayList<>();
+    List<InvBean> beanList = new ArrayList<>();
     for (GridDatasetInv fmrInv : fmr.getInventoryList()) {
       beanList.add(new InvBean(fmrInv));
     }
@@ -410,7 +410,7 @@ public class Fmrc2Panel extends JPanel {
 
   private void setCoords(FmrcInv fmrInv) {
     if (fmrInv == null) return;
-    java.util.List<CoordBean> beanList = new ArrayList<>();
+    List<CoordBean> beanList = new ArrayList<>();
     for (FmrcInv.RunSeq tc : fmrInv.getRunSeqs())
       beanList.add(new TimeCoordBean(tc));
     for (VertCoord vc : fmrInv.getVertCoords())
@@ -421,7 +421,7 @@ public class Fmrc2Panel extends JPanel {
 
   private void setGrids(FmrcInv fmrInv) {
     if (fmrInv == null) return;
-    java.util.List<GridBean> beanList = new ArrayList<>();
+    List<GridBean> beanList = new ArrayList<>();
     for (FmrcInv.UberGrid grid : fmrInv.getUberGrids()) {
       beanList.add(new GridBean(grid));
     }
@@ -431,7 +431,7 @@ public class Fmrc2Panel extends JPanel {
 
   /* private void setGrids(GridDatasetInv fmrInv) {
     if (fmrInv == null) return;
-    java.util.List<GridBean> beanList = new ArrayList<GridBean>();
+    List<GridBean> beanList = new ArrayList<GridBean>();
     for (TimeCoord tc : fmrInv.getTimeCoords()) {
       for (GridDatasetInv.Grid grid : tc.getGrids())
         beanList.add(new GridBean(grid));
@@ -441,8 +441,8 @@ public class Fmrc2Panel extends JPanel {
   } */
 
   private void setSelectedCoord(GridBean gridBean) {
-    java.util.List<CoordBean> beans = coordTable.getBeans();
-    java.util.List<CoordBean> selected = new ArrayList<>();
+    List<CoordBean> beans = coordTable.getBeans();
+    List<CoordBean> selected = new ArrayList<>();
     for (CoordBean bean : beans) {
       if (bean instanceof TimeCoordBean) {
         TimeCoordBean tbean = (TimeCoordBean) bean;

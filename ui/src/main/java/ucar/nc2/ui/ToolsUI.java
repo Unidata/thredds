@@ -16,6 +16,7 @@ import ucar.httpservices.HTTPSession;
 import ucar.nc2.*;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.*;
+import ucar.nc2.dods.DODSNetcdfFile;
 import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
@@ -35,8 +36,6 @@ import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
 import ucar.nc2.stream.CdmRemote;
-import ucar.nc2.time.CalendarDate;
-import ucar.nc2.time.CalendarDateUnit;
 import ucar.nc2.ui.coverage2.CoverageViewer;
 import ucar.nc2.ui.dialog.DiskCache2Form;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
@@ -46,6 +45,7 @@ import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.menu.*;
+import ucar.nc2.ui.opp.*;
 import ucar.nc2.ui.simplegeom.SimpleGeomTable;
 import ucar.nc2.ui.simplegeom.SimpleGeomUI;
 import ucar.nc2.ui.util.SocketMessage;
@@ -57,7 +57,6 @@ import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
-import ucar.util.prefs.ui.ComboBox;
 import ucar.util.prefs.ui.Debug;
 
 import java.awt.*;
@@ -67,11 +66,8 @@ import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
-import java.util.StringTokenizer;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
@@ -167,17 +163,12 @@ public class ToolsUI extends JPanel {
 
   // data
   private DataFactory threddsDataFactory = new DataFactory();
-  private DateFormatter formatter = new DateFormatter();
 
   private boolean useRecordStructure;
   private DiskCache2Form diskCache2Form;
 
   // debugging
   private DebugFlags debugFlags;
-
-  // Check if on a mac
-  private final static String osName = System.getProperty("os.name").toLowerCase();
-  private final static boolean isMacOs = osName.startsWith("mac os x");
 
   public ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
@@ -692,7 +683,7 @@ public class ToolsUI extends JPanel {
     NetcdfFile.setDebugFlags(debugFlags);
     H5iosp.setDebugFlags(debugFlags);
     ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
-    ucar.nc2.dods.DODSNetcdfFile.setDebugFlags(debugFlags);
+    DODSNetcdfFile.setDebugFlags(debugFlags);
     CdmRemote.setDebugFlags(debugFlags);
     Nc4Iosp.setDebugFlags(debugFlags);
     DataFactory.setDebugFlags(debugFlags);
@@ -1170,13 +1161,13 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (ncfile != null) ncfile.close();
       ncfile = null;
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       int pos;
       String input = ((String) o).trim();
 
@@ -1253,446 +1244,8 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  private class UnitsPanel extends JPanel {
-    PreferencesExt prefs;
-    JSplitPane split, split2;
-    UnitDatasetCheck unitDataset;
-    UnitConvert unitConvert;
-    DateFormatMark dateFormatMark;
 
-    UnitsPanel(PreferencesExt prefs) {
-      super();
-      this.prefs = prefs;
-      unitDataset = new UnitDatasetCheck((PreferencesExt) prefs.node("unitDataset"));
-      unitConvert = new UnitConvert((PreferencesExt) prefs.node("unitConvert"));
-      dateFormatMark = new DateFormatMark((PreferencesExt) prefs.node("dateFormatMark"));
 
-      split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, unitConvert, dateFormatMark);
-      split2.setDividerLocation(prefs.getInt("splitPos2", 500));
-
-      split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(unitDataset), split2);
-      split.setDividerLocation(prefs.getInt("splitPos", 500));
-
-      setLayout(new BorderLayout());
-      add(split, BorderLayout.CENTER);
-    }
-
-    void save() {
-      prefs.putInt("splitPos", split.getDividerLocation());
-      prefs.putInt("splitPos2", split2.getDividerLocation());
-      unitConvert.save();
-      unitDataset.save();
-    }
-  }
-
-
-  private class UnitDatasetCheck extends OpPanel {
-    TextHistoryPane ta;
-
-    UnitDatasetCheck(PreferencesExt p) {
-      super(p, "dataset:");
-      ta = new TextHistoryPane(true);
-      add(ta, BorderLayout.CENTER);
-    }
-
-    @Override
-    boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try (NetcdfFile ncfile = NetcdfDataset.openDataset(command, addCoords, null)) {
-
-        ta.setText("Variables for " + command + ":");
-        for (Variable o1 : ncfile.getVariables()) {
-          VariableEnhanced vs = (VariableEnhanced) o1;
-          String units = vs.getUnitsString();
-          StringBuilder sb = new StringBuilder();
-          sb.append("   ").append(vs.getShortName()).append(" has unit= <").append(units).append(">");
-          if (units != null) {
-            try {
-              SimpleUnit su = SimpleUnit.factoryWithExceptions(units);
-              sb.append(" unit convert = ").append(su.toString());
-              if (su.isUnknownUnit()) {
-                sb.append(" UNKNOWN UNIT");
-              }
-            }
-            catch (Exception ioe) {
-              sb.append(" unit convert failed ");
-              sb.insert(0, "**** Fail ");
-            }
-          }
-
-          ta.appendLine(sb.toString());
-        }
-      }
-      catch (FileNotFoundException ioe) {
-        ta.setText("Failed to open <" + command + ">");
-        err = true;
-      }
-      catch (IOException ioe) {
-        ioe.printStackTrace();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    void closeOpenFiles() throws IOException {
-      ta.clear();
-    }
-  }
-
-
-  private class UnitConvert extends OpPanel {
-    TextHistoryPane ta;
-
-    UnitConvert(PreferencesExt prefs) {
-      super(prefs, "unit:", false, false);
-
-      ta = new TextHistoryPane(true);
-      add(ta, BorderLayout.CENTER);
-
-      JButton compareButton = new JButton("Compare");
-      compareButton.addActionListener(e -> {
-          compare(cb.getSelectedItem());
-      });
-      buttPanel.add(compareButton);
-
-      JButton dateButton = new JButton("UdunitDate");
-      dateButton.addActionListener(e -> {
-          checkUdunits(cb.getSelectedItem());
-      });
-      buttPanel.add(dateButton);
-
-      JButton cdateButton = new JButton("CalendarDate");
-      cdateButton.addActionListener(e -> {
-          checkCalendarDate(cb.getSelectedItem());
-      });
-      buttPanel.add(cdateButton);
-    }
-
-    @Override
-    boolean process(Object o) {
-      String command = (String) o;
-      try {
-        SimpleUnit su = SimpleUnit.factoryWithExceptions(command);
-        ta.setText("parse=" + command + "\n");
-        ta.appendLine("SimpleUnit.toString()          =" + su.toString() + "\n");
-        ta.appendLine("SimpleUnit.getCanonicalString  =" + su.getCanonicalString());
-        ta.appendLine("SimpleUnit.getImplementingClass= " + su.getImplementingClass());
-        ta.appendLine("SimpleUnit.isUnknownUnit       = " + su.isUnknownUnit());
-
-        return true;
-      }
-      catch (Exception e) {
-
-        if (Debug.isSet("Xdeveloper")) {
-          StringWriter sw = new StringWriter(10000);
-          e.printStackTrace(new PrintWriter(sw));
-          ta.setText(sw.toString());
-        }
-        else {
-          ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
-        }
-        return false;
-      }
-    }
-
-    @Override
-    void closeOpenFiles() {
-    }
-
-    void compare(Object o) {
-      String command = (String) o;
-      StringTokenizer stoke = new StringTokenizer(command);
-      List<String> list = new ArrayList<>();
-      while (stoke.hasMoreTokens())
-        list.add(stoke.nextToken());
-
-      try {
-        String unitS1 = list.get(0);
-        String unitS2 = list.get(1);
-        SimpleUnit su1 = SimpleUnit.factoryWithExceptions(unitS1);
-        SimpleUnit su2 = SimpleUnit.factoryWithExceptions(unitS2);
-        ta.setText("<" + su1.toString() + "> isConvertable to <" + su2.toString() + ">=" +
-                SimpleUnit.isCompatibleWithExceptions(unitS1, unitS2));
-
-      }
-      catch (Exception e) {
-        if (Debug.isSet("Xdeveloper")) {
-          StringWriter sw = new StringWriter(10000);
-          e.printStackTrace(new PrintWriter(sw));
-          ta.setText(sw.toString());
-        }
-        else {
-          ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
-        }
-      }
-    }
-
-    void checkUdunits(Object o) {
-      String command = (String) o;
-
-      boolean isDate = false;
-      try {
-        DateUnit du = new DateUnit(command);
-        ta.appendLine("\nFrom udunits:\n <" + command + "> isDateUnit = " + du);
-        Date d = du.getDate();
-        ta.appendLine("getStandardDateString = " + formatter.toDateTimeString(d));
-        ta.appendLine("getDateOrigin = " + formatter.toDateTimeString(du.getDateOrigin()));
-        isDate = true;
-
-        Date d2 = DateUnit.getStandardOrISO(command);
-        if (d2 == null)
-          ta.appendLine("\nDateUnit.getStandardOrISO = false");
-        else
-          ta.appendLine("\nDateUnit.getStandardOrISO = " + formatter.toDateTimeString(d2));
-
-      }
-      catch (Exception e) {
-        // ok to fall through
-      }
-      ta.appendLine("isDate = " + isDate);
-
-      if (!isDate) {
-        try {
-          SimpleUnit su = SimpleUnit.factory(command);
-          boolean isTime = su instanceof TimeUnit;
-          ta.setText("<" + command + "> isTimeUnit= " + isTime);
-          if (isTime) {
-            TimeUnit du = (TimeUnit) su;
-            ta.appendLine("\nTimeUnit = " + du);
-          }
-
-        }
-        catch (Exception e) {
-          if (Debug.isSet("Xdeveloper")) {
-            StringWriter sw = new StringWriter(10000);
-            e.printStackTrace(new PrintWriter(sw));
-            ta.setText(sw.toString());
-          }
-          else {
-            ta.setText(e.getClass().getName() + ":" + e.getMessage() + "\n" + command);
-          }
-        }
-      }
-    }
-
-    void checkCalendarDate(Object o) {
-      String command = (String) o;
-
-      try {
-        ta.setText("\nParse CalendarDate: <" + command + ">\n");
-        CalendarDate cd = CalendarDate.parseUdunits(null, command);
-        ta.appendLine("CalendarDate = " + cd);
-      }
-      catch (Throwable t) {
-        ta.appendLine("not a CalendarDateUnit= " + t.getMessage());
-      }
-
-      try {
-        /* int pos = command.indexOf(' ');
-        if (pos < 0) return;
-        String valString = command.substring(0, pos).trim();
-        String unitString = command.substring(pos+1).trim();  */
-
-        ta.appendLine("\nParse CalendarDateUnit: <" + command + ">\n");
-
-        CalendarDateUnit cdu = CalendarDateUnit.of(null, command);
-        ta.appendLine("CalendarDateUnit = " + cdu);
-        ta.appendLine(" Calendar        = " + cdu.getCalendar());
-        ta.appendLine(" PeriodField     = " + cdu.getCalendarPeriod().getField());
-        ta.appendLine(" PeriodValue     = " + cdu.getCalendarPeriod().getValue());
-        ta.appendLine(" Base            = " + cdu.getBaseCalendarDate());
-        ta.appendLine(" isCalendarField = " + cdu.isCalendarField());
-
-      }
-      catch (Exception e) {
-        ta.appendLine("not a CalendarDateUnit= " + e.getMessage());
-
-        try {
-          String[] s = command.split("%");
-          if (s.length == 2) {
-            Double val = Double.parseDouble(s[0].trim());
-            ta.appendLine("\nval= " + val + " unit=" + s[1]);
-            CalendarDateUnit cdu = CalendarDateUnit.of(null, s[1].trim());
-            ta.appendLine("CalendarDateUnit= " + cdu);
-            CalendarDate cd = cdu.makeCalendarDate(val);
-            ta.appendLine(" CalendarDate = " + cd);
-            Date d = cd.toDate();
-            ta.appendLine(" Date.toString() = " + d);
-            DateFormatter format = new DateFormatter();
-            ta.appendLine(" DateFormatter= " + format.toDateTimeString(cd.toDate()));
-          }
-        }
-        catch (Exception ee) {
-          ta.appendLine("Failed on CalendarDateUnit " + ee.getMessage());
-        }
-      }
-
-    }
-  }
-
-  private class DateFormatMark extends OpPanel {
-    ComboBox testCB;
-    DateFormatter dateFormatter = new DateFormatter();
-    TextHistoryPane ta;
-
-    DateFormatMark(PreferencesExt prefs) {
-      super(prefs, "dateFormatMark:", false, false);
-
-      ta = new TextHistoryPane(true);
-      add(ta, BorderLayout.CENTER);
-
-      testCB = new ComboBox(prefs);
-      buttPanel.add(testCB);
-
-      JButton compareButton = new JButton("Apply");
-      compareButton.addActionListener(e -> {
-          apply(cb.getSelectedItem(), testCB.getSelectedItem());
-      });
-      buttPanel.add(compareButton);
-    }
-
-    @Override
-    boolean process(Object o) {
-      return false;
-    }
-
-    @Override
-    void closeOpenFiles() {
-    }
-
-    void apply(Object mark, Object testo) {
-      String dateFormatMark = (String) mark;
-      String filename = (String) testo;
-      try {
-        Date coordValueDate = DateFromString.getDateUsingDemarkatedCount(filename, dateFormatMark, '#');
-        String coordValue = dateFormatter.toDateTimeStringISO(coordValueDate);
-        ta.setText("got date= " + coordValue);
-
-      } catch (Exception e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        ta.setText(sw.toString());
-      }
-    }
-  }
-
-
-  /////////////////////////////////////////////////////////////////////
-  private class CoordSysPanel extends OpPanel {
-    NetcdfDataset ds = null;
-    CoordSysTable coordSysTable;
-
-    @Override
-    void closeOpenFiles() throws IOException {
-      if (ds != null) ds.close();
-      ds = null;
-      coordSysTable.clear();
-    }
-
-    CoordSysPanel(PreferencesExt p) {
-      super(p, "dataset:", true, false);
-      coordSysTable = new CoordSysTable(prefs, buttPanel);
-      add(coordSysTable, BorderLayout.CENTER);
-
-      AbstractButton summaryButton = BAMutil.makeButtcon("Information", "Summary Info", false);
-      summaryButton.addActionListener(e -> {
-          Formatter f = new Formatter();
-          coordSysTable.summaryInfo(f);
-          detailTA.setText(f.toString());
-          detailWindow.show();
-      });
-      buttPanel.add(summaryButton);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Parse Info", false);
-      infoButton.addActionListener(e -> {
-          if (ds != null) {
-            try (NetcdfDatasetInfo info = new NetcdfDatasetInfo(ds)) {
-              detailTA.appendLine(info.getParseInfo());
-              detailTA.gotoTop();
-
-            } catch (Exception e1) {
-              StringWriter sw = new StringWriter(5000);
-              e1.printStackTrace(new PrintWriter(sw));
-              detailTA.setText(sw.toString());
-            }
-            detailWindow.show();
-          }
-      });
-      buttPanel.add(infoButton);
-
-      JButton dsButton = new JButton("Object dump");
-      dsButton.addActionListener(e -> {
-          if (ds != null) {
-            StringWriter sw = new StringWriter(5000);
-            NetcdfDataset.debugDump(new PrintWriter(sw), ds);
-            detailTA.setText(sw.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-      });
-      buttPanel.add(dsButton);
-    }
-
-    @Override
-    boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      // close previous file
-      try {
-        if (ds != null) ds.close();
-      } catch (IOException ioe) {
-        System.out.printf("close failed %n");
-      }
-
-      Object spiObject = null;
-      try {
-        ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
-        if (ds == null) {
-          JOptionPane.showMessageDialog(null, "Failed to open <" + command + ">");
-        } else {
-          coordSysTable.setDataset(ds);
-        }
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-        e.printStackTrace();
-      }
-
-      return !err;
-    }
-
-    void setDataset(NetcdfDataset ncd) {
-      try {
-        if (ds != null) ds.close();
-        ds = null;
-      } catch (IOException ioe) {
-        System.out.printf("close failed %n");
-      }
-      ds = ncd;
-
-      coordSysTable.setDataset(ds);
-      setSelectedItem(ds.getLocation());
-    }
-
-    @Override
-    void save() {
-      coordSysTable.save();
-      super.save();
-    }
-  }
 
   /////////////////////////////////////////////////////////////////////
   private class AggPanel extends OpPanel {
@@ -1700,7 +1253,7 @@ public class ToolsUI extends JPanel {
     NetcdfDataset ncd;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (ncd != null) ncd.close();
       ncd = null;
       aggTable.clear();
@@ -1749,7 +1302,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -1783,7 +1336,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       aggTable.save();
       super.save();
     }
@@ -1796,7 +1349,7 @@ public class ToolsUI extends JPanel {
     BufrMessageViewer bufrTable;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (raf != null) raf.close();
       raf = null;
     }
@@ -1808,7 +1361,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -1836,14 +1389,14 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       bufrTable.save();
       super.save();
     }
   }
 
   /////////////////////////////////////////////////////////////////////
-  private FileManager bufrFileChooser = null;
+  private FileManager bufrFileChooser;
 
   private void initBufrFileChooser() {
     bufrFileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
@@ -1892,12 +1445,12 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object command) {
+    public boolean process(Object command) {
       return true;
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
 
     void accept() {
@@ -1943,7 +1496,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       bufrTable.save();
       super.save();
     }
@@ -1990,12 +1543,12 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object command) {
+    public boolean process(Object command) {
       return true;
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
 
     void accept() {
@@ -2042,7 +1595,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       bufrTable.save();
       super.save();
     }
@@ -2083,11 +1636,11 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       return reportPanel.setCollection((String) o);
     }
 
-    boolean process() {
+    public boolean process() {
       boolean err = false;
       String command = (String) cb.getSelectedItem();
 
@@ -2112,7 +1665,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       reportPanel.save();
       super.save();
     }
@@ -2124,7 +1677,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.grib.GribFilesPanel gribTable;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
     }
 
     GribFilesPanel(PreferencesExt p) {
@@ -2140,9 +1693,9 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+      final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
       showButt.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           gribTable.showCollection(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -2152,7 +1705,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -2176,7 +1729,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       gribTable.save();
       super.save();
     }
@@ -2188,7 +1741,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.grib.Grib2CollectionPanel gribTable;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
     }
 
@@ -2206,9 +1759,9 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+      final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
       showButt.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           gribTable.showCollection(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -2216,9 +1769,9 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(showButt);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
       infoButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           gribTable.checkProblems(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -2226,9 +1779,9 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      AbstractButton gdsButton = BAMutil.makeButtcon("Information", "Show GDS use", false);
+      final AbstractButton gdsButton = BAMutil.makeButtcon("Information", "Show GDS use", false);
       gdsButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           gribTable.showGDSuse(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -2236,9 +1789,9 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(gdsButton);
 
-      AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+      final AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
       writeButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           try {
             if (!gribTable.writeIndex(f)) return;
             f.format("WriteIndex was successful%n");
@@ -2260,7 +1813,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -2284,7 +1837,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       gribTable.save();
       super.save();
     }
@@ -2295,7 +1848,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.grib.Grib2DataPanel gribTable;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
     }
 
     Grib2DataPanel(PreferencesExt p) {
@@ -2312,9 +1865,9 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
+      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
       infoButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           gribTable.showInfo(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -2322,9 +1875,9 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      AbstractButton checkButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+      final AbstractButton checkButton = BAMutil.makeButtcon("Information", "Check Problems", false);
       checkButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           gribTable.checkProblems(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -2340,7 +1893,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -2364,7 +1917,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       gribTable.save();
       super.save();
     }
@@ -2375,7 +1928,7 @@ public class ToolsUI extends JPanel {
     Grib1DataTable gribTable;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
     }
 
     Grib1DataPanel(PreferencesExt p) {
@@ -2392,9 +1945,9 @@ public class ToolsUI extends JPanel {
         }
       });
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
+      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
       infoButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           gribTable.checkProblems(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -2410,7 +1963,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -2434,7 +1987,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       gribTable.save();
       super.save();
     }
@@ -2445,7 +1998,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.BufrCdmIndexPanel table;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       //table.closeOpenFiles();
     }
 
@@ -2456,7 +2009,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -2480,7 +2033,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       table.save();
       super.save();
     }
@@ -2491,7 +2044,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.grib.CdmIndexPanel indexPanel;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       indexPanel.clear();
     }
 
@@ -2511,7 +2064,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -2535,7 +2088,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       indexPanel.save();
       super.save();
     }
@@ -2546,7 +2099,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.grib.GribIndexPanel gribTable;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
     }
 
@@ -2557,7 +2110,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -2581,7 +2134,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       gribTable.save();
       super.save();
     }
@@ -2594,7 +2147,7 @@ public class ToolsUI extends JPanel {
     ucar.nc2.ui.grib.Grib1CollectionPanel gribTable;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       gribTable.closeOpenFiles();
     }
 
@@ -2603,9 +2156,9 @@ public class ToolsUI extends JPanel {
       gribTable = new ucar.nc2.ui.grib.Grib1CollectionPanel(buttPanel, prefs);
       add(gribTable, BorderLayout.CENTER);
 
-      AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+      final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
       showButt.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           gribTable.showCollection(f);
           detailTA.setText(f.toString());
           detailTA.gotoTop();
@@ -2613,9 +2166,9 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(showButt);
 
-      AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+      final AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
       writeButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           try {
             if (!gribTable.writeIndex(f)) return;
           }
@@ -2636,7 +2189,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -2660,104 +2213,13 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       gribTable.save();
       super.save();
     }
   }
 
   /////////////////////////////////////////////////////////////////////
-
-  private class ReportOpPanel extends OpPanel {
-    ucar.nc2.ui.ReportPanel reportPanel;
-    boolean useIndex = true;
-    boolean eachFile = false;
-    boolean extra = false;
-    JComboBox reports;
-
-    ReportOpPanel(PreferencesExt p, ReportPanel reportPanel) {
-      super(p, "collection:", true, false);
-      this.reportPanel = reportPanel;
-      add(reportPanel, BorderLayout.CENTER);
-      reportPanel.addOptions(buttPanel);
-
-      reports = new JComboBox(reportPanel.getOptions());
-      buttPanel.add(reports);
-
-      AbstractAction useIndexButt = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          useIndex = (Boolean) getValue(BAMutil.STATE);
-        }
-      };
-      useIndexButt.putValue(BAMutil.STATE, useIndex);
-      BAMutil.setActionProperties(useIndexButt, "Doit", "use Index", true, 'C', -1);
-      BAMutil.addActionToContainer(buttPanel, useIndexButt);
-
-      AbstractAction eachFileButt = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          eachFile = (Boolean) getValue(BAMutil.STATE);
-        }
-      };
-      eachFileButt.putValue(BAMutil.STATE, eachFile);
-      BAMutil.setActionProperties(eachFileButt, "Doit", "report on each file", true, 'E', -1);
-      BAMutil.addActionToContainer(buttPanel, eachFileButt);
-
-      AbstractAction extraButt = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          extra = (Boolean) getValue(BAMutil.STATE);
-        }
-      };
-      extraButt.putValue(BAMutil.STATE, extra);
-      BAMutil.setActionProperties(extraButt, "Doit", "extra info", true, 'X', -1);
-      BAMutil.addActionToContainer(buttPanel, extraButt);
-
-      AbstractAction doitButt = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          process();
-        }
-      };
-      BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
-      BAMutil.addActionToContainer(buttPanel, doitButt);
-    }
-
-    @Override
-    void closeOpenFiles() {
-    }
-
-    @Override
-    boolean process(Object o) {
-      return reportPanel.showCollection((String) o);
-    }
-
-    boolean process() {
-      boolean err = false;
-      String command = (String) cb.getSelectedItem();
-
-      try {
-        reportPanel.doReport(command, useIndex, eachFile, extra, reports.getSelectedItem());
-
-      } catch (IOException ioe) {
-        JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
-        ioe.printStackTrace();
-        err = true;
-
-      } catch (Exception e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    void save() {
-      // reportPanel.save();
-      super.save();
-    }
-  }
 
   /* private class Grib2ReportPanel extends OpPanel {
     ucar.nc2.ui.grib.Grib2ReportPanel gribReport;
@@ -2814,15 +2276,15 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       return gribReport.setCollection((String) o);
     }
 
-    boolean process() {
+    public boolean process() {
       boolean err = false;
       String command = (String) cb.getSelectedItem();
 
@@ -2846,7 +2308,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       gribReport.save();
       super.save();
     }
@@ -2888,11 +2350,11 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       return gribReport.setCollection((String) o);
     }
 
-    boolean process() {
+    public boolean process() {
       boolean err = false;
       String command = (String) cb.getSelectedItem();
 
@@ -2917,7 +2379,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       gribReport.save();
       super.save();
     }
@@ -2943,18 +2405,18 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object command) {
+    public boolean process(Object command) {
       return true;
     }
 
     @Override
-    void save() {
+    public void save() {
       codeTable.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
   }
 
@@ -2978,18 +2440,18 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object command) {
+    public boolean process(Object command) {
       return true;
     }
 
     @Override
-    void save() {
+    public void save() {
       codeTable.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
   }
 
@@ -3005,18 +2467,18 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object command) {
+    public boolean process(Object command) {
       return true;
     }
 
     @Override
-    void save() {
+    public void save() {
       codeTable.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
   }
 
@@ -3033,18 +2495,18 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object command) {
+    public boolean process(Object command) {
       return true;
     }
 
     @Override
-    void save() {
+    public void save() {
       codeTable.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
   }
 
@@ -3061,7 +2523,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object command) {
+    public boolean process(Object command) {
       try {
         codeTable.setTable((String) command);
         return true;
@@ -3071,13 +2533,13 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       codeTable.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
   }
 
@@ -3094,18 +2556,18 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object command) {
+    public boolean process(Object command) {
       return true;
     }
 
     @Override
-    void save() {
+    public void save() {
       codeTable.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
   }
 
@@ -3152,18 +2614,18 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       return ftTable.setScanDirectory(command);
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
       ftTable.clear();
     }
 
     @Override
-    void save() {
+    public void save() {
       dirChooser.save();
       ftTable.save();
       prefs.put("currDir", dirChooser.getCurrentDirectory());
@@ -3177,7 +2639,7 @@ public class ToolsUI extends JPanel {
     Hdf5ObjectTable hdf5Table;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       hdf5Table.closeOpenFiles();
     }
 
@@ -3186,9 +2648,9 @@ public class ToolsUI extends JPanel {
       hdf5Table = new Hdf5ObjectTable(prefs);
       add(hdf5Table, BorderLayout.CENTER);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Compact Representation", false);
+      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Compact Representation", false);
       infoButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           try {
             hdf5Table.showInfo(f);
           }
@@ -3205,14 +2667,14 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      AbstractButton infoButton2 = BAMutil.makeButtcon("Information", "Detail Info", false);
+      final AbstractButton infoButton2 = BAMutil.makeButtcon("Information", "Detail Info", false);
       infoButton2.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           try {
             hdf5Table.showInfo2(f);
           }
-          catch (IOException ioe) {
-            StringWriter sw = new StringWriter(5000);
+          catch (final IOException ioe) {
+            final StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
             detailWindow.show();
@@ -3224,16 +2686,16 @@ public class ToolsUI extends JPanel {
       });
       buttPanel.add(infoButton2);
 
-      AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
+      final AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
       eosdump.addActionListener(e -> {
           try {
-            Formatter f = new Formatter();
+            final Formatter f = new Formatter();
             hdf5Table.getEosInfo(f);
             detailTA.setText(f.toString());
             detailWindow.show();
           }
           catch (IOException ioe) {
-            StringWriter sw = new StringWriter(5000);
+            final StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
             detailWindow.show();
@@ -3244,7 +2706,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -3271,7 +2733,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       hdf5Table.save();
       super.save();
     }
@@ -3284,7 +2746,7 @@ public class ToolsUI extends JPanel {
     Hdf5DataTable hdf5Table;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       hdf5Table.closeOpenFiles();
     }
 
@@ -3293,14 +2755,14 @@ public class ToolsUI extends JPanel {
       hdf5Table = new Hdf5DataTable(prefs, buttPanel);
       add(hdf5Table, BorderLayout.CENTER);
 
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
+      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
       infoButton.addActionListener(e -> {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           try {
             hdf5Table.showInfo(f);
           }
           catch (IOException ioe) {
-            StringWriter sw = new StringWriter(5000);
+            final StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
             detailWindow.show();
@@ -3314,7 +2776,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -3341,7 +2803,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       hdf5Table.save();
       super.save();
     }
@@ -3354,7 +2816,7 @@ public class ToolsUI extends JPanel {
     Hdf4Table hdf4Table;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       hdf4Table.closeOpenFiles();
     }
 
@@ -3363,16 +2825,16 @@ public class ToolsUI extends JPanel {
       hdf4Table = new Hdf4Table(prefs);
       add(hdf4Table, BorderLayout.CENTER);
 
-      AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
+      final AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
       eosdump.addActionListener(e -> {
           try {
-            Formatter f = new Formatter();
+            final Formatter f = new Formatter();
             hdf4Table.getEosInfo(f);
             detailTA.setText(f.toString());
             detailWindow.show();
           }
-          catch (IOException ioe) {
-            StringWriter sw = new StringWriter(5000);
+          catch (final IOException ioe) {
+            final StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
             detailWindow.show();
@@ -3382,7 +2844,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -3409,7 +2871,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       hdf4Table.save();
       super.save();
     }
@@ -3421,7 +2883,7 @@ public class ToolsUI extends JPanel {
     NcmlEditor editor;
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       editor.closeOpenFiles();
     }
 
@@ -3432,12 +2894,12 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       return editor.setNcml((String) o);
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       editor.save();
     }
@@ -3453,14 +2915,14 @@ public class ToolsUI extends JPanel {
       panel = new CdmrFeaturePanel(prefs);
       add(panel, BorderLayout.CENTER);
 
-      AbstractAction infoAction = new AbstractAction() {
+      final AbstractAction infoAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           try {
             panel.showInfo(f);
-
-          } catch (Exception ioe) {
-            StringWriter sw = new StringWriter(5000);
+          }
+          catch (final Exception ioe) {
+            final StringWriter sw = new StringWriter(5000);
             ioe.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
             detailWindow.show();
@@ -3476,7 +2938,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -3499,13 +2961,13 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       panel.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       panel.closeOpenFiles();
     }
   }
@@ -3522,7 +2984,7 @@ public class ToolsUI extends JPanel {
 
       AbstractAction infoAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          Formatter f = new Formatter();
+          final Formatter f = new Formatter();
           try {
             panel.showInfo(f);
 
@@ -3543,7 +3005,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -3566,13 +3028,13 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       panel.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       panel.closeOpenFiles();
     }
   }
@@ -3649,7 +3111,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       if (command == null) return false;
 
@@ -3676,13 +3138,13 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       table.save();
       super.save();
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       table.closeOpenFiles();
     }
   }
@@ -3733,7 +3195,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       if (command == null) return false;
 
@@ -3753,11 +3215,11 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
 
     @Override
-    void save() {
+    public void save() {
       table.save();
       super.save();
     }
@@ -3833,7 +3295,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -3864,7 +3326,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
       dsTable.clear();
@@ -3914,7 +3376,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       dsTable.save();
       if (gridUI != null) gridUI.storePersistentData();
@@ -3993,7 +3455,7 @@ public class ToolsUI extends JPanel {
 	    }
 
         @Override
-	    boolean process(Object o) {
+	    public boolean process(Object o) {
 	      String command = (String) o;
 	      boolean err = false;
 
@@ -4024,7 +3486,7 @@ public class ToolsUI extends JPanel {
 	    }
 
         @Override
-	    void closeOpenFiles() throws IOException {
+	    public void closeOpenFiles() throws IOException {
 	      if (ds != null) ds.close();
 	      ds = null;
 	      sgTable.clear();
@@ -4074,7 +3536,7 @@ public class ToolsUI extends JPanel {
 	    }
 
         @Override
-	    void save() {
+	    public void save() {
 	      super.save();
 	      sgTable.save();
 	      if (sgUI != null) sgUI.storePersistentData();
@@ -4141,7 +3603,7 @@ public class ToolsUI extends JPanel {
       viewerWindow.setBounds(bounds);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -4194,14 +3656,14 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (covDatasetCollection != null) covDatasetCollection.close();
       covDatasetCollection = null;
       dsTable.clear();
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       dsTable.save();
       if (viewerWindow != null) mainPrefs.putBeanObject(GRIDVIEW_FRAME_SIZE, viewerWindow.getBounds());
@@ -4233,7 +3695,7 @@ public class ToolsUI extends JPanel {
       buttPanel.add(infoButton);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -4284,13 +3746,13 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (ds != null) ds.close();
       ds = null;
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       dsTable.save();
     }
@@ -4338,7 +3800,7 @@ public class ToolsUI extends JPanel {
       dsViewer.addActions(buttPanel);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String location = (String) o;
       boolean err = false;
       NetcdfFile ncnew;
@@ -4373,7 +3835,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (ncfile != null) ncfile.close();
       ncfile = null;
       dsViewer.clear();
@@ -4395,7 +3857,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       dsViewer.save();
     }
@@ -4422,7 +3884,7 @@ public class ToolsUI extends JPanel {
       dsWriter.addActions(buttPanel);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       boolean err = false;
 
@@ -4450,7 +3912,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (ncfile != null) {
         ncfile.close();
       }
@@ -4474,7 +3936,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       dsWriter.save();
     }
@@ -4538,18 +4000,18 @@ public class ToolsUI extends JPanel {
       BAMutil.addActionToContainer(buttPanel, fileAction);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       return ftTable.setScanDirectory(command);
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
       ftTable.clear();
     }
 
     @Override
-    void save() {
+    public void save() {
       dirChooser.save();
       ftTable.save();
       prefs.put("currDir", dirChooser.getCurrentDirectory());
@@ -4586,7 +4048,7 @@ public class ToolsUI extends JPanel {
 
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       if (command == null) {
         return false;
@@ -4608,11 +4070,11 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
 
     @Override
-    void save() {
+    public void save() {
       table.save();
       super.save();
     }
@@ -4636,7 +4098,7 @@ public class ToolsUI extends JPanel {
       });
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
       if (command == null) {
         return false;
@@ -4659,11 +4121,11 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
 
     @Override
-    void save() {
+    public void save() {
       table.save();
       super.save();
       table.clear();
@@ -4732,13 +4194,13 @@ public class ToolsUI extends JPanel {
       buttPanel.add(xmlButton);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String location = (String) o;
       return setPointFeatureDataset((FeatureType) types.getSelectedItem(), location);
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (pfDataset != null) {
         pfDataset.close();
       }
@@ -4747,7 +4209,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       pfViewer.save();
     }
@@ -4858,17 +4320,17 @@ public class ToolsUI extends JPanel {
       buttPanel.add(infoButton);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String location = (String) o;
       return wmsViewer.setDataset((String) types.getSelectedItem(), location);
     }
 
     @Override
-    void closeOpenFiles() {
+    public void closeOpenFiles() {
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       wmsViewer.save();
     }
@@ -4900,13 +4362,13 @@ public class ToolsUI extends JPanel {
       buttPanel.add(infoButton);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String location = (String) o;
       return setStationRadialDataset(location);
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
       if (radarCollectionDataset != null) {
         radarCollectionDataset.close();
       }
@@ -4914,7 +4376,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void save() {
+    public void save() {
       super.save();
       radialViewer.save();
     }
@@ -4990,7 +4452,7 @@ public class ToolsUI extends JPanel {
       add(imagePanel, BorderLayout.CENTER);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String command = (String) o;
 
       try {
@@ -5015,7 +4477,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
     }
   }
 
@@ -5040,7 +4502,7 @@ public class ToolsUI extends JPanel {
       buttPanel.add(readButton);
     }
 
-    boolean process(Object o) {
+    public boolean process(Object o) {
       String filename = (String) o;
 
       GridDataset gridDs = null;
@@ -5101,7 +4563,7 @@ public class ToolsUI extends JPanel {
     }
 
     @Override
-    void closeOpenFiles() throws IOException {
+    public void closeOpenFiles() throws IOException {
     }
   }
 
@@ -5159,37 +4621,44 @@ public class ToolsUI extends JPanel {
     });
   }
 
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
+    // run this on the event thread
+    private static void createGui() {
+        final String osName = System.getProperty("os.name").toLowerCase();
+        final boolean isMacOs = osName.startsWith("mac os x");
 
-  // run this on the event thread
-  private static void createGui() {
+        if (isMacOs) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
 
-    if (isMacOs) {
-      System.setProperty("apple.laf.useScreenMenuBar", "true");
-      // fixes the case where users on a mac use the system bar to quit rather than
-      // closing a window using the 'x' button.
-      Runtime.getRuntime().addShutdownHook(new Thread() {
-        @Override
-        public void run() {
-          doSavePrefsAndUI();
+            // fixes the case on macOS where users use the system menu option to quit rather than
+            // closing a window using the 'x' button.
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    doSavePrefsAndUI();
+                }
+            });
         }
-      });
-    }
-    else {
-      try {
-        // Switch to Nimbus Look and Feel, if it's available.
-        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-          if ("Nimbus".equals(info.getName())) {
-            UIManager.setLookAndFeel(info.getClassName());
-            break;
+        else {
+            // Not macOS, so try applying Nimbus L&F, if available.
+            try {
+                for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        UIManager.setLookAndFeel(info.getClassName());
+                        break;
+                    }
+                }
+            }
+            catch (Exception exc) {
+                log.warn("Unable to apply Nimbus look-and-feel due to {}", exc.toString());
+
+                if (log.isTraceEnabled()) {
+                    exc.printStackTrace();
+                }
           }
-        }
       }
-      catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-              UnsupportedLookAndFeelException e) {
-        log.warn("Found Nimbus Look and Feel, but couldn't install it.", e);
-      }
-    }
 
     // get a splash screen up right away
     final ToolsSplashScreen splash = ToolsSplashScreen.getSharedInstance();
@@ -5304,8 +4773,6 @@ public class ToolsUI extends JPanel {
       HTTPSession.setInterceptors(true);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
     // spring initialization
     try (ClassPathXmlApplicationContext springContext =
                  new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml")) {
@@ -5367,7 +4834,7 @@ public class ToolsUI extends JPanel {
         Debug.setStore(prefs.node("Debug"));
       }
       catch (IOException e) {
-        log.warn("XMLStore Creation failed ", e.toString());
+        log.warn("XMLStore Creation failed - {}", e.toString());
       }
 
       // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
@@ -5378,7 +4845,7 @@ public class ToolsUI extends JPanel {
         thredds.inventory.CollectionManagerAbstract.setMetadataStore(MetadataManager.getFactory());
       }
       catch (Exception e) {
-        log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore", e);
+        log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore - {}", e.toString());
       }
 
       UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
@@ -5394,21 +4861,12 @@ public class ToolsUI extends JPanel {
       java.net.Authenticator.setDefault(provider);
 
       // open dap initializations
-      ucar.nc2.dods.DODSNetcdfFile.setAllowCompression(true);
-      ucar.nc2.dods.DODSNetcdfFile.setAllowSessions(true);
+      DODSNetcdfFile.setAllowCompression(true);
+      DODSNetcdfFile.setAllowSessions(true);
 
       // caching
       ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
       GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
-
-    /* No longer needed
-    HttpClient client = HttpClientManager.init(provider, "ToolsUI");
-    opendap.dap.DConnect2.setHttpClient(client);
-    HTTPRandomAccessFile.setHttpClient(client);
-    CdmRemote.setHttpClient(client);
-    NetcdfDataset.setHttpClient(client);
-    WmsViewer.setHttpClient(client);
-    */
 
       SwingUtilities.invokeLater(( ) -> {
           createGui();

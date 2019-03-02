@@ -18,7 +18,6 @@ import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.StandardFields;
 import ucar.nc2.iosp.bufr.*;
-import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.writer.Bufr2Xml;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
@@ -33,7 +32,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
@@ -166,7 +164,7 @@ public class BufrMessageViewer extends JPanel {
 
         MessageBean mb = (MessageBean) messageTable.getSelectedBean();
         if (mb == null) return;
-        java.util.List<DdsBean> beanList = new ArrayList<>();
+        List<DdsBean> beanList = new ArrayList<>();
         try {
           setDataDescriptors(beanList, mb.m.getRootDataDescriptor(), 0);
           setObs(mb.m);
@@ -192,9 +190,7 @@ public class BufrMessageViewer extends JPanel {
       }
     });  */
 
-   ////////////////////////////////////////////////////////////
-
-    ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(messageTable.getJTable(), "Options");
+    PopupMenu varPopup = new PopupMenu(messageTable.getJTable(), "Options");
     varPopup.addAction("Show DDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean vb = (MessageBean) messageTable.getSelectedBean();
@@ -605,7 +601,7 @@ public class BufrMessageViewer extends JPanel {
 
   public void setBufrFile(RandomAccessFile raf) throws IOException {
     this.raf = raf;
-    java.util.List<MessageBean> beanList = new ArrayList<>();
+    List<MessageBean> beanList = new ArrayList<>();
     center = -1;
 
     scan = new MessageScanner(raf, 0, true);
@@ -638,7 +634,7 @@ public class BufrMessageViewer extends JPanel {
     return ncfile;
   }
 
-  private int setDataDescriptors(java.util.List<DdsBean> beanList, DataDescriptor dds, int seqno) {
+  private int setDataDescriptors(List<DdsBean> beanList, DataDescriptor dds, int seqno) {
     for (DataDescriptor key : dds.getSubKeys()) {
       beanList.add(new DdsBean(key, seqno++));
       if (key.getSubKeys() != null)
@@ -649,7 +645,7 @@ public class BufrMessageViewer extends JPanel {
 
   private void setObs(Message m) {
 
-    java.util.List<ObsBean> beanList = new ArrayList<>();
+    List<ObsBean> beanList = new ArrayList<>();
     try {
       NetcdfFile ncd = makeBufrMessageAsDataset(m);
       Variable v = ncd.findVariable(BufrIosp2.obsRecord);

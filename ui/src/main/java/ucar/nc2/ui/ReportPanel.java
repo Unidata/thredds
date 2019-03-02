@@ -30,7 +30,7 @@ public abstract class ReportPanel extends JPanel {
     add(reportPane, BorderLayout.CENTER);
   }
 
-  protected void addOptions(JPanel buttPanel) {
+  public void addOptions(JPanel buttPanel) {
 
   }
 
@@ -73,7 +73,7 @@ public abstract class ReportPanel extends JPanel {
   }
 
 
-  protected boolean showCollection(String spec) {
+  public boolean showCollection(String spec) {
     Formatter f = new Formatter();
     f.format("collection = %s%n", spec);
     boolean hasFiles = false;
