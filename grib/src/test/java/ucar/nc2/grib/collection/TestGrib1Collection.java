@@ -64,7 +64,6 @@ public class TestGrib1Collection {
     System.out.printf("changed = %s%n", changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
 
-
     String filename = topDir + "pofp/ds083.2_pofp.ncx4";
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, fdc);
