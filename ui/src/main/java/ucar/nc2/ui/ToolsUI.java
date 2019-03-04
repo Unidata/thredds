@@ -55,6 +55,7 @@ import ucar.nc2.units.*;
 import ucar.nc2.util.*;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.xml.RuntimeConfigParser;
+import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.Debug;
@@ -314,30 +315,37 @@ public class ToolsUI extends JPanel {
     setDebugFlags();
   }
 
-  private void addListeners(final JTabbedPane tabPane) {
-    tabPane.addChangeListener(e -> {
-        Component c = tabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = tabPane.getSelectedIndex();
-          String title = tabPane.getTitleAt(idx);
-          makeComponent(tabPane, title);
-        }
-    });
-    tabPane.addComponentListener(new ComponentAdapter() {
-      public void componentShown(ComponentEvent e) {
-        Component c = tabPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = tabPane.getSelectedIndex();
-          String title = tabPane.getTitleAt(idx);
-          makeComponent(tabPane, title);
-        }
-      }
-    });
-  }
+/**
+ *
+ */
+    private void addListeners(final JTabbedPane tabPane) {
+        tabPane.addChangeListener(e -> {
+            final Component c = tabPane.getSelectedComponent();
+            if (c instanceof JLabel) {
+                final int idx = tabPane.getSelectedIndex();
+                final String title = tabPane.getTitleAt(idx);
+                makeComponent(tabPane, title);
+            }
+        });
+        tabPane.addComponentListener(new ComponentAdapter() {
+            public void componentShown(final ComponentEvent e) {
+            final Component c = tabPane.getSelectedComponent();
+                if (c instanceof JLabel) {
+                    final int idx = tabPane.getSelectedIndex();
+                    final String title = tabPane.getTitleAt(idx);
+                    makeComponent(tabPane, title);
+                }
+            }
+        });
+    }
 
-  // deferred creation of components to minimize startup
-  private void makeComponent(JTabbedPane parent, String title) {
-    if (parent == null) parent = tabbedPane;
+/**
+ *  deferred creation of components to minimize startup
+ */
+    private void makeComponent(JTabbedPane parent, String title) {
+        if (parent == null) {
+            parent = tabbedPane;
+        }
 
     // find the correct index
     int n = parent.getTabCount();
@@ -1345,7 +1353,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class BufrPanel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
+    RandomAccessFile raf = null;
     BufrMessageViewer bufrTable;
 
     @Override
@@ -1368,7 +1376,7 @@ public class ToolsUI extends JPanel {
       try {
         if (raf != null)
           raf.close();
-        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+        raf = new RandomAccessFile(command, "r");
 
         bufrTable.setBufrFile(raf);
 
@@ -2143,7 +2151,7 @@ public class ToolsUI extends JPanel {
   /////////////////////////////////////////////////////////////////////
   // raw grib access - dont go through the IOSP
   private class Grib1CollectionPanel extends OpPanel {
-    //ucar.unidata.io.RandomAccessFile raf = null;
+    //RandomAccessFile raf = null;
     ucar.nc2.ui.grib.Grib1CollectionPanel gribTable;
 
     @Override
@@ -2635,7 +2643,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class Hdf5ObjectPanel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
+    RandomAccessFile raf = null;
     Hdf5ObjectTable hdf5Table;
 
     @Override
@@ -2713,7 +2721,7 @@ public class ToolsUI extends JPanel {
       try {
         if (raf != null)
           raf.close();
-        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+        raf = new RandomAccessFile(command, "r");
 
         hdf5Table.setHdf5File(raf);
 
@@ -2742,7 +2750,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class Hdf5DataPanel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
+    RandomAccessFile raf = null;
     Hdf5DataTable hdf5Table;
 
     @Override
@@ -2783,7 +2791,7 @@ public class ToolsUI extends JPanel {
       try {
         if (raf != null)
           raf.close();
-        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+        raf = new RandomAccessFile(command, "r");
 
         hdf5Table.setHdf5File(raf);
 
@@ -2812,7 +2820,7 @@ public class ToolsUI extends JPanel {
 
   /////////////////////////////////////////////////////////////////////
   private class Hdf4Panel extends OpPanel {
-    ucar.unidata.io.RandomAccessFile raf = null;
+    RandomAccessFile raf = null;
     Hdf4Table hdf4Table;
 
     @Override
@@ -2851,7 +2859,7 @@ public class ToolsUI extends JPanel {
       try {
         if (raf != null)
           raf.close();
-        raf = new ucar.unidata.io.RandomAccessFile(command, "r");
+        raf = new RandomAccessFile(command, "r");
 
         hdf4Table.setHdf4File(raf);
 
@@ -3815,7 +3823,7 @@ public class ToolsUI extends JPanel {
         if (jni) {
           Nc4Iosp iosp = new Nc4Iosp(NetcdfFileWriter.Version.netcdf4);
           ncnew = new NetcdfFileSubclass(iosp, location);
-          ucar.unidata.io.RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(location, "r");
+          RandomAccessFile raf = new RandomAccessFile(location, "r");
           iosp.open(raf, ncnew, null);
         } else {
           ncnew = openFile(location, addCoords, null);
@@ -4578,7 +4586,7 @@ public class ToolsUI extends JPanel {
 /**
  *
  */
-  static private void doSavePrefsAndUI()  {
+  private static void doSavePrefsAndUI()  {
     ui.save();
     Rectangle bounds = frame.getBounds();
     prefs.putBeanObject(FRAME_SIZE, bounds);
@@ -4602,30 +4610,30 @@ public class ToolsUI extends JPanel {
 /**
  * Handle messages.
  */
-  private static void setDataset() {
-    SwingUtilities.invokeLater(( ) -> {
+    private static void setDataset() {
         // do it in the swing event thread
-        int pos = wantDataset.indexOf('#');
-        if (pos > 0) {
-          String catName = wantDataset.substring(0, pos); // {catalog}#{dataset}
-          if (catName.endsWith(".xml")) {
-            ui.makeComponent(null, "THREDDS");
-            ui.threddsUI.setDataset(wantDataset);
-            ui.tabbedPane.setSelectedComponent(ui.threddsUI);
-          }
-          return;
-        }
+        SwingUtilities.invokeLater(( ) -> {
+            int pos = wantDataset.indexOf('#');
+            if (pos > 0) {
+                final String catName = wantDataset.substring(0, pos); // {catalog}#{dataset}
+                if (catName.endsWith(".xml")) {
+                    ui.makeComponent(null, "THREDDS");
+                    ui.threddsUI.setDataset(wantDataset);
+                    ui.tabbedPane.setSelectedComponent(ui.threddsUI);
+                }
+                return;
+            }
 
-        // default
-        ui.openNetcdfFile(wantDataset);
-    });
-  }
+            // default
+            ui.openNetcdfFile(wantDataset);
+        });
+    }
 
 /**
- *
+ *  Set look-and-feel.
  */
-    // run this on the event thread
-    private static void createGui() {
+    private static void prepareGui() {
+
         final String osName = System.getProperty("os.name").toLowerCase();
         final boolean isMacOs = osName.startsWith("mac os x");
 
@@ -4657,220 +4665,258 @@ public class ToolsUI extends JPanel {
                 if (log.isTraceEnabled()) {
                     exc.printStackTrace();
                 }
-          }
-      }
+            }
+        }
 
-    // get a splash screen up right away
-    final ToolsSplashScreen splash = ToolsSplashScreen.getSharedInstance();
-    splash.setVisible(true);
+        // misc Gui initialization(s)
+        BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
-    // misc initializations
-    BAMutil.setResourcePath("/resources/nj22/ui/icons/");
+        // Setting up a font metrics object triggers one of the most time-wasting steps of GUI set up,
+        // so do it now before trying to create the splash or tools interface.
+        SwingUtilities.invokeLater(( ) -> {
+            final Toolkit tk = Toolkit.getDefaultToolkit ( );
+            final Font f = new Font ("SansSerif", Font.PLAIN, 12);
 
-    // test
-    // java.util.logging.Logger.getLogger("ucar.nc2").setLevel( java.util.logging.Level.SEVERE);
-
-    // put UI in a JFrame
-    frame = new JFrame("NetCDF ("+DIALOG_VERSION+") Tools");
-    ui = new ToolsUI(prefs, frame);
-
-    frame.setIconImage(BAMutil.getImage("netcdfUI"));
-
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowActivated(WindowEvent e) {
-        splash.setVisible(false);
-        // splash.dispose();
-      }
-
-      public void windowClosing(WindowEvent e) {
-        if (! done) exit();
-      }
-    });
-
-    frame.getContentPane().add(ui);
-
-    Rectangle have = frame.getGraphicsConfiguration().getBounds();
-    Rectangle def = new Rectangle(50, 50, 800, 800);
-    Rectangle want = (Rectangle) prefs.getBean(FRAME_SIZE, def);
-
-    if (want.getX() > have.getWidth() - 25) {
-      // may be off screen when switcing between 2 monitor system
-      want = def;
+            @SuppressWarnings("deprecation")
+            final FontMetrics fm = tk.getFontMetrics (f);
+        });
     }
 
-    frame.setBounds(want);
+/**
+ *  Must call this method on the event thread.
+ */
+    private static void createToolsFrame() {
+        // put UI in a JFrame
+        frame = new JFrame("NetCDF ("+DIALOG_VERSION+") Tools");
+        ui = new ToolsUI(prefs, frame);
 
-    frame.pack();
-    frame.setBounds(want);
-    frame.setVisible(true);
+        frame.setIconImage(BAMutil.getImage("netcdfUI"));
 
-    // in case a dataset was on the command line
-    if (wantDataset != null) {
-      setDataset();
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowActivated(final WindowEvent e) {
+                ToolsSplashScreen.getSharedInstance().setVisible(false);
+            }
+
+            @Override
+            public void windowClosing(final WindowEvent e) {
+                if (! done) {
+                    exit();
+                }
+            }
+        });
+
+        frame.getContentPane().add(ui);
+
+        final Rectangle have = frame.getGraphicsConfiguration().getBounds();
+        final Rectangle def = new Rectangle(50, 50, 800, 800);
+
+        Rectangle want = (Rectangle) prefs.getBean(FRAME_SIZE, def);
+
+        if (want.getX() > have.getWidth() - 25) {
+            // may be off screen when switcing between 2 monitor system
+            want = def;
+        }
+
+        frame.setBounds(want);
+
+        frame.pack();
+        frame.setBounds(want);
+
+        // in case a dataset was on the command line
+        if (wantDataset != null) {
+            setDataset();
+        }
     }
-  }
 
 /**
  *
  */
-  public static void main(String args[]) {
-    if (debugListen) {
-      System.out.println("Arguments:");
-      for (String arg : args) {
-        System.out.println(" " + arg);
-      }
-      HTTPSession.setInterceptors(true);
-    }
+    public static void main(String args[]) {
+        final long start = System.currentTimeMillis();
 
-    //////////////////////////////////////////////////////////////////////////
-    // handle multiple versions of ToolsUI, along with passing a dataset name
-    SocketMessage sm;
-    if (args.length > 0) {
-      // munge arguments into a single string
-      StringBuilder sbuff = new StringBuilder();
-      for (String arg : args) {
-        sbuff.append(arg);
-        sbuff.append(" ");
-      }
-      String arguments = sbuff.toString();
-      System.out.println("ToolsUI arguments=" + arguments);
-
-      wantDataset = arguments;
-
-      // see if another version is running, if so send it the message
-      sm = new SocketMessage(14444, wantDataset);
-      if (sm.isAlreadyRunning()) {
-        log.error("ToolsUI already running - pass argument= '{}}' to it and exit", wantDataset);
-        System.exit(0);
-      }
-
-    }
-    else { // no arguments were passed
-
-      // look for messages from another ToolsUI
-      sm = new SocketMessage(14444, null);
-      if (sm.isAlreadyRunning()) {
-        System.out.println("ToolsUI already running - start up another copy");
-      }
-      else {
-        sm.addEventListener(new SocketMessage.EventListener() {
-          public void setMessage(SocketMessage.Event event) {
-            wantDataset = event.getMessage();
-            if (debugListen) {
-              System.out.println(" got message= '" + wantDataset);
+        if (debugListen) {
+            System.out.println("Arguments:");
+            for (final String arg : args) {
+                System.out.println(" " + arg);
             }
-            setDataset();
-          }
+            HTTPSession.setInterceptors(true);
+        }
+
+        // handle multiple versions of ToolsUI, along with passing a dataset name
+        // first, if there were command-line arguments
+        if (args.length > 0) {
+            // munge arguments into a single string
+            final StringBuilder sbuff = new StringBuilder();
+            for (final String arg : args) {
+                sbuff.append(arg);
+                sbuff.append(" ");
+            }
+            final String arguments = sbuff.toString();
+            System.out.println("ToolsUI arguments=" + arguments);
+
+            // see if another version is running, if so send it the message then exit
+            final SocketMessage sm = new SocketMessage(14444, wantDataset);
+            if (sm.isAlreadyRunning()) {
+                log.error("ToolsUI already running - pass argument='{}' and exit", arguments);
+                System.exit(0);
+            }
+        }
+
+        // otherwise if no command-line arguments were passed
+        else {
+            final SocketMessage sm = new SocketMessage(14444, null);
+            if (sm.isAlreadyRunning()) {
+                System.out.println("ToolsUI already running - start up another copy");
+            }
+            else {
+                sm.addEventListener(new SocketMessage.EventListener() {
+                    @Override
+                    public void setMessage(SocketMessage.Event event) {
+                        wantDataset = event.getMessage();
+                        if (debugListen) {
+                            System.out.println(" got message= '" + wantDataset);
+                        }
+                        setDataset();
+                    }
+                });
+            }
+        }
+
+        if (debugListen) {
+            System.out.println("Arguments:");
+            for (final String arg : args) {
+                System.out.println(" " + arg);
+            }
+            HTTPSession.setInterceptors(true);
+        }
+
+        // spring initialization
+        try {
+            ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(
+                                "classpath:resources/nj22/ui/spring/application-config.xml");
+        }
+        catch (Exception exc) {
+            log.error("failed creating spring context: {}", exc.toString());
+            System.exit(1);
+        }
+
+        // look for command-line arguments
+        boolean configRead = false;
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
+                final String runtimeConfig = args[i + 1];
+                i++;
+                try (final FileInputStream fis = new FileInputStream(runtimeConfig)) {
+                    final StringBuilder errlog = new StringBuilder();
+                    RuntimeConfigParser.read(fis, errlog);
+                    configRead = true;
+                    System.out.println(errlog);
+                }
+                catch (IOException ioe) {
+                    log.warn("Error reading {} = {}", runtimeConfig, ioe.getMessage());
+                }
+            }
+        }
+
+        if (!configRead) {
+            final String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
+            final File f = new File(filename);
+            if (f.exists()) {
+                try (final FileInputStream fis = new FileInputStream(filename)) {
+                    final StringBuilder errlog = new StringBuilder();
+                    RuntimeConfigParser.read(fis, errlog);
+                    configRead = true;
+                    System.out.println(errlog);
+                }
+                catch (IOException ioe) {
+                    log.warn("Error reading {} = {}", filename, ioe.getMessage());
+                }
+            }
+        }
+
+        // prefs storage
+        try {
+            // 4.4
+            final String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
+            final File prefs44 = new File(prefStore);
+
+            if (!prefs44.exists()) {
+                // if 4.4 doesnt exist, see if 4.3 exists
+                final String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
+                final File prefs43 = new File(prefStoreBack);
+                if (prefs43.exists()) {
+                    // make a copy of it
+                    IO.copyFile(prefs43, prefs44);
+                }
+            }
+
+            // open 4.4 version, create it if it doesn't exist
+            store = XMLStore.createFromFile(prefStore, null);
+            prefs = store.getPreferences();
+
+            Debug.setStore(prefs.node("Debug"));
+        }
+        catch (IOException e) {
+            log.warn("XMLStore creation failed - {}", e.toString());
+        }
+
+        // Prepare UI management.
+        prepareGui();
+
+        // Display the splash screen so there's something to look at while we do some more init.
+        SwingUtilities.invokeLater(( ) -> {
+            ToolsSplashScreen.getSharedInstance().setVisible(true);
         });
-      }
-    }
 
-    if (debugListen) {
-      System.out.println("Arguments:");
-      for (String arg : args) {
-        System.out.println(" " + arg);
-      }
-      HTTPSession.setInterceptors(true);
-    }
+        // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
+        Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
 
-    // spring initialization
-    try (ClassPathXmlApplicationContext springContext =
-                 new ClassPathXmlApplicationContext("classpath:resources/nj22/ui/spring/application-config.xml")) {
-
-      // look for run line arguments
-      boolean configRead = false;
-      for (int i = 0; i < args.length; i++) {
-        if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
-          String runtimeConfig = args[i + 1];
-          i++;
-          try {
-            StringBuilder errlog = new StringBuilder();
-            FileInputStream fis = new FileInputStream(runtimeConfig);
-            RuntimeConfigParser.read(fis, errlog);
-            configRead = true;
-            System.out.println(errlog);
-          }
-          catch (IOException ioe) {
-            log.warn("Error reading {} = {}", runtimeConfig, ioe.getMessage());
-          }
+        try {
+            // MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
+            thredds.inventory.CollectionManagerAbstract.setMetadataStore(MetadataManager.getFactory());
         }
-      }
-
-      if (!configRead) {
-        String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
-        File f = new File(filename);
-        if (f.exists()) {
-          try {
-            StringBuilder errlog = new StringBuilder();
-            FileInputStream fis = new FileInputStream(filename);
-            RuntimeConfigParser.read(fis, errlog);
-            configRead = true;
-            System.out.println(errlog);
-          }
-          catch (IOException ioe) {
-            log.warn("Error reading {} = {}", filename, ioe.getMessage());
-          }
-        }
-      }
-
-      // prefs storage
-      try {
-        // 4.4
-        String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
-        File prefs44 = new File(prefStore);
-
-        if (!prefs44.exists()) { // if 4.4 doesnt exist, see if 4.3 exists
-          String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
-          File prefs43 = new File(prefStoreBack);
-          if (prefs43.exists()) { // make a copy of it
-            IO.copyFile(prefs43, prefs44);
-          }
+        catch (Exception exc) {
+            log.error("CdmInit: Failed CollectionManagerAbstract.setMetadataStore - {}", exc.toString());
         }
 
-        // open 4.4 version, create it if doesnt exist
-        store = XMLStore.createFromFile(prefStore, null);
-        prefs = store.getPreferences();
+        // open dap initializations
+        DODSNetcdfFile.setAllowCompression(true);
+        DODSNetcdfFile.setAllowSessions(true);
 
-        Debug.setStore(prefs.node("Debug"));
-      }
-      catch (IOException e) {
-        log.warn("XMLStore Creation failed - {}", e.toString());
-      }
+        // caching
+        RandomAccessFile.enableDefaultGlobalFileCache();
+        GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
 
-      // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
-      Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
+        // Waste some time on the main thread before adding another task to the event dispatch thread.
+        // Somehow this let's the EDT "catch up" and in particular gets the splash to finish rendering.
+        try
+        {
+            Thread.sleep (2500l);
+        }
+        catch (Exception ignore)
+        {
+            // LOGGER.debug ("Not implemented.");.
+        }
 
-      try {
-        // MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
-        thredds.inventory.CollectionManagerAbstract.setMetadataStore(MetadataManager.getFactory());
-      }
-      catch (Exception e) {
-        log.error("CdmInit: Failed to open CollectionManagerAbstract.setMetadataStore - {}", e.toString());
-      }
+        // Create the UI frame!
+        SwingUtilities.invokeLater(( ) -> {
+            createToolsFrame();
+            frame.setVisible(true);
+        });
 
-      UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
-      try {
-        HTTPSession.setGlobalCredentialsProvider(provider);
-      }
-      catch (HTTPException e) {
-        log.error("Failed to set global credentials");
-      }
-      HTTPSession.setGlobalUserAgent("ToolsUI v5.0");
+        // Name HTTP user agent and set Authentication for accessing password protected services
+        SwingUtilities.invokeLater(( ) -> {
+            UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
+            try {
+                HTTPSession.setGlobalCredentialsProvider(provider);
+            }
+            catch (HTTPException e) {
+                log.error("Failed to set global credentials");
+            }
+            HTTPSession.setGlobalUserAgent("ToolsUI v5.0");
 
-      // set Authentication for accessing passsword protected services like TDS PUT
-      java.net.Authenticator.setDefault(provider);
-
-      // open dap initializations
-      DODSNetcdfFile.setAllowCompression(true);
-      DODSNetcdfFile.setAllowSessions(true);
-
-      // caching
-      ucar.unidata.io.RandomAccessFile.enableDefaultGlobalFileCache();
-      GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
-
-      SwingUtilities.invokeLater(( ) -> {
-          createGui();
-      });
+            java.net.Authenticator.setDefault(provider);
+        });
     }
-  }
 }
