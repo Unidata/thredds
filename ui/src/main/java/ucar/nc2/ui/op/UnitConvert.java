@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.opp;
+package ucar.nc2.ui.op;
 
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;

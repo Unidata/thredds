@@ -3,32 +3,33 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
-// import ucar.nc2.thredds.TDSRadarDatasetCollection;
+import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDataset;
+import ucar.nc2.ft.radial.StationRadialDataset;
 import ucar.nc2.time.CalendarDate;
+import ucar.nc2.ui.RadialDatasetTable;
+import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.BeanTable;
-import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.ui.point.StationRegionDateChooser;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-
 import ucar.nc2.units.DateRange;
 import ucar.unidata.geoloc.Station;
 import ucar.unidata.geoloc.LatLonPoint;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
 
-import java.beans.PropertyChangeListener;
 import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 /**
  * A Swing widget to view the contents of a ucar.nc2.dt.StationRadarCollection
@@ -39,7 +40,7 @@ import java.io.IOException;
 public class StationRadialViewer extends JPanel {
   private PreferencesExt prefs;
 
-  private ucar.nc2.ft.radial.StationRadialDataset sds;
+  private StationRadialDataset sds;
 
   private StationRegionDateChooser chooser;
   private BeanTable stnTable;
@@ -50,6 +51,9 @@ public class StationRadialViewer extends JPanel {
   private boolean eventsOK = true;
   private boolean debugStationRegionSelect = false, debugStationDatsets = false, debugQuery = false;
 
+/**
+ *
+ */
   public StationRadialViewer(PreferencesExt prefs) {
     this.prefs = prefs;
 
@@ -57,7 +61,7 @@ public class StationRadialViewer extends JPanel {
     chooser.addPropertyChangeListener( new PropertyChangeListener() {
       public void propertyChange(java.beans.PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
-          ucar.unidata.geoloc.Station selectedStation = (ucar.unidata.geoloc.Station) e.getNewValue();
+          Station selectedStation = (Station) e.getNewValue();
           if (debugStationRegionSelect) System.out.println("selectedStation= "+selectedStation.getName());
           eventsOK = false;
           stnTable.setSelectedBean( selectedStation);
@@ -96,8 +100,11 @@ public class StationRadialViewer extends JPanel {
     add(splitV, BorderLayout.CENTER);
   }
 
+/**
+ *
+ */
   public void setDataset(FeatureDataset dataset) {
-    this.sds = (ucar.nc2.ft.radial.StationRadialDataset) dataset;
+    this.sds = (StationRadialDataset) dataset;
 
     if (debugStationDatsets)
       System.out.println("PointObsViewer open type "+dataset.getClass().getName());
@@ -108,10 +115,10 @@ public class StationRadialViewer extends JPanel {
 
     List<StationBean> stationBeans = new ArrayList<StationBean>();
       try {
-        List<ucar.unidata.geoloc.Station> stations = sds.getStations();
+        List<Station> stations = sds.getStations();
         if (stations == null) return;
 
-        for (ucar.unidata.geoloc.Station station : stations)
+        for (Station station : stations)
           stationBeans.add(new StationBean(station));
 
       } catch (IOException ioe) {
@@ -124,6 +131,9 @@ public class StationRadialViewer extends JPanel {
     rdTable.clear();
   }
 
+/**
+ *
+ */
   public void setStation(StationBean sb) {
     try {
       RadialDatasetSweep rsds = sds.getRadarDataset(sb.getName(), new Date()); // LOOK kludge - should show all possibilities
@@ -133,8 +143,14 @@ public class StationRadialViewer extends JPanel {
     }
   }
 
+/**
+ *
+ */
   public PreferencesExt getPrefs() { return prefs; }
 
+/**
+ *
+ */
   public void save() {
    stnTable.saveState(false);
    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
@@ -143,7 +159,10 @@ public class StationRadialViewer extends JPanel {
    //rdTable.saveState();
   }
 
-  public class StationBean implements ucar.unidata.geoloc.Station {
+/**
+ *
+ */
+  public class StationBean implements Station {
     private Station s;
 
     public StationBean( Station s) {

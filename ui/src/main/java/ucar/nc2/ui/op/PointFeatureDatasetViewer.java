@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import org.apache.xmlbeans.XmlException;
 import ucar.ma2.StructureData;
@@ -31,6 +31,8 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.geoloc.Station;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
+
+import ucar.nc2.ui.StructureTable;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;

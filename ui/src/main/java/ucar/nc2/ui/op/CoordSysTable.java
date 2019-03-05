@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.opp;
+package ucar.nc2.ui.op;
 
 import ucar.ma2.*;
 import ucar.ma2.DataType;
@@ -79,7 +79,7 @@ public class CoordSysTable extends JPanel {
 
     axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);
 
-    ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(varTable.getJTable(), "Options");
+    PopupMenu varPopup = new PopupMenu(varTable.getJTable(), "Options");
     varPopup.addAction("Show Declaration", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
@@ -235,7 +235,7 @@ public class CoordSysTable extends JPanel {
     if (attTable == null) {
       // global attributes
       attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
-      PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
+      PopupMenu varPopup = new PopupMenu(attTable.getJTable(), "Options");
       varPopup.addAction("Show Attribute", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           AttributeBean bean = (AttributeBean) attTable.getSelectedBean();

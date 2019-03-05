@@ -31,7 +31,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import ucar.ma2.Array;
 import ucar.nc2.NetcdfFile;

@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
@@ -27,9 +27,8 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import ucar.nc2.ui.StructureTable;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.*;
@@ -39,6 +38,9 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 //import ucar.util.GoogleDiff;
 

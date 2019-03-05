@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import thredds.inventory.*;
 import ucar.nc2.time.CalendarDate;

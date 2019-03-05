@@ -85,7 +85,7 @@ public abstract class OpPanel extends JPanel {
             }
         });
 
-        AbstractAction closeAction = new AbstractAction() {
+        final AbstractAction closeAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -113,7 +113,7 @@ public abstract class OpPanel extends JPanel {
         }
 
         if (addCoordButton) {
-            AbstractAction coordAction = new AbstractAction() {
+            final AbstractAction coordAction = new AbstractAction() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     addCoords = (Boolean) getValue(BAMutil.STATE);
@@ -123,7 +123,7 @@ public abstract class OpPanel extends JPanel {
                 }
             };
             addCoords = prefs.getBoolean("coordState", false);
-            String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
+            final String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
             BAMutil.setActionProperties(coordAction, "addCoords", tooltip2, true, 'C', -1);
             coordAction.putValue(BAMutil.STATE, Boolean.valueOf(addCoords));
             coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);

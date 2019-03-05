@@ -3,13 +3,12 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui.opp;
+package ucar.nc2.ui.op;
 
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.NetcdfDatasetInfo;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;

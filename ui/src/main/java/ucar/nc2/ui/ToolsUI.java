@@ -22,11 +22,8 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
 import ucar.nc2.ft.point.PointDatasetImpl;
-import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.geotiff.GeoTiff;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
@@ -45,7 +42,7 @@ import ucar.nc2.ui.grid.GeoGridTable;
 import ucar.nc2.ui.grid.GridUI;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.menu.*;
-import ucar.nc2.ui.opp.*;
+import ucar.nc2.ui.op.*;
 import ucar.nc2.ui.simplegeom.SimpleGeomTable;
 import ucar.nc2.ui.simplegeom.SimpleGeomUI;
 import ucar.nc2.ui.util.SocketMessage;
@@ -68,7 +65,6 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Paths;
 import java.util.Formatter;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 
@@ -124,9 +120,9 @@ public class ToolsUI extends JPanel {
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
   private GribCodePanel gribCodePanel;
-  private GribFilesPanel gribFilesPanel;
+  private GribFilesOpPanel gribFilesPanel;
   private GribIndexPanel gribIdxPanel;
-  private GribRewritePanel gribRewritePanel;
+  private GribRewriteOpPanel gribRewritePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1CollectionPanel grib1CollectionPanel;
   private ReportOpPanel grib1ReportPanel;
@@ -424,7 +420,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "GRIB-FILES":
-        gribFilesPanel = new GribFilesPanel((PreferencesExt) mainPrefs.node("gribFiles"));
+        gribFilesPanel = new GribFilesOpPanel((PreferencesExt) mainPrefs.node("gribFiles"));
         c = gribFilesPanel;
         break;
 
@@ -506,7 +502,7 @@ public class ToolsUI extends JPanel {
         break;
 
       case "GRIB-Rewrite":
-        gribRewritePanel = new GribRewritePanel((PreferencesExt) mainPrefs.node("grib-rewrite"));
+        gribRewritePanel = new GribRewriteOpPanel((PreferencesExt) mainPrefs.node("grib-rewrite"));
         c = gribRewritePanel;
         break;
 
@@ -781,47 +777,61 @@ public class ToolsUI extends JPanel {
     if (wmsPanel != null) wmsPanel.save();
   }
 
-  //////////////////////////////////////////////////////////////////////////////////
+///
+///////////////////////////////////////////////////////////////////////////////////////
+///
+    public static ToolsUI getToolsUI() { return ui; }
 
-  private void openNetcdfFile(String datasetName) {
+    public static JFrame getToolsFrame() { return ui.getFramePriv(); }
+
+    private JFrame getFramePriv() { return parentFrame; }
+
+    public static DataFactory getThreddsDataFactory() { return ui.getThreddsDataFactoryPriv(); }
+
+    private DataFactory getThreddsDataFactoryPriv() { return threddsDataFactory; }
+
+///
+///////////////////////////////////////////////////////////////////////////////////////
+///
+  public void openNetcdfFile(String datasetName) {
     makeComponent(tabbedPane, "Viewer");
     viewerPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(viewerPanel);
   }
 
-  private void openNetcdfFile(NetcdfFile ncfile) {
+  public void openNetcdfFile(NetcdfFile ncfile) {
     makeComponent(tabbedPane, "Viewer");
     viewerPanel.setDataset(ncfile);
     tabbedPane.setSelectedComponent(viewerPanel);
   }
 
-  private void openCoordSystems(String datasetName) {
+  public void openCoordSystems(String datasetName) {
     makeComponent(tabbedPane, "CoordSys");
     coordSysPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(coordSysPanel);
   }
 
-  private void openCoordSystems(NetcdfDataset dataset) {
+  public void openCoordSystems(NetcdfDataset dataset) {
     makeComponent(tabbedPane, "CoordSys");
     coordSysPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(coordSysPanel);
   }
 
-  private void openNcML(String datasetName) {
+  public void openNcML(String datasetName) {
     makeComponent(ncmlTabPane, "NcmlEditor");
     ncmlEditorPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ncmlTabPane);
     ncmlTabPane.setSelectedComponent(ncmlEditorPanel);
   }
 
-  private void openPointFeatureDataset(String datasetName) {
+  public void openPointFeatureDataset(String datasetName) {
     makeComponent(ftTabPane, "PointFeature");
     pointFeaturePanel.setPointFeatureDataset(FeatureType.ANY_POINT, datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(pointFeaturePanel);
   }
 
-  private void openGrib1Collection(String collection) {
+  public void openGrib1Collection(String collection) {
     makeComponent(grib1TabPane, "GRIB1collection");  // LOOK - does this aleays make component ?
     grib1CollectionPanel.setCollection(collection);
     tabbedPane.setSelectedComponent(iospTabPane);
@@ -829,7 +839,7 @@ public class ToolsUI extends JPanel {
     grib1TabPane.setSelectedComponent(grib1CollectionPanel);
   }
 
-  private void openGrib2Collection(String collection) {
+  public void openGrib2Collection(String collection) {
     makeComponent(grib2TabPane, "GRIB2collection");
     grib2CollectionPanel.setCollection(collection);
     tabbedPane.setSelectedComponent(iospTabPane);
@@ -837,7 +847,7 @@ public class ToolsUI extends JPanel {
     grib2TabPane.setSelectedComponent(grib2CollectionPanel);
   }
 
-  private void openGrib2Data(String datasetName) {
+  public void openGrib2Data(String datasetName) {
     makeComponent(grib2TabPane, "GRIB2data");
     grib2DataPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(iospTabPane);
@@ -845,7 +855,7 @@ public class ToolsUI extends JPanel {
     grib2TabPane.setSelectedComponent(grib2DataPanel);
   }
 
-  private void openGrib1Data(String datasetName) {
+  public void openGrib1Data(String datasetName) {
     makeComponent(grib1TabPane, "GRIB1data");
     grib1DataPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(iospTabPane);
@@ -853,42 +863,42 @@ public class ToolsUI extends JPanel {
     grib1TabPane.setSelectedComponent(grib1DataPanel);
   }
 
-  private void openGridDataset(String datasetName) {
+  public void openGridDataset(String datasetName) {
     makeComponent(ftTabPane, "Grids");
     gridPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(gridPanel);
   }
 
-  private void openCoverageDataset(String datasetName) {
+  public void openCoverageDataset(String datasetName) {
     makeComponent(ftTabPane, "Coverages");
     coveragePanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(coveragePanel);
   }
 
-  private void openGridDataset(NetcdfDataset dataset) {
+  public void openGridDataset(NetcdfDataset dataset) {
     makeComponent(ftTabPane, "Grids");
     gridPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(gridPanel);
   }
 
-  private void openGridDataset(GridDataset dataset) {
+  public void openGridDataset(GridDataset dataset) {
     makeComponent(ftTabPane, "Grids");
     gridPanel.setDataset(dataset);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(gridPanel);
   }
 
-  private void openRadialDataset(String datasetName) {
+  public void openRadialDataset(String datasetName) {
     makeComponent(ftTabPane, "Radial");
     radialPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
     ftTabPane.setSelectedComponent(radialPanel);
   }
 
-  private void openWMSDataset(String datasetName) {
+  public void openWMSDataset(String datasetName) {
     makeComponent(ftTabPane, "WMS");
     wmsPanel.doit(datasetName);
     tabbedPane.setSelectedComponent(ftTabPane);
@@ -1135,8 +1145,9 @@ public class ToolsUI extends JPanel {
     pm.start(this, "Download", 30);
   }
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // the panel contents
+///
+///////////////////////////////////////////////////////////////////////////////////////
+/// the panel contents
 
   private class NCdumpPanel extends OpPanel implements GetDataRunnable {
     private GetDataTask task;
@@ -1252,164 +1263,18 @@ public class ToolsUI extends JPanel {
     }
   }
 
-
-
-
-  /////////////////////////////////////////////////////////////////////
-  private class AggPanel extends OpPanel {
-    AggTable aggTable;
-    NetcdfDataset ncd;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      if (ncd != null) ncd.close();
-      ncd = null;
-      aggTable.clear();
-    }
-
-    AggPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
-      aggTable = new AggTable(prefs, buttPanel);
-      aggTable.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-
-          if (e.getPropertyName().equals("openNetcdfFile")) {
-            NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-            if (ncfile != null) {
-              openNetcdfFile(ncfile);
-            }
-
-          }
-          else if (e.getPropertyName().equals("openCoordSystems")) {
-            NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-            if (ncfile == null) {
-              return;
-            }
-            try {
-              NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
-              openCoordSystems(ncd);
-            }
-            catch (IOException e1) {
-              e1.printStackTrace();
-            }
-
-          } else if (e.getPropertyName().equals("openGridDataset")) {
-            NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-            if (ncfile == null) return;
-            try {
-              NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
-              openGridDataset(ncd);
-            } catch (IOException e1) {
-              e1.printStackTrace();
-            }
-          }
-        }
-      });
-
-      add(aggTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        if (ncd != null) {
-          try {
-            ncd.close();
-          } catch (IOException ioe) {
-            ioe.printStackTrace();
-          }
-        }
-
-        ncd = NetcdfDataset.openDataset(command);
-        aggTable.setAggDataset(ncd);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Throwable e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      aggTable.save();
-      super.save();
-    }
-  }
-
-
-  /////////////////////////////////////////////////////////////////////
-  private class BufrPanel extends OpPanel {
-    RandomAccessFile raf = null;
-    BufrMessageViewer bufrTable;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      if (raf != null) raf.close();
-      raf = null;
-    }
-
-    BufrPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
-      bufrTable = new BufrMessageViewer(prefs, buttPanel);
-      add(bufrTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        if (raf != null)
-          raf.close();
-        raf = new RandomAccessFile(command, "r");
-
-        bufrTable.setBufrFile(raf);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      bufrTable.save();
-      super.save();
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private FileManager bufrFileChooser;
 
   private void initBufrFileChooser() {
     bufrFileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
   }
 
+/**
+ *
+ */
   private class BufrTableBPanel extends OpPanel {
     BufrTableBViewer bufrTable;
     JComboBox<BufrTables.Format> modes;
@@ -1510,7 +1375,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class BufrTableDPanel extends OpPanel {
     BufrTableDViewer bufrTable;
     JComboBox<BufrTables.Format> modes;
@@ -1680,71 +1547,9 @@ public class ToolsUI extends JPanel {
 
   } */
 
-  /////////////////////////////////////////////////////////////////////
-  private class GribFilesPanel extends OpPanel {
-    ucar.nc2.ui.grib.GribFilesPanel gribTable;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-    }
-
-    GribFilesPanel(PreferencesExt p) {
-      super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.grib.GribFilesPanel(prefs);
-      add(gribTable, BorderLayout.CENTER);
-      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib1Collection")) {
-            String filename = (String) e.getNewValue();
-            openGrib1Collection(filename);
-          }
-        }
-      });
-
-      final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
-      showButt.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          gribTable.showCollection(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(showButt);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        gribTable.setCollection(command);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      gribTable.save();
-      super.save();
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////
-  // GRIB2
+/**
+ *
+ */
   private class Grib2CollectionPanel extends OpPanel {
     ucar.nc2.ui.grib.Grib2CollectionPanel gribTable;
 
@@ -1851,7 +1656,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class Grib2DataPanel extends OpPanel {
     ucar.nc2.ui.grib.Grib2DataPanel gribTable;
 
@@ -1931,7 +1738,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class Grib1DataPanel extends OpPanel {
     Grib1DataTable gribTable;
 
@@ -2001,7 +1810,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class BufrCdmIndexPanel extends OpPanel {
     ucar.nc2.ui.BufrCdmIndexPanel table;
 
@@ -2047,7 +1858,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class CdmIndexPanel extends OpPanel {
     ucar.nc2.ui.grib.CdmIndexPanel indexPanel;
 
@@ -2102,7 +1915,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class GribIndexPanel extends OpPanel {
     ucar.nc2.ui.grib.GribIndexPanel gribTable;
 
@@ -2148,8 +1963,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
-  // raw grib access - dont go through the IOSP
+/**
+ *  raw grib access - dont go through the IOSP
+ */
   private class Grib1CollectionPanel extends OpPanel {
     //RandomAccessFile raf = null;
     ucar.nc2.ui.grib.Grib1CollectionPanel gribTable;
@@ -2393,8 +2209,9 @@ public class ToolsUI extends JPanel {
     }
   }  */
 
-  /////////////////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class GribTemplatePanel extends OpPanel {
     GribWmoTemplatesPanel codeTable;
 
@@ -2428,8 +2245,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class GribCodePanel extends OpPanel {
     GribWmoCodesPanel codeTable;
 
@@ -2463,8 +2281,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class BufrCodePanel extends OpPanel {
     BufrWmoCodesPanel codeTable;
 
@@ -2490,8 +2309,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class WmoCCPanel extends OpPanel {
     WmoCommonCodesPanel codeTable;
 
@@ -2518,9 +2338,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-
-  /////////////////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class Grib1TablePanel extends OpPanel {
     Grib1TablesViewer codeTable;
 
@@ -2551,9 +2371,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-
-  /////////////////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class Grib2TablePanel extends OpPanel {
     Grib2TableViewer2 codeTable;
 
@@ -2579,246 +2399,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
-  private class GribRewritePanel extends OpPanel {
-    ucar.nc2.ui.grib.GribRewritePanel ftTable;
-    final FileManager dirChooser;
-
-    GribRewritePanel(PreferencesExt prefs) {
-      super(prefs, "dir:", false, false);
-      dirChooser = new FileManager(parentFrame, null, null, (PreferencesExt) prefs.node("FeatureScanFileManager"));
-      ftTable = new ucar.nc2.ui.grib.GribRewritePanel(prefs, buttPanel);
-      add(ftTable, BorderLayout.CENTER);
-
-      ftTable.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openNetcdfFile")) {
-            String datasetName = (String) e.getNewValue();
-            openNetcdfFile(datasetName);
-          } else if (e.getPropertyName().equals("openGridDataset")) {
-            String datasetName = (String) e.getNewValue();
-            openGridDataset(datasetName);
-          } else if (e.getPropertyName().equals("openGrib1Data")) {
-            String datasetName = (String) e.getNewValue();
-            openGrib1Data(datasetName);
-          } else if (e.getPropertyName().equals("openGrib2Data")) {
-            String datasetName = (String) e.getNewValue();
-            openGrib2Data(datasetName);
-          }
-        }
-      });
-
-      dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-      dirChooser.setCurrentDirectory(prefs.get("currDir", "."));
-      AbstractAction fileAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          String filename = dirChooser.chooseFilename();
-          if (filename == null) return;
-          cb.setSelectedItem(filename);
-        }
-      };
-      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local dataset...", false, 'L', -1);
-      BAMutil.addActionToContainer(buttPanel, fileAction);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      return ftTable.setScanDirectory(command);
-    }
-
-    @Override
-    public void closeOpenFiles() {
-      ftTable.clear();
-    }
-
-    @Override
-    public void save() {
-      dirChooser.save();
-      ftTable.save();
-      prefs.put("currDir", dirChooser.getCurrentDirectory());
-      super.save();
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////
-  private class Hdf5ObjectPanel extends OpPanel {
-    RandomAccessFile raf = null;
-    Hdf5ObjectTable hdf5Table;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      hdf5Table.closeOpenFiles();
-    }
-
-    Hdf5ObjectPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
-      hdf5Table = new Hdf5ObjectTable(prefs);
-      add(hdf5Table, BorderLayout.CENTER);
-
-      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Compact Representation", false);
-      infoButton.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          try {
-            hdf5Table.showInfo(f);
-          }
-          catch (IOException ioe) {
-            StringWriter sw = new StringWriter(5000);
-            ioe.printStackTrace(new PrintWriter(sw));
-            detailTA.setText(sw.toString());
-            detailWindow.show();
-            return;
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton);
-
-      final AbstractButton infoButton2 = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton2.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          try {
-            hdf5Table.showInfo2(f);
-          }
-          catch (final IOException ioe) {
-            final StringWriter sw = new StringWriter(5000);
-            ioe.printStackTrace(new PrintWriter(sw));
-            detailTA.setText(sw.toString());
-            detailWindow.show();
-            return;
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton2);
-
-      final AbstractButton eosdump = BAMutil.makeButtcon("alien", "Show EOS processing", false);
-      eosdump.addActionListener(e -> {
-          try {
-            final Formatter f = new Formatter();
-            hdf5Table.getEosInfo(f);
-            detailTA.setText(f.toString());
-            detailWindow.show();
-          }
-          catch (IOException ioe) {
-            final StringWriter sw = new StringWriter(5000);
-            ioe.printStackTrace(new PrintWriter(sw));
-            detailTA.setText(sw.toString());
-            detailWindow.show();
-          }
-      });
-      buttPanel.add(eosdump);
-
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        if (raf != null)
-          raf.close();
-        raf = new RandomAccessFile(command, "r");
-
-        hdf5Table.setHdf5File(raf);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "Hdf5ObjectTable cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      hdf5Table.save();
-      super.save();
-    }
-
-  }
-
-  /////////////////////////////////////////////////////////////////////
-  private class Hdf5DataPanel extends OpPanel {
-    RandomAccessFile raf = null;
-    Hdf5DataTable hdf5Table;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      hdf5Table.closeOpenFiles();
-    }
-
-    Hdf5DataPanel(PreferencesExt p) {
-      super(p, "file:", true, false);
-      hdf5Table = new Hdf5DataTable(prefs, buttPanel);
-      add(hdf5Table, BorderLayout.CENTER);
-
-      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          try {
-            hdf5Table.showInfo(f);
-          }
-          catch (IOException ioe) {
-            final StringWriter sw = new StringWriter(5000);
-            ioe.printStackTrace(new PrintWriter(sw));
-            detailTA.setText(sw.toString());
-            detailWindow.show();
-            return;
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        if (raf != null)
-          raf.close();
-        raf = new RandomAccessFile(command, "r");
-
-        hdf5Table.setHdf5File(raf);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "Hdf5DataTable cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      hdf5Table.save();
-      super.save();
-    }
-
-  }
-
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class Hdf4Panel extends OpPanel {
     RandomAccessFile raf = null;
     Hdf4Table hdf4Table;
@@ -2885,8 +2468,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class NcmlEditorPanel extends OpPanel {
     NcmlEditor editor;
 
@@ -2913,8 +2497,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  ////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class CdmrFeature extends OpPanel {
     CdmrFeaturePanel panel;
 
@@ -2980,8 +2565,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  ////////////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class NcStreamPanel extends OpPanel {
     ucar.nc2.ui.NcStreamPanel panel;
 
@@ -3047,7 +2633,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  // new ucar.nc2.ft.fmrc stuff
+/**
+ *
+ */
   private class FmrcPanel extends OpPanel {
     Fmrc2Panel table;
 
@@ -3157,7 +2745,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  // new Fmrc Collection Metadata storage in bdb
+/**
+ * new Fmrc Collection Metadata storage in bdb
+ */
   private class FmrcCollectionPanel extends OpPanel {
     FmrcCollectionTable table;
 
@@ -3233,9 +2823,10 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////
-
-  private class GeoGridPanel extends OpPanel {
+/**
+ *
+ */
+   private class GeoGridPanel extends OpPanel {
     GeoGridTable dsTable;
     JSplitPane split;
     IndependentWindow viewerWindow, imageWindow;
@@ -3393,8 +2984,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////
-  
+/**
+ *
+ */
   	private class SimpleGeomPanel extends OpPanel {
 	    SimpleGeomTable sgTable;
 	    JSplitPane split;
@@ -3554,8 +3146,9 @@ public class ToolsUI extends JPanel {
 
 	  }
 
-	  /////////////////////////////////
-
+/**
+ *
+ */
   private class CoveragePanel extends OpPanel {
     ucar.nc2.ui.coverage2.CoverageTable dsTable;
     CoverageViewer display;
@@ -3678,8 +3271,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////
-
+/**
+ *
+ */
   private class RadialPanel extends OpPanel {
     RadialDatasetTable dsTable;
     JSplitPane split;
@@ -3766,7 +3360,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  ///////////////////////////////////////////////////////////
+/**
+ *
+ */
   public class DatasetViewerPanel extends OpPanel {
     DatasetViewer dsViewer;
     JSplitPane split;
@@ -3879,7 +3475,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  ///////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class DatasetWriterPanel extends OpPanel {
     DatasetWriter dsWriter;
     JSplitPane split;
@@ -3950,7 +3548,9 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////
+/**
+ *
+ */
   private class FeatureScanPanel extends OpPanel {
     ucar.nc2.ui.FeatureScanPanel ftTable;
     final FileManager dirChooser;
@@ -4027,585 +3627,40 @@ public class ToolsUI extends JPanel {
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////
-
-  private class CollectionSpecPanel extends OpPanel {
-    CollectionSpecTable table;
-
-    CollectionSpecPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "collection spec:", true, false);
-      table = new CollectionSpecTable(prefs);
-      add(table, BorderLayout.CENTER);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(e -> {
-          Formatter f = new Formatter();
-          try {
-            table.showCollection(f);
-          }
-          catch (Exception e1) {
-            StringWriter sw = new StringWriter(5000);
-            e1.printStackTrace(new PrintWriter(sw));
-            f.format("%s", sw.toString());
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton);
-
+///
+///////////////////////////////////////////////////////////////////////////////////////
+///
+/**
+ *
+ */
+    public static void exit() {
+        doSavePrefsAndUI();
+        System.exit(0);
     }
-
-    public boolean process(Object o) {
-      String command = (String) o;
-      if (command == null) {
-        return false;
-      }
-
-      try {
-        table.setCollection(command);
-        return true;
-      }
-      catch (Exception ioe) {
-        StringWriter sw = new StringWriter(5000);
-        ioe.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
-      }
-
-      return false;
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-
-    @Override
-    public void save() {
-      table.save();
-      super.save();
-    }
-  }
-
-  private class DirectoryPartitionPanel extends OpPanel {
-    DirectoryPartitionViewer table;
-
-    DirectoryPartitionPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "collection:", false, false, false);
-      table = new DirectoryPartitionViewer(prefs, topPanel, buttPanel);
-      add(table, BorderLayout.CENTER);
-
-      table.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib2Collection")) {
-            String collectionName = (String) e.getNewValue();
-            openGrib2Collection(collectionName);
-          }
-        }
-      });
-    }
-
-    public boolean process(Object o) {
-      String command = (String) o;
-      if (command == null) {
-        return false;
-      }
-
-      try {
-        //table.setCollectionFromConfig(command);
-        return true;
-      }
-      catch (Exception ioe) {
-        ioe.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        ioe.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailTA.gotoTop();
-        detailWindow.show();
-      }
-
-      return false;
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-
-    @Override
-    public void save() {
-      table.save();
-      super.save();
-      table.clear();
-    }
-  }
-
-////////////////////////////////////////////////////////////////////////
-
-  private class PointFeaturePanel extends OpPanel {
-    PointFeatureDatasetViewer pfViewer;
-    JSplitPane split;
-    FeatureDatasetPoint pfDataset = null;
-    JComboBox<FeatureType> types;
-
-    PointFeaturePanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      pfViewer = new PointFeatureDatasetViewer(dbPrefs, buttPanel);
-      add(pfViewer, BorderLayout.CENTER);
-
-      types = new JComboBox<>();
-      for (FeatureType ft : FeatureType.values()) {
-        types.addItem(ft);
-      }
-      types.getModel().setSelectedItem(FeatureType.ANY_POINT);
-      buttPanel.add(types);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
-      infoButton.addActionListener(e -> {
-          if (pfDataset == null) {
-            return;
-          }
-          Formatter f = new Formatter();
-          pfDataset.getDetailInfo(f);
-          detailTA.setText(f.toString());
-          detailTA.appendLine("-----------------------------");
-          detailTA.appendLine(getCapabilities(pfDataset));
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton);
-
-      AbstractButton calcButton = BAMutil.makeButtcon("V3", "Calculate the latlon/dateRange", false);
-      calcButton.addActionListener(e -> {
-          if (pfDataset == null) {
-            return;
-          }
-          Formatter f = new Formatter();
-          pfDataset.calcBounds(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(calcButton);
-
-      AbstractButton xmlButton = BAMutil.makeButtcon("XML", "pointConfig.xml", false);
-      xmlButton.addActionListener(e -> {
-          if (pfDataset == null) {
-            return;
-          }
-          Formatter f = new Formatter();
-          ucar.nc2.ft.point.standard.PointConfigXML.writeConfigXML(pfDataset, f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(xmlButton);
-    }
-
-    public boolean process(Object o) {
-      String location = (String) o;
-      return setPointFeatureDataset((FeatureType) types.getSelectedItem(), location);
-    }
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      if (pfDataset != null) {
-        pfDataset.close();
-      }
-      pfDataset = null;
-      pfViewer.clear();
-    }
-
-    @Override
-    public void save() {
-      super.save();
-      pfViewer.save();
-    }
-
-    private boolean setPointFeatureDataset(FeatureType type, String location) {
-      if (location == null) return false;
-
-      try {
-        if (pfDataset != null) pfDataset.close();
-      }
-      catch (IOException ioe) {
-        System.out.printf("close failed %n");
-      }
-      detailTA.clear();
-
-      Formatter log = new Formatter();
-      try {
-        FeatureDataset featureDataset = FeatureDatasetFactoryManager.open(type, location, null, log);
-        if (featureDataset == null) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + log);
-          return false;
-        }
-        if (!(featureDataset instanceof FeatureDatasetPoint)) {
-          JOptionPane.showMessageDialog(null, location + " could not be opened as a PointFeatureDataset");
-          return false;
-        }
-
-        pfDataset = (FeatureDatasetPoint) featureDataset;
-        pfViewer.setDataset(pfDataset);
-        setSelectedItem(location);
-        return true;
-
-      } catch (IOException e) {
-        String message = e.getClass().getName() + ": " + e.getMessage();
-        JOptionPane.showMessageDialog(this, message);
-        return false;
-
-      } catch (Throwable e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(log.toString());
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-
-        JOptionPane.showMessageDialog(this, e.getMessage());
-        return false;
-      }
-    }
-
-    private boolean setPointFeatureDataset(FeatureDatasetPoint pfd) {
-
-      try {
-        if (pfDataset != null) pfDataset.close();
-      } catch (IOException ioe) {
-        System.out.printf("close failed %n");
-      }
-      detailTA.clear();
-
-      try {
-        pfDataset = pfd;
-        pfViewer.setDataset(pfDataset);
-        setSelectedItem(pfDataset.getLocation());
-        return true;
-
-      } catch (Throwable e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-
-        JOptionPane.showMessageDialog(this, e.getMessage());
-        return false;
-      }
-    }
-
-    private String getCapabilities(FeatureDatasetPoint fdp) {
-      FeatureDatasetCapabilitiesWriter xmlWriter = new FeatureDatasetCapabilitiesWriter(fdp, null);
-      return xmlWriter.getCapabilities();
-    }
-  }
 
 /**
  *
  */
-  private class WmsPanel extends OpPanel {
-    WmsViewer wmsViewer;
-    JSplitPane split;
-    JComboBox<String> types;
-
-    WmsPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      wmsViewer = new WmsViewer(dbPrefs, frame);
-      add(wmsViewer, BorderLayout.CENTER);
-
-      buttPanel.add(new JLabel("version:"));
-      types = new JComboBox<>();
-      types.addItem("1.3.0");
-      types.addItem("1.1.1");
-      types.addItem("1.0.0");
-      buttPanel.add(types);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-      infoButton.addActionListener(e -> {
-          detailTA.setText(wmsViewer.getDetailInfo());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton);
-    }
-
-    public boolean process(Object o) {
-      String location = (String) o;
-      return wmsViewer.setDataset((String) types.getSelectedItem(), location);
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-
-    @Override
-    public void save() {
-      super.save();
-      wmsViewer.save();
-    }
-  }
-
-/**
- *
- */
-  private class StationRadialPanel extends OpPanel {
-    StationRadialViewer radialViewer;
-    JSplitPane split;
-    FeatureDataset radarCollectionDataset = null;
-
-    StationRadialPanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      radialViewer = new StationRadialViewer(dbPrefs);
-      add(radialViewer, BorderLayout.CENTER);
-
-      AbstractButton infoButton = BAMutil.makeButtcon("Information", "Dataset Info", false);
-      infoButton.addActionListener(e -> {
-          if (radarCollectionDataset != null) {
-            Formatter info = new Formatter();
-            radarCollectionDataset.getDetailInfo(info);
-            detailTA.setText(info.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-          }
-      });
-      buttPanel.add(infoButton);
-    }
-
-    public boolean process(Object o) {
-      String location = (String) o;
-      return setStationRadialDataset(location);
-    }
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      if (radarCollectionDataset != null) {
-        radarCollectionDataset.close();
-      }
-      radarCollectionDataset = null;
-    }
-
-    @Override
-    public void save() {
-      super.save();
-      radialViewer.save();
-    }
-
-    boolean setStationRadialDataset(String location) {
-      if (location == null) return false;
-
-      try {
-        if (radarCollectionDataset != null) radarCollectionDataset.close();
-      }
-      catch (IOException ioe) {
-        System.out.printf("close failed %n");
-      }
-
-      DataFactory.Result result = null;
-      try {
-        result = threddsDataFactory.openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
-        if (result.fatalError) {
-          JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + result.errLog.toString());
-          return false;
-        }
-
-        setStationRadialDataset(result.featureDataset);
-        return true;
-      }
-      catch (Exception e) {
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(log.toString());
-        detailTA.appendLine(sw.toString());
-        detailWindow.show();
-
-        JOptionPane.showMessageDialog(this, e.getMessage());
-        if (result != null) {
-          try {
-            result.close();
-          }
-          catch (IOException ioe2) {
-            JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + ioe2.getMessage());
-          }
-        }
-        return false;
-      }
-    }
-
-    boolean setStationRadialDataset(FeatureDataset dataset) {
-      if (dataset == null) return false;
-
-      try {
-        if (radarCollectionDataset != null) radarCollectionDataset.close();
-      }
-      catch (IOException ioe) {
-        System.out.printf("close failed %n");
-      }
-
-      radarCollectionDataset = dataset;
-      radialViewer.setDataset(radarCollectionDataset);
-      setSelectedItem(radarCollectionDataset.getLocation());
-      return true;
-    }
-  }
-
-/**
- *
- */
-  private class ImagePanel extends OpPanel {
-    ImageViewPanel imagePanel;
-    JSplitPane split;
-
-    ImagePanel(PreferencesExt dbPrefs) {
-      super(dbPrefs, "dataset:", true, false);
-      imagePanel = new ImageViewPanel(buttPanel);
-      add(imagePanel, BorderLayout.CENTER);
-    }
-
-    public boolean process(Object o) {
-      String command = (String) o;
-
-      try {
-        if (null != command)
-          imagePanel.setImageFromUrl(command);
-      }
-      catch (Exception ioe) {
-        ioe.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        ioe.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        return false;
-      }
-
-      return true;
-    }
-
-    void setImageLocation(String location) {
-      imagePanel.setImageFromUrl(location);
-      setSelectedItem(location);
-    }
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-    }
-  }
-
-/**
- *
- */
-  private class GeotiffPanel extends OpPanel {
-    TextHistoryPane ta;
-
-    GeotiffPanel(PreferencesExt p) {
-      super(p, "netcdf:", true, false);
-
-      ta = new TextHistoryPane(true);
-      add(ta, BorderLayout.CENTER);
-
-      JButton readButton = new JButton("read geotiff");
-      readButton.addActionListener(e -> {
-          String item = cb.getSelectedItem().toString();
-          String fname = item.trim();
-          read(fname);
-      });
-      buttPanel.add(readButton);
-    }
-
-    public boolean process(Object o) {
-      String filename = (String) o;
-
-      GridDataset gridDs = null;
-      try {
-        gridDs = ucar.nc2.dt.grid.GridDataset.open(filename);
-        List grids = gridDs.getGrids();
-        if (grids.size() == 0) {
-          log.warn("No grids found.");
-          return false;
-        }
-
-        GridDatatype grid = (GridDatatype) grids.get(0);
-        ucar.ma2.Array data = grid.readDataSlice(0, 0, -1, -1); // first time, level
-
-        String fileOut = fileChooser.chooseFilenameToSave(filename + ".tif");
-        if (fileOut == null) return false;
-
-        ucar.nc2.geotiff.GeotiffWriter writer = new ucar.nc2.geotiff.GeotiffWriter(fileOut);
-        writer.writeGrid(gridDs, grid, data, false);
-
-        read(fileOut);
-        JOptionPane.showMessageDialog(null, "File written to " + fileOut);
-      }
-      catch (IOException ioe) {
-        ioe.printStackTrace();
-        return false;
-      }
-      finally {
+    private static void doSavePrefsAndUI() {
+        ui.save();
+        final Rectangle bounds = frame.getBounds();
+        prefs.putBeanObject(FRAME_SIZE, bounds);
         try {
-          if (gridDs != null) gridDs.close();
+            store.save();
         }
         catch (IOException ioe) {
-          System.out.printf("close failed %n");
+            ioe.printStackTrace();
         }
-      }
-      return true;
-    }
 
-    void read(String filename) {
-      GeoTiff geotiff = null;
-      try {
-        geotiff = new GeoTiff(filename);
-        geotiff.read();
-
-        ta.setText(geotiff.showInfo());
-      }
-      catch (IOException ioe) {
-        ioe.printStackTrace();
-      }
-      finally {
-        try {
-          if (geotiff != null) geotiff.close();
+        done = true; // on some systems, still get a window close event
+        final ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+        if (cache != null) {
+            cache.clearCache(true);
         }
-        catch (IOException ioe) {
-          System.out.printf("close failed %n");
-        }
-      }
+        FileCache.shutdown();           // shutdown threads
+        DiskCache2.exit();              // shutdown threads
+        MetadataManager.closeAll();     // shutdown bdb
     }
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-    }
-  }
-
-/**
- *
- */
-  public static void exit() {
-    doSavePrefsAndUI();
-    System.exit(0);
-  }
-
-/**
- *
- */
-  private static void doSavePrefsAndUI()  {
-    ui.save();
-    Rectangle bounds = frame.getBounds();
-    prefs.putBeanObject(FRAME_SIZE, bounds);
-    try {
-      store.save();
-    }
-    catch (IOException ioe) {
-      ioe.printStackTrace();
-    }
-
-    done = true; // on some systems, still get a window close event
-    ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-    if (cache != null) {
-      cache.clearCache(true);
-    }
-    FileCache.shutdown(); // shutdown threads
-    DiskCache2.exit(); // shutdown threads
-    MetadataManager.closeAll(); // shutdown bdb
-  }
 
 /**
  * Handle messages.
@@ -4688,6 +3743,7 @@ public class ToolsUI extends JPanel {
     private static void createToolsFrame() {
         // put UI in a JFrame
         frame = new JFrame("NetCDF ("+DIALOG_VERSION+") Tools");
+
         ui = new ToolsUI(prefs, frame);
 
         frame.setIconImage(BAMutil.getImage("netcdfUI"));
@@ -4792,6 +3848,7 @@ public class ToolsUI extends JPanel {
         }
 
         // spring initialization
+        // is spring used by ToolsUI for anything? is this necessary?
         try {
             ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(
                                 "classpath:resources/nj22/ui/spring/application-config.xml");

@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import ucar.httpservices.*;
 import ucar.nc2.constants.CDM;
