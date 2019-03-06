@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import ucar.nc2.iosp.bufr.tables.CodeFlagTables;
 import ucar.nc2.ui.widget.BAMutil;
@@ -44,8 +44,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Formatter;
 import java.util.List;
+import java.util.Map;
 
 /**
  * BUFR code tables UI
@@ -93,7 +96,7 @@ public class BufrWmoCodesPanel extends JPanel {
     });  */
 
     Map<Short, CodeFlagTables> tables = CodeFlagTables.getTables();
-    java.util.List<CodeTableBean> beans = new ArrayList<>(tables.size());
+    List<CodeTableBean> beans = new ArrayList<>(tables.size());
     List<Short> list = new ArrayList<>(tables.keySet());
     Collections.sort(list);
     for (short key : list) {
@@ -126,7 +129,7 @@ public class BufrWmoCodesPanel extends JPanel {
 
   public void setEntries(CodeFlagTables codeTable) {
     Map<Integer, String> map = codeTable.getMap();
-    java.util.List<EntryBean> beans = new ArrayList<>(map.size());
+    List<EntryBean> beans = new ArrayList<>(map.size());
     List<Integer> list = new ArrayList<>(map.keySet());
     Collections.sort(list);
     for (int key : list) {

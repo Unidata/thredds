@@ -31,8 +31,11 @@
  */
 package ucar.nc2.ui.op;
 
-import ucar.nc2.ui.widget.*;
+// import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.util.Misc;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -45,9 +48,6 @@ import ucar.ma2.DataType;
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.ui.widget.BAMutil;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

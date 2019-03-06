@@ -128,7 +128,7 @@ public class Fmrc2Panel extends JPanel {
       }
     });
 
-    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(invTable.getJTable(), "Options");
+    PopupMenu varPopup = new PopupMenu(invTable.getJTable(), "Options");
     varPopup.addAction("Open in NetcdfFile Viewer", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         InvBean dsb = (InvBean) invTable.getSelectedBean();

@@ -59,7 +59,7 @@ public class StationRadialViewer extends JPanel {
 
     chooser = new StationRegionDateChooser();
     chooser.addPropertyChangeListener( new PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
+      public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
           Station selectedStation = (Station) e.getNewValue();
           if (debugStationRegionSelect) System.out.println("selectedStation= "+selectedStation.getName());

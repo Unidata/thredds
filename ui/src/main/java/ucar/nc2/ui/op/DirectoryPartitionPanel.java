@@ -68,7 +68,7 @@ public class DirectoryPartitionPanel extends OpPanel {
  */
     @Override
     public void closeOpenFiles() {
-        // Do nothing.
+        // Nothing to do here.
     }
 
 /**

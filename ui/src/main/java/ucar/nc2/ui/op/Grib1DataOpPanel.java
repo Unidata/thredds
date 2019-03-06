@@ -93,7 +93,7 @@ public class Grib1DataOpPanel extends OpPanel {
 /** */
     @Override
     public void closeOpenFiles() throws IOException {
-        // Do nothing.
+        // Nothing to do here.
     }
 
 /** */

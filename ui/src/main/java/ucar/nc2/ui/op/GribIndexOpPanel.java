@@ -6,54 +6,30 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.ui.OpPanel;
-import ucar.nc2.ui.ToolsUI;
-import ucar.nc2.ui.grib.GribFilesPanel;
+import ucar.nc2.ui.grib.GribIndexPanel;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Formatter;
-import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
 /**
  *
  */
-public class GribFilesOpPanel extends OpPanel {
-    GribFilesPanel gribTable;
+public class GribIndexOpPanel extends OpPanel {
+    private GribIndexPanel gribTable;
 
 /**
  *
  */
-    public GribFilesOpPanel(PreferencesExt p) {
-        super(p, "collection:", true, false);
-        gribTable = new GribFilesPanel(prefs);
+    public GribIndexOpPanel(PreferencesExt p) {
+        super(p, "index file:", true, false);
+        gribTable = new GribIndexPanel(prefs, buttPanel);
         add(gribTable, BorderLayout.CENTER);
-        gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-            @Override
-            public void propertyChange(PropertyChangeEvent e) {
-                if (e.getPropertyName().equals("openGrib1Collection")) {
-                    final String filename = (String) e.getNewValue();
-                    ToolsUI.getToolsUI().openGrib1Collection(filename);
-                }
-            }
-        });
-
-        final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
-        showButt.addActionListener(e -> {
-            final Formatter f = new Formatter();
-            gribTable.showCollection(f);
-            detailTA.setText(f.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-        });
-        buttPanel.add(showButt);
     }
 
 /** */
@@ -63,7 +39,7 @@ public class GribFilesOpPanel extends OpPanel {
         boolean err = false;
 
         try {
-            gribTable.setCollection(command);
+            gribTable.setIndexFile(command);
         }
         catch (FileNotFoundException ioe) {
             JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
@@ -84,7 +60,7 @@ public class GribFilesOpPanel extends OpPanel {
 /** */
     @Override
     public void closeOpenFiles() throws IOException {
-        // Nothing to do here.
+        gribTable.closeOpenFiles();
     }
 
 /** */

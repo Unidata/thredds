@@ -92,7 +92,7 @@ public class Grib2DataPanel extends JPanel {
       }
     });
 
-    varPopup = new ucar.nc2.ui.widget.PopupMenu(param2BeanTable.getJTable(), "Options");
+    varPopup = new PopupMenu(param2BeanTable.getJTable(), "Options");
     varPopup.addAction("Show PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();

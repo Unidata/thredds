@@ -78,7 +78,7 @@ public class BufrTableBPanel extends OpPanel {
 /** */
     @Override
     public void closeOpenFiles() {
-        // Do nothing.
+        // Nothing to do here.
     }
 
 /**

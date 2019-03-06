@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
@@ -136,7 +137,7 @@ public class RadialDatasetTable extends JPanel {
 
   public List<VariableBean> getVariableBeans(RadialDatasetSweep rds) {
     List<VariableBean> vlist = new ArrayList<>();
-    java.util.List list = rds.getDataVariables();
+    List list = rds.getDataVariables();
     for (Object aList : list) {
       RadialDatasetSweep.RadialVariable v = (RadialDatasetSweep.RadialVariable) aList;
       vlist.add(new VariableBean(v));

@@ -8,7 +8,6 @@ package ucar.nc2.ui.op;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.widget.BAMutil;

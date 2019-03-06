@@ -24,7 +24,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -68,7 +72,7 @@ public class Hdf5ObjectTable extends JPanel {
       }
     });
 
-    varPopup = new ucar.nc2.ui.widget.PopupMenu(objectTable.getJTable(), "Options");
+    varPopup = new PopupMenu(objectTable.getJTable(), "Options");
     varPopup.addAction("show", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         ObjectBean mb = (ObjectBean) objectTable.getSelectedBean();
@@ -96,7 +100,7 @@ public class Hdf5ObjectTable extends JPanel {
       }
     });
 
-    varPopup = new ucar.nc2.ui.widget.PopupMenu(messTable.getJTable(), "Options");
+    varPopup = new PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show FractalHeap", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         MessageBean mb = (MessageBean) messTable.getSelectedBean();
@@ -175,7 +179,7 @@ public class Hdf5ObjectTable extends JPanel {
     closeOpenFiles();
 
     this.location = raf.getLocation();
-    java.util.List<ObjectBean> beanList = new ArrayList<>();
+    List<ObjectBean> beanList = new ArrayList<>();
 
     iosp = new H5iosp();
     NetcdfFile ncfile = new NetcdfFileSubclass(iosp, location);

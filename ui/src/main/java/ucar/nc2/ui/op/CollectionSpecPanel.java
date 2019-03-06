@@ -73,7 +73,7 @@ public class CollectionSpecPanel extends OpPanel {
 /** */
     @Override
     public void closeOpenFiles() {
-        // Do nothing.
+        // Nothing to do here.
     }
 
 /** */

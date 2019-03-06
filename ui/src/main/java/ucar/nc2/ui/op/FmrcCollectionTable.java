@@ -76,7 +76,7 @@ public class FmrcCollectionTable extends JPanel {
       }
     });
 
-    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(collectionNameTable.getJTable(), "Options");
+    PopupMenu varPopup = new PopupMenu(collectionNameTable.getJTable(), "Options");
     varPopup.addAction("Show Collection Stats", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();

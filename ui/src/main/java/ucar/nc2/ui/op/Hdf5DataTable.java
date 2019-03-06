@@ -64,7 +64,7 @@ public class Hdf5DataTable extends JPanel {
     BAMutil.setActionProperties(calcAction, "Dataset", "calc storage", false, 'D', -1);
     BAMutil.addActionToContainer(buttPanel, calcAction);
 
-    varPopup = new ucar.nc2.ui.widget.PopupMenu(objectTable.getJTable(), "Options");
+    varPopup = new PopupMenu(objectTable.getJTable(), "Options");
     varPopup.addAction("deflate", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         VarBean mb = (VarBean) objectTable.getSelectedBean();

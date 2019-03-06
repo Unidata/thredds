@@ -1,4 +1,4 @@
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

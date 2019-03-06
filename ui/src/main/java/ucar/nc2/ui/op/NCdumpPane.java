@@ -17,8 +17,6 @@ import ucar.util.prefs.ui.ComboBox;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.nio.channels.WritableByteChannel;
 
@@ -32,7 +30,7 @@ public class NCdumpPane extends TextHistoryPane {
   private static final String ImageViewer_WindowSize = "ImageViewer_WindowSize";
 
   private PreferencesExt prefs;
-  private ucar.util.prefs.ui.ComboBox cb;
+  private ComboBox cb;
   private CommonTask task;
   private StopButton stopButton;
   private FileManager fileChooser;

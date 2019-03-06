@@ -82,7 +82,7 @@ public class ReportOpPanel extends OpPanel {
  */
     @Override
     public void closeOpenFiles() {
-        // Do nothing.
+        // Nothing to do here.
     }
 
 /**

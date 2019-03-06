@@ -8,7 +8,6 @@ package ucar.nc2.ui;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import thredds.client.catalog.ServiceType;
 import thredds.client.catalog.tools.DataFactory;
-import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.bdb.MetadataManager;
 import thredds.ui.catalog.ThreddsUI;
 import ucar.httpservices.HTTPException;
@@ -62,7 +61,6 @@ import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Proxy;
-import java.nio.file.Paths;
 import java.util.Formatter;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -101,10 +99,10 @@ public class ToolsUI extends JPanel {
   private BufrTableBPanel bufrTableBPanel;
   private BufrTableDPanel bufrTableDPanel;
   private ReportOpPanel bufrReportPanel;
-  private BufrCdmIndexPanel bufrCdmIndexPanel;
+  private BufrCdmIndexOpPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
   private CdmrFeature cdmremotePanel;
-  private CdmIndexPanel cdmIndexPanel;
+  private CdmIndexOpPanel cdmIndexPanel;
   private ReportOpPanel cdmIndexReportPanel;
   private CollectionSpecPanel fcPanel;
   private CoordSysPanel coordSysPanel;
@@ -120,7 +118,7 @@ public class ToolsUI extends JPanel {
   private GeotiffPanel geotiffPanel;
   private GribCodePanel gribCodePanel;
   private GribFilesOpPanel gribFilesPanel;
-  private GribIndexPanel gribIdxPanel;
+  private GribIndexOpPanel gribIdxPanel;
   private GribRewriteOpPanel gribRewritePanel;
   private GribTemplatePanel gribTemplatePanel;
   private Grib1CollectionPanel grib1CollectionPanel;
@@ -436,7 +434,7 @@ public class ToolsUI extends JPanel {
             break;
 
           case "BufrCdmIndex":
-            bufrCdmIndexPanel = new BufrCdmIndexPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
+            bufrCdmIndexPanel = new BufrCdmIndexOpPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
             c = bufrCdmIndexPanel;
         /* } else if (title.equals("CdmIndex")) {
           gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
@@ -444,7 +442,7 @@ public class ToolsUI extends JPanel {
             break;
 
           case "CdmIndex4":
-            cdmIndexPanel = new CdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
+            cdmIndexPanel = new CdmIndexOpPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
             c = cdmIndexPanel;
             break;
 
@@ -457,7 +455,7 @@ public class ToolsUI extends JPanel {
           }
 
           case "GribIndex":
-            gribIdxPanel = new GribIndexPanel((PreferencesExt) mainPrefs.node("gribIdx"));
+            gribIdxPanel = new GribIndexOpPanel((PreferencesExt) mainPrefs.node("gribIdx"));
             c = gribIdxPanel;
             break;
 
@@ -1258,159 +1256,6 @@ public class ToolsUI extends JPanel {
   } */
 
 /**
- *
- */
-  private class BufrCdmIndexPanel extends OpPanel {
-    ucar.nc2.ui.BufrCdmIndexPanel table;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      //table.closeOpenFiles();
-    }
-
-    BufrCdmIndexPanel(PreferencesExt p) {
-      super(p, "index file:", true, false);
-      table = new ucar.nc2.ui.BufrCdmIndexPanel(prefs, buttPanel);
-      add(table, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        table.setIndexFile(command);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "BufrCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      table.save();
-      super.save();
-    }
-  }
-
-/**
- *
- */
-  private class CdmIndexPanel extends OpPanel {
-    ucar.nc2.ui.grib.CdmIndexPanel indexPanel;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      indexPanel.clear();
-    }
-
-    CdmIndexPanel(PreferencesExt p) {
-      super(p, "index file:", true, false);
-      indexPanel = new ucar.nc2.ui.grib.CdmIndexPanel(prefs, buttPanel);
-      indexPanel.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib2Collection")) {
-            String collectionName = (String) e.getNewValue();
-            openGrib2Collection(collectionName);
-          }
-        }
-      });
-
-      add(indexPanel, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        indexPanel.setIndexFile(Paths.get(command), new FeatureCollectionConfig());
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Throwable e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      indexPanel.save();
-      super.save();
-    }
-  }
-
-/**
- *
- */
-  private class GribIndexPanel extends OpPanel {
-    ucar.nc2.ui.grib.GribIndexPanel gribTable;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      gribTable.closeOpenFiles();
-    }
-
-    GribIndexPanel(PreferencesExt p) {
-      super(p, "index file:", true, false);
-      gribTable = new ucar.nc2.ui.grib.GribIndexPanel(prefs, buttPanel);
-      add(gribTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        gribTable.setIndexFile(command);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      gribTable.save();
-      super.save();
-    }
-  }
-
-/**
  *  raw grib access - dont go through the IOSP
  */
   private class Grib1CollectionPanel extends OpPanel {
@@ -1731,124 +1576,6 @@ public class ToolsUI extends JPanel {
 /**
  *
  */
-  private class BufrCodePanel extends OpPanel {
-    BufrWmoCodesPanel codeTable;
-
-    BufrCodePanel(PreferencesExt p) {
-      super(p, "table:", false, false, false);
-      codeTable = new BufrWmoCodesPanel(prefs, buttPanel);
-      add(codeTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object command) {
-      return true;
-    }
-
-    @Override
-    public void save() {
-      codeTable.save();
-      super.save();
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-  }
-
-/**
- *
- */
-  private class WmoCCPanel extends OpPanel {
-    WmoCommonCodesPanel codeTable;
-
-    WmoCCPanel(PreferencesExt p) {
-      super(p, "table:", false, false);
-
-      codeTable = new WmoCommonCodesPanel(prefs, buttPanel);
-      add(codeTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object command) {
-      return true;
-    }
-
-    @Override
-    public void save() {
-      codeTable.save();
-      super.save();
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-  }
-
-/**
- *
- */
-  private class Grib1TablePanel extends OpPanel {
-    Grib1TablesViewer codeTable;
-
-    Grib1TablePanel(PreferencesExt p) {
-      super(p, "table:", true, false);
-      codeTable = new Grib1TablesViewer(prefs, buttPanel);
-      add(codeTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object command) {
-      try {
-        codeTable.setTable((String) command);
-        return true;
-      } catch (IOException e) {
-        return false;
-      }
-    }
-
-    @Override
-    public void save() {
-      codeTable.save();
-      super.save();
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-  }
-
-/**
- *
- */
-  private class Grib2TablePanel extends OpPanel {
-    Grib2TableViewer2 codeTable;
-
-    Grib2TablePanel(PreferencesExt p) {
-      super(p, "table:", false, false);
-      codeTable = new Grib2TableViewer2(prefs, buttPanel);
-      add(codeTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object command) {
-      return true;
-    }
-
-    @Override
-    public void save() {
-      codeTable.save();
-      super.save();
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-  }
-
-/**
- *
- */
   private class Hdf4Panel extends OpPanel {
     RandomAccessFile raf = null;
     Hdf4Table hdf4Table;
@@ -1912,35 +1639,6 @@ public class ToolsUI extends JPanel {
     public void save() {
       hdf4Table.save();
       super.save();
-    }
-  }
-
-/**
- *
- */
-  private class NcmlEditorPanel extends OpPanel {
-    NcmlEditor editor;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      editor.closeOpenFiles();
-    }
-
-    NcmlEditorPanel(PreferencesExt p) {
-      super(p, "dataset:", true, false);
-      editor = new NcmlEditor(buttPanel, prefs);
-      add(editor, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object o) {
-      return editor.setNcml((String) o);
-    }
-
-    @Override
-    public void save() {
-      super.save();
-      editor.save();
     }
   }
 

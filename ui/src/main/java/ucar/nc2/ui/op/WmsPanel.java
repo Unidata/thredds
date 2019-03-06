@@ -58,7 +58,7 @@ public class WmsPanel extends OpPanel {
 /** */
     @Override
     public void closeOpenFiles() {
-        // Do nothing.
+        // Nothing to do here.
     }
 
 /** */
