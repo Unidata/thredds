@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 package ucar.nc2.ui.op;
@@ -21,7 +21,9 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
 
 /**
  * Show internal structure of ncstream files.
@@ -111,12 +113,12 @@ public class NcStreamPanel extends JPanel {
   public void setNcStreamFile(String filename) throws IOException {
     closeOpenFiles();
 
-    java.util.List<MessBean> messages = new ArrayList<MessBean>();
+    List<MessBean> messages = new ArrayList<MessBean>();
     ncd = new NetcdfFileSubclass();
     iosp = new NcStreamIosp();
     try {
       raf = new RandomAccessFile(filename, "r");
-      java.util.List<NcStreamIosp.NcsMess> ncm = new ArrayList<>();
+     List<NcStreamIosp.NcsMess> ncm = new ArrayList<>();
       iosp.openDebug(raf, ncd, ncm);
       for (NcStreamIosp.NcsMess m : ncm) {
         messages.add(new MessBean(m));

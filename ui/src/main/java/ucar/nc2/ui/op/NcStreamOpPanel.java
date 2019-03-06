@@ -5,10 +5,6 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.NCdumpW;
-import ucar.nc2.NetcdfFile;
-import ucar.nc2.ui.GetDataRunnable;
-import ucar.nc2.ui.GetDataTask;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
@@ -22,9 +18,7 @@ import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import javax.swing.AbstractAction;
-import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
 
 /**
  *

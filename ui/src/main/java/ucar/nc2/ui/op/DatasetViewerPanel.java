@@ -16,8 +16,6 @@ import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.PrintWriter;

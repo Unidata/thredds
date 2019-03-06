@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;

@@ -21,14 +21,12 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ft.point.PointDatasetImpl;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.grib.grib2.table.WmoTemplateTable;
-import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.ncml.Aggregation;
@@ -63,6 +61,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Proxy;
 import java.nio.file.Paths;
 import java.util.Formatter;
 import javax.swing.*;
@@ -127,11 +126,11 @@ public class ToolsUI extends JPanel {
   private Grib1CollectionPanel grib1CollectionPanel;
   private ReportOpPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
-  private Grib2CollectionPanel grib2CollectionPanel;
+  private Grib2CollectionOpPanel grib2CollectionPanel;
   private Grib2TablePanel grib2TablePanel;
   private ReportOpPanel grib2ReportPanel;
-  private Grib1DataPanel grib1DataPanel;
-  private Grib2DataPanel grib2DataPanel;
+  private Grib1DataOpPanel grib1DataPanel;
+  private Grib2DataOpPanel grib2DataPanel;
   private Hdf5ObjectPanel hdf5ObjectPanel;
   private Hdf5DataPanel hdf5DataPanel;
   private Hdf4Panel hdf4Panel;
@@ -157,6 +156,7 @@ public class ToolsUI extends JPanel {
 
   private JFrame parentFrame;
   private FileManager fileChooser;
+  private FileManager bufrFileChooser;
 
   // data
   private DataFactory threddsDataFactory = new DataFactory();
@@ -179,17 +179,17 @@ public class ToolsUI extends JPanel {
     OpPanel.setFileChooser(fileChooser);
 
     // all the tabbed panes
-    tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-    iospTabPane = new JTabbedPane(JTabbedPane.TOP);
-    gribTabPane = new JTabbedPane(JTabbedPane.TOP);
+    tabbedPane   = new JTabbedPane(JTabbedPane.TOP);
+    iospTabPane  = new JTabbedPane(JTabbedPane.TOP);
+    gribTabPane  = new JTabbedPane(JTabbedPane.TOP);
     grib2TabPane = new JTabbedPane(JTabbedPane.TOP);
     grib1TabPane = new JTabbedPane(JTabbedPane.TOP);
-    bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
-    ftTabPane   = new JTabbedPane(JTabbedPane.TOP);
-    fcTabPane   = new JTabbedPane(JTabbedPane.TOP);
-    fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
-    hdf5TabPane = new JTabbedPane(JTabbedPane.TOP);
-    ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
+    bufrTabPane  = new JTabbedPane(JTabbedPane.TOP);
+    ftTabPane    = new JTabbedPane(JTabbedPane.TOP);
+    fcTabPane    = new JTabbedPane(JTabbedPane.TOP);
+    fmrcTabPane  = new JTabbedPane(JTabbedPane.TOP);
+    hdf5TabPane  = new JTabbedPane(JTabbedPane.TOP);
+    ncmlTabPane  = new JTabbedPane(JTabbedPane.TOP);
 
     // the widgets in the top level tabbed pane
     viewerPanel = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("varTable"), false);
@@ -209,10 +209,10 @@ public class ToolsUI extends JPanel {
     tabbedPane.addTab("URLdump", new JLabel("URLdump"));
     tabbedPane.setSelectedIndex(0);
     tabbedPane.addChangeListener(e -> {
-        Component c = tabbedPane.getSelectedComponent();
+        final Component c = tabbedPane.getSelectedComponent();
         if (c instanceof JLabel) {
           int idx = tabbedPane.getSelectedIndex();
-          String title = tabbedPane.getTitleAt(idx);
+          final String title = tabbedPane.getTitleAt(idx);
           makeComponent(tabbedPane, title);
         }
     });
@@ -303,7 +303,8 @@ public class ToolsUI extends JPanel {
     addListeners(ncmlTabPane);
 
     // dynamic proxy for DebugFlags
-    debugFlags = (DebugFlags) java.lang.reflect.Proxy.newProxyInstance(DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
+    debugFlags = (DebugFlags) Proxy.newProxyInstance(
+            DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
 
     final JMenuBar mb = makeMenuBar();
     parentFrame.setJMenuBar(mb);
@@ -415,7 +416,7 @@ public class ToolsUI extends JPanel {
             break;
 
           case "GRIB1data":
-            grib1DataPanel = new Grib1DataPanel((PreferencesExt) mainPrefs.node("grib1Data"));
+            grib1DataPanel = new Grib1DataOpPanel((PreferencesExt) mainPrefs.node("grib1Data"));
             c = grib1DataPanel;
             break;
 
@@ -425,12 +426,12 @@ public class ToolsUI extends JPanel {
             break;
 
           case "GRIB2collection":
-            grib2CollectionPanel = new Grib2CollectionPanel((PreferencesExt) mainPrefs.node("gribNew"));
+            grib2CollectionPanel = new Grib2CollectionOpPanel((PreferencesExt) mainPrefs.node("gribNew"));
             c = grib2CollectionPanel;
             break;
 
           case "GRIB2data":
-            grib2DataPanel = new Grib2DataPanel((PreferencesExt) mainPrefs.node("grib2Data"));
+            grib2DataPanel = new Grib2DataOpPanel((PreferencesExt) mainPrefs.node("grib2Data"));
             c = grib2DataPanel;
             break;
 
@@ -768,13 +769,13 @@ public class ToolsUI extends JPanel {
     // if (stationObsPanel != null) stationObsPanel.save();
     if (stationRadialPanel != null) stationRadialPanel.save();
     // if (trajTablePanel != null) trajTablePanel.save();
-    if (threddsUI != null) threddsUI.storePersistentData();
-    if (unitsPanel != null) unitsPanel.save();
-    if (urlPanel != null) urlPanel.save();
-    if (viewerPanel != null) viewerPanel.save();
-    if (writerPanel != null) writerPanel.save();
+    if (threddsUI          != null) threddsUI.storePersistentData();
+    if (unitsPanel         != null) unitsPanel.save();
+    if (urlPanel           != null) urlPanel.save();
+    if (viewerPanel        != null) viewerPanel.save();
+    if (writerPanel        != null) writerPanel.save();
     if (wmoCommonCodePanel != null) wmoCommonCodePanel.save();
-    if (wmsPanel != null) wmsPanel.save();
+    if (wmsPanel           != null) wmsPanel.save();
   }
 
 ///
@@ -782,17 +783,32 @@ public class ToolsUI extends JPanel {
 ///
     public static ToolsUI getToolsUI() { return ui; }
 
+
     public static JFrame getToolsFrame() { return ui.getFramePriv(); }
 
     private JFrame getFramePriv() { return parentFrame; }
+
 
     public static JTabbedPane getTabbedPane() { return ui.getTabbedPanePriv(); }
 
     private JTabbedPane getTabbedPanePriv() { return tabbedPane; }
 
+
     public static DataFactory getThreddsDataFactory() { return ui.getThreddsDataFactoryPriv(); }
 
     private DataFactory getThreddsDataFactoryPriv() { return threddsDataFactory; }
+
+
+    public static FileManager getBufrFileChooser() { return ui.getBufrFileChooserPriv(); }
+
+    private FileManager getBufrFileChooserPriv() {
+        if (bufrFileChooser == null) {
+            bufrFileChooser = new FileManager(
+                        parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
+        }
+
+        return bufrFileChooser;
+    }
 
     public static OpPanel getOpPanel(String pname) { return ui.getOpPanelPriv(pname); }
 
@@ -1170,219 +1186,6 @@ public class ToolsUI extends JPanel {
 ///////////////////////////////////////////////////////////////////////////////////////
 /// the panel contents
 
-/**
- *
- */
-  private FileManager bufrFileChooser;
-
-  private void initBufrFileChooser() {
-    bufrFileChooser = new FileManager(parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
-  }
-
-/**
- *
- */
-  private class BufrTableBPanel extends OpPanel {
-    BufrTableBViewer bufrTable;
-    JComboBox<BufrTables.Format> modes;
-    JComboBox<BufrTables.TableConfig> tables;
-
-    BufrTableBPanel(PreferencesExt p) {
-      super(p, "tableB:", false, false);
-
-      AbstractAction fileAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          if (bufrFileChooser == null) {
-            initBufrFileChooser();
-          }
-          String filename = bufrFileChooser.chooseFilename();
-          if (filename == null) {
-            return;
-          }
-          cb.setSelectedItem(filename);
-        }
-      };
-      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
-      BAMutil.addActionToContainer(buttPanel, fileAction);
-
-      modes = new JComboBox<>(BufrTables.Format.values());
-      buttPanel.add(modes);
-
-      JButton accept = new JButton("Accept");
-      buttPanel.add(accept);
-      accept.addActionListener(e -> {
-          accept();
-      });
-
-      tables = new JComboBox<>(BufrTables.getTableConfigsAsArray());
-      buttPanel.add(tables);
-      tables.addActionListener(e -> {
-          acceptTable((BufrTables.TableConfig) tables.getSelectedItem());
-      });
-
-      bufrTable = new BufrTableBViewer(prefs, buttPanel);
-      add(bufrTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object command) {
-      return true;
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-
-    void accept() {
-      String command = (String) cb.getSelectedItem();
-
-      try {
-        Object format = modes.getSelectedItem();
-        bufrTable.setBufrTableB(command, (BufrTables.Format) format);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
-        detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
-        detailTA.setVisible(true);
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailTA.setVisible(true);
-      }
-
-    }
-
-    void acceptTable(BufrTables.TableConfig tc) {
-
-      try {
-        bufrTable.setBufrTableB(tc.getTableBname(), tc.getTableBformat());
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + tc + "\n" + ioe.getMessage());
-        detailTA.setText("Failed to open <" + tc + ">\n" + ioe.getMessage());
-        detailTA.setVisible(true);
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailTA.setVisible(true);
-      }
-
-    }
-
-    @Override
-    public void save() {
-      bufrTable.save();
-      super.save();
-    }
-  }
-
-/**
- *
- */
-  private class BufrTableDPanel extends OpPanel {
-    BufrTableDViewer bufrTable;
-    JComboBox<BufrTables.Format> modes;
-    JComboBox<BufrTables.TableConfig> tables;
-
-    BufrTableDPanel(PreferencesExt p) {
-      super(p, "tableD:", false, false);
-
-      AbstractAction fileAction = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          if (bufrFileChooser == null) initBufrFileChooser();
-          String filename = bufrFileChooser.chooseFilename();
-          if (filename == null) return;
-          cb.setSelectedItem(filename);
-        }
-      };
-      BAMutil.setActionProperties(fileAction, "FileChooser", "open Local table...", false, 'L', -1);
-      BAMutil.addActionToContainer(buttPanel, fileAction);
-
-      modes = new JComboBox<>(BufrTables.Format.values());
-      buttPanel.add(modes);
-
-      JButton accept = new JButton("Accept");
-      buttPanel.add(accept);
-      accept.addActionListener(e -> {
-          accept();
-      });
-
-      tables = new JComboBox<>(BufrTables.getTableConfigsAsArray());
-      buttPanel.add(tables);
-      tables.addActionListener(e -> {
-          acceptTable((BufrTables.TableConfig) tables.getSelectedItem());
-      });
-
-
-      bufrTable = new BufrTableDViewer(prefs, buttPanel);
-      add(bufrTable, BorderLayout.CENTER);
-    }
-
-    @Override
-    public boolean process(Object command) {
-      return true;
-    }
-
-    @Override
-    public void closeOpenFiles() {
-    }
-
-    void accept() {
-      String command = (String) cb.getSelectedItem();
-      if (command == null) return;
-
-      try {
-        Object mode = modes.getSelectedItem();
-        bufrTable.setBufrTableD(command, (BufrTables.Format) mode);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
-        detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
-        detailTA.setVisible(true);
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailTA.setVisible(true);
-      }
-
-    }
-
-    void acceptTable(BufrTables.TableConfig tc) {
-
-      try {
-        bufrTable.setBufrTableD(tc.getTableDname(), tc.getTableDformat());
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + tc + "\n" + ioe.getMessage());
-        detailTA.setText("Failed to open <" + tc + ">\n" + ioe.getMessage());
-        detailTA.setVisible(true);
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailTA.setVisible(true);
-      }
-
-    }
-
-    @Override
-    public void save() {
-      bufrTable.save();
-      super.save();
-    }
-
-  }
 
   ////////////////////////////////////////////////////////////////////////
   /* private class BufrReportPanel extends OpPanel {
@@ -1453,269 +1256,6 @@ public class ToolsUI extends JPanel {
     }
 
   } */
-
-/**
- *
- */
-  private class Grib2CollectionPanel extends OpPanel {
-    ucar.nc2.ui.grib.Grib2CollectionPanel gribTable;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-      gribTable.closeOpenFiles();
-    }
-
-    Grib2CollectionPanel(PreferencesExt p) {
-      super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.grib.Grib2CollectionPanel(prefs, buttPanel);
-      add(gribTable, BorderLayout.CENTER);
-
-      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib2Collection")) {
-            String collectionName = (String) e.getNewValue();
-            openGrib2Collection(collectionName);
-          }
-        }
-      });
-
-      final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
-      showButt.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          gribTable.showCollection(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(showButt);
-
-      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-      infoButton.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          gribTable.checkProblems(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton);
-
-      final AbstractButton gdsButton = BAMutil.makeButtcon("Information", "Show GDS use", false);
-      gdsButton.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          gribTable.showGDSuse(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(gdsButton);
-
-      final AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
-      writeButton.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          try {
-            if (!gribTable.writeIndex(f)) return;
-            f.format("WriteIndex was successful%n");
-          }
-          catch (IOException e1) {
-            e1.printStackTrace();
-          }
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(writeButton);
-    }
-
-    void setCollection(String collection) {
-      if (process(collection)) {
-        cb.addItem(collection);
-      }
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        gribTable.setCollection(command);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      gribTable.save();
-      super.save();
-    }
-  }
-
-/**
- *
- */
-  private class Grib2DataPanel extends OpPanel {
-    ucar.nc2.ui.grib.Grib2DataPanel gribTable;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-    }
-
-    Grib2DataPanel(PreferencesExt p) {
-      super(p, "collection:", true, false);
-      gribTable = new ucar.nc2.ui.grib.Grib2DataPanel(prefs);
-      add(gribTable, BorderLayout.CENTER);
-
-      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib2Collection")) {
-            String collectionName = (String) e.getNewValue();
-            openGrib2Collection(collectionName);
-          }
-        }
-      });
-
-      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-      infoButton.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          gribTable.showInfo(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton);
-
-      final AbstractButton checkButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-      checkButton.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          gribTable.checkProblems(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(checkButton);
-    }
-
-    void setCollection(String collection) {
-      if (process(collection)) {
-        cb.addItem(collection);
-      }
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        gribTable.setCollection(command);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      gribTable.save();
-      super.save();
-    }
-  }
-
-/**
- *
- */
-  private class Grib1DataPanel extends OpPanel {
-    Grib1DataTable gribTable;
-
-    @Override
-    public void closeOpenFiles() throws IOException {
-    }
-
-    Grib1DataPanel(PreferencesExt p) {
-      super(p, "collection:", true, false);
-      gribTable = new Grib1DataTable(prefs);
-      add(gribTable, BorderLayout.CENTER);
-
-      gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent e) {
-          if (e.getPropertyName().equals("openGrib1Collection")) {
-            String collectionName = (String) e.getNewValue();
-            openGrib1Collection(collectionName);
-          }
-        }
-      });
-
-      final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-      infoButton.addActionListener(e -> {
-          final Formatter f = new Formatter();
-          gribTable.checkProblems(f);
-          detailTA.setText(f.toString());
-          detailTA.gotoTop();
-          detailWindow.show();
-      });
-      buttPanel.add(infoButton);
-    }
-
-    void setCollection(String collection) {
-      if (process(collection)) {
-        cb.addItem(collection);
-      }
-    }
-
-    @Override
-    public boolean process(Object o) {
-      String command = (String) o;
-      boolean err = false;
-
-      try {
-        gribTable.setCollection(command);
-
-      } catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
-        err = true;
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(5000);
-        e.printStackTrace(new PrintWriter(sw));
-        detailTA.setText(sw.toString());
-        detailWindow.show();
-        err = true;
-      }
-
-      return !err;
-    }
-
-    @Override
-    public void save() {
-      gribTable.save();
-      super.save();
-    }
-  }
 
 /**
  *

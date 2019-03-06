@@ -11,7 +11,6 @@ import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.FeatureDatasetFactoryManager;
 import ucar.nc2.ui.OpPanel;
-import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 

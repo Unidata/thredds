@@ -33,8 +33,10 @@
 package ucar.nc2.ui.op;
 
 import thredds.inventory.bdb.MetadataManager;
-import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
@@ -42,9 +44,6 @@ import ucar.util.prefs.ui.BeanTable;
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
-
-import ucar.nc2.ui.widget.TextHistoryPane;
-import ucar.nc2.ui.widget.IndependentWindow;
 
 import java.util.*;
 import java.awt.event.ActionEvent;

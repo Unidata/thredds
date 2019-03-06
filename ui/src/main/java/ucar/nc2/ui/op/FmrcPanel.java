@@ -11,7 +11,6 @@ import ucar.nc2.dt.GridDataset;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.FileManager;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;

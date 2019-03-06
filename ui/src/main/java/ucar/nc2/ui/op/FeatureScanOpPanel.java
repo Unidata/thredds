@@ -15,13 +15,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 /**
  *

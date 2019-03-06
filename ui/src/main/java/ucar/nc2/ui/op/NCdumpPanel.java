@@ -7,30 +7,17 @@ package ucar.nc2.ui.op;
 
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
-import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;
-import ucar.nc2.ft.FeatureDataset;
-import ucar.nc2.ft.FeatureDatasetFactoryManager;
-import ucar.nc2.ft.FeatureDatasetPoint;
-import ucar.nc2.ft.point.standard.PointConfigXML;
-import ucar.nc2.ft.point.writer.FeatureDatasetCapabilitiesWriter;
 import ucar.nc2.ui.GetDataRunnable;
 import ucar.nc2.ui.GetDataTask;
 import ucar.nc2.ui.OpPanel;
-import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
-import java.util.Formatter;
-import javax.swing.AbstractButton;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JSplitPane;
 
 /**
  *

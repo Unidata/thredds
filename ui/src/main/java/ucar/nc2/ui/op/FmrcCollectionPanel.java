@@ -6,20 +6,15 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.ui.OpPanel;
-import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Formatter;
 import javax.swing.AbstractButton;
-import javax.swing.JOptionPane;
 
 /**
  * new Fmrc Collection Metadata storage in bdb
