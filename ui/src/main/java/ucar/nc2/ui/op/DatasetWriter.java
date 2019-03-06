@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -27,6 +27,8 @@ import java.util.StringTokenizer;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
+import ucar.nc2.ui.StructureTable;
 
 import org.jdom2.Element;
 import ucar.ma2.Array;

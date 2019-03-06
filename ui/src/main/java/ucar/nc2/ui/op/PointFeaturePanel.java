@@ -19,6 +19,7 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JComboBox;
@@ -29,6 +30,10 @@ import javax.swing.JSplitPane;
  *
  */
 public  class PointFeaturePanel extends OpPanel {
+
+    private final static org.slf4j.Logger logger
+                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private PointFeatureDatasetViewer pfViewer;
     private JSplitPane split;
     private FeatureDatasetPoint pfDataset;
@@ -129,7 +134,7 @@ public  class PointFeaturePanel extends OpPanel {
             }
         }
         catch (IOException ioe) {
-            System.out.printf("close failed %n");
+            logger.warn("close failed");
         }
         detailTA.clear();
 
@@ -178,7 +183,7 @@ public  class PointFeaturePanel extends OpPanel {
             }
         }
         catch (IOException ioe) {
-            System.out.printf("close failed %n");
+            logger.warn("close failed");
         }
         detailTA.clear();
 

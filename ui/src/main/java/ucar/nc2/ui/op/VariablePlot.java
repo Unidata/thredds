@@ -1,18 +1,20 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import java.awt.*;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import javax.swing.*;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -32,6 +34,7 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
+
 import ucar.ma2.Array;
 import ucar.ma2.Index;
 import ucar.nc2.Attribute;
@@ -50,7 +53,8 @@ import ucar.util.prefs.PreferencesExt;
  * @author https://github.com/petejan
  */
 public class VariablePlot extends JPanel {
-  final private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
+  private final static org.slf4j.Logger log
+                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   final JFreeChart chart;
 

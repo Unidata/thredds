@@ -7,7 +7,6 @@ package ucar.nc2.ui.op;
 
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
-import ucar.nc2.ui.grib.GribRewritePanel;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.util.prefs.PreferencesExt;
@@ -16,52 +15,59 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.invoke.MethodHandles;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
  */
-public class GribRewriteOpPanel extends OpPanel {
-
-  private final static org.slf4j.Logger logger
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private GribRewritePanel ftTable;
-    private final FileManager dirChooser;
+public class FeatureScanOpPanel extends OpPanel {
+    private FeatureScanPanel ftTable;
+    final FileManager dirChooser;
 
 /**
  *
  */
-    public GribRewriteOpPanel(final PreferencesExt prefs) {
+    public FeatureScanOpPanel(PreferencesExt prefs) {
         super(prefs, "dir:", false, false);
+
         dirChooser = new FileManager(ToolsUI.getToolsFrame(), null, null,
                                 (PreferencesExt) prefs.node("FeatureScanFileManager"));
-        ftTable = new GribRewritePanel(prefs, buttPanel);
+
+        ftTable = new FeatureScanPanel(prefs);
         add(ftTable, BorderLayout.CENTER);
 
         ftTable.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
-            public void propertyChange(PropertyChangeEvent e) {
-                final String pname = e.getPropertyName();
+            public void propertyChange(final PropertyChangeEvent e) {
 
                 final String datasetName = (String) e.getNewValue();
 
-                if ("openNetcdfFile".equals (pname)) {
+                if (e.getPropertyName().equals("openPointFeatureDataset")) {
+                    ToolsUI.getToolsUI().openPointFeatureDataset(datasetName);
+                }
+                else if (e.getPropertyName().equals("openNetcdfFile")) {
                     ToolsUI.getToolsUI().openNetcdfFile(datasetName);
                 }
-                else if ("openGridDataset".equals (pname)) {
+                else if (e.getPropertyName().equals("openCoordSystems")) {
+                    ToolsUI.getToolsUI().openCoordSystems(datasetName);
+                }
+                else if (e.getPropertyName().equals("openNcML")) {
+                    ToolsUI.getToolsUI().openNcML(datasetName);
+                }
+                else if (e.getPropertyName().equals("openGridDataset")) {
                     ToolsUI.getToolsUI().openGridDataset(datasetName);
                 }
-                else if ("openGrib1Data".equals (pname)) {
-                    ToolsUI.getToolsUI().openGrib1Data(datasetName);
+                else if (e.getPropertyName().equals("openCoverageDataset")) {
+                    ToolsUI.getToolsUI().openCoverageDataset(datasetName);
                 }
-                else if ("openGrib2Data".equals (pname)) {
-                    ToolsUI.getToolsUI().openGrib2Data(datasetName);
-                }
-                else {
-                    logger.debug("Unknown popertry name {}", pname);
+                else if (e.getPropertyName().equals("openRadialDataset")) {
+                    ToolsUI.getToolsUI().openRadialDataset(datasetName);
                 }
             }
         });
@@ -69,9 +75,8 @@ public class GribRewriteOpPanel extends OpPanel {
         dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         dirChooser.setCurrentDirectory(prefs.get("currDir", "."));
         final AbstractAction fileAction = new AbstractAction() {
-            @Override
-            public void actionPerformed(final ActionEvent e) {
-                final String filename = dirChooser.chooseFilename();
+            public void actionPerformed(ActionEvent e) {
+                String filename = dirChooser.chooseFilename();
                 if (filename == null) {
                     return;
                 }

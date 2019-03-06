@@ -30,7 +30,7 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import thredds.inventory.bdb.MetadataManager;
 import ucar.nc2.ui.widget.*;

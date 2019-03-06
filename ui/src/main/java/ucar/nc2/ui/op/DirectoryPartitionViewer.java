@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ui.op;
 
 import org.jdom2.input.SAXBuilder;
@@ -33,7 +38,6 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
@@ -52,7 +56,8 @@ import java.util.List;
  * @since 11/9/13
  */
 public class DirectoryPartitionViewer extends JPanel {
-  private final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(DirectoryPartitionViewer.class);
+    private final static org.slf4j.Logger logger
+                            = org.slf4j.LoggerFactory.getLogger(DirectoryPartitionViewer.class);
 
     private PreferencesExt prefs;
 
@@ -116,6 +121,7 @@ public class DirectoryPartitionViewer extends JPanel {
             dirFileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("fileChooser"));
             dirFileChooser.getFileChooser().setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES);
             AbstractAction dirFileAction = new AbstractAction() {
+                @Override
                 public void actionPerformed(ActionEvent e) {
                     String filename = dirFileChooser.chooseFilename();
                     if (filename == null) {

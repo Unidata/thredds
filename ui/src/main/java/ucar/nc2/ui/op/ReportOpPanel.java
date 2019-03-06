@@ -8,7 +8,6 @@ package ucar.nc2.ui.op;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ReportPanel;
 import ucar.nc2.ui.widget.BAMutil;
-import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
@@ -43,39 +42,39 @@ public class ReportOpPanel extends OpPanel {
         buttPanel.add(reports);
 
         AbstractAction useIndexButt = new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
-          useIndex = (Boolean) getValue(BAMutil.STATE);
-        }
-      };
-      useIndexButt.putValue(BAMutil.STATE, useIndex);
-      BAMutil.setActionProperties(useIndexButt, "Doit", "use Index", true, 'C', -1);
-      BAMutil.addActionToContainer(buttPanel, useIndexButt);
+            public void actionPerformed(ActionEvent e) {
+                useIndex = (Boolean) getValue(BAMutil.STATE);
+            }
+        };
+        useIndexButt.putValue(BAMutil.STATE, useIndex);
+        BAMutil.setActionProperties(useIndexButt, "Doit", "use Index", true, 'C', -1);
+        BAMutil.addActionToContainer(buttPanel, useIndexButt);
 
-      final AbstractAction eachFileButt = new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            eachFile = (Boolean) getValue(BAMutil.STATE);
-          }
-      };
-      eachFileButt.putValue(BAMutil.STATE, eachFile);
-      BAMutil.setActionProperties(eachFileButt, "Doit", "report on each file", true, 'E', -1);
-      BAMutil.addActionToContainer(buttPanel, eachFileButt);
+        final AbstractAction eachFileButt = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                eachFile = (Boolean) getValue(BAMutil.STATE);
+            }
+        };
+        eachFileButt.putValue(BAMutil.STATE, eachFile);
+        BAMutil.setActionProperties(eachFileButt, "Doit", "report on each file", true, 'E', -1);
+        BAMutil.addActionToContainer(buttPanel, eachFileButt);
 
-      final AbstractAction extraButt = new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            extra = (Boolean) getValue(BAMutil.STATE);
-          }
-      };
-      extraButt.putValue(BAMutil.STATE, extra);
-      BAMutil.setActionProperties(extraButt, "Doit", "extra info", true, 'X', -1);
-      BAMutil.addActionToContainer(buttPanel, extraButt);
+        final AbstractAction extraButt = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                extra = (Boolean) getValue(BAMutil.STATE);
+            }
+        };
+        extraButt.putValue(BAMutil.STATE, extra);
+        BAMutil.setActionProperties(extraButt, "Doit", "extra info", true, 'X', -1);
+        BAMutil.addActionToContainer(buttPanel, extraButt);
 
-      final AbstractAction doitButt = new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
-            process();
-          }
-      };
-      BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
-      BAMutil.addActionToContainer(buttPanel, doitButt);
+        final AbstractAction doitButt = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                process();
+            }
+        };
+        BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
+        BAMutil.addActionToContainer(buttPanel, doitButt);
     }
 
 /**
@@ -83,6 +82,7 @@ public class ReportOpPanel extends OpPanel {
  */
     @Override
     public void closeOpenFiles() {
+        // Do nothing.
     }
 
 /**

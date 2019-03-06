@@ -1,26 +1,9 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
-
-import java.awt.BorderLayout;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableModel;
+package ucar.nc2.ui.op;
 
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
@@ -39,14 +22,39 @@ import ucar.nc2.time.CalendarTimeZone;
 import ucar.nc2.ui.widget.FileManager;
 import ucar.util.prefs.PreferencesExt;
 
+import java.awt.BorderLayout;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.lang.invoke.MethodHandles;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableModel;
+
+/**
+ *
+ */
 public class VariableTable extends JPanel {
-	final private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass());
+    private final static org.slf4j.Logger log
+                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
 	private PreferencesExt prefs;
 	private FileManager fileChooser; // for exporting
 
 	List col0 = null;
 	Array[] data = null;
 
+/**
+ *
+ */
 	public VariableTable(PreferencesExt prefs) {
 		this.prefs = prefs;
 

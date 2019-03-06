@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -9,7 +9,7 @@ import ucar.nc2.dt.RadialDatasetSweep;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft.radial.StationRadialDataset;
 import ucar.nc2.time.CalendarDate;
-import ucar.nc2.ui.RadialDatasetTable;
+// import ucar.nc2.ui.op.RadialDatasetTable;
 import ucar.nc2.ui.point.StationRegionDateChooser;
 import ucar.nc2.ui.widget.IndependentDialog;
 import ucar.nc2.ui.widget.TextHistoryPane;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
 
@@ -16,19 +16,21 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 import ucar.nc2.util.IO;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.imageio.ImageIO;
-
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Formatter;
+import java.util.List;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
+import javax.swing.*;
+import javax.imageio.ImageIO;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.Element;
@@ -191,7 +193,7 @@ public class WmsViewer extends JPanel {
 
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document tdoc = builder.build(method.getResponseAsStream());
-      org.jdom2.Element root = tdoc.getRootElement();
+      Element root = tdoc.getRootElement();
       parseGetCapabilities(root);
 
     } catch (Exception e) {
@@ -204,13 +206,13 @@ public class WmsViewer extends JPanel {
     return true;
   }
 
-  private void parseGetCapabilities(org.jdom2.Element root) {
+  private void parseGetCapabilities(Element root) {
 
     Element capElem = root.getChild("Capability", wmsNamespace);
     Element layer1Elem = capElem.getChild("Layer", wmsNamespace);
 
-    java.util.List<String> crsList = new ArrayList<>(100);
-    java.util.List<Element> crs = layer1Elem.getChildren("CRS", wmsNamespace);
+    List<String> crsList = new ArrayList<>(100);
+    List<Element> crs = layer1Elem.getChildren("CRS", wmsNamespace);
     for (Element crsElem : crs) {
       crsList.add(crsElem.getText());
     }
@@ -218,16 +220,16 @@ public class WmsViewer extends JPanel {
 
     Element reqElem = capElem.getChild("Request", wmsNamespace);
     Element mapElem = reqElem.getChild("GetMap", wmsNamespace);
-    java.util.List<String> formatList = new ArrayList<>(100);
-    java.util.List<Element> formats = mapElem.getChildren("Format", wmsNamespace);
+    List<String> formatList = new ArrayList<>(100);
+    List<Element> formats = mapElem.getChildren("Format", wmsNamespace);
     for (Element formatElem : formats) {
       formatList.add(formatElem.getText());
     }
     formatChooser.setCollection(formatList.iterator());
 
-    java.util.List<LayerBean> beans = new ArrayList<>(100);
+    List<LayerBean> beans = new ArrayList<>(100);
     Element layer2Elem = layer1Elem.getChild("Layer", wmsNamespace);
-    java.util.List<Element> layers = layer2Elem.getChildren("Layer", wmsNamespace);
+    List<Element> layers = layer2Elem.getChildren("Layer", wmsNamespace);
     for (Element layer3Elem : layers) {
       beans.add(new LayerBean(layer3Elem));
     }
@@ -335,9 +337,9 @@ public class WmsViewer extends JPanel {
 
     boolean hasTime, hasLevel;
 
-    java.util.List<String> styles = new ArrayList<>();
-    java.util.List<String> levels = new ArrayList<>();
-    java.util.List<String> times = new ArrayList<>();
+    List<String> styles = new ArrayList<>();
+    List<String> levels = new ArrayList<>();
+    List<String> times = new ArrayList<>();
 
     // no-arg constructor
     public LayerBean() {
@@ -379,8 +381,8 @@ public class WmsViewer extends JPanel {
       return (name == null) ? "" : elem.getText();
     }
 
-    java.util.List<String> getVals(Element parent, String name) {
-      java.util.List<String> result = new ArrayList<>(10);
+    List<String> getVals(Element parent, String name) {
+      List<String> result = new ArrayList<>(10);
       for (Element elem : parent.getChildren(name, wmsNamespace)) {
         result.add(elem.getText());
       }

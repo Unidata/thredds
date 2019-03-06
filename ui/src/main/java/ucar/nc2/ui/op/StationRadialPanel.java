@@ -96,7 +96,8 @@ public class StationRadialPanel extends OpPanel {
 
         DataFactory.Result result = null;
         try {
-            result = ToolsUI.getThreddsDataFactory().openFeatureDataset(FeatureType.STATION_RADIAL, location, null);
+            result = ToolsUI.getThreddsDataFactory().openFeatureDataset(
+                                                FeatureType.STATION_RADIAL, location, null);
             if (result.fatalError) {
                 JOptionPane.showMessageDialog(null, "Can't open " + location + ": " + result.errLog.toString());
                 return false;

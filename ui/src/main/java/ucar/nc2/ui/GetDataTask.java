@@ -14,7 +14,7 @@ import java.io.StringWriter;
 /**
  *
  */
-class GetDataTask extends ProgressMonitorTask {
+public class GetDataTask extends ProgressMonitorTask {
     private GetDataRunnable getData;
     private Object o;
     private String name;
@@ -23,7 +23,7 @@ class GetDataTask extends ProgressMonitorTask {
 /**
  *
  */
-    GetDataTask(GetDataRunnable getData, String name, Object o) {
+    public GetDataTask(GetDataRunnable getData, String name, Object o) {
         this.getData = getData;
         this.name = name;
         this.o = o;

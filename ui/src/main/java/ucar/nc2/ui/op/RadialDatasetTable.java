@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

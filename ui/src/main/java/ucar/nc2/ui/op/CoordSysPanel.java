@@ -16,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -25,6 +26,10 @@ import javax.swing.JOptionPane;
  *
  */
 public class CoordSysPanel extends OpPanel {
+
+    private final static org.slf4j.Logger logger
+                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private NetcdfDataset ds;
     private CoordSysTable coordSysTable;
 
@@ -90,7 +95,7 @@ public class CoordSysPanel extends OpPanel {
             }
         }
         catch (IOException ioe) {
-            System.out.printf("close failed %n");
+            logger.warn("close failed");
         }
 
         Object spiObject = null;
@@ -140,7 +145,7 @@ public class CoordSysPanel extends OpPanel {
             ds = null;
         }
         catch (IOException ioe) {
-            System.out.printf("close failed %n");
+            logger.warn("close failed");
         }
         ds = ncd;
 
