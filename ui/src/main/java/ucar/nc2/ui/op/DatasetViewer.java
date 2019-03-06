@@ -297,7 +297,7 @@ public class DatasetViewer extends JPanel {
     if (attTable == null) {
       // global attributes
       attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttributeBeans"), false);
-      PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(attTable.getJTable(), "Options");
+      PopupMenu varPopup = new PopupMenu(attTable.getJTable(), "Options");
       varPopup.addAction("Show Attribute", new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           AttributeBean bean = (AttributeBean) attTable.getSelectedBean();
@@ -832,7 +832,7 @@ public class DatasetViewer extends JPanel {
       // collect dimensions
       StringBuilder lens = new StringBuilder();
       StringBuilder names = new StringBuilder();
-      java.util.List dims = vs.getDimensions();
+      List dims = vs.getDimensions();
       for (int j=0; j<dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
         if (j>0) {

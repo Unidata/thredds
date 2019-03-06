@@ -9,7 +9,6 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.ToolsUI;
 import ucar.nc2.ui.grib.CdmIndexPanel;
-import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;

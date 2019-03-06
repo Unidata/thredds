@@ -5,8 +5,12 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.ma2.*;
+import ucar.ma2.Array;
+import ucar.ma2.ArrayChar;
+import ucar.ma2.ArrayDouble;
+import ucar.ma2.ArrayObject;
 import ucar.ma2.DataType;
+import ucar.ma2.IndexIterator;
 import ucar.nc2.*;
 import ucar.nc2.Dimension;
 import ucar.nc2.constants.CDM;

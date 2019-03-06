@@ -17,8 +17,8 @@ import ucar.util.prefs.ui.BeanTable;
 import ucar.nc2.util.IO;
 
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;

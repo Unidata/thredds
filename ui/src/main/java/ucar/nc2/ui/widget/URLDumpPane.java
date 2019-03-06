@@ -18,7 +18,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.ComboBox;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +32,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
-
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * A text widget to dump a web URL.

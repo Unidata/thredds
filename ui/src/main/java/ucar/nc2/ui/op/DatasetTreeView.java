@@ -10,8 +10,6 @@ import ucar.nc2.*;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.MultilineTooltip;
 
-import javax.swing.*;
-import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,7 +18,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolTip;
+import javax.swing.JTree;
+import javax.swing.ToolTipManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
  * A Tree View of the groups and variables inside a NetcdfFile.
@@ -155,7 +164,7 @@ public class DatasetTreeView extends JPanel {
   }
 
   // make an NetcdfFile into a TreeModel
-  private class DatasetTreeModel extends javax.swing.tree.DefaultTreeModel {
+  private class DatasetTreeModel extends DefaultTreeModel {
     DatasetTreeModel (NetcdfFile file) {
       super( new GroupNode( null, file.getRootGroup()), false);
     }
@@ -339,7 +348,7 @@ public class DatasetTreeView extends JPanel {
 
 
   // this is to get different icons
-  private static class MyTreeCellRenderer extends javax.swing.tree.DefaultTreeCellRenderer {
+  private static class MyTreeCellRenderer extends DefaultTreeCellRenderer {
     ImageIcon structIcon, dimIcon;
     String tooltipText = null;
 

@@ -7,7 +7,6 @@ package ucar.nc2.ui.op;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
@@ -713,7 +712,7 @@ public class DatasetWriter extends JPanel {
       Formatter lens = new Formatter();
       Formatter names = new Formatter();
       lens.format("(");
-      java.util.List<Dimension> dims = vs.getDimensions();
+      List<Dimension> dims = vs.getDimensions();
       for (int j=0; j<dims.size(); j++) {
         ucar.nc2.Dimension dim = dims.get(j);
         if (j>0) {
@@ -834,8 +833,8 @@ public class DatasetWriter extends JPanel {
 
     public String getName() { return att.getShortName(); }
     public String getValue() {
-      Array value = att.getValues();
-      return NCdumpW.toString(value, null, null);
+        Array value = att.getValues();
+        return NCdumpW.toString(value, null, null);
     }
 
   }
