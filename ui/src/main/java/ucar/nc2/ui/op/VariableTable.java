@@ -24,6 +24,7 @@ import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,8 +44,9 @@ import javax.swing.table.TableModel;
  *
  */
 public class VariableTable extends JPanel {
+
     private final static org.slf4j.Logger log
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
 	private PreferencesExt prefs;
 	private FileManager fileChooser; // for exporting

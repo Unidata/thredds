@@ -5,7 +5,6 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ft.FeatureDataset;
 import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.ft2.coverage.CoverageDatasetFactory;
@@ -16,7 +15,6 @@ import ucar.nc2.ui.coverage2.CoverageTable;
 import ucar.nc2.ui.coverage2.CoverageViewer;
 import ucar.nc2.ui.gis.shapefile.ShapeFileBean;
 import ucar.nc2.ui.gis.worldmap.WorldMapBean;
-import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.util.Optional;
@@ -25,7 +23,6 @@ import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.lang.invoke.MethodHandles;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -39,8 +36,8 @@ import javax.swing.JSplitPane;
  */
 public class CoveragePanel extends OpPanel {
 
-    private final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(
-                                                        MethodHandles.lookup().lookupClass());
+    private final static org.slf4j.Logger logger
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private CoverageTable dsTable;
     private CoverageViewer display;

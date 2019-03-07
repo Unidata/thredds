@@ -34,9 +34,6 @@ import ucar.util.prefs.ui.BeanTable;
 
 import ucar.nc2.ui.StructureTable;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -45,8 +42,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * A Swing widget to view the contents of a ucar.nc2.dt2.PointFeatureDataset
@@ -58,7 +59,9 @@ import java.util.List;
  */
 
 public class PointFeatureDatasetViewer extends JPanel {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(PointFeatureDatasetViewer.class);
+
+    private final static org.slf4j.Logger log
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
   private PreferencesExt prefs;
 

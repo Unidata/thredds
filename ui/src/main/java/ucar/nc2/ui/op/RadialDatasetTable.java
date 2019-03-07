@@ -5,28 +5,33 @@
 
 package ucar.nc2.ui.op;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.nc2.*;
-import ucar.nc2.ui.image.ImageViewPanel;
-import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.dt.RadialDatasetSweep;
-import ucar.nc2.dt.image.image.ImageArrayAdapter;
-
-import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.ui.*;
 import ucar.ma2.Array;
 import ucar.ma2.DataType;
+import ucar.nc2.VariableSimpleIF;
+import ucar.nc2.ui.image.ImageViewPanel;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
+import ucar.nc2.ui.widget.PopupMenu;
+import ucar.nc2.ui.widget.TextHistoryPane;
+import ucar.nc2.dt.RadialDatasetSweep;
+import ucar.nc2.dt.image.image.ImageArrayAdapter;
+import ucar.util.prefs.PreferencesExt;
+import ucar.util.prefs.ui.BeanTable;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
-import java.util.*;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
-
-import javax.swing.*;
+import java.lang.invoke.MethodHandles;
+import javax.swing.AbstractAction;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
@@ -37,7 +42,9 @@ import javax.swing.event.ListSelectionEvent;
  */
 
 public class RadialDatasetTable extends JPanel {
-  static private final Logger logger = LoggerFactory.getLogger(RadialDatasetTable.class);
+
+    private final static org.slf4j.Logger logger
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
   private PreferencesExt prefs;
   private RadialDatasetSweep radialDataset;

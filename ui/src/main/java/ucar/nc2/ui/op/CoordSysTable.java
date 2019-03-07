@@ -11,14 +11,19 @@ import ucar.ma2.ArrayDouble;
 import ucar.ma2.ArrayObject;
 import ucar.ma2.DataType;
 import ucar.ma2.IndexIterator;
-import ucar.nc2.*;
+import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.Structure;
+import ucar.nc2.Variable;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.dt.radial.RadialCoordSys;
 import ucar.nc2.ft2.coverage.adapter.DtCoverageCSBuilder;
 import ucar.nc2.time.*;
-import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.BAMutil;
+import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.dt.radial.RadialCoordSys;
+import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.dataset.*;
 import ucar.nc2.constants._Coordinate;
 import ucar.nc2.constants.AxisType;
@@ -27,13 +32,18 @@ import ucar.unidata.util.Parameter;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.*;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
+import java.awt.BorderLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
-
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Formatter;
+import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
 
@@ -662,7 +672,7 @@ public class CoordSysTable extends JPanel {
       boolean first = true;
       StringBuilder lens = new StringBuilder();
       StringBuilder names = new StringBuilder();
-      for (ucar.nc2.Dimension dim : v.getDimensions()) {
+      for (Dimension dim : v.getDimensions()) {
         if (!first) {
           lens.append(",");
           names.append(",");
@@ -917,9 +927,9 @@ public class CoordSysTable extends JPanel {
       // collect dimensions
       StringBuilder lens = new StringBuilder();
       StringBuilder names = new StringBuilder();
-      java.util.List dims = v.getDimensions();
+      List dims = v.getDimensions();
       for (int j = 0; j < dims.size(); j++) {
-        ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
+        Dimension dim = (Dimension) dims.get(j);
         if (j > 0) {
           lens.append(",");
           names.append(",");

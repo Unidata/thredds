@@ -13,12 +13,13 @@ import ucar.nc2.ui.widget.*;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
-import javax.swing.*;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.table.TableColumn;
 
 /**
  * Examine BUFR CdmIndex files
@@ -27,7 +28,9 @@ import java.util.List;
  * @since 6/29/11
  */
 public class BufrCdmIndexPanel extends JPanel {
-    private final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrCdmIndexPanel.class);
+
+    private final static org.slf4j.Logger logger
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private PreferencesExt prefs;
 

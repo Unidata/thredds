@@ -36,8 +36,8 @@ import javax.swing.JSplitPane;
  */
 public class SimpleGeomPanel extends OpPanel {
 
-    private final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(
-                                                        MethodHandles.lookup().lookupClass());
+    private final static org.slf4j.Logger logger
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private SimpleGeomTable sgTable;
     private JSplitPane split;

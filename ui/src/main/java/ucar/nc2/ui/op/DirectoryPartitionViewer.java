@@ -41,6 +41,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,8 +57,9 @@ import java.util.List;
  * @since 11/9/13
  */
 public class DirectoryPartitionViewer extends JPanel {
+
     private final static org.slf4j.Logger logger
-                            = org.slf4j.LoggerFactory.getLogger(DirectoryPartitionViewer.class);
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private PreferencesExt prefs;
 

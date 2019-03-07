@@ -25,8 +25,8 @@ import javax.swing.JFileChooser;
  */
 public class GribRewriteOpPanel extends OpPanel {
 
-  private final static org.slf4j.Logger logger
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final static org.slf4j.Logger logger
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private GribRewritePanel ftTable;
     private final FileManager dirChooser;

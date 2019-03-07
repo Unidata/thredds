@@ -24,7 +24,6 @@ import java.lang.invoke.MethodHandles;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
 
 /**
  *
@@ -32,7 +31,7 @@ import javax.swing.JTabbedPane;
 public class DatasetViewerPanel extends OpPanel {
 
     private final static org.slf4j.Logger logger
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private DatasetViewer dsViewer;
     private JSplitPane split;

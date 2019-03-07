@@ -28,7 +28,7 @@ import javax.swing.JOptionPane;
 public class CoordSysPanel extends OpPanel {
 
     private final static org.slf4j.Logger logger
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private NetcdfDataset ds;
     private CoordSysTable coordSysTable;

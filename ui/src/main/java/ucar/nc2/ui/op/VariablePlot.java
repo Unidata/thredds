@@ -53,8 +53,9 @@ import ucar.util.prefs.PreferencesExt;
  * @author https://github.com/petejan
  */
 public class VariablePlot extends JPanel {
-  private final static org.slf4j.Logger log
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private final static org.slf4j.Logger log
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
   final JFreeChart chart;
 

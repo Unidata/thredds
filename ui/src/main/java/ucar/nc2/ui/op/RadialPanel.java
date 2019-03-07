@@ -30,7 +30,7 @@ import javax.swing.JSplitPane;
 public class RadialPanel extends OpPanel {
 
     private final static org.slf4j.Logger logger
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+                = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private RadialDatasetTable dsTable;
     private JSplitPane split;
