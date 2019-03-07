@@ -94,7 +94,7 @@ public class BufrTableDPanel extends OpPanel {
             bufrTable.setBufrTableD(command, (BufrTables.Format) mode);
         }
         catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + command + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "BufrTableViewer cannot open " + command + "\n" + ioe.getMessage());
             detailTA.setText("Failed to open <" + command + ">\n" + ioe.getMessage());
             detailTA.setVisible(true);
         }
@@ -115,7 +115,7 @@ public class BufrTableDPanel extends OpPanel {
             bufrTable.setBufrTableD(tc.getTableDname(), tc.getTableDformat());
         }
         catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "BufrTableViewer cant open " + tc + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "BufrTableViewer cannot open " + tc + "\n" + ioe.getMessage());
             detailTA.setText("Failed to open <" + tc + ">\n" + ioe.getMessage());
             detailTA.setVisible(true);
         }

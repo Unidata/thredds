@@ -40,7 +40,7 @@ public class BufrCdmIndexOpPanel extends OpPanel {
             table.setIndexFile(command);
         }
         catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "BufrCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "BufrCdmIndexPanel cannot open " + command + "\n" + ioe.getMessage());
             err = true;
         }
         catch (Exception e) {

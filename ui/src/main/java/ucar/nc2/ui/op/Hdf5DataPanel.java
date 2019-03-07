@@ -70,7 +70,7 @@ public class Hdf5DataPanel extends OpPanel {
 
       }
       catch (FileNotFoundException ioe) {
-        JOptionPane.showMessageDialog(null, "Hdf5DataTable cant open " + command + "\n" + ioe.getMessage());
+        JOptionPane.showMessageDialog(null, "Hdf5DataTable cannot open " + command + "\n" + ioe.getMessage());
         err = true;
 
       }

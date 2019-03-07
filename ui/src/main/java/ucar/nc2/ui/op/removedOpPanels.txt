@@ -1,0 +1,242 @@
+
+// The following OpPanel subclasses were originally inner classes within ToolsUI but had been
+// commented out.
+
+
+  ////////////////////////////////////////////////////////////////////////
+  /* private class BufrReportPanel extends OpPanel {
+    ucar.nc2.ui.BufrReportPanel reportPanel;
+    boolean useIndex = true;
+    JComboBox reports;
+
+    BufrReportPanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      reportPanel = new ucar.nc2.ui.BufrReportPanel(prefs, buttPanel);
+      add(reportPanel, BorderLayout.CENTER);
+
+      reports = new JComboBox(ucar.nc2.ui.BufrReportPanel.Report.values());
+      buttPanel.add(reports);
+
+      AbstractAction useIndexButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useIndex = state.booleanValue();
+        }
+      };
+      useIndexButt.putValue(BAMutil.STATE, useIndex);
+      BAMutil.setActionProperties(useIndexButt, "Doit", "use default table", true, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, useIndexButt);
+
+      AbstractAction doitButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          process();
+        }
+      };
+      BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, doitButt);
+    }
+
+    @Override
+    public boolean process(Object o) {
+      return reportPanel.setCollection((String) o);
+    }
+
+    public boolean process() {
+      boolean err = false;
+      String command = (String) cb.getSelectedItem();
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        reportPanel.doReport(command, useIndex, (ucar.nc2.ui.BufrReportPanel.Report) reports.getSelectedItem());
+
+      } catch (IOException ioe) {
+        JOptionPane.showMessageDialog(null, "Grib2ReportPanel cannot open " + command + "\n" + ioe.getMessage());
+        ioe.printStackTrace();
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    @Override
+    public void save() {
+      reportPanel.save();
+      super.save();
+    }
+
+  } */
+
+
+  /////////////////////////////////////////////////////////////////////
+
+  /* private class Grib2ReportPanel extends OpPanel {
+    ucar.nc2.ui.grib.Grib2ReportPanel gribReport;
+    boolean useIndex = true;
+    boolean eachFile = false;
+    boolean extra = false;
+    JComboBox reports;
+
+    Grib2ReportPanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      gribReport = new ucar.nc2.ui.grib.Grib2ReportPanel(prefs, buttPanel);
+      add(gribReport, BorderLayout.CENTER);
+
+      reports = new JComboBox(ucar.nc2.ui.grib.Grib2ReportPanel.Report.values());
+      buttPanel.add(reports);
+
+      AbstractAction useIndexButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useIndex = state.booleanValue();
+        }
+      };
+      useIndexButt.putValue(BAMutil.STATE, useIndex);
+      BAMutil.setActionProperties(useIndexButt, "Doit", "use Index", true, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, useIndexButt);
+
+      AbstractAction eachFileButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          eachFile = state.booleanValue();
+        }
+      };
+      eachFileButt.putValue(BAMutil.STATE, eachFile);
+      BAMutil.setActionProperties(eachFileButt, "Doit", "report on each file", true, 'E', -1);
+      BAMutil.addActionToContainer(buttPanel, eachFileButt);
+
+      AbstractAction extraButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          extra = state.booleanValue();
+        }
+      };
+      extraButt.putValue(BAMutil.STATE, extra);
+      BAMutil.setActionProperties(extraButt, "Doit", "extra info", true, 'X', -1);
+      BAMutil.addActionToContainer(buttPanel, extraButt);
+
+      AbstractAction doitButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          process();
+        }
+      };
+      BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, doitButt);
+    }
+
+    @Override
+    public void closeOpenFiles() {
+    }
+
+    @Override
+    public boolean process(Object o) {
+      return gribReport.setCollection((String) o);
+    }
+
+    public boolean process() {
+      boolean err = false;
+      String command = (String) cb.getSelectedItem();
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        gribReport.doReport(command, useIndex, eachFile, extra, (ucar.nc2.ui.grib.Grib2ReportPanel.Report) reports.getSelectedItem());
+
+      } catch (IOException ioe) {
+        JOptionPane.showMessageDialog(null, "Grib2ReportPanel cannot open " + command + "\n" + ioe.getMessage());
+        ioe.printStackTrace();
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    @Override
+    public void save() {
+      gribReport.save();
+      super.save();
+    }
+
+  } */
+
+  /////////////////////////////////////////////////////////////////////
+
+  /* private class Grib1ReportPanel extends OpPanel {
+    ucar.nc2.ui.grib.Grib1ReportPanel gribReport;
+    boolean useIndex = true;
+    JComboBox reports;
+
+    Grib1ReportPanel(PreferencesExt p) {
+      super(p, "collection:", true, false);
+      gribReport = new ucar.nc2.ui.grib.Grib1ReportPanel(prefs, buttPanel);
+      add(gribReport, BorderLayout.CENTER);
+
+      reports = new JComboBox(ucar.nc2.ui.grib.Grib1ReportPanel.Report.values());
+      buttPanel.add(reports);
+
+      AbstractAction useIndexButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          Boolean state = (Boolean) getValue(BAMutil.STATE);
+          useIndex = state.booleanValue();
+        }
+      };
+      useIndexButt.putValue(BAMutil.STATE, useIndex);
+      BAMutil.setActionProperties(useIndexButt, "Doit", "use default table", true, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, useIndexButt);
+
+      AbstractAction doitButt = new AbstractAction() {
+        public void actionPerformed(ActionEvent e) {
+          process();
+        }
+      };
+      BAMutil.setActionProperties(doitButt, "alien", "make report", false, 'C', -1);
+      BAMutil.addActionToContainer(buttPanel, doitButt);
+    }
+
+    @Override
+    public boolean process(Object o) {
+      return gribReport.setCollection((String) o);
+    }
+
+    public boolean process() {
+      boolean err = false;
+      String command = (String) cb.getSelectedItem();
+
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
+      try {
+        gribReport.doReport(command, useIndex, (ucar.nc2.ui.grib.Grib1ReportPanel.Report) reports.getSelectedItem());
+
+      } catch (IOException ioe) {
+        JOptionPane.showMessageDialog(null, "Grib2ReportPanel cannot open " + command + "\n" + ioe.getMessage());
+        ioe.printStackTrace();
+        err = true;
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        e.printStackTrace(new PrintStream(bos));
+        detailTA.setText(bos.toString());
+        detailWindow.show();
+        err = true;
+      }
+
+      return !err;
+    }
+
+    @Override
+    public void save() {
+      gribReport.save();
+      super.save();
+    }
+  }  */
+

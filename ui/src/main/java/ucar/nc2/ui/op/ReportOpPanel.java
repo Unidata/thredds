@@ -104,7 +104,7 @@ public class ReportOpPanel extends OpPanel {
             reportPanel.doReport(command, useIndex, eachFile, extra, reports.getSelectedItem());
         }
         catch (IOException ioe) {
-            JOptionPane.showMessageDialog(null, "Grib2ReportPanel cant open " + command + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "Grib2ReportPanel cannot open " + command + "\n" + ioe.getMessage());
             ioe.printStackTrace();
             err = true;
         }

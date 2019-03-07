@@ -220,7 +220,7 @@ public class CommonCodeTable implements Comparable<CommonCodeTable> {
       Class c = CommonCodeTable.class;
       ios = c.getResourceAsStream(version.getResourceName());
       if (ios == null) {
-        throw new IllegalStateException("CommonCodeTable cant open " + version.getResourceName());
+        throw new IllegalStateException("CommonCodeTable cannot open " + version.getResourceName());
       }
 
       org.jdom2.Document doc;

@@ -15,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
@@ -23,33 +22,34 @@ import javax.swing.JOptionPane;
 /**
  *
  */
-public class NcStreamOpPanel extends OpPanel {
-    private NcStreamPanel panel;
+public class CdmrFeatureOpPanel extends OpPanel {
+    private CdmrFeaturePanel panel;
 
 /**
  *
  */
-    public NcStreamOpPanel(PreferencesExt p) {
+    public CdmrFeatureOpPanel(PreferencesExt p) {
         super(p, "file:", true, false);
-        panel = new NcStreamPanel(prefs);
+        panel = new CdmrFeaturePanel(prefs);
         add(panel, BorderLayout.CENTER);
 
         final AbstractAction infoAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final Formatter f = new Formatter();
                 try {
                     panel.showInfo(f);
                 }
-                catch (Exception ioe) {
+                catch (final Exception ioe) {
                     final StringWriter sw = new StringWriter(5000);
                     ioe.printStackTrace(new PrintWriter(sw));
                     detailTA.setText(sw.toString());
                     detailWindow.show();
                     return;
-              }
-              detailTA.setText(f.toString());
-              detailTA.gotoTop();
-              detailWindow.show();
+                }
+                detailTA.setText(f.toString());
+                detailTA.gotoTop();
+                detailWindow.show();
             }
         };
         BAMutil.setActionProperties(infoAction, "Information", "show Info", false, 'I', -1);
@@ -63,13 +63,13 @@ public class NcStreamOpPanel extends OpPanel {
         boolean err = false;
 
         try {
-            panel.setNcStreamFile(command);
+            panel.setNcStream(command);
         }
         catch (FileNotFoundException ioe) {
             JOptionPane.showMessageDialog(null, "CdmremotePanel cannot open " + command + "\n" + ioe.getMessage());
             err = true;
-      }
-      catch (Exception e) {
+        }
+        catch (Exception e) {
             final StringWriter sw = new StringWriter(5000);
             e.printStackTrace(new PrintWriter(sw));
             detailTA.setText(sw.toString());
@@ -93,4 +93,3 @@ public class NcStreamOpPanel extends OpPanel {
         panel.closeOpenFiles();
     }
 }
-

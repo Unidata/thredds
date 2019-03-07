@@ -103,7 +103,7 @@ public class Hdf5ObjectPanel extends OpPanel {
             hdf5Table.setHdf5File(raf);
       }
       catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "Hdf5ObjectTable cant open " + command + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "Hdf5ObjectTable cannot open " + command + "\n" + ioe.getMessage());
             err = true;
       }
       catch (Exception e) {

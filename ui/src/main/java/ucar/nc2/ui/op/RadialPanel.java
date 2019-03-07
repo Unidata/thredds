@@ -67,7 +67,7 @@ public class RadialPanel extends OpPanel {
         try {
             newds = NetcdfDataset.openDataset(command, true, null);
             if (newds == null) {
-                JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command);
+                JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command);
                 return false;
             }
 
@@ -75,7 +75,7 @@ public class RadialPanel extends OpPanel {
             RadialDatasetSweep rds = (RadialDatasetSweep) FeatureDatasetFactoryManager.wrap(
                                                             FeatureType.RADIAL, newds, null, errlog);
             if (rds == null) {
-                JOptionPane.showMessageDialog(null, "FeatureDatasetFactoryManager cant open " + command + "as RADIAL dataset\n" + errlog.toString());
+                JOptionPane.showMessageDialog(null, "FeatureDatasetFactoryManager cannot open " + command + "as RADIAL dataset\n" + errlog.toString());
                 err = true;
             }
             else {
@@ -83,7 +83,7 @@ public class RadialPanel extends OpPanel {
             }
         }
         catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + command + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + command + "\n" + ioe.getMessage());
             ioe.printStackTrace();
             err = true;
         }

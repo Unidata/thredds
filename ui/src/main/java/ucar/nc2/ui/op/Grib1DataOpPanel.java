@@ -75,7 +75,7 @@ public class Grib1DataOpPanel extends OpPanel {
             gribTable.setCollection(command);
         }
             catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "NetcdfDataset cannot open " + command + "\n" + ioe.getMessage());
             err = true;
         }
         catch (Exception e) {

@@ -54,7 +54,7 @@ public class CdmIndexOpPanel extends OpPanel {
             indexPanel.setIndexFile(Paths.get(command), new FeatureCollectionConfig());
         }
         catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cant open " + command + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "GribCdmIndexPanel cannot open " + command + "\n" + ioe.getMessage());
             err = true;
         }
         catch (Throwable e) {

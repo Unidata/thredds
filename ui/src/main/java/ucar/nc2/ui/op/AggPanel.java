@@ -92,7 +92,7 @@ public class AggPanel extends OpPanel {
             aggTable.setAggDataset(ncd);
         }
         catch (FileNotFoundException ioe) {
-            JOptionPane.showMessageDialog(null, "NetcdfDataset cant open " + command + "\n" + ioe.getMessage());
+            JOptionPane.showMessageDialog(null, "NetcdfDataset cannot open " + command + "\n" + ioe.getMessage());
             err = true;
         }
         catch (Throwable e) {

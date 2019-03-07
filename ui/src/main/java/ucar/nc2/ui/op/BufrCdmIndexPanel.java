@@ -72,14 +72,12 @@ public class BufrCdmIndexPanel extends JPanel {
     buttPanel.add(writeButton);
 
     /* AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
-    filesButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    filesButton.addActionListener(e -> {
         Formatter f = new Formatter();
         showFiles(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
-      }
     });
     buttPanel.add(filesButton); */
 

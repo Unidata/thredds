@@ -6,14 +6,11 @@
 package ucar.nc2.ui.op;
 
 import ucar.nc2.ui.OpPanel;
-import ucar.nc2.ui.ToolsUI;
-import ucar.nc2.ui.grib.Grib2DataPanel;
+import ucar.nc2.ui.grib.Grib1CollectionPanel;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -23,44 +20,46 @@ import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
 /**
+ *  raw grib access - dont go through the IOSP
+ */
+public class Grib1CollectionOpPanel extends OpPanel {
+    private Grib1CollectionPanel gribTable;
+
+/**
  *
  */
-public class Grib2DataOpPanel extends OpPanel {
-    private Grib2DataPanel gribTable;
-
-    public Grib2DataOpPanel(PreferencesExt p) {
+    public Grib1CollectionOpPanel(PreferencesExt p) {
         super(p, "collection:", true, false);
-        gribTable = new Grib2DataPanel(prefs);
+
+        gribTable = new Grib1CollectionPanel(buttPanel, prefs);
         add(gribTable, BorderLayout.CENTER);
 
-        gribTable.addPropertyChangeListener(new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent e) {
-                if (e.getPropertyName().equals("openGrib2Collection")) {
-                    String collectionName = (String) e.getNewValue();
-                    ToolsUI.getToolsUI().openGrib2Collection(collectionName);
+        final AbstractButton showButt = BAMutil.makeButtcon("Information", "Show Collection", false);
+        showButt.addActionListener(e -> {
+            final Formatter f = new Formatter();
+            gribTable.showCollection(f);
+            detailTA.setText(f.toString());
+            detailTA.gotoTop();
+            detailWindow.show();
+        });
+        buttPanel.add(showButt);
+
+        final AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+        writeButton.addActionListener(e -> {
+            final Formatter f = new Formatter();
+            try {
+                if (!gribTable.writeIndex(f)) {
+                    return;
                 }
             }
-        });
-
-        final AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-        infoButton.addActionListener(e -> {
-            final Formatter f = new Formatter();
-            gribTable.showInfo(f);
+            catch (IOException e1) {
+                e1.printStackTrace();
+            }
             detailTA.setText(f.toString());
             detailTA.gotoTop();
             detailWindow.show();
         });
-        buttPanel.add(infoButton);
-
-        final AbstractButton checkButton = BAMutil.makeButtcon("Information", "Check Problems", false);
-        checkButton.addActionListener(e -> {
-            final Formatter f = new Formatter();
-            gribTable.checkProblems(f);
-            detailTA.setText(f.toString());
-            detailTA.gotoTop();
-            detailWindow.show();
-        });
-        buttPanel.add(checkButton);
+        buttPanel.add(writeButton);
     }
 
 /**
@@ -100,7 +99,7 @@ public class Grib2DataOpPanel extends OpPanel {
 /** */
     @Override
     public void closeOpenFiles() throws IOException {
-        // Do nothing
+        gribTable.closeOpenFiles();
     }
 
 /** */

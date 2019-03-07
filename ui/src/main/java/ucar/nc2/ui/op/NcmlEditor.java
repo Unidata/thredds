@@ -7,7 +7,6 @@ package ucar.nc2.ui.op;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
@@ -274,7 +273,7 @@ public class NcmlEditor extends JPanel {
       //if (setUseRecordStructure)
      //   ncd.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
     } catch (IOException ioe) {
-      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cant open " + ioe.getMessage());
+      JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + ioe.getMessage());
       if (!(ioe instanceof java.io.FileNotFoundException)) ioe.printStackTrace();
       return null;
     }

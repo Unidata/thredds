@@ -5,10 +5,11 @@
 
 package ucar.nc2.ui.op;
 
+import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.IsMissingEvaluator;
 import ucar.nc2.*;
-import ucar.nc2.dataset.NetcdfDataset;
+import ucar.nc2.Variable;
 import ucar.nc2.dt.image.image.ImageArrayAdapter;
 import ucar.nc2.ui.image.ImageViewPanel;
 import ucar.nc2.ui.widget.*;
@@ -184,8 +185,8 @@ public class NCdumpPane extends TextHistoryPane {
 
   private abstract class CommonTask extends ProgressMonitorTask implements ucar.nc2.util.CancelTask {
     String contents, command;
-    ucar.nc2.Variable v = null;
-    ucar.ma2.Array data;
+    Variable v = null;
+    Array data;
     IsMissingEvaluator eval = null;
 
     CommonTask(String command) {
