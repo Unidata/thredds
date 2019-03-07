@@ -64,13 +64,8 @@ public class DatasetViewerPanel extends OpPanel {
             public void actionPerformed(ActionEvent e) {
                 final NetcdfFile ds = dsViewer.getDataset();
                 if (ds != null) {
-
-                    NCdumpPanel ncdumpPanel = (NCdumpPanel)ToolsUI.getOpPanel("NCDump");
-
-                    ncdumpPanel.setNetcdfFile(ds);
-
-                    final JTabbedPane tabbedPane = ToolsUI.getTabbedPane();
-                    tabbedPane.setSelectedComponent(ncdumpPanel);
+                    logger.debug("setNCdumpPanel");
+                    ToolsUI.setNCdumpPanel(ds);
                 }
             }
         };

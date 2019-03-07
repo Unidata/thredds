@@ -27,18 +27,21 @@ import java.util.List;
  * @since 6/29/11
  */
 public class BufrCdmIndexPanel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrCdmIndexPanel.class);
+    private final static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(BufrCdmIndexPanel.class);
 
-  private PreferencesExt prefs;
+    private PreferencesExt prefs;
 
-  private BeanTable stationTable, fldTable;
-  private JSplitPane split, split2, split3;
+    private BeanTable stationTable, fldTable;
+    private JSplitPane split, split2, split3;
 
-  private TextHistoryPane infoPopup, detailTA;
-  private IndependentWindow infoWindow, detailWindow;
+    private TextHistoryPane infoPopup, detailTA;
+    private IndependentWindow infoWindow, detailWindow;
 
-  public BufrCdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
-    this.prefs = prefs;
+/**
+ *
+ */
+    public BufrCdmIndexPanel(PreferencesExt prefs, JPanel buttPanel) {
+        this.prefs = prefs;
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
     infoButton.addActionListener(e -> {
@@ -118,15 +121,16 @@ public class BufrCdmIndexPanel extends JPanel {
 
   }
 
-  public void save() {
-    stationTable.saveState(false);
-    fldTable.saveState(false);
-    prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    prefs.putBeanObject("DetailWindowBounds", detailWindow.getBounds());
-    if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
-    if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
-  }
+/** */
+    public void save() {
+        stationTable.saveState(false);
+        fldTable.saveState(false);
+        prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
+        prefs.putBeanObject("DetailWindowBounds", detailWindow.getBounds());
+        if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
+        if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+        if (split3 != null) prefs.putInt("splitPos3", split3.getDividerLocation());
+    }
 
   ///////////////////////////////////////////////
 

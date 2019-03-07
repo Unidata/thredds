@@ -69,9 +69,8 @@ public class ToolsUI extends JPanel {
   public final static String FRAME_SIZE = "FrameSize";
   public final static String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
   public final static String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
-  private static boolean debugListen;
 
-  private PreferencesExt mainPrefs;
+  private static boolean debugListen;
 
   private static ToolsUI ui;
   private static JFrame frame;
@@ -80,6 +79,19 @@ public class ToolsUI extends JPanel {
   private static boolean done;
 
   private static String wantDataset;
+
+  private JFrame parentFrame;   // redundant? will equal static "frame" defined just above
+
+  private FileManager fileChooser;
+  private FileManager bufrFileChooser;
+
+  private JTabbedPane tabbedPane;
+  private JTabbedPane iospTabPane, bufrTabPane, gribTabPane, grib2TabPane, grib1TabPane, hdf5TabPane;
+  private JTabbedPane ftTabPane, fcTabPane;
+  private JTabbedPane fmrcTabPane;
+  private JTabbedPane ncmlTabPane;
+
+  private PreferencesExt mainPrefs;
 
   // Op panels and friends
   private OpPanel aggPanel;
@@ -134,16 +146,6 @@ public class ToolsUI extends JPanel {
   private WmoCCPanel wmoCommonCodePanel;
   private WmsPanel wmsPanel;
 
-  private JTabbedPane tabbedPane;
-  private JTabbedPane iospTabPane, bufrTabPane, gribTabPane, grib2TabPane, grib1TabPane, hdf5TabPane;
-  private JTabbedPane ftTabPane, fcTabPane;
-  private JTabbedPane fmrcTabPane;
-  private JTabbedPane ncmlTabPane;
-
-  private JFrame parentFrame;
-  private FileManager fileChooser;
-  private FileManager bufrFileChooser;
-
   // data
   private DataFactory threddsDataFactory = new DataFactory();
 
@@ -153,6 +155,9 @@ public class ToolsUI extends JPanel {
   // debugging
   private DebugFlags debugFlags;
 
+/**
+ *
+ */
   public ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
@@ -177,22 +182,22 @@ public class ToolsUI extends JPanel {
     hdf5TabPane  = new JTabbedPane(JTabbedPane.TOP);
     ncmlTabPane  = new JTabbedPane(JTabbedPane.TOP);
 
-    // the widgets in the top level tabbed pane
+    // Create and attach the initially visible panel in the top level tabbed pane
     viewerPanel = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("varTable"), false);
     tabbedPane.addTab("Viewer", viewerPanel);
 
-    // all the other component are deferred construction for fast startup
-    tabbedPane.addTab("Writer", new JLabel("Writer"));
-    tabbedPane.addTab("NCDump", new JLabel("NCDump"));
-    tabbedPane.addTab("Iosp", iospTabPane);
-    tabbedPane.addTab("CoordSys", new JLabel("CoordSys"));
+    // All other panels are deferred construction for fast startup
+    tabbedPane.addTab("Writer",       new JLabel("Writer"));
+    tabbedPane.addTab("NCDump",       new JLabel("NCDump"));
+    tabbedPane.addTab("Iosp",         iospTabPane);
+    tabbedPane.addTab("CoordSys",     new JLabel("CoordSys"));
     tabbedPane.addTab("FeatureTypes", ftTabPane);
-    tabbedPane.addTab("THREDDS", new JLabel("THREDDS"));
-    tabbedPane.addTab("Fmrc", fmrcTabPane);
-    tabbedPane.addTab("GeoTiff", new JLabel("GeoTiff"));
-    tabbedPane.addTab("Units", new JLabel("Units"));
-    tabbedPane.addTab("NcML", ncmlTabPane);
-    tabbedPane.addTab("URLdump", new JLabel("URLdump"));
+    tabbedPane.addTab("THREDDS",      new JLabel("THREDDS"));
+    tabbedPane.addTab("Fmrc",         fmrcTabPane);
+    tabbedPane.addTab("GeoTiff",      new JLabel("GeoTiff"));
+    tabbedPane.addTab("Units",        new JLabel("Units"));
+    tabbedPane.addTab("NcML",         ncmlTabPane);
+    tabbedPane.addTab("URLdump",      new JLabel("URLdump"));
     tabbedPane.setSelectedIndex(0);
     tabbedPane.addChangeListener(e -> {
         final Component c = tabbedPane.getSelectedComponent();
@@ -207,84 +212,84 @@ public class ToolsUI extends JPanel {
     add(tabbedPane, BorderLayout.CENTER);
 
     // nested tab - iosp
-    iospTabPane.addTab("BUFR", bufrTabPane);
-    iospTabPane.addTab("GRIB", gribTabPane);
-    iospTabPane.addTab("GRIB2", grib2TabPane);
-    iospTabPane.addTab("GRIB1", grib1TabPane);
-    iospTabPane.addTab("HDF5", hdf5TabPane);
-    iospTabPane.addTab("HDF4", new JLabel("HDF4"));
-    iospTabPane.addTab("NcStream", new JLabel("NcStream"));
+    iospTabPane.addTab("BUFR",        bufrTabPane);
+    iospTabPane.addTab("GRIB",        gribTabPane);
+    iospTabPane.addTab("GRIB2",       grib2TabPane);
+    iospTabPane.addTab("GRIB1",       grib1TabPane);
+    iospTabPane.addTab("HDF5",        hdf5TabPane);
+    iospTabPane.addTab("HDF4",        new JLabel("HDF4"));
+    iospTabPane.addTab("NcStream",    new JLabel("NcStream"));
     iospTabPane.addTab("CdmrFeature", new JLabel("CdmrFeature"));
     addListeners(iospTabPane);
 
     // nested-2 tab - bufr
-    bufrTabPane.addTab("BUFR", new JLabel("BUFR"));
+    bufrTabPane.addTab("BUFR",         new JLabel("BUFR"));
     bufrTabPane.addTab("BufrCdmIndex", new JLabel("BufrCdmIndex"));
-    bufrTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
-    bufrTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
-    bufrTabPane.addTab("BUFR-CODES", new JLabel("BUFR-CODES"));
-    bufrTabPane.addTab("BufrReports", new JLabel("BufrReports"));
+    bufrTabPane.addTab("BUFRTableB",   new JLabel("BUFRTableB"));
+    bufrTabPane.addTab("BUFRTableD",   new JLabel("BUFRTableD"));
+    bufrTabPane.addTab("BUFR-CODES",   new JLabel("BUFR-CODES"));
+    bufrTabPane.addTab("BufrReports",  new JLabel("BufrReports"));
     addListeners(bufrTabPane);
 
     // nested-2 tab - grib
     //gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
-    gribTabPane.addTab("CdmIndex4", new JLabel("CdmIndex4"));
+    gribTabPane.addTab("CdmIndex4",      new JLabel("CdmIndex4"));
     gribTabPane.addTab("CdmIndexReport", new JLabel("CdmIndexReport"));
-    gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
-    gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
-    gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
-    gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
-    gribTabPane.addTab("GRIB-Rename", new JLabel("GRIB-Rename"));
-    gribTabPane.addTab("GRIB-Rewrite", new JLabel("GRIB-Rewrite"));
+    gribTabPane.addTab("GribIndex",      new JLabel("GribIndex"));
+    gribTabPane.addTab("WMO-COMMON",     new JLabel("WMO-COMMON"));
+    gribTabPane.addTab("WMO-CODES",      new JLabel("WMO-CODES"));
+    gribTabPane.addTab("WMO-TEMPLATES",  new JLabel("WMO-TEMPLATES"));
+    gribTabPane.addTab("GRIB-Rename",    new JLabel("GRIB-Rename"));
+    gribTabPane.addTab("GRIB-Rewrite",   new JLabel("GRIB-Rewrite"));
     addListeners(gribTabPane);
 
     // nested-2 tab - grib-2
     grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
-    grib2TabPane.addTab("GRIB2rectilyze", new JLabel("GRIB2rectilyze"));
-    grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
-    grib2TabPane.addTab("GRIB2data", new JLabel("GRIB2data"));
-    grib2TabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
+    grib2TabPane.addTab("GRIB2rectilyze",  new JLabel("GRIB2rectilyze"));
+    grib2TabPane.addTab("GRIB2-REPORT",    new JLabel("GRIB2-REPORT"));
+    grib2TabPane.addTab("GRIB2data",       new JLabel("GRIB2data"));
+    grib2TabPane.addTab("GRIB2-TABLES",    new JLabel("GRIB2-TABLES"));
     addListeners(grib2TabPane);
 
     // nested-2 tab - grib-1
     grib1TabPane.addTab("GRIB1collection", new JLabel("GRIB1collection"));
-    grib1TabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
-    grib1TabPane.addTab("GRIB1-REPORT", new JLabel("GRIB1-REPORT"));
-    grib1TabPane.addTab("GRIB1data", new JLabel("GRIB1data"));
-    grib1TabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
+    grib1TabPane.addTab("GRIB-FILES",      new JLabel("GRIB-FILES"));
+    grib1TabPane.addTab("GRIB1-REPORT",    new JLabel("GRIB1-REPORT"));
+    grib1TabPane.addTab("GRIB1data",       new JLabel("GRIB1data"));
+    grib1TabPane.addTab("GRIB1-TABLES",    new JLabel("GRIB1-TABLES"));
     addListeners(grib1TabPane);
 
     // nested-2 tab - hdf5
     hdf5TabPane.addTab("HDF5-Objects", new JLabel("HDF5-Objects"));
-    hdf5TabPane.addTab("HDF5-Data", new JLabel("HDF5-Data"));
-    hdf5TabPane.addTab("Netcdf4-JNI", new JLabel("Netcdf4-JNI"));
+    hdf5TabPane.addTab("HDF5-Data",    new JLabel("HDF5-Data"));
+    hdf5TabPane.addTab("Netcdf4-JNI",  new JLabel("Netcdf4-JNI"));
     addListeners(hdf5TabPane);
 
     // nested tab - features
-    ftTabPane.addTab("Grids", new JLabel("Grids"));
-    ftTabPane.addTab("Coverages", new JLabel("Coverages"));
-    ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
-    ftTabPane.addTab("WMS", new JLabel("WMS"));
-    ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
-    ftTabPane.addTab("Images", new JLabel("Images"));
-    ftTabPane.addTab("Radial", new JLabel("Radial"));
-    ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
+    ftTabPane.addTab("Grids",             new JLabel("Grids"));
+    ftTabPane.addTab("Coverages",         new JLabel("Coverages"));
+    ftTabPane.addTab("SimpleGeometry",    new JLabel("SimpleGeometry"));
+    ftTabPane.addTab("WMS",               new JLabel("WMS"));
+    ftTabPane.addTab("PointFeature",      new JLabel("PointFeature"));
+    ftTabPane.addTab("Images",            new JLabel("Images"));
+    ftTabPane.addTab("Radial",            new JLabel("Radial"));
+    ftTabPane.addTab("FeatureScan",       new JLabel("FeatureScan"));
     ftTabPane.addTab("FeatureCollection", fcTabPane);
     addListeners(ftTabPane);
 
     // nested tab - feature collection
     fcTabPane.addTab("DirectoryPartition", new JLabel("DirectoryPartition"));
     // fcTabPane.addTab("PartitionReport", new JLabel("PartitionReport"));
-    fcTabPane.addTab("CollectionSpec", new JLabel("CollectionSpec"));
+    fcTabPane.addTab("CollectionSpec",     new JLabel("CollectionSpec"));
     addListeners(fcTabPane);
 
     // nested tab - fmrc
-    fmrcTabPane.addTab("Fmrc", new JLabel("Fmrc"));
+    fmrcTabPane.addTab("Fmrc",        new JLabel("Fmrc"));
     fmrcTabPane.addTab("Collections", new JLabel("Collections"));
     addListeners(fmrcTabPane);
 
     // nested tab - ncml
-    ncmlTabPane.addTab("NcmlEditor", new JLabel("NcmlEditor"));
+    ncmlTabPane.addTab("NcmlEditor",  new JLabel("NcmlEditor"));
     ncmlTabPane.addTab("Aggregation", new JLabel("Aggregation"));
     addListeners(ncmlTabPane);
 
@@ -706,52 +711,52 @@ public class ToolsUI extends JPanel {
  */
   public void save() {
     fileChooser.save();
-    if (aggPanel != null) aggPanel.save();
-    if (bufrFileChooser != null) bufrFileChooser.save();
-    if (bufrPanel != null) bufrPanel.save();
-    if (bufrTableBPanel != null) bufrTableBPanel.save();
-    if (bufrTableDPanel != null) bufrTableDPanel.save();
-    if (bufrReportPanel != null) bufrReportPanel.save();
-    if (bufrCodePanel != null) bufrCodePanel.save();
-    if (coordSysPanel != null) coordSysPanel.save();
-    if (coveragePanel != null) coveragePanel.save();
-    if (cdmIndexPanel != null) cdmIndexPanel.save();
-    if (cdmIndexReportPanel != null) cdmIndexReportPanel.save();
-    if (cdmremotePanel != null) cdmremotePanel.save();
-    if (dirPartPanel != null) dirPartPanel.save();
-    if (bufrCdmIndexPanel != null) bufrCdmIndexPanel.save();
+    if (aggPanel             != null) aggPanel.save();
+    if (bufrFileChooser      != null) bufrFileChooser.save();
+    if (bufrPanel            != null) bufrPanel.save();
+    if (bufrTableBPanel      != null) bufrTableBPanel.save();
+    if (bufrTableDPanel      != null) bufrTableDPanel.save();
+    if (bufrReportPanel      != null) bufrReportPanel.save();
+    if (bufrCodePanel        != null) bufrCodePanel.save();
+    if (coordSysPanel        != null) coordSysPanel.save();
+    if (coveragePanel        != null) coveragePanel.save();
+    if (cdmIndexPanel        != null) cdmIndexPanel.save();
+    if (cdmIndexReportPanel  != null) cdmIndexReportPanel.save();
+    if (cdmremotePanel       != null) cdmremotePanel.save();
+    if (dirPartPanel         != null) dirPartPanel.save();
+    if (bufrCdmIndexPanel    != null) bufrCdmIndexPanel.save();
     //if (gribCdmIndexPanel != null) gribCdmIndexPanel.save();
-    if (fmrcCollectionPanel != null) fmrcCollectionPanel.save();
-    if (fcPanel != null) fcPanel.save();
-    if (ftPanel != null) ftPanel.save();
-    if (fmrcPanel != null) fmrcPanel.save();
-    if (geotiffPanel != null) geotiffPanel.save();
-    if (gribFilesPanel != null) gribFilesPanel.save();
+    if (fmrcCollectionPanel  != null) fmrcCollectionPanel.save();
+    if (fcPanel              != null) fcPanel.save();
+    if (ftPanel              != null) ftPanel.save();
+    if (fmrcPanel            != null) fmrcPanel.save();
+    if (geotiffPanel         != null) geotiffPanel.save();
+    if (gribFilesPanel       != null) gribFilesPanel.save();
     if (grib2CollectionPanel != null) grib2CollectionPanel.save();
     // if (grib2RectilyzePanel != null) grib2RectilyzePanel.save();
-    if (grib2DataPanel != null) grib2DataPanel.save();
-    if (grib1DataPanel != null) grib1DataPanel.save();
-    if (gribCodePanel != null) gribCodePanel.save();
-    if (gribIdxPanel != null) gribIdxPanel.save();
-    if (gribTemplatePanel != null) gribTemplatePanel.save();
+    if (grib2DataPanel       != null) grib2DataPanel.save();
+    if (grib1DataPanel       != null) grib1DataPanel.save();
+    if (gribCodePanel        != null) gribCodePanel.save();
+    if (gribIdxPanel         != null) gribIdxPanel.save();
+    if (gribTemplatePanel    != null) gribTemplatePanel.save();
     if (grib1CollectionPanel != null) grib1CollectionPanel.save();
-    if (grib1ReportPanel != null) grib1ReportPanel.save();
-    if (grib2ReportPanel != null) grib2ReportPanel.save();
-    if (grib1TablePanel != null) grib1TablePanel.save();
-    if (grib2TablePanel != null) grib2TablePanel.save();
-    if (gribRewritePanel != null) gribRewritePanel.save();
-    if (gridPanel != null) gridPanel.save();
-    if (hdf5ObjectPanel != null) hdf5ObjectPanel.save();
-    if (hdf5DataPanel != null) hdf5DataPanel.save();
-    if (hdf4Panel != null) hdf4Panel.save();
-    if (imagePanel != null) imagePanel.save();
-    if (ncdumpPanel != null) ncdumpPanel.save();
-    if (ncStreamPanel != null) ncStreamPanel.save();
-    if (nc4viewer != null) nc4viewer.save();
-    if (ncmlEditorPanel != null) ncmlEditorPanel.save();
-    if (pointFeaturePanel != null) pointFeaturePanel.save();
-    //if (pointObsPanel != null) pointObsPanel.save();
-    if (radialPanel != null) radialPanel.save();
+    if (grib1ReportPanel     != null) grib1ReportPanel.save();
+    if (grib2ReportPanel     != null) grib2ReportPanel.save();
+    if (grib1TablePanel      != null) grib1TablePanel.save();
+    if (grib2TablePanel      != null) grib2TablePanel.save();
+    if (gribRewritePanel     != null) gribRewritePanel.save();
+    if (gridPanel            != null) gridPanel.save();
+    if (hdf5ObjectPanel      != null) hdf5ObjectPanel.save();
+    if (hdf5DataPanel        != null) hdf5DataPanel.save();
+    if (hdf4Panel          != null) hdf4Panel.save();
+    if (imagePanel         != null) imagePanel.save();
+    if (ncdumpPanel        != null) ncdumpPanel.save();
+    if (ncStreamPanel      != null) ncStreamPanel.save();
+    if (nc4viewer          != null) nc4viewer.save();
+    if (ncmlEditorPanel    != null) ncmlEditorPanel.save();
+    if (pointFeaturePanel  != null) pointFeaturePanel.save();
+    //if (pointObsPanel    != null) pointObsPanel.save();
+    if (radialPanel        != null) radialPanel.save();
     // if (stationObsPanel != null) stationObsPanel.save();
     if (stationRadialPanel != null) stationRadialPanel.save();
     // if (trajTablePanel != null) trajTablePanel.save();
@@ -765,7 +770,7 @@ public class ToolsUI extends JPanel {
   }
 
 ///
-///////////////////////////////////////////////////////////////////////////////////////
+/// The following are hooks and shortcuts allowing OpPanel classes to interact with the UI.
 ///
 /**
  *
@@ -778,13 +783,6 @@ public class ToolsUI extends JPanel {
     public static JFrame getToolsFrame() { return ui.getFramePriv(); }
 
     private JFrame getFramePriv() { return parentFrame; }
-
-/**
- *
- */
-    public static JTabbedPane getTabbedPane() { return ui.getTabbedPanePriv(); }
-
-    private JTabbedPane getTabbedPanePriv() { return tabbedPane; }
 
 /**
  *
@@ -810,6 +808,22 @@ public class ToolsUI extends JPanel {
 /**
  *
  */
+    public static void setNCdumpPanel(NetcdfFile ds) { ui.setNCdumpPanelPriv(ds); }
+
+    private void setNCdumpPanelPriv(NetcdfFile ds) {
+        if (ncdumpPanel == null) {
+            log.debug("make ncdumpPanel");
+            makeComponent(tabbedPane, "NCDump");
+        }
+
+        ncdumpPanel.setNetcdfFile(ds);
+
+        tabbedPane.setSelectedComponent(ncdumpPanel);
+    }
+
+/**
+ *
+ */
     public static Object getPrefsBean(final String key, final Object defaultVal) {
         return ui.getPrefsBeanPriv(key, defaultVal);
     }
@@ -829,30 +843,8 @@ public class ToolsUI extends JPanel {
         mainPrefs.putBean (key, newVal);
     }
 
-/**
- *
- */
-    public static OpPanel getOpPanel(String pname) { return ui.getOpPanelPriv(pname); }
-
-    private OpPanel getOpPanelPriv(String pname) {
-        log.debug("getOpPanelPriv - {}", pname);
-
-        switch (pname) {
-            case "NCDump":
-                if (ncdumpPanel == null) {
-                    makeComponent(tabbedPane, "NCDump");
-                }
-                return ncdumpPanel;
-
-            default:
-                // No other cases necessary (yet).
-        }
-
-        return null;
-    }
-
 ///
-///////////////////////////////////////////////////////////////////////////////////////
+///
 ///
 /**
  *
@@ -1354,8 +1346,8 @@ public class ToolsUI extends JPanel {
         // misc Gui initialization(s)
         BAMutil.setResourcePath("/resources/nj22/ui/icons/");
 
-        // Setting up a font metrics object triggers one of the most time-wasting steps of GUI set up,
-        // so do it now before trying to create the splash or tools interface.
+        // Setting up a font metrics object triggers one of the most time-wasting steps of GUI set up.
+        // We do it now before trying to create the splash or tools interface.
         SwingUtilities.invokeLater(( ) -> {
             final Toolkit tk = Toolkit.getDefaultToolkit ( );
             final Font f = new Font ("SansSerif", Font.PLAIN, 12);
@@ -1370,7 +1362,7 @@ public class ToolsUI extends JPanel {
  */
     private static void createToolsFrame() {
         // put UI in a JFrame
-        frame = new JFrame("NetCDF ("+DIALOG_VERSION+") Tools");
+        frame = new JFrame("NetCDF (" + DIALOG_VERSION + ") Tools");
 
         ui = new ToolsUI(prefs, frame);
 
@@ -1573,7 +1565,7 @@ public class ToolsUI extends JPanel {
         RandomAccessFile.enableDefaultGlobalFileCache();
         GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
 
-        // Waste some time on the main thread before adding another task to the event dispatch thread.
+        // Waste a couple secs on the main thread before adding another task to the event dispatch thread.
         // Somehow this let's the EDT "catch up" and in particular gets the splash to finish rendering.
         try
         {
@@ -1581,10 +1573,10 @@ public class ToolsUI extends JPanel {
         }
         catch (Exception ignore)
         {
-            // LOGGER.debug ("Not implemented.");.
+            // Nothing to do here.
         }
 
-        // Create the UI frame!
+        // Create and show the UI frame!
         SwingUtilities.invokeLater(( ) -> {
             createToolsFrame();
             frame.setVisible(true);

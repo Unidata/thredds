@@ -66,30 +66,24 @@ public class WmoCommonCodesPanel extends JPanel {
     });
 
     /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to current table", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compareButton.addActionListener(e -> {
         compareToCurrent();
-      }
     });
     buttPanel.add(compareButton);
 
     AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in WMO table", false);
-    dupButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    dupButton.addActionListener(e -> {
         lookForProblems();
-      }
     });
     buttPanel.add(dupButton);
 
     AbstractButton modelsButton = BAMutil.makeButtcon("Select", "Check current models", false);
-    modelsButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    modelsButton.addActionListener(e -> {
         try {
           checkCurrentModels();
         } catch (IOException e1) {
           e1.printStackTrace();
         }
-      }
     });
     buttPanel.add(modelsButton);   */
 

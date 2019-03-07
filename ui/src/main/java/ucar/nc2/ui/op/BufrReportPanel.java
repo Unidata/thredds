@@ -1,10 +1,11 @@
-package ucar.nc2.ui;
+package ucar.nc2.ui.op;
 
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.iosp.bufr.Message;
 import ucar.nc2.iosp.bufr.MessageScanner;
 import ucar.nc2.iosp.bufr.writer.BufrSplitter2;
+import ucar.nc2.ui.ReportPanel;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.util.prefs.PreferencesExt;
 
@@ -29,7 +30,7 @@ public class BufrReportPanel extends ReportPanel {
 
   @Override
   public Object[] getOptions() {
-    return ucar.nc2.ui.BufrReportPanel.Report.values();
+    return Report.values();
   }
 
   @Override

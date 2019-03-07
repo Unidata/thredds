@@ -69,10 +69,8 @@ public class GribWmoCodesPanel extends JPanel {
     });  */
 
     /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to 4.2 table", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compareButton.addActionListener(e -> {
         compareToCurrent();
-      }
     });
     buttPanel.add(compareButton);  */
 
