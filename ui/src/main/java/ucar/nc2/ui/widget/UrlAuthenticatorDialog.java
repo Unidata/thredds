@@ -56,15 +56,11 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
 
     userF = pp.addTextField("user", "User", "");
     passwF = pp.addPasswordField("password", "Password", "");
-    pp.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(ActionEvent e)
-      {
+    pp.addActionListener(
         char[] pw = passwF.getPassword();
         if (pw == null) return;
         pwa = new UsernamePasswordCredentials(userF.getText(), new String(pw));
         dialog.setVisible( false);
-      }
     });
       // button to dismiss
     JButton cancel = new JButton("Cancel");

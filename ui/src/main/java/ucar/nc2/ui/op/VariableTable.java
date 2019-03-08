@@ -260,10 +260,8 @@ public class VariableTable extends JPanel {
 		includeGlobals = new JCheckBox("Export Attributes");
 		
 		JButton export = new JButton("Export");
-		export.addActionListener(new AbstractAction() {
-			public void actionPerformed(java.awt.event.ActionEvent e) {
-				export();
-		    }
+		export.addActionListener(e -> {
+            export();
 		});
 		
 		JPanel holderPanel = new JPanel(new BorderLayout());

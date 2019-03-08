@@ -125,23 +125,19 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
 
     if (helpMessage != null) {
       helpButton = new JButton("help");
-      helpButton.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
+      helpButton.addActionListener(e -> {
           if (helpWindow == null)
             helpWindow = new HelpWindow(null, "Help on " + title, helpMessage);
           helpWindow.show(helpButton);
-        }
       });
       butts.add(helpButton);
     }
 
     if (acceptButton) {
       JButton okButton = new JButton("accept");
-      okButton.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
+      okButton.addActionListener(e -> {
           pp.accept();
           sendEvent();
-        }
       });
 
       butts.add(okButton);
@@ -150,15 +146,13 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
 
     if (enableButton) {
       disableButton = new JToggleButton("disable", false);
-      disableButton.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
+      disableButton.addActionListener(e -> {
           boolean b = !disableButton.getModel().isSelected();
           minField.setEnabled(b);
           maxField.setEnabled(b);
           durationField.setEnabled(b);
           minSlider.setEnabled(b);
           maxSlider.setEnabled(b);
-        }
       });
 
       butts.add(disableButton);

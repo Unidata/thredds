@@ -400,11 +400,9 @@ public class FileManager {
     });
 
     JButton butt = new JButton("accept");
-    butt.addActionListener(new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
+    butt.addActionListener(e -> {
         System.out.println("butt accept");
         //cb.accept();
-      }
     });
 
     fm.chooseFilename();
