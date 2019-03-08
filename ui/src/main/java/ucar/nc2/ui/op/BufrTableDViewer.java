@@ -51,11 +51,9 @@ public class BufrTableDViewer extends JPanel {
     this.prefs = prefs;
 
     ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
-    ddsTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    ddsTable.addListSelectionListener(e -> {
         DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
         showVariants(csb);
-      }
     });
 
     variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);

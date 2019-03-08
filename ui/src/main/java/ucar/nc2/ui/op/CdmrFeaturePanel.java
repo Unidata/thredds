@@ -48,12 +48,10 @@ public class CdmrFeaturePanel extends JPanel {
     PopupMenu varPopup;
 
     messTable = new BeanTable(MessBean.class, (PreferencesExt) prefs.node("CdmMessage"), false);
-    messTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    messTable.addListSelectionListener(e -> {
         MessBean bean = (MessBean) messTable.getSelectedBean();
         if (bean == null) return;
         infoTA.setText(bean.getDesc());
-      }
     });
     varPopup = new PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show record -> variable data assignments", new AbstractAction() {

@@ -58,11 +58,9 @@ public class RadialDatasetTable extends JPanel {
     this.prefs = prefs;
 
     varTable = new BeanTable(VariableBean.class, (PreferencesExt) prefs.node("VariableBeans"), false);
-    varTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    varTable.addListSelectionListener(e -> {
         VariableBean vb = (VariableBean) varTable.getSelectedBean();
         if (vb != null) setVariable(vb);
-      }
     });
 
     JTable jtable = varTable.getJTable();

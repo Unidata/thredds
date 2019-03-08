@@ -50,12 +50,10 @@ public class NcStreamPanel extends JPanel {
     PopupMenu varPopup;
 
     messTable = new BeanTable(MessBean.class, (PreferencesExt) prefs.node("NcStreamPanel"), false);
-    messTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    messTable.addListSelectionListener(e -> {
         MessBean bean = (MessBean) messTable.getSelectedBean();
         if (bean == null) return;
         infoTA.setText(bean.getDesc());
-      }
     });
     varPopup = new PopupMenu(messTable.getJTable(), "Options");
     varPopup.addAction("Show deflate", new AbstractAction() {

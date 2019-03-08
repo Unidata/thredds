@@ -246,10 +246,8 @@ public class StationRegionDateChooser extends NPController {
     BAMutil.setActionProperties(decrFontAction, "FontDecr", "decrease font size", false, 'D', -1);
 
     JCheckBox declutCB = new JCheckBox("Declutter", true);
-    declutCB.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    declutCB.addActionListener(e -> {
         setDeclutter(((JCheckBox) e.getSource()).isSelected());
-      }
     });
 
     AbstractAction bbAction = new AbstractAction() {
@@ -271,8 +269,7 @@ public class StationRegionDateChooser extends NPController {
       maxLatField = minmaxPP.addDoubleField("maxLat", "maxLat", geoSelection.getMaxY(), nfracDig, 6, 0, null);
 
       minmaxPP.finish(true, BorderLayout.EAST);
-      minmaxPP.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      minmaxPP.addActionListener(e -> {
           // "Apply" was called
           double minLon = minLonField.getDouble();
           double minLat = minLatField.getDouble();
@@ -282,7 +279,6 @@ public class StationRegionDateChooser extends NPController {
                   new LatLonPointImpl(maxLat, maxLon));
           setGeoSelection(llbb);
           redraw();
-        }
       });
 
 
@@ -552,10 +548,8 @@ public class StationRegionDateChooser extends NPController {
       // add a dismiss button
       JPanel buttPanel = new JPanel();
       JButton dismissButton = new JButton("Dismiss");
-      dismissButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
+      dismissButton.addActionListener(e -> {
           setVisible(false);
-        }
       });
       buttPanel.add(dismissButton, null);
 

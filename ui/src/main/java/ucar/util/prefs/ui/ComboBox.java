@@ -224,14 +224,12 @@ public class ComboBox extends JComboBox {
     });
 
     final ComboBox cb = new ComboBox( null);
-    cb.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    cb.addActionListener(e -> {
         System.out.println("**** cb event="+e);
         if (e.getActionCommand().equals("comboBoxChanged")) {
           //System.out.println("cb.getSelectedItem="+cb.getSelectedItem());
           cb.addItem( cb.getSelectedItem());
         }
-      }
     });
     cb.getEditor().getEditorComponent().setForeground(Color.red);
 

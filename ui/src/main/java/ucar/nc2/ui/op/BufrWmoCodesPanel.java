@@ -42,11 +42,9 @@ public class BufrWmoCodesPanel extends JPanel {
     this.prefs = prefs;
 
     codeTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
-    codeTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    codeTable.addListSelectionListener(e -> {
         CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
         setEntries(csb.code);
-      }
     });
 
     ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(codeTable.getJTable(), "Options");

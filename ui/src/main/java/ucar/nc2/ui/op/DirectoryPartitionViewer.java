@@ -924,21 +924,17 @@ public class DirectoryPartitionViewer extends JPanel {
 
       ////////////////
       groupsTable = new BeanTable(GroupsBean.class, (PreferencesExt) prefs.node("GroupsBean"), false, "Groups", "GribCollection.GroupHcs", null);
-      groupsTable.addListSelectionListener(new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
+      groupsTable.addListSelectionListener(e -> {
           GroupsBean bean = (GroupsBean) groupsTable.getSelectedBean();
           if (bean != null)
             setGroups(bean);
-        }
       });
 
       groupTable = new BeanTable(GroupBean.class, (PreferencesExt) prefs.node("GroupBean"), false, "Partitions for this Group", "GribCollection.GroupGC", null);
-      groupTable.addListSelectionListener(new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
+      groupTable.addListSelectionListener(e -> {
           GroupBean bean = (GroupBean) groupTable.getSelectedBean();
           if (bean != null)
             setGroup(bean.group);
-        }
       });
 
       varPopup = new PopupMenu(groupTable.getJTable(), "Options");

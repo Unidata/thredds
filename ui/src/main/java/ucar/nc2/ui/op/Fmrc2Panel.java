@@ -66,11 +66,9 @@ public class Fmrc2Panel extends JPanel {
 
     fmrTable = new BeanTable(
             FmrBean.class, (PreferencesExt) prefs.node("DatasetBean"), false, "FmrInv", fmrBeanDesc, null);
-    fmrTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    fmrTable.addListSelectionListener(e -> {
         FmrBean fmrBean = (FmrBean) fmrTable.getSelectedBean();
         setFmr(fmrBean.fmr);
-      }
     });
 
     invTable = new BeanTable(
@@ -94,11 +92,9 @@ public class Fmrc2Panel extends JPanel {
 
     gridTable = new BeanTable(
             GridBean.class, (PreferencesExt) prefs.node("GridBean"), false, "UberGrids", gridBeanDesc, null);
-    gridTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    gridTable.addListSelectionListener(e -> {
         GridBean gridBean = (GridBean) gridTable.getSelectedBean();
         setSelectedCoord(gridBean);
-      }
     });
 
     PopupMenu varPopup = new PopupMenu(invTable.getJTable(), "Options");

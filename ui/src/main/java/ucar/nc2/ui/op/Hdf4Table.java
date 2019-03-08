@@ -41,14 +41,12 @@ public class Hdf4Table extends JPanel {
     this.prefs = prefs;
 
     tagTable = new BeanTable(TagBean.class, (PreferencesExt) prefs.node("Hdf4Object"), false);
-    tagTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    tagTable.addListSelectionListener(e -> {
         TagBean bean = (TagBean) tagTable.getSelectedBean();
         dumpTA.setText("Tag=\n ");
         dumpTA.appendLine(bean.tag.detail());
         dumpTA.appendLine("\nVinfo=");
         dumpTA.appendLine(bean.tag.getVinfo());
-      }
     });
 
     /* messTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false);

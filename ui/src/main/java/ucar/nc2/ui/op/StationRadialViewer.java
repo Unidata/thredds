@@ -71,13 +71,11 @@ public class StationRadialViewer extends JPanel {
 
     // station table
     stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
-    stnTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    stnTable.addListSelectionListener(e -> {
         StationBean sb = (StationBean) stnTable.getSelectedBean();
         setStation( sb);
         if (debugStationRegionSelect) System.out.println("stnTable selected= "+sb.getName());
         if (eventsOK) chooser.setSelectedStation( sb.getName());
-      }
     });
 
     // the RadialDatasetTable

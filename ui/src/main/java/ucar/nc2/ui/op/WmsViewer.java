@@ -87,32 +87,26 @@ public class WmsViewer extends JPanel {
     });
 
     AbstractButton mapButton = BAMutil.makeButtcon("WorldDetailMap", "getMap", false);
-    mapButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    mapButton.addActionListener(e -> {
         LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
         getMap(ftb);
-      }
     });
     chooserPanel.add(mapButton);
 
     AbstractButton redrawButton = BAMutil.makeButtcon("alien", "redraw image", false);
-    redrawButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    redrawButton.addActionListener(e -> {
         showImage(currImage);
-      }
     });
     chooserPanel.add(redrawButton);
 
     imagePanel = new JPanel();
 
     ftTable = new BeanTable(LayerBean.class, (PreferencesExt) prefs.node("LayerBeans"), false);
-    ftTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    ftTable.addListSelectionListener(e -> {
         LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
         styleChooser.setCollection(ftb.styles.iterator());
         timeChooser.setCollection(ftb.times.iterator());
         levelChooser.setCollection(ftb.levels.iterator());
-      }
     });
     ftTable.setBeans(new ArrayList());
 
