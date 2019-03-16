@@ -325,9 +325,12 @@ public class Grib2RecordScanner {
     return true;
   }
 
+  // Count the number of records in a grib2 file.
   public static void main(String[] args) throws IOException {
     int count = 0;
-    RandomAccessFile raf = new RandomAccessFile("Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb", "r");
+    String file = (args.length > 0) ? args[0] : "Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb";
+
+    RandomAccessFile raf = new RandomAccessFile(file, "r");
     System.out.printf("Read %s%n", raf.getLocation());
     Grib2RecordScanner scan = new Grib2RecordScanner(raf);
     while (scan.hasNext()) {

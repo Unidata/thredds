@@ -42,8 +42,6 @@ public class Grib2NetcdfWriter implements Closeable {
         float[] data = gr.readData(raf);
         for (int i=0; i<data.length; i++) {
           data[i] = bitShave(data[i], mask11);
-          if (i % 10 == 0)
-            System.out.println();
         }
       }
     }
@@ -85,9 +83,10 @@ public class Grib2NetcdfWriter implements Closeable {
     writer.close();
   }
 
-  public static void main2(String[] args) {
-    String fileIn = "Q:/cdmUnitTest/formats/grib2/ds.mint.bin";
-    String fileOut = "C:/tmp/ds.mint.bin";
+  // Write Grib file to a netcdf4 file. Experimental.
+  public static void main(String[] args) {
+    String fileIn = (args.length > 0) ? args[0] : "Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb";
+    String fileOut = (args.length > 1) ? args[1] : "C:/tmp/ds.mint.bi";
 
     try (Grib2NetcdfWriter writer = new Grib2NetcdfWriter(fileIn, fileOut)) {
       writer.write();
@@ -96,11 +95,6 @@ public class Grib2NetcdfWriter implements Closeable {
       e.printStackTrace();
     }
 
-  }
-
-  public static void main(String[] args) {
-    for (int i=0; i<24; i++)
-      System.out.printf("%d == %8d == 0x%s == 0x%s%n", i, getBitMask(i), Integer.toHexString(getBitMask(i)), Integer.toBinaryString(getBitMask(i)));
   }
 
 }

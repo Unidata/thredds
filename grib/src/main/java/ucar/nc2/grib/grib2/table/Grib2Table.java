@@ -24,6 +24,8 @@ import java.util.List;
  * @since 8/1/2014
  */
 public class Grib2Table {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Table.class);
+
   public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev}
   private static final String tableMapPath = "resources/grib2/standardTableMap.txt";
   public static List<Grib2Table> tables = null;
@@ -49,7 +51,7 @@ public class Grib2Table {
 
           String[] flds = line.split(";");
           if (flds.length < 7) {
-            System.out.printf("%d BAD format == %s%n", count, line);
+            logger.warn("%d BAD format == %s%n", count, line);
             continue;
           }
 
@@ -70,7 +72,7 @@ public class Grib2Table {
             result.add(table);
 
           } catch (Exception e) {
-            System.out.printf("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
+            logger.warn("%d %d BAD line == %s : %s%n", count, fldidx, line, e.getMessage());
           }
         }
       }

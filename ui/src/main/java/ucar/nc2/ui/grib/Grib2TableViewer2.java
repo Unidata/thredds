@@ -344,3 +344,80 @@ public class Grib2TableViewer2 extends JPanel {
 
   }
 }
+
+
+  /*
+  //////////////////////////////////////////////////////////////////////////
+  // LOOK - compare to Grib2TablesViewer, From NCepLocalParameters
+
+  private static void compareTables(NcepLocalParams test, Grib2Customizer current) {
+    Formatter f = new Formatter();
+    //f.format("Table 1 = %s%n", test.tableName);
+    //f.format("Table 2 = %s%n", "currentNcep");
+
+    int extra = 0;
+    int udunits = 0;
+    int conflict = 0;
+    // f.format("Table 1 : %n");
+    for (Grib2Parameter p1 : test.getParameters()) {
+      Grib2Customizer.Parameter  p2 = current.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
+      if (p2 == null) {
+        extra++;
+        if (p1.getNumber() < 192) f.format("  WMO missing %s%n", p1);
+
+      } else {
+        String p1n = Util.cleanName(StringUtil2.substitute(p1.getName(), "-", " "));
+        String p2n = Util.cleanName(StringUtil2.substitute(p2.getName(), "-", " "));
+
+        if (!p1n.equalsIgnoreCase(p2n) ||
+           (p1.getNumber() >= 192 && !p1.getAbbrev().equals(p2.getAbbrev()))) {
+          f.format("  p1=%10s %40s %15s  %15s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev());
+          f.format("  p2=%10s %40s %15s  %15s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev());
+          conflict++;
+        }
+
+        if (!p1.getUnit().equalsIgnoreCase(p2.getUnit())) {
+          String cu1 = Util.cleanUnit(p1.getUnit());
+          String cu2 = Util.cleanUnit(p2.getUnit());
+
+          // eliminate common non-udunits
+          boolean isUnitless1 = isUnitless(cu1);
+          boolean isUnitless2 = isUnitless(cu2);
+
+          if (isUnitless1 != isUnitless2) {
+            f.format("  ud=%10s %s != %s for %s (%s)%n%n", p1.getId(), cu1, cu2, p1.getId(), p1.getName());
+            udunits++;
+
+          } else if (!isUnitless1) {
+
+            try {
+              SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
+              if (!su1.isCompatible(cu2)) {
+                f.format("  ud=%10s %s (%s) != %s for %s (%s)%n%n", p1.getId(), cu1, su1, cu2, p1.getId(), p1.getName());
+                udunits++;
+              }
+            } catch (Exception e) {
+              f.format("  udunits cant parse=%10s %15s %15s%n", p1.getId(), cu1, cu2);
+            }
+          }
+
+        }
+      }
+
+    }
+    f.format("Conflicts=%d extra=%d udunits=%d%n%n", conflict, extra, udunits);
+
+    /* extra = 0;
+    f.format("Table 2 : %n");
+    for (Object t : current.getParameters()) {
+      Grib2Tables.Parameter p2 = (Grib2Tables.Parameter) t;
+      Grib2Parameter  p1 = test.getParameter(p2.getNumber());
+      if (p1 == null) {
+        extra++;
+        f.format(" Missing %s in table 1%n", p2);
+      }
+    }
+    f.format("%nextra=%d%n%n", extra);
+    System.out.printf("%s%n", f);
+  }  */
+

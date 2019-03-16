@@ -76,7 +76,7 @@ abstract class GribCollectionBuilderFromIndex {
       // these are the variable records
       long skip = raf.readLong();
       raf.skipBytes(skip);
-      if (debug) System.out.printf("GribCollectionBuilderFromIndex %s (%s) records len = %d%n", raf.getLocation(), getMagicStart(), skip);
+      logger.debug("GribCollectionBuilderFromIndex %s (%s) records len = %d%n", raf.getLocation(), getMagicStart(), skip);
 
       int size = NcStream.readVInt(raf);
       if ((size < 0) || (size > 300 * 1000 * 1000)) { // ncx bigger than 300 MB?
@@ -84,7 +84,7 @@ abstract class GribCollectionBuilderFromIndex {
         throw new IllegalStateException();   // temp debug
         //return false;
       }
-      if (debug) System.out.printf("GribCollectionBuilderFromIndex proto len = %d%n", size);
+      logger.debug("GribCollectionBuilderFromIndex proto len = %d%n", size);
 
       byte[] m = new byte[size];
       raf.readFully(m);
@@ -148,7 +148,7 @@ abstract class GribCollectionBuilderFromIndex {
         fsize += mf.getFilename().length();
       }
       gc.setFileMap(fileMap);
-      if (debug) System.out.printf("GribCollectionBuilderFromIndex files len = %d%n", fsize);
+      logger.debug("GribCollectionBuilderFromIndex files len = %d%n", fsize);
 
       gc.masterRuntime = (CoordinateRuntime) readCoord(proto.getMasterRuntime());
 
@@ -308,7 +308,7 @@ message Group {
       CoordinateRuntime runtime2D = t2d.getRuntimeCoordinate();
       CoordinateRuntime runtime = runtimes.get(runtime2D);
       if (runtime == null)
-        System.out.printf("HEY assignRuntimeNames failed on %s group %s%n", t2d.getName(), groupId);
+        logger.warn("HEY assignRuntimeNames failed on %s group %s%n", t2d.getName(), groupId);
       else
         runtime2D.setName(runtime.getName());
     }
