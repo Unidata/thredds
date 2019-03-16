@@ -21,11 +21,11 @@ import ucar.unidata.io.RandomAccessFile;
  * @author caron
  * @since 8/4/2014
  */
-public class Grib2NetcdfWriter implements Closeable {
+public class GribToNetcdfWriter implements Closeable {
   String fileIn;
   NetcdfFileWriter writer;
 
-  public Grib2NetcdfWriter(String fileIn, String fileOut) throws IOException {
+  public GribToNetcdfWriter(String fileIn, String fileOut) throws IOException {
     this.fileIn = fileIn;
 
     Nc4Chunking chunker = Nc4ChunkingStrategy.factory(Nc4Chunking.Strategy.grib, 9, true);
@@ -42,8 +42,6 @@ public class Grib2NetcdfWriter implements Closeable {
         float[] data = gr.readData(raf);
         for (int i=0; i<data.length; i++) {
           data[i] = bitShave(data[i], mask11);
-          if (i % 10 == 0)
-            System.out.println();
         }
       }
     }
@@ -85,22 +83,18 @@ public class Grib2NetcdfWriter implements Closeable {
     writer.close();
   }
 
-  public static void main2(String[] args) {
-    String fileIn = "Q:/cdmUnitTest/formats/grib2/ds.mint.bin";
-    String fileOut = "C:/tmp/ds.mint.bin";
+  // Write Grib file to a netcdf4 file. Experimental.
+  public static void main(String[] args) {
+    String fileIn = (args.length > 0) ? args[0] : "Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb";
+    String fileOut = (args.length > 1) ? args[1] : "C:/tmp/ds.mint.bi";
 
-    try (Grib2NetcdfWriter writer = new Grib2NetcdfWriter(fileIn, fileOut)) {
+    try (GribToNetcdfWriter writer = new GribToNetcdfWriter(fileIn, fileOut)) {
       writer.write();
 
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-  }
-
-  public static void main(String[] args) {
-    for (int i=0; i<24; i++)
-      System.out.printf("%d == %8d == 0x%s == 0x%s%n", i, getBitMask(i), Integer.toHexString(getBitMask(i)), Integer.toBinaryString(getBitMask(i)));
   }
 
 }

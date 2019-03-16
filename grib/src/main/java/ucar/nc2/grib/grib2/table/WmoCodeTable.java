@@ -542,35 +542,35 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   ////////////////////////////////////////////////////////////////////////////////////
   // debug
 
-  public static void showDiff(WmoTables gt1, WmoTables gt2, boolean showDiff) throws IOException {
+  public static void showDiff(WmoTables gt1, WmoTables gt2, boolean showDiff, Formatter f) throws IOException {
     int total = 0;
     int nsame = 0;
     int nsameIgn = 0;
     int ndiff = 0;
     int unknown = 0;
 
-    System.out.printf("DIFFERENCES between %s and %s%n", gt1.name, gt2.name);
+    f.format("DIFFERENCES between %s and %s%n", gt1.name, gt2.name);
     for (WmoCodeTable gc1 : gt1.list) {
 
       WmoCodeTable gc2 = gt2.map.get(gc1.tableName);
       if (gc2 == null) {
-        System.out.printf("1 table %s not found in %s%n", gc1.getTableId(), gt2.name);
+        f.format("1 table %s not found in %s%n", gc1.getTableId(), gt2.name);
         continue;
       }
 
       for (TableEntry p1 : gc1.entries) {
         TableEntry p2 = gc2.get(p1.start);
         if (p2 == null) {
-          System.out.printf("2 code %s not found in %s%n", p1.getId(), gt2.name);
+          f.format("2 code %s not found in %s%n", p1.getId(), gt2.name);
           continue;
         }
 
         if (showDiff && !p1.equals(p2)) {
-          System.out.printf("3 %s not equal%n  %s%n%n", p1, p2);
+          f.format("3 %s not equal%n  %s%n%n", p1, p2);
         }
       }
     }
-    System.out.printf("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
+    f.format("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
   }
 
 
@@ -581,7 +581,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     int ndiff = 0;
     int unknown = 0;
 
-    System.out.printf("DIFFERENCES with current parameter table (now,org) %n");
+    f.format("DIFFERENCES with current parameter table (now,org) %n");
     for (WmoCodeTable gt : tlist) {
       if (!gt.isParameter) continue;
       for (TableEntry p : gt.entries) {
@@ -605,10 +605,10 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
         total++;
         String state = same ? "  " : (sameIgnore ? "* " : "**");
         if (!same && !sameIgnore)
-          System.out.printf("%s%d %d %d%n %s%n %s%n", state, gt.discipline, gt.category, p.start, p.name, paramOrg);
+          f.format("%s%d %d %d%n %s%n %s%n", state, gt.discipline, gt.category, p.start, p.name, paramOrg);
       }
     }
-    System.out.printf("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
+    f.format("Total=%d same=%d sameIgn=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknown);
   } */
 
   static String munge(String org) {
@@ -617,12 +617,11 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return result;
   }
 
-  public static void showTable(List<WmoCodeTable> tlist) throws IOException {
-
+  public static void showTable(List<WmoCodeTable> tlist,  Formatter f) throws IOException {
     for (WmoCodeTable gt : tlist) {
-      System.out.printf("%d.%d (%d,%d) %s %n", gt.m1, gt.m2, gt.discipline, gt.category, gt.tableName);
+      f.format("%d.%d (%d,%d) %s %n", gt.m1, gt.m2, gt.discipline, gt.category, gt.tableName);
       for (TableEntry p : gt.entries) {
-        System.out.printf("  %s (%d-%d) = %s %n", p.code, p.start, p.stop, p.meaning);
+        f.format("  %s (%d-%d) = %s %n", p.code, p.start, p.stop, p.meaning);
       }
     }
   }

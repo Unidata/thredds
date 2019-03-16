@@ -413,18 +413,4 @@ public class TimeCoord {
 
   }
 
-  public static void main(String[] args) {
-    CalendarDate start = CalendarDate.of(1269820799000L);
-    CalendarDate end = CalendarDate.of(1269824399000L);
-    TinvDate tinvDate = new TinvDate(start, end);
-    System.out.printf("tinvDate = %s%n", tinvDate);
-
-    CalendarDate refDate = CalendarDate.of(1269820800000L);
-    CalendarPeriod timeUnit = CalendarPeriod.of("Hour");
-
-    Tinv tinv = tinvDate.convertReferenceDate(refDate, timeUnit);
-    System.out.printf("tinv = %s offset from %s%n", tinv, refDate);
-
-  }
-
 }

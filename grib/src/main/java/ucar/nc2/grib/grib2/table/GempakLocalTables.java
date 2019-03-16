@@ -40,7 +40,6 @@ public class GempakLocalTables extends LocalTables {
     super(grib2Table);
     Formatter f = new Formatter();
     local = initLocalTable(grib2Table.getPath(), f);
-    System.out.printf("%s%n", f); // debug
   }
   /*
 ! GRIB2 parameter table

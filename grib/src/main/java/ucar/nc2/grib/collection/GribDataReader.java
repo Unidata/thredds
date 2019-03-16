@@ -73,7 +73,6 @@ public abstract class GribDataReader {
    * @return data as an Array
    */
   public Array readData(SectionIterable want) throws IOException, InvalidRangeException {
-    // System.out.printf("%nGribDataReader.want=%n%s%n", want.show());
     if (vindex instanceof PartitionCollectionImmutable.VariableIndexPartitioned)
       return readDataFromPartition((PartitionCollectionImmutable.VariableIndexPartitioned) vindex, want);
     else
@@ -102,7 +101,7 @@ public abstract class GribDataReader {
       // addRecord(sourceIndex, count++);
       GribCollectionImmutable.Record record = vindex.getRecordAt(sourceIndex);
       if (Grib.debugRead)
-        System.out.printf("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
+        logger.debug("GribIosp debugRead sourceIndex=%d resultIndex=%d record is null=%s%n", sourceIndex, resultIndex, record == null);
       if (record != null)
         records.add( new DataRecord(resultIndex, record, vindex.group.getGdsHorizCoordSys()));
       resultIndex++;
@@ -148,7 +147,7 @@ public abstract class GribDataReader {
 
       PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(useIndex);
       if (record == null) {
-        if (Grib.debugRead) System.out.printf("readDataFromPartition missing data%n");
+        if (Grib.debugRead) logger.debug("readDataFromPartition missing data%n");
         resultPos++; // can just skip, since result is prefilled with NaNs
         continue;
       }

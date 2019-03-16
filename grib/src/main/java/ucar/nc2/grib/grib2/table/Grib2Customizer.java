@@ -29,7 +29,7 @@ import java.util.*;
  */
 @Immutable
 public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConverter {
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2Customizer.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Customizer.class);
   private static Map<Grib2Table.Id, Grib2Customizer> tables = new HashMap<>();
   private static Grib2Customizer wmoStandardTable = null;
 
@@ -209,7 +209,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
         continue;
       if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
         if (!timeUnitWarnWasSent) {
-          log.warn("TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
+          logger.warn("TimeInterval has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
           timeUnitWarnWasSent = true;
           // throw new RuntimeException("TimeInterval(2) has different units");
         }
@@ -248,7 +248,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
       if (ti.timeRangeUnit == 255)
         continue;
       if ((ti.timeRangeUnit != timeUnitOrg) || (ti.timeIncrementUnit != timeUnitOrg && ti.timeIncrementUnit != 255 && ti.timeIncrement != 0)) {
-        log.warn("TimeInterval(2) has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
+        logger.warn("TimeInterval(2) has different units timeUnit org=" + timeUnitOrg + " TimeInterval=" + ti.timeIncrementUnit);
         throw new RuntimeException("TimeInterval(2) has different units");
       }
 
@@ -543,7 +543,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
         }
       }
     } catch (IOException e) {
-      System.out.printf("Error reading wmo tables = %s%n", e.getMessage());
+      logger.warn("Error reading wmo tables = %s%n", e.getMessage());
     }
     return allParams;
   }
