@@ -7,6 +7,8 @@ package ucar.coord;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -32,6 +34,8 @@ import java.util.*;
  */
 @Immutable
 public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordinate {
+  private static Logger logger = LoggerFactory.getLogger(CoordinateTime2D.class);
+
   private final CoordinateRuntime runtime;
   private final List<Coordinate> times;       // nruns time coordinates - original offsets
   private final CoordinateTimeAbstract otime; // orthogonal time coordinates - only when isOrthogonal
@@ -495,7 +499,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       valueWithOffset = value.time + offset;
     }
     int result = time.getIndex(valueWithOffset);
-    if (Grib.debugRead) System.out.printf("  matchTimeCoordinate value wanted = (%s) valueWithOffset=%s result=%d %n", value, valueWithOffset, result);
+    logger.info("  matchTimeCoordinate value wanted = (%s) valueWithOffset=%s result=%d %n", value, valueWithOffset, result);
 
     return result;
   }

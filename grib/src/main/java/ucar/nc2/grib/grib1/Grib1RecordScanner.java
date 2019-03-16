@@ -188,7 +188,7 @@ public class Grib1RecordScanner {
       Grib1SectionGridDefinition gds = pds.gdsExists() ? new Grib1SectionGridDefinition(raf)
           : new Grib1SectionGridDefinition(pds);
       if (!pds.gdsExists() && debugGds) {
-        System.out.printf(" NO GDS: center = %d, GridDefinition=%d file=%s%n", pds.getCenter(),
+        log.warn(" NO GDS: center = %d, GridDefinition=%d file=%s%n", pds.getCenter(),
             pds.getGridDefinition(), raf.getLocation());
       }
 
@@ -205,21 +205,6 @@ public class Grib1RecordScanner {
         throw new IllegalStateException("Illegal Grib1SectionBinaryData Message Length");
       }
 
-      /* from old code
-          // obtain BMS or BDS offset in the file for this product
-          if (pds.getPdsVars().getCenter() == 98) {  // check for ecmwf offset by 1 bug
-            int length = GribNumbers.uint3(raf);  // should be length of BMS
-            if ((length + raf.getFilePointer()) < EOR) {
-              dataOffset = raf.getFilePointer() - 3;  // ok
-            } else {
-              //System.out.println("ECMWF off by 1 bug" );
-              dataOffset = raf.getFilePointer() - 2;
-            }
-          } else {
-            dataOffset = raf.getFilePointer();
-          }
-       */
-
       // look for duplicate gds
       long crc = gds.calcCRC();
       Grib1SectionGridDefinition gdsCached = gdsMap.get(crc);
@@ -231,10 +216,8 @@ public class Grib1RecordScanner {
 
       // check that end section is correct
       boolean foundEnding = checkEnding(ending);
-      if (debug) {
-        System.out.printf(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
+      log.debug(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
             raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
-      }
 
       if (!foundEnding && (allowBadIsLength || is.isMessageLengthFixed)) {
         foundEnding = checkEnding(dataSection.getStartingPosition() + dataSection.getLength());

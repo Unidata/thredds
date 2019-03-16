@@ -117,20 +117,20 @@ public class Grib1Index extends GribIndex {
       NcStream.readFully(fin, m);
 
       Grib1IndexProto.Grib1Index proto = Grib1IndexProto.Grib1Index.parseFrom(m);
-      if (debug) System.out.printf("%s for %s%n",  proto.getFilename(), filename);
+      logger.debug("%s for %s%n",  proto.getFilename(), filename);
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib1IndexProto.Grib1GdsSection pgds : proto.getGdsListList()) {
         Grib1SectionGridDefinition gds = readGds(pgds);
         gdsList.add(gds);
       }
-      if (debug) System.out.printf(" read %d gds%n", gdsList.size());
+      logger.debug(" read %d gds%n", gdsList.size());
 
       records = new ArrayList<>(proto.getRecordsCount());
       for (Grib1IndexProto.Grib1Record precord : proto.getRecordsList()) {
         records.add(readRecord(precord));
       }
-      if (debug) System.out.printf(" read %d records%n", records.size());
+      logger.debug(" read %d records%n", records.size());
 
     } catch (NegativeArraySizeException | IOException e) {
       logger.error("GribIndex failed on " + filename, e);

@@ -277,9 +277,7 @@ TBLE2 cptec_254_params[] = {
         Grib1Parameter parameter = new Grib1Parameter(this, p1, m.group(4), m.group(2),
             m.group(3));
         result.put(parameter.getNumber(), parameter);
-        if (debug) {
-          System.out.printf(" %s%n", parameter);
-        }
+        logger.debug(" %s%n", parameter);
       }
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
@@ -296,7 +294,7 @@ TBLE2 cptec_254_params[] = {
     try {
       return Integer.parseInt(want.trim());
     } catch (NumberFormatException e) {
-      System.out.printf("BAD %s (%s)%n", line, path);
+      logger.warn("BAD %s (%s)%n", line, path);
       return -1;
     }
   }
@@ -391,9 +389,7 @@ TBLE2 cptec_254_params[] = {
         }
         Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units1);
         result.put(parameter.getNumber(), parameter);
-        if (debug) {
-          System.out.printf(" %s (%s)%n", parameter, notes);
-        }
+        logger.debug(" %s (%s)%n", parameter, notes);
       }
       return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
@@ -484,9 +480,7 @@ TBLE2 cptec_254_params[] = {
         }
         Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, unit);
         result.put(parameter.getNumber(), parameter);
-        if (debug) {
-          System.out.printf(" %s%n", parameter);
-        }
+        logger.debug(" %s%n", parameter);
       }
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
@@ -545,9 +539,7 @@ TBLE2 cptec_254_params[] = {
         Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTableReader.this, code, name, desc,
             units, cf);
         result.put(parameter.getNumber(), parameter);
-        if (debug) {
-          System.out.printf(" %s%n", parameter);
-        }
+        logger.debug(" %s%n", parameter);
       }
       return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
@@ -582,7 +574,7 @@ TBLE2 cptec_254_params[] = {
         try {
           code = Integer.parseInt(elem1.getChildText("grib1Id"));
         } catch (NumberFormatException e) {
-          System.out.printf("BAD number= %s%n", elem1.getChildText("grib1Id"));
+          logger.warn("BAD number= %s%n", elem1.getChildText("grib1Id"));
           continue;
         }
         String desc = elem1.getChildText("description");
@@ -599,9 +591,7 @@ TBLE2 cptec_254_params[] = {
         Grib1Parameter parameter = new Grib1Parameter(Grib1ParamTableReader.this, code, name, desc,
             units, null);
         result.put(parameter.getNumber(), parameter);
-        if (debug) {
-          System.out.printf(" %s%n", parameter);
-        }
+        logger.debug(" %s%n", parameter);
       }
       useName = true;
       return result;
@@ -634,9 +624,7 @@ TBLE2 cptec_254_params[] = {
 
         Grib1Parameter parameter = new Grib1Parameter(this, p1, name, desc, units);
         result.put(parameter.getNumber(), parameter);
-        if (debug) {
-          System.out.printf(" %s%n", parameter);
-        }
+        logger.debug(" %s%n", parameter);
       }
       return Collections.unmodifiableMap(result);  // all at once - thread safe
     }
@@ -681,11 +669,7 @@ TBLE2 cptec_254_params[] = {
           if (!parameter.getDescription().equalsIgnoreCase("undefined")) {
             params.put(parameter.getNumber(), parameter);
           }
-          if (debug) {
-            System.out.println(
-                parameter.getNumber() + " " + parameter.getDescription() + " " + parameter
-                    .getUnit());
-          }
+          logger.debug(parameter.getNumber() + " " + parameter.getDescription() + " " + parameter.getUnit());
         }
       }
       return Collections.unmodifiableMap(params);  // all at once - thread safe

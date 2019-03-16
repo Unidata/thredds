@@ -32,7 +32,7 @@ import java.util.Arrays;
  */
 public class Grib2DataReader2 {
 
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory
       .getLogger(Grib2DataReader2.class);
 
   private static final int[] bitsmv1 = new int[31];
@@ -90,7 +90,7 @@ public class Grib2DataReader2 {
 
     if (bitmap != null) { // is bitmap ok ?
       if (bitmap.length * 8 < totalNPoints) { // gdsNumberPoints == nx * ny ??
-        log.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length,
+        logger.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length,
             totalNPoints, nx, totalNPoints / nx);
         throw new IllegalStateException("Bitmap section length!= grid length");
       }
@@ -137,7 +137,7 @@ public class Grib2DataReader2 {
 
     if (bitmap != null) { // is bitmap ok ?
       if (bitmap.length * 8 < totalNPoints) { // gdsNumberPoints == nx * ny ??
-        log.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length,
+        logger.warn("Bitmap section length = {} != grid length {} ({},{})", bitmap.length,
             totalNPoints, nx, totalNPoints / nx);
         throw new IllegalStateException("Bitmap section length!= grid length");
       }
@@ -564,7 +564,7 @@ public class Grib2DataReader2 {
     // test
     if (mvm != 0) {
       if (totalL != totalNPoints) {
-        log.warn("NPoints != gds.nPts: " + totalL + "!=" + totalNPoints);
+        logger.warn("NPoints != gds.nPts: " + totalL + "!=" + totalNPoints);
         float[] data = new float[totalNPoints];
         for (int i = 0; i < totalNPoints; i++) {
           data[i] = mv;
@@ -573,7 +573,7 @@ public class Grib2DataReader2 {
       }
     } else {
       if (totalL != dataNPoints) {
-        log.warn("NPoints != drs.nPts: " + totalL + "!=" + totalNPoints);
+        logger.warn("NPoints != drs.nPts: " + totalL + "!=" + totalNPoints);
         float[] data = new float[totalNPoints];
         for (int i = 0; i < totalNPoints; i++) {
           data[i] = mv;
@@ -768,7 +768,7 @@ public class Grib2DataReader2 {
     int[] idata = g2j.getGdata();
     if (bitmap == null) { // must be one decoded value in idata for every expected data point
       if (idata.length != dataNPoints) {
-        log.debug("Number of points in the data record {} != {} expected from GDS", idata.length,
+        logger.debug("Number of points in the data record {} != {} expected from GDS", idata.length,
             dataNPoints);
         throw new IllegalStateException(
             "Number of points in the data record {} != expected from GDS");
@@ -785,8 +785,7 @@ public class Grib2DataReader2 {
       for (int i = 0, j = 0; i < totalNPoints; i++) {
         if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           if (j >= idata.length) {
-            System.out
-                .printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
+            logger.warn("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
                     idata.length, j, i, totalNPoints);
             break;
           }
@@ -802,7 +801,7 @@ public class Grib2DataReader2 {
 
     /* } catch (NullPointerException npe) {
 
-      log.error("Grib2DataReader2.jpeg2000Unpacking: bit rate too small nb =" + nb + " for file" + raf.getLocation());
+      logger.error("Grib2DataReader2.jpeg2000Unpacking: bit rate too small nb =" + nb + " for file" + raf.getLocation());
       float[] data = new float[dataNPoints];
       for (int i = 0; i < dataNPoints; i++) {
         data[i] = staticMissingValue;  // LOOK ??
@@ -831,7 +830,7 @@ public class Grib2DataReader2 {
 
     if (bitmap == null) { // must be one decoded value in idata for every expected data point
       if (idata.length != totalNPoints) {
-        log.debug("Number of points in the data record {} != {} expected from GDS", idata.length,
+        logger.debug("Number of points in the data record {} != {} expected from GDS", idata.length,
             totalNPoints);
         return null;
       }
@@ -843,8 +842,7 @@ public class Grib2DataReader2 {
       for (int i = 0, j = 0; i < totalNPoints; i++) {
         if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
           if (j >= idata.length) {
-            System.out
-                .printf("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
+            logger.warn("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
                     idata.length, j, i, totalNPoints);
             break;
           }
@@ -895,7 +893,7 @@ public class Grib2DataReader2 {
     BufferedImage image = ImageIO.read(in);
 
     if (nb != image.getColorModel().getPixelSize()) {
-      log.debug("PNG pixel size disagrees with grib number of bits: ",
+      logger.debug("PNG pixel size disagrees with grib number of bits: ",
           image.getColorModel().getPixelSize(), nb);
     }
 

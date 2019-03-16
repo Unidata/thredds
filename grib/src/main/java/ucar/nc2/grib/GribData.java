@@ -6,6 +6,8 @@
 package ucar.nc2.grib;
 
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.util.zip.Deflater;
  * @since 9/1/2014
  */
 public class GribData {
+  private static Logger logger = LoggerFactory.getLogger(GribData.class);
 
   public enum InterpolationMethod {none, cubic, linear}
 
@@ -365,8 +368,8 @@ public class GribData {
     int count = 0;
     for (int b : data) {
       if (b < 0 || b > n - 1) {
-        //System.out.printf("BAD %d at index %d; max=%d%n", b, count, n - 1);
-        // just skip return Double.NaN;
+        logger.warn("BAD %d at index %d; max=%d%n", b, count, n - 1);
+        // just skip
       } else {
         p[b]++;
       }
