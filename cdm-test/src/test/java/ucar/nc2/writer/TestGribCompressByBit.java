@@ -18,7 +18,7 @@ import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.nc2.grib.grib2.Grib2Variable;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.writer.Grib2NetcdfWriter;
+import ucar.nc2.grib.writer.GribToNetcdfWriter;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.TestDir;
@@ -507,20 +507,20 @@ public class TestGribCompressByBit {
   }
 
   public static byte[] shaveToBytes(float[] data, int bits) {
-    int bitMask = Grib2NetcdfWriter.getBitMask(bits + 1);
+    int bitMask = GribToNetcdfWriter.getBitMask(bits + 1);
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
     for (float d : data)
-      bb.putFloat(Grib2NetcdfWriter.bitShave(d, bitMask));
+      bb.putFloat(GribToNetcdfWriter.bitShave(d, bitMask));
     return bb.array();
   }
 
   public static byte[] shavePrecision(float[] org_data, int bits) {
     double expectedPrecision = Math.pow(2.0, -(bits + 1));
 
-    int bitMask = Grib2NetcdfWriter.getBitMask(bits + 1);
+    int bitMask = GribToNetcdfWriter.getBitMask(bits + 1);
     ByteBuffer bb = ByteBuffer.allocate(org_data.length * 4);
     for (float d : org_data)
-      bb.putFloat(Grib2NetcdfWriter.bitShave(d, bitMask));
+      bb.putFloat(GribToNetcdfWriter.bitShave(d, bitMask));
 
     int count = 0;
     float[] result = new float[org_data.length];
@@ -546,10 +546,10 @@ public class TestGribCompressByBit {
   public static void checkShavedPrecision(float[] org, int bits) {
     double expectedPrecision = Math.pow(2.0, -bits);
     float max_pdiff = - Float.MAX_VALUE;
-    int bitMask = Grib2NetcdfWriter.getBitMask(bits);
+    int bitMask = GribToNetcdfWriter.getBitMask(bits);
     for (int i=0; i<org.length; i++) {
       float d = org[i];
-      float shaved = Grib2NetcdfWriter.bitShave(org[i], bitMask);
+      float shaved = GribToNetcdfWriter.bitShave(org[i], bitMask);
       float diff = Math.abs(d - shaved);
       float pdiff = (d != 0.0) ? diff / d : 0.0f;
       assert pdiff < expectedPrecision;

@@ -499,7 +499,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       valueWithOffset = value.time + offset;
     }
     int result = time.getIndex(valueWithOffset);
-    logger.info("  matchTimeCoordinate value wanted = (%s) valueWithOffset=%s result=%d %n", value, valueWithOffset, result);
+    if (Grib.debugRead) logger.debug("  matchTimeCoordinate value wanted = (%s) valueWithOffset=%s result=%d %n", value, valueWithOffset, result);
 
     return result;
   }
