@@ -31,7 +31,7 @@ class NcepLocalParams {
   private static final boolean debugOpen = false;
   private static final boolean debug = false;
 
-  private Map<Integer, Table> tableMap = new HashMap<>(30);
+  private final Map<Integer, Table> tableMap = new HashMap<>(30);
   private final String resourcePath;
 
   NcepLocalParams(String resourcePath) {

@@ -321,7 +321,7 @@ public class GribData {
   }
 
   // only used by test code
-  public static float[] uncompressScaled(byte[] bdata) throws IOException {
+  public static float[] uncompressScaled(byte[] bdata) {
     throw new UnsupportedOperationException("bzip2 compression no longer supported.");
   }
 

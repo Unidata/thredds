@@ -33,10 +33,10 @@ public class EcmwfLocalConcepts {
     private static final Charset ENCODING = StandardCharsets.UTF_8;
 
     // tableNumber -> paramNumber -> metadata from table
-    private HashMap<String, HashMap<String, HashMap<String,String>>> localConcepts = new HashMap<>();
+    private final HashMap<String, HashMap<String, HashMap<String,String>>> localConcepts = new HashMap<>();
 
     // location of the localConcept files
-    private String ecmwfLocalConceptsLoc;
+    private final String ecmwfLocalConceptsLoc;
 
     // default constructor
     public EcmwfLocalConcepts() {
@@ -125,7 +125,7 @@ public class EcmwfLocalConcepts {
      * @return cleaned version of lineIn
      */
     private String cleanLine(String lineIn) {
-        String lineOut = "";
+        String lineOut;
         lineOut = lineIn.replaceAll("'", "");
         lineOut = lineOut.replaceAll("\t", "");
         lineOut = lineOut.replaceAll(";", "");

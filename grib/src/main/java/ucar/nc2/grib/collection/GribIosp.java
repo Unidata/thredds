@@ -42,7 +42,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
   public static int debugIndexOnlyCount = 0;  // count number of data accesses
 
   // store custom tables in here
-  protected FeatureCollectionConfig config = new FeatureCollectionConfig();
+  protected final FeatureCollectionConfig config = new FeatureCollectionConfig();
 
   public void setParamTable(Element paramTable) {
     config.gribConfig.paramTable = paramTable;
@@ -486,9 +486,9 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
   private static class Time2Dinfo {
 
-    Time2DinfoType which;
-    CoordinateTime2D time2D;
-    Coordinate time1D;
+    final Time2DinfoType which;
+    final CoordinateTime2D time2D;
+    final Coordinate time1D;
 
     private Time2Dinfo(Time2DinfoType which, CoordinateTime2D time2D, Coordinate time1D) {
       this.which = which;

@@ -30,7 +30,9 @@ import java.util.*;
 public class PartitionCollectionMutable extends GribCollectionMutable {
 
   static class PartitionForVariable2D {
-    int partno, groupno, varno; // , flag;     // what the hell is the flag used for ?
+    final int partno;
+    final int groupno;
+    final int varno; // , flag;     // what the hell is the flag used for ?
     GribCollectionMutable.VariableIndex vi;
 
     PartitionForVariable2D(int partno, int groupno, int varno) {
@@ -41,7 +43,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   }
 
   public class VariableIndexPartitioned extends GribCollectionMutable.VariableIndex {
-    int nparts;
+    final int nparts;
     SmartArrayInt partnoSA;
     SmartArrayInt groupnoSA;
     SmartArrayInt varnoSA;

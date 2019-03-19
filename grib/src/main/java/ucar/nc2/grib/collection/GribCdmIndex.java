@@ -540,23 +540,21 @@ public class GribCdmIndex implements IndexReader {
 
       // redo the children here
       if (updateType != CollectionUpdateType.testIndexOnly) {   // skip children on testIndexOnly
-        partition.iterateOverMFileCollection(new DirectoryCollection.Visitor() {
-          public void consume(MFile mfile) {
-            MCollection part = new CollectionSingleFile(mfile, logger);
-            part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
+        partition.iterateOverMFileCollection(mfile -> {
+          MCollection part = new CollectionSingleFile(mfile, logger);
+          part.putAuxInfo(FeatureCollectionConfig.AUX_CONFIG, config);
 
-            try {
-              boolean changed = updateGribCollection(isGrib1, part, updateType, FeatureCollectionConfig.PartitionType.file, logger, errlog);
-              if (changed) anyChange.set(true);
+          try {
+            boolean changed = updateGribCollection(isGrib1, part, updateType, FeatureCollectionConfig.PartitionType.file, logger, errlog);
+            if (changed) anyChange.set(true);
 
-            } catch (IllegalStateException t) {
-              logger.warn("Error making partition {} '{}'", part.getRoot(), t.getMessage());
-              partition.removePartition(part); // keep on truckin; can happen if directory is empty
+          } catch (IllegalStateException t) {
+            logger.warn("Error making partition {} '{}'", part.getRoot(), t.getMessage());
+            partition.removePartition(part); // keep on truckin; can happen if directory is empty
 
-            } catch (Throwable t) {
-              logger.error("Error making partition " + part.getRoot(), t);
-              partition.removePartition(part);
-            }
+          } catch (Throwable t) {
+            logger.error("Error making partition " + part.getRoot(), t);
+            partition.removePartition(part);
           }
         });
       }
@@ -719,7 +717,7 @@ public class GribCdmIndex implements IndexReader {
   public static GribCollectionImmutable openGribCollectionFromRaf(RandomAccessFile raf, FeatureCollectionConfig config,
                 CollectionUpdateType updateType, org.slf4j.Logger logger) throws IOException {
 
-    GribCollectionImmutable result = null;
+    GribCollectionImmutable result;
 
     // check if its a plain ole GRIB1/2 data file
     boolean isGrib1 = false;
@@ -964,13 +962,14 @@ public class GribCdmIndex implements IndexReader {
 
   private static class CommandLine {
     @Parameter(names = {"-fc", "--featureCollection"}, description = "Input XML file containing <featureCollection> root element", required = true)
-    public File inputFile;
+    File inputFile;
 
     @Parameter(names = {"-update", "--CollectionUpdateType"}, description = "Collection Update Type")
-    public CollectionUpdateType updateType = CollectionUpdateType.always;
+    final
+    CollectionUpdateType updateType = CollectionUpdateType.always;
 
     @Parameter(names = {"-h", "--help"}, description = "Display this help and exit", help = true)
-    public boolean help = false;
+    public final boolean help = false;
 
     public class CollectionUpdateTypeConverter implements IStringConverter<CollectionUpdateType> {
       @Override

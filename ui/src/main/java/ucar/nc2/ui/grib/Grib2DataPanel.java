@@ -152,13 +152,7 @@ public class Grib2DataPanel extends JPanel {
         Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          try {
-            Grib2Show.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
-          } catch (IOException ioe) {
-            StringWriter sw = new StringWriter(10000);
-            ioe.printStackTrace(new PrintWriter(sw));
-            f.format("%s", sw.toString());
-          }
+          Grib2Show.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
           infoWindow.show();

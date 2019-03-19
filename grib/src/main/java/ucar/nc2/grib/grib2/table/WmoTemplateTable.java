@@ -23,7 +23,7 @@ import java.util.*;
  */
 
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
 
   public static final Version standard = Version.GRIB2_20_0_0;
 
@@ -45,8 +45,8 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   public static class GribTemplates {
-    public List<WmoTemplateTable> list;
-    public Map<String, WmoTemplateTable> map; // key is "disc.cat"
+    public final List<WmoTemplateTable> list;
+    public final Map<String, WmoTemplateTable> map; // key is "disc.cat"
 
     GribTemplates(List<WmoTemplateTable> list, Map<String, WmoTemplateTable> map) {
       this.list = list;
@@ -186,7 +186,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   ///////////////////////////////////////
   public String name, desc;
   public int m1, m2;
-  public List<Field> flds = new ArrayList<>();
+  public final List<Field> flds = new ArrayList<>();
 
   private WmoTemplateTable(String desc) {
     this.desc = desc;
@@ -221,7 +221,10 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   public static class Field implements Comparable<Field> {
-    public String octet, content, status, note;
+    public final String octet;
+    public final String content;
+    public String status;
+    public String note;
     public int start, nbytes;
 
     Field(String octet, String content, String status, String note) {

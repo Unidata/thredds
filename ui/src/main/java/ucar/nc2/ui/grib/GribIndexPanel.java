@@ -312,11 +312,7 @@ public class GribIndexPanel extends JPanel {
     }
 
     private void show(Grib2Record gr2, Formatter f) {
-      try {
-        Grib2Show.showCompleteGribRecord(f, indexFile, gr2, cust2);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      Grib2Show.showCompleteGribRecord(f, indexFile, gr2, cust2);
     }
   }
 

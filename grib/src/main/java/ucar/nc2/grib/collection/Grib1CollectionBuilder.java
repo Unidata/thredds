@@ -36,7 +36,7 @@ import java.util.*;
 public class Grib1CollectionBuilder extends GribCollectionBuilder {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionBuilder.class);
 
-  private FeatureCollectionConfig.GribConfig gribConfig;
+  private final FeatureCollectionConfig.GribConfig gribConfig;
   private Grib1Customizer cust;
 
   Grib1CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
@@ -175,10 +175,10 @@ public class Grib1CollectionBuilder extends GribCollectionBuilder {
   }
 
   public static class VariableBag implements Comparable<VariableBag> {
-    Grib1Record first;
-    Grib1Variable gv;
+    final Grib1Record first;
+    final Grib1Variable gv;
 
-    List<Grib1Record> atomList = new ArrayList<>(100); // not sorted
+    final List<Grib1Record> atomList = new ArrayList<>(100); // not sorted
     CoordinateND<Grib1Record> coordND;
     CalendarPeriod timeUnit;
 

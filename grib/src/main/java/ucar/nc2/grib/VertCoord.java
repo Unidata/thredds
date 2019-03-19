@@ -32,7 +32,7 @@ public class VertCoord {
     }
 
     // sort by name
-    temp.sort((o1, o2) -> o1.getName().compareTo(o2.getName()));
+    temp.sort(Comparator.comparing(VertCoord::getName));
 
     // disambiguate names
     String lastName = null;

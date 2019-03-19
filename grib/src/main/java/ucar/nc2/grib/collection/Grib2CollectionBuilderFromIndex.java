@@ -28,7 +28,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
   // read in the index, index raf already open; return null on failure
   @Nullable
   static Grib2Collection readFromIndex(String name, RandomAccessFile raf,
-      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, org.slf4j.Logger logger) {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -46,7 +46,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
   // read in the index, index raf already open; return null on failure
   @Nullable
   static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf,
-      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, org.slf4j.Logger logger) {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -93,7 +93,6 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
   protected String getLevelNameShort(int levelCode) {
     return cust.getLevelNameShort(levelCode);
   }
-
 
   @Override
   protected GribHorizCoordSystem readGds(GribCollectionProto.Gds p) {

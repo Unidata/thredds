@@ -927,8 +927,8 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   private class NameAndType {
-    String name;
-    AxisType type;
+    final String name;
+    final AxisType type;
 
     NameAndType(String name, AxisType type) {
       this.name = name;
@@ -1095,12 +1095,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     SectionIterable siter = new SectionIterable(ranges, fullShape);
 
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
-    Array data;
-    try {
-      data = dataReader.readData(siter); // optimize pass in null ?? LOOK old way
-    } catch (InvalidRangeException e) {
-      throw new RuntimeException(e);
-    }
+    Array data = dataReader.readData(siter); // optimize pass in null ?? LOOK old way
 
     return (double[]) data.get1DJavaArray(DataType.DOUBLE);  // LOOK lame conversion
   }

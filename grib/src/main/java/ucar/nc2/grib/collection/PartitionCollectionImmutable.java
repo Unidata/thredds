@@ -48,7 +48,6 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
 
   static final ucar.nc2.util.cache.FileFactory partitionCollectionFactory = new FileFactory() {
     public FileCacheable open(DatasetUrl durl, int buffer_size, CancelTask cancelTask, Object iospMessage) throws IOException {
-
       try (RandomAccessFile raf = RandomAccessFile.acquire(durl.trueurl)) {
         Partition p = (Partition) iospMessage;
         return GribCdmIndex.openGribCollectionFromIndexFile(raf, p.getConfig(), p.getLogger()); // do we know its a partition ?

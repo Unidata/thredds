@@ -39,7 +39,7 @@ public class Grib2JpegDecoder {
   private static final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
 
   private boolean debug;
-  private int rate;
+  private final int rate;
 
   /**
    * Return the packBytes ie number bytes / number 1,2 or 4
@@ -59,7 +59,7 @@ public class Grib2JpegDecoder {
   /**
    * The parameter list (arguments)
    */
-  private ParameterList pl;
+  private final ParameterList pl;
 
   /**
    * Instantiates a decoder object, width the 'argv' command
@@ -434,12 +434,12 @@ public class Grib2JpegDecoder {
          * Whether the data must be signed when writing or not. In the latter
          * case inverse level shifting must be applied
          */
-        boolean isSigned;
+        final boolean isSigned;
 
         /**
          * The bit-depth of the input file (must be between 1 and 31)
          */
-        private int bitDepth;
+        private final int bitDepth;
 
         /**
          * A DataBlk, just used to avoid allocating a new one each time it is
@@ -453,7 +453,7 @@ public class Grib2JpegDecoder {
         /**
          * The index of the component from where to get the data
          */
-        private int c;
+        private final int c;
 
         /**
          * The pack length of one sample (in bytes, according to the output
@@ -502,9 +502,8 @@ public class Grib2JpegDecoder {
          * written. Any call to other methods of the class become illegal after a
          * call to this one.
          *
-         * @throws IOException If an I/O error occurs.
          */
-        public void close() throws IOException {
+        public void close() {
         }
 
         /**
@@ -527,9 +526,8 @@ public class Grib2JpegDecoder {
          *               to write, relative to the current tile.
          * @param w  The width of the area to write.
          * @param h The height of the area to write.
-         * @throws IOException If an I/O error occurs.
          */
-        public void write(int ulx, int uly, int w, int h) throws IOException {
+        public void write(int ulx, int uly, int w, int h) {
             // Initialize db
             db.ulx = ulx;
             db.uly = uly;
@@ -547,7 +545,7 @@ public class Grib2JpegDecoder {
 
         } // end int ulx, int uly, int w, int h
 
-        public void writeAll() throws IOException {
+        public void writeAll() {
             // Find the list of tile to decode.
             Coord nT = src.getNumTiles(null);
 
@@ -570,10 +568,9 @@ public class Grib2JpegDecoder {
          * then it is requested over and over until it is not progressive
          * anymore.</p>
          *
-         * @throws IOException If an I/O error occurs.
          * @see DataBlk
          */
-        public void write() throws IOException {
+        public void write() {
             int i;
             int tIdx = src.getTileIdx();
             int tw = src.getTileCompWidth(tIdx, c);  // Tile width
