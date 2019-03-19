@@ -1095,8 +1095,12 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     SectionIterable siter = new SectionIterable(ranges, fullShape);
 
     GribDataReader dataReader = GribDataReader.factory(gribCollection, vindex);
-    Array data = dataReader.readData(siter); // optimize pass in null ?? LOOK old way
-
+    Array data;
+    try {
+      data = dataReader.readData(siter); // optimize pass in null ?? LOOK old way
+    } catch (InvalidRangeException e) {
+      throw new RuntimeException(e);
+    }
     return (double[]) data.get1DJavaArray(DataType.DOUBLE);  // LOOK lame conversion
   }
 
