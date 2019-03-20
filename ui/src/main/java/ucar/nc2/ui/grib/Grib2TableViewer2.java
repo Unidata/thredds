@@ -49,11 +49,9 @@ public class Grib2TableViewer2 extends JPanel {
     this.prefs = prefs;
 
     gribTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
-    gribTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    gribTable.addListSelectionListener(e -> {
         TableBean csb = (TableBean) gribTable.getSelectedBean();
         setEntries(csb.table);
-      }
     });
 
     ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(gribTable.getJTable(), "Options");

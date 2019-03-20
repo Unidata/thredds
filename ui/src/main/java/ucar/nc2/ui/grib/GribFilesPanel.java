@@ -61,7 +61,7 @@ public class GribFilesPanel extends JPanel {
       }
     }); */
 
-    varPopup = new ucar.nc2.ui.widget.PopupMenu(collectionTable.getJTable(), "Options");
+    varPopup = new PopupMenu(collectionTable.getJTable(), "Options");
     varPopup.addAction("Show Files in Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CollectionBean pb = (CollectionBean) collectionTable.getSelectedBean();

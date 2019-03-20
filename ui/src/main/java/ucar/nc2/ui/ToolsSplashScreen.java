@@ -85,6 +85,6 @@ public class ToolsSplashScreen extends JWindow {
                     setVisible(false);
                 }
             });
-         }
+        }
     }
 }

@@ -46,8 +46,7 @@ public class VertScaleSlider extends JPanel {
     slider.setBorder(BorderFactory.createEmptyBorder(0,0,0,10));
 
       // listen for changes from user manupulation
-    slider.addChangeListener( new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    slider.addChangeListener(e -> {
         if (eventOK && (zAxis != null) && !slider.getValueIsAdjusting()) {
           int pos = slider.getValue();
           int idx = slider2index(pos);
@@ -63,7 +62,6 @@ public class VertScaleSlider extends JPanel {
           }); // invokeLater
 
         } // eventPOk
-      } // stateChanged
     }); //add ChangeListener
 
       // listen for outside changes

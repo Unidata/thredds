@@ -344,10 +344,8 @@ public class HtmlBrowser extends JPanel {
       JButton dismissButton = new JButton("Dismiss");
       topButtons.add(dismissButton, null);
 
-      dismissButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
+      dismissButton.addActionListener(e -> {
           setVisible(false);
-        }
       });
 
      // add it to contentPane

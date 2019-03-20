@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ui.grib;
 
 import ucar.ma2.DataType;
@@ -56,14 +61,12 @@ public class GribIndexPanel extends JPanel {
 
 
     /* AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
-    filesButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    filesButton.addActionListener(e -> {
         Formatter f = new Formatter();
         showFiles(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
-      }
     });
     buttPanel.add(filesButton);    */
 

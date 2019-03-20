@@ -117,8 +117,7 @@ public class SimpleGeomTable extends JPanel {
   public void addExtra(JPanel buttPanel, final FileManager fileChooser) {
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Detail Info", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    infoButton.addActionListener(e ->{
         if ((gridDataset != null) && (gridDataset instanceof ucar.nc2.dt.grid.GridDataset)) {
           ucar.nc2.dt.grid.GridDataset gdsImpl = (ucar.nc2.dt.grid.GridDataset) gridDataset;
           infoTA.clear();
@@ -126,13 +125,11 @@ public class SimpleGeomTable extends JPanel {
           infoTA.gotoTop();
           infoWindow.show();
         }
-      }
     });
     buttPanel.add(infoButton);
 
     JButton invButton = new JButton("GridInv");
-    invButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    invButton.addActionListener(e -> {
         if (gridDataset == null) return;
         GridDatasetInv inv = new GridDatasetInv((ucar.nc2.dt.grid.GridDataset) gridDataset, null);
         try {
@@ -142,7 +139,6 @@ public class SimpleGeomTable extends JPanel {
         } catch (Exception e1) {
           e1.printStackTrace();
         }
-      }
     });
     buttPanel.add(invButton);
 
@@ -782,10 +778,8 @@ public class SimpleGeomTable extends JPanel {
       JButton dismissButton = new JButton("Dismiss");
       buttPanel.add(dismissButton, null);
 
-      dismissButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
+      dismissButton.addActionListener(e -> {
           setVisible(false);
-        }
       }); */
 
       // add it to contentPane

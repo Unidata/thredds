@@ -101,8 +101,7 @@ public class FileManager {
       JOptionPane.showMessageDialog(null, "Sorry, this Applet does not have disk read permission.");
     }
 
-    chooser.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    chooser.addActionListener(e -> {
         if (debug) System.out.println("**** chooser event=" + e.getActionCommand() + "\n  " + e);
         //if (debug) System.out.println("  curr directory="+chooser.getCurrentDirectory());
         //if (debug) System.out.println("  selected file="+chooser.getSelectedFile());
@@ -110,7 +109,6 @@ public class FileManager {
         if (e.getActionCommand().equals("ApproveSelection"))
           selectedFile = true;
         w.setVisible(false);
-      }
     });
 
     // set filters
@@ -177,10 +175,8 @@ public class FileManager {
     main.add(chooser, BorderLayout.CENTER);
 
     /* urlComboBox = new ComboBox(prefs);
-    urlComboBox.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    urlComboBox.addActionListener(e -> {
           selectedURL = true;
-      }
     });
 
     JPanel p = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
@@ -397,20 +393,16 @@ public class FileManager {
 
     final FileManager fm = new FileManager(frame);
     final JFileChooser fc = fm.chooser;
-    fc.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    fc.addActionListener(e -> {
         System.out.println("**** fm event=" + e.getActionCommand());
         System.out.println("  curr directory=" + fc.getCurrentDirectory());
         System.out.println("  selected file=" + fc.getSelectedFile());
-      }
     });
 
     JButton butt = new JButton("accept");
-    butt.addActionListener(new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
+    butt.addActionListener(e -> {
         System.out.println("butt accept");
         //cb.accept();
-      }
     });
 
     fm.chooseFilename();

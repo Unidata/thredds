@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  *
  */
-interface GetDataRunnable {
+public interface GetDataRunnable {
     void run(Object o) throws IOException;
 }
 

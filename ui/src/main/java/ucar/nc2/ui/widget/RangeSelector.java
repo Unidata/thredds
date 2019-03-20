@@ -82,23 +82,19 @@ public class RangeSelector extends JPanel {
 
       if (help != null) {
         helpButton = new JButton("help");
-        helpButton.addActionListener(new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
+        helpButton.addActionListener(e -> {
             if (helpWindow == null)
               helpWindow = new HelpWindow(null, "Help on "+tit, helpMessage);
             helpWindow.show(helpButton);
-           }
         });
         butts.add(helpButton);
       }
 
       if (acceptButton) {
         JButton okButton = new JButton("accept");
-        okButton.addActionListener(new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
+        okButton.addActionListener(e -> {
             pp.accept();
             sendEvent();
-          }
         });
 
         butts.add(okButton);

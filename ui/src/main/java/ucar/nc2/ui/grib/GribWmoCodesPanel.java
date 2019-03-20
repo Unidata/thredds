@@ -1,8 +1,14 @@
+/*
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ui.grib;
 
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib2.table.WmoCodeTable;
 import ucar.nc2.ui.widget.*;
+import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -41,14 +47,12 @@ public class GribWmoCodesPanel extends JPanel {
     this.prefs = prefs;
 
     codeTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
-    codeTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    codeTable.addListSelectionListener(e -> {
         CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
         setEntries(csb.codeTable);
-      }
     });
 
-    ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
+    ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(codeTable.getJTable(), "Options");
     varPopup.addAction("Show table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
@@ -68,10 +72,8 @@ public class GribWmoCodesPanel extends JPanel {
     });  */
 
     /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to 4.2 table", false);
-    compareButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    compareButton.addActionListener(e -> {
         compareToCurrent();
-      }
     });
     buttPanel.add(compareButton);  */
 
