@@ -21,9 +21,6 @@ import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -33,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.List;
+import javax.swing.*;
 
 /**
  * ucar.nc2.ft.fmrc Fmrc refactor.

@@ -18,9 +18,6 @@ import ucar.nc2.util.IO;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.FileInputStream;
@@ -28,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.List;
+import javax.swing.*;
 
 /**
  * Display the cdmrFeature protocol objects, from a URL or a file

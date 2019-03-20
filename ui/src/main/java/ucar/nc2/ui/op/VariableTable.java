@@ -23,13 +23,15 @@ import ucar.nc2.ui.widget.FileManager;
 import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.lang.invoke.MethodHandles;
-import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -51,8 +53,20 @@ public class VariableTable extends JPanel {
 	private PreferencesExt prefs;
 	private FileManager fileChooser; // for exporting
 
-	List col0 = null;
-	Array[] data = null;
+	List col0;
+	Array[] data;
+
+    int col0Dim = -1;
+    private boolean col0isDate;
+
+    NetcdfFile file;
+    NetcdfDataset fds;
+
+    String[] columnNames;
+
+    VariableTableModel dataModel = new VariableTableModel();
+
+    JCheckBox includeGlobals;
 
 /**
  *
@@ -63,34 +77,37 @@ public class VariableTable extends JPanel {
 		PreferencesExt fcPrefs = (prefs == null) ? null : (PreferencesExt) prefs.node("FileManager");
 		fileChooser = new FileManager(null, null, "csv", "comma seperated values", fcPrefs);		
 	}
-	// clear the table
 
+/**
+ * clear the table
+ */
 	public void clear() {
-		if (dataModel != null)
+		if (dataModel != null) {
 			dataModel.clear();
+        }
 		col0 = null;
 	}
 
-	// save state
-
+/**
+ * save state
+ */
 	public void saveState() {
 		fileChooser.save();
 	}
 
-
-	int col0Dim = -1;
-	private boolean col0isDate = false;
-	
+/**
+ *
+ */
 	public void setVariableList(List<Variable> vl) {
 		int length = 1;
 		int i = 0;
 		
 		// find the number of columns, get shape for each variable after the first DIMENSON
-		for(Variable v : vl) {
+		for (Variable v : vl) {
 			int[] shape = v.getShape();
 
 			length = 1;
-			for(int j=1;j<shape.length;j++) {
+			for (int j=1;j<shape.length;j++) {
 				length *= shape[j];
 			}			
 			i += length;
@@ -104,12 +121,12 @@ public class VariableTable extends JPanel {
 		// Add each variable to the list of data, and also create column names
 		i = 0;
 
-		for(Variable v : vl)
+		for (Variable v : vl)
 		{
 			log.info("Variable " + v.getShortName());
 			List<Dimension> vd = v.getDimensions();
 			int dimNo = 0;
-			for(Dimension d : vd) {
+			for (Dimension d : vd) {
 				//System.out.println("Dimensions " + d + " " + d.getLength());
 				Variable dimVar = file.findVariable(d.getShortName());
 				if (dimVar != null) {
@@ -134,7 +151,7 @@ public class VariableTable extends JPanel {
 
 			if (col0Dim < 0) {
 				col0 = new ArrayList();
-				for(int j=0;j<shape[0];j++) {
+				for (int j=0;j<shape[0];j++) {
 					col0.add(j);
 				}				
 				col0Dim = 0;
@@ -188,8 +205,9 @@ public class VariableTable extends JPanel {
 		}
 	}
 
-	NetcdfFile file;
-	NetcdfDataset fds;
+/**
+ *
+ */
 	public void setDataset(NetcdfFile ds) {
 		file = ds;
 		try {
@@ -199,34 +217,45 @@ public class VariableTable extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	String[] columnNames;
 
+/**
+ *
+ */
 	class VariableTableModel extends AbstractTableModel {
 
-		@Override
-		public int getColumnCount() {			
-			return data.length+1;
-		}
-
+    /**
+     *
+     */
 		public void clear() {
 			// TODO Auto-generated method stub
-
 		}
 
+    /** */
+        @Override
+        public int getColumnCount() {
+            return data.length+1;
+        }
+
+    /** */
+        @Override
 		public String getColumnName(int col) {
 			return columnNames[col];
 		}
 
-		public Class getColoumClass(int col) {
+    /** */
+        @Override
+		public Class getColumnClass(int col) {
 			return String.class;
 		}
 
-		@Override
+    /** */
+        @Override
 		public int getRowCount() {
 			return col0.size();
 		}
 
-		@Override
+    /** */
+        @Override
 		public Object getValueAt(int row, int col) {
 			if (col == 0) {
 				return col0.get(row);				
@@ -234,10 +263,11 @@ public class VariableTable extends JPanel {
 
 			return data[col-1].getObject(row);
 		}
-
 	}
 
-	VariableTableModel dataModel = new VariableTableModel();
+/**
+ *
+ */
 	public void createTable() {
 		this.setLayout(new BorderLayout());
 
@@ -249,7 +279,7 @@ public class VariableTable extends JPanel {
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
 		//Create the scroll pane and add the table to it.
-		JScrollPane scrollPane = new JScrollPane(table);
+		final JScrollPane scrollPane = new JScrollPane(table);
 
 		//Add the scroll pane to this panel.
 		this.removeAll();
@@ -259,50 +289,55 @@ public class VariableTable extends JPanel {
 		
 		includeGlobals = new JCheckBox("Export Attributes");
 		
-		JButton export = new JButton("Export");
+		final JButton export = new JButton("Export");
 		export.addActionListener(e -> {
             export();
 		});
 		
-		JPanel holderPanel = new JPanel(new BorderLayout());
+		final JPanel holderPanel = new JPanel(new BorderLayout());
 		holderPanel.add(export, BorderLayout.EAST);
 		holderPanel.add(includeGlobals, BorderLayout.CENTER);
 		add(holderPanel, BorderLayout.PAGE_END);
 	}
-	
-	JCheckBox includeGlobals;
-	
+
+/**
+ *
+ */
 	private void export() {
-		String filename = fileChooser.chooseFilename();
-		CalendarDateFormatter printForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
-		if (filename == null) return;
-		try {
-      PrintWriter pw = new PrintWriter( new OutputStreamWriter(new FileOutputStream(filename), CDM.utf8Charset));
+		final String filename = fileChooser.chooseFilename();
+
+        if (filename == null) { return; }
+
+		final CalendarDateFormatter printForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
+
+		try (final FileOutputStream fos = new FileOutputStream(filename);
+             final OutputStreamWriter osw = new OutputStreamWriter(fos, CDM.utf8Charset);
+             final PrintWriter pw = new PrintWriter(osw)) {
 
 			pw.println("; file name : " + fds.getLocation());
 			
 			if (includeGlobals.isSelected()) {
 				List<Attribute> gAtts = fds.getGlobalAttributes();
-				for(Attribute a : gAtts) {
+				for (Attribute a : gAtts) {
 					pw.println("; " +  a.toString(false));
 				}
 			}
 			
 			pw.println("; this file written : " + new Date());
 			
-			TableModel model = dataModel;
+			final TableModel model = dataModel;
 			for (int col = 0; col < model.getColumnCount(); col++) {
-				if (col > 0) pw.print(",");
+				if (col > 0) { pw.print(","); }
 				pw.print(model.getColumnName(col));
 			}
 			pw.println();
 
 			for (int row = 0; row < model.getRowCount(); row++) {
 				for (int col = 0; col < model.getColumnCount(); col++) {
-					if (col > 0) pw.print(",");
-					Object o = model.getValueAt(row, col);
+					if (col > 0) { pw.print(","); }
+					final Object o = model.getValueAt(row, col);
 					if (o instanceof CalendarDate) {
-						CalendarDate d = (CalendarDate)o;
+						final CalendarDate d = (CalendarDate)o;
 						pw.print(printForm.toString(d));
 					}
 					else {
@@ -314,7 +349,8 @@ public class VariableTable extends JPanel {
 			}
 			pw.close();
 			JOptionPane.showMessageDialog(this, "File successfully written");
-		} catch (IOException ioe) {
+		}
+        catch (IOException ioe) {
 			JOptionPane.showMessageDialog(this, "ERROR: " + ioe.getMessage());
 			ioe.printStackTrace();
 		}
@@ -322,10 +358,16 @@ public class VariableTable extends JPanel {
 		fileChooser.save();
 	}
 
+/**
+ *
+ */
 	static class DateRenderer extends DefaultTableCellRenderer {
 		private CalendarDateFormatter newForm, oldForm;
 		private CalendarDate cutoff;
 
+    /**
+     *
+     */
 		DateRenderer() {
 			super();
 
@@ -336,15 +378,21 @@ public class VariableTable extends JPanel {
 			cutoff = now.add(-1, CalendarPeriod.Field.Year); // "now" time format within a year
 		}
 
+    /**
+     *
+     */
 		public void setValue(Object value) {
-			if (value == null)
+			if (value == null) {
 				setText("");
+            }
 			else {
-				CalendarDate date = (CalendarDate) value;
-				if (date.isBefore(cutoff))
+				final CalendarDate date = (CalendarDate) value;
+				if (date.isBefore(cutoff)) {
 					setText(oldForm.toString(date));
-				else
+                }
+				else {
 					setText(newForm.toString(date));
+                }
 			}
 		}
 	}

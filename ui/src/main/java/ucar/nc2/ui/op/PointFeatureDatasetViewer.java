@@ -95,7 +95,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
     stationMap = new StationRegionDateChooser();
     stationMap.addPropertyChangeListener(new PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
+      public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("Station")) {
           StationBean selectedStation = (StationBean) e.getNewValue();
           if (debugStationRegionSelect) System.out.println("selectedStation= " + selectedStation.getName());
