@@ -289,20 +289,4 @@ public final class GribNumbers {
     return bits;
   }
 
-
-  //////////////////////////////////////////////////////////////////////////
-
-  public static void main(String[] args) {
-    System.out.printf("byte == convertSignedByte == convertSignedByte2 == hex%n");
-    for (int i=125; i<256;i++) {
-      byte b = (byte) i;
-      System.out.printf("%d == %d == %d == %s%n", b, convertSignedByte(b), convertSignedByte2(b), Long.toHexString((long) i));
-      assert convertSignedByte(b) == convertSignedByte2(b) : convertSignedByte(b) +"!=" +convertSignedByte2(b);
-    }
-
-    int val = (int) DataType.unsignedByteToShort((byte) -200);
-    int val2 = DataType.unsignedShortToInt((short) -200);
-    System.out.printf("%d != %d%n", val, val2);
-  }
-
 }

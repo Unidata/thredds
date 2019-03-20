@@ -107,7 +107,6 @@ public class CoordinatePartitionUnionizer {
       long time = runtime.getRuntime(idx);
       PartitionCollectionMutable.Partition prevPart = timeMap.get(time);
       if (prevPart != null && prevPart != part && prevPart != shownPrevPart) {
-        // System.out.printf("Variable %s Runtime %s in part %s and partition %s%n", vi.id(), CalendarDate.of(time), prevPart.getName(), part.getName());
         logger.warn("Variable {} Runtime {} in part {} and partition {}", vi.id(), CalendarDate.of(time), prevPart.getName(), part.getName());
         shownPrevPart = prevPart; // eliminate extra messages
         duplicateRuntimeMessage = true;

@@ -81,16 +81,13 @@ public class CoordinateSharer<T> {
               if (time2DUnionizer == null) time2DUnionizer = new CoordinateTime2DUnionizer(time2D.isTimeInterval(), time2D.getTimeUnit(), coord.getCode(), true, logger);
               time2DUnionizer.addAll(time2D);
             }
-            //if (time2DAllBuilder == null)     // boolean isTimeInterval, Grib2Customizer cust, CalendarPeriod timeUnit, int code
-            //  time2DAllBuilder = new CoordinateTime2D.Builder2(time2D.isTimeInterval(), null, time2D.getTimeUnit(), time2D.getCode());
-            // time2DAllBuilder.addAll(coord);
           } else {
             time2DSet.add(coord);
           }
           // debug
           CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
           if (!runtimeFrom2D.equals(runtime))
-            System.out.println("CoordinateSharer runtimes differ");
+            logger.warn("CoordinateSharer runtimes differ");
           break;
 
         case vert:
@@ -103,34 +100,6 @@ public class CoordinateSharer<T> {
       }
     }
   }
-
-  /* public void addCoordinate(Coordinate coord) {
-    switch (coord.getType()) {
-      case runtime:
-        runtimeBuilders.add(coord);   // unique coordinates
-        break;
-
-      case time:
-        timeBuilders.add(coord);
-        break;
-
-      case timeIntv:
-        timeIntvBuilders.add(coord);
-        break;
-
-      case time2D:
-        time2DBuilders.add(coord);
-        break;
-
-      case vert:
-        vertBuilders.add(coord);
-        break;
-
-      case ens:
-        ensBuilders.add(coord);
-        break;
-    }
-  } */
 
   private Map<Coordinate, CoordinateTime2D> swap = new HashMap<>(); // old, new coordinate
   public void finish() {
@@ -252,43 +221,11 @@ public class CoordinateSharer<T> {
         f.format("%nprev:%n");
         for (Coordinate c :  prev)
           f.format(" %d == (%s) %s%n", c.hashCode(), c, c.getName());
-        System.out.printf("%s%n", f.toString());
-        logger.error("CoordinateSharer cant find coordinate "+ coord.getName(), new Throwable());
+        logger.error("CoordinateSharer cant find coordinate %s (%s)", coord.getName(), f, new Throwable());
       } else {
         result.add(idx);
       }
     }
-
-    /* debug
-    for (Coordinate coord : shared) {
-      switch (coord.getType()) {
-        case time2D:
-          CoordinateTime2D time2Dprev = (CoordinateTime2D) coord;
-          Integer idx = getIndexIntoShared(coord);
-          CoordinateTime2D time2D = (CoordinateTime2D) unionCoords.get(idx);
-          int ntimePrev = time2Dprev.getNtimes();
-          int ntimes = time2D.getNtimes();
-          if (ntimes != ntimePrev)
-            System.out.printf("HEY CoordinateSharer.reindex2shared: ntimes %d != orgNtimes %d%n", ntimes, ntimePrev);
-      }
-    }
-
-    Coordinate runtime = null;
-    for (Integer idx : result) {
-      Coordinate coord = unionCoords.get(idx);
-      switch (coord.getType()) {
-        case runtime:
-          runtime = coord;
-          break;
-        case time2D:
-          CoordinateTime2D time2D = (CoordinateTime2D) coord;
-          CoordinateRuntime runtimeFrom2D = time2D.getRuntimeCoordinate();
-          if (!runtimeFrom2D.equals(runtime))
-            System.out.printf("HEY CoordinateSharer.reindex2shared: runtimeFrom2D %s != runtime %s%n", runtimeFrom2D, runtime);
-
-          break;
-      }
-    }  // end debug  */
 
     return result;
   }

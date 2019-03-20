@@ -280,7 +280,6 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 #         ------11 3rd-order    "         "         " .
 
    */
-    System.out.printf("flagExt=%s%n", Long.toBinaryString(flagExt));
     boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
     boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
     boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
@@ -305,7 +304,6 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
         widths[i] = raf.read();
       }
       bitmapStart = 21 + P1;
-      System.out.printf("%s%n", Misc.showInts(widths));
     }
 
     /* (4) Where bit 7 of the extended flags (Code table 11) is 0, the secondary bit-map shall be omitted; and implied
@@ -321,24 +319,18 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     byte[] bitmap2;
     if (hasBitmap2) {
       int bitmapSize = N1 - bitmapStart - 1;
-      System.out.printf("bitmapSize=%d%n", bitmapSize);
       bitmap2 = new byte[bitmapSize];
       raf.readFully(bitmap2);
       int bitson = GribNumbers.countBits(bitmap2);
-      System.out.printf("bitson=%d%n", bitson);
     }
     long filePos = raf.getFilePointer();
     int offset = (int) (filePos - this.startPos);
-    System.out.printf("offset=%d%n", offset);
-
 
     //   N1–(N2–1) P1 first-order packed values, padded to a whole number of octets with binary 0
     int nfo = N2 - N1;  // docs say N1–(N2–1)
-    System.out.printf("nfo=%d%n", nfo);
 
     //   N2–. . .  P2 second-order packed values
     int np = this.nPts;
-    System.out.printf("need bitmap bytes=%d for npts=%d%n", np / 8, np);
 
     return new float[1]; // ?? fake
   }
@@ -515,18 +507,14 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       int val = 0;
       double log2 = Math.log(2);
       for (int group = 0; group < NG; group++) {
-        //System.out.printf("%3d: %3d %3d %d: ", group, groupLength[group], groupWidth[group], firstOrderValues[group]);
         for (int i = 0; i < groupLength[group]; i++) {
           int secVal = (int) reader.bits2UInt(groupWidth[group]);
           secondOrderValues[val++] = secVal;
-          //int nbits = secVal == 0 ? 0 : (int) Math.ceil(Math.log(secVal) / log2);
-          //System.out.printf("%d,", nbits);
         }
-        //System.out.printf("%n");
         countGroups++;
       }
     } catch (EOFException ioe) {
-      System.out.printf("Only did %d groups out of %d%n", countGroups, NG);
+      logger.warn("Only did %d groups out of %d%n", countGroups, NG);
     }
 
     int offset4 = (int) (raf.getFilePointer() - this.startPos);
@@ -608,7 +596,6 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     int groupWidthsSizeBits = widthOfWidths * NG;
     int groupWidthsSizeBytes = (groupWidthsSizeBits + 7) / 8;
     int skipBytes = NL - groupWidthsSizeBytes - 26;
-    System.out.printf("groupWidthsSizeBytes=%d, skipBytes=%d%n", groupWidthsSizeBytes, skipBytes);
     raf.skipBytes(skipBytes);
 
     BitReader reader = new BitReader(raf, raf.getFilePointer());
@@ -662,11 +649,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     logger.debug("%s", f);
   }
 
-  /*
-
-
-
-
+    /* Grib1 second order packing - unfinished.
     // 22–(xx–1) Width(s) in bits of second-order packed values; each width is contained in 1 octet
    /*   (2) The width of the second-order packed values shall be indicated by the values of W2(j):
       (a) If bit 8 of the extended flags (Code table 11) is 0, all second-order packed values will have the same width,
@@ -779,7 +762,6 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 
     // octet 11 (number of bits per value)
     int numbits = raf.read();
-    // boolean isConstant =  (numbits == 0);
 
     // *** read int values *******************************************************
     BitReader reader = new BitReader(raf, startPos + 11);

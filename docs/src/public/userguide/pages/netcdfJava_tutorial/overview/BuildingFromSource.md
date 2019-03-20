@@ -11,7 +11,7 @@ toc: false
 THREDDS source code is hosted on GitHub, and—as of v4.6.1—we use Gradle to build it.
 Ant and Maven builds are no longer supported.
 THREDDS includes the NetCDF-Java client libraries, the TDS server, the TDM indexer, and other related packages.
-To build, you need Git and JDK 7+ installed.
+To build, you need Git and JDK 8 installed (building with JDK > 8 is not yet supported, but is being addressed).
 
 First, clone the THREDDS repository from Github:
 

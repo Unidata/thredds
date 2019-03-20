@@ -236,20 +236,4 @@ public class Grib1Iosp extends GribIosp {
   public Object getGribCustomizer() {
     return cust;
   }
-
-  public static void main(String[] args) {
-      int pno = 121;
-      int result = 823375026;
-      result += result * 37 + 1;  // 1223479917
-      result += result * 37 + pno;  // 1223479917
-
-      int result2 = 823375026;  // 1223479917
-      result2 += result2 * 37 + 4;
-      result2 += result2 * 37 + pno;
-
-      System.out.printf("%d,%d%n", result, result2);
-
-      // Arrays.hashCode(new Object[] {1, 2, 3});
-    }
-
 }

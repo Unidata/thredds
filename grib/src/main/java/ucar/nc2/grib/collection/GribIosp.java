@@ -39,8 +39,6 @@ import java.util.List;
  * @since 4/6/11
  */
 public abstract class GribIosp extends AbstractIOServiceProvider {
-
-  private static final boolean debug = false, debugTime = false, debugName = false;
   public static int debugIndexOnlyCount = 0;  // count number of data accesses
 
   // store custom tables in here
@@ -74,10 +72,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         if (pos > 0) {
           config.gribConfig.paramTablePath = s.substring(pos + 1).trim();
         }
-      }
-
-      if (debug) {
-        System.out.printf("GRIB got IOSP message=%s%n", special);
       }
       return null;
     }
@@ -394,9 +388,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         String vname = makeVariableName(vindex);
         Variable v = new Variable(ncfile, g, null, vname, DataType.FLOAT, dimNames.toString());
         ncfile.addVariable(g, v);
-        if (debugName) {
-          System.out.printf("added %s%n", vname);
-        }
 
         String desc = makeVariableLongName(vindex);
         v.addAttribute(new Attribute(CDM.LONG_NAME, desc));
@@ -995,9 +986,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
       result = dataReader.readData(sectionIter);
 
       long took = System.currentTimeMillis() - start;
-      if (debugTime) {
-        System.out.println("  read data took=" + took + " msec ");
-      }
       return result;
 
     } catch (IOException ioe) {
@@ -1070,7 +1058,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       PartitionCollectionImmutable.DataRecord record = vindexP.getDataRecord(useIndex);
       if (record == null) {
-        if (debugRead) System.out.printf("readDataFromPartition missing data%n");
         // vindexP.getDataRecord(indexWanted); // debug
         resultPos++;
         continue;
@@ -1101,7 +1088,6 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     readDataFromCollection(v2, section, channel);
 
     long took = System.currentTimeMillis() - start;
-    if (debugTime) System.out.println("  read data took=" + took + " msec ");
     return 0;
   } */
 

@@ -29,8 +29,6 @@ import java.util.*;
  */
 public class PartitionCollectionMutable extends GribCollectionMutable {
 
-  //////////////////////////////////////////////////////////////////////
-
   static class PartitionForVariable2D {
     int partno, groupno, varno; // , flag;     // what the hell is the flag used for ?
     GribCollectionMutable.VariableIndex vi;
@@ -75,8 +73,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     public void finish() {
       if (partList == null) return;  // nothing to do
-      if (partList.size() > nparts)
-        System.out.println("PartitionCollectionMutable partList.size() > nparts");   // might be smaller due to failed partition
+      if (partList.size() > nparts)  // might be smaller due to failed partition
+        logger.warn("PartitionCollectionMutable partList.size() > nparts");
 
       int[] partno = new int[nparts];
       int[] groupno = new int[nparts];
