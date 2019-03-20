@@ -96,7 +96,7 @@ public class RadialDatasetTable extends JPanel {
 
     sweepTable = new BeanTable(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
 
-    ucar.nc2.ui.widget.PopupMenu sweepPopup = new PopupMenu(sweepTable.getJTable(), "Options");
+    PopupMenu sweepPopup = new PopupMenu(sweepTable.getJTable(), "Options");
     sweepPopup.addAction("Show Image", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         showImage((SweepBean) sweepTable.getSelectedBean());

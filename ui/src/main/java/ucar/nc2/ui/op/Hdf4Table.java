@@ -29,7 +29,7 @@ import javax.swing.*;
 public class Hdf4Table extends JPanel {
   private PreferencesExt prefs;
 
-  private ucar.util.prefs.ui.BeanTable tagTable; //, messTable, attTable;
+  private BeanTable tagTable; //, messTable, attTable;
   private JSplitPane split;
 
   private TextHistoryPane dumpTA, infoTA;
