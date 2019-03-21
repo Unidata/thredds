@@ -68,6 +68,7 @@ public class TestGrib2Collection {
       Assert.assertArrayEquals(new int[] {99, 26, 73, 144}, varccb.getShape());
     }
   }
+  
   @Test
   public void testGefsEns() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));

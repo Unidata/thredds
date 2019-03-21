@@ -23,7 +23,6 @@ public class TestGrib1Collection {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String topDir = "../grib/src/test/data/collection/grib1/";
 
-
   @Test
   public void testEcmwfMwp() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
