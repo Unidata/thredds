@@ -58,7 +58,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
 /** */
     @Override
     public void closeOpenFiles() throws IOException {
-        if (ncfile != null) ncfile.close();
+        if (ncfile != null) { ncfile.close(); }
         ncfile = null;
     }
 
@@ -107,7 +107,7 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
                 ncfile = NetcdfDataset.openFile(filename, null);
             }
 
-            StringWriter sw = new StringWriter(50000);
+            final StringWriter sw = new StringWriter(50000);
             NCdumpW.print(ncfile, command, sw, task);
             result = sw.toString();
         }
@@ -131,9 +131,9 @@ public class NCdumpPanel extends OpPanel implements GetDataRunnable {
         this.ncfile = ncf;
         this.filename = ncf.getLocation();
 
-        GetDataRunnable runner = new GetDataRunnable() {
+        final GetDataRunnable runner = new GetDataRunnable() {
             public void run(Object o) throws IOException {
-                StringWriter sw = new StringWriter(50000);
+                final StringWriter sw = new StringWriter(50000);
                 NCdumpW.print(ncfile, command, sw, task);
                 result = sw.toString();
             }
