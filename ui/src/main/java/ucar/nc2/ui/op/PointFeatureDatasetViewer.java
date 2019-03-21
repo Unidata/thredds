@@ -91,7 +91,6 @@ public class PointFeatureDatasetViewer extends JPanel {
     private FeatureDatasetPoint pfDataset;
 
     private boolean eventsOK = true;
-    private boolean debugStationRegionSelect = false, debugQuery = false;
 
     private int maxCount = Integer.MAX_VALUE;
 
@@ -111,9 +110,9 @@ public class PointFeatureDatasetViewer extends JPanel {
             public void propertyChange(PropertyChangeEvent e) {
                 if (e.getPropertyName().equals("Station")) {
                     final StationBean selectedStation = (StationBean) e.getNewValue();
-                    if (debugStationRegionSelect) {
-                        System.out.println("selectedStation= " + selectedStation.getName());
-                    }
+
+                    log.debug("selectedStation= {}", selectedStation.getName());
+
                     eventsOK = false;
                     stnTable.setSelectedBean(selectedStation);
                     eventsOK = true;
@@ -128,9 +127,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
                 // is the date window showing ?
                 DateRange dateRange = stationMap.getDateRange();
-                if (debugQuery) {
-                    System.out.println("date range=" + dateRange);
-                }
+                log.debug("date range={}", dateRange);
 
                 // is the geoRegion mode true ?
                 LatLonRect geoRegion = null;
@@ -139,9 +136,7 @@ public class PointFeatureDatasetViewer extends JPanel {
                 boolean useRegion = stationMap.getGeoSelectionMode();
                 if (useRegion) {
                     geoRegion = stationMap.getGeoSelectionLL();
-                    if (debugQuery) {
-                        System.out.println("geoRegion=" + geoRegion);
-                    }
+                    log.debug("geoRegion={}", geoRegion);
                 }
                 else {
                     selectedStation = (StationBean) stationMap.getSelectedStation();
