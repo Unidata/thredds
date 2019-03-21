@@ -66,7 +66,7 @@ public class TestGrib1Collection {
     System.out.printf("changed = %s%n", changed);
     Grib.setDebugFlags(new DebugFlagsImpl());
 
-    String filename = topDir + "pofp/ds083.2_pofp.ncx4";
+    String filename = topDir + "pofpFromIndex/ds083.2_pofp.ncx4";
     try (FeatureDatasetCoverage fdc = CoverageDatasetFactory.open(filename)) {
       Assert.assertNotNull(filename, fdc);
 
@@ -82,9 +82,8 @@ public class TestGrib1Collection {
       Coverage covb = best.findCoverage("Absolute_vorticity_isobaric");
       Assert.assertNotNull(covb);
       CoverageCoordSys varccb = covb.getCoordSys();
-      Assert.assertArrayEquals(new int[] {144, 26, 181, 360}, varccb.getShape());
+      Assert.assertArrayEquals(new int[] {8, 26, 181, 360}, varccb.getShape());
     }
-
   }
 
 }
