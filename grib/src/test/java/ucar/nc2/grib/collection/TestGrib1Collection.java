@@ -23,6 +23,7 @@ public class TestGrib1Collection {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
   private static final String topDir = "../grib/src/test/data/collection/grib1/";
 
+
   @Test
   public void testEcmwfMwp() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
@@ -54,10 +55,11 @@ public class TestGrib1Collection {
   }
 
   @Test
-  public void testRdvamds083pofp() throws IOException {
+  public void testRdvamds083pofpWithIndexPresent() throws IOException {
     Grib.setDebugFlags(new DebugFlagsImpl("Grib/debugGbxIndexOnly"));
-    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_pofp", "test/ds083.2_pofp", FeatureCollectionType.GRIB1,
-            topDir + "pofp/**/.*gbx9",
+    FeatureCollectionConfig config = new FeatureCollectionConfig("ds083.2_pofp", "test/ds083.2_pofp",
+            FeatureCollectionType.GRIB1,
+            topDir + "pofpFromIndex/**/.*gbx9",
             null, null, null, "directory", null);
 
     boolean changed = GribCdmIndex.updateGribCollection(config, CollectionUpdateType.always, logger);

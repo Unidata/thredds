@@ -377,7 +377,7 @@ public class GribCdmIndex implements IndexReader {
         updateGribCollection(isGrib1, part, updateType, FeatureCollectionConfig.PartitionType.timePeriod, logger, errlog);
 
       } catch (Throwable t) {
-        logger.warn("Error making partition " + part.getRoot(), t);
+        logger.warn("Error making partition with root {}" + part.getRoot(), t);
         tp.removePartition(part); // keep on truckin; can happen if directory is empty
       }
     }   // loop over component grib collections
@@ -450,7 +450,7 @@ public class GribCdmIndex implements IndexReader {
             updateLeafCollection(isGrib1, config, updateType, false, logger, partPath); // LOOK why not using part ??
           }
         } catch (IllegalStateException t) {
-          logger.warn("Error making partition {} '{}'", part.getRoot(), t.getMessage());
+          logger.warn("IllegalStateException making partition {} '{}'", part.getRoot(), t.getMessage(), t);
           dpart.removePartition(part); // keep on truckin; can happen if directory is empty
 
         } catch (Throwable t) {
@@ -471,7 +471,7 @@ public class GribCdmIndex implements IndexReader {
       return changed;
 
     } catch (IllegalStateException t) {
-      logger.warn("Error making partition {} '{}'", dpart.getRoot(), t.getMessage());
+      logger.warn("IllegalStateException 2 making partition {} '{}'", dpart.getRoot(), t.getMessage(), t);
       return false;
 
     } catch (Throwable t) {

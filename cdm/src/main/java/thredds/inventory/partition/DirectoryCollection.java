@@ -139,7 +139,6 @@ public class DirectoryCollection extends CollectionAbstract {
           BasicFileAttributes attr =  Files.readAttributes(nextPath, BasicFileAttributes.class);
           if (attr.isDirectory()) continue;
           FileTime last = attr.lastModifiedTime();
-          //System.out.printf("%s%n", last);
           long millisSinceModified = now - last.toMillis();
           if (millisSinceModified < olderThanMillis)
             continue;

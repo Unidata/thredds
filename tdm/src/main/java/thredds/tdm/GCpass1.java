@@ -317,7 +317,7 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
           accum.add(scanLeafDirectoryCollection(isGrib1, config, countersPart, logger, partPath, false, indent, fm));
         }
       } catch (Throwable t) {
-        logger.warn("Error making partition " + part.getRoot(), t);
+        logger.warn("Error scanDirectoryPartitionRecurse: " + part.getRoot(), t);
         dpart.removePartition(part);
       }
     }   // loop over partitions
