@@ -42,7 +42,7 @@ import javax.swing.JSplitPane;
 public class Hdf5ObjectTable extends JPanel {
     private PreferencesExt prefs;
 
-    private ucar.util.prefs.ui.BeanTable objectTable, messTable, attTable;
+    private BeanTable objectTable, messTable, attTable;
     private JSplitPane splitH, split, split2;
 
     private TextHistoryPane dumpTA, infoTA;

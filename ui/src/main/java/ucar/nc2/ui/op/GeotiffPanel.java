@@ -110,7 +110,7 @@ public class GeotiffPanel extends OpPanel {
         }
         finally {
             try {
-                if (geotiff != null) geotiff.close();
+                if (geotiff != null) { geotiff.close(); }
             }
             catch (final IOException ioe) {
                 logger.warn("Close failed");

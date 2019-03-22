@@ -35,6 +35,7 @@ public class NcStreamOpPanel extends OpPanel {
         add(panel, BorderLayout.CENTER);
 
         final AbstractAction infoAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final Formatter f = new Formatter();
                 try {

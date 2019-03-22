@@ -120,6 +120,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
         // do the query
         final AbstractAction queryAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (selectedCollection == null) { return; }
 
@@ -161,6 +162,7 @@ public class PointFeatureDatasetViewer extends JPanel {
 
         // get all data
         final AbstractAction getallAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (selectedCollection == null) { return; }
                 try {
@@ -176,6 +178,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         stationMap.addToolbarAction(new WaterMLConverterAction());
 
         final AbstractAction netcdfAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 if (pfDataset == null) { return; }
 
