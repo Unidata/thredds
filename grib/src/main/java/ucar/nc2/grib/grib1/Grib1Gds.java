@@ -119,7 +119,7 @@ public abstract class Grib1Gds {
   protected final byte[] data;
   protected int[] nptsInLine; // thin grids, else null
 
-  public int template;
+  public final int template;
   protected int nx, ny;
   public int scanMode, resolution;
   protected int lastOctet;
@@ -669,7 +669,7 @@ public abstract class Grib1Gds {
    */
   public static class GaussianLatLon extends LatLon {
 
-    int nparellels;
+    final int nparellels;
     public float latSouthPole, lonSouthPole, rotAngle, latPole, lonPole, stretchFactor;
 
     GaussianLatLon(byte[] data, int template) {
@@ -755,7 +755,7 @@ public abstract class Grib1Gds {
 
     protected float la1, lo1, lov, dX, dY;
     protected int projCenterFlag;
-    private float lad = (float) 60.0; // LOOK
+    private final float lad = (float) 60.0; // LOOK
 
     protected PolarStereographic(int template) {
       super(template);
@@ -934,8 +934,17 @@ public abstract class Grib1Gds {
    */
   public static class LambertConformal extends Grib1Gds {
 
-    protected float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
-    protected int projCenterFlag;
+    protected final float la1;
+    protected final float lo1;
+    protected final float lov;
+    protected float lad;
+    protected final float dX;
+    protected final float dY;
+    protected final float latin1;
+    protected final float latin2;
+    protected final float latSouthPole;
+    protected final float lonSouthPole;
+    protected final int projCenterFlag;
 
     // private int hla1, hlo1, hlov, hlad, hdX, hdY, hlatin1, hlatin2; // hasheesh
 
@@ -1060,7 +1069,7 @@ public abstract class Grib1Gds {
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1116,7 +1125,13 @@ public abstract class Grib1Gds {
 
   public static class Mercator extends Grib1Gds {
 
-    protected float la1, lo1, la2, lo2, latin, dX, dY;
+    protected final float la1;
+    protected final float lo1;
+    protected final float la2;
+    protected final float lo2;
+    protected final float latin;
+    protected final float dX;
+    protected final float dY;
 
     Mercator(byte[] data, int template) {
       super(data, template);
@@ -1257,9 +1272,9 @@ public abstract class Grib1Gds {
 
   public static class RotatedLatLon extends LatLon {
 
-    protected float angleRotation; // Angle of rotation (represented in the same way as the reference value)
-    protected float latSouthPole; // Latitude of pole of stretching in millidegrees (integer)
-    protected float lonSouthPole;  // Longitude of pole of stretching in millidegrees (integer)
+    protected final float angleRotation; // Angle of rotation (represented in the same way as the reference value)
+    protected final float latSouthPole; // Latitude of pole of stretching in millidegrees (integer)
+    protected final float lonSouthPole;  // Longitude of pole of stretching in millidegrees (integer)
 
     RotatedLatLon(byte[] data, int template) {
       super(data, template);
@@ -1364,7 +1379,11 @@ public abstract class Grib1Gds {
    */
   public static class SphericalHarmonicCoefficients extends Grib1Gds {
 
-    int j, k, m, type, mode;
+    final int j;
+    final int k;
+    final int m;
+    final int type;
+    final int mode;
 
     SphericalHarmonicCoefficients(byte[] data, int template) {
       super(data, template);

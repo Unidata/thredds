@@ -60,7 +60,7 @@ public abstract class GribDataReader {
 
   protected final GribCollectionImmutable gribCollection;
   private final GribCollectionImmutable.VariableIndex vindex;
-  private List<DataRecord> records = new ArrayList<>();
+  private final List<DataRecord> records = new ArrayList<>();
 
   protected GribDataReader(GribCollectionImmutable gribCollection, GribCollectionImmutable.VariableIndex vindex) {
     this.gribCollection = gribCollection;
@@ -311,8 +311,8 @@ public abstract class GribDataReader {
 
   public static class DataRecord implements Comparable<DataRecord> {
     int resultIndex; // index into the result array
-    GribCollectionImmutable.Record record;
-    GdsHorizCoordSys hcs;
+    final GribCollectionImmutable.Record record;
+    final GdsHorizCoordSys hcs;
     SubsetParams validation;
 
     DataRecord(int resultIndex, GribCollectionImmutable.Record record, GdsHorizCoordSys hcs) {
@@ -336,15 +336,16 @@ public abstract class GribDataReader {
   }
 
   public interface DataReceiverIF {
-    void addData(float[] data, int resultIndex, int nx) throws IOException;
+    void addData(float[] data, int resultIndex, int nx);
     void setDataToZero(); // only used when debugging with gbx/ncx only, to fake the data
     Array getArray();
   }
 
   public static class DataReceiver implements DataReceiverIF {
     private Array dataArray;
-    private RangeIterator yRange, xRange;
-    private int horizSize;
+    private final RangeIterator yRange;
+    private final RangeIterator xRange;
+    private final int horizSize;
 
     DataReceiver(int[] shape, RangeIterator yRange, RangeIterator xRange) {
       this.yRange = yRange;
@@ -428,7 +429,7 @@ public abstract class GribDataReader {
   /////////////////////////////////////////////////////////
 
   private static class Grib2DataReader extends GribDataReader {
-    private Grib2Customizer cust;
+    private final Grib2Customizer cust;
 
     Grib2DataReader(GribCollectionImmutable gribCollection,
         GribCollectionImmutable.VariableIndex vindex) {
@@ -464,7 +465,7 @@ public abstract class GribDataReader {
   }
 
   private static class Grib1DataReader extends GribDataReader {
-    private Grib1Customizer cust;
+    private final Grib1Customizer cust;
 
     Grib1DataReader(GribCollectionImmutable gribCollection,
         GribCollectionImmutable.VariableIndex vindex) {

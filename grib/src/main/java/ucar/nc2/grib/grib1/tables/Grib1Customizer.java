@@ -60,8 +60,8 @@ public class Grib1Customizer implements GribTables {
   }
 
   ///////////////////////////////////////
-  private int center;
-  private Grib1ParamTables tables;
+  private final int center;
+  private final Grib1ParamTables tables;
 
   protected Grib1Customizer(int center, Grib1ParamTables tables) {
     this.center = center;

@@ -31,6 +31,6 @@ public class Grib {
     debugGbxIndexOnly = debugFlag.isSet("Grib/debugGbxIndexOnly");
   }
 
-  // class not interface, per Bloch edition 2 item 19
+  // Class, not interface, per Bloch edition 2 item 19
   private Grib() {} // disable instantiation
 }

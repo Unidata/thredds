@@ -37,7 +37,7 @@ public class Grib2Show {
     }
   }
 
-  public static void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) throws IOException {
+  public static void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) {
     f.format("File=%d %s offset=%d%n", gr.getFile(), path, gr.getIs().getStartPos());
     f.format("Header=\"");
     showBytes(f, gr.getHeader(), 100);
@@ -66,11 +66,6 @@ public class Grib2Show {
     if (gr.hasLocalUseSection()) {
       byte[] lus = gr.getLocalUseSection().getRawBytes();
       f.format("%nLocal Use Section (grib section 2)%n");
-      /* try {
-       f.format(" String= %s%n", new String(lus, 0, lus.length, "UTF-8"));
-     } catch (UnsupportedEncodingException e) {
-       e.printStackTrace();
-     } */
       f.format("bytes (len=%d) =", lus.length);
       Misc.showBytes(lus, f);
       f.format("%n");

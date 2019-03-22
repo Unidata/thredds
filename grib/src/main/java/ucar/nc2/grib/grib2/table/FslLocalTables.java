@@ -31,7 +31,7 @@ public class FslLocalTables extends NcepLocalTables {
   // private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr.csv";
   private static final String fimTable = "resources/grib2/noaa_gsd/fim.gribtable";   // look not used right now
   private static final String hrrrTable = "resources/grib2/noaa_gsd/Fsl-hrrr2.csv";
-  private static Map<String, FslLocalTables> tables = new HashMap<>();
+  private static final Map<String, FslLocalTables> tables = new HashMap<>();
 
   // not a singleton
   public static FslLocalTables getCust(Grib2Table table) {

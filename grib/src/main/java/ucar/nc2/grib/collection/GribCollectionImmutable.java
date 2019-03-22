@@ -877,11 +877,11 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
   }
 
   // release any resources like file handles
-  public void release() throws IOException {
+  public void release() {
   }
 
   // reacquire any resources like file handles
-  public void reacquire() throws IOException {
+  public void reacquire() {
   }
 
   @Override

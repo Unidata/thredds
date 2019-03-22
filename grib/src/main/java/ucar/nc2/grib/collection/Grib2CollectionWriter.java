@@ -35,15 +35,15 @@ class Grib2CollectionWriter extends GribCollectionWriter {
   }
 
   public static class Group implements GribCollectionBuilder.Group {
-    public Grib2SectionGridDefinition gdss;
-    public int hashCode;       // may have been modified
+    public final Grib2SectionGridDefinition gdss;
+    public final int hashCode;       // may have been modified
     public CalendarDate runtime;
 
     List<Grib2CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
-    public List<Grib2Record> records = new ArrayList<>();
+    public final List<Grib2Record> records = new ArrayList<>();
+    public final Set<Long> runtimes = new HashSet<>();
     Set<Integer> fileSet; // this is so we can show just the component files that are in this group
-    public Set<Long> runtimes = new HashSet<>();
 
     Group(Grib2SectionGridDefinition gdss, int hashCode) {
       this.gdss = gdss;
@@ -276,7 +276,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     required Type type = 1;
     repeated Group groups = 2;
    */
-  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type, List<Group> groups) throws IOException {
+  private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type, List<Group> groups) {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
     GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type.valueOf(type.toString());
@@ -296,7 +296,7 @@ class Grib2CollectionWriter extends GribCollectionWriter {
     repeated uint32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
   }
    */
-  private GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
+  private GribCollectionProto.Group writeGroupProto(Group g) {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGds( writeGdsProto(g.gdss.getRawBytes(), -1));

@@ -55,7 +55,7 @@ import java.util.*;
  * @since 9/5/11
  */
 public class Grib1Index extends GribIndex {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
 
   public static final String MAGIC_START = "Grib1Index";
   private static final int version = 5;

@@ -22,7 +22,7 @@ import java.util.Map;
  * @since 3/28/11
  */
 public class Grib2RecordScanner {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
   private static final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
   private static final boolean debug = false;
   private static final boolean debugRepeat = false;
@@ -74,8 +74,8 @@ public class Grib2RecordScanner {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  private Map<Long, Grib2SectionGridDefinition> gdsMap = new HashMap<>();
-  private ucar.unidata.io.RandomAccessFile raf;
+  private final Map<Long, Grib2SectionGridDefinition> gdsMap = new HashMap<>();
+  private final ucar.unidata.io.RandomAccessFile raf;
 
   private byte[] header;
   private int badEndings = 0;

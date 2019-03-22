@@ -53,7 +53,7 @@ public class GribCollectionMutable implements Closeable {
     return new GcMFile(directory, nameNoBlanks + GribCdmIndex.NCX_SUFFIX, -1, -1, -1); // LOOK dont know lastMod, size. can it be added later?
   }
 
-  private static CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
+  private static final CalendarDateFormatter cf = new CalendarDateFormatter("yyyyMMdd-HHmmss", new CalendarTimeZone("UTC"));
 
   static String makeName(String collectionName, CalendarDate runtime) {
     String nameNoBlanks = StringUtil2.replace(collectionName, ' ', "_");
@@ -61,9 +61,9 @@ public class GribCollectionMutable implements Closeable {
   }
 
   ////////////////////////////////////////////////////////////////
-  protected String name; // collection name; index filename must be directory/name.ncx2
-  protected FeatureCollectionConfig config;
-  protected boolean isGrib1;
+  protected final String name; // collection name; index filename must be directory/name.ncx2
+  protected final FeatureCollectionConfig config;
+  protected final boolean isGrib1;
   protected File directory;
   protected String orgDirectory;
 
@@ -258,7 +258,7 @@ public class GribCollectionMutable implements Closeable {
 
   public class GroupGC implements Comparable<GroupGC> {
     GribHorizCoordSystem horizCoordSys;
-    List<VariableIndex> variList;
+    final List<VariableIndex> variList;
     List<Coordinate> coords;      // shared coordinates
     int[] filenose;               // key for GC.fileMap
     HashMap<GribCollectionMutable.VariableIndex, GribCollectionMutable.VariableIndex> varMap;

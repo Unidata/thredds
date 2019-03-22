@@ -41,8 +41,8 @@ abstract class GribCollectionBuilder {
   protected final boolean isGrib1;
   protected GribCollectionImmutable.Type type;
 
-  protected String name;            // collection name
-  protected File directory;         // top directory
+  protected final String name;            // collection name
+  protected final File directory;         // top directory
 
   protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException;
 

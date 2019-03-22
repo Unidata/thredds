@@ -55,7 +55,7 @@ import java.util.*;
  * @since 4/1/11
  */
 public class Grib2Index extends GribIndex {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Index.class);
 
   public static final String MAGIC_START = "Grib2Index";
   public static final int ScanModeMissing = 9999;
@@ -83,7 +83,7 @@ public class Grib2Index extends GribIndex {
     return records.size();
   }
 
-  public boolean readIndex(String filename, long gribLastModified) throws IOException {
+  public boolean readIndex(String filename, long gribLastModified) {
     return readIndex(filename, gribLastModified, CollectionUpdateType.test);
   }
 
@@ -261,7 +261,7 @@ public class Grib2Index extends GribIndex {
     }
   }
 
-  private Grib2IndexProto.Grib2Record makeRecordProto(Grib2Record r, int gdsIndex, int scanMode) throws IOException {
+  private Grib2IndexProto.Grib2Record makeRecordProto(Grib2Record r, int gdsIndex, int scanMode) {
     Grib2IndexProto.Grib2Record.Builder b = Grib2IndexProto.Grib2Record.newBuilder();
 
     b.setHeader(ByteString.copyFrom(r.getHeader()));

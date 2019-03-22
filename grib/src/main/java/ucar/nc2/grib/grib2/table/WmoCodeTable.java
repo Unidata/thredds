@@ -230,7 +230,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   public int category = -1;
   private String id;
 
-  public List<TableEntry> entries = new ArrayList<>();
+  public final List<TableEntry> entries = new ArrayList<>();
   private Map<Integer, TableEntry> entryMap;
 
   WmoCodeTable() {
@@ -337,7 +337,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   // remove () for the following:
-  private static int[] badones = new int[]{
+  private static final int[] badones = new int[]{
           0, 1, 51,
           0, 6, 25,
           0, 19, 22,
@@ -361,7 +361,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   }
 
   // truncate the following:
-  private static int[] truncOnes = new int[]{
+  private static final int[] truncOnes = new int[]{
           10, 0, 46, (int) 'E',
           10, 0, 47, (int) 'E',
           10, 0, 48, (int) 'E',
@@ -617,7 +617,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     return result;
   }
 
-  public static void showTable(List<WmoCodeTable> tlist,  Formatter f) throws IOException {
+  public static void showTable(List<WmoCodeTable> tlist,  Formatter f) {
     for (WmoCodeTable gt : tlist) {
       f.format("%d.%d (%d,%d) %s %n", gt.m1, gt.m2, gt.discipline, gt.category, gt.tableName);
       for (TableEntry p : gt.entries) {

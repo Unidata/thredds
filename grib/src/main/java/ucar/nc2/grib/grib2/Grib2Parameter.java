@@ -7,14 +7,9 @@ package ucar.nc2.grib.grib2;
 
 import javax.annotation.Nonnull;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.wmo.Util;
-import ucar.unidata.util.StringUtil2;
 
 import javax.annotation.concurrent.Immutable;
-import java.util.Formatter;
-import java.util.List;
 
 /**
  * A Grib-2 parameter

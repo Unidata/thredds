@@ -98,7 +98,6 @@ public class GcMFile implements thredds.inventory.MFile {
 
   @Override
   public void setAuxInfo(Object info) {
-
   }
 
   public File getDirectory() {
