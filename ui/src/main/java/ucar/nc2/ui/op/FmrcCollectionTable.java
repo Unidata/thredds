@@ -24,8 +24,6 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 
 /**
  * Show the info stored in the MetadataManager
@@ -46,11 +44,9 @@ public class FmrcCollectionTable extends JPanel {
     this.prefs = prefs;
 
     collectionNameTable = new BeanTable(CollectionBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
-    collectionNameTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    collectionNameTable.addListSelectionListener(e -> {
         CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();
         setCollection(bean.name);
-      }
     });
 
     PopupMenu varPopup = new PopupMenu(collectionNameTable.getJTable(), "Options");
@@ -75,11 +71,9 @@ public class FmrcCollectionTable extends JPanel {
     });
 
     dataTable = new BeanTable(DataBean.class, (PreferencesExt) prefs.node("DataBean"), false);
-    dataTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    dataTable.addListSelectionListener(e -> {
         DataBean bean = (DataBean) dataTable.getSelectedBean();
         showData(bean);
-      }
     });
     varPopup = new PopupMenu(dataTable.getJTable(), "Options");
     varPopup.addAction("delete", new AbstractAction() {

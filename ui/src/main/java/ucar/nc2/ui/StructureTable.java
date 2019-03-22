@@ -185,13 +185,12 @@ public class StructureTable extends JPanel {
     jtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
     ListSelectionModel rowSM = jtable.getSelectionModel();
-    rowSM.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        if (e.getValueIsAdjusting()) return;  //Ignore extra messages.
+    rowSM.addListSelectionListener(e -> {
+        if (e.getValueIsAdjusting()) { return; }   //Ignore extra messages.
         ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-        if (!lsm.isSelectionEmpty())
+        if (!lsm.isSelectionEmpty()) {
           fireEvent(e);
-      }
+        }
     });
 
     if (m.wantDate) {

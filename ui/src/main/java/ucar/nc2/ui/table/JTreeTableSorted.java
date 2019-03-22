@@ -107,8 +107,7 @@ public class JTreeTableSorted extends JPanel {
     }
 
     // listen for list selection
-    table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    table.getSelectionModel().addListSelectionListener(e -> {
         if (!e.getValueIsAdjusting() && lm.hasListeners() && (listSelectionEvent == null)) {
           listSelectionEvent = e;
           if (debugEvent) System.out.println(" JTreeTableSorted message selected = " + e);
@@ -120,7 +119,6 @@ public class JTreeTableSorted extends JPanel {
             }
           }); // new Runnable
         }
-      }
     }); // new ListSelectionListener
 
     // listen for mouse clicks on the column header

@@ -48,11 +48,9 @@ public class Hdf4Table extends JPanel {
     });
 
     /* messTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("MessBean"), false);
-    messTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    messTable.addListSelectionListener(e -> {
         MessageBean mb = (MessageBean) messTable.getSelectedBean();
         dumpTA.setText( mb.m.toString());
-      }
     });
 
     thredds.ui.PopupMenu varPopup = new thredds.ui.PopupMenu(messTable.getJTable(), "Options");
@@ -76,11 +74,9 @@ public class Hdf4Table extends JPanel {
     });
 
     attTable = new BeanTable(AttributeBean.class, (PreferencesExt) prefs.node("AttBean"), false);
-    attTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    attTable.addListSelectionListener(e -> {
         AttributeBean mb = (AttributeBean) attTable.getSelectedBean();
         dumpTA.setText( mb.att.toString());
-      }
     }); */
 
     // the info window

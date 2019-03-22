@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import ucar.nc2.ui.StructureTable;
 
@@ -550,8 +548,7 @@ public class DatasetWriter extends JPanel {
        }
 
        // get selected variable, see if its a structure
-       table.addListSelectionListener(new ListSelectionListener() {
-         public void valueChanged(ListSelectionEvent e) {
+       table.addListSelectionListener(e -> {
            Variable v = getCurrentVariable(table);
            if ((v != null) && (v instanceof Structure)) {
              hideNestedTable(NestedTable.this.level+2);
@@ -561,7 +558,6 @@ public class DatasetWriter extends JPanel {
              hideNestedTable(NestedTable.this.level+1);
            }
            // if (eventsOK) datasetTree.setSelected( v);
-         }
        });
 
        // layout

@@ -44,8 +44,6 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 
 /**
  * A Swing widget to examine Coordinate Systems.
@@ -84,11 +82,9 @@ public class CoordSysTable extends JPanel {
     });
 
     csTable = new BeanTable(CoordinateSystemBean.class, (PreferencesExt) prefs.node("CoordinateSystemBean"), false);
-    csTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    csTable.addListSelectionListener(e -> {
         CoordinateSystemBean csb = (CoordinateSystemBean) csTable.getSelectedBean();
         setSelectedCoordinateAxes(csb.coordSys);
-      }
     });
 
     axisTable = new BeanTable(AxisBean.class, (PreferencesExt) prefs.node("CoordinateAxisBean"), false);

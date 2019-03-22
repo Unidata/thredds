@@ -52,10 +52,8 @@ public class BufrTableDViewer extends JPanel {
     });
 
     variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
-    /* variantTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    /* variantTable.addListSelectionListener(e -> {
         variantTable.getSelectedBean();
-      }
     }); */
 
     PopupMenu varPopup = new PopupMenu(ddsTable.getJTable(), "Options");

@@ -53,8 +53,6 @@ import javax.swing.AbstractAction;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
 import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  * <p>
@@ -199,8 +197,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         // feature collection table
         fcTable = new BeanTable(FeatureCollectionBean.class,
                             (PreferencesExt) prefs.node("FeatureCollectionBean"), false);
-        fcTable.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
+        fcTable.addListSelectionListener(e -> {
                 FeatureCollectionBean fcb = (FeatureCollectionBean) fcTable.getSelectedBean();
                 try {
                     setFeatureCollection(fcb);
@@ -209,15 +206,13 @@ public class PointFeatureDatasetViewer extends JPanel {
                     JOptionPane.showMessageDialog(null, "Error reading FeatureCollection " + fcb.fc.getName() + " error=" + exc.getMessage());
                     exc.printStackTrace();
                 }
-            }
         });
         new BeanContextMenu(fcTable);
 
         // profile table
         profileTable = new BeanTable(ProfileFeatureBean.class,
                                 (PreferencesExt) prefs.node("ProfileFeatureBean"), false);
-        profileTable.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
+        profileTable.addListSelectionListener(e -> {
                 ProfileFeatureBean sb = (ProfileFeatureBean) profileTable.getSelectedBean();
                 try {
                     setProfile(sb);
@@ -226,14 +221,12 @@ public class PointFeatureDatasetViewer extends JPanel {
                 catch (IOException ioe) {
                     ioe.printStackTrace();
                 }
-            }
         });
         new BeanContextMenu(profileTable);
 
         // station table
         stnTable = new BeanTable(StationBean.class, (PreferencesExt) prefs.node("StationBeans"), false);
-        stnTable.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
+        stnTable.addListSelectionListener(e -> {
                 StationBean sb = (StationBean) stnTable.getSelectedBean();
                 try {
                     setStation(sb, null);
@@ -245,15 +238,13 @@ public class PointFeatureDatasetViewer extends JPanel {
                 if (eventsOK) {
                     stationMap.setSelectedStation(sb.getName());
                 }
-            }
         });
         new BeanContextMenu(stnTable);
 
         // station profile table
         stnProfileTable = new BeanTable(StnProfileFeatureBean.class,
                                 (PreferencesExt) prefs.node("StnProfileFeatureBean"), false);
-        stnProfileTable.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
+        stnProfileTable.addListSelectionListener(e -> {
                 StnProfileFeatureBean sb = (StnProfileFeatureBean) stnProfileTable.getSelectedBean();
                 try {
                     setStnProfile(sb);
@@ -262,7 +253,6 @@ public class PointFeatureDatasetViewer extends JPanel {
                 catch (IOException ioe) {
                     ioe.printStackTrace();
                 }
-            }
         });
         new BeanContextMenu(stnProfileTable);
 

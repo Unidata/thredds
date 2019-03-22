@@ -29,8 +29,6 @@ import java.util.*;
 import java.util.List;
 import java.io.*;
 import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 
 /**
  * View BUFR Table B
@@ -57,18 +55,14 @@ public class BufrTableBViewer extends JPanel {
     this.prefs = prefs;
 
     ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
-    ddsTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    ddsTable.addListSelectionListener(e -> {
         DdsBean csb = (DdsBean) ddsTable.getSelectedBean();
         showVariants(csb);
-      }
     });
 
     variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
-    /* variantTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    /* variantTable.addListSelectionListener(e -> {
         variantTable.getSelectedBean();
-      }
     }); */
 
     PopupMenu varPopup = new PopupMenu(ddsTable.getJTable(), "Options");

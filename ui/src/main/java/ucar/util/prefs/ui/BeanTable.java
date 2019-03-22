@@ -207,13 +207,12 @@ public class BeanTable extends JPanel {
     listenerList = new EventListenerList();
 
     ListSelectionModel rowSM = jtable.getSelectionModel();
-    rowSM.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        if (e.getValueIsAdjusting()) return;  //Ignore extra messages.
+    rowSM.addListSelectionListener(e -> {
+        if (e.getValueIsAdjusting()) { return; } //Ignore extra messages.
         ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-        if (!lsm.isSelectionEmpty())
+        if (!lsm.isSelectionEmpty()) {
           fireEvent(e);
-      }
+        }
     });
 
   }

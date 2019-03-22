@@ -71,20 +71,16 @@ public class Fmrc2Panel extends JPanel {
 
     invTable = new BeanTable(
             InvBean.class, (PreferencesExt) prefs.node("DataBean"), false, "GridDatasetInv", dataBeanDesc, null);
-    /* invTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    /* invTable.addListSelectionListener(e -> {
         invTable.getSelectedBean();
         //setCoords(invBean.fmrInv);
         //setGrids(invBean.fmrInv);
-      }
     }); */
 
     coordTable = new BeanTable(
             CoordBean.class, (PreferencesExt) prefs.node("CoordBean"), false, "Time,Vert coords", coordBeanDesc, null);
-    /* coordTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    /* coordTable.addListSelectionListener(e -> {
         coordTable.getSelectedBean();
-      }
     }); */
     coordTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
