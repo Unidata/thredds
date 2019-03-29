@@ -11,7 +11,6 @@ import ucar.coord.*;
 import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
-import java.io.IOException;
 
 /**
  * Common superclass for writing Grib ncx files
@@ -30,7 +29,7 @@ class GribCollectionWriter {
     this.logger = logger;
   }
 
-  protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) throws IOException {
+  protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) {
     return writeGdsProto(hcs.getRawGds(), hcs.getPredefinedGridDefinition());
   }
 

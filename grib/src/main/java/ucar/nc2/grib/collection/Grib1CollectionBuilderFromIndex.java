@@ -28,7 +28,7 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
   // read in the index, index raf already open; return null on failure
   @Nullable
   static Grib1Collection readFromIndex(String name, RandomAccessFile raf,
-      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, org.slf4j.Logger logger) {
 
     Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -44,7 +44,7 @@ public class Grib1CollectionBuilderFromIndex extends GribCollectionBuilderFromIn
 
   // read in the index, index raf already open; return null on failure
   @Nullable
-  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+  static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf, FeatureCollectionConfig config, org.slf4j.Logger logger) {
 
     Grib1CollectionBuilderFromIndex builder = new Grib1CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))

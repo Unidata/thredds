@@ -456,7 +456,7 @@ message Coord {
 
   /////////////////////////////////////////////////////////////////////////////////////////////////
   // these objects are created from the ncx index. lame - should only be in the builder i think
-  private Set<String> hcsNames = new HashSet<>(5);
+  private final Set<String> hcsNames = new HashSet<>(5);
 
   String makeHorizCoordSysName(GdsHorizCoordSys hcs) {
     // default id

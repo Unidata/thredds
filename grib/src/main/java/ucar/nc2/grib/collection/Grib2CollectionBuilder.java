@@ -33,7 +33,7 @@ import java.util.*;
  * @since 2/5/14
  */
 class Grib2CollectionBuilder extends GribCollectionBuilder {
-  private FeatureCollectionConfig.GribConfig gribConfig;
+  private final FeatureCollectionConfig.GribConfig gribConfig;
   private Grib2Customizer cust;
 
   // LOOK prob name could be dcm.getCollectionName()
@@ -192,10 +192,10 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   static class VariableBag implements Comparable<VariableBag> {
-    public Grib2Record first;
-    public Grib2Variable gv;
+    public final Grib2Record first;
+    public final Grib2Variable gv;
 
-    List<Grib2Record> atomList = new ArrayList<>(100); // not sorted
+    final List<Grib2Record> atomList = new ArrayList<>(100); // not sorted
     CoordinateND<Grib2Record> coordND;
     CalendarPeriod timeUnit;
 

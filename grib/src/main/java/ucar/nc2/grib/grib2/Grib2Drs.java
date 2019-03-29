@@ -40,7 +40,7 @@ public abstract class Grib2Drs {
   }
 
   // for debugging
-  abstract GribData.Info getBinaryDataInfo(RandomAccessFile raf) throws IOException;
+  abstract GribData.Info getBinaryDataInfo(RandomAccessFile raf);
 
   public int getNGroups() {
     return 1;

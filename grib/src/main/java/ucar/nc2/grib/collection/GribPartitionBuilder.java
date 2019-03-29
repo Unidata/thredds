@@ -34,13 +34,12 @@ import java.util.*;
 abstract class GribPartitionBuilder {
 
   private final PartitionManager partitionManager; // defines the partition
-  protected String name;            // collection name
-  protected org.slf4j.Logger logger;
+  protected final String name;            // collection name
+  protected final org.slf4j.Logger logger;
   protected PartitionCollectionMutable result;  // build this object
 
   GribPartitionBuilder(String name, PartitionManager tpc, org.slf4j.Logger logger) {
     this.name = name;
-    //this.directory = directory;
     this.partitionManager = tpc;
     this.logger = logger;
   }
@@ -151,10 +150,10 @@ abstract class GribPartitionBuilder {
 
   // each dataset / group has one of these, across all partitions
   private class GroupPartitions {
-    GribCollectionMutable.GroupGC resultGroup;
-    GribCollectionMutable.GroupGC[] componentGroups; // one for each partition; may be null if group is not in the partition
-    int[] componentGroupIndex;                 // one for each partition; the index into the partition.ds2d.groups() array
-    int npart;
+    final GribCollectionMutable.GroupGC resultGroup;
+    final GribCollectionMutable.GroupGC[] componentGroups; // one for each partition; may be null if group is not in the partition
+    final int[] componentGroupIndex;                 // one for each partition; the index into the partition.ds2d.groups() array
+    final int npart;
 
     GroupPartitions(GribCollectionMutable.GroupGC resultGroup, int npart) {
       this.resultGroup = resultGroup;
@@ -272,7 +271,6 @@ abstract class GribPartitionBuilder {
       gp.makeVariableIndexPartitioned();
 
       String gname = resultGroup.getId();
-      // String gdesc = resultGroup.getDescription();
 
       // for each partition in this gorup
       for (int partno = 0; partno < npart; partno++) {
@@ -286,7 +284,6 @@ abstract class GribPartitionBuilder {
         // for each variable in this Partition, add reference to it in the vip
         for (int varIdx = 0; varIdx < group.variList.size(); varIdx++) {
           GribCollectionMutable.VariableIndex vi = group.variList.get(varIdx);
-          //int flag = 0;
           PartitionCollectionMutable.VariableIndexPartitioned vip = (PartitionCollectionMutable.VariableIndexPartitioned) resultGroup.findVariableByHash(vi);
           vip.addPartition(partno, groupIdx, varIdx, vi.ndups, vi.nrecords, vi.nmissing, vi);
         } // loop over variable
@@ -379,7 +376,7 @@ abstract class GribPartitionBuilder {
     }
   } */
 
-  private void makeDatasetBest(GribCollectionMutable.Dataset ds2D, boolean isComplete) throws IOException {
+  private void makeDatasetBest(GribCollectionMutable.Dataset ds2D, boolean isComplete) {
     GribCollectionMutable.Dataset dsBest = result.makeDataset(isComplete ? GribCollectionImmutable.Type.BestComplete : GribCollectionImmutable.Type.Best);
 
     int npart = result.getPartitionSize();
@@ -643,7 +640,7 @@ abstract class GribPartitionBuilder {
    repeated PartitionVariable partVariable = 100;
    }
    */
-  private GribCollectionProto.Variable writeVariableProto(PartitionCollectionMutable.VariableIndexPartitioned vp) throws IOException {
+  private GribCollectionProto.Variable writeVariableProto(PartitionCollectionMutable.VariableIndexPartitioned vp) {
 
     GribCollectionProto.Variable.Builder b = GribCollectionProto.Variable.newBuilder();
 
@@ -696,7 +693,7 @@ abstract class GribPartitionBuilder {
     uint32 missing = 10;
   }
    */
-  private GribCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno, int nrecords, int ndups, int nmissing) throws IOException {
+  private GribCollectionProto.PartitionVariable writePartitionVariableProto(int partno, int groupno, int varno, int nrecords, int ndups, int nmissing) {
     GribCollectionProto.PartitionVariable.Builder pb = GribCollectionProto.PartitionVariable.newBuilder();
     pb.setPartno(partno);
     pb.setGroupno(groupno);
@@ -718,7 +715,7 @@ message Partition {
   int64 partitionDate = 6;  // partition date added 11/25/14
   }
    */
-  private GribCollectionProto.Partition writePartitionProto(PartitionCollectionMutable pc, PartitionCollectionMutable.Partition p) throws IOException {
+  private GribCollectionProto.Partition writePartitionProto(PartitionCollectionMutable pc, PartitionCollectionMutable.Partition p) {
     GribCollectionProto.Partition.Builder b = GribCollectionProto.Partition.newBuilder();
     String pathRS = makeReletiveFilename(pc, p); // reletive to pc.directory
     b.setFilename(pathRS);

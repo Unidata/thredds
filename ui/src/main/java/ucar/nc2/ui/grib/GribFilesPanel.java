@@ -402,14 +402,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     void showComplete(Formatter f) {
-      try {
-        Grib2Show.showCompleteGribRecord(f, m.getPath(), first, tables);
-      } catch (IOException e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(10000);
-        e.printStackTrace(new PrintWriter(sw));
-        f.format("%s", sw.toString());
-      }
+      Grib2Show.showCompleteGribRecord(f, m.getPath(), first, tables);
     }
 
   }

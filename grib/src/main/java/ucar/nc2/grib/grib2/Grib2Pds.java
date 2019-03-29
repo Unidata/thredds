@@ -1350,7 +1350,7 @@ public abstract class Grib2Pds {
      */
     private static class Grib2Pds31 extends Grib2Pds {
 
-        static int octetsPerBand = 11;
+        static final int octetsPerBand = 11;
 
         Grib2Pds31(byte[] input) {
             super(input);

@@ -33,7 +33,7 @@ import java.util.Map;
  */
 public class Grib1RecordScanner {
 
-  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
   private static final KMPMatch matcher = new KMPMatch(new byte[]{'G', 'R', 'I', 'B'});
   private static final boolean debug = false;
   private static final boolean debugGds = false;
@@ -124,8 +124,8 @@ public class Grib1RecordScanner {
 
 ////////////////////////////////////////////////////////////
 
-  private Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<>();
-  private ucar.unidata.io.RandomAccessFile raf;
+  private final Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<>();
+  private final ucar.unidata.io.RandomAccessFile raf;
 
   private byte[] header;
   private long lastPos;

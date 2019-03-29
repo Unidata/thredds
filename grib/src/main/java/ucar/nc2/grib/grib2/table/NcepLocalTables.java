@@ -446,7 +446,7 @@ Updated again on 3/26/2008
 */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private Map<String, String> codeMap = new HashMap<>(400);
+  private final Map<String, String> codeMap = new HashMap<>(400);
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   private Map<String, String> initCodes() {

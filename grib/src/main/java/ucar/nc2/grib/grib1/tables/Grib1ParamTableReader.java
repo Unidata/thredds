@@ -42,7 +42,7 @@ public class Grib1ParamTableReader {
   private int center_id;
   private int subcenter_id;
   private int version;
-  private String name;  // name of the table
+  private final String name;  // name of the table
   private String path; // path of filename containing this table
   private String desc; // optional desc from within the file
   private Map<Integer, Grib1Parameter> parameters; // param number -> param
@@ -506,7 +506,7 @@ TBLE2 cptec_254_params[] = {
 
   private class DssParser implements XmlTableParser {
 
-    private Namespace ns;
+    private final Namespace ns;
 
     DssParser(Namespace ns) {
       this.ns = ns;
