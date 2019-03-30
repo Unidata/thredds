@@ -14,14 +14,16 @@ import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Formatter;
+import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 
 /**
  * Show the info stored in the MetadataManager
@@ -42,11 +44,9 @@ public class FmrcCollectionTable extends JPanel {
     this.prefs = prefs;
 
     collectionNameTable = new BeanTable(CollectionBean.class, (PreferencesExt) prefs.node("DatasetBean"), false);
-    collectionNameTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    collectionNameTable.addListSelectionListener(e -> {
         CollectionBean bean = (CollectionBean) collectionNameTable.getSelectedBean();
         setCollection(bean.name);
-      }
     });
 
     PopupMenu varPopup = new PopupMenu(collectionNameTable.getJTable(), "Options");
@@ -71,11 +71,9 @@ public class FmrcCollectionTable extends JPanel {
     });
 
     dataTable = new BeanTable(DataBean.class, (PreferencesExt) prefs.node("DataBean"), false);
-    dataTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    dataTable.addListSelectionListener(e -> {
         DataBean bean = (DataBean) dataTable.getSelectedBean();
         showData(bean);
-      }
     });
     varPopup = new PopupMenu(dataTable.getJTable(), "Options");
     varPopup.addAction("delete", new AbstractAction() {
@@ -116,7 +114,7 @@ public class FmrcCollectionTable extends JPanel {
   }
 
   public void refresh() {
-    java.util.List<CollectionBean> beanList = new ArrayList<CollectionBean>();
+    List<CollectionBean> beanList = new ArrayList<CollectionBean>();
     for (String name : MetadataManager.getCollectionNames()) {
       beanList.add(new CollectionBean(name));
     }
@@ -124,7 +122,7 @@ public class FmrcCollectionTable extends JPanel {
   }
 
   private void setCollection(String name) {
-    java.util.List<DataBean> beans = new ArrayList<DataBean>();
+    List<DataBean> beans = new ArrayList<DataBean>();
     MetadataManager mm = null;
     try {
       mm = new MetadataManager(name);

@@ -42,6 +42,7 @@ public class ReportOpPanel extends OpPanel {
         buttPanel.add(reports);
 
         AbstractAction useIndexButt = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 useIndex = (Boolean) getValue(BAMutil.STATE);
             }
@@ -51,6 +52,7 @@ public class ReportOpPanel extends OpPanel {
         BAMutil.addActionToContainer(buttPanel, useIndexButt);
 
         final AbstractAction eachFileButt = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 eachFile = (Boolean) getValue(BAMutil.STATE);
             }
@@ -60,6 +62,7 @@ public class ReportOpPanel extends OpPanel {
         BAMutil.addActionToContainer(buttPanel, eachFileButt);
 
         final AbstractAction extraButt = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 extra = (Boolean) getValue(BAMutil.STATE);
             }
@@ -69,6 +72,7 @@ public class ReportOpPanel extends OpPanel {
         BAMutil.addActionToContainer(buttPanel, extraButt);
 
         final AbstractAction doitButt = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 process();
             }

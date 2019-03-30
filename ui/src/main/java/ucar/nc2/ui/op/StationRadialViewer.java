@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.io.IOException;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 
 /**
  * A Swing widget to view the contents of a ucar.nc2.dt.StationRadarCollection

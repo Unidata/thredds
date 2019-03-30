@@ -43,11 +43,9 @@ public class CollectionSpecTable extends JPanel {
     this.prefs = prefs;
 
     ftTable = new BeanTable(Bean.class, (PreferencesExt) prefs.node("FeatureDatasetBeans"), false);
-    /* ftTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    /* ftTable.addListSelectionListener(e -> {
         FeatureScan.Bean ftb = (FeatureScan.Bean) ftTable.getSelectedBean();
         setSelectedFeatureDataset(ftb);
-      }
     });
 
     /* PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(ftTable.getJTable(), "Options");

@@ -39,8 +39,6 @@ import java.util.Formatter;
 import java.util.HashMap;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 //import ucar.util.GoogleDiff;
 
@@ -159,8 +157,7 @@ public class BufrMessageViewer extends JPanel {
     ///////////////////////////////////////
 
     messageTable = new BeanTable(MessageBean.class, (PreferencesExt) prefs.node("GridRecordBean"), false);
-    messageTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    messageTable.addListSelectionListener(e -> {
         ddsTable.setBeans(new ArrayList());
         obsTable.setBeans(new ArrayList());
 
@@ -175,21 +172,16 @@ public class BufrMessageViewer extends JPanel {
           e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         ddsTable.setBeans(beanList);
-      }
     });
 
     obsTable = new BeanTable(ObsBean.class, (PreferencesExt) prefs.node("ObsBean"), false);
-    /* obsTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    /* obsTable.addListSelectionListener(e -> {
         obsTable.getSelectedBean();
-      }
     }); */
 
     ddsTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("DdsBean"), false);
-    /* ddsTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    /* ddsTable.addListSelectionListener(e -> {
         ddsTable.getSelectedBean();
-      }
     });  */
 
     PopupMenu varPopup = new PopupMenu(messageTable.getJTable(), "Options");

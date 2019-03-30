@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.awt.event.*;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  * A simple extension to JComboBox, which persists the n latest values.
@@ -107,14 +105,13 @@ public class ComboBox extends JComboBox {
       public void actionPerformed( java.awt.event.ActionEvent e) {
         final JList delComp= new JList();
         delComp.setModel( getModel());
-        delComp.addListSelectionListener(new ListSelectionListener() {
-          public void valueChanged(ListSelectionEvent e) {
+        delComp.addListSelectionListener(e2 -> {
             int index = delComp.getSelectedIndex();
             deleting = true;
-            if (index >= 0)
+            if (index >= 0) {
               removeItemAt( index);
+            }
             deleting = false;
-          }
         });
 
         IndependentDialog iw = new IndependentDialog(null, true, "delete items", delComp);

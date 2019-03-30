@@ -32,8 +32,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
 
 /**
  * A Swing widget to examine a RadialDataset.
@@ -98,7 +96,7 @@ public class RadialDatasetTable extends JPanel {
 
     sweepTable = new BeanTable(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
 
-    ucar.nc2.ui.widget.PopupMenu sweepPopup = new PopupMenu(sweepTable.getJTable(), "Options");
+    PopupMenu sweepPopup = new PopupMenu(sweepTable.getJTable(), "Options");
     sweepPopup.addAction("Show Image", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         showImage((SweepBean) sweepTable.getSelectedBean());

@@ -53,6 +53,7 @@ public class ModesMenu extends JMenu {
         AbstractAction a;
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 toolsui.setUseRecordStructure(state);
@@ -75,6 +76,7 @@ public class ModesMenu extends JMenu {
         AbstractAction a;
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 CoordSysBuilder.setUseMaximalCoordSys(state);
@@ -85,6 +87,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(dsMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 NetcdfDataset.setFillValueIsMissing(state);
@@ -95,6 +98,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(dsMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 NetcdfDataset.setInvalidDataIsMissing(state);
@@ -105,6 +109,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(dsMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 NetcdfDataset.setMissingDataIsMissing(state);
@@ -127,6 +132,7 @@ public class ModesMenu extends JMenu {
         AbstractAction a;
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 H5iosp.useHdfEos(state);
@@ -137,6 +143,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(subMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 H4header.useHdfEos(state);
@@ -147,6 +154,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(subMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 Nc4Iosp.useHdfEos(state);
@@ -169,6 +177,7 @@ public class ModesMenu extends JMenu {
         AbstractAction a;
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 toolsui.setGribDiskCache();
             }
@@ -177,6 +186,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(subMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 Grib1ParamTables.setStrict(state);
@@ -188,6 +198,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(subMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final boolean state = (Boolean) getValue(BAMutil.STATE);
                 GribData.setInterpolationMethod(state ? GribData.InterpolationMethod.cubic : GribData.InterpolationMethod.linear);
@@ -201,6 +212,7 @@ public class ModesMenu extends JMenu {
         //static public boolean useGenTypeDef = false, useTableVersionDef = true, intvMergeDef = true, useCenterDef = true;
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 FeatureCollectionConfig.useGenTypeDef = (Boolean) getValue(BAMutil.STATE);
             }
@@ -220,6 +232,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(subMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 FeatureCollectionConfig.intvMergeDef = (Boolean) getValue(BAMutil.STATE);
             }
@@ -229,6 +242,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(subMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 FeatureCollectionConfig.useCenterDef = (Boolean) getValue(BAMutil.STATE);
             }
@@ -250,6 +264,7 @@ public class ModesMenu extends JMenu {
         AbstractAction a;
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 Boolean state = (Boolean) getValue(BAMutil.STATE);
                 FeatureCollectionConfig.setRegularizeDefault(state);
@@ -262,6 +277,7 @@ public class ModesMenu extends JMenu {
         BAMutil.addActionToMenu(subMenu, a);
 
         a = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 Boolean state = (Boolean) getValue(BAMutil.STATE);
                 DataFactory.setPreferCdm(state);

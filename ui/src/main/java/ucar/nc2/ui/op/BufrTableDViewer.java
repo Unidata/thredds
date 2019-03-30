@@ -16,15 +16,12 @@ import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.tables.TableD;
 import ucar.ma2.DataType;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.ListSelectionEvent;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
 import java.util.List;
 import java.io.*;
+import javax.swing.*;
 
 /**
  * View BUFR Table D
@@ -32,8 +29,6 @@ import java.io.*;
  * @author caron
  * @since Dec 1, 2009
  */
-
-
 public class BufrTableDViewer extends JPanel {
   private PreferencesExt prefs;
 
@@ -57,10 +52,8 @@ public class BufrTableDViewer extends JPanel {
     });
 
     variantTable = new BeanTable(DdsBean.class, (PreferencesExt) prefs.node("VariantBean"), false);
-    /* variantTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    /* variantTable.addListSelectionListener(e -> {
         variantTable.getSelectedBean();
-      }
     }); */
 
     PopupMenu varPopup = new PopupMenu(ddsTable.getJTable(), "Options");

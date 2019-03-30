@@ -70,11 +70,10 @@ public class FeatureScanOpPanel extends OpPanel {
         dirChooser.getFileChooser().setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         dirChooser.setCurrentDirectory(prefs.get("currDir", "."));
         final AbstractAction fileAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 String filename = dirChooser.chooseFilename();
-                if (filename == null) {
-                    return;
-                }
+                if (filename == null) { return; }
                 cb.setSelectedItem(filename);
             }
         };

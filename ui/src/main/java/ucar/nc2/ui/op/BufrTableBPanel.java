@@ -37,6 +37,7 @@ public class BufrTableBPanel extends OpPanel {
         super(p, "tableB:", false, false);
 
         final AbstractAction fileAction = new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 final FileManager bufrFileChooser = ToolsUI.getBufrFileChooser();
 

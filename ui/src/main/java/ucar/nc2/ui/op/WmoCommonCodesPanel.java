@@ -12,8 +12,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
@@ -38,12 +36,10 @@ public class WmoCommonCodesPanel extends JPanel {
     this.prefs = prefs;
 
     codeTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
-    codeTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
+    codeTable.addListSelectionListener(e -> {
         TableBean csb = (TableBean) codeTable.getSelectedBean();
         CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());
         setEntries(cct);
-      }
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
