@@ -500,7 +500,6 @@ TBLE2 cptec_254_params[] = {
   }
 
   private interface XmlTableParser {
-
     Map<Integer, Grib1Parameter> parseXml(Element root);
   }
 

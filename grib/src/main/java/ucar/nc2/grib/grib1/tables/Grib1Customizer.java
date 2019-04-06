@@ -27,7 +27,7 @@ import java.util.Map;
  * Subclasses override as needed.
  *
  * Bit of a contradiction, since getParamter() allows different center, subcenter, version (the version is for sure needed)
- * But other tables are fixed by  center.
+ * But other tables are fixed by center.
  *
  * @author caron
  * @since 1/13/12
