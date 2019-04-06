@@ -25,11 +25,11 @@ import java.util.*;
 public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoTemplateTable.class);
 
-  public static final Version standard = Version.GRIB2_20_0_0;
+  public static final Version standard = Version.GRIB2_22_0_0;
 
   public enum Version {
-    // GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0, GRIB2_10_0_1, GRIB2_13_0_1;
-    GRIB2_20_0_0;
+    // GRIB2_5_2_0, GRIB2_6_0_1, GRIB2_7_0_0, GRIB2_8_0_0, GRIB2_10_0_1, GRIB2_13_0_1, GRIB2_20_0_0
+    GRIB2_22_0_0;
 
     String getResourceName() {
       return "/resources/grib2/wmo/" + this.name() + "_Template_en.xml";
@@ -37,8 +37,8 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
 
     @Nullable
     String[] getElemNames() {
-      if (this == GRIB2_20_0_0)
-        return new String[]{"GRIB2_20_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
+      if (this == GRIB2_22_0_0)
+        return new String[]{"GRIB2_22_0_0_Template_en", "Title_en", "Note_en", "Contents_en"};
 
       return null;
     }
@@ -55,60 +55,14 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   }
 
   /*
-
-  <GRIB2_10_0_1_Template_en>
-    <No>817</No>
-    <Title_en>Product definition template 4.14 - derived forecasts based on a cluster of ensemble members over a circular area at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval</Title_en>
-    <OctetNo>11</OctetNo>
-    <Contents_en>Parameter number</Contents_en>
-    <Note_en>(see Code table 4.2)</Note_en>
+  <GRIB2_22_0_0_Template_en>
+    <No>1451</No>
+    <Title_en>Product definition template 4.55 - spatio-temporal changing tiles at a horizontal level or horizontal layer at a point in time</Title_en>
+    <OctetNo>35</OctetNo>
+    <Contents_en>Type of second fixed surface</Contents_en>
+    <Note_en>(see Code table 4.5)</Note_en>
     <Status>Operational</Status>
-  </GRIB2_10_0_1_Template_en>
-
-  <GRIB2_8_0_0_Template_en>
-    <No>1065</No>
-    <Title_en>Product definition template 4.50 - analysis or forecast of a multi component parameter or matrix element
-      at a point in time
-    </Title_en>
-    <OctetNo>18</OctetNo>
-    <Contents_en>Indicator of unit of time range</Contents_en>
-    <Note_en>(see Code table 4.4)</Note_en>
-    <Status>Validation</Status>
-  </GRIB2_8_0_0_Template_en>
-
-
- 5.2
-
- <ForExport_Templates_E>
-   <No>1037</No>
-   <TemplateName_E>Product definition template 4.47 - individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for aerosol</TemplateName_E>
-   <OctetNo>11</OctetNo>
-   <Contents_E>Parameter number</Contents_E>
-   <Nindicator_E>(see Code table 4.2)</Nindicator_E>
-   <Status>Validation</Status>
- </ForExport_Templates_E>
-
- 6.1
-
- <Exp_template_E>
-   <No>903</No>
-   <Title_E>Product definition template 4.43 - individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents</Title_E>
-   <OctetNo>20</OctetNo>
-   <Contents_E>Indicator of unit of time range</Contents_E>
-   <Note_E>(see Code table 4.4)#GRIB2_6_0_1_codeflag.doc#G2_CF44</Note_E>
-   <Status>Operational</Status>
- </Exp_template_E>
-
- 7.0
-<Exp_Temp_E>
-  <No>15</No>
-  <Title_E>Grid definition template 3.0 - latitude/longitude (or equidistant cylindrical, or Plate Carrée)</Title_E>
-  <OctetNo>56-59</OctetNo>
-  <Contents_E>La2 - latitude of last grid point</Contents_E>
-  <Note_E>(see Note 1)#GRIB2_7_0_0_Temp.doc#G2_Gdt30n</Note_E>
-  <Status>Operational</Status>
-</Exp_Temp_E>
-
+  </GRIB2_22_0_0_Template_en>
   */
 
   public static GribTemplates readXml(Version version) throws IOException {

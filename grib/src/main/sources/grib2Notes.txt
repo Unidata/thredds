@@ -424,3 +424,6 @@ download
     - downloaded and added WMO tables 20.0.0 (CodeFlag in http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/GRIB2_20_0_0.zip,
       Template in http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/GRIB2_20_0_0_exp.zip)
     - modify ucar.nc2.grib.grib2.table.WmoCodeTable, ucar.nc2.grib.grib2.table.WmoTemplateTable to use new 20.0.0 tables
+
+04/06/2019 jcaron - download GRIB2_22_0_0_exp_zip from http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
+    - make these to defaults in WmoCodeTable and WmoTemplateTable
