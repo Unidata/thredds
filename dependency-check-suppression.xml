@@ -78,4 +78,12 @@
     <gav regex="true">^org\.quartz-scheduler:quartz:.*$</gav>
     <cpe>cpe:/a:jenkins:jenkins</cpe>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name example: spring-security-core-4.2.7.RELEASE.jar
+      reason: Only valid if specifically using in combination with Spring 5.0.5 RELEASE. https://pivotal.io/security/cve-2018-1258
+      ]]></notes>
+    <filePath regex="true">.*\/spring-security-core-4.2.7.RELEASE.jar</filePath>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
 </suppressions>
