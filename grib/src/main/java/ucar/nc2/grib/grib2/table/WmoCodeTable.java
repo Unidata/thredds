@@ -40,7 +40,7 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
     @Nullable
     String[] getElemNames() {
       if (this == GRIB2_22_0_0)
-        return new String[]{"GRIB2_22_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
+        return new String[]{"GRIB2_22_0_0_CodeFlag_exp_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
 
       return null;
     }
@@ -49,12 +49,10 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
   /*
   Code Table:
   <GRIB2_22_0_0_CodeFlag_exp_en>
-    <No>861</No>
-    <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
-    <SubTitle_en>Product discipline 0 - Meteorological products, parameter category 20: atmospheric chemical constituents</SubTitle_en>
-    <CodeFlag>51</CodeFlag>
-    <MeaningParameterDescription_en>Concentration in air</MeaningParameterDescription_en>
-    <UnitComments_en>mol m-3</UnitComments_en>
+    <No>2</No>
+    <Title_en>Code table 0.0 - Discipline of processed data in the GRIB message, number of GRIB Master table</Title_en>
+    <CodeFlag>1</CodeFlag>
+    <MeaningParameterDescription_en>Hydrological products</MeaningParameterDescription_en>
     <Status>Operational</Status>
   </GRIB2_22_0_0_CodeFlag_exp_en>
 
