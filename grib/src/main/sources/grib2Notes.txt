@@ -427,3 +427,5 @@ download
 
 04/06/2019 jcaron - download GRIB2_22_0_0_exp_zip from http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/LatestVERSION/LatestVERSION.html
     - make these to defaults in WmoCodeTable and WmoTemplateTable
+
+04/06/2019 jcaron download ECMWF eccodes-2.12.0-Source.tar.gz from https://confluence.ecmwf.int/display/ECC
