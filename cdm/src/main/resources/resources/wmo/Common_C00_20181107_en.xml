@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataroot xmlns:od="urn:schemas-microsoft-com:officedata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="Common_C00_20181107_en.xsd" generated="2018-09-24T10:37:48">
+<Common_C00_20181107_en>
+<No>1</No>
+<GRIB_x0020_version_x0020_number>0</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>0</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>0</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>Experimental</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>2</No>
+<BUFR_x0020_version_x0020_number>1</BUFR_x0020_version_x0020_number>
+<Effective_x0020_date>1 November 1988</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>3</No>
+<BUFR_x0020_version_x0020_number>2</BUFR_x0020_version_x0020_number>
+<Effective_x0020_date>1 November 1993</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>4</No>
+<BUFR_x0020_version_x0020_number>3</BUFR_x0020_version_x0020_number>
+<Effective_x0020_date>2 November 1994</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>5</No>
+<BUFR_x0020_version_x0020_number>4</BUFR_x0020_version_x0020_number>
+<Effective_x0020_date>8 November 1995</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>6</No>
+<BUFR_x0020_version_x0020_number>5</BUFR_x0020_version_x0020_number>
+<Effective_x0020_date>6 November 1996</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>7</No>
+<BUFR_x0020_version_x0020_number>6</BUFR_x0020_version_x0020_number>
+<Effective_x0020_date>5 November 1997</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>8</No>
+<BUFR_x0020_version_x0020_number>7</BUFR_x0020_version_x0020_number>
+<Effective_x0020_date>4 November 1998</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>9</No>
+<BUFR_x0020_version_x0020_number>8</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>1</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>3 May 2000</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>10</No>
+<BUFR_x0020_version_x0020_number>9</BUFR_x0020_version_x0020_number>
+<Effective_x0020_date>8 November 2000</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>11</No>
+<GRIB_x0020_version_x0020_number>1</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>10</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>2</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>7 November 2001</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>12</No>
+<GRIB_x0020_version_x0020_number>2</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>11</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>3</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>5 November 2003</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>13</No>
+<GRIB_x0020_version_x0020_number>3</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>12</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>4</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>2 November 2005</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>14</No>
+<GRIB_x0020_version_x0020_number>4</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>13</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>5</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>7 November 2007</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>15</No>
+<GRIB_x0020_version_x0020_number>5</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>14</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>6</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>4 November 2009</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>16</No>
+<GRIB_x0020_version_x0020_number>6</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>15</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>7</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>15 September 2010</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>17</No>
+<GRIB_x0020_version_x0020_number>7</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>16</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>16</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>4 May 2011</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>18</No>
+<GRIB_x0020_version_x0020_number>8</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>17</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>17</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>2 November 2011</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>19</No>
+<GRIB_x0020_version_x0020_number>9</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>18</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>18</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>2 May 2012</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>20</No>
+<GRIB_x0020_version_x0020_number>10</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>19</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>19</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>7 November 2012</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>21</No>
+<GRIB_x0020_version_x0020_number>11</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>20</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>20</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>8 May 2013</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>22</No>
+<GRIB_x0020_version_x0020_number>12</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>21</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>21</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>14 November 2013</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>23</No>
+<GRIB_x0020_version_x0020_number>13</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>22</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>22</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>7 May 2014</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>24</No>
+<GRIB_x0020_version_x0020_number>14</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>23</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>23</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>5 November 2014</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>25</No>
+<GRIB_x0020_version_x0020_number>15</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>24</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>24</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>6 May 2015</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>26</No>
+<GRIB_x0020_version_x0020_number>16</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>25</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>25</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>11 November 2015</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>27</No>
+<GRIB_x0020_version_x0020_number>17</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>26</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>26</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>4 May 2016</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>28</No>
+<GRIB_x0020_version_x0020_number>18</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>27</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>27</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>2 November 2016</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>29</No>
+<GRIB_x0020_version_x0020_number>19</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>28</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>28</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>3 May 2017</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>30</No>
+<GRIB_x0020_version_x0020_number>20</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>29</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>29</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>8 November 2017</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>31</No>
+<GRIB_x0020_version_x0020_number>21</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>30</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>30</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>2 May 2018</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>32</No>
+<GRIB_x0020_version_x0020_number>22</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>31</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>31</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>7 November 2018</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>33</No>
+<GRIB_x0020_version_x0020_number>23</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>32</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>32</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>Pre-operational to be implemented by next amendment</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>34</No>
+<GRIB_x0020_version_x0020_number>24-254</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>33-254</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>33-254</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>Future versions</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+<Common_C00_20181107_en>
+<No>35</No>
+<GRIB_x0020_version_x0020_number>255</GRIB_x0020_version_x0020_number>
+<BUFR_x0020_version_x0020_number>255</BUFR_x0020_version_x0020_number>
+<CREX_x0020_version_x0020_number>255</CREX_x0020_version_x0020_number>
+<Effective_x0020_date>Missing</Effective_x0020_date>
+<Status>Operational</Status>
+</Common_C00_20181107_en>
+</dataroot>

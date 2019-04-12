@@ -27,20 +27,20 @@ import java.util.*;
 
 public class WmoCodeTable implements Comparable<WmoCodeTable> {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(WmoCodeTable.class);
-  public static final Version standard = Version.GRIB2_20_0_0;
+  public static final Version standard = Version.GRIB2_22_0_0;
 
   public enum Version {
-    // GRIB2_10_0_1, GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0, GRIB2_13_0_1;
-    GRIB2_20_0_0;
+    // GRIB2_10_0_1, GRIB2_8_0_0, GRIB2_7_0_0, GRIB2_6_0_1, GRIB2_5_2_0, GRIB2_13_0_1, GRIB2_20_0_0;
+    GRIB2_22_0_0;
 
     String getResourceName() {
-      return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_en.xml";
+      return "/resources/grib2/wmo/" + this.name() + "_CodeFlag_exp_en.xml";
     }
 
     @Nullable
     String[] getElemNames() {
-      if (this == GRIB2_20_0_0)
-        return new String[]{"GRIB2_20_0_0_CodeFlag_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
+      if (this == GRIB2_22_0_0)
+        return new String[]{"GRIB2_22_0_0_CodeFlag_exp_en", "Title_en", "SubTitle_en", "MeaningParameterDescription_en", "UnitComments_en"};
 
       return null;
     }
@@ -48,34 +48,31 @@ public class WmoCodeTable implements Comparable<WmoCodeTable> {
 
   /*
   Code Table:
-  <GRIB2_14_0_0_CodeFlag_en>
-    <No>861</No>
-    <Title_en>Code table 4.2 - Parameter number by product discipline and parameter category</Title_en>
-    <SubTitle_en>Product discipline 2 - Land surface products, parameter category 3: soil products</SubTitle_en>
+  <GRIB2_22_0_0_CodeFlag_exp_en>
+    <No>2</No>
+    <Title_en>Code table 0.0 - Discipline of processed data in the GRIB message, number of GRIB Master table</Title_en>
     <CodeFlag>1</CodeFlag>
-    <MeaningParameterDescription_en>Upper layer soil temperature</MeaningParameterDescription_en>
-    <Note_en>*</Note_en>
-    <UnitComments_en>K</UnitComments_en>
-    <Status>Deprecated</Status>
-  </GRIB2_14_0_0_CodeFlag_en>
+    <MeaningParameterDescription_en>Hydrological products</MeaningParameterDescription_en>
+    <Status>Operational</Status>
+  </GRIB2_22_0_0_CodeFlag_exp_en>
 
   FlagTable:
-  <GRIB2_14_0_0_CodeFlag_en>
-    <No>152</No>
+  <GRIB2_22_0_0_CodeFlag_exp_en>
+    <No>168</No>
     <Title_en>Flag table 3.4 - Scanning mode</Title_en>
     <CodeFlag>1</CodeFlag>
     <Value>0</Value>
     <MeaningParameterDescription_en>Points of first row or column scan in the +i (+x) direction</MeaningParameterDescription_en>
     <Status>Operational</Status>
-  </GRIB2_14_0_0_CodeFlag_en>
-  <GRIB2_14_0_0_CodeFlag_en>
-    <No>153</No>
+  </GRIB2_22_0_0_CodeFlag_exp_en>
+  <GRIB2_22_0_0_CodeFlag_exp_en>
+    <No>169</No>
     <Title_en>Flag table 3.4 - Scanning mode</Title_en>
     <CodeFlag>1</CodeFlag>
     <Value>1</Value>
     <MeaningParameterDescription_en>Points of first row or column scan in the -i (-x) direction</MeaningParameterDescription_en>
     <Status>Operational</Status>
-  </GRIB2_14_0_0_CodeFlag_en>
+  </GRIB2_22_0_0_CodeFlag_exp_en>
   */
 
   @Nullable
