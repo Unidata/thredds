@@ -79,7 +79,7 @@ libraries["spring-webmvc"] = "org.springframework:spring-webmvc:${versions["spri
 
 ////////////////////////////////////////// Spring security //////////////////////////////////////////
 
-versions["spring-security"] = "4.2.7.RELEASE"
+versions["spring-security"] = "4.2.12.RELEASE"
 
 libraries["spring-security-config"] = "org.springframework.security:spring-security-config:${versions["spring-security"]}"
 
