@@ -558,8 +558,16 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
           case Nc4prototypes.NC_UBYTE:
             att = new Attribute(attname, DataType.UBYTE);
             break;
-          case Nc4prototypes.NC_CHAR: // a zero length char is considered to be an empty string
-            att = new Attribute(attname, "");
+          case Nc4prototypes.NC_CHAR:
+            // From what I can tell, the way we should treat char attrs depends on
+            // the netCDF format used (3 vs. 4)
+            if ((format == NC_FORMAT_NETCDF4_CLASSIC) || (format == NC_FORMAT_NETCDF4)) {
+              // if netcdf4, make null char attrs null string attrs
+              att = new Attribute(attname, DataType.STRING);
+            } else {
+              // all others, treat null char attrs as empty string attrs
+              att = new Attribute(attname, "");
+            }
             break;
           case Nc4prototypes.NC_DOUBLE:
             att = new Attribute(attname, DataType.DOUBLE);
