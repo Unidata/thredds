@@ -726,10 +726,13 @@ public class IospHelper {
   // convert char array to byte array
 
   static public byte[] convertCharToByte(char[] from) {
-    int size = from.length;
-    byte[] to = new byte[size];
-    for (int i = 0; i < size; i++)
-      to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte ???
+    byte[] to = null;
+    if (from != null) {
+      int size = from.length;
+      to = new byte[size];
+      for (int i = 0; i < size; i++)
+        to[i] = (byte) from[i]; // LOOK wrong, convert back to unsigned byte ???
+    }
     return to;
   }
 
