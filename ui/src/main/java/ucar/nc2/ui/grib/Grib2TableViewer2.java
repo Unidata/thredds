@@ -8,7 +8,7 @@ package ucar.nc2.ui.grib;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Table;
-import ucar.nc2.grib.grib2.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoParamTable;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -18,11 +18,8 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
@@ -164,6 +161,7 @@ public class Grib2TableViewer2 extends JPanel {
     }
     f.format("%nUNITS: Total=%d problems=%d%n%n", total, probs);
 
+    int local = 0;
     int extra = 0;
     int nameDiffers = 0;
     int caseDiffers = 0;
@@ -171,9 +169,13 @@ public class Grib2TableViewer2 extends JPanel {
     f.format("Conflicts with WMO%n");
     for (Object t : entryTable.getBeans()) {
       Grib2Customizer.Parameter p = ((EntryBean) t).param;
-      if (Grib2Customizer.isLocal(p)) continue;
+      if (Grib2Customizer.isLocal(p)) {
+        local++;
+        continue;
+      }
       if (p.getNumber() < 0) continue;
-      WmoCodeTable.TableEntry wmo = WmoCodeTable.getParameterEntry(p.getDiscipline(), p.getCategory(), p.getNumber());
+      GribTables.Parameter wmo = WmoParamTable.getParameter(p.getDiscipline(), p.getCategory(), p.getNumber());
+
       if (wmo == null) {
         extra++;
         f.format(" NEW %s%n", p);
@@ -190,8 +192,8 @@ public class Grib2TableViewer2 extends JPanel {
         f.format(" wmo=%10s %40s %15s%n%n", wmo.getId(), wmo.getName(), wmo.getUnit());
       }
     }
-    f.format("%nWMO differences: nameDiffers=%d caseDiffers=%d, unitsDiffer=%d, extra=%d %n%n",
-            nameDiffers, caseDiffers, unitsDiffer, extra);
+    f.format("%nWMO differences: nameDiffers=%d caseDiffers=%d, unitsDiffer=%d, extra=%d local=%d%n%n",
+            nameDiffers, caseDiffers, unitsDiffer, extra, local);
 
     infoTA.setText(f.toString());
     infoWindow.show();
@@ -321,9 +323,10 @@ public class Grib2TableViewer2 extends JPanel {
     }
 
     public String getId() {
-      return param.getDiscipline() + "-" + param.getCategory() + "-" + param.getNumber();
+      return param.getId();
     }
 
+    // This gives the correct sort order.
     public int getKey() {
       return Grib2Customizer.makeParamId(param.getDiscipline(), param.getCategory(), param.getNumber());
     }

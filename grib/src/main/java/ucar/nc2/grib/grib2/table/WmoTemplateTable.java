@@ -66,7 +66,7 @@ public class WmoTemplateTable implements Comparable<WmoTemplateTable> {
   */
 
   public static GribTemplates readXml(Version version) throws IOException {
-    try (InputStream ios = WmoCodeTable.class.getResourceAsStream(version.getResourceName())) {
+    try (InputStream ios = WmoTemplateTable.class.getResourceAsStream(version.getResourceName())) {
       if (ios == null) {
         throw new IOException("cant open WmoTemplateTable %s " + version.getResourceName());
       }

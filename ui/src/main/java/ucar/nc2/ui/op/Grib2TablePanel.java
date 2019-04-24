@@ -11,9 +11,7 @@ import ucar.util.prefs.PreferencesExt;
 
 import java.awt.BorderLayout;
 
-/**
- *
- */
+// LOOK: Remove this and just use Grib2TableViewer2 directly in ToolsUI.
 public class Grib2TablePanel extends OpPanel {
     private Grib2TableViewer2 codeTable;
 

@@ -274,15 +274,15 @@ public abstract class Grib2Pds {
   }
 
   /**
-   * Get the indexth byte in the PDS as an integer.
-   * THIS IS ONE BASED (not zero) to correspond with the manual
+   * Get the index'th byte in the PDS as an unsigned integer.
+   * THIS IS ONE BASED (not zero) to correspond with the manual.
+   * Will throw Exception if index is out of bounds.
    *
    * @param index 1 based index
    * @return input[index-1] & 0xff
    */
   public final int getOctet(int index) {
-    //if (index > input.length) return GribNumbers.UNDEFINED; // allow exception
-    return input[index - 1] & 0xff;
+    return Byte.toUnsignedInt(input[index - 1]);
   }
 
   public final int getInt4StartingAtOctet(int index) {

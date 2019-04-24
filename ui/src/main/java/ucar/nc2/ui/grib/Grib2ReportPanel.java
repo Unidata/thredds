@@ -22,13 +22,14 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoParamTable;
 import ucar.nc2.ui.ReportPanel;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
@@ -316,15 +317,15 @@ public class Grib2ReportPanel extends ReportPanel {
             continue;
           }
 
-          WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
+          GribTables.Parameter entry = WmoParamTable.getParameter(discipline, category, number);
           if (entry == null) {
             fm.format("  missing from WMO table (%d %d %d) = %s units=%s %n", discipline, category, number, currName, dt.getUnitsString());
             miss++;
             continue;
           }
 
-          if (!entry.status.equalsIgnoreCase("Operational")) {
-            fm.format("  %s parameter = %s (%d %d %d) %n", entry.status, currName, discipline, category, number);
+          if (!entry.getOperationalStatus().equalsIgnoreCase("Operational")) {
+            fm.format("  %s parameter = %s (%d %d %d) %n", entry.getOperationalStatus(), currName, discipline, category, number);
             nonop++;
           }
         }

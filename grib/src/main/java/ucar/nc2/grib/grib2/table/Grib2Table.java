@@ -80,7 +80,7 @@ public class Grib2Table {
       e.printStackTrace();
     }
 
-    standardTable = new Grib2Table("WMO", 0,-1,-1,-1,-1, WmoCodeTable.standard.getResourceName(), Grib2Table.Type.wmo);
+    standardTable = new Grib2Table("WMO", 0,-1,-1,-1,-1, WmoCodeFlagTables.standard.getResourceName(), Grib2Table.Type.wmo);
     result.add(standardTable);
     return result;
   }

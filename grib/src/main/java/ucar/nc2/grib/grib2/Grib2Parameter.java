@@ -85,11 +85,6 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
   }
 
   @Override
-  public int getValue() {
-    return -1;
-  }
-
-  @Override
   public int getNumber() {
     return number;
   }
@@ -118,6 +113,11 @@ public class Grib2Parameter implements GribTables.Parameter, Comparable<Grib2Par
   @Override
   public Float getMissing() {
     return missing;
+  }
+
+  @Override
+  public String getOperationalStatus() {
+    return null;
   }
 
   @Override

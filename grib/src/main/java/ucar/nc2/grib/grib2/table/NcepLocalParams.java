@@ -57,7 +57,6 @@ class NcepLocalParams {
     return (params == null) ? null : params.title;
   }
 
-
   @Nullable
   Table factory(String path) {
     Table params = new Table();
@@ -77,7 +76,7 @@ class NcepLocalParams {
   }
 
   ////////////////////////////////////////////////////
-  // one table for the discipline, category
+  // one table for each discipline, category
   static class Table {
 
     private String title;

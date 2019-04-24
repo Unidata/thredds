@@ -277,27 +277,4 @@ public class CfsrLocalTables extends NcepLocalTables {
       throw new RuntimeException(ioe);
     }
   }
-
-/*
-0	0	0	TMP	. Temperature	. K
-0	0	2	POT	. Potential temperature	. K
-0	0	4	T MAX	. Maximum temperature	. K
-0	0	5	T MIN	. Minimum temperature	. K
-0	0	6	DPT	. Dewpoint temperature	. K
-*/
-
-  public static void main(String[] args) {
-    CfsrLocalTables t = new CfsrLocalTables(
-        new Grib2Table("DSS", 7, 0, 0, 0, -1, null, Grib2Table.Type.cfsr));
-    Formatter f = new Formatter();
-    Grib2Utils.compareTables("DSS-093", "Standard WMO version 8", t.getParameters(),
-        Grib2Customizer.factory(0, 0, 0, 0, 0), f);
-    System.out.printf("%s%n", f);
-
-    Formatter f2 = new Formatter();
-    Grib2Utils.compareTables("DSS-093", "NCEP Table", t.getParameters(),
-        Grib2Customizer.factory(7, 0, 0, 0, 0), f2);
-    System.out.printf("%s%n", f2);
-
-  }
 }

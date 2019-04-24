@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoParamTable;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.wmo.Util;
@@ -49,7 +49,8 @@ public class Grib2Utils {
   }
 
   public static String getVariableName(Grib2Record gr) {
-    String s =  WmoCodeTable.getParameterName(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+    GribTables.Parameter p = WmoParamTable.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+    String s = (p == null) ? null : p.getName();
     if (s == null)
       s = "U"+ gr.getDiscipline()+"-"+gr.getPDS().getParameterCategory()+"-" + gr.getPDS().getParameterNumber();
     return s;
