@@ -205,8 +205,8 @@ public class Grib2TableViewer2 extends JPanel {
 
     Formatter f = new Formatter();
 
-    f.format("Table 1 = %s (%s)%n", id1.name, t1.getTablePath(0, 192,192)); // local  // WTF ??
-    f.format("Table 2 = %s (%s)%n", id2.name, t2.getTablePath(0, 192,192)); // local
+    f.format("Table 1 = %s (%s)%n", id1.getName(), t1.getTablePath(0, 192,192)); // local  // WTF ??
+    f.format("Table 2 = %s (%s)%n", id2.getName(), t2.getTablePath(0, 192,192)); // local
 
     int conflict = 0;
     f.format("Table 1 : %n");
@@ -265,7 +265,7 @@ public class Grib2TableViewer2 extends JPanel {
     }
 
     public String getName() {
-      return table.name;
+      return table.getName();
     }
 
     public int getCenter_id() {
@@ -293,7 +293,7 @@ public class Grib2TableViewer2 extends JPanel {
    }
 
     public String getType() {
-     return table.type.toString();
+     return table.getType().toString();
    }
 
     @Override

@@ -53,7 +53,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   public static Grib2Customizer factory(Grib2Table grib2Table) {
-    switch (grib2Table.type) {
+    switch (grib2Table.getType()) {
       case cfsr: return CfsrLocalTables.getCust(grib2Table);
       case gempak: return GempakLocalTables.getCust(grib2Table);
       case gsd: return FslLocalTables.getCust(grib2Table);
@@ -134,9 +134,10 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   @Nullable
   public String getCategory(int discipline, int category) {
-    return getTableValue("4.1." + discipline, category);
+    WmoCodeTable catTable = WmoCodeFlagTables.getInstance().getCodeTable("4.1." + discipline);
+    WmoCodeTable.Entry entry = (catTable == null) ? null : catTable.getEntry(category);
+    return (entry == null) ? null : entry.getName();
   }
-
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // Time

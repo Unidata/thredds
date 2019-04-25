@@ -9,13 +9,12 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.WmoTemplateTable;
+import ucar.nc2.grib.grib2.table.WmoTemplateTables;
+import ucar.nc2.grib.grib2.table.WmoTemplateTables.TemplateTable;
 import ucar.nc2.util.Misc;
 import ucar.nc2.wmo.CommonCodeTable;
 
-import java.io.IOException;
 import java.util.Formatter;
-import java.util.Map;
 
 /**
  * Utilities to show Grib2 records.
@@ -120,22 +119,12 @@ public class Grib2Show {
     showRawWithTemplate("4." + template, raw, f, cust);
   }
 
-  private static Map<String, WmoTemplateTable> gribTemplates = null; // LOOK move to WmoTemplateTable
-
   private static void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Customizer cust) {
-    if (gribTemplates == null)
-      try {
-        gribTemplates = WmoTemplateTable.getWmoStandard().map;
-      } catch (IOException e) {
-        f.format("Read template failed = %s%n", e.getMessage());
-        return;
-      }
-
-    WmoTemplateTable gt = gribTemplates.get(key);
-    if (gt == null)
+    TemplateTable template = WmoTemplateTables.getInstance().getTemplateTable(key);
+    if (template == null)
       f.format("Cant find template %s%n", key);
     else
-      gt.showInfo(cust, raw, f);
+      template.showInfo(cust, raw, f);
   }
 
   public static void showProcessedPds(Grib2Customizer cust, Grib2Pds pds, int discipline, Formatter f) {

@@ -1,7 +1,9 @@
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable.WmoEntry;
 
@@ -10,6 +12,8 @@ public class WmoCodeTable implements Grib2CodeTableInterface {
   private final ImmutableMap<Integer, WmoCodeEntry> entryMap;
 
   WmoCodeTable(WmoTable wmoTable) {
+    Preconditions.checkNotNull(wmoTable);
+    Preconditions.checkArgument(wmoTable.getType() == TableType.code || wmoTable.getType() == TableType.cat);
     this.wmoTable = wmoTable;
     ImmutableMap.Builder<Integer, WmoCodeEntry> builder = ImmutableMap.builder();
     wmoTable.getEntries().forEach(e -> builder.put(e.getNumber(), new WmoCodeEntry(e)));

@@ -5,7 +5,7 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.grib.grib2.table.WmoTemplateTable;
+import ucar.nc2.grib.grib2.table.WmoTemplateTables;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.grib.GribWmoTemplatesPanel;
 import ucar.util.prefs.PreferencesExt;
@@ -13,9 +13,7 @@ import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import javax.swing.JComboBox;
 
-/**
- *
- */
+// LOOK: Remove this and just use GribWmoCodesPanel directly in ToolsUI.
 public class GribTemplatePanel extends OpPanel {
     private GribWmoTemplatesPanel codeTable;
 
@@ -25,11 +23,11 @@ public class GribTemplatePanel extends OpPanel {
     public GribTemplatePanel(PreferencesExt p) {
         super(p, "table:", false, false, false);
 
-        final JComboBox<WmoTemplateTable.Version> modes = new JComboBox<>(WmoTemplateTable.Version.values());
-        modes.setSelectedItem(WmoTemplateTable.standard);
+        final JComboBox<WmoTemplateTables.Version> modes = new JComboBox<>(WmoTemplateTables.Version.values());
+        modes.setSelectedItem(WmoTemplateTables.standard);
         topPanel.add(modes, BorderLayout.CENTER);
         modes.addActionListener(e -> {
-            codeTable.setTable((WmoTemplateTable.Version) modes.getSelectedItem());
+            codeTable.setTable((WmoTemplateTables.Version) modes.getSelectedItem());
         });
 
         codeTable = new GribWmoTemplatesPanel(prefs, buttPanel);

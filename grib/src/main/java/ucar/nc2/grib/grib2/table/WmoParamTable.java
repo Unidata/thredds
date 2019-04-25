@@ -1,9 +1,11 @@
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import javax.annotation.Nullable;
 import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable.WmoEntry;
 
@@ -28,6 +30,8 @@ public class WmoParamTable implements Grib2ParamTableInterface {
   private final ImmutableMap<Integer, GribTables.Parameter> entryMap;
 
   WmoParamTable(WmoTable wmoTable) {
+    Preconditions.checkNotNull(wmoTable);
+    Preconditions.checkArgument(wmoTable.getType() == TableType.param);
     this.wmoTable = wmoTable;
     ImmutableMap.Builder<Integer, GribTables.Parameter> builder = ImmutableMap.builder();
     wmoTable.getEntries().forEach(entry -> builder.put(entry.getNumber(), new WmoParamEntry(entry)));

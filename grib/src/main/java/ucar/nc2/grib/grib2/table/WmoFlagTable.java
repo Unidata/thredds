@@ -1,10 +1,12 @@
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable.WmoEntry;
 
@@ -13,6 +15,8 @@ public class WmoFlagTable implements Grib2FlagTableInterface {
   private final ImmutableListMultimap<Integer, WmoEntry> multimap;
 
   WmoFlagTable(WmoTable wmoTable) {
+    Preconditions.checkNotNull(wmoTable);
+    Preconditions.checkArgument(wmoTable.getType() == TableType.flag);
     this.wmoTable = wmoTable;
     ImmutableListMultimap.Builder<Integer, WmoEntry> builder = ImmutableListMultimap.builder();
     for (WmoEntry wmoEntry : wmoTable.getEntries()) {
