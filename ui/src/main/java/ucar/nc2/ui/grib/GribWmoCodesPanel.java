@@ -5,26 +5,18 @@
 
 package ucar.nc2.ui.grib;
 
-import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.grib2.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.Attribute;
-import ucar.nc2.dt.GridDatatype;
-import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.units.SimpleUnit;
-import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -37,7 +29,7 @@ import java.util.List;
 public class GribWmoCodesPanel extends JPanel {
   private PreferencesExt prefs;
 
-  private BeanTable codeTable, entryTable;
+  private BeanTable wmoTable, entryTable;
   private JSplitPane split;
 
   private TextHistoryPane compareTA;
@@ -46,17 +38,17 @@ public class GribWmoCodesPanel extends JPanel {
   public GribWmoCodesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
-    codeTable.addListSelectionListener(e -> {
-        CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
-        setEntries(csb.codeTable);
+    wmoTable = new BeanTable(CodeTableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    wmoTable.addListSelectionListener(e -> {
+        CodeTableBean csb = (CodeTableBean) wmoTable.getSelectedBean();
+        setEntries(csb.wmoTable);
     });
 
-    ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(codeTable.getJTable(), "Options");
+    ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(wmoTable.getJTable(), "Options");
     varPopup.addAction("Show table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        CodeTableBean csb = (CodeTableBean) codeTable.getSelectedBean();
+        CodeTableBean csb = (CodeTableBean) wmoTable.getSelectedBean();
         csb.showTable(out);
         compareTA.setText(out.toString());
         compareTA.gotoTop();
@@ -65,65 +57,36 @@ public class GribWmoCodesPanel extends JPanel {
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    /* entryTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        entryTable.getSelectedBean();
-      }
-    });  */
-
-    /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to 4.2 table", false);
-    compareButton.addActionListener(e -> {
-        compareToCurrent();
-    });
-    buttPanel.add(compareButton);  */
-
-    AbstractButton compare2Button = BAMutil.makeButtcon("Select", "Compare to standard WMO table", false);
-    compare2Button.addActionListener(e -> {
-        compareToStandardWMO();
-    });
-    buttPanel.add(compare2Button);
 
     AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in this table", false);
     dupButton.addActionListener(e -> {
-        lookForProblems();
+      lookForProblems();
     });
     buttPanel.add(dupButton);
-
-    AbstractButton modelsButton = BAMutil.makeButtcon("Select", "Check current models", false);
-    modelsButton.addActionListener(e -> {
-        try {
-          checkCurrentModels();
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-    });
-    buttPanel.add(modelsButton);
 
     // the info window
     compareTA = new TextHistoryPane();
     infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), compareTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 600)));
 
-    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, codeTable, entryTable);
+    split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, wmoTable, entryTable);
     split.setDividerLocation(prefs.getInt("splitPos", 500));
 
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
 
-    setTable(WmoCodeTable.standard);
+    setTable(WmoCodeFlagTables.standard);
   }
 
-  private WmoCodeTable.Version currTable = null;
+  private WmoCodeFlagTables.Version currTable = null;
 
-  public void setTable(WmoCodeTable.Version v) {
+  public void setTable(WmoCodeFlagTables.Version v) {
     try {
-      WmoCodeTable.WmoTables wmo = WmoCodeTable.readGribCodes(v);
-      List<WmoCodeTable> codes = wmo.list;
-      List<CodeTableBean> dds = new ArrayList<>(codes.size());
-      for (WmoCodeTable code : codes) {
-        dds.add(new CodeTableBean(code));
+      List<CodeTableBean> dds = new ArrayList<>();
+      for (WmoTable wmoTable : WmoCodeFlagTables.getInstance().getWmoTables()) {
+        dds.add(new CodeTableBean(wmoTable));
       }
-      codeTable.setBeans(dds);
+      wmoTable.setBeans(dds);
       currTable = v;
 
     } catch (Exception e) {
@@ -132,7 +95,7 @@ public class GribWmoCodesPanel extends JPanel {
   }
 
   public void save() {
-    codeTable.saveState(false);
+    wmoTable.saveState(false);
     entryTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
     //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
@@ -140,87 +103,181 @@ public class GribWmoCodesPanel extends JPanel {
     //prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
-  public void setEntries(WmoCodeTable codeTable) {
-    List<EntryBean> beans = new ArrayList<>(codeTable.entries.size());
-    for (WmoCodeTable.TableEntry d : codeTable.entries) {
+  public void setEntries(WmoTable wmoTable) {
+    List<EntryBean> beans = new ArrayList<>();
+    for (WmoTable.WmoEntry d : wmoTable.getEntries()) {
       beans.add(new EntryBean(d));
     }
     entryTable.setBeans(beans);
+  }
+
+  public class CodeTableBean {
+    WmoTable wmoTable;
+
+    // no-arg constructor
+    public CodeTableBean() {
+    }
+
+    // create from a dataset
+    public CodeTableBean(WmoTable wmoTable) {
+      this.wmoTable = wmoTable;
+    }
+
+    public String getTitle() {
+      return wmoTable.getName();
+    }
+
+    public String getTableNo() {
+      return wmoTable.getId();
+    }
+
+    public String getType() {
+      return wmoTable.getType().name();
+    }
+
+    void showTable(Formatter f) {
+      f.format("Code Table %s (%s)%n", wmoTable.getName(), wmoTable.getId());
+      for (WmoTable.WmoEntry entry : wmoTable.getEntries()) {
+        f.format("  %3d: %s%n", entry.getNumber(), entry.getName());
+      }
+    }
+  }
+
+  public class EntryBean {
+    WmoTable.WmoEntry entry;
+
+    // no-arg constructor
+    public EntryBean() {
+    }
+
+    // create from a dataset
+    public EntryBean(WmoTable.WmoEntry entry) {
+      this.entry = entry;
+    }
+
+    public int getNumber() {
+      return entry.getNumber();
+    }
+
+    public String getName() {
+      return entry.getName();
+    }
+
+    public String getUnit() {
+      return entry.getUnit();
+    }
+
+    public String getUdunit() {
+      if (entry.getUnit() == null) return "";                               
+      if (entry.getUnit().length() == 0) return "";
+
+      try {
+        SimpleUnit su = SimpleUnit.factoryWithExceptions(entry.getUnit());
+        if (su.isUnknownUnit())
+          return ("UNKNOWN");
+        else
+          return su.toString();
+      } catch (Exception ioe) {
+        return "FAIL";
+      }
+    }
+
+    public String getStatus() {
+      return entry.getStatus();
+    }
+
+    public int getLine() {
+      return entry.getLine();
+    }
+    public int getValue() {
+       return entry.getValue();
+     }
   }
 
   private void lookForProblems() {
     int total = 0;
     int dups = 0;
 
-    Map<String, WmoCodeTable.TableEntry> paramSet = new HashMap<>();
-    Formatter f = new Formatter();
-    f.format("WMO parameter table %s%n", currTable);
-    f.format("%nDuplicates Names%n");
-    for (Object t : codeTable.getBeans()) {
-      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
-      if (!gt.isParameter) continue;
-      for (WmoCodeTable.TableEntry p : gt.entries) {
-        if (p.meaning.equalsIgnoreCase("Reserved")) continue;
-        if (p.meaning.equalsIgnoreCase("Missing")) continue;
-        if (p.start != p.stop) continue;
+    Map<String, WmoTable.WmoEntry> paramSet = new HashMap<>();
+    try (Formatter f = new Formatter()) {
+      f.format("WMO parameter table %s%n", currTable);
+      f.format("%nDuplicates Names%n");
+      for (Object t : wmoTable.getBeans()) {
+        WmoTable gt = ((CodeTableBean) t).wmoTable;
+        if (gt.getType() != TableType.param)
+          continue;
+        for (WmoTable.WmoEntry p : gt.getEntries()) {
+          if (p.getMeaning().equalsIgnoreCase("Reserved"))
+            continue;
+          if (p.getMeaning().equalsIgnoreCase("Missing"))
+            continue;
+          if (p.getStart() != p.getStop())
+            continue;
 
-        WmoCodeTable.TableEntry pdup = paramSet.get(p.name);
-        if (pdup != null) {
-          f.format("Duplicate %s%n", p);
-          f.format("          %s%n%n", pdup);
-          dups++;
-        } else {
-          paramSet.put(p.name, p);
+          WmoTable.WmoEntry pdup = paramSet.get(p.getName());
+          if (pdup != null) {
+            f.format("Duplicate %s%n", p);
+            f.format("          %s%n%n", pdup);
+            dups++;
+          } else {
+            paramSet.put(p.getName(), p);
+          }
+          total++;
         }
-        total++;
       }
-    }
-    f.format("%nTotal=%d dups=%d%n%n", total, dups);
+      f.format("%nTotal=%d dups=%d%n%n", total, dups);
 
-    total = 0;
-    dups = 0;
-    f.format("Names with parenthesis%n");
-    for (Object t : codeTable.getBeans()) {
-      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
-      if (!gt.isParameter) continue;
-      for (WmoCodeTable.TableEntry p : gt.entries) {
-        if (p.meaning.indexOf('(') > 0) {
-          f.format("  %s:%n  org='%s'%n name='%s' %n%n", p.getId(), p.meaning, p.name);
-          dups++;
-        }
-        total++;
-      }
-    }
-    f.format("%nTotal=%d parens=%d%n%n", total, dups);
-
-    total = 0;
-    dups = 0;
-    f.format("non-udunits%n");
-    for (Object t : codeTable.getBeans()) {
-      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
-      if (!gt.isParameter) continue;
-      for (WmoCodeTable.TableEntry p : gt.entries) {
-        if (p.unit == null) continue;
-        if (p.unit.length() == 0) continue;
-        try {
-          SimpleUnit su = SimpleUnit.factoryWithExceptions(p.unit);
-          if (su.isUnknownUnit()) {
-            f.format("%s %s has UNKNOWN udunit%n", p.getId(), p.unit);
+      total = 0;
+      dups = 0;
+      f.format("Names with parenthesis%n");
+      for (Object t : wmoTable.getBeans()) {
+        WmoTable gt = ((CodeTableBean) t).wmoTable;
+        if (gt.getType() != TableType.param)
+          continue;
+        for (WmoTable.WmoEntry p : gt.getEntries()) {
+          if (p.getMeaning().indexOf('(') > 0) {
+            f.format("  %s:%n  org='%s'%n name='%s' %n%n", p.getId(), p.getMeaning(), p.getName());
             dups++;
           }
-        } catch (Exception ioe) {
-          f.format("%s %s FAILS on udunit parse%n", p.getId(), p.unit);
-          dups++;
+          total++;
         }
-        total++;
       }
-    }
-    f.format("%nTotal=%d problems=%d%n%n", total, dups);
+      f.format("%nTotal=%d parens=%d%n%n", total, dups);
 
-    compareTA.setText(f.toString());
+      total = 0;
+      dups = 0;
+      f.format("non-udunits%n");
+      for (Object t : wmoTable.getBeans()) {
+        WmoTable gt = ((CodeTableBean) t).wmoTable;
+        if (gt.getType() != TableType.param)
+          continue;
+        for (WmoTable.WmoEntry p : gt.getEntries()) {
+          if (p.getUnit() == null)
+            continue;
+          if (p.getUnit().length() == 0)
+            continue;
+          try {
+            SimpleUnit su = SimpleUnit.factoryWithExceptions(p.getUnit());
+            if (su.isUnknownUnit()) {
+              f.format("%s %s has UNKNOWN udunit%n", p.getId(), p.getUnit());
+              dups++;
+            }
+          } catch (Exception ioe) {
+            f.format("%s %s FAILS on udunit parse%n", p.getId(), p.getUnit());
+            dups++;
+          }
+          total++;
+        }
+      }
+      f.format("%nTotal=%d problems=%d%n%n", total, dups);
+
+      compareTA.setText(f.toString());
+    }
     infoWindow.show();
   }
+}
 
+/*
 
   private boolean showSame = false, showCase = false, showUnknown = false;
   /* private void compareToCurrent() {
@@ -232,11 +289,11 @@ public class GribWmoCodesPanel extends JPanel {
 
     Formatter f = new Formatter();
     f.format("DIFFERENCES of %s with 4.2 standard parameter table%n", currTable);
-    List tables = codeTable.getBeans();
+    List tables = wmoTable.getBeans();
     for (Object t : tables) {
-      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
+      WmoTable gt = ((CodeTableBean) t).wmoTable;
       if (!gt.isParameter) continue;
-      for (WmoCodeTable.TableEntry p : gt.entries) {
+      for (WmoTable.WmoEntry p : gt.entries) {
         if (p.meaning.equalsIgnoreCase("Reserved")) continue;
         if (p.meaning.equalsIgnoreCase("Missing")) continue;
         if (p.start != p.stop) continue;
@@ -269,7 +326,7 @@ public class GribWmoCodesPanel extends JPanel {
     f.format("%nTotal=%d same=%d sameIgnoreCase=%d dif=%d unknown=%d%n", total, nsame, nsameIgn, ndiff, unknownCount);
     compareTA.setText(f.toString());
     infoWindow.show();
-  } */
+  }
 
   private void compareToStandardWMO() {
     int total = 0;
@@ -281,16 +338,16 @@ public class GribWmoCodesPanel extends JPanel {
 
     Formatter f = new Formatter();
     f.format("DIFFERENCES of %s with standard WMO table%n", currTable);
-    List tables = codeTable.getBeans();
+    List tables = wmoTable.getBeans();
     for (Object t : tables) {
-      WmoCodeTable gt = ((CodeTableBean) t).codeTable;
+      WmoTable gt = ((CodeTableBean) t).wmoTable;
       if (!gt.isParameter) continue;
-      for (WmoCodeTable.TableEntry p : gt.entries) {
-        if (p.meaning.equalsIgnoreCase("Reserved")) continue;
-        if (p.meaning.equalsIgnoreCase("Missing")) continue;
+      for (WmoTable.WmoEntry p : gt.getEntries()) {
+        if (p.getMeaning().equalsIgnoreCase("Reserved")) continue;
+        if (p.getMeaning().equalsIgnoreCase("Missing")) continue;
         if (p.start != p.stop) continue;
 
-        WmoCodeTable.TableEntry wmo = WmoCodeTable.getParameterEntry(gt.discipline, gt.category, p.start);
+        WmoTable.WmoEntry wmo = WmoTable.getParameterEntry(gt.discipline, gt.category, p.start);
         if (wmo == null) {
           missingCount++;
           f.format(" NEW %d %d %d %s (%s)%n",  gt.discipline, gt.category, p.start, p.name, p.unit);
@@ -388,7 +445,7 @@ public class GribWmoCodesPanel extends JPanel {
             if (number >= 192) continue;
             total++;
 
-            WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
+            WmoTable.WmoEntry entry = WmoTable.getParameterEntry(discipline, category, number);
             if (entry == null) {
               fm.format("%n%d %d %d CANT FIND %s%n", discipline, category, number, currName);
               continue;
@@ -409,7 +466,7 @@ public class GribWmoCodesPanel extends JPanel {
             /* String unitsCurr = dt.findAttributeIgnoreCase(CDM.UNITS).getStringValue();
             String unitsWmo = entry.unit;
             boolean sameUnits = (unitsWmo == null) ? (unitsCurr == null) : unitsWmo.equals(unitsCurr);
-            same = same && sameUnits; */
+            same = same && sameUnits;
 
             if (!same)
               fm.format("%d %d %d%n wmo =%s%n curr=%s%n", discipline, category, number, wmoName, dt.getShortName());
@@ -426,107 +483,4 @@ public class GribWmoCodesPanel extends JPanel {
     compareTA.setText(fm.toString());
     infoWindow.show();
   }
-
-  public class CodeTableBean {
-    WmoCodeTable codeTable;
-
-    // no-arg constructor
-    public CodeTableBean() {
-    }
-
-    // create from a dataset
-    public CodeTableBean(WmoCodeTable code) {
-      this.codeTable = code;
-    }
-
-    public String getTitle() {
-      return codeTable.tableName;
-    }
-
-    public int getDiscipline() {
-      return codeTable.discipline;
-    }
-
-    public String getTableNo() {
-      Formatter f = new Formatter();
-      f.format("%d.%d", codeTable.m1, codeTable.m2);
-
-      if (codeTable.discipline >= 0)
-        f.format(".%d", codeTable.discipline);
-      if (codeTable.category >= 0)
-        f.format(".%d", codeTable.category);
-
-      return f.toString();
-    }
-
-    public int getCategory() {
-      return codeTable.category;
-    }
-    
-    public boolean isParameter() {
-      return codeTable.isParameter;
-    }
-
-    void showTable(Formatter f) {
-      f.format("Code Table %s (%s)%n", codeTable.getTableName(), codeTable.getTableId());
-      for (WmoCodeTable.TableEntry entry : codeTable.entries) {
-        f.format("  %3d: %s%n", entry.number, entry.meaning);
-      }
-    }
-  }
-
-  public class EntryBean {
-    WmoCodeTable.TableEntry te;
-
-    // no-arg constructor
-    public EntryBean() {
-    }
-
-    // create from a dataset
-    public EntryBean(WmoCodeTable.TableEntry te) {
-      this.te = te;
-    }
-
-    public String getCode() {
-      return te.code;
-    }
-
-    public String getName() {
-      return te.name;
-    }
-
-    public String getMeaning() {
-      return te.meaning;
-    }
-
-    public String getUnit() {
-      return te.unit;
-    }
-
-    public String getUdunit() {
-      if (te.unit == null) return "";                               
-      if (te.unit.length() == 0) return "";
-
-      try {
-        SimpleUnit su = SimpleUnit.factoryWithExceptions(te.unit);
-        if (su.isUnknownUnit())
-          return ("UNKNOWN");
-        else
-          return su.toString();
-      } catch (Exception ioe) {
-        return "FAIL";
-      }
-    }
-
-    public String getStatus() {
-      return te.status;
-    }
-
-    public int getLine() {
-      return te.line;
-    }
-    public int getValue() {
-       return te.value;
-     }
-  }
-}
+ */

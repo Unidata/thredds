@@ -20,7 +20,7 @@ public class Util {
    * @param unit original
    * @return cleaned up
    */
-  static public String cleanUnit(String unit) {
+  public static String cleanUnit(String unit) {
     if (unit == null) return null;
     // These specific words become dimensionless
     if (unit.equalsIgnoreCase("Proportion") || unit.equalsIgnoreCase("Numeric"))
@@ -50,7 +50,7 @@ public class Util {
    * @param name original name
    * @return cleaned up name
    */
-  static public String cleanName(String name) {
+  public static String cleanName(String name) {
     if (name == null) return null;
     int pos = name.indexOf("(see");
     if (pos < 0) pos = name.indexOf("(See");
@@ -63,8 +63,7 @@ public class Util {
     return StringUtil2.collapseWhitespace(sb.toString().trim());
   }
 
-
-  static public String cleanupDescription(String desc) {
+  public static String cleanupDescription(String desc) {
     if (desc == null) return null;
     int pos = desc.indexOf("(see");
     if (pos > 0) desc = desc.substring(0,pos);
@@ -74,4 +73,24 @@ public class Util {
     return sb.toString().trim();
   }
 
+  /**
+   * Compare two names from tables, trying to ignore superfulous characters.
+   * @return true if these are equivilent
+   */
+  public static boolean equivilantName(String name1, String name2) {
+    if (name1 == null || name2 == null) return (name1 == name2);
+    String name1clean = cleanName(name1).toLowerCase();
+    String name2clean = cleanName(name2).toLowerCase();
+    if (name1.equals(name2)) return true;
+
+    StringBuilder sb1 = new StringBuilder(name1clean);
+    StringUtil2.remove(sb1, " -’'");
+    StringBuilder sb2 = new StringBuilder(name2clean);
+    StringUtil2.remove(sb2, " -’'");
+    return sb1.toString().equals(sb2.toString());
+  }
+
+  public static void main(String[] args) {
+    System.out.printf("clean '/s' = %s%n", cleanUnit("/s"));
+  }
 }

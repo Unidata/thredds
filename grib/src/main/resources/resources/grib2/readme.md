@@ -1,5 +1,16 @@
 #Grib2 Table Management
 
+## Grib2Customizer
+
+All code (except for debugging) accesses tables through Grib2Customizer.
+
+````
+public static Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId);
+````  
+
+This allows local overrides and table augmentation by center, subcenter, localVersion and genProcessId.
+In principle it could allow masterVersion override, but in practice that doesnt seem to be used.
+
 Grib2Table reads standardTableMap.txt to assign
 (center, subCenter, masterVersion, localVersion, genProcessId) -> Grib2Table.
 
@@ -24,5 +35,16 @@ proper subclass is returned:
   }
 ````
 
-The center id indicates who created the data, but it map use a table from anoth center.
+The center id indicates who created the data, but it may use a table from another center.
 For example, center 7 (ncep), 9 (usnws) and 54 (canandian met) all use ncep tables.
+
+
+## WmoCodeFlagTables
+
+This reads in the standard WMO tables from the canonical XML files, puplished by the WMO.
+It appears that ECMWF and NCEP doe not override anything in here, and any discrepencies are inadvertant.
+  * ECMWF: see EcmwfTableCompare comparing against eccodes program.
+  * NCEP: adds abbreviations. (from screen scraping tables published on the web)
+  
+Therefore WmoCodeFlagTables are the base tables used, and local tables override or augment these.
+  

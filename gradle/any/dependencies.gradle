@@ -147,6 +147,9 @@ libraries["objenesis"] = "org.objenesis:objenesis:2.4"
 //mockito
 libraries["mockito"] = "org.mockito:mockito-core:2.+"
 
+// Fluent assertions for Java
+libraries["truth"] = "com.google.truth:truth:0.44"
+
 
 ////////////////////////////////////////// Other //////////////////////////////////////////
 

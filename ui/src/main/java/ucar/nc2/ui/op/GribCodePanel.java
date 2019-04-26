@@ -5,7 +5,7 @@
 
 package ucar.nc2.ui.op;
 
-import ucar.nc2.grib.grib2.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
 import ucar.nc2.ui.OpPanel;
 import ucar.nc2.ui.grib.GribWmoCodesPanel;
 import ucar.util.prefs.PreferencesExt;
@@ -13,44 +13,32 @@ import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import javax.swing.JComboBox;
 
-/**
- *
- */
+// LOOK: Remove this and just use GribWmoCodesPanel directly in ToolsUI.
 public class GribCodePanel extends OpPanel {
     private GribWmoCodesPanel codeTable;
 
-/**
- *
- */
     public GribCodePanel(PreferencesExt p) {
         super(p, "table:", false, false, false);
 
-        final JComboBox<WmoCodeTable.Version> modes = new JComboBox<>(WmoCodeTable.Version.values());
-        modes.setSelectedItem(WmoCodeTable.standard);
+        final JComboBox<WmoCodeFlagTables.Version> modes = new JComboBox<>(WmoCodeFlagTables.Version.values());
+        modes.setSelectedItem(WmoCodeFlagTables.standard);
         topPanel.add(modes, BorderLayout.CENTER);
         modes.addActionListener(e -> {
-            codeTable.setTable((WmoCodeTable.Version) modes.getSelectedItem());
+            codeTable.setTable((WmoCodeFlagTables.Version) modes.getSelectedItem());
         });
 
         codeTable = new GribWmoCodesPanel(prefs, buttPanel);
         add(codeTable, BorderLayout.CENTER);
     }
 
-/** */
     @Override
     public boolean process(Object command) {
         return true;
     }
 
-/** */
     @Override
     public void save() {
         codeTable.save();
         super.save();
-    }
-
-    @Override
-    public void closeOpenFiles() {
-        // Nothing to do here.
     }
 }

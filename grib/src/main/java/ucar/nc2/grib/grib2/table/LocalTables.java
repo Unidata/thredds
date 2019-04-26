@@ -65,7 +65,7 @@ public abstract class LocalTables extends Grib2Customizer {
     Grib2Parameter plocal = local.get(makeParamId(discipline, category, number));
 
     if ((category <= 191) && (number <= 191))  {
-      GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
+      GribTables.Parameter pwmo = WmoParamTable.getParameter(discipline, category, number);
       if (plocal == null) return pwmo;
       if (pwmo == null) return plocal;
 

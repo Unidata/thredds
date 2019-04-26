@@ -272,17 +272,4 @@ ozone mixing ratio - b                                      154   109           
 
     return result;
   }
-
-  public static void main(String[] args) {
-    FslLocalTables hrrr = new FslLocalTables(new Grib2Table("GSD_HRRR", 59, -1, -1, -1, 125, null, Grib2Table.Type.gsd));
-    // FslLocalTables fim = new FslLocalTables(0,0,1,116);
-    Formatter f = new Formatter();
-    Grib2Utils.compareTables("FSL-HRRR", "Standard WMO version", hrrr.getParameters(), Grib2Customizer.factory(0, 0, 0, 0, 0), f);
-    System.out.printf("%s%n", f);
-
-    Formatter f2 = new Formatter();
-    Grib2Utils.compareTables("FSL-HRRR", "NCEP Table", hrrr.getParameters(), Grib2Customizer.factory(7, 0, 0, 0, 0), f2);
-    System.out.printf("%s%n", f2);
-
-  }
 }

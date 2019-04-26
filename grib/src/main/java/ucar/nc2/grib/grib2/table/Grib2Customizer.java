@@ -12,12 +12,13 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2SectionIdentification;
 import ucar.nc2.grib.grib2.Grib2Utils;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
+import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.WmoTable;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.wmo.CommonCodeTable;
 
 import javax.annotation.concurrent.Immutable;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -52,7 +53,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   public static Grib2Customizer factory(Grib2Table grib2Table) {
-    switch (grib2Table.type) {
+    switch (grib2Table.getType()) {
       case cfsr: return CfsrLocalTables.getCust(grib2Table);
       case gempak: return GempakLocalTables.getCust(grib2Table);
       case gsd: return FslLocalTables.getCust(grib2Table);
@@ -71,8 +72,16 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return (discipline << 16) + (category << 8) + number;
   }
 
+  public static int[] unmakeParamId(int code) {
+    int number = code & 255;
+    code = code >> 8;
+    int category = code & 255;
+    int discipline = code >> 8;
+    return new int[] {discipline, category, number};
+  }
+
   public static boolean isLocal(Parameter p) {
-    return ((p.getCategory() > 191) || (p.getNumber() > 191));
+    return ((p.getDiscipline() > 191) || (p.getCategory() > 191) || (p.getNumber() > 191));
   }
 
   ///////////////////////////////////////////////////////////////
@@ -89,7 +98,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   }
 
   public String getVariableName(int discipline, int category, int parameter) {
-    String s = WmoCodeTable.getParameterName(discipline, category, parameter);
+    String s = WmoParamTable.getParameterName(discipline, category, parameter);
     if (s == null)
       s = "U" + discipline + "-" + category + "-" + parameter;
     return s;
@@ -97,12 +106,14 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   @Nullable
   public String getTableValue(String tableName, int code) {
-    return WmoCodeTable.getTableValue(tableName, code);
+    WmoCodeTable codeTable = WmoCodeFlagTables.getInstance().getCodeTable(tableName);
+    WmoCodeTable.Entry entry = (codeTable == null) ? null : codeTable.getEntry(code);
+    return (entry == null) ? null : entry.getName();
   }
 
   @Nullable
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
-    return WmoCodeTable.getParameterEntry(discipline, category, number);
+    return WmoParamTable.getParameter(discipline, category, number);
   }
 
   @Override
@@ -123,9 +134,10 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
 
   @Nullable
   public String getCategory(int discipline, int category) {
-    return getTableValue("4.1." + discipline, category);
+    WmoCodeTable catTable = WmoCodeFlagTables.getInstance().getCodeTable("4.1." + discipline);
+    WmoCodeTable.Entry entry = (catTable == null) ? null : catTable.getEntry(category);
+    return (entry == null) ? null : entry.getName();
   }
-
 
   ////////////////////////////////////////////////////////////////////////////////////////////
   // Time
@@ -521,34 +533,27 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
   /////////////////////////////////////////////////////
   // debugging
+
   @Nullable
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-    return WmoCodeTable.getParameterEntry(discipline, category, number);
+    return WmoParamTable.getParameter(discipline, category, number);
   }
 
-  // debugging
   public String getTablePath(int discipline, int category, int number) {
-    return WmoCodeTable.standard.getResourceName();
+    return WmoCodeFlagTables.standard.getResourceName();
   }
 
-  // debugging
   public List<GribTables.Parameter> getParameters() {
     List<GribTables.Parameter> allParams = new ArrayList<>(3000);
-    try {
-      WmoCodeTable.WmoTables wmo = WmoCodeTable.getWmoStandard();
-      for (String key : wmo.map.keySet()) {
-        if (key.startsWith("4.2.")) {
-          WmoCodeTable params = wmo.map.get(key);
-          allParams.addAll(params.entries);
-        }
+    for (WmoTable wmoTable : WmoCodeFlagTables.getInstance().getWmoTables()) {
+      if (wmoTable.getType() == TableType.param) {
+        WmoParamTable paramTable = new WmoParamTable(wmoTable);
+        allParams.addAll(paramTable.getParameters());
       }
-    } catch (IOException e) {
-      logger.warn("Error reading wmo tables = %s%n", e.getMessage());
     }
     return allParams;
   }
 
-  // debugging
   public void lookForProblems(Formatter f) {
   }
 

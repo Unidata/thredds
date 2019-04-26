@@ -33,13 +33,14 @@ public interface GribTables {
   String getGeneratingProcessTypeName(int code);
 
   interface Parameter {
+    /** Unsigned byte */
     int getDiscipline();
 
+    /** Unsigned byte */
     int getCategory();
 
+    /** Unsigned byte */
     int getNumber();
-
-    int getValue();
 
     String getName();
 
@@ -50,12 +51,15 @@ public interface GribTables {
 
     String getDescription();
 
+    /** Unique across all Parameter tables */
     String getId();
 
     @Nullable
     Float getFill();
 
     Float getMissing();
+
+    String getOperationalStatus();
   }
 
 

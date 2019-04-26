@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Objects;
 import ucar.unidata.util.StringUtil2;
 
@@ -28,10 +29,10 @@ public class Grib2Table {
 
   public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev}
   private static final String tableMapPath = "resources/grib2/standardTableMap.txt";
-  public static List<Grib2Table> tables = null;
+  private static ImmutableList<Grib2Table> tables = null;
   private static Grib2Table standardTable = null;
 
-  private static List<Grib2Table> init() {
+  private static ImmutableList<Grib2Table> init() {
     List<Grib2Table> result = new ArrayList<>();
     ClassLoader cl = Grib2Table.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableMapPath)) {
@@ -80,9 +81,9 @@ public class Grib2Table {
       e.printStackTrace();
     }
 
-    standardTable = new Grib2Table("WMO", 0,-1,-1,-1,-1, WmoCodeTable.standard.getResourceName(), Grib2Table.Type.wmo);
+    standardTable = new Grib2Table("WMO", 0,-1,-1,-1,-1, WmoCodeFlagTables.standard.getResourceName(), Grib2Table.Type.wmo);
     result.add(standardTable);
-    return result;
+    return ImmutableList.copyOf(result);
   }
 
   public static Grib2Table getTable(Grib2Table.Id id) {
@@ -97,17 +98,17 @@ public class Grib2Table {
     return standardTable;
   }
 
-  public static List<Grib2Table> getTables() {
+  public static ImmutableList<Grib2Table> getTables() {
     if (tables == null)
       tables = init();
 
     return tables;
   }
 
-    ///////////////////////////////////////////////////////////////////////////////////////
-  public final String name;
-  public final Type type;
-  public final Id id;
+  ///////////////////////////////////////////////////////////////////////////////////////
+  private final String name;
+  private final Type type;
+  private final Id id;
   private String path;
 
   Grib2Table(String name, int center, int subCenter, int masterVersion, int localVersion, int genProcessId, String path, Type type) {

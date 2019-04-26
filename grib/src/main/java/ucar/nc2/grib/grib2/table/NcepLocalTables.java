@@ -153,7 +153,7 @@ public class NcepLocalTables extends LocalTables {
     Grib2Parameter plocal = params.getParameter(discipline, category, number);
 
     if ((category <= 191) && (number <= 191)) {
-      GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
+      GribTables.Parameter pwmo = WmoParamTable.getParameter(discipline, category, number);
       if (plocal == null) return pwmo;
 
       // allow local table to override all but name, units
@@ -177,7 +177,7 @@ public class NcepLocalTables extends LocalTables {
     }
 
     if ((code < 192) || (code > 254) || tableName.equals("4.0"))
-      return WmoCodeTable.getTableValue(tableName, code);
+      return super.getTableValue(tableName, code);
 
     return codeMap.get(tableName + "." + code);
   }
