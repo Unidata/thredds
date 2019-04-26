@@ -12,7 +12,7 @@ import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;
@@ -188,12 +188,12 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   ///////////////////////////////////////////////////////////
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
-    private final Grib2Customizer cust;
+    private final Grib2Tables cust;
     private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;
     private final CalendarDate refDate;
 
-    public Builder2(Grib2Customizer cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
+    public Builder2(Grib2Tables cust, int code, CalendarPeriod timeUnit, CalendarDate refDate) {
       this.cust = cust;
       this.code = code;
       this.timeUnit = timeUnit;

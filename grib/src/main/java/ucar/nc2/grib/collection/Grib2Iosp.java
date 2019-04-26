@@ -8,7 +8,7 @@ package ucar.nc2.grib.collection;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -26,7 +26,7 @@ import java.util.Formatter;
 public class Grib2Iosp extends GribIosp {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
-  static String makeVariableNameFromTable(Grib2Customizer cust,
+  static String makeVariableNameFromTable(Grib2Tables cust,
       GribCollectionImmutable gribCollection,
       GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
 
@@ -90,7 +90,7 @@ public class Grib2Iosp extends GribIosp {
     }
   }
 
-  static String makeVariableLongName(Grib2Customizer cust,
+  static String makeVariableLongName(Grib2Tables cust,
       GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
 
     try (Formatter f = new Formatter()) {
@@ -172,13 +172,13 @@ public class Grib2Iosp extends GribIosp {
     return makeVariableUnits(cust, vindex);
   }
 
-  static String makeVariableUnits(Grib2Customizer tables,
+  static String makeVariableUnits(Grib2Tables tables,
       GribCollectionImmutable.VariableIndex vindex) {
     if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) return "%";
     return getVindexUnits(tables, vindex);
   }
 
-  private static String getVindexUnits(Grib2Customizer tables, GribCollectionImmutable.VariableIndex vindex) {
+  private static String getVindexUnits(Grib2Tables tables, GribCollectionImmutable.VariableIndex vindex) {
     GribTables.Parameter gp = tables.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;
@@ -186,7 +186,7 @@ public class Grib2Iosp extends GribIosp {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private Grib2Customizer cust;
+  private Grib2Tables cust;
 
   // accept grib2 or ncx files
   @Override
@@ -236,7 +236,7 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected ucar.nc2.grib.GribTables createCustomizer() {
-    cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal(),
+    cust = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal(),
             gribCollection.getGenProcessId());
     return cust;
   }

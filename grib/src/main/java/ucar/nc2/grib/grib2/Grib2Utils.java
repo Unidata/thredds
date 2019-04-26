@@ -8,7 +8,7 @@ package ucar.nc2.grib.grib2;
 import javax.annotation.Nullable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoParamTable;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.units.SimpleUnit;
@@ -156,7 +156,7 @@ public class Grib2Utils {
   }
 
   // Compare 2 tables, print report.
-  public static void compareTables(String name1, String name2, List<? extends GribTables.Parameter> test, Grib2Customizer reference, Formatter f) {
+  public static void compareTables(String name1, String name2, List<? extends GribTables.Parameter> test, Grib2Tables reference, Formatter f) {
 
     int extra = 0;
     int udunits = 0;
@@ -186,8 +186,8 @@ public class Grib2Utils {
           String cu2 = Util.cleanUnit(p2.getUnit());
 
           // eliminate common non-udunits
-          boolean isUnitless1 = isUnitless(cu1);
-          boolean isUnitless2 = isUnitless(cu2);
+          boolean isUnitless1 = Util.isUnitless(cu1);
+          boolean isUnitless2 = Util.isUnitless(cu2);
 
           if (isUnitless1 != isUnitless2) {
             f.format("  ud=%10s %s != %s for %s (%s)%n%n", p1.getId(), cu1, cu2, p1.getId(), p1.getName());
@@ -221,16 +221,6 @@ public class Grib2Utils {
       }
     }
     f.format(" missing=%d%n%n", local);
-  }
-
-  private static boolean isUnitless(String unit) {
-    if (unit == null) return true;
-    String munge = unit.toLowerCase().trim();
-    munge = StringUtil2.remove(munge, '(');
-    return munge.length()  == 0 ||
-            munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see") ||
-            munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") ||
-            munge.equals("1") ;
   }
 
 }

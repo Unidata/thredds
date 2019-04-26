@@ -22,7 +22,7 @@ import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
@@ -429,12 +429,12 @@ public abstract class GribDataReader {
   /////////////////////////////////////////////////////////
 
   private static class Grib2DataReader extends GribDataReader {
-    private final Grib2Customizer cust;
+    private final Grib2Tables cust;
 
     Grib2DataReader(GribCollectionImmutable gribCollection,
         GribCollectionImmutable.VariableIndex vindex) {
       super(gribCollection, vindex);
-      this.cust = (Grib2Customizer) gribCollection.cust;
+      this.cust = (Grib2Tables) gribCollection.cust;
     }
 
     @Override

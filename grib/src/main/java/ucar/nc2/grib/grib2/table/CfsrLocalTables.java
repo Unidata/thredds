@@ -5,7 +5,10 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import java.util.ArrayList;
+import java.util.List;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
@@ -27,24 +30,18 @@ import java.util.Formatter;
  * @author caron
  * @since 11/3/11
  */
-public class CfsrLocalTables extends NcepLocalTables {
-
-  private static final String tableName = "resources/grib2/local/cfsr.txt";
-  private static CfsrLocalTables single;
-
-  public static CfsrLocalTables getCust(Grib2Table table) {
-    if (single == null) {
-      single = new CfsrLocalTables(table);
-    }
-    return single;
+class CfsrLocalTables extends NcepLocalTables {
+  CfsrLocalTables(Grib2TableConfig config) {
+    super(config);
+    initLocalTable();
   }
 
-  private CfsrLocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
-    if (grib2Table.getPath() == null) {
-      grib2Table.setPath(tableName);
-    }
-    initLocalTable();
+  // LOOK: Have to override NcepLocalTables. Probably need delegates, not subclasses?
+  @Override
+  public List<Parameter> getParameters() {
+    List<Parameter> result = new ArrayList<>(local.values());
+    result.sort(new ParameterSort());
+    return result;
   }
 
   @Override
@@ -52,7 +49,7 @@ public class CfsrLocalTables extends NcepLocalTables {
     if ((category <= 191) && (number <= 191)) {
       return super.getTablePath(discipline, category, number);
     }
-    return tableName;
+    return config.getPath();
   }
 
   @Override
@@ -227,6 +224,7 @@ public class CfsrLocalTables extends NcepLocalTables {
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   private void initLocalTable() {
+    String tableName = config.getPath();
     ClassLoader cl = this.getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableName)) {
       if (is == null) {

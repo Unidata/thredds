@@ -15,7 +15,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.Assert2;
@@ -31,7 +31,7 @@ public class GribCoverageValidator implements GribDataValidator {
     if (cust instanceof Grib1Customizer)
       validateGrib1((Grib1Customizer) cust, rafData, dataPos, coords);
     else
-      validateGrib2((Grib2Customizer) cust, rafData, dataPos, coords);
+      validateGrib2((Grib2Tables) cust, rafData, dataPos, coords);
   }
 
   public void validateGrib1(Grib1Customizer cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
@@ -86,7 +86,7 @@ public class GribCoverageValidator implements GribDataValidator {
 
   }
 
-  public void validateGrib2(Grib2Customizer cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
+  public void validateGrib2(Grib2Tables cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
     Grib2Record gr = Grib2RecordScanner.findRecordByDrspos(rafData, dataPos);
     Grib2Pds pds = gr.getPDS();
 

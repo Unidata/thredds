@@ -11,24 +11,23 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
 import java.util.*;
 
 /**
- * Superclass for local table implementations
+ * Superclass for local table implementations.
+ * A Local table ovverides some of the methods in Grib2Tables.
  *
  * @author John
  * @since 6/22/11
  */
-public abstract class LocalTables extends Grib2Customizer {
-
-  //////////////////////////////////////////////////////////////////////
+abstract class LocalTables extends Grib2Tables {
   protected Map<Integer, Grib2Parameter> local = new HashMap<>(100);  // subclass must set
 
-  LocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
+  LocalTables(Grib2TableConfig config) {
+    super(config);
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return grib2Table.getPath();
+    return config.getPath();
   }
 
   @Override

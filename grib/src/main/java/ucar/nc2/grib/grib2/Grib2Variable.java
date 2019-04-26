@@ -4,7 +4,7 @@
  */
 package ucar.nc2.grib.grib2;
 
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 
 /**
  * Used to group records into a CDM variable
@@ -16,13 +16,13 @@ import ucar.nc2.grib.grib2.table.Grib2Customizer;
  */
 public class Grib2Variable {
 
-  public static int cdmVariableHash(Grib2Customizer cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge, boolean useGenType) {
+  public static int cdmVariableHash(Grib2Tables cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge, boolean useGenType) {
     Grib2Variable gv = new Grib2Variable(cust, gr, gdsHashOverride, intvMerge, useGenType);
     return gv.hashCode();
   }
 
   ////////////////////////////////////////////////////////////////////////
-  private final Grib2Customizer cust;
+  private final Grib2Tables cust;
   private final int discipline, center, subcenter;
   private final int gdsHash;
   private final Grib2Gds gds;
@@ -39,7 +39,7 @@ public class Grib2Variable {
    * @param intvMerge  should intervals be merged? default true
    * @param useGenType should genProcessType be used in hash? default false
    */
-  public Grib2Variable(Grib2Customizer cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge, boolean useGenType) {
+  public Grib2Variable(Grib2Tables cust, Grib2Record gr, int gdsHashOverride, boolean intvMerge, boolean useGenType) {
     this.cust = cust;
     this.discipline = gr.getDiscipline();
     this.center = gr.getId().getCenter_id();
@@ -54,7 +54,7 @@ public class Grib2Variable {
   /**
    * Used when building from ncx (full records)
    */
-  public Grib2Variable(Grib2Customizer cust, int discipline, int center, int subcenter, Grib2Gds gds, Grib2Pds pds, boolean intvMerge, boolean useGenType) {
+  public Grib2Variable(Grib2Tables cust, int discipline, int center, int subcenter, Grib2Gds gds, Grib2Pds pds, boolean intvMerge, boolean useGenType) {
     this.cust = cust;
     this.discipline = discipline;
     this.center = center;

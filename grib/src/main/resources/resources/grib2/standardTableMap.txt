@@ -1,26 +1,26 @@
 # resources\grib2\standardTableMap.txt
-# center; subcenter; master; local; genProcess; Grib2Table.Type; resource name (opt)
+# center; subcenter; master; local; genProcess; Type; name; resource name (opt)
 #
-# center 7 subcenter has non-standard time interval computation
-7;     14; 1; 0; -1;      nwsDev; NWS Meteorological Development Laboratory
+# center 7 subcenter 14 has non-standard time interval computation
+7;     14; 1; 0; -1;      nwsDev; NWS Meteorological Development Laboratory; resources/grib2/ncep/v21.0.0/
 #
 # center 7 (ncep), 9 (usnws) and 54 (canandian met) all use ncep tables
-7;     -1; -1; -1; -1;    ncep; ncep
-9;     -1; -1; -1; -1;    ncep; usnws
-54;    -1; -1; -1; -1;    ncep; canadian met
+7;     -1; -1; -1; -1;    ncep; ncep;     resources/grib2/ncep/v21.0.0/
+9;     -1; -1; -1; -1;    ncep; usnws;    resources/grib2/ncep/v21.0.0/
+54;    -1; -1; -1; -1;    ncep; canadian met; resources/grib2/ncep/v21.0.0/
 #
 # FSL HRRR
-59;    -1; -1; -1; 125;   gsd; fsl hrrr
+59;    -1; -1; -1; 125;   gsd; FSL HRRR;  resources/grib2/noaa_gsd/Fsl-hrrr2.csv
 # RDA CSFR
-60;    1; 2; 1; 197;   cfsr; rda cfsr
+60;    1; 2; 1; 197;   cfsr; RDA CFSR;  resources/grib2/local/cfsr.txt
 #
-# center 8, subcenter 0 and -9999 use ndfd table
-8;      0; -1; -1; -1;    ndfd; ndfd
-8;  -9999; -1; -1; -1;    ndfd; ndfd
+# center 8, subcenter 0 and -9999 use NDFD table
+8;      0; -1; -1; -1;    ndfd; NDFD
+8;  -9999; -1; -1; -1;    ndfd; NDFD
 #
 # center 40 (KMA)
-40;     -1; -1; -1; -1;   kma; korea met
+40;     -1; -1; -1; -1;   kma; Korea met; resources/grib2/local/kma-ver5.txt
 #
 # MRMS coming from NCEP
 # center 161 (US NOAA OAR), subcenter 0, discipline 209
-161;	0; -1; -1; -1; mrms; mrms
+161;	0; -1; -1; -1; mrms; nssl MULTI-RADAR/MULTI-SENSOR SYSTEM;

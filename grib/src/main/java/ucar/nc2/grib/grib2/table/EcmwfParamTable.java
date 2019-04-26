@@ -111,7 +111,7 @@ public class EcmwfParamTable implements Grib2ParamTableInterface {
       System.out.printf("readEcmwfTable path= %s%n", path);
     }
 
-    ClassLoader cl = Grib2Table.class.getClassLoader();
+    ClassLoader cl = Grib2TableConfig.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(path)) {
       if (is == null) {
         throw new IllegalStateException("Cant find " + path);

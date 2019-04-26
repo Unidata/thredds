@@ -10,10 +10,8 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.io.RandomAccessFile;
-
-import java.io.IOException;
 
 /**
  * Build a GribCollection object for Grib-2 files. Only from ncx files.
@@ -63,7 +61,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   ////////////////////////////////////////////////////////////////
 
-  protected Grib2Customizer cust; // gets created in readIndex, after center etc is read in
+  protected Grib2Tables cust; // gets created in readIndex, after center etc is read in
 
   Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config,
       org.slf4j.Logger logger) {
@@ -86,7 +84,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
   }
 
   protected GribTables makeCustomizer() {
-    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.genProcessId);
+    this.cust = Grib2Tables.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.genProcessId);
     return this.cust;
   }
 

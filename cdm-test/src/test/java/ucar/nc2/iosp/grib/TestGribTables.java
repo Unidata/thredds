@@ -32,35 +32,29 @@
 
 package ucar.nc2.iosp.grib;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
-import ucar.nc2.grib.grib2.table.Grib2Table;
-import ucar.nc2.grib.grib2.table.KmaLocalTables;
-import ucar.unidata.util.test.TestDir;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.grib.grib2.table.Grib2TablesId;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
-/**
- * Description
- *
- * @author John
- * @since 12/18/2014
- */
 public class TestGribTables {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   @Test
   public void testKmaTable() {
-    Grib2Table.Id id = new Grib2Table.Id(40,-1,-1,-1,-1);
-    Grib2Table table = Grib2Table.getTable(id);
-    KmaLocalTables kma = KmaLocalTables.getCust(table);
-    assert kma != null;
-    assert kma.getParameters().size() > 0;
+    Grib2Tables kma = Grib2Tables.factory(40,-1,-1,-1,-1);
+    assertThat(kma).isNotNull();
+    assertThat(kma.getType()).isEqualTo(Grib2TablesId.Type.kma);
+    assertThat(kma.getParameters()).isNotEmpty();
     for (GribTables.Parameter p : kma.getParameters())
       System.out.printf("%s%n", p);
   }

@@ -22,14 +22,8 @@ import ucar.nc2.time.CalendarPeriod;
  * @since 1/28/2016.
  */
 public class NwsMetDevTables extends NcepLocalTables {
-  private static NwsMetDevTables single;
 
-  public static NwsMetDevTables getCust(Grib2Table table) {
-    if (single == null) single = new NwsMetDevTables(table);
-    return single;
-  }
-
-  private NwsMetDevTables(Grib2Table grib2Table) {
+  NwsMetDevTables(Grib2TableConfig grib2Table) {
     super(grib2Table);
   }
 

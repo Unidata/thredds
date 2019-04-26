@@ -28,7 +28,7 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoParamTable;
 import ucar.nc2.ui.ReportPanel;
 import ucar.nc2.util.Counters;
@@ -636,10 +636,10 @@ public class Grib2ReportPanel extends ReportPanel {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
-    Grib2Customizer cust = null;
+    Grib2Tables cust = null;
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
       if (cust == null)
-        cust = Grib2Customizer.factory(gr);
+        cust = Grib2Tables.factory(gr);
 
       Grib2Pds pds = gr.getPDS();
       counters.count("template", pds.getTemplateNumber());
@@ -970,7 +970,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
     Grib2Index index = createIndex(mf, f);
     if (index == null) return 0;
-    Grib2Customizer cust = null;
+    Grib2Tables cust = null;
 
     int count = 0;
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
@@ -1000,7 +1000,7 @@ public class Grib2ReportPanel extends ReportPanel {
           shutup = true;
         }
 
-        if (cust == null) cust = Grib2Customizer.factory(gr);
+        if (cust == null) cust = Grib2Tables.factory(gr);
         double len = cust.getForecastTimeIntervalSizeInHours(pds);
         counters.count("TimeIntervalsLength", (int) len);
         int[] intv = cust.getForecastTimeIntervalOffset(gr);

@@ -15,7 +15,7 @@ import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -34,7 +34,7 @@ import java.util.*;
  */
 class Grib2CollectionBuilder extends GribCollectionBuilder {
   private final FeatureCollectionConfig.GribConfig gribConfig;
-  private Grib2Customizer cust;
+  private Grib2Tables cust;
 
   // LOOK prob name could be dcm.getCollectionName()
   Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
@@ -90,7 +90,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
         for (Grib2Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
           if (this.cust == null) {
-            this.cust = Grib2Customizer.factory(gr);
+            this.cust = Grib2Tables.factory(gr);
             cust.setTimeUnitConverter(gribConfig.getTimeUnitConverter());
           }
           if (filterIntervals(gr, gribConfig.intvFilter)) {
@@ -304,7 +304,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       counter.recordsTotal += total;
     }
 
-    public void showInfo(Formatter f, Grib2Customizer tables) {
+    public void showInfo(Formatter f, Grib2Tables tables) {
       GribRecordStats all = new GribRecordStats();
 
       for (VariableBag vb : gribvars) {

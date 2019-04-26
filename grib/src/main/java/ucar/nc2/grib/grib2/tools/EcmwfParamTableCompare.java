@@ -48,8 +48,8 @@ public class EcmwfParamTableCompare {
           String cu2 = Util.cleanUnit(p2.getUnit());
 
           // eliminate common non-udunits
-          boolean isUnitless1 = isUnitless(cu1);
-          boolean isUnitless2 = isUnitless(cu2);
+          boolean isUnitless1 = Util.isUnitless(cu1);
+          boolean isUnitless2 = Util.isUnitless(cu2);
 
           if (isUnitless1 != isUnitless2) {
             f.format("  unitless for %10s %s != %s%n", p1.getId(), cu1, cu2);
@@ -89,19 +89,6 @@ public class EcmwfParamTableCompare {
           missing);
     }
   }
-
-  private static boolean isUnitless(String unit) {
-    if (unit == null) {
-      return true;
-    }
-    String munge = unit.toLowerCase().trim();
-    munge = StringUtil2.remove(munge, '(');
-    return munge.length() == 0 ||
-        munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see") ||
-        munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") ||
-        munge.equals("1");
-  }
-
 
   public static void readParamTable(int discipline, int category) {
     Grib2ParamTableInterface latest = WmoCodeFlagTables.getInstance().getParamTable(discipline, category);

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.*;
@@ -23,47 +24,49 @@ import java.util.*;
 
 /**
  * Grib 2 Tables - allows local overrides and augmentation
- * This class implements the standard WMO tables, local tables are subclasses
+ * This class serves the standard WMO tables, local tables are subclasses.
  *
  * @author caron
  * @since 4/3/11
  */
 @Immutable
-public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConverter {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Customizer.class);
-  private static Map<Grib2Table.Id, Grib2Customizer> tables = new HashMap<>();
-  private static Grib2Customizer wmoStandardTable = null;
+public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Tables.class);
+  private static Map<Grib2TablesId, Grib2Tables> tables = new HashMap<>();
+  private static Grib2Tables wmoStandardTable = null;
 
-  public static Grib2Customizer factory(Grib2Record gr) {
+  public static Grib2Tables factory(Grib2Record gr) {
     Grib2SectionIdentification ids = gr.getId();
     Grib2Pds pds = gr.getPDS();
     return factory(ids.getCenter_id(), ids.getSubcenter_id(), ids.getMaster_table_version(), ids.getLocal_table_version(), pds.getGenProcessId());
   }
 
-  public static Grib2Customizer factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
-    Grib2Table.Id id = new Grib2Table.Id(center, subCenter, masterVersion, localVersion, genProcessId);
-    Grib2Customizer cust = tables.get(id);
+  // Lazy instantiation.
+  public static Grib2Tables factory(int center, int subCenter, int masterVersion, int localVersion, int genProcessId) {
+    Grib2TablesId id = new Grib2TablesId(center, subCenter, masterVersion, localVersion, genProcessId);
+    Grib2Tables cust = tables.get(id);
     if (cust != null) return cust;
 
-    Grib2Table table = Grib2Table.getTable(id);
-    cust = factory(table);
+    // note that we match on id, so same Grib2Customizer may be mapped to multiple id's (eg match on -1)
+    Grib2TableConfig config = Grib2TableConfig.matchTable(id);
+    cust = build(config);
 
-    tables.put(id, cust);   // note that we use id, so same Grib2Customizer may be mapped to multiple id's (eg match on -1)
+    tables.put(id, cust);
     return cust;
   }
 
-  public static Grib2Customizer factory(Grib2Table grib2Table) {
-    switch (grib2Table.getType()) {
-      case cfsr: return CfsrLocalTables.getCust(grib2Table);
-      case gempak: return GempakLocalTables.getCust(grib2Table);
-      case gsd: return FslLocalTables.getCust(grib2Table);
-      case kma: return KmaLocalTables.getCust(grib2Table);
-      case ncep: return NcepLocalTables.getCust(grib2Table);
-      case ndfd: return NdfdLocalTables.getCust(grib2Table);
-      case mrms: return MrmsLocalTables.getCust(grib2Table);
-      case nwsDev: return NwsMetDevTables.getCust(grib2Table);
+  private static Grib2Tables build(Grib2TableConfig config) {
+    switch (config.getType()) {
+      case cfsr: return new CfsrLocalTables(config);
+      case gempak: return new GempakLocalTables(config); // LOOK: not used
+      case gsd: return new FslHrrrLocalTables(config);
+      case kma: return new KmaLocalTables(config);
+      case ncep: return new NcepLocalTables(config);
+      case ndfd: return new NdfdLocalTables(config);
+      case mrms: return new MrmsLocalTables(config);
+      case nwsDev: return new NwsMetDevTables(config);
       default:
-        if (wmoStandardTable == null) wmoStandardTable = new Grib2Customizer(grib2Table);
+        if (wmoStandardTable == null) wmoStandardTable = new Grib2Tables(config);
         return wmoStandardTable;
     }
   }
@@ -84,13 +87,36 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
     return ((p.getDiscipline() > 191) || (p.getCategory() > 191) || (p.getNumber() > 191));
   }
 
-  ///////////////////////////////////////////////////////////////
+  public static ImmutableList<Grib2Tables> getAllRegisteredTables() {
+    ImmutableList.Builder<Grib2Tables> builder = ImmutableList.builder();
+    for (Grib2TableConfig config : Grib2TableConfig.getTables()) {
+      builder.add(build(config));
+    }
+    return builder.build();
+  }
 
-  protected final Grib2Table grib2Table;
+  ///////////////////////////////////////////////////////////////
+  protected final Grib2TableConfig config;
   private boolean timeUnitWarnWasSent;
 
-  protected Grib2Customizer(Grib2Table grib2Table) {
-    this.grib2Table = grib2Table;
+  protected Grib2Tables(Grib2TableConfig config) {
+    this.config = config;
+  }
+
+  public String getName() {
+    return config.getName();
+  }
+
+  public String getPath() {
+    return config.getPath();
+  }
+
+  public Grib2TablesId getConfigId() {
+    return config.getConfigId();
+  }
+
+  public Grib2TablesId.Type getType() {
+    return config.getType();
   }
 
   public String getVariableName(Grib2Record gr) {
@@ -107,7 +133,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   @Nullable
   public String getTableValue(String tableName, int code) {
     WmoCodeTable codeTable = WmoCodeFlagTables.getInstance().getCodeTable(tableName);
-    WmoCodeTable.Entry entry = (codeTable == null) ? null : codeTable.getEntry(code);
+    Grib2CodeTableInterface.Entry entry = (codeTable == null) ? null : codeTable.getEntry(code);
     return (entry == null) ? null : entry.getName();
   }
 
@@ -135,7 +161,7 @@ public class Grib2Customizer implements ucar.nc2.grib.GribTables, TimeUnitConver
   @Nullable
   public String getCategory(int discipline, int category) {
     WmoCodeTable catTable = WmoCodeFlagTables.getInstance().getCodeTable("4.1." + discipline);
-    WmoCodeTable.Entry entry = (catTable == null) ? null : catTable.getEntry(category);
+    Grib2CodeTableInterface.Entry entry = (catTable == null) ? null : catTable.getEntry(category);
     return (entry == null) ? null : entry.getName();
   }
 

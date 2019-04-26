@@ -8,7 +8,7 @@ import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables.TemplateTable;
 import ucar.nc2.util.Misc;
@@ -36,7 +36,7 @@ public class Grib2Show {
     }
   }
 
-  public static void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Customizer cust) {
+  public static void showCompleteGribRecord(Formatter f, String path, Grib2Record gr, Grib2Tables cust) {
     f.format("File=%d %s offset=%d%n", gr.getFile(), path, gr.getIs().getStartPos());
     f.format("Header=\"");
     showBytes(f, gr.getHeader(), 100);
@@ -107,19 +107,19 @@ public class Grib2Show {
     f.format("  Data Length        = %d%n", ds.getMsgLength());
   }
 
-  public static void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Customizer cust) {
+  public static void showGdsTemplate(Grib2SectionGridDefinition gds, Formatter f, Grib2Tables cust) {
     int template = gds.getGDSTemplateNumber();
     byte[] raw = gds.getRawBytes();
     showRawWithTemplate("3." + template, raw, f, cust);
   }
 
-  public static void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Customizer cust) {
+  public static void showPdsTemplate(Grib2SectionProductDefinition pdss, Formatter f, Grib2Tables cust) {
     int template = pdss.getPDSTemplateNumber();
     byte[] raw = pdss.getRawBytes();
     showRawWithTemplate("4." + template, raw, f, cust);
   }
 
-  private static void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Customizer cust) {
+  private static void showRawWithTemplate(String key, byte[] raw, Formatter f, Grib2Tables cust) {
     TemplateTable template = WmoTemplateTables.getInstance().getTemplateTable(key);
     if (template == null)
       f.format("Cant find template %s%n", key);
@@ -127,7 +127,7 @@ public class Grib2Show {
       template.showInfo(cust, raw, f);
   }
 
-  public static void showProcessedPds(Grib2Customizer cust, Grib2Pds pds, int discipline, Formatter f) {
+  public static void showProcessedPds(Grib2Tables cust, Grib2Pds pds, int discipline, Formatter f) {
     int template = pds.getTemplateNumber();
     f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));
     f.format(" Discipline %3d     = %s%n", discipline, cust.getTableValue("0.0", discipline));
@@ -153,7 +153,7 @@ public class Grib2Show {
     f.format(" Gen Process Ttype (from table 4.3) = %3s %n", cust.getTableValue("4.3", pds.getGenProcessType()));
   }
 
-  public static void showProcessedGridRecord(Grib2Customizer cust, Grib2Record gr, Formatter f) {
+  public static void showProcessedGridRecord(Grib2Tables cust, Grib2Record gr, Formatter f) {
     GribTables.Parameter param = cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
     if (param != null) {
       f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
