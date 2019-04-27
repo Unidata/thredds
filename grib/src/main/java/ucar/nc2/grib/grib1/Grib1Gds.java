@@ -193,7 +193,7 @@ public abstract class Grib1Gds {
       1     Direction increments given
     2 0     Earth assumed spherical with radius 6367.47 km
       1     Earth assumed oblate spheroidal with size as determined by IAU in 1965 (6378.160 km, 6356.775 km, f = 1/297.0)
-  3–4       Reserved
+    3–4     Reserved
     5 0     Resolved u- and v-components of vector quantities relative to easterly and northerly directions
       1     Resolved u- and v-components of vector quantities relative to the defined grid in the direction of increasing x and y (or i and j) coordinates respectively
    6–8 0    Reserved – set to zero */

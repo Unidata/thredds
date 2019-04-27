@@ -23,22 +23,22 @@ public final class GribNumbers {
 
   /**
    * Test if the given gribBitNumber is set in the test value.
-   * @param test test the 8 bits in this value .
+   * @param value test the 8 bits in this value .
    * @param gribBitNumber one based, starting from highest bit. Must be between 1-8.
    * @return true if the given gribBitNumber is set.
    */
-  public static boolean testGribBitIsSet(int test, int gribBitNumber) {
-    return (test & bitmask[gribBitNumber-1]) != 0;
+  public static boolean testGribBitIsSet(int value, int gribBitNumber) {
+    return (value & bitmask[gribBitNumber-1]) != 0;
   }
 
   /**
    * Test if the given bit is set in the test value.
-   * @param test test the 8 bits in this value .
+   * @param value test the 8 bits in this value .
    * @param bit zero based, starting from highest bit. Must be between 0-7.
    * @return true if the given bit is set.
    */
-  public static boolean testBitIsSet(int test, int bit) {
-    return (test & bitmask[bit]) != 0;
+  public static boolean testBitIsSet(int value, int bit) {
+    return (value & bitmask[bit]) != 0;
   }
 
   /**

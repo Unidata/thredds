@@ -174,13 +174,13 @@ public class Grib1Record {
     f.format("        data = %s%n", info.getGridPointS());
     f.format("     packing = %s%n", info.getPackingS());
     f.format("        type = %s%n", info.getDataTypeS());
-    f.format("        more = %s%n", info.hasMore());
+    f.format(" moreOctet14 = %s%n", info.hasOctet14());
     f.format("    binscale = %d%n", info.binaryScaleFactor);
     f.format("    decscale = %d%n", info.decimalScaleFactor);
     f.format("reference value = %f%n", info.referenceValue);
     f.format("      nbits = %d%n", info.numberOfBits);
 
-    Grib1DataReader.showInfo(f, raf, dataSection.getStartingPosition());
+    Grib1DataReader.showComplexPackingInfo(f, raf, dataSection.getStartingPosition());
   }
 
   /**

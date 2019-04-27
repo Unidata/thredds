@@ -86,30 +86,25 @@ public class Grib1DataReader {
   public float[] getData(RandomAccessFile raf, byte[] bitmap) throws IOException {
     GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
-    boolean isGridPointData = !GribNumbers.testGribBitIsSet(info.flag, 1);
-    boolean isSimplePacking = !GribNumbers.testGribBitIsSet(info.flag, 2);
-
-    if (!isGridPointData) {
+    if (!info.isGridPointData()) {
       logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data for {}", raf.getLocation());
       throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data");
     }
 
-    return isSimplePacking ? readSimplePacking(raf, bitmap, info) : readExtendedComplexPacking(raf, bitmap, info);
+    return info.isSimplePacking() ? readSimplePacking(raf, bitmap, info) : readExtendedComplexPacking(raf, bitmap, info);
   }
 
-    /*  From WMO Manual on Codes  I-2 bi - 5
-
+  /*  From WMO Manual on Codes  I-2 bi - 5
   Data shall be coded in the form of non-negative scaled differences from a reference value.
   Notes:
   (1) The reference value is normally the minimum value of the data set which is represented.
   (2) The actual value Y (in the units of Code table 2) is linked to the coded value X, the reference
-  value R, the binary scale factor E and the decimal scale factor D by means of the following formula:
-    Y * 10 ^ D = R + X * 2 ^ E
-*/
+      value R, the binary scale factor E and the decimal scale factor D by means of the following formula:
+      Y * 10 ^ D = R + X * 2 ^ E
+  */
 
-  // raf will be at byte 12
+  // raf will be positioned at byte 12
   private float[] readSimplePacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
-
     boolean isConstant = (info.numberOfBits == 0);
     int unusedbits = info.flag & 15;
 
@@ -221,6 +216,7 @@ public class Grib1DataReader {
   value for that subset is a constant given by R + (Xi × 2E). This is a form of run-length encoding in which a string of
   identical values is represented by one value; the replication count for that value is, implicitly, in the secondary bit-map.*/
 
+  // LOOK readComplexPacking doesnt work.
   // raf will be at byte 12
   private float[] readComplexPacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
 
@@ -244,41 +240,41 @@ public class Grib1DataReader {
     int P2 = GribNumbers.uint2(raf);
     raf.read(); // skip
 
-      /*
-From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18/definitions/grib1/11-2.table?rev=4
+    /*
+      From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18/definitions/grib1/11-2.table?rev=4
 
-# CODE TABLE 11-2, Flag
-#  Undocumented use of octet 14 extededFlags
-#  Taken from d2ordr.F
-#         R------- only bit 1 is reserved.
-#         -0------ single datum at each grid point.
-#         -1------ matrix of values at each grid point.
-#         --0----- no secondary bit map.
-#         --1----- secondary bit map present.
-#         ---0---- second order values have constant width.
-#         ---1---- second order values have different widths.
-#         ----0--- no general extended second order packing.
-#         ----1--- general extended second order packing used.
-#         -----0-- standard field ordering in section 4.
-#         -----1-- boustrophedonic ordering in section 4.
-1 0 Reserved
-1 1 Reserved
-2 0 Single datum at each grid point
-2 1 Matrix of values at each grid point
-3 0 No secondary bitmap Present
-3 1 Secondary bitmap Present
-4 0 Second-order values constant width
-4 1 Second-order values different widths
-5 0 no general extended second order packing
-5 1 general extended second order packing used
-6 0 standard field ordering in section 4
-6 1 boustrophedonic ordering in section 4
-#         ------00 no spatial differencing used.
-#         ------01 1st-order spatial differencing used.
-#         ------10 2nd-order    "         "         " .
-#         ------11 3rd-order    "         "         " .
-
-   */
+      # CODE TABLE 11-2, Flag
+      #  Undocumented use of octet 14 extededFlags
+      #  Taken from d2ordr.F
+      #         R------- only bit 1 is reserved.
+      #         -0------ single datum at each grid point.
+      #         -1------ matrix of values at each grid point.
+      #         --0----- no secondary bit map.
+      #         --1----- secondary bit map present.
+      #         ---0---- second order values have constant width.
+      #         ---1---- second order values have different widths.
+      #         ----0--- no general extended second order packing.
+      #         ----1--- general extended second order packing used.
+      #         -----0-- standard field ordering in section 4.
+      #         -----1-- boustrophedonic ordering in section 4.
+    Bit Value Meaning
+      1 0 Reserved
+      1 1 Reserved
+      2 0 Single datum at each grid point
+      2 1 Matrix of values at each grid point
+      3 0 No secondary bitmap Present
+      3 1 Secondary bitmap Present
+      4 0 Second-order values constant width
+      4 1 Second-order values different widths
+      5 0 no general extended second order packing
+      5 1 general extended second order packing used
+      6 0 standard field ordering in section 4
+      6 1 boustrophedonic ordering in section 4
+      #         ------00 no spatial differencing used.
+      #         ------01 1st-order spatial differencing used.
+      #         ------10 2nd-order    "         "         " .
+      #         ------11 3rd-order    "         "         " .
+    */
     boolean hasBitmap2 = GribNumbers.testGribBitIsSet(flagExt, 3);
     boolean hasDifferentWidths = GribNumbers.testGribBitIsSet(flagExt, 4);
     boolean useGeneralExtended = GribNumbers.testGribBitIsSet(flagExt, 5);
@@ -334,6 +330,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     return new float[1]; // ?? fake
   }
 
+  // LOOK not clear if this works - needs testing.
   // raf will be at byte 12
   private float[] readExtendedComplexPacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
 
@@ -555,12 +552,10 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     f.format("%s: filePos=%d, offset=%d expect=%d%n", what, raf.getFilePointer(), offset, expectOffset);
   }
 
-  public static void showInfo(Formatter f, RandomAccessFile raf, long startPos) throws IOException {
+  public static void showComplexPackingInfo(Formatter f, RandomAccessFile raf, long startPos) throws IOException {
     GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
-    boolean isGridPointData = !GribNumbers.testGribBitIsSet(info.flag, 1);
-    boolean isSimplePacking = !GribNumbers.testGribBitIsSet(info.flag, 2);
-    if (!isGridPointData || isSimplePacking) return;
+    if (!info.isGridPointData() || info.isSimplePacking()) return;
 
     int N1 = GribNumbers.uint2(raf);
     int flagExt = raf.read();

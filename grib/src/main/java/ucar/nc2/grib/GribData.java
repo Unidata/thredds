@@ -70,16 +70,17 @@ public class GribData {
     1 Integer values (in the original data) are represented
   4 0 No additional flags at octet 14
     1 Octet 14 contains additional flag bits
+
   The following gives the meaning of the bits in octet 14 ONLY if bit 4 is set to 1. Otherwise octet 14 contains
   regular binary data.
   Bit No. Value Meaning
   5 Reserved – set to zero
   6 0 Single datum at each grid point
-  1 Matrix of values at each grid point
+    1 Matrix of values at each grid point
   7 0 No secondary bit-maps
-  1 Secondary bit-maps present
+    1 Secondary bit-maps present
   8 0 Second-order values constant width
-  1 Second-order values different widths
+    1 Second-order values different widths
   9–12 Reserved for future use
   Notes:
   (1) Bit 4 shall be set to 1 to indicate that bits 5 to 12 are contained in octet 14 of the Binary data section.
@@ -105,24 +106,24 @@ public class GribData {
     // GRIB-1 only
     public int flag;
 
-    public boolean isGridPoint() {
-      return GribNumbers.testGribBitIsSet(flag, 1);
+    public boolean isGridPointData() {
+      return !GribNumbers.testGribBitIsSet(flag, 1);
     }
 
     public boolean isSimplePacking() {
-      return GribNumbers.testGribBitIsSet(flag, 2);
+      return !GribNumbers.testGribBitIsSet(flag, 2);
     }
 
-    public boolean isFloatingPoint() {
-      return GribNumbers.testGribBitIsSet(flag, 3);
+    public boolean hasFloatingPointValues() {
+      return !GribNumbers.testGribBitIsSet(flag, 3);
     }
 
-    public boolean hasMore() {
+    public boolean hasOctet14() {
       return GribNumbers.testGribBitIsSet(flag,  4);
     }
 
     public String getGridPointS() {
-      return isGridPoint() ? "grid point" : "Spherical harmonic coefficients";
+      return isGridPointData() ? "Grid-point" : "Spherical harmonic coefficients";
     }
 
     public String getPackingS() {
@@ -130,7 +131,7 @@ public class GribData {
     }
 
     public String getDataTypeS() {
-      return isFloatingPoint() ? "float" : "int";
+      return hasFloatingPointValues() ? "float" : "int";
     }
 
     private float DD, EE;

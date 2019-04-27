@@ -236,7 +236,7 @@ public class Grib2Record {
   public float[] readData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
-    Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
+    Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drss.getDrs(raf);
@@ -255,7 +255,7 @@ public class Grib2Record {
   public int[] readRawData(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
-    Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
+    Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drss.getDrs(raf);
@@ -268,7 +268,7 @@ public class Grib2Record {
   public Grib2Drs.Type40 readDataTest(RandomAccessFile raf) throws IOException {
     Grib2Gds gds = getGDS();
 
-    Grib2DataReader2 reader = new Grib2DataReader2(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
+    Grib2DataReader reader = new Grib2DataReader(drss.getDataTemplate(), gdss.getNumberPoints(), drss.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drss.getDrs(raf);
@@ -294,7 +294,7 @@ public class Grib2Record {
     Grib2SectionData dataSection = new Grib2SectionData(raf);
 
     Grib2Gds gds = getGDS();
-    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
+    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdss.getNumberPoints(), drs.getDataPoints(),
             getScanMode(), gds.getNxRaw(), dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drs.getDrs(raf);
@@ -329,7 +329,7 @@ public class Grib2Record {
     if (bmsPos > 0)
       bms = Grib2SectionBitMap.factory(raf, bmsPos);
 
-    Grib2DataReader2 reader = new Grib2DataReader2(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
+    Grib2DataReader reader = new Grib2DataReader(drs.getDataTemplate(), gdsNumberPoints, drs.getDataPoints(),
             scanMode, nx, dataSection.getStartingPosition(), dataSection.getMsgLength());
 
     Grib2Drs gdrs = drs.getDrs(raf);

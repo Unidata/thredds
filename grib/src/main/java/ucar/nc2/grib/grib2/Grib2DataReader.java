@@ -30,13 +30,11 @@ import java.util.Arrays;
  * @see "unpk_complex in wgrib2 code"
  * @since 4/2/11
  */
-public class Grib2DataReader2 {
+public class Grib2DataReader {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2DataReader.class);
 
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory
-      .getLogger(Grib2DataReader2.class);
-
+  // look up table: 2**i - 1
   private static final int[] bitsmv1 = new int[31];
-
   static {
     for (int i = 0; i < 31; i++) {
       bitsmv1[i] = (int) java.lang.Math.pow((double) 2, (double) i) - 1;
@@ -56,7 +54,7 @@ public class Grib2DataReader2 {
   private int bitmapIndicator;
   private byte[] bitmap;
 
-  Grib2DataReader2(int dataTemplate, int totalNPoints, int dataNPoints, int scanMode, int nx,
+  Grib2DataReader(int dataTemplate, int totalNPoints, int dataNPoints, int scanMode, int nx,
       long startPos, int dataLength) {
     this.dataTemplate = dataTemplate;
     this.totalNPoints = totalNPoints;

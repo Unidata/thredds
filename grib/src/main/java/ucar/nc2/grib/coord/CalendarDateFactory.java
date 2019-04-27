@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * Reuse immutable calendar date objects.
+ * LOOK: This optimization should go away.
  *
  * @author caron
  * @since 4/3/2015
