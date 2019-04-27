@@ -1,4 +1,4 @@
-package ucar.coord;
+package ucar.nc2.grib.coord;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * Test SparseArray class.
  *
  * @author caron
  * @since 12/12/13

@@ -1,4 +1,4 @@
-package ucar.coord;
+package ucar.nc2.grib.coord;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -11,7 +11,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * Test CoordinateND class.
  *
  * @author caron
  * @since 12/10/13
@@ -46,7 +46,7 @@ public class TestCoordinateND {
     Assert2.assertNearlyEquals(reindexed.getSparseArray().getDensity(), .826446f);
   }
 
-  static public CoordinateND<Short> makeCoordinateND(int rank, int size) {
+  public static CoordinateND<Short> makeCoordinateND(int rank, int size) {
     List<Coordinate> coords = new ArrayList<>();
     for (int i=0; i<rank; i++)
       coords.add(new TestCoordinate(size*(i+1)));
@@ -69,7 +69,7 @@ public class TestCoordinateND {
     return new CoordinateND<>(coords, sa);
   }
 
-  static public CoordinateND<Short> makeCoordinateND(int size) {
+  public static CoordinateND<Short> makeCoordinateND(int size) {
     List<Coordinate> coords = new ArrayList<>();
     coords.add(TestCoordinate.factory(size, Coordinate.Type.runtime));
     coords.add(TestCoordinate.factory(size, Coordinate.Type.time));

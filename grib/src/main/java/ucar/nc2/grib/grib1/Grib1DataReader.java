@@ -8,7 +8,6 @@ package ucar.nc2.grib.grib1;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.iosp.BitReader;
-import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.EOFException;
@@ -87,8 +86,8 @@ public class Grib1DataReader {
   public float[] getData(RandomAccessFile raf, byte[] bitmap) throws IOException {
     GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
-    boolean isGridPointData = !GribNumbers.testBitIsSet(info.flag, 1);
-    boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
+    boolean isGridPointData = !GribNumbers.testGribBitIsSet(info.flag, 1);
+    boolean isSimplePacking = !GribNumbers.testGribBitIsSet(info.flag, 2);
 
     if (!isGridPointData) {
       logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data for {}", raf.getLocation());
@@ -127,7 +126,7 @@ public class Grib1DataReader {
       BitReader reader = new BitReader(raf, startPos + 11);
       values = new float[nPts];
       for (int i = 0; i < nPts; i++) {
-        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+        if (GribNumbers.testBitIsSet(bitmap[i / 8],i % 8)) {
           if (!isConstant) {
             values[i] = ref + scale * reader.bits2UInt(info.numberOfBits);
           } else {  // rdg - added this to handle a constant valued parameter
@@ -280,10 +279,10 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 #         ------11 3rd-order    "         "         " .
 
    */
-    boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
-    boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
-    boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
-    boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt, 6);
+    boolean hasBitmap2 = GribNumbers.testGribBitIsSet(flagExt, 3);
+    boolean hasDifferentWidths = GribNumbers.testGribBitIsSet(flagExt, 4);
+    boolean useGeneralExtended = GribNumbers.testGribBitIsSet(flagExt, 5);
+    boolean useBoustOrdering = GribNumbers.testGribBitIsSet(flagExt, 6);
 
 
     // 22–(xx–1) Width(s) in bits of second-order packed values; each width is contained in 1 octet
@@ -378,10 +377,10 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
    */
     Formatter f = new Formatter();
     f.format("%n=====================%nGrib1DataReader.readExtendedComplexPacking flagExt=%s%n", Long.toBinaryString(flagExt));
-    boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
-    boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
-    boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
-    boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt, 6);
+    boolean hasBitmap2 = GribNumbers.testGribBitIsSet(flagExt, 3);
+    boolean hasDifferentWidths = GribNumbers.testGribBitIsSet(flagExt, 4);
+    boolean useGeneralExtended = GribNumbers.testGribBitIsSet(flagExt, 5);
+    boolean useBoustOrdering = GribNumbers.testGribBitIsSet(flagExt, 6);
     f.format(" hasBitmap2=%s, hasDifferentWidths=%s, useGeneralExtended=%s, useBoustOrdering=%s%n%n", hasBitmap2, hasDifferentWidths, useGeneralExtended, useBoustOrdering);
 
          /* Octet     Contents
@@ -559,16 +558,16 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
   public static void showInfo(Formatter f, RandomAccessFile raf, long startPos) throws IOException {
     GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
-    boolean isGridPointData = !GribNumbers.testBitIsSet(info.flag, 1);
-    boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
+    boolean isGridPointData = !GribNumbers.testGribBitIsSet(info.flag, 1);
+    boolean isSimplePacking = !GribNumbers.testGribBitIsSet(info.flag, 2);
     if (!isGridPointData || isSimplePacking) return;
 
     int N1 = GribNumbers.uint2(raf);
     int flagExt = raf.read();
-    boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
-    boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
-    boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
-    boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt, 6);
+    boolean hasBitmap2 = GribNumbers.testGribBitIsSet(flagExt, 3);
+    boolean hasDifferentWidths = GribNumbers.testGribBitIsSet(flagExt, 4);
+    boolean useGeneralExtended = GribNumbers.testGribBitIsSet(flagExt, 5);
+    boolean useBoustOrdering = GribNumbers.testGribBitIsSet(flagExt, 6);
 
     int N2 = GribNumbers.uint2(raf);
     int codedNumberOfGroups = GribNumbers.uint2(raf);

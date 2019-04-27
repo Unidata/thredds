@@ -5,11 +5,10 @@
 package ucar.nc2.ui.grib;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Objects;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import thredds.inventory.MCollection;
-import ucar.coord.SparseArray;
+import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.ui.ReportPanel;
 import ucar.nc2.util.CloseableIterator;
@@ -27,9 +26,9 @@ import java.util.*;
  * @since 5/15/2014
  */
 public class CdmIndexReportPanel extends ReportPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
-  public static enum Report {
+  public enum Report {
     dupAndMissing,
     misplacedFlds             // find misplaced records for NCDC
   }

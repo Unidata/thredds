@@ -234,7 +234,7 @@ public class Grib2DataReader2 {
       }
     } else {
       for (int i = 0; i < totalNPoints; i++) {
-        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+        if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           data[i] = (R + reader.bits2UInt(nb) * EE) / DD;
         } else {
           data[i] = staticMissingValue;
@@ -364,7 +364,7 @@ public class Grib2DataReader2 {
       int idx = 0;
       float[] tmp = new float[totalNPoints];
       for (int i = 0; i < totalNPoints; i++) {
-        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+        if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           tmp[i] = data[idx++];
         } else {
           tmp[i] = mv;
@@ -717,7 +717,7 @@ public class Grib2DataReader2 {
       int idx = 0;
       float[] tmp = new float[totalNPoints];
       for (int i = 0; i < totalNPoints; i++) {
-        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+        if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           tmp[i] = data[idx++];
         } else {
           tmp[i] = mv;
@@ -783,7 +783,7 @@ public class Grib2DataReader2 {
 
     } else {  // use bitmap to skip missing values
       for (int i = 0, j = 0; i < totalNPoints; i++) {
-        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+        if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           if (j >= idata.length) {
             logger.warn("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
                     idata.length, j, i, totalNPoints);
@@ -840,7 +840,7 @@ public class Grib2DataReader2 {
       int[] result = new int[totalNPoints];
 
       for (int i = 0, j = 0; i < totalNPoints; i++) {
-        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+        if (GribNumbers.testBitIsSet(bitmap[i / 8], i % 8)) {
           if (j >= idata.length) {
             logger.warn("HEY jj2000 data count %d < bitmask count %d, i=%d, totalNPoints=%d%n",
                     idata.length, j, i, totalNPoints);
@@ -900,13 +900,11 @@ public class Grib2DataReader2 {
     DataBuffer db = image.getRaster().getDataBuffer();
     if (bitmap == null) {
       for (int i = 0; i < dataNPoints; i++) {
-//        data[i] = (R + imageData[i] * EE) / DD;
         data[i] = (R + db.getElem(i) * EE) / DD;
       }
     } else {
       for (int bitPt = 0, dataPt = 0; bitPt < totalNPoints; bitPt++) {
-        if ((bitmap[bitPt / 8] & GribNumbers.bitmask[bitPt % 8]) != 0) {
-//          data[i] = (R + imageData[i] * EE) / DD;
+        if (GribNumbers.testBitIsSet(bitmap[bitPt / 8], bitPt % 8)) {
           data[bitPt] = (R + db.getElem(dataPt++) * EE) / DD;
         } else {
           data[bitPt] = staticMissingValue;

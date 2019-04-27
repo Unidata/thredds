@@ -1,4 +1,4 @@
-package ucar.coord;
+package ucar.nc2.grib.coord;
 
 import org.junit.Assert;
 import org.junit.Test;

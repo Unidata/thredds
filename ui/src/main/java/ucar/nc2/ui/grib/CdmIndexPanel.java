@@ -6,12 +6,20 @@ package ucar.nc2.ui.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.coord.*;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.collection.GribCollectionImmutable.Record;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateTime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeAbstract;
+import ucar.nc2.grib.coord.CoordinateTimeIntv;
+import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.MFileTable;
 import ucar.nc2.ui.widget.BAMutil;
@@ -27,7 +35,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -43,7 +50,7 @@ import java.util.List;
  * @since 12/5/13
  */
 public class CdmIndexPanel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
 
   private PreferencesExt prefs;
   private BeanTable groupTable, varTable, coordTable;
@@ -401,7 +408,7 @@ public class CdmIndexPanel extends JPanel {
             if (count == 0) f.format(" total   SA  Variable%n");
             try {
               v.readRecords();
-              SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
+              SparseArray<Record> sa = v.getSparseArray();
               int ntracks = sa.getTotalSize();
               int nrecords = sa.getContent().size();
               int memEstForSA = 276 + nrecords * 40 + ntracks * 4;

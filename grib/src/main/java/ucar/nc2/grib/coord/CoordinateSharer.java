@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.coord;
+package ucar.nc2.grib.coord;
 
 import com.google.common.collect.Sets;
 
@@ -271,7 +271,7 @@ public class CoordinateSharer<T> {
   private static final double smooshTolerence = .10;
   private List<RuntimeSmoosher> runtimes = new ArrayList<>();
 
-  private class RuntimeSmoosher {
+  private static class RuntimeSmoosher {
     private CoordinateRuntime runtime;
     private Set<Long> coordSet = new HashSet<>();
     private boolean combined;

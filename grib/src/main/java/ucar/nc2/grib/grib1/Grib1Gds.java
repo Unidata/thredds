@@ -199,15 +199,15 @@ public abstract class Grib1Gds {
    6–8 0    Reserved – set to zero */
 
   private static boolean getDirectionIncrementsGiven(int resolution) {
-    return ((resolution & GribNumbers.bitmask[0]) != 0);
+    return GribNumbers.testGribBitIsSet(resolution,1);
   }
 
   private static boolean getEarthShapeIsSpherical(int resolution) {
-    return ((resolution & GribNumbers.bitmask[1]) == 0);
+    return !GribNumbers.testGribBitIsSet(resolution,2);
   }
 
-  private static boolean getUVisReletive(int resolution) {
-    return ((resolution & GribNumbers.bitmask[1]) != 0);
+  private static boolean getUVisReletiveToEastNorth(int resolution) {
+    return !GribNumbers.testGribBitIsSet(resolution,5);
   }
 
   protected Earth getEarth() {
@@ -222,8 +222,8 @@ public abstract class Grib1Gds {
     return getEarthShapeIsSpherical(resolution) ? 0 : 1;
   }
 
-  public boolean getUVisReletive() {
-    return getUVisReletive(resolution);
+  public boolean getUVisReletiveToEastNorth() {
+    return getUVisReletiveToEastNorth(resolution);
   }
 
   public int getResolution() {

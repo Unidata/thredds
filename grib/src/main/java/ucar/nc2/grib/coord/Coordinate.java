@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.coord;
+package ucar.nc2.grib.coord;
 
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.util.Counters;

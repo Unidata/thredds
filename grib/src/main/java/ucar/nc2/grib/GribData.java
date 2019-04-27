@@ -105,32 +105,32 @@ public class GribData {
     // GRIB-1 only
     public int flag;
 
-    public int getGridPoint() {
-      return (flag & GribNumbers.bitmask[0]);
+    public boolean isGridPoint() {
+      return GribNumbers.testGribBitIsSet(flag, 1);
     }
 
-    public int getPacking() {
-      return (flag & GribNumbers.bitmask[1]);
+    public boolean isSimplePacking() {
+      return GribNumbers.testGribBitIsSet(flag, 2);
     }
 
-    public int getDataType() {
-      return (flag & GribNumbers.bitmask[2]);
+    public boolean isFloatingPoint() {
+      return GribNumbers.testGribBitIsSet(flag, 3);
     }
 
     public boolean hasMore() {
-      return (flag & GribNumbers.bitmask[3]) != 0;
+      return GribNumbers.testGribBitIsSet(flag,  4);
     }
 
     public String getGridPointS() {
-      return getGridPoint() == 0 ? "grid point" : "Spherical harmonic coefficients";
+      return isGridPoint() ? "grid point" : "Spherical harmonic coefficients";
     }
 
     public String getPackingS() {
-      return getPacking() == 0 ? "simple" : "Complex / second order";
+      return isSimplePacking() ? "simple" : "Complex / second order";
     }
 
     public String getDataTypeS() {
-      return getDataType() == 0 ? "float" : "int";
+      return isFloatingPoint() ? "float" : "int";
     }
 
     private float DD, EE;

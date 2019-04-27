@@ -16,7 +16,7 @@ public final class GribCollectionProto {
   }
   /**
    * <pre>
-   * same as ucar.coord.Coordinate.Type
+   * same as Coordinate.Type
    * </pre>
    *
    * Protobuf enum {@code GribAxisType}

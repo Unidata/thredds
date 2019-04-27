@@ -13,7 +13,7 @@ import thredds.inventory.CollectionSpecParser;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
 import thredds.server.catalog.FeatureCollectionRef;
-import ucar.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateRuntime;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.dataset.NetcdfDataset;

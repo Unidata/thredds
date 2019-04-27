@@ -7,7 +7,7 @@ package ucar.nc2.grib;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import ucar.coord.CoordinateTimeAbstract;
+import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarDateUnit;

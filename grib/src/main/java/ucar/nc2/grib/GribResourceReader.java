@@ -5,13 +5,13 @@
 package ucar.nc2.grib;
 
 import java.io.*;
+
 /*
  * Static methods to read resource files.
  *
  * @author caron 07/28/14
  * @version 2.0
  */
-
 public class GribResourceReader {
 
   /**

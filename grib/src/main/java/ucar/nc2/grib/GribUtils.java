@@ -149,7 +149,7 @@ public class GribUtils {
     * @return true: x points scan in positive direction, false: x points scan in negetive direction
     */
   public static boolean scanModeXisPositive(int scanMode) {
-    return (scanMode & GribNumbers.bitmask[0]) == 0;
+    return !GribNumbers.testGribBitIsSet(scanMode, 1);
   }
 
   /**
@@ -159,25 +159,25 @@ public class GribUtils {
     * @return true: y points scan in positive direction, false: y points scan in negetive direction
     */
   public static boolean scanModeYisPositive(int scanMode) {
-    return (scanMode & GribNumbers.bitmask[1]) != 0;
+    return GribNumbers.testGribBitIsSet(scanMode, 2);
   }
 
   /**
-   * Adjacent points in x or y direction are consecutive. Grib 1 or 2.
+   * Adjacent points in x/y direction are consecutive. Grib 1 or 2.
    * @param scanMode scanMode byte
    * @return true: x points are consecutive (row) false: y points are consecutive (col)
    */
   public static boolean scanModeXisConsecutive(int scanMode) {
-    return (scanMode & GribNumbers.bitmask[2]) == 0;
+    return !GribNumbers.testGribBitIsSet(scanMode, 3);
   }
 
   /**
    * All rows scan in the same/opposite direction. Grib 2 only.
    * @param scanMode scanMode byte
-   * @return  true: All rows scan in the same direction, false: Adjacent rows scans in the opposite direction, the first row scan is as defined by previous flags
+   * @return  true: All rows scan in the same direction, false: Adjacent rows scan in the opposite direction, the first row scan is as defined by previous flags
    */
   public static boolean scanModeSameDirection(int scanMode) {
-    return (scanMode & GribNumbers.bitmask[3]) == 0;
+    return !GribNumbers.testGribBitIsSet(scanMode, 4);
   }
 
 }

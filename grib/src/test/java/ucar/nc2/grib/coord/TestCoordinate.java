@@ -1,4 +1,4 @@
-package ucar.coord;
+package ucar.nc2.grib.coord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import java.util.Formatter;
 import java.util.List;
 
 /**
- * Describe
+ * Test Coordinate class
  *
  * @author caron
  * @since 12/10/13
@@ -31,7 +31,7 @@ public class TestCoordinate implements Coordinate {
     for (int i=0; i<nvals; i++) vals.add(i);
   }
 
-  static public Coordinate factory(int nvals, Coordinate.Type type) {
+  public static Coordinate factory(int nvals, Coordinate.Type type) {
     CalendarPeriod period = CalendarPeriod.of("1 hour");
     switch (type) {
       case runtime:

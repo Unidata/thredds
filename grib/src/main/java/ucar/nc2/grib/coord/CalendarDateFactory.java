@@ -2,7 +2,7 @@
  * Copyright (c) 1998-2018 John Caron and University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-package ucar.coord;
+package ucar.nc2.grib.coord;
 
 import ucar.nc2.time.CalendarDate;
 
@@ -16,7 +16,7 @@ import java.util.Map;
  * @since 4/3/2015
  */
 public class CalendarDateFactory {
-  Map<Long, CalendarDate> map;
+  private Map<Long, CalendarDate> map;
 
   public CalendarDateFactory(CoordinateRuntime master) {
     map = new HashMap<>(master.getSize() * 2);

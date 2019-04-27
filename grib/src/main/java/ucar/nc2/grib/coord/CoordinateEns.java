@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.coord;
+package ucar.nc2.grib.coord;
 
 import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.grib1.Grib1Record;

@@ -9,7 +9,7 @@ import com.google.common.base.Throwables;
 import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.ft2.coverage.SubsetParams;

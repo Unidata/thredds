@@ -7,10 +7,16 @@ package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.MCollection;
-import ucar.coord.*;
 import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateEns;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateTime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeIntv;
+import ucar.nc2.grib.coord.CoordinateVert;
 
 /**
  * Common superclass for writing Grib ncx files
