@@ -30,34 +30,17 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.iosp.grib;
-
-import static com.google.common.truth.Truth.assertThat;
+package ucar.nc2.grib.grib1.tables;
 
 import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
-import ucar.nc2.grib.grib2.table.Grib2TablesId;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
+@RunWith(JUnit4.class)
 public class TestGribTables {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  @Test
-  public void testKmaTable() {
-    Grib2Tables kma = Grib2Tables.factory(40,-1,-1,-1,-1);
-    assertThat(kma).isNotNull();
-    assertThat(kma.getType()).isEqualTo(Grib2TablesId.Type.kma);
-    assertThat(kma.getParameters()).isNotEmpty();
-    for (GribTables.Parameter p : kma.getParameters())
-      System.out.printf("%s%n", p);
-  }
 
   @Test
   public void testNclParameterTable() throws IOException {

@@ -3,7 +3,7 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.iosp.grib;
+package ucar.nc2.grib;
 
 /**
  * from https://github.com/lost-carrier 6/12/2014
@@ -14,15 +14,17 @@ import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.grib.QuasiRegular;
 
+@RunWith(JUnit4.class)
 public class TestQuasiRegular {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static final double x1d = 1.0e30;  /* derivative of the first end point */
-    private static final double xnd = 1.0e30;  /* derivative of the nth end point */
+  private static final double xnd = 1.0e30;  /* derivative of the nth end point */
 
 	@Test
 	public void testCubicSpline() throws IOException {

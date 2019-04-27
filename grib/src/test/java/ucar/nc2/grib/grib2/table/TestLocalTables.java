@@ -23,4 +23,14 @@ public class TestLocalTables {
       }
     }
   }
+
+  @Test
+  public void testKmaTable() {
+    Grib2Tables kma = Grib2Tables.factory(40,-1,-1,-1,-1);
+    assertThat(kma).isNotNull();
+    assertThat(kma.getType()).isEqualTo(Grib2TablesId.Type.kma);
+    assertThat(kma.getParameters()).isNotEmpty();
+    for (GribTables.Parameter p : kma.getParameters())
+      System.out.printf("%s%n", p);
+  }
 }
