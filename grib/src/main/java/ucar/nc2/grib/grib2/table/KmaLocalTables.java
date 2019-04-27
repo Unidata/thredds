@@ -19,22 +19,14 @@ import java.util.*;
  * @since 6/22/11
  */
 public class KmaLocalTables extends LocalTables {
-  private static final String tablePath = "resources/grib2/local/kma-ver5.txt";
-  private static KmaLocalTables single;
-
-  public static KmaLocalTables getCust(Grib2Table table) {
-    if (single == null) single = new KmaLocalTables(table);
-    return single;
-  }
-
-  private KmaLocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
-    grib2Table.setPath(tablePath);
+  KmaLocalTables(Grib2TableConfig config) {
+    super(config);
     initLocalTable();
   }
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   private void initLocalTable() {
+    String tablePath = config.getPath();
     ClassLoader cl = KmaLocalTables.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tablePath)) {
     if (is == null) throw new IllegalStateException("Cant find "+tablePath);

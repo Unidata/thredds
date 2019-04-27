@@ -23,7 +23,7 @@ import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.util.cache.FileCacheIF;
@@ -771,14 +771,14 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       if (isGrib1)
         return ((Grib1Variable) gribVariable).makeVariableName(config.gribConfig);
       else
-        return Grib2Iosp.makeVariableNameFromTable((Grib2Customizer) cust, GribCollectionImmutable.this, this, config.gribConfig.useGenType);
+        return Grib2Iosp.makeVariableNameFromTable((Grib2Tables) cust, GribCollectionImmutable.this, this, config.gribConfig.useGenType);
     }
 
     public String makeVariableUnits() {
       if (isGrib1)
         return Grib1Iosp.makeVariableUnits((Grib1Customizer) cust, GribCollectionImmutable.this, this);
       else
-        return Grib2Iosp.makeVariableUnits((Grib2Customizer) cust, this);
+        return Grib2Iosp.makeVariableUnits((Grib2Tables) cust, this);
     }
 
     public String makeVariableDescription() {
@@ -786,14 +786,14 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
         return Grib1Iosp.makeVariableLongName((Grib1Customizer) cust, getCenter(), getSubcenter(), getTableVersion(), getParameter(),
                 getLevelType(), isLayer(), getIntvType(), getIntvName(), getProbabilityName());
       else
-        return Grib2Iosp.makeVariableLongName((Grib2Customizer) cust, this, config.gribConfig.useGenType);
+        return Grib2Iosp.makeVariableLongName((Grib2Tables) cust, this, config.gribConfig.useGenType);
     }
 
     public GribTables.Parameter getGribParameter() {
       if (isGrib1)
         return ((Grib1Customizer) cust).getParameter(getCenter(), getSubcenter(), getVersion(), getParameter());
       else
-        return ((Grib2Customizer) cust).getParameter(getDiscipline(), getCategory(), getParameter());
+        return ((Grib2Tables) cust).getParameter(getDiscipline(), getCategory(), getParameter());
     }
 
     public GribStatType getStatType() {

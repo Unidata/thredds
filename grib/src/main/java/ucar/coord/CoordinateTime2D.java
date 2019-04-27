@@ -14,7 +14,7 @@ import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -815,14 +815,14 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> implements CoordinateBuilder.TwoD<Grib2Record> {
     private final boolean isTimeInterval;
-    private final Grib2Customizer cust;
+    private final Grib2Tables cust;
     private final int code;                  // pdsFirst.getTimeUnit()
     private final CalendarPeriod timeUnit;   // time duration, based on code
 
     private final CoordinateRuntime.Builder2 runBuilder;
     private final Map<Object, CoordinateBuilderImpl<Grib2Record>> timeBuilders;  // one for each runtime
 
-    public Builder2(boolean isTimeInterval, Grib2Customizer cust, CalendarPeriod timeUnit, int code) {
+    public Builder2(boolean isTimeInterval, Grib2Tables cust, CalendarPeriod timeUnit, int code) {
       this.isTimeInterval = isTimeInterval;
       this.cust = cust;
       this.timeUnit = timeUnit;

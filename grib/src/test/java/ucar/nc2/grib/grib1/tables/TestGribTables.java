@@ -30,40 +30,17 @@
  * WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ucar.nc2.iosp.grib;
+package ucar.nc2.grib.grib1.tables;
 
 import org.junit.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
-import ucar.nc2.grib.grib2.table.Grib2Table;
-import ucar.nc2.grib.grib2.table.KmaLocalTables;
-import ucar.unidata.util.test.TestDir;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-/**
- * Description
- *
- * @author John
- * @since 12/18/2014
- */
+@RunWith(JUnit4.class)
 public class TestGribTables {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-  @Test
-  public void testKmaTable() {
-    Grib2Table.Id id = new Grib2Table.Id(40,-1,-1,-1,-1);
-    Grib2Table table = Grib2Table.getTable(id);
-    KmaLocalTables kma = KmaLocalTables.getCust(table);
-    assert kma != null;
-    assert kma.getParameters().size() > 0;
-    for (GribTables.Parameter p : kma.getParameters())
-      System.out.printf("%s%n", p);
-  }
 
   @Test
   public void testNclParameterTable() throws IOException {

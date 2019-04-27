@@ -18,7 +18,7 @@ import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CloseableIterator;
 import ucar.nc2.util.Counters;
@@ -449,11 +449,11 @@ String usage = "usage: thredds.tdm.GCpass1 -spec <collectionSpec> [-isGrib2] -pa
 
   }
 
-  Grib2Customizer cust2 = null;
+  Grib2Tables cust2 = null;
 
   private void accumGrib2Record(ucar.nc2.grib.grib2.Grib2Record gr, Counters counters) throws IOException {
     if (cust2 == null) {                              // first record LOOK test if assumption is valid
-      cust2 = Grib2Customizer.factory(gr);
+      cust2 = Grib2Tables.factory(gr);
     }
 
     Grib2SectionIdentification id = gr.getId();

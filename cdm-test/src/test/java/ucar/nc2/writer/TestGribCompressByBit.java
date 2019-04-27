@@ -17,7 +17,7 @@ import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2SectionDataRepresentation;
 import ucar.nc2.grib.grib2.Grib2Variable;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.writer.GribToNetcdfWriter;
 import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
@@ -271,7 +271,7 @@ public class TestGribCompressByBit {
   private long prev = 0;
 
   private void showData(Grib2Record gr, Bean bean, int[] rawData) throws IOException {
-    Grib2Customizer cust = Grib2Customizer.factory(gr);
+    Grib2Tables cust = Grib2Tables.factory(gr);
     Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
     int id = gv.hashCode();
     System.out.printf("Grib2 record cdmHash=%d (0x%s) pos=%d%n", id, Integer.toHexString(id), gr.getIs().getStartPos());

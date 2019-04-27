@@ -6,13 +6,14 @@
 package ucar.nc2.grib.grib2.table;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,10 +59,10 @@ class NcepLocalParams {
   }
 
   @Nullable
-  Table factory(String path) {
-    Table params = new Table();
-    if (!params.readParameterTableXml(path)) return null;
-    return params;
+  ImmutableList<GribTables.Parameter> getParameters(String path) {
+    Table table = new Table();
+    if (!table.readParameterTableXml(path)) return null;
+    return table.getParameters();
   }
 
   @Nullable
@@ -85,10 +86,8 @@ class NcepLocalParams {
     private int discipline, category;
     private Map<Integer, Grib2Parameter> paramMap;
 
-    public List<Grib2Parameter> getParameters() {
-      List<Grib2Parameter> result = new ArrayList<>(paramMap.values());
-      Collections.sort(result);
-      return result;
+    private ImmutableList<GribTables.Parameter> getParameters() {
+      return paramMap.values().stream().sorted().collect(ImmutableList.toImmutableList());
     }
 
     @Nullable
@@ -191,13 +190,4 @@ class NcepLocalParams {
     }
   }
 
-  static boolean isUnitless(String unit) {
-    if (unit == null) return true;
-    String munge = unit.toLowerCase().trim();
-    munge = StringUtil2.remove(munge, '(');
-    return munge.length()  == 0 ||
-            munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see") ||
-            munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") ||
-            munge.equals("1") ;
-  }
 }

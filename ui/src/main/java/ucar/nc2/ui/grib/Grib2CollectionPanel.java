@@ -45,7 +45,7 @@ import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -59,7 +59,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -451,7 +450,7 @@ public class Grib2CollectionPanel extends JPanel {
   private String spec;
   private MCollection dcm;
   private List<MFile> fileList;
-  private Grib2Customizer cust;
+  private Grib2Tables cust;
 
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
@@ -527,7 +526,7 @@ public class Grib2CollectionPanel extends JPanel {
       gr.setFile(fileno);
 
       if (cust == null)
-        cust = Grib2Customizer.factory(gr);
+        cust = Grib2Tables.factory(gr);
 
       Grib2Variable gv = new Grib2Variable(cust, gr, 0, FeatureCollectionConfig.intvMergeDef, FeatureCollectionConfig.useGenTypeDef);
       Grib2ParameterBean bean = pdsSet.get(gv);
@@ -766,7 +765,7 @@ public class Grib2CollectionPanel extends JPanel {
       GribTables.Parameter p = pbean.getParameter();
       if (p == null)
         f.format("   null parameter for %s%n", pbean);
-      else if (Grib2Customizer.isLocal(p))
+      else if (Grib2Tables.isLocal(p))
         f.format("   %s%n", p);
     }
   }
@@ -1220,7 +1219,7 @@ public class Grib2CollectionPanel extends JPanel {
     } */
 
     public String getUnits() {
-      Grib2Customizer.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      Grib2Tables.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
       return (p == null) ? "?" : p.getUnit();
     }
 

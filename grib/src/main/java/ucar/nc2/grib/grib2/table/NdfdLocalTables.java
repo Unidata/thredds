@@ -13,17 +13,9 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
  */
 
 public class NdfdLocalTables extends LocalTables {
-  private static NdfdLocalTables single;
 
-  public static Grib2Customizer getCust(Grib2Table table) {
-    if (single == null) single = new NdfdLocalTables(table);
-    return single;
-  }
-
-  private NdfdLocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
-    if (grib2Table.getPath() == null)
-      grib2Table.setPath(this.getClass().getName());
+  NdfdLocalTables(Grib2TableConfig config) {
+    super(config);
     init();
   }
 

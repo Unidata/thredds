@@ -19,7 +19,7 @@ import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.time.CalendarDateRange;
@@ -472,7 +472,7 @@ public class GribCollectionMutable implements Closeable {
         gribVariable = new Grib1Variable(cust, pds, (Grib1Gds) g.getGdsHash(), config.gribConfig.useTableVersion, config.gribConfig.intvMerge, config.gribConfig.useCenter);
 
       } else {
-        Grib2Customizer cust2 = (Grib2Customizer) customizer;
+        Grib2Tables cust2 = (Grib2Tables) customizer;
 
         Grib2SectionProductDefinition pdss = new Grib2SectionProductDefinition(rawPds);
         Grib2Pds pds = pdss.getPDS();

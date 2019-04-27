@@ -39,7 +39,7 @@ import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -281,7 +281,7 @@ public class Grib2DataPanel extends JPanel {
   private String spec;
   private MCollection dcm;
   private List<MFile> fileList;
-  private Grib2Customizer cust;
+  private Grib2Tables cust;
   // private Grib2Rectilyser rect2;
 
   /* public void setCollection(String filename) throws IOException {
@@ -369,7 +369,7 @@ public class Grib2DataPanel extends JPanel {
 
     for (Grib2Record gr : index.getRecords()) {
       if (cust == null)
-        cust = Grib2Customizer.factory(gr);
+        cust = Grib2Tables.factory(gr);
 
       gr.setFile(fileno);
 
@@ -1084,7 +1084,7 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public String getUnits() {
-      Grib2Customizer.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      Grib2Tables.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
       return (p == null) ? "?" : p.getUnit();
     }
 

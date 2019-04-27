@@ -90,6 +90,17 @@ public class Util {
     return sb1.toString().equals(sb2.toString());
   }
 
+  /** The given unit is "unitless". */
+  public static boolean isUnitless(String unit) {
+    if (unit == null) return true;
+    String munge = unit.toLowerCase().trim();
+    munge = StringUtil2.remove(munge, '(');
+    return munge.length()  == 0 ||
+        munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see") ||
+        munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") ||
+        munge.equals("1") ;
+  }
+
   public static void main(String[] args) {
     System.out.printf("clean '/s' = %s%n", cleanUnit("/s"));
   }

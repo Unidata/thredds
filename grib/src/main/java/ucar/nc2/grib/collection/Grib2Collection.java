@@ -19,7 +19,7 @@ import ucar.nc2.ft2.coverage.CoverageCollection;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.coverage.GribCoverageDataset;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
@@ -220,7 +220,7 @@ public class Grib2Collection extends GribCollectionImmutable {
   }
 
   static void addVariableAttributes(AttributeContainer v, GribCollectionImmutable.VariableIndex vindex, GribCollectionImmutable gc) {
-    Grib2Customizer cust2 = (Grib2Customizer) gc.cust;
+    Grib2Tables cust2 = (Grib2Tables) gc.cust;
 
     v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
     int[] param = new int[]{vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};

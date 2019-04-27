@@ -27,31 +27,21 @@ import java.util.jar.JarFile;
  * @author caron
  * @since 4/3/11
  */
-public class NcepLocalTables extends LocalTables {
+class NcepLocalTables extends LocalTables {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  private static final String defaultResourcePath = "resources/grib2/ncep/v21.0.0/";
-  private static NcepLocalTables single;
 
-  public static Grib2Customizer getCust(Grib2Table table) {
-    if (single == null) single = new NcepLocalTables(table);
-    return single;
-  }
+  protected final NcepLocalParams localParams;
 
-  ////////////////////////////////////////////////////////////////////////////////////
-  protected final NcepLocalParams params;
-
-  NcepLocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
-    if (grib2Table.getPath() == null)
-      grib2Table.setPath(defaultResourcePath);
-    this.params =  new NcepLocalParams(grib2Table.getPath());
+  NcepLocalTables(Grib2TableConfig config) {
+    super(config);
+    this.localParams = new NcepLocalParams(config.getPath());
     initCodes();
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return params.getTablePath(discipline, category);
+    return localParams.getTablePath(discipline, category);
   }
 
   private String[] getResourceListing(String path) throws URISyntaxException, IOException {
@@ -102,7 +92,7 @@ public class NcepLocalTables extends LocalTables {
   public List<GribTables.Parameter> getParameters() {
     List<GribTables.Parameter> allParams = new ArrayList<>(3000);
     try {
-      String[] fileNames = getResourceListing(grib2Table.getPath());
+      String[] fileNames = getResourceListing(config.getPath());
       if (fileNames == null) return allParams;
       for (String fileName : fileNames) {
         File f = new File(fileName);
@@ -110,9 +100,9 @@ public class NcepLocalTables extends LocalTables {
         if (!f.getName().contains("Table4.2.")) continue;
         if (!f.getName().endsWith(".xml")) continue;
         try {
-          NcepLocalParams.Table table = params.factory(grib2Table.getPath() + f.getPath());
-          if (table != null)
-            allParams.addAll(table.getParameters());
+          List<GribTables.Parameter> params = localParams.getParameters(config.getPath() + f.getPath());
+          if (params != null)
+            allParams.addAll(params);
         } catch (Exception e) {
           logger.error("Error reading wmo tables", e);
         }
@@ -150,7 +140,7 @@ public class NcepLocalTables extends LocalTables {
     // if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
     //   return getParameter(0, 1, 242);
 
-    Grib2Parameter plocal = params.getParameter(discipline, category, number);
+    Grib2Parameter plocal = localParams.getParameter(discipline, category, number);
 
     if ((category <= 191) && (number <= 191)) {
       GribTables.Parameter pwmo = WmoParamTable.getParameter(discipline, category, number);
@@ -167,7 +157,7 @@ public class NcepLocalTables extends LocalTables {
 
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-     return params.getParameter(discipline, category, number);
+     return localParams.getParameter(discipline, category, number);
    }
 
   @Override
@@ -384,7 +374,7 @@ public class NcepLocalTables extends LocalTables {
 
   @Nullable
   private Map<Integer, String> initTable410() {
-    String path = grib2Table.getPath() + "Table4.10.xml";
+    String path = config.getPath() + "Table4.10.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
@@ -421,7 +411,7 @@ public class NcepLocalTables extends LocalTables {
   @Override
   @Nullable
   public String getCategory(int discipline, int category) {
-    String catName = params.getCategory(discipline, category);
+    String catName = localParams.getCategory(discipline, category);
     if (catName != null) return catName;
     return super.getCategory(discipline, category);
   }

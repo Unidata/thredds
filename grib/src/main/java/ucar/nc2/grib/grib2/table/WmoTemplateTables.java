@@ -233,7 +233,7 @@ public class WmoTemplateTables {
       }
     }
 
-    public void showInfo(Grib2Customizer tables, byte[] raw, Formatter f) {
+    public void showInfo(Grib2Tables tables, byte[] raw, Formatter f) {
       f.format("%n(%s) %s %n", name, desc);
       for (Field fld : flds) {
         if (fld.start < 0) {
@@ -254,7 +254,7 @@ public class WmoTemplateTables {
       }
     }
 
-    private String convert(Grib2Customizer tables, String table, int value) {
+    private String convert(Grib2Tables tables, String table, int value) {
       String result = tables.getTableValue(table, value);
       return (result != null) ? result : "Table " + table + " code " + value + " not found";
     }

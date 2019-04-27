@@ -26,7 +26,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -500,7 +500,7 @@ public class GribCoordsMatchGbx {
     }
 
     Grib2Record grib2 = idxHash.get(dr.pos);
-    Grib2Customizer cust = Grib2Customizer.factory(grib2);
+    Grib2Tables cust = Grib2Tables.factory(grib2);
 
     Grib2RecordBean bean = new Grib2RecordBean(cust, grib2);
     boolean paramOk = true;
@@ -599,7 +599,7 @@ public class GribCoordsMatchGbx {
   }
 
   public class Grib2RecordBean {
-    Grib2Customizer cust;
+    Grib2Tables cust;
     Grib2Record gr;
     Grib2Pds pds;
     int discipline;
@@ -607,7 +607,7 @@ public class GribCoordsMatchGbx {
     public Grib2RecordBean() {
     }
 
-    public Grib2RecordBean(Grib2Customizer cust, Grib2Record gr) throws IOException {
+    public Grib2RecordBean(Grib2Tables cust, Grib2Record gr) throws IOException {
       this.cust = cust;
       this.gr = gr;
       this.pds = gr.getPDS();
