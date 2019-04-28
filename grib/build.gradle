@@ -17,7 +17,7 @@ dependencies {
     compile libraries["guava"]
     compile libraries["jcommander"]
     compile libraries["slf4j-api"]
-    testCompile libraries["truth"]
+    compile libraries["truth"]
     testCompile libraries["jsoup"]
     testRuntime libraries["logback-classic"]
 }
