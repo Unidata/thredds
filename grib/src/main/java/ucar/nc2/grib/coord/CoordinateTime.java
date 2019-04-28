@@ -7,7 +7,6 @@ package ucar.nc2.grib.coord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
@@ -144,8 +143,6 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
     return result;
   }
 
-  ////////////////////////////////////////////////
-
   protected CoordinateTimeAbstract makeBestFromComplete(int[] best, int n) {
     List<Integer> offsetSortedBest = new ArrayList<>(offsetSorted.size());
     int[] time2runtimeBest = new int[n];
@@ -196,7 +193,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
           return offset;
         }
         CalendarDate validDate = refDate.add(period.multiply(offset));
-        return TimeCoord.getOffset(refDate, validDate, timeUnit);
+        return timeUnit.getOffset(refDate, validDate);
       }
     }
 
@@ -234,7 +231,7 @@ public class CoordinateTime extends CoordinateTimeAbstract implements Coordinate
 
       } else {
         CalendarDate validDate = GribUtils.getValidTime(refDate, tuInRecord, offset);
-        return TimeCoord.getOffset(refDate, validDate, timeUnit);
+        return timeUnit.getOffset(refDate, validDate);
       }
 
     }

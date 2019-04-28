@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib.coord;
 
-import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -30,16 +29,16 @@ import java.util.stream.Collectors;
  */
 @Immutable
 public class CoordinateEns implements Coordinate {
-  private final List<EnsCoord.Coord> ensSorted;
+  private final List<EnsCoordValue> ensSorted;
   private final int code;
   private String name ="ens";
 
-  public CoordinateEns(int code, List<EnsCoord.Coord> ensSorted) {
+  public CoordinateEns(int code, List<EnsCoordValue> ensSorted) {
     this.ensSorted = Collections.unmodifiableList(ensSorted);
     this.code = code;
   }
 
-  public List<EnsCoord.Coord> getEnsSorted() {
+  public List<EnsCoordValue> getEnsSorted() {
     return ensSorted;
   }
 
@@ -60,7 +59,7 @@ public class CoordinateEns implements Coordinate {
 
   public int getIndexByMember(double need) {
     for (int i = 0; i < ensSorted.size(); i++) {
-      EnsCoord.Coord coord = ensSorted.get(i);
+      EnsCoordValue coord = ensSorted.get(i);
       if (Misc.nearlyEquals(need, coord.getEnsMember())) return i;
     }
     return -1;
@@ -108,7 +107,7 @@ public class CoordinateEns implements Coordinate {
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s: ", indent, getType());
-     for (EnsCoord.Coord level : ensSorted)
+     for (EnsCoordValue level : ensSorted)
        info.format(" %s", level);
     info.format(" (%d)%n", ensSorted.size());
   }
@@ -116,7 +115,7 @@ public class CoordinateEns implements Coordinate {
   @Override
   public void showCoords(Formatter info) {
     info.format("Ensemble coords: (%s)%n", getUnit());
-    for (EnsCoord.Coord level : ensSorted)
+    for (EnsCoordValue level : ensSorted)
       info.format("   %s%n", level);
   }
 
@@ -166,13 +165,13 @@ public class CoordinateEns implements Coordinate {
     public Object extract(Grib2Record gr) {
       Grib2Pds pds = gr.getPDS();
       Grib2Pds.PdsEnsemble pdse = (Grib2Pds.PdsEnsemble) pds;
-      return new EnsCoord.Coord(pdse.getPerturbationType(), pdse.getPerturbationNumber());
+      return new EnsCoordValue(pdse.getPerturbationType(), pdse.getPerturbationNumber());
     }
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<EnsCoord.Coord> levelSorted = new ArrayList<>(values.size());
-      for (Object val : values) levelSorted.add( (EnsCoord.Coord) val);
+      List<EnsCoordValue> levelSorted = new ArrayList<>(values.size());
+      for (Object val : values) levelSorted.add( (EnsCoordValue) val);
       Collections.sort(levelSorted);
       return new CoordinateEns(code, levelSorted);
     }
@@ -190,12 +189,12 @@ public class CoordinateEns implements Coordinate {
     @Override
     public Object extract(Grib1Record gr) {
       Grib1SectionProductDefinition pds = gr.getPDSsection();
-      return new EnsCoord.Coord(pds.getPerturbationType(), pds.getPerturbationNumber());
+      return new EnsCoordValue(pds.getPerturbationType(), pds.getPerturbationNumber());
     }
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<EnsCoord.Coord> levelSorted = values.stream().map(val -> (EnsCoord.Coord) val).sorted()
+      List<EnsCoordValue> levelSorted = values.stream().map(val -> (EnsCoordValue) val).sorted()
           .collect(Collectors.toList());
       return new CoordinateEns(code, levelSorted);
     }

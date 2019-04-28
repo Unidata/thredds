@@ -18,6 +18,9 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.EnsCoordValue;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -356,11 +359,11 @@ message Coord {
         return new CoordinateTime(code, timeUnit, refDate, offs, readTime2Runtime(pc));
 
       case timeIntv:
-        List<TimeCoord.Tinv> tinvs = new ArrayList<>(pc.getValuesCount());
+        List<TimeCoordIntvValue> tinvs = new ArrayList<>(pc.getValuesCount());
         for (int i = 0; i < pc.getValuesCount(); i++) {
           int val1 = (int) pc.getValues(i);
           int val2 = (int) pc.getBound(i);
-          tinvs.add(new TimeCoord.Tinv(val1, val2));
+          tinvs.add(new TimeCoordIntvValue(val1, val2));
         }
         refDate = CalendarDate.of(pc.getMsecs(0));
         if (unit == null)
@@ -388,21 +391,21 @@ message Coord {
 
       case vert:
         boolean isLayer = pc.getValuesCount() == pc.getBoundCount();
-        List<VertCoord.Level> levels = new ArrayList<>(pc.getValuesCount());
+        List<VertCoordValue> levels = new ArrayList<>(pc.getValuesCount());
         for (int i = 0; i < pc.getValuesCount(); i++) {
           if (isLayer)
-            levels.add(new VertCoord.Level(pc.getValues(i), pc.getBound(i)));
+            levels.add(new VertCoordValue(pc.getValues(i), pc.getBound(i)));
           else
-            levels.add(new VertCoord.Level(pc.getValues(i)));
+            levels.add(new VertCoordValue(pc.getValues(i)));
         }
         return new CoordinateVert(code, tables.getVertUnit(code), levels);
 
       case ens:
-        List<EnsCoord.Coord> ecoords = new ArrayList<>(pc.getValuesCount());
+        List<EnsCoordValue> ecoords = new ArrayList<>(pc.getValuesCount());
         for (int i = 0; i < pc.getValuesCount(); i++) {
           double val1 = pc.getValues(i);
           double val2 = pc.getBound(i);
-          ecoords.add(new EnsCoord.Coord((int)val1, (int)val2));
+          ecoords.add(new EnsCoordValue((int)val1, (int)val2));
         }
         return new CoordinateEns(code, ecoords);
     }

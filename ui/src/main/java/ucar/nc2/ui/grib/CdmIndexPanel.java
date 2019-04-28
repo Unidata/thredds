@@ -6,8 +6,6 @@ package ucar.nc2.ui.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.collection.GribCollectionImmutable.Record;
@@ -20,6 +18,8 @@ import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.grib.coord.SparseArray;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.MFileTable;
 import ucar.nc2.ui.widget.BAMutil;
@@ -962,8 +962,8 @@ public class CdmIndexPanel extends JPanel {
         //double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
 
         if (time.isTimeInterval()) {
-          start = ((TimeCoord.Tinv) offsets.get(0)).getBounds1(); // + offsetFromMaster;
-          end = ((TimeCoord.Tinv) offsets.get(n - 1)).getBounds2(); // + offsetFromMaster;
+          start = ((TimeCoordIntvValue) offsets.get(0)).getBounds1(); // + offsetFromMaster;
+          end = ((TimeCoordIntvValue) offsets.get(n - 1)).getBounds2(); // + offsetFromMaster;
           resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
 
         } else {
@@ -983,7 +983,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateTimeIntv) {
         CoordinateTimeIntv time = (CoordinateTimeIntv) coord;
-        List<TimeCoord.Tinv> offsets = time.getTimeIntervals();
+        List<TimeCoordIntvValue> offsets = time.getTimeIntervals();
         double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
         int n = offsets.size();
         start = offsets.get(0).getBounds1() + offsetFromMaster;
@@ -991,7 +991,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateVert) {
         CoordinateVert vert = (CoordinateVert) coord;
-        List<VertCoord.Level> offsets = vert.getLevelSorted();
+        List<VertCoordValue> offsets = vert.getLevelSorted();
         int n = offsets.size();
         if (vert.isLayer()) {
           start = offsets.get(0).getValue1();
@@ -1308,7 +1308,7 @@ public class CdmIndexPanel extends JPanel {
 
      }
 
-     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoord.Tinv> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
+     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoordIntvValue> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
        f.format(" timeIntv (down) vertLevel (across) %n");
 
        f.format("%12s ", " ");
@@ -1342,7 +1342,7 @@ public class CdmIndexPanel extends JPanel {
       return wantFile.getPath();
     }
 
-     void showRecords2Dintv(Formatter f, List<TimeCoord.Tinv> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
+     void showRecords2Dintv(Formatter f, List<TimeCoordIntvValue> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
        f.format(" timeIntv (down) %n");
 
        for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {

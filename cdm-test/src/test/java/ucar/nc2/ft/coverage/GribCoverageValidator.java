@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribDataValidator;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -98,7 +99,7 @@ public class GribCoverageValidator implements GribDataValidator {
     // time offset
     CalendarDate wantTimeOffset = (CalendarDate) coords.get(SubsetParams.timeOffsetDate);
     if (gr.getPDS().isTimeInterval()) {
-      TimeCoord.TinvDate tinv = cust.getForecastTimeInterval(gr);
+      TimeCoordIntvDateValue tinv = cust.getForecastTimeInterval(gr);
       double[] wantTimeOffsetIntv = coords.getTimeOffsetIntv();
       if (wantTimeOffset != null) {
         Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset));          // lower <= time

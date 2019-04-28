@@ -10,8 +10,8 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
-import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
@@ -33,7 +33,7 @@ public class NcepTables extends Grib1Customizer {
   private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
   private static Map<Integer, String> genProcessMap;  // shared by all instances
-  private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, VertCoordType> levelTypesMap;  // shared by all instances
 
   NcepTables(Grib1ParamTables tables) {
     super(7, tables);
@@ -226,7 +226,7 @@ public class NcepTables extends Grib1Customizer {
   }
 
   ///////////////////////////////////////// levels
-  protected GribLevelType getLevelType(int code) {
+  protected VertCoordType getLevelType(int code) {
     if (code < 129)
       return super.getLevelType(code); // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
 
@@ -235,7 +235,7 @@ public class NcepTables extends Grib1Customizer {
     if (levelTypesMap == null)
       return super.getLevelType(code);
 
-    GribLevelType levelType = levelTypesMap.get(code);
+    VertCoordType levelType = levelTypesMap.get(code);
     if (levelType != null) return levelType;
 
     return super.getLevelType(code);

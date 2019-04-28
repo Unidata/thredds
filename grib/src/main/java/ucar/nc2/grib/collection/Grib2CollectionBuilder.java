@@ -12,7 +12,6 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.coord.CoordinateEns;
 import ucar.nc2.grib.coord.CoordinateND;
@@ -21,6 +20,7 @@ import ucar.nc2.grib.coord.CoordinateSharer;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateVert;
 import ucar.nc2.grib.coord.GribRecordStats;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
@@ -272,7 +272,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         if (vb.first.getPDS().isEnsemble())
           coordNBuilder.addBuilder(new CoordinateEns.Builder2(0));
 
-        VertCoord.VertUnit vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
+        VertCoordType vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
         if (vertUnit.isVerticalCoordinate())
           coordNBuilder.addBuilder(new CoordinateVert.Builder2(pdsFirst.getLevelType1(), cust.getVertUnit(pdsFirst.getLevelType1())));
 

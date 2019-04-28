@@ -5,7 +5,6 @@
 package ucar.nc2.grib.coord;
 
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
@@ -35,9 +34,9 @@ import java.util.List;
  */
 @Immutable
 public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordinate {
-  private final List<TimeCoord.Tinv> timeIntervals;
+  private final List<TimeCoordIntvValue> timeIntervals;
 
-  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<TimeCoord.Tinv> timeIntervals, int[] time2runtime) {
+  public CoordinateTimeIntv(int code, CalendarPeriod timeUnit, CalendarDate refDate, List<TimeCoordIntvValue> timeIntervals, int[] time2runtime) {
     super(code, timeUnit, refDate, time2runtime);
     this.timeIntervals = Collections.unmodifiableList(timeIntervals);
   }
@@ -47,7 +46,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     this.timeIntervals = org.getTimeIntervals();
   }
 
-  public List<TimeCoord.Tinv> getTimeIntervals() {
+  public List<TimeCoordIntvValue> getTimeIntervals() {
     return timeIntervals;
   }
 
@@ -63,7 +62,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
   @Override
   public int getIndex(Object val) {
-    return Collections.binarySearch(timeIntervals, (TimeCoord.Tinv) val);
+    return Collections.binarySearch(timeIntervals, (TimeCoordIntvValue) val);
   }
 
   @Override
@@ -88,7 +87,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   public String getTimeIntervalName() {
     // are they the same length ?
     int firstValue = -1;
-    for (TimeCoord.Tinv tinv : timeIntervals) {
+    for (TimeCoordIntvValue tinv : timeIntervals) {
       int value = (tinv.getBounds2() - tinv.getBounds1());
       if (firstValue < 0) firstValue = value;
       else if (value != firstValue) return MIXED_INTERVALS;
@@ -114,7 +113,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s:", indent, getType());
-    for (TimeCoord.Tinv cd : timeIntervals)
+    for (TimeCoordIntvValue cd : timeIntervals)
       info.format(" %s,", cd);
     info.format(" (%d) %n", timeIntervals.size());
     if (time2runtime != null)
@@ -124,7 +123,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
   @Override
   public void showCoords(Formatter info) {
     info.format("Time Interval offsets: (%s) ref=%s%n", getTimeUnit(), getRefDate());
-    for (TimeCoord.Tinv cd : timeIntervals)
+    for (TimeCoordIntvValue cd : timeIntervals)
       info.format("   (%3d - %3d)  %d%n", cd.getBounds1(), cd.getBounds2(), cd.getBounds2() - cd.getBounds1());
   }
 
@@ -134,7 +133,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     counters.add("resol");
     counters.add("intv");
 
-    List<TimeCoord.Tinv> offsets = getTimeIntervals();
+    List<TimeCoordIntvValue> offsets = getTimeIntervals();
     for (int i = 0; i < offsets.size(); i++) {
       int intv = offsets.get(i).getBounds2() - offsets.get(i).getBounds1();
       counters.count("intv", intv);
@@ -167,10 +166,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
     return result;
   }
 
-  ////////////////////////////////////////
-
   protected CoordinateTimeIntv makeBestFromComplete(int[] best, int n) {
-    List<TimeCoord.Tinv> timeIntervalsBest = new ArrayList<>(timeIntervals.size());
+    List<TimeCoordIntvValue> timeIntervalsBest = new ArrayList<>(timeIntervals.size());
     int[] time2runtimeBest = new int[n];
     int count = 0;
     for (int i=0; i<best.length; i++) {
@@ -209,17 +206,17 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
     @Override
     public Object extract(Grib2Record gr) {
-      TimeCoord.Tinv tinv;
+      TimeCoordIntvValue tinv;
 
       Grib2Pds pds = gr.getPDS();
       int tuInRecord = pds.getTimeUnit();
       if (tuInRecord == code) {
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
         if (intv == null) throw new IllegalStateException("CoordinateTimeIntv must have TimeIntervalOffset");
-        tinv = new TimeCoord.Tinv(intv[0], intv[1]);
+        tinv = new TimeCoordIntvValue(intv[0], intv[1]);
 
       } else {
-        TimeCoord.TinvDate tinvd = cust.getForecastTimeInterval(gr); // converts to calendar date
+        TimeCoordIntvDateValue tinvd = cust.getForecastTimeInterval(gr); // converts to calendar date
         if (tinvd == null) throw new IllegalStateException("CoordinateTimeIntv has no ForecastTime");
         tinv = tinvd.convertReferenceDate(refDate, timeUnit);
         if (tinv == null) throw new IllegalStateException("CoordinateTimeIntv has no ReferenceTime");
@@ -230,8 +227,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
+      List<TimeCoordIntvValue> offsetSorted = new ArrayList<>(values.size());
+      for (Object val : values) offsetSorted.add( (TimeCoordIntvValue) val);
       Collections.sort(offsetSorted);
 
       return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted, null);
@@ -256,7 +253,7 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
       Grib1SectionProductDefinition pds = gr.getPDSsection();
       Grib1ParamTime ptime = gr.getParamTime(cust);
       int[] intv = ptime.getInterval();
-      TimeCoord.Tinv  tinv = new TimeCoord.Tinv(intv[0], intv[1]);
+      TimeCoordIntvValue  tinv = new TimeCoordIntvValue(intv[0], intv[1]);
 
       // If its a different time unit, we have to adjust the interval.
       int tuInRecord = pds.getTimeUnit();
@@ -269,8 +266,8 @@ public class CoordinateTimeIntv extends CoordinateTimeAbstract implements Coordi
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
-      for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
+      List<TimeCoordIntvValue> offsetSorted = new ArrayList<>(values.size());
+      for (Object val : values) offsetSorted.add( (TimeCoordIntvValue) val);
       Collections.sort(offsetSorted);
 
       return new CoordinateTimeIntv(code, timeUnit, refDate, offsetSorted, null);

@@ -15,10 +15,7 @@ import ucar.nc2.Attribute;
 import ucar.nc2.AttributeContainerHelper;
 import ucar.nc2.constants.*;
 import ucar.nc2.ft2.coverage.*;
-import ucar.nc2.grib.EnsCoord;
 import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
@@ -31,6 +28,9 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.EnsCoordValue;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -544,7 +544,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       int count = 0;
       for (int runIdx = 0; runIdx < nruns; runIdx++) {
         CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
-        for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
+        for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
           values[count++] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
           values[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
         }
@@ -593,7 +593,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       for (int runIdx = 0; runIdx < n; runIdx++) {
         CoordinateTimeAbstract time = time2D.getTimeCoordinate(runIdx);
         assert time.getNCoords() == 1;
-        TimeCoord.Tinv tinv = (TimeCoord.Tinv) time.getValue(0);
+        TimeCoordIntvValue tinv = (TimeCoordIntvValue) time.getValue(0);
         values[count++] = tinv.getBounds1() + time2D.getOffset(runIdx);
         values[count++] = tinv.getBounds2() + time2D.getOffset(runIdx);
       }
@@ -646,7 +646,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
         CoordinateTimeIntv coordIntv = (CoordinateTimeIntv) time;
         int n = coordIntv.getSize(); // may be different than ntimes
         for (int timeIdx=0; timeIdx<n; timeIdx++) {
-          TimeCoord.Tinv tinv = (TimeCoord.Tinv) coordIntv.getValue(timeIdx);
+          TimeCoordIntvValue tinv = (TimeCoordIntvValue) coordIntv.getValue(timeIdx);
           values[runIdx*ntimes+timeIdx] = tinv.getBounds1() + runOffset;
           values[runIdx*ntimes+timeIdx+1] = tinv.getBounds2() + runOffset;
         }
@@ -686,7 +686,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       values = new double[2 * n];
       int count = 0;
       for (Object offset : offsets) {
-        TimeCoord.Tinv tinv = (TimeCoord.Tinv) offset;
+        TimeCoordIntvValue tinv = (TimeCoordIntvValue) offset;
         values[count++] = tinv.getBounds1();
         values[count++] = tinv.getBounds2();
       }
@@ -848,12 +848,12 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   private CoverageCoordAxis makeCoordAxis(CoordinateTimeIntv time) {
     trackDateRange(time.makeCalendarDateRange(null)); // default calendar
 
-    List<TimeCoord.Tinv> offsets = time.getTimeIntervals();
+    List<TimeCoordIntvValue> offsets = time.getTimeIntervals();
     int n = offsets.size();
     double[] values = new double[2 * n];
 
     int count = 0;
-    for (TimeCoord.Tinv offset : offsets) {
+    for (TimeCoordIntvValue offset : offsets) {
       values[count++] = offset.getBounds1();
       values[count++] = offset.getBounds2();
     }
@@ -871,7 +871,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
   }
 
   private CoverageCoordAxis makeCoordAxis(CoordinateVert vertCoord) {
-    List<VertCoord.Level> levels = vertCoord.getLevelSorted();
+    List<VertCoordValue> levels = vertCoord.getLevelSorted();
 
     int n = vertCoord.getSize();
     double[] values;
@@ -911,7 +911,7 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
     int n = ensCoord.getSize();
     double[] values = new double[n];
     for (int i = 0; i < n; i++)
-      values[i] = ((EnsCoord.Coord) ensCoord.getValue(i)).getEnsMember();
+      values[i] = ((EnsCoordValue) ensCoord.getValue(i)).getEnsMember();
 
     AttributeContainerHelper atts = new AttributeContainerHelper(ensCoord.getName());
     String units = ensCoord.getUnit();
@@ -1054,19 +1054,19 @@ public class GribCoverageDataset implements CoverageReader, CoordAxisReader {
       return values;
 
     } else if (coord instanceof CoordinateTimeIntv) {
-      List<TimeCoord.Tinv> intv = ((CoordinateTimeIntv) coord).getTimeIntervals();
+      List<TimeCoordIntvValue> intv = ((CoordinateTimeIntv) coord).getTimeIntervals();
       double[] values;
       if (coordAxis.getSpacing() == CoverageCoordAxis.Spacing.discontiguousInterval) {
         values = new double[2 * intv.size()];
         int count = 0;
-        for (TimeCoord.Tinv val : intv) {
+        for (TimeCoordIntvValue val : intv) {
           values[count++] = val.getBounds1();
           values[count++] = val.getBounds2();
         }
       } else {
         values = new double[intv.size() + 1];
         int count = 0;
-        for (TimeCoord.Tinv val : intv) {
+        for (TimeCoordIntvValue val : intv) {
           values[count++] = val.getBounds1();
           values[count] = val.getBounds2(); // gets overritten except for the last
         }

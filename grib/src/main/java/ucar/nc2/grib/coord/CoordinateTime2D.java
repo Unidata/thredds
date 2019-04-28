@@ -9,7 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
@@ -278,11 +277,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     if (isTimeInterval()) {
       counters.add("intv");
       for (int i = 0; i < offsets.size(); i++) {
-        TimeCoord.Tinv tinv = (TimeCoord.Tinv) offsets.get(i);
+        TimeCoordIntvValue tinv = (TimeCoordIntvValue) offsets.get(i);
         int intv = tinv.getBounds2() - tinv.getBounds1();
         counters.count("intv", intv);
         if (i > 0) {
-          int resol = tinv.getBounds1() - ((TimeCoord.Tinv)offsets.get(i-1)).getBounds1();
+          int resol = tinv.getBounds1() - ((TimeCoordIntvValue)offsets.get(i-1)).getBounds1();
           counters.count("resol", resol);
         }
       }
@@ -454,7 +453,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     CoordinateTimeAbstract time = getTimeCoordinate(runIdx);
     CalendarDate runDate = runtime.getRuntimeDate(runIdx);
     if (isTimeInterval) {
-      TimeCoord.Tinv valIntv = (TimeCoord.Tinv) time.getValue(timeIdx);
+      TimeCoordIntvValue valIntv = (TimeCoordIntvValue) time.getValue(timeIdx);
       if (valIntv == null) throw new IllegalArgumentException();
       return new Time2D(runDate, null, valIntv);
     } else {
@@ -574,11 +573,11 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   public boolean hasUniqueTimes() {
     if (isTimeInterval) {
       // make unique set of coordinates
-      Set<TimeCoord.Tinv> values = new HashSet<>();
+      Set<TimeCoordIntvValue> values = new HashSet<>();
       for (int runIdx = 0; runIdx < nruns; runIdx++) { // use times array, passed into constructor, with original inventory, if possible
         CoordinateTimeIntv timeIntv = (times == null) ? (CoordinateTimeIntv) getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
-        for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
-          TimeCoord.Tinv tinvAbs = tinv.offset(getOffset(runIdx)); // convert to absolute offset
+        for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
+          TimeCoordIntvValue tinvAbs = tinv.offset(getOffset(runIdx)); // convert to absolute offset
           if (values.contains(tinvAbs))
             return false;
           values.add(tinvAbs);
@@ -635,20 +634,20 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   private CoordinateTimeAbstract makeBestTimeIntv(CoordinateRuntime master) {
      // make unique set of coordinates
-    Set<TimeCoord.Tinv> values = new HashSet<>();
+    Set<TimeCoordIntvValue> values = new HashSet<>();
     for (int runIdx=0; runIdx<nruns; runIdx++) {        // use times array, passed into constructor, with original inventory, if possible
       CoordinateTimeIntv timeIntv = (times == null) ?  (CoordinateTimeIntv)  getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
-      for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals())
+      for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals())
         values.add(tinv.offset(getOffset(runIdx)));
     }
-    List<TimeCoord.Tinv> offsetSorted = new ArrayList<>(values.size());
-    for (Object val : values) offsetSorted.add( (TimeCoord.Tinv) val);
+    List<TimeCoordIntvValue> offsetSorted = new ArrayList<>(values.size());
+    for (Object val : values) offsetSorted.add( (TimeCoordIntvValue) val);
     Collections.sort(offsetSorted);
 
     // fast lookup of offset tinv in the result CoordinateTimeIntv
-    Map<TimeCoord.Tinv, Integer> map = new HashMap<>();  // lookup coord val to index
+    Map<TimeCoordIntvValue, Integer> map = new HashMap<>();  // lookup coord val to index
     int count = 0;
-    for (TimeCoord.Tinv val : offsetSorted)
+    for (TimeCoordIntvValue val : offsetSorted)
       map.put(val, count++);
 
         // fast lookup of the run time in the master
@@ -665,7 +664,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     int[] time2runtime = new int[ offsetSorted.size()];
     for (int runIdx=0; runIdx<nruns; runIdx++) {
       CoordinateTimeIntv timeIntv = (times == null) ?  (CoordinateTimeIntv)  getTimeCoordinate(runIdx) : (CoordinateTimeIntv) times.get(runIdx);
-      for (TimeCoord.Tinv bestVal : timeIntv.getTimeIntervals()) {
+      for (TimeCoordIntvValue bestVal : timeIntv.getTimeIntervals()) {
         Integer bestValIdx = map.get(bestVal.offset(getOffset(runIdx)));
         if (bestValIdx == null) throw new IllegalStateException();
         time2runtime[bestValIdx] = run2master[runIdx] + 1; // uses this runtime; later ones override; one based so 0 = missing
@@ -694,7 +693,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   /**
    * Find index in time coordinate from the time value
-   * @param val TimeCoord.Tinv or Integer
+   * @param val TimeCoordIntvValue or Integer
    * @return indx in the time coordinate
    */
   public int findTimeIndexFromVal(int runIdx, Object val) {
@@ -708,7 +707,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
 
   /**
    * Get a sorted list of the unique time coordinates
-   * @return List<Integer> or List<TimeCoord.Tinv>
+   * @return List<Integer> or List<TimeCoordIntvValue>
    */
   public List<?> getOffsetsSorted() {
     if (isOrthogonal)
@@ -732,13 +731,13 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
     return result;
   }
 
-  private List<TimeCoord.Tinv> getIntervalsSorted(List<? extends Coordinate> coords) {
-    Set<TimeCoord.Tinv> set = new HashSet<>(100);
+  private List<TimeCoordIntvValue> getIntervalsSorted(List<? extends Coordinate> coords) {
+    Set<TimeCoordIntvValue> set = new HashSet<>(100);
     for (Coordinate coord : coords) {
       for (Object val : coord.getValues())
-        set.add((TimeCoord.Tinv) val);
+        set.add((TimeCoordIntvValue) val);
     }
-    List<TimeCoord.Tinv> result = new ArrayList<>(set);
+    List<TimeCoordIntvValue> result = new ArrayList<>(set);
     Collections.sort(result);
     return result;
   }
@@ -748,15 +747,15 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
   public static class Time2D implements Comparable<Time2D> {
     long refDate;
     Integer time;
-    TimeCoord.Tinv tinv;
+    TimeCoordIntvValue tinv;
 
-    public Time2D(CalendarDate refDate, Integer time, TimeCoord.Tinv tinv) {
+    public Time2D(CalendarDate refDate, Integer time, TimeCoordIntvValue tinv) {
       this.refDate = refDate.getMillis();
       this.time = time;
       this.tinv = tinv;
     }
 
-    Time2D(long refDate, Integer time, TimeCoord.Tinv tinv) {
+    Time2D(long refDate, Integer time, TimeCoordIntvValue tinv) {
       this.refDate = refDate;
       this.time = time;
       this.tinv = tinv;
@@ -853,7 +852,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       if (time instanceof Integer)
         return new Time2D(run, (Integer) time, null);
       else
-        return new Time2D(run, null, (TimeCoord.Tinv) time);
+        return new Time2D(run, null, (TimeCoordIntvValue) time);
     }
 
     @Override
@@ -947,7 +946,7 @@ public class CoordinateTime2D extends CoordinateTimeAbstract implements Coordina
       if (time instanceof Integer)
         return new Time2D(run, (Integer) time, null);
       else
-        return new Time2D(run, null, (TimeCoord.Tinv) time);
+        return new Time2D(run, null, (TimeCoordIntvValue) time);
     }
 
     @Override

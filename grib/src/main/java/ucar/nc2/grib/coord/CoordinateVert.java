@@ -5,7 +5,6 @@
 package ucar.nc2.grib.coord;
 
 import javax.annotation.Nullable;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1Record;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
@@ -32,21 +31,20 @@ import java.util.List;
  */
 @Immutable
 public class CoordinateVert implements Coordinate {
-
-  private final List<VertCoord.Level> levelSorted;
+  private final List<VertCoordValue> levelSorted;
   private final int code; // Grib1 - code table 3; Grib2 - Code table 4.5
   private String name;
-  private final VertCoord.VertUnit vunit;
+  private final VertCoordType vunit;
   private final boolean isLayer;
 
-  public CoordinateVert(int code, VertCoord.VertUnit vunit, List<VertCoord.Level> levelSorted) {
+  public CoordinateVert(int code, VertCoordType vunit, List<VertCoordValue> levelSorted) {
     this.levelSorted = Collections.unmodifiableList(levelSorted);
     this.code = code;
     this.vunit = vunit;
     this.isLayer = levelSorted.get(0).isLayer();
   }
 
-  public List<VertCoord.Level> getLevelSorted() {
+  public List<VertCoordValue> getLevelSorted() {
     return levelSorted;
   }
 
@@ -91,7 +89,7 @@ public class CoordinateVert implements Coordinate {
     return vunit == null ? null : vunit.getUnits();
   }
 
-  public VertCoord.VertUnit getVertUnit() {
+  public VertCoordType getVertUnit() {
     return vunit;
   }
 
@@ -120,7 +118,7 @@ public class CoordinateVert implements Coordinate {
   @Override
   public void showInfo(Formatter info, Indent indent) {
     info.format("%s%s: ", indent, getType());
-     for (VertCoord.Level level : levelSorted)
+     for (VertCoordValue level : levelSorted)
        info.format(" %s", level);
     info.format(" (%d)%n", levelSorted.size());
   }
@@ -128,7 +126,7 @@ public class CoordinateVert implements Coordinate {
   @Override
   public void showCoords(Formatter info) {
     info.format("Levels: (%s)%n", getUnit());
-    for (VertCoord.Level level : levelSorted)
+    for (VertCoordValue level : levelSorted)
       info.format("   %s%n", level);
   }
 
@@ -183,9 +181,9 @@ public class CoordinateVert implements Coordinate {
 
   public static class Builder2 extends CoordinateBuilderImpl<Grib2Record> {
     int code;
-    VertCoord.VertUnit vunit;
+    VertCoordType vunit;
 
-    public Builder2(int code, VertCoord.VertUnit vunit) {
+    public Builder2(int code, VertCoordType vunit) {
       this.code = code;
       this.vunit = vunit;
     }
@@ -194,15 +192,15 @@ public class CoordinateVert implements Coordinate {
     public Object extract(Grib2Record gr) {
       Grib2Pds pds = gr.getPDS();
       if (Grib2Utils.isLayer(pds))
-        return new VertCoord.Level(pds.getLevelValue1(), pds.getLevelValue2());
+        return new VertCoordValue(pds.getLevelValue1(), pds.getLevelValue2());
       else
-        return new VertCoord.Level(pds.getLevelValue1());
+        return new VertCoordValue(pds.getLevelValue1());
     }
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
-      for (Object val : values) levelSorted.add( (VertCoord.Level) val);
+      List<VertCoordValue> levelSorted = new ArrayList<>(values.size());
+      for (Object val : values) levelSorted.add( (VertCoordValue) val);
       Collections.sort(levelSorted);
       return new CoordinateVert(code, vunit, levelSorted);
     }
@@ -223,15 +221,15 @@ public class CoordinateVert implements Coordinate {
       boolean isLayer = cust.isLayer(pds.getLevelType());
       Grib1ParamLevel plevel = cust.getParamLevel(pds);
       if (isLayer)
-        return new VertCoord.Level(plevel.getValue1(), plevel.getValue2());
+        return new VertCoordValue(plevel.getValue1(), plevel.getValue2());
       else
-        return new VertCoord.Level(plevel.getValue1());
+        return new VertCoordValue(plevel.getValue1());
     }
 
     @Override
     public Coordinate makeCoordinate(List<Object> values) {
-      List<VertCoord.Level> levelSorted = new ArrayList<>(values.size());
-      for (Object val : values) levelSorted.add( (VertCoord.Level) val);
+      List<VertCoordValue> levelSorted = new ArrayList<>(values.size());
+      for (Object val : values) levelSorted.add( (VertCoordValue) val);
       Collections.sort(levelSorted);
       return new CoordinateVert(code, cust.getVertUnit(code), levelSorted);
     }

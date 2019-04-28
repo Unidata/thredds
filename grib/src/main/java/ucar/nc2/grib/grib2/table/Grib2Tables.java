@@ -9,6 +9,9 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import thredds.featurecollection.TimeUnitConverter;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2SectionIdentification;
@@ -185,7 +188,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   public CalendarDate getForecastDate(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     if (pds.isTimeInterval()) {
-      TimeCoord.TinvDate intv = getForecastTimeInterval(gr);
+      TimeCoordIntvDateValue intv = getForecastTimeInterval(gr);
       return intv == null ? null : intv.getEnd();
 
     } else {
@@ -225,7 +228,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
    * @return time interval in units of gr.getPDS().getTimeUnit()
    */
   @Nullable
-  public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
+  public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
     // note  from Arthur Taylor (degrib):
     /* If there was a range I used:
 
@@ -264,9 +267,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     // End of Interval as date
     CalendarDate EI = pdsIntv.getIntervalTimeEnd();
     if (EI == CalendarDate.UNKNOWN) {  // all values were set to zero   LOOK guessing!
-      return new TimeCoord.TinvDate(gr.getReferenceDate(), period);
+      return new TimeCoordIntvDateValue(gr.getReferenceDate(), period);
     } else {
-      return new TimeCoord.TinvDate(period, EI);
+      return new TimeCoordIntvDateValue(period, EI);
     }
   }
 
@@ -318,12 +321,12 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
    */
   @Nullable
   public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
-    TimeCoord.TinvDate tinvd = getForecastTimeInterval(gr);
+    TimeCoordIntvDateValue tinvd = getForecastTimeInterval(gr);
     if (tinvd == null) return null;
 
     Grib2Pds pds = gr.getPDS();
     int unit = convertTimeUnit(pds.getTimeUnit());
-    TimeCoord.Tinv tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
+    TimeCoordIntvValue tinv = tinvd.convertReferenceDate(gr.getReferenceDate(), Grib2Utils.getCalendarPeriod(unit));
     if (tinv == null) return null;
     int[] result = new int[2];
     result[0] = tinv.getBounds1();
@@ -405,74 +408,74 @@ Code Table Code table 4.7 - Derived forecast (4.7)
    * @return level unit, default is empty unit string
    */
   @Override
-  public VertCoord.VertUnit getVertUnit(int code) {
-    //     GribLevelType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
+  public VertCoordType getVertUnit(int code) {
+    //     VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
     switch (code) {
 
       case 11:
       case 12:
-        return new GribLevelType(code, "m", null, true);
+        return new VertCoordType(code, "m", null, true);
 
       case 20:
-        return new GribLevelType(code, "K", null, false);
+        return new VertCoordType(code, "K", null, false);
 
       case 100:
-        return new GribLevelType(code, "Pa", null, false);
+        return new VertCoordType(code, "Pa", null, false);
 
       case 102:
-        return new GribLevelType(code, "m", "mean sea level", true);
+        return new VertCoordType(code, "m", "mean sea level", true);
 
       case 103:
-        return new GribLevelType(code, "m", "ground", true);
+        return new VertCoordType(code, "m", "ground", true);
 
       case 104:
       case 105:
-        return new GribLevelType(code, "sigma", null, false); // positive?
+        return new VertCoordType(code, "sigma", null, false); // positive?
 
       case 106:
-        return new GribLevelType(code, "m", "land surface", false);
+        return new VertCoordType(code, "m", "land surface", false);
 
       case 107:
-        return new GribLevelType(code, "K", null, true); // positive?
+        return new VertCoordType(code, "K", null, true); // positive?
 
       case 108:
-        return new GribLevelType(code, "Pa", "ground", true);
+        return new VertCoordType(code, "Pa", "ground", true);
 
       case 109:
-        return new GribLevelType(code, "K m2 kg-1 s-1", null, true); // positive?
+        return new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
 
       case 114:
-        return new GribLevelType(code, "numeric", null, false);
+        return new VertCoordType(code, "numeric", null, false);
 
       case 117:
-        return new GribLevelType(code, "m", null, true);
+        return new VertCoordType(code, "m", null, true);
 
       case 119:
-        return new GribLevelType(code, "Pa", null, false); // ??
+        return new VertCoordType(code, "Pa", null, false); // ??
 
       case 160:
-        return new GribLevelType(code, "m", "sea level", false);
+        return new VertCoordType(code, "m", "sea level", false);
 
       case 161:
-        return new GribLevelType(code, "m", "water surface", false);
+        return new VertCoordType(code, "m", "water surface", false);
 
       // LOOK NCEP specific
       case 235:
-        return new GribLevelType(code, "0.1 C", null, true);
+        return new VertCoordType(code, "0.1 C", null, true);
 
       case 237:
-        return new GribLevelType(code, "m", null, true);
+        return new VertCoordType(code, "m", null, true);
 
       case 238:
-        return new GribLevelType(code, "m", null, true);
+        return new VertCoordType(code, "m", null, true);
 
       default:
-        return new GribLevelType(code, null, null, true);
+        return new VertCoordType(code, null, null, true);
     }
   }
 
   public boolean isLevelUsed(int code) {
-    VertCoord.VertUnit vunit = getVertUnit(code);
+    VertCoordType vunit = getVertUnit(code);
     return vunit.isVerticalCoordinate();
   }
 

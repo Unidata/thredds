@@ -14,7 +14,7 @@ import ucar.ma2.*;
 import ucar.nc2.ft2.coverage.CoordsSet;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
-import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -455,7 +455,7 @@ public abstract class GribDataReader {
         f.format("  Parameter=%s%n", cust.getVariableName(gr));
         f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
         f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
-        TimeCoord.TinvDate tinv = cust.getForecastTimeInterval(gr);
+        TimeCoordIntvDateValue tinv = cust.getForecastTimeInterval(gr);
         if (tinv != null) f.format("  TimeInterval=%s%n", tinv);
         f.format("  ");
         gr.getPDS().show(f);

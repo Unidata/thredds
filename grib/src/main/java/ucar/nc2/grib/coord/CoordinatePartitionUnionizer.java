@@ -5,7 +5,6 @@
 package ucar.nc2.grib.coord;
 
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.grib.collection.GribCollectionMutable;
 import ucar.nc2.grib.collection.PartitionCollectionMutable;
 import ucar.nc2.time.CalendarDate;
@@ -115,10 +114,10 @@ public class CoordinatePartitionUnionizer {
     }
   }
 
-  private List<TimeCoord.Tinv> intervalFilter(CoordinateTimeIntv coord) {
+  private List<TimeCoordIntvValue> intervalFilter(CoordinateTimeIntv coord) {
     if (intvFilter == null) return coord.getTimeIntervals();
-    List<TimeCoord.Tinv> result = new ArrayList<>();
-    for (TimeCoord.Tinv tinv : coord.getTimeIntervals()) {
+    List<TimeCoordIntvValue> result = new ArrayList<>();
+    for (TimeCoordIntvValue tinv : coord.getTimeIntervals()) {
       if (!intvFilter.filter(vi.getVarid(), tinv.getBounds1(), tinv.getBounds2(), Integer.MIN_VALUE))
         result.add(tinv);
     }

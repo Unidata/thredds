@@ -44,6 +44,7 @@ import ucar.nc2.NCdumpW;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
@@ -1367,7 +1368,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public String getIntv() {
       if (cust != null) {
-        TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
+        TimeCoordIntvDateValue intv = cust.getForecastTimeInterval(gr);
         if (intv != null) return intv.toString();
       }
       return "";

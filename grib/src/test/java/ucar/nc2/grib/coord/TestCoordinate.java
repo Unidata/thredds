@@ -2,8 +2,6 @@ package ucar.nc2.grib.coord;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.grib.GribLevelType;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 import ucar.nc2.util.Counters;
@@ -43,9 +41,9 @@ public class TestCoordinate implements Coordinate {
         for (int i=0; i<nvals; i++) vals.add(i);
         return new CoordinateTime(0, period, null, vals, null);
       case vert:
-        List<VertCoord.Level> vert = new ArrayList<>(nvals);
-        for (int i=0; i<nvals; i++) vert.add(new VertCoord.Level((double) (i+1), (double) (i+2)));
-        return new CoordinateVert(1, new GribLevelType(11, "m", null, true), vert);  // random vert unit
+        List<VertCoordValue> vert = new ArrayList<>(nvals);
+        for (int i=0; i<nvals; i++) vert.add(new VertCoordValue((double) (i+1), (double) (i+2)));
+        return new CoordinateVert(1, new VertCoordType(11, "m", null, true), vert);  // random vert unit
      }
     return null;
   }

@@ -7,7 +7,6 @@ package ucar.nc2.grib.coord;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import org.slf4j.LoggerFactory;
-import ucar.nc2.grib.TimeCoord;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarPeriod;
 
@@ -91,7 +90,7 @@ class CoordinateTime2DUnionizer<T> extends CoordinateBuilderImpl<T> {
         CalendarDate cd = CalendarDate.of(runtime);
         for (Object timeVal : time.getValues())
           allVals.add( isTimeInterval ?
-                  new CoordinateTime2D.Time2D(cd, null, (TimeCoord.Tinv) timeVal) :
+                  new CoordinateTime2D.Time2D(cd, null, (TimeCoordIntvValue) timeVal) :
                   new CoordinateTime2D.Time2D(cd, (Integer) timeVal, null));
       }
     }

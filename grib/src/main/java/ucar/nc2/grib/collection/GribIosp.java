@@ -25,6 +25,10 @@ import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.CoordinateTimeIntv;
 import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.EnsCoordValue;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordType;
+import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.grib.grib2.Grib2Utils;
 import ucar.nc2.iosp.AbstractIOServiceProvider;
 import ucar.nc2.time.Calendar;
@@ -680,7 +684,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
-          for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
+          for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
             data[runIdx * ntimes + timeIdx] = timeUnit.getValue() * tinv.getBounds2() + time2D
                 .getOffset(runIdx); // use upper bounds for coord value
             timeIdx++;
@@ -692,7 +696,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         count = 0;
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
-          for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
+          for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
             data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D
                 .getOffset(runIdx); // use upper bounds for coord value
           }
@@ -723,7 +727,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
           int timeIdx = 0;
-          for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
+          for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
             data[runIdx * ntimes * 2 + timeIdx] =
                 timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
             data[runIdx * ntimes * 2 + timeIdx + 1] =
@@ -737,7 +741,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
         count = 0;
         for (int runIdx = 0; runIdx < nruns; runIdx++) {
           CoordinateTimeIntv timeIntv = (CoordinateTimeIntv) time2D.getTimeCoordinate(runIdx);
-          for (TimeCoord.Tinv tinv : timeIntv.getTimeIntervals()) {
+          for (TimeCoordIntvValue tinv : timeIntv.getTimeIntervals()) {
             data[count++] = timeUnit.getValue() * tinv.getBounds1() + time2D.getOffset(runIdx);
             data[count++] = timeUnit.getValue() * tinv.getBounds2() + time2D.getOffset(runIdx);
           }
@@ -812,7 +816,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     int count = 0;
 
     // use upper bounds for coord value
-    for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals()) {
+    for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
       data[count++] = tinv.getBounds2();
     }
     v.setCachedData(Array.factory(DataType.DOUBLE, new int[]{ntimes}, data));
@@ -827,7 +831,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     data = new double[ntimes * 2];
     count = 0;
-    for (TimeCoord.Tinv tinv : coordTime.getTimeIntervals()) {
+    for (TimeCoordIntvValue tinv : coordTime.getTimeIntervals()) {
       data[count++] = tinv.getBounds1();
       data[count++] = tinv.getBounds2();
     }
@@ -854,7 +858,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     }
 
     v.addAttribute(new Attribute("Grib_level_type", vc.getCode()));
-    VertCoord.VertUnit vu = vc.getVertUnit();
+    VertCoordType vu = vc.getVertUnit();
     if (vu != null) {
       if (vu.getDatum() != null) {
         v.addAttribute(new Attribute("datum", vu.getDatum()));
@@ -864,7 +868,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     if (vc.isLayer()) {
       float[] data = new float[n];
       int count = 0;
-      for (VertCoord.Level val : vc.getLevelSorted()) {
+      for (VertCoordValue val : vc.getLevelSorted()) {
         data[count++] = (float) (val.getValue1() + val.getValue2()) / 2;
       }
       v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
@@ -880,7 +884,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
       data = new float[2 * n];
       count = 0;
-      for (VertCoord.Level level : vc.getLevelSorted()) {
+      for (VertCoordValue level : vc.getLevelSorted()) {
         data[count++] = (float) level.getValue1();
         data[count++] = (float) level.getValue2();
       }
@@ -889,7 +893,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
     } else {
       float[] data = new float[n];
       int count = 0;
-      for (VertCoord.Level val : vc.getLevelSorted()) {
+      for (VertCoordValue val : vc.getLevelSorted()) {
         data[count++] = (float) val.getValue1();
       }
       v.setCachedData(Array.factory(DataType.FLOAT, new int[]{n}, data));
@@ -907,7 +911,7 @@ public abstract class GribIosp extends AbstractIOServiceProvider {
 
     int[] data = new int[n];
     int count = 0;
-    for (EnsCoord.Coord ecc : ec.getEnsSorted()) {
+    for (EnsCoordValue ecc : ec.getEnsSorted()) {
       data[count++] = ecc.getEnsMember();
     }
     v.setCachedData(Array.factory(DataType.INT, new int[]{n}, data));

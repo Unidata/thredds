@@ -26,6 +26,8 @@ import ucar.nc2.grib.coord.CoordinateRuntime;
 import ucar.nc2.grib.coord.CoordinateTime2D;
 import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.coord.SparseArray;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.grib.grib1.Grib1Variable;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
@@ -547,7 +549,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
           case timeIntv:
             double[] timeIntv = coords.getTimeOffsetIntv();
-            idx = coord.getIndex(new TimeCoord.Tinv((int) timeIntv[0], (int) timeIntv[1]));
+            idx = coord.getIndex(new TimeCoordIntvValue((int) timeIntv[0], (int) timeIntv[1]));
             break;
 
           case time:
@@ -559,7 +561,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           case time2D:
             timeIntv = coords.getTimeOffsetIntv();
             if (timeIntv != null) {
-              TimeCoord.Tinv coordTinv = new TimeCoord.Tinv((int) timeIntv[0], (int) timeIntv[1]);
+              TimeCoordIntvValue coordTinv = new TimeCoordIntvValue((int) timeIntv[0], (int) timeIntv[1]);
               idx = ((CoordinateTime2D) coord).findTimeIndexFromVal(runIdx, coordTinv); // LOOK can only use if orthogonal
               break;
             }
@@ -581,13 +583,13 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
           case vert:
             double[] vertIntv = coords.getVertCoordIntv();
             if (vertIntv != null) {
-              VertCoord.Level coordVert = new VertCoord.Level(vertIntv[0], vertIntv[1]);
+              VertCoordValue coordVert = new VertCoordValue(vertIntv[0], vertIntv[1]);
               idx = coord.getIndex(coordVert);
               break;
             }
             Double vertCoord = coords.getVertCoord();
             if (vertCoord != null) {
-              VertCoord.Level coordVert = new VertCoord.Level(vertCoord);
+              VertCoordValue coordVert = new VertCoordValue(vertCoord);
               idx = coord.getIndex(coordVert);
             }
             break;
