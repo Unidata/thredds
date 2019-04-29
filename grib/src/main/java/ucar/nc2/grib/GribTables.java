@@ -10,7 +10,6 @@ import ucar.nc2.grib.coord.VertCoordType;
 
 /**
  * Abstraction of GribTable for Grib Collections.
- * Still figuring out what the minimal need is
  *
  * @author John
  * @since 9/5/11
@@ -60,8 +59,8 @@ public interface GribTables {
 
     Float getMissing();
 
+    @Nullable
     String getOperationalStatus();
   }
-
 
 }
