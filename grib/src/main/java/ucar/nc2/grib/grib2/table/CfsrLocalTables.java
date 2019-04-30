@@ -8,8 +8,7 @@ package ucar.nc2.grib.grib2.table;
 import java.util.ArrayList;
 import java.util.List;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -117,7 +116,7 @@ class CfsrLocalTables extends NcepLocalTables {
   }
 
   @Override
-  public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
+  public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     if (!pds.isTimeInterval()) {
       return null;
@@ -140,7 +139,7 @@ class CfsrLocalTables extends NcepLocalTables {
     CalendarDate start = gr.getReferenceDate().add(intv[0], fld);
     CalendarPeriod period = CalendarPeriod.of(intvLen, fld);
 
-    return new TimeCoord.TinvDate(start, period);
+    return new TimeCoordIntvDateValue(start, period);
   }
 
   /**

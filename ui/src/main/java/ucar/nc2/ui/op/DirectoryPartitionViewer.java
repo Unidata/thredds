@@ -12,7 +12,7 @@ import thredds.featurecollection.FeatureCollectionConfigBuilder;
 import thredds.inventory.*;
 import thredds.inventory.partition.DirectoryPartition;
 import thredds.inventory.partition.DirectoryBuilder;
-import ucar.coord.Coordinate;
+import ucar.nc2.grib.coord.Coordinate;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionMutable;
 import ucar.nc2.grib.collection.PartitionCollectionMutable;

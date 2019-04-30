@@ -321,7 +321,7 @@ public class Grib1ReportPanel extends ReportPanel {
     Grib1ParamTime ptime = cust.getParamTime(pds);
     counters.count("timeCoord", ptime.getTimeCoord());
     counters.count("earthShape", gds.getEarthShape());
-    counters.count("uvIsReletive", gds.getUVisReletive() ? "true" : "false");
+    counters.count("UVisReletiveToEastNorth", gds.getUVisReletiveToEastNorth() ? "true" : "false");
 
     if (gdss.isThin()) {
       if (extraInfo) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), path);
@@ -368,10 +368,10 @@ public class Grib1ReportPanel extends ReportPanel {
         counters.count("decimalScale", info.decimalScaleFactor);
         counters.count("binScale", info.binaryScaleFactor);
         counters.count("nbits", info.numberOfBits);
-        counters.count("gridType", info.getGridPoint());
-        counters.count("packing", info.getPacking());
-        counters.count("dataType", info.getDataType());
-        counters.count("hasMore", info.hasMore() ? 1 : 0);
+        counters.count("gridType", info.getGridPointS());
+        counters.count("packing", info.getPackingS());
+        counters.count("dataType", info.getDataTypeS());
+        counters.count("hasOctet14", info.hasOctet14() ? 1 : 0);
 
         if (info.binaryScaleFactor != 0 && info.decimalScaleFactor != 0) {
           counters.count("scale", 1);

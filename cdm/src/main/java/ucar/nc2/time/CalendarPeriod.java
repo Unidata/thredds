@@ -25,13 +25,13 @@ import javax.annotation.concurrent.Immutable;
  */
 @Immutable
 public class CalendarPeriod {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CalendarPeriod.class);
 
   private static final Cache<CalendarPeriod, CalendarPeriod> cache = CacheBuilder.newBuilder()
                 .maximumSize(100)  // limit cache size....
                 .build();
 
-  static public final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
+  public static final CalendarPeriod Hour = CalendarPeriod.of(1, Field.Hour);
 
   public enum Field {
     Millisec(PeriodType.millis()), Second(PeriodType.seconds()), Minute(PeriodType.minutes()), Hour(PeriodType.hours()),
@@ -214,6 +214,13 @@ public class CalendarPeriod {
 
      else throw new IllegalStateException("Illegal Field = "+field);
    }
+
+   /* LOOK from old TimeCoord code, which is better ??
+  public static int getOffset(CalendarDate refDate, CalendarDate cd, CalendarPeriod timeUnit) {
+    long msecs = cd.getDifferenceInMsecs(refDate);
+    return (int) Math.round(msecs / timeUnit.getValueInMillisecs());
+  }
+  */
 
   // offset from start to end, in these units
   // start + offset = end

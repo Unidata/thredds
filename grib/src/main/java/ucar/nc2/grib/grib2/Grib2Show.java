@@ -6,8 +6,8 @@ package ucar.nc2.grib.grib2;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables;
 import ucar.nc2.grib.grib2.table.WmoTemplateTables.TemplateTable;
@@ -83,7 +83,7 @@ public class Grib2Show {
     f.format("%nGrib2ProductDefinitionSection%n");
     Grib2Pds pds = gr.getPDS();
     if (pds.isTimeInterval()) {
-      TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
+      TimeCoordIntvDateValue intv = cust.getForecastTimeInterval(gr);
       if (intv != null) f.format(" Interval     = %s%n", intv);
     }
     showPdsTemplate(pdss, f, cust);
@@ -162,7 +162,7 @@ public class Grib2Show {
     }
 
     Grib2Pds pds = gr.getPDS();
-    VertCoord.VertUnit levelUnit = cust.getVertUnit(pds.getLevelType1());
+    VertCoordType levelUnit = cust.getVertUnit(pds.getLevelType1());
     f.format("  Level=%f/%f %s; level name =  (%s)%n", pds.getLevelValue1(), pds.getLevelValue1(), levelUnit.getUnits(), cust.getLevelNameShort(pds.getLevelType1()));
 
     String intvName = "none";
@@ -176,7 +176,7 @@ public class Grib2Show {
     f.format("  Time Unit=%s; Stat=%s%n", Grib2Utils.getCalendarPeriod( pds.getTimeUnit()), intvName);
     f.format("  ReferenceDate=%s%n", gr.getReferenceDate());
     f.format("  ForecastDate=%s%n", cust.getForecastDate(gr));
-    TimeCoord.TinvDate intv = cust.getForecastTimeInterval(gr);
+    TimeCoordIntvDateValue intv = cust.getForecastTimeInterval(gr);
     if (intv != null) f.format("  TimeInterval=%s%n", intv);
     f.format("%n");
     pds.show(f);

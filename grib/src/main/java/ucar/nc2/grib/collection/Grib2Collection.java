@@ -6,7 +6,7 @@
 package ucar.nc2.grib.collection;
 
 import javax.annotation.Nullable;
-import ucar.coord.CoordinateTimeAbstract;
+import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.ma2.Array;
 import ucar.nc2.*;
 import ucar.nc2.constants.DataFormatType;

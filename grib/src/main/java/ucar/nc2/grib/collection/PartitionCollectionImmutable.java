@@ -10,15 +10,15 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import thredds.featurecollection.FeatureCollectionConfig;
-import ucar.coord.Coordinate;
-import ucar.coord.CoordinateRuntime;
-import ucar.coord.CoordinateTime2D;
-import ucar.coord.CoordinateTimeAbstract;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.dataset.DatasetUrl;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.util.CancelTask;
 import ucar.nc2.util.Misc;
@@ -580,7 +580,7 @@ public abstract class PartitionCollectionImmutable extends GribCollectionImmutab
             return null;
 
           CoordinateTime2D.Time2D wholeVal2D = compCoord2D.isTimeInterval() ?
-                  new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), null, (TimeCoord.Tinv) wholeVal1D) :
+                  new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), null, (TimeCoordIntvValue) wholeVal1D) :
                   new CoordinateTime2D.Time2D(wholeCoord1Dtime.getRefDate(), (Integer) wholeVal1D, null);
 
           resultIdx = compCoord2D.matchTimeCoordinate(runtimeIdxPart, wholeVal2D);

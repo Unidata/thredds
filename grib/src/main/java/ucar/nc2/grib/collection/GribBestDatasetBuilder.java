@@ -4,11 +4,14 @@
  */
 package ucar.nc2.grib.collection;
 
-import ucar.coord.*;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateSharerBest;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 
 /**
  * Not used yet.

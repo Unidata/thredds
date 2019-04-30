@@ -5,7 +5,7 @@
 package ucar.nc2.grib.grib2.table;
 
 import javax.annotation.Nullable;
-import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
@@ -29,7 +29,7 @@ public class NwsMetDevTables extends NcepLocalTables {
 
   @Override
   @Nullable
-  public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
+  public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     if (!pds.isTimeInterval()) return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
@@ -55,7 +55,7 @@ public class NwsMetDevTables extends NcepLocalTables {
     CalendarDate referenceDate = gr.getReferenceDate();
     CalendarDate intvStart = referenceDate.add(ftime, fld);
 
-    return new TimeCoord.TinvDate(intvStart, intvEnd);
+    return new TimeCoordIntvDateValue(intvStart, intvEnd);
   }
 
   /**

@@ -931,7 +931,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60))  [Snyder,Working Manual p157]
       // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
       double scale;
-      if (GribNumbers.isUndefined(lad)) { // LOOK
+      if (GribNumbers.isUndefined(lad)) { // LOOK -9999.0 means use a default? Probably an encoding mistake fixed in code.
         scale = 0.9330127018922193;
       } else {
         scale = (1.0 + Math.sin(Math.toRadians(Math.abs(Math.abs(lad))))) / 2;

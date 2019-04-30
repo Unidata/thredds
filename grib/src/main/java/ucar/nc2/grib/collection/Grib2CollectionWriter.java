@@ -7,8 +7,15 @@ package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.*;
-import ucar.coord.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateEns;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateTime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeIntv;
+import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;

@@ -9,8 +9,8 @@ import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribResourceReader;
+import ucar.nc2.grib.coord.VertCoordType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ public class FnmocTables extends Grib1Customizer {
   private static final String fnmocTable2 = "resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterParameterTableOrdered.GRIB1.Tbl2.xml";
   private static final String fnmocTable3 = "resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml";
 
-  private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, VertCoordType> levelTypesMap;  // shared by all instances
   private static Map<Integer, String> genProcessMap;  // shared by all instances
 
   FnmocTables(Grib1ParamTables tables) {
@@ -94,13 +94,13 @@ public class FnmocTables extends Grib1Customizer {
 
 
   /// levels
-  protected GribLevelType getLevelType(int code) {
+  protected VertCoordType getLevelType(int code) {
     if (levelTypesMap == null)
       levelTypesMap = readFnmocTable3(fnmocTable3);
     if (levelTypesMap == null)
       return super.getLevelType(code);
 
-    GribLevelType levelType = levelTypesMap.get(code);
+    VertCoordType levelType = levelTypesMap.get(code);
     if (levelType != null) return levelType;
     return super.getLevelType(code);
   }
@@ -124,13 +124,13 @@ public class FnmocTables extends Grib1Customizer {
     </entry>
    */
   @Nullable
-  private HashMap<Integer, GribLevelType> readFnmocTable3(String path) {
+  private HashMap<Integer, VertCoordType> readFnmocTable3(String path) {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, GribLevelType> result = new HashMap<>(200);
+      HashMap<Integer, VertCoordType> result = new HashMap<>(200);
       Element fnmocTable = root.getChild("fnmocTable");
       List<Element> params = fnmocTable.getChildren("entry");
       for (Element elem1 : params) {
@@ -143,7 +143,7 @@ public class FnmocTables extends Grib1Customizer {
         String datum = elem1.getChildText("datum");
         boolean isLayer = elem1.getChild("isLayer") != null;
         boolean isPositiveUp = elem1.getChild("isPositiveUp")  != null;
-        GribLevelType lt = new GribLevelType(code, desc, abbrev, units, datum, isPositiveUp, isLayer);
+        VertCoordType lt = new VertCoordType(code, desc, abbrev, units, datum, isPositiveUp, isLayer);
         result.put(code, lt);
       }
 

@@ -9,7 +9,6 @@ import ucar.nc2.grib.grib2.table.Grib2ParamTableInterface;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.wmo.Util;
-import ucar.unidata.util.StringUtil2;
 
 /**
  * ECMWF param tables read from resources/grib2/ecmwf/tables/<latest>.
