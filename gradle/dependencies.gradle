@@ -210,7 +210,7 @@ libraries["quartz"] = dependencies.create("org.quartz-scheduler:quartz:2.2.3") {
 }
 
 // replace the c3p0 lib that were excluded from quartz
-libraries["c3p0"] = "com.mchange:c3p0:0.9.5.3"
+libraries["c3p0"] = "com.mchange:c3p0:0.9.5.4"
 
 libraries["visad"] = "edu.wisc.ssec:visad:2.0-20130124"
 
