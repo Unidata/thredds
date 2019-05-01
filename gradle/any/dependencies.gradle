@@ -301,7 +301,7 @@ libraries["quartz"] = dependencies.create("org.quartz-scheduler:quartz:2.2.3") {
 }
 
 // replace the c3p0 lib that were excluded from quartz
-libraries["c3p0"] = "com.mchange:c3p0:0.9.5.3"
+libraries["c3p0"] = "com.mchange:c3p0:0.9.5.4"
 
 // Version update note:
 // spring-context 4.x is limited to hibernate-validator 4.3.2.Final. We can't update to hibernate-validator 5.x
