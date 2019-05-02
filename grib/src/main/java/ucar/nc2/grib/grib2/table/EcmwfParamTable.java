@@ -11,6 +11,10 @@ import javax.annotation.Nullable;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 
+/**
+ * The results of EcmwfParamTableCompare indicate there are no significant differences of the parameter tables with WMO.
+ * So this class is not used currently in production.
+ */
 public class EcmwfParamTable implements Grib2ParamTableInterface {
   private static final boolean debugOpen = false;
   private static final boolean debug = false;

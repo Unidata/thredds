@@ -11,7 +11,7 @@ import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 
 /**
- *
+ * LOOK can remove this, use WmoCommonCodesPanel directly.
  */
 public class WmoCCPanel extends OpPanel {
     private WmoCommonCodesPanel codeTable;

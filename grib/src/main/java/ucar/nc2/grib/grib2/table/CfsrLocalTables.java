@@ -38,7 +38,7 @@ class CfsrLocalTables extends NcepLocalTables {
   // LOOK: Have to override NcepLocalTables. Probably need delegates, not subclasses?
   @Override
   public List<Parameter> getParameters() {
-    List<Parameter> result = new ArrayList<>(local.values());
+    List<Parameter> result = new ArrayList<>(localParams.values());
     result.sort(new ParameterSort());
     return result;
   }
@@ -266,7 +266,7 @@ class CfsrLocalTables extends NcepLocalTables {
           String unit = b.toString().trim();
 
           Grib2Parameter s = new Grib2Parameter(p1, p2, p3, name, unit, abbrev, null);
-          local.put(makeParamId(p1, p2, p3), s);
+          localParams.put(makeParamId(p1, p2, p3), s);
         }
       }
 

@@ -34,7 +34,7 @@ public class GempakLocalTables extends LocalTables {
   GempakLocalTables(Grib2TableConfig config) {
     super(config);
     Formatter f = new Formatter();
-    local = initLocalTable(config.getPath(), f);
+    localParams = initLocalTable(config.getPath(), f);
   }
 
   /*

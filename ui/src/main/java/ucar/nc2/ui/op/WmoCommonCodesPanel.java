@@ -51,6 +51,7 @@ public class WmoCommonCodesPanel extends JPanel {
         TableBean csb = (TableBean) codeTable.getSelectedBean();
         if (csb == null) return;
         CommonCodeTable cct = CommonCodeTable.getTable(csb.t.getTableNo());
+        out.format("%s ==== %s%n", csb.getName(), csb.getResource());
         List<EntryBean> beans = setEntries(cct);
         for (EntryBean bean: beans) {
           bean.show(out);
@@ -60,28 +61,6 @@ public class WmoCommonCodesPanel extends JPanel {
         infoWindow.setVisible(true);
       }
     });
-
-    /* AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to current table", false);
-    compareButton.addActionListener(e -> {
-        compareToCurrent();
-    });
-    buttPanel.add(compareButton);
-
-    AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in WMO table", false);
-    dupButton.addActionListener(e -> {
-        lookForProblems();
-    });
-    buttPanel.add(dupButton);
-
-    AbstractButton modelsButton = BAMutil.makeButtcon("Select", "Check current models", false);
-    modelsButton.addActionListener(e -> {
-        try {
-          checkCurrentModels();
-        } catch (IOException e1) {
-          e1.printStackTrace();
-        }
-    });
-    buttPanel.add(modelsButton);   */
 
     // the info window
     compareTA = new TextHistoryPane();
@@ -93,8 +72,6 @@ public class WmoCommonCodesPanel extends JPanel {
 
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
-
-    ///
 
     try {
       List<TableBean> tables = new ArrayList<>();

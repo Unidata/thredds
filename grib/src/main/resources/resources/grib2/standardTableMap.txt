@@ -24,3 +24,6 @@
 # MRMS coming from NCEP
 # center 161 (US NOAA OAR), subcenter 0, discipline 209
 161;	0; -1; -1; -1; mrms; nssl MULTI-RADAR/MULTI-SENSOR SYSTEM;
+#
+# ECMWF and friends
+98;     -1; -1; -1; -1;   ecmwf; ECMWF; resources/grib2/ecmwf/tables/21
