@@ -293,15 +293,7 @@ libraries["threddsIso"] = "EDS:threddsIso:2.3.0-SNAPSHOT"
 
 libraries["Saxon-HE"] = "net.sf.saxon:Saxon-HE:9.7.0-8"
 
-libraries["quartz"] = dependencies.create("org.quartz-scheduler:quartz:2.2.3") {
-    // exclude c3p0 deps so that they can be overridden
-    // with 0.9.5.3 to address a potential security issue.
-    // See https://github.com/swaldman/c3p0/issues/123
-    exclude group: 'com.mchange', module: 'c3p0'
-}
-
-// replace the c3p0 lib that were excluded from quartz
-libraries["c3p0"] = "com.mchange:c3p0:0.9.5.4"
+libraries["quartz"] = "org.quartz-scheduler:quartz:2.3.1"
 
 // Version update note:
 // spring-context 4.x is limited to hibernate-validator 4.3.2.Final. We can't update to hibernate-validator 5.x
