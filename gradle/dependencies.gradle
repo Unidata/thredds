@@ -202,15 +202,7 @@ libraries["jsoup"] = "org.jsoup:jsoup:1.11.2"
 
 libraries["protobuf-java"] = "com.google.protobuf:protobuf-java:3.5.0"
 
-libraries["quartz"] = dependencies.create("org.quartz-scheduler:quartz:2.2.3") {
-    // exclude c3p0 deps so that they can be overridden
-    // with 0.9.5.3 to address a potential security issue.
-    // See https://github.com/swaldman/c3p0/issues/123
-    exclude group: 'com.mchange', module: 'c3p0'
-}
-
-// replace the c3p0 lib that were excluded from quartz
-libraries["c3p0"] = "com.mchange:c3p0:0.9.5.4"
+libraries["quartz"] = "org.quartz-scheduler:quartz:2.3.1"
 
 libraries["visad"] = "edu.wisc.ssec:visad:2.0-20130124"
 
