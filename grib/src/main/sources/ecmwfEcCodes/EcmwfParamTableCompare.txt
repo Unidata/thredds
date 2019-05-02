@@ -1,0 +1,1869 @@
+EcmwfParamTableCompare on 2019-04-30T22:34:42.025Z
+  ECMWF = /usr/local/google/home/jlcaron/github/thredds/grib/src/main/resources/resources/grib2/ecmwf/tables/21
+  WMO   = /resources/grib2/wmo/GRIB2_22_0_0_CodeFlag_exp_en.xml
+================================================================
+Product discipline 0 - Meteorological products, parameter category 0: temperature
+Ecmwf version 21 discipline 0 category 0 (resources/grib2/ecmwf/tables/21/4.2.0.0.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 1: moisture
+Ecmwf version 21 discipline 0 category 1 (resources/grib2/ecmwf/tables/21/4.2.0.1.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 13: aerosols
+Ecmwf version 21 discipline 0 category 13 (resources/grib2/ecmwf/tables/21/4.2.0.13.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 14: trace gases
+Ecmwf version 21 discipline 0 category 14 (resources/grib2/ecmwf/tables/21/4.2.0.14.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 15: radar
+Ecmwf version 21 discipline 0 category 15 (resources/grib2/ecmwf/tables/21/4.2.0.15.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 16: forecast radar imagery
+Ecmwf version 21 discipline 0 category 16 (resources/grib2/ecmwf/tables/21/4.2.0.16.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 17: electrodynamics
+Ecmwf version 21 discipline 0 category 17 (resources/grib2/ecmwf/tables/21/4.2.0.17.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 18: nuclear/radiology
+Ecmwf version 21 discipline 0 category 18 (resources/grib2/ecmwf/tables/21/4.2.0.18.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 19: physical atmospheric properties
+Ecmwf version 21 discipline 0 category 19 (resources/grib2/ecmwf/tables/21/4.2.0.19.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 190: CCITT IA5 string
+Ecmwf version 21 discipline 0 category 190 (resources/grib2/ecmwf/tables/21/4.2.0.190.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 191: miscellaneous
+Ecmwf version 21 discipline 0 category 191 (resources/grib2/ecmwf/tables/21/4.2.0.191.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 2: momentum
+Ecmwf version 21 discipline 0 category 2 (resources/grib2/ecmwf/tables/21/4.2.0.2.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 20: atmospheric chemical constituents
+Ecmwf version 21 discipline 0 category 20 (resources/grib2/ecmwf/tables/21/4.2.0.20.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 3: mass
+Ecmwf version 21 discipline 0 category 3 (resources/grib2/ecmwf/tables/21/4.2.0.3.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 4: short-wave radiation
+Ecmwf version 21 discipline 0 category 4 (resources/grib2/ecmwf/tables/21/4.2.0.4.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 5: long-wave radiation
+Ecmwf version 21 discipline 0 category 5 (resources/grib2/ecmwf/tables/21/4.2.0.5.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 6: cloud
+Ecmwf version 21 discipline 0 category 6 (resources/grib2/ecmwf/tables/21/4.2.0.6.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 7: thermodynamic stability indices
+Ecmwf version 21 discipline 0 category 7 (resources/grib2/ecmwf/tables/21/4.2.0.7.table)
+================================================================
+Product discipline 1 - Hydrological products, parameter category 0: hydrology basic products
+Ecmwf version 21 discipline 1 category 0 (resources/grib2/ecmwf/tables/21/4.2.1.0.table)
+================================================================
+Product discipline 1 - Hydrological products, parameter category 1: hydrology probabilities
+Ecmwf version 21 discipline 1 category 1 (resources/grib2/ecmwf/tables/21/4.2.1.1.table)
+================================================================
+Product discipline 1 - Hydrological products, parameter category 2: inland water and sediment properties
+Ecmwf version 21 discipline 1 category 2 (resources/grib2/ecmwf/tables/21/4.2.1.2.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 0: waves
+Ecmwf version 21 discipline 10 category 0 (resources/grib2/ecmwf/tables/21/4.2.10.0.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 1: currents
+Ecmwf version 21 discipline 10 category 1 (resources/grib2/ecmwf/tables/21/4.2.10.1.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 191: miscellaneous
+Ecmwf version 21 discipline 10 category 191 (resources/grib2/ecmwf/tables/21/4.2.10.191.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 2: ice
+Ecmwf version 21 discipline 10 category 2 (resources/grib2/ecmwf/tables/21/4.2.10.2.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 3: surface properties
+Ecmwf version 21 discipline 10 category 3 (resources/grib2/ecmwf/tables/21/4.2.10.3.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 4: subsurface properties
+Ecmwf version 21 discipline 10 category 4 (resources/grib2/ecmwf/tables/21/4.2.10.4.table)
+================================================================
+Product discipline 2 - Land surface products, parameter category 0: vegetation/biomass
+Ecmwf version 21 discipline 2 category 0 (resources/grib2/ecmwf/tables/21/4.2.2.0.table)
+================================================================
+Product discipline 2 - Land surface products, parameter category 3: soil products
+Ecmwf version 21 discipline 2 category 3 (resources/grib2/ecmwf/tables/21/4.2.2.3.table)
+================================================================
+Product discipline 2 - Land surface products, parameter category 4: fire weather products
+Ecmwf version 21 discipline 2 category 4 (resources/grib2/ecmwf/tables/21/4.2.2.4.table)
+================================================================
+Product discipline 2 - Land surface products, parameter category 5: glaciers and inland ice
+Ecmwf version 21 discipline 2 category 5 (resources/grib2/ecmwf/tables/21/4.2.2.5.table)
+================================================================
+Product discipline 3 - Space products, parameter category 0: image format products
+Ecmwf version 21 discipline 3 category 0 (resources/grib2/ecmwf/tables/21/4.2.3.0.table)
+================================================================
+Product discipline 3 - Space products, parameter category 1: quantitative products
+Ecmwf version 21 discipline 3 category 1 (resources/grib2/ecmwf/tables/21/4.2.3.1.table)
+  p1=4.2.3.1.20 Aerosol optical thickness at 0.635 μm
+  p2=    3.1.20 Aerosol optical thickness at 0.635 um
+  p1=4.2.3.1.21 Aerosol optical thickness at 0.810 μm
+  p2=    3.1.21 Aerosol optical thickness at 0.810 um
+  p1=4.2.3.1.22 Aerosol optical thickness at 1.640 μm
+  p2=    3.1.22 Aerosol optical thickness at 1.640 um
+ ***Conflicts=3 extra=2 udunits=0 missing=0
+================================================================
+Product discipline 3 - Space products, parameter category 2: cloud properties
+Ecmwf version 21 discipline 3 category 2 (resources/grib2/ecmwf/tables/21/4.2.3.2.table)
+================================================================
+Product discipline 3 - Space products, parameter category 3: flight rule conditions
+Ecmwf version 21 discipline 3 category 3 (resources/grib2/ecmwf/tables/21/4.2.3.3.table)
+================================================================
+Product discipline 3 - Space products, parameter category 4: volcanic ash
+Ecmwf version 21 discipline 3 category 4 (resources/grib2/ecmwf/tables/21/4.2.3.4.table)
+================================================================
+Product discipline 3 - Space products, parameter category 5: sea-surface temperature
+Ecmwf version 21 discipline 3 category 5 (resources/grib2/ecmwf/tables/21/4.2.3.5.table)
+================================================================
+Product discipline 3 - Space products, parameter category 6: solar radiation
+Ecmwf version 21 discipline 3 category 6 (resources/grib2/ecmwf/tables/21/4.2.3.6.table)
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+EcmwfParamTableCompare on 2019-04-30T22:33:13.728Z
+  ECMWF = /usr/local/google/home/jlcaron/github/thredds/grib/src/main/resources/resources/grib2/ecmwf/tables/21
+  WMO   = /resources/grib2/wmo/GRIB2_22_0_0_CodeFlag_exp_en.xml
+================================================================
+Product discipline 0 - Meteorological products, parameter category 0: temperature
+Ecmwf version 21 discipline 0 category 0 (resources/grib2/ecmwf/tables/21/4.2.0.0.table)
+Ecmwf version 20 discipline 0 category 0 (resources/grib2/ecmwf/tables/20/4.2.0.0.table)
+Ecmwf version 19 discipline 0 category 0 (resources/grib2/ecmwf/tables/19/4.2.0.0.table)
+Ecmwf version 18 discipline 0 category 0 (resources/grib2/ecmwf/tables/18/4.2.0.0.table)
+Ecmwf version 17 discipline 0 category 0 (resources/grib2/ecmwf/tables/17/4.2.0.0.table)
+  Ecmwf version 17 (0-0) missing Grib2Parameter{discipline=0, category=0, number=28, name='Unbalanced component of temperature', unit='K', abbrev='null', desc='Unbalanced component of temperature', fill='null', missing='NaN'}
+  Ecmwf version 17 (0-0) missing Grib2Parameter{discipline=0, category=0, number=29, name='Temperature advection', unit='K.s-1', abbrev='null', desc='Temperature advection', fill='null', missing='NaN'}
+Ecmwf version 16 discipline 0 category 0 (resources/grib2/ecmwf/tables/16/4.2.0.0.table)
+  p1=    0.0.26 Temperature tendency due to parameterization
+  p2=    0.0.26 Temperature tendency due to parameterizations
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 15 discipline 0 category 0 (resources/grib2/ecmwf/tables/15/4.2.0.0.table)
+  Ecmwf version 15 (0-0) missing Grib2Parameter{discipline=0, category=0, number=22, name='Temperature tendency due to short-wave radiation', unit='K.s-1', abbrev='null', desc='Temperature tendency due to short-wave radiation', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-0) missing Grib2Parameter{discipline=0, category=0, number=23, name='Temperature tendency due to long-wave radiation', unit='K.s-1', abbrev='null', desc='Temperature tendency due to long-wave radiation', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-0) missing Grib2Parameter{discipline=0, category=0, number=24, name='Temperature tendency due to short-wave radiation, clear sky', unit='K.s-1', abbrev='null', desc='Temperature tendency due to short-wave radiation, clear sky', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-0) missing Grib2Parameter{discipline=0, category=0, number=25, name='Temperature tendency due to long-wave radiation, clear sky', unit='K.s-1', abbrev='null', desc='Temperature tendency due to long-wave radiation, clear sky', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-0) missing Grib2Parameter{discipline=0, category=0, number=26, name='Temperature tendency due to parameterizations', unit='K.s-1', abbrev='null', desc='Temperature tendency due to parameterizations', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-0) missing Grib2Parameter{discipline=0, category=0, number=27, name='Wet bulb temperature', unit='K', abbrev='null', desc='Wet bulb temperature', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 0 category 0 (resources/grib2/ecmwf/tables/14/4.2.0.0.table)
+Ecmwf version 13 discipline 0 category 0 (resources/grib2/ecmwf/tables/13/4.2.0.0.table)
+Ecmwf version 12 discipline 0 category 0 (resources/grib2/ecmwf/tables/12/4.2.0.0.table)
+  Ecmwf version 12 (0-0) missing Grib2Parameter{discipline=0, category=0, number=21, name='Apparent temperature', unit='K', abbrev='null', desc='Apparent temperature', fill='null', missing='NaN'}
+Ecmwf version 11 discipline 0 category 0 (resources/grib2/ecmwf/tables/11/4.2.0.0.table)
+Ecmwf version 10 discipline 0 category 0 (resources/grib2/ecmwf/tables/10/4.2.0.0.table)
+Ecmwf version 9 discipline 0 category 0 (resources/grib2/ecmwf/tables/9/4.2.0.0.table)
+Ecmwf version 8 discipline 0 category 0 (resources/grib2/ecmwf/tables/8/4.2.0.0.table)
+Ecmwf version 7 discipline 0 category 0 (resources/grib2/ecmwf/tables/7/4.2.0.0.table)
+  p1=    0.0.18 Snow temperature (top of snow)
+  p2=    0.0.18 Snow temperature (top of snow) - validation
+  p1=    0.0.19 Turbulent transfer coefficient for heat
+  p2=    0.0.19 Turbulent transfer coefficient for heat - validation
+  p1=    0.0.20 Turbulent diffusion coefficient for heat
+  p2=    0.0.20 Turbulent diffusion coefficient for heat - validation
+ ***Conflicts=3 extra=0 udunits=0 missing=0
+Ecmwf version 6 discipline 0 category 0 (resources/grib2/ecmwf/tables/6/4.2.0.0.table)
+Ecmwf version 5 discipline 0 category 0 (resources/grib2/ecmwf/tables/5/4.2.0.0.table)
+  Ecmwf version 5 (0-0) missing Grib2Parameter{discipline=0, category=0, number=18, name='Snow temperature (top of snow) - validation', unit='K', abbrev='null', desc='Snow temperature (top of snow) - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-0) missing Grib2Parameter{discipline=0, category=0, number=19, name='Turbulent transfer coefficient for heat - validation', unit='', abbrev='null', desc='Turbulent transfer coefficient for heat - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-0) missing Grib2Parameter{discipline=0, category=0, number=20, name='Turbulent diffusion coefficient for heat - validation', unit='m2.s-1', abbrev='null', desc='Turbulent diffusion coefficient for heat - validation', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 0 category 0 (resources/grib2/ecmwf/tables/4/4.2.0.0.table)
+Ecmwf version 3 discipline 0 category 0 (resources/grib2/ecmwf/tables/3/4.2.0.0.table)
+Ecmwf version 2 discipline 0 category 0 (resources/grib2/ecmwf/tables/2/4.2.0.0.table)
+Ecmwf version 1 discipline 0 category 0 (resources/grib2/ecmwf/tables/1/4.2.0.0.table)
+Ecmwf version 0 discipline 0 category 0 (resources/grib2/ecmwf/tables/0/4.2.0.0.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 1: moisture
+Ecmwf version 21 discipline 0 category 1 (resources/grib2/ecmwf/tables/21/4.2.0.1.table)
+  Ecmwf version 21 (0-1) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@6b9651f3
+Ecmwf version 20 discipline 0 category 1 (resources/grib2/ecmwf/tables/20/4.2.0.1.table)
+Ecmwf version 19 discipline 0 category 1 (resources/grib2/ecmwf/tables/19/4.2.0.1.table)
+  Ecmwf version 19 (0-1) missing Grib2Parameter{discipline=0, category=1, number=87, name='Stratiform precipitation rate', unit='kg.m-2.s-1', abbrev='null', desc='Stratiform precipitation rate', fill='null', missing='NaN'}
+  Ecmwf version 19 (0-1) missing Grib2Parameter{discipline=0, category=1, number=88, name='Categorical convective precipitation', unit='Code table 4.222', abbrev='null', desc='Categorical convective precipitation', fill='null', missing='NaN'}
+  Ecmwf version 19 (0-1) missing Grib2Parameter{discipline=0, category=1, number=121, name='Fraction of snow cover', unit='', abbrev='null', desc='Fraction of snow cover', fill='null', missing='NaN'}
+Ecmwf version 18 discipline 0 category 1 (resources/grib2/ecmwf/tables/18/4.2.0.1.table)
+Ecmwf version 17 discipline 0 category 1 (resources/grib2/ecmwf/tables/17/4.2.0.1.table)
+  Ecmwf version 17 (0-1) missing Grib2Parameter{discipline=0, category=1, number=118, name='Unbalanced component of specific humidity', unit='kg.kg-1', abbrev='null', desc='Unbalanced component of specific humidity', fill='null', missing='NaN'}
+  Ecmwf version 17 (0-1) missing Grib2Parameter{discipline=0, category=1, number=119, name='Unbalanced component of specific cloud liquid water content', unit='kg.kg-1', abbrev='null', desc='Unbalanced component of specific cloud liquid water content', fill='null', missing='NaN'}
+  Ecmwf version 17 (0-1) missing Grib2Parameter{discipline=0, category=1, number=120, name='Unbalanced component of specific cloud ice water content', unit='kg.kg-1', abbrev='null', desc='Unbalanced component of specific cloud ice water content', fill='null', missing='NaN'}
+Ecmwf version 16 discipline 0 category 1 (resources/grib2/ecmwf/tables/16/4.2.0.1.table)
+  p1=   0.1.108 Specific humidity tendency due to parameterization
+  p2=   0.1.108 Specific humidity tendency due to parameterizations
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=109, name='Mass density of liquid water coating on hail expressed as mass of liquid water per unit volume of air', unit='kg.m-3', abbrev='null', desc='Mass density of liquid water coating on hail expressed as mass of liquid water per unit volume of air', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=110, name='Specific mass of liquid water coating on hail expressed as mass of liquid water per unit mass of moist air', unit='kg.kg-1', abbrev='null', desc='Specific mass of liquid water coating on hail expressed as mass of liquid water per unit mass of moist air', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=111, name='Mass mixing ratio of liquid water coating on hail expressed as mass of liquid water per unit mass of dry air', unit='kg.kg-1', abbrev='null', desc='Mass mixing ratio of liquid water coating on hail expressed as mass of liquid water per unit mass of dry air', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=112, name='Mass density of liquid water coating on graupel expressed as mass of liquid water per unit volume of air', unit='kg.m-3', abbrev='null', desc='Mass density of liquid water coating on graupel expressed as mass of liquid water per unit volume of air', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=113, name='Specific mass of liquid water coating on graupel expressed as mass of liquid water per unit mass of moist air', unit='kg.kg-1', abbrev='null', desc='Specific mass of liquid water coating on graupel expressed as mass of liquid water per unit mass of moist air', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=114, name='Mass mixing ratio of liquid water coating on graupel expressed as mass of liquid water per unit mass of dry air', unit='kg.kg-1', abbrev='null', desc='Mass mixing ratio of liquid water coating on graupel expressed as mass of liquid water per unit mass of dry air', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=115, name='Mass density of liquid water coating on snow expressed as mass of liquid water per unit volume of air', unit='kg.m-3', abbrev='null', desc='Mass density of liquid water coating on snow expressed as mass of liquid water per unit volume of air', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=116, name='Specific mass of liquid water coating on snow expressed as mass of liquid water per unit mass of moist air', unit='kg.kg-1', abbrev='null', desc='Specific mass of liquid water coating on snow expressed as mass of liquid water per unit mass of moist air', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-1) missing Grib2Parameter{discipline=0, category=1, number=117, name='Mass mixing ratio of liquid water coating on snow expressed as mass of liquid water per unit mass of dry air', unit='kg.kg-1', abbrev='null', desc='Mass mixing ratio of liquid water coating on snow expressed as mass of liquid water per unit mass of dry air', fill='null', missing='NaN'}
+ ***Conflicts=1 extra=9 udunits=0 missing=0
+Ecmwf version 15 discipline 0 category 1 (resources/grib2/ecmwf/tables/15/4.2.0.1.table)
+  p1=   0.1.100 Specific number concentration of rain
+  p2=   0.1.100 Specific number concentratoin of rain
+  p1=   0.1.101 Specific number concentration of snow
+  p2=   0.1.101 Specific number concentratoin of sonw
+  p1=   0.1.102 Specific number concentration of graupel
+  p2=   0.1.102 Specific number concentratoin of graupel
+  p1=   0.1.103 Specific number concentration of hail
+  p2=   0.1.103 Specific number concentratoin of hail
+  Ecmwf version 15 (0-1) missing Grib2Parameter{discipline=0, category=1, number=108, name='Specific humidity tendency due to parameterizations', unit='kg.kg-1.s-1', abbrev='null', desc='Specific humidity tendency due to parameterizations', fill='null', missing='NaN'}
+ ***Conflicts=4 extra=1 udunits=0 missing=0
+Ecmwf version 14 discipline 0 category 1 (resources/grib2/ecmwf/tables/14/4.2.0.1.table)
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=95, name='Freezing or frozen precipitation rate', unit='kg.m-2.s-1', abbrev='null', desc='Freezing or frozen precipitation rate', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=96, name='Mass density of rain', unit='kg.m-3', abbrev='null', desc='Mass density of rain', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=97, name='Mass density of snow', unit='kg.m-3', abbrev='null', desc='Mass density of snow', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=98, name='Mass density of graupel', unit='kg.m-3', abbrev='null', desc='Mass density of graupel', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=99, name='Mass density of hail', unit='kg.m-3', abbrev='null', desc='Mass density of hail', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=100, name='Specific number concentratoin of rain', unit='kg-1', abbrev='null', desc='Specific number concentratoin of rain', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=101, name='Specific number concentratoin of sonw', unit='kg-1', abbrev='null', desc='Specific number concentratoin of sonw', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=102, name='Specific number concentratoin of graupel', unit='kg-1', abbrev='null', desc='Specific number concentratoin of graupel', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=103, name='Specific number concentratoin of hail', unit='kg-1', abbrev='null', desc='Specific number concentratoin of hail', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=104, name='Number density of rain', unit='m-3', abbrev='null', desc='Number density of rain', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=105, name='Number density of snow', unit='m-3', abbrev='null', desc='Number density of snow', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=106, name='Number density of graupel', unit='m-3', abbrev='null', desc='Number density of graupel', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-1) missing Grib2Parameter{discipline=0, category=1, number=107, name='Number density of hail', unit='m-3', abbrev='null', desc='Number density of hail', fill='null', missing='NaN'}
+Ecmwf version 13 discipline 0 category 1 (resources/grib2/ecmwf/tables/13/4.2.0.1.table)
+  Ecmwf version 13 (0-1) missing Grib2Parameter{discipline=0, category=1, number=93, name='Relative humidity with respect to water', unit='%', abbrev='null', desc='Relative humidity with respect to water', fill='null', missing='NaN'}
+  Ecmwf version 13 (0-1) missing Grib2Parameter{discipline=0, category=1, number=94, name='Relative humidity with respect to ice', unit='%', abbrev='null', desc='Relative humidity with respect to ice', fill='null', missing='NaN'}
+Ecmwf version 12 discipline 0 category 1 (resources/grib2/ecmwf/tables/12/4.2.0.1.table)
+Ecmwf version 11 discipline 0 category 1 (resources/grib2/ecmwf/tables/11/4.2.0.1.table)
+Ecmwf version 10 discipline 0 category 1 (resources/grib2/ecmwf/tables/10/4.2.0.1.table)
+Ecmwf version 9 discipline 0 category 1 (resources/grib2/ecmwf/tables/9/4.2.0.1.table)
+Ecmwf version 8 discipline 0 category 1 (resources/grib2/ecmwf/tables/8/4.2.0.1.table)
+Ecmwf version 7 discipline 0 category 1 (resources/grib2/ecmwf/tables/7/4.2.0.1.table)
+  p1=    0.1.17 Snow age
+  p2=    0.1.17 Snow age day
+  unitless for     0.1.17 d !=
+  p1=    0.1.19 Precipitation type (
+  p2=    0.1.19 Precipitation type (code table
+  unitless for     0.1.19 Code table 4.201) != 4.201)
+  p1=    0.1.30 Precipitable water category (
+  p2=    0.1.30 Precipitable water category (code table
+  unitless for     0.1.30 Code table 4.202) != 4.202)
+  p1=    0.1.71 Hail mixing ratio
+  p2=    0.1.71 Hail mixing ratio - validation
+  p1=    0.1.73 Hail precipitation rate
+  p2=    0.1.73 Hail precipitation rate - validation
+  p1=    0.1.75 Graupel (snow pellets) precipitation rate
+  p2=    0.1.75 Graupel (snow pellets) precipitation rate - validation
+  p1=    0.1.76 Convective rain rate
+  p2=    0.1.76 Convective rain rate - validation
+  p1=    0.1.77 Large scale rain rate
+  p2=    0.1.77 Large scale rain rate - validation
+  p1=    0.1.79 Evaporation rate
+  p2=    0.1.79 Evaporation rate - validation
+  p1=    0.1.80 Total Condensate
+  p2=    0.1.80 Total Condensate - validation
+  p1=    0.1.81 Total Column-Integrated Condensate
+  p2=    0.1.81 Total Column-Integrated Condensate - validation
+  p1=    0.1.82 Cloud Ice Mixing-Ratio
+  p2=    0.1.82 Cloud Ice Mixing-Ratio - validation
+  Ecmwf version 7 (0-1) missing Grib2Parameter{discipline=0, category=1, number=90, name='Total kinematic moisture flux', unit='kg.kg-1.m.s-1', abbrev='null', desc='Total kinematic moisture flux', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-1) missing Grib2Parameter{discipline=0, category=1, number=91, name='u-component (zonal) kinematic moisture flux', unit='kg.kg-1.m.s-1', abbrev='null', desc='u-component (zonal) kinematic moisture flux', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-1) missing Grib2Parameter{discipline=0, category=1, number=92, name='v-component (meridional) kinematic moisture flux', unit='kg.kg-1.m.s-1', abbrev='null', desc='v-component (meridional) kinematic moisture flux', fill='null', missing='NaN'}
+ ***Conflicts=12 extra=3 udunits=3 missing=0
+Ecmwf version 6 discipline 0 category 1 (resources/grib2/ecmwf/tables/6/4.2.0.1.table)
+  p1=    0.1.69 Total column integrated cloud water
+  p2=    0.1.69 Total column integrated cloud water - validation
+  p1=    0.1.70 Total column integrated cloud ice
+  p2=    0.1.70 Total column integrated cloud ice  - validation
+  p1=    0.1.72 Total column integrated hail
+  p2=    0.1.72 Total column integrated hail - validation
+  p1=    0.1.74 Total column integrated graupel
+  p2=    0.1.74 Total column integrated graupel - validation
+  p1=    0.1.78 Total column integrated water (all components including precipitation)
+  p2=    0.1.78 Total column integrated water (all components incl. precipitation) - validation
+ ***Conflicts=5 extra=0 udunits=0 missing=0
+Ecmwf version 5 discipline 0 category 1 (resources/grib2/ecmwf/tables/5/4.2.0.1.table)
+  p1=     0.1.4 Vapour pressure
+  p2=     0.1.4 Vapor pressure
+  p1=    0.1.17 Snow age day
+  p2=    0.1.17 Snow age
+  unitless for     0.1.17  != day
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=69, name='Total column integrated cloud water - validation', unit='kg.m-2', abbrev='null', desc='Total column integrated cloud water - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=70, name='Total column integrated cloud ice  - validation', unit='kg.m-2', abbrev='null', desc='Total column integrated cloud ice  - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=71, name='Hail mixing ratio - validation', unit='kg.kg-1', abbrev='null', desc='Hail mixing ratio - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=72, name='Total column integrated hail - validation', unit='kg.m-2', abbrev='null', desc='Total column integrated hail - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=73, name='Hail precipitation rate - validation', unit='kg.m-2.s-1', abbrev='null', desc='Hail precipitation rate - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=74, name='Total column integrated graupel - validation', unit='kg.m-2', abbrev='null', desc='Total column integrated graupel - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=75, name='Graupel (snow pellets) precipitation rate - validation', unit='kg.m-2.s-1', abbrev='null', desc='Graupel (snow pellets) precipitation rate - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=76, name='Convective rain rate - validation', unit='kg.m-2.s-1', abbrev='null', desc='Convective rain rate - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=77, name='Large scale rain rate - validation', unit='kg.m-2.s-1', abbrev='null', desc='Large scale rain rate - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=78, name='Total column integrated water (all components incl. precipitation) - validation', unit='kg.m-2', abbrev='null', desc='Total column integrated water (all components incl. precipitation) - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=79, name='Evaporation rate - validation', unit='kg.m-2.s-1', abbrev='null', desc='Evaporation rate - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=80, name='Total Condensate - validation', unit='kg.kg-1', abbrev='null', desc='Total Condensate - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=81, name='Total Column-Integrated Condensate - validation', unit='kg.m-2', abbrev='null', desc='Total Column-Integrated Condensate - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=82, name='Cloud Ice Mixing-Ratio - validation', unit='kg.kg-1', abbrev='null', desc='Cloud Ice Mixing-Ratio - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=83, name='Specific cloud liquid water content', unit='kg.kg-1', abbrev='null', desc='Specific cloud liquid water content', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=84, name='Specific cloud ice water content', unit='kg.kg-1', abbrev='null', desc='Specific cloud ice water content', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=85, name='Specific rain water content', unit='kg.kg-1', abbrev='null', desc='Specific rain water content', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-1) missing Grib2Parameter{discipline=0, category=1, number=86, name='Specific snow water content', unit='kg.kg-1', abbrev='null', desc='Specific snow water content', fill='null', missing='NaN'}
+ ***Conflicts=2 extra=18 udunits=1 missing=0
+Ecmwf version 4 discipline 0 category 1 (resources/grib2/ecmwf/tables/4/4.2.0.1.table)
+  udunits cant parse=    0.1.19          4.201)           4.201
+  udunits cant parse=    0.1.30          4.202)           4.202
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=47, name='Large scale water precipitation (non-convective)', unit='kg.m-2', abbrev='null', desc='Large scale water precipitation (non-convective)', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=48, name='Convective water precipitation', unit='kg.m-2', abbrev='null', desc='Convective water precipitation', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=49, name='Total water precipitation', unit='kg.m-2', abbrev='null', desc='Total water precipitation', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=50, name='Total snow precipitation', unit='kg.m-2', abbrev='null', desc='Total snow precipitation', fill='null', missing='NaN'}
+  p1=    0.1.51 Total column water (Vertically integrated total water (vapour + cloud water/ice))
+  p2=    0.1.51 Total column water
+  p1=    0.1.56 Large scale snowfall rate water equivalent
+  p2=    0.1.56 Large scale rate water equivalent
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=61, name='Snow density', unit='kg.m-3', abbrev='null', desc='Snow density', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=62, name='Snow evaporation', unit='kg.m-2', abbrev='null', desc='Snow evaporation', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=63, name='Reserved', unit='', abbrev='null', desc='Reserved', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=64, name='Total column integrated water vapour', unit='kg.m-2', abbrev='null', desc='Total column integrated water vapour', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=65, name='Rain precipitation rate', unit='kg.m-2.s-1', abbrev='null', desc='Rain precipitation rate', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=66, name='Snow precipitation rate', unit='kg.m-2.s-1', abbrev='null', desc='Snow precipitation rate', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=67, name='Freezing rain precipitation rate', unit='kg.m-2.s-1', abbrev='null', desc='Freezing rain precipitation rate', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-1) missing Grib2Parameter{discipline=0, category=1, number=68, name='Ice pellets precipitation rate', unit='kg.m-2.s-1', abbrev='null', desc='Ice pellets precipitation rate', fill='null', missing='NaN'}
+ ***Conflicts=2 extra=12 udunits=0 missing=0
+Ecmwf version 3 discipline 0 category 1 (resources/grib2/ecmwf/tables/3/4.2.0.1.table)
+Ecmwf version 2 discipline 0 category 1 (resources/grib2/ecmwf/tables/2/4.2.0.1.table)
+Ecmwf version 1 discipline 0 category 1 (resources/grib2/ecmwf/tables/1/4.2.0.1.table)
+Ecmwf version 0 discipline 0 category 1 (resources/grib2/ecmwf/tables/0/4.2.0.1.table)
+  Ecmwf version 1 (0-1) missing Grib2Parameter{discipline=0, category=1, number=69, name='Specific cloud liquid water content', unit='kg.kg-1', abbrev='null', desc='Specific cloud liquid water content', fill='null', missing='NaN'}
+  Ecmwf version 1 (0-1) missing Grib2Parameter{discipline=0, category=1, number=70, name='Specific cloud ice water content', unit='kg.kg-1', abbrev='null', desc='Specific cloud ice water content', fill='null', missing='NaN'}
+  Ecmwf version 1 (0-1) missing Grib2Parameter{discipline=0, category=1, number=71, name='Specific rain water content', unit='kg.kg-1', abbrev='null', desc='Specific rain water content', fill='null', missing='NaN'}
+  Ecmwf version 1 (0-1) missing Grib2Parameter{discipline=0, category=1, number=72, name='Specific snow water content', unit='kg.kg-1', abbrev='null', desc='Specific snow water content', fill='null', missing='NaN'}
+ ***Conflicts=0 extra=0 udunits=0 missing=4
+================================================================
+Product discipline 0 - Meteorological products, parameter category 13: aerosols
+Ecmwf version 21 discipline 0 category 13 (resources/grib2/ecmwf/tables/21/4.2.0.13.table)
+Ecmwf version 20 discipline 0 category 13 (resources/grib2/ecmwf/tables/20/4.2.0.13.table)
+Ecmwf version 19 discipline 0 category 13 (resources/grib2/ecmwf/tables/19/4.2.0.13.table)
+Ecmwf version 18 discipline 0 category 13 (resources/grib2/ecmwf/tables/18/4.2.0.13.table)
+Ecmwf version 17 discipline 0 category 13 (resources/grib2/ecmwf/tables/17/4.2.0.13.table)
+Ecmwf version 16 discipline 0 category 13 (resources/grib2/ecmwf/tables/16/4.2.0.13.table)
+Ecmwf version 15 discipline 0 category 13 (resources/grib2/ecmwf/tables/15/4.2.0.13.table)
+Ecmwf version 14 discipline 0 category 13 (resources/grib2/ecmwf/tables/14/4.2.0.13.table)
+Ecmwf version 13 discipline 0 category 13 (resources/grib2/ecmwf/tables/13/4.2.0.13.table)
+Ecmwf version 12 discipline 0 category 13 (resources/grib2/ecmwf/tables/12/4.2.0.13.table)
+Ecmwf version 11 discipline 0 category 13 (resources/grib2/ecmwf/tables/11/4.2.0.13.table)
+Ecmwf version 10 discipline 0 category 13 (resources/grib2/ecmwf/tables/10/4.2.0.13.table)
+Ecmwf version 9 discipline 0 category 13 (resources/grib2/ecmwf/tables/9/4.2.0.13.table)
+Ecmwf version 8 discipline 0 category 13 (resources/grib2/ecmwf/tables/8/4.2.0.13.table)
+Ecmwf version 7 discipline 0 category 13 (resources/grib2/ecmwf/tables/7/4.2.0.13.table)
+  p1=    0.13.0 Aerosol type (
+  p2=    0.13.0 Aerosol type (code table
+  unitless for     0.13.0 Code table 4.205) != 4.205)
+ ***Conflicts=1 extra=0 udunits=1 missing=0
+Ecmwf version 6 discipline 0 category 13 (resources/grib2/ecmwf/tables/6/4.2.0.13.table)
+Ecmwf version 5 discipline 0 category 13 (resources/grib2/ecmwf/tables/5/4.2.0.13.table)
+Ecmwf version 4 discipline 0 category 13 (resources/grib2/ecmwf/tables/4/4.2.0.13.table)
+  p1=    0.13.0 Aerosol type (code table
+  p2=    0.13.0 Aerosol type
+  unitless for     0.13.0 4.205) != Code table 4.205
+ ***Conflicts=1 extra=0 udunits=1 missing=0
+Ecmwf version 3 discipline 0 category 13 (resources/grib2/ecmwf/tables/3/4.2.0.13.table)
+Ecmwf version 2 discipline 0 category 13 (resources/grib2/ecmwf/tables/2/4.2.0.13.table)
+Ecmwf version 1 discipline 0 category 13 (resources/grib2/ecmwf/tables/1/4.2.0.13.table)
+Ecmwf version 0 discipline 0 category 13 (resources/grib2/ecmwf/tables/0/4.2.0.13.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 14: trace gases
+Ecmwf version 21 discipline 0 category 14 (resources/grib2/ecmwf/tables/21/4.2.0.14.table)
+Ecmwf version 20 discipline 0 category 14 (resources/grib2/ecmwf/tables/20/4.2.0.14.table)
+Ecmwf version 19 discipline 0 category 14 (resources/grib2/ecmwf/tables/19/4.2.0.14.table)
+Ecmwf version 18 discipline 0 category 14 (resources/grib2/ecmwf/tables/18/4.2.0.14.table)
+Ecmwf version 17 discipline 0 category 14 (resources/grib2/ecmwf/tables/17/4.2.0.14.table)
+Ecmwf version 16 discipline 0 category 14 (resources/grib2/ecmwf/tables/16/4.2.0.14.table)
+Ecmwf version 15 discipline 0 category 14 (resources/grib2/ecmwf/tables/15/4.2.0.14.table)
+Ecmwf version 14 discipline 0 category 14 (resources/grib2/ecmwf/tables/14/4.2.0.14.table)
+Ecmwf version 13 discipline 0 category 14 (resources/grib2/ecmwf/tables/13/4.2.0.14.table)
+Ecmwf version 12 discipline 0 category 14 (resources/grib2/ecmwf/tables/12/4.2.0.14.table)
+Ecmwf version 11 discipline 0 category 14 (resources/grib2/ecmwf/tables/11/4.2.0.14.table)
+Ecmwf version 10 discipline 0 category 14 (resources/grib2/ecmwf/tables/10/4.2.0.14.table)
+Ecmwf version 9 discipline 0 category 14 (resources/grib2/ecmwf/tables/9/4.2.0.14.table)
+Ecmwf version 8 discipline 0 category 14 (resources/grib2/ecmwf/tables/8/4.2.0.14.table)
+Ecmwf version 7 discipline 0 category 14 (resources/grib2/ecmwf/tables/7/4.2.0.14.table)
+  incompatible for     0.14.0 DU (du) != Dobson (org Dobson)
+  incompatible for     0.14.2 DU (du) != Dobson (org Dobson)
+ ***Conflicts=0 extra=0 udunits=2 missing=0
+Ecmwf version 6 discipline 0 category 14 (resources/grib2/ecmwf/tables/6/4.2.0.14.table)
+Ecmwf version 5 discipline 0 category 14 (resources/grib2/ecmwf/tables/5/4.2.0.14.table)
+Ecmwf version 4 discipline 0 category 14 (resources/grib2/ecmwf/tables/4/4.2.0.14.table)
+  Ecmwf version 4 (0-14) missing Grib2Parameter{discipline=0, category=14, number=2, name='Total column integrated ozone', unit='Dobson', abbrev='null', desc='Total column integrated ozone', fill='null', missing='NaN'}
+Ecmwf version 3 discipline 0 category 14 (resources/grib2/ecmwf/tables/3/4.2.0.14.table)
+Ecmwf version 2 discipline 0 category 14 (resources/grib2/ecmwf/tables/2/4.2.0.14.table)
+Ecmwf version 1 discipline 0 category 14 (resources/grib2/ecmwf/tables/1/4.2.0.14.table)
+Ecmwf version 0 discipline 0 category 14 (resources/grib2/ecmwf/tables/0/4.2.0.14.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 15: radar
+Ecmwf version 21 discipline 0 category 15 (resources/grib2/ecmwf/tables/21/4.2.0.15.table)
+Ecmwf version 20 discipline 0 category 15 (resources/grib2/ecmwf/tables/20/4.2.0.15.table)
+Ecmwf version 19 discipline 0 category 15 (resources/grib2/ecmwf/tables/19/4.2.0.15.table)
+Ecmwf version 18 discipline 0 category 15 (resources/grib2/ecmwf/tables/18/4.2.0.15.table)
+Ecmwf version 17 discipline 0 category 15 (resources/grib2/ecmwf/tables/17/4.2.0.15.table)
+Ecmwf version 16 discipline 0 category 15 (resources/grib2/ecmwf/tables/16/4.2.0.15.table)
+Ecmwf version 15 discipline 0 category 15 (resources/grib2/ecmwf/tables/15/4.2.0.15.table)
+Ecmwf version 14 discipline 0 category 15 (resources/grib2/ecmwf/tables/14/4.2.0.15.table)
+  Ecmwf version 14 (0-15) missing Grib2Parameter{discipline=0, category=15, number=15, name='Hybrid scan reflectivity', unit='dB', abbrev='null', desc='Hybrid scan reflectivity', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-15) missing Grib2Parameter{discipline=0, category=15, number=16, name='Hybrid scan reflectivity height', unit='m', abbrev='null', desc='Hybrid scan reflectivity height', fill='null', missing='NaN'}
+Ecmwf version 13 discipline 0 category 15 (resources/grib2/ecmwf/tables/13/4.2.0.15.table)
+Ecmwf version 12 discipline 0 category 15 (resources/grib2/ecmwf/tables/12/4.2.0.15.table)
+Ecmwf version 11 discipline 0 category 15 (resources/grib2/ecmwf/tables/11/4.2.0.15.table)
+Ecmwf version 10 discipline 0 category 15 (resources/grib2/ecmwf/tables/10/4.2.0.15.table)
+Ecmwf version 9 discipline 0 category 15 (resources/grib2/ecmwf/tables/9/4.2.0.15.table)
+Ecmwf version 8 discipline 0 category 15 (resources/grib2/ecmwf/tables/8/4.2.0.15.table)
+  p1=    0.15.3 Vertically-integrated liquid water (VIL)
+  p2=    0.15.3 Vertically-integrated liquid
+  incompatible for     0.15.3 kg.m-2 (kg.m-2) != kg/m (org kg/m)
+ ***Conflicts=1 extra=0 udunits=1 missing=0
+Ecmwf version 7 discipline 0 category 15 (resources/grib2/ecmwf/tables/7/4.2.0.15.table)
+  p1=    0.15.9 Reflectivity of cloud droplets
+  p2=    0.15.9 Reflectivity of cloud droplets - validation
+  p1=   0.15.10 Reflectivity of cloud ice
+  p2=   0.15.10 Reflectivity of cloud ice - validation
+  p1=   0.15.11 Reflectivity of snow
+  p2=   0.15.11 Reflectivity of snow - validation
+  p1=   0.15.12 Reflectivity of rain
+  p2=   0.15.12 Reflectivity of rain - validation
+  p1=   0.15.13 Reflectivity of graupel
+  p2=   0.15.13 Reflectivity of graupel - validation
+  p1=   0.15.14 Reflectivity of hail
+  p2=   0.15.14 Reflectivity of hail - validation
+ ***Conflicts=6 extra=0 udunits=0 missing=0
+Ecmwf version 6 discipline 0 category 15 (resources/grib2/ecmwf/tables/6/4.2.0.15.table)
+Ecmwf version 5 discipline 0 category 15 (resources/grib2/ecmwf/tables/5/4.2.0.15.table)
+  Ecmwf version 5 (0-15) missing Grib2Parameter{discipline=0, category=15, number=9, name='Reflectivity of cloud droplets - validation', unit='dB', abbrev='null', desc='Reflectivity of cloud droplets - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-15) missing Grib2Parameter{discipline=0, category=15, number=10, name='Reflectivity of cloud ice - validation', unit='dB', abbrev='null', desc='Reflectivity of cloud ice - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-15) missing Grib2Parameter{discipline=0, category=15, number=11, name='Reflectivity of snow - validation', unit='dB', abbrev='null', desc='Reflectivity of snow - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-15) missing Grib2Parameter{discipline=0, category=15, number=12, name='Reflectivity of rain - validation', unit='dB', abbrev='null', desc='Reflectivity of rain - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-15) missing Grib2Parameter{discipline=0, category=15, number=13, name='Reflectivity of graupel - validation', unit='dB', abbrev='null', desc='Reflectivity of graupel - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-15) missing Grib2Parameter{discipline=0, category=15, number=14, name='Reflectivity of hail - validation', unit='dB', abbrev='null', desc='Reflectivity of hail - validation', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 0 category 15 (resources/grib2/ecmwf/tables/4/4.2.0.15.table)
+Ecmwf version 3 discipline 0 category 15 (resources/grib2/ecmwf/tables/3/4.2.0.15.table)
+Ecmwf version 2 discipline 0 category 15 (resources/grib2/ecmwf/tables/2/4.2.0.15.table)
+Ecmwf version 1 discipline 0 category 15 (resources/grib2/ecmwf/tables/1/4.2.0.15.table)
+Ecmwf version 0 discipline 0 category 15 (resources/grib2/ecmwf/tables/0/4.2.0.15.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 16: forecast radar imagery
+Ecmwf version 21 discipline 0 category 16 (resources/grib2/ecmwf/tables/21/4.2.0.16.table)
+Ecmwf version 20 discipline 0 category 16 (resources/grib2/ecmwf/tables/20/4.2.0.16.table)
+Ecmwf version 19 discipline 0 category 16 (resources/grib2/ecmwf/tables/19/4.2.0.16.table)
+Ecmwf version 18 discipline 0 category 16 (resources/grib2/ecmwf/tables/18/4.2.0.16.table)
+Ecmwf version 17 discipline 0 category 16 (resources/grib2/ecmwf/tables/17/4.2.0.16.table)
+Ecmwf version 16 discipline 0 category 16 (resources/grib2/ecmwf/tables/16/4.2.0.16.table)
+Ecmwf version 15 discipline 0 category 16 (resources/grib2/ecmwf/tables/15/4.2.0.16.table)
+Ecmwf version 14 discipline 0 category 16 (resources/grib2/ecmwf/tables/14/4.2.0.16.table)
+Ecmwf version 13 discipline 0 category 16 (resources/grib2/ecmwf/tables/13/4.2.0.16.table)
+Ecmwf version 12 discipline 0 category 16 (resources/grib2/ecmwf/tables/12/4.2.0.16.table)
+Ecmwf version 11 discipline 0 category 16 (resources/grib2/ecmwf/tables/11/4.2.0.16.table)
+Ecmwf version 10 discipline 0 category 16 (resources/grib2/ecmwf/tables/10/4.2.0.16.table)
+Ecmwf version 9 discipline 0 category 16 (resources/grib2/ecmwf/tables/9/4.2.0.16.table)
+Ecmwf version 8 discipline 0 category 16 (resources/grib2/ecmwf/tables/8/4.2.0.16.table)
+Ecmwf version 7 discipline 0 category 16 (resources/grib2/ecmwf/tables/7/4.2.0.16.table)
+Ecmwf version 6 discipline 0 category 16 (resources/grib2/ecmwf/tables/6/4.2.0.16.table)
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 0 - Meteorological products, parameter category 17: electrodynamics
+Ecmwf version 21 discipline 0 category 17 (resources/grib2/ecmwf/tables/21/4.2.0.17.table)
+  Ecmwf version 21 (0-17) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@396e2f39
+  Ecmwf version 21 (0-17) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@a74868d
+  Ecmwf version 21 (0-17) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@12c8a2c0
+Ecmwf version 20 discipline 0 category 17 (resources/grib2/ecmwf/tables/20/4.2.0.17.table)
+Ecmwf version 19 discipline 0 category 17 (resources/grib2/ecmwf/tables/19/4.2.0.17.table)
+Ecmwf version 18 discipline 0 category 17 (resources/grib2/ecmwf/tables/18/4.2.0.17.table)
+Ecmwf version 17 discipline 0 category 17 (resources/grib2/ecmwf/tables/17/4.2.0.17.table)
+Ecmwf version 16 discipline 0 category 17 (resources/grib2/ecmwf/tables/16/4.2.0.17.table)
+  Ecmwf version 16 (0-17) missing Grib2Parameter{discipline=0, category=17, number=1, name='Lightning potential index (LPI)', unit='J.kg-1', abbrev='null', desc='Lightning potential index (LPI)', fill='null', missing='NaN'}
+Ecmwf version 15 discipline 0 category 17 (resources/grib2/ecmwf/tables/15/4.2.0.17.table)
+Ecmwf version 14 discipline 0 category 17 (resources/grib2/ecmwf/tables/14/4.2.0.17.table)
+Ecmwf version 13 discipline 0 category 17 (resources/grib2/ecmwf/tables/13/4.2.0.17.table)
+Missing version 12
+Missing version 11
+Missing version 10
+Missing version 9
+Missing version 8
+Missing version 7
+Missing version 6
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 0 - Meteorological products, parameter category 18: nuclear/radiology
+Ecmwf version 21 discipline 0 category 18 (resources/grib2/ecmwf/tables/21/4.2.0.18.table)
+Ecmwf version 20 discipline 0 category 18 (resources/grib2/ecmwf/tables/20/4.2.0.18.table)
+Ecmwf version 19 discipline 0 category 18 (resources/grib2/ecmwf/tables/19/4.2.0.18.table)
+Ecmwf version 18 discipline 0 category 18 (resources/grib2/ecmwf/tables/18/4.2.0.18.table)
+Ecmwf version 17 discipline 0 category 18 (resources/grib2/ecmwf/tables/17/4.2.0.18.table)
+  Ecmwf version 17 (0-18) missing Grib2Parameter{discipline=0, category=18, number=17, name='Column-integrated air concentration', unit='Bq.m-2', abbrev='null', desc='Column-integrated air concentration', fill='null', missing='NaN'}
+  Ecmwf version 17 (0-18) missing Grib2Parameter{discipline=0, category=18, number=18, name='Column-averaged air concentration in layer', unit='Bq.m-3', abbrev='null', desc='Column-averaged air concentration in layer', fill='null', missing='NaN'}
+Ecmwf version 16 discipline 0 category 18 (resources/grib2/ecmwf/tables/16/4.2.0.18.table)
+  Ecmwf version 16 (0-18) missing Grib2Parameter{discipline=0, category=18, number=14, name='Specific activity concentration', unit='Bq.kg-1', abbrev='null', desc='Specific activity concentration', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-18) missing Grib2Parameter{discipline=0, category=18, number=15, name='Maximum of air concentration in layer', unit='Bq.m-3', abbrev='null', desc='Maximum of air concentration in layer', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-18) missing Grib2Parameter{discipline=0, category=18, number=16, name='Height of maximum air concentration', unit='m', abbrev='null', desc='Height of maximum air concentration', fill='null', missing='NaN'}
+Ecmwf version 15 discipline 0 category 18 (resources/grib2/ecmwf/tables/15/4.2.0.18.table)
+Ecmwf version 14 discipline 0 category 18 (resources/grib2/ecmwf/tables/14/4.2.0.18.table)
+Ecmwf version 13 discipline 0 category 18 (resources/grib2/ecmwf/tables/13/4.2.0.18.table)
+Ecmwf version 12 discipline 0 category 18 (resources/grib2/ecmwf/tables/12/4.2.0.18.table)
+Ecmwf version 11 discipline 0 category 18 (resources/grib2/ecmwf/tables/11/4.2.0.18.table)
+Ecmwf version 10 discipline 0 category 18 (resources/grib2/ecmwf/tables/10/4.2.0.18.table)
+Ecmwf version 9 discipline 0 category 18 (resources/grib2/ecmwf/tables/9/4.2.0.18.table)
+Ecmwf version 8 discipline 0 category 18 (resources/grib2/ecmwf/tables/8/4.2.0.18.table)
+Ecmwf version 7 discipline 0 category 18 (resources/grib2/ecmwf/tables/7/4.2.0.18.table)
+Ecmwf version 6 discipline 0 category 18 (resources/grib2/ecmwf/tables/6/4.2.0.18.table)
+  Ecmwf version 6 (0-18) missing Grib2Parameter{discipline=0, category=18, number=9, name='Reserved', unit='', abbrev='null', desc='Reserved', fill='null', missing='NaN'}
+  Ecmwf version 6 (0-18) missing Grib2Parameter{discipline=0, category=18, number=10, name='Air concentration', unit='Bq.m-3', abbrev='null', desc='Air concentration', fill='null', missing='NaN'}
+  Ecmwf version 6 (0-18) missing Grib2Parameter{discipline=0, category=18, number=11, name='Wet deposition', unit='Bq.m-2', abbrev='null', desc='Wet deposition', fill='null', missing='NaN'}
+  Ecmwf version 6 (0-18) missing Grib2Parameter{discipline=0, category=18, number=12, name='Dry deposition', unit='Bq.m-2', abbrev='null', desc='Dry deposition', fill='null', missing='NaN'}
+  Ecmwf version 6 (0-18) missing Grib2Parameter{discipline=0, category=18, number=13, name='Total deposition (wet + dry)', unit='Bq.m-2', abbrev='null', desc='Total deposition (wet + dry)', fill='null', missing='NaN'}
+Ecmwf version 5 discipline 0 category 18 (resources/grib2/ecmwf/tables/5/4.2.0.18.table)
+Ecmwf version 4 discipline 0 category 18 (resources/grib2/ecmwf/tables/4/4.2.0.18.table)
+Ecmwf version 3 discipline 0 category 18 (resources/grib2/ecmwf/tables/3/4.2.0.18.table)
+Ecmwf version 2 discipline 0 category 18 (resources/grib2/ecmwf/tables/2/4.2.0.18.table)
+Ecmwf version 1 discipline 0 category 18 (resources/grib2/ecmwf/tables/1/4.2.0.18.table)
+Ecmwf version 0 discipline 0 category 18 (resources/grib2/ecmwf/tables/0/4.2.0.18.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 19: physical atmospheric properties
+Ecmwf version 21 discipline 0 category 19 (resources/grib2/ecmwf/tables/21/4.2.0.19.table)
+Ecmwf version 20 discipline 0 category 19 (resources/grib2/ecmwf/tables/20/4.2.0.19.table)
+Ecmwf version 19 discipline 0 category 19 (resources/grib2/ecmwf/tables/19/4.2.0.19.table)
+  Ecmwf version 19 (0-19) missing Grib2Parameter{discipline=0, category=19, number=32, name='Highest freezing level', unit='m', abbrev='null', desc='Highest freezing level', fill='null', missing='NaN'}
+  Ecmwf version 19 (0-19) missing Grib2Parameter{discipline=0, category=19, number=33, name='Visibility through liquid fog', unit='m', abbrev='null', desc='Visibility through liquid fog', fill='null', missing='NaN'}
+  Ecmwf version 19 (0-19) missing Grib2Parameter{discipline=0, category=19, number=34, name='Visibility through ice fog', unit='m', abbrev='null', desc='Visibility through ice fog', fill='null', missing='NaN'}
+  Ecmwf version 19 (0-19) missing Grib2Parameter{discipline=0, category=19, number=35, name='Visibility through blowing snow', unit='m', abbrev='null', desc='Visibility through blowing snow', fill='null', missing='NaN'}
+Ecmwf version 18 discipline 0 category 19 (resources/grib2/ecmwf/tables/18/4.2.0.19.table)
+Ecmwf version 17 discipline 0 category 19 (resources/grib2/ecmwf/tables/17/4.2.0.19.table)
+Ecmwf version 16 discipline 0 category 19 (resources/grib2/ecmwf/tables/16/4.2.0.19.table)
+  Ecmwf version 16 (0-19) missing Grib2Parameter{discipline=0, category=19, number=29, name='Clear air turbulence (CAT)', unit='m2/3.s-1', abbrev='null', desc='Clear air turbulence (CAT)', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-19) missing Grib2Parameter{discipline=0, category=19, number=30, name='Eddy dissipation parameter', unit='m2/3.s-1', abbrev='null', desc='Eddy dissipation parameter', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-19) missing Grib2Parameter{discipline=0, category=19, number=31, name='Maximum of Eddy dissipation parameter in layer', unit='m2/3.s-1', abbrev='null', desc='Maximum of Eddy dissipation parameter in layer', fill='null', missing='NaN'}
+Ecmwf version 15 discipline 0 category 19 (resources/grib2/ecmwf/tables/15/4.2.0.19.table)
+  Ecmwf version 15 (0-19) missing Grib2Parameter{discipline=0, category=19, number=28, name='Mountain wave turbulence (eddy dissipation rate)', unit='m2/3.s-1', abbrev='null', desc='Mountain wave turbulence (eddy dissipation rate)', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 0 category 19 (resources/grib2/ecmwf/tables/14/4.2.0.19.table)
+Ecmwf version 13 discipline 0 category 19 (resources/grib2/ecmwf/tables/13/4.2.0.19.table)
+Ecmwf version 12 discipline 0 category 19 (resources/grib2/ecmwf/tables/12/4.2.0.19.table)
+Ecmwf version 11 discipline 0 category 19 (resources/grib2/ecmwf/tables/11/4.2.0.19.table)
+Ecmwf version 10 discipline 0 category 19 (resources/grib2/ecmwf/tables/10/4.2.0.19.table)
+Ecmwf version 9 discipline 0 category 19 (resources/grib2/ecmwf/tables/9/4.2.0.19.table)
+Ecmwf version 8 discipline 0 category 19 (resources/grib2/ecmwf/tables/8/4.2.0.19.table)
+  p1=   0.19.25 Weather
+  p2=   0.19.25 Weather Interpretation ww (WMO)
+  Ecmwf version 8 (0-19) missing Grib2Parameter{discipline=0, category=19, number=27, name='Icing scenario', unit='Code table 4.227', abbrev='null', desc='Icing scenario', fill='null', missing='NaN'}
+ ***Conflicts=1 extra=1 udunits=0 missing=0
+Ecmwf version 7 discipline 0 category 19 (resources/grib2/ecmwf/tables/7/4.2.0.19.table)
+  p1=    0.19.4 Volcanic ash (
+  p2=    0.19.4 Volcanic ash (code table
+  unitless for     0.19.4 Code table 4.206) != 4.206)
+  p1=    0.19.7 Icing (
+  p2=    0.19.7 Icing (code table
+  unitless for     0.19.7 Code table 4.207) != 4.207)
+  p1=   0.19.10 Turbulence (
+  p2=   0.19.10 Turbulence (code table
+  unitless for    0.19.10 Code table 4.208) != 4.208)
+  p1=   0.19.12 Planetary boundary-layer regime (
+  p2=   0.19.12 Planetary boundary layer regime (code table
+  unitless for    0.19.12 Code table 4.209) != 4.209)
+  p1=   0.19.13 Contrail intensity (
+  p2=   0.19.13 Contrail intensity (code table
+  unitless for    0.19.13 Code table 4.210) != 4.210)
+  p1=   0.19.14 Contrail engine type (
+  p2=   0.19.14 Contrail engine type (code table
+  unitless for    0.19.14 Code table 4.211) != 4.211)
+  p1=   0.19.24 Convective turbulent kinetic energy
+  p2=   0.19.24 Convective turbulent kinetic energy - validation
+  p1=   0.19.25 Weather Interpretation ww (WMO)
+  p2=   0.19.25 Weather Interpretation ww
+  unitless for    0.19.25  != (WMO).-.validation
+  p1=   0.19.26 Convective outlook
+  p2=   0.19.26 Convective outlook (code table
+  unitless for    0.19.26 Code table 4.224 != 4.224)
+ ***Conflicts=9 extra=0 udunits=8 missing=0
+Ecmwf version 6 discipline 0 category 19 (resources/grib2/ecmwf/tables/6/4.2.0.19.table)
+  p1=   0.19.25 Weather Interpretation ww
+  p2=   0.19.25 Weather Interpretation ww (WMO) - validation
+  unitless for    0.19.25 (WMO).-.validation !=
+  Ecmwf version 6 (0-19) missing Grib2Parameter{discipline=0, category=19, number=26, name='Convective outlook (code table', unit='4.224)', abbrev='null', desc='Convective outlook (code table', fill='null', missing='NaN'}
+ ***Conflicts=1 extra=1 udunits=1 missing=0
+Ecmwf version 5 discipline 0 category 19 (resources/grib2/ecmwf/tables/5/4.2.0.19.table)
+  Ecmwf version 5 (0-19) missing Grib2Parameter{discipline=0, category=19, number=24, name='Convective turbulent kinetic energy - validation', unit='J.kg-1', abbrev='null', desc='Convective turbulent kinetic energy - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-19) missing Grib2Parameter{discipline=0, category=19, number=25, name='Weather Interpretation ww (WMO) - validation', unit='', abbrev='null', desc='Weather Interpretation ww (WMO) - validation', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 0 category 19 (resources/grib2/ecmwf/tables/4/4.2.0.19.table)
+  p1=    0.19.4 Volcanic ash (code table
+  p2=    0.19.4 Volcanic ash
+  unitless for     0.19.4 4.206) != Code table 4.206
+  p1=    0.19.7 Icing (code table
+  p2=    0.19.7 Icing
+  unitless for     0.19.7 4.207) != Code table 4.207
+  p1=   0.19.10 Turbulence (code table
+  p2=   0.19.10 Turbulence
+  unitless for    0.19.10 4.208) != Code table 4.208
+  p1=   0.19.12 Planetary boundary layer regime (code table
+  p2=   0.19.12 Planetary boundary layer regime
+  unitless for    0.19.12 4.209) != Code table 4.209
+  p1=   0.19.13 Contrail intensity (code table
+  p2=   0.19.13 Contrail intensity
+  unitless for    0.19.13 4.210) != Code table 4.210
+  p1=   0.19.14 Contrail engine type (code table
+  p2=   0.19.14 Contrail engine type
+  unitless for    0.19.14 4.211) != Code table 4.211
+  Ecmwf version 4 (0-19) missing Grib2Parameter{discipline=0, category=19, number=19, name='Snow albedo', unit='%', abbrev='null', desc='Snow albedo', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-19) missing Grib2Parameter{discipline=0, category=19, number=20, name='Icing', unit='%', abbrev='null', desc='Icing', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-19) missing Grib2Parameter{discipline=0, category=19, number=21, name='In-cloud turbulence', unit='%', abbrev='null', desc='In-cloud turbulence', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-19) missing Grib2Parameter{discipline=0, category=19, number=22, name='Clear air turbulence (CAT)', unit='%', abbrev='null', desc='Clear air turbulence (CAT)', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-19) missing Grib2Parameter{discipline=0, category=19, number=23, name='Supercooled large droplet probability (see Note 4)', unit='%', abbrev='null', desc='Supercooled large droplet probability (see Note 4)', fill='null', missing='NaN'}
+ ***Conflicts=6 extra=5 udunits=6 missing=0
+Ecmwf version 3 discipline 0 category 19 (resources/grib2/ecmwf/tables/3/4.2.0.19.table)
+Ecmwf version 2 discipline 0 category 19 (resources/grib2/ecmwf/tables/2/4.2.0.19.table)
+Ecmwf version 1 discipline 0 category 19 (resources/grib2/ecmwf/tables/1/4.2.0.19.table)
+Ecmwf version 0 discipline 0 category 19 (resources/grib2/ecmwf/tables/0/4.2.0.19.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 190: CCITT IA5 string
+Ecmwf version 21 discipline 0 category 190 (resources/grib2/ecmwf/tables/21/4.2.0.190.table)
+Ecmwf version 20 discipline 0 category 190 (resources/grib2/ecmwf/tables/20/4.2.0.190.table)
+Ecmwf version 19 discipline 0 category 190 (resources/grib2/ecmwf/tables/19/4.2.0.190.table)
+Ecmwf version 18 discipline 0 category 190 (resources/grib2/ecmwf/tables/18/4.2.0.190.table)
+Ecmwf version 17 discipline 0 category 190 (resources/grib2/ecmwf/tables/17/4.2.0.190.table)
+Ecmwf version 16 discipline 0 category 190 (resources/grib2/ecmwf/tables/16/4.2.0.190.table)
+Ecmwf version 15 discipline 0 category 190 (resources/grib2/ecmwf/tables/15/4.2.0.190.table)
+Ecmwf version 14 discipline 0 category 190 (resources/grib2/ecmwf/tables/14/4.2.0.190.table)
+Ecmwf version 13 discipline 0 category 190 (resources/grib2/ecmwf/tables/13/4.2.0.190.table)
+Ecmwf version 12 discipline 0 category 190 (resources/grib2/ecmwf/tables/12/4.2.0.190.table)
+Ecmwf version 11 discipline 0 category 190 (resources/grib2/ecmwf/tables/11/4.2.0.190.table)
+Ecmwf version 10 discipline 0 category 190 (resources/grib2/ecmwf/tables/10/4.2.0.190.table)
+Ecmwf version 9 discipline 0 category 190 (resources/grib2/ecmwf/tables/9/4.2.0.190.table)
+Ecmwf version 8 discipline 0 category 190 (resources/grib2/ecmwf/tables/8/4.2.0.190.table)
+Ecmwf version 7 discipline 0 category 190 (resources/grib2/ecmwf/tables/7/4.2.0.190.table)
+  incompatible for    0.190.0 CCITT.IA5 (ccitt.ia5) != CCITTIA5 (org CCITTIA5)
+ ***Conflicts=0 extra=0 udunits=1 missing=0
+Ecmwf version 6 discipline 0 category 190 (resources/grib2/ecmwf/tables/6/4.2.0.190.table)
+Ecmwf version 5 discipline 0 category 190 (resources/grib2/ecmwf/tables/5/4.2.0.190.table)
+Ecmwf version 4 discipline 0 category 190 (resources/grib2/ecmwf/tables/4/4.2.0.190.table)
+Ecmwf version 3 discipline 0 category 190 (resources/grib2/ecmwf/tables/3/4.2.0.190.table)
+Ecmwf version 2 discipline 0 category 190 (resources/grib2/ecmwf/tables/2/4.2.0.190.table)
+Ecmwf version 1 discipline 0 category 190 (resources/grib2/ecmwf/tables/1/4.2.0.190.table)
+Ecmwf version 0 discipline 0 category 190 (resources/grib2/ecmwf/tables/0/4.2.0.190.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 191: miscellaneous
+Ecmwf version 21 discipline 0 category 191 (resources/grib2/ecmwf/tables/21/4.2.0.191.table)
+Ecmwf version 20 discipline 0 category 191 (resources/grib2/ecmwf/tables/20/4.2.0.191.table)
+Ecmwf version 19 discipline 0 category 191 (resources/grib2/ecmwf/tables/19/4.2.0.191.table)
+Ecmwf version 18 discipline 0 category 191 (resources/grib2/ecmwf/tables/18/4.2.0.191.table)
+Ecmwf version 17 discipline 0 category 191 (resources/grib2/ecmwf/tables/17/4.2.0.191.table)
+Ecmwf version 16 discipline 0 category 191 (resources/grib2/ecmwf/tables/16/4.2.0.191.table)
+Ecmwf version 15 discipline 0 category 191 (resources/grib2/ecmwf/tables/15/4.2.0.191.table)
+Ecmwf version 14 discipline 0 category 191 (resources/grib2/ecmwf/tables/14/4.2.0.191.table)
+Ecmwf version 13 discipline 0 category 191 (resources/grib2/ecmwf/tables/13/4.2.0.191.table)
+Ecmwf version 12 discipline 0 category 191 (resources/grib2/ecmwf/tables/12/4.2.0.191.table)
+  Ecmwf version 12 (0-191) missing Grib2Parameter{discipline=0, category=191, number=3, name='Days since last observation', unit='d', abbrev='null', desc='Days since last observation', fill='null', missing='NaN'}
+Ecmwf version 11 discipline 0 category 191 (resources/grib2/ecmwf/tables/11/4.2.0.191.table)
+  p1= 0.191.255 Missing
+  p2= 0.191.255 Missing value
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 10 discipline 0 category 191 (resources/grib2/ecmwf/tables/10/4.2.0.191.table)
+Ecmwf version 9 discipline 0 category 191 (resources/grib2/ecmwf/tables/9/4.2.0.191.table)
+Ecmwf version 8 discipline 0 category 191 (resources/grib2/ecmwf/tables/8/4.2.0.191.table)
+Ecmwf version 7 discipline 0 category 191 (resources/grib2/ecmwf/tables/7/4.2.0.191.table)
+  p1=   0.191.1 Geographical latitude
+  p2=   0.191.1 Geographical latitude - validation
+  p1=   0.191.2 Geographical longitude
+  p2=   0.191.2 Geographical longitude - validation
+  p1= 0.191.255 Missing value
+  p2= 0.191.255 Missing
+ ***Conflicts=3 extra=0 udunits=0 missing=0
+Ecmwf version 6 discipline 0 category 191 (resources/grib2/ecmwf/tables/6/4.2.0.191.table)
+Ecmwf version 5 discipline 0 category 191 (resources/grib2/ecmwf/tables/5/4.2.0.191.table)
+  Ecmwf version 5 (0-191) missing Grib2Parameter{discipline=0, category=191, number=1, name='Geographical latitude - validation', unit='deg.N', abbrev='null', desc='Geographical latitude - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-191) missing Grib2Parameter{discipline=0, category=191, number=2, name='Geographical longitude - validation', unit='deg.E', abbrev='null', desc='Geographical longitude - validation', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 0 category 191 (resources/grib2/ecmwf/tables/4/4.2.0.191.table)
+Ecmwf version 3 discipline 0 category 191 (resources/grib2/ecmwf/tables/3/4.2.0.191.table)
+Ecmwf version 2 discipline 0 category 191 (resources/grib2/ecmwf/tables/2/4.2.0.191.table)
+Ecmwf version 1 discipline 0 category 191 (resources/grib2/ecmwf/tables/1/4.2.0.191.table)
+Ecmwf version 0 discipline 0 category 191 (resources/grib2/ecmwf/tables/0/4.2.0.191.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 2: momentum
+Ecmwf version 21 discipline 0 category 2 (resources/grib2/ecmwf/tables/21/4.2.0.2.table)
+Ecmwf version 20 discipline 0 category 2 (resources/grib2/ecmwf/tables/20/4.2.0.2.table)
+Ecmwf version 19 discipline 0 category 2 (resources/grib2/ecmwf/tables/19/4.2.0.2.table)
+Ecmwf version 18 discipline 0 category 2 (resources/grib2/ecmwf/tables/18/4.2.0.2.table)
+Ecmwf version 17 discipline 0 category 2 (resources/grib2/ecmwf/tables/17/4.2.0.2.table)
+  Ecmwf version 17 (0-2) missing Grib2Parameter{discipline=0, category=2, number=45, name='Unbalanced component of divergence', unit='s-1', abbrev='null', desc='Unbalanced component of divergence', fill='null', missing='NaN'}
+  Ecmwf version 17 (0-2) missing Grib2Parameter{discipline=0, category=2, number=46, name='Vorticity advection', unit='s-2', abbrev='null', desc='Vorticity advection', fill='null', missing='NaN'}
+Ecmwf version 16 discipline 0 category 2 (resources/grib2/ecmwf/tables/16/4.2.0.2.table)
+  p1=    0.2.39 Eastward wind tendency due to parameterization
+  p2=    0.2.39 Eastward wind tendency due to parameterizations
+  p1=    0.2.40 Northward wind tendency due to parameterization
+  p2=    0.2.40 Northward wind tendency due to parameterizations
+ ***Conflicts=2 extra=0 udunits=0 missing=0
+Ecmwf version 15 discipline 0 category 2 (resources/grib2/ecmwf/tables/15/4.2.0.2.table)
+  Ecmwf version 15 (0-2) missing Grib2Parameter{discipline=0, category=2, number=39, name='Eastward wind tendency due to parameterizations', unit='m.s-2', abbrev='null', desc='Eastward wind tendency due to parameterizations', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-2) missing Grib2Parameter{discipline=0, category=2, number=40, name='Northward wind tendency due to parameterizations', unit='m.s-2', abbrev='null', desc='Northward wind tendency due to parameterizations', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-2) missing Grib2Parameter{discipline=0, category=2, number=41, name='u-component of geostrophic wind', unit='m.s-1', abbrev='null', desc='u-component of geostrophic wind', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-2) missing Grib2Parameter{discipline=0, category=2, number=42, name='v-component of geostrophic wind', unit='m.s-1', abbrev='null', desc='v-component of geostrophic wind', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-2) missing Grib2Parameter{discipline=0, category=2, number=43, name='Geostrophic wind direction', unit='degree_true', abbrev='null', desc='Geostrophic wind direction', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-2) missing Grib2Parameter{discipline=0, category=2, number=44, name='Geostrophic wind speed', unit='m.s-1', abbrev='null', desc='Geostrophic wind speed', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 0 category 2 (resources/grib2/ecmwf/tables/14/4.2.0.2.table)
+Ecmwf version 13 discipline 0 category 2 (resources/grib2/ecmwf/tables/13/4.2.0.2.table)
+Ecmwf version 12 discipline 0 category 2 (resources/grib2/ecmwf/tables/12/4.2.0.2.table)
+  Ecmwf version 12 (0-2) missing Grib2Parameter{discipline=0, category=2, number=36, name='Amplitude function for Rossby wave envelope for meridional wind', unit='m/s', abbrev='null', desc='Amplitude function for Rossby wave envelope for meridional wind', fill='null', missing='NaN'}
+  Ecmwf version 12 (0-2) missing Grib2Parameter{discipline=0, category=2, number=37, name='Northward turbulent surface stress', unit='N.m-2.s', abbrev='null', desc='Northward turbulent surface stress', fill='null', missing='NaN'}
+  Ecmwf version 12 (0-2) missing Grib2Parameter{discipline=0, category=2, number=38, name='Eastward turbulent surface stress', unit='N.m-2.s', abbrev='null', desc='Eastward turbulent surface stress', fill='null', missing='NaN'}
+Ecmwf version 11 discipline 0 category 2 (resources/grib2/ecmwf/tables/11/4.2.0.2.table)
+Ecmwf version 10 discipline 0 category 2 (resources/grib2/ecmwf/tables/10/4.2.0.2.table)
+  p1=     0.2.0 Wind direction (from which blowing)
+  p2=     0.2.0 Wind direction (from which blowing) (degree true)
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 9 discipline 0 category 2 (resources/grib2/ecmwf/tables/9/4.2.0.2.table)
+Ecmwf version 8 discipline 0 category 2 (resources/grib2/ecmwf/tables/8/4.2.0.2.table)
+  Ecmwf version 8 (0-2) missing Grib2Parameter{discipline=0, category=2, number=34, name='Normal wind component', unit='m/s', abbrev='null', desc='Normal wind component', fill='null', missing='NaN'}
+  Ecmwf version 8 (0-2) missing Grib2Parameter{discipline=0, category=2, number=35, name='Tangential wind component', unit='m/s', abbrev='null', desc='Tangential wind component', fill='null', missing='NaN'}
+Ecmwf version 7 discipline 0 category 2 (resources/grib2/ecmwf/tables/7/4.2.0.2.table)
+  p1=     0.2.0 Wind direction (from which blowing) (degree true)
+  p2=     0.2.0 Wind direction (from which blowing)
+  incompatible for      0.2.0 deg (0.017453292519943295 rad) != deg.true (org deg.true)
+  Ecmwf version 7 (0-2) missing Grib2Parameter{discipline=0, category=2, number=33, name='Wind fetch', unit='m', abbrev='null', desc='Wind fetch', fill='null', missing='NaN'}
+ ***Conflicts=1 extra=1 udunits=1 missing=0
+Ecmwf version 6 discipline 0 category 2 (resources/grib2/ecmwf/tables/6/4.2.0.2.table)
+Ecmwf version 5 discipline 0 category 2 (resources/grib2/ecmwf/tables/5/4.2.0.2.table)
+  Ecmwf version 5 (0-2) missing Grib2Parameter{discipline=0, category=2, number=31, name='Turbulent diffusion coefficient for momentum', unit='m2.s-1', abbrev='null', desc='Turbulent diffusion coefficient for momentum', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-2) missing Grib2Parameter{discipline=0, category=2, number=32, name='eta coordinate vertical velocity', unit='s-1', abbrev='null', desc='eta coordinate vertical velocity', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 0 category 2 (resources/grib2/ecmwf/tables/4/4.2.0.2.table)
+Ecmwf version 3 discipline 0 category 2 (resources/grib2/ecmwf/tables/3/4.2.0.2.table)
+Ecmwf version 2 discipline 0 category 2 (resources/grib2/ecmwf/tables/2/4.2.0.2.table)
+Ecmwf version 1 discipline 0 category 2 (resources/grib2/ecmwf/tables/1/4.2.0.2.table)
+Ecmwf version 0 discipline 0 category 2 (resources/grib2/ecmwf/tables/0/4.2.0.2.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 20: atmospheric chemical constituents
+Ecmwf version 21 discipline 0 category 20 (resources/grib2/ecmwf/tables/21/4.2.0.20.table)
+Ecmwf version 20 discipline 0 category 20 (resources/grib2/ecmwf/tables/20/4.2.0.20.table)
+Ecmwf version 19 discipline 0 category 20 (resources/grib2/ecmwf/tables/19/4.2.0.20.table)
+Ecmwf version 18 discipline 0 category 20 (resources/grib2/ecmwf/tables/18/4.2.0.20.table)
+Ecmwf version 17 discipline 0 category 20 (resources/grib2/ecmwf/tables/17/4.2.0.20.table)
+  Ecmwf version 17 (0-20) missing Grib2Parameter{discipline=0, category=20, number=63, name='Column-averaged mass density in layer', unit='kg.m-3', abbrev='null', desc='Column-averaged mass density in layer', fill='null', missing='NaN'}
+Ecmwf version 16 discipline 0 category 20 (resources/grib2/ecmwf/tables/16/4.2.0.20.table)
+  Ecmwf version 16 (0-20) missing Grib2Parameter{discipline=0, category=20, number=60, name='Aerosol specific number concentration', unit='kg-1', abbrev='null', desc='Aerosol specific number concentration', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-20) missing Grib2Parameter{discipline=0, category=20, number=61, name='Maximum of mass density in layer', unit='kg.m-3', abbrev='null', desc='Maximum of mass density in layer', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-20) missing Grib2Parameter{discipline=0, category=20, number=62, name='Height of maximum mass density', unit='m', abbrev='null', desc='Height of maximum mass density', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-20) missing Grib2Parameter{discipline=0, category=20, number=111, name='Angstrom exponent', unit='', abbrev='null', desc='Angstrom exponent', fill='null', missing='NaN'}
+Ecmwf version 15 discipline 0 category 20 (resources/grib2/ecmwf/tables/15/4.2.0.20.table)
+Ecmwf version 14 discipline 0 category 20 (resources/grib2/ecmwf/tables/14/4.2.0.20.table)
+Ecmwf version 13 discipline 0 category 20 (resources/grib2/ecmwf/tables/13/4.2.0.20.table)
+Ecmwf version 12 discipline 0 category 20 (resources/grib2/ecmwf/tables/12/4.2.0.20.table)
+Ecmwf version 11 discipline 0 category 20 (resources/grib2/ecmwf/tables/11/4.2.0.20.table)
+Ecmwf version 10 discipline 0 category 20 (resources/grib2/ecmwf/tables/10/4.2.0.20.table)
+Ecmwf version 9 discipline 0 category 20 (resources/grib2/ecmwf/tables/9/4.2.0.20.table)
+Ecmwf version 8 discipline 0 category 20 (resources/grib2/ecmwf/tables/8/4.2.0.20.table)
+  p1=  0.20.101 Vertical visual range
+  p2=  0.20.101 Atmosphere optical thickness
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 7 discipline 0 category 20 (resources/grib2/ecmwf/tables/7/4.2.0.20.table)
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=9, name='Wet deposition by large-scale precipitation mass flux', unit='kg.m-2.s-1', abbrev='null', desc='Wet deposition by large-scale precipitation mass flux', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=10, name='Wet deposition by convective precipitation mass flux', unit='kg.m-2.s-1', abbrev='null', desc='Wet deposition by convective precipitation mass flux', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=11, name='Sedimentation mass flux', unit='kg.m-2.s-1', abbrev='null', desc='Sedimentation mass flux', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=12, name='Dry deposition mass flux', unit='kg.m-2.s-1', abbrev='null', desc='Dry deposition mass flux', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=13, name='Transfer from hydrophobic to hydrophilic', unit='kg.kg-1.s-1', abbrev='null', desc='Transfer from hydrophobic to hydrophilic', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=14, name='Transfer from SO2 (Sulphur dioxide) to SO4 (sulphate)', unit='kg.kg-1.s-1', abbrev='null', desc='Transfer from SO2 (Sulphur dioxide) to SO4 (sulphate)', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=59, name='Aerosol number concentration', unit='m-3', abbrev='null', desc='Aerosol number concentration', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=102, name='Aerosol optical thickness', unit='', abbrev='null', desc='Aerosol optical thickness', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=103, name='Single scattering albedo', unit='', abbrev='null', desc='Single scattering albedo', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=104, name='Asymmetry factor', unit='', abbrev='null', desc='Asymmetry factor', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=105, name='Aerosol extinction coefficient', unit='m-1', abbrev='null', desc='Aerosol extinction coefficient', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=106, name='Aerosol absorption coefficient', unit='m-1', abbrev='null', desc='Aerosol absorption coefficient', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=107, name='Aerosol lidar backscatter from satellite', unit='m-1.sr-1', abbrev='null', desc='Aerosol lidar backscatter from satellite', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=108, name='Aerosol lidar backscatter from the ground', unit='m-1.sr-1', abbrev='null', desc='Aerosol lidar backscatter from the ground', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=109, name='Aerosol lidar extinction from satellite', unit='m-1', abbrev='null', desc='Aerosol lidar extinction from satellite', fill='null', missing='NaN'}
+  Ecmwf version 7 (0-20) missing Grib2Parameter{discipline=0, category=20, number=110, name='Aerosol lidar extinction from the ground', unit='m-1', abbrev='null', desc='Aerosol lidar extinction from the ground', fill='null', missing='NaN'}
+Ecmwf version 6 discipline 0 category 20 (resources/grib2/ecmwf/tables/6/4.2.0.20.table)
+Ecmwf version 5 discipline 0 category 20 (resources/grib2/ecmwf/tables/5/4.2.0.20.table)
+  p1=    0.20.0 Mass density (concentration)
+  p2=    0.20.0 Mass density
+  incompatible for     0.20.0 kg.m-3 (kg.m-3) != (concentration).kg.m-3 (org (concentration).kg.m-3)
+  unitless for     0.20.1 kg.m-2 != (see.Note1).kg.m-2
+  p1=    0.20.2 Mass mixing ratio (mass fraction in air)
+  p2=    0.20.2 Mass mixing ratio
+  incompatible for     0.20.2 kg.kg-1 () != (mass.fraction.in.air).kg.kg-1 (org (mass.fraction.in.air).kg.kg-1)
+  p1=    0.20.3 Atmosphere emission mass flux
+  p2=    0.20.3 Atmosphere emission mass flux kg m-2 s-1
+  unitless for     0.20.3 kg.m-2.s-1 !=
+  p1=    0.20.4 Atmosphere net production mass flux
+  p2=    0.20.4 Atmosphere net production mass flux kg m-2 s-1
+  unitless for     0.20.4 kg.m-2.s-1 !=
+  p1=    0.20.5 Atmosphere net production and emission mass flux
+  p2=    0.20.5 Atmosphere net production and emission mass flux kg m-2 s-1
+  unitless for     0.20.5 kg.m-2.s-1 !=
+  p1=    0.20.6 Surface dry deposition mass flux
+  p2=    0.20.6 Surface dry deposition mass flux kg m-2 s-1
+  unitless for     0.20.6 kg.m-2.s-1 !=
+  p1=    0.20.7 Surface wet deposition mass flux
+  p2=    0.20.7 Surface wet deposition mass flux kg m-2 s-1
+  unitless for     0.20.7 kg.m-2.s-1 !=
+  p1=    0.20.8 Atmosphere re-emission mass flux
+  p2=    0.20.8 Atmosphere re-emission mass flux kg m-2 s-1
+  unitless for     0.20.8 kg.m-2.s-1 !=
+  p1=   0.20.50 Amount in atmosphere
+  p2=   0.20.50 Amount in atmosphere mol
+  unitless for    0.20.50 mol !=
+  p1=   0.20.51 Concentration in air
+  p2=   0.20.51 Concentration in air mol m-3
+  unitless for    0.20.51 mol.m-3 !=
+  p1=   0.20.52 Volume mixing ratio (fraction in air)
+  p2=   0.20.52 Volume mixing ratio
+  incompatible for    0.20.52 mol.mol-1 () != (fraction.in.air).mol.mol-1 (org (fraction.in.air).mol.mol-1)
+  p1=   0.20.53 Chemical gross production rate of concentration
+  p2=   0.20.53 Chemical gross production rate of concentration mol m-3 s-1
+  unitless for    0.20.53 mol.m-3.s-1 !=
+  p1=   0.20.54 Chemical gross destruction rate of concentration
+  p2=   0.20.54 Chemical gross destruction rate of concentration mol m-3 s-1
+  unitless for    0.20.54 mol.m-3.s-1 !=
+  p1=   0.20.55 Surface flux
+  p2=   0.20.55 Surface flux mol m-2 s-1
+  unitless for    0.20.55 mol.m-2.s-1 !=
+  unitless for    0.20.56 mol.s-1 != (see.Note.1).mol.s-1
+  p1=   0.20.57 Total yearly average burden of the atmosphere
+  p2=   0.20.57 Total yearly average burden of the atmosphere mol
+  unitless for    0.20.57 mol !=
+  unitless for    0.20.58 mol.s-1 != (see.Note.1).mol.s-1
+  p1=  0.20.100 Surface area density (aerosol)
+  p2=  0.20.100 Surface area density
+  incompatible for   0.20.100 m-1 (m-1) != (aerosol).m-1 (org (aerosol).m-1)
+  p1=  0.20.101 Atmosphere optical thickness
+  p2=  0.20.101 Atmosphere optical thickness m
+  unitless for   0.20.101 m !=
+ ***Conflicts=17 extra=0 udunits=20 missing=0
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Ecmwf version 0 discipline 0 category 20 (resources/grib2/ecmwf/tables/0/4.2.0.20.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 3: mass
+Ecmwf version 21 discipline 0 category 3 (resources/grib2/ecmwf/tables/21/4.2.0.3.table)
+Ecmwf version 20 discipline 0 category 3 (resources/grib2/ecmwf/tables/20/4.2.0.3.table)
+Ecmwf version 19 discipline 0 category 3 (resources/grib2/ecmwf/tables/19/4.2.0.3.table)
+Ecmwf version 18 discipline 0 category 3 (resources/grib2/ecmwf/tables/18/4.2.0.3.table)
+Ecmwf version 17 discipline 0 category 3 (resources/grib2/ecmwf/tables/17/4.2.0.3.table)
+  Ecmwf version 17 (0-3) missing Grib2Parameter{discipline=0, category=3, number=31, name='Unbalanced component of logarithm of surface pressure', unit='', abbrev='null', desc='Unbalanced component of logarithm of surface pressure', fill='null', missing='NaN'}
+Ecmwf version 16 discipline 0 category 3 (resources/grib2/ecmwf/tables/16/4.2.0.3.table)
+Ecmwf version 15 discipline 0 category 3 (resources/grib2/ecmwf/tables/15/4.2.0.3.table)
+  Ecmwf version 15 (0-3) missing Grib2Parameter{discipline=0, category=3, number=27, name='Updraught mass flux', unit='kg.m-2.s-1', abbrev='null', desc='Updraught mass flux', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-3) missing Grib2Parameter{discipline=0, category=3, number=28, name='Downdraught mass flux', unit='kg.m-2.s-1', abbrev='null', desc='Downdraught mass flux', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-3) missing Grib2Parameter{discipline=0, category=3, number=29, name='Updraught detrainment rate', unit='kg.m-3.s-1', abbrev='null', desc='Updraught detrainment rate', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-3) missing Grib2Parameter{discipline=0, category=3, number=30, name='Downdraught detrainment rate', unit='kg.m-3.s-1', abbrev='null', desc='Downdraught detrainment rate', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 0 category 3 (resources/grib2/ecmwf/tables/14/4.2.0.3.table)
+Ecmwf version 13 discipline 0 category 3 (resources/grib2/ecmwf/tables/13/4.2.0.3.table)
+Ecmwf version 12 discipline 0 category 3 (resources/grib2/ecmwf/tables/12/4.2.0.3.table)
+Ecmwf version 11 discipline 0 category 3 (resources/grib2/ecmwf/tables/11/4.2.0.3.table)
+Ecmwf version 10 discipline 0 category 3 (resources/grib2/ecmwf/tables/10/4.2.0.3.table)
+Ecmwf version 9 discipline 0 category 3 (resources/grib2/ecmwf/tables/9/4.2.0.3.table)
+Ecmwf version 8 discipline 0 category 3 (resources/grib2/ecmwf/tables/8/4.2.0.3.table)
+  Ecmwf version 8 (0-3) missing Grib2Parameter{discipline=0, category=3, number=26, name='Exner pressure', unit='', abbrev='null', desc='Exner pressure', fill='null', missing='NaN'}
+Ecmwf version 7 discipline 0 category 3 (resources/grib2/ecmwf/tables/7/4.2.0.3.table)
+  incompatible for     0.3.23 W.m-2 (kg.s-3) != Wm-2 (org Wm-2)
+ ***Conflicts=0 extra=0 udunits=1 missing=0
+Ecmwf version 6 discipline 0 category 3 (resources/grib2/ecmwf/tables/6/4.2.0.3.table)
+Ecmwf version 5 discipline 0 category 3 (resources/grib2/ecmwf/tables/5/4.2.0.3.table)
+  Ecmwf version 5 (0-3) missing Grib2Parameter{discipline=0, category=3, number=25, name='Natural logarithm of pressure in Pa', unit='', abbrev='null', desc='Natural logarithm of pressure in Pa', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 0 category 3 (resources/grib2/ecmwf/tables/4/4.2.0.3.table)
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=0, name='Pressure', unit='Pa', abbrev='null', desc='Pressure', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=1, name='Pressure reduced to MSL', unit='Pa', abbrev='null', desc='Pressure reduced to MSL', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=2, name='Pressure tendency', unit='Pa.s-1', abbrev='null', desc='Pressure tendency', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=3, name='ICAO Standard Atmosphere Reference Height', unit='m', abbrev='null', desc='ICAO Standard Atmosphere Reference Height', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=4, name='Geopotential', unit='m2.s-2', abbrev='null', desc='Geopotential', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=5, name='Geopotential height', unit='gpm', abbrev='null', desc='Geopotential height', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=6, name='Geometric height', unit='m', abbrev='null', desc='Geometric height', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=7, name='Standard deviation of height', unit='m', abbrev='null', desc='Standard deviation of height', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=8, name='Pressure anomaly', unit='Pa', abbrev='null', desc='Pressure anomaly', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=9, name='Geopotential height anomaly', unit='gpm', abbrev='null', desc='Geopotential height anomaly', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=10, name='Density', unit='kg.m-3', abbrev='null', desc='Density', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=11, name='Altimeter setting', unit='Pa', abbrev='null', desc='Altimeter setting', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=12, name='Thickness', unit='m', abbrev='null', desc='Thickness', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=13, name='Pressure altitude', unit='m', abbrev='null', desc='Pressure altitude', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=14, name='Density altitude', unit='m', abbrev='null', desc='Density altitude', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=15, name='5-wave geopotential height', unit='gpm', abbrev='null', desc='5-wave geopotential height', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=16, name='Zonal flux of gravity wave stress', unit='N.m-2', abbrev='null', desc='Zonal flux of gravity wave stress', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=17, name='Meridional flux of gravity wave stress', unit='N.m-2', abbrev='null', desc='Meridional flux of gravity wave stress', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=18, name='Planetary boundary layer height', unit='m', abbrev='null', desc='Planetary boundary layer height', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=19, name='5-wave geopotential height anomaly', unit='gpm', abbrev='null', desc='5-wave geopotential height anomaly', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=20, name='Standard deviation of sub-grid scale orography', unit='m', abbrev='null', desc='Standard deviation of sub-grid scale orography', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=21, name='Angle of sub-gridscale orography', unit='rad', abbrev='null', desc='Angle of sub-gridscale orography', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=22, name='Slope of sub-gridscale orography', unit='', abbrev='null', desc='Slope of sub-gridscale orography', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=23, name='Gravity wave dissipation', unit='Wm-2', abbrev='null', desc='Gravity wave dissipation', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=24, name='Anisotropy of sub-gridscale orography', unit='', abbrev='null', desc='Anisotropy of sub-gridscale orography', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-3) missing Grib2Parameter{discipline=0, category=3, number=255, name='Missing', unit='', abbrev='null', desc='Missing', fill='null', missing='NaN'}
+Ecmwf version 3 discipline 0 category 3 (resources/grib2/ecmwf/tables/3/4.2.0.3.table)
+Ecmwf version 2 discipline 0 category 3 (resources/grib2/ecmwf/tables/2/4.2.0.3.table)
+Ecmwf version 1 discipline 0 category 3 (resources/grib2/ecmwf/tables/1/4.2.0.3.table)
+Ecmwf version 0 discipline 0 category 3 (resources/grib2/ecmwf/tables/0/4.2.0.3.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 4: short-wave radiation
+Ecmwf version 21 discipline 0 category 4 (resources/grib2/ecmwf/tables/21/4.2.0.4.table)
+Ecmwf version 20 discipline 0 category 4 (resources/grib2/ecmwf/tables/20/4.2.0.4.table)
+Ecmwf version 19 discipline 0 category 4 (resources/grib2/ecmwf/tables/19/4.2.0.4.table)
+Ecmwf version 18 discipline 0 category 4 (resources/grib2/ecmwf/tables/18/4.2.0.4.table)
+Ecmwf version 17 discipline 0 category 4 (resources/grib2/ecmwf/tables/17/4.2.0.4.table)
+Ecmwf version 16 discipline 0 category 4 (resources/grib2/ecmwf/tables/16/4.2.0.4.table)
+  Ecmwf version 16 (0-4) missing Grib2Parameter{discipline=0, category=4, number=52, name='Downward short-wave radiation flux, clear sky', unit='W.m-2', abbrev='null', desc='Downward short-wave radiation flux, clear sky', fill='null', missing='NaN'}
+  Ecmwf version 16 (0-4) missing Grib2Parameter{discipline=0, category=4, number=53, name='Upward short-wave radiation flux, clear sky', unit='W.m-2', abbrev='null', desc='Upward short-wave radiation flux, clear sky', fill='null', missing='NaN'}
+Ecmwf version 15 discipline 0 category 4 (resources/grib2/ecmwf/tables/15/4.2.0.4.table)
+  Ecmwf version 15 (0-4) missing Grib2Parameter{discipline=0, category=4, number=13, name='Direct short wave radiation flux', unit='W.m-2', abbrev='null', desc='Direct short wave radiation flux', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-4) missing Grib2Parameter{discipline=0, category=4, number=14, name='Diffuse short wave radiation flux', unit='W.m-2', abbrev='null', desc='Diffuse short wave radiation flux', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 0 category 4 (resources/grib2/ecmwf/tables/14/4.2.0.4.table)
+Ecmwf version 13 discipline 0 category 4 (resources/grib2/ecmwf/tables/13/4.2.0.4.table)
+Ecmwf version 12 discipline 0 category 4 (resources/grib2/ecmwf/tables/12/4.2.0.4.table)
+Ecmwf version 11 discipline 0 category 4 (resources/grib2/ecmwf/tables/11/4.2.0.4.table)
+Ecmwf version 10 discipline 0 category 4 (resources/grib2/ecmwf/tables/10/4.2.0.4.table)
+Ecmwf version 9 discipline 0 category 4 (resources/grib2/ecmwf/tables/9/4.2.0.4.table)
+Ecmwf version 8 discipline 0 category 4 (resources/grib2/ecmwf/tables/8/4.2.0.4.table)
+Ecmwf version 7 discipline 0 category 4 (resources/grib2/ecmwf/tables/7/4.2.0.4.table)
+Ecmwf version 6 discipline 0 category 4 (resources/grib2/ecmwf/tables/6/4.2.0.4.table)
+Ecmwf version 5 discipline 0 category 4 (resources/grib2/ecmwf/tables/5/4.2.0.4.table)
+Ecmwf version 4 discipline 0 category 4 (resources/grib2/ecmwf/tables/4/4.2.0.4.table)
+  Ecmwf version 4 (0-4) missing Grib2Parameter{discipline=0, category=4, number=8, name='Upward short-wave radiation flux', unit='W.m-2', abbrev='null', desc='Upward short-wave radiation flux', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-4) missing Grib2Parameter{discipline=0, category=4, number=9, name='Net short wave radiation flux', unit='W.m-2', abbrev='null', desc='Net short wave radiation flux', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-4) missing Grib2Parameter{discipline=0, category=4, number=10, name='Photosynthetically active radiation', unit='W.m-2', abbrev='null', desc='Photosynthetically active radiation', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-4) missing Grib2Parameter{discipline=0, category=4, number=11, name='Net short-wave radiation flux, clear sky', unit='W.m-2', abbrev='null', desc='Net short-wave radiation flux, clear sky', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-4) missing Grib2Parameter{discipline=0, category=4, number=12, name='Downward UV radiation', unit='W.m-2', abbrev='null', desc='Downward UV radiation', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-4) missing Grib2Parameter{discipline=0, category=4, number=50, name='UV index (under clear sky)', unit='', abbrev='null', desc='UV index (under clear sky)', fill='null', missing='NaN'}
+  Ecmwf version 4 (0-4) missing Grib2Parameter{discipline=0, category=4, number=51, name='UV index', unit='', abbrev='null', desc='UV index', fill='null', missing='NaN'}
+Ecmwf version 3 discipline 0 category 4 (resources/grib2/ecmwf/tables/3/4.2.0.4.table)
+Ecmwf version 2 discipline 0 category 4 (resources/grib2/ecmwf/tables/2/4.2.0.4.table)
+Ecmwf version 1 discipline 0 category 4 (resources/grib2/ecmwf/tables/1/4.2.0.4.table)
+Ecmwf version 0 discipline 0 category 4 (resources/grib2/ecmwf/tables/0/4.2.0.4.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 5: long-wave radiation
+Ecmwf version 21 discipline 0 category 5 (resources/grib2/ecmwf/tables/21/4.2.0.5.table)
+Ecmwf version 20 discipline 0 category 5 (resources/grib2/ecmwf/tables/20/4.2.0.5.table)
+Ecmwf version 19 discipline 0 category 5 (resources/grib2/ecmwf/tables/19/4.2.0.5.table)
+Ecmwf version 18 discipline 0 category 5 (resources/grib2/ecmwf/tables/18/4.2.0.5.table)
+Ecmwf version 17 discipline 0 category 5 (resources/grib2/ecmwf/tables/17/4.2.0.5.table)
+Ecmwf version 16 discipline 0 category 5 (resources/grib2/ecmwf/tables/16/4.2.0.5.table)
+  Ecmwf version 16 (0-5) missing Grib2Parameter{discipline=0, category=5, number=8, name='Downward long-wave radiation flux, clear sky', unit='W.m-2', abbrev='null', desc='Downward long-wave radiation flux, clear sky', fill='null', missing='NaN'}
+Ecmwf version 15 discipline 0 category 5 (resources/grib2/ecmwf/tables/15/4.2.0.5.table)
+Ecmwf version 14 discipline 0 category 5 (resources/grib2/ecmwf/tables/14/4.2.0.5.table)
+  Ecmwf version 14 (0-5) missing Grib2Parameter{discipline=0, category=5, number=7, name='Brightness temperature', unit='K', abbrev='null', desc='Brightness temperature', fill='null', missing='NaN'}
+Ecmwf version 13 discipline 0 category 5 (resources/grib2/ecmwf/tables/13/4.2.0.5.table)
+Ecmwf version 12 discipline 0 category 5 (resources/grib2/ecmwf/tables/12/4.2.0.5.table)
+Ecmwf version 11 discipline 0 category 5 (resources/grib2/ecmwf/tables/11/4.2.0.5.table)
+Ecmwf version 10 discipline 0 category 5 (resources/grib2/ecmwf/tables/10/4.2.0.5.table)
+Ecmwf version 9 discipline 0 category 5 (resources/grib2/ecmwf/tables/9/4.2.0.5.table)
+Ecmwf version 8 discipline 0 category 5 (resources/grib2/ecmwf/tables/8/4.2.0.5.table)
+Ecmwf version 7 discipline 0 category 5 (resources/grib2/ecmwf/tables/7/4.2.0.5.table)
+Ecmwf version 6 discipline 0 category 5 (resources/grib2/ecmwf/tables/6/4.2.0.5.table)
+Ecmwf version 5 discipline 0 category 5 (resources/grib2/ecmwf/tables/5/4.2.0.5.table)
+Ecmwf version 4 discipline 0 category 5 (resources/grib2/ecmwf/tables/4/4.2.0.5.table)
+  Ecmwf version 4 (0-5) missing Grib2Parameter{discipline=0, category=5, number=6, name='Net long-wave radiation flux, clear sky', unit='W.m-2', abbrev='null', desc='Net long-wave radiation flux, clear sky', fill='null', missing='NaN'}
+Ecmwf version 3 discipline 0 category 5 (resources/grib2/ecmwf/tables/3/4.2.0.5.table)
+Ecmwf version 2 discipline 0 category 5 (resources/grib2/ecmwf/tables/2/4.2.0.5.table)
+Ecmwf version 1 discipline 0 category 5 (resources/grib2/ecmwf/tables/1/4.2.0.5.table)
+Ecmwf version 0 discipline 0 category 5 (resources/grib2/ecmwf/tables/0/4.2.0.5.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 6: cloud
+Ecmwf version 21 discipline 0 category 6 (resources/grib2/ecmwf/tables/21/4.2.0.6.table)
+Ecmwf version 20 discipline 0 category 6 (resources/grib2/ecmwf/tables/20/4.2.0.6.table)
+Ecmwf version 19 discipline 0 category 6 (resources/grib2/ecmwf/tables/19/4.2.0.6.table)
+Ecmwf version 18 discipline 0 category 6 (resources/grib2/ecmwf/tables/18/4.2.0.6.table)
+Ecmwf version 17 discipline 0 category 6 (resources/grib2/ecmwf/tables/17/4.2.0.6.table)
+Ecmwf version 16 discipline 0 category 6 (resources/grib2/ecmwf/tables/16/4.2.0.6.table)
+Ecmwf version 15 discipline 0 category 6 (resources/grib2/ecmwf/tables/15/4.2.0.6.table)
+  Ecmwf version 15 (0-6) missing Grib2Parameter{discipline=0, category=6, number=40, name='Mass density of convective cloud water droplets', unit='kg.m-3', abbrev='null', desc='Mass density of convective cloud water droplets', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-6) missing Grib2Parameter{discipline=0, category=6, number=47, name='Volume fraction of cloud water droplets', unit='', abbrev='null', desc='Volume fraction of cloud water droplets', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-6) missing Grib2Parameter{discipline=0, category=6, number=48, name='Volume fraction of cloud ice particles', unit='', abbrev='null', desc='Volume fraction of cloud ice particles', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-6) missing Grib2Parameter{discipline=0, category=6, number=49, name='Volume fraction of cloud (ice and/or water)', unit='', abbrev='null', desc='Volume fraction of cloud (ice and/or water)', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 0 category 6 (resources/grib2/ecmwf/tables/14/4.2.0.6.table)
+  Ecmwf version 14 (0-6) missing Grib2Parameter{discipline=0, category=6, number=38, name='Mass density of cloud droplets', unit='kg.m-3', abbrev='null', desc='Mass density of cloud droplets', fill='null', missing='NaN'}
+  Ecmwf version 14 (0-6) missing Grib2Parameter{discipline=0, category=6, number=39, name='Mass density of cloud ice', unit='kg.m-3', abbrev='null', desc='Mass density of cloud ice', fill='null', missing='NaN'}
+Ecmwf version 13 discipline 0 category 6 (resources/grib2/ecmwf/tables/13/4.2.0.6.table)
+  Ecmwf version 13 (0-6) missing Grib2Parameter{discipline=0, category=6, number=36, name='Fraction of stratiform precipitation cover', unit='', abbrev='null', desc='Fraction of stratiform precipitation cover', fill='null', missing='NaN'}
+  Ecmwf version 13 (0-6) missing Grib2Parameter{discipline=0, category=6, number=37, name='Fraction of convective precipitation cover', unit='', abbrev='null', desc='Fraction of convective precipitation cover', fill='null', missing='NaN'}
+Ecmwf version 12 discipline 0 category 6 (resources/grib2/ecmwf/tables/12/4.2.0.6.table)
+Ecmwf version 11 discipline 0 category 6 (resources/grib2/ecmwf/tables/11/4.2.0.6.table)
+Ecmwf version 10 discipline 0 category 6 (resources/grib2/ecmwf/tables/10/4.2.0.6.table)
+Ecmwf version 9 discipline 0 category 6 (resources/grib2/ecmwf/tables/9/4.2.0.6.table)
+Ecmwf version 8 discipline 0 category 6 (resources/grib2/ecmwf/tables/8/4.2.0.6.table)
+  p1=    0.6.28 Number of cloud droplets per unit mass of air
+  p2=    0.6.28 Number concentration of cloud droplets
+  p1=    0.6.29 Number of cloud ice particles per unit mass of air
+  p2=    0.6.29 Number concentration of cloud ice
+  p1=    0.6.31 Number density of cloud ice particles
+  p2=    0.6.31 Number density of cloud ice
+  Ecmwf version 8 (0-6) missing Grib2Parameter{discipline=0, category=6, number=34, name='Surface long wave effective total cloudiness', unit='', abbrev='null', desc='Surface long wave effective total cloudiness', fill='null', missing='NaN'}
+  Ecmwf version 8 (0-6) missing Grib2Parameter{discipline=0, category=6, number=35, name='Surface short wave effective total cloudiness', unit='', abbrev='null', desc='Surface short wave effective total cloudiness', fill='null', missing='NaN'}
+ ***Conflicts=3 extra=2 udunits=0 missing=0
+Ecmwf version 7 discipline 0 category 6 (resources/grib2/ecmwf/tables/7/4.2.0.6.table)
+  p1=     0.6.8 Cloud type (
+  p2=     0.6.8 Cloud type (code table
+  unitless for      0.6.8 Code table 4.203) != 4.203)
+  p1=    0.6.10 Thunderstorm coverage (
+  p2=    0.6.10 Thunderstorm coverage (code table
+  unitless for     0.6.10 Code table 4.204) != 4.204)
+  p1=    0.6.26 Height of convective cloud base
+  p2=    0.6.26 Height of convective cloud base - validation
+  p1=    0.6.27 Height of convective cloud top
+  p2=    0.6.27 Height of convective cloud top - validation
+  p1=    0.6.28 Number concentration of cloud droplets
+  p2=    0.6.28 Number concentration of cloud droplets - validation
+  p1=    0.6.29 Number concentration of cloud ice
+  p2=    0.6.29 Number concentration of cloud ice - validation
+  p1=    0.6.30 Number density of cloud droplets
+  p2=    0.6.30 Number density of cloud droplets - validation
+  p1=    0.6.31 Number density of cloud ice
+  p2=    0.6.31 Number density of cloud ice - validation
+ ***Conflicts=8 extra=0 udunits=2 missing=0
+Ecmwf version 6 discipline 0 category 6 (resources/grib2/ecmwf/tables/6/4.2.0.6.table)
+Ecmwf version 5 discipline 0 category 6 (resources/grib2/ecmwf/tables/5/4.2.0.6.table)
+  Ecmwf version 5 (0-6) missing Grib2Parameter{discipline=0, category=6, number=26, name='Height of convective cloud base - validation', unit='m', abbrev='null', desc='Height of convective cloud base - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-6) missing Grib2Parameter{discipline=0, category=6, number=27, name='Height of convective cloud top - validation', unit='m', abbrev='null', desc='Height of convective cloud top - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-6) missing Grib2Parameter{discipline=0, category=6, number=28, name='Number concentration of cloud droplets - validation', unit='kg-1', abbrev='null', desc='Number concentration of cloud droplets - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-6) missing Grib2Parameter{discipline=0, category=6, number=29, name='Number concentration of cloud ice - validation', unit='kg-1', abbrev='null', desc='Number concentration of cloud ice - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-6) missing Grib2Parameter{discipline=0, category=6, number=30, name='Number density of cloud droplets - validation', unit='m-3', abbrev='null', desc='Number density of cloud droplets - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-6) missing Grib2Parameter{discipline=0, category=6, number=31, name='Number density of cloud ice - validation', unit='m-3', abbrev='null', desc='Number density of cloud ice - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-6) missing Grib2Parameter{discipline=0, category=6, number=32, name='Fraction of cloud cover', unit='', abbrev='null', desc='Fraction of cloud cover', fill='null', missing='NaN'}
+  Ecmwf version 5 (0-6) missing Grib2Parameter{discipline=0, category=6, number=33, name='Sunshine duration', unit='s', abbrev='null', desc='Sunshine duration', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 0 category 6 (resources/grib2/ecmwf/tables/4/4.2.0.6.table)
+  p1=     0.6.8 Cloud type (code table
+  p2=     0.6.8 Cloud type
+  unitless for      0.6.8 4.203) != Code table 4.203
+  p1=    0.6.10 Thunderstorm coverage (code table
+  p2=    0.6.10 Thunderstorm coverage
+  unitless for     0.6.10 4.204) != Code table 4.204
+  Ecmwf version 4 (0-6) missing Grib2Parameter{discipline=0, category=6, number=25, name='Horizontal extent of cumulonimbus (CB)', unit='%', abbrev='null', desc='Horizontal extent of cumulonimbus (CB)', fill='null', missing='NaN'}
+ ***Conflicts=2 extra=1 udunits=2 missing=0
+Ecmwf version 3 discipline 0 category 6 (resources/grib2/ecmwf/tables/3/4.2.0.6.table)
+Ecmwf version 2 discipline 0 category 6 (resources/grib2/ecmwf/tables/2/4.2.0.6.table)
+Ecmwf version 1 discipline 0 category 6 (resources/grib2/ecmwf/tables/1/4.2.0.6.table)
+Ecmwf version 0 discipline 0 category 6 (resources/grib2/ecmwf/tables/0/4.2.0.6.table)
+================================================================
+Product discipline 0 - Meteorological products, parameter category 7: thermodynamic stability indices
+Ecmwf version 21 discipline 0 category 7 (resources/grib2/ecmwf/tables/21/4.2.0.7.table)
+Ecmwf version 20 discipline 0 category 7 (resources/grib2/ecmwf/tables/20/4.2.0.7.table)
+Ecmwf version 19 discipline 0 category 7 (resources/grib2/ecmwf/tables/19/4.2.0.7.table)
+Ecmwf version 18 discipline 0 category 7 (resources/grib2/ecmwf/tables/18/4.2.0.7.table)
+  Ecmwf version 18 (0-7) missing Grib2Parameter{discipline=0, category=7, number=19, name='Convective available potential energy - shear', unit='m2.s-2', abbrev='null', desc='Convective available potential energy - shear', fill='null', missing='NaN'}
+Ecmwf version 17 discipline 0 category 7 (resources/grib2/ecmwf/tables/17/4.2.0.7.table)
+Ecmwf version 16 discipline 0 category 7 (resources/grib2/ecmwf/tables/16/4.2.0.7.table)
+  p1=    0.7.15 Updraught helicity
+  p2=    0.7.15 Updraft helicity
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 15 discipline 0 category 7 (resources/grib2/ecmwf/tables/15/4.2.0.7.table)
+  Ecmwf version 15 (0-7) missing Grib2Parameter{discipline=0, category=7, number=16, name='Bulk Richardson number', unit='', abbrev='null', desc='Bulk Richardson number', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-7) missing Grib2Parameter{discipline=0, category=7, number=17, name='Gradient Richardson number', unit='', abbrev='null', desc='Gradient Richardson number', fill='null', missing='NaN'}
+  Ecmwf version 15 (0-7) missing Grib2Parameter{discipline=0, category=7, number=18, name='Flux Richardson number', unit='', abbrev='null', desc='Flux Richardson number', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 0 category 7 (resources/grib2/ecmwf/tables/14/4.2.0.7.table)
+Ecmwf version 13 discipline 0 category 7 (resources/grib2/ecmwf/tables/13/4.2.0.7.table)
+Ecmwf version 12 discipline 0 category 7 (resources/grib2/ecmwf/tables/12/4.2.0.7.table)
+Ecmwf version 11 discipline 0 category 7 (resources/grib2/ecmwf/tables/11/4.2.0.7.table)
+Ecmwf version 10 discipline 0 category 7 (resources/grib2/ecmwf/tables/10/4.2.0.7.table)
+Ecmwf version 9 discipline 0 category 7 (resources/grib2/ecmwf/tables/9/4.2.0.7.table)
+Ecmwf version 8 discipline 0 category 7 (resources/grib2/ecmwf/tables/8/4.2.0.7.table)
+Ecmwf version 7 discipline 0 category 7 (resources/grib2/ecmwf/tables/7/4.2.0.7.table)
+  p1=    0.7.13 Showalter index
+  p2=    0.7.13 Showalter index - validation
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 6 discipline 0 category 7 (resources/grib2/ecmwf/tables/6/4.2.0.7.table)
+  Ecmwf version 6 (0-7) missing Grib2Parameter{discipline=0, category=7, number=14, name='Reserved', unit='', abbrev='null', desc='Reserved', fill='null', missing='NaN'}
+  Ecmwf version 6 (0-7) missing Grib2Parameter{discipline=0, category=7, number=15, name='Updraft helicity', unit='m2.s-2', abbrev='null', desc='Updraft helicity', fill='null', missing='NaN'}
+Ecmwf version 5 discipline 0 category 7 (resources/grib2/ecmwf/tables/5/4.2.0.7.table)
+  Ecmwf version 5 (0-7) missing Grib2Parameter{discipline=0, category=7, number=13, name='Showalter index - validation', unit='K', abbrev='null', desc='Showalter index - validation', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 0 category 7 (resources/grib2/ecmwf/tables/4/4.2.0.7.table)
+Ecmwf version 3 discipline 0 category 7 (resources/grib2/ecmwf/tables/3/4.2.0.7.table)
+Ecmwf version 2 discipline 0 category 7 (resources/grib2/ecmwf/tables/2/4.2.0.7.table)
+Ecmwf version 1 discipline 0 category 7 (resources/grib2/ecmwf/tables/1/4.2.0.7.table)
+Ecmwf version 0 discipline 0 category 7 (resources/grib2/ecmwf/tables/0/4.2.0.7.table)
+================================================================
+Product discipline 1 - Hydrological products, parameter category 0: hydrology basic products
+Ecmwf version 21 discipline 1 category 0 (resources/grib2/ecmwf/tables/21/4.2.1.0.table)
+Ecmwf version 20 discipline 1 category 0 (resources/grib2/ecmwf/tables/20/4.2.1.0.table)
+Ecmwf version 19 discipline 1 category 0 (resources/grib2/ecmwf/tables/19/4.2.1.0.table)
+Ecmwf version 18 discipline 1 category 0 (resources/grib2/ecmwf/tables/18/4.2.1.0.table)
+Ecmwf version 17 discipline 1 category 0 (resources/grib2/ecmwf/tables/17/4.2.1.0.table)
+Ecmwf version 16 discipline 1 category 0 (resources/grib2/ecmwf/tables/16/4.2.1.0.table)
+  Ecmwf version 16 (1-0) missing Grib2Parameter{discipline=1, category=0, number=16, name='Percolation rate', unit='kg.m-2.s-1', abbrev='null', desc='Percolation rate', fill='null', missing='NaN'}
+Ecmwf version 15 discipline 1 category 0 (resources/grib2/ecmwf/tables/15/4.2.1.0.table)
+  Ecmwf version 15 (1-0) missing Grib2Parameter{discipline=1, category=0, number=8, name='Groundwater upper storage', unit='kg.m-2', abbrev='null', desc='Groundwater upper storage', fill='null', missing='NaN'}
+  Ecmwf version 15 (1-0) missing Grib2Parameter{discipline=1, category=0, number=9, name='Groundwater lower storage', unit='kg.m-2', abbrev='null', desc='Groundwater lower storage', fill='null', missing='NaN'}
+  Ecmwf version 15 (1-0) missing Grib2Parameter{discipline=1, category=0, number=10, name='Side flow into river channel', unit='m3.s-1.m-1', abbrev='null', desc='Side flow into river channel', fill='null', missing='NaN'}
+  Ecmwf version 15 (1-0) missing Grib2Parameter{discipline=1, category=0, number=11, name='River storage of water', unit='m3', abbrev='null', desc='River storage of water', fill='null', missing='NaN'}
+  Ecmwf version 15 (1-0) missing Grib2Parameter{discipline=1, category=0, number=12, name='Floodplain storage of water', unit='m3', abbrev='null', desc='Floodplain storage of water', fill='null', missing='NaN'}
+  Ecmwf version 15 (1-0) missing Grib2Parameter{discipline=1, category=0, number=13, name='Depth of water on soil surface', unit='kg.m-2', abbrev='null', desc='Depth of water on soil surface', fill='null', missing='NaN'}
+  Ecmwf version 15 (1-0) missing Grib2Parameter{discipline=1, category=0, number=14, name='Upstream accumulated precipitation', unit='kg.m-2', abbrev='null', desc='Upstream accumulated precipitation', fill='null', missing='NaN'}
+  Ecmwf version 15 (1-0) missing Grib2Parameter{discipline=1, category=0, number=15, name='Upstream accumulated snow melt', unit='kg.m-2', abbrev='null', desc='Upstream accumulated snow melt', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 1 category 0 (resources/grib2/ecmwf/tables/14/4.2.1.0.table)
+Ecmwf version 13 discipline 1 category 0 (resources/grib2/ecmwf/tables/13/4.2.1.0.table)
+Ecmwf version 12 discipline 1 category 0 (resources/grib2/ecmwf/tables/12/4.2.1.0.table)
+  Ecmwf version 12 (1-0) missing Grib2Parameter{discipline=1, category=0, number=7, name='Discharge from rivers or streams', unit='m3/s', abbrev='null', desc='Discharge from rivers or streams', fill='null', missing='NaN'}
+Ecmwf version 11 discipline 1 category 0 (resources/grib2/ecmwf/tables/11/4.2.1.0.table)
+Ecmwf version 10 discipline 1 category 0 (resources/grib2/ecmwf/tables/10/4.2.1.0.table)
+Ecmwf version 9 discipline 1 category 0 (resources/grib2/ecmwf/tables/9/4.2.1.0.table)
+Ecmwf version 8 discipline 1 category 0 (resources/grib2/ecmwf/tables/8/4.2.1.0.table)
+Ecmwf version 7 discipline 1 category 0 (resources/grib2/ecmwf/tables/7/4.2.1.0.table)
+Ecmwf version 6 discipline 1 category 0 (resources/grib2/ecmwf/tables/6/4.2.1.0.table)
+Ecmwf version 5 discipline 1 category 0 (resources/grib2/ecmwf/tables/5/4.2.1.0.table)
+Ecmwf version 4 discipline 1 category 0 (resources/grib2/ecmwf/tables/4/4.2.1.0.table)
+Ecmwf version 3 discipline 1 category 0 (resources/grib2/ecmwf/tables/3/4.2.1.0.table)
+Ecmwf version 2 discipline 1 category 0 (resources/grib2/ecmwf/tables/2/4.2.1.0.table)
+Ecmwf version 1 discipline 1 category 0 (resources/grib2/ecmwf/tables/1/4.2.1.0.table)
+Ecmwf version 0 discipline 1 category 0 (resources/grib2/ecmwf/tables/0/4.2.1.0.table)
+================================================================
+Product discipline 1 - Hydrological products, parameter category 1: hydrology probabilities
+Ecmwf version 21 discipline 1 category 1 (resources/grib2/ecmwf/tables/21/4.2.1.1.table)
+Ecmwf version 20 discipline 1 category 1 (resources/grib2/ecmwf/tables/20/4.2.1.1.table)
+Ecmwf version 19 discipline 1 category 1 (resources/grib2/ecmwf/tables/19/4.2.1.1.table)
+Ecmwf version 18 discipline 1 category 1 (resources/grib2/ecmwf/tables/18/4.2.1.1.table)
+Ecmwf version 17 discipline 1 category 1 (resources/grib2/ecmwf/tables/17/4.2.1.1.table)
+Ecmwf version 16 discipline 1 category 1 (resources/grib2/ecmwf/tables/16/4.2.1.1.table)
+Ecmwf version 15 discipline 1 category 1 (resources/grib2/ecmwf/tables/15/4.2.1.1.table)
+Ecmwf version 14 discipline 1 category 1 (resources/grib2/ecmwf/tables/14/4.2.1.1.table)
+Ecmwf version 13 discipline 1 category 1 (resources/grib2/ecmwf/tables/13/4.2.1.1.table)
+Ecmwf version 12 discipline 1 category 1 (resources/grib2/ecmwf/tables/12/4.2.1.1.table)
+Ecmwf version 11 discipline 1 category 1 (resources/grib2/ecmwf/tables/11/4.2.1.1.table)
+Ecmwf version 10 discipline 1 category 1 (resources/grib2/ecmwf/tables/10/4.2.1.1.table)
+Ecmwf version 9 discipline 1 category 1 (resources/grib2/ecmwf/tables/9/4.2.1.1.table)
+Ecmwf version 8 discipline 1 category 1 (resources/grib2/ecmwf/tables/8/4.2.1.1.table)
+Ecmwf version 7 discipline 1 category 1 (resources/grib2/ecmwf/tables/7/4.2.1.1.table)
+Ecmwf version 6 discipline 1 category 1 (resources/grib2/ecmwf/tables/6/4.2.1.1.table)
+Ecmwf version 5 discipline 1 category 1 (resources/grib2/ecmwf/tables/5/4.2.1.1.table)
+Ecmwf version 4 discipline 1 category 1 (resources/grib2/ecmwf/tables/4/4.2.1.1.table)
+Ecmwf version 3 discipline 1 category 1 (resources/grib2/ecmwf/tables/3/4.2.1.1.table)
+Ecmwf version 2 discipline 1 category 1 (resources/grib2/ecmwf/tables/2/4.2.1.1.table)
+Ecmwf version 1 discipline 1 category 1 (resources/grib2/ecmwf/tables/1/4.2.1.1.table)
+Ecmwf version 0 discipline 1 category 1 (resources/grib2/ecmwf/tables/0/4.2.1.1.table)
+================================================================
+Product discipline 1 - Hydrological products, parameter category 2: inland water and sediment properties
+Ecmwf version 21 discipline 1 category 2 (resources/grib2/ecmwf/tables/21/4.2.1.2.table)
+Ecmwf version 20 discipline 1 category 2 (resources/grib2/ecmwf/tables/20/4.2.1.2.table)
+Ecmwf version 19 discipline 1 category 2 (resources/grib2/ecmwf/tables/19/4.2.1.2.table)
+Ecmwf version 18 discipline 1 category 2 (resources/grib2/ecmwf/tables/18/4.2.1.2.table)
+Ecmwf version 17 discipline 1 category 2 (resources/grib2/ecmwf/tables/17/4.2.1.2.table)
+Ecmwf version 16 discipline 1 category 2 (resources/grib2/ecmwf/tables/16/4.2.1.2.table)
+Ecmwf version 15 discipline 1 category 2 (resources/grib2/ecmwf/tables/15/4.2.1.2.table)
+  Ecmwf version 15 (1-2) missing Grib2Parameter{discipline=1, category=2, number=13, name='Cross sectional area of flow in channel', unit='m2', abbrev='null', desc='Cross sectional area of flow in channel', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 1 category 2 (resources/grib2/ecmwf/tables/14/4.2.1.2.table)
+Ecmwf version 13 discipline 1 category 2 (resources/grib2/ecmwf/tables/13/4.2.1.2.table)
+Ecmwf version 12 discipline 1 category 2 (resources/grib2/ecmwf/tables/12/4.2.1.2.table)
+Ecmwf version 11 discipline 1 category 2 (resources/grib2/ecmwf/tables/11/4.2.1.2.table)
+Ecmwf version 10 discipline 1 category 2 (resources/grib2/ecmwf/tables/10/4.2.1.2.table)
+Ecmwf version 9 discipline 1 category 2 (resources/grib2/ecmwf/tables/9/4.2.1.2.table)
+Ecmwf version 8 discipline 1 category 2 (resources/grib2/ecmwf/tables/8/4.2.1.2.table)
+  p1=    1.2.11 Attenuation coefficient of water with respect to solar radiation
+  p2=    1.2.11 Attenuation coefficient of water with respect to solar attenuation coefficient of water with respect to solar radiation
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Missing version 7
+Missing version 6
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 0: waves
+Ecmwf version 21 discipline 10 category 0 (resources/grib2/ecmwf/tables/21/4.2.10.0.table)
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@29ba4338
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@57175e74
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@7bb58ca3
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@c540f5a
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@770c2e6b
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@1a052a00
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@4d826d77
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@61009542
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@77e9807f
+  Ecmwf version 21 (10-0) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@448ff1a8
+Ecmwf version 20 discipline 10 category 0 (resources/grib2/ecmwf/tables/20/4.2.10.0.table)
+Ecmwf version 19 discipline 10 category 0 (resources/grib2/ecmwf/tables/19/4.2.10.0.table)
+Ecmwf version 18 discipline 10 category 0 (resources/grib2/ecmwf/tables/18/4.2.10.0.table)
+Ecmwf version 17 discipline 10 category 0 (resources/grib2/ecmwf/tables/17/4.2.10.0.table)
+Ecmwf version 16 discipline 10 category 0 (resources/grib2/ecmwf/tables/16/4.2.10.0.table)
+Ecmwf version 15 discipline 10 category 0 (resources/grib2/ecmwf/tables/15/4.2.10.0.table)
+Ecmwf version 14 discipline 10 category 0 (resources/grib2/ecmwf/tables/14/4.2.10.0.table)
+Ecmwf version 13 discipline 10 category 0 (resources/grib2/ecmwf/tables/13/4.2.10.0.table)
+Ecmwf version 12 discipline 10 category 0 (resources/grib2/ecmwf/tables/12/4.2.10.0.table)
+Ecmwf version 11 discipline 10 category 0 (resources/grib2/ecmwf/tables/11/4.2.10.0.table)
+Ecmwf version 10 discipline 10 category 0 (resources/grib2/ecmwf/tables/10/4.2.10.0.table)
+Ecmwf version 9 discipline 10 category 0 (resources/grib2/ecmwf/tables/9/4.2.10.0.table)
+  p1=    10.0.4 Direction of wind waves
+  p2=    10.0.4 Direction of wind waves (degree true)
+  p1=    10.0.7 Direction of swell waves
+  p2=    10.0.7 Direction of swell waves (degree true)
+  p1=   10.0.10 Primary wave direction
+  p2=   10.0.10 Primary wave direction (degree true)
+  p1=   10.0.12 Secondary wave direction
+  p2=   10.0.12 Secondary wave direction (degree true)
+  p1=   10.0.14 Direction of combined wind waves and swell
+  p2=   10.0.14 Direction of combined wind waves and swell (degree true)
+  p1=   10.0.19 Normalized wave stress
+  p2=   10.0.19 Normalised wave stress
+  p1=   10.0.26 Inverse mean frequency of wind waves
+  p2=   10.0.26 Inverse mean frequency of the wind waves
+  p1=   10.0.27 Inverse mean frequency of total swell
+  p2=   10.0.27 Inverse mean frequency of the total swell
+  p1=   10.0.29 Mean zero-crossing period of wind waves
+  p2=   10.0.29 Mean zero-crossing period of the wind waves
+  p1=   10.0.30 Mean zero-crossing period of total swell
+  p2=   10.0.30 Mean zero-crossing period of the total swell
+  p1=   10.0.32 Directional width of wind waves
+  p2=   10.0.32 Directional width of the wind waves
+  p1=   10.0.33 Directional width of total swell
+  p2=   10.0.33 Directional width of the total swell
+  p1=   10.0.35 Peak period of wind waves
+  p2=   10.0.35 Peak period of the wind waves
+  p1=   10.0.36 Peak period of total swell
+  p2=   10.0.36 Peak period of the total swell
+ ***Conflicts=14 extra=0 udunits=0 missing=0
+Ecmwf version 8 discipline 10 category 0 (resources/grib2/ecmwf/tables/8/4.2.10.0.table)
+  Ecmwf version 9 (10-0) missing Grib2Parameter{discipline=10, category=0, number=46, name='2-dim spectral energy density', unit='m2.s', abbrev='null', desc='2-dim spectral energy density', fill='null', missing='NaN'}
+  Ecmwf version 9 (10-0) missing Grib2Parameter{discipline=10, category=0, number=47, name='Frequency spectral energy density', unit='m2.s', abbrev='null', desc='Frequency spectral energy density', fill='null', missing='NaN'}
+  Ecmwf version 9 (10-0) missing Grib2Parameter{discipline=10, category=0, number=48, name='Directional spectral energy density', unit='', abbrev='null', desc='Directional spectral energy density', fill='null', missing='NaN'}
+ ***Conflicts=0 extra=0 udunits=0 missing=3
+Ecmwf version 7 discipline 10 category 0 (resources/grib2/ecmwf/tables/7/4.2.10.0.table)
+  p1=    10.0.4 Direction of wind waves (degree true)
+  p2=    10.0.4 Direction of wind waves
+  incompatible for     10.0.4 deg (0.017453292519943295 rad) != Degree.true (org Degree.true)
+  p1=    10.0.7 Direction of swell waves (degree true)
+  p2=    10.0.7 Direction of swell waves
+  incompatible for     10.0.7 deg (0.017453292519943295 rad) != Degree.true (org Degree.true)
+  p1=   10.0.10 Primary wave direction (degree true)
+  p2=   10.0.10 Primary wave direction
+  incompatible for    10.0.10 deg (0.017453292519943295 rad) != Degree.true (org Degree.true)
+  p1=   10.0.12 Secondary wave direction (degree true)
+  p2=   10.0.12 Secondary wave direction
+  incompatible for    10.0.12 deg (0.017453292519943295 rad) != Degree.true (org Degree.true)
+  p1=   10.0.14 Direction of combined wind waves and swell (degree true)
+  p2=   10.0.14 Direction of combined wind waves and swell
+  incompatible for    10.0.14 deg (0.017453292519943295 rad) != Degree.true (org Degree.true)
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=16, name='Coefficient of drag with waves', unit='', abbrev='null', desc='Coefficient of drag with waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=17, name='Friction velocity', unit='m.s-1', abbrev='null', desc='Friction velocity', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=18, name='Wave stress', unit='N.m-2', abbrev='null', desc='Wave stress', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=19, name='Normalised wave stress', unit='', abbrev='null', desc='Normalised wave stress', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=20, name='Mean square slope of waves', unit='', abbrev='null', desc='Mean square slope of waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=21, name='u-component surface Stokes drift', unit='m.s-1', abbrev='null', desc='u-component surface Stokes drift', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=22, name='v-component surface Stokes drift', unit='m.s-1', abbrev='null', desc='v-component surface Stokes drift', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=23, name='Period of maximum individual wave height', unit='s', abbrev='null', desc='Period of maximum individual wave height', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=24, name='Maximum individual wave height', unit='m', abbrev='null', desc='Maximum individual wave height', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=25, name='Inverse mean wave frequency', unit='s', abbrev='null', desc='Inverse mean wave frequency', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=26, name='Inverse mean frequency of the wind waves', unit='s', abbrev='null', desc='Inverse mean frequency of the wind waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=27, name='Inverse mean frequency of the total swell', unit='s', abbrev='null', desc='Inverse mean frequency of the total swell', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=28, name='Mean zero-crossing wave period', unit='s', abbrev='null', desc='Mean zero-crossing wave period', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=29, name='Mean zero-crossing period of the wind waves', unit='s', abbrev='null', desc='Mean zero-crossing period of the wind waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=30, name='Mean zero-crossing period of the total swell', unit='s', abbrev='null', desc='Mean zero-crossing period of the total swell', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=31, name='Wave directional width', unit='', abbrev='null', desc='Wave directional width', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=32, name='Directional width of the wind waves', unit='', abbrev='null', desc='Directional width of the wind waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=33, name='Directional width of the total swell', unit='', abbrev='null', desc='Directional width of the total swell', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=34, name='Peak wave period', unit='s', abbrev='null', desc='Peak wave period', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=35, name='Peak period of the wind waves', unit='s', abbrev='null', desc='Peak period of the wind waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=36, name='Peak period of the total swell', unit='s', abbrev='null', desc='Peak period of the total swell', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=37, name='Altimeter wave height', unit='m', abbrev='null', desc='Altimeter wave height', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=38, name='Altimeter corrected wave height', unit='m', abbrev='null', desc='Altimeter corrected wave height', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=39, name='Altimeter range relative correction', unit='', abbrev='null', desc='Altimeter range relative correction', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=40, name='10 metre neutral wind speed over waves', unit='m.s-1', abbrev='null', desc='10 metre neutral wind speed over waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=41, name='10 metre wind direction over waves', unit='deg', abbrev='null', desc='10 metre wind direction over waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=42, name='Wave energy spectrum', unit='m2.s.rad-1', abbrev='null', desc='Wave energy spectrum', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=43, name='Kurtosis of the sea surface elevation due to waves', unit='', abbrev='null', desc='Kurtosis of the sea surface elevation due to waves', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=44, name='Benjamin-Feir index', unit='', abbrev='null', desc='Benjamin-Feir index', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=45, name='Spectral peakedness factor', unit='s-1', abbrev='null', desc='Spectral peakedness factor', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=46, name='2-dim spectral energy density', unit='m2.s', abbrev='null', desc='2-dim spectral energy density', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=47, name='Frequency spectral energy density', unit='m2.s', abbrev='null', desc='Frequency spectral energy density', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-0) missing Grib2Parameter{discipline=10, category=0, number=48, name='Directional spectral energy density', unit='', abbrev='null', desc='Directional spectral energy density', fill='null', missing='NaN'}
+ ***Conflicts=5 extra=33 udunits=5 missing=0
+Ecmwf version 6 discipline 10 category 0 (resources/grib2/ecmwf/tables/6/4.2.10.0.table)
+Ecmwf version 5 discipline 10 category 0 (resources/grib2/ecmwf/tables/5/4.2.10.0.table)
+  Ecmwf version 5 (10-0) missing Grib2Parameter{discipline=10, category=0, number=14, name='Direction of combined wind waves and swell', unit='Degree.true', abbrev='null', desc='Direction of combined wind waves and swell', fill='null', missing='NaN'}
+  Ecmwf version 5 (10-0) missing Grib2Parameter{discipline=10, category=0, number=15, name='Mean period of combined wind waves and swell', unit='s', abbrev='null', desc='Mean period of combined wind waves and swell', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 10 category 0 (resources/grib2/ecmwf/tables/4/4.2.10.0.table)
+Ecmwf version 3 discipline 10 category 0 (resources/grib2/ecmwf/tables/3/4.2.10.0.table)
+Ecmwf version 2 discipline 10 category 0 (resources/grib2/ecmwf/tables/2/4.2.10.0.table)
+Ecmwf version 1 discipline 10 category 0 (resources/grib2/ecmwf/tables/1/4.2.10.0.table)
+Ecmwf version 0 discipline 10 category 0 (resources/grib2/ecmwf/tables/0/4.2.10.0.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 1: currents
+Ecmwf version 21 discipline 10 category 1 (resources/grib2/ecmwf/tables/21/4.2.10.1.table)
+Ecmwf version 20 discipline 10 category 1 (resources/grib2/ecmwf/tables/20/4.2.10.1.table)
+Ecmwf version 19 discipline 10 category 1 (resources/grib2/ecmwf/tables/19/4.2.10.1.table)
+  Ecmwf version 19 (10-1) missing Grib2Parameter{discipline=10, category=1, number=4, name='Rip current occurrence probability', unit='%', abbrev='null', desc='Rip current occurrence probability', fill='null', missing='NaN'}
+Ecmwf version 18 discipline 10 category 1 (resources/grib2/ecmwf/tables/18/4.2.10.1.table)
+Ecmwf version 17 discipline 10 category 1 (resources/grib2/ecmwf/tables/17/4.2.10.1.table)
+Ecmwf version 16 discipline 10 category 1 (resources/grib2/ecmwf/tables/16/4.2.10.1.table)
+Ecmwf version 15 discipline 10 category 1 (resources/grib2/ecmwf/tables/15/4.2.10.1.table)
+Ecmwf version 14 discipline 10 category 1 (resources/grib2/ecmwf/tables/14/4.2.10.1.table)
+Ecmwf version 13 discipline 10 category 1 (resources/grib2/ecmwf/tables/13/4.2.10.1.table)
+Ecmwf version 12 discipline 10 category 1 (resources/grib2/ecmwf/tables/12/4.2.10.1.table)
+Ecmwf version 11 discipline 10 category 1 (resources/grib2/ecmwf/tables/11/4.2.10.1.table)
+Ecmwf version 10 discipline 10 category 1 (resources/grib2/ecmwf/tables/10/4.2.10.1.table)
+Ecmwf version 9 discipline 10 category 1 (resources/grib2/ecmwf/tables/9/4.2.10.1.table)
+  p1=    10.1.0 Current direction
+  p2=    10.1.0 Current direction (degree true)
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 8 discipline 10 category 1 (resources/grib2/ecmwf/tables/8/4.2.10.1.table)
+Ecmwf version 7 discipline 10 category 1 (resources/grib2/ecmwf/tables/7/4.2.10.1.table)
+  p1=    10.1.0 Current direction (degree true)
+  p2=    10.1.0 Current direction
+  incompatible for     10.1.0 deg (0.017453292519943295 rad) != Degree.true (org Degree.true)
+ ***Conflicts=1 extra=0 udunits=1 missing=0
+Ecmwf version 6 discipline 10 category 1 (resources/grib2/ecmwf/tables/6/4.2.10.1.table)
+Ecmwf version 5 discipline 10 category 1 (resources/grib2/ecmwf/tables/5/4.2.10.1.table)
+Ecmwf version 4 discipline 10 category 1 (resources/grib2/ecmwf/tables/4/4.2.10.1.table)
+Ecmwf version 3 discipline 10 category 1 (resources/grib2/ecmwf/tables/3/4.2.10.1.table)
+Ecmwf version 2 discipline 10 category 1 (resources/grib2/ecmwf/tables/2/4.2.10.1.table)
+Ecmwf version 1 discipline 10 category 1 (resources/grib2/ecmwf/tables/1/4.2.10.1.table)
+Ecmwf version 0 discipline 10 category 1 (resources/grib2/ecmwf/tables/0/4.2.10.1.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 191: miscellaneous
+Ecmwf version 21 discipline 10 category 191 (resources/grib2/ecmwf/tables/21/4.2.10.191.table)
+Ecmwf version 20 discipline 10 category 191 (resources/grib2/ecmwf/tables/20/4.2.10.191.table)
+Ecmwf version 19 discipline 10 category 191 (resources/grib2/ecmwf/tables/19/4.2.10.191.table)
+Ecmwf version 18 discipline 10 category 191 (resources/grib2/ecmwf/tables/18/4.2.10.191.table)
+Ecmwf version 17 discipline 10 category 191 (resources/grib2/ecmwf/tables/17/4.2.10.191.table)
+Ecmwf version 16 discipline 10 category 191 (resources/grib2/ecmwf/tables/16/4.2.10.191.table)
+Ecmwf version 15 discipline 10 category 191 (resources/grib2/ecmwf/tables/15/4.2.10.191.table)
+Ecmwf version 14 discipline 10 category 191 (resources/grib2/ecmwf/tables/14/4.2.10.191.table)
+Ecmwf version 13 discipline 10 category 191 (resources/grib2/ecmwf/tables/13/4.2.10.191.table)
+Ecmwf version 12 discipline 10 category 191 (resources/grib2/ecmwf/tables/12/4.2.10.191.table)
+  Ecmwf version 12 (10-191) missing Grib2Parameter{discipline=10, category=191, number=2, name='Reserved', unit='', abbrev='null', desc='Reserved', fill='null', missing='NaN'}
+  Ecmwf version 12 (10-191) missing Grib2Parameter{discipline=10, category=191, number=3, name='Days since last observation', unit='d', abbrev='null', desc='Days since last observation', fill='null', missing='NaN'}
+Ecmwf version 11 discipline 10 category 191 (resources/grib2/ecmwf/tables/11/4.2.10.191.table)
+Ecmwf version 10 discipline 10 category 191 (resources/grib2/ecmwf/tables/10/4.2.10.191.table)
+Ecmwf version 9 discipline 10 category 191 (resources/grib2/ecmwf/tables/9/4.2.10.191.table)
+Ecmwf version 8 discipline 10 category 191 (resources/grib2/ecmwf/tables/8/4.2.10.191.table)
+Ecmwf version 7 discipline 10 category 191 (resources/grib2/ecmwf/tables/7/4.2.10.191.table)
+Ecmwf version 6 discipline 10 category 191 (resources/grib2/ecmwf/tables/6/4.2.10.191.table)
+Ecmwf version 5 discipline 10 category 191 (resources/grib2/ecmwf/tables/5/4.2.10.191.table)
+  Ecmwf version 5 (10-191) missing Grib2Parameter{discipline=10, category=191, number=0, name='Seconds prior to initial reference time (defined in Section 1)', unit='s', abbrev='null', desc='Seconds prior to initial reference time (defined in Section 1)', fill='null', missing='NaN'}
+  Ecmwf version 5 (10-191) missing Grib2Parameter{discipline=10, category=191, number=1, name='Meridional overturning stream function', unit='m3.s-1', abbrev='null', desc='Meridional overturning stream function', fill='null', missing='NaN'}
+  Ecmwf version 5 (10-191) missing Grib2Parameter{discipline=10, category=191, number=255, name='Missing', unit='', abbrev='null', desc='Missing', fill='null', missing='NaN'}
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 2: ice
+Ecmwf version 21 discipline 10 category 2 (resources/grib2/ecmwf/tables/21/4.2.10.2.table)
+Ecmwf version 20 discipline 10 category 2 (resources/grib2/ecmwf/tables/20/4.2.10.2.table)
+Ecmwf version 19 discipline 10 category 2 (resources/grib2/ecmwf/tables/19/4.2.10.2.table)
+Ecmwf version 18 discipline 10 category 2 (resources/grib2/ecmwf/tables/18/4.2.10.2.table)
+Ecmwf version 17 discipline 10 category 2 (resources/grib2/ecmwf/tables/17/4.2.10.2.table)
+Ecmwf version 16 discipline 10 category 2 (resources/grib2/ecmwf/tables/16/4.2.10.2.table)
+Ecmwf version 15 discipline 10 category 2 (resources/grib2/ecmwf/tables/15/4.2.10.2.table)
+Ecmwf version 14 discipline 10 category 2 (resources/grib2/ecmwf/tables/14/4.2.10.2.table)
+Ecmwf version 13 discipline 10 category 2 (resources/grib2/ecmwf/tables/13/4.2.10.2.table)
+  p1=    10.2.9 Module of ice internal pressure
+  p2=    10.2.9 Ice internal pressure
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 12 discipline 10 category 2 (resources/grib2/ecmwf/tables/12/4.2.10.2.table)
+  Ecmwf version 12 (10-2) missing Grib2Parameter{discipline=10, category=2, number=10, name='Zonal vector component of vertically integrated ice internal pressure', unit='Pa.m', abbrev='null', desc='Zonal vector component of vertically integrated ice internal pressure', fill='null', missing='NaN'}
+  Ecmwf version 12 (10-2) missing Grib2Parameter{discipline=10, category=2, number=11, name='Meridional vector component of vertically integrated ice internal pressure', unit='Pa.m', abbrev='null', desc='Meridional vector component of vertically integrated ice internal pressure', fill='null', missing='NaN'}
+  Ecmwf version 12 (10-2) missing Grib2Parameter{discipline=10, category=2, number=12, name='Compressive ice strength', unit='N/m', abbrev='null', desc='Compressive ice strength', fill='null', missing='NaN'}
+Ecmwf version 11 discipline 10 category 2 (resources/grib2/ecmwf/tables/11/4.2.10.2.table)
+Ecmwf version 10 discipline 10 category 2 (resources/grib2/ecmwf/tables/10/4.2.10.2.table)
+Ecmwf version 9 discipline 10 category 2 (resources/grib2/ecmwf/tables/9/4.2.10.2.table)
+  p1=    10.2.2 Direction of ice drift
+  p2=    10.2.2 Direction of ice drift (degree true)
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 8 discipline 10 category 2 (resources/grib2/ecmwf/tables/8/4.2.10.2.table)
+Ecmwf version 7 discipline 10 category 2 (resources/grib2/ecmwf/tables/7/4.2.10.2.table)
+  p1=    10.2.2 Direction of ice drift (degree true)
+  p2=    10.2.2 Direction of ice drift
+  incompatible for     10.2.2 deg (0.017453292519943295 rad) != Degree.true (org Degree.true)
+ ***Conflicts=1 extra=0 udunits=1 missing=0
+Ecmwf version 6 discipline 10 category 2 (resources/grib2/ecmwf/tables/6/4.2.10.2.table)
+  Ecmwf version 6 (10-2) missing Grib2Parameter{discipline=10, category=2, number=9, name='Ice internal pressure', unit='Pa.m', abbrev='null', desc='Ice internal pressure', fill='null', missing='NaN'}
+Ecmwf version 5 discipline 10 category 2 (resources/grib2/ecmwf/tables/5/4.2.10.2.table)
+Ecmwf version 4 discipline 10 category 2 (resources/grib2/ecmwf/tables/4/4.2.10.2.table)
+  Ecmwf version 4 (10-2) missing Grib2Parameter{discipline=10, category=2, number=8, name='Ice temperature', unit='K', abbrev='null', desc='Ice temperature', fill='null', missing='NaN'}
+Ecmwf version 3 discipline 10 category 2 (resources/grib2/ecmwf/tables/3/4.2.10.2.table)
+Ecmwf version 2 discipline 10 category 2 (resources/grib2/ecmwf/tables/2/4.2.10.2.table)
+Ecmwf version 1 discipline 10 category 2 (resources/grib2/ecmwf/tables/1/4.2.10.2.table)
+Ecmwf version 0 discipline 10 category 2 (resources/grib2/ecmwf/tables/0/4.2.10.2.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 3: surface properties
+Ecmwf version 21 discipline 10 category 3 (resources/grib2/ecmwf/tables/21/4.2.10.3.table)
+Ecmwf version 20 discipline 10 category 3 (resources/grib2/ecmwf/tables/20/4.2.10.3.table)
+Ecmwf version 19 discipline 10 category 3 (resources/grib2/ecmwf/tables/19/4.2.10.3.table)
+Ecmwf version 18 discipline 10 category 3 (resources/grib2/ecmwf/tables/18/4.2.10.3.table)
+Ecmwf version 17 discipline 10 category 3 (resources/grib2/ecmwf/tables/17/4.2.10.3.table)
+  Ecmwf version 17 (10-3) missing Grib2Parameter{discipline=10, category=3, number=2, name='Heat exchange coefficient', unit='', abbrev='null', desc='Heat exchange coefficient', fill='null', missing='NaN'}
+Ecmwf version 16 discipline 10 category 3 (resources/grib2/ecmwf/tables/16/4.2.10.3.table)
+Ecmwf version 15 discipline 10 category 3 (resources/grib2/ecmwf/tables/15/4.2.10.3.table)
+Ecmwf version 14 discipline 10 category 3 (resources/grib2/ecmwf/tables/14/4.2.10.3.table)
+Ecmwf version 13 discipline 10 category 3 (resources/grib2/ecmwf/tables/13/4.2.10.3.table)
+Ecmwf version 12 discipline 10 category 3 (resources/grib2/ecmwf/tables/12/4.2.10.3.table)
+Ecmwf version 11 discipline 10 category 3 (resources/grib2/ecmwf/tables/11/4.2.10.3.table)
+Ecmwf version 10 discipline 10 category 3 (resources/grib2/ecmwf/tables/10/4.2.10.3.table)
+Ecmwf version 9 discipline 10 category 3 (resources/grib2/ecmwf/tables/9/4.2.10.3.table)
+Ecmwf version 8 discipline 10 category 3 (resources/grib2/ecmwf/tables/8/4.2.10.3.table)
+Ecmwf version 7 discipline 10 category 3 (resources/grib2/ecmwf/tables/7/4.2.10.3.table)
+Ecmwf version 6 discipline 10 category 3 (resources/grib2/ecmwf/tables/6/4.2.10.3.table)
+Ecmwf version 5 discipline 10 category 3 (resources/grib2/ecmwf/tables/5/4.2.10.3.table)
+Ecmwf version 4 discipline 10 category 3 (resources/grib2/ecmwf/tables/4/4.2.10.3.table)
+Ecmwf version 3 discipline 10 category 3 (resources/grib2/ecmwf/tables/3/4.2.10.3.table)
+Ecmwf version 2 discipline 10 category 3 (resources/grib2/ecmwf/tables/2/4.2.10.3.table)
+Ecmwf version 1 discipline 10 category 3 (resources/grib2/ecmwf/tables/1/4.2.10.3.table)
+Ecmwf version 0 discipline 10 category 3 (resources/grib2/ecmwf/tables/0/4.2.10.3.table)
+================================================================
+Product discipline 10 - Oceanographic products, parameter category 4: subsurface properties
+Ecmwf version 21 discipline 10 category 4 (resources/grib2/ecmwf/tables/21/4.2.10.4.table)
+Ecmwf version 20 discipline 10 category 4 (resources/grib2/ecmwf/tables/20/4.2.10.4.table)
+Ecmwf version 19 discipline 10 category 4 (resources/grib2/ecmwf/tables/19/4.2.10.4.table)
+Ecmwf version 18 discipline 10 category 4 (resources/grib2/ecmwf/tables/18/4.2.10.4.table)
+Ecmwf version 17 discipline 10 category 4 (resources/grib2/ecmwf/tables/17/4.2.10.4.table)
+Ecmwf version 16 discipline 10 category 4 (resources/grib2/ecmwf/tables/16/4.2.10.4.table)
+Ecmwf version 15 discipline 10 category 4 (resources/grib2/ecmwf/tables/15/4.2.10.4.table)
+Ecmwf version 14 discipline 10 category 4 (resources/grib2/ecmwf/tables/14/4.2.10.4.table)
+Ecmwf version 13 discipline 10 category 4 (resources/grib2/ecmwf/tables/13/4.2.10.4.table)
+Ecmwf version 12 discipline 10 category 4 (resources/grib2/ecmwf/tables/12/4.2.10.4.table)
+Ecmwf version 11 discipline 10 category 4 (resources/grib2/ecmwf/tables/11/4.2.10.4.table)
+Ecmwf version 10 discipline 10 category 4 (resources/grib2/ecmwf/tables/10/4.2.10.4.table)
+Ecmwf version 9 discipline 10 category 4 (resources/grib2/ecmwf/tables/9/4.2.10.4.table)
+Ecmwf version 8 discipline 10 category 4 (resources/grib2/ecmwf/tables/8/4.2.10.4.table)
+Ecmwf version 7 discipline 10 category 4 (resources/grib2/ecmwf/tables/7/4.2.10.4.table)
+  Ecmwf version 7 (10-4) missing Grib2Parameter{discipline=10, category=4, number=7, name='Bathymetry', unit='m', abbrev='null', desc='Bathymetry', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-4) missing Grib2Parameter{discipline=10, category=4, number=11, name='Shape factor with respect to salinity profile', unit='', abbrev='null', desc='Shape factor with respect to salinity profile', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-4) missing Grib2Parameter{discipline=10, category=4, number=12, name='Shape factor with respect to temperature profile in thermocline', unit='', abbrev='null', desc='Shape factor with respect to temperature profile in thermocline', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-4) missing Grib2Parameter{discipline=10, category=4, number=13, name='Attenuation coefficient of water with respect to solar radiation', unit='m-1', abbrev='null', desc='Attenuation coefficient of water with respect to solar radiation', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-4) missing Grib2Parameter{discipline=10, category=4, number=14, name='Water depth', unit='m', abbrev='null', desc='Water depth', fill='null', missing='NaN'}
+  Ecmwf version 7 (10-4) missing Grib2Parameter{discipline=10, category=4, number=15, name='Water temperature', unit='K', abbrev='null', desc='Water temperature', fill='null', missing='NaN'}
+Ecmwf version 6 discipline 10 category 4 (resources/grib2/ecmwf/tables/6/4.2.10.4.table)
+  Ecmwf version 6 (10-4) missing Grib2Parameter{discipline=10, category=4, number=4, name='Ocean vertical heat diffusivity', unit='m2.s-1', abbrev='null', desc='Ocean vertical heat diffusivity', fill='null', missing='NaN'}
+  Ecmwf version 6 (10-4) missing Grib2Parameter{discipline=10, category=4, number=5, name='Ocean vertical salt diffusivity', unit='m2.s-1', abbrev='null', desc='Ocean vertical salt diffusivity', fill='null', missing='NaN'}
+  Ecmwf version 6 (10-4) missing Grib2Parameter{discipline=10, category=4, number=6, name='Ocean vertical momentum diffusivity', unit='m2.s-1', abbrev='null', desc='Ocean vertical momentum diffusivity', fill='null', missing='NaN'}
+Ecmwf version 5 discipline 10 category 4 (resources/grib2/ecmwf/tables/5/4.2.10.4.table)
+Ecmwf version 4 discipline 10 category 4 (resources/grib2/ecmwf/tables/4/4.2.10.4.table)
+Ecmwf version 3 discipline 10 category 4 (resources/grib2/ecmwf/tables/3/4.2.10.4.table)
+Ecmwf version 2 discipline 10 category 4 (resources/grib2/ecmwf/tables/2/4.2.10.4.table)
+Ecmwf version 1 discipline 10 category 4 (resources/grib2/ecmwf/tables/1/4.2.10.4.table)
+Ecmwf version 0 discipline 10 category 4 (resources/grib2/ecmwf/tables/0/4.2.10.4.table)
+================================================================
+Product discipline 2 - Land surface products, parameter category 0: vegetation/biomass
+Ecmwf version 21 discipline 2 category 0 (resources/grib2/ecmwf/tables/21/4.2.2.0.table)
+Ecmwf version 20 discipline 2 category 0 (resources/grib2/ecmwf/tables/20/4.2.2.0.table)
+Ecmwf version 19 discipline 2 category 0 (resources/grib2/ecmwf/tables/19/4.2.2.0.table)
+Ecmwf version 18 discipline 2 category 0 (resources/grib2/ecmwf/tables/18/4.2.2.0.table)
+Ecmwf version 17 discipline 2 category 0 (resources/grib2/ecmwf/tables/17/4.2.2.0.table)
+Ecmwf version 16 discipline 2 category 0 (resources/grib2/ecmwf/tables/16/4.2.2.0.table)
+Ecmwf version 15 discipline 2 category 0 (resources/grib2/ecmwf/tables/15/4.2.2.0.table)
+Ecmwf version 14 discipline 2 category 0 (resources/grib2/ecmwf/tables/14/4.2.2.0.table)
+  Ecmwf version 14 (2-0) missing Grib2Parameter{discipline=2, category=0, number=38, name='Soil volumetric ice content (water equivalent)', unit='m3.m-3', abbrev='null', desc='Soil volumetric ice content (water equivalent)', fill='null', missing='NaN'}
+Ecmwf version 13 discipline 2 category 0 (resources/grib2/ecmwf/tables/13/4.2.2.0.table)
+  Ecmwf version 13 (2-0) missing Grib2Parameter{discipline=2, category=0, number=35, name='Tile class', unit='Code table 4.243', abbrev='null', desc='Tile class', fill='null', missing='NaN'}
+  Ecmwf version 13 (2-0) missing Grib2Parameter{discipline=2, category=0, number=36, name='Tile fraction', unit='', abbrev='null', desc='Tile fraction', fill='null', missing='NaN'}
+  Ecmwf version 13 (2-0) missing Grib2Parameter{discipline=2, category=0, number=37, name='Tile percentage', unit='%', abbrev='null', desc='Tile percentage', fill='null', missing='NaN'}
+Ecmwf version 12 discipline 2 category 0 (resources/grib2/ecmwf/tables/12/4.2.2.0.table)
+  Ecmwf version 12 (2-0) missing Grib2Parameter{discipline=2, category=0, number=33, name='Water runoff and drainage', unit='kg.m-2', abbrev='null', desc='Water runoff and drainage', fill='null', missing='NaN'}
+  Ecmwf version 12 (2-0) missing Grib2Parameter{discipline=2, category=0, number=34, name='Surface water runoff', unit='kg.m-2', abbrev='null', desc='Surface water runoff', fill='null', missing='NaN'}
+Ecmwf version 11 discipline 2 category 0 (resources/grib2/ecmwf/tables/11/4.2.2.0.table)
+Ecmwf version 10 discipline 2 category 0 (resources/grib2/ecmwf/tables/10/4.2.2.0.table)
+Ecmwf version 9 discipline 2 category 0 (resources/grib2/ecmwf/tables/9/4.2.2.0.table)
+Ecmwf version 8 discipline 2 category 0 (resources/grib2/ecmwf/tables/8/4.2.2.0.table)
+  p1=    2.0.29 Evergreen forest cover
+  p2=    2.0.29 Evergreen forest
+  p1=    2.0.30 Deciduous forest cover
+  p2=    2.0.30 Deciduous forest
+ ***Conflicts=2 extra=0 udunits=0 missing=0
+Ecmwf version 7 discipline 2 category 0 (resources/grib2/ecmwf/tables/7/4.2.2.0.table)
+  p1=     2.0.0 Land cover (0 = sea, 1 = land)
+  p2=     2.0.0 Land cover (1=land, 0=sea)
+  incompatible for      2.0.6 kg-2.s-1 (kg-2.s-1) != kg.-2.s-1 (org kg.-2.s-1)
+  p1=     2.0.8 Land use (
+  p2=     2.0.8 Land use (code table
+  unitless for      2.0.8 Code table 4.212) != 4.212)
+  p1=    2.0.28 Leaf area index
+  p2=    2.0.28 Leaf area index - validation
+  p1=    2.0.29 Evergreen forest
+  p2=    2.0.29 Evergreen forest - validation
+  p1=    2.0.30 Deciduous forest
+  p2=    2.0.30 Deciduous forest - validation
+  p1=    2.0.31 Normalized differential vegetation index (NDVI)
+  p2=    2.0.31 Normalized differential vegetation index (NDVI) - validation
+  p1=    2.0.32 Root depth of vegetation
+  p2=    2.0.32 Root depth of vegetation - validation
+ ***Conflicts=7 extra=0 udunits=2 missing=0
+Ecmwf version 6 discipline 2 category 0 (resources/grib2/ecmwf/tables/6/4.2.2.0.table)
+  p1=    2.0.19 Temperature parameter in canopy
+  p2=    2.0.19 Temperature parameter in canopy conductance
+  p1=    2.0.20 Humidity parameter in canopy conductance
+  p2=    2.0.20 Soil moisture parameter in canopy conductance
+  p1=    2.0.21 Soil moisture parameter in canopy conductance
+  p2=    2.0.21 Humidity parameter in canopy conductance
+ ***Conflicts=3 extra=0 udunits=0 missing=0
+Ecmwf version 5 discipline 2 category 0 (resources/grib2/ecmwf/tables/5/4.2.2.0.table)
+  Ecmwf version 5 (2-0) missing Grib2Parameter{discipline=2, category=0, number=28, name='Leaf area index - validation', unit='', abbrev='null', desc='Leaf area index - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (2-0) missing Grib2Parameter{discipline=2, category=0, number=29, name='Evergreen forest - validation', unit='', abbrev='null', desc='Evergreen forest - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (2-0) missing Grib2Parameter{discipline=2, category=0, number=30, name='Deciduous forest - validation', unit='', abbrev='null', desc='Deciduous forest - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (2-0) missing Grib2Parameter{discipline=2, category=0, number=31, name='Normalized differential vegetation index (NDVI) - validation', unit='', abbrev='null', desc='Normalized differential vegetation index (NDVI) - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (2-0) missing Grib2Parameter{discipline=2, category=0, number=32, name='Root depth of vegetation - validation', unit='M', abbrev='null', desc='Root depth of vegetation - validation', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 2 category 0 (resources/grib2/ecmwf/tables/4/4.2.2.0.table)
+  p1=     2.0.0 Land cover (1=land, 0=sea)
+  p2=     2.0.0 Land cover (0 = sea, 1 = land)
+  p1=     2.0.8 Land use (code table
+  p2=     2.0.8 Land use
+  unitless for      2.0.8 4.212) != Code table 4.212
+  Ecmwf version 4 (2-0) missing Grib2Parameter{discipline=2, category=0, number=23, name='Column-integrated soil water', unit='kg.m-2', abbrev='null', desc='Column-integrated soil water', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-0) missing Grib2Parameter{discipline=2, category=0, number=24, name='Heat flux', unit='W.m-2', abbrev='null', desc='Heat flux', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-0) missing Grib2Parameter{discipline=2, category=0, number=25, name='Volumetric soil moisture', unit='m3.m-3', abbrev='null', desc='Volumetric soil moisture', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-0) missing Grib2Parameter{discipline=2, category=0, number=27, name='Volumetric wilting point', unit='m3.m-3', abbrev='null', desc='Volumetric wilting point', fill='null', missing='NaN'}
+ ***Conflicts=2 extra=4 udunits=1 missing=0
+Ecmwf version 3 discipline 2 category 0 (resources/grib2/ecmwf/tables/3/4.2.2.0.table)
+  p1=     2.0.0 Land cover (0 = sea, 1 = land)
+  p2=     2.0.0 Land cover (0=land, 1=sea)
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 2 discipline 2 category 0 (resources/grib2/ecmwf/tables/2/4.2.2.0.table)
+Ecmwf version 1 discipline 2 category 0 (resources/grib2/ecmwf/tables/1/4.2.2.0.table)
+Ecmwf version 0 discipline 2 category 0 (resources/grib2/ecmwf/tables/0/4.2.2.0.table)
+================================================================
+Product discipline 2 - Land surface products, parameter category 3: soil products
+Ecmwf version 21 discipline 2 category 3 (resources/grib2/ecmwf/tables/21/4.2.2.3.table)
+Ecmwf version 20 discipline 2 category 3 (resources/grib2/ecmwf/tables/20/4.2.2.3.table)
+Ecmwf version 19 discipline 2 category 3 (resources/grib2/ecmwf/tables/19/4.2.2.3.table)
+Ecmwf version 18 discipline 2 category 3 (resources/grib2/ecmwf/tables/18/4.2.2.3.table)
+Ecmwf version 17 discipline 2 category 3 (resources/grib2/ecmwf/tables/17/4.2.2.3.table)
+Ecmwf version 16 discipline 2 category 3 (resources/grib2/ecmwf/tables/16/4.2.2.3.table)
+  Ecmwf version 16 (2-3) missing Grib2Parameter{discipline=2, category=3, number=26, name='Soil heat flux', unit='W.m-2', abbrev='null', desc='Soil heat flux', fill='null', missing='NaN'}
+  Ecmwf version 16 (2-3) missing Grib2Parameter{discipline=2, category=3, number=27, name='Soil depth', unit='m', abbrev='null', desc='Soil depth', fill='null', missing='NaN'}
+Ecmwf version 15 discipline 2 category 3 (resources/grib2/ecmwf/tables/15/4.2.2.3.table)
+  Ecmwf version 15 (2-3) missing Grib2Parameter{discipline=2, category=3, number=24, name='Frost index', unit='K.day-1', abbrev='null', desc='Frost index', fill='null', missing='NaN'}
+  Ecmwf version 15 (2-3) missing Grib2Parameter{discipline=2, category=3, number=25, name='Snow depth at elevation bands', unit='kg.m-2', abbrev='null', desc='Snow depth at elevation bands', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 2 category 3 (resources/grib2/ecmwf/tables/14/4.2.2.3.table)
+  Ecmwf version 14 (2-3) missing Grib2Parameter{discipline=2, category=3, number=23, name='Liquid water in snow pack', unit='kg.m-2', abbrev='null', desc='Liquid water in snow pack', fill='null', missing='NaN'}
+Ecmwf version 13 discipline 2 category 3 (resources/grib2/ecmwf/tables/13/4.2.2.3.table)
+Ecmwf version 12 discipline 2 category 3 (resources/grib2/ecmwf/tables/12/4.2.2.3.table)
+Ecmwf version 11 discipline 2 category 3 (resources/grib2/ecmwf/tables/11/4.2.2.3.table)
+Ecmwf version 10 discipline 2 category 3 (resources/grib2/ecmwf/tables/10/4.2.2.3.table)
+Ecmwf version 9 discipline 2 category 3 (resources/grib2/ecmwf/tables/9/4.2.2.3.table)
+Ecmwf version 8 discipline 2 category 3 (resources/grib2/ecmwf/tables/8/4.2.2.3.table)
+Ecmwf version 7 discipline 2 category 3 (resources/grib2/ecmwf/tables/7/4.2.2.3.table)
+  p1=     2.3.0 Soil type (
+  p2=     2.3.0 Soil type (code table
+  unitless for      2.3.0 Code table 4.213) != 4.213)
+  p1=    2.3.18 Soil Temperature
+  p2=    2.3.18 Soil Temperature - validation
+  p1=    2.3.19 Soil moisture
+  p2=    2.3.19 Soil moisture - validation
+  p1=    2.3.20 Column-integrated soil moisture
+  p2=    2.3.20 Column-integrated soil moisture - validation
+  p1=    2.3.21 Soil ice
+  p2=    2.3.21 Soil ice - validation
+  p1=    2.3.22 Column-integrated soil ice
+  p2=    2.3.22 Column-integrated soil ice - validation
+ ***Conflicts=6 extra=0 udunits=1 missing=0
+Ecmwf version 6 discipline 2 category 3 (resources/grib2/ecmwf/tables/6/4.2.2.3.table)
+Ecmwf version 5 discipline 2 category 3 (resources/grib2/ecmwf/tables/5/4.2.2.3.table)
+  Ecmwf version 5 (2-3) missing Grib2Parameter{discipline=2, category=3, number=18, name='Soil Temperature - validation', unit='K', abbrev='null', desc='Soil Temperature - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (2-3) missing Grib2Parameter{discipline=2, category=3, number=19, name='Soil moisture - validation', unit='kg.m-3', abbrev='null', desc='Soil moisture - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (2-3) missing Grib2Parameter{discipline=2, category=3, number=20, name='Column-integrated soil moisture - validation', unit='kg.m-2', abbrev='null', desc='Column-integrated soil moisture - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (2-3) missing Grib2Parameter{discipline=2, category=3, number=21, name='Soil ice - validation', unit='kg.m-3', abbrev='null', desc='Soil ice - validation', fill='null', missing='NaN'}
+  Ecmwf version 5 (2-3) missing Grib2Parameter{discipline=2, category=3, number=22, name='Column-integrated soil ice - validation', unit='kg.m-2', abbrev='null', desc='Column-integrated soil ice - validation', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 2 category 3 (resources/grib2/ecmwf/tables/4/4.2.2.3.table)
+  p1=     2.3.0 Soil type (code table
+  p2=     2.3.0 Soil type
+  unitless for      2.3.0 4.213) != Code table 4.213
+  Ecmwf version 4 (2-3) missing Grib2Parameter{discipline=2, category=3, number=10, name='Liquid volumetric soil moisture (non-frozen)', unit='m3.m-3', abbrev='null', desc='Liquid volumetric soil moisture (non-frozen)', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-3) missing Grib2Parameter{discipline=2, category=3, number=11, name='Volumetric transpiration stress-onset (soil moisture)', unit='m3.m-3', abbrev='null', desc='Volumetric transpiration stress-onset (soil moisture)', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-3) missing Grib2Parameter{discipline=2, category=3, number=13, name='Volumetric direct evaporation cease (soil moisture)', unit='m3.m-3', abbrev='null', desc='Volumetric direct evaporation cease (soil moisture)', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-3) missing Grib2Parameter{discipline=2, category=3, number=14, name='Direct evaporation cease (soil moisture)', unit='kg.m-3', abbrev='null', desc='Direct evaporation cease (soil moisture)', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-3) missing Grib2Parameter{discipline=2, category=3, number=15, name='Soil porosity', unit='m3.m-3', abbrev='null', desc='Soil porosity', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-3) missing Grib2Parameter{discipline=2, category=3, number=16, name='Volumetric saturation of soil moisture', unit='m3.m-3', abbrev='null', desc='Volumetric saturation of soil moisture', fill='null', missing='NaN'}
+  Ecmwf version 4 (2-3) missing Grib2Parameter{discipline=2, category=3, number=17, name='Saturation of soil moisture', unit='kg.m-3', abbrev='null', desc='Saturation of soil moisture', fill='null', missing='NaN'}
+ ***Conflicts=1 extra=7 udunits=1 missing=0
+Ecmwf version 3 discipline 2 category 3 (resources/grib2/ecmwf/tables/3/4.2.2.3.table)
+Ecmwf version 2 discipline 2 category 3 (resources/grib2/ecmwf/tables/2/4.2.2.3.table)
+Ecmwf version 1 discipline 2 category 3 (resources/grib2/ecmwf/tables/1/4.2.2.3.table)
+Ecmwf version 0 discipline 2 category 3 (resources/grib2/ecmwf/tables/0/4.2.2.3.table)
+================================================================
+Product discipline 2 - Land surface products, parameter category 4: fire weather products
+Ecmwf version 21 discipline 2 category 4 (resources/grib2/ecmwf/tables/21/4.2.2.4.table)
+Ecmwf version 20 discipline 2 category 4 (resources/grib2/ecmwf/tables/20/4.2.2.4.table)
+Ecmwf version 19 discipline 2 category 4 (resources/grib2/ecmwf/tables/19/4.2.2.4.table)
+Ecmwf version 18 discipline 2 category 4 (resources/grib2/ecmwf/tables/18/4.2.2.4.table)
+Ecmwf version 17 discipline 2 category 4 (resources/grib2/ecmwf/tables/17/4.2.2.4.table)
+Ecmwf version 16 discipline 2 category 4 (resources/grib2/ecmwf/tables/16/4.2.2.4.table)
+  p1=     2.4.5 Forest Fire Weather Index (Canadian Forest Service)
+  p2=     2.4.5 Fire weather index (Canadian forest service)
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 15 discipline 2 category 4 (resources/grib2/ecmwf/tables/15/4.2.2.4.table)
+  Ecmwf version 15 (2-4) missing Grib2Parameter{discipline=2, category=4, number=5, name='Fire weather index (Canadian forest service)', unit='', abbrev='null', desc='Fire weather index (Canadian forest service)', fill='null', missing='NaN'}
+  Ecmwf version 15 (2-4) missing Grib2Parameter{discipline=2, category=4, number=6, name='Fine fuel moisture code (Canadian forest service)', unit='', abbrev='null', desc='Fine fuel moisture code (Canadian forest service)', fill='null', missing='NaN'}
+  Ecmwf version 15 (2-4) missing Grib2Parameter{discipline=2, category=4, number=7, name='Duff moisture code (Canadian forest service)', unit='', abbrev='null', desc='Duff moisture code (Canadian forest service)', fill='null', missing='NaN'}
+  Ecmwf version 15 (2-4) missing Grib2Parameter{discipline=2, category=4, number=8, name='Drought code (Canadian forest service)', unit='', abbrev='null', desc='Drought code (Canadian forest service)', fill='null', missing='NaN'}
+  Ecmwf version 15 (2-4) missing Grib2Parameter{discipline=2, category=4, number=9, name='Initial fire spread index (Canadian forest service)', unit='', abbrev='null', desc='Initial fire spread index (Canadian forest service)', fill='null', missing='NaN'}
+  Ecmwf version 15 (2-4) missing Grib2Parameter{discipline=2, category=4, number=10, name='Fire build up index (Canadian forest service)', unit='', abbrev='null', desc='Fire build up index (Canadian forest service)', fill='null', missing='NaN'}
+  Ecmwf version 15 (2-4) missing Grib2Parameter{discipline=2, category=4, number=11, name='Fire daily severity rating (Canadian forest service)', unit='', abbrev='null', desc='Fire daily severity rating (Canadian forest service)', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 2 category 4 (resources/grib2/ecmwf/tables/14/4.2.2.4.table)
+Ecmwf version 13 discipline 2 category 4 (resources/grib2/ecmwf/tables/13/4.2.2.4.table)
+Ecmwf version 12 discipline 2 category 4 (resources/grib2/ecmwf/tables/12/4.2.2.4.table)
+  Ecmwf version 12 (2-4) missing Grib2Parameter{discipline=2, category=4, number=4, name='Fosberg index', unit='', abbrev='null', desc='Fosberg index', fill='null', missing='NaN'}
+Ecmwf version 11 discipline 2 category 4 (resources/grib2/ecmwf/tables/11/4.2.2.4.table)
+Ecmwf version 10 discipline 2 category 4 (resources/grib2/ecmwf/tables/10/4.2.2.4.table)
+Ecmwf version 9 discipline 2 category 4 (resources/grib2/ecmwf/tables/9/4.2.2.4.table)
+  Ecmwf version 9 (2-4) missing Grib2Parameter{discipline=2, category=4, number=255, name='Missing', unit='', abbrev='null', desc='Missing', fill='null', missing='NaN'}
+Ecmwf version 8 discipline 2 category 4 (resources/grib2/ecmwf/tables/8/4.2.2.4.table)
+  Ecmwf version 8 (2-4) missing Grib2Parameter{discipline=2, category=4, number=3, name='Fire burned area', unit='%', abbrev='null', desc='Fire burned area', fill='null', missing='NaN'}
+Ecmwf version 7 discipline 2 category 4 (resources/grib2/ecmwf/tables/7/4.2.2.4.table)
+  p1=     2.4.0 Fire outlook
+  p2=     2.4.0 Fire outlook (code table
+  unitless for      2.4.0 Code table 4.224 != 4.224)
+  p1=     2.4.1 Fire outlook due to dry thunderstorm
+  p2=     2.4.1 Fire outlook due to dry thunderstorm (code table
+  unitless for      2.4.1 Code table 4.224 != 4.224)
+  Ecmwf version 7 (2-4) missing Grib2Parameter{discipline=2, category=4, number=2, name='Haines Index', unit='', abbrev='null', desc='Haines Index', fill='null', missing='NaN'}
+ ***Conflicts=2 extra=1 udunits=2 missing=0
+Ecmwf version 6 discipline 2 category 4 (resources/grib2/ecmwf/tables/6/4.2.2.4.table)
+  p1=     2.4.0 Fire outlook (code table
+  p2=     2.4.0 Fire Outlook Critical Risk Area
+  udunits cant parse=     2.4.0          4.224)               %
+  p1=     2.4.1 Fire outlook due to dry thunderstorm (code table
+  p2=     2.4.1 Fire Outlook Extreme Critical Risk Area
+  udunits cant parse=     2.4.1          4.224)               %
+  Ecmwf version 7 (2-4) missing Grib2Parameter{discipline=2, category=4, number=2, name='Fire Outlook Dry Lightning Area', unit='%', abbrev='null', desc='Fire Outlook Dry Lightning Area', fill='null', missing='NaN'}
+ ***Conflicts=2 extra=0 udunits=0 missing=1
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 2 - Land surface products, parameter category 5: glaciers and inland ice
+Ecmwf version 21 discipline 2 category 5 (resources/grib2/ecmwf/tables/21/4.2.2.5.table)
+Ecmwf version 20 discipline 2 category 5 (resources/grib2/ecmwf/tables/20/4.2.2.5.table)
+Ecmwf version 19 discipline 2 category 5 (resources/grib2/ecmwf/tables/19/4.2.2.5.table)
+Ecmwf version 18 discipline 2 category 5 (resources/grib2/ecmwf/tables/18/4.2.2.5.table)
+Ecmwf version 17 discipline 2 category 5 (resources/grib2/ecmwf/tables/17/4.2.2.5.table)
+Ecmwf version 16 discipline 2 category 5 (resources/grib2/ecmwf/tables/16/4.2.2.5.table)
+Ecmwf version 15 discipline 2 category 5 (resources/grib2/ecmwf/tables/15/4.2.2.5.table)
+Missing version 14
+Missing version 13
+Missing version 12
+Missing version 11
+Missing version 10
+Missing version 9
+Missing version 8
+Missing version 7
+Missing version 6
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 3 - Space products, parameter category 0: image format products
+Ecmwf version 21 discipline 3 category 0 (resources/grib2/ecmwf/tables/21/4.2.3.0.table)
+Ecmwf version 20 discipline 3 category 0 (resources/grib2/ecmwf/tables/20/4.2.3.0.table)
+Ecmwf version 19 discipline 3 category 0 (resources/grib2/ecmwf/tables/19/4.2.3.0.table)
+Ecmwf version 18 discipline 3 category 0 (resources/grib2/ecmwf/tables/18/4.2.3.0.table)
+Ecmwf version 17 discipline 3 category 0 (resources/grib2/ecmwf/tables/17/4.2.3.0.table)
+Ecmwf version 16 discipline 3 category 0 (resources/grib2/ecmwf/tables/16/4.2.3.0.table)
+Ecmwf version 15 discipline 3 category 0 (resources/grib2/ecmwf/tables/15/4.2.3.0.table)
+Ecmwf version 14 discipline 3 category 0 (resources/grib2/ecmwf/tables/14/4.2.3.0.table)
+Ecmwf version 13 discipline 3 category 0 (resources/grib2/ecmwf/tables/13/4.2.3.0.table)
+Ecmwf version 12 discipline 3 category 0 (resources/grib2/ecmwf/tables/12/4.2.3.0.table)
+Ecmwf version 11 discipline 3 category 0 (resources/grib2/ecmwf/tables/11/4.2.3.0.table)
+Ecmwf version 10 discipline 3 category 0 (resources/grib2/ecmwf/tables/10/4.2.3.0.table)
+Ecmwf version 9 discipline 3 category 0 (resources/grib2/ecmwf/tables/9/4.2.3.0.table)
+Ecmwf version 8 discipline 3 category 0 (resources/grib2/ecmwf/tables/8/4.2.3.0.table)
+Ecmwf version 7 discipline 3 category 0 (resources/grib2/ecmwf/tables/7/4.2.3.0.table)
+Ecmwf version 6 discipline 3 category 0 (resources/grib2/ecmwf/tables/6/4.2.3.0.table)
+Ecmwf version 5 discipline 3 category 0 (resources/grib2/ecmwf/tables/5/4.2.3.0.table)
+Ecmwf version 4 discipline 3 category 0 (resources/grib2/ecmwf/tables/4/4.2.3.0.table)
+  Ecmwf version 4 (3-0) missing Grib2Parameter{discipline=3, category=0, number=9, name='Fire detection indicator', unit='Code table 4.223', abbrev='null', desc='Fire detection indicator', fill='null', missing='NaN'}
+Ecmwf version 3 discipline 3 category 0 (resources/grib2/ecmwf/tables/3/4.2.3.0.table)
+Ecmwf version 2 discipline 3 category 0 (resources/grib2/ecmwf/tables/2/4.2.3.0.table)
+Ecmwf version 1 discipline 3 category 0 (resources/grib2/ecmwf/tables/1/4.2.3.0.table)
+Ecmwf version 0 discipline 3 category 0 (resources/grib2/ecmwf/tables/0/4.2.3.0.table)
+================================================================
+Product discipline 3 - Space products, parameter category 1: quantitative products
+Ecmwf version 21 discipline 3 category 1 (resources/grib2/ecmwf/tables/21/4.2.3.1.table)
+  p1=4.2.3.1.20 Aerosol optical thickness at 0.635 μm
+  p2=    3.1.20 Aerosol optical thickness at 0.635 um
+  p1=4.2.3.1.21 Aerosol optical thickness at 0.810 μm
+  p2=    3.1.21 Aerosol optical thickness at 0.810 um
+  p1=4.2.3.1.22 Aerosol optical thickness at 1.640 μm
+  p2=    3.1.22 Aerosol optical thickness at 1.640 um
+  Ecmwf version 21 (3-1) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@11a9e7c8
+  Ecmwf version 21 (3-1) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@3901d134
+ ***Conflicts=3 extra=2 udunits=0 missing=0
+Ecmwf version 20 discipline 3 category 1 (resources/grib2/ecmwf/tables/20/4.2.3.1.table)
+Ecmwf version 19 discipline 3 category 1 (resources/grib2/ecmwf/tables/19/4.2.3.1.table)
+Ecmwf version 18 discipline 3 category 1 (resources/grib2/ecmwf/tables/18/4.2.3.1.table)
+Ecmwf version 17 discipline 3 category 1 (resources/grib2/ecmwf/tables/17/4.2.3.1.table)
+Ecmwf version 16 discipline 3 category 1 (resources/grib2/ecmwf/tables/16/4.2.3.1.table)
+Ecmwf version 15 discipline 3 category 1 (resources/grib2/ecmwf/tables/15/4.2.3.1.table)
+  Ecmwf version 15 (3-1) missing Grib2Parameter{discipline=3, category=1, number=27, name='Bidirectional reflectance factor', unit='', abbrev='null', desc='Bidirectional reflectance factor', fill='null', missing='NaN'}
+  Ecmwf version 15 (3-1) missing Grib2Parameter{discipline=3, category=1, number=28, name='Brightness temperature', unit='K', abbrev='null', desc='Brightness temperature', fill='null', missing='NaN'}
+  Ecmwf version 15 (3-1) missing Grib2Parameter{discipline=3, category=1, number=29, name='Scaled radiance', unit='', abbrev='null', desc='Scaled radiance', fill='null', missing='NaN'}
+Ecmwf version 14 discipline 3 category 1 (resources/grib2/ecmwf/tables/14/4.2.3.1.table)
+Ecmwf version 13 discipline 3 category 1 (resources/grib2/ecmwf/tables/13/4.2.3.1.table)
+Ecmwf version 12 discipline 3 category 1 (resources/grib2/ecmwf/tables/12/4.2.3.1.table)
+Ecmwf version 11 discipline 3 category 1 (resources/grib2/ecmwf/tables/11/4.2.3.1.table)
+Ecmwf version 10 discipline 3 category 1 (resources/grib2/ecmwf/tables/10/4.2.3.1.table)
+Ecmwf version 9 discipline 3 category 1 (resources/grib2/ecmwf/tables/9/4.2.3.1.table)
+Ecmwf version 8 discipline 3 category 1 (resources/grib2/ecmwf/tables/8/4.2.3.1.table)
+Ecmwf version 7 discipline 3 category 1 (resources/grib2/ecmwf/tables/7/4.2.3.1.table)
+  p1=     3.1.6 Number of pixel used
+  p2=     3.1.6 Number of pixels used
+ ***Conflicts=1 extra=0 udunits=0 missing=0
+Ecmwf version 6 discipline 3 category 1 (resources/grib2/ecmwf/tables/6/4.2.3.1.table)
+  Ecmwf version 6 (3-1) missing Grib2Parameter{discipline=3, category=1, number=14, name='Cloudy brightness temperature', unit='K', abbrev='null', desc='Cloudy brightness temperature', fill='null', missing='NaN'}
+  Ecmwf version 6 (3-1) missing Grib2Parameter{discipline=3, category=1, number=15, name='Clear-sky brightness temperature', unit='K', abbrev='null', desc='Clear-sky brightness temperature', fill='null', missing='NaN'}
+  Ecmwf version 6 (3-1) missing Grib2Parameter{discipline=3, category=1, number=16, name='Cloudy radiance (with respect to wave number)', unit='W.m-1.sr-1', abbrev='null', desc='Cloudy radiance (with respect to wave number)', fill='null', missing='NaN'}
+  Ecmwf version 6 (3-1) missing Grib2Parameter{discipline=3, category=1, number=17, name='Clear-sky radiance (with respect to wave number)', unit='W.m-1.sr-1', abbrev='null', desc='Clear-sky radiance (with respect to wave number)', fill='null', missing='NaN'}
+  Ecmwf version 6 (3-1) missing Grib2Parameter{discipline=3, category=1, number=18, name='Reserved', unit='', abbrev='null', desc='Reserved', fill='null', missing='NaN'}
+Ecmwf version 5 discipline 3 category 1 (resources/grib2/ecmwf/tables/5/4.2.3.1.table)
+  Ecmwf version 5 (3-1) missing Grib2Parameter{discipline=3, category=1, number=19, name='Wind speed', unit='m.s-1', abbrev='null', desc='Wind speed', fill='null', missing='NaN'}
+  Ecmwf version 5 (3-1) missing Grib2Parameter{discipline=3, category=1, number=20, name='Aerosol optical thickness at 0.635 um', unit='', abbrev='null', desc='Aerosol optical thickness at 0.635 um', fill='null', missing='NaN'}
+  Ecmwf version 5 (3-1) missing Grib2Parameter{discipline=3, category=1, number=21, name='Aerosol optical thickness at 0.810 um', unit='', abbrev='null', desc='Aerosol optical thickness at 0.810 um', fill='null', missing='NaN'}
+  Ecmwf version 5 (3-1) missing Grib2Parameter{discipline=3, category=1, number=22, name='Aerosol optical thickness at 1.640 um', unit='', abbrev='null', desc='Aerosol optical thickness at 1.640 um', fill='null', missing='NaN'}
+  Ecmwf version 5 (3-1) missing Grib2Parameter{discipline=3, category=1, number=23, name='Angstrom coefficient', unit='', abbrev='null', desc='Angstrom coefficient', fill='null', missing='NaN'}
+Ecmwf version 4 discipline 3 category 1 (resources/grib2/ecmwf/tables/4/4.2.3.1.table)
+  Ecmwf version 4 (3-1) missing Grib2Parameter{discipline=3, category=1, number=6, name='Number of pixels used', unit='', abbrev='null', desc='Number of pixels used', fill='null', missing='NaN'}
+  Ecmwf version 4 (3-1) missing Grib2Parameter{discipline=3, category=1, number=7, name='Solar zenith angle', unit='Degree', abbrev='null', desc='Solar zenith angle', fill='null', missing='NaN'}
+  Ecmwf version 4 (3-1) missing Grib2Parameter{discipline=3, category=1, number=8, name='Relative azimuth angle', unit='Degree', abbrev='null', desc='Relative azimuth angle', fill='null', missing='NaN'}
+  Ecmwf version 4 (3-1) missing Grib2Parameter{discipline=3, category=1, number=9, name='Reflectance in 0.6 micron channel', unit='%', abbrev='null', desc='Reflectance in 0.6 micron channel', fill='null', missing='NaN'}
+  Ecmwf version 4 (3-1) missing Grib2Parameter{discipline=3, category=1, number=10, name='Reflectance in 0.8 micron channel', unit='%', abbrev='null', desc='Reflectance in 0.8 micron channel', fill='null', missing='NaN'}
+  Ecmwf version 4 (3-1) missing Grib2Parameter{discipline=3, category=1, number=11, name='Reflectance in 1.6 micron channel', unit='%', abbrev='null', desc='Reflectance in 1.6 micron channel', fill='null', missing='NaN'}
+  Ecmwf version 4 (3-1) missing Grib2Parameter{discipline=3, category=1, number=12, name='Reflectance in 3.9 micron channel', unit='%', abbrev='null', desc='Reflectance in 3.9 micron channel', fill='null', missing='NaN'}
+  Ecmwf version 4 (3-1) missing Grib2Parameter{discipline=3, category=1, number=13, name='Atmospheric divergence', unit='s-1', abbrev='null', desc='Atmospheric divergence', fill='null', missing='NaN'}
+Ecmwf version 3 discipline 3 category 1 (resources/grib2/ecmwf/tables/3/4.2.3.1.table)
+Ecmwf version 2 discipline 3 category 1 (resources/grib2/ecmwf/tables/2/4.2.3.1.table)
+Ecmwf version 1 discipline 3 category 1 (resources/grib2/ecmwf/tables/1/4.2.3.1.table)
+Ecmwf version 0 discipline 3 category 1 (resources/grib2/ecmwf/tables/0/4.2.3.1.table)
+================================================================
+Product discipline 3 - Space products, parameter category 2: cloud properties
+Ecmwf version 21 discipline 3 category 2 (resources/grib2/ecmwf/tables/21/4.2.3.2.table)
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@6973bf95
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@2ddc8ecb
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@229d10bd
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@47542153
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@33afa13b
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@7a4ccb53
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@309e345f
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@56a6d5a6
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@18ce0030
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@4445629
+  Ecmwf version 21 (3-2) missing ucar.nc2.grib.grib2.table.WmoParamTable$WmoParamEntry@45b9a632
+Ecmwf version 20 discipline 3 category 2 (resources/grib2/ecmwf/tables/20/4.2.3.2.table)
+Ecmwf version 19 discipline 3 category 2 (resources/grib2/ecmwf/tables/19/4.2.3.2.table)
+Ecmwf version 18 discipline 3 category 2 (resources/grib2/ecmwf/tables/18/4.2.3.2.table)
+Ecmwf version 17 discipline 3 category 2 (resources/grib2/ecmwf/tables/17/4.2.3.2.table)
+Ecmwf version 16 discipline 3 category 2 (resources/grib2/ecmwf/tables/16/4.2.3.2.table)
+Missing version 15
+Missing version 14
+Missing version 13
+Missing version 12
+Missing version 11
+Missing version 10
+Missing version 9
+Missing version 8
+Missing version 7
+Missing version 6
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 3 - Space products, parameter category 3: flight rule conditions
+Ecmwf version 21 discipline 3 category 3 (resources/grib2/ecmwf/tables/21/4.2.3.3.table)
+Ecmwf version 20 discipline 3 category 3 (resources/grib2/ecmwf/tables/20/4.2.3.3.table)
+Ecmwf version 19 discipline 3 category 3 (resources/grib2/ecmwf/tables/19/4.2.3.3.table)
+Ecmwf version 18 discipline 3 category 3 (resources/grib2/ecmwf/tables/18/4.2.3.3.table)
+Ecmwf version 17 discipline 3 category 3 (resources/grib2/ecmwf/tables/17/4.2.3.3.table)
+Ecmwf version 16 discipline 3 category 3 (resources/grib2/ecmwf/tables/16/4.2.3.3.table)
+  p1=     3.3.0 Probability of encountering marginal visual flight rule conditions
+  p2=     3.3.0 Probability of encountering marginal visual flight rules conditions
+  p1=     3.3.1 Probability of encountering low instrument flight rule conditions
+  p2=     3.3.1 Probability of encountering low instrument flight rules conditions
+  p1=     3.3.2 Probability of encountering instrument flight rule conditions
+  p2=     3.3.2 Probability of encountering instrument flight rules conditions
+ ***Conflicts=3 extra=0 udunits=0 missing=0
+Missing version 15
+Missing version 14
+Missing version 13
+Missing version 12
+Missing version 11
+Missing version 10
+Missing version 9
+Missing version 8
+Missing version 7
+Missing version 6
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 3 - Space products, parameter category 4: volcanic ash
+Ecmwf version 21 discipline 3 category 4 (resources/grib2/ecmwf/tables/21/4.2.3.4.table)
+Ecmwf version 20 discipline 3 category 4 (resources/grib2/ecmwf/tables/20/4.2.3.4.table)
+Ecmwf version 19 discipline 3 category 4 (resources/grib2/ecmwf/tables/19/4.2.3.4.table)
+Ecmwf version 18 discipline 3 category 4 (resources/grib2/ecmwf/tables/18/4.2.3.4.table)
+Ecmwf version 17 discipline 3 category 4 (resources/grib2/ecmwf/tables/17/4.2.3.4.table)
+Ecmwf version 16 discipline 3 category 4 (resources/grib2/ecmwf/tables/16/4.2.3.4.table)
+Missing version 15
+Missing version 14
+Missing version 13
+Missing version 12
+Missing version 11
+Missing version 10
+Missing version 9
+Missing version 8
+Missing version 7
+Missing version 6
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 3 - Space products, parameter category 5: sea-surface temperature
+Ecmwf version 21 discipline 3 category 5 (resources/grib2/ecmwf/tables/21/4.2.3.5.table)
+Ecmwf version 20 discipline 3 category 5 (resources/grib2/ecmwf/tables/20/4.2.3.5.table)
+Ecmwf version 19 discipline 3 category 5 (resources/grib2/ecmwf/tables/19/4.2.3.5.table)
+Ecmwf version 18 discipline 3 category 5 (resources/grib2/ecmwf/tables/18/4.2.3.5.table)
+Ecmwf version 17 discipline 3 category 5 (resources/grib2/ecmwf/tables/17/4.2.3.5.table)
+Ecmwf version 16 discipline 3 category 5 (resources/grib2/ecmwf/tables/16/4.2.3.5.table)
+Missing version 15
+Missing version 14
+Missing version 13
+Missing version 12
+Missing version 11
+Missing version 10
+Missing version 9
+Missing version 8
+Missing version 7
+Missing version 6
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0
+================================================================
+Product discipline 3 - Space products, parameter category 6: solar radiation
+Ecmwf version 21 discipline 3 category 6 (resources/grib2/ecmwf/tables/21/4.2.3.6.table)
+Ecmwf version 20 discipline 3 category 6 (resources/grib2/ecmwf/tables/20/4.2.3.6.table)
+Ecmwf version 19 discipline 3 category 6 (resources/grib2/ecmwf/tables/19/4.2.3.6.table)
+Ecmwf version 18 discipline 3 category 6 (resources/grib2/ecmwf/tables/18/4.2.3.6.table)
+Ecmwf version 17 discipline 3 category 6 (resources/grib2/ecmwf/tables/17/4.2.3.6.table)
+Ecmwf version 16 discipline 3 category 6 (resources/grib2/ecmwf/tables/16/4.2.3.6.table)
+Missing version 15
+Missing version 14
+Missing version 13
+Missing version 12
+Missing version 11
+Missing version 10
+Missing version 9
+Missing version 8
+Missing version 7
+Missing version 6
+Missing version 5
+Missing version 4
+Missing version 3
+Missing version 2
+Missing version 1
+Missing version 0

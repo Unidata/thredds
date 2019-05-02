@@ -8,7 +8,6 @@ package ucar.nc2.grib.grib1;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.iosp.BitReader;
-import ucar.nc2.util.Misc;
 import ucar.unidata.io.RandomAccessFile;
 
 import java.io.EOFException;
@@ -22,8 +21,8 @@ import java.util.Formatter;
  * @since 9/8/11
  */
 public class Grib1DataReader {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1DataReader.class);
-  static private final float staticMissingValue = Float.NaN;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1DataReader.class);
+  private static final float staticMissingValue = Float.NaN;
 
   ///////////////////////////////// Grib1Data
 
@@ -87,38 +86,27 @@ public class Grib1DataReader {
   public float[] getData(RandomAccessFile raf, byte[] bitmap) throws IOException {
     GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
-    boolean isGridPointData = !GribNumbers.testBitIsSet(info.flag, 1);
-    boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
-
-    if (isGridPointData && isSimplePacking) {
-      return readSimplePacking(raf, bitmap, info);
+    if (!info.isGridPointData()) {
+      logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data for {}", raf.getLocation());
+      throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data");
     }
 
-    if (isGridPointData && !isSimplePacking) {
-      return readExtendedComplexPacking(raf, bitmap, info);
-    }
-
-    logger.warn("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing for {}", raf.getLocation());
-    throw new IllegalStateException("Grib1BinaryDataSection: (octet 4, 1st half) not grid point data and simple packing ");
+    return info.isSimplePacking() ? readSimplePacking(raf, bitmap, info) : readExtendedComplexPacking(raf, bitmap, info);
   }
 
-    /*  From WMO Manual on Codes  I-2 bi - 5
-
+  /*  From WMO Manual on Codes  I-2 bi - 5
   Data shall be coded in the form of non-negative scaled differences from a reference value.
   Notes:
   (1) The reference value is normally the minimum value of the data set which is represented.
   (2) The actual value Y (in the units of Code table 2) is linked to the coded value X, the reference
-  value R, the binary scale factor E and the decimal scale factor D by means of the following formula:
-    Y * 10 ^ D = R + X * 2 ^ E
-*/
+      value R, the binary scale factor E and the decimal scale factor D by means of the following formula:
+      Y * 10 ^ D = R + X * 2 ^ E
+  */
 
-  // raf will be at byte 12
+  // raf will be positioned at byte 12
   private float[] readSimplePacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
-
     boolean isConstant = (info.numberOfBits == 0);
     int unusedbits = info.flag & 15;
-
-    // *** read values *******************************************************
 
     double pow10 = Math.pow(10.0, -decimalScale);
     float ref = (float) (pow10 * info.referenceValue);
@@ -133,7 +121,7 @@ public class Grib1DataReader {
       BitReader reader = new BitReader(raf, startPos + 11);
       values = new float[nPts];
       for (int i = 0; i < nPts; i++) {
-        if ((bitmap[i / 8] & GribNumbers.bitmask[i % 8]) != 0) {
+        if (GribNumbers.testBitIsSet(bitmap[i / 8],i % 8)) {
           if (!isConstant) {
             values[i] = ref + scale * reader.bits2UInt(info.numberOfBits);
           } else {  // rdg - added this to handle a constant valued parameter
@@ -228,6 +216,7 @@ public class Grib1DataReader {
   value for that subset is a constant given by R + (Xi × 2E). This is a form of run-length encoding in which a string of
   identical values is represented by one value; the replication count for that value is, implicitly, in the secondary bit-map.*/
 
+  // LOOK readComplexPacking doesnt work.
   // raf will be at byte 12
   private float[] readComplexPacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
 
@@ -251,46 +240,45 @@ public class Grib1DataReader {
     int P2 = GribNumbers.uint2(raf);
     raf.read(); // skip
 
-      /*
-From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18/definitions/grib1/11-2.table?rev=4
+    /*
+      From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18/definitions/grib1/11-2.table?rev=4
 
-# CODE TABLE 11-2, Flag
-#  Undocumented use of octet 14 extededFlags
-#  Taken from d2ordr.F
-#         R------- only bit 1 is reserved.
-#         -0------ single datum at each grid point.
-#         -1------ matrix of values at each grid point.
-#         --0----- no secondary bit map.
-#         --1----- secondary bit map present.
-#         ---0---- second order values have constant width.
-#         ---1---- second order values have different widths.
-#         ----0--- no general extended second order packing.
-#         ----1--- general extended second order packing used.
-#         -----0-- standard field ordering in section 4.
-#         -----1-- boustrophedonic ordering in section 4.
-1 0 Reserved
-1 1 Reserved
-2 0 Single datum at each grid point
-2 1 Matrix of values at each grid point
-3 0 No secondary bitmap Present
-3 1 Secondary bitmap Present
-4 0 Second-order values constant width
-4 1 Second-order values different widths
-5 0 no general extended second order packing
-5 1 general extended second order packing used
-6 0 standard field ordering in section 4
-6 1 boustrophedonic ordering in section 4
-#         ------00 no spatial differencing used.
-#         ------01 1st-order spatial differencing used.
-#         ------10 2nd-order    "         "         " .
-#         ------11 3rd-order    "         "         " .
-
-   */
-    System.out.printf("flagExt=%s%n", Long.toBinaryString(flagExt));
-    boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
-    boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
-    boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
-    boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt, 6);
+      # CODE TABLE 11-2, Flag
+      #  Undocumented use of octet 14 extededFlags
+      #  Taken from d2ordr.F
+      #         R------- only bit 1 is reserved.
+      #         -0------ single datum at each grid point.
+      #         -1------ matrix of values at each grid point.
+      #         --0----- no secondary bit map.
+      #         --1----- secondary bit map present.
+      #         ---0---- second order values have constant width.
+      #         ---1---- second order values have different widths.
+      #         ----0--- no general extended second order packing.
+      #         ----1--- general extended second order packing used.
+      #         -----0-- standard field ordering in section 4.
+      #         -----1-- boustrophedonic ordering in section 4.
+    Bit Value Meaning
+      1 0 Reserved
+      1 1 Reserved
+      2 0 Single datum at each grid point
+      2 1 Matrix of values at each grid point
+      3 0 No secondary bitmap Present
+      3 1 Secondary bitmap Present
+      4 0 Second-order values constant width
+      4 1 Second-order values different widths
+      5 0 no general extended second order packing
+      5 1 general extended second order packing used
+      6 0 standard field ordering in section 4
+      6 1 boustrophedonic ordering in section 4
+      #         ------00 no spatial differencing used.
+      #         ------01 1st-order spatial differencing used.
+      #         ------10 2nd-order    "         "         " .
+      #         ------11 3rd-order    "         "         " .
+    */
+    boolean hasBitmap2 = GribNumbers.testGribBitIsSet(flagExt, 3);
+    boolean hasDifferentWidths = GribNumbers.testGribBitIsSet(flagExt, 4);
+    boolean useGeneralExtended = GribNumbers.testGribBitIsSet(flagExt, 5);
+    boolean useBoustOrdering = GribNumbers.testGribBitIsSet(flagExt, 6);
 
 
     // 22–(xx–1) Width(s) in bits of second-order packed values; each width is contained in 1 octet
@@ -311,7 +299,6 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
         widths[i] = raf.read();
       }
       bitmapStart = 21 + P1;
-      System.out.printf("%s%n", Misc.showInts(widths));
     }
 
     /* (4) Where bit 7 of the extended flags (Code table 11) is 0, the secondary bit-map shall be omitted; and implied
@@ -327,28 +314,23 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     byte[] bitmap2;
     if (hasBitmap2) {
       int bitmapSize = N1 - bitmapStart - 1;
-      System.out.printf("bitmapSize=%d%n", bitmapSize);
       bitmap2 = new byte[bitmapSize];
       raf.readFully(bitmap2);
       int bitson = GribNumbers.countBits(bitmap2);
-      System.out.printf("bitson=%d%n", bitson);
     }
     long filePos = raf.getFilePointer();
     int offset = (int) (filePos - this.startPos);
-    System.out.printf("offset=%d%n", offset);
-
 
     //   N1–(N2–1) P1 first-order packed values, padded to a whole number of octets with binary 0
     int nfo = N2 - N1;  // docs say N1–(N2–1)
-    System.out.printf("nfo=%d%n", nfo);
 
     //   N2–. . .  P2 second-order packed values
     int np = this.nPts;
-    System.out.printf("need bitmap bytes=%d for npts=%d%n", np / 8, np);
 
     return new float[1]; // ?? fake
   }
 
+  // LOOK not clear if this works - needs testing.
   // raf will be at byte 12
   private float[] readExtendedComplexPacking(RandomAccessFile raf, byte[] bitmap, GribData.Info info) throws IOException {
 
@@ -390,12 +372,13 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 #         ------11 3rd-order    "         "         " .
 
    */
-    System.out.printf("%n=====================%nflagExt=%s%n", Long.toBinaryString(flagExt));
-    boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
-    boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
-    boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
-    boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt, 6);
-    System.out.printf(" hasBitmap2=%s, hasDifferentWidths=%s, useGeneralExtended=%s, useBoustOrdering=%s%n%n", hasBitmap2, hasDifferentWidths, useGeneralExtended, useBoustOrdering);
+    Formatter f = new Formatter();
+    f.format("%n=====================%nGrib1DataReader.readExtendedComplexPacking flagExt=%s%n", Long.toBinaryString(flagExt));
+    boolean hasBitmap2 = GribNumbers.testGribBitIsSet(flagExt, 3);
+    boolean hasDifferentWidths = GribNumbers.testGribBitIsSet(flagExt, 4);
+    boolean useGeneralExtended = GribNumbers.testGribBitIsSet(flagExt, 5);
+    boolean useBoustOrdering = GribNumbers.testGribBitIsSet(flagExt, 6);
+    f.format(" hasBitmap2=%s, hasDifferentWidths=%s, useGeneralExtended=%s, useBoustOrdering=%s%n%n", hasBitmap2, hasDifferentWidths, useGeneralExtended, useBoustOrdering);
 
          /* Octet     Contents
       12–13     N1 – octet number at which first-order packed data begin
@@ -429,7 +412,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     }
      */
 
-    showOffset("N2", raf, 14, 672);
+    showOffset(f, "N2", raf, 14, 672);
     int N2 = GribNumbers.uint2(raf);
     int codedNumberOfGroups = GribNumbers.uint2(raf);
     int numberOfSecondOrderPackedValues = GribNumbers.uint2(raf);
@@ -438,13 +421,13 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     int widthOfWidths = raf.read();
     int widthOfLengths = raf.read();
     int NL = GribNumbers.uint2(raf);
-    System.out.printf("NG=%d NL=%d%n", NG, NL);
+    f.format("NG=%d NL=%d%n", NG, NL);
 
     // heres how many bits groupWidths should take
     int groupWidthsSizeBits = widthOfWidths * NG;
     int groupWidthsSizeBytes = (groupWidthsSizeBits + 7) / 8;
     int skipBytes = NL - groupWidthsSizeBytes - 26;
-    System.out.printf("groupWidthsSizeBytes=%d, skipBytes=%d%n", groupWidthsSizeBytes, skipBytes);
+    f.format("groupWidthsSizeBytes=%d, skipBytes=%d%n", groupWidthsSizeBytes, skipBytes);
 
     raf.skipBytes(skipBytes);
 
@@ -455,7 +438,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     //int SPD = GribNumbers.int4(raf);
     //raf.read();
     //raf.read();
-    showOffset("GroupWidth", raf, 31, 689);
+    showOffset(f, "GroupWidth", raf, 31, 689);
 
     BitReader reader = new BitReader(raf, raf.getFilePointer());
 
@@ -466,7 +449,7 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     }
 
     reader.incrByte(); // assume on byte boundary
-    showOffset("GroupLength", raf, NL - 1, 2723);
+    showOffset(f, "GroupLength", raf, NL - 1, 2723);
 
     // try forcing to NL
     // reader = new BitReader(raf, this.startPos + NL - 1);
@@ -475,14 +458,14 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     int[] groupLength = new int[NG];
     for (int group = 0; group < NG; group++)
       groupLength[group] = (int) reader.bits2UInt(widthOfLengths);
-    showOffset("FirstOrderValues", raf, N1 - 1, 5774);
+    showOffset(f, "FirstOrderValues", raf, N1 - 1, 5774);
 
     // meta countOfGroupLengths sum(groupLengths);
     int countOfGroupLengths = 0;
     for (int group = 0; group < NG; group++)
       countOfGroupLengths += groupLength[group];
-    System.out.printf("countOfGroupLengths = %d%n", countOfGroupLengths);
-    System.out.printf("nPts = %d%n%n", nPts);
+    f.format("countOfGroupLengths = %d%n", countOfGroupLengths);
+    f.format("nPts = %d%n%n", nPts);
 
     // try forcing to N1
     // reader = new BitReader(raf, this.startPos + N1 - 1);
@@ -496,8 +479,8 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     for (int group = 0; group < NG; group++)
       firstOrderValues[group] = (int) reader.bits2UInt(foWidth);
     int offset3 = (int) (raf.getFilePointer() - this.startPos);
-    System.out.printf("nbytes=%d%n", (foWidth * NG + 7) / 8);
-    showOffset("SecondOrderValues", raf, N2 - 1, 11367);
+    f.format("nbytes=%d%n", (foWidth * NG + 7) / 8);
+    showOffset(f, "SecondOrderValues", raf, N2 - 1, 11367);
 
 
     int total_nbits = 0;
@@ -506,11 +489,11 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       total_nbits += nbits;
     }
     int data_bytes = (total_nbits + 7) / 8;
-    System.out.printf(" total_nbits=%d, nbytes=%d%n", total_nbits, data_bytes);
-    System.out.printf(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataLength);
+    f.format(" total_nbits=%d, nbytes=%d%n", total_nbits, data_bytes);
+    f.format(" expect msgLen=%d, actual=%d%n", N2 - 1 + data_bytes, info.dataLength);
     int simplepackSizeInBits = nPts * info.numberOfBits;
     int simplepackSizeInBytes = (simplepackSizeInBits + 7) / 8;
-    System.out.printf(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
+    f.format(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
 
     // meta bitsPerValue second_order_bits_per_value(codedValues,binaryScaleFactor,decimalScaleFactor);
     reader.incrByte(); // assume on byte boundary
@@ -520,25 +503,21 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
       int val = 0;
       double log2 = Math.log(2);
       for (int group = 0; group < NG; group++) {
-        //System.out.printf("%3d: %3d %3d %d: ", group, groupLength[group], groupWidth[group], firstOrderValues[group]);
         for (int i = 0; i < groupLength[group]; i++) {
           int secVal = (int) reader.bits2UInt(groupWidth[group]);
           secondOrderValues[val++] = secVal;
-          //int nbits = secVal == 0 ? 0 : (int) Math.ceil(Math.log(secVal) / log2);
-          //System.out.printf("%d,", nbits);
         }
-        //System.out.printf("%n");
         countGroups++;
       }
     } catch (EOFException ioe) {
-      System.out.printf("Only did %d groups out of %d%n", countGroups, NG);
+      logger.warn("Only did %d groups out of %d%n", countGroups, NG);
     }
 
     int offset4 = (int) (raf.getFilePointer() - this.startPos);
-    showOffset("MessageEnd", raf, (int) info.dataLength, 82091);
+    showOffset(f, "MessageEnd", raf, (int) info.dataLength, 82091);
 
-    System.out.printf("nbytes= %d%n", (total_nbits + 7) / 8);
-    System.out.printf("actual= %d%n", offset4 - offset3);
+    f.format("nbytes= %d%n", (total_nbits + 7) / 8);
+    f.format("actual= %d%n", offset4 - offset3);
 
     double pow10 = Math.pow(10.0, -decimalScale);
     float ref = (float) (pow10 * info.referenceValue);
@@ -563,9 +542,9 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     return values;
   }
 
-  private void showOffset(String what, RandomAccessFile raf, int expectOffset, int expectDump) throws IOException {
+  private void showOffset(Formatter f, String what, RandomAccessFile raf, int expectOffset, int expectDump) throws IOException {
     int offset = (int) (raf.getFilePointer() - this.startPos);
-    System.out.printf("%s: filePos=%d, expectDump=%d, offset=%d expect=%d%n", what, raf.getFilePointer(), expectDump, offset, expectOffset);
+    f.format("%s: filePos=%d, expectDump=%d, offset=%d expect=%d%n", what, raf.getFilePointer(), expectDump, offset, expectOffset);
   }
 
   private static void showOffset(Formatter f, String what, RandomAccessFile raf, long startPos, int expectOffset) throws IOException {
@@ -573,19 +552,17 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     f.format("%s: filePos=%d, offset=%d expect=%d%n", what, raf.getFilePointer(), offset, expectOffset);
   }
 
-  public static void showInfo(Formatter f, RandomAccessFile raf, long startPos) throws IOException {
+  public static void showComplexPackingInfo(Formatter f, RandomAccessFile raf, long startPos) throws IOException {
     GribData.Info info = Grib1SectionBinaryData.getBinaryDataInfo(raf, startPos);
 
-    boolean isGridPointData = !GribNumbers.testBitIsSet(info.flag, 1);
-    boolean isSimplePacking = !GribNumbers.testBitIsSet(info.flag, 2);
-    if (!isGridPointData || isSimplePacking) return;
+    if (!info.isGridPointData() || info.isSimplePacking()) return;
 
     int N1 = GribNumbers.uint2(raf);
     int flagExt = raf.read();
-    boolean hasBitmap2 = GribNumbers.testBitIsSet(flagExt, 3);
-    boolean hasDifferentWidths = GribNumbers.testBitIsSet(flagExt, 4);
-    boolean useGeneralExtended = GribNumbers.testBitIsSet(flagExt, 5);
-    boolean useBoustOrdering = GribNumbers.testBitIsSet(flagExt, 6);
+    boolean hasBitmap2 = GribNumbers.testGribBitIsSet(flagExt, 3);
+    boolean hasDifferentWidths = GribNumbers.testGribBitIsSet(flagExt, 4);
+    boolean useGeneralExtended = GribNumbers.testGribBitIsSet(flagExt, 5);
+    boolean useBoustOrdering = GribNumbers.testGribBitIsSet(flagExt, 6);
 
     int N2 = GribNumbers.uint2(raf);
     int codedNumberOfGroups = GribNumbers.uint2(raf);
@@ -613,7 +590,6 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     int groupWidthsSizeBits = widthOfWidths * NG;
     int groupWidthsSizeBytes = (groupWidthsSizeBits + 7) / 8;
     int skipBytes = NL - groupWidthsSizeBytes - 26;
-    System.out.printf("groupWidthsSizeBytes=%d, skipBytes=%d%n", groupWidthsSizeBytes, skipBytes);
     raf.skipBytes(skipBytes);
 
     BitReader reader = new BitReader(raf, raf.getFilePointer());
@@ -664,13 +640,10 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
     //int simplepackSizeInBits = nPts * info.numberOfBits;
     //int simplepackSizeInBytes = (simplepackSizeInBits +7) / 8;
     //f.format(" simplepackSizeInBits=%d, simplepackSizeInBytes=%d%n", simplepackSizeInBits, simplepackSizeInBytes);
+    logger.debug("%s", f);
   }
 
-  /*
-
-
-
-
+    /* Grib1 second order packing - unfinished.
     // 22–(xx–1) Width(s) in bits of second-order packed values; each width is contained in 1 octet
    /*   (2) The width of the second-order packed values shall be indicated by the values of W2(j):
       (a) If bit 8 of the extended flags (Code table 11) is 0, all second-order packed values will have the same width,
@@ -783,7 +756,6 @@ From http://cost733.geo.uni-augsburg.de/cost733class-1.2/browser/grib_api-1.9.18
 
     // octet 11 (number of bits per value)
     int numbits = raf.read();
-    // boolean isConstant =  (numbits == 0);
 
     // *** read int values *******************************************************
     BitReader reader = new BitReader(raf, startPos + 11);

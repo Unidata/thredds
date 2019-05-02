@@ -39,7 +39,7 @@ import thredds.inventory.MFile;
 import ucar.ma2.DataType;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -92,7 +92,7 @@ public class Grib2DataPanel extends JPanel {
       }
     });
 
-    varPopup = new ucar.nc2.ui.widget.PopupMenu(param2BeanTable.getJTable(), "Options");
+    varPopup = new PopupMenu(param2BeanTable.getJTable(), "Options");
     varPopup.addAction("Show PDS", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib2ParameterBean pb = (Grib2ParameterBean) param2BeanTable.getSelectedBean();
@@ -152,13 +152,7 @@ public class Grib2DataPanel extends JPanel {
         Grib2RecordBean bean = (Grib2RecordBean) record2BeanTable.getSelectedBean();
         if (bean != null) {
           Formatter f = new Formatter();
-          try {
-            Grib2Show.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
-          } catch (IOException ioe) {
-            StringWriter sw = new StringWriter(10000);
-            ioe.printStackTrace(new PrintWriter(sw));
-            f.format("%s", sw.toString());
-          }
+          Grib2Show.showCompleteGribRecord(f, fileList.get(bean.gr.getFile()).getPath(), bean.gr, cust);
           infoPopup.setText(f.toString());
           infoPopup.gotoTop();
           infoWindow.show();
@@ -287,7 +281,7 @@ public class Grib2DataPanel extends JPanel {
   private String spec;
   private MCollection dcm;
   private List<MFile> fileList;
-  private Grib2Customizer cust;
+  private Grib2Tables cust;
   // private Grib2Rectilyser rect2;
 
   /* public void setCollection(String filename) throws IOException {
@@ -375,7 +369,7 @@ public class Grib2DataPanel extends JPanel {
 
     for (Grib2Record gr : index.getRecords()) {
       if (cust == null)
-        cust = Grib2Customizer.factory(gr);
+        cust = Grib2Tables.factory(gr);
 
       gr.setFile(fileno);
 
@@ -1090,7 +1084,7 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public String getUnits() {
-      Grib2Customizer.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      Grib2Tables.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
       return (p == null) ? "?" : p.getUnit();
     }
 

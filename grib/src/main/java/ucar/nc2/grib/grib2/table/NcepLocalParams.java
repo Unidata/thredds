@@ -5,35 +5,42 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
-import ucar.unidata.util.StringUtil2;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 /**
- * Read NCEP parameter tables. inner class Table for each discipline, category
+ * Read NCEP parameter tables.
+ * There will be a Table for each discipline, category
  *
  * @author caron
  * @since 1/9/12
  */
 class NcepLocalParams {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(NcepLocalParams.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalParams.class);
+  private static final String MATCH = "Table4.2.";
+
   private static final boolean debugOpen = false;
   private static final boolean debug = false;
 
-  private Map<Integer, Table> tableMap = new HashMap<>(30);
+  private final Map<Integer, Table> tableMap = new HashMap<>(30);
   private final String resourcePath;
 
   NcepLocalParams(String resourcePath) {
     this.resourcePath = resourcePath;
   }
 
+  @Nullable
   public Grib2Parameter getParameter(int discipline, int category, int number) {
     int key = (discipline << 8) + category;
     Table params = tableMap.get( key);
@@ -45,19 +52,21 @@ class NcepLocalParams {
     return params.getParameter(number);
   }
 
+  @Nullable
   public String getCategory(int discipline, int category) {
     int key = (discipline << 8) + category;
     Table params = tableMap.get( key);
     return (params == null) ? null : params.title;
   }
 
-
-  Table factory(String path) {
-    Table params = new Table();
-    if (!params.readParameterTableXml(path)) return null;
-    return params;
+  @Nullable
+  ImmutableList<GribTables.Parameter> getParameters(String path) {
+    Table table = new Table();
+    if (!table.readParameterTableXml(path)) return null;
+    return table.getParameters();
   }
 
+  @Nullable
   private Table factory(int discipline, int category) {
     Table params = new Table();
     if (!params.readParameterTableFromResource(getTablePath(discipline, category))) return null;
@@ -69,7 +78,7 @@ class NcepLocalParams {
   }
 
   ////////////////////////////////////////////////////
-  // one table for the discipline, category
+  // one table for each discipline, category
   static class Table {
 
     private String title;
@@ -78,25 +87,18 @@ class NcepLocalParams {
     private int discipline, category;
     private Map<Integer, Grib2Parameter> paramMap;
 
-    public List<Grib2Parameter> getParameters() {
-      List<Grib2Parameter> result = new ArrayList<>(paramMap.values());
-      Collections.sort(result);
-      return result;
+    private ImmutableList<GribTables.Parameter> getParameters() {
+      return paramMap.values().stream().sorted().collect(ImmutableList.toImmutableList());
     }
 
+    @Nullable
     public Grib2Parameter getParameter(int code) {
-      if (paramMap == null) return null;
       return paramMap.get(code);
     }
 
     private boolean readParameterTableXml(String path) {
-      if (debugOpen) System.out.printf("readParameterTableXml table %s%n", path);
+      if (debugOpen) logger.debug("readParameterTableXml table %s%n", path);
       try (InputStream is = GribResourceReader.getInputStream(path)) {
-        if (is == null) {
-          log.warn("Cant read file " + path);
-          return false;
-        }
-
         SAXBuilder builder = new SAXBuilder();
         org.jdom2.Document doc = builder.build(is);
         Element root = doc.getRootElement();
@@ -110,11 +112,11 @@ class NcepLocalParams {
     }
 
     private boolean readParameterTableFromResource(String resource) {
-      if (debugOpen) System.out.printf("readParameterTableFromResource from resource %s%n", resource);
+      if (debugOpen) logger.debug("readParameterTableFromResource from resource %s%n", resource);
       ClassLoader cl = this.getClass().getClassLoader();
       try (InputStream is = cl.getResourceAsStream(resource)) {
         if (is == null) {
-          log.info("Cant read resource " + resource);
+          logger.info("Cant read resource " + resource);
           return false;
         }
         SAXBuilder builder = new SAXBuilder();
@@ -146,8 +148,8 @@ class NcepLocalParams {
       source = root.getChildText("source");
 
       // Table4.2.0.0
-      int pos = tableName.indexOf(match);
-      String dc = tableName.substring(pos + match.length());
+      int pos = tableName.indexOf(MATCH);
+      String dc = tableName.substring(pos + MATCH.length());
       String[] dcs = dc.split("\\.");
       discipline = Integer.parseInt(dcs[0]);
       category = Integer.parseInt(dcs[1]);
@@ -172,162 +174,21 @@ class NcepLocalParams {
         //   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev) {
         Grib2Parameter parameter = new Grib2Parameter(discipline, category, code, name, units, abbrev, desc);
         result.put(parameter.getNumber(), parameter);
-        if (debug) System.out.printf(" %s%n", parameter);
+        if (debug) logger.debug(" %s%n", parameter);
       }
       return result;
     }
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append("NcepTable");
-      sb.append("{title='").append(title).append('\'');
-      sb.append(", source='").append(source).append('\'');
-      sb.append(", tableName='").append(tableName).append('\'');
-      sb.append('}');
-      return sb.toString();
-    }
-
-  }
-
-  private static final String match = "Table4.2.";
-
-  /*
-  //////////////////////////////////////////////////////////////////////////
-  // LOOK - compare to Grib2TablesViewer
-
-  private static void compareTables(NcepLocalParams test, Grib2Customizer current) {
-    Formatter f = new Formatter();
-    //f.format("Table 1 = %s%n", test.tableName);
-    //f.format("Table 2 = %s%n", "currentNcep");
-
-    int extra = 0;
-    int udunits = 0;
-    int conflict = 0;
-    // f.format("Table 1 : %n");
-    for (Grib2Parameter p1 : test.getParameters()) {
-      Grib2Customizer.Parameter  p2 = current.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
-      if (p2 == null) {
-        extra++;
-        if (p1.getNumber() < 192) f.format("  WMO missing %s%n", p1);
-
-      } else {
-        String p1n = Util.cleanName(StringUtil2.substitute(p1.getName(), "-", " "));
-        String p2n = Util.cleanName(StringUtil2.substitute(p2.getName(), "-", " "));
-
-        if (!p1n.equalsIgnoreCase(p2n) ||
-           (p1.getNumber() >= 192 && !p1.getAbbrev().equals(p2.getAbbrev()))) {
-          f.format("  p1=%10s %40s %15s  %15s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev());
-          f.format("  p2=%10s %40s %15s  %15s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev());
-          conflict++;
-        }
-
-        if (!p1.getUnit().equalsIgnoreCase(p2.getUnit())) {
-          String cu1 = Util.cleanUnit(p1.getUnit());
-          String cu2 = Util.cleanUnit(p2.getUnit());
-
-          // eliminate common non-udunits
-          boolean isUnitless1 = isUnitless(cu1);
-          boolean isUnitless2 = isUnitless(cu2);
-
-          if (isUnitless1 != isUnitless2) {
-            f.format("  ud=%10s %s != %s for %s (%s)%n%n", p1.getId(), cu1, cu2, p1.getId(), p1.getName());
-            udunits++;
-
-          } else if (!isUnitless1) {
-
-            try {
-              SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
-              if (!su1.isCompatible(cu2)) {
-                f.format("  ud=%10s %s (%s) != %s for %s (%s)%n%n", p1.getId(), cu1, su1, cu2, p1.getId(), p1.getName());
-                udunits++;
-              }
-            } catch (Exception e) {
-              f.format("  udunits cant parse=%10s %15s %15s%n", p1.getId(), cu1, cu2);
-            }
-          }
-
-        }
-      }
-
-    }
-    f.format("Conflicts=%d extra=%d udunits=%d%n%n", conflict, extra, udunits);
-
-    /* extra = 0;
-    f.format("Table 2 : %n");
-    for (Object t : current.getParameters()) {
-      Grib2Tables.Parameter p2 = (Grib2Tables.Parameter) t;
-      Grib2Parameter  p1 = test.getParameter(p2.getNumber());
-      if (p1 == null) {
-        extra++;
-        f.format(" Missing %s in table 1%n", p2);
-      }
-    }
-    f.format("%nextra=%d%n%n", extra);
-    System.out.printf("%s%n", f);
-  }  */
-
-  static boolean isUnitless(String unit) {
-    if (unit == null) return true;
-    String munge = unit.toLowerCase().trim();
-    munge = StringUtil2.remove(munge, '(');
-    return munge.length()  == 0 ||
-            munge.startsWith("numeric") || munge.startsWith("non-dim") || munge.startsWith("see") ||
-            munge.startsWith("proportion") || munge.startsWith("code") || munge.startsWith("0=") ||
-            munge.equals("1") ;
-  }
-
-
-  /*
-  public static void main2(String[] args) {
-
-    //Grib2Customizer current = Grib2Customizer.factory(7, -1, -1, -1);
-    Grib2Customizer wmo = Grib2Customizer.factory(0, 0, 0, 0, 0);
-
-    File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
-    for (File f : dir.listFiles()) {
-      if (f.getName().startsWith(match)) {
-        NcepLocalParams nt = factory(f.getPath());
-        System.out.printf("%s%n", nt);
-        compareTables(nt, wmo);
-      }
+      return MoreObjects.toStringHelper(this)
+          .add("title", title)
+          .add("source", source)
+          .add("tableName", tableName)
+          .add("discipline", discipline)
+          .add("category", category)
+          .toString();
     }
   }
-
-  public static void main3(String[] args) {
-    GribTables.Parameter p = getParameter(0, 16, 195);
-    System.out.printf("%s%n", p);
-
-    Grib2Customizer tables = Grib2Customizer.factory(7, 0, 0, 0, 0);
-    GribTables.Parameter p2 = tables.getParameter(0, 16, 195);
-    System.out.printf("%s%n", p2);
-  }
-
-  public static void main(String[] args) {
-    Map<String, Grib2Parameter> abbrevSet = new HashMap<>(5000);
-     File dir = new File("C:\\dev\\github\\thredds\\grib\\src\\main\\resources\\resources\\grib2\\ncep");
-     for (File f : dir.listFiles()) {
-       if (f.getName().startsWith(match)) {
-         NcepLocalParams nt = factory(f.getPath());
-         System.out.printf("%s%n", nt);
-         for (Grib2Parameter p : nt.getParameters()) {
-           if (p.getCategory() < 192 && p.getNumber() < 192) continue;
-
-           if (p.getAbbrev() != null && !p.getAbbrev().equals("Validation")) {
-             Grib2Parameter dup = abbrevSet.get(p.getAbbrev());
-             if (dup != null) System.out.printf("DUPLICATE %s and %s%n", dup.getId(), p.getId());
-             abbrevSet.put(p.getAbbrev(), p);
-           }
-
-           if (p.getDescription().length() > 60) System.out.printf("  %d %s = '%s' %s%n", p.getDescription().length(), p.getId(), p.getDescription(), p.getAbbrev());
-           else if (p.getDescription().length() > 50) System.out.printf("  50 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
-           else if (p.getDescription().length() > 40) System.out.printf("  40 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
-           else if (p.getDescription().length() > 30) System.out.printf("  30 %s = '%s' %s%n", p.getId(), p.getDescription(), p.getAbbrev());
-         }
-       }
-     }
-   }
-
-   */
 
 }

@@ -10,8 +10,6 @@ import ucar.nc2.dt.image.image.ImageFactoryRandom;
 import ucar.nc2.ui.widget.BAMutil;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -103,12 +101,10 @@ public class ImageViewPanel extends JPanel {
     BAMutil.addActionToContainer(buttPanel, loopAction);
 
     spinner = new JSpinner( new SpinnerNumberModel(5000, 10, 20000, 1000));
-    spinner.addChangeListener( new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
+    spinner.addChangeListener(e -> {
         Integer value = (Integer) spinner.getModel().getValue();
         delay = value.intValue();
         if (timer != null) timer.setDelay( delay);
-      }
     });
     buttPanel.add( spinner);
 

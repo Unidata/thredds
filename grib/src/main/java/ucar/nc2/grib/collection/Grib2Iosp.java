@@ -8,7 +8,7 @@ package ucar.nc2.grib.collection;
 import ucar.nc2.constants.DataFormatType;
 import ucar.nc2.grib.grib2.*;
 import ucar.nc2.grib.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.io.http.HTTPRandomAccessFile;
 import ucar.unidata.util.StringUtil2;
@@ -24,112 +24,137 @@ import java.util.Formatter;
  * @since 4/6/11
  */
 public class Grib2Iosp extends GribIosp {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
-  static String makeVariableNameFromTable(Grib2Customizer cust,
+  static String makeVariableNameFromTable(Grib2Tables cust,
       GribCollectionImmutable gribCollection,
       GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
-    Formatter f = new Formatter();
 
-    GribTables.Parameter param = cust.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+    try (Formatter f = new Formatter()) {
+      GribTables.Parameter param = cust
+          .getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
 
-    if (param == null) {
-      f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter(), gribCollection.getCenter(), 
-              gribCollection.getSubcenter(), vindex.getTableVersion());
-    } else {
-      f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
+      if (param == null) {
+        f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(),
+            vindex.getParameter(), gribCollection.getCenter(),
+            gribCollection.getSubcenter(), vindex.getTableVersion());
+      } else {
+        f.format("%s", GribUtils.makeNameFromDescription(param.getName()));
+      }
+
+      if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
+        f.format("_error");  // its an "error" type variable - add to name
+
+      } else if (useGenType && vindex.getGenProcessType() >= 0) {
+          String genType = cust.getGeneratingProcessTypeName(vindex.getGenProcessType());
+          String s = StringUtil2.substitute(genType, " ", "_");
+          f.format("_%s", s);
+      }
+
+      if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+        f.format("_%s", cust.getLevelNameShort(
+            vindex.getLevelType())); // vindex.getLevelType()); // code table 4.5
+        if (vindex.isLayer()) {
+          f.format("_layer");
+        }
+      }
+
+      String intvName = vindex.getIntvName();
+      if (intvName != null && !intvName.isEmpty()) {
+        f.format("_%s", intvName);
+      }
+
+      if (vindex.getIntvType() >= 0) {
+        String statName = cust.getStatisticNameShort(vindex.getIntvType());
+        if (statName != null) {
+          f.format("_%s", statName);
+        }
+      }
+
+      if (vindex.getSpatialStatisticalProcessType() >= 0) {
+        String statName = cust.getTableValue("4.10", vindex.getSpatialStatisticalProcessType());
+        if (statName != null) {
+          f.format("_%s", statName);
+        }
+      }
+
+      if (vindex.getEnsDerivedType() >= 0) {
+        f.format("_%s", cust.getProbabilityNameShort(vindex.getEnsDerivedType()));
+      } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
+        String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
+        f.format("_probability_%s", s);
+      } else if (vindex.isEnsemble()) {
+        f.format("_ens");
+      }
+      return f.toString();
     }
-
-    if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
-      f.format("_error");  // its an "error" type variable - add to name
-
-    } else if (useGenType && vindex.getGenProcessType() >= 0) {
-        String genType = cust.getGeneratingProcessTypeName(vindex.getGenProcessType());
-        String s = StringUtil2.substitute(genType, " ", "_");
-        f.format("_%s", s);
-    }
-
-    if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_%s", cust.getLevelNameShort(vindex.getLevelType())); // vindex.getLevelType()); // code table 4.5
-      if (vindex.isLayer()) f.format("_layer");
-    }
-
-    String intvName = vindex.getIntvName();
-    if (intvName != null && !intvName.isEmpty()) {
-      f.format("_%s", intvName);
-    }
-
-    if (vindex.getIntvType() >= 0) {
-      String statName = cust.getStatisticNameShort(vindex.getIntvType());
-      if (statName != null) f.format("_%s", statName);
-    }
-
-    if (vindex.getSpatialStatisticalProcessType() >= 0) {
-      String statName = cust.getTableValue("4.10", vindex.getSpatialStatisticalProcessType());
-      if (statName != null) f.format("_%s", statName);
-    }
-
-    if (vindex.getEnsDerivedType() >= 0) {
-      f.format("_%s", cust.getProbabilityNameShort(vindex.getEnsDerivedType()));
-    } else if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) {
-      String s = StringUtil2.substitute(vindex.getProbabilityName(), ".", "p");
-      f.format("_probability_%s", s);
-    } else if (vindex.isEnsemble()) {
-      f.format("_ens");
-    }
-
-    return f.toString();
   }
 
-  static String makeVariableLongName(Grib2Customizer cust,
+  static String makeVariableLongName(Grib2Tables cust,
       GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
-    Formatter f = new Formatter();
 
-    boolean isProb = (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0);
-    if (isProb)
-      f.format("Probability ");
+    try (Formatter f = new Formatter()) {
+      boolean isProb = (vindex.getProbabilityName() != null
+          && vindex.getProbabilityName().length() > 0);
+      if (isProb) {
+        f.format("Probability ");
+      }
 
-    GribTables.Parameter gp = cust.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
-    if (gp == null)
-      f.format("Unknown Parameter %d-%d-%d", vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
-    else
-      f.format("%s", gp.getName());
+      GribTables.Parameter gp = cust
+          .getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+      if (gp == null) {
+        f.format("Unknown Parameter %d-%d-%d", vindex.getDiscipline(), vindex.getCategory(),
+            vindex.getParameter());
+      } else {
+        f.format("%s", gp.getName());
+      }
 
-    if (vindex.getIntvType() >= 0 && vindex.getIntvName() != null && !vindex.getIntvName().isEmpty()) {
-      String intvName = cust.getStatisticNameShort(vindex.getIntvType());
-      if (intvName == null || intvName.equalsIgnoreCase("Missing")) intvName = cust.getStatisticNameShort(vindex.getIntvType());
-      if (intvName == null) f.format(" (%s)", vindex.getIntvName());
-      else f.format(" (%s %s)", vindex.getIntvName(), intvName);
+      if (vindex.getIntvType() >= 0 && vindex.getIntvName() != null && !vindex.getIntvName()
+          .isEmpty()) {
+        String intvName = cust.getStatisticNameShort(vindex.getIntvType());
+        if (intvName == null || intvName.equalsIgnoreCase("Missing")) {
+          intvName = cust.getStatisticNameShort(vindex.getIntvType());
+        }
+        if (intvName == null) {
+          f.format(" (%s)", vindex.getIntvName());
+        } else {
+          f.format(" (%s %s)", vindex.getIntvName(), intvName);
+        }
 
-    } else if (vindex.getIntvType() >= 0) {
-      String intvName = cust.getStatisticNameShort(vindex.getIntvType());
-      f.format(" (%s)", intvName);
+      } else if (vindex.getIntvType() >= 0) {
+        String intvName = cust.getStatisticNameShort(vindex.getIntvType());
+        f.format(" (%s)", intvName);
+      }
+
+      if (vindex.getSpatialStatisticalProcessType() >= 0) {
+        String statName = cust.getTableValue("4.10", vindex.getSpatialStatisticalProcessType());
+        if (statName != null) {
+          f.format("_%s", statName);
+        }
+      }
+
+      if (vindex.getEnsDerivedType() >= 0) {
+        f.format(" (%s)", cust.getTableValue("4.10", vindex.getEnsDerivedType()));
+      } else if (isProb) {
+        f.format(" %s %s", vindex.getProbabilityName(),
+            getVindexUnits(cust, vindex)); // add data units here
+      }
+
+      if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
+        f.format(" error");  // its an "error" type variable - add to name
+
+      } else if (useGenType && vindex.getGenProcessType() >= 0) {
+        f.format(" %s", cust.getGeneratingProcessTypeName(vindex.getGenProcessType()));
+      }
+
+      if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+        f.format(" @ %s", cust.getTableValue("4.5", vindex.getLevelType()));
+        if (vindex.isLayer()) {
+          f.format(" layer");
+        }
+      }
+      return f.toString();
     }
-
-    if (vindex.getSpatialStatisticalProcessType() >= 0) {
-      String statName = cust.getTableValue("4.10", vindex.getSpatialStatisticalProcessType());
-      if (statName != null) f.format("_%s", statName);
-    }
-
-    if (vindex.getEnsDerivedType() >= 0)
-      f.format(" (%s)", cust.getTableValue("4.10", vindex.getEnsDerivedType()));
-
-    else if (isProb)
-      f.format(" %s %s", vindex.getProbabilityName(), getVindexUnits(cust, vindex)); // add data units here
-
-    if (vindex.getGenProcessType() == 6 || vindex.getGenProcessType() == 7) {
-      f.format(" error");  // its an "error" type variable - add to name
-
-    } else if (useGenType && vindex.getGenProcessType() >= 0) {
-      f.format(" %s", cust.getGeneratingProcessTypeName(vindex.getGenProcessType()));
-    }
-
-    if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", cust.getTableValue("4.5", vindex.getLevelType()));
-      if (vindex.isLayer()) f.format(" layer");
-    }
-
-    return f.toString();
   }
 
   @Override
@@ -147,13 +172,13 @@ public class Grib2Iosp extends GribIosp {
     return makeVariableUnits(cust, vindex);
   }
 
-  static String makeVariableUnits(Grib2Customizer tables,
+  static String makeVariableUnits(Grib2Tables tables,
       GribCollectionImmutable.VariableIndex vindex) {
     if (vindex.getProbabilityName() != null && vindex.getProbabilityName().length() > 0) return "%";
     return getVindexUnits(tables, vindex);
   }
 
-  static private String getVindexUnits(Grib2Customizer tables, GribCollectionImmutable.VariableIndex vindex) {
+  private static String getVindexUnits(Grib2Tables tables, GribCollectionImmutable.VariableIndex vindex) {
     GribTables.Parameter gp = tables.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;
@@ -161,7 +186,7 @@ public class Grib2Iosp extends GribIosp {
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  private Grib2Customizer cust;
+  private Grib2Tables cust;
 
   // accept grib2 or ncx files
   @Override
@@ -211,7 +236,7 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected ucar.nc2.grib.GribTables createCustomizer() {
-    cust = Grib2Customizer.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal(),
+    cust = Grib2Tables.factory(gribCollection.getCenter(), gribCollection.getSubcenter(), gribCollection.getMaster(), gribCollection.getLocal(),
             gribCollection.getGenProcessId());
     return cust;
   }

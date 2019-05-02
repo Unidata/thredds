@@ -67,7 +67,7 @@ public class GribRewritePanel extends JPanel {
     BAMutil.setActionProperties(calcAction, "Dataset", "calc storage", false, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, calcAction);
 
-    PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(ftTable.getJTable(), "Options");
+    PopupMenu varPopup = new PopupMenu(ftTable.getJTable(), "Options");
     varPopup.addAction("Open as NetcdfFile", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         FileBean ftb = (FileBean) ftTable.getSelectedBean();

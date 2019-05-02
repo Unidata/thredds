@@ -19,37 +19,29 @@ import java.util.*;
  * @since 6/22/11
  */
 public class KmaLocalTables extends LocalTables {
-  private static final String tablePath = "resources/grib2/local/kma-ver5.txt";
-  private static KmaLocalTables single;
-
-  public static KmaLocalTables getCust(Grib2Table table) {
-    if (single == null) single = new KmaLocalTables(table);
-    return single;
-  }
-
-  private KmaLocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
-    grib2Table.setPath(tablePath);
+  KmaLocalTables(Grib2TableConfig config) {
+    super(config);
     initLocalTable();
   }
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   private void initLocalTable() {
+    String tablePath = config.getPath();
     ClassLoader cl = KmaLocalTables.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tablePath)) {
     if (is == null) throw new IllegalStateException("Cant find "+tablePath);
 
-      List<TableParser.Record> recs = TableParser.readTable(is, "41,112,124i,136i,148i,160", 1000);
-      for (TableParser.Record record : recs) {
-        String name = (String) record.get(0);
-        int disc = (Integer) record.get(2);
-        int cat = (Integer) record.get(3);
-        int param = (Integer) record.get(4);
-        String unit = (String) record.get(5);
+    List<TableParser.Record> recs = TableParser.readTable(is, "41,112,124i,136i,148i,160", 1000);
+    for (TableParser.Record record : recs) {
+      String name = (String) record.get(0);
+      int disc = (Integer) record.get(2);
+      int cat = (Integer) record.get(3);
+      int param = (Integer) record.get(4);
+      String unit = (String) record.get(5);
 
-        Grib2Parameter s = new Grib2Parameter(disc,cat,param,name,unit,null,null);
-        local.put(makeParamId(disc, cat, param), s);
-      }
+      Grib2Parameter s = new Grib2Parameter(disc,cat,param,name,unit,null,null);
+      localParams.put(makeParamId(disc, cat, param), s);
+    }
 
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);

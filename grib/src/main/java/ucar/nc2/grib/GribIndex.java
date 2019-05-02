@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
 import thredds.inventory.CollectionManager;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MFile;
@@ -57,7 +58,8 @@ public abstract class GribIndex {
     return gribCC;
   }
 
-  public static GribIndex open(boolean isGrib1, MFile mfile) throws IOException {
+  @Nullable
+  public static GribIndex open(boolean isGrib1, MFile mfile) {
 
     GribIndex index = isGrib1 ? new Grib1Index() : new Grib2Index();
 
@@ -101,9 +103,8 @@ public abstract class GribIndex {
    * @param dataModified last modified date of the data file
    * @param force rewrite? always, test, nocheck, never
    * @return true if index was successfully read, false if index must be (re)created
-   * @throws IOException on io error
    */
-  public abstract boolean readIndex(String location, long dataModified, CollectionUpdateType force) throws IOException;
+  public abstract boolean readIndex(String location, long dataModified, CollectionUpdateType force);
 
   /**
    * Make the gbx9 index file.

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CF;
 
 /**
@@ -19,6 +20,7 @@ public enum GribStatType {
   Average, Accumulation, Maximum, Minimum, DifferenceFromEnd, RootMeanSquare, StandardDeviation, Covariance, DifferenceFromStart, Ratio, Variance;
 
      // (code table 4.10) Statistical process used to calculate the processed field from the field at each time increment during the time range
+    @Nullable
     public static GribStatType getStatTypeFromGrib2(int grib2StatCode) {
       switch (grib2StatCode) {
         case 0:
@@ -93,6 +95,7 @@ public enum GribStatType {
    * @param stat the GRIB1 statistical type
    * @return equivalent CF, or null
    */
+  @Nullable
   public static CF.CellMethods getCFCellMethod(GribStatType stat) {
     switch (stat) {
       case Average:

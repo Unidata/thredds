@@ -351,8 +351,9 @@ public abstract class Grib2Gds {
   */
   public static class LatLon extends Grib2Gds {
     public float la1, lo1, la2, lo2, deltaLon, deltaLat;
-    public int basicAngle, basicAngleSubdivisions;
-    public int flags;
+    public final int basicAngle;
+    public final int basicAngleSubdivisions;
+    public final int flags;
 
     LatLon(byte[] data) {
       super(data, 0);
@@ -696,8 +697,14 @@ Template 3.10 (Grid definition template 3.10 - Mercator)
    73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Notes 2 and 3 of GDT 3.1)#GRIB2_6_0_1_temp.doc#G2_Gdt310n
    */
   public static class Mercator extends Grib2Gds {
-    public float la1, lo1, la2, lo2, lad, dX, dY;
-    public int flags;
+    public final float la1;
+    public final float lo1;
+    public final float la2;
+    public final float lo2;
+    public final float lad;
+    public final float dX;
+    public final float dY;
+    public final int flags;
 
     Mercator(byte[] data) {
       super(data, 10);
@@ -837,8 +844,14 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       65 (1): Scanning mode - (see Flag table 3.4)#GRIB2_6_0_1_codeflag.doc#G2_CF34
    */
   public static class PolarStereographic extends Grib2Gds {
-    float la1, lo1, lov, lad, dX, dY;
-    int flags, projCenterFlag;
+    final float la1;
+    final float lo1;
+    final float lov;
+    final float lad;
+    final float dX;
+    final float dY;
+    final int flags;
+    final int projCenterFlag;
 
     PolarStereographic(byte[] data) {
       super(data, 20);
@@ -918,7 +931,7 @@ Template 3.20 (Grid definition template 3.20 - polar stereographic projection)
       // since the scale factor at 60 degrees = k = 2*k0/(1+sin(60))  [Snyder,Working Manual p157]
       // then to make scale = 1 at 60 degrees, k0 = (1+sin(60))/2 = .933
       double scale;
-      if (GribNumbers.isUndefined(lad)) { // LOOK
+      if (GribNumbers.isUndefined(lad)) { // LOOK -9999.0 means use a default? Probably an encoding mistake fixed in code.
         scale = 0.9330127018922193;
       } else {
         scale = (1.0 + Math.sin(Math.toRadians(Math.abs(Math.abs(lad))))) / 2;
@@ -991,8 +1004,18 @@ Template 3.30 (Grid definition template 3.30 - Lambert conformal)
    78-81 (4): Longitude of the southern pole of projection
    */
   public static class LambertConformal extends Grib2Gds {
-    float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
-    int flags, projCenterFlag;
+    final float la1;
+    final float lo1;
+    final float lov;
+    final float lad;
+    final float dX;
+    final float dY;
+    final float latin1;
+    final float latin2;
+    final float latSouthPole;
+    final float lonSouthPole;
+    final int flags;
+    final int projCenterFlag;
 
     LambertConformal(byte[] data, int template) {
       super(data, template);
@@ -1225,7 +1248,7 @@ Template 3.40 (Grid definition template 3.40 - Gaussian latitude/longitude)
    73-nn (0): List of number of points along each meridian or parallel. - (These octets are only present for quasi-regular grids as described in Note 4)#GRIB2_6_0_1_temp.doc#G2_Gdt340n
    */
   public static class GaussLatLon extends LatLon {
-    int Nparellels;
+    final int Nparellels;
 
     GaussLatLon(byte[] data) {
       super(data);
@@ -1386,8 +1409,16 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
         Ry = 2 * Arcsin (106 )/Nr)/ dy
   */
   public static class SpaceViewPerspective extends Grib2Gds {
-    float LaP, LoP, dX, dY, Xp, Yp, Nr, Xo, Yo;
-    public int flags;
+    final float LaP;
+    final float LoP;
+    float dX;
+    float dY;
+    final float Xp;
+    final float Yp;
+    final float Nr;
+    final float Xo;
+    final float Yo;
+    public final int flags;
 
     SpaceViewPerspective(byte[] data) {
       super(data, 90);
@@ -1586,7 +1617,7 @@ Template 3.90 (Grid definition template 3.90 - space view perspective or orthogr
    */
 
   public static class CurvilinearOrthogonal extends Grib2Gds {
-    public int flags;
+    public final int flags;
 
     CurvilinearOrthogonal(byte[] data) {
       super(data, 204);

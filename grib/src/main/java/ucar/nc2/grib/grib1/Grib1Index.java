@@ -55,12 +55,11 @@ import java.util.*;
  * @since 9/5/11
  */
 public class Grib1Index extends GribIndex {
-  private static org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1Index.class);
 
   public static final String MAGIC_START = "Grib1Index";
   private static final int version = 5;
   private static final boolean debug = false;
-  private static final int grib1index_proto_version = 3;
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -118,20 +117,20 @@ public class Grib1Index extends GribIndex {
       NcStream.readFully(fin, m);
 
       Grib1IndexProto.Grib1Index proto = Grib1IndexProto.Grib1Index.parseFrom(m);
-      if (debug) System.out.printf("%s for %s%n",  proto.getFilename(), filename);
+      logger.debug("%s for %s%n",  proto.getFilename(), filename);
 
       gdsList = new ArrayList<>(proto.getGdsListCount());
       for (Grib1IndexProto.Grib1GdsSection pgds : proto.getGdsListList()) {
         Grib1SectionGridDefinition gds = readGds(pgds);
         gdsList.add(gds);
       }
-      if (debug) System.out.printf(" read %d gds%n", gdsList.size());
+      logger.debug(" read %d gds%n", gdsList.size());
 
       records = new ArrayList<>(proto.getRecordsCount());
       for (Grib1IndexProto.Grib1Record precord : proto.getRecordsList()) {
         records.add(readRecord(precord));
       }
-      if (debug) System.out.printf(" read %d records%n", records.size());
+      logger.debug(" read %d records%n", records.size());
 
     } catch (NegativeArraySizeException | IOException e) {
       logger.error("GribIndex failed on " + filename, e);
@@ -179,7 +178,6 @@ public class Grib1Index extends GribIndex {
 
       Grib1IndexProto.Grib1Index.Builder rootBuilder = Grib1IndexProto.Grib1Index.newBuilder();
       rootBuilder.setFilename(filename);
-      rootBuilder.setProtoVersion(grib1index_proto_version);
 
       if (dataRaf == null)  { // open if dataRaf not already open
         raf = RandomAccessFile.acquire(filename);
@@ -259,7 +257,7 @@ public class Grib1Index extends GribIndex {
     return b.build();
   }
 
-  static public void main(String[] args) throws IOException {
+  public static void main(String[] args) throws IOException {
    String gribName = args[0];
    new Grib1Index().makeIndex(gribName, null);
   }

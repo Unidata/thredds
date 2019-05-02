@@ -82,23 +82,19 @@ public class RangeSelector extends JPanel {
 
       if (help != null) {
         helpButton = new JButton("help");
-        helpButton.addActionListener(new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
+        helpButton.addActionListener(e -> {
             if (helpWindow == null)
               helpWindow = new HelpWindow(null, "Help on "+tit, helpMessage);
             helpWindow.show(helpButton);
-           }
         });
         butts.add(helpButton);
       }
 
       if (acceptButton) {
         JButton okButton = new JButton("accept");
-        okButton.addActionListener(new AbstractAction() {
-          public void actionPerformed(ActionEvent e) {
+        okButton.addActionListener(e -> {
             pp.accept();
             sendEvent();
-          }
         });
 
         butts.add(okButton);
@@ -162,9 +158,8 @@ public class RangeSelector extends JPanel {
     /// event management
 
     // listen for changes from user manupulation
-    maxSlider.addChangeListener( new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        if (!eventOK) return;
+    maxSlider.addChangeListener(e -> {
+        if (!eventOK) { return; }
 
         int pos = maxSlider.getValue();
         double val = scale.slider2world(pos);
@@ -176,12 +171,10 @@ public class RangeSelector extends JPanel {
         eventOK = true;
 
         if (val < minSelect) minSlider.setValue(pos); // drag min along
-     }
     });
 
-    minSlider.addChangeListener( new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        if (!eventOK) return;
+    minSlider.addChangeListener(e -> {
+        if (!eventOK) { return; }
 
         int pos = minSlider.getValue();
         double val = scale.slider2world(pos);
@@ -194,7 +187,6 @@ public class RangeSelector extends JPanel {
 
         if ((val > maxSelect) && (maxSlider != null))
          maxSlider.setValue(pos); // drag max along
-     }
     });
 
     minField.addPropertyChangeListener(new PropertyChangeListener() {

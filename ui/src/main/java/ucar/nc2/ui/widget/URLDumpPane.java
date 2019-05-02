@@ -18,7 +18,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.ComboBox;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -33,7 +32,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
-
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
  * A text widget to dump a web URL.
@@ -69,48 +72,40 @@ public class URLDumpPane extends TextHistoryPane {
 
     JButton buttHead = new JButton("Head");
     buttHead.setToolTipText("Open URL connection, Headers only");
-    buttHead.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    buttHead.addActionListener(e -> {
         String urlString = (String) cb.getSelectedItem();
         process(urlString, Command.HEAD);
         gotoTop();
         cb.addItem(urlString);
-      }
     });
 
 
     JButton buttRead = new JButton("Get");
     buttRead.setToolTipText("Open URL connection, Get content");
-    buttRead.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    buttRead.addActionListener(e -> {
         String urlString = (String) cb.getSelectedItem();
         process(urlString, Command.GET);
         gotoTop();
         cb.addItem(urlString);
-      }
     });
 
     JButton buttOpt = new JButton("Options");
     buttOpt.setToolTipText("Server options using HttpClient");
-    buttOpt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    buttOpt.addActionListener(e -> {
         String urlString = (String) cb.getSelectedItem();
         process(urlString, Command.OPTIONS);
         gotoTop();
         cb.addItem(urlString);
-      }
     });
 
 
     JButton buttPut = new JButton("Put");
     buttPut.setToolTipText("Put using HttpClient");
-    buttPut.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    buttPut.addActionListener(e -> {
         String urlString = (String) cb.getSelectedItem();
         process(urlString, Command.PUT);
         gotoTop();
         cb.addItem(urlString);
-      }
     });
 
     JPanel buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));

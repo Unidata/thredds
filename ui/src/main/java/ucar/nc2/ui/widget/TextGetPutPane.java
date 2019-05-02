@@ -73,29 +73,23 @@ public class TextGetPutPane extends TextHistoryPane {
 
       JButton getButton = new JButton("Get");
       getButton.setToolTipText("GET URL contents");
-      getButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      getButton.addActionListener(e -> {
           setURL( (String) cb.getSelectedItem());
-        }
       });
       JButton validButton = new JButton("Validate");
       validButton.setToolTipText("Validate catalog");
-      validButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      validButton.addActionListener(e -> {
           validate( (String) cb.getSelectedItem());
-        }
       });
       JButton putButton = new JButton("Put");
       putButton.setToolTipText("PUT URL contents");
-      putButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      putButton.addActionListener(e -> {
           try {
             putURL( (String) cb.getSelectedItem());
           } catch (IOException e1) {
             javax.swing.JOptionPane.showMessageDialog(null, e1.getMessage());
           }
           firePutActionEvent();
-        }
       });
 
       /* AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
@@ -164,8 +158,7 @@ public class TextGetPutPane extends TextHistoryPane {
 
       task = new GetContentsTask(urlString);
       ProgressMonitor pm = new ProgressMonitor(task);
-      pm.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      pm.addActionListener(e -> {
           // System.out.println(" setURL event"+e.getActionCommand());
           if (e.getActionCommand().equals("success")) {
             ta.setText(task.contents);
@@ -176,7 +169,6 @@ public class TextGetPutPane extends TextHistoryPane {
               cb.addItem(task.urlString);
             cb.setSelectedItem(task.urlString);
           }
-        }
       });
       pm.start(this, "Open URL " + urlString, 10);
     }

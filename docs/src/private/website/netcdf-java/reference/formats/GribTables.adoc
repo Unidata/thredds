@@ -13,7 +13,7 @@ In principle, if everything is done right, the reader ends up using the
 table that the writer used. In practice, there are many ways for that to
 fail. In order to increase the reliability of table-based file formats,
 I have
-http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[proposed]
+https://doi.org/10.5065/vkan-dp10[proposed]
 a web registry of tables, which would create a unique id for each
 registered table. The writer would then embed the id into the GRIB or
 BUFR message (possibly in the "local use" section of GRIB-2, or GRIB-1

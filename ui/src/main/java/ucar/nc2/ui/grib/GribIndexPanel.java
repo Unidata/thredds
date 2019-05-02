@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ui.grib;
 
 import ucar.ma2.DataType;
@@ -6,7 +11,7 @@ import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.PopupMenu;
@@ -19,7 +24,6 @@ import ucar.util.prefs.ui.BeanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -45,27 +49,23 @@ public class GribIndexPanel extends JPanel {
     this.prefs = prefs;
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    infoButton.addActionListener(e -> {
         Formatter f = new Formatter();
         showIndex(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
-      }
     });
     buttPanel.add(infoButton);
 
 
     /* AbstractButton filesButton = BAMutil.makeButtcon("Information", "Show Files", false);
-    filesButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    filesButton.addActionListener(e -> {
         Formatter f = new Formatter();
         showFiles(f);
         detailTA.setText(f.toString());
         detailTA.gotoTop();
         detailWindow.show();
-      }
     });
     buttPanel.add(filesButton);    */
 
@@ -250,7 +250,7 @@ public class GribIndexPanel extends JPanel {
 
   ////////////////////////////////////////////////////////////////////////////
   Grib1Customizer cust1;
-  Grib2Customizer cust2;
+  Grib2Tables cust2;
 
   public class RecordBean {
     Grib1Record gr1;
@@ -261,7 +261,7 @@ public class GribIndexPanel extends JPanel {
 
     public RecordBean(Grib2Record gr) throws IOException {
       this.gr2 = gr;
-      if (cust2 == null) cust2 = Grib2Customizer.factory(gr2);
+      if (cust2 == null) cust2 = Grib2Tables.factory(gr2);
     }
 
     public RecordBean(Grib1Record gr) {
@@ -311,11 +311,7 @@ public class GribIndexPanel extends JPanel {
     }
 
     private void show(Grib2Record gr2, Formatter f) {
-      try {
-        Grib2Show.showCompleteGribRecord(f, indexFile, gr2, cust2);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      Grib2Show.showCompleteGribRecord(f, indexFile, gr2, cust2);
     }
   }
 

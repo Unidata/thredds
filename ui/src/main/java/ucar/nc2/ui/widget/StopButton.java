@@ -44,11 +44,9 @@ public class StopButton extends JButton implements CancelTask {
     //setPreferredSize(new java.awt.Dimension(28,28));
     setFocusPainted(false);
 
-    super.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    super.addActionListener(ne -> {
         if (debug) System.out.println(" StopButton.EVENT");
         isCancelled = true;
-      }
     });
   }
 
@@ -59,11 +57,9 @@ public class StopButton extends JButton implements CancelTask {
     setToolTipText(tooltip);
     setFocusPainted(false);
 
-    super.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    super.addActionListener(e -> {
         if (debug) System.out.println(" StopButton.EVENT");
         isCancelled = true;
-      }
     });
   }
 
@@ -75,13 +71,13 @@ public class StopButton extends JButton implements CancelTask {
    *  </ul>
    */
   public void addActionListener(ActionListener l) {
-    listenerList.add(java.awt.event.ActionListener.class, l);
+    listenerList.add(ActionListener.class, l);
   }
   /** Remove listener */
   public void removeActionListener(ActionListener l) {
-    listenerList.remove(java.awt.event.ActionListener.class, l);
+    listenerList.remove(ActionListener.class, l);
   }
-  private void fireEvent(java.awt.event.ActionEvent event) {
+  private void fireEvent(ActionEvent event) {
     // Guaranteed to return a non-null array
     Object[] listeners = listenerList.getListenerList();
     // Process the listeners last to first

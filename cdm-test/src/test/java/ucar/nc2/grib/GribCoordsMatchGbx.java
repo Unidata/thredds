@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +22,13 @@ import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.grib.collection.*;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib2.Grib2Index;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.iosp.IOServiceProvider;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -500,7 +502,7 @@ public class GribCoordsMatchGbx {
     }
 
     Grib2Record grib2 = idxHash.get(dr.pos);
-    Grib2Customizer cust = Grib2Customizer.factory(grib2);
+    Grib2Tables cust = Grib2Tables.factory(grib2);
 
     Grib2RecordBean bean = new Grib2RecordBean(cust, grib2);
     boolean paramOk = true;
@@ -527,7 +529,7 @@ public class GribCoordsMatchGbx {
 
     boolean timeOk = true;
     if (bean.isTimeInterval()) {
-      TimeCoord.TinvDate dateFromGribRecord = bean.getTimeIntervalDates();
+      TimeCoordIntvDateValue dateFromGribRecord = bean.getTimeIntervalDates();
       CalendarDate[] date_bounds = (CalendarDate[]) coords.get("timeDateIntv");
       if (date_bounds == null) {
         date_bounds = makeDateBounds(coords, rt_val);
@@ -599,7 +601,7 @@ public class GribCoordsMatchGbx {
   }
 
   public class Grib2RecordBean {
-    Grib2Customizer cust;
+    Grib2Tables cust;
     Grib2Record gr;
     Grib2Pds pds;
     int discipline;
@@ -607,7 +609,7 @@ public class GribCoordsMatchGbx {
     public Grib2RecordBean() {
     }
 
-    public Grib2RecordBean(Grib2Customizer cust, Grib2Record gr) throws IOException {
+    public Grib2RecordBean(Grib2Tables cust, Grib2Record gr) throws IOException {
       this.cust = cust;
       this.gr = gr;
       this.pds = gr.getPDS();
@@ -682,7 +684,8 @@ public class GribCoordsMatchGbx {
       return pds instanceof Grib2Pds.PdsInterval;
     }
 
-    public TimeCoord.TinvDate getTimeIntervalDates() {
+    @Nullable
+    public TimeCoordIntvDateValue getTimeIntervalDates() {
       if (cust != null && isTimeInterval()) {
         return cust.getForecastTimeInterval(gr);
       }

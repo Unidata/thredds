@@ -119,20 +119,16 @@ public class BeanTable extends JPanel {
       add(buttPanel, BorderLayout.SOUTH);
 
       // button listeners
-      newButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
+      newButton.addActionListener(e -> {
           try {
-            Object bean = beanClass.newInstance();
-            addBean(bean);
-          } catch (Exception e) {
-            e.printStackTrace();
+            Object newbean = beanClass.newInstance();
+            addBean(newbean);
+          } catch (Exception exc) {
+            exc.printStackTrace();
           }
-
-        }
       });
 
-      deleteButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      deleteButton.addActionListener(e -> {
           if (JOptionPane.showConfirmDialog(null, "Do you want to delete all selected records",
                   "Delete Records", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
             return;
@@ -141,7 +137,6 @@ public class BeanTable extends JPanel {
             beans.remove(o);
           }
           model.fireTableDataChanged();
-        }
       });
     }
 
@@ -212,13 +207,12 @@ public class BeanTable extends JPanel {
     listenerList = new EventListenerList();
 
     ListSelectionModel rowSM = jtable.getSelectionModel();
-    rowSM.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        if (e.getValueIsAdjusting()) return;  //Ignore extra messages.
+    rowSM.addListSelectionListener(e -> {
+        if (e.getValueIsAdjusting()) { return; } //Ignore extra messages.
         ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-        if (!lsm.isSelectionEmpty())
+        if (!lsm.isSelectionEmpty()) {
           fireEvent(e);
-      }
+        }
     });
 
   }

@@ -4,7 +4,8 @@
  */
 package ucar.nc2.grib.grib2.table;
 
-import ucar.nc2.grib.TimeCoord;
+import javax.annotation.Nullable;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2Utils;
@@ -21,19 +22,14 @@ import ucar.nc2.time.CalendarPeriod;
  * @since 1/28/2016.
  */
 public class NwsMetDevTables extends NcepLocalTables {
-  private static NwsMetDevTables single;
 
-  public static NwsMetDevTables getCust(Grib2Table table) {
-    if (single == null) single = new NwsMetDevTables(table);
-    return single;
-  }
-
-  private NwsMetDevTables(Grib2Table grib2Table) {
+  NwsMetDevTables(Grib2TableConfig grib2Table) {
     super(grib2Table);
   }
 
   @Override
-  public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
+  @Nullable
+  public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
     if (!pds.isTimeInterval()) return null;
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) gr.getPDS();
@@ -59,7 +55,7 @@ public class NwsMetDevTables extends NcepLocalTables {
     CalendarDate referenceDate = gr.getReferenceDate();
     CalendarDate intvStart = referenceDate.add(ftime, fld);
 
-    return new TimeCoord.TinvDate(intvStart, intvEnd);
+    return new TimeCoordIntvDateValue(intvStart, intvEnd);
   }
 
   /**

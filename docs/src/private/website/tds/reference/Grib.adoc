@@ -16,7 +16,7 @@ Data is stored in compressed binary format, replacing earlier text encoding form
 === Standard Tables / Local Tables
 
 Information in the files references external tables, either WMO standard tables or local tables defined by each National Center.
-For criticism of GRIB table handling practices, see: http://www.unidata.ucar.edu/staff/caron/papers/GRIBarchivals.pdf[Archiving in GRIB considered Harmful].
+For criticism of GRIB table handling practices, see: https://doi.org/10.5065/vkan-dp10[Archiving in GRIB considered Harmful].
 
 ==== WMO
 - The GRIB Bible: http://www.wmo.int/pages/prog/www/WMOCodes/WMO306_vI2/VolumeI.2.html[Manual on Codes (WMO-No. 306)]

@@ -6,12 +6,20 @@ package ucar.nc2.ui.grib;
 
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.MFile;
-import ucar.coord.*;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
+import ucar.nc2.grib.collection.GribCollectionImmutable.Record;
 import ucar.nc2.grib.collection.PartitionCollectionImmutable;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateTime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeAbstract;
+import ucar.nc2.grib.coord.CoordinateTimeIntv;
+import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.SparseArray;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordValue;
 import ucar.nc2.time.*;
 import ucar.nc2.ui.MFileTable;
 import ucar.nc2.ui.widget.BAMutil;
@@ -27,7 +35,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -43,7 +50,7 @@ import java.util.List;
  * @since 12/5/13
  */
 public class CdmIndexPanel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CdmIndexPanel.class);
 
   private PreferencesExt prefs;
   private BeanTable groupTable, varTable, coordTable;
@@ -58,48 +65,40 @@ public class CdmIndexPanel extends JPanel {
 
     if (buttPanel != null) {
       AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Info", false);
-      infoButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      infoButton.addActionListener(e -> {
           Formatter f = new Formatter();
           showInfo(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
-        }
       });
       buttPanel.add(infoButton);
 
       AbstractButton filesButton = BAMutil.makeButtcon("catalog", "Show Files", false);
-      filesButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      filesButton.addActionListener(e -> {
           if (gc != null)
             showFileTable(gc, null);
-        }
       });
       buttPanel.add(filesButton);
 
       AbstractButton rawButton = BAMutil.makeButtcon("TableAppearence", "Estimate memory use", false);
-      rawButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      rawButton.addActionListener(e -> {
           Formatter f = new Formatter();
           showMemoryEst(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
-        }
       });
       buttPanel.add(rawButton);
 
 
       AbstractButton checkAllButton = BAMutil.makeButtcon("Select", "Check entire file", false);
-      rawButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+      rawButton.addActionListener(e -> {
           Formatter f = new Formatter();
           checkAll(f);
           infoTA.setText(f.toString());
           infoTA.gotoTop();
           infoWindow.show();
-        }
       });
       buttPanel.add(checkAllButton);
 
@@ -409,7 +408,7 @@ public class CdmIndexPanel extends JPanel {
             if (count == 0) f.format(" total   SA  Variable%n");
             try {
               v.readRecords();
-              SparseArray<GribCollectionImmutable.Record> sa = v.getSparseArray();
+              SparseArray<Record> sa = v.getSparseArray();
               int ntracks = sa.getTotalSize();
               int nrecords = sa.getContent().size();
               int memEstForSA = 276 + nrecords * 40 + ntracks * 4;
@@ -963,8 +962,8 @@ public class CdmIndexPanel extends JPanel {
         //double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
 
         if (time.isTimeInterval()) {
-          start = ((TimeCoord.Tinv) offsets.get(0)).getBounds1(); // + offsetFromMaster;
-          end = ((TimeCoord.Tinv) offsets.get(n - 1)).getBounds2(); // + offsetFromMaster;
+          start = ((TimeCoordIntvValue) offsets.get(0)).getBounds1(); // + offsetFromMaster;
+          end = ((TimeCoordIntvValue) offsets.get(n - 1)).getBounds2(); // + offsetFromMaster;
           resol = (n > 1) ? (end - start) / (n - 1) : 0.0;
 
         } else {
@@ -984,7 +983,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateTimeIntv) {
         CoordinateTimeIntv time = (CoordinateTimeIntv) coord;
-        List<TimeCoord.Tinv> offsets = time.getTimeIntervals();
+        List<TimeCoordIntvValue> offsets = time.getTimeIntervals();
         double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
         int n = offsets.size();
         start = offsets.get(0).getBounds1() + offsetFromMaster;
@@ -992,7 +991,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateVert) {
         CoordinateVert vert = (CoordinateVert) coord;
-        List<VertCoord.Level> offsets = vert.getLevelSorted();
+        List<VertCoordValue> offsets = vert.getLevelSorted();
         int n = offsets.size();
         if (vert.isLayer()) {
           start = offsets.get(0).getValue1();
@@ -1309,7 +1308,7 @@ public class CdmIndexPanel extends JPanel {
 
      }
 
-     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoord.Tinv> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
+     void showRecords2Dintv(Formatter f, VertCoord vcoord, List<TimeCoordIntvValue> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
        f.format(" timeIntv (down) vertLevel (across) %n");
 
        f.format("%12s ", " ");
@@ -1343,7 +1342,7 @@ public class CdmIndexPanel extends JPanel {
       return wantFile.getPath();
     }
 
-     void showRecords2Dintv(Formatter f, List<TimeCoord.Tinv> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
+     void showRecords2Dintv(Formatter f, List<TimeCoordIntvValue> tinvs, GribCollectionImmutable.Record[] records) throws IOException {
        f.format(" timeIntv (down) %n");
 
        for (int timeIdx = 0; timeIdx < v.ntimes; timeIdx++) {

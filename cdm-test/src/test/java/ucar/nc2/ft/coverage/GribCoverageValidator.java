@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.grib.*;
 import ucar.nc2.grib.collection.GribDataValidator;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1Record;
@@ -15,7 +16,7 @@ import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
 import ucar.nc2.grib.grib2.Grib2RecordScanner;
 import ucar.nc2.grib.grib2.Grib2Utils;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.unidata.io.RandomAccessFile;
 import ucar.unidata.util.test.Assert2;
@@ -31,7 +32,7 @@ public class GribCoverageValidator implements GribDataValidator {
     if (cust instanceof Grib1Customizer)
       validateGrib1((Grib1Customizer) cust, rafData, dataPos, coords);
     else
-      validateGrib2((Grib2Customizer) cust, rafData, dataPos, coords);
+      validateGrib2((Grib2Tables) cust, rafData, dataPos, coords);
   }
 
   public void validateGrib1(Grib1Customizer cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
@@ -86,7 +87,7 @@ public class GribCoverageValidator implements GribDataValidator {
 
   }
 
-  public void validateGrib2(Grib2Customizer cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
+  public void validateGrib2(Grib2Tables cust, RandomAccessFile rafData, long dataPos, SubsetParams coords) throws IOException {
     Grib2Record gr = Grib2RecordScanner.findRecordByDrspos(rafData, dataPos);
     Grib2Pds pds = gr.getPDS();
 
@@ -98,7 +99,7 @@ public class GribCoverageValidator implements GribDataValidator {
     // time offset
     CalendarDate wantTimeOffset = (CalendarDate) coords.get(SubsetParams.timeOffsetDate);
     if (gr.getPDS().isTimeInterval()) {
-      TimeCoord.TinvDate tinv = cust.getForecastTimeInterval(gr);
+      TimeCoordIntvDateValue tinv = cust.getForecastTimeInterval(gr);
       double[] wantTimeOffsetIntv = coords.getTimeOffsetIntv();
       if (wantTimeOffset != null) {
         Assert.assertTrue("time coord lower", !tinv.getStart().isAfter(wantTimeOffset));          // lower <= time

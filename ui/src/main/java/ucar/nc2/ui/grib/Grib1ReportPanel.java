@@ -17,7 +17,6 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.collection.Grib;
-import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.Attribute;
 import ucar.nc2.dt.GridDatatype;
@@ -41,8 +40,8 @@ import java.util.*;
  */
 public class Grib1ReportPanel extends ReportPanel {
 
-  public static enum Report {
-    checkTables, showLocalParams, summary, rename, checkRename, showEncoding, gribIndex
+  public enum Report {
+    checkTables, showLocalParams, summary, rename, showEncoding, gribIndex, gds
   }
 
   private Grib1Customizer cust = null;
@@ -64,6 +63,9 @@ public class Grib1ReportPanel extends ReportPanel {
       case checkTables:
         doCheckTables(f, dcm, useIndex);
         break;
+      case gds:
+        doUniqueGds(f, dcm, useIndex);
+        break;
       case showLocalParams:
         doCheckLocalParams(f, dcm, useIndex);
         break;
@@ -72,9 +74,6 @@ public class Grib1ReportPanel extends ReportPanel {
         break;
       case rename:
         doRename(f, dcm, useIndex);
-        break;
-      case checkRename:
-        doCheckRename(f, dcm, useIndex);
         break;
       case showEncoding:
         doShowEncoding(f, dcm);
@@ -89,7 +88,7 @@ public class Grib1ReportPanel extends ReportPanel {
     String path = mf.getPath();
     Grib1Index index = new Grib1Index();
     if (!index.readIndex(path, mf.getLastModified())) {
-      // make sure its a grib2 file
+      // make sure its a grib1 file
       try (RandomAccessFile raf = new RandomAccessFile(path, "r")) {
         if (!Grib1RecordScanner.isValidFile(raf)) return null;
         index.makeIndex(path, raf);
@@ -102,8 +101,6 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doGribIndex(Formatter f, MCollection dcm, boolean eachFile) throws IOException {
     Counters counters = new Counters();
-    counters.add("GDS");
-    counters.add("GDShashes");
 
     // must open collection again without gbx filtering
     try (MCollection dcm2 = getCollectionUnfiltered(spec, f)) {
@@ -192,11 +189,9 @@ public class Grib1ReportPanel extends ReportPanel {
 
   /////////////////////////////////////////////////////////////////
 
+  // Look through the collection and find what GDS templates are used.
   private void doCheckTables(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
     Counters counters = new Counters();
-    counters.add("tableVersion");
-    counters.add("local");
-    counters.add("missing");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       String path = mfile.getPath();
@@ -229,6 +224,7 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+        if (gr == null) break;
         doCheckTables(gr, counters);
       }
 
@@ -241,34 +237,22 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doCheckTables(ucar.nc2.grib.grib1.Grib1Record gr, Counters counters) throws IOException {
     Grib1SectionProductDefinition pds = gr.getPDSsection();
-    String key = pds.getCenter() + "-" + pds.getSubCenter() + "-" + pds.getTableVersion();
+    String key = Grib1Utils.extractParameterCode(gr);
+    counters.count("center", pds.getCenter());
     counters.count("tableVersion", key);
 
     if (pds.getParameterNumber() > 127)
-      counters.count("local", pds.getParameterNumber());
+      counters.count("local", key);
 
     Grib1ParamTableReader table = new Grib1ParamTables().getParameterTable(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion());
-    // if (table == null && useIndex) table = Grib1ParamTables.getDefaultTable();
     if (table == null || null == table.getParameter(pds.getParameterNumber()))
-      counters.count("missing", pds.getParameterNumber());
+      counters.count("missing", key);
   }
 
   /////////////////////////////////////////////////////////////////
 
   private void doScanIssues(Formatter f, MCollection dcm, boolean useIndex, boolean eachFile, boolean extraInfo) throws IOException {
     Counters countersAll = new Counters();
-    countersAll.add("referenceDate");
-    countersAll.add("timeCoord");
-    countersAll.add("table version");
-    countersAll.add("param");
-    countersAll.add("timeRangeIndicator");
-    countersAll.add("vertCoord");
-    countersAll.add("earthShape");
-    countersAll.add("uvIsReletive");
-
-    countersAll.add("vertCoordInGDS");
-    countersAll.add("predefined");
-    countersAll.add("thin");
 
     for (MFile mfile : dcm.getFilesSorted()) {
       Counters countersOneFile = countersAll.makeSubCounters();
@@ -309,6 +293,7 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+        if (gr == null) break;
         doScanIssues(gr, fm, path, extraInfo, counters);
       }
 
@@ -333,10 +318,10 @@ public class Grib1ReportPanel extends ReportPanel {
 
     if (cust == null) cust = Grib1Customizer.factory(gr, null);
 
-    Grib1ParamTime ptime = cust.getParamTime(pds);;
+    Grib1ParamTime ptime = cust.getParamTime(pds);
     counters.count("timeCoord", ptime.getTimeCoord());
     counters.count("earthShape", gds.getEarthShape());
-    counters.count("uvIsReletive", gds.getUVisReletive() ? "true" : "false");
+    counters.count("UVisReletiveToEastNorth", gds.getUVisReletiveToEastNorth() ? "true" : "false");
 
     if (gdss.isThin()) {
       if (extraInfo) fm.format("  THIN= (gds=%d) %s%n", gdss.getGridTemplate(), path);
@@ -360,15 +345,6 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private void doShowEncoding(Formatter f, MCollection dcm) throws IOException {
     Counters countersAll = new Counters();
-    countersAll.add("decimalScale");
-    countersAll.add("binScale");
-    countersAll.add("nbits");
-    countersAll.add("gridType");
-    countersAll.add("packing");
-    countersAll.add("dataType");
-    countersAll.add("hasMore");
-    countersAll.add("mixed scaling");
-
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
       // need dataRaf, so cant useIndex
@@ -387,14 +363,15 @@ public class Grib1ReportPanel extends ReportPanel {
       Grib1RecordScanner reader = new Grib1RecordScanner(raf);
       while (reader.hasNext()) {
         ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+        if (gr == null) break;
         GribData.Info info = gr.getBinaryDataInfo(raf);
-        counters.count("decimals", info.decimalScaleFactor);
+        counters.count("decimalScale", info.decimalScaleFactor);
         counters.count("binScale", info.binaryScaleFactor);
         counters.count("nbits", info.numberOfBits);
-        counters.count("gridType", info.getGridPoint());
-        counters.count("packing", info.getPacking());
-        counters.count("dataType", info.getDataType());
-        counters.count("hasMore", info.hasMore() ? 1 : 0);
+        counters.count("gridType", info.getGridPointS());
+        counters.count("packing", info.getPackingS());
+        counters.count("dataType", info.getDataTypeS());
+        counters.count("hasOctet14", info.hasOctet14() ? 1 : 0);
 
         if (info.binaryScaleFactor != 0 && info.decimalScaleFactor != 0) {
           counters.count("scale", 1);
@@ -408,64 +385,6 @@ public class Grib1ReportPanel extends ReportPanel {
       System.out.printf("Failed on %s%n", path);
       ioe.printStackTrace();
     }
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////
-
-  private void doCheckRename(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    f.format("CHECK Renaming uniqueness %s%n", dcm.getCollectionName());
-
-    GribVariableRenamer renamer = new GribVariableRenamer();
-    int fail = 0;
-    int multiple = 0;
-    int ok = 0;
-
-    for (MFile mfile : dcm.getFilesSorted()) {
-      f.format("%n%s%n", mfile.getPath());
-
-      try (NetcdfFile ncfileOld = NetcdfFile.open(mfile.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null)) {
-        NetcdfDataset ncdOld = new NetcdfDataset(ncfileOld);
-        GridDataset gridOld = new GridDataset(ncdOld);
-
-        try (GridDataset gdsNew = GridDataset.open(mfile.getPath())) {
-
-          for (GridDatatype grid : gridOld.getGrids()) {
-            // if (useIndex) {
-            List<String> newNames = renamer.matchNcepNames(gdsNew, grid.getShortName());
-            if (newNames.size() == 0) {
-              f.format(" ***FAIL %s%n", grid.getShortName());
-              fail++;
-            } else if (newNames.size() != 1) {
-              f.format(" *** %s multiple matches on %n", grid.getShortName());
-              for (String newName : newNames)
-                f.format("    %s%n", newName);
-              f.format("%n");
-              multiple++;
-            } else if (useIndex) {
-              f.format(" %s%n %s%n%n", grid.getShortName(), newNames.get(0));
-              ok++;
-            }
-
-          /* } else {
-            String newName = renamer.getNewName(mfile.getName(), grid.getShortName());
-            if (newName == null) {
-              f.format(" ***Grid %s renamer failed%n", grid.getShortName());
-              continue;
-            }
-
-            // test it really exists
-            GridDatatype ggrid = gdsNew.findGridByName(newName);
-            if (ggrid == null) f.format(" ***Grid %s new name = %s not found%n", grid.getShortName(), newName);
-          } */
-          }
-        }
-
-      } catch (Throwable t) {
-        t.printStackTrace();
-      }
-    }
-
-    f.format("Fail=%d multiple=%d ok=%d%n", fail, multiple, ok);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////
@@ -531,11 +450,7 @@ public class Grib1ReportPanel extends ReportPanel {
       // add to gridsAll
       for (GridMatch gmOld : listOld) {
         String key = gmOld.grid.getFullName();
-        List<String> newGrids = gridsAll.get(key);
-        if (newGrids == null) {
-          newGrids = new ArrayList<>();
-          gridsAll.put(key, newGrids);
-        }
+        List<String> newGrids = gridsAll.computeIfAbsent(key, k -> new ArrayList<>());
         if (gmOld.match != null) {
           String keyNew = gmOld.match.grid.getFullName() + " == " + gmOld.match.grid.getDescription();
           if (!newGrids.contains(keyNew)) newGrids.add(keyNew);
@@ -803,9 +718,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
   private Map<Integer, GridMatch> getGridsNew(MFile ff, Formatter f) throws IOException {
     Map<Integer, GridMatch> grids = new HashMap<>(100);
-    GridDataset ncfile = null;
-    try {
-      ncfile = GridDataset.open(ff.getPath());
+    try (GridDataset ncfile = GridDataset.open(ff.getPath())) {
       for (GridDatatype dt : ncfile.getGrids()) {
         GridMatch gm = new GridMatch(ncfile, dt, true);
         GridMatch dup = grids.get(gm.hashCode());
@@ -814,31 +727,26 @@ public class Grib1ReportPanel extends ReportPanel {
         else
           grids.put(gm.hashCode(), gm);
       }
-    } finally {
-      if (ncfile != null) ncfile.close();
     }
     return grids;
   }
 
   private Map<Integer, GridMatch> getGridsOld(MFile ff, Formatter f) throws IOException {
     Map<Integer, GridMatch> grids = new HashMap<>(100);
-    NetcdfFile ncfile = null;
-    try {
-      ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);
+    try (NetcdfFile ncfile = NetcdfFile.open(ff.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null)) {
       NetcdfDataset ncd = new NetcdfDataset(ncfile);
       GridDataset grid = new GridDataset(ncd);
       for (GridDatatype dt : grid.getGrids()) {
         GridMatch gm = new GridMatch(grid, dt, false);
         GridMatch dup = grids.get(gm.hashCode());
         if (dup != null)
-          f.format(" DUP OLD (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(), gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
+          f.format(" DUP OLD (%d == %d) = %s (%s) and DUP %s (%s)%n", gm.hashCode(), dup.hashCode(),
+              gm.grid.getFullName(), gm.show(), dup.grid.getFullName(), dup.show());
         else
           grids.put(gm.hashCode(), gm);
       }
     } catch (Throwable t) {
       t.printStackTrace();
-    } finally {
-      if (ncfile != null) ncfile.close();
     }
     return grids;
   }
@@ -871,77 +779,85 @@ public class Grib1ReportPanel extends ReportPanel {
         else
           f.format(" %10d == %s%n", gr.getDataSection().getStartingPosition(), Misc.showBytes(lus.getRawBytes()));
       }
-    }
+    } */
 
     ///////////////////////////////////////////////
 
-    private void doUniqueGds(Formatter f, CollectionManager dcm, boolean useIndex) throws IOException {
+    // Look through the collection and find what GDS templates are used.
+    private void doUniqueGds(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
       f.format("Show Unique GDS%n");
 
-      Map<Integer, GdsList> gdsSet = new HashMap<Integer, GdsList>();
-      for (MFile mfile : dcm.getFiles()) {
+      Map<Integer, GdsList> gdsSet = new HashMap<>();
+      for (MFile mfile : dcm.getFilesSorted()) {
         f.format(" %s%n", mfile.getPath());
         doUniqueGds(mfile, gdsSet, f);
       }
 
-      for (GdsList gdsl : gdsSet.values()) {
-        f.format("%nGDS = %d x %d (%d) %n", gdsl.gds.ny, gdsl.gds.nx, gdsl.gds.template);
-        for (FileCount fc : gdsl.fileList)
-          f.format("  %5d %s (%d)%n", fc.count, fc.f.getPath(), fc.countGds);
+      List<GdsList> sorted = new ArrayList<>(gdsSet.values());
+      Collections.sort(sorted);
+
+      for (GdsList gdsl : sorted) {
+        f.format("%nGDS %s template= %d %n", gdsl.gds.getNameShort(), gdsl.gds.template);
+        for (FileCount fc : gdsl.fileList) {
+          f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
+        }
       }
     }
 
     private void doUniqueGds(MFile mf, Map<Integer, GdsList> gdsSet, Formatter f) throws IOException {
       String path = mf.getPath();
-      GribIndex index = new GribIndex();
-      if (!index.readIndex(path, mf.getLastModified()))
-        index.makeIndex(path, f);
+      Grib1Index g1idx = new Grib1Index();
+      boolean ok = g1idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
+      if (!ok) {
+        f.format("**Cant open %s%n", path);
+        return;
+      }
 
-      int countGds = index.getGds().size();
-      for (Grib2Record gr : index.getRecords()) {
-        int hash = gr.getGDSsection().getGDS().hashCode();
-        GdsList gdsList = gdsSet.get(hash);
-        if (gdsList == null) {
-          gdsList = new GdsList(gr.getGDSsection().getGDS());
-          gdsSet.put(hash, gdsList);
-        }
-        FileCount fc = gdsList.contains(mf);
-        if (fc == null) {
-          fc = new FileCount(mf, countGds);
-          gdsList.fileList.add(fc);
-        }
-        fc.count++;
+      for (Grib1Record gr : g1idx.getRecords()) {
+        int template = gr.getGDSsection().getGDS().template;
+        gdsSet.computeIfAbsent(template, k -> new GdsList(gr.getGDSsection().getGDS()));
+        GdsList gdsList = gdsSet.get(template);
+        FileCount fc = gdsList.findOrAdd(mf);
+        fc.countRecords++;
       }
     }
 
-    private class GdsList {
-      Grib2Gds gds;
-      java.util.List<FileCount> fileList = new ArrayList<FileCount>();
+    private class GdsList implements Comparable<GdsList> {
+      Grib1Gds gds;
+      java.util.List<FileCount> fileList = new ArrayList<>();
 
-      private GdsList(Grib2Gds gds) {
+      private GdsList(Grib1Gds gds) {
         this.gds = gds;
       }
 
-      FileCount contains(MFile f) {
-        for (FileCount fc : fileList)
-          if (fc.f.getPath().equals(f.getPath())) return fc;
-        return null;
+      FileCount findOrAdd(MFile f) {
+        for (FileCount fc : fileList) {
+          if (fc.f.getPath().equals(f.getPath()))
+            return fc;
+        }
+
+        FileCount fc = new FileCount(f);
+        fileList.add(fc);
+        return fc;
       }
 
+      @Override
+      public int compareTo(GdsList o) {
+        return gds.template - o.gds.template;
+      }
     }
 
     private class FileCount {
-      private FileCount(MFile f, int countGds) {
+      private FileCount(MFile f) {
         this.f = f;
-        this.countGds = countGds;
       }
 
       MFile f;
-      int count = 0;
-      int countGds = 0;
+      int countRecords = 0;
     }
 
     ///////////////////////////////////////////////
+  /*
 
     private int countPDS, countPDSdup;
 

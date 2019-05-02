@@ -5,6 +5,9 @@
 
 package ucar.nc2.grib;
 
+import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ucar.ma2.DataType;
 
 import java.io.IOException;
@@ -14,15 +17,15 @@ import java.util.Formatter;
 import java.util.zip.Deflater;
 
 /**
- * Abstraction for handling Grib data
+ * Abstraction for handling Grib 1 & 2 data in a uniform way.
  *
  * @author John
  * @since 9/1/2014
  */
 public class GribData {
+  private static Logger logger = LoggerFactory.getLogger(GribData.class);
 
   public enum InterpolationMethod {none, cubic, linear}
-
 
   private static GribData.InterpolationMethod useInterpolationMethod = GribData.InterpolationMethod.linear; // default
 
@@ -33,7 +36,6 @@ public class GribData {
   public static void setInterpolationMethod(GribData.InterpolationMethod interpolationMethod) {
     useInterpolationMethod = interpolationMethod;
   }
-
 
   public interface Bean {
 
@@ -68,16 +70,17 @@ public class GribData {
     1 Integer values (in the original data) are represented
   4 0 No additional flags at octet 14
     1 Octet 14 contains additional flag bits
+
   The following gives the meaning of the bits in octet 14 ONLY if bit 4 is set to 1. Otherwise octet 14 contains
   regular binary data.
   Bit No. Value Meaning
   5 Reserved – set to zero
   6 0 Single datum at each grid point
-  1 Matrix of values at each grid point
+    1 Matrix of values at each grid point
   7 0 No secondary bit-maps
-  1 Secondary bit-maps present
+    1 Secondary bit-maps present
   8 0 Second-order values constant width
-  1 Second-order values different widths
+    1 Second-order values different widths
   9–12 Reserved for future use
   Notes:
   (1) Bit 4 shall be set to 1 to indicate that bits 5 to 12 are contained in octet 14 of the Binary data section.
@@ -103,32 +106,32 @@ public class GribData {
     // GRIB-1 only
     public int flag;
 
-    public int getGridPoint() {
-      return (flag & GribNumbers.bitmask[0]);
+    public boolean isGridPointData() {
+      return !GribNumbers.testGribBitIsSet(flag, 1);
     }
 
-    public int getPacking() {
-      return (flag & GribNumbers.bitmask[1]);
+    public boolean isSimplePacking() {
+      return !GribNumbers.testGribBitIsSet(flag, 2);
     }
 
-    public int getDataType() {
-      return (flag & GribNumbers.bitmask[2]);
+    public boolean hasFloatingPointValues() {
+      return !GribNumbers.testGribBitIsSet(flag, 3);
     }
 
-    public boolean hasMore() {
-      return (flag & GribNumbers.bitmask[3]) != 0;
+    public boolean hasOctet14() {
+      return GribNumbers.testGribBitIsSet(flag,  4);
     }
 
     public String getGridPointS() {
-      return getGridPoint() == 0 ? "grid point" : "Spherical harmonic coefficients";
+      return isGridPointData() ? "Grid-point" : "Spherical harmonic coefficients";
     }
 
     public String getPackingS() {
-      return getPacking() == 0 ? "simple" : "Complex / second order";
+      return isSimplePacking() ? "simple" : "Complex / second order";
     }
 
     public String getDataTypeS() {
-      return getDataType() == 0 ? "float" : "int";
+      return hasFloatingPointValues() ? "float" : "int";
     }
 
     private float DD, EE;
@@ -147,13 +150,15 @@ public class GribData {
     }
   }
 
-  public static byte[] calcScaleOffset(GribData.Bean bean1, Formatter f) {
+  /** This reports how well different compression schemes would work on the specific data.
+   * Should be renamed */
+  public static void calcScaleOffset(GribData.Bean bean1, Formatter f) {
     float[] data;
     try {
       data = bean1.readData();
     } catch (IOException e) {
       f.format("IOException %s", e.getMessage());
-      return null;
+      return;
     }
     int npoints = data.length;
 
@@ -265,13 +270,10 @@ public class GribData {
     f.format(" ratio floats / size = %f%n", (float) (npoints * 4) / compressedSize);
     f.format(" ratio packed bits / size = %f%n", (float) packedBitsLen / compressedSize);
     f.format(" ratio size / grib = %f%n", (float) compressedSize / bean1.getMsgLength());
-
-    //////////////////////////////////////////////////////////////
-
-    return scaledData;
   }
 
-  static public byte[] compressScaled(GribData.Bean bean) throws IOException {
+  @Nullable
+  public static byte[] compressScaled(GribData.Bean bean) throws IOException {
     float[] data = bean.readData();
     int npoints = data.length;
 
@@ -320,7 +322,7 @@ public class GribData {
   }
 
   // only used by test code
-  static public float[] uncompressScaled(byte[] bdata) throws IOException {
+  public static float[] uncompressScaled(byte[] bdata) {
     throw new UnsupportedOperationException("bzip2 compression no longer supported.");
   }
 
@@ -330,13 +332,13 @@ public class GribData {
     return bb.array();
   }
 
-  static public byte[] convertToBytes(int[] data) {
+  public static byte[] convertToBytes(int[] data) {
     ByteBuffer bb = ByteBuffer.allocate(data.length * 4);
     for (int val : data) bb.putInt(val);
     return bb.array();
   }
 
-  static public double entropy(byte[] data) {
+  public static double entropy(byte[] data) {
     int[] p = new int[256];
 
     // count occurrences
@@ -357,7 +359,7 @@ public class GribData {
     return (sum == 0) ? 0.0 : -sum;
   }
 
-  static public double entropy(int nbits, int[] data) {
+  public static double entropy(int nbits, int[] data) {
     if (data == null) return 0.0;
 
     int n = (int) Math.pow(2, nbits);
@@ -367,8 +369,8 @@ public class GribData {
     int count = 0;
     for (int b : data) {
       if (b < 0 || b > n - 1) {
-        //System.out.printf("BAD %d at index %d; max=%d%n", b, count, n - 1);
-        // just skip return Double.NaN;
+        logger.warn("BAD %d at index %d; max=%d%n", b, count, n - 1);
+        // just skip
       } else {
         p[b]++;
       }

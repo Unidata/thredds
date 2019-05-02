@@ -4,6 +4,7 @@
  */
 package ucar.nc2.grib.grib2;
 
+import com.google.common.base.MoreObjects;
 import ucar.jpeg.jj2000.j2k.quantization.dequantizer.*;
 import ucar.jpeg.jj2000.j2k.image.invcomptransf.*;
 import ucar.jpeg.jj2000.j2k.fileformat.reader.*;
@@ -35,10 +36,10 @@ import java.io.ByteArrayInputStream;
  * @author caron  rewritten Aug 2014
  */
 public class Grib2JpegDecoder {
-  static private final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
+  private static final Logger logger = LoggerFactory.getLogger(Grib2JpegDecoder.class);
 
   private boolean debug;
-  private int rate;
+  private final int rate;
 
   /**
    * Return the packBytes ie number bytes / number 1,2 or 4
@@ -58,7 +59,7 @@ public class Grib2JpegDecoder {
   /**
    * The parameter list (arguments)
    */
-  private ParameterList pl;
+  private final ParameterList pl;
 
   /**
    * Instantiates a decoder object, width the 'argv' command
@@ -99,15 +100,11 @@ public class Grib2JpegDecoder {
     // Create parameter list using defaults
     pl = new ParameterList(defpl);
 
-    if (argv.length == 0) {
-      throw new IllegalArgumentException("No arguments!");
-    }
-
     // Parse arguments from argv
     try {
       pl.parseArgs(argv);
     } catch (StringFormatException e) {
-      System.err.println("An error occurred while parsing the arguments:\n" + e.getMessage());
+      System.err.format("An error occurred while parsing the arguments: %s", e.getMessage());
     }
   } // end Grib2JpegDecoder constructor
 
@@ -166,7 +163,7 @@ public class Grib2JpegDecoder {
       ff.readFileFormat();
       if (ff.JP2FFUsed) {
         in.seek(ff.getFirstCodeStreamPos());
-        System.out.println("ff.JP2FFUsed is used");  // LOOK probably not
+        logger.warn("ff.JP2FFUsed is used");  // LOOK probably not
       }
 
       // +----------------------------+
@@ -202,7 +199,7 @@ public class Grib2JpegDecoder {
       try {
         entdec = hd.createEntropyDecoder(breader, pl);
       } catch (IllegalArgumentException e) {
-        error("Cannot instantiate entropy decoder" + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2, e);
+        error("Cannot instantiate entropy decoder", 2, e);
         return;
       }
 
@@ -210,7 +207,7 @@ public class Grib2JpegDecoder {
       try {
         roids = hd.createROIDeScaler(entdec, pl, decSpec);
       } catch (IllegalArgumentException e) {
-        error("Cannot instantiate roi de-scaler." + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2, e);
+        error("Cannot instantiate roi de-scaler", 2, e);
         return;
       }
 
@@ -218,7 +215,7 @@ public class Grib2JpegDecoder {
       try {
         deq = hd.createDequantizer(roids, depth, decSpec);
       } catch (IllegalArgumentException e) {
-        error("Cannot instantiate dequantizer" + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 2, e);
+        error("Cannot instantiate dequantizer", 2, e);
         return;
       }
 
@@ -227,9 +224,7 @@ public class Grib2JpegDecoder {
         // full page inverse wavelet transform
         invWT = InverseWT.createInstance(deq, decSpec);
       } catch (IllegalArgumentException e) {
-        error("Cannot instantiate inverse wavelet transform" +
-                ((e.getMessage() != null) ?
-                        (":\n" + e.getMessage()) : ""), 2, e);
+        error("Cannot instantiate inverse wavelet transform" , 2, e);
         return;
       }
 
@@ -254,10 +249,10 @@ public class Grib2JpegDecoder {
           color = hd.createColorSpaceMapper(palettized, csMap);
 
         } catch (IllegalArgumentException e) {
-          error("Could not instantiate ICC profiler" + ((e.getMessage() != null) ? (":\n" + e.getMessage()) : ""), 1, e);
+          error("Could not instantiate ICC profiler", 1, e);
           return;
         } catch (ColorSpaceException e) {
-          error("error processing jp2 colorspace information" + ((e.getMessage() != null) ? (": " + e.getMessage()) : "    "), 1, e);
+          error("error processing jp2 colorspace information", 1, e);
           return;
         }
       } else { // Skip colorspace mapping
@@ -285,11 +280,9 @@ public class Grib2JpegDecoder {
           if (csMap != null) {
             isSigned = csMap.isOutputSigned(i);
             imwriter[i] = new ImgWriterArray(decodedImage, i, csMap.isOutputSigned(i));
-            //System.out.println( "csMap!=null" );
           } else {
             isSigned = hd.isOriginalSigned(i);
             imwriter[i] = new ImgWriterArray(decodedImage, i, hd.isOriginalSigned(i));
-            //System.out.println( "csMap==null" );
           }
         } catch (IOException e) {
           if (debug) e.printStackTrace();
@@ -301,7 +294,6 @@ public class Grib2JpegDecoder {
           ImgWriterArray iwa = (ImgWriterArray) imwriter[i];
           data = iwa.getGdata();
           // unSigned data processing here
-          //System.out.println("[INFO]: isSigned = " + isSigned);
           if (!isSigned) {
             //float unSignIt = (float) java.lang.Math.pow((double) 2.0, fnb - 1); // LOOK WTF ?
             int nb = depth[i];
@@ -331,9 +323,9 @@ public class Grib2JpegDecoder {
         }
 
         if (pl.getIntParameter("ncb_quit") == -1) {
-          System.out.println("Actual bit rate = " + bitrate + " bpp (i.e. " + numBytes + " bytes)");
+          logger.info("Actual bit rate = " + bitrate + " bpp (i.e. " + numBytes + " bytes)");
         } else {
-          System.out.println("Number of packet body bytes read = " + numBytes);
+          logger.info("Number of packet body bytes read = " + numBytes);
         }
       }
 
@@ -341,20 +333,12 @@ public class Grib2JpegDecoder {
       error(e.getMessage(), 2);
       if (debug) e.printStackTrace();
 
-
     } catch (RuntimeException e) {
-      if (e.getMessage() != null) {
-        error("An uncaught runtime exception has occurred:\n" +
-                e.getMessage(), 2);
-      } else {
-        error("An uncaught runtime exception has occurred.", 2);
-      }
+      error("An uncaught runtime exception has occurred", 2, e);
       throw new IOException(e);
 
     } catch (Throwable e) {
       throw new IOException(e);
-      //error("An uncaught exception has occurred.", 2);
-      //if (debug) e.printStackTrace();
     }
   } // end decode
 
@@ -363,10 +347,10 @@ public class Grib2JpegDecoder {
     logger.debug(msg);
   }
 
-  private void error(String msg, int code, Throwable ex) {
+  private void error(String msg, int code, Throwable e) {
     exitCode = code;
-    logger.debug(msg);
-    if (debug) ex.printStackTrace();
+    logger.debug(String.format("%s=%s", msg, e.getMessage()));
+    if (debug) e.printStackTrace();
   }
 
   /**
@@ -450,12 +434,12 @@ public class Grib2JpegDecoder {
          * Whether the data must be signed when writing or not. In the latter
          * case inverse level shifting must be applied
          */
-        boolean isSigned;
+        final boolean isSigned;
 
         /**
          * The bit-depth of the input file (must be between 1 and 31)
          */
-        private int bitDepth;
+        private final int bitDepth;
 
         /**
          * A DataBlk, just used to avoid allocating a new one each time it is
@@ -469,7 +453,7 @@ public class Grib2JpegDecoder {
         /**
          * The index of the component from where to get the data
          */
-        private int c;
+        private final int c;
 
         /**
          * The pack length of one sample (in bytes, according to the output
@@ -491,15 +475,13 @@ public class Grib2JpegDecoder {
          *                 writing header).
          * @see DataBlk
          */
-        public ImgWriterArray(BlkImgDataSrc imgSrc, int c, boolean isSigned) throws IOException {
+        ImgWriterArray(BlkImgDataSrc imgSrc, int c, boolean isSigned) throws IOException {
             //Initialize
             this.c = c;
             this.isSigned = isSigned;
-            //System.out.println("sign = " + isSigned );
             src = imgSrc;
             w = src.getImgWidth();
             h = src.getImgHeight();
-            //System.out.println(" constructor iwa w=" + w +" h=" +h ) ;
 
             bitDepth = src.getNomRangeBits(this.c);
             if ((bitDepth <= 0) || (bitDepth > 31)) {
@@ -520,9 +502,8 @@ public class Grib2JpegDecoder {
          * written. Any call to other methods of the class become illegal after a
          * call to this one.
          *
-         * @throws IOException If an I/O error occurs.
          */
-        public void close() throws IOException {
+        public void close() {
         }
 
         /**
@@ -545,11 +526,8 @@ public class Grib2JpegDecoder {
          *               to write, relative to the current tile.
          * @param w  The width of the area to write.
          * @param h The height of the area to write.
-         * @throws IOException If an I/O error occurs.
          */
-        public void write(int ulx, int uly, int w, int h) throws IOException {
-
-            //System.out.println( " ulx=" + ulx +" uly=" + uly +" w=" + w +" h=" + h);
+        public void write(int ulx, int uly, int w, int h) {
             // Initialize db
             db.ulx = ulx;
             db.uly = uly;
@@ -563,24 +541,18 @@ public class Grib2JpegDecoder {
             // progressive
             do {
                 db = (DataBlkInt) src.getInternCompData(db, c);
-                //System.out.println( "Progressive Comp c =" + c );
             } while (db.progressive);
-
-            //System.out.println( "Comp c =" + c );
-            //System.out.println( "db.data.length = " + db.data.length );
 
         } // end int ulx, int uly, int w, int h
 
-        public void writeAll() throws IOException {
+        public void writeAll() {
             // Find the list of tile to decode.
             Coord nT = src.getNumTiles(null);
-            //System.out.println( "nTiles = " + nT );
 
             // Loop on vertical tiles
             for (int y = 0; y < nT.y; y++) {
                 // Loop on horizontal tiles
                 for (int x = 0; x < nT.x; x++) {
-                    //System.out.println( "setTiles(x,y) = " + x + ", " + y );
                     src.setTile(x, y);
                     write(0, 0, src.getImgWidth(), src.getImgHeight());
                 } // End loop on horizontal tiles
@@ -596,10 +568,9 @@ public class Grib2JpegDecoder {
          * then it is requested over and over until it is not progressive
          * anymore.</p>
          *
-         * @throws IOException If an I/O error occurs.
          * @see DataBlk
          */
-        public void write() throws IOException {
+        public void write() {
             int i;
             int tIdx = src.getTileIdx();
             int tw = src.getTileCompWidth(tIdx, c);  // Tile width
@@ -613,7 +584,7 @@ public class Grib2JpegDecoder {
         /**
          * The pack length of one sample (in bytes, according to the output bit-depth
          */
-        public int getPackBytes() {
+        int getPackBytes() {
             return packBytes;
         }
 
@@ -622,26 +593,23 @@ public class Grib2JpegDecoder {
          *
          * @return a int[]
          */
-        public int[] getGdata() {
-            //return gdata;
+        int[] getGdata() {
             return db.data;
         }
 
         public void flush() {
         }
 
-        /**
-         * Returns a string of information about the object, more than 1 line
-         * long. The information string includes information from the underlying
-         * RandomAccessFile (its toString() method is called in turn).
-         *
-         * @return A string of information about the object.
-         */
-        public String toString() {
-            return "ImgWriterArray: WxH = " + w + "x" + h + ", Component = " +
-                    c + ", Bit-depth = " + bitDepth + ", signed = " + isSigned +
-                    "\n";
-        }
+      @Override
+      public String toString() {
+        return MoreObjects.toStringHelper(this)
+            .add("isSigned", isSigned)
+            .add("bitDepth", bitDepth)
+            .add("component", c)
+            .add("w", w)
+            .add("h", h)
+            .toString();
+      }
     } // end ImgWriterArray
 
 } // end Grib2JpegDecoder

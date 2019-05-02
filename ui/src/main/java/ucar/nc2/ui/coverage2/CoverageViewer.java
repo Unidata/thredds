@@ -1,4 +1,8 @@
-/* Copyright */
+/*
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ui.coverage2;
 
 import ucar.nc2.ft2.coverage.*;
@@ -18,17 +22,33 @@ import ucar.unidata.geoloc.projection.LatLonProjection;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.Debug;
 
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.AffineTransform;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JToolBar;
+import javax.swing.RootPaneContainer;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EtchedBorder;
 
 /**
  * ft2.coverage widget for displaying
@@ -178,11 +198,9 @@ public class CoverageViewer extends JPanel {
       colorScalePanel = new ColorScale.Panel(this, colorScale);
       csDataMinMax = new JComboBox(ColorScale.MinMaxType.values());
       csDataMinMax.setToolTipText("ColorScale Min/Max setting");
-      csDataMinMax.addActionListener(new AbstractAction() {
-        public void actionPerformed(ActionEvent e) {
+      csDataMinMax.addActionListener(e -> {
           coverageRenderer.setDataMinMaxType((ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
           redrawLater();
-        }
       });
 
       // renderer
@@ -191,11 +209,9 @@ public class CoverageViewer extends JPanel {
       coverageRenderer.setColorScale(colorScale);
 
       strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-      strideSpinner.addChangeListener(new ChangeListener() {
-        public void stateChanged(ChangeEvent e) {
+      strideSpinner.addChangeListener(e -> {
           Integer val = (Integer) strideSpinner.getValue();
           coverageRenderer.setHorizStride(val.intValue());
-        }
       });
 
       makeActionsDataset();
@@ -1019,7 +1035,7 @@ public class CoverageViewer extends JPanel {
     //gridTable.setDataset(controller.getFields());
   }
 
-  void setFieldsFromBeans(java.util.List<CoverageTable.CoverageBean> fields) {
+  void setFieldsFromBeans(List<CoverageTable.CoverageBean> fields) {
     fieldChooser.setCollection(fields.iterator());
   }
 
@@ -1276,8 +1292,8 @@ public class CoverageViewer extends JPanel {
       return projManager;
 
     projManager = new ProjectionManager(parent, store);
-    projManager.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
-      public void propertyChange(java.beans.PropertyChangeEvent e) {
+    projManager.addPropertyChangeListener(new PropertyChangeListener() {
+      public void propertyChange(PropertyChangeEvent e) {
         if (e.getPropertyName().equals("ProjectionImpl")) {
           ProjectionImpl p = (ProjectionImpl) e.getNewValue();
           p = p.constructCopy();

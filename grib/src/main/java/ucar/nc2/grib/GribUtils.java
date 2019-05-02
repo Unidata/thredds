@@ -28,7 +28,7 @@ public class GribUtils {
    * @param timeUnit (GRIB1 table 4) (GRIB2   Code table 4.4 : Indicator of unit of time range)
    * @return equivalent CalendarPeriod
    */
-  static public CalendarPeriod getCalendarPeriod(int timeUnit) {
+  public static CalendarPeriod getCalendarPeriod(int timeUnit) {
     // LOOK - some way to intern these ? put in hash table  ?
     switch (timeUnit) { // code table 4.4
       case 0:
@@ -62,13 +62,13 @@ public class GribUtils {
     }
   }
 
-  static public CalendarDate getValidTime(CalendarDate refDate, int timeUnit, int offset) {
+  public static CalendarDate getValidTime(CalendarDate refDate, int timeUnit, int offset) {
     CalendarPeriod period = GribUtils.getCalendarPeriod(timeUnit);
     return refDate.add(period.multiply(offset));
   }
 
-  static public String cleanupUnits(String unit) {
-    if (unit == null) return null;
+  public static String cleanupUnits(String unit) {
+    if (unit == null) return "";
     if (unit.equalsIgnoreCase("-")) unit = "";
     else {
       if (unit.startsWith("/")) unit = "1" + unit;
@@ -84,8 +84,8 @@ public class GribUtils {
     return unit;
   }
 
-  static public String cleanupDescription(String desc) {
-    if (desc == null) return null;
+  public static String cleanupDescription(String desc) {
+    if (desc == null) return "";
     int pos = desc.indexOf("(see");
     if (pos < 0) pos = desc.indexOf("(See");
     if (pos > 0) desc = desc.substring(0, pos);
@@ -96,8 +96,8 @@ public class GribUtils {
     return sb.toString().trim();
   }
 
-  static public String makeNameFromDescription(String desc) {
-    if (desc == null) return null;
+  public static String makeNameFromDescription(String desc) {
+    if (desc == null) return "";
     int pos = desc.indexOf("(see");
     if (pos < 0) pos = desc.indexOf("(See");
     if (pos > 0) desc = desc.substring(0, pos);
@@ -148,8 +148,8 @@ public class GribUtils {
     * @param scanMode scanMode byte
     * @return true: x points scan in positive direction, false: x points scan in negetive direction
     */
-  static public boolean scanModeXisPositive(int scanMode) {
-    return (scanMode & GribNumbers.bitmask[0]) == 0;
+  public static boolean scanModeXisPositive(int scanMode) {
+    return !GribNumbers.testGribBitIsSet(scanMode, 1);
   }
 
   /**
@@ -158,26 +158,26 @@ public class GribUtils {
     * @param scanMode scanMode byte
     * @return true: y points scan in positive direction, false: y points scan in negetive direction
     */
-  static public boolean scanModeYisPositive(int scanMode) {
-    return (scanMode & GribNumbers.bitmask[1]) != 0;
+  public static boolean scanModeYisPositive(int scanMode) {
+    return GribNumbers.testGribBitIsSet(scanMode, 2);
   }
 
   /**
-   * Adjacent points in x or y direction are consecutive. Grib 1 or 2.
+   * Adjacent points in x/y direction are consecutive. Grib 1 or 2.
    * @param scanMode scanMode byte
    * @return true: x points are consecutive (row) false: y points are consecutive (col)
    */
-  static public boolean scanModeXisConsecutive(int scanMode) {
-    return (scanMode & GribNumbers.bitmask[2]) == 0;
+  public static boolean scanModeXisConsecutive(int scanMode) {
+    return !GribNumbers.testGribBitIsSet(scanMode, 3);
   }
 
   /**
    * All rows scan in the same/opposite direction. Grib 2 only.
    * @param scanMode scanMode byte
-   * @return  true: All rows scan in the same direction, false: Adjacent rows scans in the opposite direction, the first row scan is as defined by previous flags
+   * @return  true: All rows scan in the same direction, false: Adjacent rows scan in the opposite direction, the first row scan is as defined by previous flags
    */
-  static public boolean scanModeSameDirection(int scanMode) {
-    return (scanMode & GribNumbers.bitmask[3]) == 0;
+  public static boolean scanModeSameDirection(int scanMode) {
+    return !GribNumbers.testGribBitIsSet(scanMode, 4);
   }
 
 }

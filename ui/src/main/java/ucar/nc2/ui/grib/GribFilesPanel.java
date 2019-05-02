@@ -13,7 +13,7 @@ import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.Misc;
@@ -61,7 +61,7 @@ public class GribFilesPanel extends JPanel {
       }
     }); */
 
-    varPopup = new ucar.nc2.ui.widget.PopupMenu(collectionTable.getJTable(), "Options");
+    varPopup = new PopupMenu(collectionTable.getJTable(), "Options");
     varPopup.addAction("Show Files in Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         CollectionBean pb = (CollectionBean) collectionTable.getSelectedBean();
@@ -326,7 +326,7 @@ public class GribFilesPanel extends JPanel {
     Grib2Index index;
     int nRecords, localCount = 0, gdsCount = 0;
     Grib2Record first;
-    Grib2Customizer tables;
+    Grib2Tables tables;
     boolean bad = false;
 
     public Grib2Bean() {
@@ -352,7 +352,7 @@ public class GribFilesPanel extends JPanel {
         for (Grib2Record gr : index.getRecords()) {
           if (first == null) first = gr;
           if (tables == null) {
-            tables = Grib2Customizer.factory(gr);
+            tables = Grib2Tables.factory(gr);
           }
           Grib2Pds pds = gr.getPDS();
           if ((pds.getParameterCategory() > 191) || (pds.getParameterNumber() > 191))
@@ -402,14 +402,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     void showComplete(Formatter f) {
-      try {
-        Grib2Show.showCompleteGribRecord(f, m.getPath(), first, tables);
-      } catch (IOException e) {
-        e.printStackTrace();
-        StringWriter sw = new StringWriter(10000);
-        e.printStackTrace(new PrintWriter(sw));
-        f.format("%s", sw.toString());
-      }
+      Grib2Show.showCompleteGribRecord(f, m.getPath(), first, tables);
     }
 
   }

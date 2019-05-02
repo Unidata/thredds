@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ui.grib;
 
-import ucar.nc2.grib.grib2.table.WmoTemplateTable;
+import ucar.nc2.grib.grib2.table.WmoTemplateTables;
+import ucar.nc2.grib.grib2.table.WmoTemplateTables.TemplateTable;
 import ucar.nc2.ui.widget.BAMutil;
 import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.widget.TextHistoryPane;
@@ -8,8 +14,6 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.*;
@@ -33,26 +37,19 @@ public class GribWmoTemplatesPanel extends JPanel {
   public GribWmoTemplatesPanel(final PreferencesExt prefs, JPanel buttPanel) {
     this.prefs = prefs;
 
-    codeTable = new BeanTable(CodeBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
-    codeTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        CodeBean csb = (CodeBean) codeTable.getSelectedBean();
-        setEntries(csb.template);
-      }
+    codeTable = new BeanTable(TemplateBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
+    codeTable.addListSelectionListener(e -> {
+      TemplateBean csb = (TemplateBean) codeTable.getSelectedBean();
+      setEntries(csb.template);
     });
 
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
-    /* entryTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        entryTable.getSelectedBean();
-      }
-    }); */
 
     ucar.nc2.ui.widget.PopupMenu varPopup = new ucar.nc2.ui.widget.PopupMenu(codeTable.getJTable(), "Options");
     varPopup.addAction("Show table", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Formatter out = new Formatter();
-        CodeBean csb = (CodeBean) codeTable.getSelectedBean();
+        TemplateBean csb = (TemplateBean) codeTable.getSelectedBean();
         csb.showTable(out);
         compareTA.setText(out.toString());
         compareTA.gotoTop();
@@ -71,77 +68,71 @@ public class GribWmoTemplatesPanel extends JPanel {
     setLayout(new BorderLayout());
     add(split, BorderLayout.CENTER);
 
-    setTable(WmoTemplateTable.standard);
+    setTable(WmoTemplateTables.standard);
   }
 
   public void save() {
     codeTable.saveState(false);
     entryTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    //prefs.putBeanObject("InfoWindowBounds2", infoWindow2.getBounds());
     prefs.putInt("splitPos", split.getDividerLocation());
-    //prefs.putInt("splitPos2", split2.getDividerLocation());
   }
 
-  public void setTable(WmoTemplateTable.Version v) {
+  public void setTable(WmoTemplateTables.Version v) {
     try {
-      WmoTemplateTable.GribTemplates wmo = WmoTemplateTable.readXml(v);
-      List<WmoTemplateTable> codes = wmo.list;
-      List<CodeBean> dds = new ArrayList<>(codes.size());
-      for (WmoTemplateTable code : codes) {
-        dds.add(new CodeBean(code));
+      WmoTemplateTables tables = WmoTemplateTables.getInstance();
+      List<TemplateBean> dds = new ArrayList<>();
+      for (TemplateTable templateTable : tables.getTemplateTables()) {
+        dds.add(new TemplateBean(templateTable));
       }
       codeTable.setBeans(dds);
-      // currTable = v;
 
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-
-  public void setEntries(WmoTemplateTable template) {
-    java.util.List<EntryBean> beans = new ArrayList<>(template.flds.size());
-    for (WmoTemplateTable.Field d : template.flds) {
+  public void setEntries(TemplateTable template) {
+    java.util.List<EntryBean> beans = new ArrayList<>();
+    for (WmoTemplateTables.Field d : template.getFlds()) {
       beans.add(new EntryBean(d));
     }
     entryTable.setBeans(beans);
   }
 
-  public class CodeBean {
-    WmoTemplateTable template;
+  public class TemplateBean {
+    TemplateTable template;
 
     // no-arg constructor
-    public CodeBean() {
+    public TemplateBean() {
     }
 
-    // create from a dataset
-    public CodeBean(WmoTemplateTable template) {
+    public TemplateBean(TemplateTable template) {
       this.template = template;
     }
 
     public String getName() {
-      return template.name;
+      return template.getName();
     }
 
     public String getDescription() {
-      return template.desc;
+      return template.getDesc();
     }
 
     public int getM1() {
-      return template.m1;
+      return template.getM1();
     }
 
     public int getM2() {
-      return template.m2;
+      return template.getM2();
     }
 
     void showTable(Formatter f) {
-      f.format("Template %s (%s)%n", template.name, template.desc);
-      for (WmoTemplateTable.Field entry : template.flds) {
-        f.format("  %6s (%d): %s", entry.octet, entry.nbytes, entry.content);
-        if (entry.note != null)
-          f.format(" - %s", entry.note);
+      f.format("Template %s (%s)%n", template.getName(), template.getDesc());
+      for (WmoTemplateTables.Field entry : template.getFlds()) {
+        f.format("  %6s (%d): %s", entry.getOctet(), entry.getNote(), entry.getContent());
+        if (entry.getNote() != null)
+          f.format(" - %s", entry.getNote());
         f.format("%n");
       }
     }
@@ -149,39 +140,38 @@ public class GribWmoTemplatesPanel extends JPanel {
   }
 
   public class EntryBean {
-    WmoTemplateTable.Field te;
+    WmoTemplateTables.Field te;
 
     // no-arg constructor
     public EntryBean() {
     }
 
-    // create from a dataset
-    public EntryBean(WmoTemplateTable.Field te) {
+    public EntryBean(WmoTemplateTables.Field te) {
       this.te = te;
     }
 
     public String getOctet() {
-      return te.octet;
+      return te.getOctet();
     }
 
     public String getContent() {
-      return te.content;
+      return te.getContent();
     }
 
     public int getNbytes() {
-      return te.nbytes;
+      return te.getNbytes();
     }
 
     public int getStart() {
-      return te.start;
+      return te.getStart();
     }
 
     public String getStatus() {
-      return te.status;
+      return te.getStatus();
     }
 
     public String getNotes() {
-      return te.note;
+      return te.getNote();
     }
 
   }

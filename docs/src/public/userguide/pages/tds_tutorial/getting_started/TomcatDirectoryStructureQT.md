@@ -47,7 +47,7 @@ Familiarize yourself with these important directories:
 #### `conf/`
 
 * _Server-wide_ Tomcat configuration.
-* You will modify `server.xml` and `tomcat-users.xml` to adjust logging, authentication and access control, enable TSL/SSL, etc.
+* You will modify `server.xml` and `tomcat-users.xml` to adjust logging, authentication and access control, enable TLS/SSL, etc.
 * Web applications can override some server-wide settings in their own configuration file (e.g., the web deployment descriptor).
 
 #### `webapps/`

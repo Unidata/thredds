@@ -14,10 +14,9 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.GribLevelType;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.unidata.util.StringUtil2;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
@@ -33,8 +32,8 @@ import java.util.*;
 public class NcepHtmlScraper {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  static private final boolean debug = false;
-  static private final boolean show = false;
+  private static final boolean debug = false;
+  private static final boolean show = false;
 
  //////////////////////////////////////////////////////////////////
   // http://www.nco.ncep.noaa.gov/pmb/docs/on388/tablea.html
@@ -46,7 +45,7 @@ public class NcepHtmlScraper {
 
     Set<String> abbrevSet = new HashSet<>();
     Element table = doc.select("table").get(2);
-    List<GribLevelType> stuff = new ArrayList<>();
+    List<VertCoordType> stuff = new ArrayList<>();
     Elements rows = table.select("tr");
     for (Element row : rows) {
       Elements cols = row.select("td");
@@ -71,7 +70,7 @@ public class NcepHtmlScraper {
             if (abbrevSet.contains(abbrev))
               System.out.printf("DUPLICATE ABBREV %s%n", abbrev);
             else
-            stuff.add(new GribLevelType(pnum, desc, abbrev, null, null, false, false));
+            stuff.add(new VertCoordType(pnum, desc, abbrev, null, null, false, false));
           }
           //result.add(new Param(pnum, desc, cols.get(2).text(), cols.get(3).text()));
         } catch (NumberFormatException e) {
@@ -83,13 +82,13 @@ public class NcepHtmlScraper {
     writeTable3Xml("NCEP GRIB-1 Table 3", url, "ncepTable3.xml", stuff);
   }
 
-  private void writeTable3Xml(String name, String source, String filename, List<GribLevelType> stuff) throws IOException {
+  private void writeTable3Xml(String name, String source, String filename, List<VertCoordType> stuff) throws IOException {
      org.jdom2.Element rootElem = new org.jdom2.Element("table3");
      org.jdom2.Document doc = new org.jdom2.Document(rootElem);
      rootElem.addContent(new org.jdom2.Element("title").setText(name));
      rootElem.addContent(new org.jdom2.Element("source").setText(source));
 
-     for (GribLevelType p : stuff) {
+     for (VertCoordType p : stuff) {
        org.jdom2.Element paramElem = new org.jdom2.Element("parameter");
        paramElem.setAttribute("code", Integer.toString(p.getCode()));
        paramElem.addContent(new org.jdom2.Element("description").setText(p.getDesc()));

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
@@ -32,11 +33,11 @@ import java.util.Map;
  */
 public class Grib1RecordScanner {
 
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch(new byte[]{'G', 'R', 'I', 'B'});
-  static private final boolean debug = false;
-  static private final boolean debugGds = false;
-  static private final int maxScan = 16000;
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1RecordScanner.class);
+  private static final KMPMatch matcher = new KMPMatch(new byte[]{'G', 'R', 'I', 'B'});
+  private static final boolean debug = false;
+  private static final boolean debugGds = false;
+  private static final int maxScan = 16000;
 
   static boolean allowBadIsLength = false;
   static boolean allowBadDsLength = false; // ECMWF workaround
@@ -49,7 +50,7 @@ public class Grib1RecordScanner {
     Grib1RecordScanner.allowBadDsLength = allowBadDsLength;
   }
 
-  static public boolean isValidFile(RandomAccessFile raf) {
+  public static boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
       boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
@@ -123,8 +124,8 @@ public class Grib1RecordScanner {
 
 ////////////////////////////////////////////////////////////
 
-  private Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<>();
-  private ucar.unidata.io.RandomAccessFile raf;
+  private final Map<Long, Grib1SectionGridDefinition> gdsMap = new HashMap<>();
+  private final ucar.unidata.io.RandomAccessFile raf;
 
   private byte[] header;
   private long lastPos;
@@ -177,6 +178,7 @@ public class Grib1RecordScanner {
     return more;
   }
 
+  @Nullable
   public Grib1Record next() throws IOException {
 
     Grib1SectionIndicator is = null;
@@ -186,7 +188,7 @@ public class Grib1RecordScanner {
       Grib1SectionGridDefinition gds = pds.gdsExists() ? new Grib1SectionGridDefinition(raf)
           : new Grib1SectionGridDefinition(pds);
       if (!pds.gdsExists() && debugGds) {
-        System.out.printf(" NO GDS: center = %d, GridDefinition=%d file=%s%n", pds.getCenter(),
+        log.warn(" NO GDS: center = %d, GridDefinition=%d file=%s%n", pds.getCenter(),
             pds.getGridDefinition(), raf.getLocation());
       }
 
@@ -203,7 +205,7 @@ public class Grib1RecordScanner {
         throw new IllegalStateException("Illegal Grib1SectionBinaryData Message Length");
       }
 
-      /* from old code
+      /* ecmwf offset by 1 bug - LOOK not sure if this is still needed
           // obtain BMS or BDS offset in the file for this product
           if (pds.getPdsVars().getCenter() == 98) {  // check for ecmwf offset by 1 bug
             int length = GribNumbers.uint3(raf);  // should be length of BMS
@@ -216,7 +218,7 @@ public class Grib1RecordScanner {
           } else {
             dataOffset = raf.getFilePointer();
           }
-       */
+      */
 
       // look for duplicate gds
       long crc = gds.calcCRC();
@@ -229,10 +231,8 @@ public class Grib1RecordScanner {
 
       // check that end section is correct
       boolean foundEnding = checkEnding(ending);
-      if (debug) {
-        System.out.printf(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
+      log.debug(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
             raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
-      }
 
       if (!foundEnding && (allowBadIsLength || is.isMessageLengthFixed)) {
         foundEnding = checkEnding(dataSection.getStartingPosition() + dataSection.getLength());
@@ -250,8 +250,7 @@ public class Grib1RecordScanner {
       // skip this record
       // lastPos = is.getEndPos() + 20;  cant use is.getEndPos(), may be bad
       lastPos += 20;  // skip over the "GRIB" of this message
-      if (hasNext()) // search forward for another one
-      {
+      if (hasNext()) { // search forward for another one
         return next();
       }
 
@@ -260,13 +259,13 @@ public class Grib1RecordScanner {
       log.warn("Bad Grib1 record in file {}, skipping pos={}", raf.getLocation(), pos);
       // t.printStackTrace();
       lastPos += 20; // skip over the "GRIB"
-      if (hasNext()) // search forward for another one
-      {
+      if (hasNext()) { // search forward for another one
         return next();
       }
     }
 
-    return null; // last record was incomplete
+    // EOF that hasNext() couldnt detect
+    return null;
   }
 
   private boolean checkEnding(long ending) throws IOException {
@@ -287,11 +286,12 @@ public class Grib1RecordScanner {
     return true;
   }
 
-
+  // Count the number of records in a grib1 file.
   public static void main(String[] args) throws IOException {
     int count = 0;
-    RandomAccessFile raf = new RandomAccessFile("Q:/cdmUnitTest/formats/grib1/ECMWF.hybrid.grib1",
-        "r");
+    String file = (args.length > 0) ? args[0] : "Q:/cdmUnitTest/formats/grib1/ECMWF.hybrid.grib1";
+    RandomAccessFile raf = new RandomAccessFile(file, "r");
+    System.out.printf("Read %s%n", raf.getLocation());
     Grib1RecordScanner scan = new Grib1RecordScanner(raf);
     while (scan.hasNext()) {
       scan.next();

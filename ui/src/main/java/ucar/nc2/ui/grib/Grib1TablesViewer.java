@@ -23,11 +23,8 @@ import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -58,11 +55,9 @@ public class Grib1TablesViewer extends JPanel {
     this.prefs = prefs;
 
     codeTable = new BeanTable(TableBean.class, (PreferencesExt) prefs.node("CodeTableBean"), false);
-    codeTable.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        TableBean csb = (TableBean) codeTable.getSelectedBean();
-        setEntries(csb.table);
-      }
+    codeTable.addListSelectionListener(e -> {
+      TableBean csb = (TableBean) codeTable.getSelectedBean();
+      setEntries(csb.table);
     });
 
     ucar.nc2.ui.widget.PopupMenu varPopup = new PopupMenu(codeTable.getJTable(), "Options");
@@ -151,14 +146,12 @@ public class Grib1TablesViewer extends JPanel {
     add(split, BorderLayout.CENTER);
 
     AbstractButton infoButton = BAMutil.makeButtcon("Information", "Show Table Used", false);
-    infoButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    infoButton.addActionListener(e -> {
         if (showTableDialog == null) {
           showTableDialog = new Grib1TableDialog((Frame) null);
           showTableDialog.pack();
         }
         showTableDialog.setVisible(true);
-      }
     });
     buttPanel.add(infoButton);
 
@@ -181,11 +174,8 @@ public class Grib1TablesViewer extends JPanel {
     if (compareTableDialog == null) {
       compareTableDialog = new Grib1TableCompareDialog((Frame) null);
       compareTableDialog.pack();
-      compareTableDialog.addPropertyChangeListener("OK", new PropertyChangeListener() {
-        public void propertyChange(PropertyChangeEvent evt) {
-          compareTables((Grib1TableCompareDialog.Data) evt.getNewValue());
-        }
-      });
+      compareTableDialog.addPropertyChangeListener("OK",
+          evt -> compareTables((Grib1TableCompareDialog.Data) evt.getNewValue()));
     }
   }
 
@@ -447,7 +437,7 @@ public class Grib1TablesViewer extends JPanel {
     }
 
     public String getWMOdesc() {
-      Grib1ParamTableReader wmo = Grib1ParamTables.getDefaultTable();
+      Grib1ParamTableReader wmo = Grib1ParamTables.getDefaultWmoTable();
       Grib1Parameter p = wmo.getParameter(param.getNumber());
       return p == null ? "" : p.getDescription();
     }

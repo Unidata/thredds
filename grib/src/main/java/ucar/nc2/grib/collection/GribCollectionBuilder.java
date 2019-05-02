@@ -13,10 +13,10 @@ import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
 import thredds.inventory.partition.PartitionManager;
 import thredds.inventory.partition.PartitionManagerFromIndexList;
-import ucar.coord.Coordinate;
-import ucar.coord.CoordinateRuntime;
-import ucar.coord.CoordinateTime2D;
-import ucar.coord.CoordinateTimeAbstract;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeAbstract;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
 import ucar.nc2.time.CalendarDate;
@@ -41,8 +41,8 @@ abstract class GribCollectionBuilder {
   protected final boolean isGrib1;
   protected GribCollectionImmutable.Type type;
 
-  protected String name;            // collection name
-  protected File directory;         // top directory
+  protected final String name;            // collection name
+  protected final File directory;         // top directory
 
   protected abstract List<? extends Group> makeGroups(List<MFile> allFiles, boolean singleRuntime, Formatter errlog) throws IOException;
 
@@ -243,7 +243,7 @@ abstract class GribCollectionBuilder {
   }
 
   @Immutable
-  static protected class GroupAndRuntime {
+  protected static class GroupAndRuntime {
     private final int hashCode;
     private final long runtime;
 

@@ -8,6 +8,8 @@ package ucar.nc2.grib.grib2;
 import org.junit.Assert;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.Dimension;
@@ -22,6 +24,7 @@ import java.lang.invoke.MethodHandles;
  * 
  * @author Ben Caradoc-Davies (Transient Software Limited)
  */
+@RunWith(JUnit4.class)
 public class TestRotatedPole {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

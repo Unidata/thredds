@@ -5,7 +5,6 @@
 
 package ucar.nc2.grib.grib1;
 
-import com.google.common.base.MoreObjects;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.QuasiRegular;
@@ -51,9 +50,8 @@ import java.util.Formatter;
  */
 @Immutable
 public abstract class Grib1Gds {
-
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
-  public static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib1Gds.class);
+  static final double maxReletiveErrorPos = .01; // reletive error in position - GRIB numbers sometime miscoded
 
   /*
   Code table 6 – Data representation type
@@ -121,7 +119,7 @@ public abstract class Grib1Gds {
   protected final byte[] data;
   protected int[] nptsInLine; // thin grids, else null
 
-  public int template;
+  public final int template;
   protected int nx, ny;
   public int scanMode, resolution;
   protected int lastOctet;
@@ -195,21 +193,21 @@ public abstract class Grib1Gds {
       1     Direction increments given
     2 0     Earth assumed spherical with radius 6367.47 km
       1     Earth assumed oblate spheroidal with size as determined by IAU in 1965 (6378.160 km, 6356.775 km, f = 1/297.0)
-  3–4       Reserved
+    3–4     Reserved
     5 0     Resolved u- and v-components of vector quantities relative to easterly and northerly directions
       1     Resolved u- and v-components of vector quantities relative to the defined grid in the direction of increasing x and y (or i and j) coordinates respectively
    6–8 0    Reserved – set to zero */
 
-  static private boolean getDirectionIncrementsGiven(int resolution) {
-    return ((resolution & GribNumbers.bitmask[0]) != 0);
+  private static boolean getDirectionIncrementsGiven(int resolution) {
+    return GribNumbers.testGribBitIsSet(resolution,1);
   }
 
-  static private boolean getEarthShapeIsSpherical(int resolution) {
-    return ((resolution & GribNumbers.bitmask[1]) == 0);
+  private static boolean getEarthShapeIsSpherical(int resolution) {
+    return !GribNumbers.testGribBitIsSet(resolution,2);
   }
 
-  static private boolean getUVisReletive(int resolution) {
-    return ((resolution & GribNumbers.bitmask[1]) != 0);
+  private static boolean getUVisReletiveToEastNorth(int resolution) {
+    return !GribNumbers.testGribBitIsSet(resolution,5);
   }
 
   protected Earth getEarth() {
@@ -224,8 +222,8 @@ public abstract class Grib1Gds {
     return getEarthShapeIsSpherical(resolution) ? 0 : 1;
   }
 
-  public boolean getUVisReletive() {
-    return getUVisReletive(resolution);
+  public boolean getUVisReletiveToEastNorth() {
+    return getUVisReletiveToEastNorth(resolution);
   }
 
   public int getResolution() {
@@ -547,16 +545,14 @@ public abstract class Grib1Gds {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nLatLon{ la1=").append(la1);
-      sb.append(", lo1=").append(lo1);
-      sb.append(", la2=").append(la2);
-      sb.append(", lo2=").append(lo2);
-      sb.append(", deltaLon=").append(deltaLon);
-      sb.append(", deltaLat=").append(deltaLat);
-      sb.append('}');
-      return sb.toString();
+      return "LatLon{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", la2=" + la2 +
+              ", lo2=" + lo2 +
+              ", deltaLon=" + deltaLon +
+              ", deltaLat=" + deltaLat +
+              "} " + super.toString();
     }
 
     @Override
@@ -582,8 +578,7 @@ public abstract class Grib1Gds {
       f.format("  start at latlon= %s%n", startLL);
       f.format("    end at latlon= %s%n", endLL);
 
-      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj
-          .latLonToProj(endLL, new ProjectionPointImpl());
+      ProjectionPointImpl endPP = (ProjectionPointImpl) cs.proj.latLonToProj(endLL, new ProjectionPointImpl());
       f.format("   start at proj coord= %s%n", new ProjectionPointImpl(cs.startx, cs.starty));
       f.format("     end at proj coord= %s%n", endPP);
 
@@ -674,7 +669,7 @@ public abstract class Grib1Gds {
    */
   public static class GaussianLatLon extends LatLon {
 
-    int nparellels;
+    final int nparellels;
     public float latSouthPole, lonSouthPole, rotAngle, latPole, lonPole, stretchFactor;
 
     GaussianLatLon(byte[] data, int template) {
@@ -728,42 +723,39 @@ public abstract class Grib1Gds {
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nGaussianLatLon");
-      sb.append("{nparellels=").append(nparellels);
-      sb.append(", latSouthPole=").append(latSouthPole);
-      sb.append(", lonSouthPole=").append(lonSouthPole);
-      sb.append(", rotAngle=").append(rotAngle);
-      sb.append(", latPole=").append(latPole);
-      sb.append(", lonPole=").append(lonPole);
-      sb.append(", stretchFactor=").append(stretchFactor);
-      sb.append('}');
-      return sb.toString();
+      return "GaussianLatLon{" +
+              "nparellels=" + nparellels +
+              ", latSouthPole=" + latSouthPole +
+              ", lonSouthPole=" + lonSouthPole +
+              ", rotAngle=" + rotAngle +
+              ", latPole=" + latPole +
+              ", lonPole=" + lonPole +
+              ", stretchFactor=" + stretchFactor +
+              "} " + super.toString();
     }
   }
 
   /*
-Grid definition –   polar stereographic
- Octet No. Contents
- 7–8    Nx – number of points along x-axis
- 9–10   Ny – number of points along y-axis
- 11–13  La1 – latitude of first grid point
- 14–16  Lo1 – longitude of first grid point
- 17     Resolution and component flags (see Code table 7)
- 18–20  LoV – orientation of the grid; i.e. the longitude value of the meridian which is parallel to the y-axis (or columns
-              of the grid) along which latitude increases as the Y-coordinate increases (the orientation longitude may or may not appear on a particular grid)
- 21–23  Dx – X-direction grid length (see Note 2)
- 24–26  Dy – Y-direction grid length (see Note 2)
- 27     Projection centre flag (see Note 5)
- 28     Scanning mode (flags – see Flag/Code table 8)
- 29–32  Set to zero (reserved)
-  */
+  Grid definition –   polar stereographic
+   Octet No. Contents
+   7–8    Nx – number of points along x-axis
+   9–10   Ny – number of points along y-axis
+   11–13  La1 – latitude of first grid point
+   14–16  Lo1 – longitude of first grid point
+   17     Resolution and component flags (see Code table 7)
+   18–20  LoV – orientation of the grid; i.e. the longitude value of the meridian which is parallel to the y-axis (or columns
+                of the grid) along which latitude increases as the Y-coordinate increases (the orientation longitude may or may not appear on a particular grid)
+   21–23  Dx – X-direction grid length (see Note 2)
+   24–26  Dy – Y-direction grid length (see Note 2)
+   27     Projection centre flag (see Note 5)
+   28     Scanning mode (flags – see Flag/Code table 8)
+   29–32  Set to zero (reserved)
+    */
   public static class PolarStereographic extends Grib1Gds {
 
     protected float la1, lo1, lov, dX, dY;
     protected int projCenterFlag;
-    private float lad = (float) 60.0; // LOOK
+    private final float lad = (float) 60.0; // LOOK
 
     protected PolarStereographic(int template) {
       super(template);
@@ -788,18 +780,15 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nPolarStereographic{");
-      sb.append("la1=").append(la1);
-      sb.append(", lo1=").append(lo1);
-      sb.append(", lov=").append(lov);
-      sb.append(", dX=").append(dX);
-      sb.append(", dY=").append(dY);
-      sb.append(", projCenterFlag=").append(projCenterFlag);
-      sb.append(", lad=").append(lad);
-      sb.append('}');
-      return sb.toString();
+      return "PolarStereographic{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", lov=" + lov +
+              ", dX=" + dX +
+              ", dY=" + dY +
+              ", projCenterFlag=" + projCenterFlag +
+              ", lad=" + lad +
+              "} " + super.toString();
     }
 
     @Override
@@ -945,8 +934,17 @@ Grid definition –   polar stereographic
    */
   public static class LambertConformal extends Grib1Gds {
 
-    protected float la1, lo1, lov, lad, dX, dY, latin1, latin2, latSouthPole, lonSouthPole;
-    protected int projCenterFlag;
+    protected final float la1;
+    protected final float lo1;
+    protected final float lov;
+    protected float lad;
+    protected final float dX;
+    protected final float dY;
+    protected final float latin1;
+    protected final float latin2;
+    protected final float latSouthPole;
+    protected final float lonSouthPole;
+    protected final int projCenterFlag;
 
     // private int hla1, hlo1, hlov, hlad, hdX, hdY, hlatin1, hlatin2; // hasheesh
 
@@ -984,22 +982,19 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nLambertConformal{");
-      sb.append("la1=").append(la1);
-      sb.append(", lo1=").append(lo1);
-      sb.append(", lov=").append(lov);
-      sb.append(", lad=").append(lad);
-      sb.append(", dX=").append(dX);
-      sb.append(", dY=").append(dY);
-      sb.append(", latin1=").append(latin1);
-      sb.append(", latin2=").append(latin2);
-      sb.append(", latSouthPole=").append(latSouthPole);
-      sb.append(", lonSouthPole=").append(lonSouthPole);
-      sb.append(", projCenterFlag=").append(projCenterFlag);
-      sb.append('}');
-      return sb.toString();
+      return "LambertConformal{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", lov=" + lov +
+              ", lad=" + lad +
+              ", dX=" + dX +
+              ", dY=" + dY +
+              ", latin1=" + latin1 +
+              ", latin2=" + latin2 +
+              ", latSouthPole=" + latSouthPole +
+              ", lonSouthPole=" + lonSouthPole +
+              ", projCenterFlag=" + projCenterFlag +
+              "} " + super.toString();
     }
 
     @Override
@@ -1074,7 +1069,7 @@ Grid definition –   polar stereographic
     }
 
     public GdsHorizCoordSys makeHorizCoordSys() {
-      ProjectionImpl proj = null;
+      ProjectionImpl proj;
 
       Earth earth = getEarth();
       if (earth.isSpherical()) {
@@ -1130,7 +1125,13 @@ Grid definition –   polar stereographic
 
   public static class Mercator extends Grib1Gds {
 
-    protected float la1, lo1, la2, lo2, latin, dX, dY;
+    protected final float la1;
+    protected final float lo1;
+    protected final float la2;
+    protected final float lo2;
+    protected final float latin;
+    protected final float dX;
+    protected final float dY;
 
     Mercator(byte[] data, int template) {
       super(data, template);
@@ -1162,18 +1163,15 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nMercator{ ");
-      sb.append("la1=").append(la1);
-      sb.append(", lo1=").append(lo1);
-      sb.append(", la2=").append(la2);
-      sb.append(", lo2=").append(lo2);
-      sb.append(", latin=").append(latin);
-      sb.append(", dX=").append(dX);
-      sb.append(", dY=").append(dY);
-      sb.append('}');
-      return sb.toString();
+      return "Mercator{" +
+              "la1=" + la1 +
+              ", lo1=" + lo1 +
+              ", la2=" + la2 +
+              ", lo2=" + lo2 +
+              ", latin=" + latin +
+              ", dX=" + dX +
+              ", dY=" + dY +
+              "} " + super.toString();
     }
 
     @Override
@@ -1274,9 +1272,9 @@ Grid definition –   polar stereographic
 
   public static class RotatedLatLon extends LatLon {
 
-    protected float angleRotation; // Angle of rotation (represented in the same way as the reference value)
-    protected float latSouthPole; // Latitude of pole of stretching in millidegrees (integer)
-    protected float lonSouthPole;  // Longitude of pole of stretching in millidegrees (integer)
+    protected final float angleRotation; // Angle of rotation (represented in the same way as the reference value)
+    protected final float latSouthPole; // Latitude of pole of stretching in millidegrees (integer)
+    protected final float lonSouthPole;  // Longitude of pole of stretching in millidegrees (integer)
 
     RotatedLatLon(byte[] data, int template) {
       super(data, template);
@@ -1294,14 +1292,11 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-      final StringBuilder sb = new StringBuilder();
-      sb.append(super.toString());
-      sb.append("\nRotLatLon");
-      sb.append("{angleRotation=").append(angleRotation);
-      sb.append(", latSouthPole=").append(latSouthPole);
-      sb.append(", lonSouthPole=").append(lonSouthPole);
-      sb.append('}');
-      return sb.toString();
+      return "RotatedLatLon{" +
+              "angleRotation=" + angleRotation +
+              ", latSouthPole=" + latSouthPole +
+              ", lonSouthPole=" + lonSouthPole +
+              "} " + super.toString();
     }
 
     @Override
@@ -1384,7 +1379,11 @@ Grid definition –   polar stereographic
    */
   public static class SphericalHarmonicCoefficients extends Grib1Gds {
 
-    int j, k, m, type, mode;
+    final int j;
+    final int k;
+    final int m;
+    final int type;
+    final int mode;
 
     SphericalHarmonicCoefficients(byte[] data, int template) {
       super(data, template);
@@ -1408,7 +1407,7 @@ Grid definition –   polar stereographic
 
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
-      return null;
+      return null; // LOOK not done yet
     }
 
     @Override
@@ -1417,20 +1416,17 @@ Grid definition –   polar stereographic
 
     @Override
     public String toString() {
-
-      return MoreObjects.toStringHelper(this)
-          .add("j", j)
-          .add("k", k)
-          .add("m", m)
-          .add("type", type)
-          .add("mode", mode)
-          .toString();
+      return "SphericalHarmonicCoefficients{" +
+              "j=" + j +
+              ", k=" + k +
+              ", m=" + m +
+              ", type=" + type +
+              ", mode=" + mode +
+              "} " + super.toString();
     }
   }
 
   public static class UnknownGds extends Grib1Gds {
-
-    int j, k, m, type, mode;
 
     UnknownGds(byte[] data, int template) {
       super(data, template);
@@ -1448,12 +1444,17 @@ Grid definition –   polar stereographic
 
     @Override
     public GdsHorizCoordSys makeHorizCoordSys() {
-      return null;
+      return null; // LOOK
     }
 
     @Override
     public void testHorizCoordSys(Formatter f) {
 
+    }
+
+    @Override
+    public String toString() {
+      return "UnknownGds{} " + super.toString();
     }
   }
 

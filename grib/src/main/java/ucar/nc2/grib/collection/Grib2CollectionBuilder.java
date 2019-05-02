@@ -5,16 +5,24 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.CollectionUpdateType;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import ucar.coord.*;
 import ucar.nc2.grib.GribIndex;
 import ucar.nc2.grib.GribIndexCache;
-import ucar.nc2.grib.VertCoord;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateEns;
+import ucar.nc2.grib.coord.CoordinateND;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateSharer;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.GribRecordStats;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.time.CalendarPeriod;
@@ -32,8 +40,8 @@ import java.util.*;
  * @since 2/5/14
  */
 class Grib2CollectionBuilder extends GribCollectionBuilder {
-  private FeatureCollectionConfig.GribConfig gribConfig;
-  private Grib2Customizer cust;
+  private final FeatureCollectionConfig.GribConfig gribConfig;
+  private Grib2Tables cust;
 
   // LOOK prob name could be dcm.getCollectionName()
   Grib2CollectionBuilder(String name, MCollection dcm, org.slf4j.Logger logger) {
@@ -89,7 +97,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
 
         for (Grib2Record gr : index.getRecords()) { // we are using entire Grib2Record - memory limitations
           if (this.cust == null) {
-            this.cust = Grib2Customizer.factory(gr);
+            this.cust = Grib2Tables.factory(gr);
             cust.setTimeUnitConverter(gribConfig.getTimeUnitConverter());
           }
           if (filterIntervals(gr, gribConfig.intvFilter)) {
@@ -191,10 +199,10 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
   }
 
   static class VariableBag implements Comparable<VariableBag> {
-    public Grib2Record first;
-    public Grib2Variable gv;
+    public final Grib2Record first;
+    public final Grib2Variable gv;
 
-    List<Grib2Record> atomList = new ArrayList<>(100); // not sorted
+    final List<Grib2Record> atomList = new ArrayList<>(100); // not sorted
     CoordinateND<Grib2Record> coordND;
     CalendarPeriod timeUnit;
 
@@ -208,7 +216,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
     }
 
     @Override
-    public int compareTo(VariableBag o) {
+    public int compareTo(@Nonnull VariableBag o) {
       return Grib2Utils.getVariableName(first).compareTo(Grib2Utils.getVariableName(o.first));
     }
   }
@@ -264,7 +272,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
         if (vb.first.getPDS().isEnsemble())
           coordNBuilder.addBuilder(new CoordinateEns.Builder2(0));
 
-        VertCoord.VertUnit vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
+        VertCoordType vertUnit = cust.getVertUnit(pdsFirst.getLevelType1());
         if (vertUnit.isVerticalCoordinate())
           coordNBuilder.addBuilder(new CoordinateVert.Builder2(pdsFirst.getLevelType1(), cust.getVertUnit(pdsFirst.getLevelType1())));
 
@@ -303,7 +311,7 @@ class Grib2CollectionBuilder extends GribCollectionBuilder {
       counter.recordsTotal += total;
     }
 
-    public void showInfo(Formatter f, Grib2Customizer tables) {
+    public void showInfo(Formatter f, Grib2Tables tables) {
       GribRecordStats all = new GribRecordStats();
 
       for (VariableBag vb : gribvars) {

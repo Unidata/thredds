@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 1998-2019 University Corporation for Atmospheric Research/Unidata
+ * See LICENSE for license information.
+ */
+
 package ucar.nc2.ui.grib;
 
 import org.jdom2.Document;
@@ -17,14 +22,14 @@ import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.grib.GribData;
 import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.GribUtils;
-import ucar.nc2.grib.GribVariableRenamer;
 import ucar.nc2.grib.collection.Grib;
 import ucar.nc2.grib.collection.GribCdmIndex;
 import ucar.nc2.grib.collection.GribCollectionImmutable;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
-import ucar.nc2.grib.grib2.table.WmoCodeTable;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
+import ucar.nc2.grib.grib2.table.WmoParamTable;
 import ucar.nc2.ui.ReportPanel;
 import ucar.nc2.util.Counters;
 import ucar.nc2.util.Misc;
@@ -41,11 +46,11 @@ import java.util.*;
  * @since Dec 13, 2010
  */
 public class Grib2ReportPanel extends ReportPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2ReportPanel.class);
 
   public enum Report {
-    checkTables, localUseSection, uniqueGds, duplicatePds, drsSummary, gdsSummary, pdsSummary, pdsProblems, idProblems, timeCoord,
-    rename, renameCheck, copyCompress, gribIndex
+    checkTables, localUseSection, uniqueTemplates, duplicatePds, drsSummary, gdsSummary, pdsSummary, pdsProblems, idProblems, timeCoord,
+    rename, copyCompress, gribIndex
   }
 
   public Grib2ReportPanel(PreferencesExt prefs) {
@@ -66,8 +71,8 @@ public class Grib2ReportPanel extends ReportPanel {
       case localUseSection:
         doLocalUseSection(f, dcm, useIndex);
         break;
-      case uniqueGds:
-        doUniqueGds(f, dcm, useIndex);
+      case uniqueTemplates:
+        doUniqueTemplates(f, dcm, useIndex);
         break;
       case duplicatePds:
         doDuplicatePds(f, dcm, useIndex);
@@ -92,9 +97,6 @@ public class Grib2ReportPanel extends ReportPanel {
         break;
       case rename:
         doRename(f, dcm, useIndex);
-        break;
-      case renameCheck:
-        doRenameCheck(f, dcm, useIndex);
         break;
       case copyCompress:
         doCopyCompress(f, dcm, useIndex, eachFile, extra);
@@ -315,15 +317,15 @@ public class Grib2ReportPanel extends ReportPanel {
             continue;
           }
 
-          WmoCodeTable.TableEntry entry = WmoCodeTable.getParameterEntry(discipline, category, number);
+          GribTables.Parameter entry = WmoParamTable.getParameter(discipline, category, number);
           if (entry == null) {
             fm.format("  missing from WMO table (%d %d %d) = %s units=%s %n", discipline, category, number, currName, dt.getUnitsString());
             miss++;
             continue;
           }
 
-          if (!entry.status.equalsIgnoreCase("Operational")) {
-            fm.format("  %s parameter = %s (%d %d %d) %n", entry.status, currName, discipline, category, number);
+          if (!entry.getOperationalStatus().equalsIgnoreCase("Operational")) {
+            fm.format("  %s parameter = %s (%d %d %d) %n", entry.getOperationalStatus(), currName, discipline, category, number);
             nonop++;
           }
         }
@@ -380,68 +382,113 @@ public class Grib2ReportPanel extends ReportPanel {
 
   ///////////////////////////////////////////////
 
-  private void doUniqueGds(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    f.format("Show Unique GDS%n");
+  // Look through the collection and find what GDS and PDS templates are used.
+  private void doUniqueTemplates(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
+    f.format("Show Unique GDS and PDS templates%n");
 
-    Map<Integer, GdsList> gdsSet = new HashMap<>();
+    Map<Integer, FileList> gdsSet = new HashMap<>();
+    Map<Integer, FileList> pdsSet = new HashMap<>();
+    Map<Integer, FileList> drsSet = new HashMap<>();
     for (MFile mfile : dcm.getFilesSorted()) {
       f.format(" %s%n", mfile.getPath());
-      doUniqueGds(mfile, gdsSet, f);
+      doUniqueTemplates(mfile, gdsSet, pdsSet, drsSet, f);
     }
 
-    for (GdsList gdsl : gdsSet.values()) {
-      f.format("%nGDS = %d x %d (%d) %n", gdsl.gds.getNy(), gdsl.gds.getNx(), gdsl.gds.template);
-      for (FileCount fc : gdsl.fileList)
-        f.format("  %5d %s (%d)%n", fc.count, fc.f.getPath(), fc.countGds);
+    List<FileList> sorted = new ArrayList<>(gdsSet.values());
+    Collections.sort(sorted);
+    for (FileList gdsl : sorted) {
+      f.format("%nGDS %s template= %d %n", gdsl.name, gdsl.template);
+      for (FileCount fc : gdsl.fileList) {
+        f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
+      }
+    }
+
+    List<FileList> sortedPds = new ArrayList<>(pdsSet.values());
+    Collections.sort(sortedPds);
+    for (FileList pdsl : sortedPds) {
+      f.format("%n===================================================%n");
+      f.format("%nPDS %s template= %d %n", pdsl.name, pdsl.template);
+      for (FileCount fc : pdsl.fileList) {
+        f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
+      }
+    }
+
+    List<FileList> sortedDrs = new ArrayList<>(drsSet.values());
+    Collections.sort(sortedDrs);
+    for (FileList pdsl : sortedDrs) {
+      f.format("%n===================================================%n");
+      f.format("%nDRS %s template= %d %n", pdsl.name, pdsl.template);
+      for (FileCount fc : pdsl.fileList) {
+        f.format("  %5d %s %n", fc.countRecords, fc.f.getPath());
+      }
     }
   }
 
-  private void doUniqueGds(MFile mf, Map<Integer, GdsList> gdsSet, Formatter f) throws IOException {
-    Grib2Index index = createIndex(mf, f);
-    if (index == null) return;
+  private void doUniqueTemplates(MFile mf, Map<Integer, FileList> gdsSet, Map<Integer, FileList> pdsSet,
+                                 Map<Integer, FileList> drsSet, Formatter f) {
+    String path = mf.getPath();
+    Grib2Index g1idx = new Grib2Index();
+    boolean ok = g1idx.readIndex(path, 0, thredds.inventory.CollectionUpdateType.nocheck);
+    if (!ok) {
+      f.format("**Cant open %s%n", path);
+      return;
+    }
 
-    int countGds = index.getGds().size();
-    for (Grib2Record gr : index.getRecords()) {
-      int hash = gr.getGDS().hashCode();
-      GdsList gdsList = gdsSet.get(hash);
-      if (gdsList == null) {
-        gdsList = new GdsList(gr.getGDS());
-        gdsSet.put(hash, gdsList);
-      }
-      FileCount fc = gdsList.contains(mf);
-      if (fc == null) {
-        fc = new FileCount(mf, countGds);
-        gdsList.fileList.add(fc);
-      }
-      fc.count++;
+    for (Grib2Record gr : g1idx.getRecords()) {
+      int template = gr.getGDSsection().getGDSTemplateNumber();
+      gdsSet.computeIfAbsent(template, k -> new FileList(k, gr.getGDSsection().getGDS().getNameShort()));
+      gdsSet.get(template).findAndAdd(mf);
+
+      int pdsTemplate = gr.getPDSsection().getPDSTemplateNumber();
+      pdsSet.computeIfAbsent(pdsTemplate, k -> new FileList(k, gr.getPDSsection().getPDS().getClass().getName()));
+      pdsSet.get(pdsTemplate).findAndAdd(mf);
+
+      int drsTemplate = gr.getDataRepresentationSection().getDataTemplate();
+      drsSet.computeIfAbsent(drsTemplate, k -> new FileList(k, "DRS"+k));
+      drsSet.get(drsTemplate).findAndAdd(mf);
+
     }
   }
 
-  private static class GdsList {
-    Grib2Gds gds;
+  // keep track of all files that use this template
+  private class FileList implements Comparable<FileList> {
+    String name;
+    int template;
     java.util.List<FileCount> fileList = new ArrayList<>();
 
-    private GdsList(Grib2Gds gds) {
-      this.gds = gds;
+    private FileList(int template, String name) {
+      this.name = name;
+      this.template = template;
     }
 
-    FileCount contains(MFile f) {
-      for (FileCount fc : fileList)
-        if (fc.f.getPath().equals(f.getPath())) return fc;
-      return null;
+    void findAndAdd(MFile f) {
+      FileCount which = null;
+      for (FileCount fc : fileList) {
+        if (fc.f.getPath().equals(f.getPath()))
+          which = fc;
+      }
+
+      if (which == null) {
+        which = new FileCount(f);
+        fileList.add(which);
+      }
+      which.countRecords++;
     }
 
+    @Override
+    public int compareTo(FileList o) {
+      return template - o.template;
+    }
   }
 
-  private static class FileCount {
-    private FileCount(MFile f, int countGds) {
+  // track number of records for each file
+  private class FileCount {
+    private FileCount(MFile f) {
       this.f = f;
-      this.countGds = countGds;
     }
 
     MFile f;
-    int count = 0;
-    int countGds = 0;
+    int countRecords = 0;
   }
 
   ///////////////////////////////////////////////
@@ -589,10 +636,10 @@ public class Grib2ReportPanel extends ReportPanel {
     Grib2Index index = createIndex(mf, f);
     if (index == null) return;
 
-    Grib2Customizer cust = null;
+    Grib2Tables cust = null;
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
       if (cust == null)
-        cust = Grib2Customizer.factory(gr);
+        cust = Grib2Tables.factory(gr);
 
       Grib2Pds pds = gr.getPDS();
       counters.count("template", pds.getTemplateNumber());
@@ -923,7 +970,7 @@ public class Grib2ReportPanel extends ReportPanel {
 
     Grib2Index index = createIndex(mf, f);
     if (index == null) return 0;
-    Grib2Customizer cust = null;
+    Grib2Tables cust = null;
 
     int count = 0;
     for (ucar.nc2.grib.grib2.Grib2Record gr : index.getRecords()) {
@@ -953,7 +1000,7 @@ public class Grib2ReportPanel extends ReportPanel {
           shutup = true;
         }
 
-        if (cust == null) cust = Grib2Customizer.factory(gr);
+        if (cust == null) cust = Grib2Tables.factory(gr);
         double len = cust.getForecastTimeIntervalSizeInHours(pds);
         counters.count("TimeIntervalsLength", (int) len);
         int[] intv = cust.getForecastTimeIntervalOffset(gr);
@@ -972,68 +1019,6 @@ public class Grib2ReportPanel extends ReportPanel {
     Grib2SectionIndicator is = gr.getIs();
     Grib2Pds pds = gr.getPDS();
     return is.getDiscipline() + "-" + pds.getParameterCategory() + "-" + pds.getParameterNumber();
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////
-
-  private void doRenameCheck(Formatter f, MCollection dcm, boolean useIndex) throws IOException {
-    f.format("CHECK Renaming uniqueness %s%n", dcm.getCollectionName());
-
-    GribVariableRenamer renamer = new GribVariableRenamer();
-    int fail = 0;
-    int multiple = 0;
-    int ok = 0;
-
-    for (MFile mfile : dcm.getFilesSorted()) {
-      f.format("%n%s%n", mfile.getPath());
-
-      NetcdfFile ncfileOld = null;
-      GridDataset gdsNew = null;
-      try {
-        ncfileOld = NetcdfFile.open(mfile.getPath(), "ucar.nc2.iosp.grib.GribServiceProvider", -1, null, null);
-        NetcdfDataset ncdOld = new NetcdfDataset(ncfileOld);
-        GridDataset gridOld = new GridDataset(ncdOld);
-        gdsNew = GridDataset.open(mfile.getPath());
-
-        for (GridDatatype grid : gridOld.getGrids()) {
-          // if (useIndex) {
-            List<String> newNames = renamer.matchNcepNames(gdsNew, grid.getShortName());
-            if (newNames.size() == 0) {
-              f.format(" ***FAIL %s%n", grid.getShortName());
-              fail++;
-            } else if (newNames.size() != 1) {
-              f.format(" *** %s multiple matches on %n", grid.getShortName());
-              for (String newName : newNames)
-                f.format("    %s%n", newName);
-              f.format("%n");
-              multiple++;
-            } else if (useIndex) {
-              f.format(" %s%n %s%n%n", grid.getShortName(), newNames.get(0));
-              ok++;
-            }
-            
-          /* } else {
-            String newName = renamer.getNewName(mfile.getName(), grid.getShortName());
-            if (newName == null) {
-              f.format(" ***Grid %s renamer failed%n", grid.getShortName());
-              continue;
-            }
-            
-            // test it really exists
-            GridDatatype ggrid = gdsNew.findGridByName(newName);
-            if (ggrid == null) f.format(" ***Grid %s new name = %s not found%n", grid.getShortName(), newName);
-          } */
-        }
-
-      } catch (Throwable t) {
-        t.printStackTrace();
-      } finally {
-        if (ncfileOld != null) ncfileOld.close();
-        if (gdsNew != null) gdsNew.close();
-      }
-    }
-
-    f.format("Fail=%d multiple=%d ok=%d%n", fail, multiple, ok);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////

@@ -61,7 +61,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.*;
 import java.util.List;
@@ -89,14 +88,12 @@ public class Grib1CollectionPanel extends JPanel {
     this.prefs = prefs;
 
     AbstractButton xmlButt = BAMutil.makeButtcon("Information", "generate gds xml", false);
-    xmlButt.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    xmlButt.addActionListener(e -> {
         Formatter f = new Formatter();
         generateGdsXml(f);
         infoPopup2.setText(f.toString());
         infoPopup2.gotoTop();
         infoWindow2.show();
-      }
     });
     buttPanel.add(xmlButt);
 
@@ -585,6 +582,7 @@ public class Grib1CollectionPanel extends JPanel {
     Grib1RecordScanner reader = new Grib1RecordScanner(raf);
     while (reader.hasNext()) {
       ucar.nc2.grib.grib1.Grib1Record gr = reader.next();
+      if (gr == null) break;
 
       if (cust == null) { // first record
         cust = Grib1Customizer.factory(gr, null);

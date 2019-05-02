@@ -70,4 +70,20 @@
     <cve>CVE-2018-14720</cve>
     <cve>CVE-2018-14721</cve>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name example: quartz-2.2.3.jar
+      reason: quartz is being misidentified as jenkins -> https://github.com/jeremylong/DependencyCheck/issues/1637#issuecomment-451115272
+      ]]></notes>
+    <gav regex="true">^org\.quartz-scheduler:quartz:.*$</gav>
+    <cpe>cpe:/a:jenkins:jenkins</cpe>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      file name example: spring-security-core-4.2.7.RELEASE.jar, spring-security-cweb-4.2.7.RELEASE.jar
+      reason: Only valid if specifically using in combination with Spring 5.0.5 RELEASE. https://pivotal.io/security/cve-2018-1258
+      ]]></notes>
+    <gav regex="true">^org\.springframework\.security:spring-security.*$</gav>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
 </suppressions>

@@ -94,11 +94,9 @@ public class TestPanel {
     store.putInt("myInt", 42);
     assert (store.getInt("myInt", 43) == 42);
 
-    pp.addActionListener( new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
+    pp.addActionListener(e -> {
         System.out.println("got accept");
         //xstore.save();
-      }
     });
   }
 

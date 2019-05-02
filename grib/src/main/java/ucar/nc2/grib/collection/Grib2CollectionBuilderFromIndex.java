@@ -5,14 +5,13 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.*;
-import ucar.nc2.grib.grib2.table.Grib2Customizer;
+import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.unidata.io.RandomAccessFile;
-
-import java.io.IOException;
 
 /**
  * Build a GribCollection object for Grib-2 files. Only from ncx files.
@@ -25,8 +24,9 @@ import java.io.IOException;
 class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   // read in the index, index raf already open; return null on failure
+  @Nullable
   static Grib2Collection readFromIndex(String name, RandomAccessFile raf,
-      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, org.slf4j.Logger logger) {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -42,8 +42,9 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
 
   // read in the index, index raf already open; return null on failure
+  @Nullable
   static GribCollectionMutable openMutableGCFromIndex(String name, RandomAccessFile raf,
-      FeatureCollectionConfig config, org.slf4j.Logger logger) throws IOException {
+      FeatureCollectionConfig config, org.slf4j.Logger logger) {
 
     Grib2CollectionBuilderFromIndex builder = new Grib2CollectionBuilderFromIndex(name, config, logger);
     if (!builder.readIndex(raf))
@@ -60,7 +61,7 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
 
   ////////////////////////////////////////////////////////////////
 
-  protected Grib2Customizer cust; // gets created in readIndex, after center etc is read in
+  protected Grib2Tables cust; // gets created in readIndex, after center etc is read in
 
   Grib2CollectionBuilderFromIndex(String name, FeatureCollectionConfig config,
       org.slf4j.Logger logger) {
@@ -83,14 +84,13 @@ class Grib2CollectionBuilderFromIndex extends GribCollectionBuilderFromIndex {
   }
 
   protected GribTables makeCustomizer() {
-    this.cust = Grib2Customizer.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.genProcessId);
+    this.cust = Grib2Tables.factory(gc.center, gc.subcenter, gc.master, gc.local, gc.genProcessId);
     return this.cust;
   }
 
   protected String getLevelNameShort(int levelCode) {
     return cust.getLevelNameShort(levelCode);
   }
-
 
   @Override
   protected GribHorizCoordSystem readGds(GribCollectionProto.Gds p) {

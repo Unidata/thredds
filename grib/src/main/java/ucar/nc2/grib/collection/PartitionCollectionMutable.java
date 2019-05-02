@@ -5,6 +5,8 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.DateExtractor;
 import thredds.inventory.MCollection;
@@ -27,10 +29,10 @@ import java.util.*;
  */
 public class PartitionCollectionMutable extends GribCollectionMutable {
 
-  //////////////////////////////////////////////////////////////////////
-
   static class PartitionForVariable2D {
-    int partno, groupno, varno; // , flag;     // what the hell is the flag used for ?
+    final int partno;
+    final int groupno;
+    final int varno; // , flag;     // what the hell is the flag used for ?
     GribCollectionMutable.VariableIndex vi;
 
     PartitionForVariable2D(int partno, int groupno, int varno) {
@@ -41,7 +43,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
   }
 
   public class VariableIndexPartitioned extends GribCollectionMutable.VariableIndex {
-    int nparts;
+    final int nparts;
     SmartArrayInt partnoSA;
     SmartArrayInt groupnoSA;
     SmartArrayInt varnoSA;
@@ -73,8 +75,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
 
     public void finish() {
       if (partList == null) return;  // nothing to do
-      if (partList.size() > nparts)
-        System.out.println("PartitionCollectionMutable partList.size() > nparts");   // might be smaller due to failed partition
+      if (partList.size() > nparts)  // might be smaller due to failed partition
+        logger.warn("PartitionCollectionMutable partList.size() > nparts");
 
       int[] partno = new int[nparts];
       int[] groupno = new int[nparts];
@@ -191,7 +193,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
       return extractor;
     }
 
-
+    @Nullable
     String getIndexFilenameInCache() {
       File file = new File(directory, filename);
       File existingFile = GribIndexCache.getExistingFileOrCache(file.getPath());
@@ -200,7 +202,6 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
         File parent = getIndexParentFile();
         if (parent == null) return null;
         existingFile = new File(parent, filename);
-        //System.out.printf("try reletive file = %s%n", existingFile);
         if (!existingFile.exists()) return null;
       }
       return existingFile.getPath();
@@ -228,7 +229,8 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     // the children must already exist
-    public GribCollectionMutable makeGribCollection() throws IOException {
+    @Nullable
+    public GribCollectionMutable makeGribCollection() {
       GribCollectionMutable result = GribCdmIndex.openMutableGCFromIndex(dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX), config, false, true, logger);
       if (result == null) {
         logger.error("Failed on openMutableGCFromIndex {}", dcm.getIndexFilename(GribCdmIndex.NCX_SUFFIX));
@@ -242,7 +244,7 @@ public class PartitionCollectionMutable extends GribCollectionMutable {
     }
 
     @Override
-    public int compareTo(Partition o) {
+    public int compareTo(@Nonnull Partition o) {
       if (partitionDate != null && o.partitionDate != null)
         return partitionDate.compareTo(o.partitionDate);
       return name.compareTo(o.name);

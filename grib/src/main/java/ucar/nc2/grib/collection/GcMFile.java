@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.collection;
 
+import javax.annotation.Nullable;
 import thredds.filesystem.MFileOS;
 import thredds.inventory.MFile;
 import ucar.unidata.util.StringUtil2;
@@ -90,13 +91,13 @@ public class GcMFile implements thredds.inventory.MFile {
   }
 
   @Override
+  @Nullable
   public Object getAuxInfo() {
     return null;
   }
 
   @Override
   public void setAuxInfo(Object info) {
-
   }
 
   public File getDirectory() {

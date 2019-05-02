@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib1;
 
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.grib.GribNumbers;
@@ -21,7 +22,7 @@ import java.io.IOException;
  */
 @Immutable
 public class Grib1SectionBitMap {
-  static private final Logger logger = LoggerFactory.getLogger(Grib1SectionBitMap.class);
+  private static final Logger logger = LoggerFactory.getLogger(Grib1SectionBitMap.class);
 
   private final long startingPosition;
 
@@ -43,8 +44,9 @@ public class Grib1SectionBitMap {
   }
 
   /**
-   * Read the bitmap array when needed
+   * Read the bitmap array when needed, return null if none.
    */
+  @Nullable
   public byte[] getBitmap(RandomAccessFile raf) throws IOException {
     if (startingPosition <= 0) {
       throw new IllegalStateException("Grib1 Bit map has bad starting position");
@@ -76,22 +78,6 @@ public class Grib1SectionBitMap {
     byte[] data = new byte[n];
     raf.readFully(data);
     return data;
-
-    // create new bit map, octet 4 contains number of unused bits at the end
-    /* boolean[] bitmap = new boolean[n * 8 - unused];  // should be
-    boolean[] bitmap = new boolean[n * 8];  //
-
-    // fill bit map
-    int count = 0;
-    int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
-    for (int i = 0; i < bitmap.length; i++) {
-      bitmap[i] = (data[i / 8] & bitmask[i % 8]) != 0;
-      if (bitmap[i]) count++;
-    }
-    float r = (float) count / 8 / n;
-    System.out.printf("bitmap count = %d / %d (%f)%n", count, 8*n,  r);
-
-    return bitmap;  */
   }
 
   int getLength(RandomAccessFile raf) throws IOException {

@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2;
 
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.unidata.io.KMPMatch;
 import ucar.unidata.io.RandomAccessFile;
@@ -21,14 +22,14 @@ import java.util.Map;
  * @since 3/28/11
  */
 public class Grib2RecordScanner {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
-  static private final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
-  static private final boolean debug = false;
-  static private final boolean debugRepeat = false;
-  static private final boolean debugEnding = false;
-  static private final int maxScan = 16000;
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2RecordScanner.class);
+  private static final KMPMatch matcher = new KMPMatch(new byte[] {'G','R','I','B'} );
+  private static final boolean debug = false;
+  private static final boolean debugRepeat = false;
+  private static final boolean debugEnding = false;
+  private static final int maxScan = 16000;
 
-  static public boolean isValidFile(RandomAccessFile raf) {
+  public static boolean isValidFile(RandomAccessFile raf) {
     try {
       raf.seek(0);
       boolean found = raf.searchForward(matcher, maxScan); // look in first 16K
@@ -57,6 +58,7 @@ public class Grib2RecordScanner {
    * @param raf             from this RandomAccessFile
    * @param drsPos          Grib2SectionDataRepresentation starts here
    */
+  @Nullable
   public static Grib2Record findRecordByDrspos(RandomAccessFile raf, long drsPos) throws IOException {
     long pos = Math.max(0, drsPos- (20*1000)); // go back 20K
     Grib2RecordScanner scan = new Grib2RecordScanner(raf, pos);
@@ -72,8 +74,8 @@ public class Grib2RecordScanner {
 
   //////////////////////////////////////////////////////////////////////////////
 
-  private Map<Long, Grib2SectionGridDefinition> gdsMap = new HashMap<>();
-  private ucar.unidata.io.RandomAccessFile raf;
+  private final Map<Long, Grib2SectionGridDefinition> gdsMap = new HashMap<>();
+  private final ucar.unidata.io.RandomAccessFile raf;
 
   private byte[] header;
   private int badEndings = 0;
@@ -90,7 +92,7 @@ public class Grib2RecordScanner {
     raf.order(RandomAccessFile.BIG_ENDIAN);
     lastPos = 0;
 
-    if (debugRepeat) System.out.printf(" Grib2RecordScanner %s%n", raf.getLocation());
+    if (debugRepeat) logger.debug(" Grib2RecordScanner %s%n", raf.getLocation());
   }
 
   private Grib2RecordScanner(RandomAccessFile raf, long startFrom) throws IOException {
@@ -125,12 +127,12 @@ public class Grib2RecordScanner {
       int edition = raf.read();
       if (edition == 2) break;
       lastPos = raf.getFilePointer();   // not edition 2 ! just skip it !! start scanning from there
-      log.warn("GRIB message at pos=" + gribStart + " not GRIB2; skip");
+      logger.warn("GRIB message at pos=" + gribStart + " not GRIB2; skip");
     }
 
     if (more) {
       int sizeHeader = (int) (gribStart - lastPos);  // wmo headers are embedded between records in some idd streams
-      if (debugEnding) System.out.printf("bytes between last and next=%d%n", sizeHeader);
+      if (debugEnding) logger.debug("bytes between last and next=%d%n", sizeHeader);
       if (sizeHeader > 100) sizeHeader = 100;   // maximum 100 bytes; more is likely to be garbage
       long goBack = gribStart-sizeHeader;
       header = new byte[sizeHeader];
@@ -170,19 +172,11 @@ public class Grib2RecordScanner {
       else
         gdsMap.put(crc, gds);
 
-      // look for duplicate pds
-      /* crc = pds.calcCRC();
-      Grib2SectionProductDefinition pdsCached = pdsMap.get(crc);
-      if (pdsCached != null)
-        pds = pdsCached;
-      else
-        pdsMap.put(crc, pds); */
-
       // check to see if we have a repeating record
       long pos = raf.getFilePointer();
       long ending = is.getEndPos();
       if (pos+34 < ending) { // give it 30 bytes of slop
-        if (debugRepeat) System.out.printf(" REPEAT AT %d != %d%n", pos+4, ending);
+        if (debugRepeat) logger.debug(" REPEAT AT %d != %d%n", pos+4, ending);
         repeatPos = pos;
         repeatRecord = new Grib2Record(header, is, ids, lus, gds, pds, drs, bms, dataSection, false, Grib2Index.ScanModeMissing); // this assumes immutable sections
         // track bms in case its a repeat
@@ -191,7 +185,7 @@ public class Grib2RecordScanner {
         return new Grib2Record(repeatRecord); // GribRecord isnt immutable; still, may not be necessary
       }
 
-      if (debug) System.out.printf(" read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
+      if (debug) logger.debug(" read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
 
       // check that end section is correct
       boolean foundEnding = true;
@@ -202,12 +196,13 @@ public class Grib2RecordScanner {
           badEndings++;
           //String clean = StringUtil2.cleanup(header);
           //if (clean.length() > 40) clean = clean.substring(0,40) + "...";
-          if (debug) System.out.printf(" **missing End of GRIB message at pos=%d start= %d%n", ending, is.getStartPos());
-          log.warn("Missing End of GRIB message {} starting at pos={} is.ending={} data.ending={} file={}", badEndings, is.getStartPos(),ending,dataSection.getEndingPosition(),raf.getLocation());
+          if (debug) logger.debug(" **missing End of GRIB message at pos=%d start= %d%n", ending, is.getStartPos());
+          logger
+              .warn("Missing End of GRIB message {} starting at pos={} is.ending={} data.ending={} file={}", badEndings, is.getStartPos(),ending,dataSection.getEndingPosition(),raf.getLocation());
           break;
         }
       }
-      if (debug) System.out.printf(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
+      if (debug) logger.debug(" read until %d grib ending at %d header ='%s' foundEnding=%s%n",
               raf.getFilePointer(), ending, StringUtil2.cleanup(header), foundEnding);
 
       if (foundEnding || debugEnding) {
@@ -223,13 +218,13 @@ public class Grib2RecordScanner {
 
     } catch (Throwable t) {
       long pos = (is == null) ? -1 : is.getStartPos();
-      log.warn("Bad GRIB2 record in file {}, skipping pos={} cause={}", raf.getLocation(), pos, t.getMessage());
+      logger.warn("Bad GRIB2 record in file {}, skipping pos={} cause={}", raf.getLocation(), pos, t.getMessage());
       lastPos += 20;  // skip "GRIB"
       if (hasNext()) // search forward for another one
         return next();
     }
 
-    return null; // last record was incomplete
+    throw new IOException("last record was incomplete");
   }
 
   // return true if got another repeat out of this record
@@ -266,7 +261,7 @@ public class Grib2RecordScanner {
       repeatRecord.repeat = section;
 
     } else {
-      if (debugRepeat) System.out.printf(" REPEAT Terminate %d%n", section);
+      if (debugRepeat) logger.debug(" REPEAT Terminate %d%n", section);
       lastPos = repeatPos; // start next scan from here
       repeatPos = -1;
       repeatRecord = null;
@@ -282,7 +277,7 @@ public class Grib2RecordScanner {
         throw new IllegalStateException("No bms in repeating section");
       repeatRecord.setBms(repeatBms, true);
       //debug
-      if (debugRepeat) System.out.printf("replaced bms %d%n", section);
+      if (debugRepeat) logger.debug("replaced bms %d%n", section);
       repeatRecord.repeat += 1000;
 
     } else if (bms.getBitMapIndicator() == 0) {
@@ -306,12 +301,12 @@ public class Grib2RecordScanner {
     long pos = raf.getFilePointer();
     long ending = repeatRecord.getIs().getEndPos();
     if (pos+34 < ending) { // give it 30 bytes of slop
-      if (debugRepeat) System.out.printf(" REPEAT AGAIN %d != %d%n", pos+4, ending);
+      if (debugRepeat) logger.debug(" REPEAT AGAIN %d != %d%n", pos+4, ending);
       repeatPos = pos;
       return true;
     }
 
-    if (debug) System.out.printf(" REPEAT read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
+    if (debug) logger.debug(" REPEAT read until %d grib ending at %d header ='%s'%n", raf.getFilePointer(), ending, StringUtil2.cleanup(header));
 
     // check that end section is correct
     raf.seek(ending-4);
@@ -319,40 +314,23 @@ public class Grib2RecordScanner {
       if (raf.read() != 55) {
         String clean = StringUtil2.cleanup(header);
         if (clean.length() > 40) clean = clean.substring(0,40) + "...";
-        log.warn("  REPEAT Missing End of GRIB message at pos=" + ending + " header= " + clean+" for="+raf.getLocation());
+        logger.warn("  REPEAT Missing End of GRIB message at pos=" + ending + " header= " + clean+" for="+raf.getLocation());
         break;
       }
     }
     lastPos = raf.getFilePointer();
 
-    if (debugRepeat) System.out.printf(" REPEAT DONE%n");
+    if (debugRepeat) logger.debug(" REPEAT DONE%n");
     repeatPos = -1; // no more repeats in this record
     return true;
   }
 
-  public static void main2(String[] args) {
-    String filename = (args.length > 0 && args[0] != null) ? args[0] : "Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb";
-    System.out.printf("Scan %s%n", filename);
-
-    try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
-      raf.seek(0);
-      while (!raf.isAtEndOfFile()) {
-        boolean found = raf.searchForward(matcher, -1);
-        if (found) {
-          raf.skipBytes(7); // will be positioned on byte 0 of indicator section
-          int edition = raf.read(); // read at byte 8
-          System.out.printf(" GRIB edition %d found at pos %d%n", edition, raf.getFilePointer());
-          break;
-        }
-      }
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
+  // Count the number of records in a grib2 file.
   public static void main(String[] args) throws IOException {
     int count = 0;
-    RandomAccessFile raf = new RandomAccessFile("Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb", "r");
+    String file = (args.length > 0) ? args[0] : "Q:/cdmUnitTest/formats/grib2/LMPEF_CLM_050518_1200.grb";
+
+    RandomAccessFile raf = new RandomAccessFile(file, "r");
     System.out.printf("Read %s%n", raf.getLocation());
     Grib2RecordScanner scan = new Grib2RecordScanner(raf);
     while (scan.hasNext()) {

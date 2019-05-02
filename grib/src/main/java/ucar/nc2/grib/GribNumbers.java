@@ -11,30 +11,34 @@ import java.io.IOException;
 
 /**
  * Utilities for reading and interpreting GRIB bytes.
- *
- * @author Robb Kambic  10/20/04
- * @version 2.0
  */
-
 public final class GribNumbers {
-
   /**
-   * if missing value is not defined use this value.
+   * If missing value is not defined use this value.
    */
   public static final int UNDEFINED = -9999;
   public static final double UNDEFINEDD = -9999.0;
 
+  private static final int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
 
-  public static final int[] bitmask = {128, 64, 32, 16, 8, 4, 2, 1};
-
-  // get mask for bit number used in the GRIB docs
-  // "If bit 8 of the extended flags" ...
-  public static int getMaskForBit(int gribBitNumber) {
-    return bitmask[gribBitNumber-1];
+  /**
+   * Test if the given gribBitNumber is set in the test value.
+   * @param value test the 8 bits in this value .
+   * @param gribBitNumber one based, starting from highest bit. Must be between 1-8.
+   * @return true if the given gribBitNumber is set.
+   */
+  public static boolean testGribBitIsSet(int value, int gribBitNumber) {
+    return (value & bitmask[gribBitNumber-1]) != 0;
   }
 
-  public static boolean testBitIsSet(int test, int gribBitNumber) {
-    return (test & GribNumbers.getMaskForBit(gribBitNumber)) != 0;
+  /**
+   * Test if the given bit is set in the test value.
+   * @param value test the 8 bits in this value .
+   * @param bit zero based, starting from highest bit. Must be between 0-7.
+   * @return true if the given bit is set.
+   */
+  public static boolean testBitIsSet(int value, int bit) {
+    return (value & bitmask[bit]) != 0;
   }
 
   /**
@@ -287,22 +291,6 @@ public final class GribNumbers {
       bits += Long.bitCount(s);
     }
     return bits;
-  }
-
-
-  //////////////////////////////////////////////////////////////////////////
-
-  public static void main(String[] args) {
-    System.out.printf("byte == convertSignedByte == convertSignedByte2 == hex%n");
-    for (int i=125; i<256;i++) {
-      byte b = (byte) i;
-      System.out.printf("%d == %d == %d == %s%n", b, convertSignedByte(b), convertSignedByte2(b), Long.toHexString((long) i));
-      assert convertSignedByte(b) == convertSignedByte2(b) : convertSignedByte(b) +"!=" +convertSignedByte2(b);
-    }
-
-    int val = (int) DataType.unsignedByteToShort((byte) -200);
-    int val2 = DataType.unsignedShortToInt((short) -200);
-    System.out.printf("%d != %d%n", val, val2);
   }
 
 }

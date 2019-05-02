@@ -3,6 +3,8 @@ package ucar.nc2.grib.grib1;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ma2.Array;
@@ -21,6 +23,7 @@ import java.lang.invoke.MethodHandles;
  * @author caron
  * @since 11/23/2015.
  */
+@RunWith(JUnit4.class)
 public class TestGrib1Unpack {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -78,7 +81,7 @@ public class TestGrib1Unpack {
   // cubic:
   @Test
   public void testThisGridInterpolation() throws IOException {
-    final String testfile = "../grib/src/test/data/HPPI89_KWBC.grb";
+    final String testfile = "../grib/src/test/data/HPPI89_KWBC.grib1";
 
     Grib1Index index = new Grib1Index();
     if (!index.readIndex(testfile, -1)) {
@@ -119,7 +122,7 @@ public class TestGrib1Unpack {
       Array lineA = dataA.slice(0, lineno);
       logger.debug("{}", NCdumpW.toString(lineA));
     }
-    System.out.printf("%n", method);
+    System.out.printf("%s%n", method);
 
     return data;
   }

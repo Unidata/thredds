@@ -337,11 +337,9 @@ class FieldResizable extends Field {
     frame.setLocation(300, 300);
     frame.setVisible(true);
 
-    pp.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
+    pp.addActionListener(e -> {
         String text = tf.getText();
         tf.setText( text+"1");
-      }
     });
 
   }

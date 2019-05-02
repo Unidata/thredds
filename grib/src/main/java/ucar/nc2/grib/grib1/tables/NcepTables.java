@@ -5,12 +5,13 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.GribResourceReader;
-import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
 
@@ -29,10 +30,10 @@ import java.util.Map;
  * @since 1/13/12
  */
 public class NcepTables extends Grib1Customizer {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepTables.class);
 
   private static Map<Integer, String> genProcessMap;  // shared by all instances
-  private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, VertCoordType> levelTypesMap;  // shared by all instances
 
   NcepTables(Grib1ParamTables tables) {
     super(7, tables);
@@ -190,6 +191,7 @@ public class NcepTables extends Grib1Customizer {
   //////////////////////////////////////////// genProcess
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null)
         genProcessMap = getNcepGenProcess();
@@ -199,16 +201,11 @@ public class NcepTables extends Grib1Customizer {
   }
 
   // public so can be called from Grib2
-  static public Map<Integer, String> getNcepGenProcess() {
+  @Nullable
+  public static Map<Integer, String> getNcepGenProcess() {
     if (genProcessMap != null) return genProcessMap;
     String path = "resources/grib1/ncep/ncepTableA.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-
-      if (is == null) {
-        logger.error("Cant find NCEP Table 1 = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -220,20 +217,16 @@ public class NcepTables extends Grib1Customizer {
         String desc = elem1.getChildText("description");
         result.put(code, desc);
       }
-
       return Collections.unmodifiableMap(result);  // all at once - thread safe
 
-    } catch (IOException ioe) {
+    } catch (IOException | JDOMException ioe) {
       logger.error("Cant read NCEP Table 1 = " + path, ioe);
-      return null;
-    } catch (JDOMException e) {
-      logger.error("Cant parse NCEP Table 1 = " + path, e);
       return null;
     }
   }
 
   ///////////////////////////////////////// levels
-  protected GribLevelType getLevelType(int code) {
+  protected VertCoordType getLevelType(int code) {
     if (code < 129)
       return super.getLevelType(code); // LOOK dont let NCEP override standard tables (??) looks like a conflict with level code 210 (!)
 
@@ -242,7 +235,7 @@ public class NcepTables extends Grib1Customizer {
     if (levelTypesMap == null)
       return super.getLevelType(code);
 
-    GribLevelType levelType = levelTypesMap.get(code);
+    VertCoordType levelType = levelTypesMap.get(code);
     if (levelType != null) return levelType;
 
     return super.getLevelType(code);

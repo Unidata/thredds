@@ -217,8 +217,8 @@ entries:
       url: /digested_passwords.html
       output: web, pdf
 
-    - title: Enable TSL/SSL Encryption
-      url: /enable_tsl_encryption.html
+    - title: Enable TLS/SSL Encryption
+      url: /enable_TLS_encryption.html
       output: web, pdf
 
     - title: Secure Tomcat Manager App

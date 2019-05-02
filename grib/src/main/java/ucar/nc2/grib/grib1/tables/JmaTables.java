@@ -4,9 +4,10 @@
  */
 package ucar.nc2.grib.grib1.tables;
 
-import ucar.nc2.grib.GribLevelType;
+import javax.annotation.Nullable;
 import ucar.nc2.grib.GribNumbers;
 import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.Grib1ParamLevel;
 import ucar.nc2.grib.grib1.Grib1ParamTime;
 import ucar.nc2.grib.grib1.Grib1SectionProductDefinition;
@@ -22,7 +23,7 @@ import java.util.Map;
  * @since 1/27/2015
  */
 public class JmaTables extends Grib1Customizer {
-  private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, VertCoordType> levelTypesMap;  // shared by all instances
 
   JmaTables(Grib1ParamTables tables) {
     super(34, tables);
@@ -159,32 +160,33 @@ public class JmaTables extends Grib1Customizer {
     }
   }
 
-  protected GribLevelType getLevelType(int code) {
+  protected VertCoordType getLevelType(int code) {
     if (levelTypesMap == null) makeLevelTypesMap();
-    GribLevelType levelType = levelTypesMap.get(code);
+    VertCoordType levelType = levelTypesMap.get(code);
     if (levelType != null) return levelType;
     return super.getLevelType(code);
   }
 
-  static private void makeLevelTypesMap() {
+  private static void makeLevelTypesMap() {
     levelTypesMap = new HashMap<>(10);
     // (int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
-    levelTypesMap.put(100, new GribLevelType(100, "Isobaric Surface", "isobaric_surface_low", "hPa", null, false, false));   // 3D
-    levelTypesMap.put(211, new GribLevelType(211, "Entire soil", "entire_soil", "", null, false, false));
-    levelTypesMap.put(212, new GribLevelType(212, "The bottom of land surface model", "bottom_of_model", "", null, false, false));
-    levelTypesMap.put(213, new GribLevelType(213, "Underground layer number of land surface model", "underground_layer", "layer", null, false, false));   // 3D
+    levelTypesMap.put(100, new VertCoordType(100, "Isobaric Surface", "isobaric_surface_low", "hPa", null, false, false));   // 3D
+    levelTypesMap.put(211, new VertCoordType(211, "Entire soil", "entire_soil", "", null, false, false));
+    levelTypesMap.put(212, new VertCoordType(212, "The bottom of land surface model", "bottom_of_model", "", null, false, false));
+    levelTypesMap.put(213, new VertCoordType(213, "Underground layer number of land surface model", "underground_layer", "layer", null, false, false));   // 3D
   }
 
   //////////////////// gen process
   private static Map<Integer, String> genProcessMap;
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null) makeGenProcessMap();
     return genProcessMap.get(genProcess);
   }
 
-  static private void makeGenProcessMap() {
+  private static void makeGenProcessMap() {
     genProcessMap = new HashMap<>(100);
     genProcessMap.put(0, "Undefined (not to specify generating process)");
     genProcessMap.put(1, "Global Spectral Model (GSM8803_T63L16)");

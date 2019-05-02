@@ -11,29 +11,28 @@ import ucar.nc2.grib.grib2.Grib2Parameter;
 import java.util.*;
 
 /**
- * Superclass for local table implementations
+ * Superclass for local table implementations.
+ * A Local table overrides some of the methods in Grib2Tables.
  *
  * @author John
  * @since 6/22/11
  */
-public abstract class LocalTables extends Grib2Customizer {
+abstract class LocalTables extends Grib2Tables {
+  protected Map<Integer, Grib2Parameter> localParams = new HashMap<>(100);  // subclass must set
 
-  //////////////////////////////////////////////////////////////////////
-  protected Map<Integer, Grib2Parameter> local = new HashMap<>(100);  // subclass must set
-
-  LocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
+  LocalTables(Grib2TableConfig config) {
+    super(config);
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return grib2Table.getPath();
+    return config.getPath();
   }
 
   @Override
   public List<GribTables.Parameter> getParameters() {
-    List<Parameter> result = new ArrayList<>(local.values());
+    List<Parameter> result = new ArrayList<>(localParams.values());
     result.sort(new ParameterSort());
     return result;
   }
@@ -62,10 +61,10 @@ public abstract class LocalTables extends Grib2Customizer {
 
   @Override
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
-    Grib2Parameter plocal = local.get(makeParamId(discipline, category, number));
+    Grib2Parameter plocal = localParams.get(makeParamId(discipline, category, number));
 
     if ((category <= 191) && (number <= 191))  {
-      GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
+      GribTables.Parameter pwmo = WmoParamTable.getParameter(discipline, category, number);
       if (plocal == null) return pwmo;
       if (pwmo == null) return plocal;
 
@@ -78,7 +77,7 @@ public abstract class LocalTables extends Grib2Customizer {
 
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-    return local.get(makeParamId(discipline, category, number));
+    return localParams.get(makeParamId(discipline, category, number));
    }
 
  }

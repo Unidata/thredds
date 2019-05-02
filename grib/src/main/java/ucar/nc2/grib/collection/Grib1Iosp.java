@@ -25,7 +25,7 @@ import java.util.Formatter;
  * @since 4/6/11
  */
 public class Grib1Iosp extends GribIosp {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2Iosp.class);
 
   @Override
   public String makeVariableName(GribCollectionImmutable.VariableIndex v) {
@@ -44,43 +44,51 @@ public class Grib1Iosp extends GribIosp {
 
   private static String makeVariableNameFromTables(Grib1Customizer cust, FeatureCollectionConfig.GribConfig gribConfig, int center, int subcenter, int version, int paramNo,
                                  int levelType, boolean isLayer, int timeRangeIndicator, String intvName) {
-    Formatter f = new Formatter();
+    try (Formatter f = new Formatter()) {
 
-    Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo); // code table 2
-    if (param == null) {
-      f.format("VAR%d-%d-%d-%d", center, subcenter, version, paramNo);
-    } else {
-      if (param.useName())
-        f.format("%s", param.getName());
-      else
-        f.format("%s", GribUtils.makeNameFromDescription(param.getDescription()));
-    }
-
-    if (gribConfig.useTableVersion) {
-      f.format("_TableVersion%d", version);
-    }
-
-    if (gribConfig.useCenter) {
-      f.format("_Center%d", center);
-    }
-
-    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format("_%s", cust.getLevelNameShort(levelType)); // code table 3
-      if (isLayer) f.format("_layer");
-    }
-
-    if (timeRangeIndicator >= 0) {
-      GribStatType stat = cust.getStatType(timeRangeIndicator);
-      if (stat != null) {
-        if (intvName != null) f.format("_%s", intvName);
-        f.format("_%s", stat.name());
+      Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo); // code table 2
+      if (param == null) {
+        f.format("VAR%d-%d-%d-%d", center, subcenter, version, paramNo);
       } else {
-        if (intvName != null) f.format("_%s", intvName);
-        // f.format("_%d", timeRangeIndicator);
+        if (param.useName()) {
+          f.format("%s", param.getName());
+        } else {
+          f.format("%s", GribUtils.makeNameFromDescription(param.getDescription()));
+        }
       }
-    }
 
-    return f.toString();
+      if (gribConfig.useTableVersion) {
+        f.format("_TableVersion%d", version);
+      }
+
+      if (gribConfig.useCenter) {
+        f.format("_Center%d", center);
+      }
+
+      if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+        f.format("_%s", cust.getLevelNameShort(levelType)); // code table 3
+        if (isLayer) {
+          f.format("_layer");
+        }
+      }
+
+      if (timeRangeIndicator >= 0) {
+        GribStatType stat = cust.getStatType(timeRangeIndicator);
+        if (stat != null) {
+          if (intvName != null) {
+            f.format("_%s", intvName);
+          }
+          f.format("_%s", stat.name());
+        } else {
+          if (intvName != null) {
+            f.format("_%s", intvName);
+          }
+          // f.format("_%d", timeRangeIndicator);
+        }
+      }
+
+      return f.toString();
+    }
   }
 
   @Override
@@ -98,30 +106,38 @@ public class Grib1Iosp extends GribIosp {
   static String makeVariableLongName(Grib1Customizer cust, int center, int subcenter, int version,
       int paramNo, int levelType,
       boolean isLayer, int intvType, String intvName, String probabilityName) {
-    Formatter f = new Formatter();
+    try (Formatter f = new Formatter()) {
 
-    boolean isProb = (probabilityName != null && probabilityName.length() > 0);
-    if (isProb)
-      f.format("Probability ");
+      boolean isProb = (probabilityName != null && probabilityName.length() > 0);
+      if (isProb) {
+        f.format("Probability ");
+      }
 
-    Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo);
-    if (param == null)
-      f.format("Unknown Parameter %d-%d-%d-%d", center, subcenter, version, paramNo);
-    else
-      f.format("%s", param.getDescription());
+      Grib1Parameter param = cust.getParameter(center, subcenter, version, paramNo);
+      if (param == null) {
+        f.format("Unknown Parameter %d-%d-%d-%d", center, subcenter, version, paramNo);
+      } else {
+        f.format("%s", param.getDescription());
+      }
 
-    if (intvType >= 0) {
-      GribStatType stat = cust.getStatType(intvType);
-      if (stat != null) f.format(" (%s %s)", intvName, stat.name());
-      else if (intvName != null && intvName.length() > 0) f.format(" (%s)", intvName);
+      if (intvType >= 0) {
+        GribStatType stat = cust.getStatType(intvType);
+        if (stat != null) {
+          f.format(" (%s %s)", intvName, stat.name());
+        } else if (intvName != null && intvName.length() > 0) {
+          f.format(" (%s)", intvName);
+        }
+      }
+
+      if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
+        f.format(" @ %s", cust.getLevelDescription(levelType));
+        if (isLayer) {
+          f.format(" layer");
+        }
+      }
+
+      return f.toString();
     }
-
-    if (levelType != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-      f.format(" @ %s", cust.getLevelDescription(levelType));
-      if (isLayer) f.format(" layer");
-    }
-
-    return f.toString();
   }
 
   @Override
@@ -220,20 +236,4 @@ public class Grib1Iosp extends GribIosp {
   public Object getGribCustomizer() {
     return cust;
   }
-
-  public static void main(String[] args) {
-      int pno = 121;
-      int result = 823375026;
-      result += result * 37 + 1;  // 1223479917
-      result += result * 37 + pno;  // 1223479917
-
-      int result2 = 823375026;  // 1223479917
-      result2 += result2 * 37 + 4;
-      result2 += result2 * 37 + pno;
-
-      System.out.printf("%d,%d%n", result, result2);
-
-      // Arrays.hashCode(new Object[] {1, 2, 3});
-    }
-
 }

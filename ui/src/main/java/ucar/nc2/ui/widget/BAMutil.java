@@ -49,23 +49,23 @@ public class BAMutil {
     /** the state of "toggle" actions = Boolean */
   public static final String STATE = "state";
 
-  static private String defaultResourcePath = "/resources/nj22/ui/icons/";
+  private static String defaultResourcePath = "/resources/nj22/ui/icons/";
 
   // Check if on a mac
-  static private final String osName = System.getProperty("os.name").toLowerCase();
-  static private final boolean isMacOs = osName.startsWith("mac os x");
+  private static final String osName = System.getProperty("os.name").toLowerCase();
+  private static final boolean isMacOs = osName.startsWith("mac os x");
 
   /**
    * Set the resource path for icons, images, cursors.
    * @param path reletive to the classpath
    */
-  static public void setResourcePath( String path) { defaultResourcePath = path; }
-  static public String getResourcePath( ) { return defaultResourcePath; }
+  public static void setResourcePath( String path) { defaultResourcePath = path; }
+  public static String getResourcePath( ) { return defaultResourcePath; }
 
-  static final private int META_KEY = (isMacOs) ? java.awt.Event.META_MASK
+  final private static int META_KEY = (isMacOs) ? java.awt.Event.META_MASK
                                                     : java.awt.Event.CTRL_MASK;
 
-  static private boolean debug = false, debugToggle = false;
+  private static boolean debug = false, debugToggle = false;
 
   /** Get the named Icon from the default resource (jar file).
     * @param name name of the Icon ( will look for <name>.gif)

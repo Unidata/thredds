@@ -5,10 +5,12 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 import ucar.nc2.grib.*;
+import ucar.nc2.grib.coord.VertCoordType;
 import ucar.nc2.grib.grib1.tables.NcepTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 
@@ -26,31 +28,22 @@ import java.util.jar.JarFile;
  * @author caron
  * @since 4/3/11
  */
-public class NcepLocalTables extends LocalTables {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
-  static private final String defaultResourcePath = "resources/grib2/ncep/v21.0.0/";
-  private static NcepLocalTables single;
+class NcepLocalTables extends LocalTables {
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(NcepLocalTables.class);
 
-  public static Grib2Customizer getCust(Grib2Table table) {
-    if (single == null) single = new NcepLocalTables(table);
-    return single;
-  }
+  protected final NcepLocalParams ncepLocalParams;
+  private final Map<String, String> codeMap = new HashMap<>(400);
 
-  ////////////////////////////////////////////////////////////////////////////////////
-  protected final NcepLocalParams params;
-
-  NcepLocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
-    if (grib2Table.getPath() == null)
-      grib2Table.setPath(defaultResourcePath);
-    this.params =  new NcepLocalParams(grib2Table.getPath());
+  NcepLocalTables(Grib2TableConfig config) {
+    super(config);
+    this.ncepLocalParams = new NcepLocalParams(config.getPath());
     initCodes();
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return params.getTablePath(discipline, category);
+    return ncepLocalParams.getTablePath(discipline, category);
   }
 
   private String[] getResourceListing(String path) throws URISyntaxException, IOException {
@@ -73,8 +66,11 @@ public class NcepLocalTables extends LocalTables {
     if (dirURL.getProtocol().equals("jar")) {
             /* A JAR path */
       String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-      JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-      Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+      Enumeration<JarEntry> entries;
+      try (JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"))) {
+        //gives ALL entries in jar
+        entries = jar.entries();
+      }
       Set<String> result = new HashSet<>(); //avoid duplicates in case it is a subdirectory
       while (entries.hasMoreElements()) {
         String name = entries.nextElement().getName();
@@ -98,7 +94,7 @@ public class NcepLocalTables extends LocalTables {
   public List<GribTables.Parameter> getParameters() {
     List<GribTables.Parameter> allParams = new ArrayList<>(3000);
     try {
-      String[] fileNames = getResourceListing(grib2Table.getPath());
+      String[] fileNames = getResourceListing(config.getPath());
       if (fileNames == null) return allParams;
       for (String fileName : fileNames) {
         File f = new File(fileName);
@@ -106,18 +102,17 @@ public class NcepLocalTables extends LocalTables {
         if (!f.getName().contains("Table4.2.")) continue;
         if (!f.getName().endsWith(".xml")) continue;
         try {
-          NcepLocalParams.Table table = params.factory(grib2Table.getPath() + f.getPath());
-          if (table != null)
-            allParams.addAll(table.getParameters());
+          List<GribTables.Parameter> params = ncepLocalParams.getParameters(config.getPath() + f.getPath());
+          if (params != null)
+            allParams.addAll(params);
         } catch (Exception e) {
           logger.error("Error reading wmo tables", e);
         }
       }
-      return allParams;
     } catch (URISyntaxException | IOException e) {
       logger.error("NcepLocalTables failed", e);
     }
-    return null;
+    return allParams;
   }
 
   @Override
@@ -147,10 +142,10 @@ public class NcepLocalTables extends LocalTables {
     // if (makeHash(discipline, category, number) == makeHash(0, 19, 242))
     //   return getParameter(0, 1, 242);
 
-    Grib2Parameter plocal = params.getParameter(discipline, category, number);
+    Grib2Parameter plocal = ncepLocalParams.getParameter(discipline, category, number);
 
     if ((category <= 191) && (number <= 191)) {
-      GribTables.Parameter pwmo = WmoCodeTable.getParameterEntry(discipline, category, number);
+      GribTables.Parameter pwmo = WmoParamTable.getParameter(discipline, category, number);
       if (plocal == null) return pwmo;
 
       // allow local table to override all but name, units
@@ -164,7 +159,7 @@ public class NcepLocalTables extends LocalTables {
 
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-     return params.getParameter(discipline, category, number);
+     return ncepLocalParams.getParameter(discipline, category, number);
    }
 
   @Override
@@ -174,7 +169,7 @@ public class NcepLocalTables extends LocalTables {
     }
 
     if ((code < 192) || (code > 254) || tableName.equals("4.0"))
-      return WmoCodeTable.getTableValue(tableName, code);
+      return super.getTableValue(tableName, code);
 
     return codeMap.get(tableName + "." + code);
   }
@@ -183,20 +178,20 @@ public class NcepLocalTables extends LocalTables {
   // Vert
 
   @Override
-  public VertCoord.VertUnit getVertUnit(int code) {
+  public VertCoordType getVertUnit(int code) {
 
     switch (code) {
       case 235:
-        return new GribLevelType(code, "0.1 C", null, true);
+        return new VertCoordType(code, "0.1 C", null, true);
 
       case 237:
-        return new GribLevelType(code, "m", null, true);
+        return new VertCoordType(code, "m", null, true);
 
       case 238:
-        return new GribLevelType(code, "m", null, true);
+        return new VertCoordType(code, "m", null, true);
 
       case 241:
-        return new GribLevelType(code, "count", null, true);   // eg see NCEP World Watch datasets
+        return new VertCoordType(code, "count", null, true);   // eg see NCEP World Watch datasets
 
       default:
         return super.getVertUnit(code);
@@ -340,6 +335,7 @@ public class NcepLocalTables extends LocalTables {
   }
 
   @Override
+  @Nullable
   public GribStatType getStatType(int id) {
     if (id < 192) return super.getStatType(id);
     switch (id) {  // LOOK not correct
@@ -370,6 +366,7 @@ public class NcepLocalTables extends LocalTables {
   private static Map<Integer, String> statName;  // shared by all instances
 
   @Override
+  @Nullable
   public String getStatisticName(int id) {
     if (id < 192) return super.getStatisticName(id);
     if (statName == null) statName = initTable410();
@@ -377,15 +374,10 @@ public class NcepLocalTables extends LocalTables {
     return statName.get(id);
   }
 
-  // public so can be called from Grib2
+  @Nullable
   private Map<Integer, String> initTable410() {
-    String path = grib2Table.getPath() + "Table4.10.xml";
+    String path = config.getPath() + "Table4.10.xml";
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -397,15 +389,10 @@ public class NcepLocalTables extends LocalTables {
         String desc = elem1.getChildText("description");
         result.put(code, desc);
       }
-
       return result;  // all at once - thread safe
 
-    } catch (IOException ioe) {
+    } catch (IOException | JDOMException ioe) {
       logger.error("Cant read  " + path, ioe);
-      return null;
-
-    } catch (JDOMException e) {
-      logger.error("Cant parse = " + path, e);
       return null;
     }
   }
@@ -416,6 +403,7 @@ public class NcepLocalTables extends LocalTables {
   private static Map<Integer, String> genProcessMap;  // shared by all instances
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null) genProcessMap = NcepTables.getNcepGenProcess();
     if (genProcessMap == null) return null;
@@ -423,8 +411,9 @@ public class NcepLocalTables extends LocalTables {
   }
 
   @Override
+  @Nullable
   public String getCategory(int discipline, int category) {
-    String catName = params.getCategory(discipline, category);
+    String catName = ncepLocalParams.getCategory(discipline, category);
     if (catName != null) return catName;
     return super.getCategory(discipline, category);
   }
@@ -449,7 +438,7 @@ Updated again on 3/26/2008
 */
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-  private Map<String, String> codeMap = new HashMap<>(400);
+  // Code table overrides.
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   private Map<String, String> initCodes() {

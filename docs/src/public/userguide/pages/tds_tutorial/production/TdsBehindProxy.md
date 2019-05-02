@@ -215,7 +215,7 @@ The following example shows how to implement a proxy using the Apache HTTPD serv
 2. Disable any active `Java HTTP/1.1 Connector` and the `SSL HTTP/1.1 Connector` Tomcat connectors.
 
    {%include important.html content="
-   Only perform this step is you have enabled Apache to handle the SSL/TSL encryption for Tomcat and the TDS.
+   Only perform this step is you have enabled Apache to handle the SSL/TLS encryption for Tomcat and the TDS.
    " %}
 
    This will prevent direct communication to Tomcat via ports `8080` and `8443` ensuring the AJP proxy via Apache is the only HTTP method by which to access Tomcat and the TDS.
@@ -242,13 +242,13 @@ The following example shows how to implement a proxy using the Apache HTTPD serv
       -->
    ~~~~ 
 
-3. Configure the TDS to relinquish control of TSL/SSL to Apache
+3. Configure the TDS to relinquish control of TLS/SSL to Apache
 
    {%include important.html content="
-   Only perform this step is you have enabled Apache to handle the SSL/TSL encryption for Tomcat and the TDS.
+   Only perform this step is you have enabled Apache to handle the SSL/TLS encryption for Tomcat and the TDS.
    " %}
 
-   The TDS deployment descriptor (`$TOMCAT_HOME/webapps/thredds/WEB-INF/web.xml`) is configured to only allow access parts of the TDS application via TSL/SSL.  Because we've disabled Tomcat's handling of the TSL/SSL, we need to update these configurations.
+   The TDS deployment descriptor (`$TOMCAT_HOME/webapps/thredds/WEB-INF/web.xml`) is configured to only allow access parts of the TDS application via TLS/SSL.  Because we've disabled Tomcat's handling of the TLS/SSL, we need to update these configurations.
 
    Use your favorite editor to open the TDS `$TOMCAT_HOME/webapps/thredds/WEB-INF/web.xml` file.  Around line 106 you'll start seeing a configs that look like the following:
     

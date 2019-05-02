@@ -5,8 +5,10 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import java.util.ArrayList;
+import java.util.List;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.grib.TimeCoord;
+import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 import ucar.nc2.grib.grib2.Grib2Pds;
 import ucar.nc2.grib.grib2.Grib2Record;
@@ -22,33 +24,31 @@ import java.io.InputStreamReader;
 import java.util.Formatter;
 
 /**
- * Read screen scraped DSS tables.
- * CFSR 093 not needed - screen scraped NCEP ok 2/2/2012
+ * Read screen scraped DSS tables. CFSR 093 not needed - screen scraped NCEP ok 2/2/2012
  *
  * @author caron
  * @since 11/3/11
  */
-public class CfsrLocalTables extends NcepLocalTables {
-  private static final String tableName = "resources/grib2/local/cfsr.txt";
-  private static boolean debug = false;
-  private static CfsrLocalTables single;
-
-  public static CfsrLocalTables getCust(Grib2Table table) {
-    if (single == null) single = new CfsrLocalTables(table);
-    return single;
+class CfsrLocalTables extends NcepLocalTables {
+  CfsrLocalTables(Grib2TableConfig config) {
+    super(config);
+    initLocalTable();
   }
 
-  private CfsrLocalTables(Grib2Table grib2Table) {
-    super(grib2Table);
-    if (grib2Table.getPath() == null)
-      grib2Table.setPath(tableName);
-    initLocalTable();
+  // LOOK: Have to override NcepLocalTables. Probably need delegates, not subclasses?
+  @Override
+  public List<Parameter> getParameters() {
+    List<Parameter> result = new ArrayList<>(localParams.values());
+    result.sort(new ParameterSort());
+    return result;
   }
 
   @Override
   public String getTablePath(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return tableName;
+    if ((category <= 191) && (number <= 191)) {
+      return super.getTablePath(discipline, category, number);
+    }
+    return config.getPath();
   }
 
   @Override
@@ -78,7 +78,9 @@ public class CfsrLocalTables extends NcepLocalTables {
   @Override
   public int[] getForecastTimeIntervalOffset(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
-    if (!pds.isTimeInterval()) return null;
+    if (!pds.isTimeInterval()) {
+      return null;
+    }
 
     // LOOK this is hack for CFSR monthly combobulation
     // see http://rda.ucar.edu/datasets/ds093.2/#docs/time_ranges.html
@@ -107,39 +109,43 @@ public class CfsrLocalTables extends NcepLocalTables {
         end = p2;
         break;
       default:
-        throw new IllegalArgumentException("unknown statType "+statType);
+        throw new IllegalArgumentException("unknown statType " + statType);
     }
 
     return new int[]{start, end};
   }
 
   @Override
-  public TimeCoord.TinvDate getForecastTimeInterval(Grib2Record gr) {
+  public TimeCoordIntvDateValue getForecastTimeInterval(Grib2Record gr) {
     Grib2Pds pds = gr.getPDS();
-    if (!pds.isTimeInterval()) return null;
+    if (!pds.isTimeInterval()) {
+      return null;
+    }
 
     int[] intv = getForecastTimeIntervalOffset(gr);
     assert intv != null;
-    int intvLen = intv[1]-intv[0];
+    int intvLen = intv[1] - intv[0];
 
     int timeUnitOrg = pds.getTimeUnit();
     int timeUnitConvert = convertTimeUnit(timeUnitOrg);
     CalendarPeriod unitPeriod = Grib2Utils.getCalendarPeriod(timeUnitConvert);
-    if (unitPeriod == null)
-      throw new IllegalArgumentException("unknown CalendarPeriod "+timeUnitConvert+ " org="+timeUnitOrg);
+    if (unitPeriod == null) {
+      throw new IllegalArgumentException(
+          "unknown CalendarPeriod " + timeUnitConvert + " org=" + timeUnitOrg);
+    }
 
     CalendarPeriod.Field fld = unitPeriod.getField();
 
     CalendarDate start = gr.getReferenceDate().add(intv[0], fld);
     CalendarPeriod period = CalendarPeriod.of(intvLen, fld);
 
-    return new TimeCoord.TinvDate(start, period);
+    return new TimeCoordIntvDateValue(start, period);
   }
 
   /**
-   * Only use in GribVariable to decide on variable identity when intvMerge = false.
-   * By returning a constant, we dont support intvMerge = false.
-   * Problem is we cant reconstruct interval length without reference time, which is not in the pds.
+   * Only use in GribVariable to decide on variable identity when intvMerge = false. By returning a
+   * constant, we dont support intvMerge = false. Problem is we cant reconstruct interval length
+   * without reference time, which is not in the pds.
    */
   @Override
   public double getForecastTimeIntervalSizeInHours(Grib2Pds pds) {
@@ -148,7 +154,9 @@ public class CfsrLocalTables extends NcepLocalTables {
 
   private boolean isCfsr2(Grib2Pds pds) {
     int genType = pds.getGenProcessId();
-    if ((genType != 82) && (genType != 89)) return false;
+    if ((genType != 82) && (genType != 89)) {
+      return false;
+    }
 
     Grib2Pds.PdsInterval pdsIntv = (Grib2Pds.PdsInterval) pds;
     Grib2Pds.TimeInterval[] ti = pdsIntv.getTimeIntervals();
@@ -159,8 +167,12 @@ public class CfsrLocalTables extends NcepLocalTables {
   @Override
   public void showSpecialPdsInfo(Grib2Record gr, Formatter f) {
     Grib2Pds pds = gr.getPDS();
-    if (!pds.isTimeInterval()) return;
-    if (pds.getRawLength() < 65) return;
+    if (!pds.isTimeInterval()) {
+      return;
+    }
+    if (pds.getRawLength() < 65) {
+      return;
+    }
 
     /*     Octet(s)	Description
         47	From NCEP Code Table 4.10
@@ -191,8 +203,10 @@ public class CfsrLocalTables extends NcepLocalTables {
     f.format("                   P1  = %d%n", p2 - p2mp1);
 
     int[] intv = getForecastTimeIntervalOffset(gr);
-    if (intv == null) return;
-    f.format("ForecastTimeIntervalOffset  = (%d,%d)%n", intv[0],intv[1]);
+    if (intv == null) {
+      return;
+    }
+    f.format("ForecastTimeIntervalOffset  = (%d,%d)%n", intv[0], intv[1]);
     f.format("      ForecastTimeInterval  = %s%n", getForecastTimeInterval(gr));
 
     /* Section 4 Octet 58 (possibly 32 bits: 55-58) is the length of the averaging period per unit.
@@ -209,66 +223,55 @@ public class CfsrLocalTables extends NcepLocalTables {
 
   // see http://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc.shtml
   private void initLocalTable() {
+    String tableName = config.getPath();
     ClassLoader cl = this.getClass().getClassLoader();
     try (InputStream is = cl.getResourceAsStream(tableName)) {
-      if (is == null) throw new IllegalStateException("Cant find " + tableName);
-      BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
+      if (is == null) {
+        throw new IllegalStateException("Cant find " + tableName);
+      }
+      try (BufferedReader br = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset))) {
+        while (true) {
+          String line = br.readLine();
+          if (line == null) {
+            break;
+          }
+          if ((line.length() == 0) || line.startsWith("#")) {
+            continue;
+          }
+          String[] flds = StringUtil2.splitString(line);
 
-      while (true) {
-        String line = br.readLine();
-        if (line == null) break;
-        if ((line.length() == 0) || line.startsWith("#")) continue;
-        String[] flds = StringUtil2.splitString(line);
+          int p1 = Integer.parseInt(flds[0].trim()); // must have a number
+          int p2 = Integer.parseInt(flds[1].trim()); // must have a number
+          int p3 = Integer.parseInt(flds[2].trim()); // must have a number
+          StringBuilder b = new StringBuilder();
+          int count = 3;
 
-        int p1 = Integer.parseInt(flds[0].trim()); // must have a number
-        int p2 = Integer.parseInt(flds[1].trim()); // must have a number
-        int p3 = Integer.parseInt(flds[2].trim()); // must have a number
-        StringBuilder b = new StringBuilder();
-        int count = 3;
+          while (count < flds.length && !flds[count].equals(".")) {
+            b.append(flds[count++]).append(' ');
+          }
+          String abbrev = b.toString().trim();
+          b.setLength(0);
+          count++;
 
-        while (count < flds.length && !flds[count].equals("."))
-          b.append(flds[count++]).append(' ');
-        String abbrev = b.toString().trim();
-        b.setLength(0);
-        count++;
+          while (count < flds.length && !flds[count].equals(".")) {
+            b.append(flds[count++]).append(' ');
+          }
+          String name = b.toString().trim();
+          b.setLength(0);
+          count++;
 
-        while (count < flds.length && !flds[count].equals("."))
-          b.append(flds[count++]).append(' ');
-        String name = b.toString().trim();
-        b.setLength(0);
-        count++;
+          while (count < flds.length && !flds[count].equals(".")) {
+            b.append(flds[count++]).append(' ');
+          }
+          String unit = b.toString().trim();
 
-        while (count < flds.length && !flds[count].equals("."))
-          b.append(flds[count++]).append(' ');
-        String unit = b.toString().trim();
-
-        Grib2Parameter s = new Grib2Parameter(p1, p2, p3, name, unit, abbrev, null);
-        local.put(makeParamId(p1, p2, p3), s);
-        if (debug) System.out.printf(" %s%n", s);
+          Grib2Parameter s = new Grib2Parameter(p1, p2, p3, name, unit, abbrev, null);
+          localParams.put(makeParamId(p1, p2, p3), s);
+        }
       }
 
     } catch (IOException ioe) {
       throw new RuntimeException(ioe);
     }
-  }
-
-/*
-0	0	0	TMP	. Temperature	. K
-0	0	2	POT	. Potential temperature	. K
-0	0	4	T MAX	. Maximum temperature	. K
-0	0	5	T MIN	. Minimum temperature	. K
-0	0	6	DPT	. Dewpoint temperature	. K
-*/
-
-  public static void main(String[] args) {
-    CfsrLocalTables t = new CfsrLocalTables(new Grib2Table("DSS", 7, 0, 0, 0, -1, null, Grib2Table.Type.cfsr));
-    Formatter f = new Formatter();
-    Grib2Parameter.compareTables("DSS-093", "Standard WMO version 8", t.getParameters(), Grib2Customizer.factory(0, 0, 0, 0, 0), f);
-    System.out.printf("%s%n", f);
-
-    Formatter f2 = new Formatter();
-    Grib2Parameter.compareTables("DSS-093", "NCEP Table", t.getParameters(), Grib2Customizer.factory(7, 0, 0, 0, 0), f2);
-    System.out.printf("%s%n", f2);
-
   }
 }

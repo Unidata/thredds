@@ -8,8 +8,15 @@ package ucar.nc2.grib.collection;
 import com.google.protobuf.ByteString;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
-import ucar.coord.*;
 import ucar.nc2.constants.CDM;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateEns;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateTime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeIntv;
+import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.grib1.*;
 import ucar.nc2.stream.NcStream;
 import ucar.nc2.time.CalendarDate;
@@ -48,8 +55,8 @@ class Grib1CollectionWriter extends GribCollectionWriter {
     List<Grib1CollectionBuilder.VariableBag> gribVars;
     public List<Coordinate> coords;
 
-    public Set<Long> runtimes = new HashSet<>();
-    public List<Grib1Record> records = new ArrayList<>();
+    public final Set<Long> runtimes = new HashSet<>();
+    public final List<Grib1Record> records = new ArrayList<>();
     Set<Integer> fileSet; // this is so we can show just the component files that are in this group
 
     Group(Grib1SectionGridDefinition gdss, int hashCode, CalendarDate runtime) {
@@ -282,7 +289,7 @@ message SparseArray {
     repeated Group groups = 2;
    */
   private GribCollectionProto.Dataset writeDatasetProto(GribCollectionImmutable.Type type,
-      List<Group> groups) throws IOException {
+      List<Group> groups) {
     GribCollectionProto.Dataset.Builder b = GribCollectionProto.Dataset.newBuilder();
 
     GribCollectionProto.Dataset.Type ptype = GribCollectionProto.Dataset.Type
@@ -304,7 +311,7 @@ message Group {
   repeated int32 fileno = 4 [packed=true]; // the component files that are in this group, key into gc.mfiles
 }
  */
-  private GribCollectionProto.Group writeGroupProto(Group g) throws IOException {
+  private GribCollectionProto.Group writeGroupProto(Group g) {
     GribCollectionProto.Group.Builder b = GribCollectionProto.Group.newBuilder();
 
     b.setGds(writeGdsProto(g.gdss.getRawBytes(), g.gdss.getPredefinedGridDefinition()));

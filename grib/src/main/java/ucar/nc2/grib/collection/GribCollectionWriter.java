@@ -7,11 +7,16 @@ package ucar.nc2.grib.collection;
 
 import com.google.protobuf.ByteString;
 import thredds.inventory.MCollection;
-import ucar.coord.*;
-import ucar.nc2.grib.EnsCoord;
-import ucar.nc2.grib.TimeCoord;
-import ucar.nc2.grib.VertCoord;
-import java.io.IOException;
+import ucar.nc2.grib.coord.Coordinate;
+import ucar.nc2.grib.coord.CoordinateEns;
+import ucar.nc2.grib.coord.CoordinateRuntime;
+import ucar.nc2.grib.coord.CoordinateTime;
+import ucar.nc2.grib.coord.CoordinateTime2D;
+import ucar.nc2.grib.coord.CoordinateTimeIntv;
+import ucar.nc2.grib.coord.CoordinateVert;
+import ucar.nc2.grib.coord.EnsCoordValue;
+import ucar.nc2.grib.coord.TimeCoordIntvValue;
+import ucar.nc2.grib.coord.VertCoordValue;
 
 /**
  * Common superclass for writing Grib ncx files
@@ -30,7 +35,7 @@ class GribCollectionWriter {
     this.logger = logger;
   }
 
-  protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) throws IOException {
+  protected GribCollectionProto.Gds writeGdsProto(GribHorizCoordSystem hcs) {
     return writeGdsProto(hcs.getRawGds(), hcs.getPredefinedGridDefinition());
   }
 
@@ -99,7 +104,7 @@ class GribCollectionWriter {
     b.setUnit(coord.getTimeUnit().toString());
     b.addMsecs(coord.getRefDate().getMillis());
 
-    for (TimeCoord.Tinv tinv : coord.getTimeIntervals()) {
+    for (TimeCoordIntvValue tinv : coord.getTimeIntervals()) {
       b.addValues(tinv.getBounds1());
       b.addBound(tinv.getBounds2());
     }
@@ -118,7 +123,7 @@ class GribCollectionWriter {
     b.setCode(coord.getCode());
 
     if (coord.getUnit() != null) b.setUnit(coord.getUnit());
-    for (VertCoord.Level level : coord.getLevelSorted()) {
+    for (VertCoordValue level : coord.getLevelSorted()) {
       if (coord.isLayer()) {
         b.addValues((float) level.getValue1());
         b.addBound((float) level.getValue2());
@@ -135,7 +140,7 @@ class GribCollectionWriter {
     b.setCode(coord.getCode());
 
     if (coord.getUnit() != null) b.setUnit(coord.getUnit());
-    for (EnsCoord.Coord level : coord.getEnsSorted()) {
+    for (EnsCoordValue level : coord.getEnsSorted()) {
       b.addValues((float) level.getCode());       // lame
       b.addBound((float) level.getEnsMember());
     }
@@ -270,7 +275,7 @@ class GribCollectionWriter {
     return config;
   } */
 
-  static public GribCollectionProto.GribAxisType convertAxisType(Coordinate.Type type) {
+  public static GribCollectionProto.GribAxisType convertAxisType(Coordinate.Type type) {
     switch (type) {
       case runtime:
         return GribCollectionProto.GribAxisType.runtime;

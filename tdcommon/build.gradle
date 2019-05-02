@@ -14,7 +14,6 @@ dependencies {
     compile libraries["jdom2"]        // Required for reading THREDDS, NcML, BUFR, HDF-EOS, NEXRAD2, OPeNDAP files.
     compile libraries["spring-core"]
     compile libraries["quartz"]
-    compile libraries["c3p0"] // needed to replace the excluded version from quartz
     compile libraries["chronicle-map"]
     // because we exclude jna, jna-platfrom from chronicle-map, add
     // our replacement libs here

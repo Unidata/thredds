@@ -5,11 +5,12 @@
 
 package ucar.nc2.grib.grib1.tables;
 
+import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import ucar.nc2.grib.GribLevelType;
 import ucar.nc2.grib.GribResourceReader;
+import ucar.nc2.grib.coord.VertCoordType;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,9 +26,12 @@ import java.util.Map;
  * @since 1/14/12
  */
 public class FnmocTables extends Grib1Customizer {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FnmocTables.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(FnmocTables.class);
+  private static final String fnmocTableA = "resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml";
+  private static final String fnmocTable2 = "resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterParameterTableOrdered.GRIB1.Tbl2.xml";
+  private static final String fnmocTable3 = "resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml";
 
-  private static Map<Integer, GribLevelType> levelTypesMap;  // shared by all instances
+  private static Map<Integer, VertCoordType> levelTypesMap;  // shared by all instances
   private static Map<Integer, String> genProcessMap;  // shared by all instances
 
   FnmocTables(Grib1ParamTables tables) {
@@ -37,9 +41,10 @@ public class FnmocTables extends Grib1Customizer {
   // genProcess
 
   @Override
+  @Nullable
   public String getGeneratingProcessName(int genProcess) {
     if (genProcessMap == null)
-      genProcessMap = readGenProcess("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterModelTableOrdered.GRIB1.TblA.xml");
+      genProcessMap = readGenProcess(fnmocTableA);
     if (genProcessMap == null) return null;
     return genProcessMap.get(genProcess);
   }
@@ -63,13 +68,9 @@ public class FnmocTables extends Grib1Customizer {
       <status>current</status>
     </entry>
    */
+  @Nullable
   private Map<Integer, String> readGenProcess(String path) {
     try (InputStream is = GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find FNMOC gen process table = " + path);
-        return null;
-      }
-
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
@@ -85,26 +86,21 @@ public class FnmocTables extends Grib1Customizer {
 
       return Collections.unmodifiableMap(result);  // all at once - thread safe
 
-    } catch (IOException ioe) {
-      logger.error("Cant read FNMOC Table 1 = " + path, ioe);
-
-    } catch (JDOMException e) {
-      logger.error("Cant parse FNMOC Table 1 = " + path, e);
+    } catch (IOException | JDOMException e) {
+      logger.error("Cant read FNMOC Table 1 = " + path, e);
+      return null;
     }
-
-    return null;
   }
 
 
   /// levels
-  protected GribLevelType getLevelType(int code) {
-    if (code < 199) return super.getLevelType(code);   // WTF ??
+  protected VertCoordType getLevelType(int code) {
     if (levelTypesMap == null)
-      levelTypesMap = readFnmocTable3("resources/grib1/fnmoc/US058MMTA-ALPdoc.pntabs-prodname-masterLevelTypeTableOrdered.GRIB1.Tbl3.xml");
+      levelTypesMap = readFnmocTable3(fnmocTable3);
     if (levelTypesMap == null)
       return super.getLevelType(code);
 
-    GribLevelType levelType = levelTypesMap.get(code);
+    VertCoordType levelType = levelTypesMap.get(code);
     if (levelType != null) return levelType;
     return super.getLevelType(code);
   }
@@ -127,18 +123,14 @@ public class FnmocTables extends Grib1Customizer {
       <status>current</status>
     </entry>
    */
-  private HashMap<Integer, GribLevelType> readFnmocTable3(String path) {
-    try (InputStream is =  GribResourceReader.getInputStream(path)) {
-      if (is == null) {
-        logger.error("Cant find FnmocTable3 = " + path);
-        return null;
-      }
-
+  @Nullable
+  private HashMap<Integer, VertCoordType> readFnmocTable3(String path) {
+    try (InputStream is = GribResourceReader.getInputStream(path)) {
       SAXBuilder builder = new SAXBuilder();
       org.jdom2.Document doc = builder.build(is);
       Element root = doc.getRootElement();
 
-      HashMap<Integer, GribLevelType> result = new HashMap<>(200);
+      HashMap<Integer, VertCoordType> result = new HashMap<>(200);
       Element fnmocTable = root.getChild("fnmocTable");
       List<Element> params = fnmocTable.getChildren("entry");
       for (Element elem1 : params) {
@@ -147,31 +139,20 @@ public class FnmocTables extends Grib1Customizer {
         String desc = elem1.getChildText("description");
         String abbrev = elem1.getChildText("name");
         String units = elem1.getChildText("units");
-        if (units == null) units = makeUnits(code);
+        if (units == null) units = (code == 219) ? "Pa" : "";
         String datum = elem1.getChildText("datum");
         boolean isLayer = elem1.getChild("isLayer") != null;
         boolean isPositiveUp = elem1.getChild("isPositiveUp")  != null;
-        GribLevelType lt = new GribLevelType(code, desc, abbrev, units, datum, isPositiveUp, isLayer);
+        VertCoordType lt = new VertCoordType(code, desc, abbrev, units, datum, isPositiveUp, isLayer);
         result.put(code, lt);
       }
 
       return result;  // all at once - thread safe
 
-    } catch (IOException ioe) {
-      logger.error("Cant read FnmocTable3 = " + path, ioe);
-      return null;
-
-    } catch (JDOMException e) {
-      logger.error("Cant parse FnmocTable3 = " + path, e);
+    } catch (IOException | JDOMException e) {
+      logger.error("Cant read FnmocTable3 = " + path, e);
       return null;
     }
-  }
-
-  private String makeUnits(int code) {
-    if (code == 219) {
-      return "Pa";
-    }
-    return "";
   }
 
 }
