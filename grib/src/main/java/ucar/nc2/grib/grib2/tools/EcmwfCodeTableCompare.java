@@ -7,11 +7,12 @@ import ucar.nc2.grib.grib2.table.EcmwfCodeTable;
 import ucar.nc2.grib.grib2.table.Grib2CodeTableInterface;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.wmo.Util;
 
 public class EcmwfCodeTableCompare {
 
-  private static boolean verbose = false;
+  private static boolean verbose = true;
 
   // Compare 2 tables, print report.
   public static void compareTables(Grib2CodeTableInterface t1, Grib2CodeTableInterface t2, Formatter f) {
@@ -85,7 +86,7 @@ public class EcmwfCodeTableCompare {
 
   public static void main(String[] args) {
     final String PATH = "/usr/local/google/home/jlcaron/github/thredds/grib/src/main/resources/resources/grib2/ecmwf/tables/21";
-    System.out.printf("EcmwfCodeTableCompare%n");
+    System.out.printf("EcmwfCodeTableCompare on %s%n", CalendarDate.present());
     System.out.printf("  ECMWF = %s%n", PATH);
     System.out.printf("  WMO   = %s%n", WmoCodeFlagTables.standard.getResourceName());
 

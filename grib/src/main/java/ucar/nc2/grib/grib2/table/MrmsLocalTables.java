@@ -151,7 +151,7 @@ public class MrmsLocalTables extends LocalTables {
   }
 
   private void add(int discipline, int category, int number, String name, String desc, String unit, float fill, float missing) {
-    local.put(makeParamId(discipline, category, number),
+    localParams.put(makeParamId(discipline, category, number),
         new Grib2Parameter(discipline, category, number, name, unit, null, desc, fill, missing));
   }
 

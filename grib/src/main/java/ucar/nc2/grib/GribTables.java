@@ -10,6 +10,7 @@ import ucar.nc2.grib.coord.VertCoordType;
 
 /**
  * Abstraction of GribTable for Grib Collections.
+ * Allows Grin1 and Grib2 to be handles through common interface.
  *
  * @author John
  * @since 9/5/11

@@ -429,3 +429,12 @@ download
     - make these to defaults in WmoCodeTable and WmoTemplateTable
 
 04/06/2019 jcaron download ECMWF eccodes-2.12.0-Source.tar.gz from https://confluence.ecmwf.int/display/ECC
+
+04/30/2019 jcaron add EcmwfLocalTables based on analysis of eccodes-2.12.0/definitions/grib2/tables (see EcmwfCodeTableCompare
+     and EcmwfParamTableCompare).  However grib2/local and grib2/localConcepts and grib2/tables/local are not yet analyzed or
+     understood.
+
+05/01/2019 jcaron add tables C-1 and C-11 to resources/grib2/ecmwf/common. These are likely duplicates of the WMO
+      tables, but they also have center abbreviations that are needed to understand the localConcepts files.
+      It does look like the localConcepts files are local parameters and probably local overrides of WMO parameeters, by
+      center. Likely the same as grib1, which sean parsed and added a while ago. So that code could be generalized/reused.

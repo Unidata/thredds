@@ -20,7 +20,8 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
- * Read NCEP parameter tables. inner class Table for each discipline, category
+ * Read NCEP parameter tables.
+ * There will be a Table for each discipline, category
  *
  * @author caron
  * @since 1/9/12

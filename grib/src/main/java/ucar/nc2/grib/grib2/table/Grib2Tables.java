@@ -26,8 +26,9 @@ import javax.annotation.concurrent.Immutable;
 import java.util.*;
 
 /**
- * Grib 2 Tables - allows local overrides and augmentation
- * This class serves the standard WMO tables, local tables are subclasses.
+ * Grib 2 Tables - allows local overrides and augmentation of WMO tables.
+ * This class serves the standard WMO tables, local tables are subclasses that override.
+ * Methods are placed here because they may be overrided by local Tables.
  *
  * @author caron
  * @since 4/3/11
@@ -61,6 +62,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   private static Grib2Tables build(Grib2TableConfig config) {
     switch (config.getType()) {
       case cfsr: return new CfsrLocalTables(config);
+      case ecmwf: return new EcmwfLocalTables(config);
       case gempak: return new GempakLocalTables(config); // LOOK: not used
       case gsd: return new FslHrrrLocalTables(config);
       case kma: return new KmaLocalTables(config);
@@ -126,6 +128,9 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     return getVariableName(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
   }
 
+  /**
+   * Make a IOSP Variable name, using the Parameter name is available, otherwise a synthezized name.
+   */
   public String getVariableName(int discipline, int category, int parameter) {
     String s = WmoParamTable.getParameterName(discipline, category, parameter);
     if (s == null)
@@ -133,16 +138,22 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     return s;
   }
 
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Parameter interface (table 4.2.x)
+
+  @Nullable
+  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+    return WmoParamTable.getParameter(discipline, category, number);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////////////
+  // Code interface (tables other than 4.2.x)
+
   @Nullable
   public String getTableValue(String tableName, int code) {
     WmoCodeTable codeTable = WmoCodeFlagTables.getInstance().getCodeTable(tableName);
     Grib2CodeTableInterface.Entry entry = (codeTable == null) ? null : codeTable.getEntry(code);
     return (entry == null) ? null : entry.getName();
-  }
-
-  @Nullable
-  public GribTables.Parameter getParameter(int discipline, int category, int number) {
-    return WmoParamTable.getParameter(discipline, category, number);
   }
 
   @Override
@@ -168,8 +179,233 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     return (entry == null) ? null : entry.getName();
   }
 
+  public String getStatisticName(int id) {
+    String result = getTableValue("4.10", id); // WMO
+    if (result == null)
+      result = getStatisticNameShort(id);
+    return result;
+  }
+
+  public String getStatisticNameShort(int id) {
+    GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
+    return (stat == null) ? "UnknownStatType-" + id : stat.toString();
+  }
+
+  @Override
+  @Nullable
+  public GribStatType getStatType(int grib2StatCode) {
+    return GribStatType.getStatTypeFromGrib2(grib2StatCode);
+  }
+
+   /*
+Code Table Code table 4.7 - Derived forecast (4.7)
+    0: Unweighted mean of all members
+    1: Weighted mean of all members
+    2: Standard deviation with respect to cluster mean
+    3: Standard deviation with respect to cluster mean, normalized
+    4: Spread of all members
+    5: Large anomaly index of all members
+    6: Unweighted mean of the cluster members
+    7: Interquartile range (range between the 25th and 75th quantile)
+    8: Minimum of all ensemble members
+    9: Maximum of all ensemble members
+   -1: Reserved
+   -1: Reserved for local use
+  255: Missing
+  */
+  public String getProbabilityNameShort(int id) {
+    switch (id) {
+      case 0:
+        return "unweightedMean";
+      case 1:
+        return "weightedMean";
+      case 2:
+        return "stdDev";
+      case 3:
+        return "stdDevNormalized";
+      case 4:
+        return "spread";
+      case 5:
+        return "largeAnomalyIndex";
+      case 6:
+        return "unweightedMeanCluster";
+      case 7:
+        return "interquartileRange";
+      case 8:
+        return "minimumEnsemble";
+      case 9:
+        return "maximumEnsemble";
+      default:
+        return "UnknownProbType" + id;
+    }
+  }
+
+  ///////////////////////////////////////////////////////////////////////////////////////
+  // Vertical Units
+
+  /**
+   * Unit of vertical coordinate.
+   * from Grib2 code table 4.5.
+   * Only levels with units get a dimension added
+   *
+   * @param code code from table 4.5
+   * @return level unit, default is empty unit string
+   */
+  @Override
+  public VertCoordType getVertUnit(int code) {
+    //     VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
+    switch (code) {
+
+      case 11:
+      case 12:
+        return new VertCoordType(code, "m", null, true);
+
+      case 20:
+        return new VertCoordType(code, "K", null, false);
+
+      case 100:
+        return new VertCoordType(code, "Pa", null, false);
+
+      case 102:
+        return new VertCoordType(code, "m", "mean sea level", true);
+
+      case 103:
+        return new VertCoordType(code, "m", "ground", true);
+
+      case 104:
+      case 105:
+        return new VertCoordType(code, "sigma", null, false); // positive?
+
+      case 106:
+        return new VertCoordType(code, "m", "land surface", false);
+
+      case 107:
+        return new VertCoordType(code, "K", null, true); // positive?
+
+      case 108:
+        return new VertCoordType(code, "Pa", "ground", true);
+
+      case 109:
+        return new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
+
+      case 114:
+        return new VertCoordType(code, "numeric", null, false);
+
+      case 117:
+        return new VertCoordType(code, "m", null, true);
+
+      case 119:
+        return new VertCoordType(code, "Pa", null, false); // ??
+
+      case 160:
+        return new VertCoordType(code, "m", "sea level", false);
+
+      case 161:
+        return new VertCoordType(code, "m", "water surface", false);
+
+      // LOOK NCEP specific
+      case 235:
+        return new VertCoordType(code, "0.1 C", null, true);
+
+      case 237:
+        return new VertCoordType(code, "m", null, true);
+
+      case 238:
+        return new VertCoordType(code, "m", null, true);
+
+      default:
+        return new VertCoordType(code, null, null, true);
+    }
+  }
+
+  public boolean isLevelUsed(int code) {
+    VertCoordType vunit = getVertUnit(code);
+    return vunit.isVerticalCoordinate();
+  }
+
+  @Nullable
+  public String getLevelName(int id) {
+    return getTableValue("4.5", id);
+  }
+
+  public boolean isLayer(Grib2Pds pds) {
+    return !(pds.getLevelType2() == 255 || pds.getLevelType2() == 0);
+  }
+
+  // Table 4.5
+  @Override
+  public String getLevelNameShort(int id) {
+
+    switch (id) {
+      case 1:
+        return "surface";
+      case 2:
+        return "cloud_base";
+      case 3:
+        return "cloud_tops";
+      case 4:
+        return "zeroDegC_isotherm";
+      case 5:
+        return "adiabatic_condensation_lifted";
+      case 6:
+        return "maximum_wind";
+      case 7:
+        return "tropopause";
+      case 8:
+        return "atmosphere_top";
+      case 9:
+        return "sea_bottom";
+      case 10:
+        return "entire_atmosphere";
+      case 11:
+        return "cumulonimbus_base";
+      case 12:
+        return "cumulonimbus_top";
+      case 20:
+        return "isotherm";
+      case 100:
+        return "isobaric";
+      case 101:
+        return "msl";
+      case 102:
+        return "altitude_above_msl";
+      case 103:
+        return "height_above_ground";
+      case 104:
+        return "sigma";
+      case 105:
+        return "hybrid";
+      case 106:
+        return "depth_below_surface";
+      case 107:
+        return "isentrope";
+      case 108:
+        return "pressure_difference";
+      case 109:
+        return "potential_vorticity_surface";
+      case 111:
+        return "eta";
+      case 113:
+        return "log_hybrid";
+      case 117:
+        return "mixed_layer_depth";
+      case 118:
+        return "hybrid_height";
+      case 119:
+        return "hybrid_pressure";
+      case 120:
+        return "pressure_thickness";
+      case 160:
+        return "depth_below_sea";
+      case GribNumbers.UNDEFINED:
+        return "none";
+      default:
+        return "UnknownLevelType-" + id;
+    }
+  }
+
   ////////////////////////////////////////////////////////////////////////////////////////////
-  // Time
+  // Time utilities, generally Grib2 specific.
 
   private TimeUnitConverter timeUnitConverter;  // LOOK not really immutable
 
@@ -332,232 +568,6 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     result[0] = tinv.getBounds1();
     result[1] = tinv.getBounds2();
     return result;
-  }
-
-  public String getStatisticName(int id) {
-    String result = getTableValue("4.10", id); // WMO
-    if (result == null)
-      result = getStatisticNameShort(id);
-    return result;
-  }
-
-  public String getStatisticNameShort(int id) {
-    GribStatType stat = GribStatType.getStatTypeFromGrib2(id);
-    return (stat == null) ? "UnknownStatType-" + id : stat.toString();
-  }
-
-  @Override
-  @Nullable
-  public GribStatType getStatType(int grib2StatCode) {
-    return GribStatType.getStatTypeFromGrib2(grib2StatCode);
-  }
-
-   /*
-Code Table Code table 4.7 - Derived forecast (4.7)
-    0: Unweighted mean of all members
-    1: Weighted mean of all members
-    2: Standard deviation with respect to cluster mean
-    3: Standard deviation with respect to cluster mean, normalized
-    4: Spread of all members
-    5: Large anomaly index of all members
-    6: Unweighted mean of the cluster members
-    7: Interquartile range (range between the 25th and 75th quantile)
-    8: Minimum of all ensemble members
-    9: Maximum of all ensemble members
-   -1: Reserved
-   -1: Reserved for local use
-  255: Missing
-  */
-
-  public String getProbabilityNameShort(int id) {
-    switch (id) {
-      case 0:
-        return "unweightedMean";
-      case 1:
-        return "weightedMean";
-      case 2:
-        return "stdDev";
-      case 3:
-        return "stdDevNormalized";
-      case 4:
-        return "spread";
-      case 5:
-        return "largeAnomalyIndex";
-      case 6:
-        return "unweightedMeanCluster";
-      case 7:
-        return "interquartileRange";
-      case 8:
-        return "minimumEnsemble";
-      case 9:
-        return "maximumEnsemble";
-      default:
-        return "UnknownProbType" + id;
-    }
-  }
-
-  ///////////////////////////////////////////////////////////////////////////////////////
-  // Vert
-
-  /**
-   * Unit of vertical coordinate.
-   * from Grib2 code table 4.5.
-   * Only levels with units get a dimension added
-   *
-   * @param code code from table 4.5
-   * @return level unit, default is empty unit string
-   */
-  @Override
-  public VertCoordType getVertUnit(int code) {
-    //     VertCoordType(int code, String desc, String abbrev, String units, String datum, boolean isPositiveUp, boolean isLayer)
-    switch (code) {
-
-      case 11:
-      case 12:
-        return new VertCoordType(code, "m", null, true);
-
-      case 20:
-        return new VertCoordType(code, "K", null, false);
-
-      case 100:
-        return new VertCoordType(code, "Pa", null, false);
-
-      case 102:
-        return new VertCoordType(code, "m", "mean sea level", true);
-
-      case 103:
-        return new VertCoordType(code, "m", "ground", true);
-
-      case 104:
-      case 105:
-        return new VertCoordType(code, "sigma", null, false); // positive?
-
-      case 106:
-        return new VertCoordType(code, "m", "land surface", false);
-
-      case 107:
-        return new VertCoordType(code, "K", null, true); // positive?
-
-      case 108:
-        return new VertCoordType(code, "Pa", "ground", true);
-
-      case 109:
-        return new VertCoordType(code, "K m2 kg-1 s-1", null, true); // positive?
-
-      case 114:
-        return new VertCoordType(code, "numeric", null, false);
-
-      case 117:
-        return new VertCoordType(code, "m", null, true);
-
-      case 119:
-        return new VertCoordType(code, "Pa", null, false); // ??
-
-      case 160:
-        return new VertCoordType(code, "m", "sea level", false);
-
-      case 161:
-        return new VertCoordType(code, "m", "water surface", false);
-
-      // LOOK NCEP specific
-      case 235:
-        return new VertCoordType(code, "0.1 C", null, true);
-
-      case 237:
-        return new VertCoordType(code, "m", null, true);
-
-      case 238:
-        return new VertCoordType(code, "m", null, true);
-
-      default:
-        return new VertCoordType(code, null, null, true);
-    }
-  }
-
-  public boolean isLevelUsed(int code) {
-    VertCoordType vunit = getVertUnit(code);
-    return vunit.isVerticalCoordinate();
-  }
-
-  @Nullable
-  public String getLevelName(int id) {
-    return getTableValue("4.5", id);
-  }
-
-  public boolean isLayer(Grib2Pds pds) {
-    return !(pds.getLevelType2() == 255 || pds.getLevelType2() == 0);
-  }
-
-  // Table 4.5
-  @Override
-  public String getLevelNameShort(int id) {
-
-    switch (id) {
-      case 1:
-        return "surface";
-      case 2:
-        return "cloud_base";
-      case 3:
-        return "cloud_tops";
-      case 4:
-        return "zeroDegC_isotherm";
-      case 5:
-        return "adiabatic_condensation_lifted";
-      case 6:
-        return "maximum_wind";
-      case 7:
-        return "tropopause";
-      case 8:
-        return "atmosphere_top";
-      case 9:
-        return "sea_bottom";
-      case 10:
-        return "entire_atmosphere";
-      case 11:
-        return "cumulonimbus_base";
-      case 12:
-        return "cumulonimbus_top";
-      case 20:
-        return "isotherm";
-      case 100:
-        return "isobaric";
-      case 101:
-        return "msl";
-      case 102:
-        return "altitude_above_msl";
-      case 103:
-        return "height_above_ground";
-      case 104:
-        return "sigma";
-      case 105:
-        return "hybrid";
-      case 106:
-        return "depth_below_surface";
-      case 107:
-        return "isentrope";
-      case 108:
-        return "pressure_difference";
-      case 109:
-        return "potential_vorticity_surface";
-      case 111:
-        return "eta";
-      case 113:
-        return "log_hybrid";
-      case 117:
-        return "mixed_layer_depth";
-      case 118:
-        return "hybrid_height";
-      case 119:
-        return "hybrid_pressure";
-      case 120:
-        return "pressure_thickness";
-      case 160:
-        return "depth_below_sea";
-      case GribNumbers.UNDEFINED:
-        return "none";
-      default:
-        return "UnknownLevelType-" + id;
-    }
   }
 
   /////////////////////////////////////////////////////

@@ -40,14 +40,14 @@ public class FslHrrrLocalTables extends NcepLocalTables {
   // must override since we are subclassing NcepLocalTables
   @Override
   public List<GribTables.Parameter> getParameters() {
-    List<Parameter> result = new ArrayList<>(local.values());
+    List<Parameter> result = new ArrayList<>(localParams.values());
     result.sort(new ParameterSort());
     return result;
   }
 
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
-    return local.get(makeParamId(discipline, category, number));
+    return localParams.get(makeParamId(discipline, category, number));
    }
 
   // LOOK  maybe combine grib1, grib2 and bufr ??
@@ -110,7 +110,7 @@ public class FslHrrrLocalTables extends NcepLocalTables {
   }
 
   private void initLocalTable(Formatter f) {
-    local = readCsv(config.getPath(), f);
+    localParams = readCsv(config.getPath(), f);
   }
 
   // debugging

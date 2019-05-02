@@ -7,6 +7,7 @@ import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.table.EcmwfParamTable;
 import ucar.nc2.grib.grib2.table.Grib2ParamTableInterface;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
+import ucar.nc2.time.CalendarDate;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.wmo.Util;
 
@@ -110,7 +111,7 @@ public class EcmwfParamTableCompare {
 
   public static void main(String[] args) {
     final String PATH = "/usr/local/google/home/jlcaron/github/thredds/grib/src/main/resources/resources/grib2/ecmwf/tables/21";
-    System.out.printf("EcmwfParamTableCompare%n");
+    System.out.printf("EcmwfParamTableCompare on %s%n", CalendarDate.present());
     System.out.printf("  ECMWF = %s%n", PATH);
     System.out.printf("  WMO   = %s%n", WmoCodeFlagTables.standard.getResourceName());
 
