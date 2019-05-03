@@ -14,6 +14,7 @@ import org.jdom2.output.XMLOutputter;
 import thredds.client.catalog.Catalog;
 import ucar.nc2.util.AliasTranslator;
 import ucar.nc2.util.URLnaming;
+import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
 import java.net.URL;
@@ -160,6 +161,11 @@ public class NcmlCollectionReader {
         }
 
         String realLocation = URLnaming.resolveFile(ncmlLocation, location);
+        // for realLocation on windows, need to standardize path we put into the map
+        // for example, C:\data\file.nc will become C:/data/file.nc
+        // Hacky hacky hacky hack
+
+        realLocation = StringUtil2.replace(realLocation, '\\', "/");
         realLocationRunTimeMap.put(realLocation, runTime);
       }
       datasetManager = MFileCollectionManager.openWithRecheck(ncmlLocation, recheck);
