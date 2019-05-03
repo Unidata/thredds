@@ -76,8 +76,9 @@ public class TestCharFillValue extends UnitTestCommon
             }
         } finally {
             File f = new File(fileName);
-            if(false && f.exists())
+            if(f.exists()) {
                 f.delete();
+            }
         }
     }
 }
