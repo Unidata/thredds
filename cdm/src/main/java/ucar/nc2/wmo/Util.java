@@ -37,7 +37,7 @@ public class Util {
       unit = unit.trim();
       unit = StringUtil2.remove(unit, "**");
       StringBuilder sb = new StringBuilder(unit);
-      StringUtil2.remove(sb, "^[]");
+      StringUtil2.removeAll(sb, "^[]");
       StringUtil2.replace(sb, ' ', ".");
       StringUtil2.replace(sb, '*', ".");
       unit = sb.toString();
@@ -59,7 +59,7 @@ public class Util {
     name = StringUtil2.replace(name, '/', "-");
     StringBuilder sb = new StringBuilder(name);
     StringUtil2.replace(sb, '+', "plus");
-    StringUtil2.remove(sb, ".;,=[]()/*\"");
+    StringUtil2.removeAll(sb, ".;,=[]()/*\"");
     return StringUtil2.collapseWhitespace(sb.toString().trim());
   }
 
@@ -69,7 +69,7 @@ public class Util {
     if (pos > 0) desc = desc.substring(0,pos);
 
     StringBuilder sb = new StringBuilder(desc.trim());
-    StringUtil2.remove(sb, ".;,=[]()/*");
+    StringUtil2.removeAll(sb, ".;,=[]()/*");
     return sb.toString().trim();
   }
 
@@ -84,9 +84,9 @@ public class Util {
     if (name1.equals(name2)) return true;
 
     StringBuilder sb1 = new StringBuilder(name1clean);
-    StringUtil2.remove(sb1, " -’'");
+    StringUtil2.removeAll(sb1, " -’'");
     StringBuilder sb2 = new StringBuilder(name2clean);
-    StringUtil2.remove(sb2, " -’'");
+    StringUtil2.removeAll(sb2, " -’'");
     return sb1.toString().equals(sb2.toString());
   }
 

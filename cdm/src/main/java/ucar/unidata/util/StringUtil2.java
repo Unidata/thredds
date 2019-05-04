@@ -28,7 +28,7 @@ public class StringUtil2 {
    * @param replaceChar thar char to replace
    * @return resulting string.
    */
-  static public String allow(String x, String allowChars, char replaceChar) {
+  public static String allow(String x, String allowChars, char replaceChar) {
     boolean ok = true;
     for (int pos = 0; pos < x.length(); pos++) {
       char c = x.charAt(pos);
@@ -109,7 +109,7 @@ public class StringUtil2 {
    * @param okChars these are ok.
    * @return filtered string.
    */
-  static public String filter(String x, String okChars) {
+  public static String filter(String x, String okChars) {
     boolean ok = true;
     for (int pos = 0; pos < x.length(); pos++) {
       char c = x.charAt(pos);
@@ -140,7 +140,7 @@ public class StringUtil2 {
    * @param s filter this string
    * @return filtered string.
    */
-  static public String filter7bits(String s) {
+  public static String filter7bits(String s) {
     if (s == null) return null;
     char[] bo = new char[s.length()];
     int count = 0;
@@ -158,7 +158,7 @@ public class StringUtil2 {
   // remove control characters (< 0x20)
   // transform "/" to "_"
   // transform embedded space to "_"
-  static public String makeValidCdmObjectName(String name) {
+  public static String makeValidCdmObjectName(String name) {
     name = name.trim();
     // common case no change
     boolean ok = true;
@@ -189,7 +189,7 @@ public class StringUtil2 {
    * @param s2 compare this string
    * @return number of matching chars, starting from first char
    */
-  static public int match(String s1, String s2) {
+  public static int match(String s1, String s2) {
     int i = 0;
     while ((i < s1.length()) && (i < s2.length())) {
       if (s1.charAt(i) != s2.charAt(i)) {
@@ -278,7 +278,7 @@ public class StringUtil2 {
    * @param sub remove all occurrences of this substring.
    * @return result with substrings removed
    */
-  static public String remove(String s, String sub) {
+  public static String remove(String s, String sub) {
     int len = sub.length();
     int pos;
     while (0 <= (pos = s.indexOf(sub))) {
@@ -294,7 +294,7 @@ public class StringUtil2 {
    * @param c remove all occurrences of this character.
    * @return result with any character c removed
    */
-  static public String remove(String s, int c) {
+  public static String remove(String s, int c) {
     if (0 > s.indexOf(c)) {  // none
       return s;
     }
@@ -318,7 +318,7 @@ public class StringUtil2 {
    * @param c remove all occurrences of this character that are at the end of the string.
    * @return result with any character c removed
    */
-  static public String removeFromEnd(String s, int c) {
+  public static String removeFromEnd(String s, int c) {
     if (0 > s.indexOf(c))   // none
       return s;
 
@@ -331,7 +331,7 @@ public class StringUtil2 {
     return s.substring(0, len);
   }
 
-  static public String removeFromEnd(String s, String suffix) {
+  public static String removeFromEnd(String s, String suffix) {
     if (s.endsWith(suffix))
       return s.substring(0, s.length() - suffix.length());
 
@@ -363,7 +363,7 @@ public class StringUtil2 {
    * @param s operate on this string
    * @return result with collapsed whitespace
    */
-  static public String collapseWhitespace(String s) {
+  public static String collapseWhitespace(String s) {
     int len = s.length();
     StringBuilder b = new StringBuilder(len);
     for (int i = 0; i < len; i++) {
@@ -388,7 +388,7 @@ public class StringUtil2 {
    * @param in  with this string
    * @return modified string if needed
    */
-  static public String replace(String s, char out, String in) {
+  public static String replace(String s, char out, String in) {
     if (s.indexOf(out) < 0) {
       return s;
     }
@@ -408,7 +408,7 @@ public class StringUtil2 {
    * @param replaceWith replace with these
    * @return resulting string
    */
-  static public String replace(String x, char[] replaceChar, String[] replaceWith) {
+  public static String replace(String x, char[] replaceChar, String[] replaceWith) {
     // common case no replacement
     boolean ok = true;
     for (char aReplaceChar : replaceChar) {
@@ -454,7 +454,7 @@ public class StringUtil2 {
       if (idx < 0)
         break;
 
-      returnValue.append(string.substring(0, idx));
+      returnValue.append(string, 0, idx);
       if (value != null)
         returnValue.append(value);
 
@@ -473,7 +473,7 @@ public class StringUtil2 {
    * @param orgChar    replace with these
    * @return resulting string
    */
-  static public String unreplace(String x, String[] orgReplace, char[] orgChar) {
+  public static String unreplace(String x, String[] orgReplace, char[] orgChar) {
     // common case no replacement
     boolean ok = true;
     for (String anOrgReplace : orgReplace) {
@@ -504,7 +504,7 @@ public class StringUtil2 {
    * @param subst    string to substitute
    * @return a new string with substitutions
    */
-  static public String substitute(String original, String match, String subst) {
+  public static String substitute(String original, String match, String subst) {
     String s = original;
     int pos;
     while (0 <= (pos = s.indexOf(match))) {
@@ -522,7 +522,7 @@ public class StringUtil2 {
    * @param okChars these are ok.
    * @return equivilent escaped string.
    */
-  static public String escape(String x, String okChars) {
+  public static String escape(String x, String okChars) {
     StringBuilder newname = new StringBuilder();
     for (char c : x.toCharArray()) {
       if (c == '%') {
@@ -543,7 +543,7 @@ public class StringUtil2 {
    * @param x operate on this String
    * @return original String.
    */
-  static public String unescape(String x) {
+  public static String unescape(String x) {
     if (x.indexOf('%') < 0) {
       return x;
     }
@@ -595,7 +595,7 @@ public class StringUtil2 {
    * @param subst    array of strings to substitute
    * @return a new string with substitutions
    */
-  static public String substitute(String original, String[] match, String[] subst) {
+  public static String substitute(String original, String[] match, String[] subst) {
 
     boolean ok = true;
     for (String aMatch : match) {
@@ -616,7 +616,7 @@ public class StringUtil2 {
     return sb.toString();
   }
 
-  static public List<String> getTokens(String fullString, String sep) throws Exception {
+  public static List<String> getTokens(String fullString, String sep) throws Exception {
 
     List<String> strs = new ArrayList<>();
     if (sep != null) {
@@ -666,7 +666,7 @@ public class StringUtil2 {
    * @param sb  the StringBuilder
    * @param out get rid of any of these characters
    */
-  static public void remove(StringBuilder sb, String out) {
+  public static void removeAll(StringBuilder sb, String out) {
     int i = 0;
     while (i < sb.length()) {
       int c = sb.charAt(i);
@@ -689,7 +689,7 @@ public class StringUtil2 {
    * @param out repalce this character
    * @param in  with this string
    */
-  static public void replace(StringBuilder sb, char out, String in) {
+  public static void replace(StringBuilder sb, char out, String in) {
     for (int i = 0; i < sb.length(); i++) {
       if (sb.charAt(i) == out) {
         sb.replace(i, i + 1, in);
@@ -705,7 +705,7 @@ public class StringUtil2 {
    * @param out repalce this String
    * @param in  with this char
    */
-  static public void unreplace(StringBuilder sb, String out, char in) {
+  public static void unreplace(StringBuilder sb, String out, char in) {
     int pos;
     while (0 <= (pos = sb.indexOf(out))) {
       sb.setCharAt(pos, in);
@@ -720,7 +720,7 @@ public class StringUtil2 {
    * @param out get rid of any of these characters
    * @param in  replacing with the character at same index
    */
-  static public void replace(StringBuilder sb, String out, String in) {
+  public static void replace(StringBuilder sb, String out, String in) {
     for (int i = 0; i < sb.length(); i++) {
       int c = sb.charAt(i);
       for (int j = 0; j < out.length(); j++) {
@@ -739,7 +739,7 @@ public class StringUtil2 {
    * @param match string to match
    * @param subst string to substitute
    */
-  static public void substitute(StringBuilder sbuff, String match, String subst) {
+  public static void substitute(StringBuilder sbuff, String match, String subst) {
     int pos, fromIndex = 0;
     int substLen = subst.length();
     int matchLen = match.length();
@@ -756,7 +756,7 @@ public class StringUtil2 {
    * @return trimmed string
    */
 
-  static public String trim(String s, int bad) {
+  public static String trim(String s, int bad) {
     int len = s.length();
     int st = 0;
 
@@ -777,7 +777,7 @@ public class StringUtil2 {
   /**
    * @deprecated legacy only, use HtmlEscapers.htmlEscaper()
    */
-  static public String quoteHtmlContent(String x) {
+  public static String quoteHtmlContent(String x) {
     if (x == null) return null;
     return replace(x, htmlIn, htmlOut);
   }

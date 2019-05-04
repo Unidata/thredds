@@ -29,7 +29,7 @@ public class Grib2Utils {
   public static String clean(String s) {
     StringBuilder sb = new StringBuilder(s);
     StringUtil2.replace(sb, "/. ", "-p_");
-    StringUtil2.remove(sb, "(),;");
+    StringUtil2.removeAll(sb, "(),;");
     char c = sb.charAt(0);
     if (Character.isLetter(c)) {
       if (Character.isLowerCase(c))

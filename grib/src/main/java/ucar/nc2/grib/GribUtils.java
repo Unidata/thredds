@@ -75,7 +75,7 @@ public class GribUtils {
       unit = unit.trim();
       unit = StringUtil2.remove(unit, "**");
       StringBuilder sb = new StringBuilder(unit);
-      StringUtil2.remove(sb, "^[]");
+      StringUtil2.removeAll(sb, "^[]");
       StringUtil2.substitute(sb, " / ", "/");
       StringUtil2.replace(sb, ' ', ".");
       StringUtil2.replace(sb, '*', ".");
@@ -92,7 +92,7 @@ public class GribUtils {
 
     StringBuilder sb = new StringBuilder(desc.trim());
     StringUtil2.replace(sb, '+', "and");
-    StringUtil2.remove(sb, ".;,=[]()/");
+    StringUtil2.removeAll(sb, ".;,=[]()/");
     return sb.toString().trim();
   }
 
@@ -105,7 +105,7 @@ public class GribUtils {
     StringBuilder sb = new StringBuilder(desc.trim());
     StringUtil2.replace(sb, '+', "plus");
     StringUtil2.replace(sb, "/. ", "-p_");
-    StringUtil2.remove(sb, ";,=[]()");
+    StringUtil2.removeAll(sb, ";,=[]()");
     return sb.toString();
   }
 

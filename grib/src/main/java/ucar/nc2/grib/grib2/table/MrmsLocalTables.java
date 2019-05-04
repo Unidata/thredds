@@ -21,9 +21,9 @@ public class MrmsLocalTables extends LocalTables {
   }
 
   @Override
-  public String getTablePath(int discipline, int category, int number) {
+  public String getParamTablePathUsedFor(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) {
-      return super.getTablePath(discipline, category, number);
+      return super.getParamTablePathUsedFor(discipline, category, number);
     }
     return this.getClass().getName();
   }

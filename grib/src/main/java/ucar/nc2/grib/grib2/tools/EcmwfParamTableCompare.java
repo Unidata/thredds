@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.util.Formatter;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib2.table.EcmwfParamTable;
+import ucar.nc2.grib.grib2.table.EccodesParamTable;
 import ucar.nc2.grib.grib2.table.Grib2ParamTableInterface;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
 import ucar.nc2.time.CalendarDate;
@@ -96,7 +96,7 @@ public class EcmwfParamTableCompare {
     System.out.printf("%s%n", latest.getName());
 
     for (int version = 21; version >= 0; version--) {
-      Grib2ParamTableInterface next = EcmwfParamTable.factory(version, discipline, category);
+      Grib2ParamTableInterface next = EccodesParamTable.factory(version, discipline, category);
       if (next == null) {
         System.out.printf("Missing version %d%n", version);
       } else {

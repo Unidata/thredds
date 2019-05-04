@@ -1,7 +1,7 @@
 package ucar.nc2.grib.grib2.table;
 
 import static com.google.common.truth.Truth.assertThat;
-import static ucar.nc2.grib.grib2.table.EcmwfCodeTable.LATEST_VERSION;
+import static ucar.nc2.grib.grib2.table.EccodesCodeTable.LATEST_VERSION;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -55,10 +55,11 @@ public class TestLocalTables {
       int discipline = Integer.parseInt(tokens.next());
       int category = Integer.parseInt(tokens.next());
 
-      EcmwfCodeTable ecmwfCodeTable = EcmwfCodeTable.factory(LATEST_VERSION, discipline, category);
+      EccodesCodeTable ecmwfCodeTable = EccodesCodeTable
+          .factory(LATEST_VERSION, discipline, category);
       assertThat(ecmwfCodeTable).isNotNull();
       for (Grib2CodeTableInterface.Entry entry : ecmwfCodeTable.getEntries()) {
-        assertThat(ecmwfTable.getTableValue(tableName, entry.getCode())).isEqualTo(entry.getName());
+        assertThat(ecmwfTable.getCodeTableValue(tableName, entry.getCode())).isEqualTo(entry.getName());
       }
     }
   }

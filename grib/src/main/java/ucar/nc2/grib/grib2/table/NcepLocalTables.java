@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -23,7 +24,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * NCEP local tables
+ * NCEP local tables.
  *
  * @author caron
  * @since 4/3/11
@@ -41,8 +42,8 @@ class NcepLocalTables extends LocalTables {
   }
 
   @Override
-  public String getTablePath(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
+  public String getParamTablePathUsedFor(int discipline, int category, int number) {
+    if ((category <= 191) && (number <= 191)) return super.getParamTablePathUsedFor(discipline, category, number);
     return ncepLocalParams.getTablePath(discipline, category);
   }
 
@@ -91,11 +92,11 @@ class NcepLocalTables extends LocalTables {
   }
 
   @Override
-  public List<GribTables.Parameter> getParameters() {
-    List<GribTables.Parameter> allParams = new ArrayList<>(3000);
+  public ImmutableList<Parameter> getParameters() {
+    ImmutableList.Builder<GribTables.Parameter> allParams = ImmutableList.builder();
     try {
       String[] fileNames = getResourceListing(config.getPath());
-      if (fileNames == null) return allParams;
+      if (fileNames == null) return ImmutableList.of();
       for (String fileName : fileNames) {
         File f = new File(fileName);
         if (f.isDirectory()) continue;
@@ -112,7 +113,7 @@ class NcepLocalTables extends LocalTables {
     } catch (URISyntaxException | IOException e) {
       logger.error("NcepLocalTables failed", e);
     }
-    return allParams;
+    return allParams.build();
   }
 
   @Override
@@ -160,16 +161,16 @@ class NcepLocalTables extends LocalTables {
   @Override
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
      return ncepLocalParams.getParameter(discipline, category, number);
-   }
+  }
 
   @Override
-  public String getTableValue(String tableName, int code) {
+  public String getCodeTableValue(String tableName, int code) {
     if (tableName.equals("ProcessId")) {
       return getGeneratingProcessName(code);
     }
 
     if ((code < 192) || (code > 254) || tableName.equals("4.0"))
-      return super.getTableValue(tableName, code);
+      return super.getCodeTableValue(tableName, code);
 
     return codeMap.get(tableName + "." + code);
   }

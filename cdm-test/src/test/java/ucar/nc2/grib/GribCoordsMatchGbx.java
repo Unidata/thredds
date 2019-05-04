@@ -649,7 +649,7 @@ public class GribCoordsMatchGbx {
 
     public final String getTimeUnit() {
       int unit = pds.getTimeUnit();
-      return cust.getTableValue("4.4", unit);
+      return cust.getCodeTableValue("4.4", unit);
     }
 
     public final int getForecastTime() {

@@ -1033,7 +1033,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     public String getGridName() {
-      return cust.getTableValue("3.1", gdss.getGDSTemplateNumber());
+      return cust.getCodeTableValue("3.1", gdss.getGDSTemplateNumber());
     }
 
     public String getGroupName() {
@@ -1286,7 +1286,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     public final String getTimeUnit() {
       int unit = pds.getTimeUnit();
-      return cust.getTableValue("4.4", unit);
+      return cust.getCodeTableValue("4.4", unit);
     }
 
     public final int getForecastTime() {

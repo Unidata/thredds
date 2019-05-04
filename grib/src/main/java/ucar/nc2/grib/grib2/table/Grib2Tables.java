@@ -30,6 +30,8 @@ import java.util.*;
  * This class serves the standard WMO tables, local tables are subclasses that override.
  * Methods are placed here because they may be overrided by local Tables.
  *
+ * Tables include code, flag and parameter tables.
+ *
  * @author caron
  * @since 4/3/11
  */
@@ -62,7 +64,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   private static Grib2Tables build(Grib2TableConfig config) {
     switch (config.getType()) {
       case cfsr: return new CfsrLocalTables(config);
-      case ecmwf: return new EcmwfLocalTables(config);
+      case eccodes: return new EccodesLocalTables(config);
       case gempak: return new GempakLocalTables(config); // LOOK: not used
       case gsd: return new FslHrrrLocalTables(config);
       case kma: return new KmaLocalTables(config);
@@ -88,8 +90,29 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
     return new int[] {discipline, category, number};
   }
 
+  public static String makeParamCode(int discipline, int category, int number) {
+    return String.format("%d-%d-%d", discipline, category, number);
+  }
+
+  public static String makeParamCode(int code) {
+    int number = code & 255;
+    code = code >> 8;
+    int category = code & 255;
+    int discipline = code >> 8;
+    return String.format("%d-%d-%d", discipline, category, number);
+  }
+
   public static boolean isLocal(Parameter p) {
-    return ((p.getDiscipline() > 191) || (p.getCategory() > 191) || (p.getNumber() > 191));
+    return isLocal(p.getDiscipline(), p.getCategory(), p.getNumber());
+  }
+
+  public static boolean isLocal(int discipline, int category, int number) {
+    return ((discipline > 191) || (category > 191) || (number > 191));
+  }
+
+  public static boolean isLocal(int code) {
+    int[] uncode = unmakeParamId(code);
+    return isLocal(uncode[0], uncode[1], uncode[2]);
   }
 
   public static ImmutableList<Grib2Tables> getAllRegisteredTables() {
@@ -110,6 +133,10 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
   public String getName() {
     return config.getName();
+  }
+
+  public int getCenterId() {
+    return config.getConfigId().center;
   }
 
   public String getPath() {
@@ -150,7 +177,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   // Code interface (tables other than 4.2.x)
 
   @Nullable
-  public String getTableValue(String tableName, int code) {
+  public String getCodeTableValue(String tableName, int code) {
     WmoCodeTable codeTable = WmoCodeFlagTables.getInstance().getCodeTable(tableName);
     Grib2CodeTableInterface.Entry entry = (codeTable == null) ? null : codeTable.getEntry(code);
     return (entry == null) ? null : entry.getName();
@@ -169,7 +196,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
 
   @Nullable
   public String getGeneratingProcessTypeName(int genProcess) {
-    return getTableValue("4.3", genProcess);
+    return getCodeTableValue("4.3", genProcess);
   }
 
   @Nullable
@@ -180,7 +207,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   }
 
   public String getStatisticName(int id) {
-    String result = getTableValue("4.10", id); // WMO
+    String result = getCodeTableValue("4.10", id); // WMO
     if (result == null)
       result = getStatisticNameShort(id);
     return result;
@@ -325,7 +352,7 @@ Code Table Code table 4.7 - Derived forecast (4.7)
 
   @Nullable
   public String getLevelName(int id) {
-    return getTableValue("4.5", id);
+    return getCodeTableValue("4.5", id);
   }
 
   public boolean isLayer(Grib2Pds pds) {
@@ -573,27 +600,42 @@ Code Table Code table 4.7 - Derived forecast (4.7)
   /////////////////////////////////////////////////////
   // debugging
 
+  /**
+   * Get the unprocessed parameter provided by this Grib2Table.
+   */
   @Nullable
   public GribTables.Parameter getParameterRaw(int discipline, int category, int number) {
     return WmoParamTable.getParameter(discipline, category, number);
   }
 
-  public String getTablePath(int discipline, int category, int number) {
+  /**
+   * Get the name of the parameter table that is being used for this parameter.
+   */
+  public String getParamTablePathUsedFor(int discipline, int category, int number) {
     return WmoCodeFlagTables.standard.getResourceName();
   }
 
-  public List<GribTables.Parameter> getParameters() {
-    List<GribTables.Parameter> allParams = new ArrayList<>(3000);
+  /**
+   * Get the list of parameters provided by this Grib2Table.
+   */
+  public ImmutableList<GribTables.Parameter> getParameters() {
+    ImmutableList.Builder<GribTables.Parameter> allParams = ImmutableList.builder();
     for (WmoTable wmoTable : WmoCodeFlagTables.getInstance().getWmoTables()) {
       if (wmoTable.getType() == TableType.param) {
         WmoParamTable paramTable = new WmoParamTable(wmoTable);
         allParams.addAll(paramTable.getParameters());
       }
     }
-    return allParams;
+    return allParams.build();
   }
 
   public void lookForProblems(Formatter f) {
+  }
+
+  public void showDetails(Formatter f) {
+  }
+
+  public void showEntryDetails(Formatter f, List<GribTables.Parameter> params) {
   }
 
   public void showSpecialPdsInfo(Grib2Record pds, Formatter f) {

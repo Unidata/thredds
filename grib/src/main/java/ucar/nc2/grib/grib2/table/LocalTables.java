@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.collect.ImmutableList;
 import ucar.nc2.grib.GribTables;
 import ucar.nc2.grib.grib2.Grib2Parameter;
 
@@ -18,23 +19,26 @@ import java.util.*;
  * @since 6/22/11
  */
 abstract class LocalTables extends Grib2Tables {
-  protected Map<Integer, Grib2Parameter> localParams = new HashMap<>(100);  // subclass must set
+  protected Map<Integer, Grib2Parameter> localParams = new HashMap<>();  // subclass must set
 
   LocalTables(Grib2TableConfig config) {
     super(config);
   }
 
   @Override
-  public String getTablePath(int discipline, int category, int number) {
-    if ((category <= 191) && (number <= 191)) return super.getTablePath(discipline, category, number);
-    return config.getPath();
+  public String getParamTablePathUsedFor(int discipline, int category, int number) {
+    return isLocal(discipline, category, number) ?
+        config.getPath() :
+        super.getParamTablePathUsedFor(discipline, category, number);
   }
 
   @Override
-  public List<GribTables.Parameter> getParameters() {
-    List<Parameter> result = new ArrayList<>(localParams.values());
-    result.sort(new ParameterSort());
-    return result;
+  public ImmutableList<Parameter> getParameters() {
+    return getLocalParameters();
+  }
+
+  protected ImmutableList<Parameter> getLocalParameters() {
+    return localParams.values().stream().sorted(new ParameterSort()).collect(ImmutableList.toImmutableList());
   }
 
   protected static class ParameterSort implements Comparator<Parameter> {
@@ -48,13 +52,13 @@ abstract class LocalTables extends Grib2Tables {
   }
 
   @Override
-  public String getVariableName(int discipline, int category, int parameter) {
-    if ((category <= 191) && (parameter <= 191))
-      return super.getVariableName(discipline, category, parameter);
+  public String getVariableName(int discipline, int category, int number) {
+    if (!isLocal(discipline, category, number))
+      return super.getVariableName(discipline, category, number); // LOOK may have to change
 
-    GribTables.Parameter te = getParameter(discipline, category, parameter);
+    GribTables.Parameter te = getParameter(discipline, category, number);
     if (te == null)
-      return super.getVariableName(discipline, category, parameter);
+      return super.getVariableName(discipline, category, number);
     else
       return te.getName();
   }
@@ -63,7 +67,7 @@ abstract class LocalTables extends Grib2Tables {
   public GribTables.Parameter getParameter(int discipline, int category, int number) {
     Grib2Parameter plocal = localParams.get(makeParamId(discipline, category, number));
 
-    if ((category <= 191) && (number <= 191))  {
+    if (isLocal(discipline, category, number)) {
       GribTables.Parameter pwmo = WmoParamTable.getParameter(discipline, category, number);
       if (plocal == null) return pwmo;
       if (pwmo == null) return plocal;
@@ -80,4 +84,4 @@ abstract class LocalTables extends Grib2Tables {
     return localParams.get(makeParamId(discipline, category, number));
    }
 
- }
+}

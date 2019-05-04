@@ -1,13 +1,24 @@
 package ucar.nc2.grib.grib2.table;
 
-import static ucar.nc2.grib.grib2.table.EcmwfCodeTable.LATEST_VERSION;
+import static ucar.nc2.grib.grib2.table.EccodesCodeTable.LATEST_VERSION;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableSet;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.grib2.Grib2Parameter;
 
 /**
  * The results of EcmwfParamTableCompare indicate there are no significant differences of the parameter tables with WMO.
@@ -70,27 +81,32 @@ import javax.annotation.Nullable;
  *    No WMO table that matches ECMWF table 5.40000
  *    No WMO table that matches ECMWF table 5.50002
  */
-public class EcmwfLocalTables extends LocalTables {
-  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(EcmwfLocalTables.class);
+public class EccodesLocalTables extends LocalTables {
+  private static final Logger logger = LoggerFactory.getLogger(EccodesLocalTables.class);
+  private static final String RESOURCE_DIRECTORY = "resources/grib2/ecmwf/tables/21";
   private static final String MATCH = "4.2.";
 
   private static final boolean debugOpen = false;
   private static final boolean debug = true;
 
-  private final Map<Integer, EcmwfParamTable> tableMap = new HashMap<>(30);
+  private final Map<Integer, EccodesParamTable> tableMap = new HashMap<>(30);
 
-  EcmwfLocalTables(Grib2TableConfig config) {
+  // Each of the centers using eccodes has a seperate EccodesLocalTables with its own Grib2TableConfig, and center value.
+  EccodesLocalTables(Grib2TableConfig config) {
     super(config);
+    // LOOK: change to lazy init
+    initParams(config.getPath());
   }
 
+  // These are the tables that have been augmented
   private ImmutableSet<String> whitelist = ImmutableSet.of("4.230", "4.233", "4.192", "5.40000", "5.50002");
-  private Map<String, EcmwfCodeTable> localTables = new HashMap<>();
+  private Map<String, EccodesCodeTable> localTables = new HashMap<>();
 
   @Override
   @Nullable
-  public String getTableValue(String tableName, int code) {
+  public String getCodeTableValue(String tableName, int code) {
     if (!whitelist.contains(tableName)) {
-      return super.getTableValue(tableName, code);
+      return super.getCodeTableValue(tableName, code);
     }
     if (localTables.containsKey(tableName)) {
       Grib2CodeTableInterface.Entry entry = localTables.get(tableName).getEntry(code);
@@ -105,12 +121,42 @@ public class EcmwfLocalTables extends LocalTables {
 
     int discipline = Integer.parseInt(tokens.next());
     int category = Integer.parseInt(tokens.next());
-    EcmwfCodeTable ecmwfCodeTable = EcmwfCodeTable.factory(LATEST_VERSION, discipline, category);
+    EccodesCodeTable ecmwfCodeTable = EccodesCodeTable.factory(LATEST_VERSION, discipline, category);
     localTables.put(tableName, ecmwfCodeTable);
 
     Grib2CodeTableInterface.Entry entry = ecmwfCodeTable.getEntry(code);
     return (entry == null) ? null : entry.getName();
   }
 
+  EccodesLocalConcepts localConcepts;
+  ImmutableListMultimap<Integer, Grib2Parameter> localConceptMultimap;
+  private void initParams(String path) {
+    try {
+      localConcepts = new EccodesLocalConcepts(path);
+      localConceptMultimap = localConcepts.getLocalConceptMultimap();
+      for (Map.Entry<Integer, Collection<Grib2Parameter>> entry : localConceptMultimap.asMap().entrySet()) {
+        if (isLocal(entry.getKey())) {
+          localParams.put(entry.getKey(), entry.getValue().iterator().next());
+        }
+      }
+    } catch (IOException e) {
+      logger.warn("EccodesLocalTables failed on %s", path, e);
+    }
+  }
+
+  @Override
+  public ImmutableList<Parameter> getParameters() {
+    return localConceptMultimap.values().stream().map(p -> (Parameter) p).sorted(new ParameterSort()).collect(ImmutableList.toImmutableList());
+  }
+
+  @Override
+  public void showDetails(Formatter f) {
+    localConcepts.showDetails(f);
+  }
+
+  @Override
+  public void showEntryDetails(Formatter f, List<GribTables.Parameter> params) {
+    localConcepts.showEntryDetails(f, params);
+  }
 
 }
