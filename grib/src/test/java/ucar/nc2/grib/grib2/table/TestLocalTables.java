@@ -43,7 +43,7 @@ public class TestLocalTables {
 
     Grib2Tables ecmwfTable = Grib2Tables.factory(98, -1, -1, -1, -1);
     assertThat(ecmwfTable).isNotNull();
-    assertThat(ecmwfTable.getType()).isEqualTo(Grib2TablesId.Type.ecmwf);
+    assertThat(ecmwfTable.getType()).isEqualTo(Grib2TablesId.Type.eccodes);
 
     for (String tableName : tableOverrides) {
       Iterator<String> tokens = Splitter.on('.')

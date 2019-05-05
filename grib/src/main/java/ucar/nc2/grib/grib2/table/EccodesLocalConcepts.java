@@ -1,6 +1,5 @@
 package ucar.nc2.grib.grib2.table;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -11,8 +10,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,26 +35,33 @@ class EccodesLocalConcepts {
   private static final Charset ENCODING = StandardCharsets.UTF_8;
 
   private final String tableId;
-
-  private ImmutableListMultimap.Builder<String, LocalConceptPart> localConceptsBuilder = ImmutableListMultimap.builder();
-  private HashMap<String, LocalConcept> localConcepts = new HashMap<>();
+  private ImmutableListMultimap<String, LocalConcept> localConcepts;
 
   EccodesLocalConcepts(String directoryPath) throws IOException {
-    String[] parts = directoryPath.split("/");
-    this.tableId = parts[parts.length-1];
+    String[] dirs = directoryPath.split("/");
+    this.tableId = dirs[dirs.length-1];
 
-    parseLocalConcept(directoryPath + "/name.def", Type.name);
-    parseLocalConcept(directoryPath + "/shortName.def", Type.shortName);
-    parseLocalConcept(directoryPath + "/paramId.def", Type.paramId);
-    parseLocalConcept(directoryPath + "/units.def", Type.units);
-    parseLocalConcept(directoryPath + "/cfName.def", Type.cfName);
-    parseLocalConcept(directoryPath + "/cfVarName.def", Type.cfVarName);
+    ImmutableListMultimap.Builder<LocalConceptPart, LocalConceptPart> partsBuilder = ImmutableListMultimap.builder();
+    parseLocalConcept(partsBuilder, directoryPath + "/name.def", Type.name);
+    parseLocalConcept(partsBuilder, directoryPath + "/shortName.def", Type.shortName);
+    parseLocalConcept(partsBuilder, directoryPath + "/paramId.def", Type.paramId);
+    parseLocalConcept(partsBuilder, directoryPath + "/units.def", Type.units);
+    parseLocalConcept(partsBuilder, directoryPath + "/cfName.def", Type.cfName);
+    parseLocalConcept(partsBuilder, directoryPath + "/cfVarName.def", Type.cfVarName);
 
-    ImmutableListMultimap<String, LocalConceptPart> localConceptPieces = localConceptsBuilder.build();
-
-    for (LocalConceptPart conceptPart : localConceptPieces.values()) {
-      localConcepts.merge(conceptPart.getKey(), new LocalConcept(conceptPart), LocalConcept::merge);
+    ImmutableListMultimap.Builder<String, LocalConcept> conceptsBuilder = ImmutableListMultimap.builder();
+    for (Collection<LocalConceptPart> parts : partsBuilder.build().asMap().values()) {
+      LocalConcept localConcept = null;
+      for (LocalConceptPart part : parts) {
+        if (localConcept == null) {
+          localConcept = new LocalConcept(part);
+        } else {
+          localConcept.merge(part);
+        }
+      }
+      conceptsBuilder.put(localConcept.getKey(), localConcept);
     }
+    localConcepts = conceptsBuilder.build();
   }
 
   ImmutableListMultimap<Integer, Grib2Parameter> getLocalConceptMultimap() {
@@ -71,29 +77,49 @@ class EccodesLocalConcepts {
     return result.build();
   }
 
-
   /*
-#Mean of 10 metre wind speed
-'Mean of 10 metre wind speed' = {
-	 discipline = 192 ;
-	 parameterCategory = 228 ;
-	 parameterNumber = 5 ;
-	}
-#Mean total cloud cover
-'Mean total cloud cover' = {
-	 discipline = 192 ;
-	 parameterCategory = 228 ;
-	 parameterNumber = 6 ;
-	}
-#Lake depth
-'Lake depth' = {
-	 discipline = 192 ;
-	 parameterCategory = 228 ;
-	 parameterNumber = 7 ;
-	}
-	   */
+    #paramName
+    'value' = {
+      attName = attValue ;
+      attName = attValue ;
+      attName = attValue ;
+    }
+    examples:
 
-  private void parseLocalConcept(String path, Type conceptType) throws IOException {
+    #Potential vorticity
+    '82001004' = {
+              discipline = 0 ;
+              parameterCategory = 2 ;
+              parameterNumber = 14 ;
+              }
+    #Lake depth
+    'Lake depth' = {
+       discipline = 192 ;
+       parameterCategory = 228 ;
+       parameterNumber = 7 ;
+      }
+    #Convective available potential energy
+     'cape' = {
+     discipline = 0 ;
+     parameterCategory = 7 ;
+     parameterNumber = 6 ;
+     typeOfFirstFixedSurface = 1 ;
+     typeOfSecondFixedSurface = 8 ;
+    }
+    #Minimum temperature at 2 metres since previous post-processing
+    'K' = {
+       discipline = 0 ;
+       parameterCategory = 0 ;
+       parameterNumber = 0 ;
+       scaledValueOfFirstFixedSurface = 15 ;
+       scaleFactorOfFirstFixedSurface = 1 ;
+       typeOfStatisticalProcessing = 3 ;
+       typeOfFirstFixedSurface = 103 ;
+       is_uerra = 1 ;
+      }
+	*/
+
+  private void parseLocalConcept(ImmutableListMultimap.Builder<LocalConceptPart, LocalConceptPart> localConceptParts, String path, Type conceptType) throws IOException {
     ClassLoader cl = EccodesLocalConcepts.class.getClassLoader();
     try (InputStream is = cl.getResourceAsStream(path)) {
       if (is == null) return; // file not found is ok
@@ -122,7 +148,7 @@ class EccodesLocalConcepts {
 
           if (line.startsWith("#")) {
             if (current != null) {
-              localConceptsBuilder.put(current.getKey(), current);
+              localConceptParts.put(current, current);
             }
             String paramName = line.substring(1);
             line = br.readLine();
@@ -141,14 +167,14 @@ class EccodesLocalConcepts {
             Integer value;
             try {
               value = Integer.parseInt(valueS);
-              current.add(name, value);
+              current.addAttribute(name, value);
             } catch (Exception e) {
               logger.warn("Table {}/{} line {}", tableId, conceptType, line);
             }
           }
         }
         if (current != null) {
-          localConceptsBuilder.put(current.getKey(), current);
+          localConceptParts.put(current, current);
         }
       }
     }
@@ -161,9 +187,33 @@ class EccodesLocalConcepts {
   }
 
   private class AttributeBag {
-    final Map<String, Integer> atts;
-    AttributeBag(Map<String, Integer> atts) {
-      this.atts = atts;
+    private final Map<String, Integer> atts = new TreeMap<>();
+    int hashCode = 0;
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      AttributeBag that = (AttributeBag) o;
+      return atts.equals(that.atts);
+    }
+
+    @Override
+    public int hashCode() {
+      // must roll our own hashcode
+      if (hashCode == 0) {
+        int result = 17;
+        for (Map.Entry<String, Integer> entry : atts.entrySet()) {
+          result = 37 * result + entry.getKey().hashCode();
+          result = 37 * result + entry.getValue().hashCode();
+        }
+        hashCode = result;
+      }
+      return hashCode;
     }
 
     public void show(Formatter f) {
@@ -177,62 +227,78 @@ class EccodesLocalConcepts {
   }
 
   private class LocalConcept implements Comparable<LocalConcept> {
-    private final List<AttributeBag> attBags = new ArrayList<>();
-    private final String key;
-    private final int discipline ;
-    private final int category;
-    private final int number;
-    private final Type type;
-    private final String value;
+    private final String paramName;
+    private final LocalConceptPart org;
 
-    private String paramName;
+    private int discipline ;
+    private int category;
+    private int number;
+    private String paramId;
+    private String name;
     private String shortName;
     private String units;
     private String cfName;
     private String cfVarName;
-    private String paramId; // LOOK: WTF?
+
+    private final AttributeBag bag = new AttributeBag();
 
     LocalConcept(LocalConceptPart part) {
-      this.key = part.getKey();
-      this.discipline = part.discipline;
-      this.category = part.category;
-      this.number = part.number;
-
-      this.attBags.add(new AttributeBag(part.att));
-      this.type = part.type;
-      this.value = part.value;
-      extract(this);
+      this.paramName = part.paramName;
+      this.org = part;
+      extractValue(part);
+      extractAtts(part);
     }
 
-    LocalConcept merge(LocalConcept other) {
-      extract(other);
+    String getKey() {
+      return paramName + ":" + Grib2Tables.makeParamCode(discipline, category, number);
+    }
 
-      // assume that only the attributes in the name.def files are important.
-      if (other.type == Type.name) {
-        this.attBags.addAll(other.attBags);
+    void merge(LocalConceptPart part) {
+      assert(this.paramName.equals(part.paramName));
+      assert(this.org.atts.equals(part.atts));
+      extractValue(part);
+    }
+
+    void extractAtts(LocalConceptPart part) {
+      for (Map.Entry<String, Integer> entry : part.atts.atts.entrySet()) {
+        String name = entry.getKey();
+        Integer value = entry.getValue();
+        switch (name) {
+          case DISCIPLINE:
+            discipline = value;
+            break;
+          case CATEGORY:
+            category = value;
+            break;
+          case NUMBER:
+            number = value;
+            break;
+          default:
+            bag.atts.put(name, value);
+            break;
+        }
       }
-      return this;
     }
 
-    private void extract(LocalConcept other) {
-      switch (other.type) {
+    private void extractValue(LocalConceptPart part) {
+      switch (part.type) {
         case name:
-          this.paramName = other.value;
+          this.name = part.value;
           break;
         case shortName:
-          this.shortName = other.value;
+          this.shortName = part.value;
           break;
         case paramId:
-          this.paramId = other.value;
+          this.paramId = part.value;
           break;
         case units:
-          this.units = other.value;
+          this.units = part.value;
           break;
         case cfName:
-          this.cfName = other.value;
+          this.cfName = part.value;
           break;
         case cfVarName:
-          this.cfVarName = other.value;
+          this.cfVarName = part.value;
           break;
       }
     }
@@ -254,22 +320,6 @@ class EccodesLocalConcepts {
     }
 
     @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("atBag size=", attBags.size())
-          .add("paramName", paramName)
-          .add("discipline", discipline)
-          .add("category", category)
-          .add("number", number)
-          .add("type", type)
-          .add("value", value)
-          .add("shortName", shortName)
-          .add("units", units)
-          .add("paramId", paramId)
-          .toString();
-    }
-
-    @Override
     public int compareTo(LocalConcept o) {
       int c = discipline - o.discipline;
       if (c != 0) return c;
@@ -281,14 +331,10 @@ class EccodesLocalConcepts {
 
   private enum Type {name, shortName, paramId, units, cfName, cfVarName}
   private class LocalConceptPart {
-    private final Map<String, Integer> att = new TreeMap<>();
+    private final AttributeBag atts = new AttributeBag();
     private final String paramName;
     private final String value;
     private final Type type;
-
-    private int discipline = -1;
-    private int category = -1;
-    private int number = -1;
 
     LocalConceptPart(String paramName, String value, Type type) {
       this.paramName = paramName;
@@ -296,74 +342,32 @@ class EccodesLocalConcepts {
       this.type = type;
     }
 
-    void add(String name, int value) {
-      switch (name) {
-        case DISCIPLINE:
-          discipline = value;
-          break;
-        case CATEGORY:
-          category = value;
-          break;
-        case NUMBER:
-          number = value;
-          break;
-        default:
-          att.put(name, value);
-          break;
-      }
-    }
-
-    String getKey() {
-      return paramName + ":" + Grib2Tables.makeParamCode(discipline, category, number);
+    void addAttribute(String name, int value) {
+      atts.atts.put(name, value);
     }
 
     @Override
-    public String toString() {
-      return MoreObjects.toStringHelper(this)
-          .add("paramName", paramName)
-          .add("type", type)
-          .add("discipline", discipline)
-          .add("category", category)
-          .add("number", number)
-          .add("att", att)
-          .toString();
-    }
-  }
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
 
-  // Obsolete
-  private void checkLocalConceptsParts() {
-    ImmutableListMultimap<String, LocalConceptPart> localConceptPieces = localConceptsBuilder.build();
-    ImmutableList<String> keys = localConceptPieces.asMap().keySet().stream().sorted().collect(ImmutableList.toImmutableList());
-    System.out.printf("%-70s: %-10s: %-10s - %-10s - %s%n", "name", "code", "shortName", "paramId", "units");
-    System.out.printf("-------------------------------------------------------------------------------------------------------------%n");
-    for (String key : keys) {
-      LocalConceptPart name = null;
-      LocalConceptPart shortName = null;
-      LocalConceptPart paramId = null;
-      LocalConceptPart units = null;
-      for (LocalConceptPart concept : localConceptPieces.get(key)) {
-        if (concept.type == Type.name)
-          name = concept;
-        if (concept.type == Type.shortName)
-          shortName = concept;
-        if (concept.type == Type.paramId)
-          paramId = concept;
-        if (concept.type == Type.units)
-          units = concept;
+      LocalConceptPart that = (LocalConceptPart) o;
+
+      if (!atts.equals(that.atts)) {
+        return false;
       }
-      if (name == null || shortName == null || paramId == null || units == null) {
-        System.out.printf("***Missing %s == %s, %s, %s, %s%n", key, name == null, shortName == null,
-            paramId == null, units == null);
-      } else {
-        System.out.printf("%-70s: %-10s: %-10s - %s - %s%n", key, name.getKey(), shortName.value, paramId.value, units.value);
-        for (LocalConceptPart concept : localConceptPieces.get(key)) {
-          if (!concept.att.isEmpty()) {
-            for (Map.Entry<String, Integer> entry : concept.att.entrySet()) {
-              System.out.printf("    %s: %s = %s%n", concept.type, entry.getKey(), entry.getValue());
-            }
-          }
-        }
-      }
+      return paramName.equals(that.paramName);
+    }
+
+    @Override
+    public int hashCode() {
+      int result = atts.hashCode();
+      result = 31 * result + paramName.hashCode();
+      return result;
     }
   }
 
@@ -377,11 +381,8 @@ class EccodesLocalConcepts {
     f.format("%s%n", StringUtil2.padRight("-", 120, "-"));
     for (LocalConcept lc : sorted) {;
       f.format(FORMAT, lc.getCode(), lc.paramName, lc.shortName, lc.paramId, lc.units, lc.cfName, lc.cfVarName);
-      for (AttributeBag bag : lc.attBags) {
-        bag.show(f);
-        attNames.addAll(bag.atts.keySet());
-      }
-      f.format("%n");
+      lc.bag.show(f);
+      attNames.addAll(lc.bag.atts.keySet());
     }
     f.format("%s%n", StringUtil2.padRight("-", 120, "-"));
     f.format("All attribute names in this table:%n");
@@ -396,18 +397,20 @@ class EccodesLocalConcepts {
 
     for (GribTables.Parameter param : params) {
       String key = param.getName() + ":" + Grib2Tables.makeParamCode(param.getDiscipline(), param.getCategory(), param.getNumber());
-      LocalConcept want = localConcepts.get(key);
-      concepts.add(want);
-      showLocalConcept(f, want, attNames);
+      Collection<LocalConcept> match = localConcepts.get(key);
+      for (LocalConcept concept : match) {
+        if (concept.getShortName().equals(param.getAbbrev())) {
+          concepts.add(concept);
+          showLocalConcept(f, concept, attNames);
+        }
+      }
     }
     f.format("%n");
 
     int count = 0;
     f.format("%-30s   ", "");
     for (LocalConcept concept : concepts) {
-      for (AttributeBag bag : concept.attBags) {
-        f.format("  (%2d)   ", count);
-      }
+      f.format("  (%2d)   ", count);
       count++;
     }
     f.format("%n");
@@ -415,10 +418,8 @@ class EccodesLocalConcepts {
     for (String attName : attNames) {
       f.format("%-30s ", attName);
       for (LocalConcept concept : concepts) {
-        for (AttributeBag bag : concept.attBags) {
-          Integer value = bag.atts.get(attName);
-          f.format("%8s ", value == null ? "" : value);
-        }
+        Integer value = concept.bag.atts.get(attName);
+        f.format("%8s ", value == null ? "" : value);
       }
       f.format("%n");
     }
@@ -426,16 +427,13 @@ class EccodesLocalConcepts {
 
   private void showLocalConcept(Formatter f, LocalConcept lc, Set<String> attNames) {
     f.format(FORMAT, lc.getCode(), lc.paramName, lc.shortName, lc.paramId, lc.units, lc.cfName, lc.cfVarName);
-    for (AttributeBag bag : lc.attBags) {
-      bag.show(f);
-      attNames.addAll(bag.atts.keySet());
-    }
+    lc.bag.show(f);
+    attNames.addAll(lc.bag.atts.keySet());
     f.format("%n");
   }
 
   public static void main(String[] args) throws IOException {
     EccodesLocalConcepts ec = new EccodesLocalConcepts("resources/grib2/ecmwf/localConcepts/ecmf");
-    //ec.checkLocalConceptsParts();
     ec.showDetails(new Formatter(System.out));
   }
 
