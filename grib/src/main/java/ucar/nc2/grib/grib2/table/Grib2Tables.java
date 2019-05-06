@@ -107,7 +107,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   }
 
   public static boolean isLocal(int discipline, int category, int number) {
-    return ((discipline > 191) || (category > 191) || (number > 191));
+    return ((discipline <= 191) || (category <= 191) || (number <= 191));
   }
 
   public static boolean isLocal(int code) {

@@ -28,8 +28,8 @@ abstract class LocalTables extends Grib2Tables {
   @Override
   public String getParamTablePathUsedFor(int discipline, int category, int number) {
     return isLocal(discipline, category, number) ?
-        config.getPath() :
-        super.getParamTablePathUsedFor(discipline, category, number);
+        super.getParamTablePathUsedFor(discipline, category, number) :
+        config.getPath();
   }
 
   @Override
@@ -53,7 +53,7 @@ abstract class LocalTables extends Grib2Tables {
 
   @Override
   public String getVariableName(int discipline, int category, int number) {
-    if (!isLocal(discipline, category, number))
+    if (isLocal(discipline, category, number))
       return super.getVariableName(discipline, category, number); // LOOK may have to change
 
     GribTables.Parameter te = getParameter(discipline, category, number);
