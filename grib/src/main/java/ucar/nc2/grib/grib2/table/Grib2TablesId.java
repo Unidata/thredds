@@ -5,7 +5,7 @@ import javax.annotation.concurrent.Immutable;
 
 @Immutable
 public class Grib2TablesId {
-  public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev, ecmwf}
+  public enum Type {wmo, cfsr, gempak, gsd, kma, ncep, ndfd, mrms, nwsDev, eccodes}
 
   public final int center, subCenter, masterVersion, localVersion, genProcessId;
 

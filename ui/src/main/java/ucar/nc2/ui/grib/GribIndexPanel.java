@@ -424,7 +424,7 @@ public class GribIndexPanel extends JPanel {
     }
 
     public String getGridName() {
-      return cust2.getTableValue("3.1", gdss.getGDSTemplateNumber());
+      return cust2.getCodeTableValue("3.1", gdss.getGDSTemplateNumber());
     }
 
     public String getGroupName() {

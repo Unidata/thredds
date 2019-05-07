@@ -5,6 +5,7 @@
 
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.List;
 import ucar.nc2.constants.CDM;
@@ -35,18 +36,15 @@ class CfsrLocalTables extends NcepLocalTables {
     initLocalTable();
   }
 
-  // LOOK: Have to override NcepLocalTables. Probably need delegates, not subclasses?
   @Override
-  public List<Parameter> getParameters() {
-    List<Parameter> result = new ArrayList<>(localParams.values());
-    result.sort(new ParameterSort());
-    return result;
+  public ImmutableList<Parameter> getParameters() {
+    return getLocalParameters();
   }
 
   @Override
-  public String getTablePath(int discipline, int category, int number) {
+  public String getParamTablePathUsedFor(int discipline, int category, int number) {
     if ((category <= 191) && (number <= 191)) {
-      return super.getTablePath(discipline, category, number);
+      return super.getParamTablePathUsedFor(discipline, category, number);
     }
     return config.getPath();
   }

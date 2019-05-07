@@ -3,7 +3,7 @@ package ucar.nc2.grib.grib2.tools;
 import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.util.Formatter;
-import ucar.nc2.grib.grib2.table.EcmwfCodeTable;
+import ucar.nc2.grib.grib2.table.EccodesCodeTable;
 import ucar.nc2.grib.grib2.table.Grib2CodeTableInterface;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables;
 import ucar.nc2.grib.grib2.table.WmoCodeFlagTables.TableType;
@@ -70,7 +70,7 @@ public class EcmwfCodeTableCompare {
       System.out.printf("%s%n", latest.getName());
 
       for (int version = 21; version >= 0; version--) {
-        Grib2CodeTableInterface next = EcmwfCodeTable.factory(version, discipline, category);
+        Grib2CodeTableInterface next = EccodesCodeTable.factory(version, discipline, category);
         if (next == null) {
           System.out.printf("Missing version %d%n", version);
         } else {

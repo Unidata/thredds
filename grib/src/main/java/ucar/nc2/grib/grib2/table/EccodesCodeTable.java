@@ -1,5 +1,6 @@
 package ucar.nc2.grib.grib2.table;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import java.io.BufferedReader;
@@ -8,14 +9,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import javax.annotation.Nullable;
-import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib2.Grib2Parameter;
 
 /**
- * The results of EcmwfParamTableCompare indicate there are no significant differences of the parameter tables with WMO.
- * So this class is not used currently in production.
+ * ECMWF code tables read from resources/grib2/ecmwf/tables/<latest>.
+ * EcmwfCodeTableCompare is used to compare with WMO.
  */
-public class EcmwfParamTable implements Grib2ParamTableInterface {
+public class EccodesCodeTable implements Grib2CodeTableInterface {
+  public static final int LATEST_VERSION = 21;
+
   private static final boolean debugOpen = false;
   private static final boolean debug = false;
   private static final String PATH = "resources/grib2/ecmwf/tables";
@@ -25,17 +26,17 @@ public class EcmwfParamTable implements Grib2ParamTableInterface {
   private String tableName;
 
   private final int version, discipline, category;
-  private final ImmutableMap<Integer, Grib2Parameter> paramMap;
+  private final ImmutableMap<Integer, Entry> paramMap;
 
-  public static EcmwfParamTable factory(int version, int discipline, int category) {
+  public static EccodesCodeTable factory(int version, int discipline, int category) {
     try {
-      return new EcmwfParamTable(version, discipline, category);
+      return new EccodesCodeTable(version, discipline, category);
     } catch (Exception e) {
       return null;
     }
   }
 
-  private EcmwfParamTable(int version, int discipline, int category) throws IOException {
+  private EccodesCodeTable(int version, int discipline, int category) throws IOException {
     this.version = version;
     this.discipline = discipline;
     this.category = category;
@@ -54,24 +55,18 @@ public class EcmwfParamTable implements Grib2ParamTableInterface {
   }
 
   @Override
-  public ImmutableList<GribTables.Parameter> getParameters() {
-    return paramMap.values().stream().sorted().map( p -> (GribTables.Parameter) p).collect(
-        ImmutableList.toImmutableList());
+  public ImmutableList<Entry> getEntries() {
+    return paramMap.values().stream().sorted().collect(ImmutableList.toImmutableList());
   }
 
   @Override
   @Nullable
-  public Grib2Parameter getParameter(int code) {
+  public Entry getEntry(int code) {
     return paramMap.get(code);
   }
 
-  @Nullable
-  public Grib2Parameter getParameter(int discipline, int category, int number) {
-    return paramMap.get(number);
-  }
-
   private String getTablePath() {
-    return String.format("%s/%d/4.2.%d.%d.table", PATH, version, discipline, category);
+    return String.format("%s/%d/%d.%d.table", PATH, version, discipline, category);
   }
 
   /*
@@ -108,8 +103,8 @@ public class EcmwfParamTable implements Grib2ParamTableInterface {
   # 192-254 Reserved for local use
   255 255 Missing
    */
-  private ImmutableMap<Integer, Grib2Parameter> readTable(String path) throws IOException {
-    ImmutableMap.Builder<Integer, Grib2Parameter> builder = ImmutableMap.builder();
+  private ImmutableMap<Integer, Entry> readTable(String path) throws IOException {
+    ImmutableMap.Builder<Integer, Entry> builder = ImmutableMap.builder();
 
     if (debugOpen) {
       System.out.printf("readEcmwfTable path= %s%n", path);
@@ -141,9 +136,6 @@ public class EcmwfParamTable implements Grib2ParamTableInterface {
           String num2 = line.substring(posBlank1 + 1, posBlank2);
           String desc = (lastParen > 0) ? line.substring(posBlank2 + 1, lastParen).trim()
               : line.substring(posBlank2 + 1).trim();
-          String units = (lastParen > 0) ? line.substring(lastParen).trim() : "";
-          if (units.startsWith("(") & units.endsWith(")"))
-            units = units.substring(1, units.length()-1);
 
           if (!num1.equals(num2)) {
             if (debug) {
@@ -151,18 +143,50 @@ public class EcmwfParamTable implements Grib2ParamTableInterface {
             }
             continue;
           }
-          int number = Integer.parseInt(num1);
+          int code = Integer.parseInt(num1);
 
-          //   public Grib2Parameter(int discipline, int category, int number, String name, String unit, String abbrev) {
-          Grib2Parameter parameter = new Grib2Parameter(discipline, category, number, desc, units,
-              null, desc);
-          builder.put(parameter.getNumber(), parameter);
+          EcmwfEntry entry = new EcmwfEntry(code, desc);
+          builder.put(entry.getCode(), entry);
           if (debug) {
-            System.out.printf(" %s%n", parameter);
+            System.out.printf(" %s%n", entry);
           }
         }
       }
     }
     return builder.build();
   }
+
+  private class EcmwfEntry implements Entry, Comparable<Entry> {
+    private final int codeValue;
+    private final String name;
+
+    public EcmwfEntry(int codeValue, String name) {
+      this.codeValue = codeValue;
+      this.name = name;
+    }
+
+    @Override
+    public int getCode() {
+      return codeValue;
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public int compareTo(Entry o) {
+      return codeValue - o.getCode();
+    }
+
+    @Override
+    public String toString() {
+      return MoreObjects.toStringHelper(this)
+          .add("codeValue", codeValue)
+          .add("name", name)
+          .toString();
+    }
+  }
+
 }

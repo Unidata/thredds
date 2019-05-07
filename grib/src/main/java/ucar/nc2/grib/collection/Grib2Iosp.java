@@ -31,8 +31,7 @@ public class Grib2Iosp extends GribIosp {
       GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
 
     try (Formatter f = new Formatter()) {
-      GribTables.Parameter param = cust
-          .getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+      GribTables.Parameter param = cust.getParameter(vindex);
 
       if (param == null) {
         f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(),
@@ -72,7 +71,7 @@ public class Grib2Iosp extends GribIosp {
       }
 
       if (vindex.getSpatialStatisticalProcessType() >= 0) {
-        String statName = cust.getTableValue("4.10", vindex.getSpatialStatisticalProcessType());
+        String statName = cust.getCodeTableValue("4.10", vindex.getSpatialStatisticalProcessType());
         if (statName != null) {
           f.format("_%s", statName);
         }
@@ -100,8 +99,7 @@ public class Grib2Iosp extends GribIosp {
         f.format("Probability ");
       }
 
-      GribTables.Parameter gp = cust
-          .getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+      GribTables.Parameter gp = cust.getParameter(vindex);
       if (gp == null) {
         f.format("Unknown Parameter %d-%d-%d", vindex.getDiscipline(), vindex.getCategory(),
             vindex.getParameter());
@@ -127,14 +125,14 @@ public class Grib2Iosp extends GribIosp {
       }
 
       if (vindex.getSpatialStatisticalProcessType() >= 0) {
-        String statName = cust.getTableValue("4.10", vindex.getSpatialStatisticalProcessType());
+        String statName = cust.getCodeTableValue("4.10", vindex.getSpatialStatisticalProcessType());
         if (statName != null) {
           f.format("_%s", statName);
         }
       }
 
       if (vindex.getEnsDerivedType() >= 0) {
-        f.format(" (%s)", cust.getTableValue("4.10", vindex.getEnsDerivedType()));
+        f.format(" (%s)", cust.getCodeTableValue("4.10", vindex.getEnsDerivedType()));
       } else if (isProb) {
         f.format(" %s %s", vindex.getProbabilityName(),
             getVindexUnits(cust, vindex)); // add data units here
@@ -148,7 +146,7 @@ public class Grib2Iosp extends GribIosp {
       }
 
       if (vindex.getLevelType() != GribNumbers.UNDEFINED) { // satellite data doesnt have a level
-        f.format(" @ %s", cust.getTableValue("4.5", vindex.getLevelType()));
+        f.format(" @ %s", cust.getCodeTableValue("4.5", vindex.getLevelType()));
         if (vindex.isLayer()) {
           f.format(" layer");
         }
@@ -179,7 +177,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   private static String getVindexUnits(Grib2Tables tables, GribCollectionImmutable.VariableIndex vindex) {
-    GribTables.Parameter gp = tables.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+    GribTables.Parameter gp = tables.getParameter(vindex);
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;
   }
@@ -243,12 +241,12 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected String getVerticalCoordDesc(int vc_code) {
-    return cust.getTableValue("4.5", vc_code);
+    return cust.getCodeTableValue("4.5", vc_code);
   }
 
   @Override
   protected GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex) {
-    return cust.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+    return cust.getParameter(vindex);
   }
 
   public Object getLastRecordRead() {

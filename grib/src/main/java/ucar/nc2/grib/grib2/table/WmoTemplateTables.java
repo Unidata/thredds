@@ -255,7 +255,7 @@ public class WmoTemplateTables {
     }
 
     private String convert(Grib2Tables tables, String table, int value) {
-      String result = tables.getTableValue(table, value);
+      String result = tables.getCodeTableValue(table, value);
       return (result != null) ? result : "Table " + table + " code " + value + " not found";
     }
   }

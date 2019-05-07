@@ -47,7 +47,7 @@ public class Grib2Show {
 
     int d = gr.getDiscipline();
     f.format("Grib2IndicatorSection%n");
-    f.format(" Discipline = (%d) %s%n", d, cust.getTableValue("0.0", d));
+    f.format(" Discipline = (%d) %s%n", d, cust.getCodeTableValue("0.0", d));
     f.format(" Length     = %d%n", gr.getIs().getMessageLength());
 
     Grib2SectionIdentification id = gr.getId();
@@ -56,11 +56,11 @@ public class Grib2Show {
     f.format(" SubCenter     = (%d) %s%n", id.getSubcenter_id(), cust.getSubCenterName(id.getCenter_id(), id.getSubcenter_id()));
     f.format(" Master Table  = %d%n", id.getMaster_table_version());
     f.format(" Local Table   = %d%n", id.getLocal_table_version());
-    f.format(" RefTimeSignif = %d (%s)%n", id.getSignificanceOfRT(), cust.getTableValue("1.2", id.getSignificanceOfRT()));
+    f.format(" RefTimeSignif = %d (%s)%n", id.getSignificanceOfRT(), cust.getCodeTableValue("1.2", id.getSignificanceOfRT()));
     f.format(" RefTime       = %s%n", id.getReferenceDate());
     f.format(" RefTime Fields = %d-%d-%d %d:%d:%d%n", id.getYear(), id.getMonth(), id.getDay(), id.getHour(), id.getMinute(), id.getSecond());
-    f.format(" ProductionStatus      = %d (%s)%n", id.getProductionStatus(), cust.getTableValue("1.3", id.getProductionStatus()));
-    f.format(" TypeOfProcessedData   = %d (%s)%n", id.getTypeOfProcessedData(), cust.getTableValue("1.4", id.getTypeOfProcessedData()));
+    f.format(" ProductionStatus      = %d (%s)%n", id.getProductionStatus(), cust.getCodeTableValue("1.3", id.getProductionStatus()));
+    f.format(" TypeOfProcessedData   = %d (%s)%n", id.getTypeOfProcessedData(), cust.getCodeTableValue("1.4", id.getTypeOfProcessedData()));
 
     if (gr.hasLocalUseSection()) {
       byte[] lus = gr.getLocalUseSection().getRawBytes();
@@ -74,7 +74,7 @@ public class Grib2Show {
     Grib2Gds ggds = gds.getGDS();
     f.format("%nGrib2GridDefinitionSection hash=%d crc=%d%n", ggds.hashCode(), gds.calcCRC());
     f.format(" Length             = %d%n", gds.getLength());
-    f.format(" Source  (3.0)      = %d (%s) %n", gds.getSource(), cust.getTableValue("3.0", gds.getSource()));
+    f.format(" Source  (3.0)      = %d (%s) %n", gds.getSource(), cust.getCodeTableValue("3.0", gds.getSource()));
     f.format(" Npts               = %d%n", gds.getNumberPoints());
     f.format(" Template (3.1)     = %d%n", gds.getGDSTemplateNumber());
     showGdsTemplate(gds, f, cust);
@@ -98,7 +98,7 @@ public class Grib2Show {
 
     Grib2SectionDataRepresentation drs = gr.getDataRepresentationSection();
     f.format("%nGrib2SectionDataRepresentation%n");
-    f.format("  Template           = %d (%s) %n", drs.getDataTemplate(), cust.getTableValue("5.0", drs.getDataTemplate()));
+    f.format("  Template           = %d (%s) %n", drs.getDataTemplate(), cust.getCodeTableValue("5.0", drs.getDataTemplate()));
     f.format("  NPoints            = %d%n", drs.getDataPoints());
 
     Grib2SectionData ds = gr.getDataSection();
@@ -129,32 +129,32 @@ public class Grib2Show {
 
   public static void showProcessedPds(Grib2Tables cust, Grib2Pds pds, int discipline, Formatter f) {
     int template = pds.getTemplateNumber();
-    f.format(" Product Template %3d = %s%n", template, cust.getTableValue("4.0", template));
-    f.format(" Discipline %3d     = %s%n", discipline, cust.getTableValue("0.0", discipline));
+    f.format(" Product Template %3d = %s%n", template, cust.getCodeTableValue("4.0", template));
+    f.format(" Discipline %3d     = %s%n", discipline, cust.getCodeTableValue("0.0", discipline));
     f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getCategory(discipline, pds.getParameterCategory()));
-    GribTables.Parameter entry = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+    GribTables.Parameter entry = cust.getParameter(discipline, pds);
     if (entry != null) {
       f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
       f.format(" Parameter Units    = %s %n", entry.getUnit());
     } else {
       f.format(" Unknown Parameter  = %d-%d-%d %n", discipline, pds.getParameterCategory(), pds.getParameterNumber());
-      cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber()); // debug
+      cust.getParameter(discipline, pds); // debug
     }
-    f.format(" Parameter Table  = %s%n", cust.getTablePath(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
+    f.format(" Parameter Table  = %s%n", cust.getParamTablePathUsedFor(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
 
     int tgp = pds.getGenProcessType();
-    f.format(" Generating Process Type = %3d %s %n", tgp, cust.getTableValue("4.3", tgp));
+    f.format(" Generating Process Type = %3d %s %n", tgp, cust.getCodeTableValue("4.3", tgp));
     f.format(" Forecast Offset    = %3d %n", pds.getForecastTime());
     f.format(" First Surface Type = %3d %s %n", pds.getLevelType1(), cust.getLevelNameShort(pds.getLevelType1()));
     f.format(" First Surface value= %3f %n", pds.getLevelValue1());
     f.format(" Second Surface Type= %3d %s %n", pds.getLevelType2(), cust.getLevelNameShort(pds.getLevelType2()));
     f.format(" Second Surface val = %3f %n", pds.getLevelValue2());
-    f.format("%n Level Name (from table 4.5) = %3s %n", cust.getTableValue("4.5", pds.getLevelType1()));
-    f.format(" Gen Process Ttype (from table 4.3) = %3s %n", cust.getTableValue("4.3", pds.getGenProcessType()));
+    f.format("%n Level Name (from table 4.5) = %3s %n", cust.getCodeTableValue("4.5", pds.getLevelType1()));
+    f.format(" Gen Process Ttype (from table 4.3) = %3s %n", cust.getCodeTableValue("4.3", pds.getGenProcessType()));
   }
 
   public static void showProcessedGridRecord(Grib2Tables cust, Grib2Record gr, Formatter f) {
-    GribTables.Parameter param = cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+    GribTables.Parameter param = cust.getParameter(gr);
     if (param != null) {
       f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
     } else {

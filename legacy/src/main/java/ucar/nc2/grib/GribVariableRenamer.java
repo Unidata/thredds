@@ -179,7 +179,7 @@ public class GribVariableRenamer {
 
   private String munge(String old) {
     StringBuilder oldLower = new StringBuilder( old.toLowerCase());
-    StringUtil2.remove(oldLower, "_-");
+    StringUtil2.removeAll(oldLower, "_-");
     return oldLower.toString();
   }
   

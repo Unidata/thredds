@@ -112,7 +112,7 @@ public class NcepRfcTables extends NcepTables {
         }
 
         StringBuilder lineb = new StringBuilder(line);
-        StringUtil2.remove(lineb, "'+,/");
+        StringUtil2.removeAll(lineb, "'+,/");
         String[] flds = lineb.toString().split("[:]");
 
         int val = Integer.parseInt(flds[0].trim()); // must have a number

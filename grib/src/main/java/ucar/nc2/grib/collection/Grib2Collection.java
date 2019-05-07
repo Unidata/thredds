@@ -225,12 +225,12 @@ public class Grib2Collection extends GribCollectionImmutable {
     v.addAttribute(new Attribute(Grib.VARIABLE_ID_ATTNAME, gc.makeVariableId(vindex)));
     int[] param = new int[]{vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter()};
     v.addAttribute(new Attribute("Grib2_Parameter", Array.makeFromJavaArray(param, false)));
-    String disc = cust2.getTableValue("0.0", vindex.getDiscipline());
+    String disc = cust2.getCodeTableValue("0.0", vindex.getDiscipline());
     if (disc != null) v.addAttribute(new Attribute("Grib2_Parameter_Discipline", disc));
     String cat = cust2.getCategory(vindex.getDiscipline(), vindex.getCategory());
     if (cat != null)
       v.addAttribute(new Attribute("Grib2_Parameter_Category", cat));
-    GribTables.Parameter entry = cust2.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+    GribTables.Parameter entry = cust2.getParameter(vindex);
     if (entry != null) v.addAttribute(new Attribute("Grib2_Parameter_Name", entry.getName()));
 
     if (vindex.getLevelType() != GribNumbers.MISSING)

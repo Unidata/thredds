@@ -26,4 +26,14 @@
 161;	0; -1; -1; -1; mrms; nssl MULTI-RADAR/MULTI-SENSOR SYSTEM;
 #
 # ECMWF and friends
-98;     -1; -1; -1; -1;   ecmwf; ECMWF; resources/grib2/ecmwf/tables/21
+98;     -1; -1; -1; -1;   eccodes; ecmwf; resources/grib2/ecmwf/localConcepts/ecmf
+80;     -1; -1; -1; -1;   eccodes; Rome; resources/grib2/ecmwf/localConcepts/cnmc
+78;     -1; -1; -1; -1;   eccodes; Offenbach; resources/grib2/ecmwf/localConcepts/edzw
+86;     -1; -1; -1; -1;   eccodes; Helsinki; resources/grib2/ecmwf/localConcepts/efkl
+74;     -1; -1; -1; -1;   eccodes; U.K. Met Office; resources/grib2/ecmwf/localConcepts/egrr
+94;     -1; -1; -1; -1;   eccodes; Copenhagen; resources/grib2/ecmwf/localConcepts/ekmi
+82;     -1; -1; -1; -1;   eccodes; Norrkoping; resources/grib2/ecmwf/localConcepts/eswi
+ 7;     -1; -1; -1; -1;   eccodes; NCEP; resources/grib2/ecmwf/localConcepts/kwbc
+84;     -1; -1; -1; -1;   eccodes; French Weather Service; resources/grib2/ecmwf/localConcepts/lfpw
+85;     -1; -1; -1; -1;   eccodes; French Weather Service; resources/grib2/ecmwf/localConcepts/lfpw1
+215;    -1; -1; -1; -1;   eccodes; Zurich; resources/grib2/ecmwf/localConcepts/lssw
