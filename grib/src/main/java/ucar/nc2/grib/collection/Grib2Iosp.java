@@ -31,8 +31,7 @@ public class Grib2Iosp extends GribIosp {
       GribCollectionImmutable.VariableIndex vindex, boolean useGenType) {
 
     try (Formatter f = new Formatter()) {
-      GribTables.Parameter param = cust
-          .getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+      GribTables.Parameter param = cust.getParameter(vindex);
 
       if (param == null) {
         f.format("VAR%d-%d-%d_FROM_%d-%d-%d", vindex.getDiscipline(), vindex.getCategory(),
@@ -100,8 +99,7 @@ public class Grib2Iosp extends GribIosp {
         f.format("Probability ");
       }
 
-      GribTables.Parameter gp = cust
-          .getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+      GribTables.Parameter gp = cust.getParameter(vindex);
       if (gp == null) {
         f.format("Unknown Parameter %d-%d-%d", vindex.getDiscipline(), vindex.getCategory(),
             vindex.getParameter());
@@ -179,7 +177,7 @@ public class Grib2Iosp extends GribIosp {
   }
 
   private static String getVindexUnits(Grib2Tables tables, GribCollectionImmutable.VariableIndex vindex) {
-    GribTables.Parameter gp = tables.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+    GribTables.Parameter gp = tables.getParameter(vindex);
     String val = (gp == null) ? "" : gp.getUnit();
     return (val == null) ? "" : val;
   }
@@ -248,7 +246,7 @@ public class Grib2Iosp extends GribIosp {
 
   @Override
   protected GribTables.Parameter getParameter(GribCollectionImmutable.VariableIndex vindex) {
-    return cust.getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+    return cust.getParameter(vindex);
   }
 
   public Object getLastRecordRead() {

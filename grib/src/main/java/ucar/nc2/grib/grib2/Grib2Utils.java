@@ -8,15 +8,9 @@ package ucar.nc2.grib.grib2;
 import javax.annotation.Nullable;
 import ucar.nc2.constants.AxisType;
 import ucar.nc2.grib.GribTables;
-import ucar.nc2.grib.grib2.table.Grib2Tables;
 import ucar.nc2.grib.grib2.table.WmoParamTable;
 import ucar.nc2.time.CalendarPeriod;
-import ucar.nc2.units.SimpleUnit;
-import ucar.nc2.wmo.Util;
 import ucar.unidata.util.StringUtil2;
-
-import java.util.Formatter;
-import java.util.List;
 
 /**
  * Static utilities for Grib-2
@@ -153,74 +147,6 @@ public class Grib2Utils {
     else if (desc.contains("Latitude of") || desc.contains("Longitude of")) type = null;
     else type = LatLonCoordType.P;
     return type;
-  }
-
-  // Compare 2 tables, print report.
-  public static void compareTables(String name1, String name2, List<? extends GribTables.Parameter> test, Grib2Tables reference, Formatter f) {
-
-    int extra = 0;
-    int udunits = 0;
-    int conflict = 0;
-    f.format("Table 1 : %s%n", name1);
-    f.format("Table 2 : %s%n", name2);
-    for (GribTables.Parameter p1 : test) {
-      GribTables.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
-      if (p2 == null) {
-        if (p1.getCategory() < 192 && p1.getNumber() < 192) {
-          extra++;
-          f.format("  WMO missing %s%n", p1);
-        }
-
-      } else {
-        String p1n = Util.cleanName(p1.getName());
-        String p2n = Util.cleanName(p2.getName());
-
-        if (!p1n.equalsIgnoreCase(p2n)) {
-          f.format("  p1=%10s %40s %15s %15s %s%n", p1.getId(), p1.getName(), p1.getUnit(), p1.getAbbrev(), p1.getDescription());
-          f.format("  p2=%10s %40s %15s %15s %s%n%n", p2.getId(), p2.getName(), p2.getUnit(), p2.getAbbrev(), p2.getDescription());
-          conflict++;
-        }
-
-        if (!p1.getUnit().equalsIgnoreCase(p2.getUnit())) {
-          String cu1 = Util.cleanUnit(p1.getUnit());
-          String cu2 = Util.cleanUnit(p2.getUnit());
-
-          // eliminate common non-udunits
-          boolean isUnitless1 = Util.isUnitless(cu1);
-          boolean isUnitless2 = Util.isUnitless(cu2);
-
-          if (isUnitless1 != isUnitless2) {
-            f.format("  ud=%10s %s != %s for %s (%s)%n%n", p1.getId(), cu1, cu2, p1.getId(), p1.getName());
-            udunits++;
-
-          } else if (!isUnitless1) {
-
-            try {
-              SimpleUnit su1 = SimpleUnit.factoryWithExceptions(cu1);
-              if (!su1.isCompatible(cu2)) {
-                f.format("  ud=%10s %s (%s) != %s for %s (%s)%n%n", p1.getId(), cu1, su1, cu2, p1.getId(), p1.getName());
-                udunits++;
-              }
-            } catch (Exception e) {
-              f.format("  udunits cant parse=%10s %15s %15s%n", p1.getId(), cu1, cu2);
-            }
-          }
-
-        }
-      }
-    }
-    f.format("Conflicts=%d extra=%d udunits=%d%n%n", conflict, extra, udunits);
-
-    f.format("Parameters in %s not in %s%n", name1, name2);
-    int local = 0;
-    for (GribTables.Parameter p1 : test) {
-      GribTables.Parameter  p2 = reference.getParameter(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
-      if (p2 == null) {
-        local++;
-        f.format("  %s%n", p1);
-      }
-    }
-    f.format(" missing=%d%n%n", local);
   }
 
 }

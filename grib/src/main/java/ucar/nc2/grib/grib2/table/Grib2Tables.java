@@ -8,7 +8,10 @@ package ucar.nc2.grib.grib2.table;
 import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import thredds.featurecollection.TimeUnitConverter;
-import ucar.nc2.grib.*;
+import ucar.nc2.grib.GribNumbers;
+import ucar.nc2.grib.GribStatType;
+import ucar.nc2.grib.GribTables;
+import ucar.nc2.grib.collection.GribCollectionImmutable.VariableIndex;
 import ucar.nc2.grib.coord.TimeCoordIntvDateValue;
 import ucar.nc2.grib.coord.TimeCoordIntvValue;
 import ucar.nc2.grib.coord.VertCoordType;
@@ -107,7 +110,7 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   }
 
   public static boolean isLocal(int discipline, int category, int number) {
-    return ((discipline <= 191) || (category <= 191) || (number <= 191));
+    return ((discipline <= 191) && (category <= 191) && (number <= 191));
   }
 
   public static boolean isLocal(int code) {
@@ -169,7 +172,21 @@ public class Grib2Tables implements ucar.nc2.grib.GribTables, TimeUnitConverter 
   // Parameter interface (table 4.2.x)
 
   @Nullable
-  public GribTables.Parameter getParameter(int discipline, int category, int number) {
+  public GribTables.Parameter getParameter(Grib2Record gr) {
+    return getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+  }
+
+  @Nullable
+  public GribTables.Parameter getParameter(VariableIndex vindex) {
+    return getParameter(vindex.getDiscipline(), vindex.getCategory(), vindex.getParameter());
+  }
+
+  public GribTables.Parameter getParameter(int discipline, Grib2Pds pds) {
+    return getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+  }
+
+  @Nullable
+  GribTables.Parameter getParameter(int discipline, int category, int number) {
     return WmoParamTable.getParameter(discipline, category, number);
   }
 

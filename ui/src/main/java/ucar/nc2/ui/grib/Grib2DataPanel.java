@@ -65,7 +65,7 @@ import java.util.List;
  * @since Sep 7, 2012
  */
 public class Grib2DataPanel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2DataPanel.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2DataPanel.class);
 
   private PreferencesExt prefs;
 
@@ -1084,7 +1084,7 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public String getUnits() {
-      Grib2Tables.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      Grib2Tables.Parameter p = cust.getParameter(discipline, pds);
       return (p == null) ? "?" : p.getUnit();
     }
 
@@ -1190,9 +1190,7 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public String getPrecision() {
-      Formatter f= new Formatter();
-      f.format("%.5g", scale/2);
-      return f.toString();
+      return String.format("%.5g", scale/2);
     }
 
     public int getBitMap() {
@@ -1239,13 +1237,9 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public float[] readData() throws IOException {
-      ucar.unidata.io.RandomAccessFile raf = getRaf();
-      try {
+      try (ucar.unidata.io.RandomAccessFile raf = getRaf()) {
         raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
         return gr.readData(raf);
-      } finally {
-        if (raf != null)
-          raf.close();
       }
     }
 

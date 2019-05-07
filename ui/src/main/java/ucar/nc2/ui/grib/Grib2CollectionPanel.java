@@ -32,6 +32,7 @@
 
 package ucar.nc2.ui.grib;
 
+import javax.annotation.Nullable;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.featurecollection.FeatureCollectionType;
 import thredds.inventory.CollectionAbstract;
@@ -75,7 +76,7 @@ import java.util.List;
  * @since Aug 15, 2008
  */
 public class Grib2CollectionPanel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionPanel.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2CollectionPanel.class);
 
   private final PreferencesExt prefs;
 
@@ -1123,7 +1124,7 @@ public class Grib2CollectionPanel extends JPanel {
     }
 
     GribTables.Parameter getParameter() {
-      return cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+      return cust.getParameter(gr);
     }
 
     public int getPDS() {
@@ -1220,7 +1221,7 @@ public class Grib2CollectionPanel extends JPanel {
     } */
 
     public String getUnits() {
-      Grib2Tables.Parameter p = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+      GribTables.Parameter p = cust.getParameter(discipline, pds);
       return (p == null) ? "?" : p.getUnit();
     }
 
@@ -1234,6 +1235,7 @@ public class Grib2CollectionPanel extends JPanel {
       return id.getMaster_table_version() + "-" + id.getLocal_table_version();
     }
 
+    @Nullable
     public String getEnsDerived() {
       if (pds.isEnsembleDerived()) {  // a derived ensemble must have a derivedForecastType
         Grib2Pds.PdsEnsembleDerived pdsDerived = (Grib2Pds.PdsEnsembleDerived) pds;
@@ -1243,6 +1245,7 @@ public class Grib2CollectionPanel extends JPanel {
       return null;
     }
 
+    @Nullable
     public String getEnsProb() {
       // each probability interval generates a separate variable
       if (pds.isProbability()) {
@@ -1436,7 +1439,7 @@ public class Grib2CollectionPanel extends JPanel {
     PropertyDescriptor[] properties;
 
     PdsBeanInfo(Grib2Pds pds) {
-      ArrayList<PropertyDescriptor> props = new ArrayList<PropertyDescriptor>(40);
+      ArrayList<PropertyDescriptor> props = new ArrayList<>(40);
 
       Class cl = Grib2RecordBean.class;
       try {

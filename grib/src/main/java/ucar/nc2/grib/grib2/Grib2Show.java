@@ -132,13 +132,13 @@ public class Grib2Show {
     f.format(" Product Template %3d = %s%n", template, cust.getCodeTableValue("4.0", template));
     f.format(" Discipline %3d     = %s%n", discipline, cust.getCodeTableValue("0.0", discipline));
     f.format(" Category %3d       = %s%n", pds.getParameterCategory(), cust.getCategory(discipline, pds.getParameterCategory()));
-    GribTables.Parameter entry = cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber());
+    GribTables.Parameter entry = cust.getParameter(discipline, pds);
     if (entry != null) {
       f.format(" Parameter Name     = %3d %s %n", pds.getParameterNumber(), entry.getName());
       f.format(" Parameter Units    = %s %n", entry.getUnit());
     } else {
       f.format(" Unknown Parameter  = %d-%d-%d %n", discipline, pds.getParameterCategory(), pds.getParameterNumber());
-      cust.getParameter(discipline, pds.getParameterCategory(), pds.getParameterNumber()); // debug
+      cust.getParameter(discipline, pds); // debug
     }
     f.format(" Parameter Table  = %s%n", cust.getParamTablePathUsedFor(discipline, pds.getParameterCategory(), pds.getParameterNumber()));
 
@@ -154,7 +154,7 @@ public class Grib2Show {
   }
 
   public static void showProcessedGridRecord(Grib2Tables cust, Grib2Record gr, Formatter f) {
-    GribTables.Parameter param = cust.getParameter(gr.getDiscipline(), gr.getPDS().getParameterCategory(), gr.getPDS().getParameterNumber());
+    GribTables.Parameter param = cust.getParameter(gr);
     if (param != null) {
       f.format("  Parameter=%s (%s)%n", param.getName(), param.getAbbrev());
     } else {

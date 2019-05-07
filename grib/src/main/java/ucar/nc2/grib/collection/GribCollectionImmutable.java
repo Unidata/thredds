@@ -244,12 +244,12 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
 
   protected abstract String makeVariableId(VariableIndex v);
 
-  public static class Info {
+  static class Info {
     final int version; // the ncx version
     final int center, subcenter, master, local;  // GRIB 1 uses "local" for table version
     final int genProcessType, genProcessId, backProcessId;
 
-    public Info(int version, int center, int subcenter, int master, int local, int genProcessType, int genProcessId, int backProcessId) {
+    Info(int version, int center, int subcenter, int master, int local, int genProcessType, int genProcessId, int backProcessId) {
       this.version = version;
       this.center = center;
       this.subcenter = subcenter;
@@ -260,7 +260,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       this.backProcessId = backProcessId;
     }
 
-    public Info(GribCollectionMutable gc) {
+    Info(GribCollectionMutable gc) {
       this.version = gc.version;
       this.center = gc.center;
       this.subcenter = gc.subcenter;
@@ -800,7 +800,7 @@ public abstract class GribCollectionImmutable implements Closeable, FileCacheabl
       if (isGrib1)
         return ((Grib1Customizer) cust).getParameter(getCenter(), getSubcenter(), getVersion(), getParameter());
       else
-        return ((Grib2Tables) cust).getParameter(getDiscipline(), getCategory(), getParameter());
+        return ((Grib2Tables) cust).getParameter(this);
     }
 
     public GribStatType getStatType() {
