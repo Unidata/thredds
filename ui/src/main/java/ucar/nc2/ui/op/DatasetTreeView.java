@@ -147,7 +147,7 @@ public class DatasetTreeView extends JPanel {
         // start at root, work down through the nested groups, if any
         GroupNode gnode = (GroupNode) model.getRoot();
         pathList.add( gnode);
-        Group parentGroup = gchain.get(0); // always the root group
+        Group parentGroup; // always the root group
         for (int i=1; i < gchain.size(); i++) {
             parentGroup = gchain.get(i);
             gnode = gnode.findNestedGroup( parentGroup);

@@ -8,5 +8,5 @@ package ucar.nc2.ui.geoloc;
  * @author John Caron
  */
 public interface PickEventListener extends java.util.EventListener {
-    public void actionPerformed( PickEvent e);
+    void actionPerformed(PickEvent e);
 }

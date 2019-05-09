@@ -198,7 +198,7 @@ public class Grib2TableViewer2 extends JPanel {
     int conflict = 0;
     f.format("Table 1 : %n");
     for (Object t : t1.getParameters()) {
-      GribTables.Parameter p1 = (Grib2Tables.Parameter) t;
+      GribTables.Parameter p1 = (GribTables.Parameter) t;
       GribTables.Parameter  p2 = t2.getParameterRaw(p1.getDiscipline(), p1.getCategory(), p1.getNumber());
       if (p1.getName() == null || p1.getUnit() == null) {
         f.format(" Missing name or unit in table 1 param=%s%n", p1);

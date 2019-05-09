@@ -14,7 +14,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.event.*;
 import java.beans.*;
 
 /**
@@ -22,7 +21,7 @@ import java.beans.*;
  */
 
 public class RangeSelector extends JPanel {
-  static private final int SLIDER_RESOLUTION = 1000;
+  private static final int SLIDER_RESOLUTION = 1000;
 
   private String tit, helpMessage;
 
@@ -406,7 +405,7 @@ public class RangeSelector extends JPanel {
 
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
 
     JFrame frame = new JFrame("Test Range Selector");
     frame.addWindowListener(new WindowAdapter() {

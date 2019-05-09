@@ -42,7 +42,7 @@ public class StationRadialViewer extends JPanel {
   private StationRegionDateChooser chooser;
   private BeanTable stnTable;
   private RadialDatasetTable rdTable;
-  private JSplitPane splitH = null, splitV = null;
+  private JSplitPane splitH, splitV;
   private IndependentDialog infoWindow;
 
   private boolean eventsOK = true;

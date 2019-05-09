@@ -262,8 +262,7 @@ public class GridRenderer {
   }
 
   /**
-   * @param pp
-   * @return x index for this point
+   * @return x index for given point
    */
   public int findSliceFromPoint(ProjectionPoint pp) {
     if ((null == drawProjection) || (null == stridedGrid))
@@ -278,7 +277,7 @@ public class GridRenderer {
     // find the grid index
     GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     CoordinateAxis xaxis = geocs.getXHorizAxis();
-    if (xaxis == null || !(xaxis instanceof CoordinateAxis1D))
+    if (!(xaxis instanceof CoordinateAxis1D))
       return -1;
     int[] index = geocs.findXYindexFromCoord(pp.getX(), pp.getY(), null);
     return index[0];
@@ -345,11 +344,11 @@ public class GridRenderer {
     sbuff.setLength(0);
     sbuff.append(Format.d(loc.getX(), 3));
     CoordinateAxis yaxis = geocs.getYHorizAxis();
-    sbuff.append(" " + yaxis.getUnitsString());
+    sbuff.append(" ").append(yaxis.getUnitsString());
     sbuff.append(" ");
     sbuff.append(Format.d(loc.getY(), 3));
     CoordinateAxis1D zaxis = geocs.getVerticalAxis();
-    sbuff.append(" " + zaxis.getUnitsString());
+    sbuff.append(" ").append(zaxis.getUnitsString());
 
     return sbuff.toString();
   }
@@ -397,12 +396,12 @@ public class GridRenderer {
 
     StringBuilder sbuff = new StringBuilder();
     sbuff.append(Format.d(value, 6));
-    sbuff.append(" " + stridedGrid.getUnitsString());
+    sbuff.append(" ").append(stridedGrid.getUnitsString());
 
     GridCoordSystem geocs = stridedGrid.getCoordinateSystem();
     if (!(geocs.getXHorizAxis() instanceof CoordinateAxis1D) || !(geocs.getXHorizAxis() instanceof CoordinateAxis1D)) {
       if (Debug.isSet("pick/showGridIndexes"))
-        sbuff.append("@ (" + wantx + "," + wanty + ")");
+        sbuff.append("@ (").append(wantx).append(",").append(wanty).append(")");
       return sbuff.toString();
     }
 
@@ -421,37 +420,37 @@ public class GridRenderer {
 
       sbuff.append(lpt.toString());
       if (Debug.isSet("pick/showDataProjectionCoords")) {
-        sbuff.append("(" + Format.d(xaxis.getCoordValue(wantx), 3));
-        sbuff.append(" " + Format.d(yaxis.getCoordValue(wanty), 3));
-        sbuff.append(" " + xaxis.getUnitsString() + ")");
+        sbuff.append("(").append(Format.d(xaxis.getCoordValue(wantx), 3));
+        sbuff.append(" ").append(Format.d(yaxis.getCoordValue(wanty), 3));
+        sbuff.append(" ").append(xaxis.getUnitsString()).append(")");
       }
       if (Debug.isSet("pick/showDisplayProjectionCoords")) {
         ProjectionPoint pt = drawProjection.latLonToProj(lpt);
-        sbuff.append("(" + Format.d(pt.getX(), 3));
-        sbuff.append(" " + Format.d(pt.getY(), 3) + ")");
+        sbuff.append("(").append(Format.d(pt.getX(), 3));
+        sbuff.append(" ").append(Format.d(pt.getY(), 3)).append(")");
       }
       if (Debug.isSet("pick/showGridIndexes")) {
-        sbuff.append("(" + wantx + "," + wanty + ")");
+        sbuff.append("(").append(wantx).append(",").append(wanty).append(")");
       }
     } else if (wantx >= 0) {
       if (dataProjection.isLatLon())
         sbuff.append(LatLonPointImpl.latToString(xaxis.getCoordValue(wantx), 3));
       else {
-        sbuff.append(" " + Format.d(xaxis.getCoordValue(wantx), 3));
-        sbuff.append(" " + xaxis.getUnitsString());
+        sbuff.append(" ").append(Format.d(xaxis.getCoordValue(wantx), 3));
+        sbuff.append(" ").append(xaxis.getUnitsString());
       }
     } else if (wanty >= 0) {
       if (dataProjection.isLatLon())
         sbuff.append(LatLonPointImpl.latToString(yaxis.getCoordValue(wanty), 3));
       else {
-        sbuff.append(" " + Format.d(yaxis.getCoordValue(wanty), 3));
-        sbuff.append(" " + yaxis.getUnitsString());
+        sbuff.append(" ").append(Format.d(yaxis.getCoordValue(wanty), 3));
+        sbuff.append(" ").append(yaxis.getUnitsString());
       }
     }
 
     if (wantz >= 0) {
-      sbuff.append(" " + Format.d(zaxis.getCoordValue(wantz), 3));
-      sbuff.append(" " + zaxis.getUnitsString());
+      sbuff.append(" ").append(Format.d(zaxis.getCoordValue(wantz), 3));
+      sbuff.append(" ").append(zaxis.getUnitsString());
     }
 
     return sbuff.toString();
@@ -643,7 +642,7 @@ public class GridRenderer {
       int nlevels = cs.getNumColors();
       ArrayList levels = new ArrayList(nlevels);
       for (int i = 1; i < nlevels - 1; i++)
-        levels.add(new Double(cs.getEdge(i)));
+        levels.add(cs.getEdge(i));
 
       long startTime = System.currentTimeMillis();
       ContourFeatureRenderer contourRendererV;
@@ -937,7 +936,7 @@ onePixel = 0;  */
     for (int y = 0; y < ny; y++) {
       double ybeg = yaxis1D.getCoordEdge(y);
       double yend = yaxis1D.getCoordEdge(y + 1);
-      int thisColor = 0, lastColor = 0;
+      int thisColor, lastColor = 0;
       int run = 0;
       int xbeg = 0;
 
@@ -1168,12 +1167,12 @@ onePixel = 0;  */
     int nlevels = cs.getNumColors();
     ArrayList levels = new ArrayList(nlevels);
     for (int i = 1; i < nlevels - 1; i++)
-      levels.add(new Double(cs.getEdge(i)));
+      levels.add(cs.getEdge(i));
 
     ContourFeatureRenderer contourRenderer;
     long startTime = System.currentTimeMillis();
     try {
-      ContourGrid conGrid = new ContourGrid((Array) hslice, levels, xedges, yedges, stridedGrid);
+      ContourGrid conGrid = new ContourGrid(hslice, levels, xedges, yedges, stridedGrid);
       contourRenderer = new ContourFeatureRenderer(conGrid, dataProjection);
     } catch (Exception e) {
       System.out.println("make Contours exception = " + e);

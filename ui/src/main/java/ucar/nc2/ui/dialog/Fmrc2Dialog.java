@@ -43,7 +43,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 
 /**
@@ -210,18 +209,14 @@ public class Fmrc2Dialog extends JDialog {
 
         //---- okButton ----
         okButton.setText("OK");
-        okButton.addActionListener(e -> {
-            okButtonActionPerformed(e);
-        });
+        okButton.addActionListener(this::okButtonActionPerformed);
         buttonBar.add(okButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
           GridBagConstraints.CENTER, GridBagConstraints.BOTH,
           new Insets(0, 0, 0, 5), 0, 0));
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(e -> {
-            cancelButtonActionPerformed(e);
-        });
+        cancelButton.addActionListener(this::cancelButtonActionPerformed);
         buttonBar.add(cancelButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
           GridBagConstraints.CENTER, GridBagConstraints.BOTH,
           new Insets(0, 0, 0, 0), 0, 0));
@@ -261,17 +256,20 @@ public class Fmrc2Dialog extends JDialog {
     public void actionPerformed(ActionEvent e) {
       DefaultComboBoxModel m = new DefaultComboBoxModel();
       String type = (String) comboBox1.getSelectedItem();
-      if (type.equals("Run")) {
-        java.util.List<CalendarDate> dates = null;
-        try {
-          dates = fmrc.getRunDates();
-        } catch (IOException e1) {
-          return;
-        }
-        for (CalendarDate d : dates)
-          m.addElement(d.toString());
+      switch (type) {
+        case "Run": {
+          java.util.List<CalendarDate> dates = null;
+          try {
+            dates = fmrc.getRunDates();
+          } catch (IOException e1) {
+            return;
+          }
+          for (CalendarDate d : dates)
+            m.addElement(d.toString());
 
-      } else if (type.equals("ConstantForecast")) {
+          break;
+        }
+        case "ConstantForecast": {
           java.util.List<CalendarDate> dates = null;
           try {
             dates = fmrc.getForecastDates();
@@ -281,8 +279,10 @@ public class Fmrc2Dialog extends JDialog {
           for (CalendarDate d : dates)
             m.addElement(d.toString());
 
-      } else if (type.equals("ConstantOffset")) {
-          double [] offs  = null;
+          break;
+        }
+        case "ConstantOffset":
+          double[] offs = null;
           try {
             offs = fmrc.getForecastOffsets();
           } catch (IOException e1) {
@@ -291,8 +291,10 @@ public class Fmrc2Dialog extends JDialog {
           for (double d : offs)
             m.addElement(d);
 
-      } else {
-        m.addElement("N/A");
+          break;
+        default:
+          m.addElement("N/A");
+          break;
       }
 
       comboBox2.setModel(m);

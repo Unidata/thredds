@@ -52,7 +52,7 @@ public class SuperComboBox extends JPanel {
   private JWindow pulldown; // pulldown menu
   //private Popup popup = null;
   private JTableSorted table; // inside the pulldown
-  private IndependentWindow loopControl = null;  // loop control
+  private IndependentWindow loopControl;  // loop control
 
   private ActionSourceListener actionSource;
 
@@ -106,7 +106,7 @@ public class SuperComboBox extends JPanel {
       setCollection( iter);
 
       // the pulldown menu list
-    JFrame parentComponent = (parent != null) && (parent instanceof JFrame) ? (JFrame) parent : null;
+    JFrame parentComponent = (parent instanceof JFrame) ? (JFrame) parent : null;
     pulldown = new JWindow(parentComponent);
     pulldown.getContentPane().add( table);
     pulldown.pack();
@@ -607,7 +607,7 @@ public class SuperComboBox extends JPanel {
       loopAct = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
           Boolean state = (Boolean) getValue(BAMutil.STATE);
-          continuous = state.booleanValue();
+          continuous = state;
         }
       };
       BAMutil.setActionProperties( loopAct, "MovieLoop", "continuous loop", true, 'L', 0);
@@ -630,7 +630,7 @@ public class SuperComboBox extends JPanel {
 
     private void makeMore() {
       loopButt = BAMutil.addActionToContainer( loopPanel, loopAct);
-      loopAct.putValue(BAMutil.STATE, new Boolean(continuous));
+      loopAct.putValue(BAMutil.STATE, continuous);
       helpButt = BAMutil.addActionToContainer( loopPanel, helpAct);
       loopPanel.add( ifPanel);
 
@@ -733,7 +733,7 @@ public class SuperComboBox extends JPanel {
   }  // inner class LoopControl
 
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
 
     JFrame frame = new JFrame("Test Combo Box");
     frame.addWindowListener(new WindowAdapter() {
@@ -745,8 +745,9 @@ public class SuperComboBox extends JPanel {
       a.add("hifdsjflkjslfk "+i);
     SuperComboBox scb = new SuperComboBox(frame, "myTestdjdslkfjslkj", true, a.iterator());
     JComboBox cb = new JComboBox();
-    for (int i=0; i<a.size(); i++)
-      cb.addItem(a.get(i));
+    for (Object o : a) {
+      cb.addItem(o);
+    }
 
     JPanel main = new JPanel(new FlowLayout());
     frame.getContentPane().add(main);

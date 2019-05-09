@@ -101,10 +101,10 @@ public class ToolsUI extends JPanel {
   private final PreferencesExt mainPrefs;
 
   // Op panels and friends
-  private OpPanel aggPanel;
-  private OpPanel bufrPanel;
-  private OpPanel bufrTableBPanel;
-  private OpPanel bufrTableDPanel;
+  private AggPanel aggPanel;
+  private BufrPanel bufrPanel;
+  private BufrTableBPanel bufrTableBPanel;
+  private BufrTableDPanel bufrTableDPanel;
   private ReportOpPanel bufrReportPanel;
   private BufrCdmIndexOpPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
@@ -132,13 +132,13 @@ public class ToolsUI extends JPanel {
   private ReportOpPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2CollectionOpPanel grib2CollectionPanel;
-  private OpPanel grib2TablePanel;
-  private OpPanel grib2ReportPanel;
+  private Grib2TablePanel grib2TablePanel;
+  private ReportOpPanel grib2ReportPanel;
   private Grib1DataOpPanel grib1DataPanel;
   private Grib2DataOpPanel grib2DataPanel;
-  private OpPanel hdf5ObjectPanel;
-  private OpPanel hdf5DataPanel;
-  private OpPanel hdf4Panel;
+  private Hdf5ObjectPanel hdf5ObjectPanel;
+  private Hdf5DataPanel hdf5DataPanel;
+  private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
   private NcStreamOpPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
@@ -1435,7 +1435,7 @@ public class ToolsUI extends JPanel {
 
       // fixes the case on macOS where users use the system menu option to quit rather than
       // closing a window using the 'x' button.
-      Runtime.getRuntime().addShutdownHook(new Thread(() -> doSavePrefsAndUI()));
+      Runtime.getRuntime().addShutdownHook(new Thread(ToolsUI::doSavePrefsAndUI));
     } else {
       // Not macOS, so try applying Nimbus L&F, if available.
       try {
@@ -1646,9 +1646,7 @@ public class ToolsUI extends JPanel {
     prepareGui();
 
     // Display the splash screen so there's something to look at while we do some more init.
-    SwingUtilities.invokeLater(() -> {
-      ToolsSplashScreen.getSharedInstance().setVisible(true);
-    });
+    SwingUtilities.invokeLater(() -> ToolsSplashScreen.getSharedInstance().setVisible(true));
 
     // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
     Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));

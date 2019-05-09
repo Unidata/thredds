@@ -73,14 +73,10 @@ public class TextGetPutPane extends TextHistoryPane {
 
       JButton getButton = new JButton("Get");
       getButton.setToolTipText("GET URL contents");
-      getButton.addActionListener(e -> {
-          setURL( (String) cb.getSelectedItem());
-      });
+      getButton.addActionListener(e -> setURL( (String) cb.getSelectedItem()));
       JButton validButton = new JButton("Validate");
       validButton.setToolTipText("Validate catalog");
-      validButton.addActionListener(e -> {
-          validate( (String) cb.getSelectedItem());
-      });
+      validButton.addActionListener(e -> validate( (String) cb.getSelectedItem()));
       JButton putButton = new JButton("Put");
       putButton.setToolTipText("PUT URL contents");
       putButton.addActionListener(e -> {
@@ -246,8 +242,9 @@ public class TextGetPutPane extends TextHistoryPane {
     void setList(ArrayList list) {
       if (list == null) return;
       cb.removeAllItems();
-      for (int i=0; i< list.size(); i++)
-        cb.addItem( list.get(i));
+      for (Object o : list) {
+        cb.addItem(o);
+      }
       cb.revalidate();
     }
 

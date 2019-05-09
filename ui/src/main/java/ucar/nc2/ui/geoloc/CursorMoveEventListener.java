@@ -8,5 +8,5 @@ package ucar.nc2.ui.geoloc;
  * @author John Caron
  */
 public interface CursorMoveEventListener extends java.util.EventListener {
-    public void actionPerformed( CursorMoveEvent e);
+    void actionPerformed(CursorMoveEvent e);
 }

@@ -23,8 +23,8 @@ public interface RowSorter {
   /** May make a copy of the Array, or return the original, but must not copy the
    *  rows themselves.
    */
-  public java.util.ArrayList sort(int sortCol, boolean reverse, java.util.ArrayList docs);
+  java.util.ArrayList sort(int sortCol, boolean reverse, java.util.ArrayList docs);
 
-  public boolean isBreak(TableRow last, TableRow current);
+  boolean isBreak(TableRow last, TableRow current);
 
 }

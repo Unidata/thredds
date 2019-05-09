@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ui.grid;
 
+import javax.annotation.Nullable;
 import ucar.nc2.ui.gis.GisFeatureRenderer;
 import ucar.nc2.ui.widget.FontUtil;
 import ucar.unidata.geoloc.*;
@@ -29,7 +30,7 @@ import java.awt.geom.Rectangle2D;
 public class ContourFeatureRenderer extends GisFeatureRenderer {
 
   private ProjectionImpl dataProjection;
-  private ArrayList contourList = new ArrayList();  // list of ContourFeature-s
+  private List<ContourFeature> contourList;  // list of ContourFeatures
   private boolean ShowLabels;
 
   /**
@@ -50,12 +51,12 @@ public class ContourFeatureRenderer extends GisFeatureRenderer {
     ShowLabels = showlabels;
   }
 
-
+  @Nullable
   public LatLonRect getPreferredArea() {
     return null;
   }
 
-  protected java.util.List getFeatures() {
+  protected List getFeatures() {
     // collection of ContourFeature-s
     return contourList;
   }

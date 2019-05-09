@@ -13,8 +13,8 @@ import java.awt.event.ActionEvent;
  * @author cwardgar
  */
 public abstract class TableDemo {
-    private final static int numRows = 5;
-    private final static int numCols = 5;
+    private static final int numRows = 5;
+    private static final int numCols = 5;
 
     public static void main(String[] args) {
         System.out.println("Testing Travis!");

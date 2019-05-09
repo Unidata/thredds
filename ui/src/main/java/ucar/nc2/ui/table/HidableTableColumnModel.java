@@ -60,10 +60,10 @@ public class HidableTableColumnModel extends DefaultTableColumnModel implements 
             int noInvisibleColumns = allTableColumns.size();
             int visibleIndex = 0;
 
-            for (int invisibleIndex = 0; invisibleIndex < noInvisibleColumns; ++invisibleIndex) {
+            for (TableColumn allTableColumn : allTableColumns) {
                 TableColumn visibleColumn =
-                        (visibleIndex < noVisibleColumns ? tableColumns.get(visibleIndex) : null);
-                TableColumn testColumn = allTableColumns.get(invisibleIndex);
+                    (visibleIndex < noVisibleColumns ? tableColumns.get(visibleIndex) : null);
+                TableColumn testColumn = allTableColumn;
 
                 if (testColumn == column) {
                     if (visibleColumn != column) {

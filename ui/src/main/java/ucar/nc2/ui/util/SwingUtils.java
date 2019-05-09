@@ -57,13 +57,13 @@ public final class SwingUtils {
     */
    public static <T extends JComponent> List<T> getDescendantsOfType(
          Class<T> clazz, Container container, boolean nested) {
-      List<T> tList = new ArrayList<T>();
+      List<T> tList = new ArrayList<>();
       for (Component component : container.getComponents()) {
          if (clazz.isAssignableFrom(component.getClass())) {
             tList.add(clazz.cast(component));
          }
          if (nested || !clazz.isAssignableFrom(component.getClass())) {
-            tList.addAll(SwingUtils.<T>getDescendantsOfType(clazz,
+            tList.addAll(SwingUtils.getDescendantsOfType(clazz,
                   (Container) component, nested));
          }
       }
@@ -151,13 +151,13 @@ public final class SwingUtils {
     */
    public static <T extends JComponent> List<T> getDescendantsOfClass(
          Class<T> clazz, Container container, boolean nested) {
-      List<T> tList = new ArrayList<T>();
+      List<T> tList = new ArrayList<>();
       for (Component component : container.getComponents()) {
          if (clazz.equals(component.getClass())) {
             tList.add(clazz.cast(component));
          }
          if (nested || !clazz.equals(component.getClass())) {
-            tList.addAll(SwingUtils.<T>getDescendantsOfClass(clazz,
+            tList.addAll(SwingUtils.getDescendantsOfClass(clazz,
                   (Container) component, nested));
          }
       }
@@ -224,7 +224,7 @@ public final class SwingUtils {
          List<T> list, String property, Object value)
          throws IllegalArgumentException {
       T retVal = null;
-      Method method = null;
+      Method method;
       try {
          method = clazz.getMethod("get" + property);
       } catch (NoSuchMethodException ex) {
@@ -246,11 +246,7 @@ public final class SwingUtils {
          throw new IllegalArgumentException(
                "Error accessing property " + property +
                " in class " + clazz.getName());
-      } catch (IllegalAccessException ex) {
-         throw new IllegalArgumentException(
-               "Property " + property +
-               " cannot be accessed in class " + clazz.getName());
-      } catch (SecurityException ex) {
+      } catch (IllegalAccessException | SecurityException ex) {
          throw new IllegalArgumentException(
                "Property " + property +
                " cannot be accessed in class " + clazz.getName());
@@ -287,12 +283,12 @@ public final class SwingUtils {
    public static Map<JComponent, List<JComponent>> getComponentMap(
          JComponent container, boolean nested) {
       HashMap<JComponent, List<JComponent>> retVal =
-            new HashMap<JComponent, List<JComponent>>();
+          new HashMap<>();
       for (JComponent component : getDescendantsOfType(JComponent.class,
             container, false)) {
          if (!retVal.containsKey(container)) {
             retVal.put(container,
-                  new ArrayList<JComponent>());
+                new ArrayList<>());
          }
          retVal.get(container).add(component);
          if (nested) {
@@ -365,7 +361,7 @@ public final class SwingUtils {
    /**
     * Exclude methods that return values that are meaningless to the user
     */
-   static Set<String> setExclude = new HashSet<String>();
+   static Set<String> setExclude = new HashSet<>();
    static {
       setExclude.add("getFocusCycleRootAncestor");
       setExclude.add("getAccessibleContext");
@@ -385,10 +381,10 @@ public final class SwingUtils {
     * @return the class and value of the properties
     */
    public static Map<Object, Object> getProperties(JComponent component) {
-      Map<Object, Object> retVal = new HashMap<Object, Object>();
+      Map<Object, Object> retVal = new HashMap<>();
       Class<?> clazz = component.getClass();
       Method[] methods = clazz.getMethods();
-      Object value = null;
+      Object value;
       for (Method method : methods) {
          if (method.getName().matches("^(is|get).*") &&
                method.getParameterTypes().length == 0) {
@@ -404,9 +400,7 @@ public final class SwingUtils {
                   }
                }
             // ignore exceptions that arise if the property could not be accessed
-            } catch (IllegalAccessException ex) {
-            } catch (IllegalArgumentException ex) {
-            } catch (InvocationTargetException ex) {
+            } catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException ex) {
             }
          }
       }

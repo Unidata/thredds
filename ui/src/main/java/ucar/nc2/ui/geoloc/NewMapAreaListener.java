@@ -8,5 +8,5 @@ package ucar.nc2.ui.geoloc;
  * @author John Caron
  */
 public interface NewMapAreaListener extends java.util.EventListener {
-    public void actionPerformed( NewMapAreaEvent e);
+    void actionPerformed(NewMapAreaEvent e);
 }

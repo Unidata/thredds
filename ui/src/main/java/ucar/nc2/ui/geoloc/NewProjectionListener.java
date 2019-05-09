@@ -7,5 +7,5 @@ package ucar.nc2.ui.geoloc;
  * @author John Caron
  */
 public interface NewProjectionListener extends java.util.EventListener {
-    public void actionPerformed( NewProjectionEvent e);
+    void actionPerformed(NewProjectionEvent e);
 }

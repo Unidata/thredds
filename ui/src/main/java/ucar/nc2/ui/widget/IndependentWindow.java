@@ -27,7 +27,7 @@ import javax.swing.*;
  * @author John Caron
  */
 public class IndependentWindow extends JFrame {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IndependentWindow.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(IndependentWindow.class);
 
 
   /** constructor

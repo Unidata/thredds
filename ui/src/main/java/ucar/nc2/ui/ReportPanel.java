@@ -1,7 +1,6 @@
 package ucar.nc2.ui;
 
 import thredds.inventory.*;
-import thredds.inventory.MCollection;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 

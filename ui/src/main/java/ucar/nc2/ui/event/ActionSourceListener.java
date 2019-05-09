@@ -17,7 +17,7 @@ import ucar.nc2.util.ListenerManager;
  */
 
 public abstract class ActionSourceListener implements ActionValueListener {
-  static public final String SELECTED = "selected";
+  public static final String SELECTED = "selected";
 
   private ListenerManager lm;
   private String eventType;

@@ -77,12 +77,7 @@ public abstract class TableRowAbstract implements TableRow {
 
   protected int compareDouble(TableRow other,  int col, double d1, double d2) {
     int ret;
-    if (d1 < d2)
-      ret = -1;
-    else if (d1 == d2)
-      ret = 0;
-    else
-      ret = 1;
+    ret = Double.compare(d1, d2);
 
     // break ties
     if (ret == 0)
@@ -124,7 +119,7 @@ public abstract class TableRowAbstract implements TableRow {
 
   public String toString() { return ""; }
 
-  static public class Sorter implements Comparator, Serializable {
+  public static class Sorter implements Comparator, Serializable {
     private int col;
     private boolean reverse;
 
@@ -138,8 +133,6 @@ public abstract class TableRowAbstract implements TableRow {
       TableRow row2 = (TableRow) o2;
       return reverse ? row2.compare(row1, col) : row1.compare(row2, col);
     }
-
-    public boolean equals(Object obj) { return this == obj; }
   }
 
 }

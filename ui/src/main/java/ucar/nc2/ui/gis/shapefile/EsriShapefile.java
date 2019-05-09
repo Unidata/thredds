@@ -33,8 +33,8 @@ public class EsriShapefile {
   // these are only shape types handled by this package, so far
   enum Type {none, point, polyline, polygon, multipoint}
 
-  private final static int SHAPEFILE_CODE = 9994; // shapefile magic number
-  private final static double defaultCoarseness = 0.0;
+  private static final int SHAPEFILE_CODE = 9994; // shapefile magic number
+  private static final double defaultCoarseness = 0.0;
 
   private BeLeDataInputStream bdis; // the shapefile data stream
   private int fileBytes;         // bytes in file, according to header
@@ -55,7 +55,7 @@ public class EsriShapefile {
     * faster than 1.0 at the cost of barely discernible ugliness, but
     * for best quality (without zooms), set to 1.0.  If you still
     * want quality at 10:1 zooms, set to 1/10, etc.  */
-  private double coarseness = defaultCoarseness;
+  private double coarseness;
 
   /**
    * Read an ESRI shapefile and extract all features into

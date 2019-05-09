@@ -42,7 +42,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author John Caron
@@ -162,15 +161,11 @@ public class Grib1TableCompareDialog extends JDialog {
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(e -> {
-            cancelButtonActionPerformed(e);
-        });
+        cancelButton.addActionListener(this::cancelButtonActionPerformed);
 
         //---- okButton ----
         okButton.setText("OK");
-        okButton.addActionListener(e -> {
-            okButtonActionPerformed(e);
-        });
+        okButton.addActionListener(this::okButtonActionPerformed);
 
         //---- table1 ----
         table1.setEditable(false);

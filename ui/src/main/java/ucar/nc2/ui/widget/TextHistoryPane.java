@@ -29,7 +29,7 @@ import java.util.StringTokenizer;
  * @author John Caron
  */
 public class TextHistoryPane extends JPanel {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TextHistoryPane.class);
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(TextHistoryPane.class);
 
   protected JTextArea ta;
   private FontUtil.StandardFont fontu;

@@ -62,9 +62,9 @@ import java.util.EventObject;
  * @author Scott Violet
  */
 public class JTreeTable extends JTable {
-    static private Icon openIcon = BAMutil.getIcon( "treeOpen", true);
-    static private Icon closedIcon = BAMutil.getIcon( "treeClosed", true);
-    static private Icon leafIcon = BAMutil.getIcon( "treeLeaf", true);
+    private static Icon openIcon = BAMutil.getIcon( "treeOpen", true);
+    private static Icon closedIcon = BAMutil.getIcon( "treeClosed", true);
+    private static Icon leafIcon = BAMutil.getIcon( "treeLeaf", true);
 
     protected TreeTableCellRenderer tree;
     protected TreeTableModelAdapter tableModel;
@@ -132,8 +132,9 @@ public class JTreeTable extends JTable {
       if (rowno >= 0) setRowSelectionInterval(rowno, rowno);
       if (debugSelection) {
         int [] rows = getSelectedRows();
-        for (int i=0; i< rows.length; i++)
-          System.out.println("  rowSelection is = "+ rows[i]);
+        for (int row : rows) {
+          System.out.println("  rowSelection is = " + row);
+        }
       }
       return rowno;
     }
@@ -218,9 +219,9 @@ public class JTreeTable extends JTable {
       super.tableChanged( null);
     }
 
-    /**
-     * Returns the tree that is being shared between the model.
-     *
+    /*
+      Returns the tree that is being shared between the model.
+
     public JTree getTree() {
         return tree;
     } */

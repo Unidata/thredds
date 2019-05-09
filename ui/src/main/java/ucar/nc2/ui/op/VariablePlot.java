@@ -139,7 +139,7 @@ public class VariablePlot extends JPanel {
   public void setVariable(Variable v) throws IOException {
     log.info("variable " + v.getShortName());
 
-    AbstractIntervalXYDataset dataset = null;
+    AbstractIntervalXYDataset dataset;
 
     Dimension dim = v.getDimension(0);
     String dimName = dim.getShortName();
@@ -222,7 +222,7 @@ public class VariablePlot extends JPanel {
 
     NetcdfDataset fds = new NetcdfDataset(file);
 
-    CoordinateAxis1DTime tm = null;
+    CoordinateAxis1DTime tm;
     List<CalendarDate> dates = null;
     Array varXarray = null;
     

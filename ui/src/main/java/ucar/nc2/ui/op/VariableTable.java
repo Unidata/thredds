@@ -98,7 +98,7 @@ public class VariableTable extends JPanel {
  *
  */
 	public void setVariableList(List<Variable> vl) {
-		int length = 1;
+		int length;
 		int i = 0;
 		
 		// find the number of columns, get shape for each variable after the first DIMENSON

@@ -11,10 +11,8 @@ import ucar.nc2.grib.grib1.tables.Grib1ParamTableReader;
 import ucar.nc2.grib.grib1.tables.Grib1ParamTables;
 import ucar.nc2.ui.dialog.Grib1TableCompareDialog;
 import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.IndependentWindow;
 import ucar.nc2.ui.dialog.Grib1TableDialog;
 import ucar.nc2.ui.widget.PopupMenu;
-import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.nc2.units.SimpleUnit;
 import ucar.nc2.util.IO;
 import ucar.nc2.wmo.CommonCodeTable;
@@ -25,8 +23,6 @@ import ucar.util.prefs.ui.BeanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -203,8 +199,7 @@ public class Grib1TablesViewer extends JPanel {
       map = table.getParameters();
     }
 
-    ArrayList<Integer> params = new ArrayList<>();
-    params.addAll(map.keySet());
+    ArrayList<Integer> params = new ArrayList<>(map.keySet());
     Collections.sort(params);
     java.util.List<EntryBean> beans = new ArrayList<>(params.size());
     for (Integer key : params) {

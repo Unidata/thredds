@@ -47,8 +47,8 @@ public class RadialDatasetTable extends JPanel {
   private PreferencesExt prefs;
   private RadialDatasetSweep radialDataset;
 
-  private BeanTable varTable, sweepTable = null;
-  private JSplitPane split = null;
+  private BeanTable varTable, sweepTable;
+  private JSplitPane split;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 

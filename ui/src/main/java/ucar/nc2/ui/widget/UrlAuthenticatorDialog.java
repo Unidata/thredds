@@ -8,7 +8,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import ucar.httpservices.HTTPAuthUtil;
 import ucar.util.prefs.ui.Field;
 import ucar.util.prefs.ui.PrefPanel;
 
@@ -17,8 +16,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * This can be used both for java.net authentication:
@@ -113,7 +110,6 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     return new PasswordAuthentication(pwa.getUserName(), pwa.getPassword().toCharArray());
   }
 
-
   // http client calls this:
  public Credentials getCredentials(AuthScope scope)
  {
@@ -127,10 +123,11 @@ public class UrlAuthenticatorDialog extends Authenticator implements Credentials
     if (pwa == null) throw new IllegalStateException();
     if (debug) {
       System.out.println("user= ("+pwa.getUserName()+")");
-      System.out.println("password= ("+new String(pwa.getPassword())+")");
+      System.out.println("password= ("+ pwa.getPassword() +")");
     }
     // Is this really necessary?
-    UsernamePasswordCredentials upc = new UsernamePasswordCredentials(pwa.getUserName(), new String(pwa.getPassword()));
+    UsernamePasswordCredentials upc = new UsernamePasswordCredentials(pwa.getUserName(),
+        pwa.getPassword());
     return upc;
   }
 }

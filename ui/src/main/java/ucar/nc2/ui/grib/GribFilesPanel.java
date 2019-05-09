@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.grib;
 
+import javax.annotation.Nullable;
 import thredds.inventory.CollectionAbstract;
 import thredds.inventory.MCollection;
 import thredds.inventory.MFile;
@@ -38,6 +39,7 @@ import java.util.List;
  * @since 4/4/11
  */
 public class GribFilesPanel extends JPanel {
+
   private PreferencesExt prefs;
 
   private BeanTable grib1Table, grib2Table, collectionTable;
@@ -52,7 +54,8 @@ public class GribFilesPanel extends JPanel {
     PopupMenu varPopup;
 
     ////////////////
-    collectionTable = new BeanTable(CollectionBean.class, (PreferencesExt) prefs.node("CollectionBean"), true);
+    collectionTable = new BeanTable(CollectionBean.class,
+        (PreferencesExt) prefs.node("CollectionBean"), true);
     /* collectionTable.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
         CollectionBean pb = (CollectionBean) collectionTable.getSelectedBean();
@@ -93,7 +96,9 @@ public class GribFilesPanel extends JPanel {
     varPopup.addAction("Open in Grib1-Collection", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib1Bean pb = (Grib1Bean) grib1Table.getSelectedBean();
-        if (pb == null) return;
+        if (pb == null) {
+          return;
+        }
         GribFilesPanel.this.firePropertyChange("openGrib1Collection", null, pb.m.getPath());
       }
     });
@@ -114,10 +119,12 @@ public class GribFilesPanel extends JPanel {
       }
     });
 
-      varPopup.addAction("Open in Grib2collecion", new AbstractAction() {
+    varPopup.addAction("Open in Grib2collecion", new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Grib2Bean pb = (Grib2Bean) grib2Table.getSelectedBean();
-        if (pb == null) return;
+        if (pb == null) {
+          return;
+        }
         GribFilesPanel.this.firePropertyChange("openGrib2c", null, pb.m.getPath());
       }
     });
@@ -125,8 +132,10 @@ public class GribFilesPanel extends JPanel {
     /////////////////////////////////////////
     // the info windows
     infoPopup = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoPopup);
-    infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"),
+        infoPopup);
+    infoWindow.setBounds(
+        (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     setLayout(new BorderLayout());
 
@@ -145,7 +154,9 @@ public class GribFilesPanel extends JPanel {
     grib2Table.saveState(false);
     collectionTable.saveState(false);
     prefs.putBeanObject("InfoWindowBounds", infoWindow.getBounds());
-    if (split2 != null) prefs.putInt("splitPos2", split2.getDividerLocation());
+    if (split2 != null) {
+      prefs.putInt("splitPos2", split2.getDividerLocation());
+    }
   }
 
   public void showCollection(Formatter f) {
@@ -164,7 +175,7 @@ public class GribFilesPanel extends JPanel {
 
   ///////////////////////////////////////////////
   private static final KMPMatch matcher = new KMPMatch(new byte[]
-          {'G', 'R', 'I', 'B'});
+      {'G', 'R', 'I', 'B'});
 
   private List<CollectionBean> collections = new ArrayList<>();
 
@@ -178,10 +189,13 @@ public class GribFilesPanel extends JPanel {
     for (CollectionBean bean : beans) {
       for (MFile mfile : bean.fileList) {
         String path = mfile.getPath();
-        if (path.endsWith(".gbx8") || path.endsWith(".gbx9")  || path.endsWith(".ncx") )  continue;
+        if (path.endsWith(".gbx8") || path.endsWith(".gbx9") || path.endsWith(".ncx")) {
+          continue;
+        }
         Object gbean = getGribBean(mfile);
-        if (gbean != null)
-          files.add( gbean);
+        if (gbean != null) {
+          files.add(gbean);
+        }
       }
     }
     grib1Table.setBeans(files);
@@ -189,20 +203,21 @@ public class GribFilesPanel extends JPanel {
 
   private Object getGribBean(MFile ff) {
     String path = ff.getPath();
-    try (RandomAccessFile raf= new ucar.unidata.io.RandomAccessFile(path, "r")) {
+    try (RandomAccessFile raf = new ucar.unidata.io.RandomAccessFile(path, "r")) {
       raf.order(ucar.unidata.io.RandomAccessFile.BIG_ENDIAN);
       raf.seek(0);
 
-       if (!raf.searchForward(matcher, 8000)) {  // must find "GRIB" in first 8k
-         return null;
-       }
-       raf.skipBytes(7);
-       int edition = raf.read(); // always at byte 8
+      if (!raf.searchForward(matcher, 8000)) {  // must find "GRIB" in first 8k
+        return null;
+      }
+      raf.skipBytes(7);
+      int edition = raf.read(); // always at byte 8
 
-       if (edition == 1)
-         return getFirstGrib1Bean(ff, raf);
-       //else if (edition == 2)
-       //  setGribFile2(raf);
+      if (edition == 1) {
+        return getFirstGrib1Bean(ff, raf);
+      }
+      //else if (edition == 2)
+      //  setGribFile2(raf);
 
     } catch (Throwable ioe) {
       System.out.printf("Failed on %s%n", path);
@@ -211,8 +226,9 @@ public class GribFilesPanel extends JPanel {
     }
 
     return null;
- }
+  }
 
+  @Nullable
   Object getFirstGrib1Bean(MFile mf, RandomAccessFile raf) throws IOException {
     Grib1Record first = null;
     Grib1RecordScanner reader = new Grib1RecordScanner(raf);
@@ -231,6 +247,7 @@ public class GribFilesPanel extends JPanel {
   ////////////////////////////////////////////////////////////////////////////
 
   public class CollectionBean {
+
     String spec;
     // MCollection dcm;
     Iterable<MFile> fileList;
@@ -244,7 +261,7 @@ public class GribFilesPanel extends JPanel {
       this.spec = spec;
 
       Formatter f = new Formatter();
-      try ( MCollection dc = CollectionAbstract.open(spec, spec, null, f)) {
+      try (MCollection dc = CollectionAbstract.open(spec, spec, null, f)) {
         fileList = dc.getFilesSorted();
 
       } catch (Exception e) {
@@ -266,6 +283,7 @@ public class GribFilesPanel extends JPanel {
   }
 
   public class Grib1Bean {
+
     MFile m;
     Grib1Record first;
     Grib1ParamTableReader table;
@@ -322,6 +340,7 @@ public class GribFilesPanel extends JPanel {
 
 
   public class Grib2Bean {
+
     MFile m;
     Grib2Index index;
     int nRecords, localCount = 0, gdsCount = 0;
@@ -343,20 +362,24 @@ public class GribFilesPanel extends JPanel {
 
         Map<Long, Grib2SectionGridDefinition> gdsSet = new HashMap<>();
         for (Grib2SectionGridDefinition gds : index.getGds()) {
-          if (gdsSet.get(gds.calcCRC()) == null)
+          if (gdsSet.get(gds.calcCRC()) == null) {
             gdsSet.put(gds.calcCRC(), gds);
+          }
         }
         gdsCount = gdsSet.size();
 
         nRecords = index.getRecords().size();
         for (Grib2Record gr : index.getRecords()) {
-          if (first == null) first = gr;
+          if (first == null) {
+            first = gr;
+          }
           if (tables == null) {
             tables = Grib2Tables.factory(gr);
           }
           Grib2Pds pds = gr.getPDS();
-          if ((pds.getParameterCategory() > 191) || (pds.getParameterNumber() > 191))
+          if ((pds.getParameterCategory() > 191) || (pds.getParameterNumber() > 191)) {
             localCount++;
+          }
         }
 
       } catch (IOException e) {
@@ -366,7 +389,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     public final String getPath() {
-      return (bad) ? "BAD "+ m.getPath() : m.getPath();
+      return (bad) ? "BAD " + m.getPath() : m.getPath();
     }
 
     public final String getRefDate() {
@@ -394,7 +417,7 @@ public class GribFilesPanel extends JPanel {
     }
 
     public String getLocalCount() {
-      return (bad) ? "" : localCount+"/"+nRecords;
+      return (bad) ? "" : localCount + "/" + nRecords;
     }
 
     public int getGdsCount() {

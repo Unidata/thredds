@@ -15,10 +15,10 @@ import java.net.URL;
  */
 public class DbaseFile {
 
-  static public int DBASEIII = 0;
-  static public int DBASEIV = 1;
-  static public int DBASE5DOS = 2;
-  static public int DBASE5WIN = 3;
+  public static int DBASEIII = 0;
+  public static int DBASEIV = 1;
+  public static int DBASE5DOS = 2;
+  public static int DBASE5WIN = 3;
 
   URL url;
   byte filetype;
@@ -30,7 +30,7 @@ public class DbaseFile {
   byte[] Header;
   private boolean headerLoaded = false;
   private boolean dataLoaded = false;
-  InputStream stream = null;
+  InputStream stream;
   DataInputStream ds = null;
 
   /**
