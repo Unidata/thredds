@@ -128,9 +128,10 @@ public abstract class Field {
   public void setEnabled( boolean enable) { getEditComponent().setEnabled( enable); }
 
   /** Return whether the field is editable, default == enabled */
-  public boolean isEditable() { return isEnabled(); };
+  public boolean isEditable() { return isEnabled(); }
+
   /** Set whether the field is editable, default == enabled */
-  public void setEditable(boolean editable) { setEnabled( editable); };
+  public void setEditable(boolean editable) { setEnabled( editable); }
 
   /** Set the tooltip */
   public void setToolTipText( String tip) { getEditComponent().setToolTipText( tip); }
@@ -157,22 +158,22 @@ public abstract class Field {
   ////   if needed.
 
   /** Return the editing JComponent */
-  abstract public JComponent getEditComponent();
+  public abstract JComponent getEditComponent();
 
   /** See if edit value is valid, put error message in buff. */
-  abstract protected boolean _validate( StringBuffer buff);
+  protected abstract boolean _validate( StringBuffer buff);
 
    /** Get current value from editComponent */
-  abstract protected Object getEditValue();
+   protected abstract Object getEditValue();
 
   /** Set current value of editComponent */
-  abstract protected void setEditValue(Object value);
+  protected abstract void setEditValue(Object value);
 
   /** Get value from Store. Must be immutable or return a copy */
-  abstract protected Object getStoreValue( Object defValue);
+  protected abstract Object getStoreValue( Object defValue);
 
   /** Put new value into Store. Must be immutable or make a copy */
-  abstract protected void setStoreValue(Object newValue);
+  protected abstract void setStoreValue(Object newValue);
 
   //// these are utility routines that should work for subclasses,
   //// but may need to be overridden
@@ -328,7 +329,7 @@ public abstract class Field {
     }
   }
 
-  private static abstract class PopupTriggerListener extends MouseAdapter {
+  private abstract static class PopupTriggerListener extends MouseAdapter {
     public void mouseReleased (MouseEvent e) {
       if(e.isPopupTrigger())
         showPopup(e);
@@ -342,7 +343,7 @@ public abstract class Field {
   /**
    * String input field.
    */
-  static public class Text extends Field {
+  public static class Text extends Field {
     protected JTextComponent tf;
 
     /** Constructor for subclasses.
@@ -437,7 +438,7 @@ public abstract class Field {
   /**
    * String input field using a TextArea.
    */
-  static public class TextArea extends Text {
+  public static class TextArea extends Text {
 
     /** Constructor.
      *  @param name of the field; must be unique within the store
@@ -464,7 +465,7 @@ public abstract class Field {
   /**
    * A text input field which doesnt echo the input, for passwords.
    */
-  static public class Password extends Text {
+  public static class Password extends Text {
 
     /** Constructor.
      *  @param name of the field; must be unique within the store
@@ -489,7 +490,7 @@ public abstract class Field {
    *  Stored object is a String, exactly as user input.
    *  Use get/set Double to deal as a double.
    */
-  static public class Double extends Field {
+  public static class Double extends Field {
     private JTextField tf;
     private int nfracDig = 3;
 
@@ -506,7 +507,7 @@ public abstract class Field {
       if (nfracDig >= 0)
         this.nfracDig = nfracDig;
 
-      validValue = getStoreValue( new java.lang.Double(defValue));
+      validValue = getStoreValue(defValue);
 
       tf = new JTextField();
       setEditValue( validValue);
@@ -585,7 +586,7 @@ public abstract class Field {
    *  Stored object is a String, exactly as user input.
    *  Use get/set Double to deal as a double.
    */
-  static public class Int extends Field {
+  public static class Int extends Field {
     private JTextField tf;
 
     /** Constructor.
@@ -598,7 +599,7 @@ public abstract class Field {
     public Int(String name, String label, int defValue, PersistenceManager storeData) {
       super(name, label, storeData);
 
-      validValue = getStoreValue( new java.lang.Integer(defValue)); // returns copy
+      validValue = getStoreValue(defValue); // returns copy
 
       tf = new JTextField();
       setEditValue( validValue);
@@ -671,7 +672,7 @@ public abstract class Field {
 
   /////////////////////////////////////////////////////////////////////////////////////////
   /** Data input for Date */
-  static public class Date extends Field {
+  public static class Date extends Field {
     protected JFormattedTextField tf;
 
     /** Constructor.
@@ -758,7 +759,7 @@ public abstract class Field {
         if (value2 != null)
           value =  value2;
       }
-      if ((value == null) || !(value instanceof java.util.Date)) return null;
+      if (!(value instanceof java.util.Date)) return null;
       java.util.Date valueAsDate = (java.util.Date) value;
       return new java.util.Date(valueAsDate.getTime());
     }
@@ -1005,7 +1006,7 @@ public abstract class Field {
   /**
    * A boolean input box using a checkbox.
    */
-  static public class CheckBox extends Field {
+  public static class CheckBox extends Field {
     private JCheckBox checkbox;
 
     /** Constructor.
@@ -1018,7 +1019,7 @@ public abstract class Field {
     public CheckBox( String fldName, String label, boolean defValue, PersistenceManager storeData ) {
       super( fldName, label, storeData);
 
-      validValue = getStoreValue(Boolean.valueOf(defValue));
+      validValue = getStoreValue(defValue);
       checkbox = new JCheckBox();
       checkbox.setSelected( isSelected());
       finish();
@@ -1077,7 +1078,7 @@ public abstract class Field {
    *
    * @see ComboBox
    */
-  static public class TextCombo extends Field {
+  public static class TextCombo extends Field {
     protected ComboBox combo;
 
     /** Constructor.
@@ -1184,7 +1185,7 @@ public abstract class Field {
    * <p>
    * The actual stored object type is an object that should be equal to one of the choices.
    */
-  static public class EnumCombo extends Field {
+  public static class EnumCombo extends Field {
     protected ComboBox combo;
 
     /** Constructor.
@@ -1265,7 +1266,7 @@ public abstract class Field {
    * <p>
    * The actual stored object type is an ArrayList of Objects.
    */
-  static public class BeanTableField extends Field {
+  public static class BeanTableField extends Field {
     protected BeanTable table;
 
     /** Constructor.
@@ -1379,7 +1380,7 @@ public abstract class Field {
   } */
 
 
-    static private void showFormatInfo( JFormattedTextField tf) {
+  private static void showFormatInfo( JFormattedTextField tf) {
       JFormattedTextField.AbstractFormatter ff = tf.getFormatter();
       System.out.println("AbstractFormatter  " +  ff.getClass().getName());
       if (ff instanceof NumberFormatter) {
@@ -1477,7 +1478,7 @@ public abstract class Field {
     int dotInd = mantissa.indexOf( '.' );
     if ( dotInd == -1 ) {
       number = new StringBuffer( mantissa );
-      fraction = new StringBuffer( "" );
+      fraction = new StringBuffer();
     } else {
       number = new StringBuffer( mantissa.substring( 0, dotInd ) );
       fraction = new StringBuffer( mantissa.substring( dotInd + 1 ) );
@@ -1505,7 +1506,7 @@ public abstract class Field {
             // Don't count leading zeros in the fraction, if no number
       if ( ( numFigs == 0 || number.toString().equals( "0" ) ) && fracFigs > 0 ) {
         numFigs = 0;
-        number = new StringBuffer( "" );
+        number = new StringBuffer();
         for ( int i = 0; i < fraction.length(); ++i ) {
           if ( fraction.charAt( i ) != '0' )
             break;

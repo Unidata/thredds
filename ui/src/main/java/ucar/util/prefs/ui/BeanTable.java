@@ -17,7 +17,6 @@ import ucar.util.prefs.XMLStore;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 import java.awt.*;
@@ -298,12 +297,13 @@ public class BeanTable extends JPanel {
     ArrayList<Object> list = new ArrayList<>();
     int[] viewRowIndices = jtable.getSelectedRows();
     int[] viewColumnIndices = jtable.getSelectedColumns();
-    for (int i = 0; i < viewRowIndices.length; i++)
-      for (int j = 0; i < viewColumnIndices.length; j++) {
-        int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndices[i]);
-        int modelColumnIndex = jtable.convertColumnIndexToModel(viewColumnIndices[j]);
+    for (int viewRowIndex : viewRowIndices) {
+      for (int viewColumnIndex : viewColumnIndices) {
+        int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
+        int modelColumnIndex = jtable.convertColumnIndexToModel(viewColumnIndex);
         list.add(model.getValueAt(modelRowIndex, modelColumnIndex));
       }
+    }
 
     return list;
   }
@@ -519,7 +519,7 @@ public class BeanTable extends JPanel {
   /**
    * Should be private. This is to store the width and visibility for each table column.
    */
-  static public class PropertyCol {
+  public static class PropertyCol {
     private String name;
     private int width;
     private boolean visible = true;
@@ -758,8 +758,7 @@ public class BeanTable extends JPanel {
     // editing
 
     public Class getColumnClass(int col) {
-      Class c = wrapPrimitives(properties.get(col).getPropertyType());
-      return c;
+      return wrapPrimitives(properties.get(col).getPropertyType());
     }
 
     public boolean isCellEditable(int row, int col) {
@@ -799,12 +798,12 @@ public class BeanTable extends JPanel {
 
     protected Object zeroValue(Class c) {
       if (c == Boolean.class) return Boolean.FALSE;
-      else if (c == Integer.class) return new Integer(0);
-      else if (c == Float.class) return new Float(0.0);
-      else if (c == Double.class) return new Double(0.0);
-      else if (c == Short.class) return new Short((short) 0);
-      else if (c == Long.class) return new Long(0);
-      else if (c == Byte.class) return new Byte((byte) 0);
+      else if (c == Integer.class) return 0;
+      else if (c == Float.class) return (float) 0.0;
+      else if (c == Double.class) return 0.0;
+      else if (c == Short.class) return (short) 0;
+      else if (c == Long.class) return 0L;
+      else if (c == Byte.class) return (byte) 0;
       else return null;
     }
 
@@ -826,7 +825,7 @@ public class BeanTable extends JPanel {
 
     private void setEditable(PropertyDescriptor pd, String editableProperties) {
       if (editP == null) {
-        editP = new ArrayList<String>();
+        editP = new ArrayList<>();
         StringTokenizer toke = new StringTokenizer(editableProperties);
         while (toke.hasMoreTokens())
           editP.add(toke.nextToken());
@@ -839,7 +838,7 @@ public class BeanTable extends JPanel {
 
     private boolean isHidden(PropertyDescriptor pd, String hiddenProperties) {
       if (hiddenP == null) {
-        hiddenP = new ArrayList<String>();
+        hiddenP = new ArrayList<>();
         StringTokenizer toke = new StringTokenizer(hiddenProperties);
         while (toke.hasMoreTokens())
           hiddenP.add(toke.nextToken());
@@ -865,7 +864,7 @@ public class BeanTable extends JPanel {
   //////////////////////////////////////////////////////////////////////////////////////
   // testing
 
-  static public class TestBean {
+  public static class TestBean {
     private String name, path, sbase, dtype, stype, ddhref;
     private boolean u;
     private int i;
@@ -949,12 +948,12 @@ public class BeanTable extends JPanel {
       this.now = now;
     }
 
-    static public String editableProperties() {
+    public static String editableProperties() {
       return "name path serverbase serverType DDref use II now";
     }
   }
 
-  public static void main2(String args[]) {
+  public static void main2(String[] args) {
     TestBean testBean = new TestBean();
     //Field.Text fld = new Field.Text("test", "label", "def", null);
     Class beanClass = testBean.getClass();
@@ -965,15 +964,17 @@ public class BeanTable extends JPanel {
 
       System.out.println("Properties:");
       PropertyDescriptor[] pd = info.getPropertyDescriptors();
-      for (int i = 0; i < pd.length; i++) {
-        System.out.println(" " + pd[i].getName() + " " + pd[i].getPropertyType().getName());
-        String propName = pd[i].getName();
+      for (PropertyDescriptor propertyDescriptor : pd) {
+        System.out.println(
+            " " + propertyDescriptor.getName() + " " + propertyDescriptor.getPropertyType()
+                .getName());
+        String propName = propertyDescriptor.getName();
         char first = Character.toUpperCase(propName.charAt(0));
         String method_name = "get" + first + propName.substring(1);
         System.out.println(" " + propName + " " + first + " " + method_name);
 
         try {
-          java.lang.reflect.Method method = beanClass.getMethod(method_name, (Class[]) null);
+          Method method = beanClass.getMethod(method_name, (Class[]) null);
           System.out.println(" method = " + method);
         } catch (Exception e) {
           e.printStackTrace();
@@ -991,7 +992,7 @@ public class BeanTable extends JPanel {
     }
   }
 
-  public static void main(String args[]) throws java.io.IOException {
+  public static void main(String[] args) throws java.io.IOException {
     final XMLStore xstore;
     PreferencesExt store;
 

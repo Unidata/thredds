@@ -7,7 +7,6 @@ package ucar.nc2.util.net;
 
 import org.apache.http.Header;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.AuthSchemes;
 import org.apache.http.entity.StringEntity;
 import ucar.httpservices.*;
 import ucar.nc2.util.IO;
@@ -24,8 +23,8 @@ import java.util.zip.InflaterInputStream;
  */
 public class HttpClientManager
 {
-  static private boolean debug = false;
-  static private int timeout = 0;
+  private static boolean debug = false;
+  private static int timeout = 0;
 
   /**
    * initialize the HttpClient layer.
@@ -33,7 +32,7 @@ public class HttpClientManager
    * @param provider  CredentialsProvider.
    * @param userAgent Content of User-Agent header, may be null
    */
-  static public void init(CredentialsProvider provider, String userAgent)
+  public static void init(CredentialsProvider provider, String userAgent)
   {
     if (provider != null)
         try {
@@ -120,13 +119,13 @@ public class HttpClientManager
 
   //////////////////////
 
-  static public String getUrlContentsAsString(String urlencoded, int maxKbytes) throws IOException
+  public static String getUrlContentsAsString(String urlencoded, int maxKbytes) throws IOException
   {
     return getUrlContentsAsString(null, urlencoded, maxKbytes);
   }
 
   @Deprecated
-  static public String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) throws IOException
+  public static String getUrlContentsAsString(HTTPSession session, String urlencoded, int maxKbytes) throws IOException
   {
     HTTPSession useSession = session;
     try {
@@ -179,21 +178,21 @@ public class HttpClientManager
     }
   }
 
-  static private String readContents(InputStream is, String charset, int maxKbytes) throws IOException
+  private static String readContents(InputStream is, String charset, int maxKbytes) throws IOException
   {
     ByteArrayOutputStream bout = new ByteArrayOutputStream(1000 * maxKbytes);
     IO.copy(is, bout, 1000 * maxKbytes);
     return bout.toString(charset);
   }
 
-  static public void copyUrlContentsToFile(String urlencoded, File file)
+  public static void copyUrlContentsToFile(String urlencoded, File file)
           throws IOException
   {
     copyUrlContentsToFile(null, urlencoded, file);
   }
 
   @Deprecated
-  static public void copyUrlContentsToFile(HTTPSession session, String urlencoded, File file)
+  public static void copyUrlContentsToFile(HTTPSession session, String urlencoded, File file)
           throws IOException
   {
     HTTPSession useSession = session;
@@ -209,9 +208,6 @@ public class HttpClientManager
       if (status != 200) {
         throw new IOException(urlencoded + ": failed status = " + status);
       }
-
-      String charset = m.getResponseCharSet();
-      if (charset == null) charset = "UTF-8";
 
       // check for deflate and gzip compression
       Header h = m.getResponseHeader("content-encoding");
@@ -235,18 +231,18 @@ public class HttpClientManager
     }
   }
 
-  static public long appendUrlContentsToFile(String urlencoded, File file, long start, long end)
+  public static long appendUrlContentsToFile(String urlencoded, File file, long start, long end)
           throws IOException
   {
     return appendUrlContentsToFile(null, urlencoded, file, start, end);
   }
 
   @Deprecated
-  static public long appendUrlContentsToFile(HTTPSession session, String urlencoded, File file, long start, long end)
+  public static long appendUrlContentsToFile(HTTPSession session, String urlencoded, File file, long start, long end)
           throws IOException
   {
     HTTPSession useSession = session;
-    long nbytes = 0;
+    long nbytes;
 
     try {
       if (useSession == null) {
@@ -261,9 +257,6 @@ public class HttpClientManager
         if ((status != 200) && (status != 206)) {
           throw new RuntimeException("failed status = " + status);
         }
-
-        String charset = m.getResponseCharSet();
-        if (charset == null) charset = "UTF-8";
 
         // check for deflate and gzip compression
         Header h = m.getResponseHeader("content-encoding");

@@ -14,7 +14,7 @@ import javax.swing.*;
 /** helper class for PrefPanel */
 class LayoutM implements LayoutManager2 {
     private String name;
-    private Map<Component,Object> constraintMap = new HashMap<Component,Object>();
+    private Map<Component,Object> constraintMap = new HashMap<>();
     private Rectangle globalBounds = null;
 
     private boolean debug = false, debugLayout = false;
@@ -270,7 +270,7 @@ class LayoutM implements LayoutManager2 {
 
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
 
     JFrame frame = new JFrame("Test LayoutM");
     frame.addWindowListener(new WindowAdapter() {

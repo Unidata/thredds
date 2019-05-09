@@ -718,11 +718,14 @@ public class PrefPanel extends JPanel {
     StringBuilder sbuff = new StringBuilder();
 
     // column layout, first sort by col
-    Collections.sort(layoutComponents, new Comparator<LayoutComponent>() {
+    layoutComponents.sort(new Comparator<LayoutComponent>() {
       public int compare(LayoutComponent o1, LayoutComponent o2) {
         return o1.col - o2.col;
       }
-      public boolean equals(Object o1) { return o1 == this; }
+
+      public boolean equals(Object o1) {
+        return o1 == this;
+      }
     });
 
     // now create column layout spec and x cell constraint
@@ -747,11 +750,14 @@ public class PrefPanel extends JPanel {
     int ncols = 2*currCol;
 
     // row layout, first sort by row
-    Collections.sort(layoutComponents, new Comparator<LayoutComponent>() {
+    layoutComponents.sort(new Comparator<LayoutComponent>() {
       public int compare(LayoutComponent o1, LayoutComponent o2) {
         return o1.row - o2.row;
       }
-      public boolean equals(Object o1) { return o1 == this; }
+
+      public boolean equals(Object o1) {
+        return o1 == this;
+      }
     });
 
     // now adjust for any headings, put into y cell constraint
@@ -914,7 +920,7 @@ public class PrefPanel extends JPanel {
 
   </pre>
    */
-  static public class Dialog extends JDialog {
+  public static class Dialog extends JDialog {
     private PrefPanel pp;
     private PreferencesExt substore = null;
 
@@ -935,7 +941,7 @@ public class PrefPanel extends JPanel {
        @param prefs       PersistenceManagerExt store: keep values in here; may be null.
      */
     public Dialog(RootPaneContainer parent, boolean modal, String title, Preferences prefs, PersistenceManager storeData) {
-      super((parent != null) && (parent instanceof JFrame) ? (JFrame) parent : findActiveFrame());
+      super((parent instanceof JFrame) ? (JFrame) parent : findActiveFrame());
       setModal(modal);
       if (title != null)
         setTitle(title);
@@ -1019,7 +1025,7 @@ public class PrefPanel extends JPanel {
   }
 
   // thanks to Heinz M. Kabutz
-  static public Frame findActiveFrame() {
+  public static Frame findActiveFrame() {
     Frame[] frames = JFrame.getFrames();
     for (Frame frame : frames) {
       if (frame.isVisible())

@@ -13,7 +13,7 @@ import java.awt.*;
  */
 
 public class FldInputVerifier extends InputVerifier implements KeyListener {
-  static private Color color = new Color(243, 255, 159);  // yaller
+  private static Color color = new Color(243, 255, 159);  // yaller
   private PopupFactory popupFactory = PopupFactory.getSharedInstance();
   private Popup popup;
   private Field fld;

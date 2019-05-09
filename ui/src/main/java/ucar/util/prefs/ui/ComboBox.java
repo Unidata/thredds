@@ -131,7 +131,7 @@ public class ComboBox extends JComboBox {
 
   }
 
-  private static abstract class PopupTriggerListener extends MouseAdapter {
+  private abstract static class PopupTriggerListener extends MouseAdapter {
     public void mouseReleased (MouseEvent e) { if(e.isPopupTrigger()) showPopup(e); }
     public abstract void showPopup(MouseEvent e);
   }
@@ -173,7 +173,7 @@ public class ComboBox extends JComboBox {
    * @return ArrayList of items, may be any Object type.
    */
   public List<Object> getItemList() {
-    ArrayList<Object> list = new ArrayList<Object>();
+    ArrayList<Object> list = new ArrayList<>();
     for (int i=0; i< getItemCount() && i < nkeep; i++)
       list.add( getItemAt(i));
     return list;
@@ -211,7 +211,7 @@ public class ComboBox extends JComboBox {
 
   // debug
   private static long lastEvent;
-  public static void main(String args[]) throws IOException {
+  public static void main(String[] args) throws IOException {
 
     JFrame frame = new JFrame("Test");
     frame.addWindowListener(new WindowAdapter() {

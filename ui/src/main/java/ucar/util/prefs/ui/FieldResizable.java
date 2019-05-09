@@ -155,7 +155,7 @@ class FieldResizable extends Field {
   protected boolean validate( StringBuffer buff) { return delegate.validate(buff); }
   protected boolean _validate( StringBuffer buff) { return delegate._validate(buff); }
 
-  static private class ResizeButton extends JButton {
+  private static class ResizeButton extends JButton {
     ResizeIcon icon = new ResizeIcon(Color.black);
     ResizeButton() {
       setIcon(icon);
@@ -166,7 +166,7 @@ class FieldResizable extends Field {
     void setColor( Color c) { icon.setColor(c); }
   }
 
-  static private class ResizeIcon implements javax.swing.Icon {
+  private static class ResizeIcon implements javax.swing.Icon {
     private int h = 10, w = 5;
     private Color color;
 
@@ -188,7 +188,7 @@ class FieldResizable extends Field {
     public int getIconHeight()  { return h; }
   }
 
-  static private class RubberbandRectangle {
+  private static class RubberbandRectangle {
     private boolean debugRB = false;
     private Point anchorPt    = new Point(0,0);
     private Point stretchedPt = new Point(0,0);
@@ -311,7 +311,7 @@ class FieldResizable extends Field {
   }
 
   /** test */
-  public static void main(String args[]) {
+  public static void main(String[] args) {
 
     JFrame frame = new JFrame("Test prefs Field");
     frame.addWindowListener(new WindowAdapter() {

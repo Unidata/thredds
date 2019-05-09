@@ -51,7 +51,7 @@ public class PersistentBean implements PersistenceManager {
   }
 
   public void putDouble(String key, double value) {
-    putObject( key, new Double(value));
+    putObject( key, value);
   }
 
   public boolean getBoolean(String key, boolean def) {
@@ -60,7 +60,7 @@ public class PersistentBean implements PersistenceManager {
   }
 
   public void putBoolean(String key, boolean value) {
-    putObject( key, Boolean.valueOf(value));
+    putObject( key, value);
   }
 
   public int getInt(String key, int def) {
@@ -69,7 +69,7 @@ public class PersistentBean implements PersistenceManager {
   }
 
   public void putInt(String key, int value) {
-    putObject( key, new Integer(value));
+    putObject( key, value);
   }
 
   public long getLong(String key, long def) {
@@ -78,7 +78,7 @@ public class PersistentBean implements PersistenceManager {
   }
 
   public void putLong(String key, long value) {
-    putObject( key, new Long(value));
+    putObject( key, value);
   }
 
   public java.util.List getList(String key, java.util.List def)  {
