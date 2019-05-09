@@ -155,9 +155,7 @@ public class DatasetViewer extends JPanel {
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to another file", false);
-    compareButton.addActionListener(e -> {
-        compareDataset();
-    });
+    compareButton.addActionListener(e -> compareDataset());
     buttPanel.add(compareButton);
 
     AbstractAction attAction = new AbstractAction() {
@@ -445,7 +443,7 @@ public class DatasetViewer extends JPanel {
       // get selected variable, see if its a structure
       table.addListSelectionListener(e -> {
           Variable v = getCurrentVariable(table);
-          if ((v != null) && (v instanceof Structure)) {
+          if (v instanceof Structure) {
             hideNestedTable(NestedTable.this.level+2);
             setNestedTable(NestedTable.this.level+1, (Structure) v);
 
@@ -886,12 +884,6 @@ public class DatasetViewer extends JPanel {
 
     public String getShape() { return shape; }
     public void setShape( String shape) { this.shape = shape; }
-
-    /** Get hasMissing */
-   // public boolean getHasMissing() { return hasMissing; }
-    /** Set hasMissing */
-   // public void setHasMissing( boolean hasMissing) { this.hasMissing = hasMissing; }
-
   }
 
   public class AttributeBean {

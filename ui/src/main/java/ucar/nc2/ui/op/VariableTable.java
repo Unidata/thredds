@@ -31,7 +31,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.lang.invoke.MethodHandles;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
@@ -47,7 +46,7 @@ import javax.swing.table.TableModel;
  */
 public class VariableTable extends JPanel {
 
-    private final static org.slf4j.Logger log
+    private static final org.slf4j.Logger log
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
 	private PreferencesExt prefs;
@@ -197,9 +196,7 @@ public class VariableTable extends JPanel {
 	
 					i++;
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InvalidRangeException e) {
+			} catch (IOException | InvalidRangeException e) {
 				e.printStackTrace();
 			}
 		}
@@ -290,9 +287,7 @@ public class VariableTable extends JPanel {
 		includeGlobals = new JCheckBox("Export Attributes");
 		
 		final JButton export = new JButton("Export");
-		export.addActionListener(e -> {
-            export();
-		});
+		export.addActionListener(e -> export());
 		
 		final JPanel holderPanel = new JPanel(new BorderLayout());
 		holderPanel.add(export, BorderLayout.EAST);

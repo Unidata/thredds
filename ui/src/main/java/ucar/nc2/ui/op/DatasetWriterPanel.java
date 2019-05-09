@@ -22,7 +22,7 @@ import javax.swing.JSplitPane;
  */
 public class DatasetWriterPanel extends OpPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private DatasetWriter dsWriter;
@@ -95,7 +95,7 @@ public class DatasetWriterPanel extends OpPanel {
         }
         ncfile = nc;
 
-        if (ncfile != null) {
+        if (nc != null) {
             dsWriter.setDataset(nc);
             setSelectedItem(nc.getLocation());
         }

@@ -59,7 +59,7 @@ import javax.swing.text.PlainDocument;
  * @since 3/13/13
  */
 public class NcmlEditor extends JPanel {
-    private final static boolean debugNcmlWrite = false;
+    private static final boolean debugNcmlWrite = false;
 
     private NetcdfDataset ds;
     private String ncmlLocation;
@@ -95,7 +95,7 @@ public class NcmlEditor extends JPanel {
         addCoords = prefs.getBoolean("coordState", false);
         final String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
         BAMutil.setActionProperties(coordAction, "addCoords", tooltip2, true, 'C', -1);
-        coordAction.putValue(BAMutil.STATE, Boolean.valueOf(addCoords));
+        coordAction.putValue(BAMutil.STATE, addCoords);
         coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);
 
         protoChooser = new ComboBox((PreferencesExt) prefs.node("protoChooser"));
@@ -355,10 +355,9 @@ public class NcmlEditor extends JPanel {
  * then write it back out via resulting dataset
  */
     void doTransform(String text) {
-        try {
-            final StringReader reader = new StringReader(text);
+        try (final StringReader reader = new StringReader(text);
             final NetcdfDataset ncd = NcMLReader.readNcML(reader, null);
-            final StringWriter sw = new StringWriter(10000);
+            final StringWriter sw = new StringWriter(10000)) {
             ncd.writeNcML(sw, null);
             editor.setText(sw.toString());
             editor.setCaretPosition(0);
@@ -377,8 +376,7 @@ public class NcmlEditor extends JPanel {
     private void checkNcml(Formatter f) {
         if (ncmlLocation == null) { return; }
 
-        try {
-            NetcdfDataset ncd = NetcdfDataset.openDataset(ncmlLocation);
+        try (NetcdfDataset ncd = NetcdfDataset.openDataset(ncmlLocation)) {
             ncd.check(f);
         }
         catch (IOException ioe) {

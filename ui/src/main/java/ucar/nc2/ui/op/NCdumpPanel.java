@@ -17,7 +17,6 @@ import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.invoke.MethodHandles;
 
 /**
  *

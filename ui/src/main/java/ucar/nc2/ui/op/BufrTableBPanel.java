@@ -56,15 +56,11 @@ public class BufrTableBPanel extends OpPanel {
 
         final JButton acceptButton = new JButton("Accept");
         buttPanel.add(acceptButton);
-        acceptButton.addActionListener(e -> {
-            accept();
-        });
+        acceptButton.addActionListener(e -> accept());
 
         tables = new JComboBox<>(BufrTables.getTableConfigsAsArray());
         buttPanel.add(tables);
-        tables.addActionListener(e -> {
-            acceptTable((BufrTables.TableConfig) tables.getSelectedItem());
-        });
+        tables.addActionListener(e -> acceptTable((BufrTables.TableConfig) tables.getSelectedItem()));
 
         bufrTable = new BufrTableBViewer(prefs, buttPanel);
         add(bufrTable, BorderLayout.CENTER);

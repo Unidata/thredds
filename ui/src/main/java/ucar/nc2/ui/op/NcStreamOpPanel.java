@@ -15,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.invoke.MethodHandles;
 import java.util.Formatter;
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;

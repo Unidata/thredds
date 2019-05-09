@@ -316,22 +316,28 @@ public class Fmrc2Panel extends JPanel {
 
     GridDataset gds = null;
     try {
-      if (data.type.equals("Dataset2D"))
-        gds = fmrc.getDataset2D( null);
+      switch (data.type) {
+        case "Dataset2D":
+          gds = fmrc.getDataset2D(null);
+          break;
+        case "Best":
+          gds = fmrc.getDatasetBest();
+          break;
+        case "Run": {
+          CalendarDate date = CalendarDate.parseISOformat(null, (String) data.param);
+          gds = fmrc.getRunTimeDataset(date);
 
-      else if (data.type.equals("Best"))
-        gds = fmrc.getDatasetBest();
+          break;
+        }
+        case "ConstantForecast": {
+          CalendarDate date = CalendarDate.parseISOformat(null, (String) data.param);
+          gds = fmrc.getConstantForecastDataset(date);
 
-      else if (data.type.equals("Run")) {
-        CalendarDate date = CalendarDate.parseISOformat(null, (String) data.param);
-        gds = fmrc.getRunTimeDataset(date);
-
-      } else if (data.type.equals("ConstantForecast")) {
-        CalendarDate date = CalendarDate.parseISOformat(null, (String) data.param);
-        gds = fmrc.getConstantForecastDataset(date);
-
-      } else if (data.type.equals("ConstantOffset")) {
-        gds = fmrc.getConstantOffsetDataset( (Double) data.param);
+          break;
+        }
+        case "ConstantOffset":
+          gds = fmrc.getConstantOffsetDataset((Double) data.param);
+          break;
       }
 
     } catch (IOException e) {
@@ -568,19 +574,23 @@ public class Fmrc2Panel extends JPanel {
 
     TimeInventory ti = null;
     try {
-      if (ddata.type.equals("Best")) {
-        ti = lite.makeBestDatasetInventory();
-
-      } else if (ddata.type.equals("Run")) {
-        CalendarDate date = CalendarDate.parseISOformat(null, (String) ddata.param);
-        ti = lite.makeRunTimeDatasetInventory(date);
-
-      } else if (ddata.type.equals("ConstantForecast")) {
-        CalendarDate date = CalendarDate.parseISOformat(null, (String) ddata.param);
-        ti = lite.getConstantForecastDataset(date);
-
-      } else if (ddata.type.equals("ConstantOffset")) {
-        ti = lite.getConstantOffsetDataset((Double) ddata.param);
+      switch (ddata.type) {
+        case "Best":
+          ti = lite.makeBestDatasetInventory();
+          break;
+        case "Run": {
+          CalendarDate date = CalendarDate.parseISOformat(null, (String) ddata.param);
+          ti = lite.makeRunTimeDatasetInventory(date);
+          break;
+        }
+        case "ConstantForecast": {
+          CalendarDate date = CalendarDate.parseISOformat(null, (String) ddata.param);
+          ti = lite.getConstantForecastDataset(date);
+          break;
+        }
+        case "ConstantOffset":
+          ti = lite.getConstantOffsetDataset((Double) ddata.param);
+          break;
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -767,16 +777,16 @@ public class Fmrc2Panel extends JPanel {
     }
   }
 
-  abstract public class CoordBean {
+  public abstract class CoordBean {
     // no-arg constructor
     public CoordBean() {
     }
 
-    abstract public String getType();
+    public abstract String getType();
 
-    abstract public String getName();
+    public abstract String getName();
 
-    abstract public String getCoords();
+    public abstract String getCoords();
   }
 
   public class TimeCoordBean extends CoordBean {

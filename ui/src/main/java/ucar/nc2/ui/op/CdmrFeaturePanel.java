@@ -85,7 +85,6 @@ public class CdmrFeaturePanel extends JPanel {
 
   public void save() {
     messTable.saveState(false);
-    //prefs.putBeanObject("InfoWindowBounds3", infoWindow3.getBounds());
     if (split != null) prefs.putInt("splitPos", split.getDividerLocation());
   }
 
@@ -93,7 +92,7 @@ public class CdmrFeaturePanel extends JPanel {
     if (ncd != null) ncd.close();
 
     long total = 0;
-    List<MessBean> messages = new ArrayList<MessBean>();
+    List<MessBean> messages = new ArrayList<>();
     InputStream is = null;
     try {
       System.out.printf("open %s%n", stream);

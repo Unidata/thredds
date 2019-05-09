@@ -43,21 +43,15 @@ public class UnitConvert extends OpPanel {
         add(ta, BorderLayout.CENTER);
 
         final JButton compareButton = new JButton("Compare");
-        compareButton.addActionListener(e -> {
-            compare(cb.getSelectedItem());
-        });
+        compareButton.addActionListener(e -> compare(cb.getSelectedItem()));
         buttPanel.add(compareButton);
 
         final JButton dateButton = new JButton("UdunitDate");
-        dateButton.addActionListener(e -> {
-            checkUdunits(cb.getSelectedItem());
-        });
+        dateButton.addActionListener(e -> checkUdunits(cb.getSelectedItem()));
         buttPanel.add(dateButton);
 
         final JButton cdateButton = new JButton("CalendarDate");
-        cdateButton.addActionListener(e -> {
-            checkCalendarDate(cb.getSelectedItem());
-        });
+        cdateButton.addActionListener(e -> checkCalendarDate(cb.getSelectedItem()));
         buttPanel.add(cdateButton);
     }
 

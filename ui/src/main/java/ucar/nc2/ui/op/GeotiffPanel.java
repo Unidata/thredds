@@ -26,7 +26,7 @@ import javax.swing.JOptionPane;
  */
 public class GeotiffPanel extends OpPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private TextHistoryPane ta;
@@ -42,9 +42,11 @@ public class GeotiffPanel extends OpPanel {
 
         final JButton readButton = new JButton("read geotiff");
         readButton.addActionListener(e -> {
-            final String item = cb.getSelectedItem().toString();
-            final String fname = item.trim();
-            read(fname);
+            if (cb.getSelectedItem() != null) {
+                final String item = cb.getSelectedItem().toString();
+                final String fname = item.trim();
+                read(fname);
+            }
         });
         buttPanel.add(readButton);
     }

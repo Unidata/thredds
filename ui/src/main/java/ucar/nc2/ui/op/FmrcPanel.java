@@ -16,7 +16,6 @@ import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.invoke.MethodHandles;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -39,30 +38,29 @@ public class FmrcPanel extends OpPanel {
        table.addPropertyChangeListener(new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent e) {
 
-                if (e.getPropertyName().equals("openNetcdfFile")) {
-                    if (e.getNewValue() instanceof String) {
-                        ToolsUI.getToolsUI().openNetcdfFile((String) e.getNewValue());
-                    }
-                    else {
-                        ToolsUI.getToolsUI().openNetcdfFile((NetcdfFile) e.getNewValue());
-                    }
-                }
-                else if (e.getPropertyName().equals("openCoordSys")) {
-                    if (e.getNewValue() instanceof String) {
-                        ToolsUI.getToolsUI().openCoordSystems((String) e.getNewValue());
-                    }
-                    else {
-                        ToolsUI.getToolsUI().openCoordSystems((NetcdfDataset) e.getNewValue());
-                    }
-                }
-                else if (e.getPropertyName().equals("openGridDataset")) {
-                    if (e.getNewValue() instanceof String) {
-                        ToolsUI.getToolsUI().openGridDataset((String) e.getNewValue());
-                    }
-                    else {
-                        ToolsUI.getToolsUI().openGridDataset((GridDataset) e.getNewValue());
-                    }
-                }
+              switch (e.getPropertyName()) {
+                case "openNetcdfFile":
+                  if (e.getNewValue() instanceof String) {
+                    ToolsUI.getToolsUI().openNetcdfFile((String) e.getNewValue());
+                  } else {
+                    ToolsUI.getToolsUI().openNetcdfFile((NetcdfFile) e.getNewValue());
+                  }
+                  break;
+                case "openCoordSys":
+                  if (e.getNewValue() instanceof String) {
+                    ToolsUI.getToolsUI().openCoordSystems((String) e.getNewValue());
+                  } else {
+                    ToolsUI.getToolsUI().openCoordSystems((NetcdfDataset) e.getNewValue());
+                  }
+                  break;
+                case "openGridDataset":
+                  if (e.getNewValue() instanceof String) {
+                    ToolsUI.getToolsUI().openGridDataset((String) e.getNewValue());
+                  } else {
+                    ToolsUI.getToolsUI().openGridDataset((GridDataset) e.getNewValue());
+                  }
+                  break;
+              }
             }
         });
         add(table, BorderLayout.CENTER);
@@ -85,9 +83,7 @@ public class FmrcPanel extends OpPanel {
         buttPanel.add(infoButton);
 
         final AbstractButton collectionButton = BAMutil.makeButtcon("Information", "Collection Parsing Info", false);
-        collectionButton.addActionListener(e -> {
-            table.showCollectionInfo(true);
-        });
+        collectionButton.addActionListener(e -> table.showCollectionInfo(true));
         buttPanel.add(collectionButton);
 
         final AbstractButton viewButton = BAMutil.makeButtcon("Dump", "Show Dataset", false);

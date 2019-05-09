@@ -108,7 +108,7 @@ public class StationRadialViewer extends JPanel {
     if ((startDate != null) && (endDate != null))
       chooser.setDateRange( new DateRange( startDate.toDate(), endDate.toDate()));
 
-    List<StationBean> stationBeans = new ArrayList<StationBean>();
+    List<StationBean> stationBeans = new ArrayList<>();
       try {
         List<Station> stations = sds.getStations();
         if (stations == null) return;
