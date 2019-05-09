@@ -15,7 +15,7 @@ package ucar.units;
 public abstract class UnitFormatImpl implements UnitFormat {
 
 	private static final long	serialVersionUID	= 1L;
-	private static Object		MUTEX				= new Object();
+	private static final Object	MUTEX	= new Object();
 
 	/**
 	 * Parses a unit specification.  This method is thread-safe.

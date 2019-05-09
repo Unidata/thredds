@@ -47,9 +47,9 @@ public class PrefixDBImpl implements PrefixDB, Serializable {
 	 * Constructs from nothing.
 	 */
 	public PrefixDBImpl() {
-		nameSet = new TreeSet<Prefix>();
-		symbolSet = new TreeSet<Prefix>();
-		valueMap = new TreeMap<Double, Prefix>();
+		nameSet = new TreeSet<>();
+		symbolSet = new TreeSet<>();
+		valueMap = new TreeMap<>();
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class PrefixDBImpl implements PrefixDB, Serializable {
 			throws PrefixExistsException {
 		final Prefix prefix = new PrefixSymbol(symbol, value);
 		symbolSet.add(prefix);
-		valueMap.put(new Double(value), prefix);
+		valueMap.put(value, prefix);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public class PrefixDBImpl implements PrefixDB, Serializable {
 	 * @return The prefix whose value matches or null.
 	 */
 	public Prefix getPrefixByValue(final double value) {
-		return valueMap.get(new Double(value));
+		return valueMap.get(value);
 	}
 
 	/**
@@ -129,8 +129,7 @@ public class PrefixDBImpl implements PrefixDB, Serializable {
 	 *            The set to search.
 	 */
 	private static Prefix getPrefix(final String string, final Set<Prefix> set) {
-		for (final Iterator<Prefix> iter = set.iterator(); iter.hasNext();) {
-			final Prefix prefix = iter.next();
+		for (final Prefix prefix : set) {
 			final int comp = prefix.compareTo(string);
 			if (comp == 0) {
 				return prefix;

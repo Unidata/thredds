@@ -24,7 +24,7 @@ public interface PrefixDB {
 	 * @throws PrefixDBAccessException
 	 *             Prefix database access failure.
 	 */
-	public void addName(String name, double value)
+  void addName(String name, double value)
 			throws PrefixExistsException, PrefixDBAccessException;
 
 	/**
@@ -39,7 +39,7 @@ public interface PrefixDB {
 	 * @throws PrefixDBAccessException
 	 *             Prefix database access failure.
 	 */
-	public void addSymbol(String symbol, double value)
+  void addSymbol(String symbol, double value)
 			throws PrefixExistsException, PrefixDBAccessException;
 
 	/**
@@ -51,7 +51,7 @@ public interface PrefixDB {
 	 * @throws PrefixDBAccessException
 	 *             Prefix database access failure.
 	 */
-	public Prefix getPrefixByName(String name) throws PrefixDBAccessException;
+  Prefix getPrefixByName(String name) throws PrefixDBAccessException;
 
 	/**
 	 * Gets a prefix from the database by symbol.
@@ -62,7 +62,7 @@ public interface PrefixDB {
 	 * @throws PrefixDBAccessException
 	 *             Prefix database access failure.
 	 */
-	public Prefix getPrefixBySymbol(String symbol)
+  Prefix getPrefixBySymbol(String symbol)
 			throws PrefixDBAccessException;
 
 	/**
@@ -74,19 +74,19 @@ public interface PrefixDB {
 	 * @throws PrefixDBAccessException
 	 *             Prefix database access failure.
 	 */
-	public Prefix getPrefixByValue(double value) throws PrefixDBAccessException;
+  Prefix getPrefixByValue(double value) throws PrefixDBAccessException;
 
 	/**
 	 * Gets a string representation of this database.
 	 * 
 	 * @return A string representation of this database.
 	 */
-	public String toString();
+  String toString();
 
 	/**
 	 * Gets an iterator over the entries in the database.
 	 * 
 	 * @return An iterator over the database.
 	 */
-	public Iterator<?> iterator();
+  Iterator<?> iterator();
 }

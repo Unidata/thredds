@@ -25,7 +25,7 @@ public interface UnitDB {
 	 * @throws UnitDBAccessException
 	 *             Problem accessing unit database.
 	 */
-	public void addUnit(Unit unit) throws UnitExistsException,
+	void addUnit(Unit unit) throws UnitExistsException,
 			UnitDBAccessException, NameException;
 
 	/**
@@ -44,7 +44,7 @@ public interface UnitDB {
 	 * @throws NoSuchUnitException
 	 *             The unit doesn't exist in the database.
 	 */
-	public void addAlias(String alias, String name) throws NoSuchUnitException,
+	void addAlias(String alias, String name) throws NoSuchUnitException,
 			UnitExistsException, UnitDBAccessException, NameException;
 
 	/**
@@ -65,7 +65,7 @@ public interface UnitDB {
 	 * @throws NoSuchUnitException
 	 *             The unit doesn't exist in the database.
 	 */
-	public void addAlias(String alias, String name, String symbol)
+	void addAlias(String alias, String name, String symbol)
 			throws NoSuchUnitException, UnitExistsException,
 			UnitDBAccessException, NameException;
 
@@ -92,7 +92,7 @@ public interface UnitDB {
 	 * @throws NoSuchUnitException
 	 *             The unit doesn't exist in the database.
 	 */
-	public void addAlias(String alias, String name, String symbol, String plural)
+	void addAlias(String alias, String name, String symbol, String plural)
 			throws NoSuchUnitException, UnitExistsException,
 			UnitDBAccessException, NameException;
 
@@ -110,7 +110,7 @@ public interface UnitDB {
 	 * @throws UnitDBAccessException
 	 *             Problem accessing unit database.
 	 */
-	public void addAlias(UnitID id, String name) throws NoSuchUnitException,
+	void addAlias(UnitID id, String name) throws NoSuchUnitException,
 			UnitExistsException, UnitDBAccessException;
 
 	/**
@@ -129,7 +129,7 @@ public interface UnitDB {
 	 * @throws NoSuchUnitException
 	 *             The unit doesn't exist in the database.
 	 */
-	public void addSymbol(String symbol, String name)
+	void addSymbol(String symbol, String name)
 			throws NoSuchUnitException, UnitExistsException,
 			UnitDBAccessException, NameException;
 
@@ -145,7 +145,7 @@ public interface UnitDB {
 	 * @throws UnitDBAccessException
 	 *             Problem accessing unit database.
 	 */
-	public Unit get(String id) throws UnitDBAccessException;
+	Unit get(String id) throws UnitDBAccessException;
 
 	/**
 	 * Gets a unit in the database by name.
@@ -158,7 +158,7 @@ public interface UnitDB {
 	 * @throws UnitDBAccessException
 	 *             Problem accessing unit database.
 	 */
-	public Unit getByName(String name) throws UnitDBAccessException;
+	Unit getByName(String name) throws UnitDBAccessException;
 
 	/**
 	 * Gets a unit in the database by symbol.
@@ -171,14 +171,14 @@ public interface UnitDB {
 	 * @throws UnitDBAccessException
 	 *             Problem accessing unit database.
 	 */
-	public Unit getBySymbol(String symbol) throws UnitDBAccessException;
+	Unit getBySymbol(String symbol) throws UnitDBAccessException;
 
 	/**
 	 * Returns the string representation of the database.
 	 * 
 	 * @return The string representation of the database.
 	 */
-	public String toString();
+	String toString();
 
 	/**
 	 * Returns an iterator over the units of the database.
@@ -187,5 +187,5 @@ public interface UnitDB {
 	 *         <code>next()</code> of the iterator returns objects of type
 	 *         <code>Unit</code>.
 	 */
-	public Iterator<?> getIterator();
+	Iterator<?> getIterator();
 }

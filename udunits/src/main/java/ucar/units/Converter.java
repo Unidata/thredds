@@ -17,7 +17,7 @@ Converter
      * @param amount		The numeric value to convert.
      * @return			The converted numeric value.
      */
-    public float
+    float
     convert(float amount);
 
     /**
@@ -25,7 +25,7 @@ Converter
      * @param amount		The numeric value to convert.
      * @return			The converted numeric value.
      */
-    public double
+    double
     convert(double amount);
 
     /**
@@ -34,7 +34,7 @@ Converter
      * @return			The converted numeric values in allocated
      *				space.
      */
-    public float[]
+    float[]
     convert(float[] amounts);
 
     /**
@@ -43,7 +43,7 @@ Converter
      * @return			The converted numeric values in allocated
      *				space.
      */
-    public double[]
+    double[]
     convert(double[] amounts);
 
     /**
@@ -53,7 +53,7 @@ Converter
      *				same array as <code>input</code>.
      * @return			<code>output</code>.
      */
-    public float[]
+    float[]
     convert(float[] input, float[] output);
 
     /**
@@ -63,6 +63,6 @@ Converter
      *				same array as <code>input</code>.
      * @return			<code>output</code>.
      */
-    public double[]
+    double[]
     convert(double[] input, double[] output);
 }

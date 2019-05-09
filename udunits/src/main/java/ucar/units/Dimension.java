@@ -222,8 +222,8 @@ public abstract class Dimension {
     public int hashCode() {
         if (hashCode == 0) {
             int hash = 0;
-            for (int i = 0; i < _factors.length; i++) {
-                hash ^= _factors[i].hashCode();
+            for (Factor factor : _factors) {
+                hash ^= factor.hashCode();
             }
             hashCode = hash;
         }
@@ -254,8 +254,8 @@ public abstract class Dimension {
     @Override
     public String toString() {
         final StringBuilder buf = new StringBuilder(40);
-        for (int i = 0; i < _factors.length; i++) {
-            buf.append(_factors[i]).append('.');
+        for (Factor factor : _factors) {
+            buf.append(factor).append('.');
         }
         if (buf.length() != 0) {
             buf.setLength(buf.length() - 1);
