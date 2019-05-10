@@ -244,7 +244,8 @@ public class ScalablePicture implements SourcePictureListener {
           createScaledPictureInThread(priority);
           break;
         default:
-          Tools.log("ScalablePicture.loadAndScalePictureInThread: Don't know what status this is:" + Integer.toString(sourcePicture.getStatusCode()));
+          Tools.log("ScalablePicture.loadAndScalePictureInThread: Don't know what status this is:" + sourcePicture
+              .getStatusCode());
           break;
 
       }
@@ -477,9 +478,9 @@ public class ScalablePicture implements SourcePictureListener {
    */
   public String getScaledSizeString() {
     if (scaledPicture != null)
-      return Integer.toString(scaledPicture.getWidth())
+      return scaledPicture.getWidth()
           + " x "
-          + Integer.toString(scaledPicture.getHeight());
+          + scaledPicture.getHeight();
     else
       return "0 x 0";
   }

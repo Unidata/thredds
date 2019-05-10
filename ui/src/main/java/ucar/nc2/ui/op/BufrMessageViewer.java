@@ -40,8 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import javax.swing.*;
 
-//import ucar.util.GoogleDiff;
-
 /**
  * ToolsUI/Iosp/Bufr
  *
@@ -71,7 +69,7 @@ public class BufrMessageViewer extends JPanel {
         try {
           NetcdfFile ncd = makeBufrDataset() ;
           Variable v = ncd.findVariable(BufrIosp2.obsRecord);
-          if ((v != null) && (v instanceof Structure)) {
+          if (v instanceof Structure) {
             if (dataTable == null) makeDataTable();
             dataTable.setStructure((Structure) v);
             dataWindow.show();
@@ -99,19 +97,15 @@ public class BufrMessageViewer extends JPanel {
       }
     };
     BAMutil.setActionProperties(seperateWindowAction, "DrawVert", "seperate DDS window", true, 'C', -1);
-    seperateWindowAction.putValue(BAMutil.STATE, Boolean.valueOf(seperateWindow));
+    seperateWindowAction.putValue(BAMutil.STATE, seperateWindow);
     BAMutil.addActionToContainer(buttPanel, seperateWindowAction);
 
     AbstractButton distinctDdsButt = BAMutil.makeButtcon("dd", "Dump distinct DDS", false);
-    distinctDdsButt.addActionListener(e -> {
-        dumpDDS();
-    });
+    distinctDdsButt.addActionListener(e -> dumpDDS());
     buttPanel.add(distinctDdsButt);
 
     AbstractButton distinctMessButt = BAMutil.makeButtcon("Import", "Write distinct messages", false);
-    distinctMessButt.addActionListener(e -> {
-        writeAll();
-    });
+    distinctMessButt.addActionListener(e -> writeAll());
     buttPanel.add(distinctMessButt);
 
     AbstractButton configButt = BAMutil.makeButtcon("Dump", "Make BufrConfig", false);
@@ -226,7 +220,7 @@ public class BufrMessageViewer extends JPanel {
         try {
           NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
           Variable v = ncd.findVariable(BufrIosp2.obsRecord);
-          if ((v != null) && (v instanceof Structure)) {
+          if (v instanceof Structure) {
             if (dataTable == null) makeDataTable();
             dataTable.setStructure((Structure) v);
             dataWindow.show();
@@ -317,16 +311,17 @@ public class BufrMessageViewer extends JPanel {
           if (filename == null) return;
 
           File file = new File(filename);
-          FileOutputStream fos = new FileOutputStream(file);
-          WritableByteChannel wbc = fos.getChannel();
-          String headerS = mb.m.getHeader();
-          if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
+          try (FileOutputStream fos = new FileOutputStream(file);
+            WritableByteChannel wbc = fos.getChannel()) {
+            String headerS = mb.m.getHeader();
+            if (headerS != null)
+              wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
 
-          byte[] raw = scan.getMessageBytes(mb.m);
-          wbc.write(ByteBuffer.wrap(raw));
-          wbc.close();
-          JOptionPane.showMessageDialog(BufrMessageViewer.this, filename + " successfully written");
+            byte[] raw = scan.getMessageBytes(mb.m);
+            wbc.write(ByteBuffer.wrap(raw));
+            JOptionPane
+                .showMessageDialog(BufrMessageViewer.this, filename + " successfully written");
+          }
 
         } catch (Exception ex) {
           JOptionPane.showMessageDialog(BufrMessageViewer.this, "ERROR: " + ex.getMessage());
@@ -643,7 +638,7 @@ public class BufrMessageViewer extends JPanel {
     try {
       NetcdfFile ncd = makeBufrMessageAsDataset(m);
       Variable v = ncd.findVariable(BufrIosp2.obsRecord);
-      if ((v != null) && (v instanceof Structure)) {
+      if (v instanceof Structure) {
         Structure obs = (Structure) v;
         StandardFields.StandardFieldsFromStructure extract = new StandardFields.StandardFieldsFromStructure(center, obs);
         try (StructureDataIterator iter = obs.getStructureIterator()) {

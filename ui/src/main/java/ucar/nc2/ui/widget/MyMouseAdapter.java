@@ -46,7 +46,7 @@ public class MyMouseAdapter extends java.awt.event.MouseAdapter implements Seria
   public void drag(MouseEvent e, int deltax, int deltay) { }
     // System.out.println( "drag: "+deltax+" "+deltay);}
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
 
     JFrame frame = new JFrame("Test MyMouseAdapter");
     frame.addWindowListener(new WindowAdapter() {

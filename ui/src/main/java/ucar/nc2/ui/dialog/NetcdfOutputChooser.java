@@ -13,7 +13,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -149,9 +148,7 @@ public class NetcdfOutputChooser extends JDialog {
             new Insets(0, 0, 0, 0), 0, 0));
 
           //---- chunking ----
-          chunking.addItemListener(e -> {
-              chunkingItemStateChanged(e);
-          });
+          chunking.addItemListener(this::chunkingItemStateChanged);
           panel1.add(chunking, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
             GridBagConstraints.CENTER, GridBagConstraints.BOTH,
             new Insets(0, 0, 0, 0), 0, 0));
@@ -217,16 +214,12 @@ public class NetcdfOutputChooser extends JDialog {
 
         //---- okButton ----
         okButton.setText("Write File");
-        okButton.addActionListener(e -> {
-            okButtonActionPerformed(e);
-        });
+        okButton.addActionListener(this::okButtonActionPerformed);
         buttonBar.add(okButton);
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(e -> {
-            cancelButtonActionPerformed(e);
-        });
+        cancelButton.addActionListener(this::cancelButtonActionPerformed);
         buttonBar.add(cancelButton);
       }
       dialogPane.add(buttonBar, BorderLayout.SOUTH);

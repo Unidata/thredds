@@ -40,7 +40,7 @@ public class ContourLine implements GisPart {
   * "ifNew" input argument is optional.
   * points is an ArrayList of Point2D.Double
   */
-  public ContourLine(ArrayList points, double level) {
+  public ContourLine(List<Point2D.Double> points, double level) {
     this.npts = points.size();
     // define coordinate array size for this line
     wx = new double[npts];
@@ -48,14 +48,10 @@ public class ContourLine implements GisPart {
 
     // get each coord pair and push into the local x y arrays
     for (int i = 0; i < points.size(); i++) {
-      Point2D.Double onexypair = (Point2D.Double) (points.get(i));
+      Point2D.Double onexypair = (points.get(i));
       wx[i] = onexypair.getX();
       wy[i] = onexypair.getY();
-      //System.out.println("  i="+i+"  ("
-      //		   +(((Point2D.Double)(points.get(i))).getX())
-      //		   +","+wy[i]+")");
     }
-    //System.out.println("  end of line");
     contourLevel = level;
   }
 

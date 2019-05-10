@@ -22,12 +22,12 @@ import ucar.nc2.util.CancelTask;
  */
 
 public class StopButton extends JButton implements CancelTask {
-  static private ImageIcon[] icon = new ImageIcon[2];
+  private static ImageIcon[] icon = new ImageIcon[2];
   static {
     icon[0] = BAMutil.getIcon("Stop24", true);
     icon[1] = BAMutil.getIcon("Stop16", true);
   }
-  static private boolean debug = false;
+  private static boolean debug = false;
 
   private ProgressMonitorTask task;
   private javax.swing.Timer myTimer;

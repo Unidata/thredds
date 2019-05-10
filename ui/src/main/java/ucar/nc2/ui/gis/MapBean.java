@@ -104,7 +104,7 @@ public abstract class MapBean {
        }
      });
    */
-  static public PopupMenu makeMapSelectButton() {
+  public static PopupMenu makeMapSelectButton() {
 
     AbstractAction mapSelectAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -119,7 +119,7 @@ public abstract class MapBean {
     return mapPopup;
   }
 
-  static public PopupMenu getStandardMapSelectButton(PropertyChangeListener pcl) {
+  public static PopupMenu getStandardMapSelectButton(PropertyChangeListener pcl) {
     PopupMenu mapBeanMenu = makeMapSelectButton();
 
         // standard maps
@@ -128,11 +128,11 @@ public abstract class MapBean {
     standardMaps.add( new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap",
             "/resources/nj22/ui/maps/Countries.shp"));
     standardMaps.add( new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", "/resources/nj22/ui/maps/us_state.shp"));
-    
-    for (int i = 0; i < standardMaps.size(); i++) {
-      MapBean mb = (MapBean) standardMaps.get(i);
-      mapBeanMenu.addAction( mb.getActionDesc(), mb.getIcon(), mb.getAction());
-      mb.addPropertyChangeListener( pcl);
+
+    for (Object standardMap : standardMaps) {
+      MapBean mb = (MapBean) standardMap;
+      mapBeanMenu.addAction(mb.getActionDesc(), mb.getIcon(), mb.getAction());
+      mb.addPropertyChangeListener(pcl);
     }
 
     return mapBeanMenu;

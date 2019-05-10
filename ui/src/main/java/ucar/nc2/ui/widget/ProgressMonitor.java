@@ -71,8 +71,8 @@ public class ProgressMonitor {
   private ProgressMonitorTask task;
   private javax.swing.Timer timer;
   private Thread taskThread;
-  private int millisToPopup = 100;
-  private int millisToDecideToPopup = 100;
+  private int millisToPopup;
+  private int millisToDecideToPopup;
   private int secs = 0;
 
   // event handling

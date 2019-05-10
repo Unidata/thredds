@@ -75,7 +75,6 @@ public class ScaledPanel extends JPanel {
             transform.inverseTransform(e.getPoint(), worldPt);
             lmPick.sendEvent(new PickEvent(ScaledPanel.this, worldPt));
           } catch (NoninvertibleTransformException nte) {
-            ;
           }
         }
       }
@@ -89,7 +88,6 @@ public class ScaledPanel extends JPanel {
             transform.inverseTransform(e.getPoint(), worldPt);
             lmMove.sendEvent(new CursorMoveEvent(ScaledPanel.this, worldPt));
           } catch (NoninvertibleTransformException nte) {
-            ;
           }
         }
       }

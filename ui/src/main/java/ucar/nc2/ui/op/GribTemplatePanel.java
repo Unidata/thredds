@@ -13,7 +13,6 @@ import ucar.util.prefs.PreferencesExt;
 import java.awt.BorderLayout;
 import javax.swing.JComboBox;
 
-// LOOK: Remove this and just use GribWmoCodesPanel directly in ToolsUI.
 public class GribTemplatePanel extends OpPanel {
     private GribWmoTemplatesPanel codeTable;
 
@@ -26,9 +25,7 @@ public class GribTemplatePanel extends OpPanel {
         final JComboBox<WmoTemplateTables.Version> modes = new JComboBox<>(WmoTemplateTables.Version.values());
         modes.setSelectedItem(WmoTemplateTables.standard);
         topPanel.add(modes, BorderLayout.CENTER);
-        modes.addActionListener(e -> {
-            codeTable.setTable((WmoTemplateTables.Version) modes.getSelectedItem());
-        });
+        modes.addActionListener(e -> codeTable.setTable((WmoTemplateTables.Version) modes.getSelectedItem()));
 
         codeTable = new GribWmoTemplatesPanel(prefs, buttPanel);
         add(codeTable, BorderLayout.CENTER);

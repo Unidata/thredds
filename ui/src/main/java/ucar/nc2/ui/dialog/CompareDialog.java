@@ -42,7 +42,6 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 /**
  * @author John Caron
@@ -143,9 +142,7 @@ public class CompareDialog extends JDialog {
         //---- fileBrowser ----
         fileBrowser.setIcon(UIManager.getIcon("FileView.directoryIcon"));
         fileBrowser.setToolTipText("open Local dataset");
-        fileBrowser.addActionListener(e -> {
-            fileBrowserActionPerformed(e);
-        });
+        fileBrowser.addActionListener(this::fileBrowserActionPerformed);
 
         //---- label1 ----
         label1.setText("dataset:");
@@ -178,21 +175,15 @@ public class CompareDialog extends JDialog {
 
         //---- datasetCombo ----
         datasetCombo.setEditable(true);
-        datasetCombo.addActionListener(e -> {
-            datasetComboActionPerformed(e);
-        });
+        datasetCombo.addActionListener(this::datasetComboActionPerformed);
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(e -> {
-            cancelButtonActionPerformed(e);
-        });
+        cancelButton.addActionListener(this::cancelButtonActionPerformed);
 
         //---- okButton ----
         okButton.setText("OK");
-        okButton.addActionListener(e -> {
-            okButtonActionPerformed(e);
-        });
+        okButton.addActionListener(this::okButtonActionPerformed);
 
         //---- varNameOnly ----
         varNameOnly.setText("Variable names only");

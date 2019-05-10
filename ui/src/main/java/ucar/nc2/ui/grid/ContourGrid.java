@@ -166,8 +166,8 @@ public class ContourGrid {
   private ucar.ma2.Array dataArray;
   private Index dgIndex;
 
-  private ArrayList contourValues = new ArrayList(); // contour levels
-  private ArrayList contourLines = new ArrayList(); // the contours made here
+  private List<Double> contourValues = new ArrayList<>(); // contour levels
+  private List<ContourLine> contourLines = new ArrayList<>(); // the contours made here
 
   private int [][] contourOnVertlEdge; // flag if a cell has a contour in it
   private int [][] contourOnHorizEdge; // ditto - crossing bottom or top
@@ -176,7 +176,6 @@ public class ContourGrid {
   private double conLevel;          // a working contour level
   private int xMaxInd;              // the data grid's max x index (not size)
   private int yMaxInd;                 // the data grid's max y index
-  //private boolean dataismissing;    // flag if a missing data value is used
   private int dimX;
   private int numLevel;
   private double gridmax, gridmin;
@@ -196,10 +195,9 @@ public class ContourGrid {
    * @param yPosition        the y position values of rows in the grid
    * @param geogrid          a GeoGridImpl which is used for its missing data methods.
    */
-  public ContourGrid(ucar.ma2.Array dataGrid, ArrayList allContourValues,
+  public ContourGrid(ucar.ma2.Array dataGrid, List<Double> allContourValues,
           double [] xPosition, double [] yPosition,
           GridDatatype geogrid) {
-    //long t1 = System.currentTimeMillis();
     this.geogrid = geogrid;
 
     dgIndex = dataGrid.getIndex();
@@ -259,12 +257,12 @@ public class ContourGrid {
               + gridmax + "  grid min = " + gridmin);
     }
 
-    /**
-     * Determine contour level values to use.
-     * Find *working* contour levels, the levels that will actually be
-     * used in making contours in this object, which may not
-     * include some supplied to the constructor.
-     * If any contour values were supplied:
+    /*
+      Determine contour level values to use.
+      Find *working* contour levels, the levels that will actually be
+      used in making contours in this object, which may not
+      include some supplied to the constructor.
+      If any contour values were supplied:
      */
     if (allContourValues.size() > 0) {
       //boolean spanBottom=false, spanTop=false;
@@ -274,14 +272,13 @@ public class ContourGrid {
                 ("  Supplied contour levels are" + allContourValues);
 
       /* Loop over all supplied contour values;
-* if value is contained between gridmin and gridmax, add to
-* working array of contour values "contourValues".
-* Check if supplied contour values cover the entire data range */
-      for (int i = 0; i < allContourValues.size(); i++) {
-        Double dob = (Double) allContourValues.get(i);
-        double cv = dob.doubleValue();
-        if ((cv >= gridmin) && (cv <= gridmax))
-          contourValues.add(allContourValues.get(i));
+      * if value is contained between gridmin and gridmax, add to
+      * working array of contour values "contourValues".
+      * Check if supplied contour values cover the entire data range */
+      for (Double cv : allContourValues) {
+        if ((cv >= gridmin) && (cv <= gridmax)) {
+          contourValues.add(cv);
+        }
 
         // indicate if the supplied values cover the data supplied
         //if (cv <= gridmin  && !spanBottom)
@@ -317,7 +314,7 @@ public class ContourGrid {
       * no contours possible - set indicator contour value of -999;
       */
       if (interval == 0.0) {
-        Double dob = new Double(-999.0);
+        Double dob = -999.0;
         contourValues.add(dob);
       } else {
         /* determine integer multipliers of interval */
@@ -325,7 +322,7 @@ public class ContourGrid {
         int lowestmult = (int) (gridmin / interval) + 1;
 
         for (int i = lowestmult; i <= highestmult; i++) {
-          Double dob = new Double(i * interval);
+          Double dob = i * interval;
           contourValues.add(dob);
         }
       }
@@ -363,11 +360,11 @@ public class ContourGrid {
    *
    * @return an ArrayList of ContourFeature objects
    */
-  public ArrayList getContourLines() {
+  public List<ContourFeature> getContourLines() {
     // for timing tests only:
-    long t1 = 0, t2 = 0, dt = 0;
+    long t1 = 0, t2, dt;
 
-    ArrayList contourFeatureList = new ArrayList();
+    ArrayList<ContourFeature> contourFeatureList = new ArrayList<>();
 
     if (Debug.isSet("contour/contourTiming"))
       t1 = System.currentTimeMillis();
@@ -377,16 +374,14 @@ public class ContourGrid {
 
     /* For each contour level, find all of its contours in this grid. */
     for (int i = 0; i < contourValues.size(); i++) {
-      conLevel = ((Double) contourValues.get(i)).doubleValue();
+      conLevel = contourValues.get(i);
       numLevel = i;
 
       // check for flag of -999 contour level set in cstr indicating all
       // grid values are exactly the same and no contours are possible.
       if (conLevel == -999) {
-        System.err.println
-                ("  No contours possible: all same grid values");
-        ArrayList empty = new ArrayList();
-        return empty;
+        System.err.println("  No contours possible: all same grid values");
+        return new ArrayList<>();
       }
 
       searchWestEdge();
@@ -396,9 +391,9 @@ public class ContourGrid {
       sweepfromWest();
       sweepfromTop();
 
-      /** contouring is done for this contour level; make a
-       *  a ContourFeature which is an AbstractGisFeature
-       *  from the ContourLine ArrayList just completed. */
+      /* contouring is done for this contour level; make a
+         a ContourFeature which is an AbstractGisFeature
+         from the ContourLine ArrayList just completed. */
       ContourFeature oneLevelLines = new ContourFeature(contourLines);
 
       contourFeatureList.add(oneLevelLines);
@@ -426,14 +421,14 @@ public class ContourGrid {
    */
   private void setupContourCrossings() {
     int m, i, j;
-    double clevel, v1 = 0.0, v2;
+    double clevel, v1, v2;
     boolean test;
 
     // create working array of contour levels
     // to save multiple access
     double [] clevels = new double[contourValues.size()];
     for (m = 0; m < contourValues.size(); m++)
-      clevels[m] = ((Double) contourValues.get(m)).doubleValue();
+      clevels[m] = contourValues.get(m);
 
     // for each row, look at each pair of grid point values;
     // see if a contour crossing of any value occurs there
@@ -530,7 +525,7 @@ public class ContourGrid {
       // found an intersection on W edge of grid
       {
         ContourLine cline = new
-                ContourLine(followContour('W', i, j), (double) conLevel);
+                ContourLine(followContour('W', i, j), conLevel);
         contourLines.add(cline);
         contourOnVertlEdge[numLevel][j + i * dimX] = 0;
       }
@@ -554,7 +549,7 @@ public class ContourGrid {
       // of cell at i,j which is the east edge of cell (i-1, j)
       {
         ContourLine cline = new
-                ContourLine(followContour('E', i - 1, j), (double) conLevel);
+                ContourLine(followContour('E', i - 1, j), conLevel);
         contourLines.add(cline);
         contourOnVertlEdge[numLevel][j + i * dimX] = 0;
       }
@@ -581,7 +576,7 @@ public class ContourGrid {
       // the N side of cell (i,j-1)
       {
         ContourLine cline =
-                new ContourLine(followContour('N', i, j - 1), (double) conLevel);
+                new ContourLine(followContour('N', i, j - 1), conLevel);
         contourLines.add(cline);
         contourOnHorizEdge[numLevel][j + i * dimX] = 0;
       }
@@ -604,7 +599,7 @@ public class ContourGrid {
       // found an intersec on S edge
       {
         ContourLine cline =
-                new ContourLine(followContour('S', i, j), (double) conLevel);
+                new ContourLine(followContour('S', i, j), conLevel);
         contourLines.add(cline);
         contourOnHorizEdge[numLevel][j + i * dimX] = 0;
       }
@@ -633,7 +628,7 @@ public class ContourGrid {
           // follow this contour line to its end.
           ContourLine cline =
                   new ContourLine(followContour('S', i, j),
-                          (double) conLevel);
+                      conLevel);
           contourLines.add(cline);
           // set false (turn off indicator of crossing);
           contourOnHorizEdge[numLevel][j + i * dimX] = 0;
@@ -658,7 +653,7 @@ public class ContourGrid {
           // follow this contour line to its end.
           ContourLine cline =
                   new ContourLine(followContour('W', i, j),
-                          (double) conLevel);
+                      conLevel);
           contourLines.add(cline);
           // set false (turn off indicator of crossing):
           contourOnVertlEdge[numLevel][j + i * dimX] = 0;
@@ -677,7 +672,7 @@ public class ContourGrid {
    *
    * @return an ArrayList of Point2D.Double
    */
-  private ArrayList followContour(char firstSide, int i, int j) {
+  private List<Point2D.Double> followContour(char firstSide, int i, int j) {
     // the object to return:
     ArrayList cLinePts = new ArrayList();
 
@@ -860,7 +855,6 @@ public class ContourGrid {
         System.out.println(
                 "Impossible direction in contourEdgeIntersection" +
                         "  i=" + i + "  j=" + j + " direction=" + side);
-        ;
     }
 
     return intersection;
@@ -992,10 +986,10 @@ public class ContourGrid {
    * @return double
    */
   private double interpPosition(double cv, double v1, double v2) {
-    /** (Might improve slightly by nonlinear fit to
-     * four points along grid row or column. Probably would be big increase
-     * in time required, for an undetectable improvement in
-     * quality of contours and is not justified by data resolution anyway.)
+    /* (Might improve slightly by nonlinear fit to
+      four points along grid row or column. Probably would be big increase
+      in time required, for an undetectable improvement in
+      quality of contours and is not justified by data resolution anyway.)
      */
     if (v2 == v1) {
       return 0.5;

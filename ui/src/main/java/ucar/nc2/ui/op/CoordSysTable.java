@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.op;
 
+import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.ma2.ArrayChar;
 import ucar.ma2.ArrayDouble;
@@ -37,8 +38,6 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.AbstractAction;
@@ -501,7 +500,7 @@ public class CoordSysTable extends JPanel {
     }
   }
 
-  private void printArray(String title, double vals[]) {
+  private void printArray(String title, double[] vals) {
     Formatter sbuff = new Formatter();
     sbuff.format(" %s=", title);
     for (double val : vals) {
@@ -511,7 +510,7 @@ public class CoordSysTable extends JPanel {
     infoTA.appendLine(sbuff.toString());
   }
 
-  private void printArrays(String title, double vals[], double vals2[]) {
+  private void printArrays(String title, double[] vals, double[] vals2) {
     Formatter sbuff = new Formatter();
     sbuff.format(" %s%n", title);
     for (int i=0; i<vals.length; i++) {
@@ -684,11 +683,7 @@ public class CoordSysTable extends JPanel {
           // sort by largest size first
       if (v.getCoordinateSystems().size() > 0) {
         List<CoordinateSystem> css = new ArrayList<>(v.getCoordinateSystems());
-        Collections.sort(css, new Comparator<CoordinateSystem>() {
-          public int compare(CoordinateSystem o1, CoordinateSystem o2) {
-            return o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size();
-          }
-        });
+        css.sort((o1, o2) -> o2.getCoordinateAxes().size() - o1.getCoordinateAxes().size());
         CoordinateSystem cs = css.get(0);
         for (CoordinateSystemBean csBean : csList)
           if (cs == csBean.coordSys) coordSysBean = csBean;
@@ -715,6 +710,7 @@ public class CoordSysTable extends JPanel {
       return (units == null) ? "null" : units;
     }
 
+    @Nullable
     public String getAbbrev() {
       Attribute att = ve.findAttributeIgnoreCase(CDM.ABBREV);
       return (att == null) ? null : att.getStringValue();

@@ -4,7 +4,6 @@
  */
 package ucar.nc2.ui.point;
 
-import ucar.nc2.time.CalendarDateRange;
 import ucar.nc2.ui.event.ActionSourceListener;
 import ucar.nc2.ui.event.ActionValueEvent;
 import ucar.nc2.ui.event.ActionValueListener;
@@ -58,7 +57,7 @@ import java.beans.PropertyChangeListener;
  * do we wnat to remove actionSource ? we have setSelectedStation instead.
  */
 public class StationRegionDateChooser extends NPController {
-  private boolean regionSelect = true, stationSelect = true, dateSelect = true;
+  private boolean regionSelect, stationSelect, dateSelect;
 
   // station
   private StationRenderer stnRender = null;
@@ -246,9 +245,7 @@ public class StationRegionDateChooser extends NPController {
     BAMutil.setActionProperties(decrFontAction, "FontDecr", "decrease font size", false, 'D', -1);
 
     JCheckBox declutCB = new JCheckBox("Declutter", true);
-    declutCB.addActionListener(e -> {
-        setDeclutter(((JCheckBox) e.getSource()).isSelected());
-    });
+    declutCB.addActionListener(e -> setDeclutter(((JCheckBox) e.getSource()).isSelected()));
 
     AbstractAction bbAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
@@ -441,8 +438,8 @@ public class StationRegionDateChooser extends NPController {
       }
     }
 
-    for (int i = 0; i < renderers.size(); i++) {
-      ucar.nc2.ui.util.Renderer rend = (Renderer) renderers.get(i);
+    for (Object renderer : renderers) {
+      Renderer rend = (Renderer) renderer;
       rend.draw(gNP, atI);
     }
     gNP.dispose();
@@ -548,9 +545,7 @@ public class StationRegionDateChooser extends NPController {
       // add a dismiss button
       JPanel buttPanel = new JPanel();
       JButton dismissButton = new JButton("Dismiss");
-      dismissButton.addActionListener(e -> {
-          setVisible(false);
-      });
+      dismissButton.addActionListener(e -> setVisible(false));
       buttPanel.add(dismissButton, null);
 
       // add it to contentPane

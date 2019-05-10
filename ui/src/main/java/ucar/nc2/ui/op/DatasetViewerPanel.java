@@ -30,7 +30,7 @@ import javax.swing.JSplitPane;
  */
 public class DatasetViewerPanel extends OpPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private DatasetViewer dsViewer;
@@ -140,7 +140,7 @@ public class DatasetViewerPanel extends OpPanel {
         }
         ncfile = nc;
 
-        if (ncfile != null) {
+        if (nc != null) {
             dsViewer.setDataset(nc);
             setSelectedItem(nc.getLocation());
         }

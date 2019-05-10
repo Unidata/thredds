@@ -54,7 +54,7 @@ import ucar.nc2.ui.widget.FontUtil;
  */
 public class PointRenderer implements Renderer {
 
-  private java.util.List<ObservationUI> obsUIlist = new ArrayList<ObservationUI>(); // ObservationUI objects
+  private java.util.List<ObservationUI> obsUIlist = new ArrayList<>(); // ObservationUI objects
   private ProjectionImpl project = null;        // display projection
 
   // drawing parameters
@@ -80,8 +80,9 @@ public class PointRenderer implements Renderer {
     textFont = FontUtil.getStandardFont(10);
   }
 
-  public void incrFontSize() { textFont.incrFontSize(); };
-  public void decrFontSize() { textFont.decrFontSize(); };
+  public void incrFontSize() { textFont.incrFontSize(); }
+
+  public void decrFontSize() { textFont.decrFontSize(); }
 
   public void setColor(java.awt.Color color){ this.color = color; }
   public java.awt.Color getColor() { return color; }
@@ -91,7 +92,7 @@ public class PointRenderer implements Renderer {
   }
 
   public void setPointFeatures( java.util.List<PointFeature> obs) throws IOException {
-    obsUIlist = new ArrayList<ObservationUI>( obs.size());
+    obsUIlist = new ArrayList<>(obs.size());
     for (PointFeature ob : obs) {
       ObservationUI sui = new ObservationUI( ob); // wrap in a StationUI
       obsUIlist.add(sui); // wrap in a StationUI
@@ -107,9 +108,9 @@ public class PointRenderer implements Renderer {
 
   public void setSelected( PointFeature obs) {
     selected = null;
-    for (int i=0; i < obsUIlist.size(); i++) {
-      ObservationUI s = (ObservationUI) obsUIlist.get(i);
-      if (testPointObsDatatype( s.obs,  obs)) {
+    for (ObservationUI observationUI : obsUIlist) {
+      ObservationUI s = observationUI;
+      if (testPointObsDatatype(s.obs, obs)) {
         selected = s;
         break;
       }
@@ -138,9 +139,9 @@ public class PointRenderer implements Renderer {
 
   private void calcWorldPos() {
     if (project == null) return;
-    for (int i = 0; i < obsUIlist.size(); i++) {
-      ObservationUI s = (ObservationUI) obsUIlist.get(i);
-      s.worldPos.setLocation( project.latLonToProj(s.latlonPos));
+    for (ObservationUI observationUI : obsUIlist) {
+      ObservationUI s = observationUI;
+      s.worldPos.setLocation(project.latLonToProj(s.latlonPos));
     }
     posWasCalc = true;
   }
@@ -245,20 +246,21 @@ public class PointRenderer implements Renderer {
     int count = 0;
     int npts = obsUIlist.size();
     GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, npts);
-    for (int i=0; i < npts; i++) {
-      ObservationUI s = (ObservationUI) obsUIlist.get(i);
+    for (ObservationUI observationUI : obsUIlist) {
+      ObservationUI s = observationUI;
       s.calcPos(world2Normal);
       s.draw(g);
 
-      if (Double.isNaN( s.screenPos.getX())) {
-        System.out.println("screenPos="+s.screenPos+" world = "+s.worldPos);
+      if (Double.isNaN(s.screenPos.getX())) {
+        System.out.println("screenPos=" + s.screenPos + " world = " + s.worldPos);
         continue;
       }
 
-      if (count == 0)
-        path.moveTo( (float) s.screenPos.getX(), (float) s.screenPos.getY());
-      else
-        path.lineTo( (float) s.screenPos.getX(), (float) s.screenPos.getY());
+      if (count == 0) {
+        path.moveTo((float) s.screenPos.getX(), (float) s.screenPos.getY());
+      } else {
+        path.lineTo((float) s.screenPos.getX(), (float) s.screenPos.getY());
+      }
       count++;
     }
 

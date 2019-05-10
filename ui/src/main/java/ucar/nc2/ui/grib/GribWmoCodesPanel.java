@@ -59,9 +59,7 @@ public class GribWmoCodesPanel extends JPanel {
     entryTable = new BeanTable(EntryBean.class, (PreferencesExt) prefs.node("EntryBean"), false);
 
     AbstractButton dupButton = BAMutil.makeButtcon("Select", "Look for problems in this table", false);
-    dupButton.addActionListener(e -> {
-      lookForProblems();
-    });
+    dupButton.addActionListener(e -> lookForProblems());
     buttPanel.add(dupButton);
 
     // the info window

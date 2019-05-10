@@ -4,8 +4,8 @@
  */
 package ucar.nc2.ui.gis;
 
+import ucar.nc2.ui.gis.GisFeatureRendererMulti.FeatureMD.Part;
 import ucar.unidata.geoloc.*;
-import ucar.unidata.geoloc.projection.*;
 
 import ucar.util.prefs.ui.Debug;
 
@@ -43,9 +43,8 @@ public abstract class GisFeatureRendererMulti extends GisFeatureRenderer {
 
     if (featSetList == null)
       return;
-    Iterator iter = featSetList.iterator();
-    while (iter.hasNext()) {
-      FeatureSet fs = (FeatureSet) iter.next();
+    for (Object o : featSetList) {
+      FeatureSet fs = (FeatureSet) o;
       fs.newProjection = true;
     }
   }
@@ -188,7 +187,7 @@ feats:while (featList.hasNext()) {
   }
 
   private class FeatureSet {
-    List featureList = null;
+    List featureList;
     double minDist;
     ProjectionImpl project = null;
     ArrayList shapeList = null;
@@ -213,35 +212,37 @@ feats:while (featList.hasNext()) {
     void createFeatures() {
       featureList = new ArrayList();
 
-      Iterator iter = GisFeatureRendererMulti.this.getFeatures().iterator();   // this is the original, full resolution set
-      while (iter.hasNext()) {
-        AbstractGisFeature feature = (AbstractGisFeature) iter.next();
+      for (Object o : GisFeatureRendererMulti.this.getFeatures()) {
+        AbstractGisFeature feature = (AbstractGisFeature) o;
         FeatureMD featMD = new FeatureMD(minDist);
 
         Iterator pi = feature.getGisParts();
         while (pi.hasNext()) {
           GisPart gp = (GisPart) pi.next();
-          FeatureMD.Part part = featMD.newPart(gp.getNumPoints());
+          Part part = featMD.newPart(gp.getNumPoints());
 
           int np = gp.getNumPoints();
           double[] xx = gp.getX();
           double[] yy = gp.getY();
 
-          part.set( xx[0], yy[0]);
-          for(int i=1; i < np-1; i++)
-            part.setIfDistant( xx[i], yy[i]);
+          part.set(xx[0], yy[0]);
+          for (int i = 1; i < np - 1; i++) {
+            part.setIfDistant(xx[i], yy[i]);
+          }
 
           if (part.getNumPoints() > 1) {
-            part.set( xx[np-1], yy[np-1]); // close polygons
+            part.set(xx[np - 1], yy[np - 1]); // close polygons
             part.truncateArray();
             featMD.add(part);
           }
         } // loop over parts
 
-        if (featSetList == null)
+        if (featSetList == null) {
           initFeatSetList();
-        if (featMD.getNumParts() > 0)
-          featureList.add( featMD);
+        }
+        if (featMD.getNumParts() > 0) {
+          featureList.add(featMD);
+        }
       } // loop over featuures
 
       getStats(featureList.iterator());
@@ -258,7 +259,7 @@ feats:while (featList.hasNext()) {
   } // FeatureSet inner class
 
     // these are derived Features based on a mimimum distance between points
-  private static class FeatureMD extends AbstractGisFeature {
+  static class FeatureMD extends AbstractGisFeature {
     private ArrayList parts = new ArrayList();
     private int total_pts = 0;
     private double minDist;

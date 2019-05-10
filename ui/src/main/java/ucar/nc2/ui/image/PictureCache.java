@@ -79,10 +79,10 @@ public class PictureCache  {
 		
 
 
-	/**
-	 *   Method that can be called when a picture is no longer needed.
-	 *   These pictures will be removed first from the cache when
-	 *   we need more space.
+	/*
+	    Method that can be called when a picture is no longer needed.
+	    These pictures will be removed first from the cache when
+	    we need more space.
 	 */
 /*	public static void suggestCacheRemoval( SortableDefaultMutableTreeNode node ) {
 		if (node == null ) return;
@@ -180,13 +180,13 @@ public class PictureCache  {
 	 */
 	public static synchronized void reportCache() {
 		Tools.log("   PictureCache.reportCache: cache contains: " 
-			+ Integer.toString( pictureCache.size() )
+			+ pictureCache.size()
 			+ " max: " 
-			+ Integer.toString( maxCache ) );
+			+ maxCache);
 		//Tools.freeMem();
 		Enumeration e = pictureCache.keys();
 		while ( e.hasMoreElements() ) {
-			Tools.log("   Cache contains: " + ((String) e.nextElement()) );
+			Tools.log("   Cache contains: " + e.nextElement());
 		} 
 		Tools.log("  End of cache contents");
 	}

@@ -2,9 +2,9 @@
  * Copyright (c) 1998-2018 University Corporation for Atmospheric Research/Unidata
  * See LICENSE for license information.
  */
-/**
- *  Class to contain a single field of data from a dbase file
- * @author Russ Rew
+/*
+   Class to contain a single field of data from a dbase file
+  @author Russ Rew
  */
 package ucar.nc2.ui.gis.shapefile;
 
@@ -19,15 +19,15 @@ public class DbaseData {
   /**
    * Character type data (String[]).
    */
-  public final static int TYPE_CHAR = 0;
+  public static final int TYPE_CHAR = 0;
   /**
    * Data is an array of doubles (double[]).
    */
-  public final static int TYPE_NUMERIC = 1;
+  public static final int TYPE_NUMERIC = 1;
   /**
    * Data is an array of booleans (boolean[]).
    */
-  public final static int TYPE_BOOLEAN = 2;
+  public static final int TYPE_BOOLEAN = 2;
 
   /* the various possible types */
   String[] character;

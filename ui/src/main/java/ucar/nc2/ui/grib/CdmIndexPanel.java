@@ -499,8 +499,8 @@ public class CdmIndexPanel extends JPanel {
   }
 
   private void compareCoords(Formatter f, Coordinate coord1, Coordinate coord2) {
-    List<? extends Object> vals1 = coord1.getValues();
-    List<? extends Object> vals2 = coord2.getValues();
+    List<?> vals1 = coord1.getValues();
+    List<?> vals2 = coord2.getValues();
     f.format("Coordinate %s%n", coord1.getName());
     for (Object val1 : vals1) {
       if (!vals2.contains(val1)) {
@@ -560,9 +560,9 @@ public class CdmIndexPanel extends JPanel {
     }
 
     Set<Object> set1 = makeCoordSet(coord1);
-    List<? extends Object> list1 = coord1.getOffsetsSorted();
+    List<?> list1 = coord1.getOffsetsSorted();
     Set<Object> set2 = makeCoordSet(coord2);
-    List<? extends Object> list2 = coord2.getOffsetsSorted();
+    List<?> list2 = coord2.getOffsetsSorted();
 
     f.format("%nCoordinate %s%n", coord1.getName());
     for (Object val : list1) f.format(" %s,", val);
@@ -579,13 +579,12 @@ public class CdmIndexPanel extends JPanel {
     Set<Object> result = new HashSet<>(100);
     for (int runIdx = 0; runIdx < time2D.getNruns(); runIdx++) {
       Coordinate coord = time2D.getTimeCoordinate(runIdx);
-      for (Object val : coord.getValues())
-        result.add(val);
+      result.addAll(coord.getValues());
     }
     return result;
   }
 
-  private void testMissing(Formatter f, List<? extends Object> test, Set<Object> against) {
+  private void testMissing(Formatter f, List<?> test, Set<Object> against) {
     int countMissing = 0;
     for (Object val1 : test) {
       if (!against.contains(val1))
@@ -614,9 +613,7 @@ public class CdmIndexPanel extends JPanel {
     for (CoordinateTimeAbstract coord : times) {
       max = Math.max(max, coord.getSize());
       for (Object val : coord.getValues()) {
-        Integer count = allCoords.get(val);
-        if (count == null) allCoords.put(val, 1);
-        else allCoords.put(val, count + 1);
+        allCoords.merge(val, 1, (a, b) -> a + b);
       }
     }
 
@@ -651,11 +648,7 @@ public class CdmIndexPanel extends JPanel {
       CoordinateTimeAbstract coord = time2D.getTimeCoordinate(runIdx);
       CalendarDate runDate = coord.getRefDate();
       int hour = runDate.getHourOfDay();
-      List<CoordinateTimeAbstract> hg = hourMap.get(hour);
-      if (hg == null) {
-        hg = new ArrayList<>();
-        hourMap.put(hour, hg);
-      }
+      List<CoordinateTimeAbstract> hg = hourMap.computeIfAbsent(hour, k -> new ArrayList<>());
       hg.add(coord);
     }
 
@@ -684,8 +677,7 @@ public class CdmIndexPanel extends JPanel {
     Set<Object> allCoords = new HashSet<>(100);
     for (CoordinateTimeAbstract coord : times) {
       max = Math.max(max, coord.getSize());
-      for (Object val : coord.getValues())
-        allCoords.add(val);
+      allCoords.addAll(coord.getValues());
     }
 
     // is the set of all values the same as the component times?
@@ -957,7 +949,7 @@ public class CdmIndexPanel extends JPanel {
 
       } else if (coord instanceof CoordinateTime2D) {
         CoordinateTime2D time = (CoordinateTime2D) coord;
-        List<? extends Object> offsets = time.getOffsetsSorted();
+        List<?> offsets = time.getOffsetsSorted();
         int n = offsets.size();
         //double offsetFromMaster = time.getOffsetInTimeUnits(gc.getMasterFirstDate());
 

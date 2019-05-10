@@ -34,7 +34,7 @@ public class PopupManager {
 
   public void show(String text, Point p, Component owner, Object forWho) {
     if (isShowing && (showing == forWho)) { return; }
-    if (isShowing && (showing != forWho)) { popup.hide(); };
+    if (isShowing && (showing != forWho)) { popup.hide(); }
 
     isShowing = true;
     showing = forWho;

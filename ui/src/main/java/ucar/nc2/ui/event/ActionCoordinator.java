@@ -64,7 +64,7 @@ public class ActionCoordinator implements ActionValueListener {
     lm.removeListener(l);
   } */
 
-  static public void main( String[] argv) {
+    public static void main( String[] argv) {
     ActionCoordinator ac = new ActionCoordinator("test");
 /*    System.out.println("failure test------------");
     try {

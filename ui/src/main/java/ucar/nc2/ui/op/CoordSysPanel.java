@@ -27,7 +27,7 @@ import javax.swing.JOptionPane;
  */
 public class CoordSysPanel extends OpPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private NetcdfDataset ds;
@@ -98,9 +98,8 @@ public class CoordSysPanel extends OpPanel {
             logger.warn("close failed");
         }
 
-        Object spiObject = null;
         try {
-            ds = NetcdfDataset.openDataset(command, true, -1, null, spiObject);
+            ds = NetcdfDataset.openDataset(command, true, -1, null, null);
             if (ds == null) {
                 JOptionPane.showMessageDialog(null, "Failed to open <" + command + ">");
             }

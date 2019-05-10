@@ -95,13 +95,13 @@ public class PopupMenu extends JPopupMenu {
   public void addActionCheckBox( String menuName, AbstractAction act, boolean state) {
     JMenuItem mi = new JCheckBoxMenuItem(menuName, state);
     mi.addActionListener( new BAMutil.ActionToggle(act, mi));
-    act.putValue(BAMutil.STATE, new Boolean(state));
+    act.putValue(BAMutil.STATE, state);
     add( mi);
   }
 
   public JComponent getParentComponent() { return parent; }
 
-  public static abstract class PopupTriggerListener extends MouseAdapter {
+  public abstract static class PopupTriggerListener extends MouseAdapter {
     private boolean anyButton = false;
     PopupTriggerListener( boolean anyButton) {
       this.anyButton = anyButton;

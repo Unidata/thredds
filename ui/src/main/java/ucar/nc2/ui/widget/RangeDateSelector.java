@@ -18,10 +18,7 @@ import ucar.util.prefs.ui.PrefPanel;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -38,7 +35,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
   public static final String TIME_DURATION = "duration";
   public static final String TIME_RESOLUTION = "resolution";
 
-  static private final int SLIDER_RESOLUTION = 1000;
+  private static final int SLIDER_RESOLUTION = 1000;
 
   private String title, helpMessage;
   private boolean acceptButton, enableButton, isPointOnly, useLimits;
@@ -77,7 +74,6 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
    * @param acceptButton add an acceptButton
    * @param help optional help text
    * @param pointOnly if user can only select one point, otherwise can select a range of dates.
-   * @throws java.text.ParseException
    */
   public RangeDateSelector(String title, String start, String end, String durationS, String minInterval,
                            boolean enableButton, boolean acceptButton, String help, boolean pointOnly) throws Exception {
@@ -439,7 +435,7 @@ public class RangeDateSelector extends JPanel implements FieldValidator {
     }
   }
 
-  public static void main(String args[]) throws Exception {
+  public static void main(String[] args) throws Exception {
 
     JFrame frame = new JFrame("Test Date Range Selector");
     frame.addWindowListener(new WindowAdapter() {

@@ -11,7 +11,6 @@ import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.ui.widget.TextHistoryPane;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
-import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.tables.TableD;
 import ucar.ma2.DataType;
@@ -93,7 +92,8 @@ public class BufrTableDViewer extends JPanel {
         try {
           Formatter out = new Formatter();
           TableD wmoTable = BufrTables.getWmoTableD(13);
-          compare(currTable, wmoTable, out);
+          if (wmoTable != null)
+            compare(currTable, wmoTable, out);
 
           compareTA.setText(out.toString());
           compareTA.gotoTop();
@@ -281,11 +281,7 @@ public class BufrTableDViewer extends JPanel {
 
     List<TableD.Descriptor> listDesc = new ArrayList<>(table.getDescriptors());
     for (TableD.Descriptor d : listDesc) {
-      List<DdsBean> list = allVariants.get(d.getId());
-      if (list == null) {
-        list = new ArrayList<>(10);
-        allVariants.put(d.getId(), list);
-      }
+      List<DdsBean> list = allVariants.computeIfAbsent(d.getId(), k -> new ArrayList<>(10));
       list.add(new DdsBean(key, d));
     }
   }

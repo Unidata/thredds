@@ -33,8 +33,10 @@ import ucar.nc2.ui.op.*;
 import ucar.nc2.ui.util.SocketMessage;
 import ucar.nc2.ui.widget.*;
 import ucar.nc2.ui.widget.ProgressMonitor;
-import ucar.nc2.units.*;
-import ucar.nc2.util.*;
+import ucar.nc2.util.CancelTask;
+import ucar.nc2.util.DebugFlags;
+import ucar.nc2.util.DiskCache2;
+import ucar.nc2.util.IO;
 import ucar.nc2.util.cache.FileCache;
 import ucar.nc2.util.xml.RuntimeConfigParser;
 import ucar.unidata.io.RandomAccessFile;
@@ -58,17 +60,16 @@ import javax.swing.filechooser.FileFilter;
  * @author caron
  */
 public class ToolsUI extends JPanel {
-  private final static org.slf4j.Logger log
-                            = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  private final static String DIALOG_VERSION = "5.0";
+  private static final String DIALOG_VERSION = "5.0";
 
-  public final static String WORLD_DETAIL_MAP = "/resources/nj22/ui/maps/Countries.shp";
-  public final static String US_MAP = "/resources/nj22/ui/maps/us_state.shp";
+  public static final String WORLD_DETAIL_MAP = "/resources/nj22/ui/maps/Countries.shp";
+  public static final String US_MAP = "/resources/nj22/ui/maps/us_state.shp";
 
-  public final static String FRAME_SIZE = "FrameSize";
-  public final static String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
-  public final static String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
+  public static final String FRAME_SIZE = "FrameSize";
+  public static final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
+  public static final String GRIDIMAGE_FRAME_SIZE = "GridImageWindowSize";
 
   private static boolean debugListen;
 
@@ -80,24 +81,30 @@ public class ToolsUI extends JPanel {
 
   private static String wantDataset;
 
-  private JFrame parentFrame;   // redundant? will equal static "frame" defined just above
+  private final JFrame parentFrame;   // redundant? will equal static "frame" defined just above
 
-  private FileManager fileChooser;
+  private final FileManager fileChooser;
   private FileManager bufrFileChooser;
 
-  private JTabbedPane tabbedPane;
-  private JTabbedPane iospTabPane, bufrTabPane, gribTabPane, grib2TabPane, grib1TabPane, hdf5TabPane;
-  private JTabbedPane ftTabPane, fcTabPane;
-  private JTabbedPane fmrcTabPane;
-  private JTabbedPane ncmlTabPane;
+  private final JTabbedPane tabbedPane;
+  private final JTabbedPane iospTabPane;
+  private final JTabbedPane bufrTabPane;
+  private final JTabbedPane gribTabPane;
+  private final JTabbedPane grib2TabPane;
+  private final JTabbedPane grib1TabPane;
+  private final JTabbedPane hdf5TabPane;
+  private final JTabbedPane ftTabPane;
+  private final JTabbedPane fcTabPane;
+  private final JTabbedPane fmrcTabPane;
+  private final JTabbedPane ncmlTabPane;
 
-  private PreferencesExt mainPrefs;
+  private final PreferencesExt mainPrefs;
 
   // Op panels and friends
-  private OpPanel aggPanel;
-  private OpPanel bufrPanel;
-  private OpPanel bufrTableBPanel;
-  private OpPanel bufrTableDPanel;
+  private AggPanel aggPanel;
+  private BufrPanel bufrPanel;
+  private BufrTableBPanel bufrTableBPanel;
+  private BufrTableDPanel bufrTableDPanel;
   private ReportOpPanel bufrReportPanel;
   private BufrCdmIndexOpPanel bufrCdmIndexPanel;
   private BufrCodePanel bufrCodePanel;
@@ -111,12 +118,12 @@ public class ToolsUI extends JPanel {
   private DatasetViewerPanel nc4viewer;
   private DatasetWriterPanel writerPanel;
   private DirectoryPartitionPanel dirPartPanel;
-  private FeatureScanPanel ftPanel;
+  private FeatureScanOpPanel ftPanel;
   private FmrcPanel fmrcPanel;
   private FmrcCollectionPanel fmrcCollectionPanel;
   private GeoGridPanel gridPanel;
   private GeotiffPanel geotiffPanel;
-  private OpPanel gribCodePanel;
+  private GribCodePanel gribCodePanel;
   private GribFilesOpPanel gribFilesPanel;
   private GribIndexOpPanel gribIdxPanel;
   private GribRewriteOpPanel gribRewritePanel;
@@ -125,13 +132,13 @@ public class ToolsUI extends JPanel {
   private ReportOpPanel grib1ReportPanel;
   private Grib1TablePanel grib1TablePanel;
   private Grib2CollectionOpPanel grib2CollectionPanel;
-  private OpPanel grib2TablePanel;
-  private OpPanel grib2ReportPanel;
-  private OpPanel grib1DataPanel;
-  private OpPanel grib2DataPanel;
-  private OpPanel hdf5ObjectPanel;
-  private OpPanel hdf5DataPanel;
-  private OpPanel hdf4Panel;
+  private Grib2TablePanel grib2TablePanel;
+  private ReportOpPanel grib2ReportPanel;
+  private Grib1DataOpPanel grib1DataPanel;
+  private Grib2DataOpPanel grib2DataPanel;
+  private Hdf5ObjectPanel hdf5ObjectPanel;
+  private Hdf5DataPanel hdf5DataPanel;
+  private Hdf4Panel hdf4Panel;
   private ImagePanel imagePanel;
   private NcStreamOpPanel ncStreamPanel;
   private NCdumpPanel ncdumpPanel;
@@ -147,155 +154,154 @@ public class ToolsUI extends JPanel {
   private WmsPanel wmsPanel;
 
   // data
-  private DataFactory threddsDataFactory = new DataFactory();
+  private final DataFactory threddsDataFactory = new DataFactory();
 
   private boolean useRecordStructure;
   private DiskCache2Form diskCache2Form;
 
   // debugging
-  private DebugFlags debugFlags;
+  private final DebugFlags debugFlags;
 
-/**
- *
- */
-  public ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
+  /**
+   *
+   */
+  private ToolsUI(PreferencesExt prefs, JFrame parentFrame) {
     this.mainPrefs = prefs;
     this.parentFrame = parentFrame;
 
     // FileChooser is shared
-    FileFilter[] filters = new FileFilter[]{ new FileManager.HDF5ExtFilter(),
-                                             new FileManager.NetcdfExtFilter() };
-    fileChooser = new FileManager(parentFrame, null, filters, (PreferencesExt) prefs.node("FileManager"));
+    FileFilter[] filters = new FileFilter[]{new FileManager.HDF5ExtFilter(),
+        new FileManager.NetcdfExtFilter()};
+    fileChooser = new FileManager(parentFrame, null, filters,
+        (PreferencesExt) prefs.node("FileManager"));
 
     OpPanel.setFileChooser(fileChooser);
 
     // all the tabbed panes
-    tabbedPane   = new JTabbedPane(JTabbedPane.TOP);
-    iospTabPane  = new JTabbedPane(JTabbedPane.TOP);
-    gribTabPane  = new JTabbedPane(JTabbedPane.TOP);
+    tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+    iospTabPane = new JTabbedPane(JTabbedPane.TOP);
+    gribTabPane = new JTabbedPane(JTabbedPane.TOP);
     grib2TabPane = new JTabbedPane(JTabbedPane.TOP);
     grib1TabPane = new JTabbedPane(JTabbedPane.TOP);
-    bufrTabPane  = new JTabbedPane(JTabbedPane.TOP);
-    ftTabPane    = new JTabbedPane(JTabbedPane.TOP);
-    fcTabPane    = new JTabbedPane(JTabbedPane.TOP);
-    fmrcTabPane  = new JTabbedPane(JTabbedPane.TOP);
-    hdf5TabPane  = new JTabbedPane(JTabbedPane.TOP);
-    ncmlTabPane  = new JTabbedPane(JTabbedPane.TOP);
+    bufrTabPane = new JTabbedPane(JTabbedPane.TOP);
+    ftTabPane = new JTabbedPane(JTabbedPane.TOP);
+    fcTabPane = new JTabbedPane(JTabbedPane.TOP);
+    fmrcTabPane = new JTabbedPane(JTabbedPane.TOP);
+    hdf5TabPane = new JTabbedPane(JTabbedPane.TOP);
+    ncmlTabPane = new JTabbedPane(JTabbedPane.TOP);
 
     // Create and attach the initially visible panel in the top level tabbed pane
     viewerPanel = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("varTable"), false);
     tabbedPane.addTab("Viewer", viewerPanel);
 
     // All other panels are deferred construction for fast startup
-    tabbedPane.addTab("Writer",       new JLabel("Writer"));
-    tabbedPane.addTab("NCDump",       new JLabel("NCDump"));
-    tabbedPane.addTab("Iosp",         iospTabPane);
-    tabbedPane.addTab("CoordSys",     new JLabel("CoordSys"));
+    tabbedPane.addTab("Writer", new JLabel("Writer"));
+    tabbedPane.addTab("NCDump", new JLabel("NCDump"));
+    tabbedPane.addTab("Iosp", iospTabPane);
+    tabbedPane.addTab("CoordSys", new JLabel("CoordSys"));
     tabbedPane.addTab("FeatureTypes", ftTabPane);
-    tabbedPane.addTab("THREDDS",      new JLabel("THREDDS"));
-    tabbedPane.addTab("Fmrc",         fmrcTabPane);
-    tabbedPane.addTab("GeoTiff",      new JLabel("GeoTiff"));
-    tabbedPane.addTab("Units",        new JLabel("Units"));
-    tabbedPane.addTab("NcML",         ncmlTabPane);
-    tabbedPane.addTab("URLdump",      new JLabel("URLdump"));
+    tabbedPane.addTab("THREDDS", new JLabel("THREDDS"));
+    tabbedPane.addTab("Fmrc", fmrcTabPane);
+    tabbedPane.addTab("GeoTiff", new JLabel("GeoTiff"));
+    tabbedPane.addTab("Units", new JLabel("Units"));
+    tabbedPane.addTab("NcML", ncmlTabPane);
+    tabbedPane.addTab("URLdump", new JLabel("URLdump"));
     tabbedPane.setSelectedIndex(0);
     tabbedPane.addChangeListener(e -> {
-        final Component c = tabbedPane.getSelectedComponent();
-        if (c instanceof JLabel) {
-          int idx = tabbedPane.getSelectedIndex();
-          final String title = tabbedPane.getTitleAt(idx);
-          makeComponent(tabbedPane, title);
-        }
+      final Component c = tabbedPane.getSelectedComponent();
+      if (c instanceof JLabel) {
+        int idx = tabbedPane.getSelectedIndex();
+        final String title = tabbedPane.getTitleAt(idx);
+        makeComponent(tabbedPane, title);
+      }
     });
 
     setLayout(new BorderLayout());
     add(tabbedPane, BorderLayout.CENTER);
 
     // nested tab - iosp
-    iospTabPane.addTab("BUFR",        bufrTabPane);
-    iospTabPane.addTab("GRIB",        gribTabPane);
-    iospTabPane.addTab("GRIB2",       grib2TabPane);
-    iospTabPane.addTab("GRIB1",       grib1TabPane);
-    iospTabPane.addTab("HDF5",        hdf5TabPane);
-    iospTabPane.addTab("HDF4",        new JLabel("HDF4"));
-    iospTabPane.addTab("NcStream",    new JLabel("NcStream"));
+    iospTabPane.addTab("BUFR", bufrTabPane);
+    iospTabPane.addTab("GRIB", gribTabPane);
+    iospTabPane.addTab("GRIB2", grib2TabPane);
+    iospTabPane.addTab("GRIB1", grib1TabPane);
+    iospTabPane.addTab("HDF5", hdf5TabPane);
+    iospTabPane.addTab("HDF4", new JLabel("HDF4"));
+    iospTabPane.addTab("NcStream", new JLabel("NcStream"));
     iospTabPane.addTab("CdmrFeature", new JLabel("CdmrFeature"));
     addListeners(iospTabPane);
 
     // nested-2 tab - bufr
-    bufrTabPane.addTab("BUFR",         new JLabel("BUFR"));
+    bufrTabPane.addTab("BUFR", new JLabel("BUFR"));
     bufrTabPane.addTab("BufrCdmIndex", new JLabel("BufrCdmIndex"));
-    bufrTabPane.addTab("BUFRTableB",   new JLabel("BUFRTableB"));
-    bufrTabPane.addTab("BUFRTableD",   new JLabel("BUFRTableD"));
-    bufrTabPane.addTab("BUFR-CODES",   new JLabel("BUFR-CODES"));
-    bufrTabPane.addTab("BufrReports",  new JLabel("BufrReports"));
+    bufrTabPane.addTab("BUFRTableB", new JLabel("BUFRTableB"));
+    bufrTabPane.addTab("BUFRTableD", new JLabel("BUFRTableD"));
+    bufrTabPane.addTab("BUFR-CODES", new JLabel("BUFR-CODES"));
+    bufrTabPane.addTab("BufrReports", new JLabel("BufrReports"));
     addListeners(bufrTabPane);
 
     // nested-2 tab - grib
     //gribTabPane.addTab("CdmIndex", new JLabel("CdmIndex"));
-    gribTabPane.addTab("CdmIndex4",      new JLabel("CdmIndex4"));
+    gribTabPane.addTab("CdmIndex4", new JLabel("CdmIndex4"));
     gribTabPane.addTab("CdmIndexReport", new JLabel("CdmIndexReport"));
-    gribTabPane.addTab("GribIndex",      new JLabel("GribIndex"));
-    gribTabPane.addTab("WMO-COMMON",     new JLabel("WMO-COMMON"));
-    gribTabPane.addTab("WMO-CODES",      new JLabel("WMO-CODES"));
-    gribTabPane.addTab("WMO-TEMPLATES",  new JLabel("WMO-TEMPLATES"));
-    gribTabPane.addTab("GRIB-Rename",    new JLabel("GRIB-Rename"));
-    gribTabPane.addTab("GRIB-Rewrite",   new JLabel("GRIB-Rewrite"));
+    gribTabPane.addTab("GribIndex", new JLabel("GribIndex"));
+    gribTabPane.addTab("WMO-COMMON", new JLabel("WMO-COMMON"));
+    gribTabPane.addTab("WMO-CODES", new JLabel("WMO-CODES"));
+    gribTabPane.addTab("WMO-TEMPLATES", new JLabel("WMO-TEMPLATES"));
+    gribTabPane.addTab("GRIB-Rewrite", new JLabel("GRIB-Rewrite"));
     addListeners(gribTabPane);
 
     // nested-2 tab - grib-2
     grib2TabPane.addTab("GRIB2collection", new JLabel("GRIB2collection"));
-    grib2TabPane.addTab("GRIB2rectilyze",  new JLabel("GRIB2rectilyze"));
-    grib2TabPane.addTab("GRIB2-REPORT",    new JLabel("GRIB2-REPORT"));
-    grib2TabPane.addTab("GRIB2data",       new JLabel("GRIB2data"));
-    grib2TabPane.addTab("GRIB2-TABLES",    new JLabel("GRIB2-TABLES"));
+    grib2TabPane.addTab("GRIB2-REPORT", new JLabel("GRIB2-REPORT"));
+    grib2TabPane.addTab("GRIB2data", new JLabel("GRIB2data"));
+    grib2TabPane.addTab("GRIB2-TABLES", new JLabel("GRIB2-TABLES"));
     addListeners(grib2TabPane);
 
     // nested-2 tab - grib-1
     grib1TabPane.addTab("GRIB1collection", new JLabel("GRIB1collection"));
-    grib1TabPane.addTab("GRIB-FILES",      new JLabel("GRIB-FILES"));
-    grib1TabPane.addTab("GRIB1-REPORT",    new JLabel("GRIB1-REPORT"));
-    grib1TabPane.addTab("GRIB1data",       new JLabel("GRIB1data"));
-    grib1TabPane.addTab("GRIB1-TABLES",    new JLabel("GRIB1-TABLES"));
+    grib1TabPane.addTab("GRIB-FILES", new JLabel("GRIB-FILES"));
+    grib1TabPane.addTab("GRIB1-REPORT", new JLabel("GRIB1-REPORT"));
+    grib1TabPane.addTab("GRIB1data", new JLabel("GRIB1data"));
+    grib1TabPane.addTab("GRIB1-TABLES", new JLabel("GRIB1-TABLES"));
     addListeners(grib1TabPane);
 
     // nested-2 tab - hdf5
     hdf5TabPane.addTab("HDF5-Objects", new JLabel("HDF5-Objects"));
-    hdf5TabPane.addTab("HDF5-Data",    new JLabel("HDF5-Data"));
-    hdf5TabPane.addTab("Netcdf4-JNI",  new JLabel("Netcdf4-JNI"));
+    hdf5TabPane.addTab("HDF5-Data", new JLabel("HDF5-Data"));
+    hdf5TabPane.addTab("Netcdf4-JNI", new JLabel("Netcdf4-JNI"));
     addListeners(hdf5TabPane);
 
     // nested tab - features
-    ftTabPane.addTab("Grids",             new JLabel("Grids"));
-    ftTabPane.addTab("Coverages",         new JLabel("Coverages"));
-    ftTabPane.addTab("SimpleGeometry",    new JLabel("SimpleGeometry"));
-    ftTabPane.addTab("WMS",               new JLabel("WMS"));
-    ftTabPane.addTab("PointFeature",      new JLabel("PointFeature"));
-    ftTabPane.addTab("Images",            new JLabel("Images"));
-    ftTabPane.addTab("Radial",            new JLabel("Radial"));
-    ftTabPane.addTab("FeatureScan",       new JLabel("FeatureScan"));
+    ftTabPane.addTab("Grids", new JLabel("Grids"));
+    ftTabPane.addTab("Coverages", new JLabel("Coverages"));
+    ftTabPane.addTab("SimpleGeometry", new JLabel("SimpleGeometry"));
+    ftTabPane.addTab("WMS", new JLabel("WMS"));
+    ftTabPane.addTab("PointFeature", new JLabel("PointFeature"));
+    ftTabPane.addTab("Images", new JLabel("Images"));
+    ftTabPane.addTab("Radial", new JLabel("Radial"));
+    ftTabPane.addTab("FeatureScan", new JLabel("FeatureScan"));
     ftTabPane.addTab("FeatureCollection", fcTabPane);
     addListeners(ftTabPane);
 
     // nested tab - feature collection
     fcTabPane.addTab("DirectoryPartition", new JLabel("DirectoryPartition"));
     // fcTabPane.addTab("PartitionReport", new JLabel("PartitionReport"));
-    fcTabPane.addTab("CollectionSpec",     new JLabel("CollectionSpec"));
+    fcTabPane.addTab("CollectionSpec", new JLabel("CollectionSpec"));
     addListeners(fcTabPane);
 
     // nested tab - fmrc
-    fmrcTabPane.addTab("Fmrc",        new JLabel("Fmrc"));
+    fmrcTabPane.addTab("Fmrc", new JLabel("Fmrc"));
     fmrcTabPane.addTab("Collections", new JLabel("Collections"));
     addListeners(fmrcTabPane);
 
     // nested tab - ncml
-    ncmlTabPane.addTab("NcmlEditor",  new JLabel("NcmlEditor"));
+    ncmlTabPane.addTab("NcmlEditor", new JLabel("NcmlEditor"));
     ncmlTabPane.addTab("Aggregation", new JLabel("Aggregation"));
     addListeners(ncmlTabPane);
 
     // dynamic proxy for DebugFlags
     debugFlags = (DebugFlags) Proxy.newProxyInstance(
-            DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
+        DebugFlags.class.getClassLoader(), new Class[]{DebugFlags.class}, new DebugProxyHandler());
 
     final JMenuBar mb = makeMenuBar();
     parentFrame.setJMenuBar(mb);
@@ -303,345 +309,353 @@ public class ToolsUI extends JPanel {
     setDebugFlags();
   }
 
-/**
- *
- */
-    private void addListeners(final JTabbedPane tabPane) {
-        tabPane.addChangeListener(e -> {
-            final Component c = tabPane.getSelectedComponent();
-            if (c instanceof JLabel) {
-                final int idx = tabPane.getSelectedIndex();
-                final String title = tabPane.getTitleAt(idx);
-                makeComponent(tabPane, title);
-            }
-        });
-        tabPane.addComponentListener(new ComponentAdapter() {
-            public void componentShown(final ComponentEvent e) {
-            final Component c = tabPane.getSelectedComponent();
-                if (c instanceof JLabel) {
-                    final int idx = tabPane.getSelectedIndex();
-                    final String title = tabPane.getTitleAt(idx);
-                    makeComponent(tabPane, title);
-                }
-            }
-        });
+  /**
+   *
+   */
+  private void addListeners(final JTabbedPane tabPane) {
+    tabPane.addChangeListener(e -> {
+      final Component c = tabPane.getSelectedComponent();
+      if (c instanceof JLabel) {
+        final int idx = tabPane.getSelectedIndex();
+        final String title = tabPane.getTitleAt(idx);
+        makeComponent(tabPane, title);
+      }
+    });
+    tabPane.addComponentListener(new ComponentAdapter() {
+      public void componentShown(final ComponentEvent e) {
+        final Component c = tabPane.getSelectedComponent();
+        if (c instanceof JLabel) {
+          final int idx = tabPane.getSelectedIndex();
+          final String title = tabPane.getTitleAt(idx);
+          makeComponent(tabPane, title);
+        }
+      }
+    });
+  }
+
+  /**
+   * deferred creation of components to minimize startup
+   */
+  private void makeComponent(JTabbedPane parent, final String title) {
+    if (parent == null) {
+      parent = tabbedPane;
     }
 
-/**
- *  deferred creation of components to minimize startup
- */
-    public void makeComponent(JTabbedPane parent, final String title) {
-        if (parent == null) {
-            parent = tabbedPane;
-        }
+    // find the correct index
+    int n = parent.getTabCount();
+    int idx;
+    for (idx = 0; idx < n; idx++) {
+      String cTitle = parent.getTitleAt(idx);
+      if (cTitle.equals(title)) {
+        break;
+      }
+    }
+    if (idx >= n) {
+      log.debug("Cant find {} in {}", title, parent);
+      return;
+    }
 
-        // find the correct index
-        int n = parent.getTabCount();
-        int idx;
-        for (idx = 0; idx < n; idx++) {
-          String cTitle = parent.getTitleAt(idx);
-          if (cTitle.equals(title)) break;
-        }
-        if (idx >= n) {
-          log.debug("Cant find {} in {}", title, parent);
-          return;
-        }
+    Component c;
+    switch (title) {
+      case "Aggregation":
+        aggPanel = new AggPanel((PreferencesExt) mainPrefs.node("NcMLAggregation"));
+        c = aggPanel;
+        break;
 
-        Component c;
-        switch (title) {
-          case "Aggregation":
-            aggPanel = new AggPanel((PreferencesExt) mainPrefs.node("NcMLAggregation"));
-            c = aggPanel;
-            break;
+      case "BUFR":
+        bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
+        c = bufrPanel;
+        break;
 
-          case "BUFR":
-            bufrPanel = new BufrPanel((PreferencesExt) mainPrefs.node("bufr"));
-            c = bufrPanel;
-            break;
+      case "BUFRTableB":
+        bufrTableBPanel = new BufrTableBPanel((PreferencesExt) mainPrefs.node("bufr2"));
+        c = bufrTableBPanel;
+        break;
 
-          case "BUFRTableB":
-            bufrTableBPanel = new BufrTableBPanel((PreferencesExt) mainPrefs.node("bufr2"));
-            c = bufrTableBPanel;
-            break;
+      case "BUFRTableD":
+        bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
+        c = bufrTableDPanel;
+        break;
 
-          case "BUFRTableD":
-            bufrTableDPanel = new BufrTableDPanel((PreferencesExt) mainPrefs.node("bufrD"));
-            c = bufrTableDPanel;
-            break;
+      case "BufrReports": {
+        PreferencesExt prefs = (PreferencesExt) mainPrefs.node("bufrReports");
+        ReportPanel rp = new BufrReportPanel(prefs);
+        bufrReportPanel = new ReportOpPanel(prefs, rp);
+        c = bufrReportPanel;
+        break;
+      }
+      case "BUFR-CODES":
+        bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
+        c = bufrCodePanel;
+        break;
 
-          case "BufrReports": {
-            PreferencesExt prefs = (PreferencesExt) mainPrefs.node("bufrReports");
-            ReportPanel rp = new BufrReportPanel(prefs);
-            bufrReportPanel = new ReportOpPanel(prefs, rp);
-            c = bufrReportPanel;
-            break;
-          }
-          case "BUFR-CODES":
-            bufrCodePanel = new BufrCodePanel((PreferencesExt) mainPrefs.node("bufr-codes"));
-            c = bufrCodePanel;
-            break;
+      case "CdmrFeature":
+        cdmremotePanel = new CdmrFeatureOpPanel((PreferencesExt) mainPrefs.node("CdmrFeature"));
+        c = cdmremotePanel;
+        break;
 
-          case "CdmrFeature":
-            cdmremotePanel = new CdmrFeatureOpPanel((PreferencesExt) mainPrefs.node("CdmrFeature"));
-            c = cdmremotePanel;
-            break;
+      case "CollectionSpec":
+        fcPanel = new CollectionSpecPanel((PreferencesExt) mainPrefs.node("collSpec"));
+        c = fcPanel;
+        break;
 
-          case "CollectionSpec":
-            fcPanel = new CollectionSpecPanel((PreferencesExt) mainPrefs.node("collSpec"));
-            c = fcPanel;
-            break;
+      case "DirectoryPartition":
+        dirPartPanel = new DirectoryPartitionPanel((PreferencesExt) mainPrefs.node("dirPartition"));
+        c = dirPartPanel;
+        break;
 
-          case "DirectoryPartition":
-            dirPartPanel = new DirectoryPartitionPanel((PreferencesExt) mainPrefs.node("dirPartition"));
-            c = dirPartPanel;
-            break;
+      case "NcStream":
+        ncStreamPanel = new NcStreamOpPanel((PreferencesExt) mainPrefs.node("NcStream"));
+        c = ncStreamPanel;
+        break;
 
-          case "NcStream":
-            ncStreamPanel = new NcStreamOpPanel((PreferencesExt) mainPrefs.node("NcStream"));
-            c = ncStreamPanel;
-            break;
+      case "GRIB1collection":
+        grib1CollectionPanel = new Grib1CollectionOpPanel(
+            (PreferencesExt) mainPrefs.node("grib1raw"));
+        c = grib1CollectionPanel;
+        break;
 
-          case "GRIB1collection":
-            grib1CollectionPanel = new Grib1CollectionOpPanel((PreferencesExt) mainPrefs.node("grib1raw"));
-            c = grib1CollectionPanel;
-            break;
+      case "GRIB1data":
+        grib1DataPanel = new Grib1DataOpPanel((PreferencesExt) mainPrefs.node("grib1Data"));
+        c = grib1DataPanel;
+        break;
 
-          case "GRIB1data":
-            grib1DataPanel = new Grib1DataOpPanel((PreferencesExt) mainPrefs.node("grib1Data"));
-            c = grib1DataPanel;
-            break;
+      case "GRIB-FILES":
+        gribFilesPanel = new GribFilesOpPanel((PreferencesExt) mainPrefs.node("gribFiles"));
+        c = gribFilesPanel;
+        break;
 
-          case "GRIB-FILES":
-            gribFilesPanel = new GribFilesOpPanel((PreferencesExt) mainPrefs.node("gribFiles"));
-            c = gribFilesPanel;
-            break;
+      case "GRIB2collection":
+        grib2CollectionPanel = new Grib2CollectionOpPanel(
+            (PreferencesExt) mainPrefs.node("gribNew"));
+        c = grib2CollectionPanel;
+        break;
 
-          case "GRIB2collection":
-            grib2CollectionPanel = new Grib2CollectionOpPanel((PreferencesExt) mainPrefs.node("gribNew"));
-            c = grib2CollectionPanel;
-            break;
+      case "GRIB2data":
+        grib2DataPanel = new Grib2DataOpPanel((PreferencesExt) mainPrefs.node("grib2Data"));
+        c = grib2DataPanel;
+        break;
 
-          case "GRIB2data":
-            grib2DataPanel = new Grib2DataOpPanel((PreferencesExt) mainPrefs.node("grib2Data"));
-            c = grib2DataPanel;
-            break;
-
-          case "BufrCdmIndex":
-            bufrCdmIndexPanel = new BufrCdmIndexOpPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
-            c = bufrCdmIndexPanel;
+      case "BufrCdmIndex":
+        bufrCdmIndexPanel = new BufrCdmIndexOpPanel((PreferencesExt) mainPrefs.node("bufrCdmIdx"));
+        c = bufrCdmIndexPanel;
         /* } else if (title.equals("CdmIndex")) {
           gribCdmIndexPanel = new GribCdmIndexPanel((PreferencesExt) mainPrefs.node("cdmIdx"));
           c = gribCdmIndexPanel; */
-            break;
+        break;
 
-          case "CdmIndex4":
-            cdmIndexPanel = new CdmIndexOpPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
-            c = cdmIndexPanel;
-            break;
+      case "CdmIndex4":
+        cdmIndexPanel = new CdmIndexOpPanel((PreferencesExt) mainPrefs.node("cdmIdx3"));
+        c = cdmIndexPanel;
+        break;
 
-          case "CdmIndexReport": {
-            PreferencesExt prefs = (PreferencesExt) mainPrefs.node("CdmIndexReport");
-            ReportPanel rp = new CdmIndexReportPanel(prefs);
-            cdmIndexReportPanel = new ReportOpPanel(prefs, rp);
-            c = cdmIndexReportPanel;
-            break;
+      case "CdmIndexReport": {
+        PreferencesExt prefs = (PreferencesExt) mainPrefs.node("CdmIndexReport");
+        ReportPanel rp = new CdmIndexReportPanel(prefs);
+        cdmIndexReportPanel = new ReportOpPanel(prefs, rp);
+        c = cdmIndexReportPanel;
+        break;
+      }
+
+      case "GribIndex":
+        gribIdxPanel = new GribIndexOpPanel((PreferencesExt) mainPrefs.node("gribIdx"));
+        c = gribIdxPanel;
+        break;
+
+      case "GRIB1-REPORT": {
+        PreferencesExt prefs = (PreferencesExt) mainPrefs.node("grib1Report");
+        ReportPanel rp = new Grib1ReportPanel(prefs);
+        grib1ReportPanel = new ReportOpPanel(prefs, rp);
+        c = grib1ReportPanel;
+        break;
+      }
+
+      case "GRIB2-REPORT": {
+        PreferencesExt prefs = (PreferencesExt) mainPrefs.node("gribReport");
+        ReportPanel rp = new Grib2ReportPanel(prefs);
+        grib2ReportPanel = new ReportOpPanel(prefs, rp);
+        c = grib2ReportPanel;
+        break;
+      }
+
+      case "WMO-COMMON":
+        wmoCommonCodePanel = new WmoCCPanel((PreferencesExt) mainPrefs.node("wmo-common"));
+        c = wmoCommonCodePanel;
+        break;
+
+      case "WMO-CODES":
+        gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("wmo-codes"));
+        c = gribCodePanel;
+        break;
+
+      case "WMO-TEMPLATES":
+        gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("wmo-templates"));
+        c = gribTemplatePanel;
+
+        break;
+      case "GRIB1-TABLES":
+        grib1TablePanel = new Grib1TablePanel((PreferencesExt) mainPrefs.node("grib1-tables"));
+        c = grib1TablePanel;
+        break;
+
+      case "GRIB2-TABLES":
+        grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
+        c = grib2TablePanel;
+        break;
+
+      case "GRIB-Rewrite":
+        gribRewritePanel = new GribRewriteOpPanel((PreferencesExt) mainPrefs.node("grib-rewrite"));
+        c = gribRewritePanel;
+        break;
+
+      case "CoordSys":
+        coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
+        c = coordSysPanel;
+        break;
+
+      case "FeatureScan":
+        ftPanel = new FeatureScanOpPanel((PreferencesExt) mainPrefs.node("ftPanel"));
+        c = ftPanel;
+        break;
+
+      case "GeoTiff":
+        geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
+        c = geotiffPanel;
+        break;
+
+      case "Grids":
+        gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
+        c = gridPanel;
+        break;
+
+      case "SimpleGeometry":
+        simpleGeomPanel = new SimpleGeomPanel((PreferencesExt) mainPrefs.node("simpleGeom"));
+        c = simpleGeomPanel;
+        break;
+
+      case "Coverages":
+        coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage2"));
+        c = coveragePanel;
+        break;
+
+      case "HDF5-Objects":
+        hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"));
+        c = hdf5ObjectPanel;
+        break;
+
+      case "HDF5-Data":
+        hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
+        c = hdf5DataPanel;
+        break;
+
+      case "Netcdf4-JNI":
+        nc4viewer = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("nc4viewer"), true);
+        c = nc4viewer;
+        break;
+
+      case "HDF4":
+        hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
+        c = hdf4Panel;
+        break;
+
+      case "Images":
+        imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
+        c = imagePanel;
+        break;
+
+      case "Fmrc":
+        fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
+        c = fmrcPanel;
+        break;
+
+      case "Collections":
+        fmrcCollectionPanel = new FmrcCollectionPanel(
+            (PreferencesExt) mainPrefs.node("collections"));
+        c = fmrcCollectionPanel;
+        break;
+
+      case "NCDump":
+        ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
+        c = ncdumpPanel;
+        break;
+
+      case "NcmlEditor":
+        ncmlEditorPanel = new NcmlEditorPanel((PreferencesExt) mainPrefs.node("NcmlEditor"));
+        c = ncmlEditorPanel;
+        break;
+
+      case "PointFeature":
+        pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
+        c = pointFeaturePanel;
+        break;
+
+      case "Radial":
+        radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
+        c = radialPanel;
+        break;
+
+      case "StationRadial":
+        stationRadialPanel = new StationRadialPanel(
+            (PreferencesExt) mainPrefs.node("stationRadar"));
+        c = stationRadialPanel;
+        break;
+
+      case "THREDDS":
+        threddsUI = new ThreddsUI(parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
+        threddsUI.addPropertyChangeListener(new PropertyChangeListener() {
+          public void propertyChange(PropertyChangeEvent e) {
+            if (e.getPropertyName().equals("InvAccess")) {
+              thredds.client.catalog.Access access = (thredds.client.catalog.Access) e
+                  .getNewValue();
+              jumptoThreddsDatatype(access);
+            }
+            if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e
+                .getPropertyName().equals("File")) {
+              thredds.client.catalog.Dataset ds = (thredds.client.catalog.Dataset) e.getNewValue();
+              setThreddsDatatype(ds, e.getPropertyName());
+            }
           }
+        });
 
-          case "GribIndex":
-            gribIdxPanel = new GribIndexOpPanel((PreferencesExt) mainPrefs.node("gribIdx"));
-            c = gribIdxPanel;
-            break;
+        c = threddsUI;
+        break;
 
-          case "GRIB1-REPORT": {
-            PreferencesExt prefs = (PreferencesExt) mainPrefs.node("grib1Report");
-            ReportPanel rp = new Grib1ReportPanel(prefs);
-            grib1ReportPanel = new ReportOpPanel(prefs, rp);
-            c = grib1ReportPanel;
-            break;
-          }
+      case "Units":
+        unitsPanel = new UnitsPanel((PreferencesExt) mainPrefs.node("units"));
+        c = unitsPanel;
+        break;
 
-          case "GRIB2-REPORT": {
-            PreferencesExt prefs = (PreferencesExt) mainPrefs.node("gribReport");
-            ReportPanel rp = new Grib2ReportPanel(prefs);
-            grib2ReportPanel = new ReportOpPanel(prefs, rp);
-            c = grib2ReportPanel;
-            break;
-          }
+      case "URLdump":
+        urlPanel = new URLDumpPane((PreferencesExt) mainPrefs.node("urlDump"));
+        c = urlPanel;
+        break;
 
-          case "WMO-COMMON":
-            wmoCommonCodePanel = new WmoCCPanel((PreferencesExt) mainPrefs.node("wmo-common"));
-            c = wmoCommonCodePanel;
-            break;
+      case "Viewer":
+        c = viewerPanel;
+        break;
 
-          case "WMO-CODES":
-            gribCodePanel = new GribCodePanel((PreferencesExt) mainPrefs.node("wmo-codes"));
-            c = gribCodePanel;
-            break;
+      case "Writer":
+        writerPanel = new DatasetWriterPanel((PreferencesExt) mainPrefs.node("writer"));
+        c = writerPanel;
+        break;
 
-          case "WMO-TEMPLATES":
-            gribTemplatePanel = new GribTemplatePanel((PreferencesExt) mainPrefs.node("wmo-templates"));
-            c = gribTemplatePanel;
+      case "WMS":
+        wmsPanel = new WmsPanel((PreferencesExt) mainPrefs.node("wms"));
+        c = wmsPanel;
+        break;
 
-            break;
-          case "GRIB1-TABLES":
-            grib1TablePanel = new Grib1TablePanel((PreferencesExt) mainPrefs.node("grib1-tables"));
-            c = grib1TablePanel;
-            break;
-
-          case "GRIB2-TABLES":
-            grib2TablePanel = new Grib2TablePanel((PreferencesExt) mainPrefs.node("grib2-tables"));
-            c = grib2TablePanel;
-            break;
-
-          case "GRIB-Rewrite":
-            gribRewritePanel = new GribRewriteOpPanel((PreferencesExt) mainPrefs.node("grib-rewrite"));
-            c = gribRewritePanel;
-            break;
-
-          case "CoordSys":
-            coordSysPanel = new CoordSysPanel((PreferencesExt) mainPrefs.node("CoordSys"));
-            c = coordSysPanel;
-            break;
-
-          case "FeatureScan":
-            ftPanel = new FeatureScanPanel((PreferencesExt) mainPrefs.node("ftPanel"));
-            c = ftPanel;
-            break;
-
-          case "GeoTiff":
-            geotiffPanel = new GeotiffPanel((PreferencesExt) mainPrefs.node("WCS"));
-            c = geotiffPanel;
-            break;
-
-          case "Grids":
-            gridPanel = new GeoGridPanel((PreferencesExt) mainPrefs.node("grid"));
-            c = gridPanel;
-            break;
-
-          case "SimpleGeometry":
-            simpleGeomPanel = new SimpleGeomPanel((PreferencesExt) mainPrefs.node("simpleGeom"));
-            c = simpleGeomPanel;
-            break;
-
-          case "Coverages":
-            coveragePanel = new CoveragePanel((PreferencesExt) mainPrefs.node("coverage2"));
-            c = coveragePanel;
-            break;
-
-          case "HDF5-Objects":
-            hdf5ObjectPanel = new Hdf5ObjectPanel((PreferencesExt) mainPrefs.node("hdf5"));
-            c = hdf5ObjectPanel;
-            break;
-
-          case "HDF5-Data":
-            hdf5DataPanel = new Hdf5DataPanel((PreferencesExt) mainPrefs.node("hdf5data"));
-            c = hdf5DataPanel;
-            break;
-
-          case "Netcdf4-JNI":
-            nc4viewer = new DatasetViewerPanel((PreferencesExt) mainPrefs.node("nc4viewer"), true);
-            c = nc4viewer;
-            break;
-
-          case "HDF4":
-            hdf4Panel = new Hdf4Panel((PreferencesExt) mainPrefs.node("hdf4"));
-            c = hdf4Panel;
-            break;
-
-          case "Images":
-            imagePanel = new ImagePanel((PreferencesExt) mainPrefs.node("images"));
-            c = imagePanel;
-            break;
-
-          case "Fmrc":
-            fmrcPanel = new FmrcPanel((PreferencesExt) mainPrefs.node("fmrc2"));
-            c = fmrcPanel;
-            break;
-
-          case "Collections":
-            fmrcCollectionPanel = new FmrcCollectionPanel((PreferencesExt) mainPrefs.node("collections"));
-            c = fmrcCollectionPanel;
-            break;
-
-          case "NCDump":
-            ncdumpPanel = new NCdumpPanel((PreferencesExt) mainPrefs.node("NCDump"));
-            c = ncdumpPanel;
-            break;
-
-          case "NcmlEditor":
-            ncmlEditorPanel = new NcmlEditorPanel((PreferencesExt) mainPrefs.node("NcmlEditor"));
-            c = ncmlEditorPanel;
-            break;
-
-          case "PointFeature":
-            pointFeaturePanel = new PointFeaturePanel((PreferencesExt) mainPrefs.node("pointFeature"));
-            c = pointFeaturePanel;
-            break;
-
-          case "Radial":
-            radialPanel = new RadialPanel((PreferencesExt) mainPrefs.node("radial"));
-            c = radialPanel;
-            break;
-
-          case "StationRadial":
-            stationRadialPanel = new StationRadialPanel((PreferencesExt) mainPrefs.node("stationRadar"));
-            c = stationRadialPanel;
-            break;
-
-          case "THREDDS":
-            threddsUI = new ThreddsUI(parentFrame, (PreferencesExt) mainPrefs.node("thredds"));
-            threddsUI.addPropertyChangeListener(new PropertyChangeListener() {
-              public void propertyChange(PropertyChangeEvent e) {
-                if (e.getPropertyName().equals("InvAccess")) {
-                  thredds.client.catalog.Access access = (thredds.client.catalog.Access) e.getNewValue();
-                  jumptoThreddsDatatype(access);
-                }
-                if (e.getPropertyName().equals("Dataset") || e.getPropertyName().equals("CoordSys") || e.getPropertyName().equals("File")) {
-                  thredds.client.catalog.Dataset ds = (thredds.client.catalog.Dataset) e.getNewValue();
-                  setThreddsDatatype(ds, e.getPropertyName());
-                }
-              }
-            });
-
-            c = threddsUI;
-            break;
-
-          case "Units":
-            unitsPanel = new UnitsPanel((PreferencesExt) mainPrefs.node("units"));
-            c = unitsPanel;
-            break;
-
-          case "URLdump":
-            urlPanel = new URLDumpPane((PreferencesExt) mainPrefs.node("urlDump"));
-            c = urlPanel;
-            break;
-
-          case "Viewer":
-            c = viewerPanel;
-            break;
-
-          case "Writer":
-            writerPanel = new DatasetWriterPanel((PreferencesExt) mainPrefs.node("writer"));
-            c = writerPanel;
-            break;
-
-          case "WMS":
-            wmsPanel = new WmsPanel((PreferencesExt) mainPrefs.node("wms"));
-            c = wmsPanel;
-            break;
-
-          default:
-            log.warn ("tabbedPane unknown component {}", title);
-            return;
-        }
-
-        parent.setComponentAt(idx, c);
-        log.trace("tabbedPane changed {} added ", title);
+      default:
+        log.warn("tabbedPane unknown component {}", title);
+        return;
     }
 
-/**
- *
- */
+    parent.setComponentAt(idx, c);
+    log.trace("tabbedPane changed {} added ", title);
+  }
+
+  /**
+   *
+   */
   private JMenuBar makeMenuBar() {
     final JMenuBar mb = new JMenuBar();
 
@@ -664,353 +678,473 @@ public class ToolsUI extends JPanel {
     return mb;
   }
 
-/**
- *
- */
-    public DatasetViewerPanel getDatasetViewerPanel() {
-        return viewerPanel;
+  /**
+   *
+   */
+  public DatasetViewerPanel getDatasetViewerPanel() {
+    return viewerPanel;
+  }
+
+  /**
+   *
+   */
+  public void setDebugFlags() {
+    log.debug("setDebugFlags");
+
+    NetcdfFile.setDebugFlags(debugFlags);
+    H5iosp.setDebugFlags(debugFlags);
+    ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
+    DODSNetcdfFile.setDebugFlags(debugFlags);
+    CdmRemote.setDebugFlags(debugFlags);
+    Nc4Iosp.setDebugFlags(debugFlags);
+    DataFactory.setDebugFlags(debugFlags);
+
+    ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
+    ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
+    ucar.nc2.grib.collection.Grib.setDebugFlags(debugFlags);
+  }
+
+  /**
+   *
+   */
+  public void setUseRecordStructure(final boolean use) {
+    useRecordStructure = use;
+  }
+
+  /**
+   *
+   */
+  public void setGribDiskCache() {
+    if (diskCache2Form == null) {
+      diskCache2Form = new DiskCache2Form(parentFrame, GribIndexCache.getDiskCache2());
     }
-/**
- *
- */
-    public void setDebugFlags() {
-        log.debug("setDebugFlags");
+    diskCache2Form.setVisible(true);
+  }
 
-        NetcdfFile.setDebugFlags(debugFlags);
-        H5iosp.setDebugFlags(debugFlags);
-        ucar.nc2.ncml.NcMLReader.setDebugFlags(debugFlags);
-        DODSNetcdfFile.setDebugFlags(debugFlags);
-        CdmRemote.setDebugFlags(debugFlags);
-        Nc4Iosp.setDebugFlags(debugFlags);
-        DataFactory.setDebugFlags(debugFlags);
-
-        ucar.nc2.FileWriter2.setDebugFlags(debugFlags);
-        ucar.nc2.ft.point.standard.PointDatasetStandardFactory.setDebugFlags(debugFlags);
-        ucar.nc2.grib.collection.Grib.setDebugFlags(debugFlags);
-    }
-
-/**
- *
- */
-    public void setUseRecordStructure(final boolean use) {
-        useRecordStructure = use;
-    }
-
-/**
- *
- */
-    public void setGribDiskCache() {
-        if (diskCache2Form == null) {
-            diskCache2Form = new DiskCache2Form(parentFrame, GribIndexCache.getDiskCache2());
-        }
-        diskCache2Form.setVisible(true);
-    }
-
-/**
- *
- */
-  public void save() {
+  /**
+   *
+   */
+  private void save() {
     fileChooser.save();
-    if (aggPanel             != null) aggPanel.save();
-    if (bufrFileChooser      != null) bufrFileChooser.save();
-    if (bufrPanel            != null) bufrPanel.save();
-    if (bufrTableBPanel      != null) bufrTableBPanel.save();
-    if (bufrTableDPanel      != null) bufrTableDPanel.save();
-    if (bufrReportPanel      != null) bufrReportPanel.save();
-    if (bufrCodePanel        != null) bufrCodePanel.save();
-    if (coordSysPanel        != null) coordSysPanel.save();
-    if (coveragePanel        != null) coveragePanel.save();
-    if (cdmIndexPanel        != null) cdmIndexPanel.save();
-    if (cdmIndexReportPanel  != null) cdmIndexReportPanel.save();
-    if (cdmremotePanel       != null) cdmremotePanel.save();
-    if (dirPartPanel         != null) dirPartPanel.save();
-    if (bufrCdmIndexPanel    != null) bufrCdmIndexPanel.save();
+    if (aggPanel != null) {
+      aggPanel.save();
+    }
+    if (bufrFileChooser != null) {
+      bufrFileChooser.save();
+    }
+    if (bufrPanel != null) {
+      bufrPanel.save();
+    }
+    if (bufrTableBPanel != null) {
+      bufrTableBPanel.save();
+    }
+    if (bufrTableDPanel != null) {
+      bufrTableDPanel.save();
+    }
+    if (bufrReportPanel != null) {
+      bufrReportPanel.save();
+    }
+    if (bufrCodePanel != null) {
+      bufrCodePanel.save();
+    }
+    if (coordSysPanel != null) {
+      coordSysPanel.save();
+    }
+    if (coveragePanel != null) {
+      coveragePanel.save();
+    }
+    if (cdmIndexPanel != null) {
+      cdmIndexPanel.save();
+    }
+    if (cdmIndexReportPanel != null) {
+      cdmIndexReportPanel.save();
+    }
+    if (cdmremotePanel != null) {
+      cdmremotePanel.save();
+    }
+    if (dirPartPanel != null) {
+      dirPartPanel.save();
+    }
+    if (bufrCdmIndexPanel != null) {
+      bufrCdmIndexPanel.save();
+    }
     //if (gribCdmIndexPanel != null) gribCdmIndexPanel.save();
-    if (fmrcCollectionPanel  != null) fmrcCollectionPanel.save();
-    if (fcPanel              != null) fcPanel.save();
-    if (ftPanel              != null) ftPanel.save();
-    if (fmrcPanel            != null) fmrcPanel.save();
-    if (geotiffPanel         != null) geotiffPanel.save();
-    if (gribFilesPanel       != null) gribFilesPanel.save();
-    if (grib2CollectionPanel != null) grib2CollectionPanel.save();
-    // if (grib2RectilyzePanel != null) grib2RectilyzePanel.save();
-    if (grib2DataPanel       != null) grib2DataPanel.save();
-    if (grib1DataPanel       != null) grib1DataPanel.save();
-    if (gribCodePanel        != null) gribCodePanel.save();
-    if (gribIdxPanel         != null) gribIdxPanel.save();
-    if (gribTemplatePanel    != null) gribTemplatePanel.save();
-    if (grib1CollectionPanel != null) grib1CollectionPanel.save();
-    if (grib1ReportPanel     != null) grib1ReportPanel.save();
-    if (grib2ReportPanel     != null) grib2ReportPanel.save();
-    if (grib1TablePanel      != null) grib1TablePanel.save();
-    if (grib2TablePanel      != null) grib2TablePanel.save();
-    if (gribRewritePanel     != null) gribRewritePanel.save();
-    if (gridPanel            != null) gridPanel.save();
-    if (hdf5ObjectPanel      != null) hdf5ObjectPanel.save();
-    if (hdf5DataPanel        != null) hdf5DataPanel.save();
-    if (hdf4Panel          != null) hdf4Panel.save();
-    if (imagePanel         != null) imagePanel.save();
-    if (ncdumpPanel        != null) ncdumpPanel.save();
-    if (ncStreamPanel      != null) ncStreamPanel.save();
-    if (nc4viewer          != null) nc4viewer.save();
-    if (ncmlEditorPanel    != null) ncmlEditorPanel.save();
-    if (pointFeaturePanel  != null) pointFeaturePanel.save();
+    if (fmrcCollectionPanel != null) {
+      fmrcCollectionPanel.save();
+    }
+    if (fcPanel != null) {
+      fcPanel.save();
+    }
+    if (ftPanel != null) {
+      ftPanel.save();
+    }
+    if (fmrcPanel != null) {
+      fmrcPanel.save();
+    }
+    if (geotiffPanel != null) {
+      geotiffPanel.save();
+    }
+    if (gribFilesPanel != null) {
+      gribFilesPanel.save();
+    }
+    if (grib2CollectionPanel != null) {
+      grib2CollectionPanel.save();
+    }
+    if (grib2DataPanel != null) {
+      grib2DataPanel.save();
+    }
+    if (grib1DataPanel != null) {
+      grib1DataPanel.save();
+    }
+    if (gribCodePanel != null) {
+      gribCodePanel.save();
+    }
+    if (gribIdxPanel != null) {
+      gribIdxPanel.save();
+    }
+    if (gribTemplatePanel != null) {
+      gribTemplatePanel.save();
+    }
+    if (grib1CollectionPanel != null) {
+      grib1CollectionPanel.save();
+    }
+    if (grib1ReportPanel != null) {
+      grib1ReportPanel.save();
+    }
+    if (grib2ReportPanel != null) {
+      grib2ReportPanel.save();
+    }
+    if (grib1TablePanel != null) {
+      grib1TablePanel.save();
+    }
+    if (grib2TablePanel != null) {
+      grib2TablePanel.save();
+    }
+    if (gribRewritePanel != null) {
+      gribRewritePanel.save();
+    }
+    if (gridPanel != null) {
+      gridPanel.save();
+    }
+    if (hdf5ObjectPanel != null) {
+      hdf5ObjectPanel.save();
+    }
+    if (hdf5DataPanel != null) {
+      hdf5DataPanel.save();
+    }
+    if (hdf4Panel != null) {
+      hdf4Panel.save();
+    }
+    if (imagePanel != null) {
+      imagePanel.save();
+    }
+    if (ncdumpPanel != null) {
+      ncdumpPanel.save();
+    }
+    if (ncStreamPanel != null) {
+      ncStreamPanel.save();
+    }
+    if (nc4viewer != null) {
+      nc4viewer.save();
+    }
+    if (ncmlEditorPanel != null) {
+      ncmlEditorPanel.save();
+    }
+    if (pointFeaturePanel != null) {
+      pointFeaturePanel.save();
+    }
     //if (pointObsPanel    != null) pointObsPanel.save();
-    if (radialPanel        != null) radialPanel.save();
+    if (radialPanel != null) {
+      radialPanel.save();
+    }
     // if (stationObsPanel != null) stationObsPanel.save();
-    if (stationRadialPanel != null) stationRadialPanel.save();
+    if (stationRadialPanel != null) {
+      stationRadialPanel.save();
+    }
     // if (trajTablePanel != null) trajTablePanel.save();
-    if (threddsUI          != null) threddsUI.storePersistentData();
-    if (unitsPanel         != null) unitsPanel.save();
-    if (urlPanel           != null) urlPanel.save();
-    if (viewerPanel        != null) viewerPanel.save();
-    if (writerPanel        != null) writerPanel.save();
-    if (wmoCommonCodePanel != null) wmoCommonCodePanel.save();
-    if (wmsPanel           != null) wmsPanel.save();
+    if (threddsUI != null) {
+      threddsUI.storePersistentData();
+    }
+    if (unitsPanel != null) {
+      unitsPanel.save();
+    }
+    if (urlPanel != null) {
+      urlPanel.save();
+    }
+    if (viewerPanel != null) {
+      viewerPanel.save();
+    }
+    if (writerPanel != null) {
+      writerPanel.save();
+    }
+    if (wmoCommonCodePanel != null) {
+      wmoCommonCodePanel.save();
+    }
+    if (wmsPanel != null) {
+      wmsPanel.save();
+    }
   }
 
 ///
 /// The following are hooks and shortcuts allowing OpPanel classes to interact with the UI.
 ///
-/**
- *
- */
-    public static ToolsUI getToolsUI() { return ui; }
 
-/**
- *
- */
-    public static JFrame getToolsFrame() { return ui.getFramePriv(); }
+  /**
+   *
+   */
+  public static ToolsUI getToolsUI() {
+    return ui;
+  }
 
-    private JFrame getFramePriv() { return parentFrame; }
+  /**
+   *
+   */
+  public static JFrame getToolsFrame() {
+    return ui.getFramePriv();
+  }
 
-/**
- *
- */
-    public static DataFactory getThreddsDataFactory() { return ui.getThreddsDataFactoryPriv(); }
+  private JFrame getFramePriv() {
+    return parentFrame;
+  }
 
-    private DataFactory getThreddsDataFactoryPriv() { return threddsDataFactory; }
+  /**
+   *
+   */
+  public static DataFactory getThreddsDataFactory() {
+    return ui.getThreddsDataFactoryPriv();
+  }
 
-/**
- *
- */
-    public static FileManager getBufrFileChooser() { return ui.getBufrFileChooserPriv(); }
+  private DataFactory getThreddsDataFactoryPriv() {
+    return threddsDataFactory;
+  }
 
-    private FileManager getBufrFileChooserPriv() {
-        if (bufrFileChooser == null) {
-            bufrFileChooser = new FileManager(
-                        parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
-        }
+  /**
+   *
+   */
+  public static FileManager getBufrFileChooser() {
+    return ui.getBufrFileChooserPriv();
+  }
 
-        return bufrFileChooser;
+  private FileManager getBufrFileChooserPriv() {
+    if (bufrFileChooser == null) {
+      bufrFileChooser = new FileManager(
+          parentFrame, null, null, (PreferencesExt) mainPrefs.node("bufrFileManager"));
     }
 
-/**
- *
- */
-    public static void setNCdumpPanel(NetcdfFile ds) { ui.setNCdumpPanelPriv(ds); }
+    return bufrFileChooser;
+  }
 
-    private void setNCdumpPanelPriv(NetcdfFile ds) {
-        if (ncdumpPanel == null) {
-            log.debug("make ncdumpPanel");
-            makeComponent(tabbedPane, "NCDump");
-        }
+  /**
+   *
+   */
+  public static void setNCdumpPanel(NetcdfFile ds) {
+    ui.setNCdumpPanelPriv(ds);
+  }
 
-        ncdumpPanel.setNetcdfFile(ds);
-
-        tabbedPane.setSelectedComponent(ncdumpPanel);
+  private void setNCdumpPanelPriv(NetcdfFile ds) {
+    if (ncdumpPanel == null) {
+      log.debug("make ncdumpPanel");
+      makeComponent(tabbedPane, "NCDump");
     }
 
-/**
- *
- */
-    public static Object getPrefsBean(final String key, final Object defaultVal) {
-        return ui.getPrefsBeanPriv(key, defaultVal);
-    }
+    ncdumpPanel.setNetcdfFile(ds);
 
-    private Object getPrefsBeanPriv(final String key, final Object defaultVal) {
-        return mainPrefs.getBean (key, defaultVal);
-    }
+    tabbedPane.setSelectedComponent(ncdumpPanel);
+  }
 
-/**
- *
- */
-    public static void putPrefsBeanObject(final String key, final Object newVal) {
-        ui.putPrefsBeanObjectPriv(key, newVal);
-    }
+  /**
+   *
+   */
+  public static Object getPrefsBean(final String key, final Object defaultVal) {
+    return ui.getPrefsBeanPriv(key, defaultVal);
+  }
 
-    private void putPrefsBeanObjectPriv(final String key, final Object newVal) {
-        mainPrefs.putBean (key, newVal);
-    }
+  private Object getPrefsBeanPriv(final String key, final Object defaultVal) {
+    return mainPrefs.getBean(key, defaultVal);
+  }
+
+  /**
+   *
+   */
+  public static void putPrefsBeanObject(final String key, final Object newVal) {
+    ui.putPrefsBeanObjectPriv(key, newVal);
+  }
+
+  private void putPrefsBeanObjectPriv(final String key, final Object newVal) {
+    mainPrefs.putBean(key, newVal);
+  }
 
 ///
 ///
 ///
-/**
- *
- */
-    public void openNetcdfFile(String datasetName) {
-        makeComponent(tabbedPane, "Viewer");
-        viewerPanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(viewerPanel);
-    }
 
-/**
- *
- */
-    public void openNetcdfFile(NetcdfFile ncfile) {
-        makeComponent(tabbedPane, "Viewer");
-        viewerPanel.setDataset(ncfile);
-        tabbedPane.setSelectedComponent(viewerPanel);
-    }
+  /**
+   *
+   */
+  public void openNetcdfFile(String datasetName) {
+    makeComponent(tabbedPane, "Viewer");
+    viewerPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(viewerPanel);
+  }
 
-/**
- *
- */
-    public void openCoordSystems(String datasetName) {
-        makeComponent(tabbedPane, "CoordSys");
-        coordSysPanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(coordSysPanel);
-    }
+  /**
+   *
+   */
+  public void openNetcdfFile(NetcdfFile ncfile) {
+    makeComponent(tabbedPane, "Viewer");
+    viewerPanel.setDataset(ncfile);
+    tabbedPane.setSelectedComponent(viewerPanel);
+  }
 
-/**
- *
- */
-    public void openCoordSystems(NetcdfDataset dataset) {
-        makeComponent(tabbedPane, "CoordSys");
-        coordSysPanel.setDataset(dataset);
-        tabbedPane.setSelectedComponent(coordSysPanel);
-    }
+  /**
+   *
+   */
+  public void openCoordSystems(String datasetName) {
+    makeComponent(tabbedPane, "CoordSys");
+    coordSysPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(coordSysPanel);
+  }
 
-/**
- *
- */
-    public void openNcML(String datasetName) {
-        makeComponent(ncmlTabPane, "NcmlEditor");
-        ncmlEditorPanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(ncmlTabPane);
-        ncmlTabPane.setSelectedComponent(ncmlEditorPanel);
-    }
+  /**
+   *
+   */
+  public void openCoordSystems(NetcdfDataset dataset) {
+    makeComponent(tabbedPane, "CoordSys");
+    coordSysPanel.setDataset(dataset);
+    tabbedPane.setSelectedComponent(coordSysPanel);
+  }
 
-/**
- *
- */
-    public void openPointFeatureDataset(String datasetName) {
-        makeComponent(ftTabPane, "PointFeature");
-        pointFeaturePanel.setPointFeatureDataset(FeatureType.ANY_POINT, datasetName);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(pointFeaturePanel);
-    }
+  /**
+   *
+   */
+  public void openNcML(String datasetName) {
+    makeComponent(ncmlTabPane, "NcmlEditor");
+    ncmlEditorPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ncmlTabPane);
+    ncmlTabPane.setSelectedComponent(ncmlEditorPanel);
+  }
 
-/**
- *
- */
-    public void openGrib1Collection(String collection) {
-        makeComponent(grib1TabPane, "GRIB1collection");  // LOOK - does this aleays make component ?
-        grib1CollectionPanel.setCollection(collection);
-        tabbedPane.setSelectedComponent(iospTabPane);
-        iospTabPane.setSelectedComponent(grib1TabPane);
-        grib1TabPane.setSelectedComponent(grib1CollectionPanel);
-    }
+  /**
+   *
+   */
+  public void openPointFeatureDataset(String datasetName) {
+    makeComponent(ftTabPane, "PointFeature");
+    pointFeaturePanel.setPointFeatureDataset(FeatureType.ANY_POINT, datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(pointFeaturePanel);
+  }
 
-/**
- *
- */
-    public void openGrib2Collection(String collection) {
-        makeComponent(grib2TabPane, "GRIB2collection");
-        grib2CollectionPanel.setCollection(collection);
-        tabbedPane.setSelectedComponent(iospTabPane);
-        iospTabPane.setSelectedComponent(grib2TabPane);
-        grib2TabPane.setSelectedComponent(grib2CollectionPanel);
-    }
+  /**
+   *
+   */
+  public void openGrib1Collection(String collection) {
+    makeComponent(grib1TabPane, "GRIB1collection");  // LOOK - does this aleays make component ?
+    grib1CollectionPanel.setCollection(collection);
+    tabbedPane.setSelectedComponent(iospTabPane);
+    iospTabPane.setSelectedComponent(grib1TabPane);
+    grib1TabPane.setSelectedComponent(grib1CollectionPanel);
+  }
 
-/**
- *
- */
-    public void openGrib2Data(String datasetName) {
-        makeComponent(grib2TabPane, "GRIB2data");
-        grib2DataPanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(iospTabPane);
-        iospTabPane.setSelectedComponent(grib2TabPane);
-        grib2TabPane.setSelectedComponent(grib2DataPanel);
-    }
+  /**
+   *
+   */
+  public void openGrib2Collection(String collection) {
+    makeComponent(grib2TabPane, "GRIB2collection");
+    grib2CollectionPanel.setCollection(collection);
+    tabbedPane.setSelectedComponent(iospTabPane);
+    iospTabPane.setSelectedComponent(grib2TabPane);
+    grib2TabPane.setSelectedComponent(grib2CollectionPanel);
+  }
 
-/**
- *
- */
-    public void openGrib1Data(String datasetName) {
-        makeComponent(grib1TabPane, "GRIB1data");
-        grib1DataPanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(iospTabPane);
-        iospTabPane.setSelectedComponent(grib1TabPane);
-        grib1TabPane.setSelectedComponent(grib1DataPanel);
-    }
+  /**
+   *
+   */
+  public void openGrib2Data(String datasetName) {
+    makeComponent(grib2TabPane, "GRIB2data");
+    grib2DataPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(iospTabPane);
+    iospTabPane.setSelectedComponent(grib2TabPane);
+    grib2TabPane.setSelectedComponent(grib2DataPanel);
+  }
 
-/**
- *
- */
-    public void openGridDataset(String datasetName) {
-        makeComponent(ftTabPane, "Grids");
-        gridPanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(gridPanel);
-    }
+  /**
+   *
+   */
+  public void openGrib1Data(String datasetName) {
+    makeComponent(grib1TabPane, "GRIB1data");
+    grib1DataPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(iospTabPane);
+    iospTabPane.setSelectedComponent(grib1TabPane);
+    grib1TabPane.setSelectedComponent(grib1DataPanel);
+  }
 
-/**
- *
- */
-    public void openCoverageDataset(String datasetName) {
-        makeComponent(ftTabPane, "Coverages");
-        coveragePanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(coveragePanel);
-    }
+  /**
+   *
+   */
+  public void openGridDataset(String datasetName) {
+    makeComponent(ftTabPane, "Grids");
+    gridPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(gridPanel);
+  }
 
-/**
- *
- */
-    public void openGridDataset(NetcdfDataset dataset) {
-        makeComponent(ftTabPane, "Grids");
-        gridPanel.setDataset(dataset);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(gridPanel);
-    }
+  /**
+   *
+   */
+  public void openCoverageDataset(String datasetName) {
+    makeComponent(ftTabPane, "Coverages");
+    coveragePanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(coveragePanel);
+  }
 
-/**
- *
- */
-    public void openGridDataset(GridDataset dataset) {
-        makeComponent(ftTabPane, "Grids");
-        gridPanel.setDataset(dataset);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(gridPanel);
-    }
+  /**
+   *
+   */
+  public void openGridDataset(NetcdfDataset dataset) {
+    makeComponent(ftTabPane, "Grids");
+    gridPanel.setDataset(dataset);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(gridPanel);
+  }
 
-/**
- *
- */
-    public void openRadialDataset(String datasetName) {
-        makeComponent(ftTabPane, "Radial");
-        radialPanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(radialPanel);
-    }
+  /**
+   *
+   */
+  public void openGridDataset(GridDataset dataset) {
+    makeComponent(ftTabPane, "Grids");
+    gridPanel.setDataset(dataset);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(gridPanel);
+  }
 
-/**
- *
- */
-    public void openWMSDataset(String datasetName) {
-        makeComponent(ftTabPane, "WMS");
-        wmsPanel.doit(datasetName);
-        tabbedPane.setSelectedComponent(ftTabPane);
-        ftTabPane.setSelectedComponent(wmsPanel);
-    }
+  /**
+   *
+   */
+  public void openRadialDataset(String datasetName) {
+    makeComponent(ftTabPane, "Radial");
+    radialPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(radialPanel);
+  }
 
-/**
- *  Jump to the appropriate tab based on datatype of InvDataset
- */
+  /**
+   *
+   */
+  public void openWMSDataset(String datasetName) {
+    makeComponent(ftTabPane, "WMS");
+    wmsPanel.doit(datasetName);
+    tabbedPane.setSelectedComponent(ftTabPane);
+    ftTabPane.setSelectedComponent(wmsPanel);
+  }
+
+  /**
+   * Jump to the appropriate tab based on datatype of InvDataset
+   */
   private void setThreddsDatatype(thredds.client.catalog.Dataset invDataset, String wants) {
-    if (invDataset == null) return;
+    if (invDataset == null) {
+      return;
+    }
 
     boolean wantsViewer = wants.equals("File");
     boolean wantsCoordSys = wants.equals("CoordSys");
@@ -1032,13 +1166,12 @@ public class ToolsUI extends JPanel {
       // otherwise do the datatype thing
       DataFactory.Result threddsData = threddsDataFactory.openFeatureDataset(invDataset, null);
       if (threddsData.fatalError) {
-        JOptionPane.showMessageDialog(null, "Failed to open err="+threddsData.errLog);
+        JOptionPane.showMessageDialog(null, "Failed to open err=" + threddsData.errLog);
         return;
       }
       jumptoThreddsDatatype(threddsData);
 
-    }
-    catch (IOException ioe) {
+    } catch (IOException ioe) {
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
       ioe.printStackTrace();
     }
@@ -1072,48 +1205,37 @@ public class ToolsUI extends JPanel {
       // if no feature type, just open as a NetcdfDataset
       try {
         openNetcdfFile(threddsDataFactory.openDataset(invAccess, true, null, null));
-      }
-      catch (IOException ioe) {
+      } catch (IOException ioe) {
         JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
       }
       return;
     }
 
-    DataFactory.Result threddsData = null;
+    DataFactory.Result threddsData;
     try {
       threddsData = threddsDataFactory.openFeatureDataset(invAccess, null);
       if (threddsData.fatalError) {
-        JOptionPane.showMessageDialog(null, "Failed to open err="+threddsData.errLog);
+        JOptionPane.showMessageDialog(null, "Failed to open err=" + threddsData.errLog);
         return;
       }
       jumptoThreddsDatatype(threddsData);
-    }
-    catch (IOException ioe) {
+    } catch (IOException ioe) {
       ioe.printStackTrace();
       JOptionPane.showMessageDialog(null, "Error on setThreddsDatatype = " + ioe.getMessage());
-      if (threddsData != null) {
-        try {
-          threddsData.close();
-        }
-        catch (IOException ioe2) {
-          // Okay to fall through?
-        }
-      }
     }
 
   }
 
-/**
-  * Jump to the appropriate tab based on datatype of threddsData
-  */
+  /**
+   * Jump to the appropriate tab based on datatype of threddsData
+   */
   private void jumptoThreddsDatatype(DataFactory.Result threddsData) {
 
     if (threddsData.fatalError) {
       JOptionPane.showMessageDialog(this, "Cant open dataset=" + threddsData.errLog);
       try {
         threddsData.close();
-      }
-      catch (IOException e) {
+      } catch (IOException e) {
         e.printStackTrace();
       }
       return;
@@ -1125,33 +1247,28 @@ public class ToolsUI extends JPanel {
         coveragePanel.setDataset(threddsData.featureDataset);
         tabbedPane.setSelectedComponent(ftTabPane);
         ftTabPane.setSelectedComponent(coveragePanel);
-      }
-      else if (threddsData.featureDataset instanceof GridDataset) {
+      } else if (threddsData.featureDataset instanceof GridDataset) {
         makeComponent(ftTabPane, "Grids");
         gridPanel.setDataset((GridDataset) threddsData.featureDataset);
         tabbedPane.setSelectedComponent(ftTabPane);
         ftTabPane.setSelectedComponent(gridPanel);
       }
-    }
-    else if (threddsData.featureType == FeatureType.IMAGE) {
+    } else if (threddsData.featureType == FeatureType.IMAGE) {
       makeComponent(ftTabPane, "Images");
       imagePanel.setImageLocation(threddsData.imageURL);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(imagePanel);
-    }
-    else if (threddsData.featureType == FeatureType.RADIAL) {
+    } else if (threddsData.featureType == FeatureType.RADIAL) {
       makeComponent(ftTabPane, "Radial");
       radialPanel.setDataset((RadialDatasetSweep) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(radialPanel);
-    }
-    else if (threddsData.featureType.isPointFeatureType()) {
+    } else if (threddsData.featureType.isPointFeatureType()) {
       makeComponent(ftTabPane, "PointFeature");
       pointFeaturePanel.setPointFeatureDataset((PointDatasetImpl) threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
       ftTabPane.setSelectedComponent(pointFeaturePanel);
-    }
-    else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
+    } else if (threddsData.featureType == FeatureType.STATION_RADIAL) {
       makeComponent(ftTabPane, "StationRadial");
       stationRadialPanel.setStationRadialDataset(threddsData.featureDataset);
       tabbedPane.setSelectedComponent(ftTabPane);
@@ -1159,63 +1276,64 @@ public class ToolsUI extends JPanel {
     }
   }
 
-/**
- *
- */
-    public NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {
+  /**
+   *
+   */
+  public NetcdfFile openFile(String location, boolean addCoords, CancelTask task) {
 
-        NetcdfFile ncfile = null;
-        try {
-            DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
-            if (addCoords) {
-                ncfile = NetcdfDataset.acquireDataset(durl, true, task);
-            }
-            else {
-                ncfile = NetcdfDataset.acquireFile(durl, task);
-            }
+    NetcdfFile ncfile = null;
+    try {
+      DatasetUrl durl = DatasetUrl.findDatasetUrl(location);
+      if (addCoords) {
+        ncfile = NetcdfDataset.acquireDataset(durl, true, task);
+      } else {
+        ncfile = NetcdfDataset.acquireFile(durl, task);
+      }
 
-            if (ncfile == null) {
-                JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location);
-            }
-            else if (useRecordStructure) {
-                ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
-            }
+      if (ncfile == null) {
+        JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location);
+      } else if (useRecordStructure) {
+        ncfile.sendIospMessage(NetcdfFile.IOSP_MESSAGE_ADD_RECORD_STRUCTURE);
+      }
+    } catch (IOException ioe) {
+      String message = ioe.getMessage();
+      if ((null == message) && (ioe instanceof EOFException)) {
+        message = "Premature End of File";
+      }
+      JOptionPane
+          .showMessageDialog(null, "NetcdfDataset.open cannot open " + location + "%n" + message);
+      if (!(ioe instanceof FileNotFoundException)) {
+        ioe.printStackTrace();
+      }
+      ncfile = null;
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(null,
+          "NetcdfDataset.open cannot open " + location + "%n" + e.getMessage());
+      log.error("NetcdfDataset.open cannot open " + location, e);
+      e.printStackTrace();
+
+      try {
+        if (ncfile != null) {
+          ncfile.close();
         }
-        catch (IOException ioe) {
-            String message = ioe.getMessage();
-            if ((null == message) && (ioe instanceof EOFException)) {
-                message = "Premature End of File";
-            }
-            JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location + "\n" + message);
-            if (! (ioe instanceof FileNotFoundException)) {
-                ioe.printStackTrace();
-            }
-            ncfile = null;
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "NetcdfDataset.open cannot open " + location + "\n" + e.getMessage());
-            log.error("NetcdfDataset.open cannot open " + location, e);
-            e.printStackTrace();
-
-            try {
-                if (ncfile != null) ncfile.close();
-            }
-            catch (IOException ee) {
-                System.out.printf("close failed%n");
-            }
-            ncfile = null;
-        }
-
-        return ncfile;
+      } catch (IOException ee) {
+        System.out.printf("close failed%n");
+      }
+      ncfile = null;
     }
 
-    private String downloadStatus = null;
+    return ncfile;
+  }
+
+  private String downloadStatus = null;
 
   private void downloadFile(String urlString) {
     int pos = urlString.lastIndexOf('/');
     String defFilename = (pos >= 0) ? urlString.substring(pos) : urlString;
     String fileOutName = fileChooser.chooseFilename(defFilename);
-    if (fileOutName == null) return;
+    if (fileOutName == null) {
+      return;
+    }
     String[] values = new String[2];
     values[0] = fileOutName;
     values[1] = urlString;
@@ -1231,9 +1349,9 @@ public class ToolsUI extends JPanel {
           IO.copyUrlB(values[1], out, 60000);
           downloadStatus = values[1] + " written to " + values[0];
 
-        }
-        catch (IOException ioe) {
-          downloadStatus = "Error opening " + values[0] + " and reading " + values[1] + "\n" + ioe.getMessage();
+        } catch (IOException ioe) {
+          downloadStatus =
+              "Error opening " + values[0] + " and reading " + values[1] + "%n" + ioe.getMessage();
         }
       }
     };
@@ -1241,8 +1359,8 @@ public class ToolsUI extends JPanel {
     final GetDataTask task = new GetDataTask(runner, urlString, values);
     final ProgressMonitor pm = new ProgressMonitor(task);
     pm.addActionListener(e -> {
-        JOptionPane.showMessageDialog(null, e.getActionCommand() + "\n" + downloadStatus);
-        downloadStatus = null;
+      JOptionPane.showMessageDialog(null, e.getActionCommand() + "%n" + downloadStatus);
+      downloadStatus = null;
     });
     pm.start(this, "Download", 30);
   }
@@ -1250,350 +1368,329 @@ public class ToolsUI extends JPanel {
 ///
 ///////////////////////////////////////////////////////////////////////////////////////
 ///
-/**
- *
- */
-    public static void exit() {
-        doSavePrefsAndUI();
+
+  /**
+   *
+   */
+  public static void exit() {
+    doSavePrefsAndUI();
+    System.exit(0);
+  }
+
+  /**
+   *
+   */
+  private static void doSavePrefsAndUI() {
+    ui.save();
+    final Rectangle bounds = frame.getBounds();
+    prefs.putBeanObject(FRAME_SIZE, bounds);
+    try {
+      store.save();
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
+
+    done = true; // on some systems, still get a window close event
+    final ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
+    if (cache != null) {
+      cache.clearCache(true);
+    }
+    FileCache.shutdown();           // shutdown threads
+    DiskCache2.exit();              // shutdown threads
+    MetadataManager.closeAll();     // shutdown bdb
+  }
+
+  /**
+   * Handle messages.
+   */
+  private static void setDataset() {
+    // do it in the swing event thread
+    SwingUtilities.invokeLater(() -> {
+      int pos = wantDataset.indexOf('#');
+      if (pos > 0) {
+        final String catName = wantDataset.substring(0, pos); // {catalog}#{dataset}
+        if (catName.endsWith(".xml")) {
+          ui.makeComponent(null, "THREDDS");
+          ui.threddsUI.setDataset(wantDataset);
+          ui.tabbedPane.setSelectedComponent(ui.threddsUI);
+        }
+        return;
+      }
+
+      // default
+      ui.openNetcdfFile(wantDataset);
+    });
+  }
+
+  /**
+   * Set look-and-feel.
+   */
+  private static void prepareGui() {
+
+    final String osName = System.getProperty("os.name").toLowerCase();
+    final boolean isMacOs = osName.startsWith("mac os x");
+
+    if (isMacOs) {
+      System.setProperty("apple.laf.useScreenMenuBar", "true");
+
+      // fixes the case on macOS where users use the system menu option to quit rather than
+      // closing a window using the 'x' button.
+      Runtime.getRuntime().addShutdownHook(new Thread(ToolsUI::doSavePrefsAndUI));
+    } else {
+      // Not macOS, so try applying Nimbus L&F, if available.
+      try {
+        for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+          if ("Nimbus".equals(info.getName())) {
+            UIManager.setLookAndFeel(info.getClassName());
+            break;
+          }
+        }
+      } catch (Exception exc) {
+        log.warn("Unable to apply Nimbus look-and-feel due to {}", exc.toString());
+
+        if (log.isTraceEnabled()) {
+          exc.printStackTrace();
+        }
+      }
+    }
+
+    // misc Gui initialization(s)
+    BAMutil.setResourcePath("/resources/nj22/ui/icons/");
+
+    // Setting up a font metrics object triggers one of the most time-wasting steps of GUI set up.
+    // We do it now before trying to create the splash or tools interface.
+    SwingUtilities.invokeLater(() -> {
+      final Toolkit tk = Toolkit.getDefaultToolkit();
+      final Font f = new Font("SansSerif", Font.PLAIN, 12);
+
+      @SuppressWarnings("deprecation") final FontMetrics fm = tk.getFontMetrics(f);
+    });
+  }
+
+  /**
+   * Must call this method on the event thread.
+   */
+  private static void createToolsFrame() {
+    // put UI in a JFrame
+    frame = new JFrame("NetCDF (" + DIALOG_VERSION + ") Tools");
+
+    ui = new ToolsUI(prefs, frame);
+
+    frame.setIconImage(BAMutil.getImage("netcdfUI"));
+
+    frame.addWindowListener(new WindowAdapter() {
+      @Override
+      public void windowActivated(final WindowEvent e) {
+        ToolsSplashScreen.getSharedInstance().setVisible(false);
+      }
+
+      @Override
+      public void windowClosing(final WindowEvent e) {
+        if (!done) {
+          exit();
+        }
+      }
+    });
+
+    frame.getContentPane().add(ui);
+
+    final Rectangle have = frame.getGraphicsConfiguration().getBounds();
+    final Rectangle def = new Rectangle(50, 50, 800, 800);
+
+    Rectangle want = (Rectangle) prefs.getBean(FRAME_SIZE, def);
+
+    if (want.getX() > have.getWidth() - 25) {
+      // may be off screen when switcing between 2 monitor system
+      want = def;
+    }
+
+    frame.setBounds(want);
+
+    frame.pack();
+    frame.setBounds(want);
+
+    // in case a dataset was on the command line
+    if (wantDataset != null) {
+      setDataset();
+    }
+  }
+
+  /**
+   *
+   */
+  public static void main(String[] args) {
+    final long start = System.currentTimeMillis();
+
+    if (debugListen) {
+      System.out.println("Arguments:");
+      for (final String arg : args) {
+        System.out.println(" " + arg);
+      }
+      HTTPSession.setInterceptors(true);
+    }
+
+    // handle multiple versions of ToolsUI, along with passing a dataset name
+    // first, if there were command-line arguments
+    if (args.length > 0) {
+      // munge arguments into a single string
+      final StringBuilder sbuff = new StringBuilder();
+      for (final String arg : args) {
+        sbuff.append(arg);
+        sbuff.append(" ");
+      }
+      final String arguments = sbuff.toString();
+      System.out.println("ToolsUI arguments=" + arguments);
+
+      // see if another version is running, if so send it the message then exit
+      final SocketMessage sm = new SocketMessage(14444, wantDataset);
+      if (sm.isAlreadyRunning()) {
+        log.error("ToolsUI already running - pass argument='{}' and exit", arguments);
         System.exit(0);
+      }
     }
 
-/**
- *
- */
-    private static void doSavePrefsAndUI() {
-        ui.save();
-        final Rectangle bounds = frame.getBounds();
-        prefs.putBeanObject(FRAME_SIZE, bounds);
-        try {
-            store.save();
-        }
-        catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-        done = true; // on some systems, still get a window close event
-        final ucar.nc2.util.cache.FileCacheIF cache = NetcdfDataset.getNetcdfFileCache();
-        if (cache != null) {
-            cache.clearCache(true);
-        }
-        FileCache.shutdown();           // shutdown threads
-        DiskCache2.exit();              // shutdown threads
-        MetadataManager.closeAll();     // shutdown bdb
-    }
-
-/**
- * Handle messages.
- */
-    private static void setDataset() {
-        // do it in the swing event thread
-        SwingUtilities.invokeLater(( ) -> {
-            int pos = wantDataset.indexOf('#');
-            if (pos > 0) {
-                final String catName = wantDataset.substring(0, pos); // {catalog}#{dataset}
-                if (catName.endsWith(".xml")) {
-                    ui.makeComponent(null, "THREDDS");
-                    ui.threddsUI.setDataset(wantDataset);
-                    ui.tabbedPane.setSelectedComponent(ui.threddsUI);
-                }
-                return;
+    // otherwise if no command-line arguments were passed
+    else {
+      final SocketMessage sm = new SocketMessage(14444, null);
+      if (sm.isAlreadyRunning()) {
+        System.out.println("ToolsUI already running - start up another copy");
+      } else {
+        sm.addEventListener(new SocketMessage.EventListener() {
+          @Override
+          public void setMessage(SocketMessage.Event event) {
+            wantDataset = event.getMessage();
+            if (debugListen) {
+              System.out.println(" got message= '" + wantDataset);
             }
-
-            // default
-            ui.openNetcdfFile(wantDataset);
-        });
-    }
-
-/**
- *  Set look-and-feel.
- */
-    private static void prepareGui() {
-
-        final String osName = System.getProperty("os.name").toLowerCase();
-        final boolean isMacOs = osName.startsWith("mac os x");
-
-        if (isMacOs) {
-            System.setProperty("apple.laf.useScreenMenuBar", "true");
-
-            // fixes the case on macOS where users use the system menu option to quit rather than
-            // closing a window using the 'x' button.
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                @Override
-                public void run() {
-                    doSavePrefsAndUI();
-                }
-            });
-        }
-        else {
-            // Not macOS, so try applying Nimbus L&F, if available.
-            try {
-                for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                    if ("Nimbus".equals(info.getName())) {
-                        UIManager.setLookAndFeel(info.getClassName());
-                        break;
-                    }
-                }
-            }
-            catch (Exception exc) {
-                log.warn("Unable to apply Nimbus look-and-feel due to {}", exc.toString());
-
-                if (log.isTraceEnabled()) {
-                    exc.printStackTrace();
-                }
-            }
-        }
-
-        // misc Gui initialization(s)
-        BAMutil.setResourcePath("/resources/nj22/ui/icons/");
-
-        // Setting up a font metrics object triggers one of the most time-wasting steps of GUI set up.
-        // We do it now before trying to create the splash or tools interface.
-        SwingUtilities.invokeLater(( ) -> {
-            final Toolkit tk = Toolkit.getDefaultToolkit ( );
-            final Font f = new Font ("SansSerif", Font.PLAIN, 12);
-
-            @SuppressWarnings("deprecation")
-            final FontMetrics fm = tk.getFontMetrics (f);
-        });
-    }
-
-/**
- *  Must call this method on the event thread.
- */
-    private static void createToolsFrame() {
-        // put UI in a JFrame
-        frame = new JFrame("NetCDF (" + DIALOG_VERSION + ") Tools");
-
-        ui = new ToolsUI(prefs, frame);
-
-        frame.setIconImage(BAMutil.getImage("netcdfUI"));
-
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowActivated(final WindowEvent e) {
-                ToolsSplashScreen.getSharedInstance().setVisible(false);
-            }
-
-            @Override
-            public void windowClosing(final WindowEvent e) {
-                if (! done) {
-                    exit();
-                }
-            }
-        });
-
-        frame.getContentPane().add(ui);
-
-        final Rectangle have = frame.getGraphicsConfiguration().getBounds();
-        final Rectangle def = new Rectangle(50, 50, 800, 800);
-
-        Rectangle want = (Rectangle) prefs.getBean(FRAME_SIZE, def);
-
-        if (want.getX() > have.getWidth() - 25) {
-            // may be off screen when switcing between 2 monitor system
-            want = def;
-        }
-
-        frame.setBounds(want);
-
-        frame.pack();
-        frame.setBounds(want);
-
-        // in case a dataset was on the command line
-        if (wantDataset != null) {
             setDataset();
-        }
+          }
+        });
+      }
     }
 
-/**
- *
- */
-    public static void main(String args[]) {
-        final long start = System.currentTimeMillis();
-
-        if (debugListen) {
-            System.out.println("Arguments:");
-            for (final String arg : args) {
-                System.out.println(" " + arg);
-            }
-            HTTPSession.setInterceptors(true);
-        }
-
-        // handle multiple versions of ToolsUI, along with passing a dataset name
-        // first, if there were command-line arguments
-        if (args.length > 0) {
-            // munge arguments into a single string
-            final StringBuilder sbuff = new StringBuilder();
-            for (final String arg : args) {
-                sbuff.append(arg);
-                sbuff.append(" ");
-            }
-            final String arguments = sbuff.toString();
-            System.out.println("ToolsUI arguments=" + arguments);
-
-            // see if another version is running, if so send it the message then exit
-            final SocketMessage sm = new SocketMessage(14444, wantDataset);
-            if (sm.isAlreadyRunning()) {
-                log.error("ToolsUI already running - pass argument='{}' and exit", arguments);
-                System.exit(0);
-            }
-        }
-
-        // otherwise if no command-line arguments were passed
-        else {
-            final SocketMessage sm = new SocketMessage(14444, null);
-            if (sm.isAlreadyRunning()) {
-                System.out.println("ToolsUI already running - start up another copy");
-            }
-            else {
-                sm.addEventListener(new SocketMessage.EventListener() {
-                    @Override
-                    public void setMessage(SocketMessage.Event event) {
-                        wantDataset = event.getMessage();
-                        if (debugListen) {
-                            System.out.println(" got message= '" + wantDataset);
-                        }
-                        setDataset();
-                    }
-                });
-            }
-        }
-
-        if (debugListen) {
-            System.out.println("Arguments:");
-            for (final String arg : args) {
-                System.out.println(" " + arg);
-            }
-            HTTPSession.setInterceptors(true);
-        }
-
-        // spring initialization
-        // is spring used by ToolsUI for anything? is this necessary?
-        try {
-            ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(
-                                "classpath:resources/nj22/ui/spring/application-config.xml");
-        }
-        catch (Exception exc) {
-            log.error("failed creating spring context: {}", exc.toString());
-            System.exit(1);
-        }
-
-        // look for command-line arguments
-        boolean configRead = false;
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
-                final String runtimeConfig = args[i + 1];
-                i++;
-                try (final FileInputStream fis = new FileInputStream(runtimeConfig)) {
-                    final StringBuilder errlog = new StringBuilder();
-                    RuntimeConfigParser.read(fis, errlog);
-                    configRead = true;
-                    System.out.println(errlog);
-                }
-                catch (IOException ioe) {
-                    log.warn("Error reading {} = {}", runtimeConfig, ioe.getMessage());
-                }
-            }
-        }
-
-        if (!configRead) {
-            final String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
-            final File f = new File(filename);
-            if (f.exists()) {
-                try (final FileInputStream fis = new FileInputStream(filename)) {
-                    final StringBuilder errlog = new StringBuilder();
-                    RuntimeConfigParser.read(fis, errlog);
-                    configRead = true;
-                    System.out.println(errlog);
-                }
-                catch (IOException ioe) {
-                    log.warn("Error reading {} = {}", filename, ioe.getMessage());
-                }
-            }
-        }
-
-        // prefs storage
-        try {
-            // 4.4
-            final String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
-            final File prefs44 = new File(prefStore);
-
-            if (!prefs44.exists()) {
-                // if 4.4 doesnt exist, see if 4.3 exists
-                final String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
-                final File prefs43 = new File(prefStoreBack);
-                if (prefs43.exists()) {
-                    // make a copy of it
-                    IO.copyFile(prefs43, prefs44);
-                }
-            }
-
-            // open 4.4 version, create it if it doesn't exist
-            store = XMLStore.createFromFile(prefStore, null);
-            prefs = store.getPreferences();
-
-            Debug.setStore(prefs.node("Debug"));
-        }
-        catch (IOException e) {
-            log.warn("XMLStore creation failed - {}", e.toString());
-        }
-
-        // Prepare UI management.
-        prepareGui();
-
-        // Display the splash screen so there's something to look at while we do some more init.
-        SwingUtilities.invokeLater(( ) -> {
-            ToolsSplashScreen.getSharedInstance().setVisible(true);
-        });
-
-        // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
-        Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
-
-        try {
-            // MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
-            thredds.inventory.CollectionManagerAbstract.setMetadataStore(MetadataManager.getFactory());
-        }
-        catch (Exception exc) {
-            log.error("CdmInit: Failed CollectionManagerAbstract.setMetadataStore - {}", exc.toString());
-        }
-
-        // open dap initializations
-        DODSNetcdfFile.setAllowCompression(true);
-        DODSNetcdfFile.setAllowSessions(true);
-
-        // caching
-        RandomAccessFile.enableDefaultGlobalFileCache();
-        GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
-
-        // Waste a couple secs on the main thread before adding another task to the event dispatch thread.
-        // Somehow this let's the EDT "catch up" and in particular gets the splash to finish rendering.
-        try
-        {
-            Thread.sleep (2500l);
-        }
-        catch (Exception ignore)
-        {
-            // Nothing to do here.
-        }
-
-        // Create and show the UI frame!
-        SwingUtilities.invokeLater(( ) -> {
-            createToolsFrame();
-            frame.setVisible(true);
-        });
-
-        // Name HTTP user agent and set Authentication for accessing password protected services
-        SwingUtilities.invokeLater(( ) -> {
-            UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
-            try {
-                HTTPSession.setGlobalCredentialsProvider(provider);
-            }
-            catch (HTTPException e) {
-                log.error("Failed to set global credentials");
-            }
-            HTTPSession.setGlobalUserAgent("ToolsUI v5.0");
-
-            java.net.Authenticator.setDefault(provider);
-        });
+    if (debugListen) {
+      System.out.println("Arguments:");
+      for (final String arg : args) {
+        System.out.println(" " + arg);
+      }
+      HTTPSession.setInterceptors(true);
     }
+
+    // spring initialization
+    // is spring used by ToolsUI for anything? is this necessary?
+    try {
+      ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(
+          "classpath:resources/nj22/ui/spring/application-config.xml");
+    } catch (Exception exc) {
+      log.error("failed creating spring context: {}", exc.toString());
+      System.exit(1);
+    }
+
+    // look for command-line arguments
+    boolean configRead = false;
+    for (int i = 0; i < args.length; i++) {
+      if (args[i].equalsIgnoreCase("-nj22Config") && (i < args.length - 1)) {
+        final String runtimeConfig = args[i + 1];
+        i++;
+        try (final FileInputStream fis = new FileInputStream(runtimeConfig)) {
+          final StringBuilder errlog = new StringBuilder();
+          RuntimeConfigParser.read(fis, errlog);
+          configRead = true;
+          System.out.println(errlog);
+        } catch (IOException ioe) {
+          log.warn("Error reading {} = {}", runtimeConfig, ioe.getMessage());
+        }
+      }
+    }
+
+    if (!configRead) {
+      final String filename = XMLStore.makeStandardFilename(".unidata", "nj22Config.xml");
+      final File f = new File(filename);
+      if (f.exists()) {
+        try (final FileInputStream fis = new FileInputStream(filename)) {
+          final StringBuilder errlog = new StringBuilder();
+          RuntimeConfigParser.read(fis, errlog);
+          System.out.println(errlog);
+        } catch (IOException ioe) {
+          log.warn("Error reading {} = {}", filename, ioe.getMessage());
+        }
+      }
+    }
+
+    // prefs storage
+    try {
+      // 4.4
+      final String prefStore = XMLStore.makeStandardFilename(".unidata", "ToolsUI.xml");
+      final File prefs44 = new File(prefStore);
+
+      if (!prefs44.exists()) {
+        // if 4.4 doesnt exist, see if 4.3 exists
+        final String prefStoreBack = XMLStore.makeStandardFilename(".unidata", "NetcdfUI22.xml");
+        final File prefs43 = new File(prefStoreBack);
+        if (prefs43.exists()) {
+          // make a copy of it
+          IO.copyFile(prefs43, prefs44);
+        }
+      }
+
+      // open 4.4 version, create it if it doesn't exist
+      store = XMLStore.createFromFile(prefStore, null);
+      prefs = store.getPreferences();
+
+      Debug.setStore(prefs.node("Debug"));
+    } catch (IOException e) {
+      log.warn("XMLStore creation failed - {}", e.toString());
+    }
+
+    // Prepare UI management.
+    prepareGui();
+
+    // Display the splash screen so there's something to look at while we do some more init.
+    SwingUtilities.invokeLater(() -> ToolsSplashScreen.getSharedInstance().setVisible(true));
+
+    // LOOK needed? for efficiency, persist aggregations. Every hour, delete stuff older than 30 days
+    Aggregation.setPersistenceCache(new DiskCache2("/.unidata/aggCache", true, 60 * 24 * 30, 60));
+
+    try {
+      // MetadataManager.setCacheDirectory(fcCache, maxSizeBytes, jvmPercent); // use defaults
+      thredds.inventory.CollectionManagerAbstract.setMetadataStore(MetadataManager.getFactory());
+    } catch (Exception exc) {
+      log.error("CdmInit: Failed CollectionManagerAbstract.setMetadataStore - {}", exc.toString());
+    }
+
+    // open dap initializations
+    DODSNetcdfFile.setAllowCompression(true);
+    DODSNetcdfFile.setAllowSessions(true);
+
+    // caching
+    RandomAccessFile.enableDefaultGlobalFileCache();
+    GribCdmIndex.initDefaultCollectionCache(100, 200, -1);
+
+    // Waste a couple secs on the main thread before adding another task to the event dispatch thread.
+    // Somehow this let's the EDT "catch up" and in particular gets the splash to finish rendering.
+    try {
+      Thread.sleep(2500L);
+    } catch (Exception ignore) {
+      // Nothing to do here.
+    }
+
+    // Create and show the UI frame!
+    SwingUtilities.invokeLater(() -> {
+      createToolsFrame();
+      frame.setVisible(true);
+    });
+
+    // Name HTTP user agent and set Authentication for accessing password protected services
+    SwingUtilities.invokeLater(() -> {
+      UrlAuthenticatorDialog provider = new UrlAuthenticatorDialog(frame);
+      try {
+        HTTPSession.setGlobalCredentialsProvider(provider);
+      } catch (HTTPException e) {
+        log.error("Failed to set global credentials");
+      }
+      HTTPSession.setGlobalUserAgent("ToolsUI v5.0");
+
+      java.net.Authenticator.setDefault(provider);
+    });
+  }
 }

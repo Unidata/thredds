@@ -4,6 +4,7 @@
  */
 package ucar.nc2.ui.widget;
 
+import java.awt.event.InputEvent;
 import ucar.nc2.ui.util.Resource;
 
 import java.awt.*;
@@ -62,8 +63,7 @@ public class BAMutil {
   public static void setResourcePath( String path) { defaultResourcePath = path; }
   public static String getResourcePath( ) { return defaultResourcePath; }
 
-  final private static int META_KEY = (isMacOs) ? java.awt.Event.META_MASK
-                                                    : java.awt.Event.CTRL_MASK;
+  private static final int META_KEY = (isMacOs) ? InputEvent.META_MASK : InputEvent.CTRL_MASK;
 
   private static boolean debug = false, debugToggle = false;
 
@@ -180,11 +180,11 @@ public class BAMutil {
   private static JMenuItem makeMenuItemFromAction( Action act) {
     // this prevents null pointer exception if user didnt call setProperties()
     Boolean tog = (Boolean) act.getValue( BAMutil.TOGGLE);
-    boolean is_toggle = (tog == null ) ? false : tog.booleanValue();
+    boolean is_toggle = (tog != null) && tog;
     Integer mnu = (Integer) act.getValue( BAMutil.MNEMONIC);
-    int mnemonic = (tog == null ) ? -1 : mnu.intValue();
+    int mnemonic = (tog == null ) ? -1 : mnu;
     Integer acc = (Integer) act.getValue( BAMutil.ACCEL);
-    int accel = (acc == null ) ? 0 : acc.intValue();
+    int accel = (acc == null ) ? 0 : acc;
 
     return makeMenuItem(
         (Icon) act.getValue( Action.SMALL_ICON),
@@ -223,7 +223,7 @@ public class BAMutil {
       menu.add( mi);
 
     Boolean tog = (Boolean) act.getValue( BAMutil.TOGGLE);
-    boolean is_toggle = (tog == null ) ? false : tog.booleanValue();
+    boolean is_toggle = (tog != null) && tog;
 
     // set state for toggle buttons
     if (is_toggle) {
@@ -232,7 +232,7 @@ public class BAMutil {
       Boolean state = (Boolean) act.getValue( BAMutil.STATE);
       if (state == null) state = Boolean.FALSE;
       act.putValue(BAMutil.STATE, state);
-      mi.setSelected(state.booleanValue());
+      mi.setSelected(state);
     }
 
       // add event listeners
@@ -252,7 +252,7 @@ public class BAMutil {
     pmenu.add( mi);
 
     Boolean tog = (Boolean) act.getValue( BAMutil.TOGGLE);
-    boolean is_toggle = (tog == null ) ? false : tog.booleanValue();
+    boolean is_toggle = (tog != null) && tog;
 
     // set state for toggle buttons
     if (is_toggle) {
@@ -261,7 +261,7 @@ public class BAMutil {
       Boolean state = (Boolean) act.getValue( BAMutil.STATE);
       if (state == null) state = Boolean.FALSE;
       act.putValue(BAMutil.STATE, state);
-      mi.setSelected(state.booleanValue());
+      mi.setSelected(state);
     }
 
       // add event listeners
@@ -276,7 +276,7 @@ public class BAMutil {
   private static AbstractButton _makeButtconFromAction( Action act) {
     // this prevents null pointer exception if user didnt call setProperties()
     Boolean tog = (Boolean) act.getValue( BAMutil.TOGGLE);
-    boolean is_toggle = (tog == null ) ? false : tog.booleanValue();
+    boolean is_toggle = (tog != null) && tog;
 
     return makeButtcon(
         (Icon) act.getValue( Action.SMALL_ICON),
@@ -315,7 +315,7 @@ public class BAMutil {
     if (debug) System.out.println(" addActionToContainerPos "+ act+ " "+ butt+ " "+ pos);
 
     Boolean tog = (Boolean) act.getValue( BAMutil.TOGGLE);
-    boolean is_toggle = (tog == null ) ? false : tog.booleanValue();
+    boolean is_toggle = (tog != null) && tog;
 
       // set state for toggle buttons
     if (is_toggle) {
@@ -324,7 +324,7 @@ public class BAMutil {
       Boolean state = (Boolean) act.getValue( BAMutil.STATE);
       if (state == null) state = Boolean.FALSE;
       act.putValue(BAMutil.STATE, state);
-      butt.setSelected(state.booleanValue());
+      butt.setSelected(state);
     }
 
       // add event listsners
@@ -339,7 +339,7 @@ public class BAMutil {
     AbstractButton butt = _makeButtconFromAction( act);
 
     Boolean tog = (Boolean) act.getValue( BAMutil.TOGGLE);
-    boolean is_toggle = (tog == null ) ? false : tog.booleanValue();
+    boolean is_toggle = (tog != null) && tog;
 
       // set state for toggle buttons
     if (is_toggle) {
@@ -348,7 +348,7 @@ public class BAMutil {
       Boolean state = (Boolean) act.getValue( BAMutil.STATE);
       if (state == null) state = Boolean.FALSE;
       act.putValue(BAMutil.STATE, state);
-      butt.setSelected(state.booleanValue());
+      butt.setSelected(state);
     }
 
       // add event listsners
@@ -393,9 +393,9 @@ public class BAMutil {
     }
     act.putValue( Action.SHORT_DESCRIPTION, action_name);
     act.putValue( Action.LONG_DESCRIPTION, action_name);
-    act.putValue( BAMutil.TOGGLE, new Boolean(is_toggle));
-    act.putValue( BAMutil.MNEMONIC, new Integer(mnemonic));
-    act.putValue( BAMutil.ACCEL, new Integer(accel));
+    act.putValue( BAMutil.TOGGLE, is_toggle);
+    act.putValue( BAMutil.MNEMONIC, mnemonic);
+    act.putValue( BAMutil.ACCEL, accel);
   }
 
  /** Standard way to set Properties and state for "Toggle" Actions.  *
@@ -409,7 +409,7 @@ public class BAMutil {
   public static void setActionPropertiesToggle( AbstractAction act, String icon_name, String action_name,
     boolean toggleValue, int mnemonic, int accel ) {
     setActionProperties( act, icon_name, action_name, true, mnemonic, accel);
-    act.putValue( BAMutil.STATE, new Boolean(toggleValue));
+    act.putValue( BAMutil.STATE, toggleValue);
   }
 
   /*
@@ -458,24 +458,28 @@ public class BAMutil {
     public ActionToggle(Action oa, AbstractButton b) {
       this.orgAct = oa;
       this.button = b;
-      orgAct.putValue(STATE, new Boolean(true)); // state is kept with original action
+      orgAct.putValue(STATE, Boolean.TRUE); // state is kept with original action
 
       orgAct.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
         public void propertyChange(java.beans.PropertyChangeEvent e) {
           String propertyName = e.getPropertyName();
-          if (debugToggle) System.out.println("propertyChange "+ propertyName+ " "+ ((Boolean) e.getNewValue()));
-          if (propertyName.equals(Action.NAME)) {
-            String text = (String) e.getNewValue();
-            button.setText(text);
-            button.repaint();
-          } else if (propertyName.equals("enabled")) {
-            Boolean enabledState = (Boolean) e.getNewValue();
-            button.setEnabled(enabledState.booleanValue());
-            button.repaint();
-          } else if (propertyName.equals(STATE)) {
-            Boolean state = (Boolean) e.getNewValue();
-            button.setSelected(state.booleanValue());
-            button.repaint();
+          if (debugToggle) System.out.println("propertyChange "+ propertyName+ " "+ e.getNewValue());
+          switch (propertyName) {
+            case Action.NAME:
+              String text = (String) e.getNewValue();
+              button.setText(text);
+              button.repaint();
+              break;
+            case "enabled":
+              Boolean enabledState = (Boolean) e.getNewValue();
+              button.setEnabled(enabledState);
+              button.repaint();
+              break;
+            case STATE:
+              Boolean state = (Boolean) e.getNewValue();
+              button.setSelected(state);
+              button.repaint();
+              break;
           }
         }
       });
@@ -483,7 +487,7 @@ public class BAMutil {
 
     public void actionPerformed( java.awt.event.ActionEvent e) {
       Boolean state = (Boolean) orgAct.getValue(BAMutil.STATE);
-      orgAct.putValue(STATE, new Boolean(!state.booleanValue()));
+      orgAct.putValue(STATE, !state.booleanValue());
       orgAct.actionPerformed(e);
     }
   }
@@ -499,7 +503,7 @@ public class BAMutil {
 
     public void actionPerformed( java.awt.event.ActionEvent e) {
       Boolean state = (Boolean) orgAct.getValue(STATE);
-      orgAct.putValue(STATE, new Boolean(!state.booleanValue()));
+      orgAct.putValue(STATE, !state.booleanValue());
       if (debugToggle)
         System.out.println("ToggleAction: "+ orgAct.getValue( Action.SHORT_DESCRIPTION)+" "+orgAct.getValue( BAMutil.STATE));
       orgAct.actionPerformed(e);
@@ -515,7 +519,7 @@ public class BAMutil {
     public void propertyChange(java.beans.PropertyChangeEvent e) {
       String propertyName = e.getPropertyName();
       if (debugToggle) {
-        System.out.print("myActionChangedListener "+ propertyName+ " "+ ((Boolean) e.getNewValue()));
+        System.out.print("myActionChangedListener "+ propertyName+ " "+ e.getNewValue());
         AbstractAction act = (AbstractAction) button.getAction();
         System.out.print(" "+ ((act == null) ? "" : act.getValue( Action.SHORT_DESCRIPTION)));
       }
@@ -526,11 +530,11 @@ public class BAMutil {
         button.repaint();
       } else if (propertyName.equals("enabled")) {
         Boolean enabledState = (Boolean) e.getNewValue();
-        button.setEnabled(enabledState.booleanValue());
+        button.setEnabled(enabledState);
         button.repaint();
       } else if (propertyName.equals(STATE)) {
         Boolean state = (Boolean) e.getNewValue();
-        button.setSelected(state.booleanValue());
+        button.setSelected(state);
         button.repaint();
       }
     }

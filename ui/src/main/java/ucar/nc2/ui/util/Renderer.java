@@ -25,21 +25,21 @@ public interface Renderer {
      *   Renderers should use "Normalized Device" coordinates if they want to render non-scalable objects.
      *   Basically, you pretend you are working in screen pixels.
      */
-  public void draw(java.awt.Graphics2D g, java.awt.geom.AffineTransform pixelAT);
+    void draw(java.awt.Graphics2D g, java.awt.geom.AffineTransform pixelAT);
 
     /** Tell the Renderer to use the given projection from now on.
      *  @param project the projection to use.
      */
-  public void setProjection(ucar.unidata.geoloc.ProjectionImpl project);
+    void setProjection(ucar.unidata.geoloc.ProjectionImpl project);
 
     /** Tell the Renderer to use the given color.
      *  @param color the Color to use.
      */
-  public void setColor(java.awt.Color color);
-  public java.awt.Color getColor();
+    void setColor(java.awt.Color color);
+  java.awt.Color getColor();
 
   /** This allows application to automatically switch to some special area defined by the Renderer
    *  @return LatLonRect or null.
    */
-  public ucar.unidata.geoloc.LatLonRect getPreferredArea();
+  ucar.unidata.geoloc.LatLonRect getPreferredArea();
 }

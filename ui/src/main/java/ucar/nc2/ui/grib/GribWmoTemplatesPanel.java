@@ -130,7 +130,7 @@ public class GribWmoTemplatesPanel extends JPanel {
     void showTable(Formatter f) {
       f.format("Template %s (%s)%n", template.getName(), template.getDesc());
       for (WmoTemplateTables.Field entry : template.getFlds()) {
-        f.format("  %6s (%d): %s", entry.getOctet(), entry.getNote(), entry.getContent());
+        f.format("  %6s (%s): %s", entry.getOctet(), entry.getNote(), entry.getContent());
         if (entry.getNote() != null)
           f.format(" - %s", entry.getNote());
         f.format("%n");

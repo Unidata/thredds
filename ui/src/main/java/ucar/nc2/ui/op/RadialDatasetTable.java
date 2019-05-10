@@ -41,14 +41,14 @@ import javax.swing.JTable;
 
 public class RadialDatasetTable extends JPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
   private PreferencesExt prefs;
   private RadialDatasetSweep radialDataset;
 
-  private BeanTable varTable, sweepTable = null;
-  private JSplitPane split = null;
+  private BeanTable varTable, sweepTable;
+  private JSplitPane split;
   private TextHistoryPane infoTA;
   private IndependentWindow infoWindow;
 

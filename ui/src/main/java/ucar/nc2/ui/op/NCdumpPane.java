@@ -8,7 +8,9 @@ package ucar.nc2.ui.op;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.ma2.IsMissingEvaluator;
-import ucar.nc2.*;
+import ucar.nc2.NCdumpW;
+import ucar.nc2.NetcdfFile;
+import ucar.nc2.ParsedSectionSpec;
 import ucar.nc2.Variable;
 import ucar.nc2.dt.image.image.ImageArrayAdapter;
 import ucar.nc2.ui.image.ImageViewPanel;
@@ -38,10 +40,10 @@ import javax.swing.JScrollPane;
  */
 public class NCdumpPane extends TextHistoryPane {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                             = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final static String ImageViewer_WindowSize = "ImageViewer_WindowSize";
+    private static final String ImageViewer_WindowSize = "ImageViewer_WindowSize";
 
     private PreferencesExt prefs;
     private ComboBox cb;
@@ -66,15 +68,11 @@ public class NCdumpPane extends TextHistoryPane {
 
         final JButton getButton = new JButton("NCdump");
         getButton.setToolTipText("show selected data values");
-        getButton.addActionListener(e -> {
-            ncdump( (String) cb.getSelectedItem());
-        });
+        getButton.addActionListener(e -> ncdump( (String) cb.getSelectedItem()));
 
         final JButton imageButton = new JButton("Image");
         imageButton.setToolTipText("view selected data as Image");
-        imageButton.addActionListener(e -> {
-            showImage((String) cb.getSelectedItem());
-        });
+        imageButton.addActionListener(e -> showImage((String) cb.getSelectedItem()));
 
         final JButton binButton = new JButton("Write");
         binButton.setToolTipText("write binary data to file");

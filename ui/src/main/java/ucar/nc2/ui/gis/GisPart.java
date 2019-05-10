@@ -18,14 +18,14 @@ public interface GisPart  {
      *
      * @return number of points in this part.
      */
-    public int getNumPoints();
+    int getNumPoints();
 
     /**
      * Get x coordinates for this part.
      *
      * @return array of x coordinates.
      */
-    public double[] getX();
+    double[] getX();
 
 
     /**
@@ -33,7 +33,7 @@ public interface GisPart  {
      *
      * @return array of y coordinates.
      */
-    public double[] getY();
+    double[] getY();
 
 } // GisPart
 

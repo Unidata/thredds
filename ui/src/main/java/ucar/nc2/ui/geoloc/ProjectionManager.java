@@ -35,9 +35,9 @@ import ucar.unidata.geoloc.*;
  * @version revived 9/20/2012
  */
 public class ProjectionManager {
-  static private org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionManager.class);
-  static private final int min_sigfig = 6;
-  static private final Object[] voidObjectArg = new Object[]{};
+  private static org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ProjectionManager.class);
+  private static final int min_sigfig = 6;
+  private static final Object[] voidObjectArg = new Object[]{};
 
   // the current list of projection classes: be nice to do this dynamically
   // what about reading all classes in ucar.unidata.gis/projection ? (glenn doesnt like)
@@ -65,7 +65,7 @@ public class ProjectionManager {
   };
 
   private PreferencesExt store;
-  private boolean eventsOK = false;
+  private boolean eventsOK;
 
   // GUI stuff that needs class scope
   // private JTableProjection projTable;
@@ -405,7 +405,6 @@ public class ProjectionManager {
           System.out.println("none");
           return;
         }
-        System.out.println("");
       }
       for (PropertyDescriptor pd : props) {
         Method reader = pd.getReadMethod();

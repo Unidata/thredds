@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.op;
 
+import javax.annotation.Nullable;
 import ucar.nc2.ft.point.bufr.BufrCdmIndex;
 import ucar.nc2.ft.point.bufr.BufrCdmIndexProto;
 import ucar.nc2.ft.point.bufr.BufrField;
@@ -29,7 +30,7 @@ import javax.swing.table.TableColumn;
  */
 public class BufrCdmIndexPanel extends JPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private PreferencesExt prefs;
@@ -255,6 +256,7 @@ public class BufrCdmIndexPanel extends JPanel {
       this.child = child;
     }
 
+    @Nullable
     public String getParent() {
       if (parent == null) return null;
       Formatter f = new Formatter();

@@ -19,8 +19,6 @@ import ucar.util.prefs.XMLStore;
 import ucar.util.prefs.ui.ComboBox;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
@@ -584,7 +582,7 @@ public class URLDumpPane extends TextHistoryPane {
   private static XMLStore xstore;
   private static URLDumpPane main;
 
-  public static void main(String args[]) throws Exception {
+  public static void main(String[] args) throws Exception {
     JFrame frame = new JFrame("URL Dump Pane");
     frame.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {

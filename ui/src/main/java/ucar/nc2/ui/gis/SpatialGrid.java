@@ -17,7 +17,7 @@ import java.awt.geom.*;
 public class SpatialGrid {
   private static final double MAX_DOUBLE = Double.MAX_VALUE;
 
-  private GridCell[] gridArray[];
+  private GridCell[][] gridArray;
   private int nx, ny;
   private int countX, countY;
   private double gridWidth, gridHeight;
@@ -179,7 +179,7 @@ public class SpatialGrid {
    * @return the object associated with the closest cell, or null if none
   */
   public Object findClosest(Point2D pt) {
-    Object o = null;
+    Object o;
     int indexX = (int) ((pt.getX()-offsetX)/gridWidth);
     int indexY = (int) ((pt.getY()-offsetY)/gridHeight);
 
@@ -238,16 +238,16 @@ public class SpatialGrid {
     if ((indexX < 0) || (indexX >= countX) || (indexY < 0) || (indexY >= countY)) // outside bounding box
       return MAX_DOUBLE;
 
-      GridCell gtest = gridArray[indexY][indexX];
-      if (!gtest.used)    // nothing in this cell
-        return MAX_DOUBLE;
+    GridCell gtest = gridArray[indexY][indexX];
+    if (!gtest.used)    // nothing in this cell
+      return MAX_DOUBLE;
 
-        // get distance from center of cell
-      Rectangle2D rect = gtest.objectBB;
-      double dx = rect.getX()+rect.getWidth()/2 - pt.getX();
-      double dy = rect.getY()+rect.getHeight()/2 - pt.getY();
-      return (dx*dx + dy*dy);
-    }
+      // get distance from center of cell
+    Rectangle2D rect = gtest.objectBB;
+    double dx = rect.getX()+rect.getWidth()/2 - pt.getX();
+    double dy = rect.getY()+rect.getHeight()/2 - pt.getY();
+    return (dx*dx + dy*dy);
+  }
 
   private boolean intersectsOverlap( Rectangle2D r1, Rectangle2D r2) {
     if (scaleOverlap >= 1.0)

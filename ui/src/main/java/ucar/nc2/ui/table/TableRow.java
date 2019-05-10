@@ -7,12 +7,12 @@ package ucar.nc2.ui.table;
 public interface TableRow {
 
     // return the value of this row at the specified column
-  public Object getValueAt( int col);
+    Object getValueAt(int col);
 
     // for use in Comparator: return -1 (less than) 0 (equal) or 1 (greater than other)
-  public int compare( TableRow other, int col);
+    int compare(TableRow other, int col);
 
-  public void setNextSort( int[] nextSort);
-  public Object getUserObject();
+  void setNextSort(int[] nextSort);
+  Object getUserObject();
 
 }

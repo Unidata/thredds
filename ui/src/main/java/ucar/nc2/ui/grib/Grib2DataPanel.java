@@ -137,8 +137,8 @@ public class Grib2DataPanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         Formatter f = new Formatter();
         List list = record2BeanTable.getSelectedBeans();
-        for (int i = 0; i < list.size(); i++) {
-          Grib2RecordBean bean = (Grib2RecordBean) list.get(i);
+        for (Object o : list) {
+          Grib2RecordBean bean = (Grib2RecordBean) o;
           bean.toRawPdsString(f);
         }
         infoPopup.setText(f.toString());
@@ -363,8 +363,7 @@ public class Grib2DataPanel extends JPanel {
 
     for (Grib2SectionGridDefinition gds : index.getGds()) {
       int hash = gds.getGDS().hashCode();
-      if (gdsSet.get(hash) == null)
-        gdsSet.put(hash, gds);
+      gdsSet.putIfAbsent(hash, gds);
     }
 
     for (Grib2Record gr : index.getRecords()) {
@@ -683,7 +682,7 @@ public class Grib2DataPanel extends JPanel {
   }
 
   void compareData(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
-    float[] data1 = null, data2 = null;
+    float[] data1, data2;
     try {
       data1 = bean1.readData();
       data2 = bean2.readData();
@@ -711,14 +710,10 @@ public class Grib2DataPanel extends JPanel {
 
   void showBitmap(Grib2RecordBean bean1, Formatter f) throws IOException {
     byte[] bitmap;
-    ucar.unidata.io.RandomAccessFile raf = null;
-    try {
-      raf = bean1.getRaf();
+    try (ucar.unidata.io.RandomAccessFile raf = bean1.getRaf()) {
       Grib2SectionBitMap bms = bean1.gr.getBitmapSection();
       f.format("%s%n", bms);
       bitmap = bms.getBitmap(raf);
-    } finally {
-      if (raf != null) raf.close();
     }
 
     if (bitmap == null) {
@@ -1084,7 +1079,7 @@ public class Grib2DataPanel extends JPanel {
     }
 
     public String getUnits() {
-      Grib2Tables.Parameter p = cust.getParameter(discipline, pds);
+      GribTables.Parameter p = cust.getParameter(discipline, pds);
       return (p == null) ? "?" : p.getUnit();
     }
 

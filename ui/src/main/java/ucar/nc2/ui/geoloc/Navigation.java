@@ -4,7 +4,6 @@
  */
 package ucar.nc2.ui.geoloc;
 
-import ucar.nc2.util.ListenerManager;
 import ucar.unidata.geoloc.*;
 
 import java.awt.geom.AffineTransform;
@@ -203,7 +202,7 @@ public class Navigation  {
     return new java.awt.Rectangle((int)p1.getX(), (int)p1.getY(), (int)p2.getX(), (int)p2.getY());
   }
 
-  /************* domain changing calls ****************************/
+  /************ domain changing calls ****************************/
   /** call this to change the center of the screen's world coordinates.
      deltax, deltay in display coordinates */
   public void pan( double deltax, double deltay) {

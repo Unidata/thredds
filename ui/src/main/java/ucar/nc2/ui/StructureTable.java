@@ -24,7 +24,6 @@ import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -382,17 +381,17 @@ public class StructureTable extends JPanel {
 
     // subclasses implement these
 
-    abstract public StructureData getStructureData(int row) throws InvalidRangeException, IOException;
+    public abstract StructureData getStructureData(int row) throws InvalidRangeException, IOException;
 
     // remove all data
 
-    abstract public void clear();
+    public abstract void clear();
 
     // if we know how to extract the date for this data, add two extra columns
 
-    abstract public CalendarDate getObsDate(int row);
+    public abstract CalendarDate getObsDate(int row);
 
-    abstract public CalendarDate getNomDate(int row);
+    public abstract CalendarDate getNomDate(int row);
 
     public Object getRow(int row) throws InvalidRangeException, IOException {
       return getStructureData(row);
@@ -441,10 +440,7 @@ public class StructureTable extends JPanel {
       StructureData sd;
       try {
         sd = getStructureDataHash(row);
-      } catch (InvalidRangeException e) {
-        e.printStackTrace();
-        return "ERROR " + e.getMessage();
-      } catch (IOException e) {
+      } catch (InvalidRangeException | IOException e) {
         e.printStackTrace();
         return "ERROR " + e.getMessage();
       }

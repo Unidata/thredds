@@ -39,7 +39,7 @@ import java.util.List;
  * @since 8/11/2014
  */
 public class GribRewritePanel extends JPanel {
-  static private final Logger logger = LoggerFactory.getLogger(GribRewritePanel.class);
+  private static final Logger logger = LoggerFactory.getLogger(GribRewritePanel.class);
 
   private PreferencesExt prefs;
 

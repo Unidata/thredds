@@ -40,29 +40,32 @@ public class FeatureScanOpPanel extends OpPanel {
         ftTable.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(final PropertyChangeEvent e) {
+                if (!(e.getNewValue() instanceof String)) return;
 
                 final String datasetName = (String) e.getNewValue();
 
-                if (e.getPropertyName().equals("openPointFeatureDataset")) {
-                    ToolsUI.getToolsUI().openPointFeatureDataset(datasetName);
-                }
-                else if (e.getPropertyName().equals("openNetcdfFile")) {
-                    ToolsUI.getToolsUI().openNetcdfFile(datasetName);
-                }
-                else if (e.getPropertyName().equals("openCoordSystems")) {
-                    ToolsUI.getToolsUI().openCoordSystems(datasetName);
-                }
-                else if (e.getPropertyName().equals("openNcML")) {
-                    ToolsUI.getToolsUI().openNcML(datasetName);
-                }
-                else if (e.getPropertyName().equals("openGridDataset")) {
-                    ToolsUI.getToolsUI().openGridDataset(datasetName);
-                }
-                else if (e.getPropertyName().equals("openCoverageDataset")) {
-                    ToolsUI.getToolsUI().openCoverageDataset(datasetName);
-                }
-                else if (e.getPropertyName().equals("openRadialDataset")) {
-                    ToolsUI.getToolsUI().openRadialDataset(datasetName);
+                switch (e.getPropertyName()) {
+                    case "openPointFeatureDataset":
+                        ToolsUI.getToolsUI().openPointFeatureDataset(datasetName);
+                        break;
+                    case "openNetcdfFile":
+                        ToolsUI.getToolsUI().openNetcdfFile(datasetName);
+                        break;
+                    case "openCoordSystems":
+                        ToolsUI.getToolsUI().openCoordSystems(datasetName);
+                        break;
+                    case "openNcML":
+                        ToolsUI.getToolsUI().openNcML(datasetName);
+                        break;
+                    case "openGridDataset":
+                        ToolsUI.getToolsUI().openGridDataset(datasetName);
+                        break;
+                    case "openCoverageDataset":
+                        ToolsUI.getToolsUI().openCoverageDataset(datasetName);
+                        break;
+                    case "openRadialDataset":
+                        ToolsUI.getToolsUI().openRadialDataset(datasetName);
+                        break;
                 }
             }
         });

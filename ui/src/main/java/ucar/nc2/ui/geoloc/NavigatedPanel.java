@@ -82,8 +82,8 @@ public class NavigatedPanel extends JPanel {
   public AbstractAction setReferenceAction;
 
   // main delegates
-  private Navigation navigate = null;
-  private ProjectionImpl project = null;
+  private Navigation navigate;
+  private ProjectionImpl project;
 
   // ui stuff
   private BufferedImage bImage = null;
@@ -672,7 +672,7 @@ public class NavigatedPanel extends JPanel {
     sbuff.setLength(0);
 
     if (ucar.util.prefs.ui.Debug.isSet("projection/showPosition")) {
-      sbuff.append(workW + " -> ");
+      sbuff.append(workW).append(" -> ");
     }
 
     sbuff.append(workL.toString(5));
@@ -947,11 +947,8 @@ public class NavigatedPanel extends JPanel {
         } else {
           e.rejectDrop();
         }
-      } catch (IOException io) {
+      } catch (IOException | UnsupportedFlavorException io) {
         io.printStackTrace();
-        e.rejectDrop();
-      } catch (UnsupportedFlavorException ufe) {
-        ufe.printStackTrace();
         e.rejectDrop();
       }
     }

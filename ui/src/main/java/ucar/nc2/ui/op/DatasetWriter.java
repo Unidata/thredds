@@ -42,8 +42,6 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.BufferedOutputStream;
@@ -74,7 +72,7 @@ import javax.swing.JTable;
  */
 public class DatasetWriter extends JPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private FileManager fileChooser;
@@ -422,7 +420,7 @@ public class DatasetWriter extends JPanel {
                                             new Rectangle(300, 100, 500, 800)));
         }
 
-        final List<AttributeBean> attlist = new ArrayList<AttributeBean>();
+        final List<AttributeBean> attlist = new ArrayList<>();
         for (Attribute att : ds.getGlobalAttributes()) {
             attlist.add(new AttributeBean(att));
         }
@@ -453,7 +451,7 @@ public class DatasetWriter extends JPanel {
  *
  */
     private void setSelected( Variable v ) {
-        final List<Variable> vchain = new ArrayList<Variable>();
+        final List<Variable> vchain = new ArrayList<>();
         vchain.add( v);
 
         Variable vp = v;
@@ -662,7 +660,7 @@ public class DatasetWriter extends JPanel {
            // get selected variable, see if its a structure
            table.addListSelectionListener(e -> {
                final Variable v = getCurrentVariable(table);
-               if ((v != null) && (v instanceof Structure)) {
+               if (v instanceof Structure) {
                     hideNestedTable(NestedTable.this.level+2);
                     setNestedTable(NestedTable.this.level+1, (Structure) v);
                }
@@ -1017,7 +1015,7 @@ public class DatasetWriter extends JPanel {
      */
         public void setChunkArray(long[] chunked) {
             this.chunked = chunked;
-            if (chunked != null) { isChunked = true; }
+            this.isChunked = (chunked != null);
         }
     }
 

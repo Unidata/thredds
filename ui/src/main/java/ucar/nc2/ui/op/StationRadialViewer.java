@@ -42,7 +42,7 @@ public class StationRadialViewer extends JPanel {
   private StationRegionDateChooser chooser;
   private BeanTable stnTable;
   private RadialDatasetTable rdTable;
-  private JSplitPane splitH = null, splitV = null;
+  private JSplitPane splitH, splitV;
   private IndependentDialog infoWindow;
 
   private boolean eventsOK = true;
@@ -108,7 +108,7 @@ public class StationRadialViewer extends JPanel {
     if ((startDate != null) && (endDate != null))
       chooser.setDateRange( new DateRange( startDate.toDate(), endDate.toDate()));
 
-    List<StationBean> stationBeans = new ArrayList<StationBean>();
+    List<StationBean> stationBeans = new ArrayList<>();
       try {
         List<Station> stations = sds.getStations();
         if (stations == null) return;

@@ -77,16 +77,8 @@ public class TableSorter extends AbstractTableModel {
 
   private static Directive EMPTY_DIRECTIVE = new Directive(-1, NOT_SORTED);
 
-  public static final Comparator COMPARABLE_COMPARATOR = new Comparator() {
-    public int compare(Object o1, Object o2) {
-      return ((Comparable) o1).compareTo(o2);
-    }
-  };
-  public static final Comparator LEXICAL_COMPARATOR = new Comparator() {
-    public int compare(Object o1, Object o2) {
-      return o1.toString().compareToIgnoreCase(o2.toString());
-    }
-  };
+  public static final Comparator COMPARABLE_COMPARATOR = (o1, o2) -> ((Comparable) o1).compareTo(o2);
+  public static final Comparator LEXICAL_COMPARATOR = (o1, o2) -> o1.toString().compareToIgnoreCase(o2.toString());
 
   private Row[] viewToModel;
   private int[] modelToView;
@@ -94,8 +86,8 @@ public class TableSorter extends AbstractTableModel {
   private JTableHeader tableHeader;
   private MouseListener mouseListener;
   private TableModelListener tableModelListener;
-  private Map<Class, Comparator> columnComparators = new HashMap<Class, Comparator>();
-  private List<Directive> sortingColumns = new ArrayList<Directive>();
+  private Map<Class, Comparator> columnComparators = new HashMap<>();
+  private List<Directive> sortingColumns = new ArrayList<>();
 
   public TableSorter() {
     this.mouseListener = new MouseHandler();

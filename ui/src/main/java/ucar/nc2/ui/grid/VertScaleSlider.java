@@ -12,7 +12,6 @@ import ucar.nc2.ui.event.ActionValueEvent;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 
 /**
  * Slider for Vertical scale
@@ -132,9 +131,9 @@ public class VertScaleSlider extends JPanel {
     if (zAxis == null) return;
     int n = (int) zAxis.getSize();
     int last = world2slider(zAxis.getCoordValue(n-1));  // always
-    labelTable.put( new Integer( last), new JLabel(zAxis.getCoordName(n-1)) ); // always
+    labelTable.put(last, new JLabel(zAxis.getCoordName(n-1)) ); // always
     int next = world2slider(zAxis.getCoordValue(0));
-    labelTable.put( new Integer( next), new JLabel(zAxis.getCoordName(0)) ); // always
+    labelTable.put(next, new JLabel(zAxis.getCoordName(0)) ); // always
     if (debugLevels) System.out.println("level = "+slider2pixel*next+" "+ zAxis.getCoordName(0)+" added ");
 
     for (int i=1; i< n-1; i++) {
@@ -142,7 +141,7 @@ public class VertScaleSlider extends JPanel {
       if (debugLevels) System.out.println("level = "+slider2pixel*ival+" "+ zAxis.getCoordName(i));
       if ((slider2pixel*Math.abs(ival-last) > incrY) &&
           (slider2pixel*Math.abs(ival-next) > incrY)) {
-        labelTable.put( new Integer( ival), new JLabel(zAxis.getCoordName(i)) );
+        labelTable.put(ival, new JLabel(zAxis.getCoordName(i)) );
         next = ival;
         if (debugLevels) System.out.println("  added ");
       }

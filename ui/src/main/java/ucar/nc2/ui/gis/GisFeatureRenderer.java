@@ -89,28 +89,25 @@ public abstract class GisFeatureRenderer implements Renderer {
 
     shapeList = new ArrayList(featList.size());
 
-    Iterator iter = featList.iterator();
+    for (Object o : featList) {
+      AbstractGisFeature feature = (AbstractGisFeature) o;
+      Shape shape;
+      if (dataProject == null) {
+        shape = feature.getShape();
+      } else if (dataProject.isLatLon()) {
+        // always got to run it through if its lat/lon
+        shape = feature.getProjectedShape(displayProject);
+        //System.out.println("getShapes dataProject.isLatLon() "+displayProject);
+      } else if (dataProject == displayProject) {
+        shape = feature.getShape();
+        //System.out.println("getShapes dataProject == displayProject");
+      } else {
+        shape = feature.getProjectedShape(dataProject, displayProject);
+        //System.out.println("getShapes dataProject != displayProject");
+      }
 
-    while (iter.hasNext())
-        {
-        AbstractGisFeature feature = (AbstractGisFeature) iter.next();
-        Shape shape;
-        if (dataProject == null)
-            shape = feature.getShape();
-        else if (dataProject.isLatLon())  {
-            // always got to run it through if its lat/lon
-            shape = feature.getProjectedShape(displayProject);
-            //System.out.println("getShapes dataProject.isLatLon() "+displayProject);
-        } else if (dataProject == displayProject) {
-            shape = feature.getShape();
-            //System.out.println("getShapes dataProject == displayProject");
-        } else {
-            shape = feature.getProjectedShape(dataProject, displayProject);
-            //System.out.println("getShapes dataProject != displayProject");
-        }
-
-        shapeList.add(shape);
-        }
+      shapeList.add(shape);
+    }
 
     return shapeList.iterator();
   }

@@ -17,7 +17,7 @@ package ucar.nc2.ui.table;
 
 public interface ThreadSorter extends RowSorter {
 
-  public int getIndentCol( );
-  public boolean isTopThread( TableRow row);
+  int getIndentCol();
+  boolean isTopThread(TableRow row);
 
 }

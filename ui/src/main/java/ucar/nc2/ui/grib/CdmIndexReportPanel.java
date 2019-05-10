@@ -7,7 +7,6 @@ package ucar.nc2.ui.grib;
 import com.google.common.base.MoreObjects;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import thredds.inventory.MCollection;
 import ucar.nc2.grib.coord.SparseArray;
 import ucar.nc2.grib.collection.*;
 import ucar.nc2.ui.ReportPanel;

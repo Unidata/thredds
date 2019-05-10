@@ -31,7 +31,7 @@ import javax.swing.JSplitPane;
  */
 public  class PointFeaturePanel extends OpPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private PointFeatureDatasetViewer pfViewer;

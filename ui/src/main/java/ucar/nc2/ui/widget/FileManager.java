@@ -4,13 +4,13 @@
  */
 package ucar.nc2.ui.widget;
 
+import javax.annotation.Nullable;
 import ucar.util.prefs.PreferencesExt;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -76,7 +76,7 @@ public class FileManager {
     this.prefs = prefs;
 
     // where to start ?
-    java.util.List<String> defaultDirs = new ArrayList<String>();
+    java.util.List<String> defaultDirs = new ArrayList<>();
     if (defDir != null)
       defaultDirs.add(defDir);
     else {
@@ -248,6 +248,7 @@ public class FileManager {
    *
    * @return chosen filename in canonical form, or null if nothing chosen.
    */
+  @Nullable
   public String chooseFilename() {
     if (!readOk) return null;
     selectedFile = false;
@@ -382,7 +383,7 @@ public class FileManager {
     }
   }
 
-  public static void main(String args[]) throws IOException {
+  public static void main(String[] args) throws IOException {
 
     JFrame frame = new JFrame("Test");
     frame.addWindowListener(new WindowAdapter() {

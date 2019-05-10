@@ -5,6 +5,11 @@
 
 package ucar.nc2.ui.op;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
 import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.XMLOutputter;
 import thredds.featurecollection.FeatureCollectionConfig;
@@ -19,13 +24,11 @@ import ucar.nc2.grib.collection.PartitionCollectionMutable;
 import ucar.nc2.ui.MFileTable;
 import ucar.nc2.ui.grib.CdmIndexPanel;
 import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.PopupMenu;
 import ucar.unidata.util.StringUtil2;
 import ucar.util.prefs.PreferencesExt;
 import ucar.util.prefs.ui.BeanTable;
 import ucar.util.prefs.ui.ComboBox;
 
-import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
@@ -38,7 +41,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.List;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TreeSelectionEvent;
@@ -56,7 +58,7 @@ import javax.swing.tree.TreePath;
  */
 public class DirectoryPartitionViewer extends JPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     private PreferencesExt prefs;
@@ -793,9 +795,7 @@ public class DirectoryPartitionViewer extends JPanel {
       final List<NodeInfo> result = new ArrayList<>(100);
       NodeInfo uobj = (NodeInfo) node.getUserObject();
       if (uobj.hasIndex && uobj.isPartition) {
-        for (NodeInfo child : uobj.getChildren()) {
-          result.add(child);
-        }
+        result.addAll(uobj.getChildren());
 
       } else {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(uobj.dir)) {

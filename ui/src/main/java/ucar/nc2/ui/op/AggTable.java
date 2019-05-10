@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.op;
 
+import javax.annotation.Nullable;
 import ucar.ma2.Array;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFile;
@@ -232,6 +233,7 @@ public class AggTable extends JPanel {
     /**
      *
      */
+    @Nullable
         protected NetcdfFile acquireFile() {
             try {
                 return ds.acquireFile(null);
