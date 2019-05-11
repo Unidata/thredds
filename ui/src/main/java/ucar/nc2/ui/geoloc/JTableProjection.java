@@ -24,8 +24,8 @@ import ucar.util.prefs.PreferencesExt;
  */
 
 public class JTableProjection extends JTable {
-  private PreferencesExt store = null;
-  private ProjectionTableModel model = null;
+  private PreferencesExt store;
+  private ProjectionTableModel model;
   private ArrayList list;
   private boolean debug = false;
   private int selectedRow = 0;  // JTable doesnt handle selections correctly
@@ -188,7 +188,7 @@ public class JTableProjection extends JTable {
     }
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
       ProjectionImpl proj = (ProjectionImpl) list.get( rowIndex);
-      proj.setName( new String((String) aValue));
+      proj.setName((String) aValue);
     }
 
       // do our own listener management to get around serialization bug

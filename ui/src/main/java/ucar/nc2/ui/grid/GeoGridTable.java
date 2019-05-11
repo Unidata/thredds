@@ -28,8 +28,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 import java.io.IOException;
@@ -295,25 +293,25 @@ public class GeoGridTable extends JPanel {
   public void setDataset(NetcdfDataset ds, Formatter parseInfo) throws IOException {
     this.gridDataset = new ucar.nc2.dt.grid.GridDataset(ds, parseInfo);
 
-    List<GeoGridBean> beanList = new ArrayList<GeoGridBean>();
+    List<GeoGridBean> beanList = new ArrayList<>();
     java.util.List<GridDatatype> list = gridDataset.getGrids();
     for (GridDatatype g : list)
       beanList.add(new GeoGridBean(g));
     varTable.setBeans(beanList);
 
     if (csTable != null) {
-      List<GeoCoordinateSystemBean> csList = new ArrayList<GeoCoordinateSystemBean>();
+      List<GeoCoordinateSystemBean> csList = new ArrayList<>();
       List<GeoAxisBean> axisList;
-      axisList = new ArrayList<GeoAxisBean>();
+      axisList = new ArrayList<>();
       for (GridDataset.Gridset gset : gridDataset.getGridsets()) {
         csList.add(new GeoCoordinateSystemBean(gset));
         GridCoordSystem gsys = gset.getGeoCoordSystem();
         List<CoordinateAxis> axes = gsys.getCoordinateAxes();
-        for (int i = 0; i < axes.size(); i++) {
-          CoordinateAxis axis = axes.get(i);
+        for (CoordinateAxis axis : axes) {
           GeoAxisBean axisBean = new GeoAxisBean(axis);
-          if (!contains(axisList, axisBean.getName()))
+          if (!contains(axisList, axisBean.getName())) {
             axisList.add(axisBean);
+          }
         }
       }
       csTable.setBeans(csList);
@@ -324,25 +322,25 @@ public class GeoGridTable extends JPanel {
   public void setDataset(GridDataset gds) throws IOException {
     this.gridDataset = gds;
 
-    List<GeoGridBean> beanList = new ArrayList<GeoGridBean>();
+    List<GeoGridBean> beanList = new ArrayList<>();
     java.util.List<GridDatatype> list = gridDataset.getGrids();
     for (GridDatatype g : list)
       beanList.add(new GeoGridBean(g));
     varTable.setBeans(beanList);
 
     if (csTable != null) {
-      List<GeoCoordinateSystemBean> csList = new ArrayList<GeoCoordinateSystemBean>();
+      List<GeoCoordinateSystemBean> csList = new ArrayList<>();
       List<GeoAxisBean> axisList;
-      axisList = new ArrayList<GeoAxisBean>();
+      axisList = new ArrayList<>();
       for (GridDataset.Gridset gset : gridDataset.getGridsets()) {
         csList.add(new GeoCoordinateSystemBean(gset));
         GridCoordSystem gsys = gset.getGeoCoordSystem();
         List<CoordinateAxis> axes = gsys.getCoordinateAxes();
-        for (int i = 0; i < axes.size(); i++) {
-          CoordinateAxis axis = axes.get(i);
+        for (CoordinateAxis axis : axes) {
           GeoAxisBean axisBean = new GeoAxisBean(axis);
-          if (!contains(axisList, axisBean.getName()))
+          if (!contains(axisList, axisBean.getName())) {
             axisList.add(axisBean);
+          }
         }
       }
       csTable.setBeans(csList);
@@ -362,7 +360,7 @@ public class GeoGridTable extends JPanel {
 
   public List<String> getSelectedGrids() {
     List grids = varTable.getSelectedBeans();
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     for (Object bean : grids) {
       GeoGridBean gbean = (GeoGridBean) bean;
       result.add(gbean.getName());
@@ -405,7 +403,7 @@ public class GeoGridTable extends JPanel {
       setCoordSystem(gcs.getName());
 
       // collect dimensions
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       java.util.List dims = geogrid.getDimensions();
       for (int j = 0; j < dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);
@@ -537,11 +535,13 @@ public class GeoGridTable extends JPanel {
         setProjection(proj.getClassName());
 
       int count = 0;
-      StringBuffer buff = new StringBuffer();
+      StringBuilder buff = new StringBuilder();
       List ctList = gcs.getCoordinateTransforms();
-      for (int i = 0; i < ctList.size(); i++) {
-        CoordinateTransform ct = (CoordinateTransform) ctList.get(i);
-        if (count > 0) buff.append("; ");
+      for (Object o : ctList) {
+        CoordinateTransform ct = (CoordinateTransform) o;
+        if (count > 0) {
+          buff.append("; ");
+        }
         // buff.append( ct.getTransformType());
         if (ct instanceof VerticalCT) {
           buff.append(((VerticalCT) ct).getVerticalTransformType());
@@ -633,8 +633,8 @@ public class GeoGridTable extends JPanel {
       setUnits(v.getUnitsString());
 
       // collect dimensions
-      StringBuffer lens = new StringBuffer();
-      StringBuffer names = new StringBuffer();
+      StringBuilder lens = new StringBuilder();
+      StringBuilder names = new StringBuilder();
       java.util.List dims = v.getDimensions();
       for (int j = 0; j < dims.size(); j++) {
         ucar.nc2.Dimension dim = (ucar.nc2.Dimension) dims.get(j);

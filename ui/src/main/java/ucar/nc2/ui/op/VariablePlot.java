@@ -54,7 +54,7 @@ import ucar.util.prefs.PreferencesExt;
  */
 public class VariablePlot extends JPanel {
 
-    private final static org.slf4j.Logger log
+    private static final org.slf4j.Logger log
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
   final JFreeChart chart;
@@ -92,7 +92,7 @@ public class VariablePlot extends JPanel {
   }
 
   private JFreeChart createChart() {
-    final JFreeChart chart = ChartFactory.createTimeSeriesChart(
+    return ChartFactory.createTimeSeriesChart(
             "Variable Plot",
             "X",
             "Value",
@@ -101,7 +101,6 @@ public class VariablePlot extends JPanel {
             true,
             false
     );
-    return chart;
   }
 
   NetcdfFile file;
@@ -140,7 +139,7 @@ public class VariablePlot extends JPanel {
   public void setVariable(Variable v) throws IOException {
     log.info("variable " + v.getShortName());
 
-    AbstractIntervalXYDataset dataset = null;
+    AbstractIntervalXYDataset dataset;
 
     Dimension dim = v.getDimension(0);
     String dimName = dim.getShortName();
@@ -172,8 +171,10 @@ public class VariablePlot extends JPanel {
 	    else
 	    	p.getDomainAxis().setLabel(dimName);
 
-        if (xAxis != null)
-	        log.info("X axis type " + xUnit.getDataType() + " value " + xUnit.toString() + " is Time " + xIsTime);
+        if (xAxis != null) {
+          log.info("X axis type " + xAxis.getDataType() + " value " + xAxis.toString() + " is Time "
+              + xIsTime);
+        }
     }
 
     int ax = 0;
@@ -221,7 +222,7 @@ public class VariablePlot extends JPanel {
 
     NetcdfDataset fds = new NetcdfDataset(file);
 
-    CoordinateAxis1DTime tm = null;
+    CoordinateAxis1DTime tm;
     List<CalendarDate> dates = null;
     Array varXarray = null;
     

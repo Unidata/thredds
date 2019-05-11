@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.op;
 
+import javax.annotation.Nullable;
 import ucar.nc2.Dimension;
 import ucar.nc2.*;
 import ucar.nc2.ui.widget.BAMutil;
@@ -40,7 +41,7 @@ import javax.swing.tree.TreeSelectionModel;
  */
 public class DatasetTreeView extends JPanel {
 
-    private final static org.slf4j.Logger logger
+    private static final org.slf4j.Logger logger
                 = org.slf4j.LoggerFactory.getLogger (MethodHandles.lookup ( ).lookupClass ( ));
 
     // ui
@@ -146,8 +147,7 @@ public class DatasetTreeView extends JPanel {
         // start at root, work down through the nested groups, if any
         GroupNode gnode = (GroupNode) model.getRoot();
         pathList.add( gnode);
-        Group parentGroup = gchain.get(0); // always the root group
-
+        Group parentGroup; // always the root group
         for (int i=1; i < gchain.size(); i++) {
             parentGroup = gchain.get(i);
             gnode = gnode.findNestedGroup( parentGroup);
@@ -225,18 +225,18 @@ public class DatasetTreeView extends JPanel {
             children = new ArrayList<>();
 
             List dims = group.getDimensions();
-            for (int i = 0; i < dims.size(); i++) {
-                children.add( new DimensionNode( this, (Dimension) dims.get(i)));
+            for (Object dim : dims) {
+                children.add(new DimensionNode(this, (Dimension) dim));
             }
 
             List vars = group.getVariables();
-            for (int i = 0; i < vars.size(); i++) {
-                children.add( new VariableNode( this, (VariableIF) vars.get(i)));
+            for (Object var : vars) {
+                children.add(new VariableNode(this, (VariableIF) var));
             }
 
             List groups = group.getGroups();
-            for (int i = 0; i < groups.size(); i++) {
-                children.add( new GroupNode( this, (Group) groups.get(i)));
+            for (Object group1 : groups) {
+                children.add(new GroupNode(this, (Group) group1));
             }
 
             logger.debug("children={}", group.getFullName());
@@ -261,24 +261,30 @@ public class DatasetTreeView extends JPanel {
             }
         }
 
-        public GroupNode findNestedGroup( Group g) {
+    @Nullable
+    public GroupNode findNestedGroup( Group g) {
             if (children == null) { makeChildren(); }
-            for (int i = 0; i < children.size(); i++) {
-                if (children.get(i) instanceof GroupNode) {
-                    final GroupNode elem = (GroupNode) children.get(i);
-                    if (elem.group == g) { return elem; }
+            for (Object child : children) {
+                if (child instanceof GroupNode) {
+                    final GroupNode elem = (GroupNode) child;
+                    if (elem.group == g) {
+                        return elem;
+                    }
                 }
             }
             return null;
         }
 
-        public VariableNode findNestedVariable( VariableIF v) {
+    @Nullable
+    public VariableNode findNestedVariable( VariableIF v) {
             if (children == null) { makeChildren(); }
-            for (int i = 0; i < children.size(); i++) {
-                final TreeNode node = (TreeNode) children.get(i);
-                if (node instanceof VariableNode ) {
-                    final VariableNode vnode= (VariableNode) node;
-                    if (vnode.var == v) { return vnode; }
+            for (Object child : children) {
+                final TreeNode node = (TreeNode) child;
+                if (node instanceof VariableNode) {
+                    final VariableNode vnode = (VariableNode) node;
+                    if (vnode.var == v) {
+                        return vnode;
+                    }
                 }
             }
             return null;
@@ -333,8 +339,8 @@ public class DatasetTreeView extends JPanel {
             if (var instanceof Structure) {
                 final Structure s = (Structure) var;
                 final List vars = s.getVariables();
-                for (int i = 0; i < vars.size(); i++) {
-                    children.add( new VariableNode( this, (VariableIF) vars.get(i)));
+                for (Object var1 : vars) {
+                    children.add(new VariableNode(this, (VariableIF) var1));
                 }
             }
             logger.debug("children={}", var.getShortName());
@@ -351,11 +357,14 @@ public class DatasetTreeView extends JPanel {
 
         public String toString() { return var.getShortName(); }
 
+    @Nullable
         public VariableNode findNestedVariable( VariableIF v) {
             if (children == null) { makeChildren(); }
-            for (int i = 0; i < children.size(); i++) {
-                final VariableNode elem = (VariableNode) children.get(i);
-                if (elem.var == v) { return elem; }
+            for (Object child : children) {
+                final VariableNode elem = (VariableNode) child;
+                if (elem.var == v) {
+                    return elem;
+                }
             }
             return null;
         }
@@ -380,10 +389,12 @@ public class DatasetTreeView extends JPanel {
             this.d = d;
         }
 
+    @Nullable
         public Enumeration children() { return null;}
 
         public boolean getAllowsChildren() { return false; }
 
+    @Nullable
         public TreeNode getChildAt(int index) { return null; }
 
         public int getChildCount() { return 0; }

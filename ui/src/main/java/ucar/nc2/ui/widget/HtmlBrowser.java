@@ -18,7 +18,6 @@ import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -34,7 +33,7 @@ import java.util.Enumeration;
  */
 
 public class HtmlBrowser extends JPanel {
-  static private EditorKit kit = JEditorPane.createEditorKitForContentType("text/html");
+  private static EditorKit kit = JEditorPane.createEditorKitForContentType("text/html");
   private PreferencesExt prefs;
   private RootPaneContainer parent = null;
 
@@ -270,12 +269,17 @@ public class HtmlBrowser extends JPanel {
 
       //htmlViewer.setEditorKit(kit);
       try {
-        if (type.equals("urlString"))
-          htmlViewer.setPage(title);
-        else if (type.equals("url"))
-          htmlViewer.setPage(url.toString());
-        else if (type.equals("content"))
-          htmlViewer.setText(content);
+        switch (type) {
+          case "urlString":
+            htmlViewer.setPage(title);
+            break;
+          case "url":
+            htmlViewer.setPage(url.toString());
+            break;
+          case "content":
+            htmlViewer.setText(content);
+            break;
+        }
         htmlViewer.setCaretPosition(0);
 
         if (debugDoc) {
@@ -344,9 +348,7 @@ public class HtmlBrowser extends JPanel {
       JButton dismissButton = new JButton("Dismiss");
       topButtons.add(dismissButton, null);
 
-      dismissButton.addActionListener(e -> {
-          setVisible(false);
-      });
+      dismissButton.addActionListener(e -> setVisible(false));
 
      // add it to contentPane
       Container cp = getContentPane();

@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @author David M. Geary
  * @author John Caron
  */
-abstract public class Rubberband implements Serializable {
+public abstract class Rubberband implements Serializable {
   protected Point anchorPt    = new Point(0,0);
   protected Point stretchedPt = new Point(0,0);
   protected Point lastPt      = new Point(0,0);
@@ -24,8 +24,8 @@ abstract public class Rubberband implements Serializable {
   private boolean   active = false;
 
   // actual drawing done by subclass.
-  abstract public void drawLast(Graphics2D g);
-  abstract public void drawNext(Graphics2D g);
+  public abstract void drawLast(Graphics2D g);
+  public abstract void drawNext(Graphics2D g);
 
   /**
    * Constructor. use if you want Rubberband to do the event listening.
@@ -94,7 +94,7 @@ abstract public class Rubberband implements Serializable {
     if(g != null) {
      try {
        g.setXORMode(component.getBackground());
-       if(firstStretch == true)
+       if(firstStretch)
          firstStretch = false;
        else
          drawLast(g);

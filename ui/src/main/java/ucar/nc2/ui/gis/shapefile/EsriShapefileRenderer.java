@@ -30,9 +30,9 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
    * <p/>
    * Implementation note: should switch to weak references.
    */
-  static public EsriShapefileRenderer factory(String filename) {
+  public static EsriShapefileRenderer factory(String filename) {
     if (sfileHash == null)
-      sfileHash = new HashMap<String, EsriShapefileRenderer>();
+      sfileHash = new HashMap<>();
 
     if (sfileHash.containsKey(filename))
       return sfileHash.get(filename);
@@ -48,9 +48,9 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
     }
   }
 
-  static public EsriShapefileRenderer factory(String key, InputStream stream) {
+  public static EsriShapefileRenderer factory(String key, InputStream stream) {
     if (sfileHash == null)
-      sfileHash = new HashMap<String, EsriShapefileRenderer>();
+      sfileHash = new HashMap<>();
 
     if (sfileHash.containsKey(key))
       return sfileHash.get(key);
@@ -66,7 +66,7 @@ public class EsriShapefileRenderer extends GisFeatureRendererMulti {
   }
 
   ////////////////////////////////////////
-  private EsriShapefile esri = null;
+  private EsriShapefile esri;
   private ProjectionImpl dataProject = new LatLonProjection("Cylindrical Equidistant");
 
   private EsriShapefileRenderer(InputStream stream) throws IOException {

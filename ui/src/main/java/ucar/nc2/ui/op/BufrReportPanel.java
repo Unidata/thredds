@@ -25,7 +25,7 @@ import java.util.*;
  */
 public class BufrReportPanel extends ReportPanel {
 
-  public static enum Report {
+  public enum Report {
     checkHash, bufrSplitter
   }
 
@@ -77,7 +77,7 @@ public class BufrReportPanel extends ReportPanel {
 
   private static class Count {
     int nmess = 1;
-    int nobs = 0;
+    int nobs;
 
     private Count(int nobs) {
       this.nobs = nobs;
@@ -85,7 +85,7 @@ public class BufrReportPanel extends ReportPanel {
   }
 
   private static class TrackMessageTypes {
-    HashMap<Message, Count> map = new HashMap<Message, Count>();
+    HashMap<Message, Count> map = new HashMap<>();
 
     void add(Message m) {
       Count hashCount = map.get(m);
@@ -103,13 +103,12 @@ public class BufrReportPanel extends ReportPanel {
 
     int countMess = 0;
     int countObs = 0;
-    RandomAccessFile raf = null;
-    try {
-      raf = new RandomAccessFile(ff.getPath(), "r");
+    try (RandomAccessFile raf = new RandomAccessFile(ff.getPath(), "r")) {
       MessageScanner scan = new MessageScanner(raf, 0, true);
       while (scan.hasNext()) {
         Message m = scan.next();
-        if (m == null) continue;
+        if (m == null)
+          continue;
 
         oneFile.add(m);
         all.add(m);
@@ -117,8 +116,6 @@ public class BufrReportPanel extends ReportPanel {
         countMess++;
         countObs += m.getNumberDatasets();
       }
-    } finally {
-      if (raf != null) raf.close();
     }
 
     show(oneFile, fm);
@@ -128,13 +125,8 @@ public class BufrReportPanel extends ReportPanel {
   }
 
   private void show(TrackMessageTypes track, Formatter f) throws IOException {
-    List<Message> mess = new ArrayList<Message>(track.map.keySet());
-    Collections.sort(mess, new Comparator<Message>() {
-      @Override
-      public int compare(Message o1, Message o2) {
-        return o1.getLookup().getCategoryNo().compareTo(o2.getLookup().getCategoryNo());
-      }
-    });
+    List<Message> mess = new ArrayList<>(track.map.keySet());
+    mess.sort((o1, o2) -> o1.getLookup().getCategoryNo().compareTo(o2.getLookup().getCategoryNo()));
 
     f.format("  nmess / nobs (hash) (ddsHash) category - center %n");
     for (Message m : mess) {

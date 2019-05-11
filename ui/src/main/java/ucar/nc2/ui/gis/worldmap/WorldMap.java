@@ -33,7 +33,7 @@ public class WorldMap extends GisFeatureRenderer {
   private static boolean readWorldMap () {
     java.io.DataInputStream dis;
     String filename = "/resources/nj22/ui/maps/cil_100km.mapr";
-    java.io.InputStream is = null;
+    java.io.InputStream is;
     long secs = System.currentTimeMillis();
 
     is = Resource.getFileResource( filename);
@@ -137,9 +137,9 @@ public class WorldMap extends GisFeatureRenderer {
   protected java.util.List getFeatures() { return gisList; }
   protected ProjectionImpl getDataProjection() { return dataProject; }
 
-    /**
-     * Draws the World Map.
-     * @param g the Graphics2D context on which to draw
+    /*
+      Draws the World Map.
+      @param g the Graphics2D context on which to draw
      * @param pixelAT   use this AffineTransform to draw in constant-pixel coordinates. ignored here.
      *
   public void draw(java.awt.Graphics2D g, java.awt.geom.AffineTransform pixelAT) {

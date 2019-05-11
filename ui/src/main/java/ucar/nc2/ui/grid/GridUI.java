@@ -28,7 +28,6 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,8 +40,8 @@ import java.util.List;
  * @author caron
  */
 public class GridUI extends JPanel {
-  static private final String DATASET_URL = "DatasetURL";
-  static private final String GEOTIFF_FILECHOOSER_DEFAULTDIR = "geotiffDefDir";
+  private static final String DATASET_URL = "DatasetURL";
+  private static final String GEOTIFF_FILECHOOSER_DEFAULTDIR = "geotiffDefDir";
 
   //private TopLevel topLevel;
   private PreferencesExt store;
@@ -165,8 +164,8 @@ public class GridUI extends JPanel {
   public void storePersistentData() {
     store.putInt( "vertSplit", splitDraw.getDividerLocation());
 
-    store.putBoolean( "navToolbarAction", ((Boolean)navToolbarAction.getValue(BAMutil.STATE)).booleanValue());
-    store.putBoolean( "moveToolbarAction", ((Boolean)moveToolbarAction.getValue(BAMutil.STATE)).booleanValue());
+    store.putBoolean( "navToolbarAction", (Boolean) navToolbarAction.getValue(BAMutil.STATE));
+    store.putBoolean( "moveToolbarAction", (Boolean) moveToolbarAction.getValue(BAMutil.STATE));
 
     if (projManager != null)
       projManager.storePersistentData();
@@ -584,26 +583,26 @@ public class GridUI extends JPanel {
     navToolbarAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        if (state.booleanValue())
+        if (state)
           toolPanel.add(navToolbar);
         else
           toolPanel.remove(navToolbar);
       }
     };
     BAMutil.setActionProperties( navToolbarAction, "MagnifyPlus", "show Navigate toolbar", true, 'M', 0);
-    navToolbarAction.putValue(BAMutil.STATE, new Boolean(store.getBoolean( "navToolbarAction", true)));
+    navToolbarAction.putValue(BAMutil.STATE, store.getBoolean("navToolbarAction", true));
 
     moveToolbarAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        if (state.booleanValue())
+        if (state)
           toolPanel.add(moveToolbar);
         else
           toolPanel.remove(moveToolbar);
       }
     };
     BAMutil.setActionProperties( moveToolbarAction, "Up", "show Move toolbar", true, 'M', 0);
-    moveToolbarAction.putValue(BAMutil.STATE, new Boolean(store.getBoolean( "moveToolbarAction", true)));
+    moveToolbarAction.putValue(BAMutil.STATE, store.getBoolean("moveToolbarAction", true));
   }
 
  /*  private void makeSysConfigWindow() {
@@ -700,9 +699,9 @@ public class GridUI extends JPanel {
     panz.setLayout(new FlowLayout());
     navToolbar = panz.getNavToolBar();
     moveToolbar = panz.getMoveToolBar();
-    if (((Boolean)navToolbarAction.getValue(BAMutil.STATE)).booleanValue())
+    if ((Boolean) navToolbarAction.getValue(BAMutil.STATE))
       toolPanel.add(navToolbar);
-    if (((Boolean)moveToolbarAction.getValue(BAMutil.STATE)).booleanValue())
+    if ((Boolean) moveToolbarAction.getValue(BAMutil.STATE))
       toolPanel.add(moveToolbar);
 
     BAMutil.addActionToContainer( toolPanel, panz.setReferenceAction);
@@ -735,9 +734,7 @@ public class GridUI extends JPanel {
     colorScalePanel = new ColorScale.Panel(this, controller.getColorScale());
     csDataMinMax = new JComboBox( ColorScale.MinMaxType.values());
     csDataMinMax.setToolTipText("ColorScale Min/Max setting");
-    csDataMinMax.addActionListener(e -> {
-        controller.setDataMinMaxType( ( ColorScale.MinMaxType) csDataMinMax.getSelectedItem());
-    });
+    csDataMinMax.addActionListener(e -> controller.setDataMinMaxType( ( ColorScale.MinMaxType) csDataMinMax.getSelectedItem()));
     JPanel westPanel = new JPanel(new BorderLayout());
     westPanel.add( colorScalePanel, BorderLayout.CENTER);
     westPanel.add( csDataMinMax, BorderLayout.NORTH);
@@ -761,10 +758,11 @@ public class GridUI extends JPanel {
   private ArrayList choosers;
   private void setChoosers() {
     fieldPanel.removeAll();
-    for (int i = 0; i < choosers.size(); i++) {
-      Chooser c = (Chooser) choosers.get(i);
-      if (c.isWanted)
+    for (Object chooser : choosers) {
+      Chooser c = (Chooser) chooser;
+      if (c.isWanted) {
         fieldPanel.add(c.field);
+      }
     }
   }
 
@@ -780,9 +778,11 @@ public class GridUI extends JPanel {
   }
 
   private void setChooserWanted(String name, boolean want) {
-    for (int i = 0; i < choosers.size(); i++) {
-      Chooser chooser = (Chooser) choosers.get(i);
-      if (chooser.name.equals(name)) chooser.isWanted = want;
+    for (Object chooser1 : choosers) {
+      Chooser chooser = (Chooser) chooser1;
+      if (chooser.name.equals(name)) {
+        chooser.isWanted = want;
+      }
     }
   }
 
@@ -871,7 +871,7 @@ public class GridUI extends JPanel {
     }
 
     public void run() {
-      NetcdfDataset dataset = null;
+      NetcdfDataset dataset;
       GridDataset gridDataset = null;
       Formatter errlog = new Formatter();
 

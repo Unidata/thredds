@@ -103,7 +103,7 @@ public class ImageViewPanel extends JPanel {
     spinner = new JSpinner( new SpinnerNumberModel(5000, 10, 20000, 1000));
     spinner.addChangeListener(e -> {
         Integer value = (Integer) spinner.getModel().getValue();
-        delay = value.intValue();
+        delay = value;
         if (timer != null) timer.setDelay( delay);
     });
     buttPanel.add( spinner);
@@ -215,26 +215,26 @@ public class ImageViewPanel extends JPanel {
     pixPane.repaint();
   }
 
-  static public void main( String[] args) {
+  public static void main( String[] args) {
       String[] readers = javax.imageio.ImageIO.getReaderFormatNames();
-      for (int i = 0; i < readers.length; i++) {
-        System.out.println(" reader = "+ readers[i]);
-      }
+    for (String reader : readers) {
+      System.out.println(" reader = " + reader);
+    }
       System.out.println("-------------------------------------------");
       String[] readerMimes = javax.imageio.ImageIO.getReaderMIMETypes();
-      for (int i = 0; i < readerMimes.length; i++) {
-        System.out.println(" readerMimes = "+ readerMimes[i]);
-      }
+    for (String readerMime : readerMimes) {
+      System.out.println(" readerMimes = " + readerMime);
+    }
       System.out.println("-------------------------------------------");
       String[] writers = javax.imageio.ImageIO.getWriterFormatNames();
-      for (int i = 0; i < writers.length; i++) {
-        System.out.println(" writers = "+ writers[i]);
-      }
+    for (String writer : writers) {
+      System.out.println(" writers = " + writer);
+    }
       System.out.println("-------------------------------------------");
       String[] writerMimes = javax.imageio.ImageIO.getWriterMIMETypes();
-      for (int i = 0; i < writerMimes.length; i++) {
-        System.out.println(" writerMimes = "+ writerMimes[i]);
-      }
+    for (String writerMime : writerMimes) {
+      System.out.println(" writerMimes = " + writerMime);
+    }
       System.out.println("-------------------------------------------");
   }
 

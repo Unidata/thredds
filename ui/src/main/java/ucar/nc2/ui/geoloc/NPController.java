@@ -46,8 +46,8 @@ public class NPController extends JPanel {
     np.addNewProjectionListener(new NewProjectionListener() {
       public void actionPerformed(NewProjectionEvent e) {
         ProjectionImpl p = e.getProjection();
-        for (int i = 0; i < renderers.size(); i++) {
-          Renderer r = (Renderer) renderers.get(i);
+        for (Object renderer : renderers) {
+          Renderer r = (Renderer) renderer;
           r.setProjection(p);
         }
         redraw(true);
@@ -104,9 +104,9 @@ public class NPController extends JPanel {
 
   public void setProjection( ProjectionImpl p) {
     project = p;
-    for (int i = 0; i < renderers.size(); i++) {
-      Renderer r = (Renderer) renderers.get(i);
-      r.setProjection( p);
+    for (Object renderer : renderers) {
+      Renderer r = (Renderer) renderer;
+      r.setProjection(p);
     }
 
     eventOk = false;
@@ -129,8 +129,8 @@ public class NPController extends JPanel {
     gNP.setBackground(np.getBackgroundColor());
     gNP.fill(gNP.getClipBounds());
 
-    for (int i = 0; i < renderers.size(); i++) {
-      Renderer r = (Renderer) renderers.get(i);
+    for (Object renderer : renderers) {
+      Renderer r = (Renderer) renderer;
       r.draw(gNP, atI);
     }
     gNP.dispose();

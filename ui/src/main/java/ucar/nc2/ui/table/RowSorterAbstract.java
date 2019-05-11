@@ -84,13 +84,13 @@ public abstract class RowSorterAbstract implements ucar.nc2.ui.table.RowSorter {
   public java.util.ArrayList sort(int sortCol, boolean reverse, java.util.ArrayList docs) {
     setupSort( sortCol, reverse);
     if (startSort < 0) return docs;
-    java.util.Collections.sort( docs, new TableRowAbstract.Sorter(startSort, false));
+    docs.sort(new TableRowAbstract.Sorter(startSort, false));
     return docs;
   }
 
   public boolean isBreak(TableRow last, TableRow current) {
-    TableRow lastRow = (TableRow) last;
-    TableRow currentRow = (TableRow) current;
+    TableRow lastRow = last;
+    TableRow currentRow = current;
 
     currentRow.setNextSort( sortBreak);
     int ret = currentRow.compare( lastRow, startSort);
@@ -105,8 +105,9 @@ public abstract class RowSorterAbstract implements ucar.nc2.ui.table.RowSorter {
     if (debug) {
       System.out.println("RowSorter sort ");
       System.out.print(" col->model = ");
-      for (int i=0; i<col2Model.length; i++)
-        System.out.print(" "+col2Model[i]);
+      for (int i1 : col2Model) {
+        System.out.print(" " + i1);
+      }
       System.out.println();
     }
 
@@ -126,9 +127,9 @@ public abstract class RowSorterAbstract implements ucar.nc2.ui.table.RowSorter {
       System.out.println();
     }
 
-      // compute sortBreak
-    for (int i=0; i< ncolumns; i++)
-      sortBreak[i] = sortNext[i];
+    // compute sortBreak
+    if (ncolumns >= 0)
+      System.arraycopy(sortNext, 0, sortBreak, 0, ncolumns);
     sortBreak[sortCol] = -1;
     if (debug) {
       System.out.print(" sortBreak = ");
@@ -137,7 +138,7 @@ public abstract class RowSorterAbstract implements ucar.nc2.ui.table.RowSorter {
       System.out.println();
     }
 
-      /** heres how you do it if you want the sortCol to be the primary sort
+      /* heres how you do it if you want the sortCol to be the primary sort
         // sort order
       int [] sortOrder = new int[ n];
       sortOrder[0] = sortModelCol;
@@ -170,16 +171,3 @@ public abstract class RowSorterAbstract implements ucar.nc2.ui.table.RowSorter {
   }
 
 }
-
-/* Change History:
-   $Log: RowSorterAbstract.java,v $
-   Revision 1.2  2004/09/24 03:26:43  caron
-   merge nj22
-
-   Revision 1.1  2002/12/13 00:55:09  caron
-   pass 2
-
-   Revision 1.1.1.1  2001/03/24 03:11:17  caron
-   initial checkin
-
-*/

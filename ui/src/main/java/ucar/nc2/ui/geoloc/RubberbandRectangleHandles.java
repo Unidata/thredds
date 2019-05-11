@@ -13,7 +13,7 @@ import java.awt.geom.*;
  * @author John Caron
  */
 public class RubberbandRectangleHandles extends Rubberband {
-  static public double handleSizePixels = 6.0;
+  public static double handleSizePixels = 6.0;
 
   private Rectangle current;
 
@@ -37,7 +37,7 @@ public class RubberbandRectangleHandles extends Rubberband {
     if(g != null) {
      try {
        g.setXORMode(component.getBackground());
-       if(firstStretch == true)
+       if(firstStretch)
          firstStretch = false;
        else
          drawLast(g);
@@ -96,7 +96,7 @@ public class RubberbandRectangleHandles extends Rubberband {
     //System.out.println("==RBRH draw= "+getBounds());
   }
 
-  static public void drawHandledRect(Graphics2D graphics, Rectangle2D rect, double handleSize) {
+  public static void drawHandledRect(Graphics2D graphics, Rectangle2D rect, double handleSize) {
     double x = rect.getX();
     double y = rect.getY();
     double w = rect.getWidth();

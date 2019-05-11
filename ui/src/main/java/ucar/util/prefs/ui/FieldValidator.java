@@ -5,5 +5,5 @@
 package ucar.util.prefs.ui;
 
 public interface FieldValidator {
-  public boolean validate( Field fld, Object editValue, StringBuffer errMessages);
+  boolean validate(Field fld, Object editValue, StringBuffer errMessages);
 }

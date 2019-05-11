@@ -35,10 +35,10 @@ import javax.swing.tree.TreePath;
  */
 public class JTreeTableSorted extends JPanel {
   // for HeaderRenderer
-  static private Icon sortDownIcon = BAMutil.getIcon("SortDown", true);
-  static private Icon sortUpIcon = BAMutil.getIcon("SortUp", true);
-  static private Icon threadSortIcon = BAMutil.getIcon("ThreadSorted", true);
-  static private Icon threadUnSortIcon = BAMutil.getIcon("ThreadUnsorted", true);
+  private static Icon sortDownIcon = BAMutil.getIcon("SortDown", true);
+  private static Icon sortUpIcon = BAMutil.getIcon("SortUp", true);
+  private static Icon threadSortIcon = BAMutil.getIcon("ThreadSorted", true);
+  private static Icon threadUnSortIcon = BAMutil.getIcon("ThreadUnsorted", true);
 
   // main stuff
   private JTreeTable table;
@@ -49,7 +49,7 @@ public class JTreeTableSorted extends JPanel {
   private TableRow selectedRow;
 
   private JScrollPane scrollPane;
-  private PopupMenu popupMenu = null;
+  private PopupMenu popupMenu;
   private PopupAction[] acts;
 
   private boolean treeSort;
@@ -219,7 +219,7 @@ public class JTreeTableSorted extends JPanel {
         if (!visible[i]) {
           //System.out.println( colName[i]+" hide "+i);
           acts[i].hideColumn();
-          acts[i].putValue(BAMutil.STATE, new Boolean(false));
+          acts[i].putValue(BAMutil.STATE, Boolean.FALSE);
         }
 
       // now set the header order
@@ -282,7 +282,7 @@ public class JTreeTableSorted extends JPanel {
 
   public void setColOn(int colno, boolean state, int pos) {
     // System.out.println("setColOn "+colno+" "+state+" "+pos);
-    acts[colno].putValue(BAMutil.STATE, new Boolean(state));
+    acts[colno].putValue(BAMutil.STATE, state);
     if (state)
       acts[colno].addAtPos(pos);
     else
@@ -351,7 +351,7 @@ public class JTreeTableSorted extends JPanel {
     table.fireDataChanged();
   }
 
-  /**
+  /*
    Remove elem from rowList, update the table.
    Searches for match using object identity (==)
    @param Object elem
@@ -498,7 +498,7 @@ public class JTreeTableSorted extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
-      boolean state = ((Boolean) getValue(BAMutil.STATE)).booleanValue();
+      boolean state = (Boolean) getValue(BAMutil.STATE);
       TableColumnModel tcm = table.getColumnModel();
 
       if (state) {

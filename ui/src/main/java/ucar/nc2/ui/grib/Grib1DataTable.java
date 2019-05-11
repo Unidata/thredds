@@ -40,7 +40,7 @@ import java.util.List;
  * @since 8/12/2014
  */
 public class Grib1DataTable extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2DataPanel.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib2DataPanel.class);
 
   private PreferencesExt prefs;
 
@@ -340,8 +340,7 @@ public class Grib1DataTable extends JPanel {
 
     for (Grib1SectionGridDefinition gds : index.getGds()) {
       int hash = gds.getGDS().hashCode();
-      if (gdsSet.get(hash) == null)
-        gdsSet.put(hash, gds);
+      gdsSet.putIfAbsent(hash, gds);
     }
 
     for (Grib1Record gr : index.getRecords()) {
@@ -422,11 +421,7 @@ public class Grib1DataTable extends JPanel {
       Grib1ParameterBean p = (Grib1ParameterBean) o;
       int gdsHash = p.gr.getGDSsection().getGDS().hashCode();
 
-      Set<Integer> group = groups.get(gdsHash);
-      if (group == null) {
-        group = new TreeSet<>();
-        groups.put(gdsHash, group);
-      }
+      Set<Integer> group = groups.computeIfAbsent(gdsHash, k -> new TreeSet<>());
       for (Grib1RecordBean r : p.getRecordBeans())
         group.add(r.gr.getFile());
     }
@@ -582,7 +577,7 @@ public class Grib1DataTable extends JPanel {
   }
 
   private void compareData(Grib1RecordBean bean1, Grib1RecordBean bean2, Formatter f) {
-    float[] data1 = null, data2 = null;
+    float[] data1, data2;
     try {
       data1 = bean1.readData();
       data2 = bean2.readData();
@@ -657,14 +652,10 @@ public class Grib1DataTable extends JPanel {
 
   void showBitmap(Grib1RecordBean bean1, Formatter f) throws IOException {
     byte[] bitmap;
-    ucar.unidata.io.RandomAccessFile raf = null;
-    try {
-      raf = bean1.getRaf();
+    try (ucar.unidata.io.RandomAccessFile raf = bean1.getRaf()) {
       Grib1SectionBitMap bms = bean1.gr.getBitMapSection();
       f.format("%s%n", bms);
       bitmap = bms.getBitmap(raf);
-    } finally {
-      if (raf != null) raf.close();
     }
 
     if (bitmap == null) {
@@ -965,7 +956,7 @@ public class Grib1DataTable extends JPanel {
     }
   }
 
-  public static void main(String arg[]) {
+  public static void main(String[] arg) {
     float add_offset = 143.988f;
     float scale_factor = 0.000614654f;
     float fd = 339.029f;

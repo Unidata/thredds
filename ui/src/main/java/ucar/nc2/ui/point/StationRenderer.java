@@ -4,10 +4,10 @@
  */
 package ucar.nc2.ui.point;
 
-/**
- * Renders collections of stations. package private.
- *
- * @author caron
+/*
+  Renders collections of stations. package private.
+
+  @author caron
  */
 
 import ucar.nc2.ui.gis.SpatialGrid;
@@ -21,8 +21,8 @@ import java.util.*;
 import java.util.List;
 
 class StationRenderer implements Renderer {
-  private List<StationUI> stations = new ArrayList<StationUI>(); // StationUI objects
-  private HashMap<String, StationUI> stationHash = new HashMap<String, StationUI>();
+  private List<StationUI> stations = new ArrayList<>(); // StationUI objects
+  private HashMap<String, StationUI> stationHash = new HashMap<>();
   private SpatialGrid stationGrid;              // for "decluttering" and closest point
   private ProjectionImpl project = null;        // display projection
   private AffineTransform world2Normal;
@@ -52,8 +52,9 @@ class StationRenderer implements Renderer {
     textFont = FontUtil.getStandardFont(10);
   }
 
-  public void incrFontSize() { textFont.incrFontSize(); };
-  public void decrFontSize() { textFont.decrFontSize(); };
+  public void incrFontSize() { textFont.incrFontSize(); }
+
+  public void decrFontSize() { textFont.decrFontSize(); }
 
   public void setColor(java.awt.Color color){ this.color = color; }
   public java.awt.Color getColor() { return color; }
@@ -67,13 +68,13 @@ class StationRenderer implements Renderer {
    * @param stns: list of DDStation objects
    */
   public void setStations(java.util.List<ucar.unidata.geoloc.Station> stns) {
-    stations = new ArrayList<StationUI>( stns.size());
+    stations = new ArrayList<>(stns.size());
     stationHash.clear();
-    for (int i = 0; i < stns.size(); i++) {
-      ucar.unidata.geoloc.Station s = (ucar.unidata.geoloc.Station) stns.get(i);
-      StationUI sui = new StationUI( s); // wrap in a StationUI
+    for (Station stn : stns) {
+      Station s = stn;
+      StationUI sui = new StationUI(s); // wrap in a StationUI
       stations.add(sui); // wrap in a StationUI
-      stationHash.put( s.getName(), sui);
+      stationHash.put(s.getName(), sui);
     }
     posWasCalc = false;
     calcWorldPos();
@@ -81,7 +82,7 @@ class StationRenderer implements Renderer {
 
   // set selected station based on the sttion id.
   public void setSelectedStation( String name) {
-    StationUI sui = (StationUI) stationHash.get( name);
+    StationUI sui = stationHash.get( name);
     if (sui != null) {
       setSelectedStation( sui);
     }
@@ -109,9 +110,9 @@ class StationRenderer implements Renderer {
 
   private void calcWorldPos() {
     if (project == null) return;
-    for (int i = 0; i < stations.size(); i++) {
-      StationUI s = (StationUI) stations.get(i);
-      s.worldPos.setLocation( project.latLonToProj(s.latlonPos));
+    for (StationUI station : stations) {
+      StationUI s = station;
+      s.worldPos.setLocation(project.latLonToProj(s.latlonPos));
     }
     posWasCalc = true;
   }
@@ -212,10 +213,10 @@ class StationRenderer implements Renderer {
       selected.draw(g);
     }
 
-    for (int i=0; i < stations.size(); i++) {
-      StationUI s = (StationUI) stations.get(i);
-      s.calcPos( world2Normal);
-      if (stationGrid.markIfClear( s.getBB(), s) || !declutter) {
+    for (StationUI station : stations) {
+      StationUI s = station;
+      s.calcPos(world2Normal);
+      if (stationGrid.markIfClear(s.getBB(), s) || !declutter) {
         s.draw(g);
       }
     }

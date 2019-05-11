@@ -13,7 +13,6 @@ import ucar.nc2.ui.geoloc.*;
 import ucar.nc2.ui.gis.MapBean;
 import ucar.nc2.ui.grid.*;
 import ucar.nc2.ui.widget.*;
-import ucar.nc2.ui.widget.PopupMenu;
 import ucar.nc2.util.NamedObject;
 import ucar.unidata.geoloc.ProjectionImpl;
 import ucar.unidata.geoloc.ProjectionPointImpl;
@@ -58,7 +57,7 @@ import javax.swing.border.EtchedBorder;
  * @since 12/27/12
  */
 public class CoverageViewer extends JPanel {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageViewer.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CoverageViewer.class);
 
   // constants
   private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec
@@ -66,8 +65,8 @@ public class CoverageViewer extends JPanel {
   private static final String LastProjectionName = "LastProjection";
   private static final String LastDatasetName = "LastDataset";
   private static final String ColorScaleName = "ColorScale";
-  static private final String DATASET_URL = "DatasetURL";
-  static private final String GEOTIFF_FILECHOOSER_DEFAULTDIR = "geotiffDefDir";
+  private static final String DATASET_URL = "DatasetURL";
+  private static final String GEOTIFF_FILECHOOSER_DEFAULTDIR = "geotiffDefDir";
 
   private PreferencesExt store;
   private JFrame parent;
@@ -190,7 +189,7 @@ public class CoverageViewer extends JPanel {
 
       // colorscale
       Object bean = store.getBean(ColorScaleName, null);
-      if ((null == bean) || !(bean instanceof ColorScale))
+      if (!(bean instanceof ColorScale))
         colorScale = new ColorScale("default");
       else
         colorScale = (ColorScale) store.getBean(ColorScaleName, null);
@@ -211,7 +210,7 @@ public class CoverageViewer extends JPanel {
       strideSpinner = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
       strideSpinner.addChangeListener(e -> {
           Integer val = (Integer) strideSpinner.getValue();
-          coverageRenderer.setHorizStride(val.intValue());
+          coverageRenderer.setHorizStride(val);
       });
 
       makeActionsDataset();
@@ -551,26 +550,26 @@ public class CoverageViewer extends JPanel {
     navToolbarAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        if (state.booleanValue())
+        if (state)
           toolPanel.add(navToolbar);
         else
           toolPanel.remove(navToolbar);
       }
     };
     BAMutil.setActionProperties(navToolbarAction, "MagnifyPlus", "show Navigate toolbar", true, 'M', 0);
-    navToolbarAction.putValue(BAMutil.STATE, new Boolean(store.getBoolean("navToolbarAction", true)));
+    navToolbarAction.putValue(BAMutil.STATE, store.getBoolean("navToolbarAction", true));
 
     moveToolbarAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        if (state.booleanValue())
+        if (state)
           toolPanel.add(moveToolbar);
         else
           toolPanel.remove(moveToolbar);
       }
     };
     BAMutil.setActionProperties(moveToolbarAction, "Up", "show Move toolbar", true, 'M', 0);
-    moveToolbarAction.putValue(BAMutil.STATE, new Boolean(store.getBoolean("moveToolbarAction", true)));
+    moveToolbarAction.putValue(BAMutil.STATE, store.getBoolean("moveToolbarAction", true));
   }
 
   // create all actions here
@@ -597,7 +596,7 @@ public class CoverageViewer extends JPanel {
     drawBBAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        coverageRenderer.setDrawBB(state.booleanValue());
+        coverageRenderer.setDrawBB(state);
         draw(false);
       }
     };
@@ -608,67 +607,67 @@ public class CoverageViewer extends JPanel {
     drawHorizAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        drawHorizOn = state.booleanValue();
+        drawHorizOn = state;
         setDrawHorizAndVert(drawHorizOn, drawVertOn);
         draw(false);
       }
     };
     BAMutil.setActionProperties(drawHorizAction, "DrawHoriz", "draw horizontal", true, 'H', 0);
     state = store.getBoolean("drawHorizAction", true);
-    drawHorizAction.putValue(BAMutil.STATE, new Boolean(state));
+    drawHorizAction.putValue(BAMutil.STATE, state);
     drawHorizOn = state;
 
     // draw Vert
     drawVertAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        drawVertOn = state.booleanValue();
+        drawVertOn = state;
         setDrawHorizAndVert(drawHorizOn, drawVertOn);
         draw(false);
       }
     };
     BAMutil.setActionProperties(drawVertAction, "DrawVert", "draw vertical", true, 'V', 0);
     state = store.getBoolean("drawVertAction", false);
-    drawVertAction.putValue(BAMutil.STATE, new Boolean(state));
+    drawVertAction.putValue(BAMutil.STATE, state);
     drawVertOn = state;
 
     // show grid
     showGridAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        coverageRenderer.setDrawGridLines(state.booleanValue());
+        coverageRenderer.setDrawGridLines(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties(showGridAction, "Grid", "show grid lines", true, 'G', 0);
     state = store.getBoolean("showGridAction", false);
-    showGridAction.putValue(BAMutil.STATE, new Boolean(state));
+    showGridAction.putValue(BAMutil.STATE, state);
     coverageRenderer.setDrawGridLines(state);
 
     // contouring
     showContoursAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        coverageRenderer.setDrawContours(state.booleanValue());
+        coverageRenderer.setDrawContours(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties(showContoursAction, "Contours", "show contours", true, 'C', 0);
     state = store.getBoolean("showContoursAction", false);
-    showContoursAction.putValue(BAMutil.STATE, new Boolean(state));
+    showContoursAction.putValue(BAMutil.STATE, state);
     coverageRenderer.setDrawContours(state);
 
     // contouring labels
     showContourLabelsAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        coverageRenderer.setDrawContourLabels(state.booleanValue());
+        coverageRenderer.setDrawContourLabels(state);
         draw(false);
       }
     };
     BAMutil.setActionProperties(showContourLabelsAction, "ContourLabels", "show contour labels", true, 'L', 0);
     state = store.getBoolean("showContourLabelsAction", false);
-    showContourLabelsAction.putValue(BAMutil.STATE, new Boolean(state));
+    showContourLabelsAction.putValue(BAMutil.STATE, state);
     coverageRenderer.setDrawContourLabels(state);
   }
 
@@ -869,8 +868,8 @@ public class CoverageViewer extends JPanel {
   public void save() {
     //store.putInt( "vertSplit", splitDraw.getDividerLocation());
 
-    store.putBoolean("navToolbarAction", ((Boolean) navToolbarAction.getValue(BAMutil.STATE)).booleanValue());
-    store.putBoolean("moveToolbarAction", ((Boolean) moveToolbarAction.getValue(BAMutil.STATE)).booleanValue());
+    store.putBoolean("navToolbarAction", (Boolean) navToolbarAction.getValue(BAMutil.STATE));
+    store.putBoolean("moveToolbarAction", (Boolean) moveToolbarAction.getValue(BAMutil.STATE));
 
     if (projManager != null)
       projManager.storePersistentData();
@@ -890,9 +889,10 @@ public class CoverageViewer extends JPanel {
     //  store.put(LastDatasetName, gridDataset.getTitle());
     store.putBeanObject(ColorScaleName, colorScale);
 
-    store.putBoolean("showGridAction", ((Boolean) showGridAction.getValue(BAMutil.STATE)).booleanValue());
-    store.putBoolean("showContoursAction", ((Boolean) showContoursAction.getValue(BAMutil.STATE)).booleanValue());
-    store.putBoolean("showContourLabelsAction", ((Boolean) showContourLabelsAction.getValue(BAMutil.STATE)).booleanValue());
+    store.putBoolean("showGridAction", (Boolean) showGridAction.getValue(BAMutil.STATE));
+    store.putBoolean("showContoursAction", (Boolean) showContoursAction.getValue(BAMutil.STATE));
+    store.putBoolean("showContourLabelsAction",
+        (Boolean) showContourLabelsAction.getValue(BAMutil.STATE));
 
   }
 

@@ -11,13 +11,13 @@ import javax.swing.tree.TreePath;
 public class TreeTableModelSorted extends TreeTableModelAbstract {
   private boolean treeSort = false;
   private RowSorter rowSorter = null;
-  private ThreadSorter threadSorter = null;
+  private ThreadSorter threadSorter;
 
   private String[] colName;     // column names
   private ArrayList rowList;    // row data
   private ArrayList treeList;   // divided into tree
 
-  private boolean useThreads = false; // are we in "thread mode"?
+  private boolean useThreads; // are we in "thread mode"?
   private boolean threadsOn = false;  // are threads currently toggled on ?
   private int threadCol = -1;         // thread column
   private int indentCol = -1;         // column to indent, to indicate child
@@ -54,8 +54,7 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
     // add a column if it uses Threads; note thread column is always last
     if (useThreads) {
       String[] newColName = new String[ colName.length + 1];
-      for (int i=0; i<colName.length; i++)
-        newColName[i] = colName[i];
+      System.arraycopy(colName, 0, newColName, 0, colName.length);
 
       threadCol = colName.length;
       newColName[threadCol] = "Threads";
@@ -139,7 +138,7 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
     if (debugSort) System.out.println("standard sort");
 
     // standard sort on the selected col
-    java.util.Collections.sort( rowList, new TableRowAbstract.Sorter(sortCol, reverse));
+    rowList.sort(new TableRowAbstract.Sorter(sortCol, reverse));
 
     if (treeSort)
       makeTreeList( sortCol, rowList);
@@ -348,8 +347,8 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
       return new TreePath( path);
     }
       // note this returns path to the SortNode only
-    for (int i=0; i< treeList.size(); i++) {
-      SortNode snode = (SortNode) treeList.get(i);
+    for (Object o : treeList) {
+      SortNode snode = (SortNode) o;
      /* if (rowno == snode.start) {
         Object[] path = new Object[2];
         path[0] = root;
@@ -360,7 +359,7 @@ public class TreeTableModelSorted extends TreeTableModelAbstract {
         Object[] path = new Object[2];
         path[0] = root;
         path[1] = snode;
-        return new TreePath( path);
+        return new TreePath(path);
       }
     }
     System.out.println("getPath didnt find row "+rowno+" = "+row);

@@ -34,10 +34,10 @@ import java.util.Iterator;
 
 public class JTableSorted extends JPanel {
       // for HeaderRenderer
-  static private Icon sortDownIcon = BAMutil.getIcon( "SortDown", true);
-  static private Icon sortUpIcon = BAMutil.getIcon( "SortUp", true);
-  static private Icon threadSortIcon = BAMutil.getIcon( "ThreadSorted", true);
-  static private Icon threadUnSortIcon = BAMutil.getIcon( "ThreadUnsorted", true);
+      private static Icon sortDownIcon = BAMutil.getIcon( "SortDown", true);
+  private static Icon sortUpIcon = BAMutil.getIcon( "SortUp", true);
+  private static Icon threadSortIcon = BAMutil.getIcon( "ThreadSorted", true);
+  private static Icon threadUnSortIcon = BAMutil.getIcon( "ThreadUnsorted", true);
 
   private ArrayList list;
   private String[] colName;
@@ -51,7 +51,7 @@ public class JTableSorted extends JPanel {
 
   private boolean debug = false;
   private boolean sortOK = true;
-  private ThreadSorter threadSorter = null;
+  private ThreadSorter threadSorter;
   private int threadCol = -1;
 
   private ListenerManager lm;
@@ -99,8 +99,7 @@ public class JTableSorted extends JPanel {
     boolean hasThreads = (threadSorter != null);
     if (hasThreads) {
       String[] newColName = new String[ colName.length + 1];
-      for (int i=0; i<colName.length; i++)
-        newColName[i] = colName[i];
+      System.arraycopy(colName, 0, newColName, 0, colName.length);
 
       threadCol = colName.length;
       newColName[threadCol] = "Threads";
@@ -153,7 +152,7 @@ public class JTableSorted extends JPanel {
 
           // notify listsners of impending sort
         if (lm.hasListeners())
-          lm.sendEvent( new UIChangeEvent(this, "sort", null, new Integer(colNo)));
+          lm.sendEvent( new UIChangeEvent(this, "sort", null, colNo));
 
           // sort
         model.sort(colNo);
@@ -176,7 +175,7 @@ public class JTableSorted extends JPanel {
 
   }
 
-  /**
+  /*
     Set the state from the last saved in the PersistentStore.
     @param String name  object name
     @param PersistentStore store ok if null or empty
@@ -240,9 +239,9 @@ public class JTableSorted extends JPanel {
     jtable.setFont( jtable.getFont().deriveFont( (float) size));
   } */
 
-  /**
+  /*
     Save the state in the PersistentStore passed to getState().
-  *
+
   public void saveState(PersistentStore store) {
     if (store == null)
       return;
@@ -434,7 +433,7 @@ public class JTableSorted extends JPanel {
     PopupAction(String id) { this.id = id; }
 
     public void actionPerformed(ActionEvent e) {
-      boolean state = ((Boolean) getValue(BAMutil.STATE)).booleanValue();
+      boolean state = (Boolean) getValue(BAMutil.STATE);
       TableColumnModel tcm = jtable.getColumnModel();
 
       if (state)
@@ -492,7 +491,7 @@ public class JTableSorted extends JPanel {
       if ((sortCol == threadCol) && (threadSorter != null)) {
         list = threadSorter.sort( sortCol, reverse, list);
       } else if (sortCol >= 0) {
-        java.util.Collections.sort( list, new SortList(sortCol, reverse));
+        list.sort(new SortList(sortCol, reverse));
       }
       JTableSorted.this.setSortCol( sortCol, reverse);
       this.sortCol = sortCol; // keep track of last sort
@@ -514,7 +513,7 @@ public class JTableSorted extends JPanel {
       return comp.getPreferredSize().width;
     }
     private int widestCellInColumn(TableColumn col) {
-      int c = col.getModelIndex(), width=0, maxw=0;
+      int c = col.getModelIndex(), width, maxw=0;
 
       for(int r=0; r < getRowCount(); ++r) {
         TableCellRenderer renderer = jtable.getCellRenderer(r,c);
@@ -541,8 +540,6 @@ public class JTableSorted extends JPanel {
       TableRow row2 = (TableRow) o2;
       return reverse ? row2.compare(row1, col) : row1.compare(row2, col);
     }
-
-    public boolean equals(Object obj) { return this == obj; }
   }
 
   // add tooltips

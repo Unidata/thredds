@@ -30,7 +30,7 @@ import javax.swing.*;
  */
 
 public class ColorScale implements Cloneable, java.io.Serializable {
-  public static enum MinMaxType {horiz, log, hold};
+  public enum MinMaxType {horiz, log, hold}
 
   public static final int VERTICAL = 0;
   public static final int HORIZONTAL = 1;
@@ -58,7 +58,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   private Color missingDataColor = Color.white;
 
   // kludge to make life easier
-  static final public Color[] redHot = {
+  public static final Color[] redHot = {
           new java.awt.Color(0x5cacee),    //cyan
           new java.awt.Color(0xfff5eb),
           new java.awt.Color(0xffe6cc),
@@ -77,7 +77,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
           new java.awt.Color(0xff00ff)      // magenta
   };
 
-  static final public Color[] redBlue = {
+  public static final Color[] redBlue = {
           new java.awt.Color(1, 57, 255),
           new java.awt.Color(0, 140, 255),
           new java.awt.Color(1, 209, 255),
@@ -95,7 +95,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
           new java.awt.Color(255, 84, 0),
           new java.awt.Color(255, 7, 0)
   };
-  static final public Color[] hueBands = {
+  public static final Color[] hueBands = {
           new java.awt.Color(204, 0, 0),
           new java.awt.Color(255, 0, 0),
           new java.awt.Color(255, 51, 51),
@@ -130,7 +130,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
   };
 
 
-  static final public Color[] spectrum2 = {
+  public static final Color[] spectrum2 = {
           new java.awt.Color(204, 0, 0),
           new java.awt.Color(255, 31, 0),
           new java.awt.Color(255, 69, 0),
@@ -169,7 +169,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
           new java.awt.Color(189, 1, 255),
           new java.awt.Color(219, 1, 255)
   };
-  static final private Color[] defaultColors = redBlue;
+  private static final Color[] defaultColors = redBlue;
 
   /* Constructor.
    * @param name of this colorscale.
@@ -427,7 +427,7 @@ public class ColorScale implements Cloneable, java.io.Serializable {
     cl.name = new String(name);
     cl.set(this);
     cl.construct();  */
-    return (Object) cl;
+    return cl;
   }
 
   /////////// private ////////////////////

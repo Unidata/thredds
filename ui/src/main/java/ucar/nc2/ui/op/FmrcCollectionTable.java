@@ -114,7 +114,7 @@ public class FmrcCollectionTable extends JPanel {
   }
 
   public void refresh() {
-    List<CollectionBean> beanList = new ArrayList<CollectionBean>();
+    List<CollectionBean> beanList = new ArrayList<>();
     for (String name : MetadataManager.getCollectionNames()) {
       beanList.add(new CollectionBean(name));
     }
@@ -122,7 +122,7 @@ public class FmrcCollectionTable extends JPanel {
   }
 
   private void setCollection(String name) {
-    List<DataBean> beans = new ArrayList<DataBean>();
+    List<DataBean> beans = new ArrayList<>();
     MetadataManager mm = null;
     try {
       mm = new MetadataManager(name);

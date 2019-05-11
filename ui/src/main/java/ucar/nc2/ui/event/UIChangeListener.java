@@ -8,5 +8,5 @@ package ucar.nc2.ui.event;
  * @author John Caron
  */
 public interface UIChangeListener extends java.util.EventListener {
-    public void processChange( UIChangeEvent e);
+    void processChange(UIChangeEvent e);
 }

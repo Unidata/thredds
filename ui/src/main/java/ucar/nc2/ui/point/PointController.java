@@ -58,11 +58,11 @@ public class PointController extends NPController {
     AbstractAction useReaderAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) {
         Boolean state = (Boolean) getValue(BAMutil.STATE);
-        setDrawConnectingLine(state.booleanValue());
+        setDrawConnectingLine(state);
       }
     };
     BAMutil.setActionProperties(useReaderAction, "addCoords", "draw connecting lines", true, 'C', -1);
-    useReaderAction.putValue(BAMutil.STATE, new Boolean(drawConnectingLine));
+    useReaderAction.putValue(BAMutil.STATE, drawConnectingLine);
     BAMutil.addActionToContainer(toolPanel, useReaderAction);
 
   }

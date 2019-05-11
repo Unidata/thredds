@@ -9,7 +9,6 @@ import java.util.prefs.BackingStoreException;
 
 import javax.swing.JMenu;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.event.*;
 
 /**
  * Provides static methods for managing persistent lists of debugging flags that
@@ -63,18 +62,18 @@ import javax.swing.event.*;
  */
 
 public class Debug {
-  static private Preferences store = null;
-  static private boolean debug = false, debugEvents = false;
+  private static Preferences store = null;
+  private static boolean debug = false, debugEvents = false;
 
   /** Set the persistent data. You must call this before any other call. */
-  static public void setStore(Preferences debugStore) {
+  public static void setStore(Preferences debugStore) {
     store = debugStore;
   }
 
   /** Return the value of the named flag. If it doesnt exist, it will be added
    *  to the store and the menu with a value of "false".
    */
-  static public boolean isSet(String flagName) {
+  public static boolean isSet(String flagName) {
     if (store == null) return false;
 
     NamePart np = partit( flagName);
@@ -95,7 +94,7 @@ public class Debug {
   /** Set the value of the named flag. If it doesnt exist, it will be added
    *  to the store and the menu.
    */
-  static public void set(String flagName, boolean value) {
+  public static void set(String flagName, boolean value) {
     NamePart np = partit( flagName);
     if (debug) {
       try {
@@ -110,7 +109,7 @@ public class Debug {
 
   /** Clear all flags (set to false).
    */
-  static public void removeAll() {
+  public static void removeAll() {
     try {
       removeAll(store, false);
     } catch (BackingStoreException ex) {
@@ -118,7 +117,7 @@ public class Debug {
     }
   }
 
-  static private void removeAll(Preferences prefs, boolean delete) throws BackingStoreException {
+  private static void removeAll(Preferences prefs, boolean delete) throws BackingStoreException {
 
     String[] kidName = prefs.childrenNames();
     for (String aKidName : kidName) {
@@ -140,7 +139,7 @@ public class Debug {
    *  in the Preferences object.
    *  @param topMenu attach the menus as children of this one.
    */
-  static public void constructMenu(JMenu topMenu) {
+  public static void constructMenu(JMenu topMenu) {
     if (debug) System.out.println("Debug.constructMenu ");
 
     if (topMenu.getItemCount() > 0)
@@ -154,7 +153,7 @@ public class Debug {
   }
 
     // recursive menu adding
-  static private void addToMenu( JMenu menu, Preferences prefs) throws BackingStoreException {
+    private static void addToMenu( JMenu menu, Preferences prefs) throws BackingStoreException {
     if (debug) System.out.println(" addMenu "+ prefs.name());
 
     String[] keys = prefs.keys();
@@ -174,7 +173,7 @@ public class Debug {
     }
   }
 
-  static private NamePart partit( String name) {
+  private static NamePart partit( String name) {
     NamePart np = new NamePart();
 
     //name = name.replace('.', '/');

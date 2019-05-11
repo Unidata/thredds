@@ -35,13 +35,11 @@ package ucar.nc2.ui.grib;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
 import ucar.nc2.constants.CDM;
-import ucar.nc2.dataset.CoordinateAxisTimeHelper;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
 import ucar.nc2.grib.collection.Grib1Iosp;
 import ucar.nc2.grib.grib1.*;
-import ucar.nc2.grib.grib1.Grib1Parameter;
 import ucar.nc2.grib.grib1.tables.Grib1Customizer;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateUnit;
@@ -72,7 +70,7 @@ import java.util.List;
  * @since 9/3/11
  */
 public class Grib1CollectionPanel extends JPanel {
-  static private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionPanel.class);
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Grib1CollectionPanel.class);
 
   private PreferencesExt prefs;
 
@@ -321,11 +319,7 @@ public class Grib1CollectionPanel extends JPanel {
     Map<Integer, Set<Integer>> groups = new HashMap<>();
     for (Object o : param1BeanTable.getBeans()) {
       ParameterBean p = (ParameterBean) o;
-      Set<Integer> group = groups.get(p.getGds());
-      if (group == null) {
-        group = new TreeSet<>();
-        groups.put(p.getGds(), group);
-      }
+      Set<Integer> group = groups.computeIfAbsent(p.getGds(), k -> new TreeSet<>());
       for (RecordBean r : p.getRecordBeans())
         group.add(r.gr.getFile());
     }
@@ -335,9 +329,9 @@ public class Grib1CollectionPanel extends JPanel {
       Set<Integer> group = groups.get(gds.getHash());
       f.format("%nGroup %s %n", gds.getGridName());
       if (group == null) continue;
-        for (Integer fileno : group) {
-          f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
-        }
+      for (Integer fileno : group) {
+        f.format(" %d = %s%n", fileno, fileList.get(fileno).getPath());
+      }
       f.format("%n");
     }
   }
@@ -351,13 +345,11 @@ public class Grib1CollectionPanel extends JPanel {
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
     List<Object> gdss = gds1Table.getBeans();
-    Collections.sort(gdss, new Comparator<Object>() {
+    gdss.sort(new Comparator<Object>() {
       public int compare(Object o1, Object o2) {
         int h1 = ((Gds1Bean) o1).gds.hashCode();
-        int h2 =  ((Gds1Bean) o2).gds.hashCode();
-        if (h1 < h2) return -1;
-        else if (h1 == h2) return 0;
-        else return 1;
+        int h2 = ((Gds1Bean) o2).gds.hashCode();
+        return Integer.compare(h1, h2);
       }
     });
 
@@ -411,7 +403,7 @@ public class Grib1CollectionPanel extends JPanel {
     compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  static public void compare(Grib1SectionGridDefinition gdss1, Grib1SectionGridDefinition gdss2, Formatter f) {
+  public static void compare(Grib1SectionGridDefinition gdss1, Grib1SectionGridDefinition gdss2, Formatter f) {
     f.format("1 GribGDS hash = %s%n", gdss1.getGDS().hashCode());
     f.format("2 GribGDS hash = %s%n", gdss2.getGDS().hashCode());
     f.format("%nCompare Gds%n");
@@ -440,7 +432,7 @@ public class Grib1CollectionPanel extends JPanel {
     f.format(" Center lat diff : %f%n", pt1.getLatitude() - pt2.getLatitude());
   }
 
-  static public void compare(Grib1SectionProductDefinition pds1, Grib1SectionProductDefinition pds2, Formatter f) {
+  public static void compare(Grib1SectionProductDefinition pds1, Grib1SectionProductDefinition pds2, Formatter f) {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getRawBytes();
     byte[] raw2 = pds2.getRawBytes();
@@ -537,8 +529,7 @@ public class Grib1CollectionPanel extends JPanel {
 
     for (Grib1SectionGridDefinition gds : index.getGds()) {
       int hash = gds.getGDS().hashCode();
-      if (gdsSet.get(hash) == null)
-        gdsSet.put(hash, gds);
+      gdsSet.putIfAbsent(hash, gds);
     }
 
     for (Grib1Record gr : index.getRecords()) {
@@ -614,7 +605,7 @@ public class Grib1CollectionPanel extends JPanel {
 
   ////////////////////////////////////////////////////////////////
 
-  static public int makeUniqueId(Grib1SectionProductDefinition pds) {
+  public static int makeUniqueId(Grib1SectionProductDefinition pds) {
     int result = 17;
     result += result * 37 + pds.getParameterNumber();
     result *= result * 37 + pds.getLevelType();
@@ -623,7 +614,7 @@ public class Grib1CollectionPanel extends JPanel {
     return result;
   }
 
-  static public void showRawPds(Grib1SectionProductDefinition pds, Formatter f) {
+  public static void showRawPds(Grib1SectionProductDefinition pds, Formatter f) {
     byte[] raw = pds.getRawBytes();
     f.format("%n");
     for (int i = 0; i < raw.length; i++) {
@@ -631,7 +622,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
   }
 
-  static public void showRawGds(Grib1SectionGridDefinition gds, Formatter f) {
+  public static void showRawGds(Grib1SectionGridDefinition gds, Formatter f) {
     byte[] raw = gds.getRawBytes();
     f.format("%n");
     for (int i = 0; i < raw.length; i++) {
@@ -639,7 +630,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
   }
 
-  static public void showCompleteRecord(Grib1Customizer cust, Grib1Record gr, String filename, Formatter f) {
+  public static void showCompleteRecord(Grib1Customizer cust, Grib1Record gr, String filename, Formatter f) {
     f.format("File = %s%n", filename);
     f.format("Header = %s%n", new String(gr.getHeader(), CDM.utf8Charset));
     f.format("Total length of GRIB message = %d%n", gr.getIs().getMessageLength());
@@ -666,7 +657,7 @@ public class Grib1CollectionPanel extends JPanel {
     }
   }
 
-  static public void showGds(Grib1SectionGridDefinition gdss, Grib1Gds gds, Formatter f) {
+  public static void showGds(Grib1SectionGridDefinition gdss, Grib1Gds gds, Formatter f) {
     f.format("Grib1SectionGridDefinition = %s", gdss);
     f.format("Grib1GDS hash = %s%n", gds.hashCode());
     f.format("Grib1GDS = %s", gds);

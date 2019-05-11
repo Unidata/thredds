@@ -8,8 +8,6 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import com.jgoodies.forms.factories.*;
-import com.jgoodies.forms.layout.*;
 import thredds.featurecollection.FeatureCollectionConfig;
 
 /**

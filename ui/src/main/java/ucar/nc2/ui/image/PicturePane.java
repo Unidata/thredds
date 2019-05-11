@@ -294,7 +294,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 	 */
 	public void centerImage() {
 		if (sclPic.getOriginalImage() != null) {
-			setCenterLocation((int) sclPic.getOriginalWidth() / 2, (int) sclPic.getOriginalHeight() / 2);
+			setCenterLocation(sclPic.getOriginalWidth() / 2, sclPic.getOriginalHeight() / 2);
 			repaint();
 		}
  }
@@ -416,7 +416,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 
     Tools.log ("paintComponent called");
 
-		if (Dragging == false) {  //otherwise it's already a move Cursor
+		if (!Dragging) {  //otherwise it's already a move Cursor
 			setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		}
 
@@ -437,9 +437,9 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 			if (showInfo) {
 				g2d.setColor(Color.white);
 				g2d.drawString(legend, infoPoint.x, infoPoint.y);
-				g2d.drawString("Size: " + Integer.toString(sclPic.getOriginalWidth()) + " x " + Integer.toString(sclPic.getOriginalHeight())
+				g2d.drawString("Size: " + sclPic.getOriginalWidth() + " x " + sclPic.getOriginalHeight()
 						+ " Offset: " + X_Offset + " x " + Y_Offset
-						+ " Mid: " + Integer.toString(focusPoint.x) + " x " + Integer.toString(focusPoint.y)
+						+ " Mid: " + focusPoint.x + " x " + focusPoint.y
 						+ " Scale: " + twoDecimalFormatter.format(sclPic.getScaleFactor()), infoPoint.x, infoPoint.y + lineSpacing);
 				/* g2d.drawString("File: " + sclPic.getFilename()
 						, infoPoint.x
@@ -462,7 +462,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 			g.fillRect(0,0,WindowWidth,WindowHeight);
 		}
 
-		if (Dragging == false) {  //otherwise a move Cursor and should remain
+		if (!Dragging) {  //otherwise a move Cursor and should remain
 			setCursor(new Cursor(Cursor.DEFAULT_CURSOR)); 
 		}
 	}
@@ -506,8 +506,8 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 		      		int WindowWidth = getSize().width;
 				int WindowHeight = getSize().height;
 
-				int X_Offset = e.getX() - (int) (WindowWidth / 2);
-				int Y_Offset = e.getY() - (int) (WindowHeight / 2);
+				int X_Offset = e.getX() - (WindowWidth / 2);
+				int Y_Offset = e.getY() - (WindowHeight / 2);
 				
 				setCenterLocation(
 					focusPoint.x + (int) (X_Offset / sclPic.getScaleFactor()), 
@@ -527,7 +527,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 		 *   image then the dragging flag is turned off and the cursor is reset.
 		 */
 		public void mouseReleased(MouseEvent e) {
-			if (Dragging == true) {
+			if (Dragging) {
 				//Dragging has ended
 				Dragging = false;
 				setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -541,7 +541,7 @@ class PicturePane extends JComponent implements ScalablePictureListener {
 		 * user drags the mouse with a button pressed. Moves the picture around
 		 */
 		public void mouseDragged(MouseEvent e) {
-			if (Dragging == false) {
+			if (!Dragging) {
 				// Switch into dragging mode and record current coordinates
 				last_x = e.getX(); 
 				last_y = e.getY();

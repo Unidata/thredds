@@ -6,8 +6,6 @@
 package ucar.nc2.ui.coverage2;
 
 import ucar.ma2.*;
-import ucar.nc2.ft2.coverage.GeoReferencedArray;
-import ucar.nc2.ft2.coverage.SubsetParams;
 import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.ui.grid.ColorScale;

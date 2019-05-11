@@ -457,13 +457,11 @@ public class Grib2CollectionPanel extends JPanel {
   public void generateGdsXml(Formatter f) {
     f.format("<gribConfig>%n");
     List<Object> gdss = new ArrayList<>(gds2Table.getBeans());
-    Collections.sort(gdss, new Comparator<Object>() {
+    gdss.sort(new Comparator<Object>() {
       public int compare(Object o1, Object o2) {
         int h1 = ((Gds2Bean) o1).gds.hashCode();
-        int h2 =  ((Gds2Bean) o2).gds.hashCode();
-        if (h1 < h2) return -1;
-        else if (h1 == h2) return 0;
-        else return 1;
+        int h2 = ((Gds2Bean) o2).gds.hashCode();
+        return Integer.compare(h1, h2);
       }
     });
 
@@ -520,8 +518,7 @@ public class Grib2CollectionPanel extends JPanel {
 
     for (Grib2SectionGridDefinition gds : index.getGds()) {
       int hash = gds.getGDS().hashCode();
-      if (gdsSet.get(hash) == null)
-        gdsSet.put(hash, gds);
+      gdsSet.putIfAbsent(hash, gds);
     }
 
     for (Grib2Record gr : index.getRecords()) {
@@ -604,11 +601,7 @@ public class Grib2CollectionPanel extends JPanel {
     Map<Integer, Set<Integer>> groups = new HashMap<>();
     for (Object o : param2BeanTable.getBeans()) {
       Grib2ParameterBean p = (Grib2ParameterBean) o;
-      Set<Integer> group = groups.get(p.getGDS());
-      if (group == null) {
-        group = new TreeSet<>();
-        groups.put(p.getGDS(), group);
-      }
+      Set<Integer> group = groups.computeIfAbsent(p.getGDS(), k -> new TreeSet<>());
       for (Grib2RecordBean r : p.getRecordBeans())
         group.add(r.gr.getFile());
     }
@@ -631,7 +624,7 @@ public class Grib2CollectionPanel extends JPanel {
     Map<Integer, Set<Integer>> fileMap = new HashMap<>();
     List<Gds2Bean> beans = gds2Table.getBeans();
     for (Gds2Bean gdsBean : beans) {
-      fileMap.put(gdsBean.getGDShash(), new TreeSet<Integer>());
+      fileMap.put(gdsBean.getGDShash(), new TreeSet<>());
       gdsMap.put(gdsBean.getGDShash(), gdsBean);
       f.format("<gdsName hash='%d' groupName='%s'/>%n", gdsBean.getGDShash(), gdsBean.getGroupName());
     }
@@ -878,7 +871,7 @@ public class Grib2CollectionPanel extends JPanel {
     compare(bean1.gr.getGDSsection(), bean2.gr.getGDSsection(), f);
   }
 
-  static public  void compare(Grib2SectionGridDefinition gdss1, Grib2SectionGridDefinition gdss2, Formatter f) {
+  public static void compare(Grib2SectionGridDefinition gdss1, Grib2SectionGridDefinition gdss2, Formatter f) {
     f.format("1 GribGDS hash = %s%n", gdss1.getGDS().hashCode());
     f.format("2 GribGDS hash = %s%n", gdss2.getGDS().hashCode());
 
@@ -905,15 +898,15 @@ public class Grib2CollectionPanel extends JPanel {
   }
 
 
-  static public void compare(Grib2SectionProductDefinition pds1, Grib2SectionProductDefinition pds2, Formatter f) {
+  public static void compare(Grib2SectionProductDefinition pds1, Grib2SectionProductDefinition pds2, Formatter f) {
     f.format("%nCompare Pds%n");
     byte[] raw1 = pds1.getRawBytes();
     byte[] raw2 = pds2.getRawBytes();
     Misc.compare(raw1, raw2, f);
   }
 
-  static public void compareData(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
-    float[] data1 = null, data2 = null;
+  public static void compareData(Grib2RecordBean bean1, Grib2RecordBean bean2, Formatter f) {
+    float[] data1, data2;
     try {
       data1 = bean1.readData();
       data2 = bean2.readData();
@@ -925,7 +918,7 @@ public class Grib2CollectionPanel extends JPanel {
     Misc.compare(data1, data2, f);
   }
 
-  static public void showData(Grib2RecordBean bean1, Formatter f) {
+  public static void showData(Grib2RecordBean bean1, Formatter f) {
     float[] data;
     try {
       data = bean1.readData();
@@ -1107,7 +1100,7 @@ public class Grib2CollectionPanel extends JPanel {
       pds = r.getPDS();
       id = r.getId();
       discipline = r.getDiscipline();
-      records = new ArrayList<Grib2RecordBean>();
+      records = new ArrayList<>();
       //gdsKey = r.getGDSsection().calcCRC();
     }
 

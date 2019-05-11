@@ -8,7 +8,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Collection;
 import javax.swing.*;
-import javax.swing.GroupLayout;
 import javax.swing.border.*;
 
 import ucar.unidata.geoloc.ProjectionRect;
@@ -239,9 +238,7 @@ public class NewProjectionDialog extends JDialog {
             ProjPanel.setLayout(new BoxLayout(ProjPanel, BoxLayout.X_AXIS));
 
             //---- cbProjectionType ----
-            cbProjectionType.addItemListener(e -> {
-                comboBox1ItemStateChanged(e);
-            });
+            cbProjectionType.addItemListener(this::comboBox1ItemStateChanged);
             ProjPanel.add(cbProjectionType);
           }
 

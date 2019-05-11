@@ -37,7 +37,7 @@ public abstract class ProgressMonitorTask implements Runnable, CancelTask {
   protected int progress;
 
   /** Here is where the work gets done. */
-  abstract public void run();
+  public abstract void run();
 
   /** Application calls to see if task is success. */
   public boolean isSuccess() { return success; }

@@ -18,8 +18,9 @@ import java.io.*;
  * Sends the contents of the message to anyone who is registered as a listener.
  */
 public final class SocketMessage {
-  static private final boolean debug = false, throwAway = false;
-  static private boolean raw = false;
+  private static final boolean debug = false, throwAway = false;
+  private static final boolean testing = false;
+  private static boolean raw = false;
 
   private ServerSocket server;
   private boolean isAlreadyRunning = false;
@@ -44,12 +45,7 @@ public final class SocketMessage {
         "ucar.nc2.ui.util.SocketMessage$Event",
         "setMessage");
 
-    } catch (java.net.BindException e) {
-      if (message != null)
-        sendMessage( port, message);
-      isAlreadyRunning = true;
-
-    } catch (java.net.SocketException e) {
+    } catch (SocketException e) {
       if (message != null)
         sendMessage( port, message);
       isAlreadyRunning = true;
@@ -82,24 +78,13 @@ public final class SocketMessage {
     lm.removeListener(l);
   }
 
-  // public void exit() { listen.exit(); }
-
   private void sendMessage(int port, String message) {
-    Socket connection = null;
-    try {
-      connection = new Socket("localhost", port);
+    try (Socket connection = new Socket("localhost", port)) {
       IO.writeContents(message, connection.getOutputStream());
       if (debug) System.out.println(" sent message " + message);
-
-    }  catch (IOException e) {
-      System.err.println(e);
+    } catch (IOException e) {
       e.printStackTrace();
-
-    } finally {
-      try { if (connection != null) connection.close(); }
-      catch (IOException e) {}
     }
-
   }
 
   private class ListenThread extends Thread {
@@ -163,13 +148,13 @@ public final class SocketMessage {
     public String getMessage() { return message; }
   }
 
-  public static interface EventListener {
-     public void setMessage(SocketMessage.Event event);
+  public interface EventListener {
+     void setMessage(SocketMessage.Event event);
   }
 
   //////////////////////////////////////////////
   public static void main(String[] args) throws IOException {
-    if (false) {
+    if (!testing) {
       new SocketMessage( 9999, "startNewServer");
       raw = true;
 

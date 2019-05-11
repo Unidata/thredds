@@ -20,13 +20,10 @@ import java.io.*;
 import java.net.*;
 import java.awt.image.*;
 import java.awt.Dimension;
-import java.util.Vector;
-import java.util.Enumeration;
 import javax.imageio.*;
 import javax.imageio.stream.*;
 import javax.imageio.event.*;
 import java.text.*;
-import javax.swing.*;
 import java.awt.geom.*;
 
 /*
@@ -200,7 +197,8 @@ public class SourcePicture implements Cloneable {
 	 *  object and updates the status when done or failed.
 	 */
 	public void loadPicture() {
-		Tools.log("SourcePicture.loadPicture: " + imageUrl.toString() + " loaded into SourcePicture object: " + Integer.toString(this.hashCode()) );
+		Tools.log("SourcePicture.loadPicture: " + imageUrl.toString() + " loaded into SourcePicture object: " + this
+				.hashCode());
 		//Tools.freeMem();
 						
 		setStatus( LOADING, "Loading: " + imageUrl.toString() );
@@ -393,7 +391,7 @@ public class SourcePicture implements Cloneable {
 	 *  method to register the listening object of the status events
 	 */
 	public void addListener ( SourcePictureListener listener ) {
-		Tools.log("SourcePicture.addListener: listener added on SourcePicture " + Integer.toString(this.hashCode()) + " of class: " + listener.getClass().toString() );
+		Tools.log("SourcePicture.addListener: listener added on SourcePicture " + this.hashCode() + " of class: " + listener.getClass().toString() );
 		sourcePictureListeners.add( listener );
 		//showListeners();
 	}
@@ -403,18 +401,19 @@ public class SourcePicture implements Cloneable {
 	 *  method to register the listening object of the status events
 	 */
 	public void removeListener ( SourcePictureListener listener ) {
-		Tools.log("SourcePicture.removeListener: listener removed from SourcePicture " + Integer.toString(this.hashCode()) + " of class: " + listener.getClass().toString() );
+		Tools.log("SourcePicture.removeListener: listener removed from SourcePicture " + this.hashCode()
+				+ " of class: " + listener.getClass().toString() );
 		sourcePictureListeners.remove( listener );
 		//showListeners();
 	}
 
 
 	public void showListeners() {
-		Tools.log("SourcePicture.showListeners: SoucePicture " + Integer.toString(this.hashCode()));
+		Tools.log("SourcePicture.showListeners: SoucePicture " + this.hashCode());
 		Enumeration en = sourcePictureListeners.elements();
 		while ( en.hasMoreElements() ) {
 			Object obj = en.nextElement();
-			Tools.log("    reports to Listener: " + Integer.toString(obj.hashCode()) + " of class " + obj.getClass().toString() );
+			Tools.log("    reports to Listener: " + obj.hashCode() + " of class " + obj.getClass().toString() );
 		}
 		Tools.log("    --------");
 	}

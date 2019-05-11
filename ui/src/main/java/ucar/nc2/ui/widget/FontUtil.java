@@ -32,7 +32,7 @@ public class FontUtil  {
   private static boolean debug = false;
   private static boolean isInit = false;
 
-  static private void init() {
+  private static void init() {
     if (isInit)
       return;
     initFontFamily( "SansSerif", stdFont, stdMetrics);
@@ -40,7 +40,7 @@ public class FontUtil  {
     isInit = true;
   }
 
-  static private void initFontFamily( String name, Font[] fonts, FontMetrics[] fontMetrics) {
+  private static void initFontFamily( String name, Font[] fonts, FontMetrics[] fontMetrics) {
      for (int i=0; i < MAX_FONTS; i++) {
        int fontSize = i < 6 ? 5+i : (i < 11 ? 10 + 2*(i-5) : 20 + 4*(i-10));
        fonts[i] = new Font(name, fontType, fontSize);
@@ -52,13 +52,13 @@ public class FontUtil  {
   }
 
     // gets largest font smaller than pixel_height
-  static public FontUtil.StandardFont getStandardFont( int pixel_height) {
+    public static FontUtil.StandardFont getStandardFont( int pixel_height) {
     init();
     return new StandardFont( stdFont, stdMetrics, pixel_height);
   }
 
     // gets largest font smaller than pixel_height
-  static public FontUtil.StandardFont getMonoFont( int pixel_height) {
+    public static FontUtil.StandardFont getMonoFont( int pixel_height) {
     init();
     return new StandardFont( monoFont, monoMetrics, pixel_height);
   }

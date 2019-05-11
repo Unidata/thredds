@@ -130,7 +130,7 @@ public class NcStreamPanel extends JPanel {
     public void setNcStreamFile(String filename) throws IOException {
         closeOpenFiles();
 
-        List<MessBean> messages = new ArrayList<MessBean>();
+        List<MessBean> messages = new ArrayList<>();
         ncd = new NetcdfFileSubclass();
         iosp = new NcStreamIosp();
         try {

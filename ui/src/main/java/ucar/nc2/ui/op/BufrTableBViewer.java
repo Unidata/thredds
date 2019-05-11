@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.op;
 
+import javax.annotation.Nullable;
 import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
@@ -84,21 +85,15 @@ public class BufrTableBViewer extends JPanel {
     });
 
     AbstractButton standardButton = BAMutil.makeButtcon("FontIncr", "Show union of tables", false);
-    standardButton.addActionListener(e -> {
-        showAll();
-    });
+    standardButton.addActionListener(e -> showAll());
     buttPanel.add(standardButton);
 
     AbstractButton diffButton = BAMutil.makeButtcon("Select", "Diff all variants", false);
-    diffButton.addActionListener(e -> {
-        diffVariants();
-    });
+    diffButton.addActionListener(e -> diffVariants());
     buttPanel.add(diffButton);
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to standard table", false);
-    compareButton.addActionListener(e -> {
-        compareToStandard();
-    });
+    compareButton.addActionListener(e -> compareToStandard());
     buttPanel.add(compareButton);
 
     AbstractAction refAction = new AbstractAction() {
@@ -245,7 +240,8 @@ public class BufrTableBViewer extends JPanel {
 Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits,CREX_Unit,CREX_Scale,CREX_DataWidth
 20,20009,General weather indicator (TAF/METAR),Code table,0,0,4,Code table,0,2
    */
-  private void writeDiff(TableB wmo, TableB t, Formatter out) {
+  private void writeDiff(@Nullable TableB wmo, TableB t, Formatter out) {
+    if (wmo == null) return;
     out.format("#%n# BUFR diff written from %s against %s %n#%n", t.getName(), wmo.getName());
     out.format("Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_Bits%n");
     List<TableB.Descriptor> listDesc = new ArrayList<>(t.getDescriptors());
@@ -407,11 +403,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
   private void setDataDescriptors(Message src, DataDescriptor dds) {
     for (DataDescriptor key : dds.getSubKeys()) {
-      List<Message> list = usedDds.get(key.getFxy());
-      if (list == null) {
-        list = new ArrayList<>();
-        usedDds.put(key.getFxy(), list);
-      }
+      List<Message> list = usedDds.computeIfAbsent(key.getFxy(), k -> new ArrayList<>());
       if (!list.contains(src))
         list.add(src);
 
@@ -474,11 +466,7 @@ Class,FXY,enElementName,BUFR_Unit,BUFR_Scale,BUFR_ReferenceValue,BUFR_DataWidth_
 
     List<TableB.Descriptor> listDesc = new ArrayList<>(tableB.getDescriptors());
     for (TableB.Descriptor d : listDesc) {
-      List<DdsBean> list = allVariants.get(d.getId());
-      if (list == null) {
-        list = new ArrayList<>(10);
-        allVariants.put(d.getId(), list);
-      }
+      List<DdsBean> list = allVariants.computeIfAbsent(d.getId(), k -> new ArrayList<>(10));
       list.add(new DdsBean(key, d));
     }
   }

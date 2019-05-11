@@ -45,13 +45,13 @@ public interface ScalablePictureListener {
 	/**
 	 *  inform the listener that the status has changed
 	 */
-	public void scalableStatusChange(int statusCode, String statusMessage );
+  void scalableStatusChange(int statusCode, String statusMessage);
 
 
 	/**
 	 *  inform the listener of progress on the loading of the image
 	 */
-	public void sourceLoadProgressNotification( int statusCode, int percentage );
+  void sourceLoadProgressNotification(int statusCode, int percentage);
 
 
 }

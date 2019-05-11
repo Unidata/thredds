@@ -130,18 +130,14 @@ public class DiskCache2Form extends JDialog {
 
         //---- okButton ----
         okButton.setText("OK");
-        okButton.addActionListener(e -> {
-            okButtonActionPerformed(e);
-        });
+        okButton.addActionListener(this::okButtonActionPerformed);
         buttonBar.add(okButton, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0,
           GridBagConstraints.CENTER, GridBagConstraints.BOTH,
           new Insets(0, 0, 0, 5), 0, 0));
 
         //---- cancelButton ----
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(e -> {
-            cancelButtonActionPerformed(e);
-        });
+        cancelButton.addActionListener(this::cancelButtonActionPerformed);
         buttonBar.add(cancelButton, new GridBagConstraints(2, 0, 1, 1, 0.0, 0.0,
           GridBagConstraints.CENTER, GridBagConstraints.BOTH,
           new Insets(0, 0, 0, 0), 0, 0));

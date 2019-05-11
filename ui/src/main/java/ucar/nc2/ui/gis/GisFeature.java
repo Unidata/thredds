@@ -20,21 +20,21 @@ public interface GisFeature  {
      *
      * @return rectangle bounding this feature
      */
-    public java.awt.geom.Rectangle2D getBounds2D();
+    java.awt.geom.Rectangle2D getBounds2D();
 
     /**
      * Get total number of points in all parts of this feature.
      *
      * @return total number of points in all parts of this feature.
      */
-    public int getNumPoints();
+    int getNumPoints();
 
     /**
      * Get number of parts comprising this feature.
      *
      * @return number of parts comprising this feature.
      */
-    public int getNumParts();
+    int getNumParts();
 
     /**
      * Get the parts of this feature, in the form of an iterator.
@@ -42,6 +42,6 @@ public interface GisFeature  {
      * @return the iterator over the parts of this feature.  Each part
      * is a GisPart.
      */
-    public java.util.Iterator getGisParts();
+    java.util.Iterator getGisParts();
 
 } // GisFeature

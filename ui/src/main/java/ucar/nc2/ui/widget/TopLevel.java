@@ -8,17 +8,17 @@ package ucar.nc2.ui.widget;
 
 public interface TopLevel {
     /** get the getRootPaneContainer */
-  public javax.swing.RootPaneContainer getRootPaneContainer();
+    javax.swing.RootPaneContainer getRootPaneContainer();
 
     /** get the underlying Frame; call only if !isApplet() */
-  public javax.swing.JFrame getJFrame();
+    javax.swing.JFrame getJFrame();
 
     /** close and exit the progem */
-  public void close();
+    void close();
 
     /** save any persistant data */
-  public void save();
+    void save();
 
     /** return true if this is an Applet */
-  public boolean isApplet();
+    boolean isApplet();
 }

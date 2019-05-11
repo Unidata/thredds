@@ -36,34 +36,40 @@ public class AggPanel extends OpPanel {
         aggTable.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent e) {
-                if (e.getPropertyName().equals("openNetcdfFile")) {
-                    final NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-                    if (ncfile != null) {
-                        ToolsUI.getToolsUI().openNetcdfFile(ncfile);
+                switch (e.getPropertyName()) {
+                    case "openNetcdfFile": {
+                        final NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+                        if (ncfile != null) {
+                            ToolsUI.getToolsUI().openNetcdfFile(ncfile);
+                        }
+                        break;
                     }
-                }
-                else if (e.getPropertyName().equals("openCoordSystems")) {
-                    final NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-                    if (ncfile == null) {
-                      return;
+                    case "openCoordSystems": {
+                        final NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+                        if (ncfile == null) {
+                            return;
+                        }
+                        try {
+                            final NetcdfDataset ncd = NetcdfDataset
+                                .wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+                            ToolsUI.getToolsUI().openCoordSystems(ncd);
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                        break;
                     }
-                    try {
-                        final NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
-                        ToolsUI.getToolsUI().openCoordSystems(ncd);
-                    }
-                    catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-                else if (e.getPropertyName().equals("openGridDataset")) {
-                    NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
-                    if (ncfile == null) return;
-                    try {
-                        NetcdfDataset ncd = NetcdfDataset.wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
-                        ToolsUI.getToolsUI().openGridDataset(ncd);
-                    }
-                    catch (IOException e1) {
-                        e1.printStackTrace();
+                    case "openGridDataset": {
+                        NetcdfFile ncfile = (NetcdfFile) e.getNewValue();
+                        if (ncfile == null)
+                            return;
+                        try {
+                            NetcdfDataset ncd = NetcdfDataset
+                                .wrap(ncfile, NetcdfDataset.getDefaultEnhanceMode());
+                            ToolsUI.getToolsUI().openGridDataset(ncd);
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
+                        break;
                     }
                 }
             }

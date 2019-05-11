@@ -18,8 +18,6 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import org.jdom2.Element;
 import ucar.ma2.Array;
 import ucar.nc2.constants.CDM;
@@ -59,7 +57,7 @@ import ucar.util.prefs.ui.Debug;
  * @author caron
  */
 public class GridController {
-  static private final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridController.class);
+  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(GridController.class);
 
   private static final int DELAY_DRAW_AFTER_DATA_EVENT = 250;   // quarter sec
   private static final String LastMapAreaName = "LastMapArea";
@@ -126,7 +124,7 @@ public class GridController {
 
     // colorscale
     Object bean = store.getBean( ColorScaleName, null);
-    if ((null == bean) || !(bean instanceof ColorScale))
+    if (!(bean instanceof ColorScale))
       cs = new ColorScale("default");
     else
       cs = (ColorScale) store.getBean( ColorScaleName, null);
@@ -922,9 +920,10 @@ public class GridController {
       store.put(LastDatasetName, gridDataset.getTitle());
     store.putBeanObject(ColorScaleName, cs);
 
-    store.putBoolean( "showGridAction", ((Boolean)showGridAction.getValue(BAMutil.STATE)).booleanValue());
-    store.putBoolean( "showContoursAction", ((Boolean)showContoursAction.getValue(BAMutil.STATE)).booleanValue());
-    store.putBoolean( "showContourLabelsAction", ((Boolean)showContourLabelsAction.getValue(BAMutil.STATE)).booleanValue());
+    store.putBoolean( "showGridAction", (Boolean) showGridAction.getValue(BAMutil.STATE));
+    store.putBoolean( "showContoursAction", (Boolean) showContoursAction.getValue(BAMutil.STATE));
+    store.putBoolean( "showContourLabelsAction",
+        (Boolean) showContourLabelsAction.getValue(BAMutil.STATE));
 
   }
 

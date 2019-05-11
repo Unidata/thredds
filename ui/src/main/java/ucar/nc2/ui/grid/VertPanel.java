@@ -134,7 +134,7 @@ public class VertPanel extends JPanel {
       rightScale.setText( LatLonPointImpl.latToString(yright, 3));
       return;
     }
-    double xval = 0.0;
+    double xval;
 
     if ((xaxis != null) && (xaxis instanceof CoordinateAxis1D)) {
       xval = ((CoordinateAxis1D)xaxis).getCoordValue(slice);

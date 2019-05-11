@@ -47,12 +47,12 @@ public interface SourcePictureListener {
 	/**
 	 *  inform the listener that the status has changed
 	 */
-	public void sourceStatusChange(int statusCode, String statusMessage, SourcePicture sp);
+  void sourceStatusChange(int statusCode, String statusMessage, SourcePicture sp);
 
 	/**
 	 *  inform the listener of progress on the loading of the image
 	 */
-	public void sourceLoadProgressNotification( int statusCode, int percentage );
+  void sourceLoadProgressNotification(int statusCode, int percentage);
 
 }
 

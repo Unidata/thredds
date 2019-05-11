@@ -79,7 +79,7 @@ public class GridTable {
   public void setDataset(java.util.List<GridDatatype> fields) {
     if (fields == null) return;
 
-    list = new ArrayList<Row>(fields.size());
+    list = new ArrayList<>(fields.size());
     for (GridDatatype gg : fields)
       list.add(new Row(gg));
 

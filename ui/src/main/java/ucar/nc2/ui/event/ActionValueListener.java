@@ -8,6 +8,6 @@ package ucar.nc2.ui.event;
  * @author John Caron
  */
 public interface ActionValueListener extends java.util.EventListener {
-  public void actionPerformed( ActionValueEvent e);
+  void actionPerformed(ActionValueEvent e);
 }
 

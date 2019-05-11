@@ -10,7 +10,6 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import thredds.inventory.*;
-import thredds.inventory.MCollection;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -617,8 +616,6 @@ public class Grib1ReportPanel extends ReportPanel {
         String desc = grid.getDescription();
         if (desc.contains("Accumulation"))
           interval = 4;
-        else if (desc.contains("Accumulation"))
-          interval = 4;
 
         att = grid.findAttributeIgnoreCase("GRIB_probability_type");
         if (att != null) prob = att.getNumericValue().intValue();
@@ -644,7 +641,7 @@ public class Grib1ReportPanel extends ReportPanel {
 
       GridMatch gridMatch = (GridMatch) o;
 
-      if (param != gridMatch.param) return false;
+      if (!Arrays.equals(param, gridMatch.param)) return false;
       if (ens != gridMatch.ens) return false;
       if (interval != gridMatch.interval) return false;
       if (isError != gridMatch.isError) return false;
