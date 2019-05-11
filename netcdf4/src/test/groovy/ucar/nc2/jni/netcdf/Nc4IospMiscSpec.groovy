@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory
 import spock.lang.Specification
 import spock.lang.Unroll
 import ucar.ma2.Array
+import ucar.ma2.ArrayChar
 import ucar.ma2.DataType
 import ucar.nc2.Attribute
 import ucar.nc2.Dimension
@@ -133,6 +134,12 @@ class Nc4IospMiscSpec extends Specification {
         and: "add a character valued attribute with a null value"
         Attribute attrChar = new Attribute("nullvalchar", DataType.CHAR)
         Attribute attrCharBefore = ncWriter.addGlobalAttribute(attrChar)
+
+        and: "add a character valued attribute with a specific null char value"
+        Attribute attrNullChar = new Attribute("nullcharvalchar", DataType.CHAR)
+        Array attrNullCharValue = ArrayChar.makeFromString("\0", 1);
+        attrNullChar.setValues(attrNullCharValue)
+        Attribute attrNullCharBefore = ncWriter.addGlobalAttribute(attrNullChar)
         ncWriter.create()
 
         and: "close the file for writing and reopen it for reading"
@@ -151,6 +158,12 @@ class Nc4IospMiscSpec extends Specification {
         Attribute attrCharAfter = ncFile.findGlobalAttribute(attrCharBefore.fullName)
         attrCharBefore.getValues().equals attrCharAfter.getValues()
         attrCharBefore.getValues() == null
+
+        Attribute attrNullCharAfter = ncFile.findGlobalAttribute(attrNullCharBefore.fullName)
+        attrNullCharBefore.getValues().getSize() == attrNullCharAfter.getValues().getSize()
+        attrNullCharBefore.getValues().getSize() == 1
+        attrNullCharBefore.getValue(0).equals(attrNullCharAfter.getValue(0))
+        attrNullCharBefore.equals(attrNullCharAfter)
 
         cleanup: "close writer and reader"
         ncWriter?.close()  // Under normal circumstances, this will already be closed. Luckily method is idempotent.
