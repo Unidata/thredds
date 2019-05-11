@@ -17,49 +17,49 @@ public interface Unit {
 	 * 
 	 * @return The identifier of this unit. May be null.
 	 */
-	public UnitName getUnitName();
+  UnitName getUnitName();
 
 	/**
 	 * Gets the name of this unit.
 	 * 
 	 * @return The name of this unit. May be null.
 	 */
-	public String getName();
+  String getName();
 
 	/**
 	 * Gets the plural form of the name of this unit.
 	 * 
 	 * @return The plural of the name of this unit. May be null.
 	 */
-	public String getPlural();
+  String getPlural();
 
 	/**
 	 * Gets the symbol of this unit.
 	 * 
 	 * @return The symbol for this unit. May be null.
 	 */
-	public String getSymbol();
+  String getSymbol();
 
 	/**
 	 * Returns the string representation of the unit.
 	 * 
 	 * @return The string representation of the unit
 	 */
-	public String toString();
+  String toString();
 
 	/**
 	 * Returns the canonical string representation of the unit.
 	 * 
 	 * @return The canonical string representation.
 	 */
-	public String getCanonicalString();
+  String getCanonicalString();
 
 	/**
 	 * Returns the derived unit that underlies this unit.
 	 * 
 	 * @return The derived unit that underlies this unit.
 	 */
-	public DerivedUnit getDerivedUnit();
+  DerivedUnit getDerivedUnit();
 
 	/**
 	 * Clones this unit, changing the identifier.
@@ -68,7 +68,7 @@ public interface Unit {
 	 *            The identifier for the new unit.
 	 * @return The new unit.
 	 */
-	public Unit clone(UnitName id);
+  Unit clone(UnitName id);
 
 	/**
 	 * Multiplies this unit by another.
@@ -79,7 +79,7 @@ public interface Unit {
 	 * @throws MultiplyException
 	 *             Can't multiply these units.
 	 */
-	public Unit multiplyBy(Unit that) throws MultiplyException;
+  Unit multiplyBy(Unit that) throws MultiplyException;
 
 	/**
 	 * Multiplies this unit by a scale factor. For example, if {@code m} is a
@@ -91,7 +91,7 @@ public interface Unit {
 	 * @throws MultiplyException
 	 *             if {@code scale} is zero.
 	 */
-	public Unit multiplyBy(double scale) throws MultiplyException;
+  Unit multiplyBy(double scale) throws MultiplyException;
 
 	/**
 	 * Divides this unit by another.
@@ -102,7 +102,7 @@ public interface Unit {
 	 * @throws OperationException
 	 *             Can't divide these units.
 	 */
-	public Unit divideBy(Unit that) throws OperationException;
+  Unit divideBy(Unit that) throws OperationException;
 
 	/**
 	 * Divides this unit into another.
@@ -113,7 +113,7 @@ public interface Unit {
 	 * @throws OperationException
 	 *             Can't divide these units.
 	 */
-	public Unit divideInto(Unit that) throws OperationException;
+  Unit divideInto(Unit that) throws OperationException;
 
 	/**
 	 * Raises this unit to a power.
@@ -124,7 +124,7 @@ public interface Unit {
 	 * @throws RaiseException
 	 *             Can't raise this unit to a power.
 	 */
-	public Unit raiseTo(int power) throws RaiseException;
+  Unit raiseTo(int power) throws RaiseException;
 
 	/**
 	 * Returns a unit identical to this instance but whose origin (i.e., zero
@@ -138,7 +138,7 @@ public interface Unit {
 	 * @throws ShiftException
 	 *             if the corresponding new unit can't be created.
 	 */
-	public Unit shiftTo(double origin) throws ShiftException;
+  Unit shiftTo(double origin) throws ShiftException;
 
 	/**
 	 * Returns a unit identical to this instance but whose origin (i.e., zero
@@ -153,7 +153,7 @@ public interface Unit {
 	 *             if the corresponding new unit can't be created. For example,
 	 *             if this instance isn't a unit of time.
 	 */
-	public Unit shiftTo(Date origin) throws ShiftException;
+  Unit shiftTo(Date origin) throws ShiftException;
 
 	/**
 	 * Returns a logarithmic unit whose reference level is equal to this unit.
@@ -166,7 +166,7 @@ public interface Unit {
 	 * @throws IllegalArgumentException
 	 *             if {@code base} isn't one of the allowed values.
 	 */
-	public Unit log(double base);
+  Unit log(double base);
 
 	/**
 	 * Gets a Converter that converts numeric values from this unit to another,
@@ -178,7 +178,7 @@ public interface Unit {
 	 * @throws ConversionException
 	 *             The units aren't compatible.
 	 */
-	public Converter getConverterTo(Unit outputUnit) throws ConversionException;
+  Converter getConverterTo(Unit outputUnit) throws ConversionException;
 
 	/**
 	 * Converts a numerical value from this unit to another unit.
@@ -191,7 +191,7 @@ public interface Unit {
 	 * @throws ConversionException
 	 *             The units aren't compatible.
 	 */
-	public float convertTo(float amount, Unit outputUnit)
+  float convertTo(float amount, Unit outputUnit)
 			throws ConversionException;
 
 	/**
@@ -205,7 +205,7 @@ public interface Unit {
 	 * @throws ConversionException
 	 *             The units aren't compatible.
 	 */
-	public double convertTo(double amount, Unit outputUnit)
+  double convertTo(double amount, Unit outputUnit)
 			throws ConversionException;
 
 	/**
@@ -219,7 +219,7 @@ public interface Unit {
 	 * @throws ConversionException
 	 *             The units aren't compatible.
 	 */
-	public float[] convertTo(float[] amounts, Unit outputUnit)
+  float[] convertTo(float[] amounts, Unit outputUnit)
 			throws ConversionException;
 
 	/**
@@ -233,7 +233,7 @@ public interface Unit {
 	 * @throws ConversionException
 	 *             The units aren't compatible.
 	 */
-	public double[] convertTo(double[] amounts, Unit outputUnit)
+  double[] convertTo(double[] amounts, Unit outputUnit)
 			throws ConversionException;
 
 	/**
@@ -250,7 +250,7 @@ public interface Unit {
 	 * @throws ConversionException
 	 *             The units aren't compatible.
 	 */
-	public float[] convertTo(float[] input, Unit outputUnit, float[] output)
+  float[] convertTo(float[] input, Unit outputUnit, float[] output)
 			throws ConversionException;
 
 	/**
@@ -267,7 +267,7 @@ public interface Unit {
 	 * @throws ConversionException
 	 *             The units aren't compatible.
 	 */
-	public double[] convertTo(double[] input, Unit outputUnit, double[] output)
+  double[] convertTo(double[] input, Unit outputUnit, double[] output)
 			throws ConversionException;
 
 	/**
@@ -278,7 +278,7 @@ public interface Unit {
 	 * @return True iff values in this unit are convertible to values in the
 	 *         other unit.
 	 */
-	public boolean isCompatible(Unit that);
+  boolean isCompatible(Unit that);
 
 	/**
 	 * Indicates if this unit is semantically identical to an object.
@@ -288,7 +288,7 @@ public interface Unit {
 	 * @return <code>true</code> if and only if this unit is semantically
 	 *         identical to the object.
 	 */
-	public boolean equals(Object object);
+  boolean equals(Object object);
 
 	/**
 	 * Makes a label for a named quantity.
@@ -298,12 +298,12 @@ public interface Unit {
 	 *            (e.g. "altitude").
 	 * @return A label (e.g. "altitude/km").
 	 */
-	public String makeLabel(String quantityID);
+  String makeLabel(String quantityID);
 
 	/**
 	 * Indicates if values in this unit are dimensionless.
 	 * 
 	 * @return <code>true</code> if and only if this unit is dimensionless.
 	 */
-	public boolean isDimensionless();
+  boolean isDimensionless();
 }

@@ -25,7 +25,7 @@ UnitFormat
      * @throws PrefixDBException	Problem with the unit-prefix database.
      * @throws UnitSystemException	Problem with the system of units.
      */
-    public Unit
+    Unit
     parse(String spec)
 	throws NoSuchUnitException,
 	    UnitParseException,
@@ -48,7 +48,7 @@ UnitFormat
      * @throws PrefixDBException	Problem with the unit-prefix database.
      * @throws UnitSystemException	Problem with the system of units.
      */
-    public Unit
+    Unit
     parse(String spec, UnitDB unitDB)
 	throws NoSuchUnitException,
 	    UnitParseException,
@@ -62,7 +62,7 @@ UnitFormat
      * @param factor		The base unit/exponent pair.
      * @return			The formatted factor.
      */
-    public String
+    String
     format(Factor factor);
 
     /**
@@ -72,7 +72,7 @@ UnitFormat
      * @param buffer		The string buffer to be appended to.
      * @return			The string buffer.
      */
-    public StringBuffer
+    StringBuffer
     format(Factor factor, StringBuffer buffer);
 
     /**
@@ -82,7 +82,7 @@ UnitFormat
      * @param unit		The unit.
      * @return			The formatted unit.
      */
-    public String
+    String
     format(Unit unit)
 	throws UnitClassException;
 
@@ -93,7 +93,7 @@ UnitFormat
      * @param unit		The unit.
      * @return			The formatted unit.
      */
-    public String
+    String
     longFormat(Unit unit)
 	throws UnitClassException;
 
@@ -105,7 +105,7 @@ UnitFormat
      * @param buffer		The string buffer to be appended to.
      * @return			The string buffer.
      */
-    public StringBuffer
+    StringBuffer
     format(Unit unit, StringBuffer buffer)
 	throws UnitClassException;
 
@@ -117,7 +117,7 @@ UnitFormat
      * @param buffer		The string buffer to be appended to.
      * @return			The string buffer.
      */
-    public StringBuffer
+    StringBuffer
     longFormat(Unit unit, StringBuffer buffer)
 	throws UnitClassException;
 }

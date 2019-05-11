@@ -47,7 +47,7 @@ public class UnitSystemImpl implements UnitSystem, Serializable {
 	 */
 	protected UnitSystemImpl(final UnitDBImpl baseUnitDB,
 			final UnitDBImpl derivedUnitDB) throws UnitExistsException {
-		quantityMap = new HashMap<BaseQuantity, BaseUnit>(baseUnitDB
+		quantityMap = new HashMap<>(baseUnitDB
 				.nameCount());
 		for (final Iterator<?> iter = baseUnitDB.getIterator(); iter.hasNext();) {
 			final Unit unit = (Unit) iter.next();

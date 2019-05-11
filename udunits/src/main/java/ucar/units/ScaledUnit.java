@@ -422,7 +422,7 @@ public final class ScaledUnit extends UnitImpl implements DerivableUnit {
     public String getCanonicalString() {
         return DerivedUnitImpl.DIMENSIONLESS.equals(_unit)
                 ? Double.toString(getScale())
-                : Double.toString(getScale()) + " " + _unit.toString();
+                : getScale() + " " + _unit.toString();
     }
 
     /**

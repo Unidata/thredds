@@ -51,13 +51,13 @@ public class UnitDBImpl implements UnitDB, Serializable {
 	 *            The expected number of symbols.
 	 */
 	protected UnitDBImpl(final int nameCount, final int symbolCount) {
-		unitSet = new TreeSet<Unit>(new Comparator<Unit>() {
+		unitSet = new TreeSet<>(new Comparator<Unit>() {
 			public int compare(final Unit obj1, final Unit obj2) {
 				return (obj1).getName().compareTo((obj2).getName());
 			}
 		});
-		nameMap = new Hashtable<String, Unit>(nameCount + 1);
-		symbolMap = new Hashtable<String, Unit>(symbolCount + 1);
+		nameMap = new Hashtable<>(nameCount + 1);
+		symbolMap = new Hashtable<>(symbolCount + 1);
 	}
 
 	/**
@@ -305,7 +305,7 @@ public class UnitDBImpl implements UnitDB, Serializable {
 	 * @throws UnitExistsException
 	 *             Attempt to redefine an existing unit.
 	 */
-	private final void addByName(final String name, final Unit newUnit)
+	private void addByName(final String name, final Unit newUnit)
 			throws UnitExistsException {
 		if (name != null) {
 			addUnique(nameMap, canonicalize(name), newUnit);
@@ -323,7 +323,7 @@ public class UnitDBImpl implements UnitDB, Serializable {
 	 * @throws UnitExistsException
 	 *             Attempt to redefine an existing unit.
 	 */
-	private final void addBySymbol(final String symbol, final Unit newUnit)
+	private void addBySymbol(final String symbol, final Unit newUnit)
 			throws UnitExistsException {
 		if (symbol != null) {
 			addUnique(symbolMap, symbol, newUnit);
@@ -342,7 +342,7 @@ public class UnitDBImpl implements UnitDB, Serializable {
 	 * @throws UnitExistsException
 	 *             Attempt to redefine an existing unit.
 	 */
-	private static final void addUnique(final Map<String, Unit> map,
+	private static void addUnique(final Map<String, Unit> map,
 			final String key, final Unit newUnit) throws UnitExistsException {
 		final Unit oldUnit = map.put(key, newUnit);
 		if (oldUnit != null && !oldUnit.equals(newUnit)) {

@@ -673,7 +673,7 @@ public final class StandardUnitDB extends UnitDBImpl {
           NoSuchUnitException, UnitParseException, SpecificationException,
           UnitDBException, PrefixDBException, OperationException,
           NameException, UnitSystemException {
-    au(name, definition, symbol, (String) null);
+    au(name, definition, symbol, null);
   }
 
   /**

@@ -37,7 +37,7 @@ public final class TimeScaleUnit extends UnitImpl {
     try {
       SECOND = BaseUnit.getOrCreate(UnitName.newUnitName("second", null, "s"), BaseQuantity.TIME);
     } catch (final Exception e) {
-      throw (ExceptionInInitializerError) new ExceptionInInitializerError().initCause(e);
+      throw new ExceptionInInitializerError(e);
     }
   }
 

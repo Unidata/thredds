@@ -16,14 +16,14 @@ public interface Base {
      * @return <code>true</code> if and only if the base entity is dimensionless
      *         (e.g. (BaseQuantity.SOLID_ANGLE</code>).
      */
-    public boolean isDimensionless();
+    boolean isDimensionless();
 
     /**
      * Returns the identifier for the base entity.
      * 
      * @return The base entity's identifier (i.e. symbol or name).
      */
-    public String getID();
+    String getID();
 
     /**
      * Indicates if this base entity is semantically the same as another object.
@@ -33,5 +33,5 @@ public interface Base {
      * @return <code>true</code> if and only if this base entity is semantically
      *         the same as <code>object</code>.
      */
-    public boolean equals(Object object);
+    boolean equals(Object object);
 }

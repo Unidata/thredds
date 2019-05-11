@@ -403,9 +403,9 @@ public abstract class UnitImpl implements Unit, Serializable {
      * @return <code>true</code> if an only if both strings are
      *         <code>null</code> or both strings are identical.
      */
-    static private boolean equals(final String s1, final String s2) {
+    private static boolean equals(final String s1, final String s2) {
         return (s1 == null && s2 == null)
-                || (s1 != null && s2 != null && s1.equals(s2));
+                || (s1 != null && s1.equals(s2));
     }
 
     /**
@@ -418,10 +418,10 @@ public abstract class UnitImpl implements Unit, Serializable {
      * @return <code>true</code> if an only if both strings are
      *         <code>null</code> or both strings are identical (ignoring case).
      */
-    static private boolean equalsIgnoreCase(final String s1,
+    private static boolean equalsIgnoreCase(final String s1,
             final String s2) {
         return (s1 == null && s2 == null)
-                || (s1 != null && s2 != null && s1.equalsIgnoreCase(s2));
+                || (s1 != null && s1.equalsIgnoreCase(s2));
     }
 
     /**

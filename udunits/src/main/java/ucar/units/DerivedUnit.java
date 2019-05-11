@@ -17,7 +17,7 @@ DerivedUnit
      * unit (e.g. "second" and "hertz").
      * @param that		The other, derived unit.
      */
-    public boolean
+    boolean
     isReciprocalOf(DerivedUnit that);
 
     /**
@@ -25,7 +25,7 @@ DerivedUnit
      * "newton" has the unit dimension "kg.m.s-2".
      * @return			The unit dimension of this derived unit.
      */
-    public UnitDimension
+    UnitDimension
     getDimension();
 
     /**
@@ -33,6 +33,6 @@ DerivedUnit
      * unit "newton" has the quantity dimension "M.L.t-2").
      * @return			The quantity dimension of this derived unit.
      */
-    public QuantityDimension
+    QuantityDimension
     getQuantityDimension();
 }

@@ -16,7 +16,7 @@ UnitSystem
      * Returns the database of base units.
      * @return			The database of base units.
      */
-    public UnitDB
+    UnitDB
     getBaseUnitDB();
 
     /**
@@ -24,7 +24,7 @@ UnitSystem
      * derived units acceptable for use in the system of units.
      * @return			The complete database of units.
      */
-    public UnitDB
+    UnitDB
     getUnitDB();
 
     /**
@@ -34,6 +34,6 @@ UnitSystem
      *				quantity or <code>null</code> if no such
      *				unit exists.
      */
-    public BaseUnit
+    BaseUnit
     getBaseUnit(BaseQuantity quantity);
 }

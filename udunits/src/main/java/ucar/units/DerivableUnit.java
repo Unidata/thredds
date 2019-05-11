@@ -17,7 +17,7 @@ DerivableUnit
      * Returns the derived unit that underlies this unit.
      * @return			The derived unit that underlies this unit.
      */
-    public DerivedUnit
+    DerivedUnit
     getDerivedUnit();
 
     /**
@@ -29,7 +29,7 @@ DerivableUnit
      * @throws ConversionException	Can't convert values to underlying 
      *					derived unit.
      */
-    public float
+    float
     toDerivedUnit(float amount)
 	throws ConversionException;
 
@@ -41,7 +41,7 @@ DerivableUnit
      *                          underlying derived unit.
      * @throws ConversionException      Can't convert to derived unit.
      */
-    public double
+    double
     toDerivedUnit(double amount)
         throws ConversionException;
 
@@ -55,7 +55,7 @@ DerivableUnit
      * @return                  <code>output</code>.
      * @throws ConversionException      Can't convert to derived unit.
      */
-    public float[]
+    float[]
     toDerivedUnit(float[] input, float[] output)
         throws ConversionException;
 
@@ -69,7 +69,7 @@ DerivableUnit
      * @return                  <code>output</code>.
      * @throws ConversionException      Can't convert to derived unit.
      */
-    public double[]
+    double[]
     toDerivedUnit(double[] input, double[] output)
         throws ConversionException;
 
@@ -81,7 +81,7 @@ DerivableUnit
      * @throws ConversionException	Can't convert values from underlying
      *					derived unit.
      */
-    public float
+    float
     fromDerivedUnit(float amount)
 	throws ConversionException;
 
@@ -94,7 +94,7 @@ DerivableUnit
      * @throws ConversionException      Can't convert from underlying derived
      *                                  unit.
      */
-    public double
+    double
     fromDerivedUnit(double amount)
         throws ConversionException;
 
@@ -109,7 +109,7 @@ DerivableUnit
      * @throws ConversionException      Can't convert from underlying derived
      *                                  unit.
      */
-    public float[]
+    float[]
     fromDerivedUnit(float[] input, float[] output)
         throws ConversionException;
 
@@ -124,7 +124,7 @@ DerivableUnit
      * @throws ConversionException      Can't convert from underlying derived
      *                                  unit.
      */
-    public double[]
+    double[]
     fromDerivedUnit(double[] input, double[] output)
         throws ConversionException;
 }
