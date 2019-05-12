@@ -221,7 +221,7 @@ public abstract class Field {
    *  If different from old value, fire PropertyChangeEvent.
    *  Return false if invalid format, add error message to buff if not null.
    */
-   protected boolean accept(StringBuffer buff){
+  protected boolean accept(StringBuffer buff){
      if (!validate(buff)) {
        validate(buff);
        return false;
