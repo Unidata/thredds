@@ -25,14 +25,18 @@ import javax.swing.*;
 
 @RunWith(JUnit4.class)
 public class TestPanel2 {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  private static final Logger logger = LoggerFactory
+      .getLogger(MethodHandles.lookup().lookupClass());
 
   @ClassRule
   public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   static {
-      System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
+    System
+        .setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
   }
+
   private static XMLStore xstore;
   private static PreferencesExt store;
 
@@ -40,7 +44,8 @@ public class TestPanel2 {
   public static void setUp() {
     try {
       xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
-    } catch (java.io.IOException e) {}
+    } catch (java.io.IOException e) {
+    }
     store = xstore.getPreferences();
   }
 
@@ -49,32 +54,37 @@ public class TestPanel2 {
     makeTestPanel((PreferencesExt) store.node("test"));
   }
 
-  private PrefPanel makeTestPanel( PreferencesExt prefs) {
+  private PrefPanel makeTestPanel(PreferencesExt prefs) {
     PrefPanel pp = new PrefPanel("title", prefs);
     pp.addTextField("name", "name", "defValue", 0, 0, null);
-    Field.Text longF = pp.addTextField("Longname", "Longname", "defValue really long name for to be with starting value gotta adjust the thing", 0, 1, null);
+    Field.Text longF = pp.addTextField("Longname", "Longname",
+        "defValue really long name for to be with starting value gotta adjust the thing", 0, 1,
+        null);
     pp.addHeading("Adult Material", 2);
     pp.addTextField("nude", "nude", "nudeCOlumn", 0, 3, null);
     pp.finish();
     return pp;
   }
 
-  private PrefPanel makeTestPanelOld( PreferencesExt prefs) {
+  private PrefPanel makeTestPanelOld(PreferencesExt prefs) {
     PrefPanel pp = new PrefPanel("title", prefs);
     pp.addTextField("name", "name", "defValue");
-    pp.addTextField("Longname", "Longname", "defValue really long name for to be with starting value gotta adjust the thing");
+    pp.addTextField("Longname", "Longname",
+        "defValue really long name for to be with starting value gotta adjust the thing");
     pp.addHeading("Adult Material");
     pp.addTextField("nude", "nude", "nudeCOlumn");
     pp.finish();
     return pp;
   }
 
-  private PrefPanel makeTestPanelFirstHeading( PreferencesExt prefs) {
+  private PrefPanel makeTestPanelFirstHeading(PreferencesExt prefs) {
     PrefPanel pp = new PrefPanel("title", prefs);
     int row = 0;
     pp.addHeading("Basics", row++);
     pp.addTextField("name", "name", "defValue", 0, row++, null);
-    Field.Text longF = pp.addTextField("Longname", "Longname", "defValue really long name for to be with starting value gotta adjust the thing", 0, row++, null);
+    Field.Text longF = pp.addTextField("Longname", "Longname",
+        "defValue really long name for to be with starting value gotta adjust the thing", 0, row++,
+        null);
     pp.addHeading("Adult Material", row++);
     pp.addTextField("nude", "nude", "nudeCOlumn", 0, row++, null);
     pp.finish();
@@ -82,83 +92,96 @@ public class TestPanel2 {
   }
 
   @Test
-   public void testPanelDup() {
+  public void testPanelDup() {
     PrefPanel pp2 = new PrefPanel("title", (PreferencesExt) store.node("dup"));
     pp2.addTextField("name", "name", "defValue");
-    Field.Text longF = pp2.addTextField("Longname", "Longname", "defValue really long name for to be with starting value gotta adjust the thing");
+    Field.Text longF = pp2.addTextField("Longname", "Longname",
+        "defValue really long name for to be with starting value gotta adjust the thing");
 
     // test duplicate field name
     try {
       pp2.addTextField("name", "name", "defValue");
       pp2.finish();
-      assert(false);
+      assert (false);
     } catch (IllegalArgumentException e) {
       System.out.println(e.getMessage());
-      assert(true);
+      assert (true);
     }
   }
 
   @Test
-  public void testPanel2 () {
+  public void testPanel2() {
+    try {
+      PrefPanel.Dialog preferenceDialog = new PrefPanel.Dialog(null, false, "Preference Dialog",
+          (PreferencesExt) store.node("dialog"));
+      PrefPanel pp = preferenceDialog.getPrefPanel();
+      pp.addTextField("textField", "textField", "defValue");
+      Field.Text tt = pp.addTextField("hasaToolTip", "hasaToolTip", "glob");
+      tt.setToolTipText("i told you!");
+      pp.addPasswordField("password", "password", "glombulate");
+      pp.addTextComboField("combo", "combo", new ArrayList(), 20, true);
+      Field.Text at = pp.addTextField("acceptListener", "acceptListener", "hitEnterOrAccept");
+      at.addPropertyChangeListener(new PropertyChangeListener() {
+        public void propertyChange(PropertyChangeEvent evt) {
+          System.out
+              .println("got new <" + evt.getNewValue() + "> old = <" + evt.getOldValue() + ">");
+        }
+      });
 
-    PrefPanel.Dialog preferenceDialog = new PrefPanel.Dialog(null, false, "Preference Dialog", (PreferencesExt) store.node("dialog"));
-    PrefPanel pp = preferenceDialog.getPrefPanel();
-    pp.addTextField("textField", "textField", "defValue");
-    Field.Text tt = pp.addTextField("hasaToolTip", "hasaToolTip", "glob");
-    tt.setToolTipText( "i told you!");
-    pp.addPasswordField("password", "password", "glombulate");
-    pp.addTextComboField("combo", "combo", new ArrayList(), 20, true);
-    Field.Text at = pp.addTextField("acceptListener", "acceptListener", "hitEnterOrAccept");
-    at.addPropertyChangeListener( new PropertyChangeListener() {
-      public void propertyChange(PropertyChangeEvent evt) {
-        System.out.println("got new <"+evt.getNewValue()+"> old = <"+evt.getOldValue()+">");
-      }
-    });
+      pp.addSeparator();
+      pp.addHeading("This is the Heading");
+      pp.addIntField("intField", "intField", 22);
+      pp.addSeparator();
+      pp.addCheckBoxField("checkitout", "checkitout", true);
+      Field.Int iu = pp.addIntField("testIU", "number of times to barf", 2);
 
-    pp.addSeparator();
-    pp.addHeading("This is the Heading");
-    pp.addIntField("intField", "intField", 22);
-    pp.addSeparator();
-    pp.addCheckBoxField("checkitout", "checkitout", true);
-    Field.Int iu = pp.addIntField("testIU", "number of times to barf", 2);
+      preferenceDialog.finish();
+      preferenceDialog.setVisible(true);
 
-    preferenceDialog.finish();
-    preferenceDialog.setVisible(true);
+      store.putInt("myInt", 42);
+      assert (store.getInt("myInt", 43) == 42);
 
-    store.putInt("myInt", 42);
-    assert (store.getInt("myInt", 43) == 42);
-
-    pp.addActionListener(e -> {
+      pp.addActionListener(e -> {
         System.out.println("got accept");
         //xstore.save();
-    });
+      });
+
+    } catch (HeadlessException e) {
+      // ok to fail if there is no display
+    }
   }
 
   @Test
-  public void testOtherPanels () {
-    makeComboBox();
-    makeDialog();
+  public void testOtherPanels() {
+    try {
+      makeComboBox();
+      makeDialog();
 
-    makeTestPanelOld(null);
-    makeTestPanel(null);
-    makeTestPanelFirstHeading(null);
-    make3columns();
-    make3columnsOneLong();
+      makeTestPanelOld(null);
+      makeTestPanel(null);
+      makeTestPanelFirstHeading(null);
+      make3columns();
+      make3columnsOneLong();
+    } catch (HeadlessException e) {
+      // ok to fail if there is no display
+    }
   }
 
-  private PrefPanel makeComboBox () {
+  private PrefPanel makeComboBox() {
 
     PrefPanel pp = new PrefPanel("testCombo", null);
-    Field.TextCombo fcb = pp.addTextComboField("datatypesText", "Datatypes Text", DataType.getTypeNames(), 20, true);
-    Field.TextCombo fcb2 = pp.addTextComboField("datatypesObjects", "Datatypes Objects", DataType.getTypes(), 20, true);
+    Field.TextCombo fcb = pp
+        .addTextComboField("datatypesText", "Datatypes Text", DataType.getTypeNames(), 20, true);
+    Field.TextCombo fcb2 = pp
+        .addTextComboField("datatypesObjects", "Datatypes Objects", DataType.getTypes(), 20, true);
     Field.TextArea fta = pp.addTextAreaField("textArea", "Text Area",
-      "4 score and seventeen long gloriuos and longer nights ago.", 3);
+        "4 score and seventeen long gloriuos and longer nights ago.", 3);
     pp.finish();
 
     return pp;
   }
 
-  private PrefPanel make3columns () {
+  private PrefPanel make3columns() {
 
     PrefPanel pp = new PrefPanel("test", null);
 
@@ -174,7 +197,7 @@ public class TestPanel2 {
     return pp;
   }
 
-  private PrefPanel make3columnsOneLong () {
+  private PrefPanel make3columnsOneLong() {
 
     PrefPanel pp = new PrefPanel("test", null);
 
@@ -191,8 +214,8 @@ public class TestPanel2 {
   }
 
 
-  private PrefPanel.Dialog makeDialog () {
-    PrefPanel.Dialog d = new PrefPanel.Dialog( null, false, "testDialogue", null);
+  private PrefPanel.Dialog makeDialog() {
+    PrefPanel.Dialog d = new PrefPanel.Dialog(null, false, "testDialogue", null);
     PrefPanel pp2 = d.getPrefPanel();
     pp2.addHeading("This is Not Your Life!");
     pp2.addTextField("name", "name", "defValue");
