@@ -21,7 +21,7 @@ import org.junit.runners.JUnit4;
 @RunWith(JUnit4.class)
 public class TestObjectEncode {
 
-  static class TesterBean {
+  public static class TesterBean {
     private boolean b = true;
     private byte by = 100;
     private int i = 42;

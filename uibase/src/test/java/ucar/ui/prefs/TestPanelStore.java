@@ -26,13 +26,13 @@ import java.util.Date;
 public class TestPanelStore {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @ClassRule public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static PreferencesExt store;
   private static XMLStore xstore;
 
   @BeforeClass
-  public void setup() throws IOException {
+  public static void setup() throws IOException {
     System.setProperty("java.util.prefs.PreferencesFactory", "ucar.util.prefs.PreferencesExtFactory");
 
     xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);

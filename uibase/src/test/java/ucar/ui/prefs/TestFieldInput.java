@@ -6,7 +6,7 @@
 package ucar.ui.prefs;
 
 import org.junit.BeforeClass;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -28,7 +28,8 @@ import ucar.util.prefs.XMLStore;
 public class TestFieldInput {
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-  @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+  @ClassRule
+  public static TemporaryFolder tempFolder = new TemporaryFolder();
 
   private static XMLStore xstore;
   private static PreferencesExt store;
@@ -36,7 +37,7 @@ public class TestFieldInput {
   private Field tf, intf, d1, d2;
 
   @BeforeClass
-  public void setUp() {
+  public static void setUp() {
     try {
       xstore = XMLStore.createFromFile(tempFolder.newFile().getAbsolutePath(), null);
     } catch (java.io.IOException e) {}

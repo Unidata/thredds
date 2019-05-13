@@ -127,11 +127,7 @@ public class TestField {
     Field.EnumCombo fcb = pp.addEnumComboField("datatypes", "Datatypes", DataType.getTypes(), false);
     pp.finish();
 
-    fcb.setValue("newbie");
-    Object v = fcb.getValue();
-    assert( v.equals("newbie"));
-
-    DataType t = new DataType("newboo");
+    DataType t = DataType.FLOAT;
     fcb.setValue(t);
     Object vt = fcb.getValue();
     assert( vt == t) : vt;
