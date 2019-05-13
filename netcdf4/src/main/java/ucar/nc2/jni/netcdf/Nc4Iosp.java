@@ -2861,6 +2861,8 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
            && v.getDataType() == DataType.CHAR) {
            // special handling of _FillValue if v.getDataType() == CHAR
            byte[] svalb = att.getStringValue().getBytes(CDM.utf8Charset);
+           // if svalb is a zero length array, force it to be the null char
+           if(svalb.length == 0) svalb = new byte[]{0};
            ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(svalb.length), svalb);
         } else { // String valued attribute
             if(this.version != NetcdfFileWriter.Version.netcdf4) {
@@ -2870,6 +2872,7 @@ public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProvi
                 for(int i=0;i<att.getLength();i++)
                     text.append(att.getStringValue(i));
                 byte[] svalb = text.toString().getBytes(CDM.utf8Charset);
+                if(svalb.length == 0) svalb = new byte[]{0};
                 ret = nc4.nc_put_att_text(grpid, varid, att.getShortName(), new SizeT(svalb.length), svalb);
             } else { // Can write as string typed attribute
                 String[] svalues = new String[att.getLength()];
