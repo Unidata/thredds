@@ -840,6 +840,9 @@ class JsonLD {
     // set url to datasets catalog
     jo.put("url", dsContext.getCatUrl());
 
+    // geocodes ID
+    jo.put("@id", dsContext.getCatUrl());
+
     // keywords
     List<Map<String, String>> kws = dsContext.getKeywords();
     if (kws.size() > 0) {
@@ -857,12 +860,17 @@ class JsonLD {
     String start = timeCoverage.containsKey("start") ? timeCoverage.get("start").toString() : "";
     String end = timeCoverage.containsKey("end") ? timeCoverage.get("end").toString() : "";
 
+    JSONObject temporalCoverage = new JSONObject();
     if (!start.isEmpty() && !end.isEmpty()) {
-      jo.put("temporalCoverage", String.format("%s/%s", start, end));
+      temporalCoverage.put("@value", String.format("%s/%s", start, end));
     } else if (!start.isEmpty()) {
-      jo.put("temporalCoverage", String.format("%s", start));
+      temporalCoverage.put("@value", String.format("%s", start));
     } else if (!end.isEmpty()) {
-      jo.put("temporalCoverage", String.format("%s", end));
+      temporalCoverage.put("@value", String.format("%s", end));
+    }
+
+    if (temporalCoverage.length() > 0) {
+        jo.put("temporalCoverage", temporalCoverage);
     }
 
     // set the spatial coverage
