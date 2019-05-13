@@ -5,6 +5,7 @@
 
 package ucar.ui.prefs;
 
+import java.awt.HeadlessException;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -227,27 +228,31 @@ public class TestPanel2 {
 
   @Test
   public void testit() {
-    JFrame frame = new JFrame("Test PrefPanel");
-    frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+    try {
+      JFrame frame = new JFrame("Test PrefPanel");
+      frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-    TestPanel2 tp = new TestPanel2();
-    //PrefPanel pp = tp.makeTestPanelOld(null);
-    //PrefPanel pp = tp.makeTestPanel(null);
-    //PrefPanel pp = tp.makeTestPanelFirstHeading(null);
-    //PrefPanel pp = tp.make3columns();
-    PrefPanel pp = tp.make3columnsOneLong();
+      TestPanel2 tp = new TestPanel2();
+      //PrefPanel pp = tp.makeTestPanelOld(null);
+      //PrefPanel pp = tp.makeTestPanel(null);
+      //PrefPanel pp = tp.makeTestPanelFirstHeading(null);
+      //PrefPanel pp = tp.make3columns();
+      PrefPanel pp = tp.make3columnsOneLong();
 
-    //PrefPanel pp =  tp.makeComboBox();
-    //PrefPanel pp =  tp.makeDialog().getPrefPanel();
+      //PrefPanel pp =  tp.makeComboBox();
+      //PrefPanel pp =  tp.makeDialog().getPrefPanel();
 
-    frame.getContentPane().add(pp);
-    frame.pack();
-    frame.setLocation(300, 300);
-    //frame.setSize(300, 300);
-    frame.setVisible(true);
+      frame.getContentPane().add(pp);
+      frame.pack();
+      frame.setLocation(300, 300);
+      //frame.setSize(300, 300);
+      frame.setVisible(true);
 
-    PrefPanel.Dialog d = tp.makeDialog();
-    d.finish();
-    d.setVisible(true);
+      PrefPanel.Dialog d = tp.makeDialog();
+      d.finish();
+      d.setVisible(true);
+    } catch (HeadlessException e) {
+      // ok to fail if there is no display
+    }
   }
 }

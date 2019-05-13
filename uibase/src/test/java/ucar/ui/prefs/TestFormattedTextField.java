@@ -20,7 +20,9 @@ import javax.swing.text.*;
 
 @RunWith(JUnit4.class)
 public class TestFormattedTextField {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+  private static final Logger logger = LoggerFactory
+      .getLogger(MethodHandles.lookup().lookupClass());
 
   static String pattern = "none";
   static JFormattedTextField d1;
@@ -32,19 +34,20 @@ public class TestFormattedTextField {
 
   private JPanel makePanel() {
     JPanel main = new JPanel();
-    main.setLayout( new BoxLayout(main, BoxLayout.Y_AXIS));
+    main.setLayout(new BoxLayout(main, BoxLayout.Y_AXIS));
 
     NumberFormat realFormatter = NumberFormat.getNumberInstance();
     realFormatter.setMinimumFractionDigits(2);
     realFormatter.setMaximumFractionDigits(4);
-    JFormattedTextField.AbstractFormatterFactory formatterFactory = new DefaultFormatterFactory( new NumberFormatter(realFormatter));
+    JFormattedTextField.AbstractFormatterFactory formatterFactory = new DefaultFormatterFactory(
+        new NumberFormatter(realFormatter));
 
     JPanel p1 = new JPanel();
-    p1.add( new JLabel("JFormattedTextField:"));
+    p1.add(new JLabel("JFormattedTextField:"));
     d1 = new JFormattedTextField(formatterFactory);
     d1.setValue(new Double(123.987));
     Dimension prefDim = d1.getPreferredSize();
-    d1.setPreferredSize(new Dimension( 100, (int) prefDim.getHeight()));
+    d1.setPreferredSize(new Dimension(100, (int) prefDim.getHeight()));
     p1.add(d1);
 
     JFormattedTextField.AbstractFormatter ff = d1.getFormatter();
@@ -73,60 +76,65 @@ public class TestFormattedTextField {
     }
 
     JPanel p2 = new JPanel();
-    p2.add( new JLabel("Pattern:"));
+    p2.add(new JLabel("Pattern:"));
     patternTF = new JTextField();
     patternTF.setText(pattern);
-    patternTF.setColumns( 20);
+    patternTF.setColumns(20);
     patternTF.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         logger.info("pattern actionevent {}", patternTF.getText());
-        decFormatter.applyPattern( patternTF.getText());
+        decFormatter.applyPattern(patternTF.getText());
       }
     });
     p2.add(patternTF);
 
     intOnly = new JCheckBox("IntegerOnly", intOnlyValue);
     intOnly.addActionListener(e -> {
-        boolean val = intOnly.getModel().isSelected();
-        logger.info("intOnly actionevent {}", val);
-        decFormatter.setParseIntegerOnly( val);
+      boolean val = intOnly.getModel().isSelected();
+      logger.info("intOnly actionevent {}", val);
+      decFormatter.setParseIntegerOnly(val);
     });
 
     allowsInvalid = new JCheckBox("AllowsInvalid", allowsInvalidValue);
     allowsInvalid.addActionListener(e -> {
-        boolean val = allowsInvalid.getModel().isSelected();
-        logger.info("allowsInvalid actionevent {}", val);
-        nf.setAllowsInvalid( val);
+      boolean val = allowsInvalid.getModel().isSelected();
+      logger.info("allowsInvalid actionevent {}", val);
+      nf.setAllowsInvalid(val);
     });
 
     JButton gv = new JButton("Get Value");
     gv.addActionListener(e -> {
-        boolean val = intOnly.getModel().isSelected();
-        logger.info("value= {} {}", d1.getValue(), d1.getValue().getClass().getName());
+      boolean val = intOnly.getModel().isSelected();
+      logger.info("value= {} {}", d1.getValue(), d1.getValue().getClass().getName());
     });
 
-    main.add( p1);
-    main.add( p2);
-    main.add( intOnly);
-    main.add( allowsInvalid);
-    main.add( gv);
+    main.add(p1);
+    main.add(p2);
+    main.add(intOnly);
+    main.add(allowsInvalid);
+    main.add(gv);
     return main;
   }
 
   @Test
   public void testit() {
+    try {
+      JFrame frame = new JFrame("TestFormattedTextField");
+      frame.addWindowListener(new WindowAdapter() {
+        public void windowClosing(WindowEvent e) {
+          System.exit(0);
+        }
+      });
 
-    JFrame frame = new JFrame("TestFormattedTextField");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {System.exit(0);}
-    });
+      TestFormattedTextField ff = new TestFormattedTextField();
+      frame.getContentPane().add(ff.makePanel());
 
-    TestFormattedTextField ff = new TestFormattedTextField();
-    frame.getContentPane().add( ff.makePanel());
-
-    frame.pack();
-    frame.setLocation(400, 300);
-    frame.setVisible(true);
+      frame.pack();
+      frame.setLocation(400, 300);
+      frame.setVisible(true);
+    } catch (HeadlessException e) {
+      // ok to fail if there is no display
+    }
   }
 
 }
