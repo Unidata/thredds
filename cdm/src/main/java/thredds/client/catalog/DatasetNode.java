@@ -4,7 +4,6 @@
  */
 package thredds.client.catalog;
 
-import com.google.common.base.MoreObjects;
 import thredds.client.catalog.builder.DatasetBuilder;
 
 import javax.annotation.concurrent.Immutable;
@@ -113,14 +112,5 @@ public class DatasetNode {
       return result;
     }
     return new ArrayList(0);
-  }
-
-  @Override
-  public String toString() {
-    return MoreObjects.toStringHelper(this)
-        .add("parent", parent)
-        .add("name", name)
-        .add("flds", flds)
-        .toString();
   }
 }
