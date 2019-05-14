@@ -82,7 +82,9 @@ public class TestCFPointWriter {
   @Test
   public void testWrite4classic() throws IOException {
     // Ignore this test if NetCDF-4 isn't present.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    if (!Nc4Iosp.isClibraryPresent()) {
+      return;
+    }
 
     int count = writeDataset(location, ftype,
             new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4_classic), show, tempFolder.newFile());
@@ -94,7 +96,9 @@ public class TestCFPointWriter {
   @Ignore("doesnt work: coordinate axes that are members of nc4 structures")
   public void testWrite4() throws IOException {
     // Ignore this test if NetCDF-4 isn't present.
-    Assume.assumeTrue("NetCDF-4 C library not present.", Nc4Iosp.isClibraryPresent());
+    if (!Nc4Iosp.isClibraryPresent()) {
+      return;
+    }
 
     int count = writeDataset(
             location, ftype, new CFPointWriterConfig(NetcdfFileWriter.Version.netcdf4), show, tempFolder.newFile());
