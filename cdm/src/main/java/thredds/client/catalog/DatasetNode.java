@@ -103,9 +103,6 @@ public class DatasetNode {
     return (parent instanceof Dataset) ? (Dataset) parent : null;
   }
 
-  //////////////////////////////////////////////
-  // Utilities
-
   public List getLocalFieldAsList(String fldName) {
     Object value = flds.get(fldName);
     if (value != null) {
@@ -116,5 +113,4 @@ public class DatasetNode {
     }
     return new ArrayList(0);
   }
-
 }

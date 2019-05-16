@@ -309,10 +309,10 @@ libraries["json"] = 'org.json:json:20180813'
 
 ////////////////////////////////////////// ToolsUI //////////////////////////////////////////
 
-// What the hell is this? Google search turns up nothing.
+// A set of Java and Swing extensions in NcmlEditor.
 libraries["bounce"] = "org.bounce:bounce:0.14"
 
-// Old and crufty. Only used by TdsMonitor in :ui. Can we switch to Guava caches?
+// Old and crufty. only used by tdsmonitor in :ui. Can we switch to Guava caches?
 // libraries["ehcache-core"] = "net.sf.ehcache:ehcache-core:2.6.2"
 
 libraries["imgscalr-lib"] = "org.imgscalr:imgscalr-lib:4.2"

@@ -47,7 +47,7 @@ dependencies {
     netcdfAll project(":httpservices")
     netcdfAll project(':visadCdm')  // For Gempak IOSPs.
 
-    toolsUI project(':ui')
+    toolsUI project(':uicdm')
     
     dap4lib project(':dap4:d4core')
     dap4lib project(':dap4:d4lib')
@@ -101,7 +101,7 @@ fatJarTasks << tasks.create(name: 'buildToolsUI', type: ShadowJar) {
     configurations = [project.configurations.toolsUI]
     
     doFirst {
-        manifest.attributes project(':ui').tasks.jar.manifest.attributes
+        manifest.attributes project(':uicdm').tasks.jar.manifest.attributes
     }
 }
 
