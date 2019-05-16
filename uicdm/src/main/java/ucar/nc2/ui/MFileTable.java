@@ -82,7 +82,7 @@ public class MFileTable extends JPanel {
     });
 
     if (isPopup) {
-      fileWindow = new IndependentWindow("Files Used", BAMutil.getImage("netcdfUI"), fileTable);
+      fileWindow = new IndependentWindow("Files Used", BAMutil.getImage("nj22/NetcdfUI"), fileTable);
       fileWindow.setBounds((Rectangle) prefs.getBean("FileWindowBounds", new Rectangle(300, 300, 500, 300)));
     } else {
       add(fileTable, BorderLayout.CENTER);

@@ -64,7 +64,7 @@ public class StructureTable extends JPanel {
 
     // other widgets
     dumpTA = new TextHistoryPane(false);
-    dumpWindow = new IndependentWindow("Show Data", BAMutil.getImage("netcdfUI"), dumpTA);
+    dumpWindow = new IndependentWindow("Show Data", BAMutil.getImage("nj22/NetcdfUI"), dumpTA);
     if (prefs != null)
       dumpWindow.setBounds((Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle(300, 300, 600, 600)));
     else
@@ -256,7 +256,7 @@ public class StructureTable extends JPanel {
       dataTable = new StructureTable(null);
       dataWindow = windows.get(s.getFullName());
       if (dataWindow == null) {
-        dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("netcdfUI"), dataTable);
+        dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
         windows.put(s.getFullName(), dataWindow);
       } else {
         dataWindow.setComponent(dataTable);

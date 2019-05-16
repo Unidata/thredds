@@ -157,7 +157,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         }
       }
     };
-    BAMutil.setActionProperties(queryAction, "query", "query for data", false, 'Q', -1);
+    BAMutil.setActionProperties(queryAction, "nj22/Query", "query for data", false, 'Q', -1);
     stationMap.addToolbarAction(queryAction);  // */
 
     // get all data
@@ -197,7 +197,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         outChooser.setVisible(true);
       }
     };
-    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
+    BAMutil.setActionProperties(netcdfAction, "nj22/Netcdf", "Write netCDF-CF file", false, 'S', -1);
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
     // feature collection table
@@ -320,7 +320,7 @@ public class PointFeatureDatasetViewer extends JPanel {
      */
     private WaterMLConverterAction() {
       putValue(NAME, "WaterML 2.0 Writer");
-      putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "drop_24.png", true));
+      putValue(SMALL_ICON, Resource.getIcon(BAMutil.getResourcePath() + "nj22/drop_24.png", true));
       putValue(SHORT_DESCRIPTION, "Write timeseries as an OGC WaterML v2.0 document.");
     }
 

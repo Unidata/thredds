@@ -424,7 +424,7 @@ public class DatasetTreeView extends JPanel {
      */
         public MyTreeCellRenderer() {
             structIcon = BAMutil.getIcon( "Structure", true);
-            dimIcon = BAMutil.getIcon( "Dimension", true);
+            dimIcon = BAMutil.getIcon( "nj22/Dimension", true);
         }
 
     /**

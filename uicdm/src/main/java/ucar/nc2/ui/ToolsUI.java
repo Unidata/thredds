@@ -66,8 +66,8 @@ public class ToolsUI extends JPanel {
 
   private static final String DIALOG_VERSION = "5.0";
 
-  public static final String WORLD_DETAIL_MAP = "/resources/nj22/ui/maps/Countries.shp";
-  public static final String US_MAP = "/resources/nj22/ui/maps/us_state.shp";
+  public static final String WORLD_DETAIL_MAP = "/resources/ui/maps/Countries.shp";
+  public static final String US_MAP = "/resources/ui/maps/us_state.shp";
 
   public static final String FRAME_SIZE = "FrameSize";
   public static final String GRIDVIEW_FRAME_SIZE = "GridUIWindowSize";
@@ -1456,9 +1456,6 @@ public class ToolsUI extends JPanel {
       }
     }
 
-    // misc Gui initialization(s)
-    BAMutil.setResourcePath("/resources/nj22/ui/icons/");
-
     // Setting up a font metrics object triggers one of the most time-wasting steps of GUI set up.
     // We do it now before trying to create the splash or tools interface.
     SwingUtilities.invokeLater(() -> {
@@ -1478,7 +1475,7 @@ public class ToolsUI extends JPanel {
 
     ui = new ToolsUI(prefs, frame);
 
-    frame.setIconImage(BAMutil.getImage("netcdfUI"));
+    frame.setIconImage(BAMutil.getImage("nj22/NetcdfUI"));
 
     frame.addWindowListener(new WindowAdapter() {
       @Override
@@ -1582,7 +1579,7 @@ public class ToolsUI extends JPanel {
     // is spring used by ToolsUI for anything? is this necessary?
     try {
       ClassPathXmlApplicationContext springContext = new ClassPathXmlApplicationContext(
-          "classpath:resources/nj22/ui/spring/application-config.xml");
+          "classpath:resources/ui/spring/application-config.xml");
     } catch (Exception exc) {
       log.error("failed creating spring context: {}", exc.toString());
       System.exit(1);

@@ -75,11 +75,11 @@ public class ToolsAboutWindow extends JWindow {
                                 BorderFactory.createEmptyBorder(8, 8, 8, 8)));
         main.setBackground(new Color(0xFFECEC));
 
-        JLabel ring = new JLabel(new ImageIcon(BAMutil.getImage("netcdfUI")));
+        JLabel ring = new JLabel(new ImageIcon(BAMutil.getImage("nj22/NetcdfUI")));
         ring.setOpaque(true);
         ring.setBackground(new Color(0xFFECEC));
 
-        JLabel threddsLogo = new JLabel(Resource.getIcon(BAMutil.getResourcePath() + "cdm.png", false));
+        JLabel threddsLogo = new JLabel(Resource.getIcon(BAMutil.getResourcePath() + "nj22/Cdm.png", false));
         threddsLogo.setBackground(new Color(0xFFECEC));
         threddsLogo.setOpaque(true);
 

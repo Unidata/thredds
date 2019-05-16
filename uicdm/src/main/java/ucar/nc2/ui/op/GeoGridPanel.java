@@ -92,12 +92,12 @@ public class GeoGridPanel extends OpPanel {
  */
     private void makeGridUI() {
         // a little tricky to get the parent right for GridUI
-        viewerWindow = new IndependentWindow("Grid Viewer", BAMutil.getImage("netcdfUI"));
+        viewerWindow = new IndependentWindow("Grid Viewer", BAMutil.getImage("nj22/NetcdfUI"));
 
         gridUI = new GridUI((PreferencesExt) prefs.node("GridUI"), viewerWindow, fileChooser, 800);
         gridUI.addMapBean(new WorldMapBean());
-        gridUI.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", ToolsUI.WORLD_DETAIL_MAP));
-        gridUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", ToolsUI.US_MAP));
+        gridUI.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "nj22/WorldDetailMap", ToolsUI.WORLD_DETAIL_MAP));
+        gridUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
         viewerWindow.setComponent(gridUI);
         Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(
@@ -115,7 +115,7 @@ public class GeoGridPanel extends OpPanel {
  *
  */
     private void makeImageWindow() {
-        imageWindow = new IndependentWindow("Grid Image Viewer", BAMutil.getImage("netcdfUI"));
+        imageWindow = new IndependentWindow("Grid Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
         imageViewer = new ImageViewPanel(null);
         imageWindow.setComponent(imageViewer);
         imageWindow.setBounds((Rectangle) ToolsUI.getPrefsBean(

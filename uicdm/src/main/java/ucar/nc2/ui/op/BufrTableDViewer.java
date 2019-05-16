@@ -112,12 +112,12 @@ public class BufrTableDViewer extends JPanel {
 
     // the info window
     compareTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), compareTA);
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), compareTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 600)));
 
     /* the info window 2
     infoTA2 = new TextHistoryPane();
-    infoWindow2 = new IndependentWindow("Extra Information-2", BAMutil.getImage("netcdfUI"), infoTA2);
+    infoWindow2 = new IndependentWindow("Extra Information-2", BAMutil.getImage("nj22/NetcdfUI"), infoTA2);
     infoWindow2.setBounds((Rectangle) prefs.getBean("InfoWindowBounds2", new Rectangle(300, 300, 500, 300)));
 
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, obsTable);

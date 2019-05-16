@@ -114,7 +114,7 @@ public class GeoGridTable extends JPanel {
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // optionally show coordinate systems and axis
@@ -217,7 +217,7 @@ public class GeoGridTable extends JPanel {
         outChooser.setVisible(true);
       }
     };
-    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF-CF file", false, 'S', -1);
+    BAMutil.setActionProperties(netcdfAction, "nj22/Netcdf", "Write netCDF-CF file", false, 'S', -1);
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
     /*

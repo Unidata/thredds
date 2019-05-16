@@ -217,7 +217,7 @@ public class StationRegionDateChooser extends NPController {
           dateWindow.setVisible(true);
         }
       };
-      BAMutil.setActionProperties(dateAction, "selectDate", "select date range", false, 'D', -1);
+      BAMutil.setActionProperties(dateAction, "nj22/SelectDate", "select date range", false, 'D', -1);
     }
 
     makeMyUI();
@@ -254,7 +254,7 @@ public class StationRegionDateChooser extends NPController {
         redraw();
       }
     };
-    BAMutil.setActionProperties(bbAction, "geoselect", "select geo region", true, 'B', -1);
+    BAMutil.setActionProperties(bbAction, "nj22/Geoselect", "select geo region", true, 'B', -1);
     bbAction.putValue(BAMutil.STATE, geoSelectionMode ? Boolean.TRUE : Boolean.FALSE);
 
     // the fields use a PrefPanel

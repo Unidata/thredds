@@ -203,7 +203,7 @@ public class GridController {
           setProjection( dataProjection);
       }
     };
-    BAMutil.setActionProperties( dataProjectionAction, "DataProjection", "use Data Projection", false, 'D', 0);
+    BAMutil.setActionProperties( dataProjectionAction, "nj22/DataProjection", "use Data Projection", false, 'D', 0);
 
      // draw horiz
     drawHorizAction = new AbstractAction() {
@@ -214,7 +214,7 @@ public class GridController {
         draw(false);
       }
     };
-    BAMutil.setActionProperties( drawHorizAction, "DrawHoriz", "draw horizontal", true, 'H', 0);
+    BAMutil.setActionProperties( drawHorizAction, "nj22/DrawHoriz", "draw horizontal", true, 'H', 0);
     state = store.getBoolean( "drawHorizAction", true);
     drawHorizAction.putValue(BAMutil.STATE, state);
     drawHorizOn = state;
@@ -228,7 +228,7 @@ public class GridController {
         draw(false);
        }
     };
-    BAMutil.setActionProperties( drawVertAction, "DrawVert", "draw vertical", true, 'V', 0);
+    BAMutil.setActionProperties( drawVertAction, "nj22/DrawVert", "draw vertical", true, 'V', 0);
     state = store.getBoolean( "drawVertAction", false);
     drawVertAction.putValue(BAMutil.STATE, state);
     drawVertOn = state;
@@ -242,7 +242,7 @@ public class GridController {
         draw(false);
       }
     };
-    BAMutil.setActionProperties( showGridAction, "Grid", "show grid lines", true, 'G', 0);
+    BAMutil.setActionProperties( showGridAction, "nj22/Grid", "show grid lines", true, 'G', 0);
     state = store.getBoolean( "showGridAction", false);
     showGridAction.putValue(BAMutil.STATE, state);
     renderGrid.setDrawGridLines( state);
@@ -255,7 +255,7 @@ public class GridController {
         draw(false);
       }
     };
-    BAMutil.setActionProperties( showContoursAction, "Contours", "show contours", true, 'C', 0);
+    BAMutil.setActionProperties( showContoursAction, "nj22/Contours", "show contours", true, 'C', 0);
     state = store.getBoolean( "showContoursAction", false);
     showContoursAction.putValue(BAMutil.STATE, state);
     renderGrid.setDrawContours( state);
@@ -268,7 +268,7 @@ public class GridController {
         draw(false);
       }
     };
-    BAMutil.setActionProperties( showContourLabelsAction, "ContourLabels", "show contour labels", true, 'L', 0);
+    BAMutil.setActionProperties( showContourLabelsAction, "nj22/ContourLabels", "show contour labels", true, 'L', 0);
     state = store.getBoolean( "showContourLabelsAction", false);
     showContourLabelsAction.putValue(BAMutil.STATE, state);
     renderGrid.setDrawContourLabels( state);

@@ -92,12 +92,12 @@ public class SimpleGeomPanel extends OpPanel {
  */
     private void makeSimpleGeomUI() {
         // a little tricky to get the parent right for GridUI
-        viewerWindow = new IndependentWindow("Simple Geometry Viewer", BAMutil.getImage("netcdfUI"));
+        viewerWindow = new IndependentWindow("Simple Geometry Viewer", BAMutil.getImage("nj22/NetcdfUI"));
 
         sgUI = new SimpleGeomUI((PreferencesExt) prefs.node("SimpleGeomUI"), viewerWindow, fileChooser, 800);
         sgUI.addMapBean(new WorldMapBean());
-        sgUI.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", ToolsUI.WORLD_DETAIL_MAP));
-        sgUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", ToolsUI.US_MAP));
+        sgUI.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "nj22/WorldDetailMap", ToolsUI.WORLD_DETAIL_MAP));
+        sgUI.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
         viewerWindow.setComponent(sgUI);
         Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE,
@@ -115,7 +115,7 @@ public class SimpleGeomPanel extends OpPanel {
  *
  */
     private void makeImageWindow() {
-        imageWindow = new IndependentWindow("Simple Geometry Image Viewer", BAMutil.getImage("netcdfUI"));
+        imageWindow = new IndependentWindow("Simple Geometry Image Viewer", BAMutil.getImage("nj22/NetcdfUI"));
         imageViewer = new ImageViewPanel(null);
         imageWindow.setComponent(imageViewer);
         imageWindow.setBounds((Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDIMAGE_FRAME_SIZE,

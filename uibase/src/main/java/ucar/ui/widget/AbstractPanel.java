@@ -3,13 +3,8 @@
  * See LICENSE for license information.
  */
 
-package ucar.nc2.ui;
+package ucar.ui.widget;
 
-import ucar.ui.widget.BAMutil;
-import ucar.ui.widget.FileManager;
-import ucar.ui.widget.IndependentWindow;
-import ucar.ui.widget.TextHistoryPane;
-import ucar.ui.widget.StopButton;
 import ucar.util.prefs.PreferencesExt;
 import ucar.ui.prefs.ComboBox;
 
@@ -27,14 +22,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 /**
- * Abstract superclass for ToolsUI panel contents.
+ * Abstract superclass for panel contents.
  *
  * Subclasses must implement process()
  */
-public abstract class OpPanel extends JPanel {
-
-  static final org.slf4j.Logger logger
-      = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+public abstract class AbstractPanel extends JPanel {
+  private static final String FRAME_SIZE = "FrameSize";
+  private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   protected PreferencesExt prefs;
   protected ComboBox cb;
@@ -53,25 +47,16 @@ public abstract class OpPanel extends JPanel {
 
   protected static FileManager fileChooser;
 
-  /**
-   *
-   */
-  public OpPanel(PreferencesExt prefs, String command) {
+  protected AbstractPanel(PreferencesExt prefs, String command) {
     this(prefs, command, true, true);
   }
 
-  /**
-   *
-   */
-  public OpPanel(PreferencesExt prefs, String command, boolean addFileButton,
+  protected AbstractPanel(PreferencesExt prefs, String command, boolean addFileButton,
       boolean addCoordButton) {
     this(prefs, command, true, addFileButton, addCoordButton);
   }
 
-  /**
-   *
-   */
-  public OpPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton,
+  protected AbstractPanel(PreferencesExt prefs, String command, boolean addComboBox, boolean addFileButton,
       boolean addCoordButton) {
     this.prefs = prefs;
     buttPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
@@ -129,14 +114,9 @@ public abstract class OpPanel extends JPanel {
       };
       addCoords = prefs.getBoolean("coordState", false);
       final String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
-      BAMutil.setActionProperties(coordAction, "nj22/AddCoords", tooltip2, true, 'C', -1);
+      BAMutil.setActionProperties(coordAction, "addCoords", tooltip2, true, 'C', -1);
       coordAction.putValue(BAMutil.STATE, addCoords);
       coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);
-    }
-
-    if (this instanceof GetDataRunnable) {
-      stopButton = new StopButton("Stop");
-      buttPanel.add(stopButton);
     }
 
     topPanel = new JPanel(new BorderLayout());
@@ -153,16 +133,12 @@ public abstract class OpPanel extends JPanel {
 
     detailTA = new TextHistoryPane();
     detailTA.setFont(new Font("Monospaced", Font.PLAIN, 12));
-    detailWindow = new IndependentWindow("Details", BAMutil.getImage("nj22/NetcdfUI"),
+    detailWindow = new IndependentWindow("Details", BAMutil.getImage("app"),
         new JScrollPane(detailTA));
-    Rectangle bounds = (Rectangle) prefs
-        .getBean(ToolsUI.FRAME_SIZE, new Rectangle(200, 50, 500, 700));
+    Rectangle bounds = (Rectangle) prefs.getBean(FRAME_SIZE, new Rectangle(200, 50, 500, 700));
     detailWindow.setBounds(bounds);
   }
 
-  /**
-   *
-   */
   public void doit(Object command) {
     if (busy) {
       return;
@@ -182,49 +158,31 @@ public abstract class OpPanel extends JPanel {
     busy = false;
   }
 
-  /**
-   *
-   */
   public abstract boolean process(Object command);
 
-  /**
-   *
-   */
   public void closeOpenFiles() throws IOException {
   }
 
-  /**
-   *
-   */
   public void save() {
     cb.save();
     if (coordButt != null) {
       prefs.putBoolean("coordState", coordButt.getModel().isSelected());
     }
     if (detailWindow != null) {
-      prefs.putBeanObject(ToolsUI.FRAME_SIZE, detailWindow.getBounds());
+      prefs.putBeanObject(FRAME_SIZE, detailWindow.getBounds());
     }
   }
 
-  /**
-   *
-   */
   public void setSelectedItem(Object item) {
     eventOK = false;
     cb.addItem(item);
     eventOK = true;
   }
 
-  /**
-   *
-   */
   public static void setFileChooser(FileManager chooser) {
     fileChooser = chooser;
   }
 
-  /**
-   *
-   */
   public IndependentWindow getDetailWindow() {
     return detailWindow;
   }

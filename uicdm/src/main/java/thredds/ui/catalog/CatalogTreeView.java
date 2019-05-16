@@ -511,12 +511,12 @@ public class CatalogTreeView extends JPanel {
     ImageIcon refIcon, refReadIcon, gridIcon, imageIcon, dqcIcon, dsScanIcon;
 
     public MyTreeCellRenderer() {
-      refIcon = BAMutil.getIcon( "CatalogRef", true);
-      refReadIcon = BAMutil.getIcon( "CatalogRefRead", true);
-      gridIcon = BAMutil.getIcon( "GridData", true);
-      imageIcon = BAMutil.getIcon( "ImageData", true);
-      dqcIcon = BAMutil.getIcon( "DQCData", true);
-      dsScanIcon = BAMutil.getIcon( "DatasetScan", true);
+      refIcon = BAMutil.getIcon( "nj22/CatalogRef", true);
+      refReadIcon = BAMutil.getIcon( "nj22/CatalogRefRead", true);
+      gridIcon = BAMutil.getIcon( "nj22/GridData", true);
+      imageIcon = BAMutil.getIcon( "nj22/ImageData", true);
+      dqcIcon = BAMutil.getIcon( "nj22/DQCData", true);
+      dsScanIcon = BAMutil.getIcon( "nj22/DatasetScan", true);
     }
 
     public Component getTreeCellRendererComponent(JTree tree, Object value,

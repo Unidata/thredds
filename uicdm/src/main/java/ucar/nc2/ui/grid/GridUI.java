@@ -127,7 +127,7 @@ public class GridUI extends JPanel {
       makeActionsToolbars();
 
       gridTable = new GridTable("field");
-      gtWindow = new IndependentWindow("Grid Table Information", BAMutil.getImage( "GDVs"), gridTable.getPanel());
+      gtWindow = new IndependentWindow("Grid Table Information", BAMutil.getImage( "nj22/GDVs"), gridTable.getPanel());
 
       PreferencesExt dsNode = (PreferencesExt) pstore.node("DatasetTable");
       dsTable = new GeoGridTable(dsNode, true);
@@ -422,7 +422,7 @@ public class GridUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if (infoWindow == null) {
           datasetInfoTA = new TextHistoryPane();
-          infoWindow = new IndependentWindow("Dataset Information", BAMutil.getImage( "GDVs"), datasetInfoTA);
+          infoWindow = new IndependentWindow("Dataset Information", BAMutil.getImage( "nj22/GDVs"), datasetInfoTA);
           infoWindow.setSize(700,700);
           infoWindow.setLocation(100,100);
         }
@@ -439,7 +439,7 @@ public class GridUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if (ncmlWindow == null) {
           ncmlTA = new TextHistoryPane();
-          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
+          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "nj22/GDVs"), ncmlTA);
           ncmlWindow.setSize(700,700);
           ncmlWindow.setLocation(200, 70);
         }
@@ -457,7 +457,7 @@ public class GridUI extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if (ncmlWindow == null) {
           ncmlTA = new TextHistoryPane();
-          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "GDVs"), ncmlTA);
+          ncmlWindow = new IndependentWindow("Dataset NcML", BAMutil.getImage( "nj22/GDVs"), ncmlTA);
           ncmlWindow.setSize(700,700);
           ncmlWindow.setLocation(200, 70);
         }
@@ -494,7 +494,7 @@ public class GridUI extends JPanel {
         }
       }
     };
-    BAMutil.setActionProperties( showNetcdfDatasetAction, "netcdf", "NetcdfDataset Table Info...", false, 'D', -1);
+    BAMutil.setActionProperties( showNetcdfDatasetAction, "nj22/Netcdf", "NetcdfDataset Table Info...", false, 'D', -1);
 
       /* write geotiff file
     geotiffAction = new AbstractAction() {

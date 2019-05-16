@@ -74,7 +74,7 @@ public class BufrWmoCodesPanel extends JPanel {
 
     // the info window
     compareTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), compareTA);
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), compareTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 800, 600)));
 
     split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, codeTable, entryTable);

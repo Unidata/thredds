@@ -91,7 +91,7 @@ public class RadialDatasetTable extends JPanel {
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     sweepTable = new BeanTable(SweepBean.class, (PreferencesExt) prefs.node("SweepBean"), false);
@@ -333,7 +333,7 @@ public class RadialDatasetTable extends JPanel {
     if (bean == null) return;
 
     if (imageWindow == null) {
-      imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("ImageData"));
+      imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("nj22/ImageData"));
       imageView = new ImageViewPanel(null);
       imageWindow.setComponent(new JScrollPane(imageView));
       //imageWindow.setComponent( imageView);

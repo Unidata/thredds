@@ -85,12 +85,12 @@ public class CoveragePanel extends OpPanel {
  *
  */
     private void makeDisplay() {
-        viewerWindow = new IndependentWindow("Coverage Viewer", BAMutil.getImage("netcdfUI"));
+        viewerWindow = new IndependentWindow("Coverage Viewer", BAMutil.getImage("nj22/NetcdfUI"));
 
         display = new CoverageViewer((PreferencesExt) prefs.node("CoverageDisplay"), viewerWindow, fileChooser, 800);
         display.addMapBean(new WorldMapBean());
-        display.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap", ToolsUI.WORLD_DETAIL_MAP));
-        display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", ToolsUI.US_MAP));
+        display.addMapBean(new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "nj22/WorldDetailMap", ToolsUI.WORLD_DETAIL_MAP));
+        display.addMapBean(new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", ToolsUI.US_MAP));
 
         viewerWindow.setComponent(display);
         final Rectangle bounds = (Rectangle) ToolsUI.getPrefsBean(ToolsUI.GRIDVIEW_FRAME_SIZE,

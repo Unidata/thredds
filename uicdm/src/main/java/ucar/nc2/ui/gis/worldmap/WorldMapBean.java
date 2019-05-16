@@ -23,7 +23,7 @@ public class WorldMapBean extends MapBean {
   }
 
   public javax.swing.ImageIcon getIcon() {
-    return BAMutil.getIcon("WorldMap", true);
+    return BAMutil.getIcon("nj22/WorldMap", true);
   }
   public String getActionName() { return "WorldMap"; }
   public String getActionDesc() { return "use World Map"; }

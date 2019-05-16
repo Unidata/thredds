@@ -645,7 +645,7 @@ public class NavigatedPanel extends JPanel {
   private void setCursor(int what) {
     if (what == REFERENCE_CURSOR) {
       if (null == referenceCursor) {
-        referenceCursor = BAMutil.makeCursor("ReferencePoint");
+        referenceCursor = BAMutil.makeCursor("nj22/ReferencePoint");
         if (null == referenceCursor)
           return;
       }
@@ -1008,7 +1008,7 @@ public class NavigatedPanel extends JPanel {
     setReferenceAction = new AbstractAction() {
       public void actionPerformed(ActionEvent e) { setReferenceMode(); drawG();}
     };
-    BAMutil.setActionProperties( setReferenceAction, "ReferencePoint", "set reference Point", true, 'P', 0);
+    BAMutil.setActionProperties( setReferenceAction, "nj22/ReferencePoint", "set reference Point", true, 'P', 0);
   }
 
   class NToolBar extends JToolBar {

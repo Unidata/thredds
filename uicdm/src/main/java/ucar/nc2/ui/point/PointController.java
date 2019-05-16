@@ -61,7 +61,7 @@ public class PointController extends NPController {
         setDrawConnectingLine(state);
       }
     };
-    BAMutil.setActionProperties(useReaderAction, "addCoords", "draw connecting lines", true, 'C', -1);
+    BAMutil.setActionProperties(useReaderAction, "nj22/AddCoords", "draw connecting lines", true, 'C', -1);
     useReaderAction.putValue(BAMutil.STATE, drawConnectingLine);
     BAMutil.addActionToContainer(toolPanel, useReaderAction);
 

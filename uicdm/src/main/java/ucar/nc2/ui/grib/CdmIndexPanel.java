@@ -74,7 +74,7 @@ public class CdmIndexPanel extends JPanel {
       });
       buttPanel.add(infoButton);
 
-      AbstractButton filesButton = BAMutil.makeButtcon("catalog", "Show Files", false);
+      AbstractButton filesButton = BAMutil.makeButtcon("nj22/Catalog", "Show Files", false);
       filesButton.addActionListener(e -> {
           if (gc != null)
             showFileTable(gc, null);
@@ -296,11 +296,11 @@ public class CdmIndexPanel extends JPanel {
     /////////////////////////////////////////
     // the info windows
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     extraTA = new TextHistoryPane();
-    extraWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), extraTA);
+    extraWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), extraTA);
     extraWindow.setBounds((Rectangle) prefs.getBean("ExtraWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     setLayout(new BorderLayout());

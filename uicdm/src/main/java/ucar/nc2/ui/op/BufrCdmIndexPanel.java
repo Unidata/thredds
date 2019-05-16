@@ -58,7 +58,7 @@ public class BufrCdmIndexPanel extends JPanel {
     });
     buttPanel.add(infoButton);
 
-    AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+    AbstractButton writeButton = BAMutil.makeButtcon("nj22/Netcdf", "Write index", false);
     writeButton.addActionListener(e -> {
         Formatter f = new Formatter();
         try {
@@ -109,11 +109,11 @@ public class BufrCdmIndexPanel extends JPanel {
     /////////////////////////////////////////
     // the info windows
     infoPopup = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoPopup);
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoPopup);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     detailTA = new TextHistoryPane();
-    detailWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), detailTA);
+    detailWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), detailTA);
     detailWindow.setBounds((Rectangle) prefs.getBean("DetailWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     setLayout(new BorderLayout());

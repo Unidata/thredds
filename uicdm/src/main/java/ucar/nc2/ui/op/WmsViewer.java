@@ -106,7 +106,7 @@ public class WmsViewer extends JPanel {
       }
     });
 
-    final AbstractButton mapButton = BAMutil.makeButtcon("WorldDetailMap", "getMap", false);
+    final AbstractButton mapButton = BAMutil.makeButtcon("nj22/WorldDetailMap", "getMap", false);
     mapButton.addActionListener(e -> {
       LayerBean ftb = (LayerBean) ftTable.getSelectedBean();
       getMap(ftb);

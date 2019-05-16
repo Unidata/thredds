@@ -69,7 +69,7 @@ public class Hdf5DataTable extends JPanel {
                 calcStorage();
             }
         };
-        BAMutil.setActionProperties(calcAction, "Dataset", "calc storage", false, 'D', -1);
+        BAMutil.setActionProperties(calcAction, "nj22/Dataset", "calc storage", false, 'D', -1);
         BAMutil.addActionToContainer(buttPanel, calcAction);
 
         varPopup = new PopupMenu(objectTable.getJTable(), "Options");

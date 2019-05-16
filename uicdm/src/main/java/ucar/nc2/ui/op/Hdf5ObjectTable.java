@@ -165,7 +165,7 @@ public class Hdf5ObjectTable extends JPanel {
  */
     private void makeInfoWindow() {
         infoTA = new TextHistoryPane();
-        infoWindow = new IndependentWindow("Extra", BAMutil.getImage("netcdfUI"), infoTA);
+        infoWindow = new IndependentWindow("Extra", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
         infoWindow.setBounds(new Rectangle(300, 300, 500, 800));
     }
 

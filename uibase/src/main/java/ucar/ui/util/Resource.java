@@ -45,8 +45,10 @@ public class Resource {
     if (iconR != null)
       icon = new ImageIcon(iconR);
 
-    if ((icon == null) && errMsg) System.out.println("  ERROR: Resource.getIcon failed on "+fullIconName);
-    else if (debugIcon) System.out.println("  Resource.getIcon ok on "+fullIconName);
+    if ((icon == null) && errMsg)
+      System.out.println("  ERROR: Resource.getIcon failed on "+fullIconName);
+    else if (debugIcon)
+      System.out.println("  Resource.getIcon ok on "+fullIconName);
 
     return icon;
   }

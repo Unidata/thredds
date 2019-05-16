@@ -112,7 +112,7 @@ public abstract class MapBean {
         //mapPopup.show();
       }
     };
-    BAMutil.setActionProperties( mapSelectAction, "WorldMap", "select map", false, 'M', -1);
+    BAMutil.setActionProperties( mapSelectAction, "nj22/WorldMap", "select map", false, 'M', -1);
     AbstractButton mapSelectButton = BAMutil.makeButtconFromAction( mapSelectAction);
 
     PopupMenu mapPopup = new PopupMenu(mapSelectButton, "Select Map", true);
@@ -125,9 +125,9 @@ public abstract class MapBean {
         // standard maps
     ArrayList standardMaps = new ArrayList();
     standardMaps.add( new WorldMapBean());
-    standardMaps.add( new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "WorldDetailMap",
-            "/resources/nj22/ui/maps/Countries.shp"));
-    standardMaps.add( new ShapeFileBean("USDetailMap", "US Detailed Map", "USMap", "/resources/nj22/ui/maps/us_state.shp"));
+    standardMaps.add( new ShapeFileBean("WorldDetailMap", "Global Detailed Map", "nj22/WorldDetailMap",
+            "/resources/ui/maps/Countries.shp"));
+    standardMaps.add( new ShapeFileBean("USDetailMap", "US Detailed Map", "nj22/USMap", "/resources/ui/maps/us_state.shp"));
 
     for (Object standardMap : standardMaps) {
       MapBean mb = (MapBean) standardMap;

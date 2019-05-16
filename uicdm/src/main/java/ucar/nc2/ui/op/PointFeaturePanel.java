@@ -69,7 +69,7 @@ public  class PointFeaturePanel extends OpPanel {
         });
         buttPanel.add(infoButton);
 
-        final AbstractButton calcButton = BAMutil.makeButtcon("V3", "Calculate the latlon/dateRange", false);
+        final AbstractButton calcButton = BAMutil.makeButtcon("nj22/V3", "Calculate the latlon/dateRange", false);
         calcButton.addActionListener(e -> {
             if (pfDataset == null) {
                 return;
@@ -82,7 +82,7 @@ public  class PointFeaturePanel extends OpPanel {
         });
         buttPanel.add(calcButton);
 
-        final AbstractButton xmlButton = BAMutil.makeButtcon("XML", "pointConfig.xml", false);
+        final AbstractButton xmlButton = BAMutil.makeButtcon("nj22/XML", "pointConfig.xml", false);
         xmlButton.addActionListener(e -> {
             if (pfDataset == null) {
                 return;

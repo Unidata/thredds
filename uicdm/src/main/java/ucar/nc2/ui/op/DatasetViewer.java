@@ -107,23 +107,23 @@ public class DatasetViewer extends JPanel {
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage( "netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage( "nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds( (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle( 300, 300, 500, 300)));
 
     // the data Table
     dataTable = new StructureTable( (PreferencesExt) prefs.node("structTable"));
     variableTable = new VariableTable( (PreferencesExt) prefs.node("variableTable"));
-    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "netcdfUI"), dataTable);
+    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage( "nj22/NetcdfUI"), dataTable);
     dataWindow.setBounds( (Rectangle) prefs.getBean("dataWindowBounds", new Rectangle( 50, 300, 1000, 1200)));
 
     // the ncdump Pane
     dumpPane = new NCdumpPane((PreferencesExt) prefs.node("dumpPane"));
-    dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage( "netcdfUI"), dumpPane);
+    dumpWindow = new IndependentWindow("NCDump Variable Data", BAMutil.getImage( "nj22/NetcdfUI"), dumpPane);
     dumpWindow.setBounds( (Rectangle) prefs.getBean("DumpWindowBounds", new Rectangle( 300, 300, 300, 200)));
     
     // the plot Pane
     dataPlot = new VariablePlot((PreferencesExt) prefs.node("plotPane"));
-    plotWindow = new IndependentWindow("Plot Variable Data", BAMutil.getImage( "netcdfUI"), dataPlot);
+    plotWindow = new IndependentWindow("Plot Variable Data", BAMutil.getImage( "nj22/NetcdfUI"), dataPlot);
     plotWindow.setBounds( (Rectangle) prefs.getBean("PlotWindowBounds", new Rectangle( 300, 300, 300, 200)));    
     plotWindow.addWindowListener(new WindowAdapter() {
         @Override
@@ -151,7 +151,7 @@ public class DatasetViewer extends JPanel {
       outChooser.setVisible(true);
       }
     };
-    BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF file", false, 'S', -1);
+    BAMutil.setActionProperties(netcdfAction, "nj22/Netcdf", "Write netCDF file", false, 'S', -1);
     BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
     AbstractButton compareButton = BAMutil.makeButtcon("Select", "Compare to another file", false);
@@ -306,7 +306,7 @@ public class DatasetViewer extends JPanel {
           }
         }
       });
-      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "netcdfUI"), attTable);
+      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage( "nj22/NetcdfUI"), attTable);
       attWindow.setBounds( (Rectangle) prefs.getBean("AttWindowBounds", new Rectangle( 300, 100, 500, 800)));
     }
 

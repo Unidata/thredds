@@ -26,7 +26,7 @@ import java.util.ArrayList;
  */
 
 public class WorldMap extends GisFeatureRenderer {
-  private static final String WORLD_MAP = "/resources/nj22/ui/maps/cil_100km.mapr";
+  private static final String WORLD_MAP = "/resources/ui/maps/cil_100km.mapr";
   private static final double SECS_PER_DEG = 3600.0;
   private static boolean debug = false, debugTime = false;
 

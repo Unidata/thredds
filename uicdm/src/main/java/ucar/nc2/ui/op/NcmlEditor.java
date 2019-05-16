@@ -94,7 +94,7 @@ public class NcmlEditor extends JPanel {
         };
         addCoords = prefs.getBoolean("coordState", false);
         final String tooltip2 = addCoords ? "add Coordinates is ON" : "add Coordinates is OFF";
-        BAMutil.setActionProperties(coordAction, "addCoords", tooltip2, true, 'C', -1);
+        BAMutil.setActionProperties(coordAction, "nj22/AddCoords", tooltip2, true, 'C', -1);
         coordAction.putValue(BAMutil.STATE, addCoords);
         coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);
 
@@ -153,7 +153,7 @@ public class NcmlEditor extends JPanel {
                 editor.updateUI();
             }
         };
-        BAMutil.setActionProperties(wrapAction, "Wrap", "Toggle Wrapping", false, 'W', -1);
+        BAMutil.setActionProperties(wrapAction, "nj22/Wrap", "Toggle Wrapping", false, 'W', -1);
         BAMutil.addActionToContainer(buttPanel, wrapAction);
 
         final AbstractAction saveAction = new AbstractAction() {
@@ -202,7 +202,7 @@ public class NcmlEditor extends JPanel {
                 outChooser.setVisible(true);
             }
         };
-        BAMutil.setActionProperties(netcdfAction, "netcdf", "Write netCDF file", false, 'N', -1);
+        BAMutil.setActionProperties(netcdfAction, "nj22/Netcdf", "Write netCDF file", false, 'N', -1);
         BAMutil.addActionToContainer(buttPanel, netcdfAction);
 
         final AbstractAction transAction = new AbstractAction() {
@@ -230,7 +230,7 @@ public class NcmlEditor extends JPanel {
 
         // the info window
         infoTA = new TextHistoryPane();
-        infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
+        infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
         infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
     }
 

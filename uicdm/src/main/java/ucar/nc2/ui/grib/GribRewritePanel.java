@@ -65,7 +65,7 @@ public class GribRewritePanel extends JPanel {
         calcAverage();
       }
     };
-    BAMutil.setActionProperties(calcAction, "Dataset", "calc storage", false, 'C', -1);
+    BAMutil.setActionProperties(calcAction, "nj22/Dataset", "calc storage", false, 'C', -1);
     BAMutil.addActionToContainer(buttPanel, calcAction);
 
     PopupMenu varPopup = new PopupMenu(ftTable.getJTable(), "Options");
@@ -122,7 +122,7 @@ public class GribRewritePanel extends JPanel {
 
     // the info window
     TextHistoryPane infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     dumpTA = new TextHistoryPane();

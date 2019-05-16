@@ -44,6 +44,8 @@ public class GribRewriteOpPanel extends OpPanel {
         ftTable.addPropertyChangeListener(new PropertyChangeListener() {
             @Override
             public void propertyChange(PropertyChangeEvent e) {
+                if (!(e.getNewValue() instanceof String)) return;
+
                 final String pname = e.getPropertyName();
 
                 final String datasetName = (String) e.getNewValue();

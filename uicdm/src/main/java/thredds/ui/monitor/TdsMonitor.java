@@ -245,7 +245,7 @@ public class TdsMonitor extends JPanel {
       this.prefs = prefs;
       this.isAccess = isAccess;
       ta = new TextHistoryPane(true);
-      infoWindow = new IndependentWindow("Details", BAMutil.getImage("netcdfUI"), new JScrollPane(ta));
+      infoWindow = new IndependentWindow("Details", BAMutil.getImage("nj22/NetcdfUI"), new JScrollPane(ta));
       Rectangle bounds = (Rectangle) prefs.getBean(FRAME_SIZE, new Rectangle(200, 50, 500, 700));
       infoWindow.setBounds(bounds);
 
@@ -366,7 +366,7 @@ public class TdsMonitor extends JPanel {
           showDNS();
         }
       };
-      BAMutil.setActionProperties(dnsAction, "Dataset", "lookup DNS", false, 'D', -1);
+      BAMutil.setActionProperties(dnsAction, "nj22/Dataset", "lookup DNS", false, 'D', -1);
       BAMutil.addActionToContainer(topPanel, dnsAction);
 
       add(logTable, BorderLayout.CENTER);
@@ -543,14 +543,11 @@ public class TdsMonitor extends JPanel {
       System.out.println("XMLStore Creation failed " + e);
     }
 
-    // initializations
-    BAMutil.setResourcePath("/resources/nj22/ui/icons/");
-
     // put UI in a JFrame
     frame = new JFrame("TDS Monitor");
     ui = new TdsMonitor(prefs, frame);
 
-    frame.setIconImage(BAMutil.getImage("netcdfUI"));
+    frame.setIconImage(BAMutil.getImage("nj22/NetcdfUI"));
     frame.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
         if (!done) ui.exit();

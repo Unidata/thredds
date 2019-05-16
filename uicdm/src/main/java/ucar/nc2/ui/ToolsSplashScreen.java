@@ -44,7 +44,7 @@ public class ToolsSplashScreen extends JWindow {
  *
  */
     private ToolsSplashScreen() {
-        final Image image = Resource.getImage("/resources/nj22/ui/pix/ring2.jpg");
+        final Image image = Resource.getImage("/resources/ui/pix/ring2.jpg");
 
         if (image != null) {
             final ImageIcon icon = new ImageIcon(image);

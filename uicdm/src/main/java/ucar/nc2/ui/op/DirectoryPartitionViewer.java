@@ -169,7 +169,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
         // the info window
         infoTA = new TextHistoryPane();
-        infoWindow = new IndependentWindow("Information", BAMutil.getImage("netcdfUI"), infoTA);
+        infoWindow = new IndependentWindow("Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
         infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
         // file popup window

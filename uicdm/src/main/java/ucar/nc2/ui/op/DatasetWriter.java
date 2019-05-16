@@ -145,14 +145,14 @@ public class DatasetWriter extends JPanel {
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("netcdfUI"),
+    infoWindow = new IndependentWindow("Variable Information", BAMutil.getImage("nj22/NetcdfUI"),
         infoTA);
     infoWindow.setBounds(
         (Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // the data Table
     dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
-    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("netcdfUI"), dataTable);
+    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
     dataWindow
         .setBounds((Rectangle) prefs.getBean("dataWindow", new Rectangle(50, 300, 1000, 600)));
 
@@ -422,7 +422,7 @@ public class DatasetWriter extends JPanel {
           }
         }
       });
-      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage("netcdfUI"),
+      attWindow = new IndependentWindow("Global Attributes", BAMutil.getImage("nj22/NetcdfUI"),
           attTable);
       attWindow.setBounds((Rectangle) prefs.getBean("AttWindowBounds",
           new Rectangle(300, 100, 500, 800)));

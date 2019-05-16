@@ -178,7 +178,7 @@ public class NCdumpPane extends TextHistoryPane {
  *
  */
     private void makeImageViewer() {
-        imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("ImageData"));
+        imageWindow = new IndependentWindow("Image Viewer", BAMutil.getImage("nj22/ImageData"));
         imageView = new ImageViewPanel( null);
         imageWindow.setComponent( new JScrollPane(imageView));
         //imageWindow.setComponent( imageView);

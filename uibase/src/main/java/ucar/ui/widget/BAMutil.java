@@ -50,7 +50,7 @@ public class BAMutil {
     /** the state of "toggle" actions = Boolean */
   public static final String STATE = "state";
 
-  private static String defaultResourcePath = "/resources/nj22/ui/icons/";
+  private static String defaultResourcePath = "/resources/ui/icons/";
 
   // Check if on a mac
   private static final String osName = System.getProperty("os.name").toLowerCase();
@@ -60,7 +60,9 @@ public class BAMutil {
    * Set the resource path for icons, images, cursors.
    * @param path reletive to the classpath
    */
-  public static void setResourcePath( String path) { defaultResourcePath = path; }
+  public static void setResourcePath( String path) {
+    defaultResourcePath = path;
+  }
   public static String getResourcePath( ) { return defaultResourcePath; }
 
   private static final int META_KEY = (isMacOs) ? InputEvent.META_MASK : InputEvent.CTRL_MASK;

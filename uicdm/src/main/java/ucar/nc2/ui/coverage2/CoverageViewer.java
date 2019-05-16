@@ -435,7 +435,7 @@ public class CoverageViewer extends JPanel {
       public void actionPerformed(ActionEvent e) {
         if (infoWindow == null) {
           datasetInfoTA = new TextHistoryPane();
-          infoWindow = new IndependentWindow("Dataset Information", BAMutil.getImage("GDVs"), datasetInfoTA);
+          infoWindow = new IndependentWindow("Dataset Information", BAMutil.getImage("nj22/GDVs"), datasetInfoTA);
           infoWindow.setSize(700, 700);
           infoWindow.setLocation(100, 100);
         }
@@ -589,7 +589,7 @@ public class CoverageViewer extends JPanel {
         }
       }
     };
-    BAMutil.setActionProperties(dataProjectionAction, "DataProjection", "use Data Projection", true, 'D', 0);
+    BAMutil.setActionProperties(dataProjectionAction, "nj22/DataProjection", "use Data Projection", true, 'D', 0);
     dataProjectionAction.putValue(BAMutil.STATE, true);
 
     // contouring
@@ -600,7 +600,7 @@ public class CoverageViewer extends JPanel {
         draw(false);
       }
     };
-    BAMutil.setActionProperties(drawBBAction, "Contours", "draw bounding box", true, 'B', 0);
+    BAMutil.setActionProperties(drawBBAction, "nj22/Contours", "draw bounding box", true, 'B', 0);
     drawBBAction.putValue(BAMutil.STATE, false);
 
     // draw horiz
@@ -612,7 +612,7 @@ public class CoverageViewer extends JPanel {
         draw(false);
       }
     };
-    BAMutil.setActionProperties(drawHorizAction, "DrawHoriz", "draw horizontal", true, 'H', 0);
+    BAMutil.setActionProperties(drawHorizAction, "nj22/DrawHoriz", "draw horizontal", true, 'H', 0);
     state = store.getBoolean("drawHorizAction", true);
     drawHorizAction.putValue(BAMutil.STATE, state);
     drawHorizOn = state;
@@ -626,7 +626,7 @@ public class CoverageViewer extends JPanel {
         draw(false);
       }
     };
-    BAMutil.setActionProperties(drawVertAction, "DrawVert", "draw vertical", true, 'V', 0);
+    BAMutil.setActionProperties(drawVertAction, "nj22/DrawVert", "draw vertical", true, 'V', 0);
     state = store.getBoolean("drawVertAction", false);
     drawVertAction.putValue(BAMutil.STATE, state);
     drawVertOn = state;
@@ -639,7 +639,7 @@ public class CoverageViewer extends JPanel {
         draw(false);
       }
     };
-    BAMutil.setActionProperties(showGridAction, "Grid", "show grid lines", true, 'G', 0);
+    BAMutil.setActionProperties(showGridAction, "nj22/Grid", "show grid lines", true, 'G', 0);
     state = store.getBoolean("showGridAction", false);
     showGridAction.putValue(BAMutil.STATE, state);
     coverageRenderer.setDrawGridLines(state);
@@ -652,7 +652,7 @@ public class CoverageViewer extends JPanel {
         draw(false);
       }
     };
-    BAMutil.setActionProperties(showContoursAction, "Contours", "show contours", true, 'C', 0);
+    BAMutil.setActionProperties(showContoursAction, "nj22/Contours", "show contours", true, 'C', 0);
     state = store.getBoolean("showContoursAction", false);
     showContoursAction.putValue(BAMutil.STATE, state);
     coverageRenderer.setDrawContours(state);
@@ -665,7 +665,7 @@ public class CoverageViewer extends JPanel {
         draw(false);
       }
     };
-    BAMutil.setActionProperties(showContourLabelsAction, "ContourLabels", "show contour labels", true, 'L', 0);
+    BAMutil.setActionProperties(showContourLabelsAction, "nj22/ContourLabels", "show contour labels", true, 'L', 0);
     state = store.getBoolean("showContourLabelsAction", false);
     showContourLabelsAction.putValue(BAMutil.STATE, state);
     coverageRenderer.setDrawContourLabels(state);

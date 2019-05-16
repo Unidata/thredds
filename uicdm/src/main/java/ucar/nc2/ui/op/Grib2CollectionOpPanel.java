@@ -75,7 +75,7 @@ public class Grib2CollectionOpPanel extends OpPanel {
         });
         buttPanel.add(gdsButton);
 
-        final AbstractButton writeButton = BAMutil.makeButtcon("netcdf", "Write index", false);
+        final AbstractButton writeButton = BAMutil.makeButtcon("nj22/Netcdf", "Write index", false);
         writeButton.addActionListener(e -> {
             final Formatter f = new Formatter();
             try {

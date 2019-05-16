@@ -96,11 +96,11 @@ public class BufrMessageViewer extends JPanel {
         seperateWindow = (Boolean) getValue(BAMutil.STATE);
       }
     };
-    BAMutil.setActionProperties(seperateWindowAction, "DrawVert", "seperate DDS window", true, 'C', -1);
+    BAMutil.setActionProperties(seperateWindowAction, "nj22/DrawVert", "seperate DDS window", true, 'C', -1);
     seperateWindowAction.putValue(BAMutil.STATE, seperateWindow);
     BAMutil.addActionToContainer(buttPanel, seperateWindowAction);
 
-    AbstractButton distinctDdsButt = BAMutil.makeButtcon("dd", "Dump distinct DDS", false);
+    AbstractButton distinctDdsButt = BAMutil.makeButtcon("nj22/dd", "Dump distinct DDS", false);
     distinctDdsButt.addActionListener(e -> dumpDDS());
     buttPanel.add(distinctDdsButt);
 
@@ -128,7 +128,7 @@ public class BufrMessageViewer extends JPanel {
     });
     buttPanel.add(configButt);
 
-    AbstractButton writeButton = BAMutil.makeButtcon("V3", "Write index", false);
+    AbstractButton writeButton = BAMutil.makeButtcon("nj22/V3", "Write index", false);
     writeButton.addActionListener(e -> {
         Formatter f = new Formatter();
         try {
@@ -199,7 +199,7 @@ public class BufrMessageViewer extends JPanel {
         }
         if (seperateWindow) {
           TextHistoryPane ta = new TextHistoryPane();
-          IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), ta);
+          IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), ta);
           info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
           ta.appendLine(f.toString());
           ta.gotoTop();
@@ -373,12 +373,12 @@ public class BufrMessageViewer extends JPanel {
 
     // the info window
     infoTA = new TextHistoryPane();
-    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), infoTA);
+    infoWindow = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), infoTA);
     infoWindow.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
 
     // the info window 2
     infoTA2 = new TextHistoryPane();
-    infoWindow2 = new IndependentWindow("Extra Information-2", BAMutil.getImage("netcdfUI"), infoTA2);
+    infoWindow2 = new IndependentWindow("Extra Information-2", BAMutil.getImage("nj22/NetcdfUI"), infoTA2);
     infoWindow2.setBounds((Rectangle) prefs.getBean("InfoWindowBounds2", new Rectangle(300, 300, 500, 300)));
 
     split2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, false, ddsTable, obsTable);
@@ -421,7 +421,7 @@ public class BufrMessageViewer extends JPanel {
   private void makeDataTable() {
     // the data Table
     dataTable = new StructureTable((PreferencesExt) prefs.node("structTable"));
-    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("netcdfUI"), dataTable);
+    dataWindow = new IndependentWindow("Data Table", BAMutil.getImage("nj22/NetcdfUI"), dataTable);
     dataWindow.setBounds((Rectangle) prefs.getBean("dataWindow", new Rectangle(50, 300, 1000, 600)));
   }
 
@@ -530,7 +530,7 @@ public class BufrMessageViewer extends JPanel {
     m1.dump(f2);
 
     TextHistoryPane ta = new TextHistoryPane();
-    IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), ta);
+    IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), ta);
     info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
     ta.appendLine(f.toString());
     ta.gotoTop();
@@ -541,7 +541,7 @@ public class BufrMessageViewer extends JPanel {
     Formatter f1 = new Formatter();
     m1.dump(f1);
     TextHistoryPane ta = new TextHistoryPane();
-    IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("netcdfUI"), ta);
+    IndependentWindow info = new IndependentWindow("Extra Information", BAMutil.getImage("nj22/NetcdfUI"), ta);
     info.setBounds((Rectangle) prefs.getBean("InfoWindowBounds", new Rectangle(300, 300, 500, 300)));
     ta.appendLine(f1.toString());
     ta.gotoTop();

@@ -172,8 +172,8 @@ public class JTableSorted extends JPanel {
 
     // event manager
     lm = new ListenerManager(
-        "ucar.nc2.ui.event.UIChangeListener",
-        "ucar.nc2.ui.event.UIChangeEvent",
+        "ucar.ui.event.UIChangeListener",
+        "ucar.ui.event.UIChangeEvent",
         "processChange");
 
   }
