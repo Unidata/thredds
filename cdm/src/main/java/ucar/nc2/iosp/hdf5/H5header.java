@@ -1442,7 +1442,7 @@ public class H5header extends NCheader
     }
 
     if (transformReference && (facade.dobj.mdt.type == 7) && (facade.dobj.mdt.referenceType == 1)) { // region reference
-      log.warn("transform region Reference: facade=" + facade.name + " variable name=" + v.getFullName());
+      if (warnings) log.warn("transform region Reference: facade=" + facade.name + " variable name=" + v.getFullName());
       int nelems = (int) v.getSize();
       int heapIdSize = 12;
       /* doesnt work yet
