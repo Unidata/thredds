@@ -122,7 +122,7 @@ task signJars(type: SignJarsTask, dependsOn: jar) {
 
 // It's possible to test Webstart files locally before publishing them.
 // 1. Uncomment the 'webstartCodebase = null' line in the ext{} block above.
-// 2. Run this task: ./gradlew :ui:buildWebstart
+// 2. Run this task: ./gradlew :uicdm:buildWebstart
 // 3. You may need to whitelist Webstart locations that refer to the local file system.
 //    Go to "Java Control Panel->Security->Edit Site List..." and add the entry "file:/".
 // 4. Navigate to $webstartBuildDir and execute: javaws netCDFtools.jnlp

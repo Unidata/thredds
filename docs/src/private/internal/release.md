@@ -117,14 +117,14 @@
       ```
 
 1. Release Web Start to `www:/content/software/thredds/v${releaseMajor}/netcdf-java/webstart`
-    - Test Web Start locally. There are notes above `:ui:releaseWebstart` about how to do that.
+    - Test Web Start locally. There are notes above `:uicdm:releaseWebstart` about how to do that.
     - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
       `keystore`, `keystoreAlias`, `keystorePassword`, `webdir`, and `ftpdir` properties defined.
     - Rename old directories
       * `cd /content/software/thredds/v${releaseMajor}/netcdf-java/`
       * `mv webstart webstartOld`
     - Perform release
-      * `./gradlew :ui:clean :ui:releaseWebstart`
+      * `./gradlew :uicdm:clean :uicdm:releaseWebstart`
     - Test the new Web Start. If there were no errors, delete the old stuff.
       * `rm -r webstartOld`
 
@@ -135,7 +135,7 @@
       * `mv javadocAll javadocAllOld`
     - Perform release
       * `./gradlew :cdm:clean :cdm:releaseDocs`
-      * `./gradlew :ui:clean :ui:releaseDocs`
+      * `./gradlew :uicdm:clean :uicdm:releaseDocs`
     - If there were no errors and the new Javadoc looks good, delete the old stuff.
       * `rm -r javadocOld`
       * `rm -r javadocAllOld`
