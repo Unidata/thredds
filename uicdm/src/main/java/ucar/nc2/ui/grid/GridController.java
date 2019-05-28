@@ -13,6 +13,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
@@ -20,7 +21,6 @@ import java.util.List;
 import javax.swing.*;
 import org.jdom2.Element;
 import ucar.ma2.Array;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1D;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
@@ -502,7 +502,7 @@ public class GridController {
       ByteArrayOutputStream bos = new ByteArrayOutputStream(10000);
       GridDatasetInfo info = new GridDatasetInfo(gridDataset, "path");
       info.writeXML( info.makeDatasetDescription(), bos);
-      return bos.toString(CDM.utf8Charset.name());
+      return bos.toString(StandardCharsets.UTF_8.name());
     } catch (IOException ioe) {
         ioe.printStackTrace();
     }

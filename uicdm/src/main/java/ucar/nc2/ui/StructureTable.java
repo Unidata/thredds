@@ -5,11 +5,11 @@
 
 package ucar.nc2.ui;
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.*;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.Structure;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.ft.PointFeature;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
@@ -288,8 +288,7 @@ public class StructureTable extends JPanel {
     String filename = fileChooser.chooseFilename();
     if (filename == null) return;
     try {
-      PrintWriter pw = new PrintWriter(new File(filename),
-              CDM.utf8Charset.name());
+      PrintWriter pw = new PrintWriter(new File(filename), StandardCharsets.UTF_8.name());
 
       TableModel model = jtable.getModel();
       for (int col = 0; col < model.getColumnCount(); col++) {

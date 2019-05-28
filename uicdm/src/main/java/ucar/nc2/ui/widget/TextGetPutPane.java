@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.widget;
 
+import java.nio.charset.StandardCharsets;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -163,10 +164,7 @@ public class TextGetPutPane extends TextHistoryPane {
       // httpSession = HttpSession.getSession();
 
       task = new GetContentsTask(urlString);
-      ProgressMonitor pm = new ProgressMonitor(task);
-      pm.addActionListener(e -> {
-          // System.out.println(" setURL event"+e.getActionCommand());
-          if (e.getActionCommand().equals("success")) {
+      ProgressMonitor pm = new ProgressMonitor(task, () -> {
             ta.setText(task.contents);
 
             // add to combobox
@@ -174,7 +172,6 @@ public class TextGetPutPane extends TextHistoryPane {
             if (!list.contains(task.urlString))
               cb.addItem(task.urlString);
             cb.setSelectedItem(task.urlString);
-          }
       });
       pm.start(this, "Open URL " + urlString, 10);
     }
@@ -208,7 +205,7 @@ public class TextGetPutPane extends TextHistoryPane {
       String contents = getText();
       //boolean isCatalog = contents.indexOf("queryCapability") < 0;
 
-      ByteArrayInputStream is = new ByteArrayInputStream(contents.getBytes(CDM.utf8Charset));
+      ByteArrayInputStream is = new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8));
 
       try {
         CatalogBuilder catFactory = new CatalogBuilder();

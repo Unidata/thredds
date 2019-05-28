@@ -9,83 +9,64 @@ import java.awt.event.ActionListener;
 import javax.swing.event.EventListenerList;
 
 /**
- * This wraps a javax.swing.ProgressMonitor, which allows tasks to be canceled.
- * This class adds extra behavior to javax.swing.ProgressMonitor:
+ * This wraps a javax.swing.ProgressMonitor, which allows tasks to be canceled. This class adds
+ * extra behavior to javax.swing.ProgressMonitor:
  * <ol>
- *  <li> Pass in the ProgressMonitorTask you want to monitor.
- *  <li> Throws an actionEvent (on the AWT event thread) when the task is done.
- *  <li> If an error, pops up an error message.
- *  <li> Get status: success/failed/cancel when task is done.
+ * <li> Pass in the ProgressMonitorTask you want to monitor.
+ * <li> Throws an actionEvent (on the AWT event thread) when the task is done.
+ * <li> If an error, pops up an error message.
+ * <li> Get status: success/failed/cancel when task is done.
  * </ol>
  * <p/>
- * The ProgressMonitorTask is run in a background thread while a
- * javax.swing.ProgressMonitor dialog box shows progress. The task is checked every second
- * to see if its done or canceled.
+ * The ProgressMonitorTask is run in a background thread while a javax.swing.ProgressMonitor dialog
+ * box shows progress. The task is checked every second to see if its done or canceled.
  * <p/>
  * <pre>
- *  Example:
+ * Example:
  *
  * AddDatasetTask task = new AddDatasetTask(datasets);
  * ProgressMonitor pm = new ProgressMonitor(task);
  * pm.addActionListener( new ActionListener() {
- * public void actionPerformed(ActionEvent e) {
- * if (e.getActionCommand().equals("success")) {
- * doGoodStuff();
- * }
- * }
+ *  public void actionPerformed(ActionEvent e) {
+ *   if (e.getActionCommand().equals("success")) {
+ *     doGoodStuff();
+ *   }
+ *  }
  * });
  * pm.start( this, "Add Datasets", datasets.size());
  *
- * class AddDatasetTask extends ProgressMonitorTask {
- * private List datasets;
+ * (or)
  *
- * OpenDatasetTask(List datasets) { this.datasets = datasets; }
- *
- * public void run() {
- * Iterator iter = datasets.iterator();
- * while (iter.hasNext()) {
- * AddeDataset ads = (AddeDataset) iter.next();
- * this.note = ads.filenameReletive();
- * try {
- * ads.addImageData( currentSM.serverInfo(), results, false);
- * } catch (IOException ioe) {
- * error = ioe.getMessage();
- * break;
- * }
- * if (cancel) break;
- * this.progress++;
- * }
- * success = !cancel && !isError();
- * done = true;    // do last!
- * }
- * }
+ * AddDatasetTask task = new AddDatasetTask(datasets);
+ * ProgressMonitor pm = new ProgressMonitor(task, () -> doGoodStuff());
+ * pm.start( this, "Add Datasets", datasets.size());
  * </pre>
  *
  * @author jcaron
- * @version 1.0
- * @see ProgressMonitorTask
+ * @see {@link ProgressMonitorTask}
  */
 
 public class ProgressMonitor {
   private javax.swing.ProgressMonitor pm;
   private ProgressMonitorTask task;
   private javax.swing.Timer timer;
-  private Thread taskThread;
-  private int millisToPopup;
-  private int millisToDecideToPopup;
+  private int millisToPopup = 1000;
+  private int millisToDecideToPopup = 1000;
   private int secs = 0;
 
   // event handling
   private EventListenerList listenerList = new EventListenerList();
 
   public ProgressMonitor(ProgressMonitorTask task) {
-    this(task, 1000, 1000);
+    this(task, null);
   }
 
-  public ProgressMonitor(ProgressMonitorTask task, int millisToPopup, int millisToDecideToPopup) {
+  // Use a labda expression to be called on success.
+  public ProgressMonitor(ProgressMonitorTask task, Runnable successListener) {
     this.task = task;
-    this.millisToPopup = millisToPopup;
-    this.millisToDecideToPopup = millisToDecideToPopup;
+    if (successListener != null) {
+      addActionListener(new ActionListenerAdapter("success", successListener));
+    }
   }
 
   public ProgressMonitorTask getTask() {
@@ -104,9 +85,6 @@ public class ProgressMonitor {
     listenerList.add(ActionListener.class, l);
   }
 
-  /**
-   * Remove listener
-   */
   public void removeActionListener(ActionListener l) {
     listenerList.remove(ActionListener.class, l);
   }
@@ -121,11 +99,10 @@ public class ProgressMonitor {
   }
 
   /**
-   * Call this from awt event thread.
-   * The task is run in a background thread.
+   * Call this from awt event thread. The task is run in a background thread.
    *
-   * @param top              put ProgressMonitor on top of this component (may be null)
-   * @param taskName         display name of task
+   * @param top put ProgressMonitor on top of this component (may be null)
+   * @param taskName display name of task
    * @param progressMaxCount maximum number of Progress indicator
    */
   public void start(java.awt.Component top, String taskName, int progressMaxCount) {
@@ -135,7 +112,7 @@ public class ProgressMonitor {
     pm.setMillisToPopup(millisToPopup);
 
     // do task in a seperate, non-event, thread
-    taskThread = new Thread(task);
+    Thread taskThread = new Thread(task);
     taskThread.start();
 
     // create timer, whose events happen on the awt event Thread
@@ -157,25 +134,44 @@ public class ProgressMonitor {
         if (task.isDone()) {
           timer.stop();
           pm.close();
-          // Toolkit.getDefaultToolkit().beep();
 
           if (task.isError()) {
             javax.swing.JOptionPane.showMessageDialog(null, task.getErrorMessage());
           }
 
-          if (task.isSuccess())
+          if (task.isSuccess()) {
             fireEvent(new ActionEvent(this, 0, "success"));
-          else if (task.isError())
+          } else if (task.isError()) {
             fireEvent(new ActionEvent(this, 0, "error"));
-          else if (task.isCancel())
+          } else if (task.isCancel()) {
             fireEvent(new ActionEvent(this, 0, "cancel"));
-          else
+          } else {
             fireEvent(new ActionEvent(this, 0, "done"));
+          }
         }
       }
     };
 
     timer = new javax.swing.Timer(1000, watcher); // every second
     timer.start();
+  }
+
+  /** Wrap an action listener to filter on event type */
+  private class ActionListenerAdapter implements ActionListener {
+
+    private final String want;
+    private final Runnable delegate;
+
+    ActionListenerAdapter(String want, Runnable delegate) {
+      this.want = want;
+      this.delegate = delegate;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+      if (e.getActionCommand().equals(want)) {
+        delegate.run();
+      }
+    }
   }
 }

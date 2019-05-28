@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.widget;
 
+import java.nio.charset.StandardCharsets;
 import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import ucar.httpservices.HTTPException;
@@ -427,7 +428,7 @@ public class URLDumpPane extends TextHistoryPane {
       IO.copy(is, bout);
       is.close();
 
-      append(new String(bout.toByteArray(), CDM.utf8Charset));
+      append(new String(bout.toByteArray(), StandardCharsets.UTF_8));
       appendLine("end contents");
 
     } catch (MalformedURLException e) {
@@ -478,7 +479,7 @@ public class URLDumpPane extends TextHistoryPane {
       IO.copy(is, bout);
       is.close();
 
-      append(new String(bout.toByteArray(), CDM.utf8Charset));
+      append(new String(bout.toByteArray(), StandardCharsets.UTF_8));
 
     } catch (MalformedURLException e) {
       append(urlString + " is not a parseable URL");

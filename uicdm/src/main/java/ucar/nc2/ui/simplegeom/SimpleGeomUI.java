@@ -29,7 +29,6 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -251,17 +250,12 @@ public class SimpleGeomUI extends JPanel {
      if (ds == null) return;
 
      OpenDatasetTask openTask = new OpenDatasetTask(ds);
-     ProgressMonitor pm = new ProgressMonitor(openTask);
-     pm.addActionListener( new ActionListener() {
-       public void actionPerformed(ActionEvent e) {
-         if (e.getActionCommand().equals("success")) {
+     ProgressMonitor pm = new ProgressMonitor(openTask, () -> {
            controller.showDataset();
            gridTable.setDataset(controller.getFields());
            datasetNameLabel.setText("Dataset:  "+ controller.getDatasetUrlString());
            setSelected(true);
            gtWindow.hide();
-         }
-       }
      });
      pm.start( this, "Open Dataset "+ds.getName(), 100);
    }

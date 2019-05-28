@@ -5,10 +5,10 @@
 
 package ucar.nc2.ui.op;
 
+import java.nio.charset.StandardCharsets;
 import ucar.nc2.Attribute;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.NetcdfFileSubclass;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.hdf5.H5header;
 import ucar.nc2.iosp.hdf5.H5iosp;
 import ucar.ui.widget.BAMutil;
@@ -239,13 +239,13 @@ public class Hdf5ObjectTable extends JPanel {
         if (iosp == null) return;
 
         ByteArrayOutputStream os = new ByteArrayOutputStream(100 * 1000);
-        PrintWriter pw = new PrintWriter( new OutputStreamWriter(os, CDM.utf8Charset));
+        PrintWriter pw = new PrintWriter( new OutputStreamWriter(os, StandardCharsets.UTF_8));
         H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl("H5header/header H5header/headerDetails H5header/symbolTable H5header/memTracker"));
         H5header headerEmpty = (H5header) iosp.sendIospMessage("headerEmpty");
         headerEmpty.read(pw);
         H5header.setDebugFlags(new ucar.nc2.util.DebugFlagsImpl(""));
         pw.flush();
-        f.format("%s", os.toString(CDM.utf8Charset.name()));
+        f.format("%s", os.toString(StandardCharsets.UTF_8.name()));
         H5header.setDebugFlags( new ucar.nc2.util.DebugFlagsImpl());
     }
 

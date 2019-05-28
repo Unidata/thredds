@@ -5,6 +5,7 @@
 
 package ucar.nc2.ui.op;
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.StructureData;
 import ucar.ma2.StructureDataIterator;
 import ucar.nc2.NetcdfFile;
@@ -315,7 +316,7 @@ public class BufrMessageViewer extends JPanel {
             WritableByteChannel wbc = fos.getChannel()) {
             String headerS = mb.m.getHeader();
             if (headerS != null)
-              wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
+              wbc.write(ByteBuffer.wrap(headerS.getBytes(StandardCharsets.UTF_8)));
 
             byte[] raw = scan.getMessageBytes(mb.m);
             wbc.write(ByteBuffer.wrap(raw));
@@ -342,13 +343,13 @@ public class BufrMessageViewer extends JPanel {
 
           NetcdfFile ncd = makeBufrMessageAsDataset(mb.m);
           new Bufr2Xml(m, ncd, out, true);
-          infoTA.setText(out.toString(CDM.UTF8));
+          infoTA.setText(out.toString(StandardCharsets.UTF_8.name()));
 
         } catch (Exception ex) {
           StringWriter sw = new StringWriter();
           ex.printStackTrace(new PrintWriter(sw));
           try {
-            infoTA.appendLine(out.toString(CDM.UTF8));
+            infoTA.appendLine(out.toString(StandardCharsets.UTF_8.name()));
           } catch (UnsupportedEncodingException uee) {
             uee.printStackTrace();
           }
@@ -455,7 +456,7 @@ public class BufrMessageViewer extends JPanel {
              WritableByteChannel wbc = fos.getChannel()) {
           String headerS = m.getHeader();
           if (headerS != null)
-            wbc.write(ByteBuffer.wrap(headerS.getBytes(CDM.utf8Charset)));
+            wbc.write(ByteBuffer.wrap(headerS.getBytes(StandardCharsets.UTF_8)));
           byte[] raw = scan.getMessageBytes(m);
           wbc.write(ByteBuffer.wrap(raw));
         }
@@ -504,7 +505,7 @@ public class BufrMessageViewer extends JPanel {
     if (filename == null) return;
 
     try (FileOutputStream out = new FileOutputStream(filename)) {
-      OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+      OutputStreamWriter fout = new OutputStreamWriter(out, StandardCharsets.UTF_8);
       BufferedWriter bw = new BufferedWriter(fout);
       Formatter f = new Formatter(bw);
 

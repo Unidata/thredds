@@ -4,7 +4,7 @@
  */
 package ucar.nc2.ui.gis.shapefile;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 
 import java.io.DataInputStream;
 
@@ -40,7 +40,7 @@ class DbaseFieldDesc {
       Header[i] = (byte) ' ';
     }
     // put the name into the header
-    byte[] headerName = Name.getBytes(CDM.utf8Charset);
+    byte[] headerName = Name.getBytes(StandardCharsets.UTF_8);
     System.arraycopy(headerName, 0, Header, 0, headerName.length);
 
     Header[11] = Type;
@@ -61,7 +61,7 @@ class DbaseFieldDesc {
     }
 
     /* requires 1.1 compiler or higher */
-    Name = new String(Header, 0, 11, CDM.utf8Charset);
+    Name = new String(Header, 0, 11, StandardCharsets.UTF_8);
 
     Name = Name.trim();
     Type = Header[11];

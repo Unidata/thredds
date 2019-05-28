@@ -5,7 +5,7 @@
 
 package thredds.logs;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.unidata.util.StringUtil2;
 
 import java.io.*;
@@ -227,8 +227,7 @@ public class LogReader {
     try (InputStream ios = new FileInputStream(file)) {
       System.out.printf("-----Reading %s %n", file.getPath());
 
-      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios,
-              CDM.utf8Charset), 40 * 1000);
+      BufferedReader dataIS = new BufferedReader(new InputStreamReader(ios, StandardCharsets.UTF_8), 40 * 1000);
       int total = 0;
       int count = 0;
       while ((maxLines < 0) || (count < maxLines)) {

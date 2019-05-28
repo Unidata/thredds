@@ -5,13 +5,13 @@
 
 package ucar.nc2.ui.op;
 
+import java.nio.charset.StandardCharsets;
 import ucar.ma2.Array;
 import ucar.ma2.InvalidRangeException;
 import ucar.nc2.Attribute;
 import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.dataset.VariableDS;
@@ -306,7 +306,7 @@ public class VariableTable extends JPanel {
 		final CalendarDateFormatter printForm = new CalendarDateFormatter("yyyy-MM-dd HH:mm:ss", CalendarTimeZone.UTC);
 
 		try (final FileOutputStream fos = new FileOutputStream(filename);
-             final OutputStreamWriter osw = new OutputStreamWriter(fos, CDM.utf8Charset);
+             final OutputStreamWriter osw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
              final PrintWriter pw = new PrintWriter(osw)) {
 
 			pw.println("; file name : " + fds.getLocation());

@@ -68,8 +68,6 @@ public class GridUI extends JPanel {
   private PopupMenu mapBeanMenu;
 
   private JLabel datasetNameLabel;
-  // private Field.TextCombo gridUrlIF;
-  // private PrefPanel gridPP;
 
   // the various managers and dialog boxes
   private ProjectionManager projManager;
@@ -150,16 +148,6 @@ public class GridUI extends JPanel {
     }
   }
 
-    // give access to the Controller
-    /* NavigatedPanel getNavigatedPanel() { return panz; }
-    VertPanel getVertPanel() { return vertPanel; }
-    SuperComboBox getFieldChooser() { return fieldChooser; }
-    SuperComboBox getLevelChooser() { return levelChooser; }
-    SuperComboBox getTimeChooser() { return timeChooser; }
-    GridTable getGridTable() { return gridTable; }
-    JLabel getDataValueLabel() { return dataValueLabel; }
-    JLabel getPositionLabel() { return positionLabel; } */
-
       /** save all data in the PersistentStore */
   public void storePersistentData() {
     store.putInt( "vertSplit", splitDraw.getDividerLocation());
@@ -169,10 +157,6 @@ public class GridUI extends JPanel {
 
     if (projManager != null)
       projManager.storePersistentData();
-    /* if (csManager != null)
-      csManager.storePersistentData();
-    if (sysConfigDialog != null)
-      sysConfigDialog.storePersistentData(); */
 
     dsTable.save();
     dsTable.getPrefs().putBeanObject("DialogBounds", dsDialog.getBounds());
@@ -181,11 +165,6 @@ public class GridUI extends JPanel {
 
     controller.storePersistentData();
   }
-
- /* private boolean chooseDataset(String url) {
-    InvDataset invDs = new InvDatasetImpl( fname, ServerType.NETCDF);
-    return chooseDataset( invDs);
-  } */
 
   boolean isSelected() { return selected; }
   void setSelected( boolean b) {
@@ -249,16 +228,13 @@ public class GridUI extends JPanel {
      if (ds == null) return;
 
      OpenDatasetTask openTask = new OpenDatasetTask(ds);
-     ProgressMonitor pm = new ProgressMonitor(openTask);
-     pm.addActionListener(e -> {
-         if (e.getActionCommand().equals("success")) {
+     ProgressMonitor pm = new ProgressMonitor(openTask, () -> {
            controller.showDataset();
            gridTable.setDataset(controller.getFields());
            datasetNameLabel.setText("Dataset:  "+ controller.getDatasetUrlString());
            setSelected(true);
            gtWindow.hide();
-         }
-     });
+         });
      pm.start( this, "Open Dataset "+ds.getName(), 100);
    }
 
