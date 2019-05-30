@@ -5,8 +5,8 @@
 
 package ucar.nc2.ui.op;
 
+import java.nio.charset.StandardCharsets;
 import ucar.httpservices.*;
-import ucar.nc2.constants.CDM;
 import ucar.ui.event.ActionValueEvent;
 import ucar.ui.event.ActionValueListener;
 import ucar.ui.widget.BAMutil;
@@ -332,7 +332,7 @@ public class WmsViewer extends JPanel {
             }
 
             if (contents != null) {
-              info.format("%s%n", new String(contents, CDM.utf8Charset));
+              info.format("%s%n", new String(contents, StandardCharsets.UTF_8));
             }
           }
         }

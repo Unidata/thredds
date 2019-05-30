@@ -5,6 +5,7 @@
 
 package thredds.ui.monitor;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.text.*;
 import java.io.*;
@@ -21,7 +22,6 @@ import org.jfree.chart.renderer.xy.*;
 import org.jfree.data.time.*;
 import org.jfree.ui.*;
 import org.jfree.util.UnitType;
-import ucar.nc2.constants.CDM;
 
 /**
  * Class Description.
@@ -79,7 +79,7 @@ public class Chart extends JPanel {
       TimeSeries low = new TimeSeries("Low", Day.class);
 
       try (FileInputStream fin = new FileInputStream(filename);
-        BufferedReader br = new BufferedReader(new InputStreamReader(fin, CDM.utf8Charset))) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(fin, StandardCharsets.UTF_8))) {
 
         br.readLine(); // read key
         String line = br.readLine();

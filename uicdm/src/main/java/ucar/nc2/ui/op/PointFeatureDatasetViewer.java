@@ -5,12 +5,12 @@
 
 package ucar.nc2.ui.op;
 
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
 import org.apache.xmlbeans.XmlException;
 import ucar.ma2.StructureData;
 import ucar.nc2.NCdumpW;
 import ucar.nc2.NetcdfFileWriter;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.constants.FeatureType;
 import ucar.nc2.ft.*;
 import ucar.nc2.ft.point.StationFeature;
@@ -349,7 +349,7 @@ public class PointFeatureDatasetViewer extends JPanel {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream(5000);
         MarshallingUtil.marshalPointDataset(pfDataset, pfDataset.getDataVariables(), outStream);
 
-        infoTA.setText(outStream.toString(CDM.utf8Charset.name()));
+        infoTA.setText(outStream.toString(StandardCharsets.UTF_8.name()));
         infoTA.gotoTop();
         infoWindow.setVisible(true);
       } catch (IOException | XmlException ex) {

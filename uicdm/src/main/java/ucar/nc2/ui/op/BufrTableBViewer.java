@@ -5,8 +5,8 @@
 
 package ucar.nc2.ui.op;
 
+import java.nio.charset.StandardCharsets;
 import javax.annotation.Nullable;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.iosp.bufr.*;
 import ucar.nc2.iosp.bufr.tables.BufrTables;
 import ucar.nc2.iosp.bufr.tables.TableB;
@@ -131,7 +131,7 @@ public class BufrTableBViewer extends JPanel {
           String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
           if (filename == null) return;
           try (FileOutputStream out = new FileOutputStream(filename)) {
-            OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+            OutputStreamWriter fout = new OutputStreamWriter(out, StandardCharsets.UTF_8);
             BufferedWriter bw = new BufferedWriter(fout);
             Formatter f = new Formatter(bw);
             writeDiff(BufrTables.getWmoTableB(14), currTable, f);
@@ -157,7 +157,7 @@ public class BufrTableBViewer extends JPanel {
           String filename = fileChooser.chooseFilenameToSave(defloc + ".csv");
           if (filename == null) return;
           try (FileOutputStream out = new FileOutputStream(filename)) {
-            OutputStreamWriter fout = new OutputStreamWriter(out, CDM.utf8Charset);
+            OutputStreamWriter fout = new OutputStreamWriter(out, StandardCharsets.UTF_8);
             BufferedWriter bw = new BufferedWriter(fout);
             Formatter f = new Formatter(bw);
             writeLocal(currTable, f);

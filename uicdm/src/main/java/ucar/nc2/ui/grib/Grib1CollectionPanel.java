@@ -32,9 +32,9 @@
 
 package ucar.nc2.ui.grib;
 
+import java.nio.charset.StandardCharsets;
 import thredds.featurecollection.FeatureCollectionConfig;
 import thredds.inventory.*;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.grib.GdsHorizCoordSys;
 import ucar.nc2.grib.GribStatType;
 import ucar.nc2.grib.GribUtils;
@@ -632,7 +632,7 @@ public class Grib1CollectionPanel extends JPanel {
 
   public static void showCompleteRecord(Grib1Customizer cust, Grib1Record gr, String filename, Formatter f) {
     f.format("File = %s%n", filename);
-    f.format("Header = %s%n", new String(gr.getHeader(), CDM.utf8Charset));
+    f.format("Header = %s%n", new String(gr.getHeader(), StandardCharsets.UTF_8));
     f.format("Total length of GRIB message = %d%n", gr.getIs().getMessageLength());
     Grib1SectionProductDefinition pds = gr.getPDSsection();
     f.format("PDS len=%d%n", pds.getLength());
@@ -689,7 +689,7 @@ public class Grib1CollectionPanel extends JPanel {
       pds = r.getPDSsection();
       ptime = r.getParamTime(cust);
 
-      header = new String(r.getHeader(), CDM.utf8Charset);
+      header = new String(r.getHeader(), StandardCharsets.UTF_8);
       records = new ArrayList<>();
       param = cust.getParameter(pds.getCenter(), pds.getSubCenter(), pds.getTableVersion(), pds.getParameterNumber());
       gdsHash = r.getGDSsection().getGDS().hashCode();
@@ -787,7 +787,7 @@ public class Grib1CollectionPanel extends JPanel {
 
 
     public String getHeader() {
-      return new String(gr.getHeader(), CDM.utf8Charset).trim();
+      return new String(gr.getHeader(), StandardCharsets.UTF_8).trim();
     }
 
     public String getPeriod() {

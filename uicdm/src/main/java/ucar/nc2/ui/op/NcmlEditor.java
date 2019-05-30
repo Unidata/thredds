@@ -5,13 +5,13 @@
 
 package ucar.nc2.ui.op;
 
+import java.nio.charset.StandardCharsets;
 import org.bounce.text.LineNumberMargin;
 import org.bounce.text.ScrollableEditorPanel;
 import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLEditorKit;
 import org.bounce.text.xml.XMLStyleConstants;
 import org.jdom2.Element;
-import ucar.nc2.constants.CDM;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.ncml.NcMLReader;
 import ucar.nc2.ncml.NcMLWriter;
@@ -337,7 +337,7 @@ public class NcmlEditor extends JPanel {
         String text = editor.getText();
 
         try {
-          ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes(CDM.utf8Charset));
+          ByteArrayInputStream bis = new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8));
           NcMLReader.writeNcMLToFile(bis, data.outputFilename, data.version,
                         Nc4ChunkingStrategy.factory(data.chunkerType, data.deflate, data.shuffle)
           );

@@ -5,7 +5,7 @@
 
 package ucar.nc2.ui;
 
-import ucar.nc2.constants.CDM;
+import java.nio.charset.StandardCharsets;
 import ucar.ui.util.Resource;
 import ucar.ui.widget.BAMutil;
 
@@ -132,7 +132,7 @@ public class ToolsAboutWindow extends JWindow {
             if (is == null) {
                 return "5.0";
             }
-            BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, CDM.utf8Charset));
+            BufferedReader dataIS = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
             StringBuilder sbuff = new StringBuilder();
             for (int i = 0; i < 3; i++) {
                 sbuff.append(dataIS.readLine());

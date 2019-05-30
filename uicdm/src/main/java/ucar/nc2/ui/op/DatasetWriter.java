@@ -100,9 +100,6 @@ public class DatasetWriter extends JPanel {
 
   private CompareDialog dialog = null;
 
-  /**
-   *
-   */
   public DatasetWriter(PreferencesExt prefs, FileManager fileChooser) {
     this.prefs = prefs;
     this.fileChooser = fileChooser;
@@ -252,11 +249,8 @@ public class DatasetWriter extends JPanel {
     }
 
     WriterTask task = new WriterTask(data);
-    ProgressMonitor pm = new ProgressMonitor(task);
-    pm.addActionListener(e -> {
-      if (e.getActionCommand().equals("success")) {
-        logger.debug("{}}", e.getActionCommand());
-      }
+    ProgressMonitor pm = new ProgressMonitor(task, () -> {
+        logger.debug("success}");
     });
     pm.start(null, "Writing " + filename, ds.getVariables().size());
   }
