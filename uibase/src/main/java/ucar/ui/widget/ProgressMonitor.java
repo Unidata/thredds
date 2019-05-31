@@ -43,15 +43,13 @@ import javax.swing.event.EventListenerList;
  * </pre>
  *
  * @author jcaron
- * @see {@link ProgressMonitorTask}
+ * {@link ProgressMonitorTask}
  */
 
 public class ProgressMonitor {
   private javax.swing.ProgressMonitor pm;
   private ProgressMonitorTask task;
   private javax.swing.Timer timer;
-  private int millisToPopup = 1000;
-  private int millisToDecideToPopup = 1000;
   private int secs = 0;
 
   // event handling
@@ -61,8 +59,8 @@ public class ProgressMonitor {
     this(task, null);
   }
 
-  // Use a labda expression to be called on success.
-  public ProgressMonitor(ProgressMonitorTask task, Runnable successListener) {
+  // Add a successListener to be called on event type "success".
+  public ProgressMonitor(ProgressMonitorTask task, ActionListener successListener) {
     this.task = task;
     if (successListener != null) {
       addActionListener(new ActionListenerAdapter("success", successListener));
@@ -108,8 +106,8 @@ public class ProgressMonitor {
   public void start(java.awt.Component top, String taskName, int progressMaxCount) {
     // create ProgressMonitor
     pm = new javax.swing.ProgressMonitor(top, taskName, "", 0, progressMaxCount);
-    pm.setMillisToDecideToPopup(millisToDecideToPopup);
-    pm.setMillisToPopup(millisToPopup);
+    pm.setMillisToDecideToPopup(1000);
+    pm.setMillisToPopup(1000);
 
     // do task in a seperate, non-event, thread
     Thread taskThread = new Thread(task);
@@ -154,24 +152,5 @@ public class ProgressMonitor {
 
     timer = new javax.swing.Timer(1000, watcher); // every second
     timer.start();
-  }
-
-  /** Wrap an action listener to filter on event type */
-  private class ActionListenerAdapter implements ActionListener {
-
-    private final String want;
-    private final Runnable delegate;
-
-    ActionListenerAdapter(String want, Runnable delegate) {
-      this.want = want;
-      this.delegate = delegate;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-      if (e.getActionCommand().equals(want)) {
-        delegate.run();
-      }
-    }
   }
 }

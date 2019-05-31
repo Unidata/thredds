@@ -47,7 +47,7 @@ public class ManageForm extends JPanel {
     return stopButton;
   }
 
-  public ComboBox getServersCB() {
+  public ComboBox<String> getServersCB() {
     return serverCB;
   }
 
@@ -67,7 +67,7 @@ public class ManageForm extends JPanel {
     textArea1 = new JTextArea();
     wantRoots = new JRadioButton();
     stopButton = new StopButtonCancelTask();
-    serverCB = new ComboBox();
+    serverCB = new ComboBox<>();
     useHttps = new JToggleButton();
     downloadAction = new DownloadAction();
 
@@ -182,7 +182,7 @@ public class ManageForm extends JPanel {
   private JTextArea textArea1;
   private JRadioButton wantRoots;
   private StopButtonCancelTask stopButton;
-  private ComboBox serverCB;
+  private ComboBox<String> serverCB;
   private JToggleButton useHttps;
   private DownloadAction downloadAction;
   // JFormDesigner - End of variables declaration  //GEN-END:variables

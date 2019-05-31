@@ -22,7 +22,7 @@ import javax.swing.JButton;
  *
  */
 public class DateFormatMark extends OpPanel {
-    private ComboBox testCB;
+    private ComboBox<String> testCB;
     private DateFormatter dateFormatter = new DateFormatter();
     private TextHistoryPane ta;
 
@@ -35,7 +35,7 @@ public class DateFormatMark extends OpPanel {
         ta = new TextHistoryPane(true);
         add(ta, BorderLayout.CENTER);
 
-        testCB = new ComboBox(prefs);
+        testCB = new ComboBox<>(prefs);
         buttPanel.add(testCB);
 
         final JButton compareButton = new JButton("Apply");

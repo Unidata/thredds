@@ -66,7 +66,7 @@ public class CatalogChooser extends JPanel {
   private String eventType = null;
 
     // ui
-  private ComboBox catListBox;
+  private ComboBox<String> catListBox;
   private CatalogTreeView tree;
   private HtmlBrowser htmlViewer;
   private FileManager fileChooser;
@@ -105,7 +105,7 @@ public class CatalogChooser extends JPanel {
     if (showComboChooser) {
 
       // combo box holds the catalogs
-      catListBox = new ComboBox(prefs);
+      catListBox = new ComboBox<>(prefs);
 
       // top panel buttons
       JButton connectButton = new JButton("Connect");

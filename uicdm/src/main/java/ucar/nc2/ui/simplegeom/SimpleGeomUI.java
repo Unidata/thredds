@@ -250,7 +250,7 @@ public class SimpleGeomUI extends JPanel {
      if (ds == null) return;
 
      OpenDatasetTask openTask = new OpenDatasetTask(ds);
-     ProgressMonitor pm = new ProgressMonitor(openTask, () -> {
+     ProgressMonitor pm = new ProgressMonitor(openTask, (e) -> {
            controller.showDataset();
            gridTable.setDataset(controller.getFields());
            datasetNameLabel.setText("Dataset:  "+ controller.getDatasetUrlString());

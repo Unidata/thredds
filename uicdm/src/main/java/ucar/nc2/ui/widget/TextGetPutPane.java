@@ -164,7 +164,7 @@ public class TextGetPutPane extends TextHistoryPane {
       // httpSession = HttpSession.getSession();
 
       task = new GetContentsTask(urlString);
-      ProgressMonitor pm = new ProgressMonitor(task, () -> {
+      ProgressMonitor pm = new ProgressMonitor(task, (e) -> {
             ta.setText(task.contents);
 
             // add to combobox

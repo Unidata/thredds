@@ -249,7 +249,7 @@ public class DatasetWriter extends JPanel {
     }
 
     WriterTask task = new WriterTask(data);
-    ProgressMonitor pm = new ProgressMonitor(task, () -> {
+    ProgressMonitor pm = new ProgressMonitor(task, (e) -> {
         logger.debug("success}");
     });
     pm.start(null, "Writing " + filename, ds.getVariables().size());
