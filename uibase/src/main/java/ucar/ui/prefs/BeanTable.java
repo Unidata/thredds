@@ -350,7 +350,7 @@ public class BeanTable<T> extends JPanel {
     setBeans(null);
   }
 
-  public List getBeans() {
+  public List<T> getBeans() {
     return beans;
   }
 

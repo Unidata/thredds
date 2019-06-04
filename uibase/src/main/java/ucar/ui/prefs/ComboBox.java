@@ -91,8 +91,9 @@ public class ComboBox<E> extends JComboBox<E> {
   public void setPreferences(PersistenceManager prefs) {
     this.prefs = prefs;
     if (prefs != null) {
-      ArrayList<E> list = (ArrayList<E>) prefs.getList(LIST, null);
+      List<E> list = (List<E>) prefs.getList(LIST, null);
       setItemList(list);
+      setSelectedIndex(-1); // nothing is selected, so first selection causes change event.
     }
   }
 
@@ -195,8 +196,6 @@ public class ComboBox<E> extends JComboBox<E> {
   public void setItemList(Collection<E> list) {
     if (list == null) return;
     setModel( new DefaultComboBoxModel<>( (E[]) list.toArray()));
-    if (list.size() > 0)
-      setSelectedIndex(0);
   }
 
   /** Set the number of items to keep */
