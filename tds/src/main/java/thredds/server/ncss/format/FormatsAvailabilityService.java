@@ -27,6 +27,7 @@ public final class FormatsAvailabilityService {
     formatsAvailability.put(SupportedFormat.WKT, true);
     formatsAvailability.put(SupportedFormat.JSON, true);
     formatsAvailability.put(SupportedFormat.WATERML2, true);
+    formatsAvailability.put(SupportedFormat.WRF, true);
   }
 
   static public boolean isFormatAvailable(SupportedFormat format) {

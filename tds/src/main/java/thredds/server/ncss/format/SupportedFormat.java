@@ -29,7 +29,9 @@ public enum SupportedFormat {
   JSON("json", false, false, ".json", ContentType.json, "json", "geojson"),
   WKT("wkt", false, false, ".txt", ContentType.text, "wkt"),
 
-  WATERML2("waterml2", true, false, ".xml", ContentType.xml, "waterml2");
+  WATERML2("waterml2", true, false, ".xml", ContentType.xml, "waterml2"),
+
+  WRF("wrf", false, true, ".wrf", ContentType.binary, "wrf-intermediate");
 
   /*
    * First alias is used as content-type in the http headers

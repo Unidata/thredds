@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import thredds.core.AllowedServices;
 import thredds.core.StandardService;
@@ -36,6 +37,7 @@ import ucar.nc2.ft2.coverage.*;
 import ucar.nc2.ft2.coverage.writer.CFGridCoverageWriter2;
 import ucar.nc2.ft2.coverage.writer.CoverageAsPoint;
 import ucar.nc2.ft2.coverage.writer.CoverageDatasetCapabilities;
+import ucar.nc2.ft2.coverage.writer.CoverageSubsetter2;
 import ucar.nc2.util.IO;
 import ucar.nc2.util.Optional;
 
@@ -136,6 +138,66 @@ public class NcssGridController extends AbstractNcssController {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
+  /*
+  hvandam   Added support for wrf June 2019
+*/
+  @RequestMapping(value = "/**", method = RequestMethod.GET, params = "accept=wrf")
+  public void handleDataRequest(HttpServletRequest req, HttpServletResponse res,
+                                @Valid NcssGridParamsBean params, BindingResult validationResult)
+          throws IOException, BindException, InvalidRangeException {
+
+    if (!allowedServices.isAllowed(StandardService.netcdfSubsetGrid))
+      throw new ServiceNotAllowed(StandardService.netcdfSubsetGrid.toString());
+
+    if (validationResult.hasErrors())
+      throw new BindException(validationResult);
+
+    String datasetPath = getDatasetPath(req);
+    //NetcdfFile ncfile = TdsRequestedDataset.getNetcdfFile(req, res, datasetPath);
+
+    try (CoverageCollection gcd = TdsRequestedDataset.getCoverageCollection(req, res, datasetPath)) {
+      if (gcd == null) return;
+
+      Formatter errs = new Formatter();
+      if (!params.intersectsTime(gcd.getCalendarDateRange(), errs)) {
+        handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, errs.toString());
+        return;
+      }
+
+      // throws exception if grid names not valid
+      checkRequestedVars(gcd, params);
+      SubsetParams subsetParams = params.makeSubset(gcd);
+
+      // We need global attributes, subsetted axes, transforms, and the coverages with attributes and referencing
+      // subsetted axes.
+      Optional<CoverageCollection> opt = CoverageSubsetter2.makeCoverageDatasetSubset(gcd, params.getVar(), subsetParams);
+      //if (!opt.isPresent())
+      // set an an error message and return
+      // ucar.nc2.util.Optional.empty(opt.getErrorMessage());
+
+      CoverageCollection subsetDataset = opt.get();
+
+      //  call the wrf file writer
+/**********************
+ NcWRFFileWriter writer = new NcWRFFileWriter();
+
+ if(writer.writeWRFFile( subsetDataset, res.getOutputStream() )){
+
+ res.setContentType(ContentType.binary.getContentHeader());
+ res.setHeader("Content-Description", "wrf-intermediate");
+ res.getOutputStream().flush();
+
+ } else{
+ // return an error message
+ }
+ ***************/
+
+    } catch (Throwable t) {
+      throw new RuntimeException("NcssGridController on dataset " + datasetPath, t);
+    }
+  }
+
+  ////////////////
   private File makeCFNetcdfFile(CoverageCollection gcd, String responseFilename, NcssGridParamsBean params,
           NetcdfFileWriter.Version version) throws InvalidRangeException, IOException {
     SubsetParams subset = params.makeSubset(gcd);
