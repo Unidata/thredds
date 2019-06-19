@@ -70,16 +70,6 @@ public class TestPanelStore {
     pp2.addTextComboField("combo", "combo", list, 5, true);
 
     pp2.addTextComboField("comboNoedit", "comboNoedit", DataType.getTypeNames(), 5, false);
-
-
-/*    pp2.addHeading("Another Column:");
-    pp2.addDateField("date", "date", new Date());
-    try {
-      JFormattedTextField tf = new JFormattedTextField(new javax.swing.text.MaskFormatter("(###) ###-####"));
-      pp2.addTextFormattedField("ff", "ff", tf, "(303) 497-1234");
-    } catch (java.text.ParseException e) { } */
-
-
     pp2.finish();
     return pp2;
   }

@@ -65,7 +65,7 @@ public class NcmlEditor extends JPanel {
     private String ncmlLocation;
     private JEditorPane editor;
     private Map<String, String> protoMap = new HashMap<>(10);
-    private ComboBox protoChooser;
+    private ComboBox<String> protoChooser;
 
     private TextHistoryPane infoTA;
     private IndependentWindow infoWindow;
@@ -98,7 +98,7 @@ public class NcmlEditor extends JPanel {
         coordAction.putValue(BAMutil.STATE, addCoords);
         coordButt = BAMutil.addActionToContainer(buttPanel, coordAction);
 
-        protoChooser = new ComboBox((PreferencesExt) prefs.node("protoChooser"));
+        protoChooser = new ComboBox<>((PreferencesExt) prefs.node("protoChooser"));
         addProtoChoices();
         buttPanel.add(protoChooser);
         protoChooser.addActionListener(e -> {

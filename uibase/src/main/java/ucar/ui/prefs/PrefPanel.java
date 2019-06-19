@@ -81,19 +81,15 @@ import java.util.prefs.Preferences;
  */
 
 public class PrefPanel extends JPanel {
-  //static private KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-
   private String name;
   private Preferences prefs;
   private PersistenceManager storeData;
 
   private boolean finished = false;
   private HashMap<String, Field> flds = new HashMap<>(40);
-  // private ArrayList currentComps, colList; // track columns of components
   private List<LayoutComponent> layoutComponents; // use with form layout
   private int cursorRow = 0, cursorCol = 0; // current row and column
 
-  private JPanel mainPanel;
   private List<JComponent> auxButtons = new ArrayList<>();
 
   // event handling
@@ -555,158 +551,7 @@ public class PrefPanel extends JPanel {
    */
   public void finish( boolean addButtons) { finish( addButtons, BorderLayout.SOUTH); }
 
-  /*
-   * Call this when you have finish constructing the panel.
-   * @param addButtons if true, add buttons
-   * @param where to add the buttons BorderLayout.NORTH, SOUTH, EAST, WEST, CENTER
-   *
-  public void finish( boolean addButtons, String where) {
-    if (finished)
-      throw new IllegalStateException("PrefPanel "+name+": already called finish()");
-
-    mainPanel = new JPanel();
-    mainPanel.setLayout( new LayoutM("main"));
-
-    // fetch the stored widths if they exists
-    if (storeData != null) {
-      Preferences substore = prefs.node("sizes");
-      Iterator iter = flds.values().iterator();
-      while (iter.hasNext()) {
-        Field fld = (Field) iter.next();
-        int width = substore.getInt(fld.getName(), 0);
-        if (width > 0) {
-          JComponent comp = fld.getEditComponent();
-          Dimension prefDim = comp.getPreferredSize();
-          // System.out.println("pref = "+prefDim+" "+width);
-          comp.setPreferredSize(new Dimension( width, (int) prefDim.getHeight()));
-        }
-      }
-    }
-
-    // make each JPanel column
-    boolean multiColumn = colList.size() > 1;
-    int count = 0;
-    Iterator iter = colList.iterator();
-    JPanel lastPanel = null;
-    while (iter.hasNext()) {
-      //if (!first)
-      //  mainPanel.add( new JSeparator( SwingConstants.VERTICAL));
-      //first = false;
-
-      ArrayList cs = (ArrayList) iter.next();
-      JPanel panel =  makeColumnPanel( "panel"+count, cs);
-      if (multiColumn)
-        mainPanel.add( panel, new LayoutM.Constraint( lastPanel, 10, 0));
-      else
-        mainPanel = panel;
-
-      lastPanel = panel;
-      count++;
-    }
-
-      // button panel
-    JPanel buttPanel = new JPanel();
-    JButton acceptButton = new JButton("Apply");
-    buttPanel.add(acceptButton, null);
-    for (int i=0; i<auxButtons.size(); i++)
-      buttPanel.add((JComponent) auxButtons.get(i), null);
-
-      // button listeners
-    acceptButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent evt) {
-        accept();
-      }
-    });
-
-    /* if (helpTarget != null) {
-      JButton helpButton = new JButton("Help");
-      buttPanel.add(helpButton, null);
-      helpButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          System.out.println(" call help taget = "+ helpTarget);
-          ucar.unidata.ui.Help.getDefaultHelp().gotoTarget(helpTarget);
-          System.out.println(" complete help taget = "+ helpTarget);
-        }
-      });
-    }
-
-    //BoxLayout bl2 = new BoxLayout( this, BoxLayout.Y_AXIS);
-    setLayout( new BorderLayout());
-    add(mainPanel, BorderLayout.CENTER);
-
-    if (addButtons) {
-      if (where == BorderLayout.SOUTH) {
-        JPanel south = new JPanel();
-        south.setLayout(new BoxLayout( south, BoxLayout.Y_AXIS));
-        south.add( new JSeparator(SwingConstants.HORIZONTAL));
-        south.add( buttPanel);
-        add( south, BorderLayout.SOUTH);
-      } else
-        add(buttPanel, where);
-    }
-
-    finished = true;
-  }
-
-  // layout a column, based on maximum label width
-  private JPanel makeColumnPanel(String name, ArrayList comps) {
-    JPanel parent = new JPanel( new LayoutM(name));
-
-    // find max widths
-    double maxLabelWidth = 0.0;
-    double maxFieldWidth = 0.0;
-    for (int i = 0; i < comps.size(); i++) {
-      Object o = comps.get(i);
-      if (o instanceof JLabel) {
-        JLabel lab = (JLabel) o;
-        Dimension prefDim = lab.getPreferredSize();
-        maxLabelWidth = Math.max( maxLabelWidth, prefDim.getWidth());
-      } else if (o instanceof Field) {
-        Field fld = (Field) o;
-        JLabel lab = new JLabel(fld.getLabel()+" :");
-        Dimension prefDim = lab.getPreferredSize();
-        maxLabelWidth = Math.max( maxLabelWidth, prefDim.getWidth());
-        prefDim = fld.getEditComponent().getPreferredSize();
-        maxFieldWidth = Math.max( maxFieldWidth, prefDim.getWidth());
-      }
-    }
-    int totalWidth = (int) (maxLabelWidth+maxFieldWidth);
-
-    // do the layout; the labels are right justified, the fields left justified
-    ArrayList sepFlds = new ArrayList();
-    JComponent lastComp = null;
-    for (int i = 0; i < comps.size(); i++) {
-      Object o = comps.get(i);
-
-      if (o instanceof JLabel) {
-        JLabel lab = (JLabel) o;
-        parent.add( lab, new LayoutM.Constraint(lastComp, (int) -maxLabelWidth-20, 10));
-        lastComp = lab;
-
-      } else if (o instanceof Field) {
-        Field fld = (Field) o;
-        JLabel lab = new JLabel(fld.getLabel()+" :");
-        JComponent comp = fld.getEditComponent();
-
-        parent.add( lab, new LayoutM.Constraint(lastComp, (int) -maxLabelWidth, 10));
-        lastComp = lab;
-        parent.add( comp, new LayoutM.Constraint(lastComp, 5, 0));
-
-      }  else if (o instanceof JSeparator) {
-        JSeparator sep = (JSeparator) o;
-        parent.add( sep, new LayoutM.Constraint(lastComp, (int) -totalWidth, 10));
-        lastComp = sep;
-
-        Dimension prefDim = sep.getPreferredSize();
-        sep.setPreferredSize(new Dimension( totalWidth, (int) prefDim.getHeight()));
-      }
-
-    }
-
-    return parent;
-  } */
-
-  /**
+   /**
    * Call when finished adding components to the PrefPanel.
    * @param addButtons if true, add buttons
    * @param where BorderLayout.NORTH, SOUTH, EAST, WEST
@@ -806,7 +651,7 @@ public class PrefPanel extends JPanel {
       }
     }
 
-    mainPanel =  builder.getPanel();
+    JPanel mainPanel = builder.getPanel();
 
       // button panel
     JPanel buttPanel = new JPanel();
@@ -1009,6 +854,7 @@ public class PrefPanel extends JPanel {
   }
 
   // thanks to Heinz M. Kabutz
+  @Nullable
   public static Frame findActiveFrame() {
     Frame[] frames = JFrame.getFrames();
     for (Frame frame : frames) {

@@ -76,7 +76,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
     private TextHistoryPane infoTA;
     private IndependentWindow infoWindow;
-    private ComboBox cb;
+    private ComboBox<String> cb;
     private FileManager dirFileChooser;
     private boolean isFromIndex;
 
@@ -97,7 +97,7 @@ public class DirectoryPartitionViewer extends JPanel {
 
         if (topPanel != null && buttPanel != null) {
 
-            cb = new ComboBox(prefs);
+            cb = new ComboBox<>(prefs);
             cb.addActionListener(e -> {
                 String filename = (String) cb.getSelectedItem();
                 if (filename == null) {

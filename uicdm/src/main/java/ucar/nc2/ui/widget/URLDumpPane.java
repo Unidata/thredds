@@ -55,18 +55,18 @@ public class URLDumpPane extends TextHistoryPane {
     GET, PUT, HEAD, OPTIONS
   }
 
-  private ComboBox cb;
-  private JComboBox implCB;
+  private ComboBox<String> cb;
+  private JComboBox<Library> implCB;
   private HttpURLConnection currentConnection = null;
 
   public URLDumpPane(PreferencesExt prefs) {
     super(true);
 
     // combo box holds a list of urls
-    cb = new ComboBox(prefs);
+    cb = new ComboBox<>(prefs);
 
     // holds Library impl enum
-    implCB = new JComboBox<Library>();
+    implCB = new JComboBox<>();
     for (Library e : Library.values())
       implCB.addItem(e);
 

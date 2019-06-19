@@ -223,7 +223,7 @@ public class TdsMonitor extends JPanel {
     }
 
     void save() {
-      ComboBox servers = manage.getServersCB();
+      ComboBox<String> servers = manage.getServersCB();
       servers.save();
     }
   }

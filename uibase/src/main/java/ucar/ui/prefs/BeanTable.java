@@ -5,6 +5,7 @@
 
 package ucar.ui.prefs;
 
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.ui.table.HidableTableColumnModel;
@@ -13,7 +14,6 @@ import ucar.ui.table.TableAppearanceAction;
 import ucar.ui.table.UndoableRowSorter;
 import ucar.ui.widget.MultilineTooltip;
 import ucar.util.prefs.PreferencesExt;
-import ucar.util.prefs.XMLStore;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -59,30 +59,29 @@ import java.util.List;
  * @author John Caron
  */
 
-public class BeanTable extends JPanel {
+public class BeanTable<T> extends JPanel {
   private static final Logger logger = LoggerFactory.getLogger(BeanTable.class);
 
-  protected Class beanClass;
-  protected Object innerbean;
+  protected Class<T> beanClass;
+  protected T innerbean;
   protected PreferencesExt store;
   protected JTable jtable;
   protected JScrollPane scrollPane;
-  // protected EventListenerList listenerList = new EventListenerList();
 
-  protected List<Object> beans;
+  protected ArrayList<T> beans;
   protected TableBeanModel model;
 
   protected boolean debug = false, debugStore = false, debugBean = false, debugSelected = false;
 
-  public BeanTable(Class bc, PreferencesExt pstore, boolean canAddDelete) {
+  public BeanTable(Class<T> bc, PreferencesExt pstore, boolean canAddDelete) {
     this(bc, pstore, canAddDelete, null, null, null);
   }
 
-  public BeanTable(Class bc, PreferencesExt pstore, String header, String tooltip, BeanInfo info) {
+  public BeanTable(Class<T> bc, PreferencesExt pstore, String header, String tooltip, BeanInfo info) {
     this.beanClass = bc;
     this.store = pstore;
 
-    beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList<>()) : new ArrayList<>();
+    beans = (store != null) ? (ArrayList<T>) store.getBean("beanList", new ArrayList<>()) : new ArrayList<>();
     model = new TableBeanModelInfo(info);
     init(header, tooltip);
   }
@@ -97,12 +96,12 @@ public class BeanTable extends JPanel {
    * @param tooltip      optional tooltip label
    * @param bean         needed for inner classes to call reflected methods on
    */
-  public BeanTable(Class bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, Object bean) {
+  public BeanTable(Class<T> bc, PreferencesExt pstore, boolean canAddDelete, String header, String tooltip, T bean) {
     this.beanClass = bc;
     this.store = pstore;
     this.innerbean = bean;
 
-    beans = (store != null) ? (ArrayList<Object>) store.getBean("beanList", new ArrayList()) : new ArrayList<>();
+    beans = (store != null) ? (ArrayList<T>) store.getBean("beanList", new ArrayList()) : new ArrayList<>();
     model = new TableBeanModel(beanClass);
     init(header, tooltip);
 
@@ -119,7 +118,7 @@ public class BeanTable extends JPanel {
       // button listeners
       newButton.addActionListener(e -> {
           try {
-            Object newbean = beanClass.newInstance();
+            T newbean = beanClass.newInstance();
             addBean(newbean);
           } catch (Exception exc) {
             exc.printStackTrace();
@@ -131,13 +130,12 @@ public class BeanTable extends JPanel {
                   "Delete Records", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION)
             return;
 
-          for (Object o : getSelectedBeans()) {
+          for (T o : getSelectedBeans()) {
             beans.remove(o);
           }
           model.fireTableDataChanged();
       });
     }
-
   }
 
   public void setHeader(String header) {
@@ -260,9 +258,10 @@ public class BeanTable extends JPanel {
    *
    * @return the currently selected bean, or null if none selected
    */
-  public Object getSelectedBean() {
+  @Nullable
+  public T getSelectedBean() {
     int viewRowIndex = jtable.getSelectedRow();
-    if(viewRowIndex < 0)
+    if (viewRowIndex < 0)
       return null;
     int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
     return (modelRowIndex < 0) || (modelRowIndex >= beans.size()) ? null : beans.get(modelRowIndex);
@@ -274,8 +273,8 @@ public class BeanTable extends JPanel {
    * @return ArrayList of currently selected beans (wont be null).
    * @see #setSelectionMode
    */
-  public List getSelectedBeans() {
-    ArrayList<Object> list = new ArrayList<>();
+  public List<T> getSelectedBeans() {
+    ArrayList<T> list = new ArrayList<>();
     int[] viewRowIndices = jtable.getSelectedRows();
     for (int viewRowIndex : viewRowIndices) {
       int modelRowIndex = jtable.convertRowIndexToModel(viewRowIndex);
@@ -329,31 +328,29 @@ public class BeanTable extends JPanel {
     }
   }
 
-  public void addBean(Object bean) {
+  public void addBean(T bean) {
     beans.add(bean);
     int row = beans.size() - 1;
     model.fireTableRowsInserted(row, row);
   }
 
-  public void addBeans(ArrayList<Object> newBeans) {
+  public void addBeans(List<T> newBeans) {
     this.beans.addAll(newBeans);
     int row = beans.size() - 1;
     model.fireTableRowsInserted(row - newBeans.size(), row);
   }
 
-  public void setBeans(List beans) {
-    if (beans == null)
-      beans = new ArrayList<>(); // empty list
-    this.beans = beans;
+  public void setBeans(List<T> beans) {
+    this.beans = (beans == null) ? new ArrayList<>() : new ArrayList<>(beans);
     model.fireTableDataChanged(); // this should make the jtable update
-    revalidate();  // LOOK soemtimes it doesnt, try this
+    revalidate();  // LOOK sometimes it doesnt, try this
   }
 
   public void clearBeans() {
-    setBeans(new ArrayList());
+    setBeans(null);
   }
 
-  public List getBeans() {
+  public List<T> getBeans() {
     return beans;
   }
 
@@ -380,7 +377,7 @@ public class BeanTable extends JPanel {
    *
    * @param bean select this one; must be in the list.
    */
-  public void setSelectedBean(Object bean) {
+  public void setSelectedBean(T bean) {
     if (bean == null) return;
     int modelRowIndex = beans.indexOf(bean);
     int viewRowIndex = jtable.convertRowIndexToView(modelRowIndex);
@@ -400,9 +397,9 @@ public class BeanTable extends JPanel {
    *
    * @param want select these
    */
-  public void setSelectedBeans(List want) {
+  public void setSelectedBeans(List<T> want) {
     jtable.getSelectionModel().clearSelection();
-    for (Object bean : want) {
+    for (T bean : want) {
       int modelRowIndex = beans.indexOf(bean);
       int viewRowIndex = jtable.convertRowIndexToView(modelRowIndex);
 
@@ -415,11 +412,9 @@ public class BeanTable extends JPanel {
   private void makeRowVisible(int viewRowIndex) {
     Rectangle visibleRect = jtable.getCellRect(viewRowIndex, 0, true);
     if (debugSelected) System.out.println("----ensureRowIsVisible = " + visibleRect);
-    if (visibleRect != null) {
-      visibleRect.x = scrollPane.getViewport().getViewPosition().x;
-      jtable.scrollRectToVisible(visibleRect);
-      jtable.repaint();
-    }
+    visibleRect.x = scrollPane.getViewport().getViewPosition().x;
+    jtable.scrollRectToVisible(visibleRect);
+    jtable.repaint();
   }
 
   public void refresh() {
@@ -473,7 +468,7 @@ public class BeanTable extends JPanel {
      *
      * @param bean  a bean that has changed.
      */
-    public void fireBeanDataChanged(Object bean) {
+    public void fireBeanDataChanged(T bean) {
         int row = beans.indexOf(bean);
         if (row >= 0) {
             model.fireTableRowsUpdated(row, row);
@@ -589,7 +584,6 @@ public class BeanTable extends JPanel {
     protected List<PropertyDescriptor> properties = new ArrayList<>();
 
     protected TableBeanModel() {
-
     }
 
     protected TableBeanModel(Class beanClass) {
@@ -795,6 +789,7 @@ public class BeanTable extends JPanel {
       else return c;
     }
 
+    @Nullable
     protected Object zeroValue(Class c) {
       if (c == Boolean.class) return Boolean.FALSE;
       else if (c == Integer.class) return 0;
@@ -807,6 +802,7 @@ public class BeanTable extends JPanel {
     }
 
     // return PropertyDescriptor with this property name, return null if not exists
+    @Nullable
     protected PropertyDescriptor getProperty(String wantName) {
       for (PropertyDescriptor property : properties) {
         if (property.getName().equals(wantName))
@@ -858,169 +854,5 @@ public class BeanTable extends JPanel {
         }
       }
     }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////
-  // testing
-
-  public static class TestBean {
-    private String name, path, sbase, dtype, stype, ddhref;
-    private boolean u;
-    private int i;
-    private Date now = new Date();
-
-    public TestBean() {
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    // should not be editable
-    public String getPath() {
-      return path;
-    }
-
-    void setPath(String path) {
-      this.path = path;
-    }
-
-    // should not appear
-    String getServerBase() {
-      return sbase;
-    }
-
-    void setServerBase(String sbase) {
-      this.sbase = sbase;
-    }
-
-    // should not appear
-    String getDataType() {
-      return dtype;
-    }
-
-    public void setDataType(String dtype) {
-      this.dtype = dtype;
-    }
-
-    public String getServerType() {
-      return stype;
-    }
-
-    public void setServerType(String stype) {
-      this.stype = stype;
-    }
-
-    public String getDDref() {
-      return ddhref;
-    }
-
-    public void setDDref(String ddhref) {
-      this.ddhref = ddhref;
-    }
-
-    public boolean getUse() {
-      return u;
-    }
-
-    public void setUse(boolean u) {
-      this.u = u;
-    }
-
-    public int getII() {
-      return i;
-    }
-
-    public void setII(int i) {
-      this.i = i;
-    }
-
-    public Date getNow() {
-      return now;
-    }
-
-    public void setNow(Date now) {
-      this.now = now;
-    }
-
-    public static String editableProperties() {
-      return "name path serverbase serverType DDref use II now";
-    }
-  }
-
-  public static void main2(String[] args) {
-    TestBean testBean = new TestBean();
-    //Field.Text fld = new Field.Text("test", "label", "def", null);
-    Class beanClass = testBean.getClass();
-
-    try {
-      BeanInfo info = Introspector.getBeanInfo(beanClass, Object.class);
-      System.out.println("Bean " + beanClass.getName());
-
-      System.out.println("Properties:");
-      PropertyDescriptor[] pd = info.getPropertyDescriptors();
-      for (PropertyDescriptor propertyDescriptor : pd) {
-        System.out.println(
-            " " + propertyDescriptor.getName() + " " + propertyDescriptor.getPropertyType()
-                .getName());
-        String propName = propertyDescriptor.getName();
-        char first = Character.toUpperCase(propName.charAt(0));
-        String method_name = "get" + first + propName.substring(1);
-        System.out.println(" " + propName + " " + first + " " + method_name);
-
-        try {
-          Method method = beanClass.getMethod(method_name, (Class[]) null);
-          System.out.println(" method = " + method);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-
-      /* System.out.println( "Methods:");
-      MethodDescriptor[] md = info.getMethodDescriptors();
-      for (int i=0; i< md.length; i++) {
-        System.out.println( " "+md[i].getMethod()+" "+md[i].getParameterDescriptors());
-      } */
-
-    } catch (IntrospectionException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public static void main(String[] args) throws java.io.IOException {
-    final XMLStore xstore;
-    PreferencesExt store;
-
-    Date now = new Date();
-    java.text.DateFormat formatter = java.text.DateFormat.getDateInstance();
-    System.out.println("date : " + now + " // " + formatter.format(now));
-
-    xstore = XMLStore.createFromFile("C:/tmp/testBeanTable.xml", null);
-    store = xstore.getPreferences();
-    final BeanTable bt = new BeanTable(TestBean.class, store, true, "header", "header\ntooltip", null);
-
-    JFrame frame = new JFrame("Test BeanTable");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        try {
-          bt.saveState(true);
-          xstore.save();
-          System.exit(0);
-        } catch (java.io.IOException ee) {
-          ee.printStackTrace();
-        }
-      }
-    });
-
-    frame.getContentPane().add(bt);
-    bt.setPreferredSize(new Dimension(500, 200));
-
-    frame.pack();
-    frame.setLocation(300, 300);
-    frame.setVisible(true);
   }
 }

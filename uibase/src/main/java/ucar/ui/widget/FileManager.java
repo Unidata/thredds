@@ -56,7 +56,7 @@ public class FileManager {
   // regular
   private PreferencesExt prefs;
   private IndependentDialog w;
-  private ucar.ui.prefs.ComboBox dirComboBox;
+  private ucar.ui.prefs.ComboBox<String> dirComboBox;
   private JFileChooser chooser = null;
 
   // for override
@@ -171,7 +171,7 @@ public class FileManager {
     BAMutil.addActionToContainer(buttPanel, rescanAction);
 
     JPanel dirPanel = new JPanel(new BorderLayout());
-    dirComboBox = new ucar.ui.prefs.ComboBox(prefs);
+    dirComboBox = new ucar.ui.prefs.ComboBox<>(prefs);
     dirComboBox.setEditable(true);
     dirPanel.add(new JLabel(" Directories: "), BorderLayout.WEST);
     dirPanel.add(dirComboBox, BorderLayout.CENTER);

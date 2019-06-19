@@ -46,7 +46,7 @@ public class NCdumpPane extends TextHistoryPane {
     private static final String ImageViewer_WindowSize = "ImageViewer_WindowSize";
 
     private PreferencesExt prefs;
-    private ComboBox cb;
+    private ComboBox<String> cb;
     private CommonTask task;
     private StopButton stopButton;
     private FileManager fileChooser;
@@ -64,7 +64,7 @@ public class NCdumpPane extends TextHistoryPane {
         this.prefs = prefs;
         fileChooser = new FileManager(null, null, null, (PreferencesExt) prefs.node("FileManager"));
 
-        cb = new ComboBox(prefs);
+        cb = new ComboBox<>(prefs);
 
         final JButton getButton = new JButton("NCdump");
         getButton.setToolTipText("show selected data values");

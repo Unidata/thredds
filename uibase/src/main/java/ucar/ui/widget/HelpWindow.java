@@ -65,7 +65,7 @@ public class HelpWindow extends IndependentDialog {
       SwingUtilities.convertPointToScreen(op, source);
 
     setLocation( op);
-    super.show();
+    super.setVisible(true);
   }
 
   public void show() {

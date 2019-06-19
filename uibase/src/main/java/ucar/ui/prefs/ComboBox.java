@@ -5,16 +5,24 @@
 
 package ucar.ui.prefs;
 
+import java.awt.Component;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.JPopupMenu;
+import ucar.ui.widget.ActionListenerAdapter;
 import ucar.ui.widget.IndependentDialog;
 import ucar.util.prefs.PersistenceManager;
 import ucar.util.prefs.PreferencesExt;
-
-import java.util.*;
-import java.util.List;
-import java.io.IOException;
-import java.awt.event.*;
-import java.awt.*;
-import javax.swing.*;
 
 /**
  * A simple extension to JComboBox, which persists the n latest values.
@@ -28,30 +36,24 @@ import javax.swing.*;
  *   <li> prefs.putBeanObject() used for storage, so XMLEncoder used, so object must have no-arg Constructor.
  *  </ul>
  *
- * When listening for change events, generally key on type comboBoxChanged, and you
- *  must explicitly decide to save it in the list:
+ * When listening for change events, typically use addChangeListener(), which only throws an event on "comboBoxChanged".
+ * You must explicitly decide to save the selected Item in the list, eg on success.
+ * This moves it up the top of the saved list.
  *
  * <pre>
- *  cb.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("comboBoxChanged")) {
-          Object select = cb.getSelectedItem());
-          if (isOK( select))
-            cb.addItem( select);
-        }
-      }
+ *  cb.addChangeListener((e) -> {
+      Object select = cb.getSelectedItem());
+      if (isOK(select)) cb.addItem( select);
     });
   </pre>
-
  * @author John Caron
  */
-
-public class ComboBox extends JComboBox {
+public class ComboBox<E> extends JComboBox<E> {
   private static final String LIST = "ComboBoxList";
   private boolean deleting = false;
 
   private PersistenceManager prefs;
-  private int nkeep = 20;
+  private int nkeep;
 
   public ComboBox() {
     this( null, 20);
@@ -79,20 +81,28 @@ public class ComboBox extends JComboBox {
     addContextMenu();
   }
 
+  /**
+   * Add a listener that gets called only when the selected item changes.
+   */
+  public void addChangeListener(ActionListener successListener) {
+    addActionListener(new ActionListenerAdapter("comboBoxChanged", successListener));
+  }
+
   public void setPreferences(PersistenceManager prefs) {
     this.prefs = prefs;
     if (prefs != null) {
-      ArrayList list = (ArrayList) prefs.getList(LIST, null);
+      List<E> list = (List<E>) prefs.getList(LIST, null);
       setItemList(list);
+      setSelectedIndex(-1); // nothing is selected, so first selection causes change event.
     }
   }
 
-  public JComponent getDeepEditComponent() { 
+  public JComponent getDeepEditComponent() {
     return (JComponent) getEditor().getEditorComponent();
   }
 
   private JPopupMenu popupMenu;
-  public void addContextMenu() {
+  private void addContextMenu() {
     Component editComp = getEditor().getEditorComponent();
     popupMenu = new JPopupMenu();
     editComp.addMouseListener( new PopupTriggerListener() {
@@ -103,7 +113,7 @@ public class ComboBox extends JComboBox {
 
     AbstractAction deleteAction = new AbstractAction() {
       public void actionPerformed( java.awt.event.ActionEvent e) {
-        final JList delComp= new JList();
+        final JList<E> delComp= new JList<>();
         delComp.setModel( getModel());
         delComp.addListSelectionListener(e2 -> {
             int index = delComp.getSelectedIndex();
@@ -115,7 +125,7 @@ public class ComboBox extends JComboBox {
         });
 
         IndependentDialog iw = new IndependentDialog(null, true, "delete items", delComp);
-        iw.show();
+        iw.setVisible(true);
       }
     };
     deleteAction.putValue( Action.NAME, "Delete");
@@ -123,7 +133,7 @@ public class ComboBox extends JComboBox {
 
     AbstractAction deleteAllAction = new AbstractAction() {
       public void actionPerformed( java.awt.event.ActionEvent e) {
-        setItemList( new ArrayList());
+        setItemList( new ArrayList<>());
       }
     };
     deleteAllAction.putValue( Action.NAME, "Delete All");
@@ -145,7 +155,7 @@ public class ComboBox extends JComboBox {
    * Add the item to the top of the list. If it already exists, move it to the top.
    * @param item to be added.
    */
-  public void addItem( Object item) {
+  public void addItem(E item) {
     if (item == null) return;
     for (int i=0; i<getItemCount(); i++) {
       if (item.equals( getItemAt(i))) {
@@ -170,10 +180,10 @@ public class ComboBox extends JComboBox {
 
   /**
    * Use this to obtain the list of items.
-   * @return ArrayList of items, may be any Object type.
+   * @return ArrayList of items, of type E.
    */
-  public List<Object> getItemList() {
-    ArrayList<Object> list = new ArrayList<>();
+  public List<E> getItemList() {
+    ArrayList<E> list = new ArrayList<>();
     for (int i=0; i< getItemCount() && i < nkeep; i++)
       list.add( getItemAt(i));
     return list;
@@ -181,14 +191,11 @@ public class ComboBox extends JComboBox {
 
   /**
    * Use this to set the list of items.
-   * @param list of items, may be any Object type.
+   * @param list of items of type E.
    */
-  public void setItemList(Collection<Object> list) {
+  public void setItemList(Collection<E> list) {
     if (list == null) return;
-    setModel( new DefaultComboBoxModel( list.toArray()));
-
-    if (list.size() > 0)
-      setSelectedIndex(0);
+    setModel( new DefaultComboBoxModel<>( (E[]) list.toArray()));
   }
 
   /** Set the number of items to keep */
@@ -198,56 +205,13 @@ public class ComboBox extends JComboBox {
 
   /** Get value from Store, will be an ArrayList or null */
   protected Object getStoreValue(Object defValue) {
-    if (prefs == null)
-      return defValue;
+    if (prefs == null) return defValue;
     return ((PreferencesExt)prefs).getBean(LIST, defValue);
   }
 
   /** Put new value into Store, must be a List of Strings */
-  protected void setStoreValue(List newValue) {
+  protected void setStoreValue(List<E> newValue) {
     if (prefs != null)
       prefs.putList(LIST, newValue);
   }
-
-  // debug
-  private static long lastEvent;
-  public static void main(String[] args) throws IOException {
-
-    JFrame frame = new JFrame("Test");
-    frame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        System.exit(0);
-      }
-    });
-
-    final ComboBox cb = new ComboBox( null);
-    cb.addActionListener(e -> {
-        System.out.println("**** cb event="+e);
-        if (e.getActionCommand().equals("comboBoxChanged")) {
-          //System.out.println("cb.getSelectedItem="+cb.getSelectedItem());
-          cb.addItem( cb.getSelectedItem());
-        }
-    });
-    cb.getEditor().getEditorComponent().setForeground(Color.red);
-
-    /* JButton butt = new JButton("accept");
-   butt.addActionListener( new AbstractAction() {
-      public void actionPerformed(ActionEvent e) {
-        System.out.println("butt accept");
-        cb.accept();
-     }
-   }); */
-
-    JPanel main = new JPanel();
-    main.add(cb);
-    // main.add(butt);
-
-    frame.getContentPane().add(main);
-    // cb.setPreferredSize(new java.awt.Dimension(500, 200));
-
-    frame.pack();
-    frame.setLocation(300, 300);
-    frame.setVisible(true);
-  }
-
 }
