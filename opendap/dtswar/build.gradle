@@ -4,7 +4,7 @@ ext.title = "DAP Test Server (DTS) webapp"
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
 // dtswar has no tests
-// dtswar is not published
+apply from: "$rootDir/gradle/any/publishing.gradle"
 apply from: "$rootDir/gradle/any/gretty.gradle"
 
 apply plugin: 'war'
