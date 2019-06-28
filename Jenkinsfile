@@ -14,12 +14,13 @@ pipeline {
         stage('package') {
             agent {
                 dockerfile {
-                    args '-v ${HOME}/.m2:/home/jenkins/.m2 -v ${HOME}/.gradle:/home/jenkins/.gradle'
+                    args '-v ${HOME}/.m2:/home/builder/.m2 -v ${HOME}/.gradle:/home/builder/.gradle'
+                    additionalBuildArgs '--build-arg BUILDER_UID=${JENKINS_UID:-9999}'
                 }
             }
             environment {
-                HOME = '/home/jenkins'
-                JAVA_TOOL_OPTIONS = '-Duser.home=/home/jenkins'
+                HOME = '/home/builder'
+                JAVA_TOOL_OPTIONS = '-Duser.home=/home/builder'
             }
             steps {
                 sh './gradlew clean assemble'
