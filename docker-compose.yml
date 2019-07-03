@@ -3,7 +3,10 @@ version: '2'
 services:
   dev:
     image: thredds-build
-    build: .
+    build:
+      context: .
+      args:
+        BUILDER_UID: 1000
     stdin_open: true
     tty: true
     working_dir: /app
