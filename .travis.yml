@@ -1,3 +1,4 @@
+dist: trusty
 language: java
 
 # Previously, we were seeing a failure in :it:appBeforeIntegrationTest:
