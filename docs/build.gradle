@@ -126,7 +126,7 @@ tasks.withType(PublishToRawRepoTask).all {  // Common PublishToRawRepoTask confi
     group = "Documentation"
     
     host = "https://artifacts.unidata.ucar.edu/"
-    repoName = "thredds-doc"
+    repoName = "old-thredds-doc"
     
     onlyIf {
         // Will be evaluated at task execution time, not during configuration.
@@ -179,6 +179,6 @@ import edu.ucar.build.publishing.DeleteFromNexusTask
 // To actually delete those components, do:  ./gradlew :docs:deleteFromNexus --dryRun=false
 task deleteFromNexus(type: DeleteFromNexusTask) {
     host = "https://artifacts.unidata.ucar.edu/"
-    searchQueryParameters.repository = 'thredds-doc'
+    searchQueryParameters.repository = 'old-thredds-doc'
     searchQueryParameters.q = '*'  // Nuke everything in the repo.
 }
