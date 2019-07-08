@@ -27,7 +27,7 @@ class PublishToRawRepoTask extends DefaultTask {
     @Input
     String host
     
-    /** The name of the raw repository to publish to, e.g. {@code thredds-doc}. */
+    /** The name of the raw repository to publish to, e.g. {@code old-thredds-doc}. */
     @Input
     String repoName
     

@@ -1,7 +1,7 @@
 apply from: "$rootDir/gradle/any/dependencies.gradle"
 apply from: "$rootDir/gradle/any/java.gradle"
 // d4ts has no tests
-// d4ts is not published
+apply from: "$rootDir/gradle/any/publishing.gradle"
 apply from: "$rootDir/gradle/any/gretty.gradle"
 
 apply plugin: 'war'
