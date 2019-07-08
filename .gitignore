@@ -1,0 +1,72 @@
+# Ignore all target directories
+target/
+
+# Ignore possible THREDDS content directories
+tds/content/
+
+# Ignore unwanted IntelliJ IDEA project files
+/intelliJ/
+/intellij/
+*.ipr
+*.iml
+*.iws
+.idea/
+atlassian-ide-plugin.xml
+
+# ignore intellij compile directories
+# `module`/out/ (i.e. tds/out)
+*/out/
+# `module`/`submodule`/out (i.e. dap4/d4core/out/)
+*/*/out/
+
+# Ignore Dreamweaver balogna
+_notes
+_compareTemp
+
+# Ignore eclipse project files
+.classpath
+.project
+.settings/
+bin/
+*~
+
+# Ignore the Gradle cache directory.
+.gradle/
+# Ignore the output that Gradle generates in the "build/" directories...
+build/
+# ...but not the source code in the "edu.ucar.build" package.
+!**/src/**/edu/ucar/build/
+
+# Ignore default content directory for mock servlets
+tds/src/content/
+
+#More testing stuff
+tds/src/test/data/thredds/cataloggen/config/
+tds/src/test/data/thredds/logs/
+opendap/src/test/data/test.*.*
+tds/src/test/content/thredds/logs
+tds/src/test/content/thredds/cache
+tds/src/test/content/thredds/state
+tds/src/test/content/thredds/notebooks/
+tds/src/test/content/thredds/templates/
+
+# OS generated files 
+.DS_Store*
+ehthumbs.db
+# On Windows (and Mac?), it appears that the "Icon" line is followed by two blank lines.
+# DO NOT DELETE THEM. They are actually carraige returns ('\r'), and are part of the pattern.
+# See https://github.com/github/gitignore/pull/183
+Icon
+
+
+Thumbs.db
+*.swp
+*.*~
+._*
+
+# Coverity files 
+cov-int
+thredds.tgz
+
+# ignore shade plugin generated dependency-reduced-pom for ncIdv
+ncIdv/dependency-reduced-pom.xml
