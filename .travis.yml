@@ -23,8 +23,8 @@ env:
 
 matrix:
   include:
-    - jdk: oraclejdk8
-#      env: BUILD_IDV=true
+    - openjdk8
+    - oraclejdk8
 
 script:
   # If we need to do an IDV build, run the script
