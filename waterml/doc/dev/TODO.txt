@@ -1,4 +1,0 @@
-2014/05/14:
-I'm currently duplicating a lot of time and featureOfInterest data in the WaterML I'm producing.
-Here is an example using xlink:href that elminates the duplication:
-http://external.opengis.org/twiki_public/pub/WaterML/ExampleMinimal/measurement-collection.xml

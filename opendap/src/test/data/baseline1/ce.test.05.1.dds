@@ -1,7 +1,0 @@
-Dataset {
-  Structure {
-    Structure {
-      Float32 f32;
-    } floats;
-  } types;
-} NestedStructure;

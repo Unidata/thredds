@@ -1,8 +1,0 @@
-
-# more float testing
-
-Attributes {
-    var1 {
-        Float64 f1 -3..0;
-    }
-}

@@ -1,9 +1,0 @@
-:source-highlighter: coderay
-[[threddsDocs]]
-
-
-== SECTION TITLE
-
-=== SUBSECTION TITLE 1
-
-=== SUBSECTION TITLE 2

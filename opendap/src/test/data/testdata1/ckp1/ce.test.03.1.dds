@@ -1,3 +1,0 @@
-Dataset {
-  Int32 i32[2][2][3];
-} MultiDimensionalSimpleArrays;

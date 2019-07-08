@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" enhance="all">
-    <variable name="my_var" shape="" type="short">
-        <attribute name="long_name" value="my_var_name" />
-        <attribute name="_FillValue" type="short" value="55555" isUnsigned="true" />
-        <attribute name="_Unsigned" value="true" />
-    </variable>
-</netcdf>

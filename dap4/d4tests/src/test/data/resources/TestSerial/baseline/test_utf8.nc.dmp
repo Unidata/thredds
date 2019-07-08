@@ -1,9 +1,0 @@
-<Dataset>
-    <Dimension name="d2" size="2"/>
-    <String name="vs">
-        <Dim name="d2"/>
-    </String>
-    <Attribute name="_CoordSysBuilder" type="String" value="ucar.nc2.dataset.conv.DefaultConvention"/>
-</Dataset>
-vs(0) = "Καλημέα" ;
-vs(1) = "abc" ;

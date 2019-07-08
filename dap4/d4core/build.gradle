@@ -1,8 +1,0 @@
-// d4core has no dependencies
-apply from: "$rootDir/gradle/any/java.gradle"
-// d4core has no tests
-apply from: "$rootDir/gradle/any/archiving.gradle"
-apply from: "$rootDir/gradle/any/publishing.gradle"
-
-dependencies {
-}

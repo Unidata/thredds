@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
-    <variable name="foo" shape="" type="double">
-        <attribute name="_FillValue" type="double" value="99999" />
-        <attribute name="scale_factor" type="double" value="1.e-05" />
-        <values>99999</values>
-    </variable>
-</netcdf>

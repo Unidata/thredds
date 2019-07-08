@@ -1,8 +1,0 @@
-
-# still more ... This should work
-
-Attributes {
-    var1 {
-        Float64 f1 3;
-    }
-}

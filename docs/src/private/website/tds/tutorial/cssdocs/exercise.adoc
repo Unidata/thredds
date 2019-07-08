@@ -1,9 +1,0 @@
-:source-highlighter: coderay
-[[threddsDocs]]
-
-
-== SECTION TITLE
-
-=== SUBSECTION TITLE
-
-=== Exercise One: Bla bla bla

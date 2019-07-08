@@ -1,8 +1,0 @@
-
-# test for bad floating point values
-
-Attributes {
-    var1 {
-        Float64 f1 3.0.0;
-    }
-}

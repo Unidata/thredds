@@ -1,8 +1,0 @@
-attributes {
-    a {
-	string b c;
-	string d 4;
-    }
-}
-
-# single letter ID's and EOF w/o a preceding return

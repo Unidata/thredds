@@ -1,5 +1,0 @@
-error {
-code = 57;
-message = "message";
-program = "test1";
-};
