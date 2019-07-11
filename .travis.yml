@@ -1,6 +1,6 @@
 dist: trusty
 language: java
-sudo: false
+sudo: true 
 
 addons:
   artifacts:
@@ -19,24 +19,15 @@ addons:
 env:
   global:
     - LD_LIBRARY_PATH=${TRAVIS_BUILD_DIR}/travis/lib/ubuntu-14.04.5-amd64
-    - BUILD_IDV=false
 
-matrix:
-  include:
-    - openjdk8
-    - oraclejdk8
+jdk:
+  - openjdk8
+  - oraclejdk8
 
 script:
-  # If we need to do an IDV build, run the script
-  - if [[ $BUILD_IDV == true ]]; then
-      travis/build_idv.sh;
-    fi
-
-  - if [[ $BUILD_IDV == false ]]; then
-      echo If available, test report at;
-      echo http://unidata-tds.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
-      ./gradlew --info testAll;
-    fi
+  echo If available, test report at;
+  echo http://unidata-tds.s3.amazonaws.com/Travis/${TRAVIS_BRANCH}-${TRAVIS_BUILD_NUMBER}/${TRAVIS_JOB_NUMBER}/index.html;
+  ./gradlew --info testAll;
 
 cache:
   directories:
