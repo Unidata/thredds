@@ -253,6 +253,7 @@
 
                                     <div id="gridPreviewFrame">
                                         <div id="gridPreview">
+                                            <span></span>
                                             <!-- grid preview... -->
                                         </div>
                                     </div>
