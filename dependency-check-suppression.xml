@@ -40,5 +40,13 @@
       <cve>CVE-2012-5881</cve>
       <cve>CVE-2012-5882</cve>
       <cve>CVE-2012-5883</cve>
-   </suppress>
+  </suppress>
+  <suppress>
+      <notes><![CDATA[
+      file name: tds-4.6.14-SNAPSHOT.war: ncwms-1.2.tds.4.6.12.jar
+      reason: ncwms does not use trac libs
+      ]]></notes>
+      <packageUrl regex="true">^pkg:maven/uk\.ac\.rdg\.resc/ncwms@.*$</packageUrl>
+      <cpe>cpe:/a:trac:trac</cpe>
+  </suppress>
 </suppressions>
