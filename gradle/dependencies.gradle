@@ -192,7 +192,7 @@ libraries["jcip-annotations"] = "net.jcip:jcip-annotations:1.0"
 
 libraries["jdom2"] = "org.jdom:jdom2:2.0.4"
 
-libraries["je"] = "com.sleepycat:je:4.0.92"
+libraries["je"] = "com.sleepycat:je:18.3.12"
 
 libraries["jna"] = "net.java.dev.jna:jna:4.2.2"
 
