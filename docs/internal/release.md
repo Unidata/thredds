@@ -107,29 +107,29 @@
 
 17. Set the `webdir` and `ftpdir` Gradle properties
     - Open `~/.gradle/gradle.properties`
-    - Set `webdir` to `${webMountDir}/content/software/thredds/v${releaseMajor}/netcdf-java`
+    - Set `webdir` to `${webMountDir}/content/software/netcdf-java/v${releaseMajor}`
     - Set `ftpdir` to `${webMountDir}/ftp/pub/netcdf-java/v${releaseMajor}`
     - The value of `webMountDir` will likely differ, but mine is `/Volumes/web`.
     - So for example, on OS X, my (Christian's) Gradle properties for `webdir` and `ftpdir` are:
       ```properties
-      webdir=/Volumes/web/content/software/thredds/v4.6/netcdf-java
+      webdir=/Volumes/web/content/software/netcdf-java/v4.6
       ftpdir=/Volumes/web/ftp/pub/netcdf-java/v4.6
       ```
 
-18. Release Web Start to `www:/content/software/thredds/v${releaseMajor}/netcdf-java/webstart`
+18. Release Web Start to `www:/content/software/netcdf-java/v${releaseMajor}/webstart`
     - Make sure that you have the correct gradle.properties (see Christian for info). In particular, you'll need the
       `keystore`, `keystoreAlias`, `keystorePassword`, `webdir`, and `ftpdir` properties defined.
     - Rename old directories
-      * `cd /content/software/thredds/v${releaseMajor}/netcdf-java/`
+      * `cd /content/software/netcdf-java/v${releaseMajor}/`
       * `mv webstart webstartOld`
     - Perform release
       * `./gradlew :ui:clean :ui:releaseWebstart`
     - Test the new Web Start. If there were no errors, delete the old stuff.
       * `rm -r webstartOld`
 
-19. Release Javadoc to `www:/content/software/thredds/v${releaseMajor}/netcdf-java/javadoc` and `javadocAll`
+19. Release Javadoc to `www:/content/software/netcdf-java/v${releaseMajor}/javadoc` and `javadocAll`
     - Rename old directories
-      * `cd /content/software/thredds/v${releaseMajor}/netcdf-java/`
+      * `cd /content/software/netcdf-java/v${releaseMajor}/`
       * `mv javadoc javadocOld`
       * `mv javadocAll javadocAllOld`
     - Perform release
@@ -141,7 +141,7 @@
 
 20. Change permissions of the files you just copied.
     ```bash
-    cd /content/software/thredds/v${releaseMajor}/netcdf-java/
+    cd /content/software/netcdf-java/v${releaseMajor}/
     find webstart -type d -exec chmod 775 {} \;
     find webstart -type f -exec chmod 664 {} \;
     find javadoc -type d -exec chmod 775 {} \;
@@ -156,7 +156,7 @@
     - check http://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
       * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
 
-22. Edit `www:/content/software/thredds/latest.xml` to reflect the correct
+22. Edit `www:/content/software/tds/latest.xml` to reflect the correct
     releaseMinor version for stable and development. This file is read by all
     TDS > v4.6 to make log entries regarding current stable and development versions
     to give users a heads-up of the need to update.
