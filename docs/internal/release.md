@@ -151,10 +151,10 @@
     ```
 
 21. Update Unidata download page(s)
-    - check http://www.unidata.ucar.edu/downloads/thredds/index.jsp
-      * modify `www:/content/downloads/thredds/toc.xml` as needed
-    - check http://www.unidata.ucar.edu/downloads/netcdf/netcdf-java-4/index.jsp
-      * modify `www:/content/downloads/netcdf/netcdf-java-4/toc.xml` as needed
+    - check http://www.unidata.ucar.edu/downloads/tds/index.jsp
+      * modify `www:/content/downloads/tds/toc.xml` as needed
+    - check http://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
+      * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
 
 22. Edit `www:/content/software/thredds/latest.xml` to reflect the correct
     releaseMinor version for stable and development. This file is read by all
