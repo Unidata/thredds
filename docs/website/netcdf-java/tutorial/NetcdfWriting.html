@@ -278,7 +278,7 @@
 <h2>Writing to a netCDF-4 file with compression (version 4.5)</h2>
 <blockquote>
   <p>To write to netCDF-4, you must <a href="../reference/netcdf4Clibrary.html">install the netCDF-4 C library</a> on your machine. </p>
-  <p>The main use of netCDF-4 is to get the performance benefits from compression, and possibly from chunking (<a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_why_it_matters">why it matters</a>). <strong>By default, the Java library will write chunked and compressed netcdf-4 files</strong>, using the default chunking algorithm. To have your own control of chunking and compression, you must create a Nc4Chunking object and pass it into <em>NetcdfFileWriter.createNew()</em>:</p>
+  <p>The main use of netCDF-4 is to get the performance benefits from compression, and possibly from chunking (<a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_why_it_matters">why it matters</a>). <strong>By default, the Java library will write chunked and compressed netcdf-4 files</strong>, using the default chunking algorithm. To have your own control of chunking and compression, you must create a Nc4Chunking object and pass it into <em>NetcdfFileWriter.createNew()</em>:</p>
   <pre>Nc4Chunking chunker = Nc4Chunking factory(Strategy type, int deflateLevel, boolean shuffle);
 NetcdfFileWriter.Version version = NetcdfFileWriter.Version.netcdf4;
 

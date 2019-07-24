@@ -9,7 +9,7 @@
 <body>
 <h1>CDM Calendar Date Handling </h1>
 
-<p>As of CDM version 4.3, dates are no longer handled by the <a href="http://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling
+<p>As of CDM version 4.3, dates are no longer handled by the <a href="https://www.unidata.ucar.edu/software/udunits/">udunits library</a>. This allows handling
   <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#calendar">non-standard Calendars</a>. This change only affects <em><strong>datetime</strong></em>
   coordinate handling, called <a href="http://cfconventions.org/Data/cf-conventions/cf-conventions-1.7/build/cf-conventions.html#time-coordinate">time coordinates</a> in CF.
   For all <a href="http://en.wikipedia.org/wiki/Dimensional_analysis">dimensional units</a>, the udunits package is still used. </p>
@@ -87,7 +87,7 @@
 
 <p>The CDM library version 4.3 and after continues to accept udunits for time coordinate units, but it doesn't use the udunit library to process them.</p>
 
-<p>The <a href="http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar">udunit date grammar</a> is difficult to understand. Heres an
+<p>The <a href="https://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2lib.html#Grammar">udunit date grammar</a> is difficult to understand. Heres an
   approximate regular expression:</p>
 <pre>period SINCE [-]Y[Y[Y[Y]]]-MM-DD[(T| )hh[:mm[:ss[.sss*]]][ [+|-]hh[[:]mm]]]</pre>
 <p>The following specifies the CDM udunit date grammar:</p>
