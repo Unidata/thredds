@@ -105,12 +105,12 @@
   <LI>The optional <em><strong>enhance<a name="enhance"></a></strong></em> attribute indicates whether the referenced dataset is opened in enhanced mode, and
     can be set to <em>All, AllDefer, ScaleMissing, ScaleMissingDefer, CoordSystems, or None </em>(case insensitive). For backwards compatibility, a value of
     <em>true</em> means <em>All</em>. Default is <em>None</em>. See
-    <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/NetcdfDataset.html#enhance">NetcdfDataset.EnhanceMode</a>.
+    <a href="https://www.unidata.ucar.edu/software/netcdf-java/tutorial/NetcdfDataset.html#enhance">NetcdfDataset.EnhanceMode</a>.
   <LI>The optional <em><strong>addRecords</strong></em> attribute is used only when the referenced datasets is a netCDF-3 file. If true (default false) then a
     Structure named <em><strong>record</strong></em> is added, containing the record (unlimited) variables. This allows one to read efficiently along the
     unlimited dimension.
   <LI>These 3 parameters control how the referenced dataset is opened by the IOServiceProvider. If <strong>iosp</strong> is specified, its value must be a fully
-    qualified class name of an <strong><a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/IOSPoverview.html">IOServiceProvider</a></strong>
+    qualified class name of an <strong><a href="https://www.unidata.ucar.edu/software/netcdf-java/tutorial/IOSPoverview.html">IOServiceProvider</a></strong>
     class that knows how to open the file specified by <strong>location</strong>. The optional <strong>iospParam</strong> is passed to the IOSP through the
     <strong>IOServiceProvider</strong>.setSpecial() method. The optional <strong>bufferSize</strong> tells the IOSP how many bytes to use for buffering the file
     data.
@@ -394,7 +394,7 @@
   </li>
   <li>You can optionally specify if the scan should descend into <strong>subdir</strong>ectories (default true).</li>
   <li>If <strong>olderThan</strong> attribute is present, only files whose last modified date are older than this amount of time will be included. This is a way
-    to exclude files that are still being written. This must be a <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot;
+    to exclude files that are still being written. This must be a <a href="https://www.unidata.ucar.edu/software/udunits/">udunit</a> time such as &quot;5 min&quot;
     or &quot;1 hour&quot;.
   </li>
   <li>A <strong>dateFormatMark</strong> is used on <strong><em>joinNew</em></strong> types to create date coordinate values out of the filename. It consists of
@@ -429,7 +429,7 @@ forecastOffsetMatcher:                     HHH#.grb#</pre>
   <li>You must specify an aggregation type.</li>
   <li>For all types except <em><strong>joinUnion</strong></em>, you must specify the dimension name to join.</li>
   <li><em><strong>The recheckEvery attribute only applies when using a scan element</strong>.</em> When you are using scan elements on a set of files that may
-    change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time
+    change, and you are using caching, set <strong>recheckEvery</strong> to a valid <a href="https://www.unidata.ucar.edu/software/udunits/">udunit</a> time
     value, like &quot;10 min&quot;, &quot;1 hour&quot;, &quot;30 days&quot;, etc. Whenever the dataset is reacquired from the cache, the directories will be
     rescanned if <strong>recheckEvery</strong> amount of time has elapsed since the last time it was scanned. If you do not specify a recheckEvery attribute,
     the collection will be assumed to be non-changing.

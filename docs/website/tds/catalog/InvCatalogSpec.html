@@ -64,17 +64,17 @@
   <li><a href="Example1.0rc8.xml">Example</a> 1.0 Catalog</li>
   <li>InvCatalog XML Schema:</li>
   <ul>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd">Version 1.0.7</a></li>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">Version 1.0.6</a></li>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd">Version 1.0.5</a></li>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd">Version 1.0.4</a></li>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd">Version 1.0.3</a></li>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">Version 1.0.2</a></li>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Version 1.0.1</a></li>
-    <li><a href="http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version 1.0</a></li>
+    <li><a href="https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.7.xsd">Version 1.0.7</a></li>
+    <li><a href="https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd">Version 1.0.6</a></li>
+    <li><a href="https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.5.xsd">Version 1.0.5</a></li>
+    <li><a href="https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.4.xsd">Version 1.0.4</a></li>
+    <li><a href="https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.3.xsd">Version 1.0.3</a></li>
+    <li><a href="https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.2.xsd">Version 1.0.2</a></li>
+    <li><a href="https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.1.xsd">Version 1.0.1</a></li>
+    <li><a href="https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.xsd">Version 1.0</a></li>
   </ul>
   <li><a href="../reference/DigitalLibraries.html">Writing metadata for Digital Libraries</a></li>
-  <li>Java API to read catalogs in the <a href="http://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java library</a>.</li>
+  <li>Java API to read catalogs in the <a href="https://www.unidata.ucar.edu/software/netcdf-java/">netCDF-Java library</a>.</li>
   <li><a href="Changes.html">Changes</a> since version 1.0.1.</li>
   <li><a href="InvCatalogServerSpec.html">Server-side catalog specification</a></li>
 </ul>
@@ -324,7 +324,7 @@ The common case is that the access element is <em>implicit</em>, based on the da
   to indicate the high-level semantic type of the dataset (e.g., grid,
   point, trajectory) and can be used by clients to decide how to display
   the data. The values come from the <a href="#dataType_types_">data type enumeration</a> which are intended to map to the scientific data types from
-  the&nbsp;<a href="http://www.unidata.ucar.edu/software/netcdf/CDM/">Common Data Model (CDM)</a>. The <em><a name="dataFormat"></a>dataFormat</em>
+  the&nbsp;<a href="https://www.unidata.ucar.edu/software/netcdf/CDM/">Common Data Model (CDM)</a>. The <em><a name="dataFormat"></a>dataFormat</em>
   element indicates the format of the data and is mainly used so clients
   can determine how to read data that is accessed using a bulk access
   method. The data format values come from the <a href="#dataFormatType">data format enumeration</a>. The <em><a name="serviceName_descrip"></a>serviceName</em>
@@ -514,7 +514,7 @@ The common case is that the access element is <em>implicit</em>, based on the da
   <li>an <a href="http://www.w3.org/TR/2001/REC-xmlschema-2-20010502/#dateTime">xsd:dateTime</a>
     with form "CCYY-MM-DDThh:mm:ss", "CCYY-MM-DDThh:mm:ssZ" or "CCYY-MM-DDThh:mm:ss-hh:ss"
   </li>
-  <li>a valid <a href="http://www.unidata.ucar.edu/packages/udunits/">udunits</a>
+  <li>a valid <a href="https://www.unidata.ucar.edu/packages/udunits/">udunits</a>
     date string
   </li>
   <li>the string "present"</li>
@@ -563,7 +563,7 @@ The common case is that the access element is <em>implicit</em>, based on the da
     <li>nS indicates the number of seconds <br>
     </li>
   </ul>
-  <li>a valid <a href="http://www.unidata.ucar.edu/packages/udunits/">udunits</a>
+  <li>a valid <a href="https://www.unidata.ucar.edu/packages/udunits/">udunits</a>
     time duration string.
   </li>
 </ol>
@@ -780,7 +780,7 @@ The common case is that the access element is <em>implicit</em>, based on the da
   Aggregation Server configuration. A <em>File</em> dataset is not readable by
   remote clients. <strong>HTTPServer</strong> should be used when your file is being
   served by an HTTP (Web) Server. This is used for bulk transfer just like FTP,
-  and also can be used by the <a href="http://www.unidata.ucar.edu/packages/netcdf-java/">Java-NetCDF
+  and also can be used by the <a href="https://www.unidata.ucar.edu/packages/netcdf-java/">Java-NetCDF
     library</a> to access NetCDF files remotely (in that case just make sure that
   the dataset has dataFormatType NetCDF or NcML).</p>
 

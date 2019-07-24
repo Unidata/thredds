@@ -1,6 +1,5 @@
 ![THREDDS icon](http://www.unidata.ucar.edu/img/v3/logos/thredds-75x75.png)
 [![Travis Build Status](https://secure.travis-ci.org/Unidata/thredds.svg?branch=master)](http://travis-ci.org/Unidata/thredds)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/388/badge.svg)](https://scan.coverity.com/projects/388)
 
 # Unidata's THREDDS Project
 
@@ -54,16 +53,16 @@ For more information about netCDF-Java/CDM, see the netCDF-Java web page at
 
 and the CDM web page at
 
-http://www.unidata.ucar.edu/software/netcdf-java/CDM/index.html
+https://www.unidata.ucar.edu/software/thredds/4.6/netcdf-java/CDM/index.html
 
 You can obtain a copy of the latest released version of netCDF-Java software
 from
 
-* http://www.unidata.ucar.edu/downloads/netcdf/
+* http://www.unidata.ucar.edu/downloads/netcdf-java/
 
 More documentation can be found at
 
-* http://www.unidata.ucar.edu/software/netcdf-java/documentation.htm
+* https://www.unidata.ucar.edu/software/thredds/4.6/netcdf-java/documentation.htm
 
 A mailing list, netcdf-java@unidata.ucar.edu, exists for discussion of all
 things netCDF-Java/CDM including announcements about netCDF-Java/CDM bugs,
@@ -108,7 +107,7 @@ For more information about the TDS, see the TDS web page at
 
 You can obtain a copy of the latest released version of TDS software from
 
-* http://www.unidata.ucar.edu/downloads/thredds/
+* http://www.unidata.ucar.edu/downloads/tds/
 
 A mailing list, thredds@unidata.ucar.edu, exists for discussion of the TDS and
 THREDDS catalogs including announcements about TDS bugs, fixes, enhancements,
@@ -130,4 +129,4 @@ data consumers find out what data is available from data providers.
 
 THREDDS Catalog documentation (including the specification) is available at
 
-* http://www.unidata.ucar.edu/software/thredds/current/tds/catalog/
+* http://www.unidata.ucar.edu/software/thredds/4.6/tds/catalog/

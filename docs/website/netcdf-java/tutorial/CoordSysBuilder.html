@@ -22,11 +22,11 @@
 <p>For more details, see the <a href="../CDM/index.html">CDM Object Model</a>.</p>
 
 <p>A CoordSysBuilderIF class must be created for each type of dataset that encodes their coordinate systems differently. This obviously is burdensome, and data
-  providers are encouraged to use <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">existing Conventions</a> for writing their
+  providers are encouraged to use <a href="https://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">existing Conventions</a> for writing their
   datasets. If those are inadequate, then the next best thing is to define <strong><em>and document </em></strong>a new Convention in collaboration with others
-  with similar needs. If you do so, read <a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html">Writing NetCDF Files: Best Practices</a>,
+  with similar needs. If you do so, read <a href="https://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html">Writing NetCDF Files: Best Practices</a>,
   look at other Convention examples, and get feedback form others before committing to it. Send us a URL to your documentation, and we will add it to the
-  <a href="http://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">NetCDF Conventions page</a>. </p>
+  <a href="https://www.unidata.ucar.edu/software/netcdf/docs/conventions.html">NetCDF Conventions page</a>. </p>
 
 <p>The steps to using your CoordSysBuilderIF class in the Netcdf-Java library: </p>
 <ol>
@@ -114,7 +114,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
     // etc
   }
 </pre>
-<p> You may find it easier to do the same thing using an <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a> file, for example:</p>
+<p> You may find it easier to do the same thing using an <a href="https://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a> file, for example:</p>
 <pre>
   protected void augmentDataset( NetcdfDataset ncDataset, CancelTask cancelTask) throws IOException {<br>    this.conventionName = &quot;ATDRadar&quot;;<br>    <strong>NcMLReader.wrapNcML(
   ncDataset, &quot;file:/MyResource/ATDRadar.ncml&quot;, cancelTask);</strong><br>  }
@@ -146,7 +146,7 @@ public interface CoordSysBuilderIF {<br>  public void <strong>setConventionUsed<
 </pre>
 <p>The NcML adds the appropriate <strong>_CoordinateAxisType</strong> attribute to existing Coordinate Axes. Because the data variables all use coordinate
   variables, implicit Coordinate System objects are created and assigned. There is no need for Coordinate Transforms because all the coordinates are reference
-  coordinates (lat, lon, height). <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">Here</a> is complete info on NcML. </p>
+  coordinates (lat, lon, height). <a href="https://www.unidata.ucar.edu/software/netcdf/ncml/">Here</a> is complete info on NcML. </p>
 
 <p>If all you need to do is wrap the dataset in NcML, and the dataset already has a <strong>Convention</strong> attribute in it (before it is wrapped), then you
   can simply register the NcML directly, without having to write any code. For this, you use:</p>

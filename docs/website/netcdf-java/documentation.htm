@@ -9,25 +9,25 @@
   <img src="netcdfBig.gif" width="100" height="55" alt=""> NetCDF-Java Library</h1>
 
 <p><br>
-  The NetCDF-Java Library is a Java interface to <a href="http://www.unidata.ucar.edu/software/netcdf/index.html">NetCDF files</a>, as well as to many other
+  The NetCDF-Java Library is a Java interface to <a href="https://www.unidata.ucar.edu/software/netcdf/index.html">NetCDF files</a>, as well as to many other
   types of scientific data formats.&nbsp;
 
 <p>The library is freely available and the source code is released under the (MIT-style) NetCDF C library
-  <a href="http://www.unidata.ucar.edu/software/netcdf/copyright.html">license</a>. Previous versions use the GNU
+  <a href="https://www.unidata.ucar.edu/software/netcdf/copyright.html">license</a>. Previous versions use the GNU
   <a href="http://www.gnu.org/copyleft/lesser.html">Lesser General Public License</a>
   (LGPL).
 
 <p>The preferred place to ask questions, discuss problems and features and get support is in the NetCDF-Java email list, which you can subscribe to from
-  <a href="http://www.unidata.ucar.edu/support/index.html#subscribe">this page</a>. Also you might want to
-  <a href="http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">search or browse</a> previous netCDF-Java support questions.
+  <a href="https://www.unidata.ucar.edu/support/index.html#subscribe">this page</a>. Also you might want to
+  <a href="https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/">search or browse</a> previous netCDF-Java support questions.
 <hr>
 <h3>Overview</h3>
 
 <p>The NetCDF-Java library implements a <a href="CDM/index.html">Common Data Model </a>(CDM), a generalization of the NetCDF, OpenDAP and HDF5 data models. The
-  library is a prototype for the <a href="http://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language
+  library is a prototype for the <a href="https://www.unidata.ucar.edu/software/netcdf/netcdf-4/index.html">NetCDF-4 project</a>, which provides a C language
   API for the &quot;data access layer&quot; of the CDM, on top of the <a href="http://hdf.ncsa.uiuc.edu/HDF5/doc/H5.format.html">HDF5 file format</a>. The
   NetCDF-Java library is a 100% Java framework for <em>reading</em> netCDF and other file formats into the CDM, as well as <em>writing</em> to the netCDF-3
-  file format. <a href="reference/netcdf4Clibrary.html">Writing to the netCDF-4 file format</a> requires installing the netCDF C library. The NetCDF-Java library also implements <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add metadata
+  file format. <a href="reference/netcdf4Clibrary.html">Writing to the netCDF-4 file format</a> requires installing the netCDF C library. The NetCDF-Java library also implements <a href="https://www.unidata.ucar.edu/software/netcdf/ncml/">NcML</a>, which allows you to add metadata
   to CDM datasets, as well as to create virtual datasets through aggregation. The <a href="../tds/TDS.html">THREDDS Data Server</a> (TDS) is built on top of the NetCDF-Java library.</p>
 <p>CDM/TDS source is  hosted on <a href="https://github.com/Unidata/thredds">GitHub</a>.
 To build the latest stable version from source or contribute code  to the THREDDS project, see <a href="tutorial/SourceCodeBuild.html">here</a>. Most projects use  <strong>netcdfAll.jar</strong> or <strong>toolsUI.jar</strong> (see below for links), or include the desired <a href="http://artifacts.unidata.ucar.edu/">artifacts</a> in their maven or gradle builds.  See <a href="reference/BuildDependencies.html">Build Dependencies</a> for  details.</p>
@@ -36,12 +36,27 @@ To build the latest stable version from source or contribute code  to the THREDD
   <li><a href="http://artifacts.unidata.ucar.edu/">Maven repository</a> for maven artifacts</li>
   <li><a href="http://github.com/unidata"> GitHub repository</a> for source code</li>
   <li><a href="https://travis-ci.org/Unidata/thredds">Travis</a> Continuous Integration / unit testing</li>
-  <li><a href="https://bugtracking.unidata.ucar.edu/browse/TDS">JIRA</a> issue tracking</li>
-  <li><a href="https://scan.coverity.com/projects/388?tab=overview">Coverity</a> static analysis</li>
 </ul>
 
 <span id="current"/>
-<h3 id="v46">Current stable release version 4.6 (requires Java 7) </h3>
+
+<h3 id="v50">Current stable release version 5.0 (requires Java 8)</h3>
+<ul>
+  <li>
+    Downloads for the stable 5.0 release can be found on the <a href="https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp">netCDF-Java downloads page</a>.
+  </li>
+  <li>
+    The 5.0 documentation can be found on our new documentation site at <a href="https://docs.unidata.ucar.edu/netcdf-java/5.0/userguide/index.html">https://docs.unidata.ucar.edu/netcdf-java/5.0/userguide/</a>
+  </li>
+  <li>
+    As of Java 9, Java WebStart <a href="https://www.oracle.com/technetwork/java/javase/9-deprecated-features-3745636.html#JDK-8184998">has been deprecated</a>. As such, we no longer offer WebStart for ToolsUI.
+  </li>
+</ul>
+
+
+
+
+<h3 id="v46">Current maintenance release version 4.6 (requires Java 7) </h3>
 <ul>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.6/netcdfAll-4.6.jar">complete netCDF library jar</a> implements the full CDM model, with all
     dependent jars included. </li>
@@ -62,11 +77,11 @@ To build the latest stable version from source or contribute code  to the THREDD
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/toolsUI-4.5.jar">toolsUI.jar</a> also includes UI classes, and allows you to run the netCDF
     ToolsUI application directly from it such as &quot;<em>java -Xmx1g -jar toolsUI.jar</em>&quot;</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.5/ncIdv-4.5.jar">ncIDV.jar</a> is for the development branch of the IDV. </li>
-  <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.5/netcdf-java/javadoc/index.html">Public javadoc.</a> This is the public interface. Future changes to the API will attempt to remain backwards compatible
+  <li><a href="https://www.unidata.ucar.edu/software/netcdf-java/v4.5/javadoc/index.html">Public javadoc.</a> This is the public interface. Future changes to the API will attempt to remain backwards compatible
     with this API. </li>
-  <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.5/netcdf-java/javadocAll/index.html">All javadoc</a>. This is the javadoc for all packages and all methods except private. CAREFUL, much of this will
+  <li><a href="https://www.unidata.ucar.edu/software/netcdf-java/v4.5/javadocAll/index.html">All javadoc</a>. This is the javadoc for all packages and all methods except private. CAREFUL, much of this will
     change. </li>
-  <li>Try out the <strong> 4.5</strong> version of ToolsUI application: <a href="http://www.unidata.ucar.edu/software/thredds/v4.5/netcdf-java/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
+  <li>Try out the <strong> 4.5</strong> version of ToolsUI application: <a href="https://www.unidata.ucar.edu/software/netcdf-java/v4.5/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
   <li>Unidata public <a href="https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/">Maven repository</a> for maven artifacts </li>
   <li>All source is on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
 </ul>
@@ -77,12 +92,12 @@ To build the latest stable version from source or contribute code  to the THREDD
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/toolsUI-4.3.jar">toolsUI.jar</a> also includes UI classes, and allows you to run the netCDF
     ToolsUI application directly from it with &quot;<em>java -Xmx1g -jar toolsUI.jar</em>&quot;</li>
   <li>The <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf-java/v4.3/ncIdv-4.3.jar">ncIDV.jar</a> is for the released version of the IDV.</li>
-  <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadoc/index.html">Public javadoc.</a> This is the public interface. Future changes to the API will attempt to remain backwards compatible
+  <li><a href="https://www.unidata.ucar.edu/software/netcdf-java/v4.3/v4.3/javadoc/index.html">Public javadoc.</a> This is the public interface. Future changes to the API will attempt to remain backwards compatible
     with this API. </li>
-  <li><a href="http://www.unidata.ucar.edu/software/thredds/v4.3/netcdf-java/v4.3/javadocAll/index.html">All javadoc</a>.
+  <li><a href="https://www.unidata.ucar.edu/software/netcdf-java/v4.3/v4.3/javadocAll/index.html">All javadoc</a>.
     This is the javadoc for all packages and all methods except private. CAREFUL, much of this will
     change. </li>
-  <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="http://www.unidata.ucar.edu/software/thredds/netcdf-java/v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
+  <li>Try out the <strong> 4.3</strong> version of ToolsUI application: <a href="https://www.unidata.ucar.edu/software/thredds/netcdf-java/v4.3/webstart/netCDFtools.jnlp">launch from webstart</a>.</li>
   <li>Unidata public <a href="https://artifacts.unidata.ucar.edu/repository/unidata-releases/edu/ucar/">Maven repository</a> for maven artifacts </li>
   <li>All source is on <a href="https://github.com/Unidata/thredds">GitHub</a></li>
 </ul>
@@ -181,7 +196,7 @@ To build the latest stable version from source or contribute code  to the THREDD
 </ul>
 <h3>Miscellaneous Resources</h3>
 <ul>
-  <li><a href="http://www.unidata.ucar.edu/blogs/developer/en/category/NetCDF+Java">Netcdf-Java Blog</a></li>
+  <li><a href="https://www.unidata.ucar.edu/blogs/developer/en/category/NetCDF+Java">Netcdf-Java Blog</a></li>
   <li>Talk at netCDF workshop 2012 (<a
       href="https://www.unidata.ucar.edu/presentations/caron/NetCDFworkshop2012.pptx">pptx</a>) </li>
   <li><em>On the suitability of BUFR and GRIB for archiving data</em> (short paper Dec 2011 <a href="https://doi.org/10.5065/vkan-dp10">pdf</a>)</li>
@@ -230,7 +245,7 @@ To build the latest stable version from source or contribute code  to the THREDD
   <li><a href="http://miningsolutions.itsc.uah.edu/glider/">Globally Leveraged Integrated Data Explorer for
     Research</a>&nbsp;(aka GLIDER) (Univ. of Alabama at Huntsville)
   </li>
-  <li><a href="http://www.unidata.ucar.edu/software/idv/">Integrated Data Viewer</a> (Unidata)</li>
+  <li><a href="https://www.unidata.ucar.edu/software/idv/">Integrated Data Viewer</a> (Unidata)</li>
   <li><a href="http://www.ncdc.noaa.gov/oa/wct/"> NOAA's Weather and Climate Toolkit</a> (NOAA/NCDC)<a
       href="http://www.ncdc.noaa.gov/wct/"></a></li>
   <li><a href="http://ferret.pmel.noaa.gov/LAS">Live Access Server</a> from NOAA/OAR/PMEL (Pacific Marine

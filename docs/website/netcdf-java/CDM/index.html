@@ -13,7 +13,7 @@
 <h2>Overview</h2>
 
 <p> Unidata&rsquo;s Common Data Model (CDM) is an abstract <a href="http://en.wikipedia.org/wiki/Data_model">data model</a> for scientific datasets. It merges
-  the <a href="http://www.unidata.ucar.edu/software/netcdf/">netCDF</a>, <a href="http://www.opendap.org/">OPeNDAP</a>, and
+  the <a href="https://www.unidata.ucar.edu/software/netcdf/">netCDF</a>, <a href="http://www.opendap.org/">OPeNDAP</a>, and
   <a href="http://www.hdfgroup.org/products/hdf5/">HDF5</a> data models to create a common API for many types of scientific data. The NetCDF Java library is an
   implementation of the CDM which can read many <a href="../reference/formats/FileTypes.html">file formats</a> besides netCDF. We call these <em><strong>CDM
     files,</strong></em> a shorthand for <em>files that can be read by the NetCDF Java library and accessed through the CDM data model</em>. </p>
@@ -100,8 +100,8 @@
 
 <h3>Comparision to netCDF-4<a name="netcdf4"></a></h3>
 
-<p>The CDM data model is close to, but not identical with the<a href="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Format.html">
-  netCDF-4 data model</a> (informal <a href="http://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">UML</a>). However there is a
+<p>The CDM data model is close to, but not identical with the<a href="https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/NetCDF_002d4-Format.html">
+  netCDF-4 data model</a> (informal <a href="https://www.unidata.ucar.edu/software/netcdf/workshops/2008/netcdf4/Nc4DataModel.html">UML</a>). However there is a
   complete 2-way mapping between the two models. In the CDM:</p>
 <ul>
   <li>Non-shared dimensions are allowed, but netCDF-4 does not support these.</li>
@@ -148,8 +148,8 @@
     the region reference represents is not currently accessible.
   </li>
   <li>Since HDF5 does not support shared dimensions, however, reading HDF5 files into the higher levels of the CDM (Coordinate Systems, Grids, etc) may not work
-    like you want. For this reason we recommend using the <a href="http://www.unidata.ucar.edu/software/netcdf/">netCDF-4 C library</a> for writing HDF5 files.
-  Heres <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">why</a>.</li>
+    like you want. For this reason we recommend using the <a href="https://www.unidata.ucar.edu/software/netcdf/">netCDF-4 C library</a> for writing HDF5 files.
+  Heres <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">why</a>.</li>
   <li>Hard links that cause cycles in the group structure are ignored. These break the CDM and netCDF-4 data model, in which groups comprise a tree. All info in the HDF-5 file is still available to CDM users, but certain paths that one could call from the HDF-5 library are not available.</li>
 </ul>
 <p>Please send file examples if you find a problem with the CDM reading HDF5 files, other than the ones listed above.</p>
@@ -241,7 +241,7 @@ Structure {
 <h3>Current Encodings </h3>
 
 <p>Neither NetCDF, HDF5, or OPeNDAP have Coordinate Systems as part of their APIs and data models, so their specification in a file is left to to higher level
-  libraries (like HDF-EOS) and to <a href="http://www.unidata.ucar.edu/software/netcdf/conventions.html">conventions</a>. If you are writing netCDF files, we
+  libraries (like HDF-EOS) and to <a href="https://www.unidata.ucar.edu/software/netcdf/conventions.html">conventions</a>. If you are writing netCDF files, we
   strongly recommend using <a href="http://cfconventions.org/">CF Conventions</a>.</p>
 
 <p>NetCDF has long had the convention of specifying a 1-dimensional CoordinateAxis
@@ -279,7 +279,7 @@ Structure {
 <ul>
   <li><a href="../reference/FeatureDatasets/Overview.html">FeatureDataset APIs</a></li>
   <li><a href="../reference/FeatureDatasets/PointFeatures.html">Point Feature APIs</a></li>
-  <li>CF Discrete Sampling Geometries conventions (final) <a href="http://www.unidata.ucar.edu/staff/caron/public/CFch9-may10.pdf">pdf</a> (May 2012)</li>
+  <li>CF Discrete Sampling Geometries conventions (final) <a href="https://www.unidata.ucar.edu/staff/caron/public/CFch9-may10.pdf">pdf</a> (May 2012)</li>
   <li>CDM Feature Types <em> draft </em><a href="CDMfeatures.doc">doc</a></li>
   <li>CDM Point Feature Types <em> draft </em><a href="CDMpoints.doc">doc</a></li>
 </ul>

@@ -84,7 +84,7 @@ double[] result = (double []) a.get1DJavaArray(double.class);</pre>
 <p><strong>Q: I have lots of data in a proprietary format. How do I read it into the CDM?</strong></p>
 <blockquote>
   <p>You write a class that implements the IO Service Provider interface, typically by subclassing <strong> ucar.nc2.iosp.AbstractIOServiceProvider</strong>.
-    See section 4 of the <a href="http://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a>.</p>
+    See section 4 of the <a href="https://www.unidata.ucar.edu/software/netcdf-java/tutorial/index.html">tutorial</a>.</p>
 </blockquote>
 <p><strong>Q: I want to create a NetcdfFile from some other source than a file. But an IOSP is designed to get data from a RandomAccessFile. So what do I
   do?</strong></p>
@@ -290,18 +290,18 @@ double[] result = (double []) a.get1DJavaArray(double.class);</pre>
   </table>
   <p>The netCDF-Java library will uncompress/unzip and write a new file without the suffix, then read from the uncompressed file. Generally it prefers to
     place the uncompressed file in the same directory as the original file. If it does not have write permission on that directory, it will use
-    the <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/Caching.html">cache directory</a> defined
+    the <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/Caching.html">cache directory</a> defined
     by <strong>ucar.nc2.util.DiskCache.</strong></p>
 </blockquote>
 <h2><a id="Writing"></a>Writing</h2>
 
 <p><strong>Q: Ok, so you read a lot of files, what about writing?</strong></p>
 <blockquote>
-  <p>Netcdf-Java library supports writing netCDF-3 file format using the <a href="http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2">classic data
+  <p>Netcdf-Java library supports writing netCDF-3 file format using the <a href="https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#fv2">classic data
     model</a>. Writing to the netCDF-4 <strong><a name="netcdf4" id="netcdf4"></a></strong> file format is supported
     using a <a href="http://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a> interface to
     the <a href="netcdf4Clibrary.html">netCDF C library.</a> Writing the full
-    <a href="http://www.unidata.ucar.edu/software/netcdf-java/CDM/">CDM data model</a> is in beta, as of version 4.5. See:</p>
+    <a href="https://www.unidata.ucar.edu/software/netcdf-java/CDM/">CDM data model</a> is in beta, as of version 4.5. See:</p>
   <ul>
     <li>Program with complete control: <strong>ucar.nc2.NetcdfFileWriter</strong> javadoc and <a href="../tutorial/NetcdfWriting.html">NetCDF File Writing tutorial</a>.</li>
     <li>Copy complete files from a program: <strong>ucar.nc2.FileWriter2 </strong>writes CDM files to netCDF-3 or netCDF-4 format.</li>
@@ -312,9 +312,9 @@ double[] result = (double []) a.get1DJavaArray(double.class);</pre>
 <p><strong>Q: What is the relationship of NetCDF with HDF5?</strong></p>
 <blockquote>
   <p>The netCDF-4 file format is built on top of the <a href="http://www.hdfgroup.org/HDF5/">HDF5 file format</a>. NetCDF adds shared dimensions, so it is
-    unfortunately not a strict subset of HDF5. Gory details are here:  <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">Part
-      1,</a> <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2">Part
-      2</a>, <a href="http://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.</p>
+    unfortunately not a strict subset of HDF5. Gory details are here:  <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimensions_scales">Part
+      1,</a> <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scale2">Part
+      2</a>, <a href="https://www.unidata.ucar.edu/blogs/developer/en/entry/dimension_scales_part_3">Part 3</a>.</p>
 
   <p>HDF5 is a very complicated format, and we do not plan to write a pure Java version for <em>writing</em> netCDF4 files (we do have a pure Java version for <em>reading</em> both HDF5 and netCDF-4). You must use the JNI interfacce to the <a href="netcdf4Clibrary.html">netCDF C library</a>.</p>
 </blockquote>
@@ -331,7 +331,7 @@ double[] result = (double []) a.get1DJavaArray(double.class);</pre>
 <blockquote>
   <p>Thank you for asking, See: </p>
   <ul>
-    <li> General Guidelines:<a href="http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html">
+    <li> General Guidelines:<a href="https://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html">
       http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html</a></li>
     <li>Recommended Conventions: <a href="http://cfconventions.org/">CF Conventions </a></li>
   </ul>
