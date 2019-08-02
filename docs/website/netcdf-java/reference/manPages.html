@@ -138,12 +138,12 @@ java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.ft.point.writer.CF
 
 <hr/>
 <h2><a name="GribCdmIndex" id="GribCdmIndex">GribCdmIndex</a></h2>
-<p>Write GRIB Collection Indexes from an XML file containing a <a href="../../tds/reference/collections/GribCollections.html"> GRIB &lt;featureCollection&gt; XML element</a>. </p>
+<p>Write GRIB Collection Indexes from an XML file containing a <a href="/software/tds/v4.6/reference/collections/GribCollections.html"> GRIB &lt;featureCollection&gt; XML element</a>. </p>
 <pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.grib.collection.GribCdmIndex [options]<br />  Options:<br />  * -fc, --featureCollection<br />       Input XML file containing &lt;featureCollection&gt; root element<br />    -update, --CollectionUpdateType<br />       Collection Update Type<br />       Default: always<br />    -h, --help<br />       Display this help and exit<br />       Default: false
 </pre>
 <p>Example:</p>
 <pre>java -Xmx1g -classpath netcdfAll-&lt;version&gt;.jar ucar.nc2.grib.collection.GribCdmIndex -fc /data/fc/gfs_example.xml</pre>
-<p>Note that the output file is placed in the root directory of the collection, as specified by the  <a href="../../tds/reference/collections/CollectionSpecification.html">Collection Specification</a> of the GRIB <a href="../../tds/reference/collections/FeatureCollections.html">&lt;featureCollection&gt;</a>.</p>
+<p>Note that the output file is placed in the root directory of the collection, as specified by the  <a href="/software/tds/v4.6/reference/collections/CollectionSpecification.html">Collection Specification</a> of the GRIB <a href="/software/tds/v4.6/reference/collections/FeatureCollections.html">&lt;featureCollection&gt;</a>.</p>
 <hr/>
 <h2><a name="FeatureScan" id="FeatureScan2">FeatureScan</a></h2>
 <p>Scans all the files in a directory to see if they are CDM files and can be identified as a particular feature

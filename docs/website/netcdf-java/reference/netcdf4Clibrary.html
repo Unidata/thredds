@@ -27,8 +27,8 @@
     to write NetCDF-4 files) is usually not configured for thread safety when it's built. As a result,
     concurrent writing of NetCDF-4 files will sometimes produce unexpected results.</p>
 
-<p>When might you do concurrent writes of NetCDF-4 files? For <a href="../../tds/TDS.html">TDS</a> administrators,
-    this can often happen in the <a href="../../tds/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service
+<p>When might you do concurrent writes of NetCDF-4 files? For <a href="/software/tds/v4.6/TDS.html">TDS</a> administrators,
+    this can often happen in the <a href="/software/tds/v4.6/reference/NetcdfSubsetServiceReference.html">NetCDF Subset Service
         (NCSS)</a>. Therefore, we recommend that TDS admins who enable NCSS with NetCDF-4 output
     <a href="#installation_linux_source_build">build thread-safe libraries from source</a> instead.</p>
 
@@ -144,7 +144,7 @@
 
 <ul>
     <li>For TDS users, we recommend setting the library path and name in the <a
-            href="../../tds/reference/ThreddsConfigXMLFile.html#netcdfCLibrary">THREDDS configuration file</a>.
+            href="/software/tds/v4.6/reference/ThreddsConfigXMLFile.html#netcdfCLibrary">THREDDS configuration file</a>.
     </li>
     <li>For standalone CDM library use, you can
         <ul>

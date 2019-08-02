@@ -101,7 +101,7 @@
 <p>If the GRIB Collection index (.ncx3) already exists, one can pass that to any of the standard dataset opening classes. In this case, the collection is created
   from reading the ncx3 file with no checking against the original data file(s). The original data files are only accessed when data is requested from them. Be careful not to move the data files once the index files are created. If you do need to move the data files, its best to recreate the index files.</p>
 <h3>Creating a GRIB Collection Index<a name="Creating" id="Creating"></a></h3>
-<p>You can use a <a href="../manPages.html#GribCdmIndex"> command line tool</a> that uses a complete <a href="../../../tds/reference/collections/GribCollections.html">GRIB &lt;featureCollection&gt; element</a> to define the GRIB Collection, and generates the CDM index (<strong>ncx3</strong>) file.</p>
+<p>You can use a <a href="/software/tds/v4.6/reference/collections/GribCollections.html">GRIB &lt;featureCollection&gt; element</a> to define the GRIB Collection, and generates the CDM index (<strong>ncx3</strong>) file.</p>
 <p>For simple cases, you can create the <strong>ncx3</strong> file based on a collection spec using <strong>ToolsUI</strong>: IOSP/GRIB1(2)/GribCollection. Enter the collection spec and hit Enter.
   To write the index file, hit the &quot;Write Index&quot; button on the right. Give it a memorable name and hit Save. Its is currently not possible to pass GRIB Collection Configuration elements in this way.</p>
 <h3>NcML Aggregation</h3>
@@ -117,7 +117,7 @@
    &lt;/pdsHash&gt;
  &lt;/iospParam&gt;
 &lt;/netcdf&gt;</pre>
-<p>See <a href="../../../tds/reference/collections/GribConfig.html">GRIB Collection Configuration</a>
+<p>See <a href="/software/tds/v4.6/reference/collections/GribConfig.html">GRIB Collection Configuration</a>
   for a description of all of the options.
 </p>
 <p>Note that you cannot use NcML to open a collection of GRIB files. You must generate the Grib Collection index file in a <a href="#Creating">seperate step</a>.</p>
