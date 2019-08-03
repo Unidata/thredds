@@ -328,11 +328,9 @@ class FmrcDataset {
           Variable orgV = (Variable) v.getSPobject();
           if (orgV.getSize() > 10 * 1000 * 1000) {
             logger.info("FMRCDataset build Proto cache >10M var= "+orgV.getNameAndDimensions());
-          } else {
-            v.setCachedData(orgV.read()); // read from original - store in proto
           }
+          v.setCachedData(orgV.read()); // read from original - store in proto
         }
-
         v.setSPobject(null); // clear the reference to orgV for all of proto
       }
 
