@@ -10,7 +10,7 @@ bumpversion_build() {
 
 bumpversion_release() {
   bump2version patch
-  VERSION=$(bump2version --list --allow-dirty release | grep -oP '^new_version=\K.*$')
+  VERSION=$(bump2version --list --tag --commit --allow-dirty release | grep -oP '^new_version=\K.*$')
   git push origin $RELEASE_BRANCH
   git push origin tag $VERSION
 
