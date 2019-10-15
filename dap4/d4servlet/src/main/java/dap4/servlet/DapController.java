@@ -14,6 +14,7 @@ import dap4.core.dmr.DapType;
 import dap4.core.dmr.ErrorResponse;
 import dap4.core.util.*;
 import dap4.dap4lib.*;
+import ucar.nc2.NetcdfFile;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -116,16 +117,20 @@ abstract public class DapController extends HttpServlet
     abstract protected void doCapabilities(DapRequest drq, DapContext cxt) throws IOException;
 
     /**
-     * Convert a URL path into an absolute file path
-     * Note that it is assumed than any leading servlet prefix has been removed.
-     *
-     * @param drq      dap request
-     * @param location suffix of url path
-     * @return
+     * Get the root of the resource directory.
+     * In some cases, the root is relative to the Dap Request, so
+     * we include that as an argument.
+     * @param drq controlling dap request
+     * @return absolute path to resource directory root
      * @throws IOException
      */
 
-    abstract public String getResourcePath(DapRequest drq, String location) throws DapException;
+    abstract public String getResourceRoot(DapRequest drq) throws DapException;
+
+    /*
+     * Ask the controller if it can convert a string to a NetcdfFile
+     */
+    abstract public NetcdfFile getNetcdfFile(DapRequest drq, String location) throws DapException;
 
     /**
      * Get the maximum # of bytes per request
@@ -301,10 +306,11 @@ abstract public class DapController extends HttpServlet
     doDMR(DapRequest drq, DapContext cxt)
             throws IOException
     {
-        // Convert the url to an absolute path
-        String realpath = getResourcePath(drq, drq.getDatasetPath());
+        String root = drq.getController().getResourceRoot(drq);
+        String location = drq.getDatasetPath();
+        String path = DapUtil.canonjoin(root, location);
 
-        DSP dsp = DapCache.open(realpath, cxt);
+        DSP dsp = DapCache.open(drq, path, cxt);
         DapDataset dmr = dsp.getDMR();
 
         /* Annotate with our endianness */
@@ -357,12 +363,13 @@ abstract public class DapController extends HttpServlet
     doData(DapRequest drq, DapContext cxt)
             throws IOException
     {
-        // Convert the url to an absolute path
-        String realpath = getResourcePath(drq, drq.getDatasetPath());
+        String root = drq.getController().getResourceRoot(drq);
+        String location = drq.getDatasetPath();
+        String path = DapUtil.canonjoin(root, location);
 
-        DSP dsp = DapCache.open(realpath, cxt);
+        DSP dsp = DapCache.open(drq, path, cxt);
         if(dsp == null)
-            throw new DapException("No such file: " + drq.getResourceRoot());
+            throw new DapException("No such file: " + path);
         DapDataset dmr = dsp.getDMR();
         if(DUMPDMR) {
             printDMR(dmr);

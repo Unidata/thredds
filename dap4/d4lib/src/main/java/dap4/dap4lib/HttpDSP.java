@@ -47,7 +47,7 @@ public class HttpDSP extends D4DSP
 
     static protected final String QUERYSTART = "?";
     static protected final String CONSTRAINTTAG = "dap4.ce";
-    static protected final String PROTOTAG = "protocol";
+    static protected final String[] MODETAGS = new String[]{"mode","proto","protocol"};
 
     static protected final int DFALTPRELOADSIZE = 50000; // databuffer
 
@@ -92,10 +92,16 @@ public class HttpDSP extends D4DSP
     //////////////////////////////////////////////////
     // DSP API
 
+    @Override
+    public String getLocation()
+    {
+        return xuri.toString();
+    }
+
     /**
      * A path is a DAP4 path if at least one of the following is true.
      * 1. it has "dap4:" as its leading protocol
-     * 2. it has #protocol=dap4 in its fragment
+     * 2. it has #mode=dap4 in its fragment
      *
      * @param url
      * @param context Any parameters that may help to decide.
@@ -142,11 +148,10 @@ public class HttpDSP extends D4DSP
     }
 
     @Override
-    public HttpDSP open(String url)
+    public HttpDSP open(URI uri)
             throws DapException
     {
-        setLocation(url);
-        parseURL(url);
+        parseURL(uri.toString());
 
         /* Take from the incoming data
         String s = xuri.getFragFields().get(Dap4Util.DAP4CSUMTAG);

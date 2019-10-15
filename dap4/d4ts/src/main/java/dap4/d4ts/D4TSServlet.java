@@ -4,7 +4,6 @@
 
 package dap4.d4ts;
 
-import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
@@ -13,6 +12,7 @@ import dap4.dap4lib.DapLog;
 import dap4.dap4lib.FileDSP;
 import dap4.dap4lib.netcdf.Nc4DSP;
 import dap4.servlet.*;
+import ucar.nc2.NetcdfFile;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -42,28 +42,6 @@ public class D4TSServlet extends DapController
 
     //////////////////////////////////////////////////
     // Type Decls
-
-    static class D4TSFactory extends DSPFactory
-    {
-
-        public D4TSFactory()
-        {
-            // Register known DSP classes: order is important
-            // in event that two or more dsps can match a given file
-            // (e.q. FileDSP vs Nc4DSP).
-            // Only used in server
-            DapCache.dspregistry.register(Nc4DSP.class, DSPRegistry.LAST);
-            DapCache.dspregistry.register(SynDSP.class, DSPRegistry.LAST);
-            DapCache.dspregistry.register(FileDSP.class, DSPRegistry.LAST);
-        }
-
-    }
-
-    //////////////////////////////////////////////////
-
-    static {
-        DapCache.setFactory(new D4TSFactory());
-    }
 
     //////////////////////////////////////////////////
     // Instance variables
@@ -105,7 +83,8 @@ public class D4TSServlet extends DapController
             throws IOException
     {
         DapRequest drq = (DapRequest)cxt.get(DapRequest.class);
-        String favfile = getResourcePath(drq, icopath);
+        String prefix = getResourceRoot(drq);
+        String favfile = DapUtil.canonjoin(prefix, icopath);
         if(favfile != null) {
             try (FileInputStream fav = new FileInputStream(favfile);) {
                 byte[] content = DapUtil.readbinaryfile(fav);
@@ -138,14 +117,12 @@ public class D4TSServlet extends DapController
     }
 
     @Override
-    public String
-    getResourcePath(DapRequest drq, String location)
+    public NetcdfFile
+    getNetcdfFile(DapRequest drq, String location)
             throws DapException
     {
-        String prefix = drq.getResourceRoot();
-        if(prefix == null)
-            throw new DapException("Cannot find location resource: " + location)
-                    .setCode(DapCodes.SC_NOT_FOUND);
+        NetcdfFile ncfile = null;
+        String prefix = getResourceRoot(drq);
         location = DapUtil.canonicalpath(location);
         String datasetfilepath = DapUtil.canonjoin(prefix, location);
         // See if it really exists and is readable and of proper type
@@ -159,7 +136,26 @@ public class D4TSServlet extends DapController
         if(!dataset.canRead())
             throw new DapException("Requested file not readable: " + datasetfilepath)
                     .setCode(HttpServletResponse.SC_FORBIDDEN);
-        return datasetfilepath;
+        try {
+            ncfile = NetcdfFile.open(datasetfilepath);
+        } catch (IOException ioe) {
+            ncfile = null;
+        }
+        return ncfile;
+    }
+
+    @Override
+    public String
+    getResourceRoot(DapRequest drq)
+            throws DapException
+    {
+        String rootpath;
+        rootpath = drq.getResourceRoot();
+        File f = (rootpath == null ? null : new File(rootpath));
+        if(f == null || !f.exists() || !f.canRead() || !f.isDirectory())
+            throw new DapException("Resource root path not found")
+                    .setCode(DapCodes.SC_NOT_FOUND);
+        return rootpath;
     }
 
     @Override
@@ -190,7 +186,7 @@ public class D4TSServlet extends DapController
             // Figure out the directory containing
             // the files to display.
             String pageroot;
-            pageroot = getResourcePath(drq, "");
+            pageroot = getResourceRoot(drq);
             if(pageroot == null)
                 throw new DapException("Cannot locate resources directory");
             this.defaultroots = new ArrayList<>();

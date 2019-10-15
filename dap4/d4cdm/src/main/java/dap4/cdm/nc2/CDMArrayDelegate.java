@@ -6,7 +6,6 @@ package dap4.cdm.nc2;
 
 import dap4.core.dmr.*;
 import dap4.core.data.DSP;
-import dap4.core.data.DSP;
 
 /**
  * Since we can't use AbstractCDMArray,
@@ -20,7 +19,6 @@ import dap4.core.data.DSP;
 
 /*package*/ class CDMArrayDelegate implements CDMArray
 {
-    protected DSP dsp = null;
     protected DapVariable template = null;
     protected long bytesize = 0;
     protected DapType basetype = null;
@@ -31,17 +29,10 @@ import dap4.core.data.DSP;
         this.template = template;
         this.bytesize = 0;
         this.root = root;
-        this.dsp = dsp;
         this.bytesize = size;
         this.basetype = this.template.getBaseType();
 	this.primitivetype = this.basetype.getPrimitiveType();
     */
-
-    @Override
-    public DSP getDSP()
-    {
-        return this.dsp;
-    }
 
     @Override
     public DapVariable getTemplate()

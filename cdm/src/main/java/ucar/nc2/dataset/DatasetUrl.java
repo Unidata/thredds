@@ -111,7 +111,7 @@ public class DatasetUrl {
 
     // Priority in deciding
     // the service type is as follows.
-    // 1. "protocol" tag in fragment
+    // 1. "mode" tag in fragment (or "proto" or "protocol" for back compatibility)
     // 2. specific protocol in fragment
     // 3. leading protocol
     // 4. path extension
@@ -196,22 +196,24 @@ public class DatasetUrl {
       return null;
     Map<String, String> map = parseFragment(fragment);
     if (map == null) return null;
-    String protocol = map.get("protocol");
-    if(protocol == null) {
+    String mode = map.get("mode");
+    if(mode == null) mode = map.get("proto");
+    if(mode == null) mode = map.get("protocol");
+      if(mode == null) {
       for(String p: FRAGPROTOCOLS) {
-        if(map.get(p) != null) {protocol = p; break;}
+        if(map.get(p) != null) {mode = p; break;}
       }
     }
-    if (protocol != null) {
-      if (protocol.equalsIgnoreCase("dap") || protocol.equalsIgnoreCase("dods"))
+    if (mode != null) {
+      if (mode.equalsIgnoreCase("dap") || mode.equalsIgnoreCase("dods"))
         return ServiceType.OPENDAP;
-      if (protocol.equalsIgnoreCase("dap4"))
+      if (mode.equalsIgnoreCase("dap4"))
         return ServiceType.DAP4;
-      if (protocol.equalsIgnoreCase("cdmremote"))
+      if (mode.equalsIgnoreCase("cdmremote"))
         return ServiceType.CdmRemote;
-      if (protocol.equalsIgnoreCase("thredds"))
+      if (mode.equalsIgnoreCase("thredds"))
         return ServiceType.THREDDS;
-      if (protocol.equalsIgnoreCase("ncml"))
+      if (mode.equalsIgnoreCase("ncml"))
         return ServiceType.NCML;
     }
     return null;

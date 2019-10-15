@@ -65,7 +65,6 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
 
     // CDMArry variables
     protected Group cdmroot = null;
-    protected DSP dsp = null;
     protected DapVariable template = null;
     protected DapType basetype = null;
     protected long dimsize = 0;
@@ -104,7 +103,6 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
                 CDMUtil.computeEffectiveShape(((DapVariable) data.getTemplate()).getDimensions()));
         this.template = (DapVariable) data.getTemplate();
         assert data.getScheme() == Scheme.STRUCTARRAY;
-        this.dsp = data.getDSP();
         this.cdmroot = cdmroot;
         this.basetype = this.template.getBaseType();
         this.dimsize = DapUtil.dimProduct(template.getDimensions());
@@ -138,12 +136,6 @@ CDMArrayStructure extends ArrayStructure implements CDMArray
     }
     //////////////////////////////////////////////////
     // CDMArray Interface
-
-    @Override
-    public DSP getDSP()
-    {
-        return this.dsp;
-    }
 
     @Override
     public DapVariable getTemplate()

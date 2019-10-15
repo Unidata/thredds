@@ -17,10 +17,14 @@ import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import org.xml.sax.SAXException;
+import ucar.nc2.NetcdfFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
+import java.net.URL;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +60,6 @@ abstract public class AbstractDSP implements DSP
 
     protected DapContext context = null;
     protected DapDataset dmr = null;
-    protected String location = null;
     private ByteOrder order = null;
     private ChecksumMode checksummode = ChecksumMode.DAP;
 
@@ -77,18 +80,26 @@ abstract public class AbstractDSP implements DSP
 
     /**
      * "open" a reference to a data source and return the DSP wrapper.
+     * There is one for each possible kind of source 
      *
-     * @param location - Object that defines the data source
-     * @return = wrapping dsp
-     * @throws DapException
+     * @param src - Object that defines the data source
+     * @return wrapping dsp
+     * @throws DapException | UnsupportedOperationException
      */
-    @Override
-    abstract public AbstractDSP open(String location) throws DapException;
+    public AbstractDSP open(NetcdfFile src) throws DapException
+	    {throw new UnsupportedOperationException();}
+    public AbstractDSP open(File src) throws DapException
+	    {throw new UnsupportedOperationException();}
+    public AbstractDSP open(URI src) throws DapException
+	    {throw new UnsupportedOperationException();}
 
     /**
      * @throws IOException
      */
     abstract public void close() throws IOException;
+
+    // Misc
+    abstract public String getLocation();
 
     //////////////////////////////////////////////////
     // Implemented
@@ -104,21 +115,6 @@ abstract public class AbstractDSP implements DSP
     public DapContext getContext()
     {
         return this.context;
-    }
-
-    @Override
-    public String
-    getLocation()
-    {
-        return this.location;
-    }
-
-    @Override
-    public AbstractDSP
-    setLocation(String loc)
-    {
-        this.location = loc;
-        return this;
     }
 
     @Override

@@ -328,21 +328,5 @@ public class TestSerial extends DapTestCommon
         System.err.println(msg);
         return false;
     }
-////////////////////////////////////////
-    // Stand alone
-
-    static public void
-    main(String[] argv)
-    {
-        try {
-            new TestConstraints().testConstraints();
-        } catch (Exception e) {
-            System.err.println("*** FAIL");
-            e.printStackTrace();
-            System.exit(1);
-        }
-        System.err.println("*** PASS");
-        System.exit(0);
-    }// main
 
 } // class TestConstraints

@@ -86,39 +86,27 @@ public class CDMDSP extends AbstractDSP
     {
     }
 
-    public CDMDSP(String path)
-            throws DapException
-    {
-        super();
-        setLocation(path);
-    }
-
     //////////////////////////////////////////////////
     // DSP Interface
 
-    // This is intended to be the last DSP checked
-    @Override
-    public boolean dspMatch(String path, DapContext context)
-    {
-        return true;
-    }
+    public String getLocation() {return this.ncdfile.getLocation();}
 
     /**
-     * @param filepath - absolute path to a file
+     * @param ncfile - source netcdf file
      * @return CDMDSP instance
      * @throws DapException
      */
     @Override
     public CDMDSP
-    open(String filepath)
+    open(NetcdfFile ncfile)
             throws DapException
     {
         try {
-            NetcdfFile ncfile = createNetcdfFile(filepath, null);
             NetcdfDataset ncd = new NetcdfDataset(ncfile, ENHANCEMENT);
+            this.ncdfile = ncd;
             return open(ncd);
         } catch (IOException ioe) {
-            throw new DapException("CDMDSP: cannot process: " + filepath, ioe);
+            throw new DapException("CDMDSP: cannot process: " + getLocation(), ioe);
         }
     }
 
@@ -132,10 +120,8 @@ public class CDMDSP extends AbstractDSP
     public CDMDSP open(NetcdfDataset ncd)
             throws DapException
     {
-        assert this.context != null;
         this.dmrfactory = new DMRFactory();
         this.ncdfile = ncd;
-        setLocation(this.ncdfile.getLocation());
         buildDMR();
         return this;
     }
@@ -1070,26 +1056,6 @@ public class CDMDSP extends AbstractDSP
         } //else { // leave it unchanged
         return o;
     } */
-
-    //////////////////////////////////////////////////
-
-    protected NetcdfFile
-    createNetcdfFile(String location, CancelTask canceltask)
-            throws DapException
-    {
-        try {
-            NetcdfFile ncfile = NetcdfFile.open(location, -1, canceltask, getContext());
-            return ncfile;
-        } catch (DapException de) {
-            if (DEBUG)
-                de.printStackTrace();
-            throw de;
-        } catch (Exception e) {
-            if (DEBUG)
-                e.printStackTrace();
-            throw new DapException(e);
-        }
-    }
 
     //////////////////////////////////////////////////
     // Utilities

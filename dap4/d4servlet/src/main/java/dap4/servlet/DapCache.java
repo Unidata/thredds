@@ -3,16 +3,23 @@
 
 package dap4.servlet;
 
+import dap4.cdm.dsp.CDMDSP;
 import dap4.core.ce.CEConstraint;
 import dap4.core.data.DSP;
-import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
-import dap4.dap4lib.DapCodes;
+import dap4.dap4lib.FileDSP;
+import dap4.dap4lib.HttpDSP;
+import dap4.dap4lib.netcdf.Nc4DSP;
+import ucar.nc2.NetcdfFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -34,43 +41,27 @@ abstract public class DapCache
 
     static final int MAXFILES = 100; // size of the cache
 
-    static public final String MATCHMETHOD = "dspMatch";
+    //////////////////////////////////////////////////
+    // Types
 
     //////////////////////////////////////////////////
     // Static variables
-
-    /**
-     * Define a map of known DSP classes.
-     */
-    static public DSPRegistry dspregistry = new DSPRegistry();
 
     /**
      * Define an lru cache of known DSP objects: oldest first.
      */
     static protected List<DSP> lru = new ArrayList<DSP>();
 
-    // This should be set by any subclass
-    static protected DSPFactory factory = null;
-
-    static public void setFactory(DSPFactory f)
-    {
-        factory = f;
-    }
-
-    static public DSPFactory getFactory()
-    {
-        return factory;
-    }
-
-    static public synchronized DSP open(String path, DapContext cxt)
+    /**************************************************/
+    /* Check cache */
+    static protected DSP locateDSP(String location)
             throws IOException
     {
-        assert cxt != null;
         int lrusize = lru.size();
         for(int i = lrusize - 1; i >= 0; i--) {
             DSP dsp = lru.get(i);
             String dsppath = dsp.getLocation();
-            if(dsppath.equals(path)) {
+            if(dsppath.equals(location)) {
                 // move to the front of the queue to maintain LRU property
                 lru.remove(i);
                 lru.add(dsp);
@@ -78,22 +69,19 @@ abstract public class DapCache
                 return dsp;
             }
         }
-        // No match found, create and initialize it.
+        return null; /* no match found */
+    }
+
+    static void addDSP(DSP dsp)
+            throws DapException
+    {
         // If cache is full, remove oldest entry
-        if(lrusize == MAXFILES) {
+        if(lru.size() == MAXFILES) {
             // make room
             lru.remove(0);
             CEConstraint.release(lru.get(0).getDMR());
         }
-        // Find dsp that can process this path
-        DSP dsp = dspregistry.findMatchingDSP(path,cxt);
-        if(dsp == null)
-            throw new DapException("Resource has no matching DSP: " + path)
-                    .setCode(DapCodes.SC_FORBIDDEN);
-        dsp.setContext(cxt);
-        dsp.open(path);
         lru.add(dsp);
-        return dsp;
     }
 
     static synchronized public void flush() // for testing
@@ -105,6 +93,21 @@ abstract public class DapCache
             dsp.close();
             lru.remove(0);
         }
+    }
+
+    /**************************************************/
+    // DapDSP pass-thrus
+
+    static public synchronized DSP open(DapRequest drq, NetcdfFile ncfile, DapContext cxt)
+            throws IOException
+    {
+	return DapDSP.open(drq,ncfile,cxt);
+    }
+
+    static public synchronized DSP open(DapRequest drq, String target, DapContext cxt)
+            throws IOException
+    {
+	return DapDSP.open(drq,target,cxt);
     }
 
 

@@ -32,6 +32,7 @@ abstract public class UnitTestCommon
     static public final boolean DEBUG = false;
 
     static public final Charset UTF8 = Charset.forName("UTF-8");
+    static public final Charset ISO88591 = Charset.forName("ISO-8859-1");
 
     static protected final int[] OKCODES = new int[]{200, 404};
 

@@ -115,7 +115,6 @@ abstract public class AbstractCursor implements DataCursor
         return this.scheme;
     }
 
-    @Override
     public DSP
     getDSP()
     {

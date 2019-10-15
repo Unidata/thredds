@@ -23,6 +23,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +49,7 @@ public class TestDSP extends DapTestCommon
 
     static final String BASEEXTENSION = "txt";
 
-    static final String DAP4TAG = "#protocol=dap4";
+    static final String DAP4TAG = "#mode=dap4";
 
     //////////////////////////////////////////////////
     // Constants
@@ -147,31 +149,32 @@ public class TestDSP extends DapTestCommon
     protected DSP
     dspFor(String surl)
     {
-        URL url;
+        URI uri;
         try {
-            url = new URL(surl);
-        } catch (MalformedURLException mue) {
+            uri = new URI(surl);
+        } catch (URISyntaxException mue) {
             throw new IllegalArgumentException("Malformed url: " + surl);
         }
-        String proto = url.getProtocol();
-        String path = url.getPath();
+        String proto = uri.getScheme();
+        String path = uri.getPath();
         int dot = path.lastIndexOf('.');
         if(dot < 0) dot = path.length();
         String ext = path.substring(dot, path.length());
         DSP dsp = null;
         try {
             if("file".equals(proto)) {
+                File f = new File(path);
                 // discriminate on the extensions
                 if(".raw".equals(ext)) {
-                    dsp = new FileDSP();
+                    dsp = new FileDSP().open(f);
                 } else if(".syn".equals(ext)) {
-                    dsp = new SynDSP();
+                    dsp = new SynDSP().open(f);
                 } if(".nc".equals(ext)) {
-                    dsp = new Nc4DSP();
+                    dsp = new Nc4DSP().open(f);
                 }
             } else if("http".equals(proto)
-                    || "https".equals(url.getProtocol())) {
-                dsp = new HttpDSP();
+                    || "https".equals(proto)) {
+                dsp = new HttpDSP().open(uri);
             }  else
                 throw new IllegalArgumentException("Cannot determine DSP class for: " + surl);
         } catch (DapException de) {
@@ -321,9 +324,7 @@ public class TestDSP extends DapTestCommon
         System.err.println("Baseline: " + testcase.getBaseline());
 
         DSP dsp = dspFor(testcase.getURL());
-
         dsp.setContext(new DapContext());
-        dsp.open(testcase.getURL());
 
         String metadata = dumpmetadata(dsp);
         if(prop_visual)

@@ -4,7 +4,6 @@
 
 package dap4.test;
 
-import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.dap4lib.FileDSP;
@@ -489,8 +488,6 @@ abstract public class DapTestCommon extends UnitTestCommon
     testSetup()
     {
         DapController.TESTING = true;
-        DapCache.dspregistry.register(FileDSP.class, DSPRegistry.FIRST);
-        DapCache.dspregistry.register(SynDSP.class, DSPRegistry.FIRST);
         try {
             // Always prefer Nc4Iosp over HDF5
             NetcdfFile.iospDeRegister(NC4IOSP);
