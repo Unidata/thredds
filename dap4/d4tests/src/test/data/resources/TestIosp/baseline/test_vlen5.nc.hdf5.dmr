@@ -1,10 +1,13 @@
-netcdf test_one_var {
+netcdf test_vlen5 {
+  dimensions:
+    d2 = 2;
   variables:
-    int t;
+
+    Structure {
+      int v(*);
+    } v1(d2);
+
 
   // global attributes:
   string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-
-  data:
-    t = 17
 }

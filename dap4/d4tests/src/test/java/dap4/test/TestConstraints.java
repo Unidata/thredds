@@ -29,7 +29,7 @@ public class TestConstraints extends DapTestCommon
 
     static final boolean DEBUG = false;
 
-    static final public boolean DEBUGSERVER = true;
+    public static final boolean DEBUGSERVER = true;
 
     //////////////////////////////////////////////////
     // Constants
@@ -38,8 +38,6 @@ public class TestConstraints extends DapTestCommon
 
     static final String BASEEXTENSION = "raw.txt";
     static final String TESTEXTENSION = ".raw";
-
-    static final String DAP4TAG = "protocol=dap4";
 
     static protected final String SERVLETPATH = "d4ts";
     static protected final String RESOURCEPATH = "/src/test/data/resources";
@@ -94,7 +92,7 @@ public class TestConstraints extends DapTestCommon
         String makeurl()
         {
             StringBuilder url = new StringBuilder();
-            url.append("dap4://");
+            url.append("http://");
             url.append(server);
             url.append("/");
             url.append(servletpath);
@@ -107,8 +105,7 @@ public class TestConstraints extends DapTestCommon
                 url.append("=");
                 url.append(constraint);
             }
-            url.append("#");
-            url.append(DAP4TAG);
+            url.append(DAP4MODE);
             return url.toString();
         }
 

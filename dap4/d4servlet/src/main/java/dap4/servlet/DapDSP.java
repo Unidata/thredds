@@ -130,15 +130,13 @@ abstract public class DapDSP
         }
     }
 
-    //////////////////////////////////////////////////
+    //////////////////////////h////////////////////////
     // Static variables
 
     static ExtMatch[] match = new ExtMatch[]{
-            new ExtMatch(".dmr", SynDSP.class),
             new ExtMatch(".syn", SynDSP.class),
             new ExtMatch(".nc", Nc4DSP.class),
             new ExtMatch(".hdf5", Nc4DSP.class),
-            new ExtMatch(null, FileDSP.class) // default
     };
 
     static FragMatch[] frags = new FragMatch[]{
@@ -168,15 +166,18 @@ abstract public class DapDSP
     static protected DSP open(File file, DapContext cxt)
             throws IOException
     {
-        // Choose the DSP based on the file extension
+        // Choose the DSP based on the file extension;
+        // Note that we need to ignore any trailing .dmr or .dap
         String path = file.getPath();
         Class cldsp = null;
-        for(ExtMatch em : match) {
-            if(em.ext == null) {
-                cldsp = em.dsp;
-                break;
+        String core = filepathcore(path);
+        if(core != null && core.length() > 0) {
+            for(ExtMatch em : match) {
+                if(core.endsWith(em.ext)) {
+                    cldsp = em.dsp;
+                    break;
+                }
             }
-            if(path.endsWith(em.ext)) {cldsp = em.dsp; break;}
         }
         if(cldsp == null)
             throw new DapException("Indeciperable file: " + file);
@@ -234,7 +235,7 @@ abstract public class DapDSP
     /**************************************************/
     // Exported versions for NetcdfFile and String
 
-    static public synchronized DSP open(DapRequest drq, NetcdfFile ncfile, DapContext cxt)
+    public static synchronized DSP open(DapRequest drq, NetcdfFile ncfile, DapContext cxt)
             throws IOException
     {
         assert cxt != null && ncfile != null;
@@ -243,7 +244,7 @@ abstract public class DapDSP
         return dsp;
     }
 
-    static public synchronized DSP open(DapRequest drq, String target, DapContext cxt)
+    public static synchronized DSP open(DapRequest drq, String target, DapContext cxt)
             throws IOException
     {
         assert cxt != null && target != null;
@@ -266,11 +267,13 @@ abstract public class DapDSP
             path = target;
         }
 
+        String core = filepathcore(path); // remove any trailing .dmr|.dap
+
         if(dsp == null) {
             // See if this can open as a NetcdfFile|NetcdfDataset
             NetcdfFile ncfile = null;
             try {
-                ncfile = drq.getController().getNetcdfFile(drq,path);
+                ncfile = drq.getController().getNetcdfFile(drq,core);
             } catch (IOException ioe) {
                 ncfile = null;
             }
@@ -281,7 +284,7 @@ abstract public class DapDSP
 
         if(dsp == null) {
             // Finally, try to open as a some kind of File object
-            File file = new File(path);
+            File file = new File(core);
             // Complain if it does not exist
             if(!file.exists())
                 throw new DapException("Not found: " + target)
@@ -311,5 +314,15 @@ abstract public class DapDSP
         return map;
     }
 
+    // Given a path that might end in .dmr|.dap, strip it of that ending
+    // to get what should be the essential file path
+    static String filepathcore(String path)
+    {
+        if(path == null) return path;
+        int cut = 0;
+        if(path.endsWith(".dmr")) cut = ".dmr".length();
+        else if(path.endsWith(".dap")) cut = ".dap".length();
+        return path.substring(0,path.length() - cut);
+    }
 
-} // DapCache
+}

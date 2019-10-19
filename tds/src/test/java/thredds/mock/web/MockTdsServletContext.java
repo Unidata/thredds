@@ -83,6 +83,10 @@ public class MockTdsServletContext extends MockServletContext {
  		if (!path.startsWith("/")) {
  			path = "/" + path;
  		}
- 		return "src/main/webapp" + path;
+ 		returnu "src/main/webapp" + path;
  	} */
+
+	public String getVirtualServerName() {
+		return null;
+	}
 }

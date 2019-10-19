@@ -100,6 +100,7 @@ public class DapNetcdfFile extends NetcdfFile
      * @param location   URL for the request. Note that if this is
      *                   intended to send to a file oriented
      *                   DSP, then if must be converted to an absolute path.
+     *                   Connection URLs are assumed to not be % escaped.
      * @param cancelTask check if task is cancelled; may be null.
      * @throws IOException
      */
@@ -123,7 +124,7 @@ public class DapNetcdfFile extends NetcdfFile
         } else { // Not a file url
             this.dsplocation = xuri.assemble(XURI.URLBASE);
             try {
-                this.dsp = new FileDSP().open(new URI(this.dsplocation));
+                this.dsp = new HttpDSP().open(new URI(this.dsplocation));
             } catch (URISyntaxException e) {
                 throw new DapException(e);
             }

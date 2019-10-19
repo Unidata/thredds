@@ -101,9 +101,9 @@ public class DapRequest
             } catch (MalformedURLException e) {
                 this.resourceroot = null;
             }
-            if(this.resourceroot == null)
-                throw new DapException("Cannot locate resource root");
         }
+        if(this.resourceroot == null)
+                throw new DapException("Cannot locate resource root");
         try {
             parse();
         } catch (IOException ioe) {

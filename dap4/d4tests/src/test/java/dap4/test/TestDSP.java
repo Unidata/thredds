@@ -45,7 +45,7 @@ public class TestDSP extends DapTestCommon
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final boolean DEBUG = false;
-    static final boolean SHOWTESTCASES = true;
+    static final boolean SHOWTESTCASES = false;
 
     static final String BASEEXTENSION = "txt";
 
@@ -243,7 +243,7 @@ public class TestDSP extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("file:", "test_struct_nested3.hdf5.raw");
+            chosentests = locate("file:", "test_groups1.nc.raw");
             prop_visual = true;
             prop_baseline = false;
         } else {

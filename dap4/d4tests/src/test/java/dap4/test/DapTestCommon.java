@@ -68,6 +68,8 @@ abstract public class DapTestCommon extends UnitTestCommon
 
     static final String D4TESTDIRNAME = "d4tests";
 
+    static final String DAP4MODE = "#mode=dap4";
+
     // Equivalent to the path to the webapp/d4ts for testing purposes
     static protected final String DFALTRESOURCEPATH = "/src/test/data/resources";
     static protected Class NC4IOSP = ucar.nc2.jni.netcdf.Nc4Iosp.class;
@@ -103,9 +105,10 @@ abstract public class DapTestCommon extends UnitTestCommon
             // There appears to be bug in the spring core.io code
             // such that it assumes absolute paths start with '/'.
             // So, check for windows drive and prepend 'file:/' as a hack.
-            if(DapUtil.hasDriveLetter(testdir))
-                testdir = "/" + testdir;
-            testdir = "file:" + testdir;
+            if(DapUtil.hasDriveLetter(testdir)) {
+                //testdir = "/" + testdir;
+                testdir = "file://" + testdir;
+            }
             this.context = new MockServletContext(testdir);
             URI u = HTTPUtil.parseToURI(url);
             this.req = new MockHttpServletRequest(this.context, "GET", u.getPath());
@@ -322,9 +325,9 @@ abstract public class DapTestCommon extends UnitTestCommon
     //////////////////////////////////////////////////
     // Static variables
 
-    static protected String dap4root = null;
-    static protected String dap4testroot = null;
-    static protected String dap4resourcedir = null;
+    protected static String dap4root = null;
+    protected static String dap4testroot = null;
+    protected static String dap4resourcedir = null;
 
     static {
         dap4root = locateDAP4Root(threddsroot);
@@ -439,6 +442,7 @@ abstract public class DapTestCommon extends UnitTestCommon
     public void
     visual(String header, String captured)
     {
+        if(captured == null) captured = "";
         if(!captured.endsWith("\n"))
             captured = captured + "\n";
         // Dump the output for visual comparison

@@ -442,6 +442,8 @@ abstract public class UnitTestCommon
     {
         StringBuilder buf = new StringBuilder();
         File xx = new File(filename);
+        if(!xx.exists())
+            throw new IOException("File does not exist: "+filename);
         FileReader file = new FileReader(filename);
         BufferedReader rdr = new BufferedReader(file);
         String line;

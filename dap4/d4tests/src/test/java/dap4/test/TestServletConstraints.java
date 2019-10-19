@@ -127,7 +127,7 @@ public class TestServletConstraints extends DapTestCommon
             if(this.constraint != null) {
                 String ce = this.constraint;
                 // Escape it
-                ce = Escape.urlEncodeQuery(ce);
+                ce = Escape.urlEncode(ce);
                 query = ce;
             }
             return query;

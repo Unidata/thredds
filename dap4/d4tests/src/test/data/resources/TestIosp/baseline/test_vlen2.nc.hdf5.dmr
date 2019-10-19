@@ -1,13 +1,11 @@
-netcdf test_one_vararray {
+netcdf test_vlen2 {
   dimensions:
+    d3 = 3;
     d2 = 2;
   variables:
-    int t(d2);
+    int x(d3, d2, *);
+      string x:_CoordinateAxisType = "GeoX";
 
   // global attributes:
   string :_CoordSysBuilder = "ucar.nc2.dataset.conv.DefaultConvention";
-
-  data:
-    t = 
-      {17, 37}
 }

@@ -39,8 +39,6 @@ public class TestCDMClient extends DapTestCommon
     static final String BASEEXTENSION = ".txt";
     static final String INPUTEXTENSION = ".raw";
 
-    static final String DAP4TAG = "#mode=dap4";
-
     static final String DATADIR = "src/test/data/resources"; // relative to dap4 root
     static final String BASELINEDIR = "TestCDMClient/baseline";
     static final String TESTCDMINPUT = "TestCDMClient/testinput";
@@ -109,7 +107,7 @@ public class TestCDMClient extends DapTestCommon
 
         public String getURL()
         {
-            return this.url + DAP4TAG;
+            return this.url + DAP4MODE;
         }
 
         public String getPath()

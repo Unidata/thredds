@@ -85,23 +85,23 @@ public class XURI
         List<String> protocols = DapUtil.getProtocols(xurl, breakpoint); // should handle drive letters also
         String remainder = xurl.substring(breakpoint[0], xurl.length());
         switch (protocols.size()) {
-        case 0: // pretend it is a file
-            this.formatprotocol = "file";
-            this.baseprotocol = "file";
-            break;
-        case 1:
-            this.formatprotocol = protocols.get(0);
-            if("file".equalsIgnoreCase(this.formatprotocol))
-                this.baseprotocol = "file";   // default conversion
-            else
-                this.baseprotocol = "http";   // default conversion
-            break;
-        case 2:
-            this.baseprotocol = protocols.get(0);
-            this.formatprotocol = protocols.get(1);
-            break;
-        default:
-            throw new URISyntaxException(xurl, "Too many protocols: at most 2 allowed");
+            case 0: // pretend it is a file
+                this.formatprotocol = "file";
+                this.baseprotocol = "file";
+                break;
+            case 1:
+                this.formatprotocol = protocols.get(0);
+                if("file".equalsIgnoreCase(this.formatprotocol))
+                    this.baseprotocol = "file";   // default conversion
+                else
+                    this.baseprotocol = "http";   // default conversion
+                break;
+            case 2:
+                this.baseprotocol = protocols.get(0);
+                this.formatprotocol = protocols.get(1);
+                break;
+            default:
+                throw new URISyntaxException(xurl, "Too many protocols: at most 2 allowed");
         }
         this.isfile = "file".equals(this.baseprotocol);
         // The standard URI parser does not handle 'file:' very well,
@@ -122,7 +122,39 @@ public class XURI
             throws URISyntaxException
     {
         // Construct a usable url and parse it
-        URI uri = new URI(baseprotocol + ":" + remainder);
+        // First, break off the query and fragment parts
+        // because they need % escaping
+        int len = remainder.length();
+        int qindex = Escape.backslashindexof(remainder, '?', 0);
+        int findex = Escape.backslashindexof(remainder, '#', 0);
+        int min = -1; // min pos of query or frag
+        if(qindex >= 0) min = qindex;
+        else if(findex >= 0) min = findex;
+        else min = len;
+        if(qindex >= 0 && findex >= 0 && qindex < findex)
+            findex = Escape.backslashindexof(remainder, '#', qindex + 1);
+        String frag = null;
+        String query = null;
+        if(qindex >= 0)
+            query = remainder.substring(qindex + 1, (findex >= 0 ? findex : len)); // exclude  the '?'
+        if(findex > 0)
+            frag = remainder.substring(findex + 1, len); // exclude the '#'
+        remainder = remainder.substring(0, min);
+        frag = Escape.urlEncode(frag);
+        query = Escape.urlEncode(query);
+        StringBuilder buf = new StringBuilder();
+        buf.append(baseprotocol);
+        buf.append(':');
+        buf.append(remainder);
+        if(query != null) {
+            buf.append('?');
+            buf.append(query);
+        }
+        if(frag != null) {
+            buf.append('#');
+            buf.append(frag);
+        }
+        URI uri = new URI(buf.toString());
         // Extract the parts of the uri so they can
         // be modified and later reassembled
         this.userinfo = canonical(uri.getUserInfo());
@@ -294,19 +326,19 @@ public class XURI
         int useformat = (parts.contains(Parts.FORMAT) ? 1 : 0);
         int usebase = (parts.contains(Parts.BASE) ? 2 : 0);
         switch (useformat + usebase) {
-        case 0 + 0: // neither
-            break;
-        case 1 + 0: // FORMAT only
-            uri.append(this.formatprotocol + ":");
-            break;
-        case 2 + 0: // BASE only
-            uri.append(this.baseprotocol + ":");
-            break;
-        case 2 + 1: // both
-            uri.append(this.formatprotocol + ":");
-            if(!this.baseprotocol.equals(this.formatprotocol))
+            case 0 + 0: // neither
+                break;
+            case 1 + 0: // FORMAT only
                 uri.append(this.formatprotocol + ":");
-            break;
+                break;
+            case 2 + 0: // BASE only
+                uri.append(this.baseprotocol + ":");
+                break;
+            case 2 + 1: // both
+                uri.append(this.formatprotocol + ":");
+                if(!this.baseprotocol.equals(this.formatprotocol))
+                    uri.append(this.formatprotocol + ":");
+                break;
         }
         uri.append(this.baseprotocol.equals("file") ? "/" : "//");
 

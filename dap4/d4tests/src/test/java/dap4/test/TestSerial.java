@@ -3,6 +3,7 @@ package dap4.test;
 import dap4.core.util.DapUtil;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,19 +20,18 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level; access .ser files on server.
  */
+@Ignore
 public class TestSerial extends DapTestCommon
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static protected final boolean DEBUG = false;
 
-    static protected final String TESTINPUTDIR = "/testfiles";
+    static protected final String TESTINPUTDIR = "testfiles";
 
     static protected final boolean NCDUMP = true; // Use NcDumpW instead of D4Print
 
     static protected final String EXTENSION = (NCDUMP ? "ncdump" : "dmp");
-
-    static protected final String DAP4TAG = "#dap4";
 
     static protected final String[] EMPTY = new String[]{""};
 
@@ -39,7 +39,7 @@ public class TestSerial extends DapTestCommon
     // Constants
 
     static protected final String DATADIR = "src/test/data"; // relative to dap4 root
-    static protected final String TESTDATADIR = DATADIR + "/resources/TestCDMClient";
+    static protected final String TESTDATADIR = "/TestCDMClient";
     static protected final String BASELINEDIR = TESTDATADIR + "/baseline";
 
     static protected final String alpha = "abcdefghijklmnopqrstuvwxyz"
@@ -85,7 +85,7 @@ public class TestSerial extends DapTestCommon
             url.append(this.dataset);
             url.append(".");
             url.append("nc");
-            url.append(DAP4TAG);
+            url.append(DAP4MODE);
             if(ce != null && ce.length() > 0) {
                 url.append("?");
                 url.append(DapTestCommon.CONSTRAINTTAG);

@@ -1,12 +1,16 @@
 package dap4.test;
 
+import dap4.core.util.DapUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.util.test.category.NotJenkins;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
@@ -15,6 +19,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+@Category(NotJenkins.class)
 public class TestNc4Iosp extends DapTestCommon
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -28,9 +33,10 @@ public class TestNc4Iosp extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected final String RESOURCEPATH = "/src/test/data/resources"; // wrt getTestInputFilesDIr
-    static protected final String TESTINPUTDIR = "/testfiles";
-    static protected final String BASELINEDIR = "/TestIosp/baseline";
+    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
+    static protected String TESTDATADIR = "/resources/";
+    static protected String BASELINEDIR = "/resources/TestIosp/baseline";
+    static protected String TESTINPUTDIR = "/resources/testfiles";
 
     static protected final BigInteger MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
 
@@ -39,16 +45,7 @@ public class TestNc4Iosp extends DapTestCommon
 
     static protected class Nc4IospTest
     {
-        static String inputroot = null;
-        static String baselineroot = null;
-
-        static public void
-        setRoots(String input, String baseline)
-        {
-            inputroot = input;
-            baselineroot = baseline;
-        }
-
+        static String root = null;
         String title;
         String dataset;
         String testinputpath;
@@ -58,8 +55,10 @@ public class TestNc4Iosp extends DapTestCommon
         {
             this.title = dataset;
             this.dataset = dataset;
-            this.testinputpath = canonjoin(this.inputroot, dataset);
-            this.baselinepath = canonjoin(this.baselineroot, dataset) + ".nc4";
+            this.testinputpath
+                    = root + "/" + TESTINPUTDIR + "/" + dataset;
+            this.baselinepath
+                    = root + "/" + BASELINEDIR + "/" + dataset + ".nc4";
         }
 
         public String toString()
@@ -81,30 +80,30 @@ public class TestNc4Iosp extends DapTestCommon
 
     // Test cases
 
-    protected List<Nc4IospTest> alltestcases = new ArrayList<Nc4IospTest>();
+    protected List<Nc4IospTest> alltestcases = new ArrayList<>();
 
-    protected List<Nc4IospTest> chosentests = new ArrayList<Nc4IospTest>();
+    protected List<Nc4IospTest> chosentests = new ArrayList<>();
 
     protected String datasetpath = null;
 
-    protected String root = null;
+    protected String testroot = null;
 
     //////////////////////////////////////////////////
     @Before
     public void setup() throws Exception
     {
-        this.root = getResourceRoot();
-        testSetup();
-        Nc4IospTest.setRoots(canonjoin(getResourceRoot(), TESTINPUTDIR),
-                canonjoin(getResourceRoot(), BASELINEDIR));
-        defineAllTestcases();
+        this.testroot = getTestFilesDir();
+        this.datasetpath = this.testroot + "/" + DATADIR;
+        File f = new File(this.datasetpath + "/" + BASELINEDIR);
+        if(!f.exists()) f.mkdir();
+        defineAllTestcases(this.datasetpath);
         chooseTestcases();
     }
 
     protected String
     getTestFilesDir()
     {
-        return "";
+        return getDAP4Root();
     }
 
     //////////////////////////////////////////////////
@@ -114,20 +113,19 @@ public class TestNc4Iosp extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_struct_array.nc");
-            prop_visual = true;
-            prop_debug = true;
+            chosentests = locate("test_one_var.nc");
             //chosentests.add(new Nc4IospTest("test_test.nc"));
         } else {
-            prop_baseline = false;
             for(Nc4IospTest tc : alltestcases) {
                 chosentests.add(tc);
             }
         }
     }
 
-    void defineAllTestcases()
+    // Depending on which libnetcdf4-wrapper is used, the enum names will differ
+    void defineAllTestcases(String root)
     {
+        Nc4IospTest.root = root;
         this.alltestcases.add(new Nc4IospTest("test_one_var.nc"));
         this.alltestcases.add(new Nc4IospTest("test_one_vararray.nc"));
         this.alltestcases.add(new Nc4IospTest("test_atomic_types.nc"));
@@ -153,17 +151,21 @@ public class TestNc4Iosp extends DapTestCommon
             throws Exception
     {
         for(Nc4IospTest testcase : chosentests) {
-            doOneTest(testcase);
+            if(!doOneTest(testcase)) {
+                Assert.assertTrue(false);
+            }
         }
     }
 
     //////////////////////////////////////////////////
     // Primary test method
-    void
+    boolean
     doOneTest(Nc4IospTest testcase)
             throws Exception
     {
-        System.err.println("Testcase: " + testcase.testinputpath);
+        boolean pass = true;
+
+        System.out.println("Testcase: " + testcase.testinputpath);
 
         NetcdfDataset ncfile = openDataset(testcase.testinputpath);
 
@@ -181,8 +183,6 @@ public class TestNc4Iosp extends DapTestCommon
         }
 
         String baselinefile = String.format("%s", testcase.baselinepath);
-        System.err.println("Testpath: " + testcase.testinputpath);
-        System.err.println("Baseline: " + baselinefile);
         if(prop_baseline) {
             if(mode == Mode.DMR || mode == Mode.BOTH)
                 writefile(baselinefile + ".dmr", metadata);
@@ -192,26 +192,19 @@ public class TestNc4Iosp extends DapTestCommon
             String baselinecontent = null;
             if(mode == Mode.DMR || mode == Mode.BOTH) {
                 // Read the baseline file(s)
-                System.err.println("DMR Comparison:");
-                try {
-                    baselinecontent = readfile(baselinefile + ".dmr");
-                    boolean pass = same(getTitle(), baselinecontent, metadata);
-                    Assert.assertTrue("***Fail", pass);
-                } catch (IOException ioe) {
-                    Assert.assertTrue("baselinefile" + ".dmr: " + ioe.getMessage(), false);
-                }
+                System.out.println("DMR Comparison:");
+                baselinecontent = readfile(baselinefile + ".dmr");
+                pass = pass && same(getTitle(), baselinecontent, metadata);
+                System.out.println(pass ? "Pass" : "Fail");
             }
             if(mode == Mode.DATA || mode == Mode.BOTH) {
-                System.err.println("DATA Comparison:");
-                try {
-                    baselinecontent = readfile(baselinefile + ".dap");
-                    Assert.assertTrue("***Data Fail", same(getTitle(), baselinecontent, data));
-
-                } catch (IOException ioe) {
-                    Assert.assertTrue("baselinefile" + ".dap: " + ioe.getMessage(), false);
-                }
+                System.out.println("DATA Comparison:");
+                baselinecontent = readfile(baselinefile + ".dap");
+                pass = pass && same(getTitle(), baselinecontent, data);
+                System.out.println(pass ? "Pass" : "Fail");
             }
         }
+        return pass;
     }
 
     //////////////////////////////////////////////////
@@ -265,13 +258,11 @@ public class TestNc4Iosp extends DapTestCommon
             sw.close();
         } catch (IOException e) {
         }
-
         if(!ok) {
             System.err.println("NcdumpW failed");
             System.exit(1);
         }
-        //return shortenFileName(sw.toString(), ncfile.getLocation());
-        return sw.toString();
+        return shortenFileName(sw.toString(), ncfile.getLocation());
     }
 
     String ncdumpdata(NetcdfDataset ncfile, String datasetname)
@@ -284,7 +275,6 @@ public class TestNc4Iosp extends DapTestCommon
             args.append(" -datasetname ");
             args.append(datasetname);
         }
-
         // Dump the databuffer
         sw = new StringWriter();
         ok = false;
@@ -303,10 +293,8 @@ public class TestNc4Iosp extends DapTestCommon
             System.err.println("NcdumpW failed");
             System.exit(1);
         }
-        //return shortenFileName(sw.toString(), ncfile.getLocation());
-        return sw.toString();
+        return shortenFileName(sw.toString(), ncfile.getLocation());
     }
-
 
 }
 
