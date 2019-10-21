@@ -256,13 +256,11 @@ abstract public class DapDSP
             URI uri = new URI(target);
             String scheme = uri.getScheme();
             if(scheme == null)
-                System.err.println("XXXX: "+target);
-            assert(scheme != null);
-            // Windows drive letters cause URI to succeed, so special hack for that
-            if(scheme.length() == 1 && driveletters.indexOf(scheme.charAt(0)) >= 0)
-                throw new URISyntaxException("windows drive letter", target);
-            // If uri protocol is file, then extract the path
-            if(scheme.equals("file"))
+                path = target; // apparently not a URL
+            else if(scheme.length() == 1 && driveletters.indexOf(scheme.charAt(0)) >= 0)
+                    // Windows drive letters cause URI to succeed, so special hack for that
+                    path = target; // really not a URL
+            else if(scheme.equals("file")) // If uri protocol is file, then extract the path
                 path = uri.getPath();
             else
                 dsp = open(uri, cxt); // open as general URI
@@ -271,7 +269,7 @@ abstract public class DapDSP
             path = target;
         }
 
-        String core = filepathcore(path); // remove any trailing .dmr|.dap
+        String core = filepathcore(path); // remove any trailing .dmr|.dap -- null ok
 
         if(dsp == null) {
             // See if this can open as a NetcdfFile|NetcdfDataset

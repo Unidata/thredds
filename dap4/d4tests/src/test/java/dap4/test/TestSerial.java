@@ -5,11 +5,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.category.NotJenkins;
+import ucar.unidata.util.test.category.NotTravis;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -20,7 +23,6 @@ import java.util.List;
 /**
  * Test at the NetcdfDataset level; access .ser files on server.
  */
-@Ignore
 public class TestSerial extends DapTestCommon
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -170,6 +172,7 @@ public class TestSerial extends DapTestCommon
     // Junit test method
 
     @Test
+    @Category({NotJenkins.class, NotTravis.class})
     public void testSerial()
             throws Exception
     {
