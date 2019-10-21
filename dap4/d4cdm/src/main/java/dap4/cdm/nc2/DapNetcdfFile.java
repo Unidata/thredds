@@ -7,7 +7,6 @@ package dap4.cdm.nc2;
 import dap4.cdm.CDMUtil;
 import dap4.cdm.NodeMap;
 import dap4.core.data.DSP;
-import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
@@ -23,7 +22,9 @@ import ucar.nc2.dataset.NetcdfDataset;
 import ucar.nc2.iosp.IospHelper;
 import ucar.nc2.util.CancelTask;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.channels.WritableByteChannel;
 import java.util.*;
@@ -67,16 +68,6 @@ public class DapNetcdfFile extends NetcdfFile
 
     static protected final NullCancelTask nullcancel = new NullCancelTask();
 
-    /**
-     * Define a map of known DSP classes.
-     */
-    static protected DSPRegistry dspregistry = new DSPRegistry();
-
-    static {
-        dspregistry.register(FileDSP.class, DSPRegistry.FIRST);
-        dspregistry.register(HttpDSP.class, DSPRegistry.FIRST);
-    }
-
     //////////////////////////////////////////////////
     // Instance Variables
 
@@ -109,6 +100,7 @@ public class DapNetcdfFile extends NetcdfFile
      * @param location   URL for the request. Note that if this is
      *                   intended to send to a file oriented
      *                   DSP, then if must be converted to an absolute path.
+     *                   Connection URLs are assumed to not be % escaped.
      * @param cancelTask check if task is cancelled; may be null.
      * @throws IOException
      */
@@ -125,19 +117,22 @@ public class DapNetcdfFile extends NetcdfFile
             throw new IOException(use);
         }
         boolean isfile = xuri.isFile();
+        DapContext cxt = new DapContext();
         if(isfile) {
             this.dsplocation = DapUtil.absolutize(xuri.getPath());
+            this.dsp = new FileDSP().open(new File(this.dsplocation));
         } else { // Not a file url
             this.dsplocation = xuri.assemble(XURI.URLBASE);
+            try {
+                this.dsp = new HttpDSP().open(new URI(this.dsplocation));
+            } catch (URISyntaxException e) {
+                throw new DapException(e);
+            }
         }
-        DapContext cxt = new DapContext();
         cancel = (cancelTask == null ? nullcancel : cancelTask);
-        // 1. Get and parse the constrained DMR and Data v-a-v URL
-        this.dsp = dspregistry.findMatchingDSP(location,cxt); // will set dsp context
         if(this.dsp == null)
             throw new IOException("No matching DSP: "+this.location);
         this.dsp.setContext(cxt);
-        this.dsp.open(this.dsplocation);
 
         // 2. Construct an equivalent CDM tree and populate 
         //    this NetcdfFile object.

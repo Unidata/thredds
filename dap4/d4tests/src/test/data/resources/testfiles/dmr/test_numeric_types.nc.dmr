@@ -5,8 +5,8 @@
          xmlns="http://xml.opendap.org/ns/DAP/4.0#"
          xmlns:dap="http://xml.opendap.org/ns/DAP/4.0#">
     <Int8 name="v8"/>
-    <Byte name="vu8">
-    </Byte>
+    <UInt8 name="vu8">
+    </UInt8>
     <Int16 name="v16"/>
     <UInt16 name="vu16">
     </UInt16>

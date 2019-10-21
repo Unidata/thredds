@@ -25,6 +25,7 @@ import dap4.core.util.DapUtil;
 import dap4.dap4lib.AbstractDSP;
 import dap4.dap4lib.DapCodes;
 import dap4.dap4lib.XURI;
+import ucar.nc2.NetcdfFile;
 import ucar.nc2.jni.netcdf.Nc4Iosp;
 import ucar.nc2.jni.netcdf.Nc4prototypes;
 import ucar.nc2.jni.netcdf.SizeTByReference;
@@ -301,9 +302,10 @@ public class Nc4DSP extends AbstractDSP
     protected int ncid = -1;        // file id ; also set as DSP.source
     protected int format = 0;       // from nc_inq_format
     protected int mode = 0;
-    protected String filepath = null; // real path to the dataset
 
     protected DMRFactory dmrfactory = null;
+
+    protected NetcdfFile ncfile = null;
 
     //////////////////////////////////////////////////
     // Constructor(s)
@@ -325,23 +327,22 @@ public class Nc4DSP extends AbstractDSP
     // DSP API
 
     @Override
+    public String getLocation()
+    {
+        return ncfile.getLocation();
+    }
+
+    @Override
     public Nc4DSP
-    open(String filepath)
+    open(NetcdfFile ncfile)
             throws DapException
     {
-        if(filepath.startsWith("file:")) try {
-            XURI xuri = new XURI(filepath);
-            filepath = xuri.getPath();
-        } catch (URISyntaxException use) {
-            throw new DapException("Malformed filepath: " + filepath)
-                    .setCode(DapCodes.SC_NOT_FOUND);
-        }
         int ret, mode;
+        this.ncfile = ncfile;
         IntByReference ncidp = new IntByReference();
-        this.filepath = filepath;
         try {
             mode = NC_NOWRITE;
-            Nc4Cursor.errcheck(nc4, ret = nc4.nc_open(this.filepath, mode, ncidp));
+            Nc4Cursor.errcheck(nc4, ret = nc4.nc_open(this.ncfile.getLocation(), mode, ncidp));
             this.ncid = ncidp.getValue();
             // Figure out what kind of file
             IntByReference formatp = new IntByReference();
@@ -349,7 +350,7 @@ public class Nc4DSP extends AbstractDSP
             this.format = formatp.getValue();
             if(DEBUG)
                 System.out.printf("TestNetcdf: open: %s; ncid=%d; format=%d%n",
-                        this.filepath, ncid, this.format);
+                        this.ncfile.getLocation(), ncid, this.format);
             // Compile the DMR
             Nc4DMRCompiler dmrcompiler = new Nc4DMRCompiler(this, ncid, dmrfactory);
             setDMR(dmrcompiler.compile());
@@ -375,7 +376,7 @@ public class Nc4DSP extends AbstractDSP
         Nc4Cursor.errcheck(nc4, ret);
         closed = true;
         if(trace)
-            System.out.printf("Nc4DSP: closed: %s%n", this.filepath);
+            System.out.printf("Nc4DSP: closed: %s%n", this.ncfile.getLocation());
     }
 
     @Override
@@ -413,12 +414,6 @@ public class Nc4DSP extends AbstractDSP
     public Nc4prototypes getJNI()
     {
         return this.nc4;
-    }
-
-    @Override
-    public String getLocation()
-    {
-        return this.filepath;
     }
 
     //////////////////////////////////////////////////

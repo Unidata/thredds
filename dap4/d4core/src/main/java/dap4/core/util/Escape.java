@@ -41,6 +41,10 @@ public class Escape
     // define the default entity characters to escape
     static public final String ENTITYESCAPES = "\\<>&\"'";
 
+    // (Minimal?) Set of non-alphanum characters that need to be escaped in a query
+    // before sending it to server Subset of nonAlphaNumeric
+    static final String URLESCAPECHARS = " !\"#$%'()+,/:;<>?@[]\\^_`|{}~";
+
     // Define the alphan characters
 
     /* Defind loose set of characters that can appear in an xml entity name */
@@ -253,35 +257,55 @@ public class Escape
     }
 
     /**
+     * Search a string with respect to an unescaped haracter
+     * and taking backslashes into consideration.
+     *
+     * @param s   The string to search
+     * @param cs The character for which to search
+     * @param start Start the search at this position
+     * @return index of firt occurrencce or -1
+     */
+    static public int
+    backslashindexof(String s, char cs, int start)
+    {
+        int len = s.length();
+        int i = start;
+        while(i < len) {
+            char c = s.charAt(i);
+            if(c == cs) return i;
+            if(c == '\\' && i < (len - 1)) i++;
+            i++;
+        }
+        return -1; // not found
+    }
+
+    /**
      * Split a string with respect to a separator
      * character and taking backslashes into consideration.
      *
      * @param s   The string to split
      * @param sep The character on which to split
      * @return a List of strings (all with escaping still intact)
-     * representing s split at unescaped instances of sep.
+     *  representing s split at unescaped instances of sep.
      */
     static public List<String>
     backslashsplit(String s, char sep)
     {
         List<String> path = new ArrayList<String>();
         int len = s.length();
-        StringBuilder piece = new StringBuilder();
         int i = 0;
-        for(; i <= len - 1; i++) {
-            char c = s.charAt(i);
-            if(c == '\\' && i < (len - 1)) {
-                piece.append(c); // keep escapes in place
-                piece.append(s.charAt(++i));
-            } else if(c == sep) {
-                path.add(piece.toString());
-                piece.setLength(0);
-            } else
-                piece.append(c);
+        int prev = -1;
+        while(i < len) {
+            int pos = backslashindexof(s,sep,i);
+            if(pos < 0) pos = len;
+            String piece = s.substring(prev+1,pos);
+            path.add(piece);
+            prev = pos;
+            i = pos+1;
         }
-        path.add(piece.toString());
         return path;
     }
+
 
 /*    static public String backslashEscape(String s, String wrt)
     {
@@ -344,11 +368,8 @@ public class Escape
         return s;
     }
 
-    // (Minimal?) Set of non-alphanum characters that need to be escaped in a query
-    // before sending it to server
-    static final String URLESCAPECHARS = " %";
 
-    static public String urlEncodeQuery(String s)
+    static public String urlEncode(String s)
     {
         if(s == null || s.length() == 0) return s;
         if(false) try {// Note that URLEncoder over encodes. For practical purposes,
@@ -368,6 +389,7 @@ public class Escape
                 } else
                     buf.append(c);
             }
+            s = buf.toString();
         }
         return s;
     }

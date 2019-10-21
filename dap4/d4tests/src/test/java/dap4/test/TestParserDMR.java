@@ -89,8 +89,9 @@ public class TestParserDMR extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_struct_nested.hdf5");
+            chosentests = locate("test_ncml");
             prop_visual = true;
+            prop_baseline = true;
             assert chosentests.size() > 0 : "No tests chosen";
         } else {
             for(TestCase tc : alltestcases) {
@@ -241,11 +242,11 @@ public class TestParserDMR extends DapTestCommon
         sw.close();
         String testresult = sw.toString();
 
-        // Read the baseline file
-        String baselinecontent;
+        // Read the baseline file, unless generating it
+        String baselinecontent = null;
         if(BACKCOMPARE)
             baselinecontent = document;
-        else
+        else if(!prop_baseline)
             baselinecontent = readfile(baseline);
         if(prop_visual) {
             visual("Baseline", baselinecontent);

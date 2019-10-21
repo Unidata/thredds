@@ -101,9 +101,9 @@ public class DapRequest
             } catch (MalformedURLException e) {
                 this.resourceroot = null;
             }
-            if(this.resourceroot == null)
-                throw new DapException("Cannot locate resource root");
         }
+        if(this.resourceroot == null)
+                throw new DapException("Cannot locate resource root");
         try {
             parse();
         } catch (IOException ioe) {
@@ -321,6 +321,11 @@ public class DapRequest
         return this.controllerpath;
     }
 
+    public DapController getController()
+    {
+        return this.controller;
+    }
+
     public String getURLPath()
     {
         return this.controllerpath + (this.datasetpath == null ? "" : this.datasetpath);
@@ -356,12 +361,6 @@ public class DapRequest
     getQueries()
     {
         return this.queries;
-    }
-
-    public String getResourcePath(String relpath)
-            throws IOException
-    {
-        return controller.getResourcePath(this, relpath);
     }
 
     public String getDatasetPath()

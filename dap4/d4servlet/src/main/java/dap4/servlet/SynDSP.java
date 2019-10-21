@@ -15,10 +15,7 @@ import dap4.dap4lib.RequestMode;
 import dap4.dap4lib.XURI;
 import dap4.dap4lib.serial.D4DSP;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -40,6 +37,8 @@ public class SynDSP extends D4DSP
 
     protected byte[] raw = null; // Complete serialized binary databuffer
 
+    protected File file = null;
+
     //////////////////////////////////////////////////
     // Constructor(s)
 
@@ -51,6 +50,8 @@ public class SynDSP extends D4DSP
     //////////////////////////////////////////////////
     // DSP API
 
+    @Override
+    public String getLocation() {return this.file.getAbsolutePath();}
 
     /**
      * A path is a Synthetic path if it ends in .dmr or .syn
@@ -75,23 +76,16 @@ public class SynDSP extends D4DSP
 
     @Override
     public SynDSP
-    open(String filepath)
+    open(File file)
             throws DapException
     {
         // convert the relative path to real path
         assert this.context != null;
-        if(filepath.startsWith("file:")) try {
-            XURI xuri = new XURI(filepath);
-            filepath = xuri.getPath();
-        } catch (URISyntaxException use) {
-            throw new DapException("Malformed filepath: " + filepath)
-                    .setCode(DapCodes.SC_NOT_FOUND);
-        }
-        setLocation(filepath);
+        this.file = file;
         // Read the .dmr/.syn file
         String document;
         try {
-            try (FileInputStream stream = new FileInputStream(filepath);) {
+            try (FileInputStream stream = new FileInputStream(file);) {
                 document = DapUtil.readtextfile(stream);
             }
         } catch (IOException ioe) {

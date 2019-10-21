@@ -146,7 +146,7 @@ public class GenerateRaw extends DapTestCommon
                 dataset = dataset.substring(0, index);
             }
             this.dataset = dataset;
-            this.ce = (ce == null ? null : Escape.urlEncodeQuery(ce));
+            this.ce = (ce == null ? null : Escape.urlEncode(ce));
             this.id = id;
             this.bigendian = false;
             this.nochecksum = false;

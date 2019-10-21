@@ -3,15 +3,20 @@ package dap4.test;
 import dap4.dap4lib.ChunkInputStream;
 import dap4.core.util.*;
 import dap4.dap4lib.RequestMode;
+import dap4.dap4lib.XURI;
 import dap4.servlet.Generator;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ucar.httpservices.HTTPMethod;
+import ucar.nc2.dataset.NetcdfDataset;
+import ucar.unidata.util.test.TestDir;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.invoke.MethodHandles;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -29,103 +34,105 @@ public class TestFilters extends DapTestCommon
 
     //////////////////////////////////////////////////
     // Constants
+    static boolean DEBUGSERVER = true;
+    static final boolean NCDUMP = true; // Use NcDumpW instead of D4Print
 
-    static String DATADIR = "src/test/data"; // relative to dap4 root
-    static String TESTDATADIR = DATADIR + "/resources/";
-    static String BASELINEDIR = DATADIR + "/resources/TestFilters/baseline";
-    static String TESTINPUTDIR = DATADIR + "/resources/testfiles";
-
-    // constants for Fake Request
-    static String FAKEURLPREFIX = "http://localhost:8080/d4ts";
+    static protected final String SERVLETPATH = "d4ts";
+    static protected final String RESOURCEPATH = "/src/test/data/resources";
+    static protected final String TESTINPUTPATH = "/testfiles";
+    static protected final String BASELINEDIR = "/TestFilters/baseline";
 
     static final BigInteger MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
 
-    static protected final int DEFAULTROWCOUNT = 5;
+    static final int DEFAULTROWCOUNT = 5;
 
     //////////////////////////////////////////////////
     // Type Declarations
 
-    static class ConstraintTest
+    static class TestCase
     {
-        static String root = null;
+        static String servletpath = null;
+        static String baselinedir = null;
+        static String server = null;
 
-        static ConstraintTest[] alltests;
-
-        static {
-            alltests = new ConstraintTest[2048];
-            Arrays.fill(alltests, null);
+        static public void
+        setRoots(String servletpath, String baselinedir, String server)
+        {
+            TestCase.baselinedir = baselinedir;
+            TestCase.servletpath = servletpath;
+            TestCase.server = server;
         }
 
+        static boolean[] idcheck = new boolean[2048];
+
+        //////////////////////////////////////////////////
         String title;
         String dataset;
         String constraint;
-        boolean xfail;
-        Dump.Commands template;
-        String testinputpath;
-        String baselinepath;
         int id;
+        boolean xfail;
         int rowcount = DEFAULTROWCOUNT;
 
-        ConstraintTest(int id, String dataset, String ce)
+        TestCase(int id, String dataset, String ce)
         {
-            this(id, dataset, 0, ce, null, true);
+            this(id, dataset, 0, ce, false);
         }
 
-        ConstraintTest(int id, String dataset, String ce,
-                       Dump.Commands template)
+        TestCase(int id, String dataset, int rows, String ce, boolean xfail)
         {
-            this(id, dataset, 0, ce, template, false);
-        }
-
-        ConstraintTest(int id, String dataset, int rows, String ce,
-                       Dump.Commands template)
-        {
-            this(id, dataset, rows, ce, template, false);
-        }
-
-        ConstraintTest(int id, String dataset, int rows, String ce,
-                       Dump.Commands template, boolean xfail)
-        {
-            if(alltests[id] != null)
+	    if(idcheck[id])
                 throw new IllegalStateException("two tests with same id");
+            if(ce != null && ce.length() == 0)
+                ce = null;
             this.id = id;
+            idcheck[id] = true;
             this.title = dataset + (ce == null ? "" : ("?" + ce));
             this.dataset = dataset;
             this.constraint = ce;
             this.xfail = xfail;
-            this.template = template;
-            this.testinputpath
-                = root + "/" + TESTINPUTDIR + "/" + dataset;
-            this.baselinepath
-                = root + "/" + BASELINEDIR + "/" + dataset + "." + String.valueOf(this.id);
             this.rowcount = rows == 0 ? DEFAULTROWCOUNT : rows;
-            alltests[id] = this;
+        }
+// this.testinputpath = root + "/" + TESTINPUTDIR + "/" + dataset;
+// this.baselinepath = root + "/" + BASELINEDIR + "/" + dataset + "." + String.valueOf(this.id);
+
+        String
+        getbaseline(RequestMode mode)
+        {
+            return canonjoin(this.baselinedir, dataset) + "." + this.id + "." + mode.toString();
         }
 
         String makeurl(RequestMode ext)
         {
-            String url = FAKEURLPREFIX + "/" + dataset;
-            if(ext != null) url += "." + ext.toString();
+            StringBuilder url = new StringBuilder();
+            url.append("http://");
+            url.append(server);
+            url.append("/");
+            url.append(servletpath);
+            url.append(TESTINPUTPATH);
+            url.append("/");
+            url.append(dataset);
+            if(ext != null) {url.append("."); url.append(ext.toString());}
             if(constraint != null) {
-                url += "?" + CONSTRAINTTAG + "=";
-                String ce = constraint;
+                url.append("?");
+                url.append(CONSTRAINTTAG);
+                url.append("=");
                 // Escape it
                 //ce = Escape.urlEncodeQuery(ce);
-                url += ce;
+                url.append(constraint);
             }
-            return url;
+            url.append(DAP4MODE);
+            return url.toString();
+        }
+
+        String makeName()
+        {
+            return this.dataset + "." + this.id;
         }
 
         public String toString()
         {
             return makeurl(null);
         }
-    }
-
-    protected String
-    getTestFilesDir()
-    {
-        return TESTINPUTDIR;
     }
 
     //////////////////////////////////////////////////
@@ -136,21 +143,24 @@ public class TestFilters extends DapTestCommon
 
     // Test cases
 
-    List<ConstraintTest> alltestcases = new ArrayList<ConstraintTest>();
-
-    List<ConstraintTest> chosentests = new ArrayList<ConstraintTest>();
-
-    String datasetpath = null;
-
-    String testroot = null;
+    List<TestCase> alltestcases = new ArrayList<>();
+    List<TestCase> chosentests = new ArrayList<>();
 
     //////////////////////////////////////////////////
 
     @Before
     public void setup() throws Exception {
-        this.testroot = getTestFilesDir();
-        this.datasetpath = this.testroot + "/" + DATADIR;
-        defineAllTestcases(this.testroot);
+	String d4root = getDAP4Root();
+        if(d4root == null)
+            throw new Exception("dap4 root cannot be located");
+	    testSetup();
+        if(DEBUGSERVER)
+            HTTPMethod.MOCKEXECUTOR = new MockExecutor(getResourceRoot());
+        TestCase.setRoots(
+                SERVLETPATH,
+                canonjoin(getResourceRoot(), BASELINEDIR),
+                TestDir.dap4TestServer);
+        defineAllTestcases();
         chooseTestcases();
     }
 
@@ -161,140 +171,155 @@ public class TestFilters extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate(1);
+            chosentests = locate(2);
+            prop_visual = true;
+            prop_baseline = true;
         } else {
-            for(ConstraintTest tc : alltestcases)
+            prop_baseline = true;
+            for(TestCase tc : alltestcases)
                 chosentests.add(tc);
         }
     }
 
     protected void
-    defineAllTestcases(String root)
+    defineAllTestcases()
     {
-        ConstraintTest.root = root;
         this.alltestcases.add(
-                    new ConstraintTest(1, "test_sequence_1.syn", "/s",
-                        new Dump.Commands()
-                        {
-                            public void run(Dump printer) throws IOException
-                            {
-                                int count = printer.printcount();
-                                for(int j = 0;j < count;j++) {
-                                    printer.printvalue('S', 4);
-                                    printer.printvalue('S', 2);
-                                }
-                                printer.newline();
-                                printer.verifychecksum();
-                            }
-                        }));
+                new TestCase(1, "test_sequence_1.syn", "/s"));
         this.alltestcases.add(
-            new ConstraintTest(2, "test_sequence_1.syn", "/s|i1<0",
-                new Dump.Commands()
-                {
-                    public void run(Dump printer) throws IOException
-                    {
-                        int count = printer.printcount();
-                        for(int j = 0;j < count;j++) {
-                            printer.printvalue('S', 4);
-                            printer.printvalue('S', 2);
-                        }
-                        printer.newline();
-                        printer.verifychecksum();
-                    }
-                }));
-
+                new TestCase(2, "test_sequence_1.syn", "/s|i1<0"));
     }
-
-    //////////////////////////////////////////////////
-    // Junit test methods
+    ///////////////////////////////////////////////
     @Test
     public void testFilters()
-        throws Exception
+        throws Exception///
+    // Junit test methods
     {
-        boolean pass = true;
-        for(ConstraintTest testcase : chosentests) {
-            if(!doOneTest(testcase))
-                pass = false;
+        for(TestCase testcase : chosentests) {
+            doOneTest(testcase);
         }
-        Assert.assertTrue("***Fail: TestServletConstraints", pass);
     }
 
     //////////////////////////////////////////////////
     // Primary test method
-    boolean
-    doOneTest(ConstraintTest testcase)
+    void
+    doOneTest(TestCase testcase)
         throws Exception
     {
-        boolean pass = true;
-        System.out.println("Testcase: " + testcase.toString());
+        System.err.println("Testcase: " + testcase.toString());
+
+        String baselinepath = testcase.getbaseline(RequestMode.DAP);
+
+        System.err.println("Baseline: " + baselinepath);
         Generator.setRowCount(testcase.rowcount);
-        pass = dodata(testcase);
-        return pass;
-    }
 
-    boolean
-    dodata(ConstraintTest testcase)
-        throws Exception
-    {
-        boolean pass = true;
-        String baseline;
-        RequestMode mode = RequestMode.DAP;
-        String methodurl = testcase.makeurl(mode);
-
-	Mocker mocker = new Mocker("dap4",methodurl,this);
-	byte[] byteresult = null;
-
+        String url = testcase.makeurl(RequestMode.DAP);
+        // Make sure url is escaped
+        url = new XURI(url).assemble(XURI.URLALL);
+        NetcdfDataset ncfile = null;
         try {
-	    byteresult = mocker.execute();
-        } catch (Throwable t) {
-            t.printStackTrace();
-            return false;
+            ncfile = openDataset(url);
+        } catch (Exception e) {
+            throw e;
+        }
+
+        // Patch the ncfile to change dataset name
+        String datasetname = extractDatasetname(url,Integer.toString(testcase.id));
+        String metadata = (NCDUMP ? ncdumpmetadata(ncfile,datasetname) : null);
+        String data = (NCDUMP ? ncdumpdata(ncfile,datasetname) : null);
+
+        if(prop_visual) {
+            visual("DMR: " + url, metadata);
+            visual("DAP: " + url, data);
         }
 
         if(prop_debug) {
             ByteOrder order = (isbigendian ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
-            DapDump.dumpbytes(ByteBuffer.wrap(byteresult).order(order), true);
         }
-
-        // Setup a ChunkInputStream
-        ByteArrayInputStream bytestream = new ByteArrayInputStream(byteresult);
-
-        ChunkInputStream reader = new ChunkInputStream(bytestream, RequestMode.DAP, ByteOrder.nativeOrder());
-
-        String sdmr = reader.readDMR(); // Read the DMR
-        if(prop_visual)
-            visual(methodurl, sdmr);
-
-        Dump printer = new Dump();
-        String sdata = printer.dumpdata(reader, true, reader.getRemoteByteOrder(), testcase.template);
-
-        if(prop_visual)
-            visual(testcase.title + ".dap", sdata);
 
         if(prop_baseline)
-            writefile(testcase.baselinepath + ".dap", sdata);
+            writefile(baselinepath, data);
 
-        if(prop_diff) {
-            //compare with baseline
-            // Read the baseline file
-            System.out.println("Note Comparison:");
-            String baselinecontent = readfile(testcase.baselinepath + ".dap");
-            pass = same(getTitle(),baselinecontent, sdata);
-            System.out.println(pass ? "Pass" : "Fail");
+        if(prop_diff) { //compare with baseline
+            // Read the baseline file(s)
+            String baselinecontent = readfile(baselinepath);
+            System.err.println("Comparison:");
+            Assert.assertTrue("***Fail", same(getTitle(), baselinecontent, data));
+        }
+    }
+
+    //////////////////////////////////////////////////
+    // Dump methods
+
+    String ncdumpmetadata(NetcdfDataset ncfile, String datasetname)
+    {
+        boolean ok = false;
+        String metadata = null;
+        StringWriter sw = new StringWriter();
+        StringBuilder args = new StringBuilder("-strict");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
+        }
+        // Print the meta-databuffer using these args to NcdumpW
+        ok = false;
+        try {
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            ok = false;
+        }
+        try {
+            sw.close();
+        } catch (IOException e) {
+        }
+        ;
+        if(!ok) {
+            System.err.println("NcdumpW failed");
+        }
+        return sw.toString();
+    }
+
+    String ncdumpdata(NetcdfDataset ncfile, String datasetname)
+    {
+        boolean ok = false;
+        StringWriter sw = new StringWriter();
+
+        StringBuilder args = new StringBuilder("-strict -vall");
+        if(datasetname != null) {
+            args.append(" -datasetname ");
+            args.append(datasetname);
         }
 
-        return pass;
+        // Dump the databuffer
+        sw = new StringWriter();
+        ok = false;
+        try {
+            ok = ucar.nc2.NCdumpW.print(ncfile, args.toString(), sw, null);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            ok = false;
+        }
+        try {
+            sw.close();
+        } catch (IOException e) {
+        }
+        ;
+        if(!ok) {
+            System.err.println("NcdumpW failed");
+        }
+        return sw.toString();
     }
 
     //////////////////////////////////////////////////
     // Utility methods
 
     // Locate the test cases with given prefix
-    List<ConstraintTest>
+    List<TestCase>
     locate(Object pattern)
     {
-        List<ConstraintTest> results = new ArrayList<ConstraintTest>();
-        for(ConstraintTest ct : this.alltestcases) {
+        List<TestCase> results = new ArrayList<TestCase>();
+        for(TestCase ct : this.alltestcases) {
             if(pattern instanceof String) {
             if(ct.title.equals(pattern.toString()))
                 results.add(ct);
@@ -305,22 +330,6 @@ public class TestFilters extends DapTestCommon
         }
         return results;
     }
-    //////////////////////////////////////////////////
-    // Stand alone
-
-    static public void
-    main(String[] argv)
-    {
-        try {
-            new TestServlet().testServlet();
-        } catch (Exception e) {
-            System.err.println("*** FAIL");
-            e.printStackTrace();
-            System.exit(1);
-        }
-        System.err.println("*** PASS");
-        System.exit(0);
-    }// main
 
 }
 

@@ -39,8 +39,6 @@ public class TestCDMClient extends DapTestCommon
     static final String BASEEXTENSION = ".txt";
     static final String INPUTEXTENSION = ".raw";
 
-    static final String DAP4TAG = "#protocol=dap4";
-
     static final String DATADIR = "src/test/data/resources"; // relative to dap4 root
     static final String BASELINEDIR = "TestCDMClient/baseline";
     static final String TESTCDMINPUT = "TestCDMClient/testinput";
@@ -109,7 +107,7 @@ public class TestCDMClient extends DapTestCommon
 
         public String getURL()
         {
-            return this.url + DAP4TAG;
+            return this.url + DAP4MODE;
         }
 
         public String getPath()
@@ -187,7 +185,7 @@ public class TestCDMClient extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("file:", "test_atomic_array.nc.raw");
+            chosentests = locate("file:", "test_ncml.ncml.raw");
             prop_visual = true;
             prop_baseline = false;
         } else {
@@ -231,7 +229,8 @@ public class TestCDMClient extends DapTestCommon
         String url = "file://"+path;
         try {
             URL u = new URL(url);
-            System.err.printf("Testcase: add: %s  path=%s%n",u.toString(),u.getPath());
+            if(DEBUG)
+                System.err.printf("Testcase: add: %s  path=%s%n",u.toString(),u.getPath());
         } catch (MalformedURLException e) {
             System.err.println("Malformed file test case: " + url);
         }

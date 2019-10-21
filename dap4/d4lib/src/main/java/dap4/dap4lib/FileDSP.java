@@ -8,8 +8,10 @@ import dap4.core.util.DapContext;
 import dap4.core.util.DapException;
 import dap4.core.util.DapUtil;
 import dap4.dap4lib.serial.D4DSP;
+import ucar.nc2.NetcdfFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -33,6 +35,8 @@ public class FileDSP extends D4DSP
     //Coverity[FB.URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD]
     protected byte[] raw = null; // Complete serialized binary databuffer
 
+    protected File file = null;
+
     //////////////////////////////////////////////////
     // Constructor(s)
 
@@ -43,6 +47,8 @@ public class FileDSP extends D4DSP
 
     //////////////////////////////////////////////////
     // DSP API
+
+    public String getLocation() {return this.file.getAbsolutePath();}
 
     /**
      * A path is file if it has no base protocol or is file:
@@ -75,21 +81,15 @@ public class FileDSP extends D4DSP
 
     @Override
     public FileDSP
-    open(String filepath)
+    open(File file)
             throws DapException
     {
+        this.file = file;
         try {
-            if(filepath.startsWith("file:")) try {
-                XURI xuri = new XURI(filepath);
-                filepath = xuri.getPath();
-            } catch (URISyntaxException use) {
-                throw new DapException("Malformed filepath: " + filepath)
-                        .setCode(DapCodes.SC_NOT_FOUND);
-            }
-            try (FileInputStream stream = new FileInputStream(filepath)) {
+            try (FileInputStream stream = new FileInputStream(file)) {
                 this.raw = DapUtil.readbinaryfile(stream);
             }
-            try (FileInputStream stream = new FileInputStream(filepath)) { // == rewind
+            try (FileInputStream stream = new FileInputStream(file)) { // == rewind
                 ChunkInputStream rdr = new ChunkInputStream(stream, RequestMode.DAP);
                 String document = rdr.readDMR();
                 byte[] serialdata = DapUtil.readbinaryfile(rdr);

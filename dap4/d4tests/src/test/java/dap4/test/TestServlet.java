@@ -205,7 +205,7 @@ public class TestServlet extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_struct_type.nc");
+            chosentests = locate("test_sequence_1.syn");
             prop_visual = true;
             prop_generate = false;
             prop_baseline = false;
@@ -281,7 +281,12 @@ public class TestServlet extends DapTestCommon
         byte[] byteresult = res.getContentAsByteArray();
 
         // Test by converting the raw output to a string
-        String sdmr = new String(byteresult, UTF8);
+        String charencode = res.getCharacterEncoding();
+        String sdmr = null;
+        if(charencode == "ISO-8859-1")
+            sdmr = new String(byteresult, ISO88591);
+        else
+            sdmr = new String(byteresult, UTF8);
 
         if(prop_visual)
             visual(testcase.title + ".dmr", sdmr);
@@ -909,6 +914,27 @@ public class TestServlet extends DapTestCommon
                                         printer.format("%n");
                                     }
                                 }
+                                printer.verifychecksum();
+                            }
+                        }));
+        this.alltestcases.add(
+                new TestCase("test_ncml.ncml", "dmr,dap", true,  //8
+                        // S4 U1 S2 S4
+                        new Dump.Commands()
+                        {
+                            public void run(Dump printer) throws IOException
+                            {
+                                printer.startchecksum();
+                                printer.printvalue('S', 4);
+                                printer.verifychecksum();
+                                printer.startchecksum();
+                                printer.printvalue('U', 1);
+                                printer.verifychecksum();
+                                printer.startchecksum();
+                                printer.printvalue('S', 2);
+                                printer.verifychecksum();
+                                printer.startchecksum();
+                                printer.printvalue('S', 4);
                                 printer.verifychecksum();
                             }
                         }));

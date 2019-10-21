@@ -15,7 +15,6 @@ the CDM array classes
 
 /*package*/ interface CDMArray
 {
-    public DSP getDSP();
     public DapVariable getTemplate();
     public long getSizeBytes(); // In bytes
     public DapType getBaseType();

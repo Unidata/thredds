@@ -1,7 +1,6 @@
 package dap4.test;
 
 import dap4.core.ce.parser.CEParserImpl;
-import dap4.core.data.DSPRegistry;
 import dap4.core.util.DapDump;
 import dap4.core.util.Escape;
 import dap4.dap4lib.ChunkInputStream;
@@ -128,7 +127,7 @@ public class TestServletConstraints extends DapTestCommon
             if(this.constraint != null) {
                 String ce = this.constraint;
                 // Escape it
-                ce = Escape.urlEncodeQuery(ce);
+                ce = Escape.urlEncode(ce);
                 query = ce;
             }
             return query;

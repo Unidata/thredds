@@ -19,8 +19,8 @@
         <EnumConst name="Missing" value="127"/>
     </Enumeration>
     <Int8 name="v8"/>
-    <Byte name="vu8">
-    </Byte>
+    <UInt8 name="vu8">
+    </UInt8>
     <Int16 name="v16"/>
     <UInt16 name="vu16">
     </UInt16>
@@ -36,9 +36,9 @@
     <String name="vs"/>
     <Opaque name="vo"/>
     <Enum name="primary_cloud" enum="/cloud_class_t">
-        <Attribute name="_FillValue" type="String" value="Missing"/>
+        <Attribute name="_FillValue" type="/cloud_class_t" value="Missing"/>
     </Enum>
     <Enum name="secondary_cloud" enum="/cloud_class_t">
-        <Attribute name="_FillValue" type="String" value="Missing"/>
+        <Attribute name="_FillValue" type="/cloud_class_t" value="Missing"/>
     </Enum>
 </Dataset>

@@ -101,7 +101,6 @@ import java.util.List;
     // Instance variables
 
     protected Group cdmroot = null;
-    protected DSP dsp;
     protected DapVariable template;
     protected DapType basetype;
     protected long bytesize = 0;
@@ -143,7 +142,6 @@ import java.util.List;
             throw new DapException("Non-scalar sequences unsupported through CDM interface");
         assert data.getScheme() == DataCursor.Scheme.SEQARRAY;
         this.cdmroot = group;
-        this.dsp = dsp;
         // Since this is a scalar, pull out the single instance
         this.seqdata = ((DataCursor[])data.read(dap4.core.util.Index.SCALAR))[0];
         this.recordcount = this.seqdata.getRecordCount();
@@ -187,12 +185,6 @@ import java.util.List;
     public DapType getBaseType()
     {
         return this.basetype;
-    }
-
-    @Override
-    public DSP getDSP()
-    {
-        return this.dsp;
     }
 
     @Override

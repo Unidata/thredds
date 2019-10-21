@@ -48,8 +48,6 @@ public interface DataCursor
 
     public Scheme getScheme();
 
-    public DSP getDSP();
-
     public DapNode getTemplate();
 
     public Index getIndex() throws DapException;

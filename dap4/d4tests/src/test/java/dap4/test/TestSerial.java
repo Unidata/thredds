@@ -3,12 +3,16 @@ package dap4.test;
 import dap4.core.util.DapUtil;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ucar.nc2.dataset.NetcdfDataset;
 import ucar.unidata.util.test.TestDir;
 import ucar.unidata.util.test.UnitTestCommon;
+import ucar.unidata.util.test.category.NotJenkins;
+import ucar.unidata.util.test.category.NotTravis;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,13 +29,11 @@ public class TestSerial extends DapTestCommon
 
     static protected final boolean DEBUG = false;
 
-    static protected final String TESTINPUTDIR = "/testfiles";
+    static protected final String TESTINPUTDIR = "testfiles";
 
     static protected final boolean NCDUMP = true; // Use NcDumpW instead of D4Print
 
     static protected final String EXTENSION = (NCDUMP ? "ncdump" : "dmp");
-
-    static protected final String DAP4TAG = "#dap4";
 
     static protected final String[] EMPTY = new String[]{""};
 
@@ -39,7 +41,7 @@ public class TestSerial extends DapTestCommon
     // Constants
 
     static protected final String DATADIR = "src/test/data"; // relative to dap4 root
-    static protected final String TESTDATADIR = DATADIR + "/resources/TestCDMClient";
+    static protected final String TESTDATADIR = "/TestCDMClient";
     static protected final String BASELINEDIR = TESTDATADIR + "/baseline";
 
     static protected final String alpha = "abcdefghijklmnopqrstuvwxyz"
@@ -85,7 +87,7 @@ public class TestSerial extends DapTestCommon
             url.append(this.dataset);
             url.append(".");
             url.append("nc");
-            url.append(DAP4TAG);
+            url.append(DAP4MODE);
             if(ce != null && ce.length() > 0) {
                 url.append("?");
                 url.append(DapTestCommon.CONSTRAINTTAG);
@@ -170,6 +172,7 @@ public class TestSerial extends DapTestCommon
     // Junit test method
 
     @Test
+    @Category({NotJenkins.class, NotTravis.class})
     public void testSerial()
             throws Exception
     {
@@ -328,21 +331,5 @@ public class TestSerial extends DapTestCommon
         System.err.println(msg);
         return false;
     }
-////////////////////////////////////////
-    // Stand alone
-
-    static public void
-    main(String[] argv)
-    {
-        try {
-            new TestConstraints().testConstraints();
-        } catch (Exception e) {
-            System.err.println("*** FAIL");
-            e.printStackTrace();
-            System.exit(1);
-        }
-        System.err.println("*** PASS");
-        System.exit(0);
-    }// main
 
 } // class TestConstraints

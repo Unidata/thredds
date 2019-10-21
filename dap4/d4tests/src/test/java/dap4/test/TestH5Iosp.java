@@ -1,5 +1,6 @@
 package dap4.test;
 
+import dap4.core.util.DapUtil;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,10 +33,10 @@ public class TestH5Iosp extends DapTestCommon
     //////////////////////////////////////////////////
     // Constants
 
-    static protected String DATADIR = "src/test/data"; // relative to dap4 root
-    static protected String TESTDATADIR = DATADIR + "/resources/";
-    static protected String BASELINEDIR = DATADIR + "/resources/TestIosp/baseline";
-    static protected String TESTINPUTDIR = DATADIR + "/resources/testfiles";
+    static protected String DATADIR = "d4tests/src/test/data"; // relative to dap4 root
+    static protected String TESTDATADIR = "/resources/";
+    static protected String BASELINEDIR = "/resources/TestIosp/baseline";
+    static protected String TESTINPUTDIR = "/resources/testfiles";
 
     static protected final BigInteger MASK = new BigInteger("FFFFFFFFFFFFFFFF", 16);
 
@@ -92,17 +93,17 @@ public class TestH5Iosp extends DapTestCommon
     public void setup() throws Exception
     {
         this.testroot = getTestFilesDir();
-        File f = new File(testroot + "/" + BASELINEDIR);
-        if(!f.exists()) f.mkdir();
         this.datasetpath = this.testroot + "/" + DATADIR;
-        defineAllTestcases(this.testroot);
+        File f = new File(this.datasetpath + "/" + BASELINEDIR);
+        if(!f.exists()) f.mkdir();
+        defineAllTestcases(this.datasetpath);
         chooseTestcases();
     }
 
     protected String
     getTestFilesDir()
     {
-        return TESTINPUTDIR;
+        return getDAP4Root();
     }
 
     //////////////////////////////////////////////////
@@ -112,7 +113,7 @@ public class TestH5Iosp extends DapTestCommon
     chooseTestcases()
     {
         if(false) {
-            chosentests = locate("test_enum.nc");
+            chosentests = locate("test_one_var.nc");
             //chosentests.add(new H5IospTest("test_test.nc"));
         } else {
             for(H5IospTest tc : alltestcases) {

@@ -635,7 +635,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
         log.warn("Failed to uncompress {}, err= {}; try as a regular file.", uriString, e.getMessage());
         //allow to fall through to open the "compressed" file directly - may be a misnamed suffix
       } finally {
-        stringLocker.release(uriString);
+       stringLocker.release(uriString);
       }
 
       if (uncompressedFileName != null) {
