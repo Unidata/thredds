@@ -153,8 +153,8 @@ public class TestConstraints extends DapTestCommon
     void
     chooseTestcases()
     {
-        if(false) {
-            chosentests.add(locate1(4));
+        if(true) {
+            chosentests.add(locate1(1));
             prop_visual = true;
         } else {
             prop_baseline = false;

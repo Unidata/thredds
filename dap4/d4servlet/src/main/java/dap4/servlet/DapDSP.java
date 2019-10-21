@@ -254,14 +254,18 @@ abstract public class DapDSP
         // See if this parses as a URL
         try {
             URI uri = new URI(target);
+            String scheme = uri.getScheme();
+            if(scheme == null)
+                System.err.println("XXXX: "+target);
+            assert(scheme != null);
             // Windows drive letters cause URI to succeed, so special hack for that
-            if (uri.getScheme().length() == 1 && driveletters.indexOf(uri.getScheme().charAt(0)) >= 0)
-                throw new URISyntaxException("windows drive letter",target);
+            if(scheme.length() == 1 && driveletters.indexOf(scheme.charAt(0)) >= 0)
+                throw new URISyntaxException("windows drive letter", target);
             // If uri protocol is file, then extract the path
-            if(uri.getScheme().equals("file"))
+            if(scheme.equals("file"))
                 path = uri.getPath();
             else
-                dsp = open(uri,cxt); // open as general URI
+                dsp = open(uri, cxt); // open as general URI
         } catch (URISyntaxException use) {
             // assume it is a simple file path
             path = target;

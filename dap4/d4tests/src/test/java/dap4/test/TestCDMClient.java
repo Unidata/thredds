@@ -229,7 +229,8 @@ public class TestCDMClient extends DapTestCommon
         String url = "file://"+path;
         try {
             URL u = new URL(url);
-            System.err.printf("Testcase: add: %s  path=%s%n",u.toString(),u.getPath());
+            if(DEBUG)
+                System.err.printf("Testcase: add: %s  path=%s%n",u.toString(),u.getPath());
         } catch (MalformedURLException e) {
             System.err.println("Malformed file test case: " + url);
         }
