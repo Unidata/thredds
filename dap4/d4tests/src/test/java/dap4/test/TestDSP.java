@@ -272,7 +272,7 @@ public class TestDSP extends DapTestCommon
                 if(f.indexOf(x) >= 0) {excluded = true; break;}
             }
             if(!excluded)
-                add("file:/" + f);
+                add("file://" + f);
         }
         if(SHOWTESTCASES) {
             for(int i=0;i<this.alltestcases.size();i++) {
