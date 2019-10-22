@@ -12,13 +12,13 @@ pipeline {
             }
             stages {
                 stage('set_version') {
-                    when { not { branch "master" } }
+                    when { not { branch "4.6.x-imos" } }
                     steps {
                         sh './bumpversion.sh build'
                     }
                 }
                 stage('release') {
-                    when { branch 'master' }
+                    when { branch "4.6.x-imos" }
                     steps {
                         withCredentials([usernamePassword(credentialsId: env.CREDENTIALS_ID, passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
                             sh './bumpversion.sh release'
