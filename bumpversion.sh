@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-set -eux
+set -euxo pipefail
 
-RELEASE_BRANCH=master
+RELEASE_BRANCH="4.6.x-imos"
 
 bumpversion_build() {
   bump2version patch
@@ -11,9 +11,8 @@ bumpversion_build() {
 bumpversion_release() {
   bump2version patch
   VERSION=$(bump2version --list --tag --commit --allow-dirty release | grep -oP '^new_version=\K.*$')
-  git push origin $RELEASE_BRANCH
   git push origin tag $VERSION
-
+  git push origin HEAD:$RELEASE_BRANCH
 }
 
 main() {
