@@ -33,7 +33,9 @@ pipeline {
             }
             post {
                 success {
-                    archiveArtifacts artifacts: '**/tds*.war', fingerprint: true, onlyIfSuccessful: true
+                    dir('tds/build/libs/') {
+                        archiveArtifacts artifacts: 'tds*.war', fingerprint: true, onlyIfSuccessful: true
+                    }
                 }
             }
         }
