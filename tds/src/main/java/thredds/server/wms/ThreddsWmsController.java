@@ -32,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -83,13 +84,28 @@ public final class ThreddsWmsController extends AbstractWmsController
 
   /**
    * Called by Spring to initialize the controller. Loads the WMS configuration
-   * from /content/thredds/wmsConfig.xml.
+   * from /content/thredds/wmsConfig.xml. Also tells GeoToolkit that we are running
+   * in a server environment.
    * @throws Exception if the config file could not be loaded for some reason.
    */
   @Override
   public void init() throws Exception
   {
     super.init();
+    // tell geotoolkit that we are running on a server
+    // and do not try to use systemPreferences
+    // from https://github.com/opengeospatial/teamengine-offline/blob/6b81fc3fc4647e8f68ba433701199b0e68fc36d2/src/test-suite-dependencies/geotk-utility-3.21-sources/src/main/java/org/geotoolkit/lang/Setup.java#L99
+    //
+    // In current implementation, invoking {@link #initialize(Properties)}
+    // with a property entry {@code platform=server} also disable the usage of
+    // {@linkplain java.util.prefs.Preferences#systemRoot() system preferences}. This is a temporary
+    // workaround for the JDK 6 behavior on Unix system, which display "<cite>WARNING: Couldn't flush
+    // system prefs</cite>" if the {@code etc/.java} directory has not been created during the Java
+    // installation process.
+    //
+    Properties geoToolkitProperties = new Properties();
+    geoToolkitProperties.setProperty("platform", "server");
+    org.geotoolkit.lang.Setup.initialize(geoToolkitProperties);
     ThreddsServerConfig tdsWmsServerConfig = (ThreddsServerConfig) this.serverConfig;
     logServerStartup.info( "WMS:allow= " + tdsWmsServerConfig.isAllow() );
     if ( tdsWmsServerConfig.isAllow() )

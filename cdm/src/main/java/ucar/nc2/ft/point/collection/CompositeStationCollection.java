@@ -315,8 +315,9 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
         Station s = stnCollection.getStation(getName());
         if (s == null) {
-          System.out.printf("CompositeStationFeatureIterator dataset: %s missing station %s%n",
-                  td.getLocation(), getName());
+          if (CompositeDatasetFactory.debug)
+            System.out.printf("CompositeStationFeatureIterator dataset: %s missing station %s%n",
+                td.getLocation(), getName());
           return getNextIterator();
         }
 
