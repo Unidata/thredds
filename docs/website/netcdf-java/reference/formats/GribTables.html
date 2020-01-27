@@ -155,7 +155,7 @@
 
   <p>You can directly embed the table in NcML, using the <a href="#DefineGrib1Params">XML Schema for declaring Grib-1 Parameters</a>. Place the table inside of
     a &lt;iospParam&gt; element. For example:</p>
-  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"&gt;
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"&gt;
  &lt;iospParam&gt;<br>  &lt;parameterMap&gt;
     &lt;parameter code=&quot;2&quot;&gt;<br>      &lt;description&gt;Pressure reduced to MSL&lt;/description&gt;<br>      &lt;units&gt;Pa&lt;/units&gt;<br>      &lt;name&gt;PRMSL&lt;/name&gt;<br>    &lt;/parameter&gt;<br>    &lt;parameter code=&quot;3&quot;&gt;<br>      &lt;description&gt;Pressure tendency&lt;/description&gt;<br>      &lt;units&gt;Pa/s&lt;/units&gt;<br>      &lt;name&gt;PTEND&lt;/name&gt;<br>      &lt;CF&gt;tendency_of_air_pressure&lt;/CF&gt;<br>      &lt;GCMD&gt;EARTH SCIENCE &gt; Atmosphere &gt; Atmospheric Pressure &gt; Pressure Tendency&lt;/GCMD&gt;<br>    &lt;/parameter&gt;
     ...<br>  &lt;/parameterMap&gt;
@@ -165,12 +165,12 @@
   <p>You can reference the table in NcML, with the table being in any <a href="http://www.ecmwf.int/products/data/software/grib.html">GRIB parameter table format</a> that that CDM recognizes.
     To do so, you pass the string <strong>&quot;GribParameterTable=&lt;absolute file path to table&gt;&quot;</strong> in the iospParam attribute of the netcdf
     element:</p>
-  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;gribParameterTable=/data/NCEP/grib1/version123.tab&quot;</strong>&gt;<br>&lt;/netcdf&gt;</pre>
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;gribParameterTable=/data/NCEP/grib1/version123.tab&quot;</strong>&gt;<br>&lt;/netcdf&gt;</pre>
   <h4>Reference to a Grib Parameter table lookup in NcML</h4>
 
   <p>You can reference a <a href="#tableMap">table map</a> in NcML by passing the string <strong>&quot;GribParameterTableLookup=&lt;absolute file path to table
     map&gt;&quot;</strong> in the iospParam attribute of the netcdf element:</p>
-  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;gribParameterTableLookup=/data/NCEP/grib1/lookupTable.txt&quot;</strong>&gt;<br>&lt;/netcdf&gt;
+  <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="cldc.mean.grib1"<br>  <strong>iospParam=&quot;gribParameterTableLookup=/data/NCEP/grib1/lookupTable.txt&quot;</strong>&gt;<br>&lt;/netcdf&gt;
 </pre>
   <p>You can specify a parameterMap or an iospParam, but not both.</p>
 </blockquote>

@@ -104,7 +104,7 @@
 
 <p>Example:<br/>
 </p>
-<pre>&lt;catalog&#32;xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&#32;name=&quot;TDS&#32;configuration&#32;file&quot;&#32;&gt;<br /> &lt;datasetRoot path=&quot;dsR1&quot; location=&quot;C:/data/mydata/&quot; /&gt;
+<pre>&lt;catalog&#32;xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&#32;name=&quot;TDS&#32;configuration&#32;file&quot;&#32;&gt;<br /> &lt;datasetRoot path=&quot;dsR1&quot; location=&quot;C:/data/mydata/&quot; /&gt;
  &lt;datasetRoot path=&quot;dsR1/sub2&quot; location=&quot;Q:/smaug/floober/&quot; /&gt;<br/> ...<br/> &lt;dataset name=&quot;dataset1&quot; urlPath=&quot;dsR1/dataset1.nc&quot; /&gt;
  &lt;dataset name=&quot;dataset2&quot; urlPath=&quot;dsR1/sub/dataset2.nc&quot; /&gt;
  &lt;dataset name=&quot;dataset3&quot; urlPath=&quot;dsR1/sub2/dataset3.nc&quot; /&gt;
@@ -156,7 +156,7 @@
 <p>If the <code>grib2</code> directory contained three files (<code>data1.wmo</code>, <code>data2.wmo</code>, and <code>readme.txt</code>) and one directory
   (<code>test</code>), the catalog at the URL given in the above <span style="font-style: italic;">xlink:href</span> attribute would look something like:<br/>
 </p>
-<pre>&lt;catalog&#32;xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&#32;name=&quot;WMO catalogs&quot;&gt;
+<pre>&lt;catalog&#32;xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&#32;name=&quot;WMO catalogs&quot;&gt;
   &lt;service name=&quot;myserv&quot; ... /&gt;
   &lt;dataset name=&quot;GRIB2 Data&quot;&gt;
     &lt;metadata inherited=&quot;true&quot;&gt;
@@ -185,7 +185,7 @@
 <p>Expanding on the above example: </p>
 <pre>&lt;datasetScan name=&quot;GRIB2 Data&quot; path=&quot;grib2&quot; location=&quot;C:/data/grib2/&quot; &gt;<br/>  &lt;dataFormat&gt;GRIB-2&lt;/dataFormat&gt;<br/>  &lt;filter&gt;<br/>    &lt;include wildcard=&quot;*.wmo&quot; /&gt;<br/>  &lt;/filter&gt;<br/>&lt;/datasetScan &gt;<br/></pre>
 results in:<br/>
-<pre>&lt;catalog&#32;xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&gt;<br/>  &lt;service name=&quot;myserv&quot; ... /&gt;<br/>  &lt;dataset name=&quot;GRIB2 Data&quot;&gt;<br/>    &lt;metadata inherited=&quot;true&quot;&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br/>    &lt;dataset name=&quot;data1.wmo&quot; urlPath=&quot;data1.wmo&quot; /&gt;<br/>    &lt;dataset name=&quot;data2.wmo&quot; urlPath=&quot;data2.wmo&quot; /&gt;<br/>  &lt;/dataset&gt;<br/>&lt;/catalog&gt;<br/></pre>
+<pre>&lt;catalog&#32;xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;&gt;<br/>  &lt;service name=&quot;myserv&quot; ... /&gt;<br/>  &lt;dataset name=&quot;GRIB2 Data&quot;&gt;<br/>    &lt;metadata inherited=&quot;true&quot;&gt;&lt;serviceName&gt;myserv&lt;/serviceName&gt;&lt;/metadata&gt;<br/>    &lt;dataset name=&quot;data1.wmo&quot; urlPath=&quot;data1.wmo&quot; /&gt;<br/>    &lt;dataset name=&quot;data2.wmo&quot; urlPath=&quot;data2.wmo&quot; /&gt;<br/>  &lt;/dataset&gt;<br/>&lt;/catalog&gt;<br/></pre>
 <p>When there are one or more <strong>include</strong> filters, datasets must pass at least one of them. When there are one or more <strong>exclude</strong> filters, datasets must pass all of them. The logic can be summarized as </p>
 <pre>dataset is included = (include1 OR include2 OR ...) AND (!exclude1 AND !exclude2 AND ...)</pre>
 <p>More examples are available in the <a href="../reference/DatasetScan.html#Including_Only_the_Desired_Files">TDS datasetsScan documentation</a>.<br/>

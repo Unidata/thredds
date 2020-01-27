@@ -35,7 +35,7 @@
     href="examples/cldc.mean.nc">cldc.mean.nc</a> and<a href="examples/lflx.mean.nc"> lflx.mean.nc</a> and place
   them together in a single directory. In the ToolsUI <strong>NcML Tab</strong>, open
   <strong>aggUnionSimple.ncml</strong> and examine it:</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;attribute name=&quot;title&quot; type=&quot;string&quot; value=&quot;Union cldc and lflx&quot;/&gt;<br>  &lt;<strong>aggregation</strong> type=&quot;<strong>union</strong>&quot;&gt;    
     &lt;netcdf location=&quot;cldc.mean.nc&quot;/&gt;<br>    &lt;netcdf location=&quot;lflx.mean.nc&quot;/&gt;
   &lt;/aggregation&gt; 
@@ -94,7 +94,7 @@ netcdf lflx.mean.nc {
   variable</em></strong>.
   The dimension must be the outer (slowest varying) dimension. There must be an existing coordinate variable named
   time. </p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;<strong>aggregation</strong> <strong>dimName=&quot;time&quot;</strong> type=&quot;<strong>joinExisting</strong>&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;<strong>aggregation</strong> <strong>dimName=&quot;time&quot;</strong> type=&quot;<strong>joinExisting</strong>&quot;&gt;
     &lt;<strong>netcdf</strong> location=&quot;jan.nc&quot; /&gt;
     &lt;<strong>netcdf</strong> location=&quot;feb.nc&quot; /&gt;
   &lt;/aggregation&gt;<br>&lt;/netcdf&gt;
@@ -165,7 +165,7 @@ netcdf feb.nc {
   length of the time dimension. For large aggregations, this can be slow. In the example below, we have added the
   optional <em>ncoords</em> attribute on the nested datasets. In this case, only one dataset has to be opened
   immediately, and the others as needed for a data read request.</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
     &lt;netcdf location=&quot;file:/test/temperature/jan.nc&quot; <strong>ncoords=&quot;31&quot;</strong>/&gt;
     &lt;netcdf location=&quot;file:/test/temperature/feb.nc&quot; <strong>ncoords=&quot;28&quot;</strong>/&gt;
   &lt;/aggregation&gt;<br>&lt;/netcdf&gt;</pre>
@@ -173,7 +173,7 @@ netcdf feb.nc {
 
 <p>Typically the coordinates for a <em><strong>JoinExisting</strong></em> aggregation are taken from the existing
   coordinate variable, as in the above example. If the coordinate is missing, you must define it in the NcML: </p>
-<pre> &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<pre> &lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
 <strong>(1)</strong>&lt;variable name=&quot;time&quot; shape=&quot;time&quot; type=&quot;int&quot;&gt;
      &lt;attribute name=&quot;units&quot; value=&quot;days since 2000-01-01&quot;/&gt;
      &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
@@ -238,7 +238,7 @@ netcdf feb.nc {
 <p>Download <a href="examples/aggNew.ncml">aggNew.ncml</a>, <a href="examples/time0.nc">time0.nc,</a> <a
     href="examples/time1.nc">time1.nc</a> and<a href="examples/time2.nc"> time2.nc</a> and place them together in a
   single directory. In the ToolsUI <strong>NcML Tab</strong>, open <strong>aggNew.ncml</strong> and examine it:</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
 <strong>(1)</strong>&lt;aggregation dimName=&quot;<strong>time</strong>&quot; type=&quot;<strong>joinNew</strong>&quot;&gt;
 <strong>(2)</strong>  &lt;variableAgg name=&quot;T&quot;/&gt;
 <strong>(3)</strong>  &lt;netcdf location=&quot;time0.nc&quot; coordValue=&quot;0&quot;/&gt;
@@ -305,7 +305,7 @@ netcdf feb.nc {
   was automatically created with type double, to match the coordValues specified on the netcdf elements. However, it
   has no units or other attributes. To specify attributes on the coordinate system, you can use the following (download
   <a href="examples/aggNewCoord.ncml">aggNewCoord.ncm):</a></p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
 <strong>(1)</strong>&lt;variable name=&quot;time&quot; type=&quot;int&quot; &gt;
      &lt;attribute name=&quot;units&quot; value=&quot;months since 2000-6-16 6:00&quot;/&gt;
      &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
@@ -371,7 +371,7 @@ netcdf feb.nc {
 <p>Its often convenient to use all the files in some directory without having to name them individually. The following
   example scans all of the files in the directory <strong>/data/model </strong> (and its subdirectories) which end in
   <strong>&quot;.nc&quot;.</strong> By default, the files are ordered by sorting on the filename. </p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;aggregation dimName=&quot;time&quot; type=&quot;<strong>joinExisting</strong>&quot;&gt;
 <strong>    &lt;scan location=&quot;/data/model/&quot; suffix=&quot;.nc&quot; /&gt;</strong>
   &lt;/aggregation&gt;
@@ -384,7 +384,7 @@ netcdf feb.nc {
 
 <p>A <strong>joinNew</strong> type aggregation does not incur this expense, since there is always exactly one step per
   file: </p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;aggregation dimName=&quot;time&quot; type=&quot;<strong>joinNew</strong>&quot;&gt;
     &lt;variableAgg name=&quot;T&quot;/&gt;
 <strong>    &lt;scan location=&quot;/data/goes/&quot; suffix=&quot;.gini&quot; /&gt;</strong>
@@ -393,7 +393,7 @@ netcdf feb.nc {
 <p> In a joinNew aggregation, the problem is how to assign coordinate values to each step? If you do nothing, a
   String-valued coordinate variable will be defined, whose values are the filenames. Better is to specify the
   coordinate variable and assign it values: </p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;variable name=&quot;time&quot; type=&quot;int&quot; shape=&quot;time&quot; &gt;
     &lt;attribute name=&quot;units&quot; value=&quot;hours since 2000-01-01 00:00&quot;/&gt;
     &lt;attribute name=&quot;_CoordinateAxisType&quot; value=&quot;Time&quot; /&gt;
@@ -416,7 +416,7 @@ netcdf feb.nc {
   and <a href="examples/cg.zip">cg.zip</a>, unzip the latter and place in your data directory). In the ToolsUI
   <strong>NcML Tab</strong>, open <strong>aggDateFormat.ncml</strong> and change the scan location to point to your
   data directory, and then save it <img src="images/saveButt.png" width="31" height="30" alt="">:</p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; recheckEvery=&quot;4 sec&quot;&gt;<br>    &lt;scan location=&quot;<strong>CHANGE
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;<br>  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; recheckEvery=&quot;4 sec&quot;&gt;<br>    &lt;scan location=&quot;<strong>CHANGE
   THIS</strong>&quot; dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot; /&gt;<br>  &lt;/aggregation&gt;<br>&lt;/netcdf&gt;</pre>
 <p>The <em><strong>dateFormatMark</strong></em><a name="dateFormatMark"></a> attribute is used on
   <strong>joinNew</strong> aggregation, as well as <strong>joinExisting</strong> if there is only one time slice in
@@ -478,7 +478,7 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 </ol>
 <p>You indicate how often the directories should be rescanned using the <strong>recheckEvery</strong> attribute:</p>
 <blockquote>
-  <pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+  <pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;aggregation dimName=&quot;time&quot; type=&quot;joinNew&quot; <strong>recheckEvery=&quot;15 min&quot;</strong> &gt;
     &lt;variableAgg name=&quot;T&quot;/&gt;
     &lt;scan location=&quot;/data/goes/&quot; suffix=&quot;.gini&quot; /&gt;
@@ -487,7 +487,7 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 </pre>
 </blockquote>
 <p>The value of <strong>recheckEvery</strong> must be a <a
-    href="http://www.unidata.ucar.edu/software/udunits/">udunit</a> time unit, e.g. uses units of <em>sec, min,
+    href="https://www.unidata.ucar.edu/software/udunits/">udunit</a> time unit, e.g. uses units of <em>sec, min,
   hour, day</em>, etc. If you do not specify a recheckEvery attribute, the collection will be assumed to be
   non-changing. </p>
 
@@ -527,7 +527,7 @@ DateFormatMark: CG#yyyyDDD_HHmmss</pre>
 <h2>Nested Aggregation<a name="nested"></a></h2>
 
 <p>One can nest netcdf elements in aggregation, for example: </p>
-<pre>&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<pre>&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
  &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
    &lt;netcdf&gt;
    &lt;aggregation type=&quot;union&quot;&gt;

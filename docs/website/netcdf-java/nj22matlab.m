@@ -2,7 +2,7 @@
 % data into Matlab using the NetCDF-Java library
 
 % Get the NetCDF-Java library from: 
-% http://www.unidata.ucar.edu/software/netcdf-java/
+% https://www.unidata.ucar.edu/software/netcdf-java/
 %
 % I'm using "toolsUI.jar" which is advertised as "a nice fat jar
 % file containing everything in a single jar"

@@ -146,7 +146,7 @@
        &lt;documentation type=&quot;summary&quot;&gt;good stuff&lt;/documentation&gt;
      &lt;/metadata&gt;
 
-2)   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; enhance=&quot;true&quot;&gt;
+2)   &lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; enhance=&quot;true&quot;&gt;
        &lt;aggregation <em>dimName</em>=&quot;run&quot; <em>type</em>=&quot;forecastModelRunCollection&quot; <em>fmrcDefinition</em>=&quot;NCEP-GFS-CONUS_80km.fmrcDefinition.xml&quot; recheckEvery=&quot;15 min&quot;&gt;
          &lt;scan location=&quot;/data/ldm/pub/native/grid/NCEP/GFS/CONUS_80km/&quot; suffix=&quot;.grib1&quot; 
                dateFormatMark=&quot;GFS_CONUS_80km_#yyyyMMdd_HHmm&quot; subdirs=&quot;true&quot; olderThan=&quot;5 min&quot;/&gt;
@@ -174,7 +174,7 @@
 </ol>
 <p><strong>Old way:</strong></p>
 <pre>&lt;datasetFmrc name=&quot;RTOFS Forecast Model Run Collection&quot; path=&quot;fmrc/rtofs&quot;&gt;
-  &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+  &lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
 
  1) &lt;<strong>variable</strong> name=&quot;mixed_layer_depth&quot;&gt;
      &lt;attribute name=&quot;long_name&quot; value=&quot;mixed_layer_depth @ surface&quot;/&gt;

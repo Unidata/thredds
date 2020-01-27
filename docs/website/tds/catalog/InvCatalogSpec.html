@@ -97,9 +97,9 @@
   the catalog information. The value of the <em>version</em> attribute indicates the version of the InvCatalog specification to which the catalog conforms. The
   <em>version</em> attribute is optional, but should be used to document which version of the schema was used.</p>
 
-<p>Example of simplest useful catalog. Note the necessary presence of the <a href="http://en.wikipedia.org/wiki/XML_namespace">xml namespace</a> attribute <em><strong>xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1&quot; </strong></em>on the catalog element.</p>
+<p>Example of simplest useful catalog. Note the necessary presence of the <a href="http://en.wikipedia.org/wiki/XML_namespace">xml namespace</a> attribute <em><strong>xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1&quot; </strong></em>on the catalog element.</p>
 
-<pre> &lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1" &gt;<br>   &lt;service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/dodsC/" /&gt;<br>   &lt;dataset name="SAGE III Ozone Loss" urlPath="sage.nc"&gt;<br>     &lt;serviceName&gt;aggServer&lt;/serviceName&gt;<br>   &lt;/dataset&gt;<br> &lt;/catalog&gt;</pre>
+<pre> &lt;catalog xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.1" &gt;<br>   &lt;service name="aggServer" serviceType="DODS"  base="http://acd.ucar.edu/dodsC/" /&gt;<br>   &lt;dataset name="SAGE III Ozone Loss" urlPath="sage.nc"&gt;<br>     &lt;serviceName&gt;aggServer&lt;/serviceName&gt;<br>   &lt;/dataset&gt;<br> &lt;/catalog&gt;</pre>
 
 <h3><em>service</em><a name="service"></a> element</h3>
 
@@ -404,7 +404,7 @@ The common case is that the access element is <em>implicit</em>, based on the da
 <p>If you use an XLink, it should point to a document whose top element is a metadata
   element, which declares the THREDDS namespace:
 </p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br>  &lt;contributor role="Investigator"&gt;Mashor Mashnor&lt;/contributor&gt;<br>          <br>  &lt;abstract&gt;<br>   This project aims to determine the physiological adaptations of algae to the<br>   extreme conditions of Antarctica. <br>  &lt;/abstract&gt;<br><br>  &lt;publisher&gt;<br>     &lt;name vocabulary="DIF"&gt;AU/AADC&lt;/name&gt;<br>     &lt;long_name vocabulary="DIF"&gt;Australian Antarctic Data Centre, Australia&lt;/long_name&gt;<br>     &lt;contact url="http://www.aad.gov.au/default.asp?casid=3786" email="metadata@aad.gov.au"/&gt;<br>  &lt;/publisher&gt;<br><br>&lt;/metadata&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;metadata  xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"&gt;<br>  &lt;contributor role="Investigator"&gt;Mashor Mashnor&lt;/contributor&gt;<br>          <br>  &lt;abstract&gt;<br>   This project aims to determine the physiological adaptations of algae to the<br>   extreme conditions of Antarctica. <br>  &lt;/abstract&gt;<br><br>  &lt;publisher&gt;<br>     &lt;name vocabulary="DIF"&gt;AU/AADC&lt;/name&gt;<br>     &lt;long_name vocabulary="DIF"&gt;Australian Antarctic Data Centre, Australia&lt;/long_name&gt;<br>     &lt;contact url="http://www.aad.gov.au/default.asp?casid=3786" email="metadata@aad.gov.au"/&gt;<br>  &lt;/publisher&gt;<br><br>&lt;/metadata&gt;</pre>
 
 <p>When using elements from another namespace, all the subelements should be in
   the same namespace, which should be declared in the metadata element:</p>
@@ -413,17 +413,17 @@ The common case is that the access element is <em>implicit</em>, based on the da
 
 <p>If you use an XLink to point to elements from another namespace, add a metadataType attribute:</p>
 
-<pre>&lt;metadata xlink:href="http://www.unidata.ucar.edu/metadata/ncep/dif.xml"
+<pre>&lt;metadata xlink:href="https://www.unidata.ucar.edu/metadata/ncep/dif.xml"
 	xlink:title="NCEP DIF metadata" metadataType="DublinCore"/&gt;</pre>
 
 <p>whose xlink:href should point to a document whose top element is a metadata
   element, which declares a different namespace (note you also still need to declare the THREDDS namespace): </p>
 
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;metadata  xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" <br>           xmlns:dc="http://purl.org/dc/elements/1.1/"&gt;<br>  &lt;dc:title&gt;Goto considered harmful&lt;/dc:title &gt;<br>  &lt;dc:description&gt;The unbridled use of the go to statement has an immediate consequence <br>      that it becomes terribly <br>	    hard to find a meaningful set of coordinates in which to describe the process progress.<br>  &lt;/dc:description&gt;<br>  &lt;dc:author&gt;Edsger W. Dijkstra&lt;/dc:author&gt;<br>&lt;/metadata&gt;<br></pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;metadata  xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" <br>           xmlns:dc="http://purl.org/dc/elements/1.1/"&gt;<br>  &lt;dc:title&gt;Goto considered harmful&lt;/dc:title &gt;<br>  &lt;dc:description&gt;The unbridled use of the go to statement has an immediate consequence <br>      that it becomes terribly <br>	    hard to find a meaningful set of coordinates in which to describe the process progress.<br>  &lt;/dc:description&gt;<br>  &lt;dc:author&gt;Edsger W. Dijkstra&lt;/dc:author&gt;<br>&lt;/metadata&gt;<br></pre>
 
 <p>This equivalent declaration makes the other namespace the default namespace:</p>
 
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;cat:metadata  xmlns:cat="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" <br>               xmlns="http://purl.org/dc/elements/1.1/"&gt;<br>  &lt;title&gt;Goto considered harmful&lt;/title &gt;<br>  &lt;description&gt;The unbridled use of the go to statement has an immediate consequence <br>      that it becomes terribly <br>	    hard to find a meaningful set of coordinates in which to describe the process progress.<br>  &lt;/description&gt;<br>  &lt;author&gt;Edsger W. Dijkstra&lt;/author&gt;<br>&lt;/cat:metadata&gt; </pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;cat:metadata  xmlns:cat="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" <br>               xmlns="http://purl.org/dc/elements/1.1/"&gt;<br>  &lt;title&gt;Goto considered harmful&lt;/title &gt;<br>  &lt;description&gt;The unbridled use of the go to statement has an immediate consequence <br>      that it becomes terribly <br>	    hard to find a meaningful set of coordinates in which to describe the process progress.<br>  &lt;/description&gt;<br>  &lt;author&gt;Edsger W. Dijkstra&lt;/author&gt;<br>&lt;/cat:metadata&gt; </pre>
 
 <h3><em>property</em><a name="property"></a> element</h3>
 
@@ -620,12 +620,12 @@ The common case is that the access element is <em>implicit</em>, based on the da
 
 <p>Examples: </p>
 
-<pre>&lt;variables vocabulary="CF-1.0"&gt;<br>  &lt;variable name="wv" vocabulary_name="Wind Speed" units="m/s"&gt;Wind Speed @ surface&lt;/variable&gt;<br>  &lt;variable name="wdir" vocabulary_name="Wind Direction" units= "degrees"&gt;Wind Direction @ surface&lt;/variable&gt;<br>  &lt;variable name="o3c" vocabulary_name="Ozone Concentration" units="g/g"&gt;Ozone Concentration @ surface&lt;/variable&gt;<br>&lt;/variables&gt;<br><br>&lt;variables vocabulary="GRIB-NCEP" xlink:href="http://www.unidata.ucar.edu//GRIB-NCEPtable2.xml"&gt;<br>  &lt;variableMap xlink:href="../standardQ/Eta.xml" /&gt;<br>&lt;/variables&gt;</pre>
+<pre>&lt;variables vocabulary="CF-1.0"&gt;<br>  &lt;variable name="wv" vocabulary_name="Wind Speed" units="m/s"&gt;Wind Speed @ surface&lt;/variable&gt;<br>  &lt;variable name="wdir" vocabulary_name="Wind Direction" units= "degrees"&gt;Wind Direction @ surface&lt;/variable&gt;<br>  &lt;variable name="o3c" vocabulary_name="Ozone Concentration" units="g/g"&gt;Ozone Concentration @ surface&lt;/variable&gt;<br>&lt;/variables&gt;<br><br>&lt;variables vocabulary="GRIB-NCEP" xlink:href="https://www.unidata.ucar.edu//GRIB-NCEPtable2.xml"&gt;<br>  &lt;variableMap xlink:href="../standardQ/Eta.xml" /&gt;<br>&lt;/variables&gt;</pre>
 
 <p> A <em>varibleMap</em> should point to an XML document with a top-level <em>variables</em>
   element with the THREDDS namespace declared:</p>
 
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;variables xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;<br>  &lt;variable name="wv" vocabulary_name="Wind Speed" units="m/s"/&gt;<br>  &lt;variable name="wdir" vocabulary_name="Wind Direction" units= "degrees"/&gt;<br>  &lt;variable name="o3c" vocabulary_name="Ozone Concentration" units="g/g"/&gt;<br>  ...<br>&lt;/variables&gt;</pre>
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;variables xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;<br>  &lt;variable name="wv" vocabulary_name="Wind Speed" units="m/s"/&gt;<br>  &lt;variable name="wdir" vocabulary_name="Wind Direction" units= "degrees"/&gt;<br>  &lt;variable name="o3c" vocabulary_name="Ozone Concentration" units="g/g"/&gt;<br>  ...<br>&lt;/variables&gt;</pre>
 
 <hr>
 <h2>Other Enumerations<a name="Enumerations"></a></h2>

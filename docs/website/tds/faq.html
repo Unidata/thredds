@@ -199,7 +199,7 @@ Boulder, CO: UCAR/Unidata. (<a href="http://doi.org/10.5065/D6N014KG">http://doi
 <pre> &lt;catalogRef xlink:href=&quot;idd/newPointObs.xml&quot; xlink:title=&quot;<strong>New Point Data</strong>&quot; name=&quot;&quot; /&gt;
 </pre>
 <p>In the referenced catalog:</p>
-<pre>&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot; 
+<pre>&lt;catalog xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
  xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; name=&quot;THREDDS-IDD OPeNDAP Data Server - New Station Data&quot;
  version=&quot;1.0.3&quot;&gt;
 
@@ -215,7 +215,7 @@ Boulder, CO: UCAR/Unidata. (<a href="http://doi.org/10.5065/D6N014KG">http://doi
 <p>Make up your own service element, with an absolute URL for its base, in the configuration catalog. For example, suppose you want to use the THREDDS OPeNDAP server, and an external  WMS server:</p>
 <pre>
 &lt;?xml version="1.0" ?&gt;  
-&lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
+&lt;catalog xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
   &lt;service name=&quot;both&quot; serviceType=&quot;compound&quot; base=&quot;&quot;&gt;
    &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
    &lt;service name="extWMS" serviceType="WMS" base="http://myserver:8080/wms" /&gt;

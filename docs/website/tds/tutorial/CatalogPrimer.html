@@ -51,7 +51,7 @@
 
 <pre>
 1 &lt;?xml version="1.0" ?&gt;  
-2 &lt;<strong>catalog</strong> <strong>xmlns</strong>="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
+2 &lt;<strong>catalog</strong> <strong>xmlns</strong>="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
 3   &lt;<strong>service</strong> name="<strong>odap</strong>" serviceType="<strong>OpenDAP</strong>" base="/thredds/dodsC/" /&gt;
 4   &lt;<strong>dataset</strong> name="<strong>SAGE III Ozone 2006-10-31</strong>" serviceName="<strong>odap</strong>" urlPath="sage/20061031.nc" ID="20061031.nc"/&gt;
 5 &lt;/<strong>catalog</strong>&gt;
@@ -121,7 +121,7 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 
 <pre>
 &lt;?xml version="1.0" ?&gt;
-&lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
+&lt;catalog xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
   &lt;service name="odap" serviceType="OpenDAP"  base="/thredds/dodsC/" /&gt;
 
 1  &lt;<strong>dataset</strong> name="SAGE III Ozone Loss Experiment" ID="Sage III"&gt;   
@@ -148,7 +148,7 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 
 <pre>
 &lt;?xml version="1.0" ?&gt;
-&lt;catalog name="Example" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
+&lt;catalog name="Example" xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" &gt;
   &lt;service name="odap" serviceType="OpenDAP"  base="/thredds/dodsC/" /&gt;
 
   &lt;dataset name="SAGE III Ozone Loss Experiment" ID="Sage III"&gt;
@@ -296,7 +296,7 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
 
 <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="Top Catalog"
+&lt;catalog xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" name="Top Catalog"
 1    <strong>xmlns:xlink="http://www.w3.org/1999/xlink"</strong>&gt;   
 2  &lt;dataset name="Realtime data from IDD" ID="IDD"&gt;    <strong></strong>
 3    &lt;<strong>catalogRef</strong> <strong>xlink:href</strong>="idd/models.xml" <strong>xlink:title</strong>="NCEP Model Data" name="" /&gt;    
@@ -399,10 +399,10 @@ http://hostname:port/thredds/dodsC/sage/20061031.nc
         schema location like so:</p>
 
 <pre>
-&lt;catalog name="Validation" xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+&lt;catalog name="Validation" xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
     <strong>xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"</strong>
-    <strong>xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0</strong>
-    <strong>http://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd"</strong>&gt;
+    <strong>xsi:schemaLocation="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0</strong>
+    <strong>https://www.unidata.ucar.edu/schemas/thredds/InvCatalog.1.0.6.xsd"</strong>&gt;
   ...
 &lt;/catalog&gt;
 </pre>

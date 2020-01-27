@@ -264,7 +264,7 @@ NetCDF-3 files can be made accessible over the network by simply placing them on
   Apache. The server must be configured to set the "Content-Length" and "Accept-Ranges: bytes" headers.
   
 The client that wants to read these files just uses the usual <em>NetcdfFile.open(String
-  location, &hellip;)</em> method to open a file. The location contains the URL of the file, for example: <em>http://www.unidata.ucar.edu/staff/caron/test/mydata.nc</em>.
+  location, &hellip;)</em> method to open a file. The location contains the URL of the file, for example: <em>https://www.unidata.ucar.edu/staff/caron/test/mydata.nc</em>.
    In order to use this option you need to have <strong>HttpClient.jar</strong> in your classpath.
   
 The <em>ucar.nc2</em> library uses the HTTP 1.1 protocol's "Range" command to get ranges of bytes from the

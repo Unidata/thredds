@@ -36,7 +36,7 @@ If you find you are having trouble accessing a remote dataset due to the encodin
 
 <p>NetcdfFile can open <em><strong>HTTP remote files</strong></em>, <a href="HTTPremotefiles.html">served over HTTP</a>, for example: </p>
 <ul>
-  <li><em><strong>http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc</strong></em></li>
+  <li><em><strong>https://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.nc</strong></em></li>
 </ul>
 <p>The HTTP server must implement the <strong>getRange</strong> header. Performance will be strongly affected by file format and the data access pattern. </p>
 
@@ -78,7 +78,7 @@ If you find you are having trouble accessing a remote dataset due to the encodin
 <ul>
   <li><em><strong>/usr/share/data/model.ncml</strong></em></li>
   <li><em><strong>file:/usr/share/data/model.ncml </strong></em></li>
-  <li><em><strong>http://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.xml</strong></em></li>
+  <li><em><strong>https://www.unidata.ucar.edu/software/netcdf-java/testdata/mydata1.xml</strong></em></li>
 </ul>
 <p>Because xml is so widely used, we recommend using the <em>.ncml</em> suffix when possible.</p>
 
@@ -163,7 +163,7 @@ If you find you are having trouble accessing a remote dataset due to the encodin
 <h2>NcML<a name="NcML"></a> referenced datasets</h2>
 
 <p>NcML datasets typically reference other CDM datasets, using the <em>location</em> attribute of the <em>netcdf</em> element, for example:</p>
-<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" 
+<pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;<br>&lt;netcdf xmlns="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"
      <strong>location</strong>="file:/dev/netcdf-java-2.2/test/data/example1.nc"&gt;
 ...
 </pre>
@@ -187,7 +187,7 @@ If you find you are having trouble accessing a remote dataset due to the encodin
 <p>NcML aggregation <em><strong>scan</strong></em> elements use the location attribute to specify which directory to find files in, for example:<br>
 </p>
 <pre>
-&lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+&lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
   &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
 <strong> </strong>&lt;scan<strong> location=&quot;/data/model/&quot; </strong>suffix=&quot;.nc&quot; /&gt;
   &lt;/aggregation&gt;

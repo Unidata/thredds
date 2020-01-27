@@ -25,7 +25,7 @@ Our goal in this section is to aggregate datafiles using NcML.
         following</p>
         <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"&gt;
+&lt;netcdf xmlns="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"&gt;
   &lt;aggregation dimName="MT" type="joinExisting"&gt;
     &lt;scan location="data/" suffix=".nc" subdirs="false"/&gt;
   &lt;/aggregation&gt;
@@ -75,7 +75,7 @@ Our goal in this section is to aggregate datafiles using NcML.
         to add a time dimension and variable. Open the NcML tab and enter the following:</p>
           <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"&gt;
+&lt;netcdf xmlns="https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2"&gt;
   &lt;aggregation dimName="time" type="joinNew"&gt;
     &lt;scan dateFormatMark="umwmout_#yyyy-MM-dd_HH-mm-ss" location="data/" suffix=".nc" subdirs="false" /&gt;
   &lt;/aggregation&gt;

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <catalog
-    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    xmlns="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
     xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  InvCatalog1.0.2.xsd">
+    xsi:schemaLocation="https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0  InvCatalog1.0.2.xsd">
 
   <service base="http://acd.ucar.edu/models/MOZART/DATA_COMP/datasets_nc/solve1/" serviceType="HTTP" name="disk"/>
   <property name="auto-generate" value="test"/>
@@ -120,11 +120,11 @@
         <variable name="o3h" vocabulary_name="Ozone Hole"/>
       </variables>
 
-      <variables vocabulary="GRIB-NCEP" xlink:href="http://www.unidata.ucar.edu/projects/THREDDS/xml/standardQ/GRIB-NCEPtable2.xml">
+      <variables vocabulary="GRIB-NCEP" xlink:href="https://www.unidata.ucar.edu/projects/THREDDS/xml/standardQ/GRIB-NCEPtable2.xml">
         <variableMap xlink:href="../standardQ/Eta.xml"/>
       </variables>
 
-      <variables vocabulary="GRIB-NCEP" xlink:href="http://www.unidata.ucar.edu/projects/THREDDS/xml/standardQ/GRIB-NCEPtable2.xml">
+      <variables vocabulary="GRIB-NCEP" xlink:href="https://www.unidata.ucar.edu/projects/THREDDS/xml/standardQ/GRIB-NCEPtable2.xml">
         <variable name="ws" vocabulary_name="Wind Spume" units="m/s"/>
         <variable name="wsock" vocabulary_name="Wind Sock" units="degrees"/>
         <variable name="o3h" vocabulary_name="Ozone Hole"/>

@@ -42,13 +42,13 @@
   <p>You can use use NcML to modify an existing CDM dataset:</p>
 
 <pre>
-  &lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+  &lt;catalog xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
            xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
            name=&quot;TDS workshop test 1&quot; version=&quot;1.0.2&quot;&gt;
 <b>1)</b>  &lt;<b>service</b> name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;<br>
 <b>2)</b>  &lt;<b>dataset</b> name=&quot;Example NcML Modified&quot; <b>ID</b>=&quot;ExampleNcML-Modified&quot; <b>urlPath</b>=&quot;<b>ExampleNcML/Modified.nc</b>&quot;&gt;
       &lt;serviceName&gt;ncdods&lt;/serviceName&gt;
-<b>3)</b>    &lt;<b>netcdf</b> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; 
+<b>3)</b>    &lt;<b>netcdf</b> xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;
               location=<b>&quot;/machine/tds/workshop/ncml/example1.nc&quot;</b>&gt;
 <b>4)</b>      &lt;variable name=&quot;Temperature&quot; <b>orgName</b>=&quot;T&quot;/&gt;
 <b>5)</b>      &lt;variable name=&quot;ReletiveHumidity&quot; <b>orgName</b>=&quot;rh&quot;&gt;
@@ -89,7 +89,7 @@
 
   <p>Lets look at serving a file directly vs serving it through NcML:</p>
 <pre>
-  &lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+  &lt;catalog xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
            xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
            name=&quot;TDS workshop test 2&quot; version=&quot;1.0.2&quot;&gt;
 
@@ -100,7 +100,7 @@
     &lt;/dataset&gt;
 <b>3)</b>  &lt;<b>dataset</b> name=&quot;Example NcML Modified&quot; ID=&quot;Modified&quot; urlPath=&quot;<b>ExampleNcML/Modified.nc</b>&quot;&gt;
       &lt;serviceName&gt;ncdods&lt;/serviceName&gt;
-<b>4)</b>    &lt;<b>netcdf</b> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot; 
+<b>4)</b>    &lt;<b>netcdf</b> xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;
               location=<b>&quot;/machine/tds/workshop/ncml/example1.nc&quot;</b>&gt;
           &lt;variable name=&quot;Temperature&quot; orgName=&quot;T&quot;/&gt;
       &lt;/netcdf&gt;
@@ -129,14 +129,14 @@
   <p>Here is an example that defines a dataset using NcML aggregation.</p>
 
 <pre>
-  &lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+  &lt;catalog xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
            xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
            name=&quot;TDS workshop test 3&quot; version=&quot;1.0.2&quot;&gt;
 
 <b>1)</b>  &lt;<b>service</b> name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot; /&gt;
 <b>2)</b>  &lt;<b>dataset</b> name=&quot;Example NcML Agg&quot; ID=&quot;ExampleNcML-Agg&quot; urlPath=&quot;ExampleNcML/Agg.nc&quot;&gt;
 <b>3)</b>    &lt;<b>serviceName</b>&gt;ncdods&lt;/serviceName&gt;
-<b>4)</b>    &lt;<b>netcdf</b> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<b>4)</b>    &lt;<b>netcdf</b> xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
 <b>5)</b>      &lt;<b>aggregation</b> dimName=&quot;time&quot; type=&quot;joinExisting&quot;&gt;
 <b>6)</b>        &lt;<b>scan</b> location=&quot;<b>/machine/tds/workshop/ncml/cg/</b>&quot; dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; 
                 suffix=&quot;.<b>nc</b>&quot; subdirs=&quot;false&quot;/&gt;
@@ -185,7 +185,7 @@
          &lt;serviceName&gt;<b>ncdods</b>&lt;/serviceName&gt;
          &lt;dataType&gt;<b>Grid</b>&lt;/dataType&gt;
       &lt;/metadata&gt;
-<b>3)</b>    &lt;<b>netcdf</b> xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<b>3)</b>    &lt;<b>netcdf</b> xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
          &lt;attribute name=&quot;Conventions&quot; value=&quot;CF-1.0&quot;/&gt;
       &lt;/netcdf&gt;
      &lt;/datasetScan&gt;
@@ -222,14 +222,14 @@
 
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+&lt;catalog xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
      xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot;
      name=&quot;TDS workshop test 4&quot; version=&quot;1.0.2&quot;&gt;
      
    &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
 <b>1)</b> &lt;dataset name=&quot;Example NcML Agg&quot; ID=&quot;ExampleNcML-Agg&quot; urlPath=&quot;ExampleNcML/Agg.nc&quot;&gt;
      &lt;serviceName&gt;ncdods&lt;/serviceName&gt;
-<b>2)</b>   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<b>2)</b>   &lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
        &lt;aggregation dimName=&quot;time&quot; type=&quot;joinExisting&quot; recheckEvery=&quot;4 sec&quot;&gt;
          &lt;scan location=&quot;/machine/tds/workshop/ncml/cg/&quot; dateFormatMark=&quot;CG#yyyyDDD_HHmmss&quot; suffix=&quot;.nc&quot; subdirs=&quot;false&quot;/&gt;
        &lt;/aggregation&gt;
@@ -244,7 +244,7 @@
      &lt;filter&gt;
 <b>4)</b>     &lt;include wildcard=&quot;*.nc&quot;/&gt;
      &lt;/filter&gt;
-<b>5)</b>   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<b>5)</b>   &lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
        &lt;attribute name=&quot;Yoyo&quot; value=&quot;Ma&quot;/&gt;
      &lt;/netcdf&gt;
    &lt;/datasetScan&gt;
@@ -275,7 +275,7 @@
 
 <pre>
 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;catalog xmlns=&quot;http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
+&lt;catalog xmlns=&quot;https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0&quot;
    xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; name=&quot;Unidata THREDDS Data Server&quot; version=&quot;1.0.3&quot;&gt;
 
  &lt;service name=&quot;ncdods&quot; serviceType=&quot;OPENDAP&quot; base=&quot;/thredds/dodsC/&quot;/&gt;
@@ -289,12 +289,12 @@
 
    &lt;collection spec=&quot;/machine/tds/workshop/ncml/gomoos/gomoos.#yyyyMMdd#.cdf$&quot;/&gt;
    &lt;protoDataset&gt;
-<b>1)</b>   &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<b>1)</b>   &lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
        &lt;attribute name=&quot;History&quot; value=&quot;Processed by Kraft&quot;/&gt;
      &lt;/netcdf&gt;
    &lt;/protoDataset&gt;
  
-<b>2)</b> &lt;netcdf xmlns=&quot;http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
+<b>2)</b> &lt;netcdf xmlns=&quot;https://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2&quot;&gt;
     &lt;variable name=&quot;time&quot;&gt;
       &lt;attribute name=&quot;units&quot; value=&quot;days since 2006-11-01 00:00 UTC&quot;/&gt;
     &lt;/variable&gt;
