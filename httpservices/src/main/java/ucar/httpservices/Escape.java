@@ -233,7 +233,10 @@ public class Escape
                 return null;
             }
             protocol = u.getScheme();
-            authority = u.getAuthority();
+            // authority may contain encoded characters (such as a username containing
+            // the @ symbol), and we want to preserve that encoding, so use
+            // getRawAuthority here.
+            authority = u.getRawAuthority();
             path = u.getPath();
             query = u.getQuery();
             fragment = u.getFragment();
