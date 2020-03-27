@@ -278,7 +278,7 @@ public class TestRemoteCatalogRequest extends TestCase
     System.out.println( "As expected, catalog URI not absolute got binding error: " + bindResultMsg );
 
     // Test that invalid when catalog URI is not HTTP
-    req = basicSetup( "ftp://ftp.unidata.ucar.edu/pub/thredds/", cmdShow, null, null, null );
+    req = basicSetup( "ftp://ftp.super.cool.random.site.org/pub/thredds/", cmdShow, null, null, null );
 
     bindingResult = CatalogServiceUtils.bindAndValidateRemoteCatalogRequest( req );
     bindResultMsg = TestLocalCatalogRequest.checkBindingResults( bindingResult );
