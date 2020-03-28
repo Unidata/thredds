@@ -155,8 +155,8 @@
             </div>
         </form>
         <hr/>
-        <h3><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/RadarLevel2SubsetService.html">Radar Level2 Service Documentation</a></h3>
-        <h3><a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/RadarLevel3SubsetService.html">Radar Level3 Service Documentation</a></h3>  
+        <h3><a href="https://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/RadarLevel2SubsetService.html">Radar Level2 Service Documentation</a></h3>
+        <h3><a href="https://www.unidata.ucar.edu/projects/THREDDS/tech/interfaceSpec/RadarLevel3SubsetService.html">Radar Level3 Service Documentation</a></h3>
       </body>
     </html>
 

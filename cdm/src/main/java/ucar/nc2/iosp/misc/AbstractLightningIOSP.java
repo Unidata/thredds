@@ -48,7 +48,7 @@ import ucar.nc2.iosp.AbstractIOServiceProvider;
  * AbstractIOSP for lighting data.  Parameters for each stroke are held in
  * a structure.
  *
- * @see "http://www.unidata.ucar.edu/data/lightning.html"
+ * @see "https://www.unidata.ucar.edu/data/lightning.html"
  * @author dmurray
  * @since Nov 12, 2009
  */

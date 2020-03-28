@@ -43,7 +43,7 @@ import java.io.IOException;
  * Alternative to IOSP when you need the HttpServletRequest to create the file.
  *
  * @author caron
- * @see "http://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/DatasetSource.html"
+ * @see "https://www.unidata.ucar.edu/projects/THREDDS/tech/tds4.2/reference/DatasetSource.html"
  */
 public interface DatasetSource {
 

@@ -33,7 +33,7 @@
       <documentation type="processing_level">Read by CDM Grib Collection.</documentation>
       <documentation xlink:href="http://www.nco.ncep.noaa.gov/pmb/nwprod/analysis/"
                      xlink:title="NCEP/NWS Model Analyses and Forecasts page"/>
-      <documentation xlink:href="http://www.unidata.ucar.edu/data/index.html#model"
+      <documentation xlink:href="https://www.unidata.ucar.edu/data/index.html#model"
                      xlink:title="Unidata IDD Model Data page"/>
 
       <creator>
@@ -42,7 +42,7 @@
       </creator>
       <publisher>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+        <contact url="https://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
       <creator>
         <name vocabulary="ADN">National Oceanic and Atmospheric Administration (NOAA)/National Weather Service (NWS)
@@ -52,7 +52,7 @@
       </creator>
       <publisher>
         <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+        <contact url="https://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
       <timeCoverage>
         <end>present</end>

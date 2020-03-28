@@ -49,7 +49,7 @@ import java.util.*;
  * Unidata Observation Dataset convention version 1.0.
  *
  * Documentation on this convention is available at
- * http://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
+ * https://www.unidata.ucar.edu/software/netcdf-java/formats/UnidataObsConvention.html
  *
  * @deprecated use ucar.nc2.ft.point
  * @author edavis

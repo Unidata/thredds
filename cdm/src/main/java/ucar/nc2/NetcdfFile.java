@@ -2042,7 +2042,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return data requested
    * @throws IOException           if error
    * @throws InvalidRangeException if variableSection is invalid
-   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+   * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public Array readSection(String variableSection) throws IOException, InvalidRangeException {
     /* if (unlocked)
@@ -2157,7 +2157,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * @return Array data read.
    * @throws IOException           if error
    * @throws InvalidRangeException if variableSection is invalid
-   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+   * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    * @deprecated use readSection(), flatten=false no longer supported
    */
   public Array read(String variableSection, boolean flatten) throws IOException, InvalidRangeException {
@@ -2267,7 +2267,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Get the file type id for the underlying data source.
    *
    * @return registered id of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeId() {
     if (spi != null) return spi.getFileTypeId();
@@ -2278,7 +2278,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Get a human-readable description for this file type.
    *
    * @return description of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeDescription() {
     if (spi != null) return spi.getFileTypeDescription();
@@ -2290,7 +2290,7 @@ public class NetcdfFile implements ucar.nc2.util.cache.FileCacheable, Closeable 
    * Get the version of this file type.
    *
    * @return version of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeVersion() {
     if (spi != null) return spi.getFileTypeVersion();

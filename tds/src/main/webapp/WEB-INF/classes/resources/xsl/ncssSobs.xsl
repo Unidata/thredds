@@ -161,7 +161,7 @@
             </div>
         </form>
         <hr/>
-        <h3><a href="http://www.unidata.ucar.edu/software/netcdf-java/stream/CdmRemote.html">CDM Remote Documentation</a></h3>
+        <h3><a href="httpss://www.unidata.ucar.edu/software/netcdf-java/stream/CdmRemote.html">CDM Remote Documentation</a></h3>
       </body>
     </html>
 

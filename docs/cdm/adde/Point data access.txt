@@ -187,7 +187,6 @@ Don
 Don Murray                               UCAR Unidata Program
 dmurray@unidata.ucar.edu                        P.O. Box 3000
 (303) 497-8628                              Boulder, CO 80307
-http://www.unidata.ucar.edu/staff/donm
 "There's someone in my head, but it's not me"    Roger Waters
 *************************************************************
 

@@ -20,7 +20,7 @@
 		     <metadata metadataType="NetCDF" xlink:title="Your mama"  xlink:href="any.xml" />
 		     <documentation>HEY</documentation>
 		     <documentation  xlink:title="relative"  xlink:href="any.xml" />
-		     <documentation  xlink:title="absolute"  xlink:href="http://www.unidata.ucar.edu/" />
+		     <documentation  xlink:title="absolute"  xlink:href="https://www.unidata.ucar.edu/" />
 		     
 			<dataset name="CO2" urlPath="flux/CO2.nc" ID="nest11" />
 			<dataset name="NO2" urlPath="flux/NO2.nc" ID="nest12" dataType="Imagine" serviceName="local" authority="human">

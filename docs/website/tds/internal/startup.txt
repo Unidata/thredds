@@ -80,8 +80,8 @@ not clear if classses are loaded here
   tds.version.brief=4.3
   tds.version.builddate=20120406.1714
 
-  tds.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
-  tds.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
+  tds.url=https://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
+  tds.documentation.url=https://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
   tds.logo.url=threddsIcon.gif
   tds.logo.alt=TDS
 
@@ -126,8 +126,8 @@ not clear if classses are loaded here
 tds.version=${project.version}
 tds.version.builddate=${build.timestamp}
 
-tds.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
-tds.documentation.url=http://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
+tds.url=https://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
+tds.documentation.url=https://www.unidata.ucar.edu/projects/THREDDS/tech/TDS.html
 tds.logo.url=threddsIcon.gif
 tds.logo.alt=TDS
 

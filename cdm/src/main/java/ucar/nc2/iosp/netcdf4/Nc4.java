@@ -6,8 +6,8 @@ package ucar.nc2.iosp.netcdf4;
  * @author caron
  * @since 7/31/12
  *
- * see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_4_spec.html"
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/"
+ * see "https://www.unidata.ucar.edu/software/netcdf/docs/"
+ * @see "https://www.unidata.ucar.edu/software/netcdf/docs/"
  */
 public class Nc4 {
   // special attribute names used by netcdf4 library

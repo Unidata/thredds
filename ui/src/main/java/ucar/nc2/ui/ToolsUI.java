@@ -6169,7 +6169,7 @@ public class ToolsUI extends JPanel {
       JLabel lab1 = new JLabel("<html> <body bgcolor=\"#FFECEC\"> <center>" +
                "<h1>Netcdf Tools User Interface (ToolsUI)</h1>" +
                "<b>" + getVersion() + "</b>" +
-               "<br><i>http://www.unidata.ucar.edu/software/netcdf-java/</i>" +
+               "<br><i>https://www.unidata.ucar.edu/software/netcdf-java/</i>" +
                "<br><b><i>Developers:</b>John Caron, Ethan Davis, Sean Arms, Dennis Heimbinger, Lansing Madry, Ryan May, Christian Ward-Garrison</i></b>" +
                "</center>" +
                "<br><br>With thanks to these <b>Open Source</b> contributors:" +
@@ -6177,7 +6177,7 @@ public class ToolsUI extends JPanel {
                "<li><b>ADDE/VisAD</b>: Bill Hibbard, Don Murray, Tom Whittaker, et al (http://www.ssec.wisc.edu/~billh/visad.html)</li>" +
                "<li><b>Apache HTTP Components</b> libraries: (http://hc.apache.org/)</li>" +
                "<li><b>Apache Jakarta Commons</b> libraries: (http://http://jakarta.apache.org/commons/)</li>" +
-               "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (http://www.unidata.ucar.edu/software/IDV/)</li>" +
+               "<li><b>IDV:</b> Yuan Ho, Julien Chastang, Don Murray, Jeff McWhirter, Yuan H (https://www.unidata.ucar.edu/software/IDV/)</li>" +
                "<li><b>Joda Time</b> library: Stephen Colebourne (http://www.joda.org/joda-time/)</li>" +
                "<li><b>JDOM</b> library: Jason Hunter, Brett McLaughlin et al (www.jdom.org)</li>" +
                "<li><b>JGoodies</b> library: Karsten Lentzsch (www.jgoodies.com)</li>" +

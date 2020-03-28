@@ -44,7 +44,7 @@
 		<!-- example of documentation, attribute, and metadata elements -->
 		<dataset name="Test ETA data" dataType="Grid" serviceName="ACD" ID="hasProp">
 		     <property name="GoodThing" value="Where have you gone?"/>
-			<documentation xlink:href="http://www.unidata.ucar.edu/staff/caron/anotherGoodIdea.html"> 
+			<documentation xlink:href="https://www.unidata.ucar.edu/staff/caron/anotherGoodIdea.html">
 		      		This inline documentation refers to the entire collection. 	  
 	           </documentation>			
 	           <documentation  xlink:title="xlink:title is Documentation link" xlink:href="testReletive.html" /> 
@@ -53,7 +53,7 @@
 			<metadata xlink:href="http://motherlode.ucar.edu:8080/thredds/dublinCore/uniIDD/model/eta_211.dc.xml" metadataType="DublinCore"/>
 			<dataset name="Mar 17, 2001" urlPath="test/eta.nc" ID="hasNoProp"/>
 			<dataset name="Mar 18, 2001 " urlPath="test/eta2.nc" ID="hasProp2">
-				<documentation xlink:href="http://www.unidata.ucar.edu/staff/caron/EtaNormal.html"> The standard run. </documentation>
+				<documentation xlink:href="https://www.unidata.ucar.edu/staff/caron/EtaNormal.html"> The standard run. </documentation>
 				<property name="GoodThing" value="overrides the earlier one"/>
 			</dataset>
 			<dataset name="Mar 18, 2001 (experimental)" urlPath="test/eta2.nc">

@@ -57,7 +57,7 @@ public class NcssRequestValidator implements ConstraintValidator<NcssRequestCons
 
 	/*
 	 * since none of these are required, can only do consistency checks
-	 * @see "http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html"
+	 * @see "https://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html"
 	 */
 	@Override
 	public boolean isValid(NcssParamsBean params, ConstraintValidatorContext constraintValidatorContext) {

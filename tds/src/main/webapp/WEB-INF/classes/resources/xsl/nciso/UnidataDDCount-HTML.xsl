@@ -713,7 +713,7 @@
 						<xsl:with-param name="score" select="$idCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#id_Attribute">id</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#id_Attribute">id</a>
 						<br/>
 					</td>
 					<td rowspan="2" valign="top">The combination of the "naming authority" and the "id" should be a globally unique identifier for the dataset.<br/>
@@ -726,7 +726,7 @@
 						<xsl:with-param name="score" select="$identifierNameSpaceCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#naming_authority_Attribute">naming_authority</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#naming_authority_Attribute">naming_authority</a>
 						<br/>
 					</td>
 					<td/>
@@ -772,7 +772,7 @@
 						<xsl:with-param name="score" select="$titleCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#title_Attribute">title</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#title_Attribute">title</a>
 						<br/>
 					</td>
 					<td valign="top">A short description of the dataset.<br/></td>
@@ -784,7 +784,7 @@
 						<xsl:with-param name="score" select="$summaryCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#summary_Attribute">summary</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#summary_Attribute">summary</a>
 						<br/>
 					</td>
 					<td valign="top">A paragraph describing the dataset.<br/>
@@ -799,7 +799,7 @@
 						<xsl:with-param name="score" select="$keywordsCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#keywords_Attribute">keywords</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#keywords_Attribute">keywords</a>
 						<br/>
 					</td>
 					<td valign="top">A comma separated list of key words and phrases.<br/>
@@ -814,7 +814,7 @@
 						<xsl:with-param name="score" select="$keywordsVocabularyCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#keywords_vocabulary_Attribute">keywords_vocabulary</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#keywords_vocabulary_Attribute">keywords_vocabulary</a>
 						<br/>
 					</td>
 					<td valign="top">If you are following a guideline for the words/phrases in your "keywords" attribute, put the name of that guideline here.<br/>
@@ -828,7 +828,7 @@
 						<xsl:with-param name="score" select="$stdNameVocabularyCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#standard_name_vocabulary_Attribute">standard_name_vocabulary</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#standard_name_vocabulary_Attribute">standard_name_vocabulary</a>
 						<br/>
 					</td>
 					<td valign="top">The name of the controlled vocabulary from which variable standard names are taken.<br/>
@@ -841,7 +841,7 @@
 						<xsl:with-param name="score" select="$historyCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#history_Attribute">history</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#history_Attribute">history</a>
 						<br/>
 					</td>
 					<td valign="top">Provides an audit trail for modifications to the original data.</td>
@@ -853,7 +853,7 @@
 						<xsl:with-param name="score" select="$commentCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#comment_Attribute">comment</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#comment_Attribute">comment</a>
 						<br/>
 					</td>
 					<td valign="top">Miscellaneous information about the data.</td>
@@ -882,11 +882,11 @@
 						<xsl:with-param name="score" select="$geospatial_lat_minCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lat_min_Attribute">geospatial_lat_min</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lat_min_Attribute">geospatial_lat_min</a>
 						<br/>
 					</td>
 					<td rowspan="13" colspan="1" valign="top">Describes a simple latitude, longitude, vertical and temporal bounding box. For a more detailed geospatial coverage, see the <a
-							href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#suggested_geospatial">suggested geospatial attributes</a>.<br/> Further refinement of the geospatial bounding box can
+							href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#suggested_geospatial">suggested geospatial attributes</a>.<br/> Further refinement of the geospatial bounding box can
 						be provided by using these units and resolution attributes.<br/><br/><i>Many of these extent attributes are calculated using the CF-Conventions.</i>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/northsouth/start<br/></td>
@@ -897,7 +897,7 @@
 						<xsl:with-param name="score" select="$geospatial_lat_maxCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lat_max_Attribute">geospatial_lat_max</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lat_max_Attribute">geospatial_lat_max</a>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/northsouth/size</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:northBoundLatitude/gco:Decimal<br/></td>
@@ -907,7 +907,7 @@
 						<xsl:with-param name="score" select="$geospatial_lon_minCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lon_min_Attribute">geospatial_lon_min</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lon_min_Attribute">geospatial_lon_min</a>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/eastwest/start</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:westBoundLongitude/gco:Decimal<br/></td>
@@ -917,7 +917,7 @@
 						<xsl:with-param name="score" select="$geospatial_lon_maxCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lon_max_Attribute">geospatial_lon_max</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lon_max_Attribute">geospatial_lon_max</a>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/eastwest/size</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:geographicElement/gmd:EX_GeographicBoundingBox/gmd:eastBoundLongitude/gco:Decimal<br/></td>
@@ -927,7 +927,7 @@
 						<xsl:with-param name="score" select="$time_coverage_startCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_start_Attribute">time_coverage_start</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_start_Attribute">time_coverage_start</a>
 					</td>
 					<td valign="top">metadata/timeCoverage/start</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition</td>
@@ -937,7 +937,7 @@
 						<xsl:with-param name="score" select="$time_coverage_endCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_end_Attribute">time_coverage_end</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_end_Attribute">time_coverage_end</a>
 					</td>
 					<td valign="top">metadata/timeCoverage/end</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:endPosition</td>
@@ -947,7 +947,7 @@
 						<xsl:with-param name="score" select="$vertical_minCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_min_Attribute">geospatial_vertical_min</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_min_Attribute">geospatial_vertical_min</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/updown/start</td>
@@ -958,7 +958,7 @@
 						<xsl:with-param name="score" select="$vertical_maxCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_max_Attribute">geospatial_vertical_max</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_max_Attribute">geospatial_vertical_max</a>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/updown/size</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:verticalElement/gmd:EX_VerticalExtent/gmd:maximumValue/gco:Real</td>
@@ -983,7 +983,7 @@
 						<xsl:with-param name="score" select="$geospatial_lon_unitsCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lon_units_Attribute">geospatial_lon_units</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lon_units_Attribute">geospatial_lon_units</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/eastwest/units</td>
@@ -994,7 +994,7 @@
 						<xsl:with-param name="score" select="$geospatial_lon_resolutionCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lon_resolution_Attribute">geospatial_lon_resolution</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lon_resolution_Attribute">geospatial_lon_resolution</a>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/eastwest/resolution</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:spatialRepresentationInfo/gmd:MD_Georectified/gmd:axisDimensionProperties/gmd:MD_Dimension/gmd:resolution/gco:Measure</td>
@@ -1004,7 +1004,7 @@
 						<xsl:with-param name="score" select="$geospatial_lat_unitsCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lat_units_Attribute">geospatial_lat_units</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lat_units_Attribute">geospatial_lat_units</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/northsouth/units</td>
@@ -1015,7 +1015,7 @@
 						<xsl:with-param name="score" select="$geospatial_lat_resolutionCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lat_resolution_Attribute">geospatial_lat_resolution</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_lat_resolution_Attribute">geospatial_lat_resolution</a>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/northsouth/resolution</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:spatialRepresentationInfo/gmd:MD_Georectified/gmd:axisDimensionProperties/gmd:MD_Dimension/gmd:resolution/gco:Measure</td>
@@ -1025,7 +1025,7 @@
 						<xsl:with-param name="score" select="$verticalUnitsCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_units_Attribute">geospatial_vertical_units</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_units_Attribute">geospatial_vertical_units</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/updown/units</td>
@@ -1036,7 +1036,7 @@
 						<xsl:with-param name="score" select="$verticalResolutionCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_resolution_Attribute">geospatial_vertical_resolution</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_resolution_Attribute">geospatial_vertical_resolution</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/geospatialCoverage/updown/resolution<br/></td>
@@ -1046,7 +1046,7 @@
 						<xsl:with-param name="score" select="$verticalPositiveCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_positive_Attribute">geospatial_vertical_positive</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#geospatial_vertical_positive_Attribute">geospatial_vertical_positive</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/geospatialCoverage@zpositive<br/></td>
@@ -1056,7 +1056,7 @@
 						<xsl:with-param name="score" select="$temporalUnitsCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_duration_Attribute">time_coverage_units</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_duration_Attribute">time_coverage_units</a>
 					</td>
 					<td valign="top">This attribute is calculated using the CF Conventions</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:spatialRepresentationInfo/gmd:MD_GridSpatialRepresentation/gmd:axisDimensionProperties/gmd:MD_Dimension/gmd:resolution/gco:Measure/@uom.</td>
@@ -1066,7 +1066,7 @@
 						<xsl:with-param name="score" select="$timeDurationCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_duration_Attribute">time_coverage_duration</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_duration_Attribute">time_coverage_duration</a>
 					</td>
 					<td valign="top">metadata/timeCoverage/duration</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:extent/gmd:EX_Extent/gmd:temporalElement/gmd:EX_TemporalExtent/gmd:extent/gml:TimePeriod/gml:beginPosition provides an ISO8601
@@ -1077,7 +1077,7 @@
 						<xsl:with-param name="score" select="$timeResolutionCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_resolution_Attribute">time_coverage_resolution</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#time_coverage_resolution_Attribute">time_coverage_resolution</a>
 					</td>
 					<td valign="top">metadata/timeCoverage/resolution</td>
 					<td/>
@@ -1102,7 +1102,7 @@
 						<xsl:with-param name="score" select="$creatorNameCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#creator_name_Attribute">creator_name</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#creator_name_Attribute">creator_name</a>
 						<br/>
 					</td>
 					<td rowspan="4" colspan="1" valign="top">The data creator's name, URL, and email. The "institution" attribute will be used if the "creator_name" attribute does not exist.<br/></td>
@@ -1115,7 +1115,7 @@
 						<xsl:with-param name="score" select="$creatorURLCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#creator_url_Attribute">creator_url</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#creator_url_Attribute">creator_url</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/creator/contact@url<br/></td>
@@ -1127,7 +1127,7 @@
 						<xsl:with-param name="score" select="$creatorEmailCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#creator_email_Attribute">creator_email</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#creator_email_Attribute">creator_email</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/creator/contact@email</td>
@@ -1139,7 +1139,7 @@
 						<xsl:with-param name="score" select="$institutionCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#institution_Attribute">institution</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#institution_Attribute">institution</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/creator/name</td>
@@ -1150,7 +1150,7 @@
 						<xsl:with-param name="score" select="$creatorDateCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#date_created_Attribute">date_created</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#date_created_Attribute">date_created</a>
 					</td>
 					<td valign="top">The date on which the data was created.<br/></td>
 					<td valign="top">metadata/date[@type="created"]</td>
@@ -1161,7 +1161,7 @@
 						<xsl:with-param name="score" select="$modifiedDateCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#date_modified_Attribute">date_modified</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#date_modified_Attribute">date_modified</a>
 						<br/>
 					</td>
 					<td valign="top">The date on which this data was last modified.<br/></td>
@@ -1173,7 +1173,7 @@
 						<xsl:with-param name="score" select="$issuedDateCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#date_issued_Attribute">date_issued</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#date_issued_Attribute">date_issued</a>
 						<br/>
 					</td>
 					<td valign="top">The date on which this data was formally issued.<br/></td>
@@ -1185,7 +1185,7 @@
 						<xsl:with-param name="score" select="$projectCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#project_Attribute">project</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#project_Attribute">project</a>
 						<br/>
 					</td>
 					<td valign="top">The scientific project that produced the data.<br/></td>
@@ -1199,7 +1199,7 @@
 						<xsl:with-param name="score" select="$acknowledgmentCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#acknowledgement_Attribute">acknowledgment</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#acknowledgement_Attribute">acknowledgment</a>
 					</td>
 					<td valign="top">A place to acknowledge various type of support for the project that produced this data.<br/></td>
 					<td valign="top">metadata/documentation[@type="funding"]</td>
@@ -1224,7 +1224,7 @@
 						<xsl:with-param name="score" select="$contributorNameCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#contributor_name_Attribute">contributor_name</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#contributor_name_Attribute">contributor_name</a>
 						<br/>
 					</td>
 					<td rowspan="2" colspan="1" valign="top">The name and role of any individuals or institutions that contributed to the creation of this data.<br/></td>
@@ -1236,7 +1236,7 @@
 						<xsl:with-param name="score" select="$contributorRoleCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#contributor_role_Attribute">contributor_role</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#contributor_role_Attribute">contributor_role</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/contributor@role</td>
@@ -1262,7 +1262,7 @@
 						<xsl:with-param name="score" select="$publisherNameCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#publisher_name_Attribute">publisher_name</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#publisher_name_Attribute">publisher_name</a>
 						<br/>
 					</td>
 					<td rowspan="3" colspan="1" valign="top">The data publisher's name, URL, and email. The publisher may be an individual or an institution.</td>
@@ -1276,7 +1276,7 @@
 						<xsl:with-param name="score" select="$publisherURLCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#publisher_url_Attribute">publisher_url</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#publisher_url_Attribute">publisher_url</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/publisher/contact@url<br/></td>
@@ -1289,7 +1289,7 @@
 						<xsl:with-param name="score" select="$publisherEmailCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#publisher_email_Attribute">publisher_email</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#publisher_email_Attribute">publisher_email</a>
 						<br/>
 					</td>
 					<td valign="top">metadata/publisher/contact@email</td>
@@ -1316,7 +1316,7 @@
 						<xsl:with-param name="score" select="$processingLevelCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#processing_level_Attribute">processing_level</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#processing_level_Attribute">processing_level</a>
 					</td>
 					<td valign="top">A textual description of the processing (or quality control) level of the data.<br/></td>
 					<td valign="top">metadata/documentation[@type="processing_level"]</td>
@@ -1326,7 +1326,7 @@
 						<xsl:with-param name="score" select="$licenseCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#license_Attribute">license</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#license_Attribute">license</a>
 					</td>
 					<td valign="top">Describe the restrictions to data access and distribution. </td>
 					<td valign="top">metadata/documentation[@type="rights"]</td>
@@ -1337,10 +1337,10 @@
 						<xsl:with-param name="score" select="$cdmTypeCnt"/>
 					</xsl:call-template>
 					<td valign="top">
-						<a href="http://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#cdm_data_type_Attribute">cdm_data_type</a>
+						<a href="https://www.unidata.ucar.edu/software/netcdf-java/formats/DataDiscoveryAttConvention.html#cdm_data_type_Attribute">cdm_data_type</a>
 						<br/>
 					</td>
-					<td valign="top">The <a href="http://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dataType">THREDDS data type</a> appropriate for this dataset.</td>
+					<td valign="top">The <a href="https://www.unidata.ucar.edu/projects/THREDDS/tech/catalog/InvCatalogSpec.html#dataType">THREDDS data type</a> appropriate for this dataset.</td>
 					<td valign="top">metadata/dataType</td>
 					<td valign="top">/gmi:MI_Metadata/gmd:identificationInfo/gmd:MD_DataIdentification/gmd:spatialRepresentationType/gmd:MD_SpatialRepresentationTypeCode<br/> May need some extensions to this codelist. Current values:
 						vector, grid, textTable, tin, stereoModel, video.</td>

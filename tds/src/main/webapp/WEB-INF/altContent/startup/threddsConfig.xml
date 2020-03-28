@@ -2,7 +2,7 @@
 <threddsConfig>
 
   <!-- all options are commented out in standard install - meaning use default values -->
-  <!-- see http://www.unidata.ucar.edu/software/thredds/current/tds/reference/ThreddsConfigXMLFile.html -->
+  <!-- see https://www.unidata.ucar.edu/software/thredds/current/tds/reference/ThreddsConfigXMLFile.html -->
   <serverInformation>
     <name>Initial TDS Installation</name>
     <logoUrl>/thredds/threddsIcon.gif</logoUrl>
@@ -104,7 +104,7 @@
 
   <!--
   Configuring the CDM (netcdf-java library)
-  see http://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html
+  see https://www.unidata.ucar.edu/software/netcdf-java/reference/RuntimeLoading.html
 
   <nj22Config>
     <ioServiceProvider class="edu.univ.ny.stuff.FooFiles"/>

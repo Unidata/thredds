@@ -50,15 +50,15 @@
   the following example:</p>
 
 <pre style="margin-left: 40px;">&lt;dataset name=&quot;Test Single Dataset&quot; ID=&quot;testDataset&quot; serviceName=&quot;odap&quot; urlPath=&quot;test/testData.nc&quot; dataType=&quot;Grid&quot;&gt;<br>  <strong>
-  &lt;property name="viewer" value="http://www.unidata.ucar.edu/staff/caron/,MyViewer"/&gt;</strong>
-  <strong>&lt;property name="viewer2" value="http://www.unidata.ucar.edu/,MyOtherViewer"/&gt;</strong>
+  &lt;property name="viewer" value="https://www.unidata.ucar.edu/staff/caron/,MyViewer"/&gt;</strong>
+  <strong>&lt;property name="viewer2" value="https://www.unidata.ucar.edu/,MyOtherViewer"/&gt;</strong>
 &lt;/dataset&gt;
 </pre>
 <p>results in the following HTML fragment:</p>
 
 <pre style="margin-left: 40px;">
-&lt;a href='<strong>http://www.unidata.ucar.edu/staff/caron/</strong>'&gt;<strong>MyViewer</strong>&lt;/a&gt;
-&lt;a href='<strong>http://www.unidata.ucar.edu/</strong>'&gt;<strong>MyOtherViewer</strong>&lt;/a&gt;
+&lt;a href='<strong>https://www.unidata.ucar.edu/staff/caron/</strong>'&gt;<strong>MyViewer</strong>&lt;/a&gt;
+&lt;a href='<strong>https://www.unidata.ucar.edu/</strong>'&gt;<strong>MyOtherViewer</strong>&lt;/a&gt;
 </pre>
 
 <p>Which looks like this on the TDS page:</p>
@@ -73,11 +73,11 @@
   element, it will apply to all the descendants of the containing
   dataset. For instance, the following example will result in viewer
   links for all children datasets:</p>
-<pre style="margin-left: 40px;">&lt;dataset name="Test inherited viewer" ID="tiv"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>  &lt;dataset name="test inherited viewer ds 1" ID="tiv/ds1" urlPath="tiv/ds1.nc"&gt;<br>  &lt;dataset name="test inherited viewer ds 2" ID="tiv/ds2" urlPath="tiv/ds2.nc"&gt;<br>&lt;/dataset&gt;</pre>
+<pre style="margin-left: 40px;">&lt;dataset name="Test inherited viewer" ID="tiv"&gt;<br>  &lt;<strong>metadata inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>https://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>  &lt;dataset name="test inherited viewer ds 1" ID="tiv/ds1" urlPath="tiv/ds1.nc"&gt;<br>  &lt;dataset name="test inherited viewer ds 2" ID="tiv/ds2" urlPath="tiv/ds2.nc"&gt;<br>&lt;/dataset&gt;</pre>
 <p>When added to a <code>datasetScan</code> elements, the "viewer" property results in a viewer link being added to the HTML dataset pages for each generated
   dataset:</p>
 <pre style="margin-left: 40px;">&lt;datasetScan name="Test inherited viewer dsScan" ID="tivScan" path="tivScan" location="C:/some/good/data/"&gt;<br>  &lt;<strong>metadata
-  inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>http://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>&lt;/datasetScan&gt;</pre>
+  inherited="true"</strong>&gt;<br>    &lt;serviceName&gt;all&lt;/serviceName&gt;<br>    &lt;property name="<strong>viewer</strong>" value="<strong>https://www.unidata.ucar.edu/staff/caron/,MyViewer</strong>" /&gt;<strong><br></strong>&nbsp; &lt;/metadata&gt;<br>&lt;/datasetScan&gt;</pre>
 
 <h3>Adding the Dataset URL to the Viewer Link</h3>
 
@@ -167,7 +167,7 @@
 <p>all occurrences of "<strong>{dataset}</strong>" would be replaced by "http://some.other.server/thredds/dodsC/cool/data.nc".</p>
 
 <p>So, looking at an approximation of the IDV JNLP file:</p>
-<pre style="margin-left: 40px;">&lt;?xml version="1.0" encoding="utf-8"?&gt;<br>&lt;!-- JNLP File for Integrated Data Viewer --&gt;<br>&lt;jnlp spec="1.0+" codebase="http://www.unidata.ucar.edu/software/idv/webstart/"&gt;<br>  &lt;information&gt;<br>    &lt;title&gt;Integrated Data Viewer&lt;/title&gt;<br>    &lt;vendor&gt;Unidata&lt;/vendor&gt;<br>    &lt;homepage href="http://www.unidata.ucar.edu/software/idv/index.html"/&gt;<br>    &lt;description&gt;Integrated Data Viewer(IDV)&lt;/description&gt;<br>    &lt;description kind="short"&gt;A tool for geoscientific analysis and visualization.<br>    &lt;/description&gt;<br>    &lt;icon href="IDV/idv.gif"/&gt;<br>    &lt;offline-allowed/&gt;<br>  &lt;/information&gt;<br>  &lt;security&gt;<br>   &lt;all-permissions/&gt;<br>  &lt;/security&gt;<br>  &lt;resources&gt;<br>   &lt;j2se version="1.4+" max-heap-size="512m"/&gt;<br>   &lt;jar href="IDV/idv.jar"/&gt;<br>   &lt;extension name="IDV Base" href="IDV/idvbase.jnlp"/&gt;<br>  &lt;/resources&gt;<br>  &lt;application-desc main-class="ucar.unidata.idv.DefaultIdv"&gt;<br>   &lt;argument&gt;-data&lt;/argument&gt;<br>   &lt;argument&gt;type:opendap.grid:<strong>{dataset}</strong>&lt;/argument&gt;<br>  &lt;/application-desc&gt;<br>&lt;/jnlp&gt;</pre>
+<pre style="margin-left: 40px;">&lt;?xml version="1.0" encoding="utf-8"?&gt;<br>&lt;!-- JNLP File for Integrated Data Viewer --&gt;<br>&lt;jnlp spec="1.0+" codebase="https://www.unidata.ucar.edu/software/idv/webstart/"&gt;<br>  &lt;information&gt;<br>    &lt;title&gt;Integrated Data Viewer&lt;/title&gt;<br>    &lt;vendor&gt;Unidata&lt;/vendor&gt;<br>    &lt;homepage href="https://www.unidata.ucar.edu/software/idv/index.html"/&gt;<br>    &lt;description&gt;Integrated Data Viewer(IDV)&lt;/description&gt;<br>    &lt;description kind="short"&gt;A tool for geoscientific analysis and visualization.<br>    &lt;/description&gt;<br>    &lt;icon href="IDV/idv.gif"/&gt;<br>    &lt;offline-allowed/&gt;<br>  &lt;/information&gt;<br>  &lt;security&gt;<br>   &lt;all-permissions/&gt;<br>  &lt;/security&gt;<br>  &lt;resources&gt;<br>   &lt;j2se version="1.4+" max-heap-size="512m"/&gt;<br>   &lt;jar href="IDV/idv.jar"/&gt;<br>   &lt;extension name="IDV Base" href="IDV/idvbase.jnlp"/&gt;<br>  &lt;/resources&gt;<br>  &lt;application-desc main-class="ucar.unidata.idv.DefaultIdv"&gt;<br>   &lt;argument&gt;-data&lt;/argument&gt;<br>   &lt;argument&gt;type:opendap.grid:<strong>{dataset}</strong>&lt;/argument&gt;<br>  &lt;/application-desc&gt;<br>&lt;/jnlp&gt;</pre>
 <p>The third from the last line would be replaced with</p>
 <pre style="margin-left: 40px;">    &lt;argument&gt;type:opendap.grid:<strong>http://some.other.server/thredds/dodsC/cool/data.nc</strong>&lt;/argument&gt;</pre>
 
@@ -248,12 +248,12 @@
 
 <p>To call the ToolsUI application webstart application from your webpage, return this JNLP file:</p>
 <pre>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-&lt;jnlp spec=&quot;1.0+&quot; codebase=&quot;http://www.unidata.ucar.edu/software/netcdf-java/current/webstart&quot;&gt;
+&lt;jnlp spec=&quot;1.0+&quot; codebase=&quot;https://www.unidata.ucar.edu/software/netcdf-java/current/webstart&quot;&gt;
     
    &lt;information&gt;
      &lt;title&gt;NetCDF Tools UI&lt;/title&gt;
      &lt;vendor&gt;Unidata&lt;/vendor&gt;
-     &lt;homepage href=&quot;http://www.unidata.ucar.edu/software/netcdf-java/&quot;/&gt;
+     &lt;homepage href=&quot;https://www.unidata.ucar.edu/software/netcdf-java/&quot;/&gt;
      &lt;description kind=&quot;short&quot;&gt;GUI interface to netCDF-Java / Common Data Model&lt;/description&gt;
      &lt;icon href=&quot;nc.gif&quot;/&gt;
      &lt;offline-allowed/&gt;
@@ -293,7 +293,7 @@
 http://oos.soest.hawaii.edu/thredds/view/ToolsUI.jnlp?catalog=http://oos.soest.hawaii.edu/thredds/idd/nss_hioos.xml&amp;dataset=NS02agg</pre>
 <p> It creates a jnlp file which is sent back to your browser. If your browser has Java webstart installed as a helper application (which happens when you
   install Java on your computer), the jnlp file is handled by the "Java plugin" on your browser, which downloads ToolsUI from wherever the jnlp file specifies,
-  currently <strong>http://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart</strong><br>
+  currently <strong>https://www.unidata.ucar.edu/software/netcdf-java/v4.3/webstart</strong><br>
   <br>
   The jnlp file has been customized to include the command line argument of the form "{catalog}#{dataset}", and the ToolsUI application looks for this and uses
   it to open that catalog and display the named dataset in the "Catalog Chooser" tab. This UI component gives access to all the metadata and access protocols of

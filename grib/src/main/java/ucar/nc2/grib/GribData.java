@@ -186,7 +186,7 @@ public class GribData {
 
     // we always use unsigned packed
     // "If the packed values are intended to be interpreted as signed/unsigned integers"
-    // http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
+    // https://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
     int nbits = bean1.getNBits();
     int width = (2 << nbits - 1) - 2;                // unsigned
     int missing_value = (2 << nbits - 1) - 1;       // all ones - reserved for missing value
@@ -304,7 +304,7 @@ public class GribData {
 
     // we always use unsigned packed
     // "If the packed values are intended to be interpreted as signed/unsigned integers"
-    // http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
+    // https://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html
     int nbits = bean.getNBits();
     int width = (2 << nbits - 1) - 2;                // unsigned
     int missing_value = (2 << nbits - 1) - 1;       // all ones - reserved for missing value

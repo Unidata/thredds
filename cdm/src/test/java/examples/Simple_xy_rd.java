@@ -9,7 +9,7 @@
    This example demonstrates the netCDF Java API.
 
    Full documentation of the netCDF Java API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf-java/
+   https://www.unidata.ucar.edu/software/netcdf-java/
 */
 package examples;
 

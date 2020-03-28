@@ -62,7 +62,7 @@ import java.util.regex.Pattern;
  * IOSP for the USPLN/NAPLN original and extended formats.
  *
  * @author caron, dmurray
- * @see "http://www.unidata.ucar.edu/data/lightning.html"
+ * @see "https://www.unidata.ucar.edu/data/lightning.html"
  */
 public class Uspln extends AbstractLightningIOSP {
   static private final Logger logger = LoggerFactory.getLogger(Uspln.class);
@@ -660,7 +660,7 @@ public class Uspln extends AbstractLightningIOSP {
    * Get a unique id for this file type.
    *
    * @return registered id of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeId() {
     return "USPLN";
@@ -670,7 +670,7 @@ public class Uspln extends AbstractLightningIOSP {
    * Get a human-readable description for this file type.
    *
    * @return description of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeDescription() {
     return "US Precision Lightning Network";
@@ -680,7 +680,7 @@ public class Uspln extends AbstractLightningIOSP {
    * Get the version of this file type.
    *
    * @return version of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeVersion() {
     return "1";

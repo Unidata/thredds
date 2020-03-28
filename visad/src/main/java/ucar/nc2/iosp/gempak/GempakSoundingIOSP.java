@@ -189,7 +189,7 @@ public class GempakSoundingIOSP extends GempakStationFileIOSP {
   Also, check out Don's GEMPAK Support reply to Patrick Marsh
   about the GEMPAK data format:
 
-  http://www.unidata.ucar.edu/support/help/MailArchives/gempak/msg05580.html
+  https://www.unidata.ucar.edu/support/help/MailArchives/gempak/msg05580.html
 
   There is some documention in the GEMPAK distribution in the
   gempak/txt/gemlib directory.

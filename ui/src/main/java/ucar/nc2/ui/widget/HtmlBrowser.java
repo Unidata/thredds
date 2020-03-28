@@ -136,7 +136,7 @@ public class HtmlBrowser extends JPanel {
     htmlViewer = new JEditorPane();
     //htmlViewer.setEditorKit(kit);
     htmlViewer.setContentType("text/html; charset=iso-8859-1");
-    //setUrlString("http://www.unidata.ucar.edu/staff/caron/");
+    //setUrlString("https://www.unidata.ucar.edu/staff/caron/");
 
     htmlViewer.setEditable(false);
     htmlViewer.addHyperlinkListener( new HyperlinkListener() {

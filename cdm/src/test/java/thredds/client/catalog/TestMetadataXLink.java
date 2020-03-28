@@ -40,7 +40,7 @@ import java.util.List;
 
 /**
  * Test metadata element has XLink
- * see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
+ * see https://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
  *
  * @author caron
  * @since 1/16/2015
