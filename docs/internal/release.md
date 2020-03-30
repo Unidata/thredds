@@ -151,9 +151,9 @@
     ```
 
 21. Update Unidata download page(s)
-    - check https://www.unidata.ucar.edu/downloads/tds/index.jsp
+    - check https://www.unidata.ucar.edu/downloads/tds/
       * modify `www:/content/downloads/tds/toc.xml` as needed
-    - check https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
+    - check https://www.unidata.ucar.edu/downloads/netcdf-java/
       * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
 
 22. Edit `www:/content/software/tds/latest.xml` to reflect the correct
