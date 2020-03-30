@@ -585,7 +585,7 @@ public class H5header {
   }
 
   /////////////////////////
-  /* from http://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF_002d4-Format
+  /* from https://www.unidata.ucar.edu/software/netcdf/docs/netcdf.html#NetCDF_002d4-Format
   C.3.7 Attributes
 
   Attributes in HDF5 and netCDF-4 correspond very closely. Each attribute in an HDF5 file is represented as an attribute
@@ -607,7 +607,7 @@ public class H5header {
   Attribute references to any associated Dataset
 
 -------------
-  from http://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/2008/msg00093.html
+  from https://www.unidata.ucar.edu/mailing_lists/archives/netcdfgroup/2008/msg00093.html
 
   Then comes the part you will have to do for your datasets. You open the data
   dataset, get an ID, DID variable here, open the latitude dataset, get its ID,

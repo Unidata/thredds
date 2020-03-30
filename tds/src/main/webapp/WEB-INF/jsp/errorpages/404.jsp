@@ -12,6 +12,6 @@
     <p><b>Status</b> 404 - Not Found</p>
     <HR size="1" noshade="noshade">
     <h3>THREDDS Data Server Version 4.6
-      -- <a href='http://www.unidata.ucar.edu/software/thredds/v4.6/tds/TDS.html'>Documentation</a></h3>
+      -- <a href='https://www.unidata.ucar.edu/software/thredds/v4.6/tds/TDS.html'>Documentation</a></h3>
   </body>
 </html>

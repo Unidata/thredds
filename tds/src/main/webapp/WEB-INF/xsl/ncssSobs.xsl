@@ -326,7 +326,7 @@
                 </div>
                 <!-- Footer -->
                 <h3>
-                    <a href="http://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html">
+                    <a href="https://www.unidata.ucar.edu/software/thredds/current/tds/reference/NetcdfSubsetServiceReference.html">
                         NetCDF Subset Service Documentation
                     </a>
                 </h3>

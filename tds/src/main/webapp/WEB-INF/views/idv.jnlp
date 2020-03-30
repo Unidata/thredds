@@ -4,7 +4,7 @@
   <information>
     <title>Integrated Data Viewer</title>
     <vendor>Unidata</vendor>
-    <homepage href="http://www.unidata.ucar.edu/software/idv/index.html"/>
+    <homepage href="https://www.unidata.ucar.edu/software/idv/index.html"/>
     <description>Integrated Data Viewer (IDV)</description>
     <description kind="short">A tool for geoscientific analysis and visualization.
     </description>

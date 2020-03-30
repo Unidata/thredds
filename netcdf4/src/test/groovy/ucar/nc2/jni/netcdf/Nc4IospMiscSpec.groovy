@@ -20,7 +20,7 @@ class Nc4IospMiscSpec extends Specification {
     @Rule TemporaryFolder tempFolder = new TemporaryFolder()
     
     /*
-     * Demonstrates bug from http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00012.html
+     * Demonstrates bug from https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00012.html
      * Prior to fix, this test would fail for 'u_short', 'u_int', and 'u_long' variables with
      * "Unknown userType == 8", "Unknown userType == 9", and "Unknown userType == 11" errors respectively.
      */

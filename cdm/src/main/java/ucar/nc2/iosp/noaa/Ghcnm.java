@@ -919,7 +919,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
    * Get a unique stnId for this file type.
    *
    * @return registered stnId of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeId() {
     return "GHCNM";
@@ -929,7 +929,7 @@ public class Ghcnm extends AbstractIOServiceProvider {
    * Get a human-readable description for this file type.
    *
    * @return description of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeDescription() {
     return "GLOBAL HISTORICAL CLIMATOLOGY NETWORK MONTHLY";

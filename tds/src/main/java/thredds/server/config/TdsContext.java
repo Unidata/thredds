@@ -519,7 +519,7 @@ public final class TdsContext implements ServletContextAware, InitializingBean, 
   /**
    * Retrieve the latest stable and development versions
    * available from Unidata. Needs to connect to
-   * http://www.unidata.ucar.edu in order to get the
+   * https://www.unidata.ucar.edu in order to get the
    * latest version numbers. The propose is to easily let users
    * know if the version of TDS they are running is out of
    * date, as this information is recorded in the

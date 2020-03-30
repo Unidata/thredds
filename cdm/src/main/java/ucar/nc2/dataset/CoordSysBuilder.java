@@ -87,7 +87,7 @@ import java.util.*;
   Implementation notes:
 
   Generally, subclasses should add the _Coordinate conventions, see
-    http://www.unidata.ucar.edu/software/netcdf-java/CoordinateAttributes.html
+    https://www.unidata.ucar.edu/software/netcdf-java/CoordinateAttributes.html
   Then let this class do the rest of the work.
 
   How to add Coordinate Transforms:

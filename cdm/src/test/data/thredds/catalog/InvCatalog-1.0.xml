@@ -67,7 +67,7 @@
 
       <dataset name="Mar 17, 2001" urlPath="test/eta.nc" ID="hasNoProp"/>
       <dataset name="Mar 18, 2001 " urlPath="test/eta2.nc" ID="hasProp2">
-        <documentation xlink:href="http://www.unidata.ucar.edu/staff/caron/EtaNormal.html">The standard run.
+        <documentation xlink:href="https://www.unidata.ucar.edu/staff/caron/EtaNormal.html">The standard run.
         </documentation>
         <property name="GoodThing" value="overrides the earlier one"/>
       </dataset>

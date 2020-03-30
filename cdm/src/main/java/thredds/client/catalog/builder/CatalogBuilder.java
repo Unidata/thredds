@@ -777,7 +777,7 @@ public class CatalogBuilder {
     }
     readThreddsMetadataGroup(useFlds, dataset, mdataElement);
 
-    // also need to capture any XLinks. see http://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
+    // also need to capture any XLinks. see https://www.unidata.ucar.edu/software/thredds/v4.6/tds/catalog/InvCatalogSpec.html#metadataElement
     // in this case we just suck it in as if it was inline
     if (href != null) {
       try {

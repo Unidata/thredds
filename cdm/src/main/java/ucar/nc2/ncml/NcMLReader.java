@@ -56,7 +56,7 @@ import static ucar.unidata.util.StringUtil2.getTokens;
  * Read NcML and create NetcdfDataset.
  *
  * @author caron
- * @see <a href="http://www.unidata.ucar.edu/software/netcdf/ncml/">http://www.unidata.ucar.edu/software/netcdf/ncml/</a>
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf/ncml/">https://www.unidata.ucar.edu/software/netcdf/ncml/</a>
  */
 
 public class NcMLReader {

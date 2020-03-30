@@ -37,7 +37,7 @@ package ucar.nc2.constants;
  * Type-safe enumeration of CDM Feature types, aka "Scientific Data Types".
  *
  * @author john caron
- * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Types</a>
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/FeatureDatasets/Overview.html">CDM Feature Types</a>
  */
 /*
 1) The CF discrete sampling proposal will be the recommended one for point data when thats finalized. Unfortunately, it will be somewhat different from whats gone before. The CF: prefix is dropped until the namespace proposal can be completed. So those feature types are now proposed to be:

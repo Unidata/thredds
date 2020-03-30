@@ -37,7 +37,7 @@
       </creator>
       <publisher>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+        <contact url="https://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
       <creator>
         <name vocabulary="ADN">National Oceanic and Atmospheric Administration (NOAA)/National Weather Service (NWS)
@@ -47,7 +47,7 @@
       </creator>
       <publisher>
         <name vocabulary="ADN">University Corporation for Atmospheric Research (UCAR)/Unidata</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+        <contact url="https://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
       <timeCoverage>
         <end>present</end>
@@ -1023,7 +1023,7 @@
       </documentation>
       <creator>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+        <contact url="https://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </creator>
     </metadata>
 

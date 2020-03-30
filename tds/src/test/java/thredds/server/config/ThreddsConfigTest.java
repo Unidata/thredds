@@ -47,7 +47,7 @@ public class ThreddsConfigTest {
 	}
 
 	// Tests the "cachePathPolicy" element, added in response to this message on the thredds mailing list:
-	// http://www.unidata.ucar.edu/mailing_lists/archives/thredds/2016/msg00001.html
+	// https://www.unidata.ucar.edu/mailing_lists/archives/thredds/2016/msg00001.html
 	@Test
 	public void testCachePathPolicy() {
 		String policyStr = ThreddsConfig.get("AggregationCache.cachePathPolicy", null);

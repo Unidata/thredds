@@ -89,7 +89,7 @@ public class TestDate {
    * <p/>
    * <p>Subject: Re: [netcdf-java] Data precision while aggregating data</p>
    * <p/>
-   * <p>http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2008-May/000631.html
+   * <p>https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2008-May/000631.html
    * <p/>
    * <p>[snip]
    * <p/>

@@ -66,11 +66,11 @@ import static ucar.nc2.jni.netcdf.Nc4prototypes.*;
  * IOSP for reading netcdf files through jni interface to netcdf4 library
  *
  * @author caron
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html"
+ * @see "https://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html"
  * @see "http://earthdata.nasa.gov/sites/default/files/field/document/ESDS-RFC-022v1.pdf"
- * @see "http://www.unidata.ucar.edu/software/netcdf/docs/faq.html#How-can-I-convert-HDF5-files-into-netCDF-4-files"
+ * @see "https://www.unidata.ucar.edu/software/netcdf/docs/faq.html#How-can-I-convert-HDF5-files-into-netCDF-4-files"
  * hdf5 features not supported
- * @see "http://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
+ * @see "https://www.unidata.ucar.edu/software/netcdf/win_netcdf/"
  * @since Oct 30, 2008
  */
 public class Nc4Iosp extends AbstractIOServiceProvider implements IOServiceProviderWriter {

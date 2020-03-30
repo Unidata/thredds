@@ -46,7 +46,7 @@ import java.util.List;
  *
  * @author caron
  * @since May 8, 2008
- * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
  */
 public class ParsedSectionSpec {
   private static final boolean debugSelector = false;
@@ -75,7 +75,7 @@ public class ParsedSectionSpec {
    * @return return ParsedSectionSpec, aprsed representation of the variableSection String
    * @throws IllegalArgumentException       when token is misformed, or variable name doesnt exist in ncfile
    * @throws ucar.ma2.InvalidRangeException if section does not match variable shape
-   * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
+   * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/SectionSpecification.html">SectionSpecification</a>
    */
   public static ParsedSectionSpec parseVariableSection(NetcdfFile ncfile, String variableSection) throws InvalidRangeException {
     List<String> tokes = EscapeStrings.tokenizeEscapedName(variableSection);

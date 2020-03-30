@@ -151,9 +151,9 @@
     ```
 
 21. Update Unidata download page(s)
-    - check http://www.unidata.ucar.edu/downloads/tds/index.jsp
+    - check https://www.unidata.ucar.edu/downloads/tds/index.jsp
       * modify `www:/content/downloads/tds/toc.xml` as needed
-    - check http://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
+    - check https://www.unidata.ucar.edu/downloads/netcdf-java/index.jsp
       * modify `www:/content/downloads/netcdf-java/toc.xml` as needed
 
 22. Edit `www:/content/software/tds/latest.xml` to reflect the correct
@@ -203,11 +203,11 @@
       https://github.com/Unidata/thredds/pulls?q=base%3Amaster+merged%3A%3E%3D2016-02-12
 
 31. Make blog post for the release.
-    - Example: http://www.unidata.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds4
+    - Example: s.ucar.edu/blogs/news/entry/netcdf-java-library-and-tds4
     - Best to leave it relatively short and just link to the GitHub release.
 
 32. Make a release announcement to the mailing lists: netcdf-java@unidata.ucar.edu and thredds@unidata.ucar.edu
-    - Example: http://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00000.html
+    - Example: https://www.unidata.ucar.edu/mailing_lists/archives/netcdf-java/2017/msg00000.html
     - Best to leave it relatively short and just link to the GitHub release.
 
 **Note 1**: In the Maven build, the maven-release-plugin roughly handled steps 2-6 and 23-25 for us. In the future, we

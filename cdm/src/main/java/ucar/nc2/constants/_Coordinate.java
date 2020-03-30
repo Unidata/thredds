@@ -37,7 +37,7 @@ package ucar.nc2.constants;
  * Constants for _Coordinate Conventions.
  * Used to annotate Variables, using Attributes.
  *
- * @see <a href="http://www.unidata.ucar.edu/software/netcdf-java/reference/CoordinateAttributes.html">_Coordinate Conventions</a>
+ * @see <a href="https://www.unidata.ucar.edu/software/netcdf-java/reference/CoordinateAttributes.html">_Coordinate Conventions</a>
  * @author caron
  */
 public class _Coordinate {

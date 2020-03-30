@@ -1,4 +1,4 @@
-image::http://www.unidata.ucar.edu/images/logos/thredds_tds-150x150.png[THREDDS]
+image::https://www.unidata.ucar.edu/images/logos/thredds_tds-150x150.png[THREDDS]
 
 = Welcome contributors!
 

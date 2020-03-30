@@ -58,8 +58,8 @@ public class ErddapEDUnits {
 
     /**
      * This converts UDUnits to UCUM.
-     * <br>UDUnits: http://www.unidata.ucar.edu/software/udunits/udunits-1/etc/udunits.dat
-     * http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html
+     * <br>UDUnits: https://www.unidata.ucar.edu/software/udunits/udunits-1/etc/udunits.dat
+     * https://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html
      * I worked with v 2.1.9
      * <br>UCUM: http://unitsofmeasure.org/ucum.html
      * I worked with Version: 1.8, $Revision: 28894 $
@@ -340,8 +340,8 @@ public class ErddapEDUnits {
 
     /**
      * This converts UCUM to UDUnits.
-     * <br>UDUnits: http://www.unidata.ucar.edu/software/udunits/udunits-1/etc/udunits.dat
-     * http://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html
+     * <br>UDUnits: https://www.unidata.ucar.edu/software/udunits/udunits-1/etc/udunits.dat
+     * https://www.unidata.ucar.edu/software/udunits/udunits-2/udunits2.html
      * <br>UCUM: http://unitsofmeasure.org/ucum.html
      * <p/>
      * <p>UCUM tends to be short, canonical-only, and strict.

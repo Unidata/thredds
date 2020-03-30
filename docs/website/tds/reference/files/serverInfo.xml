@@ -22,7 +22,7 @@
     </contact>
     <hostInstitution>
         <name>Unidata</name>
-        <webSite>http://www.unidata.ucar.edu/</webSite>
+        <webSite>https://www.unidata.ucar.edu/</webSite>
         <!--logoUrl>unidataIcon.gif</logoUrl-->
         <!--logoAltText>Unidata</logoAltText-->
     </hostInstitution>

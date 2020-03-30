@@ -54,7 +54,7 @@ import java.nio.ByteBuffer;
  * National Lightning Detection Network (NLDN)
  *
  * @author caron
- * @see "http://www.unidata.ucar.edu/data/lightning.html"
+ * @see "https://www.unidata.ucar.edu/data/lightning.html"
  * @since Nov 19, 2008
  */
 public class Nldn extends AbstractLightningIOSP {
@@ -156,7 +156,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
    * Get a unique id for this file type.
    *
    * @return registered id of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeId() {
     return "NLDN";
@@ -166,7 +166,7 @@ The specifics for the binary NLDN data record contained in the IDD is:
    * Get a human-readable description for this file type.
    *
    * @return description of the file type
-   * @see "http://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
+   * @see "https://www.unidata.ucar.edu/software/netcdf-java/formats/FileTypes.html"
    */
   public String getFileTypeDescription() {
     return "National Lightning Detection Network";

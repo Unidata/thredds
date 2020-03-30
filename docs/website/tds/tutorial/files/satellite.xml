@@ -28,7 +28,7 @@
       <documentation type="rights">Freely available</documentation>
       <publisher>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
+        <contact url="https://www.unidata.ucar.edu/" email="support@unidata.ucar.edu"/>
       </publisher>
     </metadata>
 
@@ -36,7 +36,7 @@
       <metadata inherited="true">
         <dataType>Grid</dataType>
         <dataFormat>GINI</dataFormat>
-        <documentation xlink:href="http://www.unidata.ucar.edu/data/satellite_data_2.html" xlink:title="Satellite Data Available Through Unidata "/>
+        <documentation xlink:href="https://www.unidata.ucar.edu/data/satellite_data_2.html" xlink:title="Satellite Data Available Through Unidata "/>
         <documentation xlink:href="http://www.nesdis.noaa.gov/satellites.html" xlink:title="NESDIS Satellite page"/>
         <documentation type="summary">National Environmental Satellite, Data, And Information Service (NESDIS) Geostationary Operational Environmental
           Satellites (GOES) Data is remapped to standard projections.

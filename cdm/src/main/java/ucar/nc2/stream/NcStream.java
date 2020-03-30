@@ -60,8 +60,8 @@ import ucar.unidata.io.RandomAccessFile;
  * protoc --proto_path=. --java_out=. ucar/nc2/stream/ncStream.proto
  * </pre>
  *
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
- * @see "http://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"
+ * @see "https://www.unidata.ucar.edu/software/netcdf-java/stream/NcStream.html"
+ * @see "https://www.unidata.ucar.edu/software/netcdf-java/stream/NcstreamGrammer.html"
  */
 public class NcStream {
   //  must start with this "CDFS"

@@ -22,7 +22,7 @@
       </creator>
       <publisher>
         <name vocabulary="DIF">UCAR/UNIDATA</name>
-        <contact url="http://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
+        <contact url="https://www.unidata.ucar.edu/" email="support@unidata.ucar.edu" />
       </publisher>
       <timeCoverage>
         <end>present</end>

@@ -51,7 +51,7 @@
         <dataFormat>NIDS</dataFormat>
         <serviceName>radarServer</serviceName>
       <documentation type="summary">The NIDS data feed provides roughly 20 radar products sent every 5-10 minutes from 154 sites over NOAAPORT broadcast. These "derived" products include base reflectivity and velocity, composite reflectivity, precipitation estimates, echo tops and VAD winds</documentation>
-      <documentation xlink:href="http://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
+      <documentation xlink:href="https://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
       <documentation xlink:href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html" xlink:title="NCDC Radar Resources" />
       <documentation xlink:href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html" xlink:title="Description of Radar Products (NCDC)" />
       <creator>
@@ -88,7 +88,7 @@
         <dataFormat>NIDS</dataFormat>
         <serviceName>radarServer</serviceName>
       <documentation type="summary">The TDWR data feed provides roughly 20 radar products sent every 5-10 minutes from 154 sites over NOAAPORT broadcast. These "derived" products include base reflectivity and velocity</documentation>
-      <documentation xlink:href="http://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
+      <documentation xlink:href="https://www.unidata.ucar.edu/data/radar.html" xlink:title="Unidata description of NOAAPORT radar data" />
       <documentation xlink:href="http://www.ncdc.noaa.gov/oa/radar/radarresources.html" xlink:title="NCDC Radar Resources" />
       <documentation xlink:href="http://lwf.ncdc.noaa.gov/oa/radar/radarproducts.html" xlink:title="Description of Radar Products (NCDC)" />
       <creator>

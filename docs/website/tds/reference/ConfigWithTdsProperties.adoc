@@ -40,11 +40,11 @@ The Java system properties that TDS uses for configuration are:
 
 |`tds.url`
 |TDS web page URL
-|"http://www.unidata.ucar.edu/software/tds/v4.6/TDS.html"
+|"https://www.unidata.ucar.edu/software/tds/v4.6/TDS.html"
 
 |`tds.documentation.url`
 |TDS documentation URL
-|"http://www.unidata.ucar.edu/software/tds/v4.6/reference/index.html"
+|"https://www.unidata.ucar.edu/software/tds/v4.6/reference/index.html"
 
 |`tds.logo.url`
 |TDS logo URL

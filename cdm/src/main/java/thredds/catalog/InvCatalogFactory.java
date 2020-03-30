@@ -87,8 +87,8 @@ import thredds.catalog.parser.jdom.InvCatalogFactory10;
  * <strong>Implementation details: </strong> Uses JDOM to read XML documents.
  * Uses a pluggable InvCatalogConvertIF to transform the JDOM tree to the thredds.catalog objects.
  * The converters are registered based on the namespace used. We are supporting: <ul>
- * <li> the older "0.6" spec, namespace "http://www.unidata.ucar.edu/thredds"
- * <li> the current 1.0/1.1 spec, namespace "http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+ * <li> the older "0.6" spec, namespace "https://www.unidata.ucar.edu/thredds"
+ * <li> the current 1.0/1.1 spec, namespace "https://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
  * </ul>
  * The schemas are read from a local resource, see XMLEntityResolver
  *
