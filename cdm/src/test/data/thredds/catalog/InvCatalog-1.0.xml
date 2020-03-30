@@ -55,7 +55,7 @@
     <!-- example of documentation, attribute, and metadata elements -->
     <dataset name="Doc examples" dataType="Grid" serviceName="ACD" ID="hasProp">
       <property name="GoodThing" value="Where have you gone?"/>
-      <documentation xlink:href="http://my.unidata.ucar.edu/content/projects/THREDDS/currentwork.html">
+      <documentation xlink:href="http://www.unidata.ucar.edu/software/netcdf-java/">
         This is the inline documentation.
       </documentation>
       <documentation xlink:title="Metar Format Description" xlink:href="testReletive.html"/>
