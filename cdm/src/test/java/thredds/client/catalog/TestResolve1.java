@@ -67,7 +67,7 @@ public class TestResolve1 {
     assert getMetadataURL(cat, "nest1", "ADN").equals("http://you/corrupt.xml");
 
     String docUrl = getDocURL( cat, "nest1", "absolute");
-    assert docUrl.equals("http://www.unidata.ucar.edu/") : docUrl;
+    assert docUrl.equals("https://www.unidata.ucar.edu/") : docUrl;
 
     docUrl = getDocURL(cat, "nest1", "relative");
     assert docUrl.equals(base+"any.xml") : docUrl;
