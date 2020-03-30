@@ -4,7 +4,7 @@ $Id: README 22423 2010-03-30 16:59:55Z dmh $
 
 This directory contains the JPL/URI/OSU port of the DODS Data Access Protocol
 (DAP) to Java. Documentation for DODS can be found on the DODS home page at
-http://unidata.ucar.edu/packages/dods/.
+https://www.opendap.org/pdf/overview/overview.html.
 
 **NOTE: The test suites have been repaired. The test server (dods.servers.test.dts)
 has been reworked and now produces stable output. There are no tests in the 

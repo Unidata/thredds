@@ -17,18 +17,18 @@
 
 <P>Most well-written datasets specify the coordinate systems in the dataset, but without explicit library support, they do so in different ways, often
   documented by a <A
-      href="https://www.unidata.ucar.edu/packages/netcdf/conventions.html">Convention</A>. We are working closely with the HDF5 developers, who are interested in
+      href="https://www.unidata.ucar.edu/software/netcdf/conventions.html">Convention</A>. We are working closely with the HDF5 developers, who are interested in
   extending dimensions scales, and we are considering extensions of the netCDF model to comprise netCDF-4. With <SPAN style="BACKGROUND: #ffffce">OpenDAP</SPAN>
   4.0 under consideration, it seems like a unique and fortuitous time for all 3 data models to consider new features in ways that are compatible with each
   other.
 
 <P>I have done some prototyping of the functionality I think we need for coordinate systems in the netcdf-Java library, see the user manual, chapter <A
-    href="https://www.unidata.ucar.edu/packages/netcdf-java/v2.1/NetcdfJavaUserManual.htm#_Toc42914935">3.2</A> for some of the details, and implemented the
+    href="https://www.unidata.ucar.edu/software/netcdf-java/v2.1/NetcdfJavaUserManual.htm#_Toc42914935">3.2</A> for some of the details, and implemented the
   prototype in the <SPAN
       style="BACKGROUND: #ffffce"><FONT color=#0000ff>CoordinateSystem</FONT></SPAN>, <SPAN style="BACKGROUND: #ffffce"><FONT
       color=#0000ff>CoordinateAxis</FONT></SPAN>, and <SPAN style="BACKGROUND: #ffffce"><FONT
       color=#0000ff>CoordinateTransform</FONT></SPAN> classes of the ucar.nc2.dataset package (see the <A
-      href="https://www.unidata.ucar.edu/packages/netcdf-java/v2.1/javadoc/index.html">javadoc</A>).
+      href="https://www.unidata.ucar.edu/software/netcdf-java/v2.1/javadoc/index.html">javadoc</A>).
 
 <P>To summarize some definitions:
 <OL>
@@ -36,7 +36,7 @@
   <LI>A <B>georeferencing coordinate system</B> assigns space and time coordinates.
   <LI>A <B>coordinate transform</B> is a function from one coordinate system to another.</LI>
 </OL>
-<P>Some of the things we may need that are not currenly expressible by the OPeNDAP Grid datatype:
+<P>Some of the things we may need that are not currently expressible by the OPeNDAP Grid datatype:
 <OL>
   <LI>Multidimensional coordinate axes are needed, eg to assign lat/lon coordinates to model output on a projection.
   <LI>There can be multiple coordinate systems for a single variable, eg specify both lat/lon and x,y coordinates on the projection plane.
