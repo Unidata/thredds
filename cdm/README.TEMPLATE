@@ -2,7 +2,7 @@ Netcdf-Java / Common Data Model Library
 Version @VERSION.MINOR@
 Build Date = @BUILDTIME@
 
-see https://www.unidata.ucar.edu/packages/netcdf-java/
+see https://www.unidata.ucar.edu/software/netcdf-java/
 see https://www.unidata.ucar.edu/software/netcdf-java/reference/BuildDependencies.html
 
 DISTRIBUTIONS

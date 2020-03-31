@@ -6,7 +6,7 @@
 
 === Download and run locally
 You can download `toolsUI.jar` from either the NetCDF-Java
-link:/downloads/netcdf/netcdf-java-4/index.jsp[downloads] or
+link:/downloads/netcdf-java/[downloads] or
 link:../../documentation.htm#current[documentation] pages.
 You can then run the ToolsUI application using a command similar to:
 ----
@@ -37,8 +37,8 @@ image:viewer1.png[Viewer tab]
 Select a variable in the table, right-click to open its context menu, and choose "NCdump Data".
 The "NCDump Variable Data" dialog will pop up. Here you can print (i.e. "dump") its values to the screen.
 
-Here—using link:http://www.adt.unipd.it/corsi/Bianco/www.pcc.qub.ac.uk/tec/courses/f90/stu-notes/F90_notesMIF_5.html#HEADING41[Fortran 90 array section syntax]
-(`start:end:stride`)—you can print (i.e. "dump") all or part of the variable's values to the screen. By default,
+Here-using link:http://www.adt.unipd.it/corsi/Bianco/www.pcc.qub.ac.uk/tec/courses/f90/stu-notes/F90_notesMIF_5.html#HEADING41[Fortran 90 array section syntax]
+(`start:end:stride`)-you can print (i.e. "dump") all or part of the variable's values to the screen. By default,
 the full extent of the variable's dimensions are shown, where `start` and `end` are inclusive and zero-based.
 For example:
 
@@ -66,7 +66,7 @@ Note: to write to NetCDF-4, you must have the link:../netcdf4Clibrary.html[C lib
 image:writer1.png[Writer tab]
 
 === NCDump
-The NCDump tab offers functionality similar to—albeit more limited than—the
+The NCDump tab offers functionality similar to-albeit more limited than-the
 link:https://www.unidata.ucar.edu/software/netcdf/docs/ncdump-man-1.html[ncdump] utility. The string that you enter in
 the "Command" field should be of the form:
 ----

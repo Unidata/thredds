@@ -153,7 +153,7 @@ public class jscriptCore {
             + "}\n"
             + "\n"
             + "function open_dods_home() {\n"
-            + "    window.open(\"http://unidata.ucar.edu/packages/dods/\", \"DODS_HOME_PAGE\");\n"
+            + "    window.open(\"https://www.opendap.org/\", \"DODS_HOME_PAGE\");\n"
             + "}\n"
             + "\n"
             + "\n"
