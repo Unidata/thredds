@@ -66,7 +66,7 @@ Note: to write to NetCDF-4, you must have the link:../netcdf4Clibrary.html[C lib
 image:writer1.png[Writer tab]
 
 === NCDump
-The NCDump tab offers functionality similar to�albeit more limited than�the
+The NCDump tab offers functionality similar to-albeit more limited than-the
 link:https://www.unidata.ucar.edu/software/netcdf/docs/ncdump-man-1.html[ncdump] utility. The string that you enter in
 the "Command" field should be of the form:
 ----
