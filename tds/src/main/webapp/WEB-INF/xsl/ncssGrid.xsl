@@ -91,7 +91,7 @@
                         var jQueryfile = document.createElement('script');
                         jQueryfile.setAttribute("type", "text/javascript");
                         jQueryfile.setAttribute("src",
-                        context+"/js/lib/jquery-3.4.0.slim.min.js");
+                        context+"/js/lib/jquery-3.5.1.slim.min.js");
                         headTag.appendChild(jQueryfile);
 
                         //OpenLayers.js

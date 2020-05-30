@@ -168,7 +168,31 @@
      Spring listener to bootstrap Spring WebApplicationContext. Used to
      handle Spring bean configuration outside of SpringMVC configuration.
      Paths, by default, are relative to the application root.
+
+     But first...because we are going to be using ContextLoaderListener,
+     we need to make sure the Log4jServletContextListener is called first
+     or else we will get thread leaks on shutdown. See
+     https://issues.apache.org/jira/browse/LOG4J2-1259?focusedCommentId=15895026&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#comment-15895026
   -->
+  <listener>
+    <listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
+  </listener>
+
+  <filter>
+    <filter-name>log4jServletFilter</filter-name>
+    <filter-class>org.apache.logging.log4j.web.Log4jServletFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>log4jServletFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
+    <dispatcher>INCLUDE</dispatcher>
+    <dispatcher>ERROR</dispatcher>
+    <dispatcher>ASYNC</dispatcher>
+  </filter-mapping>
+
+  <!-- Now, bootstrap the Spring WebApplicationContext -->
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>/WEB-INF/applicationContext-tdsConfig.xml</param-value>
