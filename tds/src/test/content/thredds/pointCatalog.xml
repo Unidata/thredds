@@ -79,6 +79,14 @@
 
     <featureCollection name="Surface Synoptic Point Data" harvest="true" featureType="Point" path="testSurfaceSynopticFeatureCollection">
       <collection spec="${cdmUnitTest}/ft/point/ldm/synop/Surface_Synoptic_#yyyyMMdd_HHmm#.nc$"/>
+      <!-- update startup="true"/ -->
+      <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+      <protoDataset choice="Penultimate"/>
+      <pointConfig datasetTypes="cdmrFeature Files"/>
+    </featureCollection>
+
+    <featureCollection name="Surface Point Data - GEMKAP" harvest="true" featureType="Station" path="testSurfaceGempakFeatureCollection">
+      <collection spec="${cdmUnitTest}/formats/gempak/surface/#yyyyMMdd#_sao.gem$"/>
       <update startup="true"/>
       <protoDataset choice="Penultimate"/>
       <pointConfig datasetTypes="cdmrFeature Files"/>
@@ -107,6 +115,35 @@
       <!--netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2">
           <attribute name="Conventions" value="CF-1.6"/>
       </netcdf-->
+
+  </featureCollection>
+
+  <featureCollection name="2019 Archived Metar Station Data" harvest="true" featureType="Station" path="metarArchive2019/ncdecoded">
+    <metadata inherited="true">
+      <dataType>Station</dataType>
+    </metadata>
+
+    <property name="raw" value="report"/>
+    <property name="resolution" value="20 min"/>
+
+    <collection spec="${cdmUnitTest}/ft/station/gempak/collection_with_missing_station_features/#yyMMdd#.sf$" />
+    <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+    <protoDataset choice="Latest" />
+    <pointConfig datasetTypes="cdmrFeature Files"/>
+  </featureCollection>
+
+  <featureCollection name="2019 Archived Metar Point Data" harvest="true" featureType="Point" path="metarArchive2019Point/ncdecoded">
+    <metadata inherited="true">
+      <dataType>Point</dataType>
+    </metadata>
+
+    <property name="raw" value="report"/>
+    <property name="resolution" value="20 min"/>
+
+    <collection spec="${cdmUnitTest}/ft/station/gempak/collection_with_missing_station_features/#yyMMdd#.sf$" />
+    <update startup="true" rescan="0 0/15 * * * ? *" trigger="allow"/>
+    <protoDataset choice="Penultimate" />
+    <pointConfig datasetTypes="cdmrFeature Files"/>
   </featureCollection>
 
 
