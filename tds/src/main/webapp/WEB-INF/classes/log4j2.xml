@@ -165,6 +165,10 @@
       <appender-ref ref="fcScan"/>
     </logger>
 
+    <logger name="ucar.nc2.ft.point.collection" level="info" additivity="false">
+      <appender-ref ref="fcScan"/>
+    </logger>
+
     <logger name="org.quartz" level="warn" additivity="false">
       <appender-ref ref="fcScan"/>
     </logger>

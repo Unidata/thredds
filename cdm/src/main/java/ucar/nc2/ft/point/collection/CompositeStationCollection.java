@@ -32,6 +32,8 @@
 package ucar.nc2.ft.point.collection;
 
 import com.google.common.base.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import thredds.inventory.TimedCollection;
 import ucar.ma2.StructureData;
 import ucar.nc2.Attribute;
@@ -57,6 +59,8 @@ import java.util.List;
  * @since May 19, 2009
  */
 public class CompositeStationCollection extends StationTimeSeriesCollectionImpl implements UpdateableCollection {
+  private static Logger log = LoggerFactory.getLogger(CompositeStationCollection.class);
+
   private TimedCollection dataCollection;
   protected List<VariableSimpleIF> dataVariables;
   protected List<Attribute> globalAttributes;
@@ -315,15 +319,15 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         StationTimeSeriesFeatureCollection stnCollection = (StationTimeSeriesFeatureCollection) fcList.get(0);
         Station s = stnCollection.getStation(getName());
         if (s == null) {
-          if (CompositeDatasetFactory.debug)
-            System.out.printf("CompositeStationFeatureIterator dataset: %s missing station %s%n",
-                td.getLocation(), getName());
+          log.debug("CompositeStationFeatureIterator dataset: {} missing station {}", td.getLocation(), getName());
+          // close (or just release if cache is enabled) current dataset and check for station in
+          // next dataset in collection
+          currentDataset.close();
           return getNextIterator();
         }
 
         StationTimeSeriesFeature stnFeature = stnCollection.getStationFeature(s);
-        if (CompositeDatasetFactory.debug)
-          System.out.printf("CompositeStationFeatureIterator open dataset: %s for %s%n", td.getLocation(), s.getName());
+        log.debug("CompositeStationFeatureIterator open dataset: {} for {}", td.getLocation(), s.getName());
         return stnFeature.getPointFeatureIterator(bufferSize);
       }
 
@@ -339,8 +343,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         if (!pfIter.hasNext()) {
           pfIter.finish();
           currentDataset.close();
-          if (CompositeDatasetFactory.debug)
-            System.out.printf("CompositeStationFeatureIterator close dataset: %s%n", currentDataset.getLocation());
+          log.debug("CompositeStationFeatureIterator close dataset: {}", currentDataset.getLocation());
           pfIter = getNextIterator();
           return hasNext();
         }
@@ -362,8 +365,7 @@ public class CompositeStationCollection extends StationTimeSeriesCollectionImpl 
         if (currentDataset != null)
           try {
             currentDataset.close();
-            if (CompositeDatasetFactory.debug)
-              System.out.printf("CompositeStationFeatureIterator close dataset: %s%n", currentDataset.getLocation());
+            log.debug("CompositeStationFeatureIterator close dataset: {}", currentDataset.getLocation());
           } catch (IOException e) {
             throw new RuntimeException(e);
           }
