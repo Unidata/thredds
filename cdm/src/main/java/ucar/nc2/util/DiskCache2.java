@@ -63,6 +63,8 @@ public class DiskCache2 {
 
   private static org.slf4j.Logger cacheLog = org.slf4j.LoggerFactory.getLogger("cacheLogger");
 
+  private static String lockExtension = ".reserve";
+
   private CachePathPolicy cachePathPolicy = CachePathPolicy.NestedDirectory;
   private boolean alwaysUseCache = false;
   private boolean neverUseCache = false;
@@ -297,8 +299,12 @@ public class DiskCache2 {
   }
 
   /**
-   * Create a new, uniquely named file in the root directory.
-   * Mimics File.createTempFile()
+   * Reserve a new, uniquely named file in the root directory.
+   * Mimics File.createTempFile(), but does not actually create
+   * the file. Instead, a 0 byte file of the same name with the
+   * extension lock is created, thus "reserving" the name until
+   * it is used. The filename must be used before persistMinutes,
+   * or the lock will be scoured and the reservation will be lost.
    *
    * @param prefix The prefix string to be used in generating the file's
    *               name; must be at least three characters long
@@ -310,9 +316,26 @@ public class DiskCache2 {
   public synchronized File createUniqueFile(String prefix, String suffix) {
     if (suffix == null) suffix = ".tmp";
     Random random = new Random(System.currentTimeMillis());
-    File result = new File(getRootDirectory(), prefix + Integer.toString(random.nextInt()) + suffix);
-    while (result.exists())
-      result = new File(getRootDirectory(), prefix + Integer.toString(random.nextInt()) + suffix);
+    String lockName = prefix + Integer.toString(random.nextInt()) + suffix + lockExtension;
+    File lock = new File(getRootDirectory(), lockName);
+    while (lock.exists()) {
+      lockName = prefix + Integer.toString(random.nextInt()) + suffix + lockExtension;
+      lock = new File(getRootDirectory(), lockName);
+    }
+
+    // create a lock file to reserve the name
+    try {
+      lock.createNewFile();
+      cacheLog.debug(String.format("Reserved filename %s for future use.",
+          lockName.replace(lockExtension, "")));
+    } catch (IOException e) {
+      // should not happen, as DiskCache2 had to make the directory before we can even get here
+      // ...but just in case...
+      cacheLog.warn(String.format("Error creating lock file: %s. May result in cache file collisions.", lock));
+    }
+    // reserved name will be the lock file name, minus the lock extension
+    File result = new File(getRootDirectory(), lock.getName().replace(lockExtension, ""));
+
     return result;
   }
 

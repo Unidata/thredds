@@ -82,7 +82,7 @@ public class NetCDFPointDataWriter implements PointDataWriter {
         this.outputStream = outputStream;
         this.version = version;
         this.diskCache = diskCache;
-        netcdfResult = diskCache.createUniqueFile("ncss", ".nc");
+        netcdfResult = diskCache.createUniqueFile("ncss-grid-as-point", ".nc");
     }
 
     //public boolean header(Map<String, List<String>> groupedVars, GridDataset gridDataset, List<CalendarDate> wDates,

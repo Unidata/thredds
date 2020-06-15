@@ -726,7 +726,7 @@ public class StationWriter {
     WriterNetcdf() throws IOException {
       super(null);
 
-      netcdfResult = diskCache.createUniqueFile("cdmSW", ".nc");
+      netcdfResult = diskCache.createUniqueFile("cdmr-station", ".nc");
       List<Attribute> atts = new ArrayList<>();
       atts.add(new Attribute(CDM.TITLE, "Extracted data from TDS using CDM remote subsetting"));
       cfWriter = null; // new WriterCFStationCollection(null, netcdfResult.getAbsolutePath(), atts);

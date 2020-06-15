@@ -230,12 +230,7 @@ class GridResponder extends GridDatasetResponder {
         throw new RequestTooLargeException("NCSS response too large = " + estimatedSize + " max = " + maxFileDownloadSize);
     }
 
- 		Random random = new Random(System.currentTimeMillis());
- 		int randomInt = random.nextInt();
-
- 		String filename = NcssRequestUtils.getFileNameForResponse(requestPathInfo, version);
- 		String pathname = Integer.toString(randomInt) + "/" + filename;
- 		File ncFile = NcssDiskCache.getInstance().getDiskCache().getCacheFile(pathname);
+		File ncFile = NcssDiskCache.getInstance().getDiskCache().createUniqueFile("ncss-grid", ".nc");
     if(ncFile == null)
       throw new IllegalStateException("NCSS misconfigured cache = ");
  		String cacheFilename = ncFile.getPath();
