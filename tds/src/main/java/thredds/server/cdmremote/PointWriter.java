@@ -301,7 +301,7 @@ public class PointWriter {
 
     WriterNetcdf() throws IOException {
       super(null);
-      netcdfResult = diskCache.createUniqueFile("CdmrFeature", ".nc");
+      netcdfResult = diskCache.createUniqueFile("cdmr-point", ".nc");
       List<Attribute> atts = new ArrayList<>();
       atts.add( new Attribute( CDM.TITLE, "Extracted data from TDS Feature Collection " + fd.getLocation() ));
       // String fileOut, List<Attribute> globalAtts, List<VariableSimpleIF> dataVars, List<Variable> extra, DateUnit timeUnit, String altUnits, CFPointWriterConfig config
