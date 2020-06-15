@@ -46,6 +46,7 @@ import thredds.server.ncss.exception.UnsupportedResponseFormatException;
 import thredds.server.ncss.format.SupportedFormat;
 import thredds.server.ncss.format.SupportedOperation;
 import thredds.server.ncss.params.NcssParamsBean;
+import thredds.server.ncss.util.NcssRequestUtils;
 import thredds.server.ncss.view.dsg.DsgSubsetWriterFactory;
 import thredds.servlet.ServletUtil;
 import thredds.util.Constants;
@@ -173,6 +174,7 @@ public class NcssController extends AbstractNcssController {
     //try {
     GridResponder gds = GridResponder.factory(gridDataset, datasetPath);
     File netcdfResult = gds.getResponseFile(res, params, version);
+    long fileSize = netcdfResult.length();
     //} catch (Exception e) {
     //  handleValidationErrorMessage(res, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
     //  return;
@@ -180,8 +182,8 @@ public class NcssController extends AbstractNcssController {
 
     // filename download attachment
     String suffix = (version == NetcdfFileWriter.Version.netcdf4) ? ".nc4" : ".nc";
-    int pos = datasetPath.lastIndexOf("/");
-    String filename = (pos >= 0) ? datasetPath.substring(pos + 1) : datasetPath;
+    String filename = NcssRequestUtils.getFileNameForResponse(datasetPath, version);
+
     if (!filename.endsWith(suffix)) {
       filename += suffix;
     }
@@ -191,6 +193,12 @@ public class NcssController extends AbstractNcssController {
     httpHeaders.set(ContentType.HEADER, sf.getResponseContentType());
     httpHeaders.set(Constants.Content_Disposition, Constants.setContentDispositionValue(filename));
     setResponseHeaders(res, httpHeaders);
+
+    if (fileSize > Integer.MAX_VALUE) {
+      res.addHeader("Content-Length", Long.toString(fileSize));  // allow content length > MAX_INT
+    } else {
+      res.setContentLength((int) fileSize);
+    }
 
     IO.copyFileB(netcdfResult, res.getOutputStream(), 60000);
     res.flushBuffer();
