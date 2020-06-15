@@ -13,21 +13,31 @@ import java.nio.file.Paths;
  * @since 2015/06/23
  */
 public class DiskCache2Test {
-  private static Path nearest;
+
+  private static Path testCacheDir;
+  private static Path dirForStaticTests;
+  private static DiskCache2 diskCache;
 
   @BeforeClass
   public static void beforeClass() throws IOException {
-    nearest = Files.createTempDirectory("nearest");
-  }
+    String cacheName = DiskCache2Test.class.getSimpleName();
+    dirForStaticTests = Files.createTempDirectory(cacheName + "-static-tests");
+    testCacheDir = Files.createTempDirectory(cacheName);
 
-  @AfterClass
-  public static void afterClass() throws IOException {
-    Files.delete(nearest);
+    try {
+      Files.deleteIfExists(testCacheDir);
+    } catch (IOException e) {
+      throw new IOException(String.format("Unable to remove existing test cache directory %s - test setup failed.",
+          testCacheDir), e);
+    }
+    Assert.assertFalse(testCacheDir.toFile().exists());
+    // create a disk cache for the test to use
+    diskCache = new DiskCache2(testCacheDir.toString(), false, 1, 5);
   }
 
   @Test
   public void canWriteDir() {
-    File file = nearest.toFile();
+    File file = dirForStaticTests.toFile();
 
     Assert.assertTrue(file.exists());
     Assert.assertTrue(DiskCache2.canWrite(file));
@@ -39,7 +49,7 @@ public class DiskCache2Test {
 
   @Test
   public void canWriteFile() throws IOException {
-    File file = Files.createTempFile(nearest, "temp", null).toFile();
+    File file = Files.createTempFile(dirForStaticTests, "temp", null).toFile();
 
     try {
       Assert.assertTrue(file.exists());
@@ -51,7 +61,7 @@ public class DiskCache2Test {
 
   @Test
   public void cantWriteFile() throws IOException {
-    File file = Files.createTempFile(nearest, "temp", null).toFile();
+    File file = Files.createTempFile(dirForStaticTests, "temp", null).toFile();
 
     try {
       Assert.assertTrue(file.exists());
@@ -64,7 +74,7 @@ public class DiskCache2Test {
 
   @Test
   public void canWriteNonExistentFileWithExistentParent() {
-    File file = Paths.get(nearest.toString(), "non-existent-file.txt").toFile();
+    File file = Paths.get(dirForStaticTests.toString(), "non-existent-file.txt").toFile();
 
     Assert.assertFalse(file.exists());
     Assert.assertTrue(DiskCache2.canWrite(file));
@@ -72,10 +82,47 @@ public class DiskCache2Test {
 
   @Test
   public void cantWriteNonExistentFileWithNonExistentParent() {
-    File file = Paths.get(nearest.toString(), "A", "B", "C", "non-existent-file.txt").toFile();
+    File file = Paths.get(dirForStaticTests.toString(), "A", "B", "C", "non-existent-file.txt").toFile();
 
     Assert.assertFalse(file.exists());
     Assert.assertFalse(file.getParentFile().exists());
     Assert.assertFalse(DiskCache2.canWrite(file));
+  }
+
+  @Test
+  public void checkUniqueFileNames() throws IOException {
+    final String prefix  = "pre-";
+    final String suffix  = "-suf";
+
+    File first = diskCache.createUniqueFile(prefix, suffix);
+    File second = diskCache.createUniqueFile(prefix, suffix);
+
+    // files do not exist yet
+    Assert.assertFalse(first.exists());
+    Assert.assertFalse(second.exists());
+
+    // make the files
+    first.createNewFile();
+    second.createNewFile();
+
+    // files should exist now
+    Assert.assertTrue(first.exists());
+    Assert.assertTrue(second.exists());
+
+    // make sure they start with prefix
+    Assert.assertTrue(first.getName().startsWith(prefix));
+    Assert.assertTrue(second.getName().startsWith(prefix));
+
+    // make sure they end with suffix
+    Assert.assertTrue(first.getName().endsWith(suffix));
+    Assert.assertTrue(second.getName().endsWith(suffix));
+
+    // make sure they are different files
+    Assert.assertNotEquals(first.getAbsolutePath(), second.getAbsolutePath());
+  }
+
+  @AfterClass
+  public static void afterClass() throws IOException {
+    diskCache.exit();
   }
 }
