@@ -186,12 +186,6 @@
       <appender-ref ref="threddsServlet"/>
     </logger>
 
-    <!-- WARN messages from wms servlet that were related to requests were
-         ending up in serverStartup - put them in threddsServlet -->
-    <logger name="org.springframework.web.servlet.handler" level="warn" additivity="false">
-      <appender-ref ref="threddsServlet" />
-    </logger>
-
     <logger name="org.springframework.beans.factory" level="info" additivity="false">
       <appender-ref ref="serverStartupAppender"/>
     </logger>
