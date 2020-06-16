@@ -84,6 +84,9 @@
   <parameter code="199">
     <description>Ensemble Forecast Based on Counting</description>
   </parameter>
+  <parameter code="200">
+    <description>Local Probability-matched Mean</description>
+  </parameter>
   <parameter code="255">
     <description>Missing</description>
   </parameter>

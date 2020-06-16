@@ -66,6 +66,9 @@
   <parameter code="24">
     <description>Highest level where air concentration exceeds the specified value (top for a given threshold of air concentration)</description>
   </parameter>
+  <parameter code="25">
+    <description>Highest level where radar reflectivity exceeds the specified value (echo top for a given threshold of reflectivity)</description>
+  </parameter>
   <parameter code="100">
     <description>Isobaric Surface</description>
   </parameter>
@@ -146,6 +149,15 @@
   </parameter>
   <parameter code="167">
     <description>Bottom of Root Zone</description>
+  </parameter>
+  <parameter code="168">
+    <description>Ocean Model Level</description>
+  </parameter>
+  <parameter code="169">
+    <description>Ocean level defined by water density (sigma-theta) difference from near-surface to level (see Note 7)</description>
+  </parameter>
+  <parameter code="170">
+    <description>Ocean level defined by water potential temperature difference from near-surface to level (see Note 7)</description>
   </parameter>
   <parameter code="174">
     <description>Top Surface of Ice on Sea, Lake or River</description>

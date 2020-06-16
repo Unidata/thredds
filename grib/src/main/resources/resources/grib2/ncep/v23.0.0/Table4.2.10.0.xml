@@ -233,6 +233,101 @@
     <description>Spectral Peakedness Factor</description>
     <units>s-1</units>
   </parameter>
+  <parameter code="46">
+    <shortName>PWAVEDIR</shortName>
+    <description>Peak wave direction</description>
+    <units />
+  </parameter>
+  <parameter code="47">
+    <shortName>SWHFSWEL</shortName>
+    <description>Significant wave height of first swell partition</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="48">
+    <shortName>SWHSSWEL</shortName>
+    <description>Significant wave height of second swell partition</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="49">
+    <shortName>SWHTSWEL</shortName>
+    <description>Significant wave height of third swell partition</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="50">
+    <shortName>MWPFSWEL</shortName>
+    <description>Mean wave period of first swell partition</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="51">
+    <shortName>MWPSSWEL</shortName>
+    <description>Mean wave period of second swell partition</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="52">
+    <shortName>MWPTSWEL</shortName>
+    <description>Mean wave period of third swell partition</description>
+    <units>s</units>
+  </parameter>
+  <parameter code="53">
+    <shortName>MWDFSWEL</shortName>
+    <description>Mean wave direction of first swell partition</description>
+    <units />
+  </parameter>
+  <parameter code="54">
+    <shortName>MWDSSWEL</shortName>
+    <description>Mean wave direction of second swell partition</description>
+    <units />
+  </parameter>
+  <parameter code="55">
+    <shortName>MWDTSWEL</shortName>
+    <description>Mean wave direction of third swell partition</description>
+    <units />
+  </parameter>
+  <parameter code="56">
+    <shortName>WDWFSWEL</shortName>
+    <description>Wave directional width of first swell partition</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="57">
+    <shortName>WDWSSWEL</shortName>
+    <description>Wave directional width of second swell partition</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="58">
+    <shortName>WDWTSWEL</shortName>
+    <description>Wave directional width of third swell partition</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="59">
+    <shortName>WFWFSWEL</shortName>
+    <description>Wave frequency width of first swell partition</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="60">
+    <shortName>WFWSSWEL</shortName>
+    <description>Wave frequency width of second swell partition</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="61">
+    <shortName>WFWTSWEL</shortName>
+    <description>Wave frequency width of third swell partition</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="62">
+    <shortName>WAVEFREW</shortName>
+    <description>Wave frequency width</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="63">
+    <shortName>FREWWW</shortName>
+    <description>Frequency width of wind waves</description>
+    <units>-</units>
+  </parameter>
+  <parameter code="64">
+    <shortName>FREWTSW</shortName>
+    <description>Frequency width of total swell</description>
+    <units>-</units>
+  </parameter>
   <parameter code="192">
     <shortName>WSTP</shortName>
     <description>Wave Steepness</description>

@@ -68,6 +68,36 @@
     <description>Water Temperature</description>
     <units>K</units>
   </parameter>
+  <parameter code="16">
+    <shortName>WATERDEN</shortName>
+    <description>Water Density (rho)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>WATDENA</shortName>
+    <description>Water Density Anomaly (sigma) See note</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="18">
+    <shortName>WATPTEMP</shortName>
+    <description>Water potential temperature (theta)</description>
+    <units>K</units>
+  </parameter>
+  <parameter code="19">
+    <shortName>WATPDEN</shortName>
+    <description>Water potential density (rho theta)</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="20">
+    <shortName>WATPDENA</shortName>
+    <description>Water potential density anomaly (sigma theta) See Note</description>
+    <units>kg m-3</units>
+  </parameter>
+  <parameter code="21">
+    <shortName>PRTSAL</shortName>
+    <description>Practical salinity</description>
+    <units>psu (numeric)</units>
+  </parameter>
   <parameter code="192">
     <shortName>WTMPC</shortName>
     <description>3-D Temperature</description>

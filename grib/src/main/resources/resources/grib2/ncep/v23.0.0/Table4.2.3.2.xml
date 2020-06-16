@@ -63,4 +63,9 @@
     <description>Effective Absorption Optical Depth Ratio</description>
     <units>Numeric</units>
   </parameter>
+  <parameter code="30">
+    <shortName>MEACST</shortName>
+    <description>Measurement cost</description>
+    <units>Numeric</units>
+  </parameter>
 </parameterMap>

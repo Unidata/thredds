@@ -144,7 +144,7 @@
     <units>m2 s-2</units>
   </parameter>
   <parameter code="201">
-    <shortName>BNEGLAY</shortName>
+    <shortName>BNEGELAY</shortName>
     <description>Bourgoiun Negative Energy Layer (surface to freezing level)</description>
     <units>J kg-1</units>
   </parameter>
@@ -152,5 +152,25 @@
     <shortName>BPOSELAY</shortName>
     <description>Bourgoiun Positive Energy Layer (2k ft AGL to 400 hPa)</description>
     <units>J kg-1</units>
+  </parameter>
+  <parameter code="203">
+    <shortName>DCAPE</shortName>
+    <description>Downdraft CAPE</description>
+    <units>J kg-1</units>
+  </parameter>
+  <parameter code="204">
+    <shortName>EFHL</shortName>
+    <description>Effective Storm Relative Helicity</description>
+    <units>m2 s-2</units>
+  </parameter>
+  <parameter code="205">
+    <shortName>ESP</shortName>
+    <description>Enhanced Stretching Potential</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>CANGLE</shortName>
+    <description>Critical Angle</description>
+    <units>Degree</units>
   </parameter>
 </parameterMap>

@@ -10,8 +10,23 @@
   </parameter>
   <parameter code="1">
     <shortName>LTPINX</shortName>
-    <description>Lightning Potential Index (LPI) (see Note)</description>
+    <description>Lightning Potential Index (LPI) (see Note 1)</description>
     <units>J kg-1</units>
+  </parameter>
+  <parameter code="2">
+    <shortName>CDGDLTFD</shortName>
+    <description>Cloud-to-Ground Lightning Flash Density</description>
+    <units>km-2 day-1</units>
+  </parameter>
+  <parameter code="3">
+    <shortName>CDCDLTFD</shortName>
+    <description>Cloud-to-Cloud Lightning Flash Density</description>
+    <units>km-2 day-1</units>
+  </parameter>
+  <parameter code="4">
+    <shortName>TLGTFD</shortName>
+    <description>Total Lightning Flash Density (see Note 2)</description>
+    <units>km-2 day-1</units>
   </parameter>
   <parameter code="192">
     <shortName>LTNG</shortName>

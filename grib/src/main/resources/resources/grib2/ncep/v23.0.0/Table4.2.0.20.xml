@@ -78,6 +78,21 @@
     <description>Transfer From SO2 (Sulphur Dioxide) to SO4 (Sulphate)</description>
     <units>kg kg-1s-1</units>
   </parameter>
+  <parameter code="15">
+    <shortName>DDVEL</shortName>
+    <description>Dry deposition velocity</description>
+    <units>m s-1</units>
+  </parameter>
+  <parameter code="16">
+    <shortName>MSSRDRYA</shortName>
+    <description>Mass mixing ratio with respect to dry air</description>
+    <units>kg kg-1</units>
+  </parameter>
+  <parameter code="17">
+    <shortName>MSSRWETA</shortName>
+    <description>Mass mixing ratio with respect to wet air</description>
+    <units>kg kg-1</units>
+  </parameter>
   <parameter code="50">
     <shortName>AIA</shortName>
     <description>Amount in Atmosphere</description>
@@ -147,6 +162,76 @@
     <shortName>CAVEMDL</shortName>
     <description>Column-Averaged Mass Density in Layer</description>
     <units>kg m-3</units>
+  </parameter>
+  <parameter code="64">
+    <shortName>MOLRDRYA</shortName>
+    <description>Mole fraction with respect to dry air</description>
+    <units>mol mol-1</units>
+  </parameter>
+  <parameter code="65">
+    <shortName>MOLRWETA</shortName>
+    <description>Mole fraction with respect to wet air</description>
+    <units>mol mol-1</units>
+  </parameter>
+  <parameter code="66">
+    <shortName>CINCLDSP</shortName>
+    <description>Column-integrated in-cloud scavenging rate by precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="67">
+    <shortName>CBLCLDSP</shortName>
+    <description>Column-integrated below-cloud scavenging rate by precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="68">
+    <shortName>CIRELREP</shortName>
+    <description>Column-integrated release rate from evaporating precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="69">
+    <shortName>CINCSLSP</shortName>
+    <description>Column-integrated in-cloud scavenging rate by large-scale precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="70">
+    <shortName>CBECSLSP</shortName>
+    <description>Column-integrated below-cloud scavenging rate by large-scale precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="71">
+    <shortName>CRERELSP</shortName>
+    <description>Column-integrated release rate from evaporating large-scale precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="72">
+    <shortName>CINCSRCP</shortName>
+    <description>Column-integrated in-cloud scavenging rate by convective precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="73">
+    <shortName>CBLCSRCP</shortName>
+    <description>Column-integrated below-cloud scavenging rate by convective precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="74">
+    <shortName>CIRERECP</shortName>
+    <description>Column-integrated release rate from evaporating convective precipitation</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="75">
+    <shortName>WFIREFLX</shortName>
+    <description>Wildfire flux</description>
+    <units>kg m-2 s-1</units>
+  </parameter>
+  <parameter code="76">
+    <shortName>EMISFLX</shortName>
+    <description>Emission Rate</description>
+    <units>kg kg-1 s-1</units>
+  </parameter>
+  <parameter code="77">
+    <shortName>SFCEFLX</shortName>
+    <description>Surface Emission flux</description>
+    <units>kg m-2 s-1</units>
   </parameter>
   <parameter code="100">
     <shortName>SADEN</shortName>

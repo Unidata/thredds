@@ -183,6 +183,16 @@
     <description>Visibility Through Blowing Snow</description>
     <units>m</units>
   </parameter>
+  <parameter code="36">
+    <shortName>PSNOWS</shortName>
+    <description>Presence of Snow Squalls</description>
+    <units>See Table 4.222</units>
+  </parameter>
+  <parameter code="37">
+    <shortName>ICESEV</shortName>
+    <description>Icing Severity</description>
+    <units>non-dim</units>
+  </parameter>
   <parameter code="192">
     <shortName>MXSALB</shortName>
     <description>Maximum Snow Albedo</description>
@@ -350,7 +360,7 @@
   </parameter>
   <parameter code="234">
     <shortName>ICSEV</shortName>
-    <description>Icing severity</description>
+    <description>Icing Severity</description>
     <units>non-dim</units>
   </parameter>
   <parameter code="235">
@@ -372,5 +382,10 @@
     <shortName>ELLINX</shortName>
     <description>Ellrod Index</description>
     <units />
+  </parameter>
+  <parameter code="239">
+    <shortName>CWASP</shortName>
+    <description>Craven-Wiedenfeld Aggregate Severe Parameter</description>
+    <units>Numeric</units>
   </parameter>
 </parameterMap>

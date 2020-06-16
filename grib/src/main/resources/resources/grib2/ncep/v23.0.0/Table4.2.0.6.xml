@@ -89,23 +89,23 @@
     <units>Proportion</units>
   </parameter>
   <parameter code="17">
-    <shortName>TCOND</shortName>
-    <description>Total Condensate *</description>
+    <shortName>TCONDO</shortName>
+    <description>Total Condensate * - Parameter deprecated</description>
     <units>kg kg-1</units>
   </parameter>
   <parameter code="18">
-    <shortName>TCOLW</shortName>
-    <description>Total Column-Integrated Cloud Water *</description>
+    <shortName>TCOLWO</shortName>
+    <description>Total Column-Integrated Cloud Water * - Parameter deprecated</description>
     <units>kg m-2</units>
   </parameter>
   <parameter code="19">
-    <shortName>TCOLI</shortName>
-    <description>Total Column-Integrated Cloud Ice *</description>
+    <shortName>TCOLIO</shortName>
+    <description>Total Column-Integrated Cloud Ice * - Parameter deprecated</description>
     <units>kg m-2</units>
   </parameter>
   <parameter code="20">
     <shortName>TCOLC</shortName>
-    <description>Total Column-Integrated Condensate *</description>
+    <description>Total Column-Integrated Condensate * - Parameter deprecated</description>
     <units>kg m-2</units>
   </parameter>
   <parameter code="21">
@@ -120,7 +120,7 @@
   </parameter>
   <parameter code="23">
     <shortName>CDCIMR</shortName>
-    <description>Cloud Ice Mixing Ratio *</description>
+    <description>Cloud Ice Mixing Ratio * - Parameter deprecated</description>
     <units>kg kg-1</units>
   </parameter>
   <parameter code="24">

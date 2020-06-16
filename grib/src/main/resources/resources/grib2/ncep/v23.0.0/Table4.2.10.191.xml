@@ -4,7 +4,7 @@
   <title>Miscellaneous</title>
   <source>https://www.nco.ncep.noaa.gov/pmb/docs/grib2/grib2_doc/grib2_table4-2-10-191.shtml</source>
   <parameter code="0">
-    <shortName>TSEC</shortName>
+    <shortName>IRTSEC</shortName>
     <description>Seconds Prior To Initial Reference Time (Defined In Section 1)</description>
     <units>s</units>
   </parameter>

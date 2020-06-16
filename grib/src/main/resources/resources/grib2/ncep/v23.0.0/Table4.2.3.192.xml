@@ -233,4 +233,84 @@
     <description>Simulated Brightness Temperature for ABI GOES-17, Band-16</description>
     <units>K</units>
   </parameter>
+  <parameter code="46">
+    <shortName>SRFAGR1</shortName>
+    <description>Simulated Reflectance Factor for nadir ABI GOES-R, Band-1</description>
+    <units />
+  </parameter>
+  <parameter code="47">
+    <shortName>SRFAGR2</shortName>
+    <description>Simulated Reflectance Factor for nadir ABI GOES-R, Band-2</description>
+    <units />
+  </parameter>
+  <parameter code="48">
+    <shortName>SRFAGR3</shortName>
+    <description>Simulated Reflectance Factor for nadir ABI GOES-R, Band-3</description>
+    <units />
+  </parameter>
+  <parameter code="49">
+    <shortName>SRFAGR4</shortName>
+    <description>Simulated Reflectance Factor for nadir ABI GOES-R, Band-4</description>
+    <units />
+  </parameter>
+  <parameter code="50">
+    <shortName>SRFAGR5</shortName>
+    <description>Simulated Reflectance Factor for nadir ABI GOES-R, Band-5</description>
+    <units />
+  </parameter>
+  <parameter code="51">
+    <shortName>SRFAGR6</shortName>
+    <description>Simulated Reflectance Factor for nadir ABI GOES-R, Band-6</description>
+    <units />
+  </parameter>
+  <parameter code="52">
+    <shortName>SBTAGR7</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-7</description>
+    <units />
+  </parameter>
+  <parameter code="53">
+    <shortName>SBTAGR8</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-8</description>
+    <units />
+  </parameter>
+  <parameter code="54">
+    <shortName>SBTAGR9</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-9</description>
+    <units />
+  </parameter>
+  <parameter code="55">
+    <shortName>SBTAGR10</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-10</description>
+    <units />
+  </parameter>
+  <parameter code="56">
+    <shortName>SBTAGR11</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-11</description>
+    <units />
+  </parameter>
+  <parameter code="57">
+    <shortName>SBTAGR12</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-12</description>
+    <units />
+  </parameter>
+  <parameter code="58">
+    <shortName>SBTAGR13</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-13</description>
+    <units />
+  </parameter>
+  <parameter code="59">
+    <shortName>SBTAGR14</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-14</description>
+    <units />
+  </parameter>
+  <parameter code="60">
+    <shortName>SBTAGR15</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-15</description>
+    <units />
+  </parameter>
+  <parameter code="61">
+    <shortName>SBTAGR16</shortName>
+    <description>Simulated Brightness Temperature for nadir ABI GOES-R, Band-16</description>
+    <units />
+  </parameter>
 </parameterMap>

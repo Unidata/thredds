@@ -34,7 +34,7 @@
     <units />
   </parameter>
   <parameter code="194">
-    <shortName>TSEC</shortName>
+    <shortName>RTSEC</shortName>
     <description>Seconds prior to initial reference time</description>
     <units>s</units>
   </parameter>

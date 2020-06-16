@@ -35,7 +35,7 @@
   </parameter>
   <parameter code="6">
     <shortName>EVAPT</shortName>
-    <description>Evapotranspiration</description>
+    <description>Evapotranspiration (See note 1)</description>
     <units>kg-2 s-1</units>
   </parameter>
   <parameter code="7">
@@ -195,8 +195,13 @@
   </parameter>
   <parameter code="38">
     <shortName>SOILVIC</shortName>
-    <description>Soil Volumetric Ice Content (Water Equivalent) *****</description>
+    <description>Soil Volumetric Ice Content (Water Equivalent) (See note 2)</description>
     <units>m3 m-3</units>
+  </parameter>
+  <parameter code="39">
+    <shortName>EVAPTRAT</shortName>
+    <description>Evapotranspiration Rate</description>
+    <units>kg m-2 s-1</units>
   </parameter>
   <parameter code="192">
     <shortName>SOILW</shortName>
