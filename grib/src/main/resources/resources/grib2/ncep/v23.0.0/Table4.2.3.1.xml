@@ -129,8 +129,18 @@
     <units>K</units>
   </parameter>
   <parameter code="29">
-    <shortName>SRAD</shortName>
+    <shortName>SCRAD</shortName>
     <description>Scaled Radiance (See Note 2)</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="98">
+    <shortName>CCMPEMRR</shortName>
+    <description>Correlation coefficient between MPE rain rates for the co-located IR data and the microwave data rain rates</description>
+    <units>Numeric</units>
+  </parameter>
+  <parameter code="99">
+    <shortName>SDMPEMRR</shortName>
+    <description>Standard deviation between MPE rain rates for the co-located IR data and the microwave data rain rates</description>
     <units>Numeric</units>
   </parameter>
   <parameter code="192">

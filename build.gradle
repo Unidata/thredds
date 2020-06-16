@@ -2,7 +2,7 @@ allprojects {
     // Matches Maven's "project.groupId". Used in MANIFEST.MF for "Implementation-Vendor-Id".
     group = "edu.ucar"
     // Matches Maven's "project.version". Used in MANIFEST.MF for "Implementation-Version".
-    version = '4.6.15-SNAPSHOT'
+    version = '4.6.16-SNAPSHOT'
     // Eventually, we'll stop appending "SNAPSHOT" to our versions and just use this.
     status = 'development'
 }
@@ -26,7 +26,7 @@ ext {
     vendor = "UCAR/Unidata"
 
     // Matches Maven's "project.url". Used in MANIFEST.MF for "Implementation-URL".
-    url = "https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/documentation.htm"
+    url = "https://www.unidata.ucar.edu/software/netcdf-java/v4.6/documentation.htm"
 
     SimpleDateFormat iso_8601_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
     buildTimestamp = iso_8601_format.format(new Date())

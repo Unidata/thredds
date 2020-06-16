@@ -121,7 +121,7 @@
     <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents based on a distribution function (see Template 4.57)</description>
   </parameter>
   <parameter code="58">
-    <description>Analysis or forecast at a horizontal level or in a horizontal layer at a point in time for atmospheric chemical constituents based on a distribution function (see Template 4.58)</description>
+    <description>Individual Ensemble Forecast, Control and Perturbed, at a horizontal level or in a horizontal layer at a point in time interval for Atmospheric Chemical Constituents based on a distribution function (see Template 4.58)</description>
   </parameter>
   <parameter code="59">
     <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer at a point in time for spatio-temporal changing tile parameters (corrected version of template 4.56 - See Template 4.59)</description>
@@ -131,6 +131,12 @@
   </parameter>
   <parameter code="61">
     <description>Individual Ensemble Reforecast, control and perturbed, at a horizontal level or in a horizontal layer, in a continuous or non-continuous time interval (see Template 4.61)</description>
+  </parameter>
+  <parameter code="62">
+    <description>Average, Accumulation and/or Extreme values or other Statistically-processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for spatio-temporal changing tiles at a horizontal level or horizontal layer at a point in time (see Template 4.62)</description>
+  </parameter>
+  <parameter code="63">
+    <description>Individual ensemble forecast, control and perturbed, at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for spatio-temporal changing tiles (see Template 4.63)</description>
   </parameter>
   <parameter code="67">
     <description>Average, accumulation and/or extreme values or other statistically processed values at a horizontal level or in a horizontal layer in a continuous or non-continuous time interval for atmospheric chemical constituents based on a distribution function (see Template 4.67)</description>

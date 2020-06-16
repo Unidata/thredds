@@ -18,6 +18,11 @@
     <description>Heat Exchange Coefficient</description>
     <units />
   </parameter>
+  <parameter code="3">
+    <shortName>PRACTSAL</shortName>
+    <description>Practical salinity</description>
+    <units>Numeric</units>
+  </parameter>
   <parameter code="192">
     <shortName>SURGE</shortName>
     <description>Hurricane Storm Surge</description>
@@ -77,6 +82,41 @@
     <shortName>LCH</shortName>
     <description>Heat Exchange Coefficient</description>
     <units />
+  </parameter>
+  <parameter code="204">
+    <shortName>FRZSPR</shortName>
+    <description>Freezing Spray</description>
+    <units />
+  </parameter>
+  <parameter code="205">
+    <shortName>TWLWAV</shortName>
+    <description>Total Water Level Accounting for Tide, Wind and Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="206">
+    <shortName>RUNUP</shortName>
+    <description>Total Water Level Increase due to Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="207">
+    <shortName>SETUP</shortName>
+    <description>Mean Increase in Water Level due to Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="208">
+    <shortName>SWASH</shortName>
+    <description>Time-varying Increase in Water Level due to Waves</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="209">
+    <shortName>TWLDT</shortName>
+    <description>Total Water Level Above Dune Toe</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="210">
+    <shortName>TWLDC</shortName>
+    <description>Total Water Level Above Dune Crest</description>
+    <units>m</units>
   </parameter>
   <parameter code="242">
     <shortName>TCSRG20</shortName>

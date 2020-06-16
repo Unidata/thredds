@@ -76,7 +76,7 @@
     <description>Optically Thick Ice Cloud</description>
   </parameter>
   <parameter code="24">
-    <description>Multi-Layered Cloud</description>
+    <description>Multi-Layeblack Cloud</description>
   </parameter>
   <parameter code="97">
     <description>Snow / Ice on Land</description>
@@ -119,6 +119,12 @@
   </parameter>
   <parameter code="110">
     <description>Unknown Cloud Type</description>
+  </parameter>
+  <parameter code="111">
+    <description>Single layer water cloud</description>
+  </parameter>
+  <parameter code="112">
+    <description>Single layer ice cloud</description>
   </parameter>
   <parameter code="255">
     <description>Missing</description>

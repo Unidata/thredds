@@ -6,7 +6,7 @@
   <parameter code="0">
     <shortName>WDIR</shortName>
     <description>Wind Direction (from which blowing)</description>
-    <units>true</units>
+    <units />
   </parameter>
   <parameter code="1">
     <shortName>WIND</shortName>
@@ -221,7 +221,7 @@
   <parameter code="43">
     <shortName>GEOWD</shortName>
     <description>Geostrophic Wind Direction</description>
-    <units>degree true</units>
+    <units />
   </parameter>
   <parameter code="44">
     <shortName>GEOWS</shortName>
@@ -432,5 +432,15 @@
     <shortName>TOD90</shortName>
     <description>Latest Reasonable Departure Time (90% exceedance)</description>
     <units>s</units>
+  </parameter>
+  <parameter code="231">
+    <shortName>TPWDIR</shortName>
+    <description>Tropical Wind Direction</description>
+    <units />
+  </parameter>
+  <parameter code="232">
+    <shortName>TPWSPD</shortName>
+    <description>Tropical Wind Speed</description>
+    <units>m s-1</units>
   </parameter>
 </parameterMap>

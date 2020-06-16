@@ -434,7 +434,7 @@
     <units>kg kg-1</units>
   </parameter>
   <parameter code="87">
-    <shortName>SPRATE</shortName>
+    <shortName>STRPRATE</shortName>
     <description>Stratiform Precipitation Rate</description>
     <units>kg m-2 s-1</units>
   </parameter>
@@ -602,6 +602,76 @@
     <shortName>FSNOWC</shortName>
     <description>Fraction of Snow Cover</description>
     <units>Proportion</units>
+  </parameter>
+  <parameter code="129">
+    <shortName>EFRCWAT</shortName>
+    <description>Effective Radius of Cloud Water</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="130">
+    <shortName>EFRRAIN</shortName>
+    <description>Effective Radius of Rain</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="131">
+    <shortName>EFRCICE</shortName>
+    <description>Effective Radius of Cloud Ice</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="132">
+    <shortName>EFRSNOW</shortName>
+    <description>Effective Radius of Snow</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="133">
+    <shortName>EFRGRL</shortName>
+    <description>Effective Radius of Graupel</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="134">
+    <shortName>EFRHAIL</shortName>
+    <description>Effective Radius of Hail</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="135">
+    <shortName>EFRSLC</shortName>
+    <description>Effective Radius of Subgrid Liquid Clouds</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="136">
+    <shortName>EFRSICEC</shortName>
+    <description>Effective Radius of Subgrid Ice Clouds</description>
+    <units>m</units>
+  </parameter>
+  <parameter code="137">
+    <shortName>EFARRAIN</shortName>
+    <description>Effective Aspect Ratio of Rain</description>
+    <units />
+  </parameter>
+  <parameter code="138">
+    <shortName>EFARCICE</shortName>
+    <description>Effective Aspect Ratio of Cloud Ice</description>
+    <units />
+  </parameter>
+  <parameter code="139">
+    <shortName>EFARSNOW</shortName>
+    <description>Effective Aspect Ratio of Snow</description>
+    <units />
+  </parameter>
+  <parameter code="140">
+    <shortName>EFARGRL</shortName>
+    <description>Effective Aspect Ratio of Graupel</description>
+    <units />
+  </parameter>
+  <parameter code="141">
+    <shortName>EFARHAIL</shortName>
+    <description>Effective Aspect Ratio of Hail</description>
+    <units />
+  </parameter>
+  <parameter code="142">
+    <shortName>EFARSIC</shortName>
+    <description>Effective Aspect Ratio of Subgrid Ice Clouds</description>
+    <units />
   </parameter>
   <parameter code="192">
     <shortName>CRAIN</shortName>
