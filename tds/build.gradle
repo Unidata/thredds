@@ -3,7 +3,7 @@ import edu.ucar.build.ui.ToolsUiJnlpBaseTask
 description = "The THREDDS Data Server (TDS) is a web server that provides catalog and data access services for " +
         "scientific data using OPeNDAP, OGC WCS and WMS, HTTP, and other remote-data-access protocols."
 ext.title = "THREDDS Data Server (TDS)"
-ext.url = "https://www.unidata.ucar.edu/software/thredds/current/tds/TDS.html"
+ext.url = "https://www.unidata.ucar.edu/software/tds/current/TDS.html"
 
 apply plugin: 'war'
 
