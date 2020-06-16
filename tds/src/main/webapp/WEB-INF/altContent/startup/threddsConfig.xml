@@ -2,7 +2,7 @@
 <threddsConfig>
 
   <!-- all options are commented out in standard install - meaning use default values -->
-  <!-- see https://www.unidata.ucar.edu/software/thredds/current/tds/reference/ThreddsConfigXMLFile.html -->
+  <!-- see https://www.unidata.ucar.edu/software/tds/current/reference/ThreddsConfigXMLFile.html -->
   <serverInformation>
     <name>Initial TDS Installation</name>
     <logoUrl>/thredds/threddsIcon.gif</logoUrl>
