@@ -137,6 +137,8 @@ public class CFGridWriter2 {
                               boolean addLatLon, boolean testSizeOnly,
                               NetcdfFileWriter writer) throws IOException, InvalidRangeException {
 
+    boolean isSubset = false;
+
     NetcdfDataset ncd = (NetcdfDataset) gds.getNetcdfFile();
 
     List<Variable> varList = new ArrayList<>();         // could make these Sets
@@ -175,9 +177,8 @@ public class CFGridWriter2 {
       if (projRect != null) {
         makeHorizRange(gcsOrg, projRect, horizStride, yxRanges);
         gridWant = gridOrg.makeSubset(null, null, timeRange, zRangeUse, yxRanges.get(0), yxRanges.get(1));
-
+        isSubset = true;
       } else {
-
         if (llbb == null) {
           yxRanges.add(null);
           yxRanges.add(null);
@@ -187,6 +188,7 @@ public class CFGridWriter2 {
 
         if ((null != timeRange) || (zRangeUse != null) || (llbb != null) || (horizStride > 1)) {
           gridWant = gridOrg.makeSubset(timeRange, zRangeUse, llbb, 1, horizStride, horizStride);
+          isSubset = true;
         } else
           gridWant = gridOrg;
       }
@@ -235,8 +237,17 @@ public class CFGridWriter2 {
 
     // use fileWriter to copy the variables
     FileWriter2 fileWriter = new FileWriter2(writer);
-    for (Variable v : varList)
+    for (Variable v : varList) {
+      if (isSubset && fileWriter.getNetcdfFileWriter().getVersion().isNetdf4format()) {
+        // if we have subset a dataset, and we are writing to netCDF-4 files, then we need to
+        // make sure that no variables come through with the _ChunkSizes attribute
+        // This has been properly fixed in netCDF-Java 5, and in this case is meant to be a
+        // quick and dirty, lite-touch hack to allow for writing in this case. If we don't do
+        // this, we get "Bad chunk sizes"
+        v.removeAttributeIgnoreCase(CDM.CHUNK_SIZES);
+      }
       fileWriter.addVariable(v);
+    }
 
     addCFAnnotations(writer, gds, gridList, ncd, axisList, addLatLon);
 
