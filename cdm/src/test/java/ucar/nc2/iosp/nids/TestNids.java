@@ -33,7 +33,9 @@
 package ucar.nc2.iosp.nids;
 
 import junit.framework.*;
+import org.junit.Assert;
 import ucar.ma2.*;
+import ucar.ma2.MAMath.MinMax;
 import ucar.nc2.*;
 import ucar.unidata.util.test.TestDir;
 
@@ -411,6 +413,28 @@ public class TestNids extends TestCase {
     assert(null != ncfile.findVariable("textStruct_code1").getDimension(0));
 
     ncfile.close();
+  }
+
+  public void testRadialImageMessagePcode180() throws IOException {
+    // Radial Image message, product code 180 (TDWR)
+    double comparisonTolerance = 0.1;
+    String basereflect180TdwrFile = TestDir.cdmLocalTestDataDir + "nids/Level3_TUL_TZ0_20200811_1804.nids";
+    try (NetcdfFile ncf = NetcdfFile.open(basereflect180TdwrFile)) {
+      Variable bref = ncf.findVariable("BaseReflectivity");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // max reflectivity value as shown by NWS web display at the time
+      // not a *great* check, but not the worst either.
+      Assert.assertTrue(Math.abs(max - 56.5) < comparisonTolerance);
+      // test that range of the radial axis variable is good
+      // expect 0 to 48 nautical miles (according to the ICD)
+      // which is roughly 0 to 88650 meters
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      Assert.assertTrue(Math.abs(minMax.min) < comparisonTolerance);
+      Assert.assertTrue(Math.abs(minMax.max - 88650) < comparisonTolerance);
+    }
   }
 
   private void testReadData(Variable v) {
