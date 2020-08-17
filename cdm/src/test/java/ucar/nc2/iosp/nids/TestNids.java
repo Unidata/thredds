@@ -437,6 +437,88 @@ public class TestNids extends TestCase {
     }
   }
 
+  public void testRadialImageMessagePcode153() throws IOException {
+    // Radial Image message, product code 153 (super res reflectivity).
+    double comparisonTolerance = 0.1;
+    String datafile = TestDir.cdmLocalTestDataDir + "nids/H0Z_20200812_1318";
+    try (NetcdfFile ncf = NetcdfFile.open(datafile)) {
+      Variable bref = ncf.findVariable("BaseReflectivityDR");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // expected max reflectivity value obtained from metpy decoder.
+      Assert.assertTrue(Math.abs(max - 59.0) < comparisonTolerance);
+      // test that range of the radial axis variable is good.
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      Assert.assertTrue(Math.abs(minMax.min) < comparisonTolerance);
+      // within 1 km of 460 km.
+      Assert.assertTrue(Math.abs(minMax.max - 460000) < 1000);
+    }
+  }
+
+  public void testRadialImageMessagePcode154() throws IOException {
+    // Radial Image message, product code 154 (super res velocity).
+    double comparisonTolerance = 0.1;
+    String datafile = TestDir.cdmLocalTestDataDir + "nids/H0V_20200812_1309";
+    try (NetcdfFile ncf = NetcdfFile.open(datafile)) {
+      Variable bref = ncf.findVariable("BaseVelocityDV");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // expected max velocity value obtained from metpy decoder.
+      Assert.assertTrue(Math.abs(max - 44.5) < comparisonTolerance);
+      // test that range of the radial axis variable is good.
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      Assert.assertTrue(Math.abs(minMax.min) < comparisonTolerance);
+      // within 1 km of 300 km.
+      Assert.assertTrue(Math.abs(minMax.max - 300000) < 1000);
+    }
+  }
+
+  public void testRadialImageMessagePcode155() throws IOException {
+    // Radial Image message, product code 155 (super res spectrum width).
+    double comparisonTolerance = 0.1;
+    String datafile = TestDir.cdmLocalTestDataDir + "nids/H0W_20200812_1305";
+    try (NetcdfFile ncf = NetcdfFile.open(datafile)) {
+      Variable bref = ncf.findVariable("SpectrumWidth");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // expected max spectrum width value obtained from metpy decoder.
+      Assert.assertTrue(Math.abs(max - 15.0) < comparisonTolerance);
+      // test that range of the radial axis variable is good.
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      Assert.assertTrue(Math.abs(minMax.min) < comparisonTolerance);
+      // within 1 km of 300 km.
+      Assert.assertTrue(Math.abs(minMax.max - 300000) < 1000);
+    }
+  }
+
+  public void testRadialImageMessagePcode167() throws IOException {
+    // Radial Image message, product code 167 (super res digital correlation coefficient).
+    double comparisonTolerance = 0.1;
+    String datafile = TestDir.cdmLocalTestDataDir + "nids/H0C_20200814_0417";
+    try (NetcdfFile ncf = NetcdfFile.open(datafile)) {
+      Variable bref = ncf.findVariable("CorrelationCoefficient");
+      Array data = bref.read();
+      double max = MAMath.getMaximum(data);
+      // expected max correlation coefficient value obtained from metpy decoder.
+      // can be greater than 1 due to the way it is measured, but should not be much greater than one.
+      Assert.assertTrue(Math.abs(max - 1.05167) < comparisonTolerance);
+      // test that range of the radial axis variable is good.
+      Variable gate = ncf.findVariable("gate");
+      Array gateValues = gate.read();
+      MinMax minMax = MAMath.getMinMax(gateValues);
+      Assert.assertTrue(Math.abs(minMax.min) < comparisonTolerance);
+      // within 1 km of 300 km.
+      Assert.assertTrue(Math.abs(minMax.max - 300000) < 1000);
+    }
+  }
+
+
   private void testReadData(Variable v) {
     Array a = null;
     assert(null != v);
